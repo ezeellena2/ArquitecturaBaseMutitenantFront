@@ -157,6 +157,5889 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organization/assistant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantStateResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/notice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consentimiento explícito por usuario y versión, después de aceptar documentos legales vigentes; 204, sin inferir aceptación. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssistantNoticeHttpRequest"];
+                    "text/json": components["schemas"]["AssistantNoticeHttpRequest"];
+                    "application/*+json": components["schemas"]["AssistantNoticeHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    saved?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CursorResultOfAssistantConversationSummaryResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Crea sin IA, title=null/isSaved=false; 201 con Location. DurableReference no copia título al store global. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateAssistantConversationHttpRequest"];
+                    "text/json": components["schemas"]["CreateAssistantConversationHttpRequest"];
+                    "application/*+json": components["schemas"]["CreateAssistantConversationHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Ruta privada del recurso creado. */
+                        Location?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantConversationSummaryResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/conversations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantConversationResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateAssistantConversationHttpRequest"];
+                    "text/json": components["schemas"]["UpdateAssistantConversationHttpRequest"];
+                    "application/*+json": components["schemas"]["UpdateAssistantConversationHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        delete: {
+            parameters: {
+                query: {
+                    version: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/conversations/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. POST SSE autenticado, sin EventSource anónimo. Primera admisión 200 text/event-stream; replay terminal 200 application/json TurnResult. Preflight antes de abrir stream; en curso 409. Sin copia de contenido en el store global. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SendAssistantMessageHttpRequest"];
+                    "text/json": components["schemas"]["SendAssistantMessageHttpRequest"];
+                    "application/*+json": components["schemas"]["SendAssistantMessageHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Primera admisión: SSE; replay terminal: JSON privado reautorizado. */
+                200: {
+                    headers: {
+                        "Cache-Control"?: "no-store";
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/event-stream": components["schemas"]["AssistantStreamHttpResponse"];
+                        "application/json": components["schemas"]["AssistantTurnResultResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Settings.NotConfigured; Assistant.Model.NotAllowed; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Provider.ContextTooLarge; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound; Assistant.Turn.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Turn.InProgress; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Service Unavailable; Assistant.Provider.Unavailable */
+                503: {
+                    headers: {
+                        /** @description Segundos hasta el siguiente intento. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/conversations/{id}/turns/{turnId}/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    id: string;
+                    turnId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StopAssistantTurnHttpRequest"];
+                    "text/json": components["schemas"]["StopAssistantTurnHttpRequest"];
+                    "application/*+json": components["schemas"]["StopAssistantTurnHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Turn.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; Assistant.Turn.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/quick/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consulta fija sin IA, títulos automáticos, cuota ni costo; revalida permisos de la herramienta. DurableReference reconstruye el resultado privado tras revalidar dueño/lado/organización/legales/módulo/permisos. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssistantQuickHttpRequest"];
+                    "text/json": components["schemas"]["AssistantQuickHttpRequest"];
+                    "application/*+json": components["schemas"]["AssistantQuickHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantQuickResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.QuickQuery.NotAvailable; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/conversations/{id}/messages/{messageId}/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Solo respuesta assistant propia; up/down/null y versión. Sin detalle libre. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssistantFeedbackHttpRequest"];
+                    "text/json": components["schemas"]["AssistantFeedbackHttpRequest"];
+                    "application/*+json": components["schemas"]["AssistantFeedbackHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/conversations/{id}/attachments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /**
+                         * Format: binary
+                         * @description Un archivo PNG/JPEG/WebP/PDF, hasta 10485760 bytes.
+                         */
+                        file: string;
+                        /** Format: uint32 */
+                        conversationVersion: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Ruta privada del recurso creado. */
+                        Location?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantAttachmentSummaryResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/conversations/{id}/attachments/{attachmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    attachmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        "Cache-Control"?: "no-store";
+                        /** @description attachment; filename autorizado y escapado. */
+                        "Content-Disposition"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "image/png": string;
+                        "image/jpeg": string;
+                        "image/webp": string;
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        delete: {
+            parameters: {
+                query: {
+                    version: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                    attachmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/conversations/{id}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Descarga Markdown UTF-8 o PDF privada, no-store; solo conversación propia. Sin tool payloads, claves ni bytes originales de adjuntos; sin IA, cuota ni costo. */
+        get: {
+            parameters: {
+                query?: {
+                    format?: components["schemas"]["AssistantExportFormat"];
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        "Cache-Control"?: "no-store";
+                        /** @description attachment; filename autorizado y escapado. */
+                        "Content-Disposition"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/markdown": string;
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected; Assistant.Export.Failed */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/assistant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantStateResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/assistant/notice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consentimiento explícito por usuario y versión, después de aceptar documentos legales vigentes; 204, sin inferir aceptación. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssistantNoticeHttpRequest"];
+                    "text/json": components["schemas"]["AssistantNoticeHttpRequest"];
+                    "application/*+json": components["schemas"]["AssistantNoticeHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/assistant/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    saved?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CursorResultOfAssistantConversationSummaryResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Crea sin IA, title=null/isSaved=false; 201 con Location. DurableReference no copia título al store global. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateAssistantConversationHttpRequest"];
+                    "text/json": components["schemas"]["CreateAssistantConversationHttpRequest"];
+                    "application/*+json": components["schemas"]["CreateAssistantConversationHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Ruta privada del recurso creado. */
+                        Location?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantConversationSummaryResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/assistant/conversations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantConversationResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateAssistantConversationHttpRequest"];
+                    "text/json": components["schemas"]["UpdateAssistantConversationHttpRequest"];
+                    "application/*+json": components["schemas"]["UpdateAssistantConversationHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        delete: {
+            parameters: {
+                query: {
+                    version: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/assistant/conversations/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. POST SSE autenticado, sin EventSource anónimo. Primera admisión 200 text/event-stream; replay terminal 200 application/json TurnResult. Preflight antes de abrir stream; en curso 409. Sin copia de contenido en el store global. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SendAssistantMessageHttpRequest"];
+                    "text/json": components["schemas"]["SendAssistantMessageHttpRequest"];
+                    "application/*+json": components["schemas"]["SendAssistantMessageHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Primera admisión: SSE; replay terminal: JSON privado reautorizado. */
+                200: {
+                    headers: {
+                        "Cache-Control"?: "no-store";
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/event-stream": components["schemas"]["AssistantStreamHttpResponse"];
+                        "application/json": components["schemas"]["AssistantTurnResultResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Settings.NotConfigured; Assistant.Model.NotAllowed; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Provider.ContextTooLarge; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound; Assistant.Turn.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Turn.InProgress; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Service Unavailable; Assistant.Provider.Unavailable */
+                503: {
+                    headers: {
+                        /** @description Segundos hasta el siguiente intento. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/assistant/conversations/{id}/turns/{turnId}/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    id: string;
+                    turnId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StopAssistantTurnHttpRequest"];
+                    "text/json": components["schemas"]["StopAssistantTurnHttpRequest"];
+                    "application/*+json": components["schemas"]["StopAssistantTurnHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Turn.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; Assistant.Turn.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/assistant/quick/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consulta fija sin IA, títulos automáticos, cuota ni costo; revalida permisos de la herramienta. DurableReference reconstruye el resultado privado tras revalidar dueño/lado/organización/legales/módulo/permisos. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssistantQuickHttpRequest"];
+                    "text/json": components["schemas"]["AssistantQuickHttpRequest"];
+                    "application/*+json": components["schemas"]["AssistantQuickHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantQuickResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.QuickQuery.NotAvailable; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/assistant/conversations/{id}/messages/{messageId}/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Solo respuesta assistant propia; up/down/null y versión. Sin detalle libre. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssistantFeedbackHttpRequest"];
+                    "text/json": components["schemas"]["AssistantFeedbackHttpRequest"];
+                    "application/*+json": components["schemas"]["AssistantFeedbackHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/assistant/conversations/{id}/attachments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /**
+                         * Format: binary
+                         * @description Un archivo PNG/JPEG/WebP/PDF, hasta 10485760 bytes.
+                         */
+                        file: string;
+                        /** Format: uint32 */
+                        conversationVersion: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Ruta privada del recurso creado. */
+                        Location?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantAttachmentSummaryResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/assistant/conversations/{id}/attachments/{attachmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    attachmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        "Cache-Control"?: "no-store";
+                        /** @description attachment; filename autorizado y escapado. */
+                        "Content-Disposition"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "image/png": string;
+                        "image/jpeg": string;
+                        "image/webp": string;
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        delete: {
+            parameters: {
+                query: {
+                    version: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                    attachmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/assistant/conversations/{id}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Descarga Markdown UTF-8 o PDF privada, no-store; solo conversación propia. Sin tool payloads, claves ni bytes originales de adjuntos; sin IA, cuota ni costo. */
+        get: {
+            parameters: {
+                query?: {
+                    format?: components["schemas"]["AssistantExportFormat"];
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        "Cache-Control"?: "no-store";
+                        /** @description attachment; filename autorizado y escapado. */
+                        "Content-Disposition"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/markdown": string;
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected; Assistant.Export.Failed */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationAssistantSettingsResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateOrganizationAssistantSettingsHttpRequest"];
+                    "text/json": components["schemas"]["UpdateOrganizationAssistantSettingsHttpRequest"];
+                    "application/*+json": components["schemas"]["UpdateOrganizationAssistantSettingsHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Settings.KeyRejected; Assistant.Settings.AlertRecipientRequired; Assistant.Model.NotAllowed; Assistant.Settings.PlatformLimitsReadOnly; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired; Assistant.Settings.OwnKeyNotAllowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Agregados mensuales paginados YYYY-MM; sin texto, conversationId, títulos ni archivos. Costo platform-key separado de own-key. */
+        get: {
+            parameters: {
+                query: {
+                    /** @example 2026-10 */
+                    month: string;
+                    groupBy?: components["schemas"]["AssistantUsageGrouping"];
+                    page?: number;
+                    pageSize?: 10 | 20 | 50 | 100;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantUsagePageResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantStateResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/notice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consentimiento explícito por usuario y versión, después de aceptar documentos legales vigentes; 204, sin inferir aceptación. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssistantNoticeHttpRequest"];
+                    "text/json": components["schemas"]["AssistantNoticeHttpRequest"];
+                    "application/*+json": components["schemas"]["AssistantNoticeHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    saved?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CursorResultOfAssistantConversationSummaryResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Crea sin IA, title=null/isSaved=false; 201 con Location. DurableReference no copia título al store global. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateAssistantConversationHttpRequest"];
+                    "text/json": components["schemas"]["CreateAssistantConversationHttpRequest"];
+                    "application/*+json": components["schemas"]["CreateAssistantConversationHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Ruta privada del recurso creado. */
+                        Location?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantConversationSummaryResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/conversations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantConversationResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateAssistantConversationHttpRequest"];
+                    "text/json": components["schemas"]["UpdateAssistantConversationHttpRequest"];
+                    "application/*+json": components["schemas"]["UpdateAssistantConversationHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        delete: {
+            parameters: {
+                query: {
+                    version: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/conversations/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. POST SSE autenticado, sin EventSource anónimo. Primera admisión 200 text/event-stream; replay terminal 200 application/json TurnResult. Preflight antes de abrir stream; en curso 409. Sin copia de contenido en el store global. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SendAssistantMessageHttpRequest"];
+                    "text/json": components["schemas"]["SendAssistantMessageHttpRequest"];
+                    "application/*+json": components["schemas"]["SendAssistantMessageHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Primera admisión: SSE; replay terminal: JSON privado reautorizado. */
+                200: {
+                    headers: {
+                        "Cache-Control"?: "no-store";
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/event-stream": components["schemas"]["AssistantStreamHttpResponse"];
+                        "application/json": components["schemas"]["AssistantTurnResultResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Settings.NotConfigured; Assistant.Model.NotAllowed; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Provider.ContextTooLarge; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound; Assistant.Turn.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Turn.InProgress; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Service Unavailable; Assistant.Provider.Unavailable */
+                503: {
+                    headers: {
+                        /** @description Segundos hasta el siguiente intento. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/conversations/{id}/turns/{turnId}/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    id: string;
+                    turnId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StopAssistantTurnHttpRequest"];
+                    "text/json": components["schemas"]["StopAssistantTurnHttpRequest"];
+                    "application/*+json": components["schemas"]["StopAssistantTurnHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Turn.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; Assistant.Turn.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/quick/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consulta fija sin IA, títulos automáticos, cuota ni costo; revalida permisos de la herramienta. DurableReference reconstruye el resultado privado tras revalidar dueño/lado/organización/legales/módulo/permisos. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssistantQuickHttpRequest"];
+                    "text/json": components["schemas"]["AssistantQuickHttpRequest"];
+                    "application/*+json": components["schemas"]["AssistantQuickHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantQuickResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.QuickQuery.NotAvailable; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/conversations/{id}/messages/{messageId}/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Solo respuesta assistant propia; up/down/null y versión. Sin detalle libre. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssistantFeedbackHttpRequest"];
+                    "text/json": components["schemas"]["AssistantFeedbackHttpRequest"];
+                    "application/*+json": components["schemas"]["AssistantFeedbackHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/conversations/{id}/attachments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /**
+                         * Format: binary
+                         * @description Un archivo PNG/JPEG/WebP/PDF, hasta 10485760 bytes.
+                         */
+                        file: string;
+                        /** Format: uint32 */
+                        conversationVersion: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Ruta privada del recurso creado. */
+                        Location?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantAttachmentSummaryResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/conversations/{id}/attachments/{attachmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    attachmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        "Cache-Control"?: "no-store";
+                        /** @description attachment; filename autorizado y escapado. */
+                        "Content-Disposition"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "image/png": string;
+                        "image/jpeg": string;
+                        "image/webp": string;
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        delete: {
+            parameters: {
+                query: {
+                    version: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                    attachmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound; Assistant.Attachment.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict; Assistant.Attachment.AlreadyUsed */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; Assistant.Attachment.TooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/conversations/{id}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Descarga Markdown UTF-8 o PDF privada, no-store; solo conversación propia. Sin tool payloads, claves ni bytes originales de adjuntos; sin IA, cuota ni costo. */
+        get: {
+            parameters: {
+                query?: {
+                    format?: components["schemas"]["AssistantExportFormat"];
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        "Cache-Control"?: "no-store";
+                        /** @description attachment; filename autorizado y escapado. */
+                        "Content-Disposition"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/markdown": string;
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected; Assistant.Export.Failed */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Desactivar modelos referidos; sin endpoint de borrado. */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: 10 | 20 | 50 | 100;
+                    search?: string;
+                    active?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PagedResultOfAssistantModelPriceResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Desactivar modelos referidos; sin endpoint de borrado. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateAssistantModelHttpRequest"];
+                    "text/json": components["schemas"]["CreateAssistantModelHttpRequest"];
+                    "application/*+json": components["schemas"]["CreateAssistantModelHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantCreatedModelResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; Assistant.Model.AlreadyExists */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/models/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Desactivar modelos referidos; sin endpoint de borrado. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateAssistantModelHttpRequest"];
+                    "text/json": components["schemas"]["UpdateAssistantModelHttpRequest"];
+                    "application/*+json": components["schemas"]["UpdateAssistantModelHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Model.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict; Assistant.Model.AlreadyExists */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/tenants/{tenantId}/assistant/policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Gestión global sin abrir conversaciones ni devolver claves. Ausente: allowOwnKey=false/version=0; PUT requiere motivo y SecurityEvent, revalida configuración/turnos. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    tenantId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantPolicyResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Gestión global sin abrir conversaciones ni devolver claves. Ausente: allowOwnKey=false/version=0; PUT requiere motivo y SecurityEvent, revalida configuración/turnos. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    tenantId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateAssistantPolicyHttpRequest"];
+                    "text/json": components["schemas"]["UpdateAssistantPolicyHttpRequest"];
+                    "application/*+json": components["schemas"]["UpdateAssistantPolicyHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PlatformAssistantSettingsResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdatePlatformAssistantSettingsHttpRequest"];
+                    "text/json": components["schemas"]["UpdatePlatformAssistantSettingsHttpRequest"];
+                    "application/*+json": components["schemas"]["UpdatePlatformAssistantSettingsHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Assistant.Settings.KeyRejected; Assistant.Settings.AlertRecipientRequired; Assistant.Model.NotAllowed; Assistant.Settings.PlatformLimitsReadOnly; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired; Assistant.Settings.OwnKeyNotAllowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/assistant/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Agregados mensuales paginados YYYY-MM; sin texto, conversationId, títulos ni archivos. Costo platform-key separado de own-key. */
+        get: {
+            parameters: {
+                query: {
+                    /** @example 2026-10 */
+                    month: string;
+                    page?: number;
+                    pageSize?: 10 | 20 | 50 | 100;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantUsagePageResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/reference-data": {
         parameters: {
             query?: never;
@@ -11002,6 +16885,430 @@ export interface components {
         } | {
             phone: components["schemas"]["PhoneInputHttpRequest"];
         });
+        AssistantAttachmentSummaryResponse: {
+            /** Format: uuid */
+            id: string;
+            fileName: string;
+            mediaType: string;
+            /** Format: int64 */
+            byteLength: number;
+            /** Format: uint32 */
+            version: number;
+        };
+        AssistantAuditRowResponse: {
+            /** Format: uuid */
+            id: string;
+            actionKey: string;
+            actorDisplayName?: null | string;
+            /** Format: date-time */
+            createdAtUtc: string;
+        };
+        AssistantConversationResponse: {
+            conversation: components["schemas"]["AssistantConversationSummaryResponse"];
+            messages: components["schemas"]["CursorResultOfAssistantMessageResponse"];
+        };
+        AssistantConversationSummaryResponse: {
+            /** Format: uuid */
+            id: string;
+            title?: null | string;
+            isSaved: boolean;
+            /** Format: uint32 */
+            version: number;
+            /** Format: date-time */
+            createdAtUtc: string;
+            /** Format: date-time */
+            lastActivityAtUtc: string;
+        };
+        AssistantCreatedModelResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uint32 */
+            version: number;
+        };
+        AssistantDeltaEventResponse: {
+            /** Format: uuid */
+            turnId: string;
+            /** Format: int32 */
+            sequence: number;
+            text: string;
+        };
+        /** @enum {string} */
+        AssistantEffort: "low" | "medium" | "high";
+        AssistantErrorEventResponse: {
+            /** Format: uuid */
+            turnId?: null | string;
+            code: string;
+            traceId: string;
+            /** Format: int32 */
+            retryAfter?: null | number;
+            status: components["schemas"]["AssistantFailedStatus"];
+        };
+        /** @enum {null|string} */
+        AssistantExportFormat: "markdown" | "pdf" | null;
+        /** @enum {string} */
+        AssistantFailedStatus: "Failed";
+        AssistantFeedbackHttpRequest: {
+            rating?: null | components["schemas"]["AssistantRating"];
+            /** Format: uint32 */
+            version?: null | number;
+        };
+        AssistantHelpArticleResponse: {
+            topicKey: string;
+            title: string;
+            text: string;
+        };
+        AssistantInvitationRowResponse: {
+            /** Format: uuid */
+            id: string;
+            displayName?: null | string;
+            status: string;
+            /** Format: date-time */
+            expiresAtUtc: string;
+        };
+        /** @enum {null|string} */
+        AssistantKeyAction: "keep" | "replace" | "clear" | null;
+        AssistantLinkParametersResponse: {
+            /** Format: uuid */
+            userId?: null | string;
+            /** Format: uuid */
+            roleId?: null | string;
+            /** Format: uuid */
+            companyId?: null | string;
+            /** Format: uuid */
+            tenantId?: null | string;
+            /** Format: uuid */
+            recoveryId?: null | string;
+        };
+        AssistantLinkQueryResponse: {
+            status?: null | components["schemas"]["AssistantLinkStatus"];
+            /** Format: int32 */
+            page?: null | number;
+            /** Format: int32 */
+            pageSize?: null | number;
+            search?: null | string;
+        };
+        AssistantLinkResponse: {
+            routeKey: components["schemas"]["AssistantRouteKey"];
+            parameters: components["schemas"]["AssistantLinkParametersResponse"];
+            query: components["schemas"]["AssistantLinkQueryResponse"];
+            labelKey: string;
+        };
+        /** @enum {null|string} */
+        AssistantLinkStatus: "Active" | "Pending" | "Expired" | null;
+        AssistantMaskedLoginMethodResponse: {
+            type: string;
+            maskedValue: string;
+            isVerified: boolean;
+            isUsable: boolean;
+        };
+        AssistantMessageResponse: {
+            /** Format: uuid */
+            id: string;
+            role: components["schemas"]["AssistantMessageRole"];
+            text: string;
+            status: components["schemas"]["AssistantMessageStatus"];
+            /** Format: date-time */
+            createdAtUtc: string;
+            /** Format: uint32 */
+            version: number;
+            attachments: components["schemas"]["AssistantAttachmentSummaryResponse"][];
+            links: components["schemas"]["AssistantLinkResponse"][];
+            rating?: null | components["schemas"]["AssistantRating"];
+        };
+        /** @enum {string} */
+        AssistantMessageRole: "user" | "assistant";
+        /** @enum {string} */
+        AssistantMessageStatus: "Complete" | "Stopped" | "Failed" | "Generating";
+        /** @enum {string} */
+        AssistantMode: "PlatformKey" | "OwnKey";
+        AssistantModelOptionResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        AssistantModelPriceResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            provider: components["schemas"]["AssistantProvider"];
+            providerModelId: string;
+            inputPricePerMillion: components["schemas"]["AssistantMoney"];
+            outputPricePerMillion: components["schemas"]["AssistantMoney"];
+            isActive: boolean;
+            /** Format: uint32 */
+            version: number;
+        };
+        AssistantMoney: {
+            /** Format: decimal */
+            amount: number;
+            currency: string;
+        };
+        AssistantNoticeHttpRequest: {
+            noticeVersion?: null | string;
+        };
+        AssistantOrganizationRowResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            status: string;
+        };
+        AssistantPersonRowResponse: {
+            /** Format: uuid */
+            id: string;
+            displayName?: null | string;
+            status: string;
+        };
+        AssistantPolicyResponse: {
+            allowOwnKey: boolean;
+            /** Format: uint32 */
+            version: number;
+        };
+        /** @enum {string} */
+        AssistantProvider: "Anthropic";
+        AssistantQuickDataResponse: components["schemas"]["AssistantQuickDataResponseAssistantPeopleQuickDataResponse"] | components["schemas"]["AssistantQuickDataResponseAssistantInvitationsQuickDataResponse"] | components["schemas"]["AssistantQuickDataResponseAssistantAuditQuickDataResponse"] | components["schemas"]["AssistantQuickDataResponseAssistantOrganizationsQuickDataResponse"] | components["schemas"]["AssistantQuickDataResponseAssistantRecoveriesQuickDataResponse"] | components["schemas"]["AssistantQuickDataResponseAssistantSecurityQuickDataResponse"] | components["schemas"]["AssistantQuickDataResponseAssistantUsageQuickDataResponse"] | components["schemas"]["AssistantQuickDataResponseAssistantAccountQuickDataResponse"] | components["schemas"]["AssistantQuickDataResponseAssistantInteractionsQuickDataResponse"];
+        AssistantQuickDataResponseAssistantAccountQuickDataResponse: {
+            displayName?: null | string;
+            loginMethods: components["schemas"]["AssistantMaskedLoginMethodResponse"][];
+            articles: components["schemas"]["AssistantHelpArticleResponse"][];
+        };
+        AssistantQuickDataResponseAssistantAuditQuickDataResponse: {
+            changes: components["schemas"]["AssistantAuditRowResponse"][];
+            nextCursor?: null | string;
+            hasMore: boolean;
+        };
+        AssistantQuickDataResponseAssistantInteractionsQuickDataResponse: {
+            interactions: components["schemas"]["PagedResultOfConsumerInteractionResponse"];
+        };
+        AssistantQuickDataResponseAssistantInvitationsQuickDataResponse: {
+            invitations: components["schemas"]["AssistantInvitationRowResponse"][];
+            /** Format: int32 */
+            totalCount: number;
+            hasMore: boolean;
+        };
+        AssistantQuickDataResponseAssistantOrganizationsQuickDataResponse: {
+            organizations: components["schemas"]["AssistantOrganizationRowResponse"][];
+            /** Format: int32 */
+            totalCount: number;
+            hasMore: boolean;
+        };
+        AssistantQuickDataResponseAssistantPeopleQuickDataResponse: {
+            people: components["schemas"]["AssistantPersonRowResponse"][];
+            /** Format: int32 */
+            totalCount: number;
+            hasMore: boolean;
+        };
+        AssistantQuickDataResponseAssistantRecoveriesQuickDataResponse: {
+            recoveries: components["schemas"]["AssistantRecoveryRowResponse"][];
+            /** Format: int32 */
+            totalCount: number;
+            hasMore: boolean;
+        };
+        AssistantQuickDataResponseAssistantSecurityQuickDataResponse: {
+            events: components["schemas"]["AssistantSecurityRowResponse"][];
+            nextCursor?: null | string;
+            hasMore: boolean;
+        };
+        AssistantQuickDataResponseAssistantUsageQuickDataResponse: {
+            usage: components["schemas"]["AssistantUsagePageResponse"];
+        };
+        AssistantQuickHttpRequest: {
+            /** Format: uuid */
+            conversationId?: null | string;
+            /** Format: uint32 */
+            version?: null | number;
+        };
+        AssistantQuickQueryResponse: {
+            key: string;
+            labelKey: string;
+        };
+        AssistantQuickResponse: {
+            conversation: components["schemas"]["AssistantConversationSummaryResponse"];
+            messages: components["schemas"]["AssistantMessageResponse"][];
+            result: components["schemas"]["AssistantQuickResultResponse"];
+        };
+        AssistantQuickResultResponse: {
+            text: string;
+            links: components["schemas"]["AssistantLinkResponse"][];
+            data: components["schemas"]["AssistantQuickDataResponse"];
+        };
+        /** @enum {null|string} */
+        AssistantRating: "up" | "down" | null;
+        AssistantRecoveryRowResponse: {
+            /** Format: uuid */
+            id: string;
+            displayName?: null | string;
+            status: string;
+            /** Format: date-time */
+            createdAtUtc: string;
+        };
+        /** @enum {string} */
+        AssistantRouteKey: "business.users" | "business.roles" | "business.companies" | "business.audit" | "business.home" | "platform.organizations" | "platform.accounts" | "platform.recoveries" | "platform.audit" | "platform.assistant.usage" | "personal.account" | "personal.organizations";
+        AssistantSecurityRowResponse: {
+            /** Format: uuid */
+            id: string;
+            eventKey: string;
+            actorDisplayName?: null | string;
+            /** Format: date-time */
+            createdAtUtc: string;
+        };
+        AssistantStartEventResponse: {
+            /** Format: uuid */
+            turnId: string;
+            /** Format: uuid */
+            userMessageId: string;
+            /** Format: uuid */
+            assistantMessageId: string;
+            /** Format: uint32 */
+            conversationVersion: number;
+        };
+        AssistantStateResponse: {
+            configured: boolean;
+            canConfigure: boolean;
+            models: components["schemas"]["AssistantModelOptionResponse"][];
+            quickQueries: components["schemas"]["AssistantQuickQueryResponse"][];
+            /** Format: int32 */
+            dailyLimit: number;
+            /** Format: date-time */
+            dailyResetAtUtc: string;
+            /** Format: int32 */
+            remainingMessages?: null | number;
+            monthlyBudget?: null | components["schemas"]["AssistantMoney"];
+            usedCost?: null | components["schemas"]["AssistantMoney"];
+            noticeVersion: string;
+            noticeAccepted: boolean;
+            /** Format: int32 */
+            retentionDays: number;
+            /** Format: int64 */
+            maxAttachmentBytes: number;
+            /** Format: int32 */
+            maxAttachments: number;
+        };
+        AssistantStreamHttpResponse: components["schemas"]["AssistantStreamHttpResponseAssistantStartStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantDeltaStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantToolStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantTitleStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantDoneStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantErrorStreamHttpResponse"];
+        AssistantStreamHttpResponseAssistantDeltaStreamHttpResponse: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "delta";
+            data: components["schemas"]["AssistantDeltaEventResponse"];
+        };
+        AssistantStreamHttpResponseAssistantDoneStreamHttpResponse: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "done";
+            data: components["schemas"]["AssistantTurnResultResponse"];
+        };
+        AssistantStreamHttpResponseAssistantErrorStreamHttpResponse: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "error";
+            data: components["schemas"]["AssistantErrorEventResponse"];
+        };
+        AssistantStreamHttpResponseAssistantStartStreamHttpResponse: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "start";
+            data: components["schemas"]["AssistantStartEventResponse"];
+        };
+        AssistantStreamHttpResponseAssistantTitleStreamHttpResponse: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "title";
+            data: components["schemas"]["AssistantTitleEventResponse"];
+        };
+        AssistantStreamHttpResponseAssistantToolStreamHttpResponse: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "tool";
+            data: components["schemas"]["AssistantToolEventResponse"];
+        };
+        AssistantTitleEventResponse: {
+            /** Format: uuid */
+            conversationId: string;
+            title: string;
+            /** Format: uint32 */
+            version: number;
+        };
+        AssistantToolEventResponse: {
+            /** Format: uuid */
+            turnId: string;
+            toolKey: string;
+            state: components["schemas"]["AssistantToolState"];
+            labelKey: string;
+        };
+        /** @enum {string} */
+        AssistantToolState: "running" | "complete" | "failed";
+        AssistantTurnResultResponse: {
+            /** Format: uuid */
+            turnId: string;
+            message: components["schemas"]["AssistantMessageResponse"];
+            /** Format: uint32 */
+            conversationVersion: number;
+            usage: components["schemas"]["AssistantTurnUsageResponse"];
+        };
+        AssistantTurnUsageResponse: {
+            /** Format: int32 */
+            inputTokens: number;
+            /** Format: int32 */
+            outputTokens: number;
+            /** Format: int32 */
+            cacheWriteTokens: number;
+            /** Format: int32 */
+            cacheReadTokens: number;
+            cost: components["schemas"]["AssistantMoney"];
+            /** Format: int32 */
+            remainingMessages?: null | number;
+            monthlyUsedCost?: null | components["schemas"]["AssistantMoney"];
+        };
+        /** @enum {null|string} */
+        AssistantUsageGrouping: "day" | "person" | null;
+        AssistantUsagePageResponse: {
+            month: string;
+            cost: components["schemas"]["AssistantMoney"];
+            platformKeyCost?: null | components["schemas"]["AssistantMoney"];
+            budget?: null | components["schemas"]["AssistantMoney"];
+            /** Format: int32 */
+            totalQueries: number;
+            /** Format: int32 */
+            peopleCount: number;
+            rows: components["schemas"]["PagedResultOfAssistantUsageRowResponse"];
+        };
+        /** @enum {string} */
+        AssistantUsageRowKind: "organization" | "person" | "day" | "personal" | "operator";
+        AssistantUsageRowResponse: {
+            kind: components["schemas"]["AssistantUsageRowKind"];
+            /** Format: uuid */
+            organizationId?: null | string;
+            /** Format: uuid */
+            personId?: null | string;
+            /** Format: date */
+            day?: null | string;
+            displayName: string;
+            /** Format: int32 */
+            queries: number;
+            /** Format: int32 */
+            inputTokens: number;
+            /** Format: int32 */
+            outputTokens: number;
+            /** Format: int32 */
+            cacheWriteTokens: number;
+            /** Format: int32 */
+            cacheReadTokens: number;
+            cost: components["schemas"]["AssistantMoney"];
+            /** Format: int32 */
+            dailyLimit?: null | number;
+            monthlyBudget?: null | components["schemas"]["AssistantMoney"];
+        };
         /** @description Recibe los datos de la primera organización y empresa sin imprimir datos fiscales en logs. */
         BusinessSignupHttpRequest: {
             organizationName?: null | string;
@@ -11151,6 +17458,17 @@ export interface components {
             type: string;
             number: string;
         };
+        ConsumerInteractionResponse: {
+            /** Format: uuid */
+            id: string;
+            sourceKey: string;
+            /** Format: uuid */
+            organizationId: string;
+            organizationName: string;
+            summary: string;
+            /** Format: date-time */
+            lastActivityAtUtc: string;
+        };
         /**
          * @description Indica si la plataforma admite nuevas cuentas personales. La regla de registro consulta este valor antes
          *     de crear una cuenta.
@@ -11169,6 +17487,15 @@ export interface components {
             isEnabled: boolean;
             /** Format: int32 */
             sortOrder?: null | number;
+        };
+        CreateAssistantConversationHttpRequest: Record<string, never>;
+        CreateAssistantModelHttpRequest: {
+            name?: null | string;
+            provider?: null | components["schemas"]["AssistantProvider"];
+            providerModelId?: null | string;
+            inputPricePerMillion?: null | components["schemas"]["AssistantMoney"];
+            outputPricePerMillion?: null | components["schemas"]["AssistantMoney"];
+            isActive?: null | boolean;
         };
         /** @description Solo el número de identificación fiscal: el tipo sale del país de la organización. */
         CreateCompanyHttpRequest: {
@@ -11236,6 +17563,18 @@ export interface components {
             isEnabled: boolean;
             /** Format: int32 */
             sortOrder?: null | number;
+        };
+        /** @description Resultado por cursor, sin conteo total sobre tablas que solo crecen. */
+        CursorResultOfAssistantConversationSummaryResponse: {
+            items: components["schemas"]["AssistantConversationSummaryResponse"][];
+            nextCursor?: null | string;
+            hasMore: boolean;
+        };
+        /** @description Resultado por cursor, sin conteo total sobre tablas que solo crecen. */
+        CursorResultOfAssistantMessageResponse: {
+            items: components["schemas"]["AssistantMessageResponse"][];
+            nextCursor?: null | string;
+            hasMore: boolean;
         };
         /** @description Resultado por cursor, sin conteo total sobre tablas que solo crecen. */
         CursorResultOfOrganizationAuditEntryResponse: {
@@ -11329,6 +17668,8 @@ export interface components {
         HomeSettings: {
             domain?: null | string;
         };
+        /** Format: binary */
+        IFormFile: string;
         /** @description Solo datos presentables de la invitación autorizada; jamás hashes ni secretos. */
         InvitationPreviewResponse: {
             state: components["schemas"]["InvitationPreviewState"];
@@ -11464,6 +17805,7 @@ export interface components {
             timeZoneId: string;
             currencyCode?: null | string;
             features: string[];
+            moduleCapabilities?: components["schemas"]["ModuleCapabilityResponse"][];
             firstName?: null | string;
             lastName?: null | string;
             /** @description País de la organización empresarial activa, desde su cultura del catálogo; no es la región personal. */
@@ -11473,6 +17815,31 @@ export interface components {
             needsPersonalLoginMethod?: boolean;
             pendingLegalDocuments?: components["schemas"]["PendingLegalDocumentResponse"][];
             permissions?: null | string[];
+        };
+        ModuleCapabilityResponse: {
+            key: string;
+            available: boolean;
+            canConfigure: boolean;
+            canReadUsage: boolean;
+        };
+        /** @description Importe decimal con moneda explícita, sin consultar un catálogo. */
+        Money: unknown;
+        OrganizationAssistantSettingsResponse: {
+            mode: components["schemas"]["AssistantMode"];
+            /** Format: uuid */
+            modelId: string;
+            effort: components["schemas"]["AssistantEffort"];
+            /** Format: int32 */
+            dailyMessageLimit: number;
+            monthlyBudget?: null | components["schemas"]["AssistantMoney"];
+            allowOwnKey: boolean;
+            hasAlertRecipient: boolean;
+            /** Format: int32 */
+            retentionDays: number;
+            hasKey: boolean;
+            maskedKeySuffix?: null | string;
+            /** Format: uint32 */
+            version: number;
         };
         OrganizationAuditActorResponse: {
             /** Format: uuid */
@@ -11616,6 +17983,34 @@ export interface components {
             search?: null | string;
         };
         /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfAssistantModelPriceResponse: {
+            items: components["schemas"]["AssistantModelPriceResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfAssistantUsageRowResponse: {
+            items: components["schemas"]["AssistantUsageRowResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
         PagedResultOfCompanyCandidateResponse: {
             items: components["schemas"]["CompanyCandidateResponse"][];
             /** Format: int32 */
@@ -11646,6 +18041,20 @@ export interface components {
         /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
         PagedResultOfCompanyResponse: {
             items: components["schemas"]["CompanyResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfConsumerInteractionResponse: {
+            items: components["schemas"]["ConsumerInteractionResponse"][];
             /** Format: int32 */
             page: number;
             /** Format: int32 */
@@ -11917,6 +18326,22 @@ export interface components {
             /** Format: int32 */
             count: number;
         };
+        PlatformAssistantSettingsResponse: {
+            /** Format: uuid */
+            defaultModelId: string;
+            allowedModelIds: string[];
+            effort: components["schemas"]["AssistantEffort"];
+            /** Format: int32 */
+            dailyMessageLimit: number;
+            monthlyOrganizationBudget: components["schemas"]["AssistantMoney"];
+            personalEnabled: boolean;
+            /** Format: int32 */
+            retentionDays: number;
+            hasKey: boolean;
+            maskedKeySuffix?: null | string;
+            /** Format: uint32 */
+            version: number;
+        };
         /** @description Una fila de la auditoría ya traducida: qué pasó, sobre qué, quién y con qué motivo. */
         PlatformAuditEventResponse: {
             /** Format: uuid */
@@ -12181,6 +18606,9 @@ export interface components {
             retryAfter?: null | number;
             /** Format: int32 */
             attemptsLeft?: null | number;
+            dailyLimit?: null | number;
+            /** Format: date-time */
+            dailyResetAtUtc?: null | string;
         };
         PublicPageHttpResponse: {
             slug?: null | string;
@@ -12299,6 +18727,12 @@ export interface components {
         RoleScope: "Organization" | "AnyCompany" | "SpecificCompany";
         /** @enum {null|string} */
         RoleScopeFilter: "Organization" | "Company" | null;
+        SendAssistantMessageHttpRequest: {
+            text?: null | string;
+            attachmentIds?: null | string[];
+            /** Format: uint32 */
+            conversationVersion?: null | number;
+        };
         SetPublicPagePublicationHttpRequest: {
             /** Format: uint32 */
             version?: null | number;
@@ -12316,6 +18750,7 @@ export interface components {
         } | {
             phone: components["schemas"]["PhoneInputHttpRequest"];
         });
+        StopAssistantTurnHttpRequest: Record<string, never>;
         /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. */
         SubmitAccountRecoveryHttpRequest: ({
             email?: null | string;
@@ -12380,6 +18815,28 @@ export interface components {
             /** Format: int32 */
             sortOrder?: null | number;
         };
+        UpdateAssistantConversationHttpRequest: {
+            title?: null | string;
+            isSaved?: null | boolean;
+            /** Format: uint32 */
+            version?: null | number;
+        };
+        UpdateAssistantModelHttpRequest: {
+            name?: null | string;
+            provider?: null | components["schemas"]["AssistantProvider"];
+            providerModelId?: null | string;
+            inputPricePerMillion?: null | components["schemas"]["AssistantMoney"];
+            outputPricePerMillion?: null | components["schemas"]["AssistantMoney"];
+            isActive?: null | boolean;
+            /** Format: uint32 */
+            version?: null | number;
+        };
+        UpdateAssistantPolicyHttpRequest: {
+            allowOwnKey?: null | boolean;
+            /** Format: uint32 */
+            version?: null | number;
+            reason?: null | string;
+        };
         /** @description Solo el número de identificación fiscal: el tipo sale del país de la organización. */
         UpdateCompanyHttpRequest: {
             name?: null | string;
@@ -12402,6 +18859,19 @@ export interface components {
             /** Format: uint32 */
             version?: null | number;
         };
+        UpdateOrganizationAssistantSettingsHttpRequest: {
+            mode?: null | components["schemas"]["AssistantMode"];
+            /** Format: uuid */
+            modelId?: null | string;
+            effort?: null | components["schemas"]["AssistantEffort"];
+            /** Format: int32 */
+            dailyMessageLimit?: null | number;
+            monthlyBudget?: null | components["schemas"]["AssistantMoney"];
+            keyAction?: null | components["schemas"]["AssistantKeyAction"];
+            apiKey?: null | string;
+            /** Format: uint32 */
+            version?: null | number;
+        };
         UpdateOrganizationSettingsHttpRequest: {
             name?: null | string;
             defaultCulture?: null | string;
@@ -12416,6 +18886,22 @@ export interface components {
             /** Format: uint32 */
             version?: null | number;
             isActive?: null | boolean;
+        };
+        UpdatePlatformAssistantSettingsHttpRequest: {
+            /** Format: uuid */
+            defaultModelId?: null | string;
+            allowedModelIds?: null | string[];
+            effort?: null | components["schemas"]["AssistantEffort"];
+            /** Format: int32 */
+            dailyMessageLimit?: null | number;
+            monthlyOrganizationBudget?: null | components["schemas"]["AssistantMoney"];
+            personalEnabled?: null | boolean;
+            /** Format: int32 */
+            retentionDays?: null | number;
+            keyAction?: null | components["schemas"]["AssistantKeyAction"];
+            apiKey?: null | string;
+            /** Format: uint32 */
+            version?: null | number;
         };
         UpdatePlatformFeatureHttpRequest: {
             enabled?: null | boolean;
