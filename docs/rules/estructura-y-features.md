@@ -28,7 +28,7 @@ Las carpetas que la feature no necesita no se crean (`audit/` tiene solo `api/` 
 - Administración conserva primero los grupos del núcleo y sus filas, después los grupos de módulos (`moreGroup`) y al final las filas que el manifiesto marca `afterModuleGroups`. El lienzo empresarial conserva Auditoría como fila de cierre; el componente no compara nombres de módulos, etiquetas ni rutas. Verifica `layouts/components/AdminPanel.test.tsx`.
 - El inicio de cada área conserva sus consultas y componentes; `ModuleHome` recibe sus bloques y avisos mediante slots. En teléfono conserva Inicio y abre el módulo como segunda sección; hasta cuatro secciones más Más.
 - Plataforma conserva Organizaciones en `/plataforma` sin chat autorizado. Con inicio de módulo usa `/plataforma/organizaciones`; ese alias siempre conserva `platform.tenants.read`. La gestión del asistente se decide por capability instalada + `canConfigure`/`canReadUsage`, independientemente de `available`; Empresa usa feature + `assistant.configure`, independientemente de `assistant.use`.
-- El registro actual del asistente aporta chat e inicio. Configuración y Uso se incorporan con sus páginas T12/T13; el contrato de contribuciones ya admite Administración por permisos independientes, sin publicar rutas vacías.
+- El registro actual del asistente aporta chat, inicio, Configuración (T12) y la política de clave propia en Módulos de la organización. Uso (T13) espera su contrato implementado; no se publican rutas vacías. Configuración usa permisos independientes del chat.
 - Verifican `shared/modules/boundaries.test.ts`, `ModuleRegistry.test.tsx`, `modules/assistant/navigation.test.ts` y `modules/assistant/composition.test.tsx`.
 
 ## Prohibido
