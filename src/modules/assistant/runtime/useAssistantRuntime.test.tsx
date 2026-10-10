@@ -21,6 +21,7 @@ const message = (id: string, role: AssistantMessageResponse["role"], status: Ass
 const conversation = (messages: AssistantMessageResponse[] = []): AssistantConversationResponse => ({
   conversation: { id: "chat", title: null, version: 3, isSaved: false, createdAtUtc: "2026-10-09T12:00:00Z", lastActivityAtUtc: "2026-10-09T12:00:00Z" },
   messages: { items: messages, hasMore: false },
+  activeTurnId: null,
 });
 const terminal: AssistantTurnResultResponse = {
   turnId: "turn", message: message("a", "assistant"), conversationVersion: 4,
