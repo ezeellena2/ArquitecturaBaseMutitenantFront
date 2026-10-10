@@ -99,22 +99,31 @@ describe("métodos de cuenta", () => {
 
 const phoneMethod: AccountLoginMethod = { ...method, id: "phone", type: "Phone", value: "+5491155554521", isPrimary: false, canMakePrimary: true, canRemove: true };
 
-it("sólo muestra Phone con capacidad disponible y usa el formato central", async () => {
-  let allow: (() => void) | undefined;
-  server.use(http.get("/api/auth/methods", async () => { await new Promise<void>((resolve) => { allow = resolve; }); return HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["AR"] }] }); }));
+it("muestra Phone recibido sin capacidades y usa el formato central", async () => {
   renderWithProviders(<LoginMethodsTable methods={[method, phoneMethod]} onAction={vi.fn()} />);
-  expect(screen.getAllByRole("listitem")).toHaveLength(1);
-  await waitFor(() => expect(allow).toBeDefined()); allow!();
+  expect(screen.getAllByRole("listitem")).toHaveLength(2);
   expect(await screen.findByText("011 15-5555-4521")).toBeVisible();
   expect(screen.queryByText("+5491155554521")).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "Cambiar número" })).not.toBeInTheDocument();
 });
 
-it("con capacidad apagada omite Phone sin romper Email/Google", async () => {
-  renderWithProviders(<LoginMethodsTable methods={[method, phoneMethod, { ...method, id: "google", type: "Google" }]} onAction={vi.fn()} />);
+it("conserva Phone, Email y Google en el orden recibido aunque no haya canal WhatsApp", async () => {
+  const google: AccountLoginMethod = { ...method, id: "google", type: "Google", isPrimary: false };
+  renderWithProviders(<LoginMethodsTable methods={[phoneMethod, method, google]} onAction={vi.fn()} />);
+  expect(screen.getAllByRole("listitem")).toHaveLength(3);
+  expect(await screen.findByText("011 15-5555-4521")).toBeVisible();
+  const rows = screen.getAllByRole("listitem");
+  expect(rows[0]).toHaveTextContent("011 15-5555-4521");
+  expect(rows[1]).toHaveTextContent("ana@example.testPrincipal");
+  expect(rows[2]).toHaveTextContent("Googleana@example.test");
+});
+
+it("no agrega Phone cuando el servidor sólo entrega Email y Google", () => {
+  const google: AccountLoginMethod = { ...method, id: "google", type: "Google" };
+  renderWithProviders(<LoginMethodsTable methods={[method, google]} onAction={vi.fn()} />);
   expect(screen.getAllByRole("listitem")).toHaveLength(2);
   expect(screen.getByText("Google")).toBeVisible();
-  expect(screen.queryByText("011 15-5555-4521")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Acciones de 011 15-5555-4521" })).not.toBeInTheDocument();
 });
 
 function MethodFlow({ phone }: { phone: boolean }) {

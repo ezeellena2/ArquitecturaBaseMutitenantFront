@@ -7,7 +7,6 @@ import { Button } from "@/shared/ui/button";
 import { RowActions } from "@/shared/ui/RowActions";
 import { PhoneText } from "@/shared/ui/format/PhoneText";
 import { useFormat } from "@/shared/format/useFormat";
-import { useHasLoginChannel } from "@/shared/account/useLoginChannels";
 import { MailIcon, WhatsAppIcon } from "@/shared/ui/icons";
 import { List, ListItem } from "@/shared/ui/List";
 import { StatusDotMark } from "@/shared/ui/StatusDot";
@@ -51,10 +50,8 @@ function MethodMenu({ method, onAction }: { method: AccountLoginMethod; onAction
 
 export function LoginMethodsTable({ methods, canLinkGoogle = false, onAction }: Props) {
   const { t } = useTranslation("account");
-  const whatsApp = useHasLoginChannel("whatsapp");
-  const visible = methods.filter((method) => method.type !== "Phone" || whatsApp);
   return <List label={t("methods")}>
-    {visible.map((method) => <ListItem key={method.id} className="min-h-14" icon={<MethodIcon method={method} />} title={method.type === "Google" ? t("google") : method.type === "Phone" ? <PhoneText value={method.value} /> : method.value} detail={methodDetail(method, t)}>
+    {methods.map((method) => <ListItem key={method.id} className="min-h-14" icon={<MethodIcon method={method} />} title={method.type === "Google" ? t("google") : method.type === "Phone" ? <PhoneText value={method.value} /> : method.value} detail={methodDetail(method, t)}>
       {/* Cuenta (.cb-enl de 13) y M-Cuenta (.acc-t de 15, como «Vincular»). */}
       {!method.isVerified ? <Button type="button" variant="link" size="sm" className="px-1 text-[13px] max-md:text-[15px]" onClick={() => onAction("verify", method)}>{t("verify")}</Button> : null}
       {method.canMakePrimary || method.canRemove ? <MethodMenu method={method} onAction={onAction} /> : null}

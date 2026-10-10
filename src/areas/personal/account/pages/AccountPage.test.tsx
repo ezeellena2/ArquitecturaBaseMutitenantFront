@@ -10,8 +10,89 @@ import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import { asPhone } from "@/test/utils/phone";
 import { referenceDataFixture } from "@/test/mocks/handlers";
+import type { AccountLoginMethodsResponse, LoginMethodsResponse } from "@/shared/api/types";
+import type { ProblemDetails } from "@/shared/api/problemDetails";
+import { loginMethodsQueryKey } from "@/shared/account/api/loginChannels";
 
 beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); });
+
+const receivedMethods: AccountLoginMethodsResponse = {
+  methods: [
+    { id: "phone", type: "Phone", value: "+5491155554521", isVerified: false, isPrimary: false, canRemove: true, canMakePrimary: false },
+    { id: "email", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: true, canRemove: false, canMakePrimary: false },
+    { id: "google", type: "Google", value: "ana@gmail.com", isVerified: true, isPrimary: false, canRemove: true, canMakePrimary: true },
+  ],
+  canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [],
+};
+
+it.each(["pending", "error", "absent"] as const)("muestra los métodos recibidos con capacidades %s sin habilitar altas WhatsApp", async (capabilities) => {
+  let release: (() => void) | undefined;
+  server.use(
+    http.get("/api/me/login-methods", () => HttpResponse.json<AccountLoginMethodsResponse>(receivedMethods)),
+    http.get<never, never, LoginMethodsResponse | ProblemDetails>("/api/auth/methods", async () => {
+      if (capabilities === "pending") await new Promise<void>((resolve) => { release = resolve; });
+      if (capabilities === "error") return HttpResponse.json<ProblemDetails>({ code: "General.Unexpected" }, { status: 503 });
+      return HttpResponse.json<LoginMethodsResponse>({ channels: [{ key: "email", countries: [] }] });
+    }),
+  );
+  const { queryClient, container } = renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+  try {
+    await waitFor(() => expect(queryClient.getQueryState(loginMethodsQueryKey)?.status).toBe(capabilities === "absent" ? "success" : capabilities));
+    if (capabilities === "pending") {
+      await waitFor(() => expect(release).toBeDefined());
+      expect(queryClient.getQueryState(loginMethodsQueryKey)?.fetchStatus).toBe("fetching");
+    }
+    const list = await screen.findByRole("list", { name: "Cómo entrás" });
+    expect(within(list).getAllByRole("listitem")).toHaveLength(3);
+    expect(await within(list).findByText("011 15-5555-4521")).toBeVisible();
+    const rows = within(list).getAllByRole("listitem");
+    expect(rows[0]).toHaveTextContent("011 15-5555-4521Sin verificar");
+    expect(within(rows[0]!).getByRole("button", { name: "Verificar" })).toBeVisible();
+    expect(rows[1]).toHaveTextContent("ana@example.testPrincipal");
+    expect(within(rows[1]!).queryByRole("button")).not.toBeInTheDocument();
+    expect(rows[2]).toHaveTextContent("Googleana@gmail.com");
+    expect(within(list).getAllByRole("button", { name: "Verificar" })).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "Agregar correo" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Agregar correo o teléfono" })).not.toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+  } finally {
+    await act(async () => { release?.(); });
+  }
+});
+
+it("relee la lista tras clear sin depender de capacidades previas en 390 px", async () => {
+  const restore = asPhone();
+  let reads = 0;
+  let capabilityReads = 0;
+  let release: (() => void) | undefined;
+  server.use(
+    http.get("/api/me/login-methods", () => { reads++; return HttpResponse.json<AccountLoginMethodsResponse>(receivedMethods); }),
+    http.get("/api/auth/methods", async () => {
+      capabilityReads++;
+      if (capabilityReads > 1) await new Promise<void>((resolve) => { release = resolve; });
+      return HttpResponse.json<LoginMethodsResponse>({ channels: [{ key: "whatsapp", countries: ["AR"] }] });
+    }),
+  );
+  const { router, queryClient, container } = renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+  try {
+    expect(await screen.findByText("011 15-5555-4521")).toBeVisible();
+    await waitFor(() => expect(queryClient.getQueryState(loginMethodsQueryKey)?.status).toBe("success"));
+    await act(async () => { await router.navigate("/mas"); });
+    act(() => { queryClient.clear(); });
+    expect(queryClient.getQueryState(loginMethodsQueryKey)).toBeUndefined();
+    await act(async () => { await router.navigate("/cuenta"); });
+    await waitFor(() => expect(release).toBeDefined());
+    expect(queryClient.getQueryState(loginMethodsQueryKey)?.fetchStatus).toBe("fetching");
+    const list = await screen.findByRole("list", { name: "Cómo entrás" });
+    expect(within(list).getAllByRole("listitem")).toHaveLength(3);
+    expect(await within(list).findByText("011 15-5555-4521")).toBeVisible();
+    expect(reads).toBe(2);
+    expect(await axe(container)).toHaveNoViolations();
+  } finally {
+    await act(async () => { release?.(); });
+    restore();
+  }
+});
 
 describe("Mi cuenta", () => {
   // Tablero M-Cuenta: en el teléfono, grupos sobre gris con el título arriba; «Agregar correo» en texto y
