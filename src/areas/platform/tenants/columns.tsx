@@ -2,7 +2,8 @@ import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import type { PlatformTenantDetailResponse, PlatformTenantHistoryResponse, PlatformTenantOwnerResponse, PlatformTenantResponse } from "@/shared/api/types";
-import { defineStatusTones, type StatusTones } from "@/shared/format/statusTones";
+import { tenantStatusTones, type StatusTones } from "@/shared/format/statusTones";
+export { tenantStatusTones } from "@/shared/format/statusTones";
 import type { Column } from "@/shared/ui/DataTable";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import { DateText } from "@/shared/ui/format/DateText";
@@ -11,7 +12,6 @@ import { EnumText } from "@/shared/ui/format/EnumText";
 import { NumberText } from "@/shared/ui/format/NumberText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 
-export const tenantStatusTones = defineStatusTones("TenantStatus", { PendingApproval: "pending", Provisioning: "danger", Active: "success", Suspended: "warning", Closed: "neutral" });
 export const organizationPath = (id: string) => `/plataforma/organizaciones/${encodeURIComponent(id)}`;
 
 type OwnerState = "Active" | "Suspended" | "PendingDeletion" | "Deleted" | "Inactive" | "Removed" | "Invited";

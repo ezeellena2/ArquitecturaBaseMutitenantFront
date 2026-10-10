@@ -32,3 +32,7 @@ export const publicPageStateTones = defineStatusTones("HomePublicPageState", { P
 
 /// Configuración de Empresa y Dominio de Plataforma muestran el mismo estado del contrato con los mismos tonos.
 export const tenantDomainStatusTones = defineStatusTones("TenantDomainStatus", { Pending: "warning", Verified: "success", Removed: "neutral" });
+
+/** Compartidos por las fichas/listados de Plataforma y Para resolver. */
+export const tenantStatusTones = defineStatusTones("TenantStatus", { PendingApproval: "pending", Provisioning: "danger", Active: "success", Suspended: "warning", Closed: "neutral" });
+export const recoveryStatusTones = defineStatusTones("AccountRecoveryStatus", { Pending: "pending", Approved: "success", Rejected: "danger" });

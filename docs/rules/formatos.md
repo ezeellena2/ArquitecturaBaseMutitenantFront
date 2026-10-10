@@ -21,6 +21,8 @@
 
 La entrada de tarifas técnicas de IA usa `MoneyField precision="technical-tariff"` (ADR 0051): conserva hasta seis decimales en edición y rechaza siete, siempre con una moneda habilitada del catálogo. El parser y la presentación editable permanecen centrales. El valor predeterminado del field, los presupuestos, `MoneyText` y `DataTable` conservan `MinorUnits`. `MoneyField.test.tsx` verifica blur, escala excesiva y el comportamiento monetario ordinario.
 
+`LoginMethodText` conserva las máscaras de métodos de ingreso entregadas por la API y delega un teléfono completo en `PhoneText`, sin enlace ni reconstrucción. Lo comparten Recuperaciones y Para resolver de Plataforma; los tonos `tenantStatusTones` y `recoveryStatusTones` viven en `shared/format/statusTones.ts`. `LoginMethodText.test.tsx` prueba máscaras y formato central; los tests de ambas pantallas verifican su uso.
+
 El período mensual usa `MonthField` y el contrato exacto `YYYY-MM` (años 0001–9999). `parseMonth` devuelve `null` solo para el vacío y rechaza el texto inválido; `formatMonth` y las opciones de mes salen de `useFormat`, con nombres localizados y años completos, sin convertir el período por zona. `getCurrentMonth` usa el reloj central y la zona efectiva de la persona como contexto de presentación; no define facturación ni cuotas. El campo permite elegir cualquier mes y año en un único popup accesible y no fija una historia disponible. Es el fundamento compartido de Uso de T13 (E8b), cuya página se conecta en el corte posterior. `month.test.ts` verifica contrato, culturas y límites de zona/año; `MonthField.test.tsx` verifica teclado, foco, carga, reinicio y accesibilidad.
 
 ## Prohibido

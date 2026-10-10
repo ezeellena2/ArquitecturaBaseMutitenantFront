@@ -19,6 +19,8 @@ import { mainSiteHost } from "@/tenancy/publicSite";
 import { asPhone } from "@/test/utils/phone";
 import type { ModuleRegistration } from "@/shared/modules/types";
 import { assistantRegistration } from "./registration";
+import { platformTenantRows, platformTenantsPage } from "@/test/mocks/platformTenants";
+import { platformRecoveries } from "@/test/mocks/platformRecoveries";
 
 const state: AssistantStateResponse = { configured: true, canConfigure: false, models: [], quickQueries: [], dailyLimit: 50, remainingMessages: 40,
   dailyResetAtUtc: "2026-10-11T00:00:00Z", noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10485760, maxAttachments: 5 };
@@ -43,12 +45,31 @@ beforeEach(() => {
   Element.prototype.scrollTo = vi.fn();
   server.use(http.get("/api/:scope/assistant", ({ request }) => { assistantRequests.push(request.url); return HttpResponse.json(state); }),
     http.get("/api/:scope/assistant/conversations", () => HttpResponse.json({ items: [], hasMore: false })),
+    http.get("/api/platform/recoveries/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
     http.get("/api/platform/tenants/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
     http.get("/api/platform/tenants/filter-counts", () => HttpResponse.json({ total: 0, statuses: [], sources: [] })));
 });
 afterEach(() => vi.unstubAllGlobals());
 
 describe("composición real de accesos e inicios", () => {
+  it.each([true, false])("Plataforma conserva Para resolver en bienvenida y Sin configurar (configured=%s)", async (configured) => {
+    const organizations = platformTenantRows.filter((item) => item.status === "PendingApproval");
+    const recoveries = platformRecoveries.filter((item) => item.status === "Pending");
+    server.use(http.get("/api/platform/assistant", () => HttpResponse.json({ ...state, configured })),
+      http.get("/api/platform/tenants/paged", () => HttpResponse.json(platformTenantsPage(organizations, 100))),
+      http.get("/api/platform/recoveries/paged", () => HttpResponse.json({ items: recoveries, page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })));
+    const app = mount("/plataforma", platform);
+    const pending = await screen.findByRole("region", { name: "Para resolver" });
+    expect(await within(pending).findByText("Gamma S.A.")).toBeVisible();
+    expect(within(pending).getByText("Julio Pérez")).toBeVisible();
+    expect(within(pending).getByText("pa•••@kappa.ejemplo.com")).toBeVisible();
+    expect(within(pending).getByText("Pablo Ortiz")).toBeVisible();
+    expect(within(pending).getByText("4")).toBeVisible();
+    expect(within(pending).getAllByRole("link", { name: "Revisar" }).map((link) => link.getAttribute("href"))).toEqual(["/plataforma/organizaciones/tenant-3", "/plataforma/organizaciones/tenant-4", "/plataforma/recuperaciones?status=Pending", "/plataforma/recuperaciones?status=Pending"]);
+    expect(screen.getAllByRole("heading", { name: "Inicio" })).toHaveLength(1);
+    if (!configured) expect(screen.getByRole("heading", { name: "El asistente todavía no está configurado" })).toBeVisible();
+    expect(await axe(app.container)).toHaveNoViolations();
+  });
   it.each(([404, 403] as const).flatMap((status) => [
     { path: "/", account: personal, status }, { path: "/org", account: business, status }, { path: "/plataforma", account: platform, status },
   ]))("$path State $status conserva Inicio del núcleo y revalida Me", async ({ path, account, status }) => {
