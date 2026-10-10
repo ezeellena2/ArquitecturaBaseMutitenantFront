@@ -168,7 +168,7 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
         void handleSubmit(begin)(event);
       }} className="flex flex-col gap-[22px]">
         <div className="flex flex-col gap-1.5">
-          <AuthDestinationField phoneLabel={t("signup.phoneLabel")} channel={channel} email={email} phone={phone}
+          <AuthDestinationField phoneLabel={t("signup.phoneLabel")} channel={channel} email={email} phone={phone} phoneUsage="whatsapp"
             onChannelChange={(value) => { preferredWhatsApp.current = false; setJourney((previous) => previous + 1); setValue("channel", value); clearErrors(); setEmailTaken(false); setError(null); }}
             onEmailChange={(value) => { preferredWhatsApp.current = false; setValue("email", value); clearErrors("email"); setEmailTaken(false); }}
             onPhoneChange={(value) => { setValue("phone", value); clearErrors("phone"); setEmailTaken(false); }}

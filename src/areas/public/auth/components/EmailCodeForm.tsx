@@ -76,7 +76,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access =
       void handleSubmit(submit)(event);
     }}>
       <div className="flex flex-col gap-1.5">
-      <AuthDestinationField channel={channel} email={email} phone={phone}
+      <AuthDestinationField channel={channel} email={email} phone={phone} phoneUsage="mobile"
         onChannelChange={(value) => { if (value !== channel) setJourney((previous) => previous + 1); setValue("channel", value); clearErrors(); setAccountMissing(false); setFormError(null); }}
         onEmailChange={(value) => { setValue("email", value); clearErrors("email"); setAccountMissing(false); setFormError(null); }}
         onPhoneChange={(value) => { setValue("phone", value); clearErrors("phone"); setAccountMissing(false); setFormError(null); }}

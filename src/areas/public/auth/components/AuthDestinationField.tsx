@@ -13,6 +13,7 @@ interface AuthDestinationFieldProps {
   email: string;
   onEmailChange: (email: string) => void;
   phone: PhoneDraft | null;
+  phoneUsage: "mobile" | "whatsapp";
   onPhoneChange: (phone: PhoneDraft | null) => void;
   error?: string;
   emailLabel?: string;
@@ -20,7 +21,7 @@ interface AuthDestinationFieldProps {
 }
 
 /** Selector de los tableros Ingreso y Registro; las capacidades las decide la API. */
-export function AuthDestinationField({ channel, onChannelChange, email, onEmailChange, phone, onPhoneChange, error, emailLabel, phoneLabel }: AuthDestinationFieldProps) {
+export function AuthDestinationField({ channel, onChannelChange, email, onEmailChange, phone, phoneUsage, onPhoneChange, error, emailLabel, phoneLabel }: AuthDestinationFieldProps) {
   const { t } = useTranslation("auth");
   const channels = useLoginChannels();
   const hasWhatsApp = channels.data?.channels.some((item) => item.key === "whatsapp") === true;
@@ -37,7 +38,7 @@ export function AuthDestinationField({ channel, onChannelChange, email, onEmailC
       </button>)}
     </div> : null}
     {showPhone ? <FormField label={phoneLabel ?? t("login.phoneLabel")} variant="auth" error={error}>
-      <PhoneField usage="whatsapp" value={phone} onChange={onPhoneChange} variant="auth" />
+      <PhoneField usage={phoneUsage} value={phone} onChange={onPhoneChange} variant="auth" />
     </FormField> : <FormField label={emailLabel ?? t("login.emailLabel")} variant="auth" error={error}>
       <EmailField value={email} onChange={(value) => onEmailChange(value ?? "")} />
     </FormField>}

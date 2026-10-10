@@ -152,7 +152,7 @@ export function RecoverAccountPage() {
         {step === "new" ? <Button type="button" variant="link" onClick={() => backTo("previous")} className="gap-1 self-start leading-[normal]"><ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t("recovery.back")}</Button> : null}
         <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t(step === "previous" ? "recovery.title" : "recovery.newEmailTitle")}</h1>
           <p className="mt-1.5 text-sm leading-normal text-[var(--t2)]">{t(step === "previous" ? (hasWhatsApp ? "recovery.previousPhoneDetail" : "recovery.previousDetail") : (hasWhatsApp ? "recovery.newPhoneDetail" : "recovery.newEmailDetail"))}</p></div>
-        <AuthDestinationField key={step} channel={currentFields.channel} email={currentFields.email} phone={currentFields.phone}
+        <AuthDestinationField key={step} channel={currentFields.channel} email={currentFields.email} phone={currentFields.phone} phoneUsage={step === "previous" ? "mobile" : "whatsapp"}
           onChannelChange={(next) => { revision.current++; form.setValue(`${field}.channel`, next); form.clearErrors(); setError(null); }}
           onEmailChange={(next) => { revision.current++; form.setValue(`${field}.email`, next); form.clearErrors(); setError(null); }}
           onPhoneChange={(next) => { revision.current++; form.setValue(`${field}.phone`, next); form.clearErrors(); setError(null); }}

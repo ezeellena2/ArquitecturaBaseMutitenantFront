@@ -289,7 +289,7 @@ export function BusinessSignupPage() {
               if (!acceptedTerms) { event.preventDefault(); requireTerms(); return; }
               void sendCode(event);
             }}>
-              <AuthDestinationField emailLabel={t("businessSignup.email")} channel={channel} email={draftEmail} phone={phone}
+              <AuthDestinationField emailLabel={t("businessSignup.email")} channel={channel} email={draftEmail} phone={phone} phoneUsage="mobile"
                 onChannelChange={(value) => { setJourney((previous) => previous + 1); emailForm.setValue("channel", value); emailForm.clearErrors(); setRequestError(null); }}
                 onEmailChange={(value) => { emailForm.setValue("email", value); emailForm.clearErrors("email"); setRequestError(null); }}
                 onPhoneChange={(value) => { emailForm.setValue("phone", value); emailForm.clearErrors("phone"); setRequestError(null); }}

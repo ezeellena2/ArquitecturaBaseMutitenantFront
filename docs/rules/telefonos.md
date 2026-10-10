@@ -20,6 +20,7 @@
 - **Uso:**
   - `usage="whatsapp"` muestra solo los países del canal `whatsapp` que devuelve `GET /api/auth/methods` en `channels` (`[{ key: "whatsapp", countries: [...] }]`; los aporta el módulo de WhatsApp);
   - `usage="mobile"` y `usage="any"` muestran todos.
+- **Destinos de autenticación:** `AuthDestinationField` recibe `phoneUsage` explícito. Ingreso (ambas puertas), registro empresarial y teléfono anterior de recuperación usan `mobile` para permitir un método verificado de un país retirado del canal; registro personal y destino nuevo de recuperación usan `whatsapp`, como Agregar método. La presencia del canal sigue dependiendo de capacidades. Poder seleccionar un país en registro empresarial no habilita un número nuevo: el backend conserva su política de altas y sus errores sobre `phone`.
 - **Capacidad cargando/apagada:** no habilitar altas WhatsApp. Si un método existente pertenece a un país retirado del canal, conservar su país/bandera/prefijo para representarlo, sin ofrecerlo en las opciones de alta.
 - **Ingreso/registro:** `variant="auth"` conserva el campo de 44 px, radio 10 y letra 15 también en móvil; el uso normal mantiene la medida móvil de formularios.
 - **Validación en vivo** (solo guía): `isValidPhoneNumber`. El error definitivo lo manda el backend (`Users.Phone.*`, o el del módulo de WhatsApp sobre el campo `phone` si el país no está habilitado) y lo ubica `applyApiErrorToForm`.
