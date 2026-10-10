@@ -1,6 +1,7 @@
 import { lazy, useEffect } from "react";
+import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { businessUser, consumerWithoutOrganizations, platformOperator } from "@/test/mocks/currentUsers";
@@ -12,6 +13,19 @@ let me: MeResponse | undefined;
 vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: me }) }));
 
 describe("registro neutral antes de lazy", () => {
+  it("conserva el inicio del núcleo mientras carga el import del módulo autorizado", async () => {
+    me = consumerWithoutOrganizations;
+    let release!: (value: { default: () => ReactNode }) => void;
+    const pending = new Promise<{ default: () => ReactNode }>((resolve) => { release = resolve; });
+    const load = vi.fn(() => pending);
+    const modules: ModuleRegistration[] = [{ id: "optional", routes: [], home: { guard: () => "allowed", Content: lazy(load) } }];
+    renderWithProviders(<ModuleRegistryProvider value={modules}><ModuleHome access="consumer" fallback={<p>{"Inicio anterior"}</p>} /></ModuleRegistryProvider>);
+    expect(await screen.findByText("Inicio anterior")).toBeVisible();
+    expect(load).toHaveBeenCalledOnce();
+    await act(async () => { release({ default: () => <p>{"Módulo listo"}</p> }); await pending; });
+    expect(await screen.findByText("Módulo listo")).toBeVisible();
+    expect(screen.queryByText("Inicio anterior")).not.toBeInTheDocument();
+  });
   it("las páginas de gestión usan su propia guarda aunque el chat no esté disponible", async () => {
     me = { ...platformOperator, moduleCapabilities: [{ key: "optional", available: false, canConfigure: true, canReadUsage: false }] };
     const configure = vi.fn(async () => ({ default: () => <p>{"Configuración permitida"}</p> }));

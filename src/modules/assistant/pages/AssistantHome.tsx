@@ -373,8 +373,17 @@ function AssistantSession(props: AssistantHomeProps) {
   const error = runtime.state.error ?? runtime.detail.error;
   if (error instanceof ApiError && error.status === 403) return <ForbiddenPage homePath={homeOf(scope.access)} />;
   if (error instanceof ApiError && error.status === 404) return <NotFoundPage homePath={homeOf(scope.access)} />;
-  if (error) return <LoadErrorPage screen={t("title")} onRetry={() => { void runtime.state.refetch(); if (selectedId) void runtime.detail.refetch(); }} />;
-  if (!state) return <p role="status">{t("loading")}</p>;
+  // El módulo no es dueño de los bloques del núcleo: D1 conserva bienvenida y Para resolver aunque State espere o falle.
+  function withCore(status: ReactNode) {
+    if (!props.children && !props.welcome && !props.banner) return status;
+    return <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-auto">
+      {props.banner}{props.welcome}
+      <section aria-label={t("title")}>{status}</section>
+      {props.children}
+    </div>;
+  }
+  if (error) return withCore(<LoadErrorPage screen={t("title")} onRetry={() => { void runtime.state.refetch(); if (selectedId) void runtime.detail.refetch(); }} />);
+  if (!state) return withCore(<p role="status">{t("loading")}</p>);
   const code = runtime.blockedCode ?? (operations.error instanceof ApiError ? operations.error.code : null);
   const configured = state.configured && code !== "Assistant.Settings.NotConfigured";
   const limited = state.remainingMessages === 0 || code === "Assistant.Limit.DailyReached" || code === "Assistant.Limit.MonthlyReached";

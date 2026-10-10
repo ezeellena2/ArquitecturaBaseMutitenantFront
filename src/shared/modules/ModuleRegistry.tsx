@@ -34,7 +34,7 @@ function AvailableModuleHome({ home, fallback, ...content }: ModuleContentProps 
   const client = useQueryClient();
   if (unavailable) return fallback;
   const Content = home.Content;
-  return <Suspense fallback={null}><Content {...content} onUnavailable={() => {
+  return <Suspense fallback={fallback}><Content {...content} onUnavailable={() => {
     setUnavailable(true);
     void client.invalidateQueries({ queryKey: currentUserQueryKey });
   }} /></Suspense>;
