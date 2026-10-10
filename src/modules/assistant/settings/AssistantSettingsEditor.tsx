@@ -165,7 +165,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
     })(event);
   }
   const errors = form.formState.errors;
-  const general = <form key={formEpoch} id="assistant-settings" noValidate aria-label={t("assistant:settings.title")} onSubmit={submit} className="flex flex-col gap-3.5">
+  const general = <form id="assistant-settings" autoComplete="off" noValidate aria-label={t("assistant:settings.title")} onSubmit={submit} className="flex flex-col gap-3.5">
     {loadError ? <FormError message={apiErrorMessage(loadError, t)} /> : null}{edit.formError}
     <Section title={t("assistant:settings.keyAndModel")} phone="inset"><SectionFields className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">
       {!platform ? settings.allowOwnKey || ownKey ? <div>
@@ -179,7 +179,8 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
       <ReadOnlyField label={t("assistant:settings.provider")}>{t("enums:AssistantProvider.Anthropic")}</ReadOnlyField>
       {platform || ownKey ? <div>
         {inputKey ? <FormField label={t(platform ? "assistant:settings.platformKey" : "assistant:settings.key")} required error={errors.keyAction?.message}>
-          <Input ref={password} type="password" autoComplete="new-password" maxLength={assistantKeyMaxLength}
+          <Input ref={password} type="text" autoComplete="off" spellCheck={false} autoCapitalize="none" autoCorrect="off"
+            data-1p-ignore="true" data-lpignore="true" data-bwignore="true" className="[-webkit-text-security:disc]" maxLength={assistantKeyMaxLength}
             onChange={() => { changed("keyAction", false); form.setValue("keyAction", "replace", { shouldDirty: true }); }} />
         </FormField> : <ReadOnlyField label={t(platform ? "assistant:settings.platformKey" : "assistant:settings.key")}>
           <span>{t("assistant:settings.maskedKey", { suffix: settings.maskedKeySuffix ?? "" })}</span>{" "}<Button type="button" variant="link" onClick={() => { changed("keyAction"); setChangingKey(true); }}>{t("assistant:settings.changeKey")}</Button>
@@ -202,13 +203,13 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
     </SectionFields></Section>
     <Section title={t("assistant:settings.limits")} phone="inset"><SectionFields className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">
       {platform || ownKey ? <>
-        <Controller control={form.control} name="dailyMessageLimit" render={({ field }) => <FormField label={t("assistant:settings.dailyLimit")} required error={errors.dailyMessageLimit?.message}><NumberField value={field.value} onChange={(value) => { changed("dailyMessageLimit"); field.onChange(value); }} /></FormField>} />
-        <Controller control={form.control} name="monthlyBudget" render={({ field }) => <FormField label={t(platform ? "assistant:settings.organizationBudget" : "assistant:settings.monthlyBudget")} error={errors.monthlyBudget?.message}><MoneyField currencyCode={billingCurrency} value={field.value} onValidityChange={(valid) => { budgetValid.current = valid; }} onChange={(value) => { changed("monthlyBudget"); field.onChange(value); }} /></FormField>} />
+        <Controller control={form.control} name="dailyMessageLimit" render={({ field }) => <FormField label={t("assistant:settings.dailyLimit")} required error={errors.dailyMessageLimit?.message}><NumberField key={formEpoch} value={field.value} onChange={(value) => { changed("dailyMessageLimit"); field.onChange(value); }} /></FormField>} />
+        <Controller control={form.control} name="monthlyBudget" render={({ field }) => <FormField label={t(platform ? "assistant:settings.organizationBudget" : "assistant:settings.monthlyBudget")} error={errors.monthlyBudget?.message}><MoneyField key={formEpoch} currencyCode={billingCurrency} value={field.value} onValidityChange={(valid) => { budgetValid.current = valid; }} onChange={(value) => { changed("monthlyBudget"); field.onChange(value); }} /></FormField>} />
       </> : <><ReadOnlyField label={t("assistant:settings.dailyLimit")}><NumberText value={settings.dailyMessageLimit} /></ReadOnlyField><ReadOnlyField label={t("assistant:settings.monthlyBudget")}><MoneyText value={settings.monthlyBudget} /></ReadOnlyField></>}
     </SectionFields></Section>
     {platform ? <Section title={t("assistant:settings.peopleAndConversations")} phone="inset"><SectionFields className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">
       <Controller control={form.control} name="personalEnabled" render={({ field }) => <CheckboxField label={t("assistant:settings.personalEnabled")} checked={field.value} onCheckedChange={(value) => { changed("personalEnabled"); field.onChange(value); }} />} />
-      <Controller control={form.control} name="retentionDays" render={({ field }) => <FormField label={t("assistant:settings.retentionDays")} required error={errors.retentionDays?.message}><NumberField value={field.value} onChange={(value) => { changed("retentionDays"); field.onChange(value); }} /></FormField>} />
+      <Controller control={form.control} name="retentionDays" render={({ field }) => <FormField label={t("assistant:settings.retentionDays")} required error={errors.retentionDays?.message}><NumberField key={formEpoch} value={field.value} onChange={(value) => { changed("retentionDays"); field.onChange(value); }} /></FormField>} />
     </SectionFields></Section> : null}
   </form>;
   const actions = tab === "general" ? <><Button type="button" variant="outline" onClick={discard}>{t("assistant:settings.discard")}</Button><Button type="submit" form="assistant-settings" disabled={!form.formState.isDirty} pending={pending} pendingLabel={t("assistant:settings.saving")}>{t("assistant:settings.save")}</Button></> : <Button onClick={(event) => setModelDialog({ trigger: event.currentTarget })}>{t("assistant:settings.addModel")}</Button>;

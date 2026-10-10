@@ -28,6 +28,28 @@ async function savedMutation(app: ReturnType<typeof mountSettings>) {
 }
 
 describe("configuración real de gestión", () => {
+  it.each([businessManager, platformManager])("$access: la clave no es un campo de contraseña ni ofrece autocompletar", async (me) => {
+    const app = mountSettings(me, me.access === "platform" ? "/plataforma/asistente/configuracion" : "/org/asistente/configuracion");
+    if (me.access === "business") await app.user.click(await screen.findByRole("radio", { name: "La nuestra" }));
+    await app.user.click(await screen.findByRole("button", { name: "Cambiar" }));
+    const input = screen.getByLabelText(me.access === "platform" ? /Clave de la plataforma/ : /Clave de Anthropic/);
+    expect(input).toHaveAttribute("type", "text");
+    expect(input).toHaveClass("[-webkit-text-security:disc]");
+    expect(input).toHaveAttribute("autocomplete", "off");
+    for (const attribute of ["data-1p-ignore", "data-lpignore", "data-bwignore"]) expect(input).toHaveAttribute(attribute, "true");
+    expect(input).toHaveAttribute("spellcheck", "false");
+  });
+  it("guardar una clave no remonta el formulario y conserva sólo el sufijo confirmado", async () => {
+    server.use(http.put("/api/organization/assistant/settings", () => HttpResponse.json({ version: 11 })));
+    const app = mountSettings();
+    await ownKey(app);
+    const form = screen.getByRole("form", { name: "Configuración" });
+    await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled());
+    expect(screen.getByRole("form", { name: "Configuración" })).toBe(form);
+    expect(screen.queryByLabelText(/Clave de Anthropic/)).not.toBeInTheDocument();
+    expect(publicCaches(app)).not.toContain(secret);
+  });
   it("gestiona sin chat.use; modelos por modo desde CC01, sin State ni catálogo de chat", async () => {
     let stateRequests = 0;
     server.use(http.get("/api/organization/assistant", () => { stateRequests++; return HttpResponse.json({}); }));
