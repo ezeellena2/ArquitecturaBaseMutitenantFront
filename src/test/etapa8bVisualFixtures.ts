@@ -222,6 +222,7 @@ function createChatScenario(board: string, state: string): GalleryApp | undefine
 }
 
 export function chatScenario(board: string, state: string): GalleryApp | undefined {
+  if (state === "Consultando" || state === "Escribiendo") return galleryOpenStreamProbe(board, state);
   // El lienzo exige Ver uso. RegisteredAssistant todavía no entrega onUsage (T13).
   if (state === "Tope del mes") return undefined;
   return createChatScenario(board, state);
@@ -237,7 +238,7 @@ export function galleryOversizedAttachmentProbe(board: string): GalleryApp {
   return createChatScenario(board, "Adjunto de más de 10 MB")!;
 }
 
-// Preparación de transporte/SDK: no cuenta como escena hasta corregir ToolStatus.
+// Escenas de streaming: DTO, eventos y selección reales del arnés, abiertos hasta cleanup.
 export function galleryOpenStreamProbe(board: string, state: "Consultando" | "Escribiendo"): GalleryApp {
   const scope: Scope = board.includes("Personal") ? "consumer" : board.includes("Plat") ? "platform" : "business";
   const prefix = `/api/${scope === "consumer" ? "me" : scope === "platform" ? "platform" : "organization"}/assistant`;
@@ -319,9 +320,11 @@ export function galleryOpenStreamProbe(board: string, state: "Consultando" | "Es
   app.actions = [...(board.startsWith("M-") ? [click("Conversaciones")] : []), { ...click(source.title), within: { role: board.startsWith("M-") ? "dialog" : "complementary", name: "Conversaciones" } },
     ...(scope === "business" ? [{ type: "upload", label: "Adjuntar", exact: true, files: [galleryPdf] } satisfies GalleryAction] : []),
     fill("Tu consulta", source.query), click("Enviar")];
-  app.readySelector = '[role="group"][aria-label="Asistente"] [role="status"]';
-  app.readyTexts = state === "Escribiendo" ? [source.delta, "Escribiendo…", "Información consultada"]
-    : ["Consultando…", "Consultando información…", ...(scope === "business" ? ["Información consultada"] : [])];
-  if (scope !== "consumer") app.readyTexts.push(scope === "business" ? "Ver usuarios" : "Ver organizaciones");
+  const toolLabels = scope === "business" ? state === "Consultando" ? ["Consultó Empresas", "Consultando usuarios…"] : ["Consultó Empresas y Usuarios"]
+    : scope === "consumer" ? [state === "Consultando" ? "Consultando tus organizaciones…" : "Consultó tus organizaciones"]
+    : [state === "Consultando" ? "Consultando el uso del asistente…" : "Consultó el uso del asistente"];
+  app.readySelector = '[role="group"][aria-label="Asistente"] [data-message-id="gallery-assistant"] [role="status"]';
+  app.readyTexts = [...toolLabels, ...(state === "Escribiendo" ? [source.delta] : [])];
+  if (scope !== "consumer") app.readyTexts.push(scope === "business" ? "Ver en Usuarios" : "Ver en Organizaciones");
   return app;
 }

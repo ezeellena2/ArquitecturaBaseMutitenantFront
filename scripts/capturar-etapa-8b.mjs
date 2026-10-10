@@ -46,7 +46,6 @@ export async function buildManifest(canvasRoot = canvas) {
     if (app) cases.push({ ...entry, label: entry.state, captureExtent: "viewport", app, scenarioSha256: jsonHash(app) });
     else pending.push({ ...entry, reason: entry.group === "uso" ? "Uso CC04 pendiente de aprobación y publicación conjunta; sin página ni fixture."
       : entry.state === "Tope del mes" ? "El lienzo exige Ver uso, pero RegisteredAssistant aún no entrega onUsage ni hay ruta Uso autorizada/publicada (T13/CC04). El 429 se prueba como comportamiento; escena completa pendiente."
-      : ["Consultando", "Escribiendo"].includes(entry.state) ? "Transporte SSE abierto y probes SDK preparados. ToolStatus ignora labelKey y muestra herramientas genéricas, distintas de Empresas/Usuarios, tus organizaciones o uso exigidas por el HTML. La escena permanece pendiente por fidelidad de producto; sin cambiar UI/copy en este corte."
       : "Escenario/acciones todavía sin preparar en este corte; no se declara cobertura." });
   }
   return { version: 1, stage: "etapa-8b-preparacion", evidence: "API y sesión ficticias del arnés; no E2E/proveedor", issuer,

@@ -93,14 +93,14 @@
   },
   "links": {
     "business": {
-      "users": "View users",
+      "users": "View in Users",
       "roles": "View roles and permissions",
       "companies": "View businesses",
       "audit": "View audit",
       "home": "Go home"
     },
     "platform": {
-      "organizations": "View organizations",
+      "organizations": "View in Organizations",
       "accounts": "View accounts",
       "recoveries": "View recoveries",
       "audit": "View audit",
@@ -187,6 +187,104 @@
   "tools": {
     "running": "Checking information…",
     "complete": "Information checked",
-    "failed": "Could not check the information."
+    "failed": "Could not check the information.",
+    "labels": {
+      "org_users": {
+        "running": "Looking up users…",
+        "complete": "Looked up users",
+        "failed": "Could not look up users."
+      },
+      "org_find_person": {
+        "running": "Looking up a person in the organization…",
+        "complete": "Looked up a person in the organization",
+        "failed": "Could not look up a person in the organization."
+      },
+      "org_role_members": {
+        "running": "Looking up role members…",
+        "complete": "Looked up role members",
+        "failed": "Could not look up role members."
+      },
+      "org_companies": {
+        "running": "Looking up companies…",
+        "complete": "Looked up companies",
+        "failed": "Could not look up companies."
+      },
+      "org_company_members": {
+        "running": "Looking up company members…",
+        "complete": "Looked up company members",
+        "failed": "Could not look up company members."
+      },
+      "org_invitations": {
+        "running": "Looking up invitations…",
+        "complete": "Looked up invitations",
+        "failed": "Could not look up invitations."
+      },
+      "org_audit": {
+        "running": "Looking up audit…",
+        "complete": "Looked up audit",
+        "failed": "Could not look up audit."
+      },
+      "org_pending": {
+        "running": "Looking up pending items…",
+        "complete": "Looked up pending items",
+        "failed": "Could not look up pending items."
+      },
+      "platform_organizations": {
+        "running": "Looking up organizations…",
+        "complete": "Looked up organizations",
+        "failed": "Could not look up organizations."
+      },
+      "platform_find_organization": {
+        "running": "Looking up an organization…",
+        "complete": "Looked up an organization",
+        "failed": "Could not look up an organization."
+      },
+      "platform_accounts": {
+        "running": "Looking up accounts…",
+        "complete": "Looked up accounts",
+        "failed": "Could not look up accounts."
+      },
+      "platform_recoveries": {
+        "running": "Looking up pending recoveries…",
+        "complete": "Looked up pending recoveries",
+        "failed": "Could not look up pending recoveries."
+      },
+      "platform_security": {
+        "running": "Looking up security…",
+        "complete": "Looked up security",
+        "failed": "Could not look up security."
+      },
+      "org_roles": {
+        "running": "Looking up roles…",
+        "complete": "Looked up roles",
+        "failed": "Could not look up roles."
+      },
+      "platform_assistant_usage": {
+        "running": "Looking up assistant usage…",
+        "complete": "Looked up assistant usage",
+        "failed": "Could not look up assistant usage."
+      },
+      "my_account": {
+        "running": "Looking up your account…",
+        "complete": "Looked up your account",
+        "failed": "Could not look up your account."
+      },
+      "my_organizations": {
+        "running": "Looking up your organizations…",
+        "complete": "Looked up your organizations",
+        "failed": "Could not look up your organizations."
+      },
+      "my_interactions": {
+        "running": "Looking up your messages…",
+        "complete": "Looked up your messages",
+        "failed": "Could not look up your messages."
+      },
+      "help_article": {
+        "running": "Looking up help…",
+        "complete": "Looked up help",
+        "failed": "Could not look up help."
+      }
+    },
+    "companiesAndUsers": "Looked up Companies and Users"
   }
 }

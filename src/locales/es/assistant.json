@@ -93,14 +93,14 @@
   },
   "links": {
     "business": {
-      "users": "Ver usuarios",
+      "users": "Ver en Usuarios",
       "roles": "Ver roles y permisos",
       "companies": "Ver empresas",
       "audit": "Ver auditoría",
       "home": "Ir al inicio"
     },
     "platform": {
-      "organizations": "Ver organizaciones",
+      "organizations": "Ver en Organizaciones",
       "accounts": "Ver cuentas",
       "recoveries": "Ver recuperaciones",
       "audit": "Ver auditoría",
@@ -187,6 +187,104 @@
   "tools": {
     "running": "Consultando información…",
     "complete": "Información consultada",
-    "failed": "No se pudo consultar la información."
+    "failed": "No se pudo consultar la información.",
+    "labels": {
+      "org_users": {
+        "running": "Consultando usuarios…",
+        "complete": "Consultó Usuarios",
+        "failed": "No se pudo consultar usuarios."
+      },
+      "org_find_person": {
+        "running": "Consultando una persona de la organización…",
+        "complete": "Consultó una persona de la organización",
+        "failed": "No se pudo consultar una persona de la organización."
+      },
+      "org_role_members": {
+        "running": "Consultando miembros de un rol…",
+        "complete": "Consultó miembros de un rol",
+        "failed": "No se pudo consultar miembros de un rol."
+      },
+      "org_companies": {
+        "running": "Consultando empresas…",
+        "complete": "Consultó Empresas",
+        "failed": "No se pudo consultar empresas."
+      },
+      "org_company_members": {
+        "running": "Consultando miembros de una empresa…",
+        "complete": "Consultó miembros de una empresa",
+        "failed": "No se pudo consultar miembros de una empresa."
+      },
+      "org_invitations": {
+        "running": "Consultando invitaciones…",
+        "complete": "Consultó Invitaciones",
+        "failed": "No se pudo consultar invitaciones."
+      },
+      "org_audit": {
+        "running": "Consultando auditoría…",
+        "complete": "Consultó Auditoría",
+        "failed": "No se pudo consultar auditoría."
+      },
+      "org_pending": {
+        "running": "Consultando pendientes…",
+        "complete": "Consultó pendientes",
+        "failed": "No se pudo consultar pendientes."
+      },
+      "platform_organizations": {
+        "running": "Consultando organizaciones…",
+        "complete": "Consultó Organizaciones",
+        "failed": "No se pudo consultar organizaciones."
+      },
+      "platform_find_organization": {
+        "running": "Consultando una organización…",
+        "complete": "Consultó una organización",
+        "failed": "No se pudo consultar una organización."
+      },
+      "platform_accounts": {
+        "running": "Consultando cuentas…",
+        "complete": "Consultó Cuentas",
+        "failed": "No se pudo consultar cuentas."
+      },
+      "platform_recoveries": {
+        "running": "Consultando recuperaciones pendientes…",
+        "complete": "Consultó recuperaciones pendientes",
+        "failed": "No se pudo consultar recuperaciones pendientes."
+      },
+      "platform_security": {
+        "running": "Consultando seguridad…",
+        "complete": "Consultó seguridad",
+        "failed": "No se pudo consultar seguridad."
+      },
+      "org_roles": {
+        "running": "Consultando roles…",
+        "complete": "Consultó Roles",
+        "failed": "No se pudo consultar roles."
+      },
+      "platform_assistant_usage": {
+        "running": "Consultando el uso del asistente…",
+        "complete": "Consultó el uso del asistente",
+        "failed": "No se pudo consultar el uso del asistente."
+      },
+      "my_account": {
+        "running": "Consultando tu cuenta…",
+        "complete": "Consultó tu cuenta",
+        "failed": "No se pudo consultar tu cuenta."
+      },
+      "my_organizations": {
+        "running": "Consultando tus organizaciones…",
+        "complete": "Consultó tus organizaciones",
+        "failed": "No se pudo consultar tus organizaciones."
+      },
+      "my_interactions": {
+        "running": "Consultando tus mensajes…",
+        "complete": "Consultó tus mensajes",
+        "failed": "No se pudo consultar tus mensajes."
+      },
+      "help_article": {
+        "running": "Consultando ayuda…",
+        "complete": "Consultó ayuda",
+        "failed": "No se pudo consultar ayuda."
+      }
+    },
+    "companiesAndUsers": "Consultó Empresas y Usuarios"
   }
 }

@@ -13,7 +13,7 @@ import { fixtureAuth } from "./mocks/authContext";
 import { server } from "./mocks/server";
 import { asPhone } from "./utils/phone";
 import { galleryImage, galleryPdf, galleryPdfTooLarge, galleryUploadBytes } from "./galleryUploadFiles";
-import type { AssistantAttachmentSummaryResponse, AssistantConversationResponse } from "@/shared/api/types";
+import type { AssistantAttachmentSummaryResponse, AssistantConversationResponse, AssistantStreamHttpResponse } from "@/shared/api/types";
 import { chatScenario, configurationScenario, galleryConversation, galleryMe, galleryMonthlyLimitProbe, galleryOpenStreamProbe, galleryStream, galleryStreamEvents, type GalleryApp } from "./etapa8bVisualFixtures";
 import type { AssistantTurnState } from "@/modules/assistant/runtime/assistantTurnState";
 
@@ -25,7 +25,7 @@ const chatBoards = ["Asistente-Org", "Asistente-Personal", "Asistente-Plat", "M-
 
 function mount(app: GalleryApp) {
   const calls: string[] = []; const completed = new Set<string>();
-  const opened: { stream: ReadableStream<Uint8Array>; cancelled: boolean }[] = [];
+  const opened: { stream: ReadableStream<Uint8Array>; cancelled: boolean; emit: (event: AssistantStreamHttpResponse) => void }[] = [];
   const ownStreams = new Set<string>();
   const onResponse: Parameters<typeof server.events.on<"response:mocked">>[1] = ({ requestId, request, response }) => {
     if (!ownStreams.delete(requestId) || response.status !== 200) return;
@@ -42,16 +42,16 @@ function mount(app: GalleryApp) {
       ownStreams.add(requestId);
       let controller: ReadableStreamDefaultController<Uint8Array>;
       const abort = () => { record.cancelled = true; controller.error(new DOMException("", "AbortError")); request.signal.removeEventListener("abort", abort); };
-      const record: { stream: ReadableStream<Uint8Array>; cancelled: boolean } = { stream: new ReadableStream<Uint8Array>({
+      const record = { stream: new ReadableStream<Uint8Array>({
         start(value) { controller = value; controller.enqueue(new TextEncoder().encode(response.rawBody!)); },
         cancel() { record.cancelled = true; request.signal.removeEventListener("abort", abort); },
-      }), cancelled: false };
+      }), cancelled: false, emit: (event: AssistantStreamHttpResponse) => controller.enqueue(new TextEncoder().encode(`event: ${event.event}\ndata: ${JSON.stringify(event.data)}\n\n`)) };
       request.signal.addEventListener("abort", abort, { once: true });
       opened.push(record);
       return new HttpResponse(record.stream, { status: response.status, headers: { "Content-Type": response.contentType! } });
     }
     completed.add(`${response.method} ${response.path}`);
-    return response.rawBody === undefined ? new HttpResponse(JSON.stringify(response.body), { status: response.status, headers: { "Content-Type": "application/json" } })
+    return response.status === 204 ? new HttpResponse(null, { status: 204 }) : response.rawBody === undefined ? new HttpResponse(JSON.stringify(response.body), { status: response.status, headers: { "Content-Type": "application/json" } })
       : new HttpResponse(response.rawBody, { status: response.status, headers: { "Content-Type": response.contentType! } });
   }));
   const route = new URL(app.path, "http://localtest.me:5192").searchParams.get("route")!;
@@ -77,7 +77,7 @@ async function actions(app: GalleryApp, user: ReturnType<typeof userEvent.setup>
   for (const text of app.readyTexts ?? []) await screen.findAllByText(text, { exact: false });
 }
 
-it.each(["Asistente-Org", "Asistente-Personal", "Asistente-Plat"].flatMap((accessBoard) => (["Consultando", "Escribiendo"] as const).map((state) => ({ board: `${state === "Escribiendo" ? "M-" : ""}${accessBoard}`, state }))))("probe $board $state conserva stream abierto, herramientas SDK y selección; no cuenta escena genérica", async ({ board, state }) => {
+it.each(["Asistente-Org", "Asistente-Personal", "Asistente-Plat"].flatMap((accessBoard) => (["Consultando", "Escribiendo"] as const).map((state) => ({ board: `${state === "Escribiendo" ? "M-" : ""}${accessBoard}`, state }))))("$board $state conserva stream abierto, herramientas SDK y selección conforme fuente", async ({ board, state }) => {
   const restore = board.startsWith("M-") ? asPhone() : () => {};
   let mounted: ReturnType<typeof mount> | undefined;
   try {
@@ -85,7 +85,7 @@ it.each(["Asistente-Org", "Asistente-Personal", "Asistente-Plat"].flatMap((acces
     vi.stubGlobal("FormData", nativeForm.constructor);
     vi.stubGlobal("File", FetchFile);
     const app = galleryOpenStreamProbe(board, state);
-    expect(chatScenario(board, state)).toBeUndefined();
+    expect(chatScenario(board, state)).toEqual(app);
     mounted = mount(app);
     for (const action of app.actions) {
       if (action.type === "upload") {
@@ -112,18 +112,33 @@ it.each(["Asistente-Org", "Asistente-Personal", "Asistente-Plat"].flatMap((acces
     expect(mounted.calls.filter((call) => call.startsWith("POST") && call.endsWith("/messages"))).toHaveLength(1);
     expect(mounted.opened).toHaveLength(1);
     expect(mounted.opened[0].cancelled).toBe(false);
-    expect(screen.getAllByText(state === "Consultando" ? "Consultando información…" : "Información consultada", { exact: true })[0]).toBeVisible();
+    const statuses = within(screen.getByRole("group", { name: "Asistente" })).getAllByRole("status");
+    for (const status of statuses) expect.soft(status.closest("[data-message-id]")).toHaveAttribute("data-message-id", "gallery-assistant");
+    const labels = board.includes("Personal") ? [state === "Consultando" ? "Consultando tus organizaciones…" : "Consultó tus organizaciones"]
+      : board.includes("Plat") ? [state === "Consultando" ? "Consultando el uso del asistente…" : "Consultó el uso del asistente"]
+      : state === "Consultando" ? ["Consultó Empresas", "Consultando usuarios…"] : ["Consultó Empresas y Usuarios"];
+    for (const label of labels) expect(screen.getByText(label, { exact: true })).toBeVisible();
+    const activeMessage = screen.getByText(labels[0], { exact: true }).closest("[data-message-id]")!;
+    expect(activeMessage.querySelector('svg[aria-hidden="true"]')).toBeInTheDocument();
+    const latestQuery = currentTurn()!.request.text!;
+    expect(screen.getByText(latestQuery, { exact: true }).compareDocumentPosition(activeMessage) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    if (state === "Escribiendo") {
+      const delta = screen.getByText(currentTurn()!.text, { exact: true });
+      expect(activeMessage).toContainElement(delta);
+      expect(screen.getByText(labels[0], { exact: true }).compareDocumentPosition(delta) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(statuses).toHaveLength(1);
+    }
+    if (board.includes("Personal")) expect(screen.queryByRole("button", { name: "Ver Beta S.R.L." })).not.toBeInTheDocument();
     const source = board.includes("Personal") ? {
       saved: ["Cómo recuperar mi cuenta"], recent: ["Por qué no puedo entrar a Beta", "Mis organizaciones", "Correos de mi cuenta"], link: undefined,
     } : board.includes("Plat") ? {
       saved: ["Altas de setiembre"], recent: ["Organizaciones por aprobar", "Recuperaciones de la semana", "Cuentas suspendidas"],
-      link: { name: "Ver organizaciones", to: "/plataforma/organizaciones?status=PendingApproval", permission: "platform.tenants.read", scope: "platform" as const },
+      link: { name: "Ver en Organizaciones", to: "/plataforma/organizaciones?status=PendingApproval", permission: "platform.tenants.read", scope: "platform" as const },
     } : {
       saved: ["Permisos del rol Auditor"], recent: ["Invitaciones vencidas", "Quién entró esta semana", "Empresas sin administrador", "Cambios de ayer en Roles"],
-      link: { name: "Ver usuarios", to: "/org/usuarios?state=Expired", permission: "users.read", scope: "organization" as const },
+      link: { name: "Ver en Usuarios", to: "/org/usuarios?state=Expired", permission: "users.read", scope: "organization" as const },
     };
     if (source.link) {
-      // El texto vigente de producto aún difiere de «Ver en Usuarios/Organizaciones» del HTML.
       expect.soft(screen.queryByRole("link", { name: source.link.name })).toBeVisible();
       expect.soft(screen.queryByRole("link", { name: source.link.name })).toHaveAttribute("href", source.link.to);
       const me = app.responses.find((response) => response.path === "/api/me")?.body as ReturnType<typeof galleryMe>;
@@ -151,6 +166,72 @@ it.each(["Asistente-Org", "Asistente-Personal", "Asistente-Plat"].flatMap((acces
     if (mounted?.opened.length) await waitFor(() => expect(mounted!.opened[0].cancelled).toBe(true));
     restore();
   }
+});
+
+it.each(["Complete", "Stopped"] as const)("el mensaje activo pasa de consulta a escritura con replay seguro, retira cursor al quedar $0 y limpia al cambiar de conversación", async (terminal) => {
+  const app = galleryOpenStreamProbe("Asistente-Org", "Consultando");
+  if (terminal === "Stopped") {
+    const stopPath = "/api/organization/assistant/conversations/gallery-chat/turns/gallery-turn/stop";
+    const pending = app.responses.find((response) => response.method === "GET" && response.path.endsWith("/gallery-chat") && response.afterResponse?.path.endsWith("/messages"))!.body as AssistantConversationResponse;
+    const stopped: AssistantConversationResponse = { ...pending, activeTurnId: null, conversation: { ...pending.conversation, version: 5 },
+      messages: { ...pending.messages, items: pending.messages.items.map((message) => message.id === "gallery-assistant" ? { ...message, status: "Stopped", text: "Respuesta parcial" } : message) } };
+    app.responses.unshift({ method: "POST", path: stopPath, status: 204 }, { method: "GET", path: "/api/organization/assistant/conversations/gallery-chat", status: 200, body: stopped, afterResponse: { method: "POST", path: stopPath } });
+  }
+  let mounted: ReturnType<typeof mount> | undefined;
+  try {
+    const nativeForm = await new Request("http://localhost/form", { method: "POST", headers: { "content-type": "multipart/form-data; boundary=test" }, body: "--test--\r\n" }).formData();
+    vi.stubGlobal("FormData", nativeForm.constructor); vi.stubGlobal("File", FetchFile);
+    mounted = mount(app);
+    for (const action of app.actions) {
+      if (action.type === "upload") fireEvent.change(await screen.findByLabelText(action.label, { selector: 'input[type="file"]' }), { target: { files: action.files.map((file) => new FetchFile([galleryUploadBytes(file)], file.name, { type: file.mimeType })) } });
+      else if (action.type === "click" && action.name === "Enviar") fireEvent.click(await screen.findByRole("button", { name: "Enviar" }));
+      else await actions({ ...app, actions: [action], readySelector: "main", readyTexts: undefined }, mounted.user);
+    }
+    await actions({ ...app, actions: [] }, mounted.user);
+    const firstStatus = screen.getByText("Consultando usuarios…");
+    expect(firstStatus.closest("[data-message-id]")).toHaveAttribute("data-message-id", "gallery-assistant");
+    expect(mounted.container.querySelector("[data-cursor-state]")).not.toBeInTheDocument();
+    const emit = mounted.opened[0].emit;
+    emit({ event: "tool", data: { turnId: "gallery-turn", toolKey: "org_users", labelKey: "Tool.org_users", state: "complete" } });
+    emit({ event: "tool", data: { turnId: "gallery-turn", toolKey: "org_users", labelKey: "private-replay", state: "running" } });
+    emit({ event: "delta", data: { turnId: "gallery-turn", sequence: 1, text: "Respuesta parcial" } });
+    emit({ event: "delta", data: { turnId: "gallery-turn", sequence: 1, text: "NO duplicar" } });
+    const completed = await screen.findByText("Consultó Empresas y Usuarios");
+    const delta = await screen.findByText("Respuesta parcial");
+    const cursor = delta.closest("[data-cursor-state]");
+    expect(cursor).toHaveAttribute("data-cursor-state", "writing");
+    expect(cursor).toContainElement(delta);
+    expect(cursor?.closest("[data-message-id]")).toHaveAttribute("data-message-id", "gallery-assistant");
+    expect(cursor?.firstElementChild).toContainElement(delta);
+    expect(mounted.container.querySelectorAll("[data-cursor-state]")).toHaveLength(1);
+    const previous = mounted.container.querySelector('[data-message-id="gallery-previous-assistant"]');
+    expect(previous).toBeInTheDocument();
+    expect(previous?.querySelector("[data-cursor-state]")).not.toBeInTheDocument();
+    expect(completed.closest("[data-message-id]")).toContainElement(delta);
+    expect(completed.compareDocumentPosition(delta) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByText(/private-replay|NO duplicar|Consultando usuarios/)).not.toBeInTheDocument();
+    if (terminal === "Complete") {
+      const done = galleryStreamEvents.find((event) => event.event === "done")!;
+      if (done.event !== "done") throw new Error("Fixture sin done");
+      emit({ event: "done", data: { ...done.data, conversationVersion: 4, message: { ...done.data.message, text: "Respuesta final" } } });
+      await screen.findByText("Respuesta final");
+      expect(screen.queryByText("Respuesta parcial")).not.toBeInTheDocument();
+    } else {
+      await mounted.user.click(screen.getByRole("button", { name: "Detener" }));
+      await screen.findByText("Detuviste la respuesta.");
+      expect(screen.getByText("Respuesta parcial")).toBeVisible();
+      expect(mounted.calls.filter((call) => call === "POST /api/organization/assistant/conversations/gallery-chat/turns/gallery-turn/stop")).toHaveLength(1);
+    }
+    const turn = mounted.client.getQueryCache().getAll().find((query) => query.queryKey.includes("turn") && query.queryKey.includes("gallery-chat"))?.state.data as AssistantTurnState;
+    expect(turn.phase).toBe(terminal);
+    expect(mounted.container.querySelector("[data-cursor-state]")).not.toBeInTheDocument();
+    await mounted.user.click(screen.getByRole("button", { name: "Nueva conversación" }));
+    await screen.findByRole("heading", { name: "¿Qué querés consultar?" });
+    expect(screen.queryByText("Consultó Empresas y Usuarios")).not.toBeInTheDocument();
+    expect(screen.queryByText("Respuesta parcial")).not.toBeInTheDocument();
+    expect(mounted.container.querySelector("[data-cursor-state]")).not.toBeInTheDocument();
+    await waitFor(() => expect(mounted!.opened[0].cancelled).toBe(true));
+  } finally { mounted?.unmount(); }
 });
 
 it("todos los eventos SSE tipados los decodifica el codec real", async () => {
