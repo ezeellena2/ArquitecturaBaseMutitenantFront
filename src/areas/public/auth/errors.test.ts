@@ -12,7 +12,6 @@ describe("errores del código de ingreso", () => {
     ["Auth.LoginCode.ResendTooSoon", "login.resendTooSoon"],
     ["Auth.LoginCode.TooManyRequests", "login.tooManyRequests"],
     ["Http.TooManyRequests", "login.networkRateLimited"],
-    ["Validation.Failed", "login.codeInvalid"],
   ])("elige el estado por código %s", (code, expected) => {
     expect(loginCodeErrorKey(new ApiError(400, { code, detail: "No usar el texto de la respuesta" }))).toBe(expected);
   });
@@ -20,6 +19,16 @@ describe("errores del código de ingreso", () => {
   it("distingue red y error desconocido sin depender del mensaje", () => {
     expect(loginCodeErrorKey(ApiError.network())).toBe("errors:network");
     expect(loginCodeErrorKey(new ApiError(500, { code: "Other.Failure", detail: "unknown" }))).toBe("errors:server");
+  });
+
+  it.each([
+    [undefined, "errors:server"],
+    [{ returnUrl: ["Código incorrecto como texto ajeno"] }, "errors:server"],
+    [{ access: ["Acceso incorrecto"] }, "errors:server"],
+    [{ code: [] }, "errors:server"],
+    [{ code: ["Revisá los dígitos"] }, "login.codeInvalid"],
+  ])("Validation.Failed sólo identifica OTP por errors.code: %j", (errors, expected) => {
+    expect(loginCodeErrorKey(new ApiError(400, { code: "Validation.Failed", errors }))).toBe(expected);
   });
 });
 

@@ -21,7 +21,7 @@ import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { AuthDestinationField } from "../components/AuthDestinationField";
-import { authDestinationSchema, destinationFromFields, phoneFromNavigation, signupCodeOperation, signupCodeRequest, sameSignupCodeOperation, type SignupCodeOperation } from "../lib/authDestinationForm";
+import { authDestinationSchema, destinationFromFields, destinationNavigationState, phoneFromNavigation, signupCodeOperation, signupCodeRequest, sameSignupCodeOperation, type SignupCodeOperation } from "../lib/authDestinationForm";
 import { loginDestinationErrorField } from "../lib/loginDestination";
 import type { LoginDestination } from "@/shared/api/types";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
@@ -297,7 +297,7 @@ export function BusinessSignupPage() {
               <FormError message={requestErrorText} />
               <Button type="submit" size="lg" className="w-full" disabled={retry.isRunning} pending={requestCode.isPending} pendingLabel={t("common:code.sending")}>{retry.label ?? t("businessSignup.continue")}</Button>
             </form>
-            <AuthLinkRow>{t("businessSignup.alreadyRegistered")}<AuthLink to={loginPathOf("business")}>{t("businessSignup.loginBusiness")}</AuthLink></AuthLinkRow>
+            <AuthLinkRow>{t("businessSignup.alreadyRegistered")}<AuthLink to={loginPathOf("business")} state={channel === "phone" && phone ? destinationNavigationState({ type: "phone", phone }) : undefined}>{t("businessSignup.loginBusiness")}</AuthLink></AuthLinkRow>
           </section>
             : step === "code" ? <AuthCodeStep destination={email} phone={destination.type === "phone" ? destination.phone : undefined} code={code} onBack={() => { setJourney((previous) => previous + 1); setStep("email"); setCode(""); setRequestError(null); }}
               onCodeChange={(next) => { setCode(next); setRequestError(null); }} onVerify={confirmCode} onResend={resendCode}

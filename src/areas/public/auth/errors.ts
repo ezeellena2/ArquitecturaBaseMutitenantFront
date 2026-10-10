@@ -11,18 +11,19 @@ const errorKeys: Record<string, string> = {
   "Auth.LoginCode.ResendTooSoon": "login.resendTooSoon",
   "Auth.LoginCode.TooManyRequests": "login.tooManyRequests",
   "Http.TooManyRequests": "login.networkRateLimited",
-  "Validation.Failed": "login.codeInvalid",
   "Identity.Account.LockedOut": "login.accountLocked",
   "Identity.Account.Suspended": "login.accountSuspended",
 };
 
 export function loginCodeErrorKey(error: ApiError): string {
   if (error.isNetworkError) return "errors:network";
+  if (error.code === "Validation.Failed" && error.errors?.code?.length) return "login.codeInvalid";
   return (error.code && errorKeys[error.code]) || "errors:server";
 }
 
 export function loginCodeErrorMessage(error: ApiError, t: TFunction): string {
-  return error.code && errorKeys[error.code] ? t(errorKeys[error.code]) : apiErrorMessage(error, t);
+  const key = loginCodeErrorKey(error);
+  return key === "errors:server" || key === "errors:network" ? apiErrorMessage(error, t) : t(key);
 }
 
 /// La franja del paso del código, igual en el ingreso y en los dos registros (tablero Ingreso): el texto del código y,

@@ -101,32 +101,87 @@ it.each(["consumer", "business"] as const)("número desconocido en %s va debajo 
   if (access === "consumer") expect(router.state.location.search).toBe(`?${new URLSearchParams({ returnUrl: authorize })}`);
 });
 
-it("Phone ocupado no simula código; conserva número hacia Login directo y sólo inicia OIDC tras verificar", async () => {
+it.each([
+  ["consumer", "/registro", "Ingresar", "/"],
+  ["business", "/registro/empresa", "Ingresá como empresa", "/org"],
+] as const)("registro conserva Phone hacia ingreso fijo %s y sólo inicia OIDC tras verificar", async (access, path, enter, returnUrl) => {
   const storageWrite = vi.spyOn(Storage.prototype, "setItem");
   server.use(
-    http.post("/api/auth/signup", () => HttpResponse.json({ code: "Auth.Signup.PhoneTaken", detail: "Ese número ya tiene una cuenta." }, { status: 409 })),
+    http.post("/api/auth/signup", () => HttpResponse.json({ code: "Auth.Signup.PhoneTaken", detail: "Ese número ya tiene una cuenta." }, { status: 400 })),
     http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 0 }, { status: 202 })),
     http.post<never, VerifyLoginCodeRequest>("/api/auth/login-code/verify", async ({ request }) => {
-      expect(await request.json()).toEqual({ phone, channel: "whatsapp", code: "123456", returnUrl: "/" });
-      return HttpResponse.json({ returnUrl: "/" });
+      expect(await request.json()).toEqual({ phone, channel: "whatsapp", code: "123456", returnUrl, access });
+      return HttpResponse.json({ returnUrl });
     }),
   );
-  const { router } = show("/registro");
+  const { router } = show(path);
   const input = await fillPhone();
-  fireEvent.click(screen.getByRole("checkbox"));
-  fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
-  await waitFor(() => expect(input).toHaveAccessibleDescription("Ese número ya tiene una cuenta."));
+  if (access === "consumer") {
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
+    await waitFor(() => expect(input).toHaveAccessibleDescription("Ese número ya tiene una cuenta."));
+  }
   expect(screen.queryByRole("textbox", { name: "Código 1" })).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole("link", { name: "Ingresar" }));
+  fireEvent.click(screen.getByRole("link", { name: enter }));
   expect(await screen.findByRole("textbox", { name: /^(Tu )?número de WhatsApp$/i })).toHaveValue(phone.number);
   expect(signinRedirect).not.toHaveBeenCalled();
   expect(router.state.location.search).toBe("");
   fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
   await verify();
-  await waitFor(() => expect(signinRedirect).toHaveBeenCalledExactlyOnceWith({ extraQueryParams: { access: "consumer" }, state: { returnTo: "/" } }));
+  await waitFor(() => expect(signinRedirect).toHaveBeenCalledExactlyOnceWith({ extraQueryParams: { access }, state: { returnTo: returnUrl } }));
   expect(completeLogin).not.toHaveBeenCalled();
   expect(storageWrite.mock.calls.some((call) => String(call[1]).includes("2345"))).toBe(false);
   storageWrite.mockRestore();
+});
+
+it.each(["consumer", "business"] as const)("reintentar OTP fijo %s conserva cuerpo/acceso/clave y corregir código cambia la operación", async (access) => {
+  const bodies: VerifyLoginCodeRequest[] = [];
+  const keys: Array<string | null> = [];
+  const returnUrl = access === "consumer" ? "/" : "/org";
+  server.use(
+    http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 0 }, { status: 202 })),
+    http.post<never, VerifyLoginCodeRequest>("/api/auth/login-code/verify", async ({ request }) => {
+      bodies.push(await request.json()); keys.push(request.headers.get("Idempotency-Key"));
+      return bodies.length < 3 ? HttpResponse.json({}, { status: 500 }) : HttpResponse.json({ returnUrl });
+    }),
+  );
+  show(access === "consumer" ? "/login" : "/login/empresa", { phone });
+  await waitFor(() => expect(screen.getByRole("textbox", { name: "Tu número de WhatsApp" })).toBeEnabled());
+  fireEvent.click(await screen.findByRole("button", { name: "Enviar código" }));
+  await verify();
+  await screen.findByText("Algo salió mal. Probá de nuevo en un rato.");
+  fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+  await waitFor(() => expect(bodies).toHaveLength(2));
+  await screen.findByText("Algo salió mal. Probá de nuevo en un rato.");
+  expect(signinRedirect).not.toHaveBeenCalled();
+  fireEvent.change(screen.getByRole("textbox", { name: "Código 1" }), { target: { value: "654321" } });
+  fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+  await waitFor(() => expect(signinRedirect).toHaveBeenCalledExactlyOnceWith({ extraQueryParams: { access }, state: { returnTo: returnUrl } }));
+  expect(bodies).toEqual([
+    { phone, channel: "whatsapp", code: "123456", returnUrl, access },
+    { phone, channel: "whatsapp", code: "123456", returnUrl, access },
+    { phone, channel: "whatsapp", code: "654321", returnUrl, access },
+  ]);
+  expect(keys[0]).toBeTruthy(); expect(keys[1]).toBe(keys[0]); expect(keys[2]).not.toBe(keys[0]);
+});
+
+it.each([
+  [{ returnUrl: ["Retorno no permitido."] }, "Retorno no permitido.", false],
+  [{ access: ["El acceso no coincide."] }, "El acceso no coincide.", false],
+  [{ code: ["Revisá el código."] }, "El código no es válido.", true],
+] as const)("validación OTP distingue campos técnicos de code: %j", async (errors, message, invalid) => {
+  server.use(
+    http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 0 }, { status: 202 })),
+    http.post("/api/auth/login-code/verify", () => HttpResponse.json({ code: "Validation.Failed", detail: message, errors }, { status: 400 })),
+  );
+  show("/login", { phone });
+  await waitFor(() => expect(screen.getByRole("textbox", { name: "Tu número de WhatsApp" })).toBeEnabled());
+  fireEvent.click(await screen.findByRole("button", { name: "Enviar código" })); await verify();
+  expect(await screen.findByText(message)).toBeVisible();
+  const otp = screen.getByRole("textbox", { name: "Código 1" });
+  if (invalid) expect(otp).toHaveAttribute("aria-invalid", "true");
+  else expect(otp).not.toHaveAttribute("aria-invalid", "true");
+  expect(signinRedirect).not.toHaveBeenCalled(); expect(completeLogin).not.toHaveBeenCalled();
 });
 
 it("registro Phone pide términos y envía consentimiento/cultura/zona sin email ni nombre; continúa autorización original", async () => {
@@ -318,17 +373,22 @@ it("Login con Phone conservado y sin autorización devuelve Google a su puerta p
   expect(signinRedirect).not.toHaveBeenCalled();
 });
 
-it("cancelar baja tras código Phone sin autorización original inicia OIDC y no abre Personal sin tokens", async () => {
+it.each(["consumer", "business"] as const)("cancelar baja tras OTP fijo %s inicia OIDC sólo después de cancelar", async (access) => {
+  const returnUrl = access === "consumer" ? "/" : "/org";
   server.use(
     http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 0 }, { status: 202 })),
-    http.post("/api/auth/login-code/verify", () => HttpResponse.json({ code: "Identity.Account.PendingDeletion", scheduledForUtc: "2026-10-30T12:00:00Z", cancelTicket: "opaque-cancel", timeZoneId: "America/Argentina/Buenos_Aires", returnUrl: "/", cancelTicketExpiresAtUtc: "2026-10-30T13:00:00Z" }, { status: 403 })),
-    http.post("/api/auth/deletion/cancel", () => HttpResponse.json({ returnUrl: "/" })),
+    http.post<never, VerifyLoginCodeRequest>("/api/auth/login-code/verify", async ({ request }) => {
+      expect(await request.json()).toEqual({ phone, channel: "whatsapp", code: "123456", returnUrl, access });
+      return HttpResponse.json({ code: "Identity.Account.PendingDeletion", scheduledForUtc: "2026-10-30T12:00:00Z", cancelTicket: "opaque-cancel", timeZoneId: "America/Argentina/Buenos_Aires", returnUrl, cancelTicketExpiresAtUtc: "2026-10-30T13:00:00Z" }, { status: 403 });
+    }),
+    http.post("/api/auth/deletion/cancel", async ({ request }) => { expect(await request.json()).toEqual({ cancelTicket: "opaque-cancel" }); return HttpResponse.json({ returnUrl }); }),
   );
-  show("/login", { phone });
+  show(access === "consumer" ? "/login" : "/login/empresa", { phone });
   expect(await screen.findByRole("textbox", { name: "Tu número de WhatsApp" })).toHaveValue(phone.number);
   fireEvent.click(screen.getByRole("button", { name: "Enviar código" })); await verify();
-  fireEvent.click(await screen.findByRole("button", { name: "Cancelar la baja y entrar" }));
-  await waitFor(() => expect(signinRedirect).toHaveBeenCalledExactlyOnceWith({ extraQueryParams: { access: "consumer" }, state: { returnTo: "/" } }));
+  const cancel = await screen.findByRole("button", { name: "Cancelar la baja y entrar" });
+  expect(signinRedirect).not.toHaveBeenCalled(); fireEvent.click(cancel);
+  await waitFor(() => expect(signinRedirect).toHaveBeenCalledExactlyOnceWith({ extraQueryParams: { access }, state: { returnTo: returnUrl } }));
   expect(completeLogin).not.toHaveBeenCalled();
 });
 

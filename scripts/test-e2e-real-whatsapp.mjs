@@ -150,10 +150,56 @@ function observe(page) {
   });
   return { oidc, calls };
 }
-function consumerOidc(observed, since) {
+function accessOidc(observed, since, access = "consumer") {
   const fresh = observed.oidc.slice(since);
-  assert.ok(fresh.some((request) => request.path === "/connect/authorize" && request.access === "consumer" && request.state && request.pkce));
+  assert.ok(fresh.some((request) => request.path === "/connect/authorize" && request.access === access && request.state && request.pkce));
   assert.ok(fresh.some((request) => request.path === "/connect/token"));
+}
+async function loginFromRegistration(page, phone, access, width, organization, observed) {
+  const fixture = await begin(`registration-login-${access}-${width}`, phone);
+  const since = observed.oidc.length;
+  const digits = phone.replace(/\D/g, "");
+  let leaked = false;
+  const inspect = (request) => {
+    const url = new URL(request.url());
+    // Se conserva sólo el resultado booleano: nunca números, URLs ni pruebas OIDC en el informe.
+    leaked ||= [url.pathname, url.hash, ...url.searchParams.values()].some((value) => value.replace(/\D/g, "").includes(digits));
+  };
+  page.on("request", inspect);
+  try {
+    detail("escribir Phone existente en registro sin autorización original");
+    await page.goto(`${base}${access === "consumer" ? "/registro" : "/registro/empresa"}`);
+    await whatsapp(page, phone);
+    if (access === "consumer") {
+      await page.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+      const occupied = await clickHttp(page, page.getByRole("button", { name: "Crear cuenta", exact: true }), "/api/auth/signup", 400);
+      assert.equal((await occupied.json()).code, "Auth.Signup.PhoneTaken");
+    }
+    // Empresa admite identidades existentes: se usa su enlace actual, sin inventar un error de alta.
+    assert.equal(await page.getByRole("textbox", { name: "Código 1", exact: true }).count(), 0);
+    await page.getByRole("link", { name: access === "consumer" ? "Ingresar" : "Ingresá como empresa", exact: true }).click();
+    const door = access === "consumer" ? "/login" : "/login/empresa";
+    await page.waitForURL((url) => url.pathname === door && url.search === "" && url.hash === "");
+    assert.ok((await page.getByRole("textbox", { name: /número de WhatsApp$/i }).inputValue()).replace(/\D/g, "").endsWith(phone.slice(-4)));
+    assert.equal(observed.oidc.length, since);
+    detail("probar posesión por OTP antes de iniciar OIDC");
+    await clickHttp(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 202);
+    await fillOtp(page, (await fixture("code")).proof);
+    const verified = await clickHttp(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 200);
+    const body = verified.request().postDataJSON();
+    const returnTo = access === "consumer" ? "/" : "/org";
+    assert.equal(body.returnUrl, returnTo); assert.equal(body.access, access);
+    assert.equal(body.channel, "whatsapp"); assert.equal(body.email, undefined);
+    detail("comprobar sesión, autorización actual y F5");
+    await page.waitForURL((url) => url.pathname === returnTo);
+    await authenticated(page, width, organization); accessOidc(observed, since, access);
+    await page.reload(); await authenticated(page, width, organization);
+    assert.equal(new URL(page.url()).pathname, returnTo);
+    const stored = await page.evaluate((number) => [localStorage, sessionStorage].some((storage) => Object.keys(storage)
+      .some((key) => `${key}${storage.getItem(key) ?? ""}`.replace(/\D/g, "").includes(number))), digits);
+    assert.equal(stored, false); assert.equal(leaked, false);
+    pass(`registro${access === "consumer" ? " ocupado" : " existente empresarial"}/Ingresar/OTP fijo/OIDC actual/F5 sin Phone en URL o storage ${width}`);
+  } finally { page.off("request", inspect); }
 }
 async function requestDeletion(page) {
   await page.goto(`${base}/cuenta`);
@@ -220,15 +266,14 @@ async function journey(width, index) {
   assert.equal(observed.calls.slice(methodStart).filter((call) => call.method === "POST" && /login-code|\/code$/.test(call.path)).length, 0);
   pass(`principal/quitar sin OTP ${width}`); await signout(page, width);
 
-  start(`ingreso Phone consumer ${width}`); await login(page, phone, "consumer", `login-${width}`);
-  await authenticated(page, width); await page.reload(); await authenticated(page, width); pass(`ingreso consumer/F5 ${width}`); await signout(page, width);
+  start(`registro ocupado hacia ingreso Persona ${width}`); await loginFromRegistration(page, phone, "consumer", width, "Personal", observed); await signout(page, width);
   start(`bot webhook y enlace ${width}`); const link = await botLink(phone, `bot-${width}`);
   const since = observed.oidc.length; const redeemStart = observed.calls.filter((call) => call.path === "/api/auth/login-link/redeem").length;
   await page.goto(link); await page.getByRole("button", { name: "Continuar", exact: true }).waitFor();
   assert.equal(new URL(page.url()).hash, ""); assert.equal(observed.oidc.length, since);
   assert.equal(observed.calls.filter((call) => call.path === "/api/auth/login-link/redeem").length, redeemStart);
   await clickHttp(page, page.getByRole("button", { name: "Continuar", exact: true }), "/api/auth/login-link/redeem", 200);
-  await authenticated(page, width); consumerOidc(observed, since); await page.reload(); await authenticated(page, width);
+  await authenticated(page, width); accessOidc(observed, since); await page.reload(); await authenticated(page, width);
   pass(`webhook HMAC/dedupe persistente/bot/preview/redeem/OIDC state PKCE/F5 ${width}`); await signout(page, width);
   start(`enlace usado ${width}`); const replayOidc = observed.oidc.length;
   await page.goto(link); await page.getByRole("heading", { name: "Este enlace ya no sirve", exact: true }).waitFor();
@@ -313,8 +358,7 @@ async function journey(width, index) {
       const created = await clickHttp(page, page.getByRole("button", { name: "Crear organización", exact: true }), "/api/auth/business-signup", 200); assert.equal((await created.json()).requiresApproval, false);
       await page.getByRole("button", { name: `Entrar a ${orgName}`, exact: true }).click(); await page.waitForURL((url) => url.pathname === "/org");
       await authenticated(page, width, orgName); await page.reload(); await authenticated(page, width, orgName); pass(`registro empresarial con personas cerrado/OIDC/F5 ${width}`); await signout(page, width, orgName);
-      start(`ingreso empresarial Phone ${width}`); await login(page, businessPhone, "business", `business-login-${width}`); await page.waitForURL((url) => url.pathname === "/org");
-      await authenticated(page, width, orgName); await page.reload(); await authenticated(page, width, orgName); pass(`ingreso empresarial Phone/F5 ${width}`); await signout(page, width, orgName);
+      start(`registro existente hacia ingreso Empresa ${width}`); await loginFromRegistration(page, businessPhone, "business", width, orgName, observed); await signout(page, width, orgName);
     },
   });
 
@@ -322,7 +366,7 @@ async function journey(width, index) {
   await begin(`deletion-${width}`, recovered); await requestDeletion(page); const pending = await pendingLink(page, recovered, width, `pending-${width}`, observed);
   const redeemCount = observed.calls.filter((call) => call.path === "/api/auth/login-link/redeem").length;
   await clickHttp(page, page.getByRole("button", { name: "Cancelar la baja y entrar", exact: true }), "/api/auth/deletion/cancel", 200);
-  await authenticated(page, width); consumerOidc(observed, pending.since);
+  await authenticated(page, width); accessOidc(observed, pending.since);
   assert.equal(observed.calls.filter((call) => call.path === "/api/auth/login-link/redeem").length, redeemCount);
   await page.reload(); await authenticated(page, width); pass(`cancelación de baja por enlace/OIDC nuevo sin otro redeem/F5 ${width}`);
   start(`ticket cancelación vencido ${width}`); await begin(`deletion-again-${width}`, recovered); await requestDeletion(page);

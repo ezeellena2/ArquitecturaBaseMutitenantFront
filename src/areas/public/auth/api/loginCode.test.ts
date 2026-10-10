@@ -31,8 +31,8 @@ describe("loginCode API", () => {
       return HttpResponse.json({ returnUrl: "/" });
     }));
 
-    await expect(verifyLoginCode({ email: "ana@example.com", code: "123456", returnUrl: "/" }, "verify-key"))
+    await expect(verifyLoginCode({ email: "ana@example.com", code: "123456", returnUrl: "/", access: "consumer" }, "verify-key"))
       .resolves.toEqual({ returnUrl: "/" });
-    expect(submitted).toEqual({ email: "ana@example.com", code: "123456", returnUrl: "/" });
+    expect(submitted).toEqual({ email: "ana@example.com", code: "123456", returnUrl: "/", access: "consumer" });
   });
 });

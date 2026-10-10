@@ -15234,7 +15234,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. returnUrl local/OIDC validado conserva access, PKCE y callback. Respuesta returnUrl, sin tokens OIDC en body. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. returnUrl OIDC o /invitacion conserva el flujo anterior y exige access ausente/null en el cuerpo. Continuación fija exclusivamente / con access=consumer o /org con access=business, valores literales sin query/fragmento; cualquier discrepancia falla antes de consumir el código. Respuesta returnUrl y cookie de identidad después del commit, sin tokens OIDC en body; el SPA inicia una autorización nueva tras el retorno fijo. */
         post: {
             parameters: {
                 query?: never;
@@ -17306,6 +17306,11 @@ export interface components {
             peopleCount: number;
             rows: components["schemas"]["PagedResultOfAssistantUsageRowResponse"];
             budgetProgress: null | components["schemas"]["AssistantBudgetProgressResponse"];
+            /**
+             * Format: int32
+             * @description Sólo Platform: organizaciones Business distintas con consumo de modelo contabilizado durante el mes solicitado, antes de paginar; excluye Personas/Operadores y organizaciones sin consumo. Cero sin uso Business; Business devuelve null.
+             */
+            organizationCount: null | number;
         };
         /** @enum {string} */
         AssistantUsageRowKind: "organization" | "person" | "day" | "personal" | "operator";
@@ -17333,6 +17338,15 @@ export interface components {
             dailyLimit?: null | number;
             monthlyBudget?: null | components["schemas"]["AssistantMoney"];
             dailyUsage: null | components["schemas"]["AssistantDailyUsageResponse"];
+            /**
+             * Format: int32
+             * @description Sólo day Business: UserId distintos con consumo de modelo contabilizado en el día civil de la organización, deduplicados entre ambas claves; títulos no agregan personas/consultas. Cero si el día incluido no tuvo consumo; demás filas null. Page.peopleCount cuenta distintos del período completo.
+             */
+            peopleCount: null | number;
+            /** @description organization Platform agrupa OrganizationId + financiación histórica + mes con consumo contabilizado; costos, consultas y tokens pertenecen sólo al grupo. La organización puede tener dos filas; PlatformKey→OwnKey→PlatformKey acumula dos grupos. personal/operator PlatformKey; day/person Business null. Orden estable con desempate por fundingMode; configuración sin consumo no crea filas. */
+            fundingMode: null | components["schemas"]["AssistantMode"];
+            /** @description Sólo organization Platform con presupuesto mensual positivo aplicable: costo confirmado o estimado registrado del mismo org/financiador/mes dividido por snapshot histórico reflejado en monthlyBudget, sin reservas ni Settings actuales. PlatformKey usa tope Plataforma; OwnKey su tope propio, sin sumar topes. Fracción sin recorte; NearLimit desde 0,8, LimitReached desde 1. Presupuesto cero/null y otras filas null. */
+            budgetProgress: null | components["schemas"]["AssistantBudgetProgressResponse"];
         };
         /** @description Recibe los datos de la primera organización y empresa sin imprimir datos fiscales en logs. */
         BusinessSignupHttpRequest: {
@@ -18988,6 +19002,8 @@ export interface components {
             returnUrl?: null | string;
             phone?: null | components["schemas"]["PhoneInputHttpRequest"];
             channel?: null | string;
+            /** @description Opcional: consumer exacto sólo con returnUrl=/; business exacto sólo con returnUrl=/org. Para OIDC o /invitacion debe omitirse o ser null. Se conserva literal, sin normalizar. */
+            access?: null | string;
         } & ({
             email: string;
         } | {

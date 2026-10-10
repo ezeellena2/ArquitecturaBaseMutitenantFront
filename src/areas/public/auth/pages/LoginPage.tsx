@@ -75,8 +75,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const [result, setResult] = useState<"noBusiness" | "inactive" | "platformOnly" | UnavailableCode | null>(null);
   const resend = useIdempotentMutation((input: { destination: LoginDestination; journey: number }, key) => requestLoginCode(toLoginDestinationRequest(input.destination), key), { meta: { handlesError: true },
     sameOperation: (previous, next) => sameLoginDestination(previous.destination, next.destination) && previous.journey === next.journey });
-  const verify = useIdempotentMutation((input: { destination: LoginDestination; code: string; returnUrl: string; journey: number }, key) => verifyLoginCode({ ...toLoginDestinationRequest(input.destination), code: input.code, returnUrl: input.returnUrl }, key), { meta: { handlesError: true },
-    sameOperation: (previous, next) => sameLoginDestination(previous.destination, next.destination) && previous.code === next.code && previous.returnUrl === next.returnUrl && previous.journey === next.journey });
+  const verify = useIdempotentMutation((input: { destination: LoginDestination; code: string; returnUrl: string; access?: LoginPageProps["access"]; journey: number }, key) => verifyLoginCode({ ...toLoginDestinationRequest(input.destination), code: input.code, returnUrl: input.returnUrl, ...(input.access ? { access: input.access } : {}) }, key), { meta: { handlesError: true },
+    sameOperation: (previous, next) => sameLoginDestination(previous.destination, next.destination) && previous.code === next.code && previous.returnUrl === next.returnUrl && previous.access === next.access && previous.journey === next.journey });
   const resendTimer = useCountdown(0);
   const verifyRetry = useRetryAfterCountdown();
   const resendRetry = useRetryAfterCountdown();
@@ -158,7 +158,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     if (!step || !returnUrl) return;
     setError(null);
     try {
-      const response = await verify.mutateAsync({ destination: step.loginDestination ?? { type: "email", email: step.destination }, code, returnUrl, journey: step.sentAtMs });
+      const response = await verify.mutateAsync({ destination: step.loginDestination ?? { type: "email", email: step.destination }, code, returnUrl, access: !originalReturn && initialPhone ? access : undefined, journey: step.sentAtMs });
       await finishLogin(response.returnUrl);
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
@@ -191,7 +191,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     }
   }
 
-  const wrongCode = error?.code === "Auth.LoginCode.Invalid" || error?.code === "Auth.LoginCode.TooManyAttempts";
+  const wrongCode = error?.code === "Auth.LoginCode.Invalid" || error?.code === "Auth.LoginCode.TooManyAttempts"
+    || error?.code === "Validation.Failed" && Boolean(error.errors?.code?.length);
   const codeSpent = error?.code === "Auth.LoginCode.TooManyAttempts" || error?.code === "Identity.Account.LockedOut";
   const accountClosed = error?.code === "Identity.Account.Suspended";
   const organizationName = typeof error?.problem.organizationName === "string" ? error.problem.organizationName : "";
