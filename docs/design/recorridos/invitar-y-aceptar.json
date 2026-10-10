@@ -1,0 +1,81 @@
+{
+  "id": "invitar-y-aceptar",
+  "titulo": "Invitar a alguien y que acepte",
+  "etapa": "Organización",
+  "orden": 10,
+  "resumen": "Lucía invita a Valentina; Valentina entra con su correo y un código, y queda aceptada (ADR 0047).",
+  "pasos": [
+    {
+      "tablero": "Usuarios",
+      "tweaks": {},
+      "resaltar": "button.b-pri:has-text(\"Invitar usuario\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Invita a alguien",
+      "texto": "En Usuarios, Lucía ve quiénes están, con su estado y sus roles.",
+      "avanzar": "Tocá «Invitar usuario».",
+      "ruta": "/org/usuarios",
+      "accion": "Toca «Invitar usuario»."
+    },
+    {
+      "tablero": "Usuarios",
+      "tweaks": {},
+      "antes": [
+        ["clic", "button.b-pri:has-text(\"Invitar usuario\")"],
+        ["llenar", "#f-Correo", "valentina.ruiz@gmail.com"]
+      ],
+      "resaltar": ".dlg button.b-pri:has-text(\"Invitar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Escribe su correo",
+      "texto": "Escribe el correo de Valentina y, si quiere, sus roles en la organización o en una empresa.",
+      "avanzar": "Tocá «Invitar».",
+      "ruta": "/org/usuarios",
+      "accion": "Escribe valentina.ruiz@gmail.com, elige sus roles y toca «Invitar»."
+    },
+    {
+      "tablero": "Mensajes",
+      "tweaks": { "mensaje": "Invitación a una organización" },
+      "resaltar": ".pl-nota",
+      "actor": "Valentina · invitada · correo",
+      "titulo": "Le llega la invitación",
+      "texto": "El correo trae «Ver la invitación» y dice que puede entrar con su correo y un código.",
+      "avanzar": "Para seguir, entra con su correo: tocá «Siguiente».",
+      "ruta": "—",
+      "accion": "Abre el correo de la invitación."
+    },
+    {
+      "tablero": "Ingreso",
+      "tweaks": { "estado": "Correo", "puerta": "Empresa" },
+      "antes": [
+        ["llenar", "#f-correo", "valentina.ruiz@gmail.com"]
+      ],
+      "resaltar": "button.b-pri.lg",
+      "actor": "Valentina · invitada · web",
+      "titulo": "Ingresa con su correo",
+      "texto": "Entra por la puerta de empresa con el correo invitado. Como tiene una invitación vigente, el ingreso manda el código.",
+      "avanzar": "Tocá «Enviar código».",
+      "ruta": "/login/empresa",
+      "accion": "Escribe valentina.ruiz@gmail.com y toca «Enviar código»."
+    },
+    {
+      "tablero": "Ingreso",
+      "tweaks": { "estado": "Código enviado", "puerta": "Empresa" },
+      "resaltar": "button.b-pri.lg:has-text(\"Verificar\")",
+      "actor": "Valentina · invitada · web",
+      "titulo": "Pone el código",
+      "texto": "Al ponerlo se crea su cuenta, si no la tenía, y se aceptan todas sus invitaciones vigentes.",
+      "avanzar": "Escribí el código y tocá «Verificar».",
+      "ruta": "/login/empresa",
+      "accion": "Escribe el código y toca «Verificar»."
+    },
+    {
+      "tablero": "Inicio-Miembro",
+      "tweaks": {},
+      "actor": "Valentina · invitada · web",
+      "titulo": "Ya es parte de la organización",
+      "texto": "Entra como empresa y ve su empresa con su rol. Lucía la ve activa en Usuarios.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org",
+      "accion": "Ve su inicio de miembro."
+    }
+  ]
+}

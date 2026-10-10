@@ -1,0 +1,56 @@
+{
+  "id": "crear-un-rol-y-asignarlo",
+  "titulo": "Crear un rol y asignarlo",
+  "etapa": "Organización",
+  "orden": 20,
+  "resumen": "Lucía crea un rol con sus permisos y se lo da a Tomás.",
+  "pasos": [
+    {
+      "tablero": "Roles",
+      "tweaks": {},
+      "resaltar": "a.b-pri:has-text(\"Crear rol\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Va a Roles",
+      "texto": "Ve los roles de la organización y de cada empresa; los de sistema no se editan.",
+      "avanzar": "Tocá «Crear rol».",
+      "ruta": "/org/roles",
+      "accion": "Toca «Crear rol»."
+    },
+    {
+      "tablero": "Rol",
+      "tweaks": { "modo": "Crear un rol" },
+      "antes": [
+        ["llenar", "input.ct", "Recursos humanos"]
+      ],
+      "resaltar": "button.cb-pri:has-text(\"Crear rol\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Le pone nombre y permisos",
+      "texto": "Escribe el nombre, elige dónde vale y marca los permisos, agrupados por área.",
+      "avanzar": "Tocá «Crear rol».",
+      "ruta": "/org/roles/nuevo",
+      "accion": "Escribe el nombre, elige dónde vale, marca los permisos y toca «Crear rol»."
+    },
+    {
+      "tablero": "Usuarios",
+      "tweaks": {},
+      "resaltar": "a.c1:has-text(\"Tomás Acosta\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Busca a la persona",
+      "texto": "Vuelve a Usuarios y abre la ficha de Tomás.",
+      "avanzar": "Tocá «Tomás Acosta».",
+      "ruta": "/org/usuarios",
+      "accion": "Toca «Tomás Acosta»."
+    },
+    {
+      "tablero": "Usuario",
+      "tweaks": { "usuario": "Tomás (activo)" },
+      "resaltar": "button.ct >> nth=1",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Le da el rol",
+      "texto": "En «Roles de la organización» marca el rol nuevo. «Guardar cambios» se prende cuando hay algo que guardar.",
+      "avanzar": "Elegí el rol y tocá «Guardar cambios». Fin del recorrido.",
+      "ruta": "/org/usuarios/:id",
+      "accion": "Abre «Roles de la organización», marca «Recursos humanos» y toca «Guardar cambios»."
+    }
+  ]
+}

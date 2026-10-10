@@ -1,0 +1,44 @@
+{
+  "id": "atender-una-recuperacion",
+  "titulo": "Atender una recuperación",
+  "etapa": "Plataforma",
+  "orden": 40,
+  "resumen": "Martín revisa un pedido de «Recuperar mi cuenta» y lo aprueba.",
+  "pasos": [
+    {
+      "tablero": "Recuperaciones",
+      "tweaks": { "caso": "Pedidos" },
+      "resaltar": "button.kebab >> nth=0",
+      "actor": "Martín · operador · web",
+      "titulo": "Ve los pedidos",
+      "texto": "Cada pedido trae el método de antes y el nuevo, tapados.",
+      "avanzar": "Abrí el pedido.",
+      "ruta": "/plataforma/recuperaciones",
+      "accion": "Abre el primer pedido."
+    },
+    {
+      "tablero": "Recuperaciones",
+      "tweaks": { "caso": "Revisar un pedido" },
+      "antes": [
+        ["llenar", "#rev-motivo", "Confirmó sus datos por videollamada."]
+      ],
+      "resaltar": ".dlg button.b-pri:has-text(\"Aprobar\")",
+      "actor": "Martín · operador · web",
+      "titulo": "Lo revisa",
+      "texto": "Confirma con la persona que la cuenta es suya y escribe el motivo.",
+      "avanzar": "Escribí el motivo y tocá «Aprobar».",
+      "ruta": "/plataforma/recuperaciones",
+      "accion": "Escribe el motivo y toca «Aprobar»."
+    },
+    {
+      "tablero": "Mensajes",
+      "tweaks": { "mensaje": "Recuperación: aprobada" },
+      "actor": "Persona · correo",
+      "titulo": "Le avisan a la persona",
+      "texto": "Le llega el aviso al método nuevo; ya puede entrar con él.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "—",
+      "accion": "Recibe el aviso de recuperación aprobada."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "id": "sumar-una-empresa",
+  "titulo": "Sumar una empresa y sus miembros",
+  "etapa": "Organización",
+  "orden": 30,
+  "resumen": "Lucía crea una empresa nueva y le suma un miembro con su rol.",
+  "pasos": [
+    {
+      "tablero": "Empresas",
+      "tweaks": {},
+      "resaltar": "button.b-pri:has-text(\"Crear empresa\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Va a Empresas",
+      "texto": "Ve las empresas de la organización.",
+      "avanzar": "Tocá «Crear empresa».",
+      "ruta": "/org/empresas",
+      "accion": "Toca «Crear empresa»."
+    },
+    {
+      "tablero": "Empresas",
+      "tweaks": {},
+      "antes": [
+        ["clic", "button.b-pri:has-text(\"Crear empresa\")"],
+        ["llenar", "#f-Nombre", "Delta Oeste S.A."]
+      ],
+      "resaltar": ".dlg button.b-pri",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Carga la empresa",
+      "texto": "Escribe el nombre y el CUIT. La zona horaria es la de la organización, salvo que elija otra.",
+      "avanzar": "Tocá «Crear empresa».",
+      "ruta": "/org/empresas",
+      "accion": "Escribe el nombre y el CUIT y toca «Crear empresa»."
+    },
+    {
+      "tablero": "Empresa",
+      "tweaks": { "pestana": "Miembros" },
+      "resaltar": "button.b-pri:has-text(\"Agregar miembro\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Abre la empresa",
+      "texto": "En la ficha de la empresa están sus miembros y sus roles.",
+      "avanzar": "Tocá «Agregar miembro».",
+      "ruta": "/org/empresas/:id",
+      "accion": "Toca «Agregar miembro»."
+    },
+    {
+      "tablero": "Empresa",
+      "tweaks": { "pestana": "Miembros" },
+      "antes": [
+        ["clic", "button.b-pri:has-text(\"Agregar miembro\")"]
+      ],
+      "resaltar": ".dlg button.b-pri:has-text(\"Agregar miembro\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Suma a alguien",
+      "texto": "Elige a una persona de la organización y sus roles en esta empresa.",
+      "avanzar": "Elegí a la persona y tocá «Agregar miembro». Fin del recorrido.",
+      "ruta": "/org/empresas/:id",
+      "accion": "Elige a la persona y sus roles y toca «Agregar miembro»."
+    }
+  ]
+}

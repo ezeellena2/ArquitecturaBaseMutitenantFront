@@ -1,0 +1,66 @@
+{
+  "id": "aprobar-una-organizacion",
+  "titulo": "Aprobar una organización",
+  "etapa": "Plataforma",
+  "orden": 20,
+  "resumen": "Martín revisa una organización que espera aprobación y la aprueba; su Dueño recibe el aviso.",
+  "pasos": [
+    {
+      "tablero": "Asistente-Plat",
+      "tweaks": { "asistente": "Bienvenida" },
+      "resaltar": "a.lnk:has-text(\"Revisar\") >> nth=0",
+      "actor": "Martín · operador · web",
+      "titulo": "Ve lo que espera",
+      "texto": "En el inicio de Plataforma, «Para resolver» muestra las organizaciones que esperan aprobación.",
+      "avanzar": "Tocá «Revisar».",
+      "ruta": "/plataforma",
+      "accion": "Toca «Revisar» en la organización que espera."
+    },
+    {
+      "tablero": "Organizacion",
+      "tweaks": { "estado": "Espera aprobación" },
+      "resaltar": "button.b-pri:has-text(\"Aprobar\")",
+      "actor": "Martín · operador · web",
+      "titulo": "Revisa la ficha",
+      "texto": "Mira el historial, el Dueño y la página antes de decidir.",
+      "avanzar": "Tocá «Aprobar».",
+      "ruta": "/plataforma/organizaciones/:id",
+      "accion": "Toca «Aprobar»."
+    },
+    {
+      "tablero": "Organizacion",
+      "tweaks": { "estado": "Espera aprobación" },
+      "antes": [
+        ["clic", "button.b-pri:has-text(\"Aprobar\")"],
+        ["llenar", "#conf-motivo", "Datos verificados."]
+      ],
+      "resaltar": ".dlg button.b-pri",
+      "actor": "Martín · operador · web",
+      "titulo": "Confirma con un motivo",
+      "texto": "El motivo queda en el historial de la organización.",
+      "avanzar": "Escribí el motivo y tocá «Aprobar».",
+      "ruta": "/plataforma/organizaciones/:id",
+      "accion": "Escribe el motivo y toca «Aprobar»."
+    },
+    {
+      "tablero": "Organizacion",
+      "tweaks": { "estado": "Activa" },
+      "actor": "Martín · operador · web",
+      "titulo": "Queda activa",
+      "texto": "La organización ya está habilitada.",
+      "avanzar": "Tocá «Siguiente».",
+      "ruta": "/plataforma/organizaciones/:id",
+      "accion": "Ve la organización activa."
+    },
+    {
+      "tablero": "Mensajes",
+      "tweaks": { "mensaje": "Organización aprobada" },
+      "actor": "Dueño · correo",
+      "titulo": "Al Dueño le llega el aviso",
+      "texto": "Le llega por correo y, si tiene WhatsApp, también por ahí.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "—",
+      "accion": "Recibe el correo de organización aprobada."
+    }
+  ]
+}

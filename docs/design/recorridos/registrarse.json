@@ -1,0 +1,66 @@
+{
+  "id": "registrarse",
+  "titulo": "Registrarse",
+  "etapa": "Ingreso y registro",
+  "orden": 20,
+  "resumen": "Mariana crea su cuenta de persona con su correo, acepta los términos y confirma el correo con un código.",
+  "pasos": [
+    {
+      "tablero": "Landing",
+      "tweaks": { "empresas": "Con empresas" },
+      "resaltar": "a.b-pri.lg:has-text(\"Crear mi cuenta\")",
+      "actor": "Mariana · persona · web",
+      "titulo": "Quiere crear su cuenta",
+      "texto": "Mariana todavía no tiene cuenta. En la portada, «Crear mi cuenta» es para personas; «Registrá tu empresa», para organizaciones.",
+      "avanzar": "Tocá «Crear mi cuenta».",
+      "ruta": "/",
+      "accion": "Toca «Crear mi cuenta»."
+    },
+    {
+      "tablero": "Registro",
+      "tweaks": { "estado": "Correo" },
+      "antes": [
+        ["clic", "input[type=\"checkbox\"]"],
+        ["llenar", "#f-correo", "mariana.lopez@gmail.com"]
+      ],
+      "resaltar": "button.b-pri.lg",
+      "actor": "Mariana · persona · web",
+      "titulo": "Acepta los términos y escribe su correo",
+      "texto": "Marca la casilla de los términos y la privacidad y escribe su correo. También podría registrarse con Google o con WhatsApp.",
+      "avanzar": "Tocá «Crear cuenta».",
+      "ruta": "/registro",
+      "accion": "Marca la casilla, escribe mariana.lopez@gmail.com y toca «Crear cuenta»."
+    },
+    {
+      "tablero": "Registro",
+      "tweaks": { "estado": "Código enviado" },
+      "resaltar": "button.b-pri.lg",
+      "actor": "Mariana · persona · web",
+      "titulo": "Confirma el correo",
+      "texto": "Le llega un código al correo. Con él prueba que el correo es suyo y la cuenta queda creada.",
+      "avanzar": "Escribí el código y tocá «Verificar y crear la cuenta».",
+      "ruta": "/registro",
+      "accion": "Escribe el código y toca «Verificar y crear la cuenta»."
+    },
+    {
+      "tablero": "Sesion",
+      "tweaks": { "estado": "Iniciando sesión" },
+      "actor": "Sistema",
+      "titulo": "Se abre la sesión",
+      "texto": "El sistema confirma el código y abre la sesión. Es una espera corta, sin nada que tocar.",
+      "avanzar": "Sigue solo: tocá «Siguiente».",
+      "ruta": "/auth/callback",
+      "accion": "Espera a que se abra la sesión."
+    },
+    {
+      "tablero": "Inicio-Personal",
+      "tweaks": { "estado": "Sin el aviso" },
+      "actor": "Mariana · persona · web",
+      "titulo": "Ya tiene su cuenta",
+      "texto": "Entró a su perfil personal. Con esta misma cuenta puede registrar una empresa o aceptar una invitación más adelante.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/",
+      "accion": "Ve su perfil personal."
+    }
+  ]
+}

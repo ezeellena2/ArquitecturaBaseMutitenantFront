@@ -1,0 +1,30 @@
+{
+  "id": "asistente-primera-vez",
+  "titulo": "La primera vez con el asistente",
+  "etapa": "Etapa 8b · Asistente",
+  "orden": 10,
+  "resumen": "Lucía abre el asistente por primera vez y acepta el aviso.",
+  "pasos": [
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Primera vez" },
+      "resaltar": "button.b-pri:has-text(\"Entendido\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lee el aviso",
+      "texto": "La primera vez, el asistente avisa que las consultas las procesa un proveedor de IA y que no suba datos sensibles. «Entendido» queda registrado.",
+      "avanzar": "Tocá «Entendido».",
+      "ruta": "/org",
+      "accion": "Toca «Entendido»."
+    },
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Bienvenida" },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Ya puede preguntar",
+      "texto": "Ve «¿Qué querés consultar?», las consultas fijas y, debajo, lo que tiene para resolver.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org",
+      "accion": "Ve la bienvenida del asistente."
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "id": "ingresar-como-persona",
+  "titulo": "Ingresar como persona",
+  "etapa": "Ingreso y registro",
+  "orden": 10,
+  "resumen": "Lucía entra con el correo de su cuenta y un código, sin contraseña, y llega a su perfil personal.",
+  "pasos": [
+    {
+      "tablero": "Landing",
+      "tweaks": {
+        "empresas": "Con empresas"
+      },
+      "resaltar": "a.b-gho:text-is(\"Ingresar\")",
+      "actor": "Lucía · persona · web",
+      "titulo": "Llega al sitio",
+      "texto": "Lucía abre ArquitecturaBase. Arriba están las dos puertas: «Ingresar», para entrar como persona, e «Ingresá como empresa», para trabajar en su organización.",
+      "avanzar": "Tocá «Ingresar».",
+      "ruta": "/",
+      "accion": "Toca «Ingresar» en la barra de arriba."
+    },
+    {
+      "tablero": "Ingreso",
+      "tweaks": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "antes": [
+        [
+          "llenar",
+          "#f-correo",
+          "lucia.fernandez@delta.ejemplo.com"
+        ]
+      ],
+      "resaltar": "button.b-pri.lg",
+      "actor": "Lucía · persona · web",
+      "titulo": "Escribe su correo",
+      "texto": "No hay contraseñas: escribe el correo de su cuenta y el sistema le manda un código. También podría entrar con Google o con WhatsApp.",
+      "avanzar": "Tocá «Enviar código».",
+      "ruta": "/login",
+      "accion": "Escribe lucia.fernandez@delta.ejemplo.com y toca «Enviar código»."
+    },
+    {
+      "tablero": "Ingreso",
+      "tweaks": {
+        "estado": "Código enviado",
+        "puerta": "Persona"
+      },
+      "resaltar": "button.b-pri.lg:text-is(\"Verificar\")",
+      "actor": "Lucía · persona · web",
+      "titulo": "Pone el código",
+      "texto": "Le llega un código de seis números al correo. Vence en 10 minutos y sirve una sola vez; si no llega, puede pedir otro.",
+      "avanzar": "Escribí el código y tocá «Verificar».",
+      "ruta": "/login",
+      "accion": "Escribe el código que le llegó y toca «Verificar»."
+    },
+    {
+      "tablero": "Sesion",
+      "tweaks": {
+        "estado": "Iniciando sesión"
+      },
+      "actor": "Sistema",
+      "titulo": "Se abre su sesión",
+      "texto": "El sistema confirma el código y abre la sesión de persona. Es una espera corta, sin nada que tocar.",
+      "avanzar": "Sigue solo: tocá «Siguiente».",
+      "ruta": "/auth/callback",
+      "accion": "Espera a que se abra la sesión."
+    },
+    {
+      "tablero": "Inicio-Personal",
+      "tweaks": {
+        "estado": "Con el aviso"
+      },
+      "resaltar": "a.cb-sec.ch",
+      "actor": "Lucía · persona · web",
+      "titulo": "Está en su perfil personal",
+      "texto": "Entró como persona. Como solo entra con el correo de su empresa, el inicio le sugiere sumar un correo propio o su WhatsApp para no perder la cuenta si deja la empresa.",
+      "avanzar": "Fin del recorrido. Para seguir en Mi cuenta, tocá «Agregar».",
+      "ruta": "/",
+      "accion": "Ve su perfil personal con el aviso para agregar un correo o su WhatsApp."
+    }
+  ]
+}

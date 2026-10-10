@@ -1,0 +1,64 @@
+{
+  "id": "ingresar-por-whatsapp",
+  "titulo": "Ingresar por WhatsApp",
+  "etapa": "Etapa 8 · WhatsApp",
+  "orden": 10,
+  "resumen": "Lucía entra con su número de WhatsApp y el código que le llega por ahí.",
+  "pasos": [
+    {
+      "tablero": "Ingreso",
+      "tweaks": { "estado": "WhatsApp", "puerta": "Persona" },
+      "antes": [
+        ["llenar", "#f-tel", "11 5555-4521"]
+      ],
+      "resaltar": "button.b-pri.lg",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Elige WhatsApp",
+      "texto": "Escribe su número, con el país. Si el número no tuviera cuenta, lo diría ahí mismo.",
+      "avanzar": "Tocá «Enviar código».",
+      "ruta": "/login",
+      "accion": "Elige WhatsApp, escribe su número y toca «Enviar código»."
+    },
+    {
+      "tablero": "Mensajes",
+      "tweaks": { "mensaje": "Código de ingreso", "canal": "WhatsApp" },
+      "actor": "Lucía · WhatsApp",
+      "titulo": "Le llega el código",
+      "texto": "El código llega al WhatsApp de su celular, con el botón para copiarlo.",
+      "avanzar": "Tocá «Siguiente».",
+      "ruta": "—",
+      "accion": "Abre el WhatsApp y copia el código."
+    },
+    {
+      "tablero": "Ingreso",
+      "tweaks": { "estado": "Código enviado por WhatsApp", "puerta": "Persona" },
+      "resaltar": "button.b-pri.lg:has-text(\"Verificar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Pone el código",
+      "texto": "El mismo código de seis números, de un solo uso.",
+      "avanzar": "Escribí el código y tocá «Verificar».",
+      "ruta": "/login",
+      "accion": "Escribe el código y toca «Verificar»."
+    },
+    {
+      "tablero": "Sesion",
+      "tweaks": { "estado": "Iniciando sesión" },
+      "actor": "Sistema",
+      "titulo": "Se abre la sesión",
+      "texto": "El sistema confirma el código y abre la sesión. Es una espera corta, sin nada que tocar.",
+      "avanzar": "Sigue solo: tocá «Siguiente».",
+      "ruta": "/auth/callback",
+      "accion": "Espera a que se abra la sesión."
+    },
+    {
+      "tablero": "Inicio-Personal",
+      "tweaks": { "estado": "Con el aviso" },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Está adentro",
+      "texto": "Entró a su perfil personal.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/",
+      "accion": "Ve su perfil personal."
+    }
+  ]
+}

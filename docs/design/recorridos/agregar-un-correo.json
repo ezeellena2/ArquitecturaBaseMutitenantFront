@@ -1,0 +1,52 @@
+{
+  "id": "agregar-un-correo",
+  "titulo": "Agregar un correo",
+  "etapa": "Mi cuenta",
+  "orden": 10,
+  "resumen": "Lucía suma un correo personal con un solo código.",
+  "pasos": [
+    {
+      "tablero": "Cuenta",
+      "tweaks": {},
+      "resaltar": "a:has-text(\"Agregar correo o teléfono\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Va a Mi cuenta",
+      "texto": "En «Cómo entrás» están sus correos, su WhatsApp y Google.",
+      "avanzar": "Tocá «Agregar correo o teléfono».",
+      "ruta": "/cuenta",
+      "accion": "Toca «Agregar correo o teléfono»."
+    },
+    {
+      "tablero": "Cuenta-Agregar",
+      "tweaks": { "estado": "Correo" },
+      "resaltar": "a.cb-pri:has-text(\"Enviar código\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Escribe el correo nuevo",
+      "texto": "Si ese correo ya es de otra cuenta, lo dice ahí y no manda código.",
+      "avanzar": "Tocá «Enviar código».",
+      "ruta": "/cuenta",
+      "accion": "Escribe el correo y toca «Enviar código»."
+    },
+    {
+      "tablero": "Cuenta-Verificar",
+      "tweaks": { "estado": "Correo" },
+      "resaltar": "a.cb.cb-pri:has-text(\"Verificar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo verifica",
+      "texto": "Un solo código: el que prueba que el correo nuevo es suyo. No le pide otro para confirmar.",
+      "avanzar": "Escribí el código y tocá «Verificar».",
+      "ruta": "/cuenta",
+      "accion": "Escribe el código y toca «Verificar»."
+    },
+    {
+      "tablero": "Cuenta",
+      "tweaks": { "aviso": "Agregamos un correo" },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Queda agregado",
+      "texto": "El correo nuevo ya sirve para entrar, y a sus otros métodos les llega un aviso.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/cuenta",
+      "accion": "Ve el correo agregado."
+    }
+  ]
+}

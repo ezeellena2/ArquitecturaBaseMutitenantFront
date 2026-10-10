@@ -1,0 +1,41 @@
+{
+  "id": "una-consulta-fija",
+  "titulo": "Una consulta fija",
+  "etapa": "Etapa 8b · Asistente",
+  "orden": 20,
+  "resumen": "Lucía toca una consulta fija: la respuesta sale al instante y sin usar el modelo.",
+  "pasos": [
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Bienvenida" },
+      "resaltar": "button.as-chip:has-text(\"Invitaciones vencidas\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Elige una consulta fija",
+      "texto": "Las consultas fijas no gastan el modelo: son gratis e instantáneas.",
+      "avanzar": "Tocá «Invitaciones vencidas».",
+      "ruta": "/org",
+      "accion": "Toca «Invitaciones vencidas»."
+    },
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Respuesta" },
+      "resaltar": "a.as-ir:has-text(\"Ver en Usuarios\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Ve la respuesta",
+      "texto": "La respuesta tiene un texto armado y un enlace a la pantalla donde se hace cada cosa.",
+      "avanzar": "Tocá «Ver en Usuarios».",
+      "ruta": "/org",
+      "accion": "Toca «Ver en Usuarios»."
+    },
+    {
+      "tablero": "Usuarios",
+      "tweaks": {},
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Va a la pantalla",
+      "texto": "Desde Usuarios reenvía las invitaciones vencidas.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/usuarios",
+      "accion": "Ve las invitaciones en Usuarios."
+    }
+  ]
+}

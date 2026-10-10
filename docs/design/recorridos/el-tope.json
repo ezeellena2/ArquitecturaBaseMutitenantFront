@@ -1,0 +1,64 @@
+{
+  "id": "el-tope",
+  "titulo": "Cuando se acerca el tope",
+  "etapa": "Etapa 8b · Asistente",
+  "orden": 60,
+  "resumen": "Lucía ve cuántas consultas le quedan, llega al tope del día y, como Dueña, sigue el uso del mes.",
+  "pasos": [
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Quedan 10 consultas" },
+      "resaltar": ".as-quedan",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Le quedan pocas",
+      "texto": "El contador aparece recién cuando quedan 10 consultas del día.",
+      "avanzar": "Tocá «Siguiente».",
+      "ruta": "/org",
+      "accion": "Ve «Te quedan 10 consultas hoy»."
+    },
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Tope del día" },
+      "resaltar": ".as-franja",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Llega al tope del día",
+      "texto": "No puede preguntar más hasta que se renueva, a la hora que dice el aviso. Las consultas fijas siguen andando.",
+      "avanzar": "Tocá «Siguiente».",
+      "ruta": "/org",
+      "accion": "Ve el aviso del tope del día."
+    },
+    {
+      "tablero": "Asistente-Uso-Org",
+      "tweaks": { "estado": "Cerca del tope" },
+      "resaltar": ".as-med",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Mira el uso del mes",
+      "texto": "Como Dueña, ve el gasto contra el tope del mes, por día y por persona, nunca el texto de las conversaciones.",
+      "avanzar": "Tocá «Siguiente».",
+      "ruta": "/org/asistente/uso",
+      "accion": "Abre Administración › Asistente › Uso."
+    },
+    {
+      "tablero": "Mensajes",
+      "tweaks": { "mensaje": "Asistente: 80 % del tope (su clave)" },
+      "resaltar": "a.pl-boton",
+      "actor": "Lucía · correo",
+      "titulo": "Le llega la alerta",
+      "texto": "Al 80 % y al 100 % del tope del mes, los Dueños reciben un correo.",
+      "avanzar": "Tocá «Siguiente».",
+      "ruta": "—",
+      "accion": "Recibe el correo de alerta."
+    },
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Tope del mes" },
+      "resaltar": "a.as-fr-l",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Si llega al tope del mes",
+      "texto": "El asistente de la organización deja de responder hasta el mes siguiente o hasta que suba el tope.",
+      "avanzar": "Tocá «Ver uso». Fin del recorrido.",
+      "ruta": "/org",
+      "accion": "Ve el aviso del tope del mes y toca «Ver uso»."
+    }
+  ]
+}

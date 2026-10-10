@@ -1,0 +1,76 @@
+{
+  "id": "publicar-y-encontrar",
+  "titulo": "Publicar la página y que la encuentren",
+  "etapa": "Página pública y directorio",
+  "orden": 10,
+  "resumen": "Lucía publica la página de su organización; Mariana la encuentra en el directorio y entra con su cuenta.",
+  "pasos": [
+    {
+      "tablero": "Pagina-Org",
+      "tweaks": { "estado": "Borrador" },
+      "resaltar": "button.o-sw",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Prende la página",
+      "texto": "La página pública está en borrador. La prende y guarda.",
+      "avanzar": "Tocá «Publicar la página» y después «Guardar cambios».",
+      "ruta": "/org/pagina",
+      "accion": "Prende «Publicar la página» y toca «Guardar cambios»."
+    },
+    {
+      "tablero": "Pagina-Org",
+      "tweaks": { "estado": "Publicada" },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Queda publicada",
+      "texto": "La página se ve en su subdominio y la organización aparece en el directorio.",
+      "avanzar": "Tocá «Siguiente».",
+      "ruta": "/org/pagina",
+      "accion": "Ve la página publicada."
+    },
+    {
+      "tablero": "Directorio",
+      "tweaks": { "estado": "Con empresas" },
+      "resaltar": "a.dir-card >> nth=0",
+      "actor": "Mariana · persona · web",
+      "titulo": "La encuentra en el directorio",
+      "texto": "Mariana busca en «Empresas en ArquitecturaBase» y encuentra la organización.",
+      "avanzar": "Tocá la tarjeta.",
+      "ruta": "/empresas",
+      "accion": "Busca por nombre y toca la tarjeta de la organización."
+    },
+    {
+      "tablero": "Pagina-Publica",
+      "tweaks": { "estado": "Publicada, sin sesión" },
+      "resaltar": "a.pp-cta",
+      "actor": "Mariana · persona · web",
+      "titulo": "Ve la página",
+      "texto": "La página muestra el logo, la descripción y el contacto.",
+      "avanzar": "Tocá «Ingresá para continuar».",
+      "ruta": "delta.plataforma.com",
+      "accion": "Toca «Ingresá para continuar»."
+    },
+    {
+      "tablero": "Ingreso",
+      "tweaks": { "estado": "Correo", "puerta": "Persona" },
+      "antes": [
+        ["llenar", "#f-correo", "mariana.lopez@gmail.com"]
+      ],
+      "resaltar": "button.b-pri.lg",
+      "actor": "Mariana · persona · web",
+      "titulo": "Ingresa con su cuenta",
+      "texto": "Entra con su correo y su código, como siempre.",
+      "avanzar": "Tocá «Enviar código».",
+      "ruta": "/login",
+      "accion": "Escribe mariana.lopez@gmail.com y sigue con el código."
+    },
+    {
+      "tablero": "Pagina-Publica",
+      "tweaks": { "estado": "Publicada, con sesión" },
+      "actor": "Mariana · persona · web",
+      "titulo": "Vuelve a la misma página",
+      "texto": "Después de ingresar, vuelve a la página de la organización, ya con su sesión.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "delta.plataforma.com",
+      "accion": "Ve la página con su sesión iniciada."
+    }
+  ]
+}

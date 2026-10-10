@@ -1,0 +1,51 @@
+{
+  "id": "una-pregunta-con-herramienta",
+  "titulo": "Una pregunta con herramienta",
+  "etapa": "Etapa 8b · Asistente",
+  "orden": 30,
+  "resumen": "Lucía adjunta una planilla y pregunta; el asistente consulta los datos y responde mientras escribe.",
+  "pasos": [
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Con adjuntos" },
+      "resaltar": "button.as-env",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Adjunta y pregunta",
+      "texto": "Puede adjuntar imágenes o PDF, hasta 10 MB y 5 por consulta.",
+      "avanzar": "Tocá enviar.",
+      "ruta": "/org",
+      "accion": "Adjunta la planilla, escribe la pregunta y la envía."
+    },
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Consultando" },
+      "actor": "Sistema",
+      "titulo": "Consulta con las herramientas",
+      "texto": "Mientras corre una herramienta, muestra «Consultando usuarios…». Solo ve lo que Lucía ya puede ver.",
+      "avanzar": "Sigue solo: tocá «Siguiente».",
+      "ruta": "/org",
+      "accion": "Espera la respuesta; puede tocar «Detener»."
+    },
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Escribiendo" },
+      "actor": "Sistema",
+      "titulo": "Escribe la respuesta",
+      "texto": "La respuesta aparece a medida que se escribe. «Detener» la corta.",
+      "avanzar": "Sigue solo: tocá «Siguiente».",
+      "ruta": "/org",
+      "accion": "Lee la respuesta mientras se escribe."
+    },
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Respuesta" },
+      "resaltar": "button[aria-label=\"Me sirvió\"]",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lee y califica",
+      "texto": "Puede copiar la respuesta y marcar si le sirvió.",
+      "avanzar": "Tocá «Me sirvió». Fin del recorrido.",
+      "ruta": "/org",
+      "accion": "Toca «Me sirvió»."
+    }
+  ]
+}

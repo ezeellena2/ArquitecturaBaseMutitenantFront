@@ -1,0 +1,66 @@
+{
+  "id": "operador-en-la-puerta-publica",
+  "titulo": "El operador en la puerta pública",
+  "etapa": "Ingreso y registro",
+  "orden": 60,
+  "resumen": "Martín, operador, prueba el ingreso de todos: recién con el código ve que su cuenta entra por Plataforma.",
+  "pasos": [
+    {
+      "tablero": "Ingreso",
+      "tweaks": { "estado": "Correo", "puerta": "Persona", "cuenta": "Martín (operador de la plataforma)" },
+      "antes": [
+        ["llenar", "#f-correo", "martin.sosa@arquitecturabase.ejemplo.com"]
+      ],
+      "resaltar": "button.b-pri.lg",
+      "actor": "Martín · operador · web",
+      "titulo": "Escribe su correo en el ingreso de todos",
+      "texto": "Nada menciona la plataforma antes del código: su correo se porta como el de cualquier cuenta.",
+      "avanzar": "Tocá «Enviar código».",
+      "ruta": "/login",
+      "accion": "Escribe su correo de operador y toca «Enviar código»."
+    },
+    {
+      "tablero": "Ingreso",
+      "tweaks": { "estado": "Código enviado", "puerta": "Persona", "cuenta": "Martín (operador de la plataforma)" },
+      "resaltar": "button.b-pri.lg:has-text(\"Verificar\")",
+      "actor": "Martín · operador · web",
+      "titulo": "Pone su código",
+      "texto": "El código prueba que el correo es suyo.",
+      "avanzar": "Escribí el código y tocá «Verificar».",
+      "ruta": "/login",
+      "accion": "Escribe el código y toca «Verificar»."
+    },
+    {
+      "tablero": "Ingreso",
+      "tweaks": { "estado": "Operador: la cuenta entra por Plataforma", "cuenta": "Martín (operador de la plataforma)" },
+      "resaltar": "a.b-pri.lg:has-text(\"Ir a Plataforma\")",
+      "actor": "Martín · operador · web",
+      "titulo": "Una pantalla solo para él",
+      "texto": "Recién ahora el sistema le dice que esa cuenta entra por Plataforma. No le abre la sesión de persona ni de empresa.",
+      "avanzar": "Tocá «Ir a Plataforma».",
+      "ruta": "/login",
+      "accion": "Toca «Ir a Plataforma»."
+    },
+    {
+      "tablero": "Ingreso",
+      "tweaks": { "estado": "Operador: segundo factor", "cuenta": "Martín (operador de la plataforma)" },
+      "resaltar": "button.b-pri.lg:has-text(\"Verificar\")",
+      "actor": "Martín · operador · web",
+      "titulo": "Entra con su segundo factor",
+      "texto": "En /plataforma pone el código de su autenticador. Plataforma tiene su propia sesión, aparte de la pública.",
+      "avanzar": "Escribí el código del autenticador y tocá «Verificar».",
+      "ruta": "/plataforma",
+      "accion": "Escribe el código del autenticador y toca «Verificar»."
+    },
+    {
+      "tablero": "Asistente-Plat",
+      "tweaks": { "asistente": "Bienvenida" },
+      "actor": "Martín · operador · web",
+      "titulo": "Está en Plataforma",
+      "texto": "Llega al inicio de Plataforma: el asistente y lo que tiene para resolver.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/plataforma",
+      "accion": "Ve el inicio de Plataforma."
+    }
+  ]
+}

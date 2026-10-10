@@ -1,0 +1,52 @@
+{
+  "id": "configuracion-y-dominio",
+  "titulo": "Configuración y dominio de correo",
+  "etapa": "Organización",
+  "orden": 40,
+  "resumen": "Lucía agrega el dominio de correo de su organización y lo verifica.",
+  "pasos": [
+    {
+      "tablero": "Configuracion",
+      "tweaks": { "dominio": "Sin dominio" },
+      "resaltar": "a:has-text(\"Agregar dominio\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Va a Configuración",
+      "texto": "Están los datos de la organización y el dominio de correo.",
+      "avanzar": "Tocá «Agregar dominio».",
+      "ruta": "/org/configuracion",
+      "accion": "Toca «Agregar dominio»."
+    },
+    {
+      "tablero": "Configuracion-Dominio",
+      "tweaks": { "estado": "Con dominio" },
+      "resaltar": "a.cb-pri:has-text(\"Siguiente\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Escribe el dominio",
+      "texto": "Escribe el dominio de los correos de su organización.",
+      "avanzar": "Tocá «Siguiente».",
+      "ruta": "/org/configuracion",
+      "accion": "Escribe el dominio y toca «Siguiente»."
+    },
+    {
+      "tablero": "Configuracion-Verificar",
+      "tweaks": {},
+      "resaltar": "a.cb-pri:has-text(\"Comprobar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo verifica",
+      "texto": "Copia el registro TXT y lo carga en su proveedor de dominio. Después comprueba.",
+      "avanzar": "Tocá «Comprobar».",
+      "ruta": "/org/configuracion",
+      "accion": "Copia el registro TXT, lo carga en su DNS y toca «Comprobar»."
+    },
+    {
+      "tablero": "Configuracion",
+      "tweaks": { "dominio": "Verificado" },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Queda verificado",
+      "texto": "Los correos de ese dominio quedan administrados por la organización.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/configuracion",
+      "accion": "Ve el dominio verificado."
+    }
+  ]
+}

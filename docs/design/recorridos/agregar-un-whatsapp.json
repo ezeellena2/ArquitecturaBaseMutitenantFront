@@ -1,0 +1,52 @@
+{
+  "id": "agregar-un-whatsapp",
+  "titulo": "Agregar un WhatsApp en Mi cuenta",
+  "etapa": "Etapa 8 · WhatsApp",
+  "orden": 30,
+  "resumen": "Lucía suma su WhatsApp y lo verifica con el código que le llega por ahí.",
+  "pasos": [
+    {
+      "tablero": "Cuenta",
+      "tweaks": { "whatsapp": "Con el módulo de WhatsApp" },
+      "resaltar": "a:has-text(\"Agregar correo o teléfono\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Va a Mi cuenta",
+      "texto": "En «Cómo entrás» puede sumar un correo o un WhatsApp.",
+      "avanzar": "Tocá «Agregar correo o teléfono».",
+      "ruta": "/cuenta",
+      "accion": "Toca «Agregar correo o teléfono»."
+    },
+    {
+      "tablero": "Cuenta-Agregar",
+      "tweaks": { "estado": "WhatsApp" },
+      "resaltar": "a.cb-pri:has-text(\"Enviar código\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Escribe su número",
+      "texto": "Elige WhatsApp, el país y el número. Si ese número ya es de otra cuenta, lo dice ahí y no manda código.",
+      "avanzar": "Tocá «Enviar código».",
+      "ruta": "/cuenta",
+      "accion": "Elige WhatsApp, escribe el número y toca «Enviar código»."
+    },
+    {
+      "tablero": "Mensajes",
+      "tweaks": { "mensaje": "Código para verificar un método", "canal": "WhatsApp" },
+      "actor": "Lucía · WhatsApp",
+      "titulo": "Le llega el código",
+      "texto": "El código prueba que el número es suyo.",
+      "avanzar": "Tocá «Siguiente».",
+      "ruta": "—",
+      "accion": "Copia el código del WhatsApp."
+    },
+    {
+      "tablero": "Cuenta-Verificar",
+      "tweaks": { "estado": "WhatsApp" },
+      "resaltar": "a.cb.cb-pri:has-text(\"Verificar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo verifica",
+      "texto": "Con ese código, el WhatsApp ya sirve para entrar.",
+      "avanzar": "Escribí el código y tocá «Verificar». Fin del recorrido.",
+      "ruta": "/cuenta",
+      "accion": "Escribe el código y toca «Verificar»."
+    }
+  ]
+}

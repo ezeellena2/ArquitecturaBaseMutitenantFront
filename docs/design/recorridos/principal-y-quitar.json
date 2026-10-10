@@ -1,0 +1,63 @@
+{
+  "id": "principal-y-quitar",
+  "titulo": "Hacer principal y quitar, sin código",
+  "etapa": "Mi cuenta",
+  "orden": 30,
+  "resumen": "Lucía cambia su método principal y quita un correo, sin ningún código (ADR 0045).",
+  "pasos": [
+    {
+      "tablero": "Cuenta",
+      "tweaks": {},
+      "resaltar": "button.ib[aria-label=\"Acciones de 011 15-5555-4521\"]",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Abre el menú del WhatsApp",
+      "texto": "Cada método tiene su ⋮ con lo que se puede hacer.",
+      "avanzar": "Tocá el ⋮ del WhatsApp.",
+      "ruta": "/cuenta",
+      "accion": "Toca el ⋮ del WhatsApp."
+    },
+    {
+      "tablero": "Cuenta-Metodo",
+      "tweaks": { "estado": "Menú del WhatsApp" },
+      "resaltar": "span.it:has-text(\"Hacer principal\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo hace principal",
+      "texto": "El principal es al que le llegan los avisos.",
+      "avanzar": "Tocá «Hacer principal».",
+      "ruta": "/cuenta",
+      "accion": "Toca «Hacer principal»."
+    },
+    {
+      "tablero": "Cuenta-Metodo",
+      "tweaks": { "estado": "Hacer principal el WhatsApp" },
+      "resaltar": "a.cb-pri:has-text(\"Hacer principal\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Confirma, sin código",
+      "texto": "Alcanza con la sesión iniciada. A sus otros métodos les llega un aviso.",
+      "avanzar": "Tocá «Hacer principal».",
+      "ruta": "/cuenta",
+      "accion": "Toca «Hacer principal»."
+    },
+    {
+      "tablero": "Cuenta-Metodo",
+      "tweaks": { "estado": "Quitar un correo" },
+      "resaltar": "a.cb-pel:has-text(\"Quitar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Quita un correo",
+      "texto": "Tampoco pide código. Lo único que no puede es quedarse sin métodos o sin principal.",
+      "avanzar": "Tocá «Quitar».",
+      "ruta": "/cuenta",
+      "accion": "Abre el ⋮ del correo, toca «Quitar» y confirma."
+    },
+    {
+      "tablero": "Cuenta",
+      "tweaks": { "aviso": "Quitamos un correo" },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Listo",
+      "texto": "El correo ya no sirve para entrar, y sus otros métodos reciben el aviso.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/cuenta",
+      "accion": "Ve el aviso de correo quitado."
+    }
+  ]
+}

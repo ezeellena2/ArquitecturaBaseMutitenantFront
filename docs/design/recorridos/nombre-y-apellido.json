@@ -1,0 +1,37 @@
+{
+  "id": "nombre-y-apellido",
+  "titulo": "Cambiar nombre y apellido",
+  "etapa": "Mi cuenta",
+  "orden": 20,
+  "resumen": "Lucía corrige su apellido en «Tus datos».",
+  "pasos": [
+    {
+      "tablero": "Cuenta",
+      "tweaks": {},
+      "antes": [
+        ["llenar", "input.ct >> nth=1", "Fernández Ruiz"]
+      ],
+      "resaltar": "button.cb-pri:has-text(\"Guardar cambios\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Cambia su apellido",
+      "texto": "Nombre y apellido van en dos campos. Al cambiar algo, aparece «Cambios sin guardar».",
+      "avanzar": "Tocá «Guardar cambios».",
+      "ruta": "/cuenta",
+      "accion": "Cambia el apellido y toca «Guardar cambios»."
+    },
+    {
+      "tablero": "Cuenta",
+      "tweaks": {},
+      "antes": [
+        ["llenar", "input.ct >> nth=1", "Fernández Ruiz"],
+        ["clic", "button.cb-pri:has-text(\"Guardar cambios\")"]
+      ],
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Queda guardado",
+      "texto": "El cambio se ve en todo el sistema.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/cuenta",
+      "accion": "Ve el aviso de cambios guardados."
+    }
+  ]
+}

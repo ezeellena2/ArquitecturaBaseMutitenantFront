@@ -1,0 +1,58 @@
+{
+  "id": "configurar-la-clave-propia",
+  "titulo": "Configurar la clave propia",
+  "etapa": "Etapa 8b · Asistente",
+  "orden": 50,
+  "resumen": "Martín permite que Grupo Delta use su clave; Lucía la carga en la configuración del asistente.",
+  "pasos": [
+    {
+      "tablero": "Organizacion",
+      "tweaks": { "estado": "Activa", "pestana": "Módulos" },
+      "antes": [
+        ["clic", "button[aria-label=\"Acciones de Asistente\"]"]
+      ],
+      "resaltar": ".menu-it:has-text(\"Permitir su propia clave\")",
+      "actor": "Martín · operador · web",
+      "titulo": "Permite la clave propia",
+      "texto": "En los módulos de la organización, el Asistente dice qué clave usa.",
+      "avanzar": "Tocá «Permitir su propia clave».",
+      "ruta": "/plataforma/organizaciones/:id",
+      "accion": "Abre el ⋮ del Asistente, toca «Permitir su propia clave» y confirma con un motivo."
+    },
+    {
+      "tablero": "Asistente-Config-Org",
+      "tweaks": { "estado": "Con la clave de la plataforma" },
+      "resaltar": "button:has-text(\"La nuestra\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Elige «La nuestra»",
+      "texto": "Ahora puede elegir qué clave usa. Para usar la propia, algún Dueño tiene que tener un correo verificado.",
+      "avanzar": "Tocá «La nuestra».",
+      "ruta": "/org/asistente/configuracion",
+      "accion": "Toca «La nuestra»."
+    },
+    {
+      "tablero": "Asistente-Config-Org",
+      "tweaks": { "estado": "Cambiar la clave" },
+      "antes": [
+        ["llenar", "input[type=\"password\"]", "sk-ant-api03-ejemplo"]
+      ],
+      "resaltar": "button.cb-pri:has-text(\"Guardar cambios\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Pega la clave",
+      "texto": "Pega la clave de Anthropic; después solo se ve tapada. Con su clave elige cualquier modelo y fija sus topes.",
+      "avanzar": "Tocá «Guardar cambios».",
+      "ruta": "/org/asistente/configuracion",
+      "accion": "Pega la clave, elige el modelo y los topes y toca «Guardar cambios»."
+    },
+    {
+      "tablero": "Asistente-Config-Org",
+      "tweaks": { "estado": "Con su clave" },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Queda configurada",
+      "texto": "El asistente de Grupo Delta usa su clave y sus topes.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/asistente/configuracion",
+      "accion": "Ve la configuración guardada."
+    }
+  ]
+}

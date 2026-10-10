@@ -71,6 +71,54 @@ def pantalla(p, n):
             f'{bloque_mas}</article>')
 
 
+RECORRIDOS = AQUI.parent / "recorridos"
+ETAPAS = ["Ingreso y registro", "Organización", "Página pública y directorio", "Plataforma", "Mi cuenta", "Etapa 8 · WhatsApp", "Etapa 8b · Asistente"]
+
+
+def recorridos():
+    """Los recorridos guiados (docs/design/recorridos/*.json), por etapa y en su orden."""
+    lista = [json.loads(f.read_text(encoding="utf-8")) for f in sorted(RECORRIDOS.glob("*.json"))]
+    for r in lista:
+        assert r["etapa"] in ETAPAS, (r["id"], r["etapa"])
+    return sorted(lista, key=lambda r: (ETAPAS.index(r["etapa"]), r.get("orden", 0)))
+
+
+def datos_recorridos(lista, cajas):
+    """Lo que necesita el reproductor: cada paso con su captura y el lugar a resaltar en porcentajes de la captura."""
+    salida = []
+    for r in lista:
+        pasos = []
+        for n, (p, c) in enumerate(zip(r["pasos"], cajas[r["id"]]), 1):
+            caja = None
+            if c["caja"]:
+                x, y, w, h, pad = c["caja"]["x"], c["caja"]["y"], c["caja"]["w"], c["caja"]["h"], 8
+                caja = [round(max(0, x - pad) / c["w"] * 100, 2), round(max(0, y - pad) / c["h"] * 100, 2),
+                        round(min(c["w"], w + 2 * pad) / c["w"] * 100, 2), round(min(c["h"], h + 2 * pad) / c["h"] * 100, 2)]
+            pasos.append({"img": f"img/rec/{r['id']}-{n}.jpg", "tel": c["w"] < 600, "caja": caja,
+                          "actor": p["actor"], "titulo": p["titulo"], "texto": p["texto"], "avanzar": p["avanzar"]})
+        salida.append({"id": r["id"], "titulo": r["titulo"], "etapa": r["etapa"], "resumen": r["resumen"], "pasos": pasos})
+    return salida
+
+
+def seccion_recorridos(lista):
+    if not lista:
+        return ""
+    bloques = []
+    for et in ETAPAS:
+        rs = [r for r in lista if r["etapa"] == et]
+        if not rs:
+            continue
+        tarjetas = "".join(
+            f'<button type="button" class="rec-card" data-rec="{e(r["id"])}"><img src="img/rec/{e(r["id"])}-1.jpg" alt="" loading="lazy">'
+            f'<span class="t">{e(r["titulo"])}</span><span class="d">{len(r["pasos"])} pasos · {e(r["pasos"][0]["actor"])}</span>'
+            f'<span class="r">{e(r["resumen"])}</span></button>' for r in rs)
+        bloques.append(f'<div class="rec-et"><h3>{e(et)}</h3><div class="rec-cards">{tarjetas}</div></div>')
+    return ('<section class="cap-sec" id="recorridos"><header class="cap-cab"><span class="paso">Recorridos guiados</span>'
+            '<h2>Cada flujo, paso a paso</h2><p>Cada paso muestra el tablero en su estado, el lugar que hay que tocar y quién lo hace. '
+            'Tocá el recuadro naranja o «Siguiente» para avanzar; «Reproducir» avanza solo cada 6 segundos.</p></header>'
+            + "".join(bloques) + "</section>")
+
+
 def pagina():
     nav, secciones = [], []
     total_p = total_t = prog = 0
@@ -81,7 +129,17 @@ def pagina():
         total_p += len(ps)
         total_t += sum(len(p[5]) + len(p[6]) + len(p[7]) for p in ps)
         prog += sum(1 for p in ps if p[3] == "si")
-    return (PLANTILLA.replace("@NAV@", "".join(nav)).replace("@SECCIONES@", "".join(secciones)).replace("@URL@", URL_LIENZO)
+    recs = recorridos()
+    cajas_f = SALIDA / "rec" / "cajas.json"
+    cajas = json.loads(cajas_f.read_text(encoding="utf-8")) if cajas_f.exists() else {}
+    recs = [r for r in recs if r["id"] in cajas]
+    datos = datos_recorridos(recs, cajas)
+    if recs:
+        nav.insert(0, '<a href="#recorridos"><span class="n">▶</span>Recorridos guiados</a>')
+    datos_js = json.dumps({"etapas": [et for et in ETAPAS if any(r["etapa"] == et for r in datos)], "recorridos": datos},
+                          ensure_ascii=False).replace("</", "<\\/")
+    return (PLANTILLA.replace("@NAV@", "".join(nav)).replace("@SECCIONES@", seccion_recorridos(recs) + "".join(secciones)).replace("@URL@", URL_LIENZO)
+            .replace("@DATOS_REC@", datos_js).replace("@BOTON_REC@", '<a class="boton sec" href="#recorridos">Ver los recorridos guiados</a>' if recs else "")
             .replace("@PANTALLAS@", str(total_p)).replace("@TABLEROS@", str(total_t)).replace("@PROGRAMADAS@", str(prog)).replace("@VERSION@", e(VERSION)))
 
 
@@ -109,15 +167,21 @@ PLANTILLA = r"""<title>Guía del lienzo multitenant</title>
   --velo: oklch(0.2 0.01 78 / 0.6);
   --sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  --naranja: oklch(0.7 0.18 50);
+  --naranja-f: oklch(0.6 0.17 45);
+  --naranja-t: oklch(0.96 0.04 60);
+  --foco: oklch(0.2 0.01 78 / 0.3);
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --fondo: oklch(0.2 0.008 78); --hoja: oklch(0.245 0.01 78); --arena: oklch(0.3 0.02 76); --arena-b: oklch(0.36 0.022 76); --borde: oklch(0.34 0.01 78);
   --t1: oklch(0.94 0.006 78); --t2: oklch(0.78 0.01 78); --t3: oklch(0.66 0.01 78); --marca: oklch(0.7 0.1 195); --marca-tx: oklch(0.78 0.09 195);
-  --marca-t: oklch(0.3 0.04 195); --no: oklch(0.55 0.01 78); --sombra: oklch(0 0 0 / 0.4); --velo: oklch(0 0 0 / 0.7); color-scheme: dark; } }
+  --marca-t: oklch(0.3 0.04 195); --no: oklch(0.55 0.01 78); --sombra: oklch(0 0 0 / 0.4); --velo: oklch(0 0 0 / 0.7);
+  --naranja: oklch(0.74 0.17 55); --naranja-f: oklch(0.62 0.16 48); --naranja-t: oklch(0.32 0.06 55); --foco: oklch(0 0 0 / 0.45); color-scheme: dark; } }
 :root[data-theme="dark"] {
   --fondo: oklch(0.2 0.008 78); --hoja: oklch(0.245 0.01 78); --arena: oklch(0.3 0.02 76); --arena-b: oklch(0.36 0.022 76); --borde: oklch(0.34 0.01 78);
   --t1: oklch(0.94 0.006 78); --t2: oklch(0.78 0.01 78); --t3: oklch(0.66 0.01 78); --marca: oklch(0.7 0.1 195); --marca-tx: oklch(0.78 0.09 195);
-  --marca-t: oklch(0.3 0.04 195); --no: oklch(0.55 0.01 78); --sombra: oklch(0 0 0 / 0.4); --velo: oklch(0 0 0 / 0.7); color-scheme: dark; }
+  --marca-t: oklch(0.3 0.04 195); --no: oklch(0.55 0.01 78); --sombra: oklch(0 0 0 / 0.4); --velo: oklch(0 0 0 / 0.7);
+  --naranja: oklch(0.74 0.17 55); --naranja-f: oklch(0.62 0.16 48); --naranja-t: oklch(0.32 0.06 55); --foco: oklch(0 0 0 / 0.45); color-scheme: dark; }
 * { box-sizing: border-box; }
 body { background: var(--fondo); color: var(--t1); font-family: var(--sans); font-size: 14px; line-height: 1.5; padding-inline: 16px; padding-block: 0 72px; }
 .envoltura { max-width: 1280px; margin: 0 auto; }
@@ -192,6 +256,79 @@ dialog img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
   .cap.tel { width: min(168px, 48%); }
 }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+/* Recorridos guiados: tarjetas por etapa y el reproductor a pantalla completa. */
+.botones { display: flex; flex-wrap: wrap; gap: 10px; }
+.boton.sec { background: var(--hoja); color: var(--marca-tx); border: 1px solid var(--arena-b); }
+.rec-et { display: grid; gap: 10px; margin-top: 8px; }
+.rec-et h3 { font-size: 15px; font-weight: 700; color: var(--t2); }
+.rec-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 14px; }
+.rec-card { display: grid; gap: 6px; align-content: start; padding: 10px 10px 14px; border: 1px solid var(--borde); border-radius: 12px; background: var(--hoja); color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.rec-card:hover { border-color: var(--marca); }
+.rec-card img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: left top; border-radius: 8px; border: 1px solid var(--borde); }
+.rec-card .t { font-size: 15px; font-weight: 700; margin-top: 4px; }
+.rec-card .d { font-size: 12.5px; color: var(--t3); }
+.rec-card .r { font-size: 13.5px; color: var(--t2); }
+dialog.rp { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; border-radius: 0; background: var(--fondo); }
+dialog.rp[open] { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); }
+.rp-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 10px 16px; background: var(--hoja); border-bottom: 1px solid var(--borde); }
+.rp-izq { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.rp-ojo { font-size: 12px; font-weight: 700; color: var(--marca-tx); letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+.rp-izq select { height: 34px; max-width: 280px; border: 1px solid var(--arena-b); border-radius: 8px; background: var(--hoja); color: var(--t1); font: inherit; font-weight: 600; padding: 0 8px; }
+.rp-etapas { display: flex; gap: 4px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: thin; }
+.rp-etapas button { flex-shrink: 0; height: 30px; padding: 0 12px; border: 1px solid var(--borde); border-radius: 999px; background: var(--hoja); color: var(--t2); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; }
+.rp-etapas button[aria-selected="true"] { background: var(--marca-t); border-color: var(--marca); color: var(--marca-tx); font-weight: 600; }
+.rp-der { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.rp-cuenta { font-size: 13px; color: var(--t2); font-variant-numeric: tabular-nums; white-space: nowrap; margin-right: 4px; }
+.rp-b { height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--arena-b); background: var(--hoja); color: var(--t1); font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.rp-b.pri { background: var(--marca); border-color: var(--marca); color: oklch(1 0 0); }
+.rp-b:disabled { opacity: 0.45; cursor: default; }
+.rp-izq { order: 0; } .rp-der { order: 2; } .rp-x { order: 3; } .rp-etapas { order: 4; flex-basis: 100%; }
+.rp-x { width: 34px; height: 34px; border: 0; border-radius: 8px; background: transparent; color: var(--t2); font-size: 18px; cursor: pointer; }
+.rp-prog { display: flex; gap: 3px; padding: 0 16px; background: var(--hoja); padding-bottom: 10px; }
+.rp-prog span { flex: 1; height: 4px; border-radius: 2px; background: var(--borde); }
+.rp-prog span.hecho { background: var(--marca); }
+.rp-prog span.ahora { background: var(--naranja); }
+.rp-cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) 380px; min-height: 0; }
+.rp-escena { min-width: 0; min-height: 0; overflow: auto; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.rp-lienzo { position: relative; display: inline-block; line-height: 0; border-radius: 10px; overflow: hidden; box-shadow: 0 12px 40px var(--sombra); background: var(--hoja); }
+.rp-lienzo img { display: block; max-width: 100%; max-height: calc(100dvh - 150px); width: auto; height: auto; }
+.rp-lienzo.tel { border-radius: 22px; }
+.rp-toque { position: absolute; border: 3px solid var(--naranja); border-radius: 10px; background: transparent; box-shadow: 0 0 0 9999px var(--foco); cursor: pointer; padding: 0; }
+.rp-toque[hidden] { display: none !important; }
+.rp-et { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(100% + 8px); background: var(--naranja-f); color: oklch(1 0 0); font-size: 13px; font-weight: 700; line-height: 1.2; padding: 6px 10px; border-radius: 8px; white-space: nowrap; box-shadow: 0 4px 12px var(--sombra); }
+.rp-toque.abajo .rp-et { bottom: auto; top: calc(100% + 8px); }
+.rp-toque.al-iz .rp-et { left: 0; transform: none; }
+.rp-toque.al-de .rp-et { left: auto; right: 0; transform: none; }
+@media (prefers-reduced-motion: no-preference) { .rp-toque { animation: rp-pulso 1.6s ease-in-out infinite; } }
+@keyframes rp-pulso { 50% { border-color: var(--naranja-f); } }
+.rp-panel { min-height: 0; overflow: auto; background: var(--hoja); border-left: 1px solid var(--borde); padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+.rp-paso { font-size: 12px; font-weight: 700; color: var(--marca-tx); letter-spacing: 0.05em; text-transform: uppercase; }
+.rp-actor { display: inline-flex; width: fit-content; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--arena); color: var(--t1); font-size: 13px; font-weight: 500; }
+.rp-panel h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.015em; }
+.rp-panel #rp-texto { color: var(--t2); font-size: 15px; line-height: 1.55; }
+.rp-como { border-left: 3px solid var(--naranja); background: var(--naranja-t); border-radius: 0 8px 8px 0; padding: 10px 12px; display: grid; gap: 2px; }
+.rp-como span { font-size: 11.5px; font-weight: 700; color: var(--t3); letter-spacing: 0.05em; text-transform: uppercase; }
+.rp-como p { font-weight: 600; }
+.rp-lista { list-style: none; margin: 8px 0 0; padding: 12px 0 0; border-top: 1px solid var(--borde); display: grid; gap: 2px; }
+.rp-lista button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 7px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--t2); font: inherit; font-size: 13.5px; text-align: left; cursor: pointer; }
+.rp-lista button .n { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; background: var(--arena); color: var(--t2); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.rp-lista button.hecho .n { background: var(--marca-t); color: var(--marca-tx); }
+.rp-lista button[aria-current="step"] { background: var(--marca-t); color: var(--t1); font-weight: 600; }
+.rp-lista button[aria-current="step"] .n { background: var(--marca); color: oklch(1 0 0); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 900px) {
+  .rp-cuerpo { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; overflow: auto; }
+  .rp-escena { overflow: visible; }
+  .rp-lienzo img { max-height: 70dvh; }
+  .rp-panel { border-left: 0; border-top: 1px solid var(--borde); overflow: visible; }
+  .rp-izq { flex: 1; }
+  .rp-izq select { flex: 1; min-width: 0; max-width: none; }
+  .rp-x { order: 1; }
+  .rp-etapas { order: 2; flex-basis: 100%; }
+  .rp-der { order: 3; margin-left: 0; width: 100%; flex-wrap: wrap; }
+  .rp-cuenta { width: 100%; }
+  .rp-der .rp-b { flex: 1; padding: 0 8px; }
+}
 </style>
 
 <div class="envoltura">
@@ -201,7 +338,7 @@ dialog img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
     <p>El recorrido completo, en el orden en que una persona usa el sistema: llega al sitio, entra, ve su perfil, registra su empresa, arma su equipo, la administra, atiende por WhatsApp y, aparte, lo que usan los operadores de la plataforma. Cada pantalla tiene la compu, el teléfono, lo que se abre desde ahí y sus estados. Tocá una captura para verla grande; para usarla con Play, abrí el lienzo.</p>
     <div class="datos"><span><b>@PANTALLAS@</b> pantallas</span><span><b>@TABLEROS@</b> tableros</span><span><b>@PROGRAMADAS@</b> pantallas ya programadas</span><span>Lienzo @VERSION@</span></div>
     <div class="leyenda"><span class="cod ok">Programada</span><span class="cod parte">Programada en parte</span><span class="cod no">Falta programar</span><span class="cod ref">De referencia</span></div>
-    <a class="boton" href="@URL@" target="_blank" rel="noopener">Abrir el lienzo</a>
+    <div class="botones"><a class="boton" href="@URL@" target="_blank" rel="noopener">Abrir el lienzo</a>@BOTON_REC@</div>
   </header>
 </div>
 <nav class="nav" aria-label="Pasos del recorrido"><div class="fila">@NAV@</div></nav>
@@ -222,6 +359,137 @@ dialog img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
   d.addEventListener('click', function (ev) { if (ev.target === d && d.close) d.close(); });
 })();
 </script>
+<dialog id="rp" class="rp" aria-labelledby="rp-titulo">
+  <div class="rp-barra">
+    <div class="rp-izq"><span class="rp-ojo">Recorrido</span><label class="sr" for="rp-sel">Elegir el recorrido</label><select id="rp-sel"></select></div>
+    <div class="rp-etapas" role="tablist" aria-label="Etapas" id="rp-etapas"></div>
+    <div class="rp-der"><span class="rp-cuenta" id="rp-cuenta" aria-live="polite"></span>
+      <button type="button" class="rp-b" id="rp-ant">Anterior</button>
+      <button type="button" class="rp-b" id="rp-play" aria-pressed="false">Reproducir</button>
+      <button type="button" class="rp-b pri" id="rp-sig">Siguiente</button></div>
+    <button type="button" class="rp-x" id="rp-x" aria-label="Cerrar el recorrido">✕</button>
+  </div>
+  <div class="rp-prog" id="rp-prog" aria-hidden="true"></div>
+  <div class="rp-cuerpo">
+    <div class="rp-escena"><div class="rp-lienzo" id="rp-lienzo"><img id="rp-img" alt=""><button type="button" class="rp-toque" id="rp-toque"><span class="rp-et">Tocá para seguir</span></button></div></div>
+    <aside class="rp-panel"><span class="rp-paso" id="rp-paso"></span><span class="rp-actor" id="rp-actor"></span><h2 id="rp-titulo"></h2><p id="rp-texto"></p>
+      <div class="rp-como"><span>Cómo seguir</span><p id="rp-avanzar"></p></div><ol class="rp-lista" id="rp-lista" aria-label="Pasos del recorrido"></ol></aside>
+  </div>
+</dialog>
+<script>
+(function () {
+  // Los recorridos guiados: los datos salen de docs/design/recorridos/*.json y las capturas, de capturar-recorridos.mjs.
+  var REC = @DATOS_REC@;
+  if (!REC.recorridos.length) return;
+  var $ = function (id) { return document.getElementById(id); };
+  var d = $('rp'), img = $('rp-img'), toque = $('rp-toque'), lienzo = $('rp-lienzo');
+  var TODO = 'La historia completa';
+  var st = { etapa: REC.etapas[0], rec: 0, i: 0 }, timer = null;
+  function enEtapa() { return st.etapa === TODO ? REC.recorridos : REC.recorridos.filter(function (r) { return r.etapa === st.etapa; }); }
+  // La secuencia: los pasos del recorrido elegido o, en «La historia completa», los de todos, uno detrás del otro.
+  function seq() {
+    var out = [], lista = st.etapa === TODO ? REC.recorridos : [REC.recorridos[st.rec]];
+    lista.forEach(function (r) { r.pasos.forEach(function (p, k) { out.push({ r: r, p: p, k: k }); }); });
+    return out;
+  }
+  function siguienteRecorrido() {
+    if (st.etapa === TODO) return null;
+    var lista = enEtapa();
+    return lista[lista.indexOf(REC.recorridos[st.rec]) + 1] || null;
+  }
+  function render() {
+    var s = seq(), x = s[st.i], r = x.r, p = x.p, base = st.i - x.k;
+    st.rec = REC.recorridos.indexOf(r);
+    img.src = p.img;
+    img.alt = r.titulo + ', paso ' + (x.k + 1) + ': ' + p.titulo;
+    lienzo.classList.toggle('tel', p.tel);
+    if (p.caja) {
+      toque.hidden = false;
+      toque.style.left = p.caja[0] + '%'; toque.style.top = p.caja[1] + '%';
+      toque.style.width = p.caja[2] + '%'; toque.style.height = p.caja[3] + '%';
+      var cx = p.caja[0] + p.caja[2] / 2;
+      toque.classList.toggle('abajo', p.caja[1] + p.caja[3] < 85);
+      toque.classList.toggle('al-iz', cx < 25);
+      toque.classList.toggle('al-de', cx > 75);
+      toque.setAttribute('aria-label', 'Tocá para seguir: ' + p.avanzar);
+    } else toque.hidden = true;
+    $('rp-paso').textContent = r.etapa + ' · Paso ' + (x.k + 1);
+    $('rp-actor').textContent = p.actor;
+    $('rp-titulo').textContent = p.titulo;
+    $('rp-texto').textContent = p.texto;
+    $('rp-avanzar').textContent = p.avanzar;
+    $('rp-cuenta').textContent = 'Paso ' + (st.i + 1) + ' de ' + s.length;
+    $('rp-ant').disabled = st.i === 0;
+    $('rp-sig').disabled = st.i === s.length - 1 && !siguienteRecorrido();
+    $('rp-prog').innerHTML = s.map(function (_, j) { return '<span class="' + (j < st.i ? 'hecho' : j === st.i ? 'ahora' : '') + '"></span>'; }).join('');
+    var ol = $('rp-lista');
+    ol.innerHTML = '';
+    r.pasos.forEach(function (q, k) {
+      var li = document.createElement('li'), b = document.createElement('button');
+      b.type = 'button';
+      b.className = k < x.k ? 'hecho' : '';
+      if (k === x.k) b.setAttribute('aria-current', 'step');
+      b.innerHTML = '<span class="n"></span><span class="t"></span>';
+      b.querySelector('.n').textContent = k + 1;
+      b.querySelector('.t').textContent = q.titulo;
+      b.addEventListener('click', function () { st.i = base + k; render(); });
+      li.appendChild(b);
+      ol.appendChild(li);
+    });
+    var sel = $('rp-sel');
+    sel.innerHTML = '';
+    enEtapa().forEach(function (q) { var o = document.createElement('option'); o.value = q.id; o.textContent = q.titulo; o.selected = q === r; sel.appendChild(o); });
+    Array.prototype.forEach.call($('rp-etapas').children, function (b) { b.setAttribute('aria-selected', b.textContent === st.etapa ? 'true' : 'false'); });
+    if (s[st.i + 1]) { var pre = new Image(); pre.src = s[st.i + 1].p.img; }
+  }
+  function sig() {
+    if (st.i < seq().length - 1) { st.i++; render(); return true; }
+    var n = siguienteRecorrido();
+    if (n) { st.rec = REC.recorridos.indexOf(n); st.i = 0; render(); return true; }
+    return false;
+  }
+  function ant() { if (st.i > 0) { st.i--; render(); } }
+  function parar() { clearInterval(timer); timer = null; $('rp-play').textContent = 'Reproducir'; $('rp-play').setAttribute('aria-pressed', 'false'); }
+  function play() {
+    if (timer) { parar(); return; }
+    $('rp-play').textContent = 'Pausar';
+    $('rp-play').setAttribute('aria-pressed', 'true');
+    timer = setInterval(function () { if (!sig()) parar(); }, 6000);
+  }
+  REC.etapas.concat([TODO]).forEach(function (et) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('role', 'tab');
+    b.textContent = et;
+    b.addEventListener('click', function () { st.etapa = et; st.rec = REC.recorridos.indexOf(enEtapa()[0]); st.i = 0; render(); });
+    $('rp-etapas').appendChild(b);
+  });
+  $('rp-sel').addEventListener('change', function (ev) {
+    var r = REC.recorridos.filter(function (q) { return q.id === ev.target.value; })[0];
+    if (st.etapa === TODO) { var s = seq(); for (var j = 0; j < s.length; j++) { if (s[j].r === r) { st.i = j; break; } } }
+    else { st.rec = REC.recorridos.indexOf(r); st.i = 0; }
+    render();
+  });
+  $('rp-sig').addEventListener('click', sig);
+  $('rp-ant').addEventListener('click', ant);
+  toque.addEventListener('click', sig);
+  $('rp-play').addEventListener('click', play);
+  $('rp-x').addEventListener('click', function () { d.close(); });
+  d.addEventListener('close', parar);
+  d.addEventListener('keydown', function (ev) {
+    if (ev.target.tagName === 'SELECT') return;
+    if (ev.key === 'ArrowRight') { ev.preventDefault(); sig(); } else if (ev.key === 'ArrowLeft') { ev.preventDefault(); ant(); }
+  });
+  document.addEventListener('click', function (ev) {
+    var c = ev.target.closest('[data-rec]');
+    if (!c) return;
+    var r = REC.recorridos.filter(function (q) { return q.id === c.getAttribute('data-rec'); })[0];
+    st.etapa = r.etapa; st.rec = REC.recorridos.indexOf(r); st.i = 0;
+    render();
+    if (d.showModal) d.showModal(); else d.setAttribute('open', '');
+  });
+})();
+</script>
 """
 
 def tableros_usados():
@@ -231,14 +499,16 @@ def tableros_usados():
 def pasar_a_jpg():
     """Las capturas de la compu, a 1200 de ancho y calidad 72; las del teléfono, enteras y calidad 80."""
     from PIL import Image
-    (SALIDA / "img").mkdir(parents=True, exist_ok=True)
-    for f in sorted((SALIDA / "png").glob("*.png")):
+    (SALIDA / "img" / "rec").mkdir(parents=True, exist_ok=True)
+    # Las de los recorridos guiados (capturar-recorridos.mjs) van a img/rec, con la misma regla.
+    for f, destino in [(f, SALIDA / "img") for f in sorted((SALIDA / "png").glob("*.png"))] + \
+                      [(f, SALIDA / "img" / "rec") for f in sorted((SALIDA / "rec").glob("*.png"))]:
         im = Image.open(f).convert("RGB")
         calidad = 80
         if im.width > 1000:
             im = im.resize((1200, int(im.height * 1200 / im.width)), Image.LANCZOS)
             calidad = 72
-        im.save(SALIDA / "img" / (f.stem + ".jpg"), "JPEG", quality=calidad, optimize=True, progressive=True)
+        im.save(destino / (f.stem + ".jpg"), "JPEG", quality=calidad, optimize=True, progressive=True)
 
 
 if __name__ == "__main__":

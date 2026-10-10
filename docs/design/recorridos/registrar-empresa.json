@@ -1,0 +1,72 @@
+{
+  "id": "registrar-empresa",
+  "titulo": "Registrar una empresa",
+  "etapa": "Ingreso y registro",
+  "orden": 30,
+  "resumen": "Mariana registra su organización con su primera empresa; queda como Dueña y la plataforma la revisa.",
+  "pasos": [
+    {
+      "tablero": "Landing",
+      "tweaks": { "empresas": "Con empresas" },
+      "resaltar": "a.b-sec.lg:has-text(\"Registrá tu empresa\")",
+      "actor": "Mariana · persona · web",
+      "titulo": "Quiere registrar su empresa",
+      "texto": "Mariana quiere usar el sistema con su grupo de empresas. Desde la portada toca «Registrá tu empresa».",
+      "avanzar": "Tocá «Registrá tu empresa».",
+      "ruta": "/",
+      "accion": "Toca «Registrá tu empresa»."
+    },
+    {
+      "tablero": "Registro-Empresa",
+      "tweaks": { "estado": "Correo" },
+      "antes": [
+        ["clic", "input[type=\"checkbox\"]"],
+        ["llenar", "#f-correo", "mariana.lopez@gmail.com"]
+      ],
+      "resaltar": "button.b-pri.lg",
+      "actor": "Mariana · persona · web",
+      "titulo": "Prueba que el correo es suyo",
+      "texto": "Acepta los términos y escribe su correo. Si ya tiene una cuenta, se usa esa: no hace falta otra.",
+      "avanzar": "Tocá «Continuar».",
+      "ruta": "/registro/empresa",
+      "accion": "Marca la casilla, escribe mariana.lopez@gmail.com y toca «Continuar»."
+    },
+    {
+      "tablero": "Registro-Empresa",
+      "tweaks": { "estado": "Código enviado" },
+      "resaltar": "button.b-pri.lg:has-text(\"Verificar\")",
+      "actor": "Mariana · persona · web",
+      "titulo": "Pone el código",
+      "texto": "Le llega un código al correo, de un solo uso y con vencimiento.",
+      "avanzar": "Escribí el código y tocá «Verificar».",
+      "ruta": "/registro/empresa",
+      "accion": "Escribe el código y toca «Verificar»."
+    },
+    {
+      "tablero": "Registro-Empresa",
+      "tweaks": { "estado": "Tu organización" },
+      "antes": [
+        ["llenar", "#f-nombre", "Grupo Omega"],
+        ["llenar", "#f-slug", "grupo-omega"],
+        ["llenar", "#f-empresa", "Omega S.A."]
+      ],
+      "resaltar": "button.b-pri.lg:has-text(\"Crear organización\")",
+      "actor": "Mariana · persona · web",
+      "titulo": "Carga su organización",
+      "texto": "Escribe el nombre de la organización, la dirección de su página en el subdominio y su primera empresa con el CUIT.",
+      "avanzar": "Tocá «Crear organización».",
+      "ruta": "/registro/empresa",
+      "accion": "Completa la organización, la dirección y la primera empresa, y toca «Crear organización»."
+    },
+    {
+      "tablero": "Registro-Empresa",
+      "tweaks": { "estado": "Espera aprobación" },
+      "actor": "Mariana · persona · web",
+      "titulo": "Espera la aprobación",
+      "texto": "La plataforma revisa la organización antes de habilitarla. Cuando la aprueba, le llega un aviso por correo y, si lo tiene, por WhatsApp.",
+      "avanzar": "Fin del recorrido. Sigue en Plataforma, en «Aprobar una organización».",
+      "ruta": "/registro/empresa",
+      "accion": "Ve que el pedido quedó en revisión."
+    }
+  ]
+}

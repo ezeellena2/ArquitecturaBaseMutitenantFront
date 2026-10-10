@@ -1,0 +1,49 @@
+{
+  "id": "publicar-una-version-legal",
+  "titulo": "Publicar una versión legal",
+  "etapa": "Plataforma",
+  "orden": 50,
+  "resumen": "Martín publica una versión nueva de los términos; cada persona la acepta en su próximo ingreso.",
+  "pasos": [
+    {
+      "tablero": "Legales",
+      "tweaks": { "pantalla": "Documentos" },
+      "resaltar": "button.b-pri:has-text(\"Publicar versión nueva\")",
+      "actor": "Martín · operador · web",
+      "titulo": "Va a Documentos legales",
+      "texto": "Están los términos y la privacidad, con la versión vigente.",
+      "avanzar": "Tocá «Publicar versión nueva».",
+      "ruta": "/plataforma/legales",
+      "accion": "Toca «Publicar versión nueva»."
+    },
+    {
+      "tablero": "Legales",
+      "tweaks": { "pantalla": "Publicar versión nueva" },
+      "antes": [
+        ["llenar", "#f-es", "Términos y condiciones de ArquitecturaBase, versión 3."],
+        ["llenar", "#f-en", "ArquitecturaBase terms and conditions, version 3."]
+      ],
+      "resaltar": "button.b-pri:has-text(\"Publicar\")",
+      "actor": "Martín · operador · web",
+      "titulo": "Carga el texto",
+      "texto": "Elige el documento, la fecha desde la que rige y el texto en español y en inglés.",
+      "avanzar": "Tocá «Publicar».",
+      "ruta": "/plataforma/legales",
+      "accion": "Completa el documento, la vigencia y los textos y toca «Publicar»."
+    },
+    {
+      "tablero": "Aceptar-Terminos",
+      "tweaks": { "caso": "Cambiaron los términos" },
+      "antes": [
+        ["clic", "input[type=\"checkbox\"]"]
+      ],
+      "resaltar": ".b-pri.lg:has-text(\"Aceptar y seguir\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lucía la acepta al entrar",
+      "texto": "En su próximo ingreso, la versión nueva aparece antes de seguir.",
+      "avanzar": "Marcá la casilla y tocá «Aceptar y seguir». Fin del recorrido.",
+      "ruta": "/aceptar-terminos",
+      "accion": "Marca la casilla y toca «Aceptar y seguir»."
+    }
+  ]
+}

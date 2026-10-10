@@ -18,17 +18,18 @@ Vive en claude.ai: <https://claude.ai/artifact/3afhCQaqwMx6kLxY4B6gpZ> (privada,
 | `recorrido.py` | Los datos: la versión del lienzo, los pasos y, en cada uno, las pantallas con sus tableros, su ruta, su etapa y si está programada. Una pantalla nueva se suma acá. |
 | `generar_recorrido.py` | Arma `Guia-Lienzo.html` y pasa las capturas a JPG. |
 | `capturar.mjs` | Saca las capturas de los tableros con Playwright y el Chrome del sistema. |
+| `capturar-recorridos.mjs` | Saca las capturas de cada paso de los recorridos guiados ([`../recorridos`](../recorridos/README.md)) y mide el lugar a resaltar. |
 
 ## Cómo regenerarla
 
 1. Actualizar `VERSION` en `recorrido.py` y, si hace falta, las pantallas y el estado del código.
 2. Correr `python docs/design/guia/generar_recorrido.py <salida>`. Deja `capturar.json` en la carpeta de salida, por ejemplo una carpeta temporal.
 3. Servir el lienzo con `python -m http.server 8815 --directory docs/design/lienzo`.
-4. Correr `node docs/design/guia/capturar.mjs <salida>`. Deja las capturas en `<salida>/png`. Después, apagar el servidor.
-5. Correr otra vez `python docs/design/guia/generar_recorrido.py <salida>`. Pasa las capturas a `<salida>/img` y arma `<salida>/Guia-Lienzo.html`.
+4. Correr `node docs/design/guia/capturar.mjs <salida>` y `node docs/design/guia/capturar-recorridos.mjs <salida>`. Dejan las capturas en `<salida>/png` y `<salida>/rec`. Después, apagar el servidor.
+5. Correr otra vez `python docs/design/guia/generar_recorrido.py <salida>`. Pasa las capturas a `<salida>/img` y `<salida>/img/rec`, y arma `<salida>/Guia-Lienzo.html` con los recorridos guiados.
 6. Publicar con la herramienta Artifact en la misma URL, con estos datos:
    - `root`: `<salida>`;
    - `file_path`: `<salida>/Guia-Lienzo.html`;
-   - `files`: cada `img/*.jpg`.
+   - `files`: cada `img/*.jpg` y `img/rec/*.jpg`.
 
 Las capturas no se commitean.

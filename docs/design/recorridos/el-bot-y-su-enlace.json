@@ -1,0 +1,51 @@
+{
+  "id": "el-bot-y-su-enlace",
+  "titulo": "El bot y su enlace",
+  "etapa": "Etapa 8 · WhatsApp",
+  "orden": 20,
+  "resumen": "Lucía le escribe al número de la plataforma y entra con el enlace que le manda el bot.",
+  "pasos": [
+    {
+      "tablero": "Mensajes",
+      "tweaks": { "mensaje": "Enlace para entrar (bot)", "canal": "WhatsApp" },
+      "resaltar": ".wa-boton:has-text(\"Entrar\")",
+      "actor": "Lucía · WhatsApp",
+      "titulo": "Le escribe al bot",
+      "texto": "Le escribe «Hola» al número de la plataforma. El bot le contesta con un enlace de un solo uso, que vence en 10 minutos.",
+      "avanzar": "Tocá «Entrar».",
+      "ruta": "—",
+      "accion": "Escribe «Hola» y toca «Entrar»."
+    },
+    {
+      "tablero": "Enlace",
+      "tweaks": { "estado": "Vista previa" },
+      "resaltar": "a.b-pri.lg:has-text(\"Continuar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Confirma que es ella",
+      "texto": "El enlace entra como persona; después puede ir a su organización desde Perfiles. Si no pidió entrar, cierra la página.",
+      "avanzar": "Tocá «Continuar».",
+      "ruta": "/login/enlace",
+      "accion": "Toca «Continuar»."
+    },
+    {
+      "tablero": "Enlace",
+      "tweaks": { "estado": "Iniciando sesión" },
+      "actor": "Sistema",
+      "titulo": "Se abre la sesión",
+      "texto": "Un mensaje nunca abre la sesión solo: hace falta tocar «Continuar».",
+      "avanzar": "Sigue solo: tocá «Siguiente».",
+      "ruta": "/login/enlace",
+      "accion": "Espera a que se abra la sesión."
+    },
+    {
+      "tablero": "Inicio-Personal",
+      "tweaks": { "estado": "Con el aviso" },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Está adentro",
+      "texto": "Entró a su perfil personal. Si el número no tuviera cuenta, el bot le ofrecería crearla en la web; a un operador le contesta «Para entrar, usá la web.».",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/",
+      "accion": "Ve su perfil personal."
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "id": "crear-una-organizacion",
+  "titulo": "Crear una organización",
+  "etapa": "Plataforma",
+  "orden": 10,
+  "resumen": "Martín crea una organización y deja invitado a su Dueño.",
+  "pasos": [
+    {
+      "tablero": "Organizaciones",
+      "tweaks": {},
+      "resaltar": "button.b-pri:has-text(\"Crear organización\")",
+      "actor": "Martín · operador · web",
+      "titulo": "Va a Organizaciones",
+      "texto": "Ve todas las organizaciones, con su Dueño, su origen y su estado.",
+      "avanzar": "Tocá «Crear organización».",
+      "ruta": "/plataforma/organizaciones",
+      "accion": "Toca «Crear organización»."
+    },
+    {
+      "tablero": "Organizaciones",
+      "tweaks": {},
+      "antes": [
+        ["clic", "button.b-pri:has-text(\"Crear organización\")"],
+        ["llenar", "#f-Nombre", "Taller del Sur"],
+        ["llenar", "#f-Empresa", "Taller del Sur S.R.L."],
+        ["llenar", "#f-Correo", "ana@tallerdelsur.ejemplo.com"]
+      ],
+      "resaltar": ".dlg button.b-pri",
+      "actor": "Martín · operador · web",
+      "titulo": "Carga los datos",
+      "texto": "Escribe el nombre, la primera empresa y el correo del Dueño; la zona y el idioma vienen por defecto.",
+      "avanzar": "Tocá «Crear organización».",
+      "ruta": "/plataforma/organizaciones",
+      "accion": "Completa los datos y toca «Crear organización»."
+    },
+    {
+      "tablero": "Organizacion",
+      "tweaks": { "estado": "Activa", "pestana": "Dueños", "duenos": "Sin Dueño todavía" },
+      "actor": "Martín · operador · web",
+      "titulo": "Queda creada",
+      "texto": "La organización queda activa y su Dueño, invitado: entra cuando acepta.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/plataforma/organizaciones/:id",
+      "accion": "Ve la ficha de la organización nueva."
+    }
+  ]
+}

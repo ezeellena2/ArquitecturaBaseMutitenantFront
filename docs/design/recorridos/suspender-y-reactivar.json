@@ -1,0 +1,67 @@
+{
+  "id": "suspender-y-reactivar",
+  "titulo": "Suspender y reactivar una cuenta",
+  "etapa": "Plataforma",
+  "orden": 30,
+  "resumen": "Martín suspende una cuenta con un motivo y después la reactiva.",
+  "pasos": [
+    {
+      "tablero": "Cuentas",
+      "tweaks": {},
+      "resaltar": "a.c1 >> nth=0",
+      "actor": "Martín · operador · web",
+      "titulo": "Busca la cuenta",
+      "texto": "En Cuentas están las personas y los operadores.",
+      "avanzar": "Tocá la cuenta.",
+      "ruta": "/plataforma/cuentas",
+      "accion": "Busca la cuenta y la abre."
+    },
+    {
+      "tablero": "Cuenta-Plat",
+      "tweaks": { "estado": "Activa", "cuenta": "Persona" },
+      "resaltar": "button:has-text(\"Suspender\")",
+      "actor": "Martín · operador · web",
+      "titulo": "Abre la ficha",
+      "texto": "Ve sus métodos de ingreso, sus organizaciones y su historial de seguridad.",
+      "avanzar": "Tocá «Suspender».",
+      "ruta": "/plataforma/cuentas/:id",
+      "accion": "Toca «Suspender»."
+    },
+    {
+      "tablero": "Cuenta-Plat",
+      "tweaks": { "estado": "Activa", "cuenta": "Persona" },
+      "antes": [
+        ["clic", "button:has-text(\"Suspender\")"],
+        ["llenar", "#conf-motivo", "Lo pidió la organización."]
+      ],
+      "resaltar": ".dlg button.b-pel",
+      "actor": "Martín · operador · web",
+      "titulo": "Confirma con un motivo",
+      "texto": "Suspender cierra sus sesiones y le impide entrar. El motivo queda en el historial.",
+      "avanzar": "Escribí el motivo y tocá «Suspender».",
+      "ruta": "/plataforma/cuentas/:id",
+      "accion": "Escribe el motivo y toca «Suspender»."
+    },
+    {
+      "tablero": "Cuenta-Plat",
+      "tweaks": { "estado": "Suspendida", "cuenta": "Persona" },
+      "resaltar": "button:has-text(\"Reactivar\")",
+      "actor": "Martín · operador · web",
+      "titulo": "Queda suspendida",
+      "texto": "La ficha muestra la suspensión. Cuando se resuelve, la reactiva.",
+      "avanzar": "Tocá «Reactivar».",
+      "ruta": "/plataforma/cuentas/:id",
+      "accion": "Toca «Reactivar»."
+    },
+    {
+      "tablero": "Cuenta-Plat",
+      "tweaks": { "estado": "Activa", "cuenta": "Persona" },
+      "actor": "Martín · operador · web",
+      "titulo": "Vuelve a estar activa",
+      "texto": "La persona puede volver a entrar.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/plataforma/cuentas/:id",
+      "accion": "Ve la cuenta activa."
+    }
+  ]
+}

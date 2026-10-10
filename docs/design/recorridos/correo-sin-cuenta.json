@@ -1,0 +1,46 @@
+{
+  "id": "correo-sin-cuenta",
+  "titulo": "Un correo sin cuenta",
+  "etapa": "Ingreso y registro",
+  "orden": 50,
+  "resumen": "Mariana intenta ingresar con un correo que no tiene cuenta y la pantalla la lleva a crearla.",
+  "pasos": [
+    {
+      "tablero": "Ingreso",
+      "tweaks": { "estado": "Correo sin cuenta", "puerta": "Persona" },
+      "resaltar": "a.err-acc",
+      "actor": "Mariana · persona · web",
+      "titulo": "Su correo no tiene cuenta",
+      "texto": "La pantalla lo dice debajo del campo, no manda ningún código y le ofrece crear la cuenta con ese correo.",
+      "avanzar": "Tocá «Crear mi cuenta».",
+      "ruta": "/login",
+      "accion": "Ve «No hay una cuenta con ese correo.» y toca «Crear mi cuenta»."
+    },
+    {
+      "tablero": "Registro",
+      "tweaks": { "estado": "Correo" },
+      "antes": [
+        ["clic", "input[type=\"checkbox\"]"],
+        ["llenar", "#f-correo", "mariana.lopez@gmail.com"]
+      ],
+      "resaltar": "button.b-pri.lg",
+      "actor": "Mariana · persona · web",
+      "titulo": "Crea la cuenta con ese correo",
+      "texto": "Llega al registro con el correo ya escrito. Acepta los términos y sigue.",
+      "avanzar": "Tocá «Crear cuenta».",
+      "ruta": "/registro",
+      "accion": "Marca la casilla y toca «Crear cuenta»."
+    },
+    {
+      "tablero": "Registro",
+      "tweaks": { "estado": "Código enviado" },
+      "resaltar": "button.b-pri.lg",
+      "actor": "Mariana · persona · web",
+      "titulo": "Confirma el correo",
+      "texto": "Con el código queda creada la cuenta, como en «Registrarse».",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/registro",
+      "accion": "Escribe el código y toca «Verificar y crear la cuenta»."
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "ingresar-con-google",
+  "titulo": "Ingresar con Google",
+  "etapa": "Ingreso y registro",
+  "orden": 40,
+  "resumen": "Lucía entra con su cuenta de Google, sin código.",
+  "pasos": [
+    {
+      "tablero": "Ingreso",
+      "tweaks": { "estado": "Correo", "puerta": "Persona" },
+      "resaltar": "a.b-google",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Elige Google",
+      "texto": "En el ingreso, Google está arriba de todo. Si su correo de Google es el de su cuenta, entra sin código.",
+      "avanzar": "Tocá «Ingresar con Google».",
+      "ruta": "/login",
+      "accion": "Toca «Ingresar con Google» y elige su cuenta en Google."
+    },
+    {
+      "tablero": "Sesion",
+      "tweaks": { "estado": "Iniciando sesión" },
+      "actor": "Sistema",
+      "titulo": "Se abre la sesión",
+      "texto": "Google confirma quién es y vuelve al sistema, que abre la sesión.",
+      "avanzar": "Sigue solo: tocá «Siguiente».",
+      "ruta": "/auth/callback",
+      "accion": "Espera a que se abra la sesión."
+    },
+    {
+      "tablero": "Inicio-Personal",
+      "tweaks": { "estado": "Con el aviso" },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Está adentro",
+      "texto": "Entró a su perfil personal, como con el código.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/",
+      "accion": "Ve su perfil personal."
+    }
+  ]
+}

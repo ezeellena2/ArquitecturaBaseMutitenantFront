@@ -1,0 +1,42 @@
+{
+  "id": "guardar-y-exportar",
+  "titulo": "Guardar y exportar una conversación",
+  "etapa": "Etapa 8b · Asistente",
+  "orden": 40,
+  "resumen": "Lucía guarda una conversación para que no venza y la exporta.",
+  "pasos": [
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Respuesta" },
+      "resaltar": ".as-it.on .as-keb",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Abre el menú de la conversación",
+      "texto": "Las conversaciones se borran solas a los 30 días sin actividad, salvo las guardadas.",
+      "avanzar": "Tocá el ⋮ de la conversación.",
+      "ruta": "/org",
+      "accion": "Toca el ⋮ de la conversación."
+    },
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Menú de una conversación" },
+      "resaltar": ".as-menu .menu-it:has-text(\"Guardar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "La guarda",
+      "texto": "Guardada, no vence nunca y pasa a «Guardadas».",
+      "avanzar": "Tocá «Guardar».",
+      "ruta": "/org",
+      "accion": "Toca «Guardar»."
+    },
+    {
+      "tablero": "Asistente-Org",
+      "tweaks": { "asistente": "Menú de una conversación" },
+      "resaltar": ".as-menu .menu-it:has-text(\"Exportar en PDF\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "La exporta",
+      "texto": "Puede bajarla en Markdown o en PDF.",
+      "avanzar": "Tocá «Exportar en PDF». Fin del recorrido.",
+      "ruta": "/org",
+      "accion": "Toca «Exportar en PDF»."
+    }
+  ]
+}
