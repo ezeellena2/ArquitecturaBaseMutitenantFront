@@ -1,5 +1,14 @@
 {
   "title": "Assistant",
+  "policy": {
+    "description": { "own": "Can use its own key", "platform": "With the platform key" },
+    "actions": { "permit": "Allow its own key", "revoke": "Only with the platform key" },
+    "confirm": {
+      "permit": { "title": "Allow {{organization}} to use its own key?", "description": "{{organization}} can add its Anthropic key and set its limits.", "button": "Allow", "pending": "Allowing…" },
+      "revoke": { "title": "Leave {{organization}} with only the platform key?", "description": "{{organization}} will no longer be able to use its own key. If it is using that key, it will need to select the platform key in Assistant Settings to make AI requests again.", "button": "Only the platform key", "pending": "Saving…" }
+    },
+    "messages": { "permit": "{{organization}} can use its own key.", "revoke": "{{organization}} can no longer use its own key." }
+  },
   "home": "Home",
   "welcome": "What would you like to ask?",
   "loading": "Loading…",

@@ -76,6 +76,7 @@ function OrganizationDetail({ id }: { id: string }) {
   const domains = useQuery({ queryKey: tenantDomainsQueryKey(id), queryFn: () => fetchTenantDomains(id), enabled: canManage && Boolean(organization.data) && tab === "domains", meta: { silent: true } });
   const publicPage = useQuery({ queryKey: tenantPublicPageQueryKey(id), queryFn: () => fetchTenantPublicPage(id), enabled: canManage && Boolean(organization.data) && tab === "publicPage", meta: { silent: true } });
   const [featureWrites, setFeatureWrites] = useState(() => new Map<string, OwnFeatureWrite>());
+  const [moduleWrites, setModuleWrites] = useState(() => new Map<string, unknown>());
   const [domainWrites, setDomainWrites] = useState(() => new Map<string, OwnDomainWrite>());
   const [publicPageWrite, setPublicPageWrite] = useState<OwnPublicPageWrite>();
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
@@ -112,6 +113,8 @@ function OrganizationDetail({ id }: { id: string }) {
         { value: "owners", label: t("platformTenants:detail.owners"), count: organizationOwners(data).length, content: <OrganizationOwnersTab organization={data} /> },
         { value: "modules", label: t("platformTenants:modules.title"), count: features.data?.length, hidden: features.data?.length === 0,
           content: <OrganizationModulesTab organization={data} query={features} writes={featureWrites} onWrite={(key, write) => setFeatureWrites((previous) => new Map(previous).set(key, write))}
+            moduleWrites={moduleWrites} onModuleWrite={(key, write) => setModuleWrites((previous) => new Map(previous).set(key, write))}
+            onModuleConflict={(key) => setModuleWrites((previous) => { const next = new Map(previous); next.delete(key); return next; })}
             onConflict={(key) => setFeatureWrites((previous) => { const next = new Map(previous); next.delete(key); return next; })} /> },
         { value: "domains", label: t("platformTenants:domains.title"), hidden: !canManage,
           content: <OrganizationDomainTab organization={data} query={domains} writes={domainWrites} onWrite={(domain, write) => setDomainWrites((previous) => new Map(previous).set(domain, write))}

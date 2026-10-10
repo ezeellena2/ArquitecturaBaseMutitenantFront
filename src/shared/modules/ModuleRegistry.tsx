@@ -3,10 +3,22 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { homeOf, type Access } from "@/tenancy/access";
-import type { ModuleContentProps } from "./types";
+import type { ModuleContentProps, ModuleOrganizationUiProps } from "./types";
 import { ModuleRegistryContext, useModuleHome, useModuleRegistry } from "./useModules";
 
 export const ModuleRegistryProvider = ModuleRegistryContext.Provider;
+
+/** Se monta sólo para una fila real autorizada; el fallback conserva las acciones genéricas. */
+export function ModuleOrganizationUi({ moduleId, children, ...props }: Omit<ModuleOrganizationUiProps, "me"> & { moduleId: string }) {
+  const registry = useModuleRegistry();
+  const { data: me } = useCurrentUser();
+  const contribution = registry.find((module) => module.id === moduleId)?.organizationUi;
+  const fallback = children({});
+  if (!me || !contribution || !props.feature.enabled || props.organization.status === "Closed" || contribution.guard(me) !== "allowed") return fallback;
+  const Content = contribution.Content;
+  return <Suspense fallback={fallback}><Content key={`${me.access}:${me.activeTenantId}:${me.id}:${props.organization.id}`} me={me} {...props}>{children}</Content></Suspense>;
+}
+
 
 /** El área conserva el inicio anterior y entrega únicamente sus bloques existentes. */
 export function ModuleHome({ access, fallback, ...content }: Omit<ModuleContentProps, "me"> & { access: Access; fallback: ReactNode }) {

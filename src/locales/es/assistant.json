@@ -1,5 +1,14 @@
 {
   "title": "Asistente",
+  "policy": {
+    "description": { "own": "Puede usar su clave", "platform": "Con la clave de la plataforma" },
+    "actions": { "permit": "Permitir su propia clave", "revoke": "Solo con la clave de la plataforma" },
+    "confirm": {
+      "permit": { "title": "¿Permitir que {{organization}} use su propia clave?", "description": "{{organization}} puede cargar su clave de Anthropic y fijar sus topes.", "button": "Permitir", "pending": "Permitiendo…" },
+      "revoke": { "title": "¿Dejar a {{organization}} solo con la clave de la plataforma?", "description": "{{organization}} ya no podrá usar su propia clave. Si la está usando, tendrá que elegir la clave de la plataforma en Configuración del asistente para volver a hacer consultas con IA.", "button": "Solo la de la plataforma", "pending": "Guardando…" }
+    },
+    "messages": { "permit": "{{organization}} puede usar su propia clave.", "revoke": "{{organization}} ya no puede usar su propia clave." }
+  },
   "home": "Inicio",
   "welcome": "¿Qué querés consultar?",
   "loading": "Cargando…",

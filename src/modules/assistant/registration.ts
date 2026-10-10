@@ -21,6 +21,10 @@ export function assistantAccess(me: MeResponse, action: "chat" | "configure" | "
 const Home = lazy(() => import("./pages/RegisteredAssistant").then((module) => ({ default: module.RegisteredAssistantHome })));
 const Phone = lazy(() => import("./pages/RegisteredAssistant").then((module) => ({ default: module.RegisteredAssistantPhone })));
 const chat = (me: MeResponse) => assistantAccess(me, "chat");
+export const assistantPolicyAccess = (me: MeResponse): ModuleAccess => me.access !== "platform" ? "forbidden"
+  : !me.moduleCapabilities?.some((item) => item.key === "assistant") ? "unavailable"
+  : me.effectivePermissions.platform.includes("platform.tenants.read") ? "allowed" : "forbidden";
+const OrganizationPolicy = lazy(() => import("./policy/OrganizationAssistantPolicy").then((module) => ({ default: module.OrganizationAssistantPolicy })));
 const configure = (me: MeResponse) => assistantAccess(me, "configure");
 const OrganizationSettings = lazy(() => import("./settings/OrganizationAssistantSettingsPage").then((module) => ({ default: module.OrganizationAssistantSettingsPage })));
 const PlatformSettings = lazy(() => import("./settings/PlatformAssistantSettingsPage").then((module) => ({ default: module.PlatformAssistantSettingsPage })));
@@ -28,6 +32,7 @@ const settingsNavigation = { labelKey: "assistant:settings.title", icon: Sparkle
 
 export const assistantRegistration: ModuleRegistration = {
   id: "assistant",
+  organizationUi: { nameKey: "assistant:title", guard: assistantPolicyAccess, Content: OrganizationPolicy },
   home: { guard: chat, Content: Home },
   routes: [
     { access: "business", path: "/org/asistente/configuracion", guard: configure, Page: OrganizationSettings, navigation: settingsNavigation },

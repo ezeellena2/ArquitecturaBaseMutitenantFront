@@ -2,6 +2,8 @@
 
 Copia de la **versión 115** (2026-10-08) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 201 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
+El 2026-10-10 el usuario aprobó corregir localmente, sobre v115, la confirmación y el aviso de revocación de clave propia en `Organizacion.dc.html`: revocar no cambia automáticamente la financiación ni los topes. El tablero móvil sólo contiene la fila y su hoja de acciones, sin esas promesas. Este ajuste de fuente no declara una publicación remota ni una versión nueva del lienzo.
+
 **La guía del lienzo** recorre estas pantallas en el orden en que una persona usa el sistema: <https://claude.ai/artifact/3afhCQaqwMx6kLxY4B6gpZ>. Se regenera y se publica con cada versión del lienzo; cómo, en [`../guia/README.md`](../guia/README.md).
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
