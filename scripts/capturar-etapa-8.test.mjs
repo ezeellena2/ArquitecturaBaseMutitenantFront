@@ -31,6 +31,22 @@ test("los rechazos de ingreso y enlace copian el HTTP publicado sin intentos en 
   }
 });
 
+test("Cuenta vencida conserva Expired de la API y muestra cumplida la espera de reenvío", async () => {
+  const manifest = await buildManifest();
+  const entries = manifest.cases.filter((entry) => /^cuenta-verificar-vencido-(desktop|mobile)$/.test(entry.id));
+  assert.equal(entries.length, 2);
+  for (const entry of entries) {
+    const sent = entry.app.responses.find((item) => item.method === "POST" && item.path === "/api/me/login-methods");
+    const rejected = entry.app.responses.find((item) => item.path.endsWith("/verify"));
+    assert.equal(sent.body.resendAfterSeconds, 0, entry.id);
+    assert.equal(rejected.body.code, "Auth.LoginCode.Expired", entry.id);
+    assert.equal(rejected.status, 400, entry.id);
+    assert.equal(rejected.body.detail, "El código venció. Pedí uno nuevo.", entry.id);
+    assert.equal(Object.hasOwn(rejected.body, "attemptsLeft"), false, entry.id);
+    assert.ok(entry.app.actions.some((action) => action.type === "click" && action.name === "Verificar"), entry.id);
+  }
+});
+
 test("N3 abre todos los menús desktop sobre el DOM real de la fuente v116", { timeout: 30_000 }, async () => {
   const manifest = await buildManifest();
   assert.equal(manifest.canvasRevision, "21f227bcf6fd7a910272c682d5085338f8e2039c");
@@ -60,7 +76,7 @@ test("N3 abre todos los menús desktop sobre el DOM real de la fuente v116", { t
   }
 });
 
-test("N2/N3 preservan las 108 escenas, corrigen sólo 14 mocks HTTP y añaden 36 comparaciones pertinentes", async () => {
+test("N2/N3 preservan las 108 escenas, corrigen sólo 16 mocks vigentes y añaden 36 comparaciones pertinentes", async () => {
   const previous = JSON.parse(execFileSync("git", ["show", "9e1e4b9c:docs/design/capturas/etapa-8/manifest.json"], { encoding: "utf8", cwd: root }));
   const current = await buildManifest();
   assert.equal(current.canvasVersion, "v116 · 21f227bc");
@@ -75,6 +91,9 @@ test("N2/N3 preservan las 108 escenas, corrigen sólo 14 mocks HTTP y añaden 36
         detail: code === "Auth.LoginCode.Invalid" ? "El código no es válido." : code === "Auth.LoginCode.Expired" ? "El código venció. Pedí uno nuevo." : "Tu cuenta está suspendida.",
         ...(code === "Auth.LoginCode.Invalid" ? { attemptsLeft: 3 } : {}),
       };
+    }
+    if (/^cuenta-verificar-vencido-(desktop|mobile)$/.test(entry.id)) {
+      expected.app.responses.find((item) => item.method === "POST" && item.path === "/api/me/login-methods").body.resendAfterSeconds = 0;
     }
     assert.deepEqual(current.cases.find((candidate) => candidate.id === entry.id), expected, entry.id);
   }

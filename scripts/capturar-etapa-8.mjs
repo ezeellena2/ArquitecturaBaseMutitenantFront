@@ -236,7 +236,8 @@ export async function buildManifest() {
   for (const [suffix, state, errorCode] of [
     ["codigo", "WhatsApp", null], ["incorrecto", "WhatsApp: código incorrecto", "Auth.LoginCode.Invalid"], ["vencido", "WhatsApp: código vencido", "Auth.LoginCode.Expired"],
   ]) both(`cuenta-verificar-${suffix}`, "cuenta", "Cuenta-Verificar", { estado: state }, {
-    ...accountDialog, responses: [...accountApp.responses, api("POST", "/api/me/login-methods", etapa8MethodCode, 202),
+    // La escena vencida representa la espera de reenvío ya cumplida; Expired sigue viniendo de verify.
+    ...accountDialog, responses: [...accountApp.responses, api("POST", "/api/me/login-methods", suffix === "vencido" ? { ...etapa8MethodCode, resendAfterSeconds: 0 } : etapa8MethodCode, 202),
       ...(errorCode ? [api("POST", "/api/me/login-methods/phone-lucia/verify", problem(errorCode, null, null, { detail: errorCode === "Auth.LoginCode.Invalid" ? "El código no es válido." : "El código venció. Pedí uno nuevo." }), 400)] : [])],
     actions: [...addPhone, click("Enviar código"), ...(errorCode ? code : [])], readyText: "Verificar tu WhatsApp",
   });
