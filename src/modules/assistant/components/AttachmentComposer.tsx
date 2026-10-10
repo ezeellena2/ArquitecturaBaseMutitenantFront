@@ -7,8 +7,9 @@ import { FileSizeText } from "@/shared/ui/format/FileSizeText";
 import { FormField } from "@/shared/ui/FormField";
 import { CloseIcon, SendIcon } from "@/shared/ui/icons";
 import { FileText, Paperclip } from "lucide-react";
+import { useFormat } from "@/shared/format/useFormat";
 
-import { assistantAttachmentTypes, type PendingAssistantFile } from "../lib/assistantFiles";
+import { assistantAttachmentTypes, type AssistantAttachmentLimits, type PendingAssistantFile } from "../lib/assistantFiles";
 
 function FilePreview({ file }: { file: File }) {
   const ref = useRef<HTMLImageElement>(null);
@@ -37,13 +38,15 @@ function ComposerFile() {
   </li></AttachmentPrimitive.Root>;
 }
 
-export function AttachmentComposer({ files, errorId, placeholder, unavailable, pending, canStop, onFiles, onStop }: {
+export function AttachmentComposer({ files, limits, errorId, placeholder, unavailable, pending, canStop, onFiles, onStop }: {
+  limits: AssistantAttachmentLimits;
   placeholder: string;
   errorId?: string;
   files: readonly PendingAssistantFile[]; unavailable: boolean; pending: boolean; canStop: boolean;
   onFiles: (files: File[]) => void; onStop: () => void;
 }) {
   const { t } = useTranslation(["assistant", "common"]);
+  const format = useFormat();
   const text = useAuiState((state) => state.composer.text);
   const running = useAuiState((state) => state.thread.isRunning);
   const [required, setRequired] = useState(false);
@@ -60,7 +63,7 @@ export function AttachmentComposer({ files, errorId, placeholder, unavailable, p
     <div className="flex items-center gap-2">
       <input ref={fileInput} type="file" multiple tabIndex={-1} accept={assistantAttachmentTypes.join(",")} aria-label={t("attachments.add")} aria-invalid={files.some((item) => item.invalid) || undefined} aria-describedby={errorId} className="sr-only" disabled={unavailable || pending}
         onChange={(event) => { onFiles(Array.from(event.target.files ?? [])); event.target.value = ""; }} />
-      <Button type="button" variant="icon" size="icon" aria-label={t("attachments.add")} disabled={unavailable || pending} onClick={() => fileInput.current?.click()}><Paperclip className="size-5" /></Button>
+      <Button type="button" variant="icon" size="icon" aria-label={t("attachments.add")} title={t("attachments.hint", { count: limits.maxAttachments, maxFiles: format.formatInteger(limits.maxAttachments), size: format.formatFileSize(limits.maxAttachmentBytes) })} disabled={unavailable || pending} onClick={() => fileInput.current?.click()}><Paperclip className="size-5" /></Button>
       <span className="flex-1" />
       {canStop ? running ? <ComposerPrimitive.Cancel asChild><Button type="button" variant="outline">{t("composer.stop")}</Button></ComposerPrimitive.Cancel>
         // Antes de start todavía no hay un turno SDK. El servidor conserva la

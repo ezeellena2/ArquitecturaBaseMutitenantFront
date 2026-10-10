@@ -11,7 +11,7 @@ function AttachmentComposer({ onSend, ...value }: typeof props) {
   return <AssistantRuntimeProvider runtime={runtime}><Composer {...value} /></AssistantRuntimeProvider>;
 }
 
-const props = { files: [], placeholder: "Preguntá algo", unavailable: false, pending: false, canStop: false, onFiles: () => {}, onSend: async (_text: string) => true, onStop: () => {} };
+const props = { files: [], limits: { maxAttachments: 5, maxAttachmentBytes: 10 * 1024 * 1024 }, placeholder: "Preguntá algo", unavailable: false, pending: false, canStop: false, onFiles: () => {}, onSend: async (_text: string) => true, onStop: () => {} };
 
 describe("disponibilidad y espera del compositor", () => {
   it("disponible vacío deja enviar y valida sin llamar al envío", async () => {

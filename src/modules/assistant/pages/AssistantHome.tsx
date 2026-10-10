@@ -15,6 +15,7 @@ import { AppBarTools } from "@/shared/ui/app/AppBarTools";
 import { AppIconButton } from "@/shared/ui/app/AppBar";
 import { Menu, Plus, Sparkles, SquarePen } from "lucide-react";
 import { NumberText } from "@/shared/ui/format/NumberText";
+import { useFormat } from "@/shared/format/useFormat";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { ChevronLeftIcon, CopyIcon, PencilIcon, TrashIcon } from "@/shared/ui/icons";
@@ -67,6 +68,7 @@ function AssistantSession(props: AssistantHomeProps) {
   const { access, tenantId, userId } = props.scope;
   const scope = useMemo(() => ({ access, tenantId, userId }), [access, tenantId, userId]);
   const { t } = useTranslation("assistant");
+  const format = useFormat();
   const client = useQueryClient();
   const { phone } = useAppChrome();
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -100,8 +102,10 @@ function AssistantSession(props: AssistantHomeProps) {
         accept: assistantAttachmentTypes.join(","),
         add: async ({ file }) => {
           operations.lifetime.assertActive();
+          const limits = latest.current.state.data;
+          if (!limits) throw new MessageNotSentError();
           const id = crypto.randomUUID();
-          changeFiles([...filesRef.current, { id, file, ...(validateAssistantFiles([file], 0) === "tooLarge" ? { invalid: "tooLarge" as const } : {}) }]);
+          changeFiles([...filesRef.current, { id, file, ...(validateAssistantFiles([file], 0, limits) === "tooLarge" ? { invalid: "tooLarge" as const } : {}) }]);
           return { id, file, name: file.name, contentType: file.type, type: file.type.startsWith("image/") ? "image" : "document", status: { type: "requires-action", reason: "composer-send" } };
         },
         // Los bytes se suben una sola vez, con la versión releída, en send.
@@ -182,8 +186,10 @@ function AssistantSession(props: AssistantHomeProps) {
   }
   async function send(text: string, attachmentIds: readonly string[]): Promise<boolean> {
     const chosen = filesRef.current.filter((item) => attachmentIds.includes(item.id));
-    const issue = validateAssistantFiles(chosen.map((item) => item.file), 0);
-    if (issue) { setFileError(invalidFiles.length ? null : t(`attachments.${issue}`)); return false; }
+    const limits = latest.current.state.data;
+    if (!limits) return false;
+    const issue = validateAssistantFiles(chosen.map((item) => item.file), 0, limits);
+    if (issue) { setFileError(invalidFiles.length ? null : t(`attachments.${issue}`, { count: limits.maxAttachments, maxFiles: format.formatInteger(limits.maxAttachments), size: format.formatFileSize(limits.maxAttachmentBytes) })); return false; }
     setFileError(null);
     let id = selectedId;
     let created = false;
@@ -378,13 +384,13 @@ function AssistantSession(props: AssistantHomeProps) {
   const canViewUsage = scope.access === "business" ? props.hasPermission("assistant.configure") : scope.access === "platform" && props.hasPermission("platform.assistant.read");
   const history = <ConversationList scope={scope} lifetime={operations.lifetime} enabled={operations.active} selectedId={selectedId} retentionDays={state.retentionDays} onNew={() => select(null)} onSelect={select} actions={actions}
     onActions={phone ? (conversation) => { setHistoryOpen(false); setPhoneActions({ title: conversation.title ?? null, items: actions(conversation) }); } : undefined} />;
-  const composer = <AttachmentComposer key={generation} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} pending={busy} canStop={runtime.canStop}
+  const composer = <AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} pending={busy} canStop={runtime.canStop}
     onFiles={(chosen) => {
-      const issue = validateAssistantFiles(chosen, files.length);
+      const issue = validateAssistantFiles(chosen, files.length, state);
       // El exceso permitido queda local para corregirlo; no admite un MIME
       // rechazado que la prioridad tooLarge de la validación de lote ocultó.
       const retainOversized = issue === "tooLarge" && chosen.every((file) => (assistantAttachmentTypes as readonly string[]).includes(file.type));
-      setFileError(issue && !retainOversized ? t(`attachments.${issue}`) : null);
+      setFileError(issue && !retainOversized ? t(`attachments.${issue}`, { count: state.maxAttachments, maxFiles: format.formatInteger(state.maxAttachments), size: format.formatFileSize(state.maxAttachmentBytes) }) : null);
       if (!issue || retainOversized) for (const file of chosen) void runtime.runtime.thread.composer.addAttachment(file).catch(() => undefined);
     }}
     onStop={() => { void runtime.stop().catch(() => undefined); }} />;
@@ -404,7 +410,7 @@ function AssistantSession(props: AssistantHomeProps) {
       </>}
       {state.remainingMessages != null && state.remainingMessages > 0 && state.remainingMessages <= 10 ? <p className="pb-3 text-center text-sm text-[var(--t2)]"><Trans ns="assistant" i18nKey="limit.remaining" count={state.remainingMessages} components={{ remaining: <NumberText value={state.remainingMessages} /> }} /></p> : null}
       {hasAttachmentError ? <p id={fileErrorId} role="alert" className="px-5 pb-3 text-[var(--peligro)]">{fileError ? <span className="block">{fileError}</span> : null}{invalidFiles.map(({ id, file }) =>
-        <span key={id} id={`${fileErrorId}-${id}`} className="block">{t("attachments.tooLargeNamed", { name: file.name })}</span>)}</p> : null}
+        <span key={id} id={`${fileErrorId}-${id}`} className="block">{t("attachments.tooLargeNamed", { name: file.name, size: format.formatFileSize(state.maxAttachmentBytes) })}</span>)}</p> : null}
       {actionError && !dialog && !notice ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{actionError}</p> : null}
       {runtimeError ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{runtimeError}</p> : null}
       {runtime.error instanceof ApiError && runtime.error.isNetworkError ? <Button variant="link" onClick={() => { void runtime.retryNetwork().catch(() => undefined); }}>{t("retry")}</Button> : null}

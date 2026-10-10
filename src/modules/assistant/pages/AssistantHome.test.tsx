@@ -46,6 +46,23 @@ beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); a
 afterEach(() => { resetHttpClient(); vi.unstubAllGlobals(); });
 
 describe("interfaz del asistente", () => {
+  it("usa los topes de State antes de crear o subir y muestra tamaño y cantidad actuales", async () => {
+    const app = setup({ ...state, maxAttachments: 1, maxAttachmentBytes: 500_000 });
+    const add = await screen.findByRole("button", { name: "Adjuntar" });
+    await waitFor(() => expect(add).toHaveAttribute("title", "Imágenes o PDF, hasta 500 KB y 1 por consulta"));
+    const input = app.container.querySelector<HTMLInputElement>('input[type="file"]')!;
+    const first = new File(["pdf"], "a.pdf", { type: "application/pdf" });
+    await app.user.upload(input, [first, new File(["png"], "b.png", { type: "image/png" })]);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Podés adjuntar hasta 1 archivo.");
+    expect(screen.queryByRole("button", { name: "Quitar a.pdf" })).not.toBeInTheDocument();
+    await app.user.upload(input, new File([new Uint8Array(500_001)], "large.pdf", { type: "application/pdf" }));
+    expect(await screen.findByRole("button", { name: "Quitar large.pdf" })).toBeVisible();
+    expect(screen.getByRole("alert")).toHaveTextContent("large.pdf pesa más de 500 KB.");
+    await app.user.type(screen.getByRole("textbox", { name: "Tu consulta" }), "Leé el archivo");
+    await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    expect(app.created()).toBe(0);
+    expect(app.requests).toHaveLength(0);
+  });
   it.each([
     { culture: "es-AR", count: 1, text: "Te queda 1 consulta hoy." },
     { culture: "es-AR", count: 2, text: "Te quedan 2 consultas hoy." },
@@ -366,9 +383,9 @@ describe("interfaz del asistente", () => {
     await app.user.upload(input, [png, pdf]);
     const removePdf = screen.getByRole("button", { name: "Quitar planilla.pdf" });
     expect(screen.getByRole("button", { name: "Quitar captura.png" })).toBeInTheDocument();
-    expect(screen.getByRole("alert")).toHaveTextContent("planilla.pdf pesa más de 10 MB.");
+    expect(screen.getByRole("alert")).toHaveTextContent("planilla.pdf pesa más de 10,5 MB.");
     expect(input).toHaveAttribute("aria-invalid", "true");
-    expect(removePdf.closest("li")).toHaveAccessibleDescription("planilla.pdf pesa más de 10 MB.");
+    expect(removePdf.closest("li")).toHaveAccessibleDescription("planilla.pdf pesa más de 10,5 MB.");
     expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled();
     expect(await axe(app.container)).toHaveNoViolations();
     await app.user.type(screen.getByRole("textbox", { name: "Tu consulta" }), "Leé la captura");
@@ -378,7 +395,7 @@ describe("interfaz del asistente", () => {
     expect(uploads).toEqual([]);
     expect(app.requests).toEqual([]);
     await app.user.upload(input, new File(["pdf"], "otra.pdf", { type: "application/pdf" }));
-    expect(screen.getByRole("alert")).toHaveTextContent("planilla.pdf pesa más de 10 MB.");
+    expect(screen.getByRole("alert")).toHaveTextContent("planilla.pdf pesa más de 10,5 MB.");
     await app.user.click(screen.getByRole("button", { name: "Quitar otra.pdf" }));
     await app.user.click(removePdf);
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -405,9 +422,9 @@ describe("interfaz del asistente", () => {
     await app.user.upload(screen.getByLabelText("Adjuntar", { selector: "input" }), [new File(["png"], "privada.png", { type: "image/png" }), new File([new Uint8Array(10 * 1024 * 1024 + 1)], "privado.pdf", { type: "application/pdf" })]);
     expect(screen.getByRole("alert")).toHaveTextContent("privado.pdf");
     await app.user.upload(screen.getByLabelText("Adjuntar", { selector: "input" }), new File([new Uint8Array(10 * 1024 * 1024 + 1)], "otro-privado.pdf", { type: "application/pdf" }));
-    expect(screen.getByRole("button", { name: "Quitar otro-privado.pdf" }).closest("li")).toHaveAccessibleDescription("otro-privado.pdf pesa más de 10 MB.");
+    expect(screen.getByRole("button", { name: "Quitar otro-privado.pdf" }).closest("li")).toHaveAccessibleDescription("otro-privado.pdf pesa más de 10,5 MB.");
     await app.user.click(screen.getByRole("button", { name: "Quitar privado.pdf" }));
-    expect(screen.getByRole("alert")).toHaveTextContent(/^otro-privado\.pdf pesa más de 10 MB\.$/u);
+    expect(screen.getByRole("alert")).toHaveTextContent(/^otro-privado\.pdf pesa más de 10,5 MB\.$/u);
     await app.user.click(screen.getByRole("button", { name: "Nueva conversación" }));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Quitar privado.pdf" })).not.toBeInTheDocument();
@@ -422,7 +439,7 @@ describe("interfaz del asistente", () => {
       new File(["png"], "permitido.png", { type: "image/png" }),
       new File([new Uint8Array(10 * 1024 * 1024 + 1)], "rechazado.exe", { type: "application/octet-stream" }),
     ]);
-    expect(screen.getByRole("alert")).toHaveTextContent("El archivo pesa más de 10 MB.");
+    expect(screen.getByRole("alert")).toHaveTextContent("El archivo pesa más de 10,5 MB.");
     expect(screen.queryByRole("button", { name: "Quitar rechazado.exe" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Quitar permitido.png" })).not.toBeInTheDocument();
     expect(app.created()).toBe(0);
@@ -437,9 +454,9 @@ describe("interfaz del asistente", () => {
       ...Array.from({ length: 4 }, (_, i) => new File(["pdf"], `${i}.pdf`, { type: "application/pdf" }))]);
     await app.user.upload(input, new File(["pdf"], "sexto.pdf", { type: "application/pdf" }));
     expect(screen.getByRole("alert")).toHaveTextContent("Podés adjuntar hasta 5 archivos.");
-    expect(screen.getByRole("alert")).toHaveTextContent("excesivo.pdf pesa más de 10 MB.");
+    expect(screen.getByRole("alert")).toHaveTextContent("excesivo.pdf pesa más de 10,5 MB.");
     expect(screen.queryByRole("button", { name: "Quitar sexto.pdf" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Quitar excesivo.pdf" }).closest("li")).toHaveAccessibleDescription("excesivo.pdf pesa más de 10 MB.");
+    expect(screen.getByRole("button", { name: "Quitar excesivo.pdf" }).closest("li")).toHaveAccessibleDescription("excesivo.pdf pesa más de 10,5 MB.");
     expect(app.created()).toBe(0);
     expect(app.requests).toEqual([]);
   });

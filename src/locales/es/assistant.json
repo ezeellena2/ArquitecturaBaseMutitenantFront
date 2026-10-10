@@ -68,9 +68,11 @@
   "attachments": {
     "add": "Adjuntar",
     "remove": "Quitar {{name}}",
-    "tooMany": "Podés adjuntar hasta 5 archivos.",
-    "tooLarge": "El archivo pesa más de 10 MB.",
-    "tooLargeNamed": "{{name}} pesa más de 10 MB.",
+    "hint": "Imágenes o PDF, hasta {{size}} y {{maxFiles}} por consulta",
+    "tooMany_one": "Podés adjuntar hasta {{maxFiles}} archivo.",
+    "tooMany_other": "Podés adjuntar hasta {{maxFiles}} archivos.",
+    "tooLarge": "El archivo pesa más de {{size}}.",
+    "tooLargeNamed": "{{name}} pesa más de {{size}}.",
     "invalidType": "Adjuntá imágenes PNG, JPEG o WebP, o archivos PDF."
   },
   "message": {
