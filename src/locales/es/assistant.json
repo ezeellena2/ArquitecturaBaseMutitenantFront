@@ -13,6 +13,10 @@
   "welcome": "¿Qué querés consultar?",
   "loading": "Cargando…",
   "retry": "Reintentar",
+  "streamErrors": {
+    "unavailable": "El asistente no responde ahora.",
+    "contextTooLarge": "La conversación o los adjuntos son demasiado grandes. Empezá una nueva."
+  },
   "cancel": "Cancelar",
   "quick": {
     "active_users": "Usuarios activos",

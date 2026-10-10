@@ -13,6 +13,10 @@
   "welcome": "What would you like to ask?",
   "loading": "Loading…",
   "retry": "Retry",
+  "streamErrors": {
+    "unavailable": "The assistant is unavailable now.",
+    "contextTooLarge": "The conversation or attachments are too large. Start a new one."
+  },
   "cancel": "Cancel",
   "quick": {
     "active_users": "Active users",

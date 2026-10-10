@@ -44,6 +44,29 @@ beforeEach(() => { Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = v
 afterEach(() => { resetHttpClient(); vi.unstubAllGlobals(); });
 
 describe("interfaz del asistente", () => {
+  it.each([
+    { code: "Assistant.Provider.ContextTooLarge", text: "La conversación o los adjuntos son demasiado grandes. Empezá una nueva.", retry: false },
+    { code: "Assistant.Provider.Unavailable", text: "El asistente no responde ahora.", retry: true },
+    { code: "Unknown.PrivateProviderFailure", text: "Algo salió mal. Probá de nuevo en un rato.", retry: false },
+  ])("el error SSE $code tiene un solo texto seguro y Retry sólo si corresponde", async ({ code, text, retry }) => {
+    const app = setup();
+    server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => {
+      const failed = message("a", "assistant", "", "Failed");
+      app.changeDetail({ ...detail(), conversation: { ...detail().conversation, version: 2 }, messages: { items: [message("u", "user", "Consulta"), failed], hasMore: false } });
+      const event = { turnId: "turn", code, traceId: "private-report", status: "Failed" };
+      return new HttpResponse(`event: start\ndata: ${JSON.stringify({ turnId: "turn", userMessageId: "u", assistantMessageId: "a", conversationVersion: 2 })}\n\nevent: error\ndata: ${JSON.stringify(event)}\n\n`, { headers: { "Content-Type": "text/event-stream" } });
+    }));
+    await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Consulta");
+    await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    await screen.findByText(text);
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Tu consulta" })).toBeEnabled());
+    const assistant = within(screen.getByRole("region", { name: "Asistente" }));
+    expect(assistant.getAllByText(text)).toHaveLength(1);
+    expect(assistant.queryByRole("button", { name: "Reintentar" }) !== null).toBe(retry);
+    expect(assistant.queryByText("private-report")).not.toBeInTheDocument();
+    expect(assistant.queryByText(code)).not.toBeInTheDocument();
+    if (code !== "Assistant.Provider.Unavailable") expect(assistant.queryByText("El asistente no responde ahora.")).not.toBeInTheDocument();
+  });
   it("el 429 mensual muestra el tope sin el aviso global de muchos pedidos", async () => {
     const app = setup();
     server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => HttpResponse.json({ code: "Assistant.Limit.MonthlyReached", detail: "Llegaste al tope del mes." }, { status: 429 })));

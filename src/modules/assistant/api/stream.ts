@@ -149,7 +149,9 @@ export async function* decodeAssistantStream(response: Response, signal?: AbortS
     }
   } finally {
     signal?.removeEventListener("abort", abort);
-    try { await reader.cancel(); } catch { /* Conserva el error original del transporte o parser. */ }
+    // Cancel inicia el cierre, pero su Promise puede esperar otra rama del
+    // transporte. El terminal ya recibido debe liberar la UI y permitir releer.
+    void reader.cancel().catch(() => {});
     reader.releaseLock();
   }
 }

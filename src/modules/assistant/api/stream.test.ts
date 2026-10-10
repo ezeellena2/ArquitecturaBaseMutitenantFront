@@ -58,6 +58,20 @@ describe("Assistant wire SSE", () => {
     await expect(collect(response(frame("error", data) + frame("done", result)))).resolves.toEqual([{ event: "error", data }]);
   });
 
+  it("un terminal libera el lector aunque el transporte demore completar cancel", async () => {
+    let finishCancel!: () => void;
+    const cancelled = new Promise<void>((resolve) => { finishCancel = resolve; });
+    const data = { status: "Failed", code: "Assistant.Provider.Unavailable", traceId: "trace" };
+    const source = new Response(new ReadableStream<Uint8Array>({
+      start(controller) { controller.enqueue(new TextEncoder().encode(frame("error", data))); },
+      cancel: () => cancelled,
+    }), { headers: { "content-type": "text/event-stream" } });
+    try {
+      await expect(collect(source)).resolves.toEqual([{ event: "error", data }]);
+      expect(source.body?.locked).toBe(false);
+    } finally { finishCancel(); }
+  });
+
   it.each([
     'event: delta\ndata: private-broken-json\n\n',
     'event: surprise\ndata: {}\n\n',

@@ -34,6 +34,8 @@ import { ConversationDialog, type ConversationDialogState } from "../components/
 import { LimitReached } from "../components/LimitReached";
 import { NotConfigured } from "../components/NotConfigured";
 import { QuickQueries } from "../components/QuickQueries";
+import { AssistantRetryButton } from "../components/AssistantRetryButton";
+import { assistantStreamErrorMessage, canRetryAssistantFailure } from "../errors";
 
 export interface AssistantHomeProps {
   scope: AssistantScope;
@@ -323,7 +325,9 @@ function AssistantSession(props: AssistantHomeProps) {
   const notice = configured && (!state.noticeAccepted || code === "Assistant.Notice.AcceptanceRequired");
   const busy = operations.pending || runtime.isPending;
   const actionError = actionErrorMessage(operations.error, t);
-  const runtimeError = runtime.error && "code" in runtime.error && !runtime.blockedCode ? apiErrorMessage(runtime.error, t) : null;
+  const runtimeError = runtime.error && "code" in runtime.error && !runtime.blockedCode
+    ? runtime.error instanceof ApiError ? apiErrorMessage(runtime.error, t)
+      : runtime.turn?.start ? null : assistantStreamErrorMessage(runtime.error, t) : null;
   const canViewUsage = scope.access === "business" ? props.hasPermission("assistant.configure") : scope.access === "platform" && props.hasPermission("platform.assistant.read");
   const history = <ConversationList scope={scope} lifetime={operations.lifetime} enabled={operations.active} selectedId={selectedId} retentionDays={state.retentionDays} onNew={() => select(null)} onSelect={select} actions={actions}
     onActions={phone ? (conversation) => { setHistoryOpen(false); setPhoneActions({ title: conversation.title ?? null, items: actions(conversation) }); } : undefined} />;
@@ -357,7 +361,7 @@ function AssistantSession(props: AssistantHomeProps) {
       {actionError && !dialog && !notice ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{actionError}</p> : null}
       {runtimeError ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{runtimeError}</p> : null}
       {runtime.error instanceof ApiError && runtime.error.isNetworkError ? <Button variant="link" onClick={() => { void runtime.retryNetwork().catch(() => undefined); }}>{t("retry")}</Button> : null}
-      {runtime.messages.at(-1)?.status === "Failed" && runtime.canSend ? <Button variant="link" onClick={() => { const text = runtime.messages.findLast((message) => message.role === "user")?.text; if (text) void runtime.retryFailed({ text, attachmentIds: [], conversationVersion: detail?.conversation.version }).catch(() => undefined); }}>{t("retry")}</Button> : null}
+      {runtime.messages.at(-1)?.status === "Failed" && runtime.canSend && canRetryAssistantFailure(runtime.turn?.error) ? <AssistantRetryButton key={runtime.turn?.start?.turnId ?? runtime.messages.at(-1)?.id} retryAfter={runtime.turn?.error?.retryAfter} pending={busy} onRetry={() => { const text = runtime.messages.findLast((message) => message.role === "user")?.text; if (text) void runtime.retryFailed({ text, attachmentIds: [], conversationVersion: detail?.conversation.version }).catch(() => undefined); }} /> : null}
     </section>
     {phone && historyOpen && !notice ? <Dialog open onOpenChange={setHistoryOpen}><DialogContent aria-describedby={undefined} onCloseAutoFocus={restoreHistory}><DialogHeader><DialogTitle>{t("history.title")}</DialogTitle></DialogHeader><DialogBody>{history}</DialogBody></DialogContent></Dialog> : null}
     {phone && phoneActions && !notice ? <Dialog open onOpenChange={(open) => { if (!open) setPhoneActions(null); }}><DialogContent size="sm" showCloseButton={false} aria-describedby={undefined} onCloseAutoFocus={restoreActions}>

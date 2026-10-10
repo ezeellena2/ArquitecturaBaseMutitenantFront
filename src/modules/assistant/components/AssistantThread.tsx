@@ -10,6 +10,7 @@ import { AssistantMessageActions } from "./AssistantMessageActions";
 import { resolveAssistantLink, type AssistantLinkContext } from "../lib/assistantLinks";
 import { ToolStatus } from "./ToolStatus";
 import type { AssistantTurnState } from "../runtime/assistantTurnState";
+import { assistantStreamErrorMessage } from "../errors";
 
 interface MessageContextValue {
   turn: AssistantTurnState | null;
@@ -36,6 +37,7 @@ function Message() {
   const status = useAuiState((state) => state.message.status);
   const context = useContext(MessageContext)!;
   const durable = context.messages.find((message) => message.id === id);
+  const streamError = context.turn?.start?.assistantMessageId === id ? context.turn.error : undefined;
   return <MessagePrimitive.Root className={`flex gap-3 ${role === "user" ? "ml-auto max-w-[76%] rounded-[16px_16px_4px_16px] bg-[var(--marca-t)] px-3.5 py-2.5" : "w-full"}`}>
     {role === "assistant" ? <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-4" aria-hidden="true" /></span> : null}
     <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -48,7 +50,7 @@ function Message() {
       return target?.to ? <Link key={index} className="text-[var(--marca-tx)] underline" to={target.to}>{t(target.labelKey)}</Link>
         : target?.organizationId ? <Button key={index} variant="link" onClick={() => context.links.onOpenOrganization?.(target.organizationId!)}>{t(target.labelKey, { name: target.organizationName })}</Button> : null;
     })}
-    {status?.type === "incomplete" ? <p role="status" className="text-sm text-[var(--t2)]">{t(status.reason === "cancelled" ? "status.stopped" : "status.failed")}</p> : null}
+    {status?.type === "incomplete" ? <p role={streamError ? "alert" : "status"} className="text-sm text-[var(--t2)]">{status.reason === "cancelled" ? t("status.stopped") : streamError ? assistantStreamErrorMessage(streamError, t) : t("status.failed")}</p> : null}
     {role === "assistant" && status?.type !== "running" ? <AssistantMessageActions message={durable} pending={context.pending} /> : null}
     </div>
   </MessagePrimitive.Root>;
