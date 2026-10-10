@@ -108,8 +108,8 @@ describe("Recuperaciones de Plataforma", () => {
   });
   it.each([
     ["NoAccount", "No hay ninguna cuenta con el método de antes. Solo se puede rechazar."],
-    ["MethodInUse", "Ese correo ya es de otra cuenta."],
-    ["MethodAlreadyOnAccount", "Ese correo ya es un método de esa cuenta."],
+    ["MethodInUse", "Ese método de ingreso ya es de otra cuenta."],
+    ["MethodAlreadyOnAccount", "Ese método de ingreso ya pertenece a esa cuenta."],
     ["OperatorAccount", "La cuenta es de un operador de la plataforma: no se recupera desde acá."],
     ["AlreadyResolved", "Ese pedido ya se resolvió."],
     ["NotFound", "No encontramos el pedido."],
@@ -125,6 +125,25 @@ describe("Recuperaciones de Plataforma", () => {
     renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" }); await open(user); await send(user); await within(screen.getByRole("dialog")).findByRole("alert");
     await user.type(screen.getByRole("textbox", { name: "Motivo" }), " corregido"); await user.click(screen.getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(reads).toBe(2));
   });
+  it.each((["Phone", "Email", "Google"] as const).flatMap((method) => (["es-AR", "en-US"] as const).flatMap((culture) => (["MethodInUse", "MethodAlreadyOnAccount"] as const).map((code) => ({ method, culture, code })))))
+    ("B7 $method/$culture/$code conserva el motivo y no expone el dueño", async ({ method, culture, code }) => {
+      const user = userEvent.setup();
+      server.use(http.get("/api/platform/recoveries/paged", () => HttpResponse.json(list([{ ...pending, newMethodType: method, newMethod: method === "Phone" ? "+54••••1234" : pending.newMethod }]))),
+        http.post("/api/platform/recoveries/r1/approve", () => HttpResponse.json({ code: `Platform.AccountRecovery.${code}`, detail: "Dueño privado owner@example.invalid +5491112345678" }, { status: 409 })));
+      const page = renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" });
+      await screen.findByRole("link", { name: "Pablo Ortiz" });
+      const english = culture === "en-US";
+      if (english) { await act(async () => { page.queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture }); }); await screen.findByRole("heading", { name: "Recoveries", level: 1 }); }
+      const trigger = screen.getByRole("button", { name: `${english ? "Actions for" : "Acciones de"} Pablo Ortiz` });
+      trigger.focus(); await user.keyboard("{ArrowDown}"); await user.click(await screen.findByRole("menuitem", { name: english ? "Review" : "Revisar" }));
+      const reason = screen.getByRole("textbox", { name: english ? "Reason" : "Motivo" });
+      await user.type(reason, "Revisión"); await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: english ? "Approve" : "Aprobar" }));
+      const alert = await within(screen.getByRole("dialog")).findByRole("alert");
+      expect(alert).toHaveTextContent(english ? code === "MethodInUse" ? "That sign-in method already belongs to another account." : "That sign-in method already belongs to that account."
+        : code === "MethodInUse" ? "Ese método de ingreso ya es de otra cuenta." : "Ese método de ingreso ya pertenece a esa cuenta.");
+      expect(alert).not.toHaveTextContent(/owner@example|5491112345678|Dueño privado/);
+      expect(reason).toHaveValue("Revisión");
+    });
   it("resuelto muestra datos reales y Cerrar, sin formulario", async () => {
     const user = userEvent.setup(); renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" }); const dialog = await open(user, "Ver detalle", "Rosa Luna");
     expect(within(dialog).getByText("Laura Díaz")).toBeVisible(); expect(within(dialog).getByText(resolved.reason!)).toBeVisible(); expect(within(dialog).queryByRole("textbox")).not.toBeInTheDocument(); expect(within(dialog).getAllByRole("button", { name: "Cerrar" })).toHaveLength(2);
