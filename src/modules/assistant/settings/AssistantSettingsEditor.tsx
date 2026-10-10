@@ -4,10 +4,10 @@ import { Sparkles } from "lucide-react";
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { Controller, useWatch } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { ApiError } from "@/shared/api/ApiError";
-import { accountPagePaths } from "@/shared/api/accountContract";
+import { AddLoginMethodDialog } from "@/shared/account/AddLoginMethodDialog";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { AssistantModelPriceResponse, MeResponse, UpdateOrganizationAssistantSettingsRequest, UpdatePlatformAssistantSettingsRequest } from "@/shared/api/types";
@@ -28,6 +28,9 @@ import { MultiSelect, type MultiSelectOption } from "@/shared/ui/MultiSelect";
 import { Page } from "@/shared/ui/Page";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { RadioGroupField } from "@/shared/ui/RadioGroupField";
+import { InfoButton } from "@/shared/ui/InfoButton";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { activeOrganization } from "@/tenancy/access";
 import { assistantModelsRoot, fetchAssistantModelOptions } from "../api/models";
@@ -64,6 +67,8 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   const [formEpoch, setFormEpoch] = useState(0);
   const budgetValid = useRef(true);
   const [modelDialog, setModelDialog] = useState<{ model?: AssistantModelPriceResponse; trigger: HTMLElement | null } | null>(null);
+  const [addEmailOpen, setAddEmailOpen] = useState(false);
+  const [info, setInfo] = useState<"ownKey" | "limits" | null>(null);
   // Version es xmin: token opaco. Sólo guardamos tokens sustituidos, no lecturas históricas.
   const [ownRead, setOwnRead] = useState<{ replacedVersions: ReadonlySet<SettingsRead["version"]>; saved: SettingsRead } | null>(null);
   if (ownRead && settings.version === ownRead.saved.version && settings !== ownRead.saved) {
@@ -174,8 +179,8 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
             options={(["PlatformKey", "OwnKey"] as const).map((mode) => ({ value: mode, label: t(`assistant:settings.modeLabels.${mode}`), disabled: mode === "OwnKey" && !settings.allowOwnKey }))}
             onValueChange={(mode) => { changed("mode"); form.setValue("mode", mode as SettingsValues["mode"], { shouldDirty: true }); }} />
         </FormField>
-        {ownKey && (!settings.hasAlertRecipient || errors.mode?.type === "alertRecipient") ? <>{!errors.mode ? <p role="alert" className="mt-1 text-[13px] text-[var(--peligro)]">{t("assistant:settings.recipientRequired", { organization: activeOrganization(me)?.name })}</p> : null}<Link className="text-[var(--marca-tx)] underline" to={accountPagePaths.account}>{t("assistant:settings.addEmail")}</Link></> : null}
-      </div> : <ReadOnlyField label={t("assistant:settings.mode")}><span title={t("assistant:settings.ownKeyUnavailable", { organization: activeOrganization(me)?.name })}>{t("assistant:settings.modeLabels.PlatformKey")}</span></ReadOnlyField> : null}
+        {ownKey && (!settings.hasAlertRecipient || errors.mode?.type === "alertRecipient") ? <>{!errors.mode ? <p role="alert" className="mt-1 text-[13px] text-[var(--peligro)]">{t("assistant:settings.recipientRequired", { organization: activeOrganization(me)?.name })}</p> : null}<Button type="button" variant="link" onClick={() => setAddEmailOpen(true)}>{t("assistant:settings.addEmail")}</Button></> : null}
+      </div> : <ReadOnlyField label={t("assistant:settings.mode")}><span className="inline-flex items-center gap-1.5">{t("assistant:settings.modeLabels.PlatformKey")}<InfoButton label={t("assistant:settings.ownKeyUnavailable", { organization: activeOrganization(me)?.name })} onClick={() => setInfo("ownKey")} /></span></ReadOnlyField> : null}
       <ReadOnlyField label={t("assistant:settings.provider")}>{t("enums:AssistantProvider.Anthropic")}</ReadOnlyField>
       {platform || ownKey ? <div>
         {inputKey ? <FormField label={t(platform ? "assistant:settings.platformKey" : "assistant:settings.key")} required error={errors.keyAction?.message}>
@@ -201,7 +206,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
         {catalog.isLoading ? <p role="status">{t("assistant:loading")}</p> : null}{catalog.isError ? <><FormError message={apiErrorMessage(catalog.error, t)} /><Button type="button" variant="outline" onClick={() => { void catalog.refetch(); }}>{t("assistant:retry")}</Button></> : null}
       </> : null}
     </SectionFields></Section>
-    <Section title={t("assistant:settings.limits")} phone="inset"><SectionFields className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">
+    <Section title={t("assistant:settings.limits")} phone="inset" meta={!platform && !ownKey ? <InfoButton label={t("assistant:settings.platformLimits")} onClick={() => setInfo("limits")} /> : undefined}><SectionFields className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">
       {platform || ownKey ? <>
         <Controller control={form.control} name="dailyMessageLimit" render={({ field }) => <FormField label={t("assistant:settings.dailyLimit")} required error={errors.dailyMessageLimit?.message}><NumberField key={formEpoch} value={field.value} onChange={(value) => { changed("dailyMessageLimit"); field.onChange(value); }} /></FormField>} />
         <Controller control={form.control} name="monthlyBudget" render={({ field }) => <FormField label={t(platform ? "assistant:settings.organizationBudget" : "assistant:settings.monthlyBudget")} error={errors.monthlyBudget?.message}><MoneyField key={formEpoch} currencyCode={billingCurrency} value={field.value} onValidityChange={(valid) => { budgetValid.current = valid; }} onChange={(value) => { changed("monthlyBudget"); field.onChange(value); }} /></FormField>} />
@@ -218,9 +223,21 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
       banner={edit.banner} actions={actions} phoneBody={tab === "catalog" ? "flush" : "padded"}
       tabs={platform ? { label: t("assistant:settings.title"), value: tab, onValueChange: (value) => { const next = new URLSearchParams(params); next.set("tab", value); setParams(next); }, items: [
         { value: "general", label: t("assistant:settings.general"), content: general },
-        { value: "catalog", label: t("assistant:settings.catalog"), content: <ModelCatalog scope={scope} onEdit={(model, trigger) => setModelDialog({ model, trigger })} /> },
+        { value: "catalog", label: t("assistant:settings.catalog"), count: catalog.data ? <NumberText value={catalog.data.length} /> : undefined, content: <ModelCatalog scope={scope} onEdit={(model, trigger) => setModelDialog({ model, trigger })} /> },
       ] } : undefined}>{general}</Page>
     {edit.leaveDialog}
+    {addEmailOpen ? <AddLoginMethodDialog open onOpenChange={setAddEmailOpen} onComplete={() => { void client.invalidateQueries({ queryKey: settingsKey }); }} /> : null}
+    {info ? <SettingsInfo title={t(info === "ownKey" ? "assistant:settings.mode" : "assistant:settings.limits")} description={t(info === "ownKey" ? "assistant:settings.ownKeyUnavailable" : "assistant:settings.platformLimits", { organization: activeOrganization(me)?.name })} onClose={() => setInfo(null)} /> : null}
     {modelDialog && platform ? <ModelEditorDialog scope={scope} model={modelDialog.model} currency={settings.monthlyOrganizationBudget.currency} trigger={modelDialog.trigger} onClose={() => setModelDialog(null)} /> : null}
   </>;
+}
+
+function SettingsInfo({ title, description, onClose }: { title: string; description: string; onClose: () => void }) {
+  const { t } = useTranslation("common");
+  const restore = useRestoreFocusOnClose();
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent size="sm" onCloseAutoFocus={restore}>
+    <DialogHeader><DialogTitle>{title}</DialogTitle></DialogHeader>
+    <DialogBody><DialogDescription>{description}</DialogDescription></DialogBody>
+    <DialogFooter><Button onClick={onClose}>{t("notice.understood")}</Button></DialogFooter>
+  </DialogContent></Dialog>;
 }

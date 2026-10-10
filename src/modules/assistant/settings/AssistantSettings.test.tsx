@@ -234,19 +234,44 @@ describe("configuración real de gestión", () => {
     const app = mountSettings(); await ownKey(app); await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     const mutation = await savedMutation(app);
     expect(screen.getByRole("alert")).toHaveTextContent(message);
-    if (label === "Clave") expect(screen.getByRole("link", { name: "Agregar o verificar un correo" })).toHaveAttribute("href", "/cuenta");
+    if (label === "Clave") expect(screen.getByRole("button", { name: "Agregar un correo" })).toBeVisible();
     if (label !== "Clave") expect(screen.getByRole(label === "Modelo" ? "combobox" : "textbox", { name: label })).toHaveAttribute("aria-invalid", "true");
     expect(publicCaches(app)).not.toContain(secret);
     await act(async () => { await expect(mutation.execute(mutation.state.variables)).rejects.toMatchObject({ name: "AbortError" }); }); expect(calls).toBe(1);
   });
-  it("sin destinatario muestra el nombre real, bloquea OwnKey y enlaza a Mi cuenta existente", async () => {
+  it("sin destinatario bloquea OwnKey y abre Agregar correo sin abandonar el editor", async () => {
     const settings = organizationSettings(); settings.hasAlertRecipient = false; settingsHandlers(settings);
     const app = mountSettings(); await app.user.click(await screen.findByRole("radio", { name: "La nuestra" }));
-    expect(screen.getByRole("link", { name: "Agregar o verificar un correo" })).toHaveAttribute("href", "/cuenta");
+    const addEmail = screen.getByRole("button", { name: "Agregar un correo" });
     expect(screen.getByRole("alert")).toHaveTextContent(businessManager.organizations.find((row) => row.id === businessManager.activeTenantId)!.name);
     await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     expect(screen.getAllByRole("alert")).toHaveLength(1);
     expect(app.client.getMutationCache().getAll()).toHaveLength(0);
+    await app.user.click(addEmail);
+    const dialog = await screen.findByRole("dialog", { name: "Agregar correo" });
+    expect(within(dialog).getByRole("textbox", { name: "Correo" })).toBeVisible();
+    expect(app.router.state.location.pathname).toBe("/org/asistente/configuracion");
+    await app.user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    expect(screen.getByRole("radio", { name: "La nuestra" })).toBeChecked();
+    await waitFor(() => expect(addEmail).toHaveFocus());
+  });
+  it.each([false, true])("información de modo y topes se abre por teclado sin superponer hojas; teléfono %s", async (phone) => {
+    if (phone) asPhone();
+    const settings = { ...organizationSettings(), allowOwnKey: false };
+    settingsHandlers(settings);
+    const app = mountSettings();
+    const name = businessManager.organizations.find((row) => row.id === businessManager.activeTenantId)!.name;
+    const reason = `La plataforma no habilitó una clave propia para ${name}.`;
+    const mode = await screen.findByRole("button", { name: reason });
+    mode.focus(); await app.user.keyboard("{Enter}");
+    expect(screen.getAllByRole("dialog")).toHaveLength(1);
+    expect(within(screen.getByRole("dialog")).getByText(reason)).toBeVisible();
+    await app.user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Entendido" }));
+    await waitFor(() => expect(mode).toHaveFocus());
+    await app.user.click(screen.getByRole("button", { name: "Los fija la plataforma." }));
+    expect(screen.getAllByRole("dialog")).toHaveLength(1);
+    expect(within(screen.getByRole("dialog")).getByText("Los fija la plataforma.")).toBeVisible();
+    expect(await axe(app.container)).toHaveNoViolations();
   });
   it("390: configuración accesible con guardas de gestión independientes", async () => {
     asPhone(); const app = mountSettings(platformManager);

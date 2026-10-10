@@ -13,6 +13,21 @@ beforeEach(() => settingsHandlers());
 afterEach(() => vi.unstubAllGlobals());
 const catalogPath = "/plataforma/asistente/configuracion?tab=catalog";
 describe("catálogo y configuración de plataforma", () => {
+  it("muestra cantidad y encabezados del catálogo sin filtros ajenos al tablero", async () => {
+    const queries: URL[] = [];
+    server.use(http.get("/api/platform/assistant/models", ({ request }) => {
+      const query = new URL(request.url); queries.push(query);
+      return HttpResponse.json({ items: [firstModel, { ...secondModel, isActive: false }], page: Number(query.searchParams.get("page")), pageSize: Number(query.searchParams.get("pageSize")), totalCount: 2 });
+    }));
+    mountSettings(platformManager, catalogPath + "&active=true&search=hidden");
+    expect(await screen.findByRole("tab", { name: "Catálogo de modelos 2" })).toBeVisible();
+    await screen.findByText(secondModel.name);
+    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Estado" })).not.toBeInTheDocument();
+    for (const name of ["Modelo", "Proveedor", "ID", "Entrada por millón", "Salida por millón", "Estado", "Acciones"]) expect(screen.getByRole("columnheader", { name })).toBeVisible();
+    expect(screen.getByText("Inactivo")).toBeVisible();
+    expect(queries.every((url) => !url.searchParams.has("active") && !url.searchParams.has("search"))).toBe(true);
+  });
   it.each([[20, 21, 22, 23, 24, 25], [900, 50, 40, 30, 20, 10]])("GET intercalado conserva escritura propia y adopta lectura nueva sólo al descartar (tokens %j)", async (...tokens) => {
     const [initial, first, second, third, fresh, fourth] = tokens;
     let reads = 0; let releaseFirstGet!: () => void; let releaseSecondPut!: () => void; let releaseLastGet!: () => void;
@@ -230,7 +245,7 @@ describe("catálogo y configuración de plataforma", () => {
   it("la pestaña vive en URL y protege el borrador antes de abandonarlo", async () => {
     const app = mountSettings(platformManager);
     fireEvent.change(await screen.findByRole("textbox", { name: "Consultas por persona por día" }), { target: { value: "77" } });
-    await app.user.click(screen.getByRole("tab", { name: "Catálogo de modelos" }));
+    await app.user.click(screen.getByRole("tab", { name: /^Catálogo de modelos/ }));
     const dialog = await screen.findByRole("dialog", { name: "¿Salir sin guardar?" });
     expect(app.router.state.location.search).toBe(""); await app.user.click(within(dialog).getByRole("button", { name: "Salir sin guardar" }));
     await waitFor(() => expect(app.router.state.location.search).toBe("?tab=catalog"));
