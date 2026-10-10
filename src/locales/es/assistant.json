@@ -38,7 +38,8 @@
   "limit": {
     "monthly": "La organización llegó al tope del mes del asistente.",
     "daily": "Llegaste a las <count/> consultas de hoy. Se renuevan a las <reset/>.",
-    "remaining": "Te quedan <remaining/> consultas hoy.",
+    "remaining_one": "Te queda <remaining/> consulta hoy.",
+    "remaining_other": "Te quedan <remaining/> consultas hoy.",
     "usage": "Ver uso"
   },
   "notice": {
@@ -94,6 +95,7 @@
     "deleteBody": "Se borra para siempre, con sus adjuntos.",
     "name": "Nombre",
     "delete": "Borrar",
+    "deleting": "Borrando…",
     "saveChanges": "Guardar cambios",
     "save": "Guardar",
     "unsave": "Dejar de guardar",

@@ -12,6 +12,8 @@ import { AssistantHome, type AssistantHomeProps } from "./AssistantHome";
 import { AppChromeProvider } from "@/shared/ui/app/AppChrome";
 import { File as FetchFile } from "node:buffer";
 import { AssistantPhonePage } from "./AssistantPhonePage";
+import { changeCulture, configureI18n } from "@/shared/i18n";
+import { referenceDataFixture } from "@/test/mocks/handlers";
 
 const state: AssistantStateResponse = { configured: true, canConfigure: true, models: [], quickQueries: [{ key: "active_users", labelKey: "unknown" }], dailyLimit: 50,
   dailyResetAtUtc: "2026-10-10T21:00:00Z", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5 };
@@ -40,10 +42,21 @@ function setup(initial = state, phone = false) {
   const result = renderWithProviders(view());
   return { ...result, user: userEvent.setup(), requests, created: () => created, changeState: (next: AssistantStateResponse) => { currentState = next; }, changeDetail: (next: AssistantConversationResponse) => { current = next; created = 1; }, rerenderAssistant: (next: AssistantHomeProps) => result.rerender(view(next)) };
 }
-beforeEach(() => { Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = vi.fn(() => "blob:private"); URL.revokeObjectURL = vi.fn(); });
+beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = vi.fn(() => "blob:private"); URL.revokeObjectURL = vi.fn(); });
 afterEach(() => { resetHttpClient(); vi.unstubAllGlobals(); });
 
 describe("interfaz del asistente", () => {
+  it.each([
+    { culture: "es-AR", count: 1, text: "Te queda 1 consulta hoy." },
+    { culture: "es-AR", count: 2, text: "Te quedan 2 consultas hoy." },
+    { culture: "en-US", count: 1, text: "You have 1 query left today." },
+    { culture: "en-US", count: 2, text: "You have 2 queries left today." },
+  ])("$culture pluraliza el saldo $count con el número formateado", async ({ culture, count, text }) => {
+    setup({ ...state, remainingMessages: count });
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    await act(async () => { await changeCulture(culture); });
+    expect(await screen.findByText((_, element) => element?.tagName === "P" && element.textContent === text)).toBeVisible();
+  });
   it("un detalle 404 vuelve a bienvenida, avisa y relee historial sin dejar Inicio atrapado", async () => {
     const app = setup();
     app.changeDetail(detail());

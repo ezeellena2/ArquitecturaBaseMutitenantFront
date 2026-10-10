@@ -4,6 +4,7 @@ import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { ConversationDialog, type ConversationDialogState } from "./ConversationDialog";
+import { AssistantNotice } from "./AssistantNotice";
 
 const conversation: ConversationDialogState["conversation"] = { id: "chat", title: "Mi consulta", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z" };
 
@@ -38,12 +39,29 @@ describe("confirmación de conversaciones", () => {
     renderWithProviders(<PendingDialog />);
     if (kind === "rename") fireEvent.change(screen.getByRole("textbox", { name: "Nombre" }), { target: { value: "Nuevo nombre" } });
     await user.click(screen.getByRole("button", { name: kind === "rename" ? "Guardar cambios" : "Borrar" }));
-    const saving = await screen.findByRole("button", { name: "Guardando…" });
+    const pendingLabel = kind === "rename" ? "Guardando…" : "Borrando…";
+    const saving = await screen.findByRole("button", { name: pendingLabel });
     expect(saving).toBeDisabled();
-    expect(within(saving).getByText("Guardando…")).toBeVisible();
+    expect(within(saving).getByText(pendingLabel)).toBeVisible();
     await user.click(saving);
     expect(confirm).toHaveBeenCalledExactlyOnceWith(kind === "rename" ? "Nuevo nombre" : "");
     if (kind === "rename") expect(screen.getByRole("textbox", { name: "Nombre" })).toHaveValue("Nuevo nombre");
+  });
+
+  it("el aviso anuncia que guarda la aceptación y bloquea el doble envío", async () => {
+    const accept = vi.fn();
+    const user = userEvent.setup();
+    function PendingNotice() {
+      const [pending, setPending] = useState(false);
+      return <AssistantNotice pending={pending} error={null} onPrivacy={() => {}} onAccept={() => { accept(); setPending(true); }} />;
+    }
+    renderWithProviders(<PendingNotice />);
+    await user.click(screen.getByRole("button", { name: "Entendido" }));
+    const saving = screen.getByRole("button", { name: "Guardando…" });
+    expect(saving).toBeDisabled();
+    expect(saving.querySelector('[data-slot="button-ring"]')).not.toBeNull();
+    await user.click(saving);
+    expect(accept).toHaveBeenCalledOnce();
   });
 
   it("Cancelar cierra y devuelve foco al disparador", async () => {

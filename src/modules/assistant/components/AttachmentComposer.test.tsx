@@ -20,6 +20,7 @@ describe("disponibilidad y espera del compositor", () => {
     renderWithProviders(<AttachmentComposer {...props} onSend={send} />);
     const button = screen.getByRole("button", { name: "Enviar" });
     expect(button).toBeEnabled();
+    expect(document.querySelector('input[type="file"]')).toHaveAttribute("tabindex", "-1");
     await user.click(button);
     expect(await screen.findByText("Escribí una consulta.")).toBeInTheDocument();
     expect(send).not.toHaveBeenCalled();

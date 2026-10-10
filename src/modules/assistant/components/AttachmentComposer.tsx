@@ -58,7 +58,7 @@ export function AttachmentComposer({ files, errorId, placeholder, unavailable, p
       </ComposerPrimitive.Input>
     </FormField></div>
     <div className="flex items-center gap-2">
-      <input ref={fileInput} type="file" multiple accept={assistantAttachmentTypes.join(",")} aria-label={t("attachments.add")} aria-invalid={files.some((item) => item.invalid) || undefined} aria-describedby={errorId} className="sr-only" disabled={unavailable || pending}
+      <input ref={fileInput} type="file" multiple tabIndex={-1} accept={assistantAttachmentTypes.join(",")} aria-label={t("attachments.add")} aria-invalid={files.some((item) => item.invalid) || undefined} aria-describedby={errorId} className="sr-only" disabled={unavailable || pending}
         onChange={(event) => { onFiles(Array.from(event.target.files ?? [])); event.target.value = ""; }} />
       <Button type="button" variant="icon" size="icon" aria-label={t("attachments.add")} disabled={unavailable || pending} onClick={() => fileInput.current?.click()}><Paperclip className="size-5" /></Button>
       <span className="flex-1" />

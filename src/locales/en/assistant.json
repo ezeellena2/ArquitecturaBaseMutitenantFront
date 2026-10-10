@@ -38,7 +38,8 @@
   "limit": {
     "monthly": "The organization reached its monthly assistant limit.",
     "daily": "You reached today’s limit of <count/> queries. It resets at <reset/>.",
-    "remaining": "You have <remaining/> queries left today.",
+    "remaining_one": "You have <remaining/> query left today.",
+    "remaining_other": "You have <remaining/> queries left today.",
     "usage": "View usage"
   },
   "notice": {
@@ -94,6 +95,7 @@
     "deleteBody": "Permanently deleted, including its attachments.",
     "name": "Name",
     "delete": "Delete",
+    "deleting": "Deleting…",
     "saveChanges": "Save changes",
     "save": "Save",
     "unsave": "Unsave",
