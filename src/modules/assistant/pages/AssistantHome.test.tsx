@@ -460,7 +460,7 @@ describe("interfaz del asistente", () => {
     expect(screen.getByRole("button", { name: "Detener" })).toBeEnabled();
   });
 
-  it("Retry de red conserva cuerpo y clave; respuesta Failed exige una nueva operación sin adjuntos", async () => {
+  it("Retry de red conserva cuerpo y clave; respuesta Failed sin archivos exige otra operación", async () => {
     const app = setup();
     const bodies: unknown[] = [];
     const keys: Array<string | null> = [];
@@ -484,6 +484,79 @@ describe("interfaz del asistente", () => {
     await waitFor(() => expect(keys).toHaveLength(3));
     expect(keys[2]).not.toBe(keys[0]);
     expect(bodies[2]).toEqual({ text: "Consulta original", attachmentIds: [], conversationVersion: 5 });
+  });
+
+  it.each([false, true])("Retry Failed conserva los bytes de todos los adjuntos y nuevos ids (historical=%s)", async (historical) => {
+    const nativeForm = await new Request("http://localhost", { method: "POST", body: "a=b", headers: { "content-type": "application/x-www-form-urlencoded" } }).formData();
+    vi.stubGlobal("FormData", nativeForm.constructor); vi.stubGlobal("File", FetchFile);
+    const app = setup();
+    const attachments: AssistantAttachmentSummaryResponse[] = [
+      { id: "pdf-old", fileName: "planilla.pdf", mediaType: "application/pdf", byteLength: 3, version: 1 },
+      { id: "png-old", fileName: "captura.png", mediaType: "image/png", byteLength: 3, version: 1 },
+    ];
+    const failed = { ...detail(), conversation: { ...detail().conversation, version: 5 }, messages: { items: [{ ...message("u", "user", "Leé mis adjuntos"), attachments }, message("a", "assistant", "Falló", "Failed")], hasMore: false } };
+    const bodies: SendAssistantMessageRequest[] = []; const keys: Array<string | null> = [];
+    const uploads: { text: string; name: string; type: string; version: string; key: string | null }[] = [];
+    let current = historical ? failed : detail();
+    let initialUploads = 0;
+    if (historical) app.changeDetail(failed);
+    server.use(http.get("/api/organization/assistant/conversations/chat/attachments/:id", ({ params }) => {
+      const attachment = attachments.find((item) => item.id === params.id)!;
+      return new HttpResponse(attachment.mediaType === "application/pdf" ? "pdf" : "png", { headers: { "Content-Type": attachment.mediaType } });
+    }), http.post("/api/organization/assistant/conversations/chat/attachments", async ({ request }) => {
+      const data = await request.formData(); const file = data.get("file") as File;
+      if (!historical && !bodies.length) {
+        current = { ...current, conversation: { ...current.conversation, version: current.conversation.version + 1 } }; app.changeDetail(current);
+        return HttpResponse.json(attachments[initialUploads++]);
+      }
+      uploads.push({ text: await file.text(), name: file.name, type: file.type, version: String(data.get("conversationVersion")), key: request.headers.get("Idempotency-Key") });
+      current = { ...current, conversation: { ...current.conversation, version: current.conversation.version + 1 } }; app.changeDetail(current);
+      return HttpResponse.json({ ...attachments[uploads.length - 1]!, id: `new-${uploads.length}` });
+    }), http.post("/api/organization/assistant/conversations/chat/messages", async ({ request }) => {
+      bodies.push(await request.json() as SendAssistantMessageRequest); keys.push(request.headers.get("Idempotency-Key"));
+      const first = !historical && bodies.length === 1;
+      const answer = first ? failed.messages.items[1]! : message("a2", "assistant", "Listo");
+      current = first ? failed : { ...current, conversation: { ...current.conversation, version: 8 }, messages: { items: [...failed.messages.items, { ...message("u2", "user", "Leé mis adjuntos"), attachments: attachments.map((item, index) => ({ ...item, id: `new-${index + 1}` })) }, answer], hasMore: false } };
+      app.changeDetail(current);
+      return HttpResponse.json({ turnId: first ? "turn" : "turn2", message: answer, conversationVersion: current.conversation.version, usage: { inputTokens: 1, outputTokens: 1, cacheReadTokens: 0, cacheWriteTokens: 0, cost: { amount: 0, currency: "USD" } } } satisfies AssistantTurnResultResponse);
+    }));
+    if (historical) await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
+    else {
+      await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Leé mis adjuntos");
+      await app.user.upload(screen.getByLabelText("Adjuntar", { selector: "input" }), [new File(["pdf"], "planilla.pdf", { type: "application/pdf" }), new File(["png"], "captura.png", { type: "image/png" })]);
+      await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    }
+    await app.user.click(await screen.findByRole("button", { name: "Reintentar" }));
+    await waitFor(() => expect(bodies).toHaveLength(historical ? 1 : 2));
+    expect(uploads).toEqual([
+      { text: "pdf", name: "planilla.pdf", type: "application/pdf", version: "5", key: expect.any(String) },
+      { text: "png", name: "captura.png", type: "image/png", version: "6", key: expect.any(String) },
+    ]);
+    expect(bodies.at(-1)).toEqual({ text: "Leé mis adjuntos", attachmentIds: ["new-1", "new-2"], conversationVersion: 7 });
+    if (!historical) expect(bodies[0]).toEqual({ text: "Leé mis adjuntos", attachmentIds: ["pdf-old", "png-old"], conversationVersion: 3 });
+    expect(new Set([...keys, ...uploads.map((item) => item.key)]).size).toBe(keys.length + uploads.length);
+  });
+
+  it.each(["missing", "leave"] as const)("un adjunto $0 impide el nuevo POST de Failed", async (failure) => {
+    const app = setup();
+    app.changeDetail({ ...detail(), messages: { items: [{ ...message("u", "user", "Con archivo"), attachments: [{ id: "old", fileName: "planilla.pdf", mediaType: "application/pdf", byteLength: 3, version: 1 }] }, message("a", "assistant", "Falló", "Failed")], hasMore: false } });
+    let release!: () => void; let downloads = 0; let uploads = 0;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    server.use(http.get("/api/organization/assistant/conversations/chat/attachments/old", async () => {
+      downloads++; if (failure === "leave") await gate;
+      return failure === "missing" ? HttpResponse.json({ code: "Assistant.Attachment.NotFound", detail: "No encontramos ese adjunto." }, { status: 404 }) : new HttpResponse("pdf", { headers: { "Content-Type": "application/pdf" } });
+    }), http.post("/api/organization/assistant/conversations/chat/attachments", () => { uploads++; return HttpResponse.json({}); }));
+    await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
+    await app.user.click(await screen.findByRole("button", { name: "Reintentar" }));
+    await waitFor(() => expect(downloads).toBe(1));
+    if (failure === "missing") expect(await screen.findByText("No encontramos ese adjunto.")).toBeVisible();
+    else {
+      await app.user.click(screen.getByRole("button", { name: "Nueva conversación" }));
+      await act(async () => { release(); await gate; });
+      expect(await screen.findByRole("heading", { name: "¿Qué querés consultar?" })).toBeVisible();
+    }
+    expect(uploads).toBe(0);
+    expect(app.requests).toEqual([]);
   });
 
   it("una consulta fija tardía no selecciona ni repuebla otro acceso", async () => {

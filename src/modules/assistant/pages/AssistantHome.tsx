@@ -244,6 +244,35 @@ function AssistantSession(props: AssistantHomeProps) {
       await read(id, context);
     }, id);
   }
+  function retryFailed() {
+    const original = runtime.messages.findLast((message) => message.role === "user");
+    if (!selectedId || !original?.text || !runtime.canSend || operations.pending) return;
+    const id = selectedId;
+    const copies = original.attachments.map((attachment) => ({ attachment, key: crypto.randomUUID(), version: undefined as number | undefined, uploadedId: undefined as string | undefined }));
+    fire(async (context) => {
+      let current = await read(id, context);
+      for (const copy of copies) {
+        if (copy.uploadedId) continue;
+        const response = await downloadAssistantAttachment(scope, id, copy.attachment.id, context.signal);
+        context.assertActive();
+        const mediaType = response.headers.get("Content-Type")?.split(";")[0].trim().toLowerCase();
+        if (mediaType !== copy.attachment.mediaType || !(assistantAttachmentTypes as readonly string[]).includes(mediaType)) throw new ApiError(422, { code: "Assistant.Attachment.UnsupportedType" });
+        const bytes = await response.arrayBuffer();
+        context.assertActive();
+        const file = new File([bytes], copy.attachment.fileName, { type: mediaType });
+        copy.version ??= current.conversation.version;
+        const attachment = await uploadAssistantAttachment(scope, id, { file, conversationVersion: copy.version }, copy.key, context.signal);
+        context.assertActive(); copy.uploadedId = attachment.id;
+        current = await read(id, context);
+      }
+      // Ni una descarga ni una subida fallida entrega sólo el texto. El Retry
+      // de red del POST final conserva su propio cuerpo y clave en el runtime.
+      try { await latest.current.retryFailed({ text: original.text, attachmentIds: copies.map((copy) => copy.uploadedId!), conversationVersion: current.conversation.version }); }
+      catch { context.assertActive(); return; }
+      context.assertActive();
+      await invalidateHistory(context);
+    }, id);
+  }
   function feedback(message: AssistantMessageResponse, rating: "up" | "down" | null) {
     if (!selectedId) return;
     const id = selectedId;
@@ -379,7 +408,7 @@ function AssistantSession(props: AssistantHomeProps) {
       {actionError && !dialog && !notice ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{actionError}</p> : null}
       {runtimeError ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{runtimeError}</p> : null}
       {runtime.error instanceof ApiError && runtime.error.isNetworkError ? <Button variant="link" onClick={() => { void runtime.retryNetwork().catch(() => undefined); }}>{t("retry")}</Button> : null}
-      {runtime.messages.at(-1)?.status === "Failed" && runtime.canSend && canRetryAssistantFailure(runtime.turn?.error) ? <AssistantRetryButton key={runtime.turn?.start?.turnId ?? runtime.messages.at(-1)?.id} retryAfter={runtime.turn?.error?.retryAfter} pending={busy} onRetry={() => { const text = runtime.messages.findLast((message) => message.role === "user")?.text; if (text) void runtime.retryFailed({ text, attachmentIds: [], conversationVersion: detail?.conversation.version }).catch(() => undefined); }} /> : null}
+      {runtime.messages.at(-1)?.status === "Failed" && runtime.canSend && canRetryAssistantFailure(runtime.turn?.error) ? <AssistantRetryButton key={runtime.turn?.start?.turnId ?? runtime.messages.at(-1)?.id} retryAfter={runtime.turn?.error?.retryAfter} pending={busy} onRetry={retryFailed} /> : null}
     </section>
     {phone && historyOpen && !notice ? <Dialog open onOpenChange={setHistoryOpen}><DialogContent aria-describedby={undefined} onCloseAutoFocus={restoreHistory}><DialogHeader><DialogTitle>{t("history.title")}</DialogTitle></DialogHeader><DialogBody>{history}</DialogBody></DialogContent></Dialog> : null}
     {phone && phoneActions && !notice ? <Dialog open onOpenChange={(open) => { if (!open) setPhoneActions(null); }}><DialogContent size="sm" showCloseButton={false} aria-describedby={undefined} onCloseAutoFocus={restoreActions}>
