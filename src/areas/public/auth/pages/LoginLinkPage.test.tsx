@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { StrictMode } from "react";
 import type { AuthContextProps } from "react-oidc-context";
@@ -71,6 +71,46 @@ it("suspensión no permite continuar", async () => {
   server.use(http.post("/api/auth/login-link/redeem", () => HttpResponse.json({ code: "Identity.Account.Suspended", detail: "Tu cuenta está suspendida." }, { status: 403 })));
   show(); await screen.findByText("Lucía Fernández"); fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
   expect(await screen.findByRole("heading", { name: "No podés entrar" })).toBeVisible(); expect(removeUser).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled();
+});
+it("LockedOut después del preview es terminal sin otro canje ni cambiar la sesión previa", async () => {
+  const detail = "Tu cuenta está bloqueada temporalmente. Intentá más tarde.";
+  server.use(http.post<never, RedeemLoginLinkRequest>("/api/auth/login-link/redeem", async ({ request }) => {
+    redeemCalls.push(await request.json()); events.push("redeem");
+    return HttpResponse.json({ code: "Identity.Account.LockedOut", detail, retryAfter: 2 }, { status: 429, headers: { "Retry-After": "2" } });
+  }));
+  const storage = vi.spyOn(Storage.prototype, "setItem");
+  const { client, clear, container } = show(); await screen.findByText("Lucía Fernández");
+  fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
+  expect(await screen.findByRole("heading", { name: "No podés entrar" })).toBeVisible();
+  expect(screen.getByText(detail)).toBeVisible();
+  expect(screen.getByRole("link", { name: "Ir al ingreso" })).toHaveAttribute("href", "/login");
+  const status = within(screen.getByRole("main"));
+  expect(status.queryByRole("button")).not.toBeInTheDocument();
+  expect(status.getAllByRole("link")).toEqual([status.getByRole("link", { name: "Ir al ingreso" })]);
+  expect(screen.queryByRole("link", { name: "Volver a WhatsApp" })).not.toBeInTheDocument();
+  vi.useFakeTimers(); await act(async () => { await vi.advanceTimersByTimeAsync(2100); window.dispatchEvent(new Event("focus")); }); vi.useRealTimers();
+  expect(status.queryByRole("button")).not.toBeInTheDocument();
+  expect(previewCalls).toEqual([{ token }]); expect(redeemCalls).toEqual([{ token, access: "consumer" }]); expect(events).toEqual(["redeem"]);
+  expect(removeUser).not.toHaveBeenCalled(); expect(clear).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled(); expect(signoutRedirect).not.toHaveBeenCalled();
+  expect(client.getQueryData(["previous-account"])).toEqual({ name: "Anterior" }); expect(location.hash).toBe("");
+  expect(JSON.stringify(client.getMutationCache().getAll().map((item) => item.state.variables))).not.toContain(token);
+  expect(JSON.stringify(storage.mock.calls)).not.toContain(token); storage.mockRestore();
+  expect(await axe(container)).toHaveNoViolations();
+});
+it("429 transitorio al canjear conserva espera y reintento manual", async () => {
+  server.use(http.post<never, RedeemLoginLinkRequest>("/api/auth/login-link/redeem", async ({ request }) => {
+    redeemCalls.push(await request.json()); events.push("redeem");
+    return redeemCalls.length === 1
+      ? HttpResponse.json({ code: "Request.TooManyRequests", retryAfter: 2 }, { status: 429, headers: { "Retry-After": "2" } })
+      : HttpResponse.json({ access: "consumer" });
+  }));
+  const { clear } = show(); await screen.findByText("Lucía Fernández"); fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
+  expect(await screen.findByRole("button", { name: "Reintentá en 0:02" })).toBeDisabled();
+  vi.useFakeTimers(); await act(async () => { await vi.advanceTimersByTimeAsync(2100); window.dispatchEvent(new Event("focus")); }); vi.useRealTimers();
+  expect(redeemCalls).toHaveLength(1); expect(removeUser).not.toHaveBeenCalled(); expect(clear).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
+  await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
+  expect(redeemCalls).toEqual([{ token, access: "consumer" }, { token, access: "consumer" }]);
 });
 it("429 cuenta Retry-After y no canjea por timer; reintentar preview no consume", async () => {
   let requests = 0;

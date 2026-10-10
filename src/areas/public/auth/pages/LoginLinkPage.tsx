@@ -115,7 +115,7 @@ export function LoginLinkPage() {
     {pending ? <PendingDeletionPanel pending={pending} onCancel={() => { void cancelDeletion(); }} busy={starting} failure={cancelFailure} cancelLabel={cancelRetry.label ?? undefined} cancelDisabled={cancelRetry.isRunning} />
       : !token || errorState === "invalid" ? <AuthStatus icon={ClockIcon} tone="neutral" title={t("loginLink.invalidTitle")} detail={t("loginLink.invalidDetail")}
       actions={<div className="flex flex-col gap-2.5">{whatsapp ? <Button asChild size="lg"><a href={whatsapp}><WhatsAppIcon className="size-4" />{t("loginLink.whatsapp")}</a></Button> : null}{loginAction}</div>} />
-      : errorState === "suspended" ? <AuthStatus icon={LockIcon} tone="danger" title={t("loginLink.suspendedTitle")} detail={apiErrorMessage(failure, t)} actions={loginAction} />
+      : errorState === "terminal" ? <AuthStatus icon={LockIcon} tone="danger" title={t("loginLink.suspendedTitle")} detail={apiErrorMessage(failure, t)} actions={loginAction} />
       : starting ? <div role="status" className="flex flex-col items-center gap-[18px]"><span aria-hidden="true" className="size-8 animate-spin motion-reduce:animate-none rounded-full border-2 border-[var(--borde)] border-t-[var(--marca)]" /><div className="text-center"><h1 className="text-[24px] font-bold">{t("loginLink.startingTitle")}</h1><p className="mt-1.5 text-sm text-[var(--t2)]">{t("loginLink.startingDetail")}</p></div></div>
       : <div className="flex flex-col gap-[22px]">
         <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("loginLink.title")}</h1>

@@ -18,4 +18,16 @@ describe("loginLinkState", () => {
   it.each(["Auth.LoginLink.Invalid", "Auth.LoginLink.Expired", "Auth.LoginLink.AlreadyUsed"])("%s comparte el estado inválido", (code) => {
     expect(loginLinkErrorState(new ApiError(400, { code }))).toBe("invalid");
   });
+  it.each([403, 429])("LockedOut es terminal por código con status %s", (status) => {
+    expect(loginLinkErrorState(new ApiError(status, { code: "Identity.Account.LockedOut", detail: "Esperá antes de ingresar." }))).toBe("terminal");
+  });
+  it("suspensión conserva el estado terminal", () => {
+    expect(loginLinkErrorState(new ApiError(403, { code: "Identity.Account.Suspended" }))).toBe("terminal");
+  });
+  it.each(["Auth.LoginLink.TooManyRequests", "Request.TooManyRequests"])("%s sigue recuperable aunque su detalle mencione el bloqueo", (code) => {
+    expect(loginLinkErrorState(new ApiError(429, { code, detail: "Identity.Account.LockedOut" }))).toBe("retry");
+  });
+  it.each([ApiError.network(), new ApiError(503, { code: "General.Unexpected" })])("un error transitorio conserva reintento", (error) => {
+    expect(loginLinkErrorState(error)).toBe("retry");
+  });
 });

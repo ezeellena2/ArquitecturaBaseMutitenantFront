@@ -10,8 +10,8 @@ export function stripLoginLinkFragment(): void {
   if (globalThis.location.hash) globalThis.history.replaceState(globalThis.history.state, "", `${globalThis.location.pathname}${globalThis.location.search}`);
 }
 
-export function loginLinkErrorState(error: unknown): "invalid" | "suspended" | "retry" {
-  if (error instanceof ApiError && error.code === "Identity.Account.Suspended") return "suspended";
+export function loginLinkErrorState(error: unknown): "invalid" | "terminal" | "retry" {
+  if (error instanceof ApiError && ["Identity.Account.Suspended", "Identity.Account.LockedOut"].includes(error.code ?? "")) return "terminal";
   if (error instanceof ApiError && ["Auth.LoginLink.Invalid", "Auth.LoginLink.Expired", "Auth.LoginLink.AlreadyUsed", "Validation.Failed"].includes(error.code ?? "")) return "invalid";
   return "retry";
 }
