@@ -20,7 +20,16 @@ describe("navegación compuesta", () => {
     const nav = composeNavigation(platformNavigationWithHome, "platform", me, permissionsOf(me), [assistantRegistration]);
     expect(nav.bottomSections?.map((section) => section.link.path)).toEqual(["/plataforma/organizaciones", "/plataforma/asistente", "/plataforma/cuentas"]);
     expect(nav.moreLinks?.map((link) => link.path)).toContain("/plataforma/recuperaciones");
+    expect(nav.moreLinks?.map((link) => link.path)).not.toContain("/plataforma/asistente");
     expect(nav.links.map((link) => link.path)).toEqual(["/plataforma"]);
+  });
+  it("Más conserva las contribuciones móviles que desbordan las cuatro pestañas", () => {
+    const me = { ...platformOperator, moduleCapabilities: [] };
+    const extra: ModuleRegistration = { id: "overflow", routes: Array.from({ length: 4 }, (_, index) => ({ access: "platform", path: `/extra/${index}`, guard: () => "allowed", Page: () => null,
+      navigation: { placement: "phone", labelKey: "extra", icon: HomeIcon } })) };
+    const nav = composeNavigation(platformNavigationWithHome, "platform", me, permissionsOf(me), [extra]);
+    expect(nav.bottomSections?.map((section) => section.link.path)).toEqual(["/plataforma/organizaciones", "/extra/0", "/extra/1", "/extra/2"]);
+    expect(nav.moreLinks?.map((link) => link.path)).toEqual(["/plataforma/recuperaciones", "/extra/3", "/plataforma/cuentas"]);
   });
   it.each([[true, false, ["/test/config"]], [false, true, ["/test/usage"]], [true, true, ["/test/config", "/test/usage"]]] as const)("la gestión instalada sin chat conserva sólo sus permisos %s/%s", (canConfigure, canReadUsage, paths) => {
     const me = { ...platformOperator, moduleCapabilities: [{ key: "assistant", available: false, canConfigure, canReadUsage }] };

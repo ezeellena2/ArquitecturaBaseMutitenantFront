@@ -37,6 +37,8 @@ export interface NavigationSection {
   labelKey: string;
   icon: IconComponent;
   links: readonly NavigationLink[];
+  /** En Más, un grupo propio con título; el núcleo conserva sus filas de Administración. */
+  moreGroup?: boolean;
 }
 
 export interface BottomNavigationSection {

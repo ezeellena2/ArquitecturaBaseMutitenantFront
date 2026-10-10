@@ -18,6 +18,7 @@ import { PublicSiteHostContext } from "@/tenancy/usePublicSite";
 import { mainSiteHost } from "@/tenancy/publicSite";
 import { asPhone } from "@/test/utils/phone";
 import type { ModuleRegistration } from "@/shared/modules/types";
+import { assistantRegistration } from "./registration";
 
 const state: AssistantStateResponse = { configured: true, canConfigure: false, models: [], quickQueries: [], dailyLimit: 50, remainingMessages: 40,
   dailyResetAtUtc: "2026-10-11T00:00:00Z", noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10485760, maxAttachments: 5 };
@@ -118,8 +119,25 @@ describe("composición real de accesos e inicios", () => {
     expect(within(nav).getByRole("link", { name: "Organizaciones" })).toHaveAttribute("aria-current", "page");
     expect(assistantRequests).toHaveLength(0);
     await app.user.click(within(nav).getByRole("link", { name: "Más" }));
-    expect(await screen.findByRole("link", { name: "Recuperaciones" })).toHaveAttribute("href", "/plataforma/recuperaciones");
+    expect(await screen.findByRole("list", { name: "Gestión" })).toBeVisible();
+    expect(within(screen.getByRole("list", { name: "Gestión" })).getByRole("link", { name: "Recuperaciones" })).toHaveAttribute("href", "/plataforma/recuperaciones");
+    expect(screen.queryByRole("list", { name: "Secciones" })).not.toBeInTheDocument();
     expect(screen.queryByText("Perfiles")).not.toBeInTheDocument();
+  });
+  it.each([["/plataforma/mas", platform, "/plataforma"], ["/mas", business, "/org"]] as const)("%s distingue Administración y el grupo Asistente", async (path, account, prefix) => {
+    asPhone();
+    const me: MeResponse = { ...account, effectivePermissions: { ...account.effectivePermissions, organization: [...account.effectivePermissions.organization, "assistant.configure"] },
+      moduleCapabilities: [{ key: "assistant", available: true, canConfigure: true, canReadUsage: true }] };
+    const usage: ModuleRegistration = { id: "test-usage", routes: [{ access: me.access, path: `${prefix}/asistente/uso`, guard: () => "allowed", Page: () => null,
+      navigation: { placement: "administration", labelKey: "assistant:limit.usage", icon: assistantRegistration.routes[0].navigation!.icon, section: { labelKey: "assistant:title", icon: assistantRegistration.routes[0].navigation!.icon } } }] };
+    const app = mount(path, me, [...moduleComposition, usage]);
+    const group = await screen.findByRole("list", { name: "Asistente" });
+    expect(within(group).getByRole("link", { name: "Configuración" })).toHaveAttribute("href", `${prefix}/asistente/configuracion`);
+    expect(within(group).getByRole("link", { name: "Ver uso" })).toHaveAttribute("href", `${prefix}/asistente/uso`);
+    expect(within(screen.getByRole("list", { name: "Administración" })).getByRole("link", { name: "Configuración" })).toHaveAttribute("href", `${prefix}/configuracion`);
+    expect(screen.queryByRole("list", { name: "Secciones" })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("navigation", { name: "Secciones" })).getAllByRole("link", { name: "Asistente" })).toHaveLength(1);
+    expect(await axe(app.container)).toHaveNoViolations();
   });
   it("Plataforma móvil sin tenants.read abre la primera sección permitida del módulo", async () => {
     asPhone();

@@ -36,6 +36,8 @@
 
 - **Inicio de Plataforma con módulo (E8b A2):** la compu conserva Inicio en `/plataforma`. En el teléfono, la barra usa Organizaciones (`/plataforma/organizaciones`), Asistente y Cuentas según permisos, más Más; `/plataforma` lleva con `replace` a la primera sección permitida de esa barra. El registro neutral decide qué módulos contribuyen; no se agrega una pestaña Inicio vacía ni se adelantan las Consultas de E11. Sin contribución de Inicio se conserva la entrada histórica y su selección por permiso.
 
+- **Más con contribuciones de módulos (E8b M3):** las secciones aportadas por el registro llevan `NavigationSection.moreGroup` y conservan su título y grupo propios, después de Administración. Las secciones del núcleo conservan sus filas aprobadas dentro de Administración. Gestión reúne sus opciones permitidas que no están en la barra. Una contribución `phone` entra en Más sólo cuando desborda sus cuatro lugares; los módulos Personal declarados como `feature` conservan su acceso histórico desde Secciones.
+
 ## Prohibido
 - Mostrar "crear una empresa" en el acceso B2C, o mostrar organizaciones en el espacio personal.
 - Usar el subdominio para mostrar algo de la administración de la organización (esa vive en `/org`).

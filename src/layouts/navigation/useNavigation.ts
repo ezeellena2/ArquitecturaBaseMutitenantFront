@@ -26,14 +26,14 @@ export function composeNavigation(base: NavigationConfig, access: Access, me: Me
     if (!nav.section) { administration.push(link); continue; }
     const section = sections.find((entry) => entry.labelKey === nav.section!.labelKey);
     if (section) section.links = [...section.links, link];
-    else sections.push({ ...nav.section, links: [link] });
+    else sections.push({ ...nav.section, links: [link], moreGroup: true });
   }
   const home = visible.links.at(0);
   const existing = visible.bottomSections ?? (access === "consumer"
     ? visible.links.filter((link) => link === home || link.feature).map((link) => ({ link, icon: link === home ? AppHomeIcon : link.icon }))
     : home ? [{ link: home, icon: AppHomeIcon }] : []);
   const allSections = phone.length ? [...existing.slice(0, 1), ...phone.map((link) => ({ link, icon: link.icon })), ...existing.slice(1)] : existing;
-  const more = [...(base.moreLinks ?? []).filter((link) => canOpen(link, permissions)), ...(access === "consumer" ? visible.links.filter((link) => link.feature) : []), ...phone, ...allSections.slice(4).map((section) => section.link)];
+  const more = [...(base.moreLinks ?? []).filter((link) => canOpen(link, permissions)), ...(access === "consumer" ? visible.links.filter((link) => link.feature) : []), ...allSections.slice(4).map((section) => section.link)];
   return { ...base,
     ...(phone.length ? { bottomSections: allSections.slice(0, 4) } : {}),
     moreLinks: [...new Map(more.map((link) => [link.path, link])).values()],

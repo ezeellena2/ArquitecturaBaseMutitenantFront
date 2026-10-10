@@ -32,8 +32,10 @@ export function MorePage() {
   if (access === "platform" && pathname === "/mas" && platformNavigation.moreTo) return <Navigate to={platformNavigation.moreTo} replace />;
 
   const panel = navigation.administration;
-  const administration = panel ? [...(panel.sections ?? []).flatMap((section) => section.links), ...panel.links] : [];
-  const personalModules = navigation.moreLinks ?? [];
+  const administration = panel ? [...(panel.sections ?? []).filter((section) => !section.moreGroup).flatMap((section) => section.links), ...panel.links] : [];
+  const moduleGroups = panel?.sections?.filter((section) => section.moreGroup) ?? [];
+  const management = navigation.management?.links.filter((link) => !navigation.bottomSections?.some((section) => section.link.path === link.path)) ?? [];
+  const personalModules = (navigation.moreLinks ?? []).filter((link) => !management.some((entry) => entry.path === link.path));
   const subtitle = access === "platform" ? t("navigation.platform")
     : access === "business" ? activeOrganization(user)?.name : t("accessMenu.personal");
 
@@ -58,6 +60,13 @@ export function MorePage() {
       </SettingsGroup>
     </> : null}
 
+    {management.length > 0 && navigation.management ? <>
+      <GroupTitle>{t(navigation.management.labelKey)}</GroupTitle>
+      <SettingsGroup label={t(navigation.management.labelKey)}>
+        {management.map((entry) => <SettingsItem key={entry.path} title={t(entry.phoneLabelKey ?? entry.labelKey)} to={entry.path} />)}
+      </SettingsGroup>
+    </> : null}
+
     {personalModules.length > 0 ? <>
       <GroupTitle>{t("navigation.sections")}</GroupTitle>
       <SettingsGroup label={t("navigation.sections")}>
@@ -71,6 +80,13 @@ export function MorePage() {
         {administration.map((entry) => <SettingsItem key={entry.labelKey} title={t(entry.phoneLabelKey ?? entry.labelKey)} to={entry.path} />)}
       </SettingsGroup>
     </> : null}
+
+    {moduleGroups.map((section) => <div key={section.labelKey}>
+      <GroupTitle>{t(section.labelKey)}</GroupTitle>
+      <SettingsGroup label={t(section.labelKey)}>
+        {section.links.map((entry) => <SettingsItem key={entry.path} title={t(entry.phoneLabelKey ?? entry.labelKey)} to={entry.path} />)}
+      </SettingsGroup>
+    </div>)}
 
     <SettingsGroup label={t("accessMenu.myAccount")} className="mt-4">
       <SettingsItem title={t("accessMenu.myAccount")} to="/cuenta" />
