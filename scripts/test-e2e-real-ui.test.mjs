@@ -1,7 +1,41 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { chromium } from "playwright";
-import { fillOtp } from "./test-e2e-real-ui.mjs";
+import { fillOtp, openAccountEmailDialog, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
+
+for (const width of [1440, 390]) for (const whatsapp of [false, true]) test(`Agregar correo conserva el destino con WhatsApp ${whatsapp} en ${width}`, async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await page.setContent(`<button onclick="document.querySelector('[role=dialog]').hidden=false">${whatsapp ? "Agregar correo o teléfono" : "Agregar correo"}</button>
+      <section role="dialog" hidden>${whatsapp ? '<button onclick="document.querySelector(\'input\').type=\'email\'">Correo</button><button>Teléfono</button>' : ''}
+      <label>Correo<input type="${whatsapp ? 'hidden' : 'email'}"></label><button>Enviar código</button></section>`);
+    const dialog = await openAccountEmailDialog(page);
+    await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill("ocupado@example.test");
+    assert.equal(await dialog.getByRole("textbox", { name: "Correo", exact: true }).inputValue(), "ocupado@example.test");
+    assert.equal(await dialog.getByRole("textbox", { name: "Código 1", exact: true }).count(), 0);
+  } finally { await browser.close(); }
+});
+
+for (const changed of [false, true]) test(`la sección privada ${changed ? 'acepta los legales reales por UI' : 'no inventa aceptación sin pendientes'}`, async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(`<section id="terms" ${changed ? '' : 'hidden'}><h1>Actualizamos los términos</h1>
+      <label><input type="checkbox">Leí y acepto los Términos y la Política de privacidad</label>
+      <button onclick="if(document.querySelector('input').checked){document.querySelector('#terms').hidden=true;document.querySelector('#page').hidden=false}">Aceptar y seguir</button></section>
+      <section id="page" ${changed ? 'hidden' : ''}><h1>Documentos legales</h1></section>`);
+    let accepted = 0;
+    await waitForPrivateHeading(page, "Documentos legales", async () => {
+      assert.equal(await page.getByRole("heading", { name: "Documentos legales", exact: true }).isVisible(), false);
+      await page.getByRole("checkbox", { name: /Leí y acepto/ }).check();
+      await page.getByRole("button", { name: "Aceptar y seguir", exact: true }).click();
+      accepted++;
+    });
+    assert.equal(accepted, changed ? 1 : 0);
+    assert.equal(await page.getByRole("heading", { name: "Documentos legales", exact: true }).isVisible(), true);
+  } finally { await browser.close(); }
+});
 
 test("el código espera los controles que aparecen después del título", async () => {
   const browser = await chromium.launch({ headless: true });

@@ -9,7 +9,8 @@ import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 import { caseDelay as delay, caseStage, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { pickupCode, plainTextBody } from "./test-e2e-real-mail.mjs";
-import { fillOtp } from "./test-e2e-real-ui.mjs";
+import { accountAddMethodName, fillOtp, openAccountEmailDialog, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
+import { waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { chromium } from "playwright";
 
@@ -424,8 +425,8 @@ async function openAccount(page, currentProfile = "Personal") {
   await page.getByRole("menuitem", { name: /^(Mi cuenta|My account)$/ }).click();
   try {
     await page.getByRole("heading", { name: /^(Mi cuenta|My account)$/ }).waitFor({ timeout: 10_000 });
-    // Sin el módulo de WhatsApp (el back de hoy), «Agregar correo»; con él, «Agregar correo o teléfono».
-    await page.getByRole("button", { name: /^(Agregar correo o teléfono|Agregar correo|Add email or phone|Add email)$/ }).waitFor({ timeout: 10_000 });
+    // La capacidad publicada decide la acción: correo solo o correo y teléfono.
+    await page.getByRole("button", { name: accountAddMethodName }).waitFor({ timeout: 10_000 });
   } catch {
     throw new Error(`La cuenta 3b: /cuenta no terminó de cargar (ruta ${new URL(page.url()).pathname}).`);
   }
@@ -434,8 +435,7 @@ async function openAccount(page, currentProfile = "Personal") {
 async function addPersonalEmail(page, originalEmail, { verify = true, onStage = () => {} } = {}) {
   const email = `e2e-personal-${randomUUID()}@example.test`;
   onStage("abre Agregar correo");
-  await page.getByRole("button", { name: /^(Agregar correo o teléfono|Agregar correo)$/ }).click();
-  const dialog = page.getByRole("dialog");
+  const dialog = await openAccountEmailDialog(page);
   onStage("completa el correo nuevo");
   await dialog.getByRole("textbox", { name: "Correo", exact: true }).waitFor();
   await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
@@ -544,7 +544,7 @@ async function platformNavigate(page, panel, link) {
   await button.waitFor();
   if (await button.getAttribute("aria-expanded") !== "true") await button.click();
   await page.getByRole("navigation", { name: panel, exact: true }).getByRole("link", { name: link, exact: true }).click();
-  await page.getByRole("heading", { name: link, exact: true }).waitFor();
+  await waitForPrivateHeading(page, link, () => acceptCurrentTerms(page));
 }
 
 async function openPlatformOrganization(page, name) {
@@ -991,8 +991,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await openAccount(accountPage);
           await accountPage.setViewportSize({ width, height: width === 390 ? 844 : 900 });
           setStage("rechaza otro correo verificado en Agregar sin OTP");
-          await accountPage.getByRole("button", { name: "Agregar correo", exact: true }).click();
-          const dialog = accountPage.getByRole("dialog");
+          const dialog = await openAccountEmailDialog(accountPage);
           await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(businessEmail);
           const ownedBefore = new Set(await pickupFiles());
           await dialog.getByRole("button", { name: "Enviar código", exact: true }).click();
@@ -1111,7 +1110,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           // El preparador acepta las versiones reales vigentes para este operador aislado.
           await expectPath(platformPage, "/plataforma", "ingreso del operador");
           setStage("muestra el listado real de Organizaciones");
-          await platformPage.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+          await waitForPlatformSession(platformPage, () => acceptCurrentTerms(platformPage));
+          await platformNavigate(platformPage, "Gestión", "Organizaciones");
 
           setStage("F5 conserva el acceso exclusivo de Plataforma");
           await platformPage.reload();
@@ -1128,7 +1128,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           try {
             const reduced = await reducedContext.newPage();
             await loginThroughUi(reduced, "e2e-reduced@example.test", "platform", setStage);
-            await reduced.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+            await platformNavigate(reduced, "Gestión", "Organizaciones");
             assert.equal(await reduced.getByRole("button", { name: "Crear organización", exact: true }).count(), 0);
             assert.equal(await reduced.getByRole("button", { name: "Administración", exact: true }).count(), 0);
             assert.equal(await reduced.getByRole("link", { name: "Cuentas", exact: true }).count(), 0);
@@ -1203,7 +1203,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
                 setStage("Ir a Plataforma aprovecha su cookie vigente");
                 await publicPage.getByRole("link", { name: "Ir a Plataforma", exact: true }).click();
                 await expectProfile(publicPage, "Plataforma", "retorno al operador sin crear Personal");
-                await publicPage.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+                await waitForPlatformSession(publicPage, () => acceptCurrentTerms(publicPage));
               }
             }
             setStage("sale desde el estado privado de empresa por logout público sin hint Platform");
@@ -1244,7 +1244,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await expectProfile(platformPage, "Plataforma", "la pestaña del operador conserva Plataforma");
             await platformPage.goto(new URL("/plataforma", baseUrl).href);
             await expectProfile(platformPage, "Plataforma", "la sesión del operador sigue abierta");
-            await platformPage.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+            await waitForPlatformSession(platformPage, () => acceptCurrentTerms(platformPage));
             setStage("refresca la persona y sale sólo del lado público");
             await publicPage.reload();
             await expectProfile(publicPage, "Personal", "la sesión pública sigue abierta");
@@ -1325,6 +1325,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await loginThroughUi(platformPage, operatorEmails["5b"], "platform", setStage);
           const ownerEmail = `e2e-owner-${randomUUID()}@example.test`;
           const name = "Creada T25";
+          await platformNavigate(platformPage, "Gestión", "Organizaciones");
           setStage("crea una organización con un Dueño sin cuenta");
           await platformPage.getByRole("button", { name: "Crear organización", exact: true }).click();
           const creation = platformPage.getByRole("dialog");
@@ -2183,12 +2184,16 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           assert.equal(await accountPage.locator("html").getAttribute("lang"), "en");
           assert.equal(await accountPage.evaluate(() => localStorage.getItem("arquitecturabasemt.culture")), "en-US");
         }],
-        ["3b: aceptar versión nueva de términos que bloquea el ingreso", async (accountPage) => {
-          await registerPerson(accountPage);
+        ["3b: aceptar versión nueva de términos que bloquea el ingreso", async (accountPage, setStage) => {
+          await registerPerson(accountPage, undefined, setStage);
+          setStage("abre Mi cuenta antes de publicar términos");
           await openAccount(accountPage);
+          setStage("publica la versión nueva real de términos");
           await publishNewTerms(readyFile);
+          setStage("F5 exige los términos nuevos");
           await accountPage.reload();
           await accountPage.getByRole("heading", { name: "Actualizamos los términos" }).waitFor();
+          setStage("rechaza aceptación sin marcar la casilla");
           // Como el tablero Aceptar-Terminos: el botón no se apaga; sin la casilla pide la aceptación.
           assert.equal(await accountPage.getByRole("button", { name: "Aceptar y seguir" }).isDisabled(), false);
           await accountPage.getByRole("button", { name: "Aceptar y seguir" }).click();
