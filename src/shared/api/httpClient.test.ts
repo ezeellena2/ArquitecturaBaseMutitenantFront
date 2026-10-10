@@ -1,5 +1,7 @@
 import { HttpResponse, http } from "msw";
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { waitFor } from "@testing-library/react";
+import { File as FetchFile } from "node:buffer";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
 import { ApiError } from "./ApiError";
@@ -17,6 +19,7 @@ beforeAll(async () => {
 describe("httpClient", () => {
   beforeEach(() => resetHttpClient());
   afterEach(async () => {
+    vi.unstubAllGlobals();
     resetHttpClient();
     await changeCulture("es-AR");
   });
@@ -143,5 +146,92 @@ describe("httpClient", () => {
     const caught = await api.get("/api/test-client").catch((error: unknown) => error);
     expect(caught).toBeInstanceOf(ApiError);
     expect(caught).toMatchObject({ status: 0, isNetworkError: true });
+  });
+
+  it("respeta Accept SSE y devuelve el cuerpo binario sin consumirlo", async () => {
+    let accept: string | null = null;
+    server.use(http.get("/api/stream", ({ request }) => {
+      accept = request.headers.get("accept");
+      return new HttpResponse("event: done\ndata: {}\n\n", { headers: { "content-type": "text/event-stream" } });
+    }));
+    const response = await api.response("/api/stream", { headers: { Accept: "text/event-stream, application/json" } });
+    expect(accept).toBe("text/event-stream, application/json");
+    expect(response.bodyUsed).toBe(false);
+    expect(await response.text()).toContain("event: done");
+  });
+
+  it("deja al navegador el boundary de FormData y conserva sus campos y Bearer", async () => {
+    let seen: unknown;
+    server.use(http.post("/api/upload", async ({ request }) => {
+      const body = await request.formData();
+      seen = { contentType: request.headers.get("content-type"), authorization: request.headers.get("authorization"),
+        version: body.get("conversationVersion"), file: (body.get("file") as File).name };
+      return HttpResponse.json({ ok: true });
+    }));
+    configureHttpClient({ getAccessToken: () => "private-token" });
+    // Fetch de Node requiere su FormData nativo; JSDOM usa otra implementación de Blob/File.
+    vi.stubGlobal("File", FetchFile);
+    const form = await new Request("http://localhost/form", { method: "POST",
+      headers: { "content-type": "multipart/form-data; boundary=fixture" },
+      body: '--fixture\r\nContent-Disposition: form-data; name="file"; filename="image.png"\r\nContent-Type: image/png\r\n\r\nbytes\r\n--fixture\r\nContent-Disposition: form-data; name="conversationVersion"\r\n\r\n7\r\n--fixture--\r\n',
+    }).formData();
+    vi.stubGlobal("FormData", form.constructor);
+    await expect(api.postForm("/api/upload", form, { headers: { "Content-Type": "application/json" } })).resolves.toEqual({ ok: true });
+    expect(seen).toEqual({ contentType: expect.stringMatching(/^multipart\/form-data; boundary=/),
+      authorization: "Bearer private-token", version: "7", file: "image.png" });
+  });
+
+  it("abortar antes de enviar conserva AbortError y no envía ni renueva", async () => {
+    const handler = vi.fn(() => HttpResponse.json({ ok: true }));
+    server.use(http.get("/api/abort", handler));
+    const renewAccessToken = vi.fn(async () => "new-token");
+    configureHttpClient({ getAccessToken: () => "old-token", renewAccessToken });
+    const controller = new AbortController();
+    controller.abort();
+    await expect(api.get("/api/abort", { signal: controller.signal })).rejects.toMatchObject({ name: "AbortError" });
+    expect(handler).not.toHaveBeenCalled();
+    expect(renewAccessToken).not.toHaveBeenCalled();
+  });
+
+  it("abortar durante fetch conserva AbortError", async () => {
+    const controller = new AbortController();
+    let release = (): void => {};
+    const pending = new Promise<void>((resolve) => { release = resolve; });
+    const handler = vi.fn(async () => { await pending; return HttpResponse.json({ ok: true }); });
+    server.use(http.get("/api/abort", handler));
+    const result = api.get("/api/abort", { signal: controller.signal }).catch((error: unknown) => error);
+    await waitFor(() => expect(handler).toHaveBeenCalledOnce());
+    controller.abort();
+    expect(await result).toMatchObject({ name: "AbortError" });
+    release();
+  });
+
+  it.each(["new-token", undefined])("cancelar la espera no cancela la renovación compartida (%s) ni expira al caller", async (renewedToken) => {
+    const seen: string[] = [];
+    server.use(http.get("/api/renew-abort", ({ request }) => {
+      const authorization = request.headers.get("authorization") ?? "";
+      seen.push(authorization);
+      return authorization === "Bearer old-token"
+        ? HttpResponse.json({ code: "Http.Unauthorized" }, { status: 401 }) : HttpResponse.json({ ok: true });
+    }));
+    let release = (_token: string | undefined): void => {};
+    const renewal = new Promise<string | undefined>((resolve) => { release = resolve; });
+    const renewAccessToken = vi.fn(() => renewal);
+    const onSessionExpired = vi.fn();
+    configureHttpClient({ getAccessToken: () => "old-token", renewAccessToken, onSessionExpired });
+    const controller = new AbortController();
+    const canceled = api.get("/api/renew-abort", { signal: controller.signal }).catch((error: unknown) => error);
+    await waitFor(() => expect(renewAccessToken).toHaveBeenCalledOnce());
+    controller.abort();
+    // Debe terminar antes de que la renovación compartida responda.
+    expect(await canceled).toMatchObject({ name: "AbortError" });
+    expect(onSessionExpired).not.toHaveBeenCalled();
+    const active = api.get("/api/renew-abort").catch((error: unknown) => error);
+    await waitFor(() => expect(seen).toHaveLength(2));
+    release(renewedToken);
+    expect(await active).toMatchObject(renewedToken ? { ok: true } : { status: 401 });
+    expect(seen.filter((token) => token === "Bearer new-token")).toHaveLength(renewedToken ? 1 : 0);
+    expect(renewAccessToken).toHaveBeenCalledOnce();
+    expect(onSessionExpired).toHaveBeenCalledTimes(renewedToken ? 0 : 1);
   });
 });

@@ -46,14 +46,37 @@ async function readProblem(response: Response): Promise<ProblemDetails> {
     const body: unknown = await response.json();
 
     return isProblemDetails(body) ? body : {};
-  } catch {
+  } catch (error) {
+    if (isAbortError(error)) throw error;
     return {};
   }
 }
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === "AbortError";
+}
+
+// Cancela solo la espera de este caller; la renovación compartida sigue para los demás.
+function waitForRenewal(pending: Promise<string | undefined>, signal?: AbortSignal | null): Promise<string | undefined> {
+  signal?.throwIfAborted();
+  if (!signal) return pending;
+  return new Promise((resolve, reject) => {
+    const abort = () => reject(signal.reason);
+    signal.addEventListener("abort", abort, { once: true });
+    pending.then(resolve, reject).finally(() => signal.removeEventListener("abort", abort));
+  });
+}
+
+function throwTransportError(error: unknown, signal?: AbortSignal | null): never {
+  signal?.throwIfAborted();
+  if (isAbortError(error)) throw error;
+  throw ApiError.network();
+}
+
 async function send(path: string, init: RequestInit, token: string | undefined, cookieOnly = false): Promise<Response> {
+  init.signal?.throwIfAborted();
   const headers = new Headers(init.headers);
-  headers.set("accept", "application/json");
+  if (!headers.has("accept")) headers.set("accept", "application/json");
 
   if (token) {
     headers.set("authorization", `Bearer ${token}`);
@@ -68,7 +91,10 @@ async function send(path: string, init: RequestInit, token: string | undefined, 
     headers.set("accept-language", language);
   }
 
-  if (init.body !== undefined) {
+  if (init.body instanceof FormData) {
+    // El navegador agrega el boundary; un Content-Type heredado lo rompería.
+    headers.delete("content-type");
+  } else if (typeof init.body === "string" && !headers.has("content-type")) {
     headers.set("content-type", "application/json");
   }
 
@@ -77,27 +103,33 @@ async function send(path: string, init: RequestInit, token: string | undefined, 
 
 async function receive(path: string, init: RequestInit, allowNotModified = false,
   cookieOnly = false): Promise<Response> {
+  init.signal?.throwIfAborted();
   let response: Response;
   const token = cookieOnly ? undefined : options.getAccessToken?.();
 
   try {
     response = await send(path, init, token, cookieOnly);
-  } catch {
-    throw ApiError.network();
+  } catch (error) {
+    throwTransportError(error, init.signal);
   }
+
+  init.signal?.throwIfAborted();
 
   if (response.status === 401 && token && options.renewAccessToken && notifiedExpiredToken !== token) {
     let renewedToken: string | undefined;
     try {
-      renewedToken = await currentOrRenewedToken(token, options.renewAccessToken);
-    } catch {
+      renewedToken = await waitForRenewal(currentOrRenewedToken(token, options.renewAccessToken), init.signal);
+    } catch (error) {
+      init.signal?.throwIfAborted();
+      if (isAbortError(error)) throw error;
       // El 401 original conserva su código y traceId si la sesión ya no se puede renovar.
     }
+    init.signal?.throwIfAborted();
     if (renewedToken) {
       try {
-      response = await send(path, init, renewedToken, cookieOnly);
-      } catch {
-        throw ApiError.network();
+        response = await send(path, init, renewedToken, cookieOnly);
+      } catch (error) {
+        throwTransportError(error, init.signal);
       }
     } else if (options.onSessionExpired && notifiedExpiredToken !== token) {
       notifiedExpiredToken = token;
@@ -109,9 +141,12 @@ async function receive(path: string, init: RequestInit, allowNotModified = false
     }
   }
 
+  init.signal?.throwIfAborted();
+
   // Solo transporta: qué pantalla muestra un 403 lo decide la consulta que lo pidió (queryClient).
   if (!response.ok && !(allowNotModified && response.status === 304)) {
     const problem = await readProblem(response);
+    init.signal?.throwIfAborted();
     const retryAfter = response.headers.get("retry-after");
     const seconds = retryAfter && /^\d+$/.test(retryAfter) ? Number(retryAfter) : undefined;
     throw new ApiError(response.status, typeof seconds === "number" && Number.isFinite(seconds)
@@ -147,10 +182,14 @@ async function getWithMetadata<T>(path: string, init: RequestInit = {}) {
 }
 
 export const api = {
+  // SSE y binarios reciben la misma autenticación/errores sin consumir el cuerpo.
+  response: (path: string, init: RequestInit = {}) => receive(path, init),
   get: <T>(path: string, init?: RequestInit) => request<T>(path, { ...init, method: "GET" }),
   getWithMetadata,
   post: <T>(path: string, body?: unknown, init?: RequestInit) =>
     request<T>(path, { ...init, method: "POST", body: body === undefined ? undefined : JSON.stringify(body) }),
+  postForm: <T>(path: string, body: FormData, init?: RequestInit) =>
+    request<T>(path, { ...init, method: "POST", body }),
   postCookie: <T>(path: string, body?: unknown, init?: RequestInit) =>
     request<T>(path, { ...init, method: "POST", body: body === undefined ? undefined : JSON.stringify(body), credentials: "same-origin" }, true),
   put: <T>(path: string, body?: unknown, init?: RequestInit) =>
