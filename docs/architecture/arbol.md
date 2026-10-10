@@ -62,6 +62,12 @@ ArquitecturaBaseMutitenantFront/
 │   ├── capturar-etapa-8.mjs                         capturas de comparación final de etapa 8 contra lienzo v115
 │   ├── generar-galeria-etapa-8.mjs                  galería de comparación final del front de la etapa 8
 │   ├── test-e2e-real-whatsapp.mjs                   runner E2E WhatsApp con front, API, OIDC y PostgreSQL reales
+│   ├── recorrido-usuario-whatsapp.mjs               El transporte se adapta sólo cuando Back publique control para…
+│   ├── recorrido-usuario-entorno.test.mjs           tests de recorrido-usuario-entorno
+│   ├── capturar-etapa-8b.test.mjs                   tests de capturar-etapa-8b
+│   ├── assistant-open-stream.test.mjs               tests de assistant-open-stream
+│   ├── assistant-open-stream.mjs                    servidor local para capturar respuestas SSE abiertas
+│   ├── capturar-etapa-8b.mjs                        prepara y captura la galería visual E8b
 │   └── recorrido-lienzo/                            recorrido del lienzo tablero por tablero (recorrido.mjs) y vista en vivo de una pantalla junto a su tablero (vivo.mjs)
 ├── src/                                             ver abajo
 ├── .gitignore
@@ -104,6 +110,7 @@ src/
 │   ├── RequirePermission.tsx                        la guarda de una ruta del manifiesto: módulo apagado → 404; sin permiso → «No tenés permiso», dentro del marco; con companyPermission, también ese permiso en la empresa de la ruta (B4)
 │   ├── RequirePermission.test.tsx                   
 │   ├── navigationStatus.test.tsx                    la navegación OIDC transitoria («Iniciando sesión…», «Cerrando sesión…»)
+│   ├── moduleComposition.ts                         Único punto concreto
 │   └── routes-by-host.test.ts                       un subdominio no monta /org, /cuenta ni /plataforma
 │
 ├── auth/                                            [E3]
@@ -135,6 +142,8 @@ src/
 │   ├── useCurrentUser.ts                            GET /api/me, key ["current-user"]
 │   ├── useCurrentUser.test.tsx                      tests de useCurrentUser
 │   ├── usePermissions.ts                            can, canInCompany, canPlatform y hasFeature (P8) sobre effectivePermissions y features de /api/me; los códigos tipados de los catálogos del back
+│   ├── accountIdentity.ts                           Identidad de la cuenta global
+│   ├── accountIdentity.test.ts                      tests de accountIdentity
 │   └── usePermissions.test.ts                       
 │
 ├── tenancy/                                         [E3] accesos (B2C / B2B / plataforma)
@@ -181,6 +190,7 @@ src/
 │   │   ├── platform.ts                              Organizaciones (el inicio) · Cuentas · Recuperaciones · Auditoría · Documentos legales · Configuración; barra inferior con Gestión y Más canónico
 │   │   ├── visible.ts                               el menú que la sesión puede ver (permiso y módulo): lo usan el menú lateral y «Más»; `canOpen`, también las migas
 │   │   ├── visible.test.ts                          cada enlace es una ruta del manifiesto
+│   │   ├── useNavigation.ts                         Aplica la misma contribución a la barra, Más y Administración
 │   │   └── navigation.test.tsx                      enlaces por acceso, feature Personal habilitada/apagada y límite de cuatro + Más
 │   └── components/
 │       ├── menuRow.ts                               las opciones del menú lateral y del panel («Criterio · Menús»): 32 de alto, ícono de 18, la activa en blanco con letra petróleo; panelEdgeButtonClass, la flecha del borde
@@ -273,6 +283,7 @@ src/
 │   │   │       ├── RecoverAccountPage.test.tsx      tests de Recuperar: nonce, idempotencia, errores, espera y vista a 390
 │   │   │       ├── CallbackPage.tsx
 │   │   │       ├── SignupChannelMarker.test.tsx     tests de SignupChannelMarker
+│   │   │       ├── AuthDestinationCountries.test.tsx tests de AuthDestinationCountries
 │   │   │       └── CallbackPage.test.tsx            tests de CallbackPage
 │   │   ├── legal/                                   [E3] P7
 │   │   │   ├── api/
@@ -545,6 +556,7 @@ src/
 │   │   ├── settings.json                            [E6]
 │   │   ├── audit.json                               [E6]
 │   │   ├── publicPage.json                          [E6] /org/pagina
+│   │   ├── assistant.json                           textos del asistente y su configuración
 │   │   └── storefront.json                          página pública del subdominio: No disponible, enlace al principal y menú móvil Tu cuenta
 │   ├── en/                                          mismos archivos
 │   ├── keys.test.ts                                 cada clave que usa el código existe en los textos
@@ -602,6 +614,7 @@ src/
 │   │   ├── personalData.test.ts                     tests de personalData
 │   │   ├── statusTones.ts                           estado → tono visual; Página pública y dominio tienen un registro común entre features, sin duplicar enums
 │   │   ├── statusTones.test.ts                      tests de statusTones
+│   │   ├── month.test.ts                            tests de month
 │   │   └── format-usage.test.ts                     falla si se formatea fuera de shared/format y shared/time o se fijan catálogos en código
 │   ├── time/                                        [E3] zona efectiva de cuenta/empresa/organización
 │   │   ├── useEffectiveTimeZone.ts                  cuenta → empresa → organización (en B2B)
@@ -706,6 +719,8 @@ src/
 │       │   ├── StatusBadge.test.tsx                 tests de StatusBadge
 │       │   ├── BooleanText.tsx                      Sí / No
 │       │   ├── EmptyValue.tsx                       — con aria-label "Sin dato"
+│       │   ├── LoginMethodText.tsx                  Una máscara entregada por la API se conserva, sin reconstruir…
+│       │   ├── LoginMethodText.test.tsx             tests de LoginMethodText
 │       │   └── EmptyValue.test.tsx                  tests de EmptyValue
 │       ├── fields/                                  [E1] cómo se CARGA cada dato (parsea la cultura y emite el contrato)
 │       │   ├── DateField.tsx                        DateOnly sin zona
@@ -734,6 +749,8 @@ src/
 │       │   ├── TimeZoneSelect.tsx                   zonas habilitadas; SortOrder, offset actual y ciudad
 │       │   ├── TimeZoneSelect.test.tsx              tests de TimeZoneSelect
 │       │   ├── CultureSelect.tsx                    culturas habilitadas, cada una en su propia lengua
+│       │   ├── MonthField.tsx                       Selector de un período civil YYYY-MM
+│       │   ├── MonthField.test.tsx                  tests de MonthField
 │       │   └── CultureSelect.test.tsx               tests de CultureSelect
 │       ├── button.tsx                               los cuatro tipos y tamaños de «Criterio · Botones»; pending muestra «Guardando…» con su aro
 │       ├── button.test.tsx                          tests de button
@@ -886,6 +903,9 @@ src/
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     ├── etapa8VisualApp.tsx                          entrada visual de etapa 8 con componentes y providers reales
     ├── etapa8VisualFixtures.ts                      datos ficticios del lienzo para el arnés visual E8
+    ├── etapa8bVisualFixtures.ts                     contratos y datos ficticios del arnés visual E8b
+    ├── etapa8IdentityVisualFixtures.ts              variantes visuales ficticias de identidad para E8
+    ├── galleryUploadFiles.ts                        archivos ficticios en memoria para cargas visuales
     └── utils/
         ├── renderWithProviders.tsx                  [E1] providers/QueryClient nuevo y fixtures as; renderRoute usa routes principales. Host público: routesForHost + PublicSiteHostContext en sus tests
         ├── renderWithProviders.test.tsx             tests de renderWithProviders

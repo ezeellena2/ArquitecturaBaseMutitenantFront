@@ -1,5 +1,4 @@
 # Cuentas de Plataforma
-
 Leé la ficha backend `docs/features/plataforma.md` y datos/API, paginado, formularios, errores, formatos y permisos; copiá business/users sin imports cruzados.
 Lista y ficha copian Cuentas/Cuenta-Plat y sus M aprobados; Page, List, DataTable y grupos son compartidos.
 Identidad: nombre, maskedPrimaryPhone recibido, correo y vacío; Phone principal gana al correo de respaldo. Una máscara no pasa por PhoneText; sin nombre conserva el avatar apagado con raya.
