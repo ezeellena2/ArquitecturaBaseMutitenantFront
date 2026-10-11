@@ -16,11 +16,11 @@ test("inventario del HTML actual preserva estados y asimetría", () => {
   assert.ok(!cases.some((entry) => entry.board === "M-Asistente-Org" && entry.state === "Detenida"));
 });
 
-test("Uso y tope mensual están preparados; los pendientes ajenos a T13 bloquean la galería completa", async () => {
+test("Configuración, Uso y tope mensual preparados; los dos estados de E11 bloquean la galería completa", async () => {
   const manifest = await buildManifest();
-  assert.equal(manifest.cases.filter((entry) => entry.group === "configuracion").length, 23);
-  assert.equal(manifest.cases.length, 130);
-  assert.equal(manifest.pending.length, 8);
+  assert.equal(manifest.cases.filter((entry) => entry.group === "configuracion").length, 29);
+  assert.equal(manifest.cases.length, 136);
+  assert.equal(manifest.pending.length, 2);
   assert.equal(manifest.cases.filter((entry) => entry.group === "chat").length, 96);
   assert.equal(manifest.cases.filter((entry) => entry.group === "uso").length, 11);
   const monthly = manifest.cases.filter((entry) => entry.state === "Tope del mes");
@@ -37,14 +37,20 @@ test("Uso y tope mensual están preparados; los pendientes ajenos a T13 bloquean
   assert.ok(oversized.every((entry) => entry.viewport.width === 1440 && entry.app.readyTexts.includes("planilla-ventas.pdf pesa más de 10,5 MB.")
     && entry.app.actions.flatMap((action) => action.type === "upload" ? action.files : []).map((file) => file.byteLength).join(",") === "240000,14800000"));
   assert.equal(manifest.complete, false);
-  assert.throws(() => selectCases(manifest), /8 estados pendientes/);
-  assert.ok(manifest.pending.every((entry) => entry.group !== "uso" && entry.state !== "Tope del mes"));
+  assert.throws(() => selectCases(manifest), /2 estados pendientes/);
+  assert.ok(manifest.pending.every((entry) => entry.group === "chat" && entry.state.includes("Mis mensajes") && entry.state.includes("con mensajes")));
   const selection = selectCases(manifest, { ids: [manifest.cases[0].id] });
   assert.equal(selection.cases.length, 1);
   assert.equal(selection.complete, false);
   const usage = selectCases(manifest, { groups: ["uso"] });
   assert.equal(usage.cases.length, 11); assert.equal(usage.complete, false);
-  assert.throws(() => selectCases(manifest, { groups: ["configuracion"] }), /6 estados pendientes/);
+  const configuration = selectCases(manifest, { groups: ["configuracion"] });
+  assert.equal(configuration.cases.length, 29); assert.equal(configuration.complete, false);
+  const advanced = configuration.cases.filter((entry) => ["Agregar un modelo: avanzado", "Editar un modelo", "Editar un modelo: error en un dato técnico"].includes(entry.state));
+  assert.equal(advanced.length, 6);
+  assert.deepEqual([...new Set(advanced.map((entry) => entry.viewport.width))].sort(), [1440, 390]);
+  assert.ok(advanced.every((entry) => entry.app.actions.some((action) => action.name === "Avanzado: datos técnicos")
+    && entry.app.responses.every((response) => response.method === "GET")));
   assert.throws(() => selectCases(manifest, { ids: ["inexistente"] }), /desconocida/);
 });
 

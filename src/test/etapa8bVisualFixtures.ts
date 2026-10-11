@@ -131,7 +131,41 @@ function baseApp(scope: Scope, route: string, configure = true): GalleryApp {
     now: "2026-10-10T12:00:00Z", actions: [], readySelector: "main", responses: [api("GET", "/api/me", galleryMe(scope, configure)),
       api("GET", "/api/reference-data", { ...reference, currencies: [...reference.currencies, { ...reference.currencies[0], code: "USD", name: "Dólar estadounidense", displaySymbol: "USD", symbol: "$", minorUnits: 2 }] })] };
 }
+/** Estados v118 del editor real, reproducidos sin escribir en el catálogo. */
+function galleryAdvancedModelScenario(board: string, state: string): GalleryApp | undefined {
+  if (!["Plat-Asistente-Config", "M-Plat-Asistente-Config"].includes(board)
+    || !["Agregar un modelo: avanzado", "Editar un modelo", "Editar un modelo: error en un dato técnico"].includes(state)) return undefined;
+  const app = baseApp("platform", "/plataforma/asistente/configuracion?tab=catalog");
+  const adding = state === "Agregar un modelo: avanzado";
+  const invalid = state === "Editar un modelo: error en un dato técnico";
+  // Ejemplos ficticios del lienzo, sin consultar ni acreditar tarifas del proveedor.
+  const model: AssistantModelPriceResponse = { ...galleryModels[0], name: invalid ? "Claude Sonnet 5.5" : "Claude Haiku 5.5",
+    providerModelId: invalid ? "claude-sonnet-5-5" : "claude-haiku-5-5",
+    inputPricePerMillion: { amount: invalid ? 2 : 0.1, currency: "USD" }, outputPricePerMillion: { amount: invalid ? 10 : 0.5, currency: "USD" },
+    technical: { supportsText: true, supportsTools: true, supportsImages: true, supportsPdf: true, supportsAdaptiveThinking: true,
+      efforts: ["low", "medium", "high"], maxInputTokens: 1000000, maxOutputTokens: 128000,
+      cacheReadPricePerMillion: { amount: invalid ? 0.1 : 0.01, currency: "USD" },
+      cacheWrite5MinutesPricePerMillion: { amount: invalid ? 2.5 : 0.125, currency: "USD" },
+      cacheWrite1HourPricePerMillion: { amount: invalid ? 4 : 0.2, currency: "USD" },
+      longContext: invalid ? null : { inputTokensThreshold: 100000, inputPricePerMillion: { amount: 0.5, currency: "USD" },
+        outputPricePerMillion: { amount: 2.5, currency: "USD" }, cacheReadPricePerMillion: { amount: 0.05, currency: "USD" },
+        cacheWrite5MinutesPricePerMillion: { amount: 0.625, currency: "USD" }, cacheWrite1HourPricePerMillion: { amount: 1, currency: "USD" } },
+    } };
+  const page: AssistantModelPricePageResponse = { ...galleryModelPage, items: [model], totalCount: 1 };
+  app.responses.push(api("GET", "/api/platform/assistant/settings", galleryPlatformSettings), api("GET", "/api/platform/assistant/models", page));
+  app.actions = adding ? [click("Agregar modelo")] : [open(`Acciones de ${model.name}`, "button"), click(`Editar ${model.name}`, "menuitem")];
+  app.actions.push(click("Avanzado: datos técnicos"));
+  app.readySelector = '[role="dialog"] input';
+  if (invalid) {
+    app.actions.push(fill("Salida máxima (tokens)", "1.280.000"), click("Guardar cambios"));
+    app.readyText = "La salida máxima no puede superar el contexto.";
+  }
+  return app;
+}
+
 export function configurationScenario(board: string, state: string): GalleryApp | undefined {
+  const advanced = galleryAdvancedModelScenario(board, state);
+  if (advanced) return advanced;
   const platform = board.includes("Plat-"); const scope = platform ? "platform" : "business";
   const prefix = platform ? "/api/platform/assistant" : "/api/organization/assistant";
   const route = `${platform ? "/plataforma" : "/org"}/asistente/configuracion`;
