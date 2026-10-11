@@ -9,8 +9,10 @@ import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 import { caseDelay as delay, caseStage, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { pickupCode, plainTextBody } from "./test-e2e-real-mail.mjs";
-import { accountAddMethodName, fillOtp, openAccountEmailDialog, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
+import { accountAddMethodName, ensureBusinessPageDraft, expectOrganizationModules, expectRecoveryEmailInUse, fillOtp, openAccountEmailDialog, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
 import { waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
+import { reloadResponse, responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
+import { assertPendingTerms, assertPublishedTerms, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { chromium } from "playwright";
 
@@ -467,10 +469,10 @@ async function addPersonalEmail(page, originalEmail, { verify = true, onStage = 
 
 async function publishNewTerms(readyFile) {
   const commandFile = readyFile.replace(/\.ready$/, ".legal.json");
-  await writeFile(commandFile, JSON.stringify({ kind: "Terms", version: 2 }), { flag: "wx" });
+  await writeFile(commandFile, JSON.stringify({ kind: "Terms" }), { flag: "wx" });
   const deadline = Date.now() + 15_000;
   while (Date.now() < deadline) {
-    try { await access(`${commandFile}.done`); return; }
+    try { return parseLegalPublicationReceipt(await readFile(`${commandFile}.done`, "utf8")); }
     catch (error) { if (error?.code !== "ENOENT") throw error; }
     await delay(250);
   }
@@ -1010,9 +1012,10 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await accountPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(email);
           await accountPage.getByRole("button", { name: "Seguir", exact: true }).click();
           await accountPage.getByRole("textbox", { name: "Correo electrónico nuevo", exact: true }).fill(businessEmail);
-          await accountPage.getByRole("button", { name: "Enviar código", exact: true }).click();
-          await accountPage.getByText("Ese correo ya es de otra cuenta.", { exact: true }).waitFor();
-          assert.equal(await accountPage.getByRole("textbox", { name: "Código 1" }).count(), 0);
+          const [occupiedRecovery] = await responsesForAction(accountPage,
+            [(response) => new URL(response.url()).pathname === "/api/account-recovery/code" && response.request().method() === "POST"],
+            () => accountPage.getByRole("button", { name: "Enviar código", exact: true }).click());
+          await expectRecoveryEmailInUse(accountPage, occupiedRecovery);
           setStage("registro ocupado conserva el correo al ingresar por OIDC");
           await accountPage.goto(new URL("/registro", baseUrl).href);
           await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
@@ -1384,8 +1387,12 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await personContext.close();
             await confirmPlatformReason(platformPage, "Reactivar");
           }
-          assert.equal(await platformPage.getByRole("tab", { name: /^Módulos/ }).count(), 0,
-            "El preparador y el catálogo real no contienen módulos; T25 permite registrar esta ausencia.");
+          setStage("comprueba Módulos contra el catálogo real después de F5");
+          const organizationId = new URL(platformPage.url()).pathname.split("/").at(-1);
+          const catalog = await reloadResponse(platformPage, (response) => new URL(response.url()).pathname === `/api/platform/tenants/${organizationId}/features`);
+          assert.equal(catalog.status(), 200);
+          await platformPage.getByRole("heading", { name: "Empresa E2E", exact: true }).waitFor();
+          await expectOrganizationModules(platformPage, await catalog.json());
           setStage("despublica la página y bloquea la publicación desde Business");
           await platformPage.getByRole("tab", { name: "Página pública", exact: true }).click();
           await confirmPlatformReason(platformPage, "Despublicar");
@@ -1754,10 +1761,17 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await acceptCurrentTerms(adminPage);
           await adminPage.getByRole("button", { name: "Cuenta E2E, Empresa E2E", exact: true }).waitFor();
 
-          setStage("ve el inicio real: las áreas y la página en borrador para resolver");
+          setStage("prepara su página en borrador por UI sin depender del caso 5b");
+          await adminPage.goto(new URL("/org/pagina", baseUrl).href);
+          await adminPage.getByRole("heading", { name: "Página pública", exact: true }).waitFor();
+          await ensureBusinessPageDraft(adminPage);
+          await adminPage.goto(new URL("/org", baseUrl).href);
+          setStage("Inicio conserva el área Usuarios");
           const areas = adminPage.getByRole("navigation", { name: "Áreas de la organización" });
           await areas.getByRole("link", { name: /^Usuarios/ }).waitFor();
+          setStage("Inicio conserva el área Auditoría");
           await areas.getByRole("link", { name: /^Auditoría/ }).waitFor();
+          setStage("Para resolver conserva la página en Borrador");
           const toResolve = adminPage.getByRole("region", { name: "Para resolver" });
           await toResolve.getByText("Borrador", { exact: true }).waitFor();
           assert.equal(await toResolve.getByRole("link", { name: "Ver", exact: true }).getAttribute("href"), "/org/pagina");
@@ -2189,7 +2203,23 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           setStage("abre Mi cuenta antes de publicar términos");
           await openAccount(accountPage);
           setStage("publica la versión nueva real de términos");
-          await publishNewTerms(readyFile);
+          const published = await publishNewTerms(readyFile);
+          const proofPage = await accountPage.context().newPage();
+          try {
+            setStage("comprueba por UI el ID y la versión publicados en la API pública");
+            const [terms] = await responsesForAction(proofPage,
+              [(response) => new URL(response.url()).pathname === "/api/legal/terms"],
+              () => proofPage.goto(new URL("/terminos", baseUrl).href));
+            assert.equal(terms.status(), 200);
+            assertPublishedTerms(await terms.json(), published);
+            setStage("una segunda vista privada observa Me pendiente antes de F5 en la primera");
+            const [me] = await responsesForAction(proofPage,
+              [(response) => new URL(response.url()).pathname === "/api/me"],
+              () => proofPage.goto(new URL("/cuenta", baseUrl).href));
+            assert.equal(me.status(), 200);
+            assertPendingTerms(await me.json(), published);
+            await proofPage.getByRole("heading", { name: "Actualizamos los términos", exact: true }).waitFor();
+          } finally { await proofPage.close(); }
           setStage("F5 exige los términos nuevos");
           await accountPage.reload();
           await accountPage.getByRole("heading", { name: "Actualizamos los términos" }).waitFor();
@@ -2200,7 +2230,13 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await accountPage.getByRole("alert").filter({ hasText: "Aceptá los Términos y la Política de privacidad." }).waitFor();
           assert.equal(await accountPage.getByRole("heading", { name: "Actualizamos los términos" }).isVisible(), true);
           await accountPage.getByRole("checkbox", { name: /Leí y acepto/ }).check();
-          await accountPage.getByRole("button", { name: "Aceptar y seguir" }).click();
+          const [acceptance, methods] = await responsesForAction(accountPage,
+            [(response) => new URL(response.url()).pathname === "/api/legal/accept" && response.request().method() === "POST",
+              (response) => new URL(response.url()).pathname === "/api/me/login-methods"],
+            () => accountPage.getByRole("button", { name: "Aceptar y seguir" }).click());
+          assert.equal(acceptance.status(), 204);
+          assert.ok(acceptance.request().postDataJSON().documents.some((document) => document.id === published.id && document.version === published.version));
+          assert.equal(methods.status(), 200, "Los métodos protegidos vuelven a estar disponibles tras aceptar los legales.");
           await accountPage.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();
         }],
         ...[1440, 390].map((width) => [`7: sitio público, directorio y regreso como persona a ${width}`, async (publicPage, setStage) => {

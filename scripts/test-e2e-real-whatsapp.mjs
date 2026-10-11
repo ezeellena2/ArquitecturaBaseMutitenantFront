@@ -4,7 +4,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { createServer } from "vite";
 import { chromium } from "playwright";
-import { fillOtp } from "./test-e2e-real-ui.mjs";
+import { fillOtp, openAccountEmailDialog, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
 import { caseDelay, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { decideAfterRecoveryNotice, newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
@@ -182,17 +182,26 @@ async function phoneAccountIdentity(page, width, phone, email, access = "consume
 
 async function addBackupEmail(page, phone, width) {
   const email = `e8-backup-${width}@example.test`;
+  detail("preparar correo de respaldo en fixture privada");
   const fixture = await begin(`backup-email-${width}`, phone);
+  detail("abrir Mi cuenta y esperar su interfaz privada");
   await page.goto(`${base}/cuenta`);
-  await page.getByRole("button", { name: "Agregar correo o teléfono", exact: true }).click();
-  const dialog = page.getByRole("dialog");
-  await dialog.getByRole("button", { name: "Correo", exact: true }).click();
+  await waitForPrivateHeading(page, "Mi cuenta", async () => {
+    detail("aceptar legales pendientes por UI antes de agregar correo");
+    await page.getByRole("checkbox", { name: /Leí y acepto/ }).check();
+    await clickHttp(page, page.getByRole("button", { name: "Aceptar y seguir", exact: true }), "/api/legal/accept", 204);
+  });
+  detail("abrir el diálogo de correo según la capacidad publicada");
+  const dialog = await openAccountEmailDialog(page);
+  detail("completar correo y solicitar su código real");
   await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
   const sent = await clickHttp(page, dialog.getByRole("button", { name: "Enviar código", exact: true }), "/api/me/login-methods", 202);
   const methodId = (await sent.json()).methodId;
+  detail("leer y verificar el código real del correo de respaldo");
   await fillOtp(dialog, (await fixture("methodEmailCode", { email, methodId })).proof);
   await clickHttp(page, dialog.getByRole("button", { name: "Verificar", exact: true }), `/api/me/login-methods/${methodId}/verify`, 204);
   await dialog.waitFor({ state: "hidden" });
+  detail("F5 y verificar Email de respaldo y Phone principal en los métodos reales");
   const response = await reloadResponse(page, (reply) => pathname(reply) === "/api/me/login-methods");
   assert.equal(response.status(), 200); const { methods } = await response.json();
   const backup = methods.find((method) => method.id === methodId);
@@ -200,6 +209,7 @@ async function addBackupEmail(page, phone, width) {
   const principal = methods.find((method) => method.isPrimary);
   assert.equal(principal?.type, "Phone"); assert.equal(principal.value, phone); assert.equal(principal.isVerified, true);
   await page.getByRole("list", { name: "Cómo entrás", exact: true }).getByText(email, { exact: true }).waitFor();
+  detail("verificar Phone principal en Me y en el menú de la identidad actual");
   return phoneAccountIdentity(page, width, phone, email);
 }
 
