@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { chromium } from "playwright";
-import { ensureBusinessPageDraft, expectOrganizationModules, expectRecoveryEmailInUse, fillOtp, openAccountEmailDialog, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
+import { ensureBusinessPageDraft, expectOrganizationModules, expectRecoveryEmailInUse, fillOtp, openAccountEmailDialog, openPhoneMore, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
 
 for (const width of [1440, 390]) for (const whatsapp of [false, true]) test(`Agregar correo conserva el destino con WhatsApp ${whatsapp} en ${width}`, async () => {
   const browser = await chromium.launch({ headless: true });
@@ -14,6 +14,31 @@ for (const width of [1440, 390]) for (const whatsapp of [false, true]) test(`Agr
     await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill("ocupado@example.test");
     assert.equal(await dialog.getByRole("textbox", { name: "Correo", exact: true }).inputValue(), "ocupado@example.test");
     assert.equal(await dialog.getByRole("textbox", { name: "Código 1", exact: true }).count(), 0);
+  } finally { await browser.close(); }
+});
+
+for (const bar of [false, true]) test(`Más móvil usa ${bar ? "la barra visible" : "Volver a Más desde Mi cuenta sin barra"} y espera la barra restituida`, async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    await page.setContent(bar ? '<main><h1>Inicio</h1></main><nav aria-label="Secciones"><a href="#">Más</a></nav>'
+      : '<main><h1>Mi cuenta</h1><a href="#" aria-label="Volver a Más">‹</a><footer>Guardar cambios</footer></main>');
+    await page.evaluate(() => {
+      document.querySelector("a").addEventListener("click", (event) => {
+        event.preventDefault();
+        document.body.dataset.entrance = event.currentTarget.getAttribute("aria-label") === "Volver a Más" ? "back" : "bar";
+        document.body.innerHTML = '<main><h1>Más</h1></main>';
+        // El título aparece antes de la barra que restituye el desmontaje de las acciones fijas.
+        requestAnimationFrame(() => document.body.insertAdjacentHTML("beforeend", '<nav aria-label="Secciones"><a href="#" aria-current="page">Más</a></nav>'));
+      });
+    });
+    const more = await openPhoneMore(page);
+    assert.equal(await page.locator("body").getAttribute("data-entrance"), bar ? "bar" : "back");
+    assert.equal(await more.getAttribute("aria-current"), "page");
+    if (!bar) {
+      await more.evaluate((link) => link.removeAttribute("aria-current"));
+      await assert.rejects(openPhoneMore(page), /Más debe volver a estar presente y marcado/);
+    }
   } finally { await browser.close(); }
 });
 

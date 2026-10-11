@@ -13,6 +13,19 @@ export async function openAccountEmailDialog(page) {
   return dialog;
 }
 
+/** Mi cuenta oculta la barra al mostrar acciones fijas; conserva su regreso a Más por la cabecera. */
+export async function openPhoneMore(page) {
+  const more = page.getByRole("navigation", { name: "Secciones", exact: true }).getByRole("link", { name: "Más", exact: true });
+  const back = page.getByRole("link", { name: "Volver a Más", exact: true });
+  await more.or(back).first().waitFor();
+  if (await more.isVisible()) await more.click();
+  else await back.click();
+  await page.getByRole("heading", { name: "Más", exact: true }).waitFor();
+  await more.waitFor();
+  assert.equal(await more.getAttribute("aria-current"), "page", "Más debe volver a estar presente y marcado en la barra móvil.");
+  return more;
+}
+
 /** El contrato ubica el rechazo en el campo y entrega su texto traducido. */
 export async function expectRecoveryEmailInUse(page, response) {
   assert.equal(response.status(), 400);

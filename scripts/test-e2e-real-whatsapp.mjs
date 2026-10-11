@@ -4,7 +4,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { createServer } from "vite";
 import { chromium } from "playwright";
-import { fillOtp, openAccountEmailDialog, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
+import { fillOtp, openAccountEmailDialog, openPhoneMore, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
 import { caseDelay, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { decideAfterRecoveryNotice, newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
@@ -155,16 +155,22 @@ async function mutedAvatar(scope) {
 
 async function phoneAccountIdentity(page, width, phone, email, access = "consumer", organization = "Personal") {
   // Sólo observa GET iniciados por F5 de la UI. Nada de fetch paralelo ni identidad construida en Front.
+  detail("F5 y observar Me real para verificar identidad Phone principal");
   const response = await reloadResponse(page, (reply) => pathname(reply) === "/api/me");
+  detail("comprobar HTTP y acceso de Me, nombre vacío y máscara Phone principal");
   assert.equal(response.status(), 200); const me = await response.json();
   assert.equal(me.access, access); assert.equal(me.displayName, null);
   assert.ok(typeof me.maskedPrimaryPhone === "string" && me.maskedPrimaryPhone.endsWith(phone.slice(-4)));
   const mask = me.maskedPrimaryPhone;
   if (width === 390) {
-    await page.getByRole("navigation", { name: "Secciones" }).getByRole("link", { name: "Más", exact: true }).click();
+    detail("abrir Más por la salida visible y esperar su barra móvil restituida");
+    const more = await openPhoneMore(page);
+    detail("comprobar máscara Phone y ausencia del correo de respaldo en Más");
     await page.getByText(mask, { exact: true }).waitFor();
     if (email) assert.equal(await page.getByText(email, { exact: true }).count(), 0);
-    await mutedAvatar(page.getByRole("link", { name: "Más", exact: true }));
+    detail("comprobar avatar neutro en la barra móvil de Más");
+    await mutedAvatar(more);
+    detail("comprobar avatar neutro en el perfil principal de Más");
     await mutedAvatar(page.getByRole("main"));
   } else {
     const trigger = page.getByRole("button", { name: `${mask}, ${organization}`, exact: true });
