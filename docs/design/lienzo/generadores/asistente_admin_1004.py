@@ -264,16 +264,24 @@ def casilla(texto, var):
     return f'<label class="as-casilla"><span class="as-chk {{{{{var}}}}}">{TILDE}</span>{texto}</label>'
 
 
+# Los datos técnicos del contrato (AssistantModelTechnicalHttpRequest): capacidades, esfuerzos, límites, caché y el tramo largo opcional.
+CAPACIDADES = [("Texto", "cTxt"), ("Herramientas", "cHer"), ("Imágenes en los adjuntos", "cImg"), ("PDF en los adjuntos", "cPdf"),
+               ("Pensamiento adaptativo", "cPen")]
+ESFUERZOS = [("Bajo", "eBajo"), ("Medio", "eMedio"), ("Alto", "eAlto")]
+OPCIONAL = '<span class="as-opc">Opcional</span>'
 AVANZADO = ('<div class="as-av-sec as-ancho">'
-            '<span class="as-sub">Capacidades</span><div class="as-casillas">'
-            + casilla("Imágenes en los adjuntos", "cImg") + casilla("PDF en los adjuntos", "cPdf") + casilla("Herramientas", "cHer") + '</div>'
+            '<span class="as-sub">Capacidades</span><div class="as-casillas">' + "".join(casilla(n, v) for n, v in CAPACIDADES) + '</div>'
+            '<span class="as-sub">Esfuerzos permitidos</span><div class="as-casillas">' + "".join(casilla(n, v) for n, v in ESFUERZOS) + '</div>'
             '<span class="as-sub">Límites</span><div class="as-g2b">'
             + entrada("Contexto (tokens)", "mCtx", "", req=True) + entrada("Salida máxima (tokens)", "mOut", "", req=True, err="errOut") + '</div>'
-            '<span class="as-sub">Tarifas especiales · por millón de tokens</span><div class="as-g2b">'
-            + entrada("Lectura de caché", "mCacheL", "", din=True) + entrada("Escritura de caché", "mCacheE", "", din=True) + '</div>'
-            '<span class="as-sub">Contexto largo</span><div class="as-g3b">'
+            '<span class="as-sub">Caché · por millón de tokens</span><div class="as-g3b">'
+            + entrada("Lectura de caché", "mCacheL", "", req=True, din=True) + entrada("Escritura de 5 minutos", "mCache5", "", req=True, din=True)
+            + entrada("Escritura de 1 hora", "mCache1", "", req=True, din=True) + '</div>'
+            f'<span class="as-sub">Contexto largo {OPCIONAL}</span><div class="as-g3b">'
             + entrada("Desde (tokens)", "mLargoDesde", "") + entrada("Entrada por millón", "mLargoEnt", "", din=True)
-            + entrada("Salida por millón", "mLargoSal", "", din=True) + '</div></div>')
+            + entrada("Salida por millón", "mLargoSal", "", din=True)
+            + entrada("Lectura de caché", "mLargoCL", "", din=True) + entrada("Escritura de 5 minutos", "mLargoC5", "", din=True)
+            + entrada("Escritura de 1 hora", "mLargoC1", "", din=True) + '</div></div>')
 DLG_MODELO = (
     '<sc-if value="{{dlgModelo}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg as-dlg-mod" role="dialog" aria-modal="true" aria-labelledby="as-mt">'
     + f'<div class="dlg-h"><h2 id="as-mt">{{{{tituloModelo}}}}</h2><button type="button" class="dlg-x" aria-label="Cerrar" onClick="{{{{cerrarModelo}}}}">{CERRAR}</button></div>'
@@ -330,13 +338,15 @@ CONFIG_PLAT = (
     + '</div></sc-if></div>'
     + DLG_MODELO)
 
-# Los datos de ejemplo del diálogo: vacío al agregar y Claude Sonnet 5.5 al editar; el error es un cero de más en la salida máxima.
+# Los datos de ejemplo del diálogo: vacío al agregar, Claude Haiku 5.5 al editar y Claude Sonnet 5.5 con un cero de más en la salida máxima;
+# los valores salen de la referencia del back (ReferenceData/anthropic-models-2026-10-10.json).
 MODELO_JS = """    const MODOS = { 'Agregar un modelo': 'nuevo', 'Agregar un modelo: avanzado': 'nuevo-av', 'Editar un modelo': 'editar', 'Editar un modelo: error en un dato técnico': 'error' };
     const modo = this.state.modo !== undefined ? this.state.modo : (MODOS[e] || null);
     const av = this.state.av ?? (modo === 'nuevo-av' || modo === 'error' || modo === 'editar');
     const DATOS = {
-      editar: { n: 'Claude Sonnet 5.5', id: 'claude-sonnet-5-5', ent: '2,00', sal: '10,00', ctx: '1.000.000', out: '128.000', cl: '0,20', ce: '2,50', img: 1, pdf: 1, her: 1 },
-      error: { n: 'Claude Sonnet 5.5', id: 'claude-sonnet-5-5', ent: '2,00', sal: '10,00', ctx: '1.000.000', out: '1.280.000', cl: '0,20', ce: '2,50', img: 1, pdf: 1, her: 1 },
+      editar: { n: 'Claude Haiku 5.5', id: 'claude-haiku-5-5', ent: '0,10', sal: '0,50', ctx: '1.000.000', out: '128.000', cl: '0,01', c5: '0,125', c1: '0,20',
+        ld: '100.000', le: '0,50', ls: '2,50', lcl: '0,05', lc5: '0,625', lc1: '1,00', todo: 1 },
+      error: { n: 'Claude Sonnet 5.5', id: 'claude-sonnet-5-5', ent: '2,00', sal: '10,00', ctx: '1.000.000', out: '1.280.000', cl: '0,10', c5: '2,50', c1: '4,00', todo: 1 },
     };
     const M = DATOS[modo] || {};
     const edita = modo === 'editar' || modo === 'error';
@@ -356,8 +366,10 @@ JS_CONFIG_PLAT = """    const abierto = this.state.abierto ?? (e === 'Elegir los
       tituloModelo: edita ? 'Editar modelo' : 'Agregar modelo',
       botonModelo: edita ? 'Guardar cambios' : 'Agregar modelo',
       mNombre: M.n || '', mId: M.id || '', mEnt: M.ent || '', mSal: M.sal || '', mCtx: M.ctx || '', mOut: M.out || '',
-      mCacheL: M.cl || '', mCacheE: M.ce || '', mLargoDesde: '', mLargoEnt: '', mLargoSal: '',
-      cImg: M.img ? 'on' : '', cPdf: M.pdf ? 'on' : '', cHer: M.her ? 'on' : '', cAct: 'on',
+      mCacheL: M.cl || '', mCache5: M.c5 || '', mCache1: M.c1 || '',
+      mLargoDesde: M.ld || '', mLargoEnt: M.le || '', mLargoSal: M.ls || '', mLargoCL: M.lcl || '', mLargoC5: M.lc5 || '', mLargoC1: M.lc1 || '',
+      cTxt: M.todo ? 'on' : '', cHer: M.todo ? 'on' : '', cImg: M.todo ? 'on' : '', cPdf: M.todo ? 'on' : '', cPen: M.todo ? 'on' : '',
+      eBajo: M.todo ? 'on' : '', eMedio: M.todo ? 'on' : '', eAlto: M.todo ? 'on' : '', cAct: 'on',
       errOut: modo === 'error' ? 'No puede superar el contexto.' : '', errOutClase: modo === 'error' ? 'mal' : '',
       avAbierto: av, avExp: av ? 'true' : 'false', alternarAv: () => this.setState({ av: !av }),
       agregarModelo: () => this.setState({ modo: 'nuevo', av: false }), cerrarModelo: () => this.setState({ modo: null, av: undefined }),
@@ -485,6 +497,7 @@ CSS = """.as-g2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0,
 .as-avz[aria-expanded="true"] .as-avz-f { transform: rotate(90deg); }
 .as-av-sec { display: flex; flex-direction: column; gap: 12px; }
 .as-sub { font-size: 14px; font-weight: 600; color: var(--t1); margin-top: 6px; }
+.as-opc { margin-left: 6px; font-size: 12.5px; font-weight: 500; color: var(--t3); }
 .as-casillas { display: flex; flex-wrap: wrap; gap: 4px 24px; }
 .as-casillas .as-casilla { min-height: 36px; }
 .as-g2b { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 20px; }
@@ -630,11 +643,14 @@ T_HOJA_MODELO = (
     + casilla("Activo", "cAct")
     + f'<button type="button" class="as-avz" aria-expanded="{{{{avExp}}}}" onClick="{{{{alternarAv}}}}"><span class="as-avz-f">{FLECHA_AV}</span>Avanzado: datos técnicos</button>'
     + '<sc-if value="{{avAbierto}}" hint-placeholder-val="{{no}}"><div class="as-av-sec">'
-    + '<span class="as-sub">Capacidades</span><div class="as-casillas">' + casilla("Imágenes en los adjuntos", "cImg") + casilla("PDF en los adjuntos", "cPdf") + casilla("Herramientas", "cHer") + '</div>'
+    + '<span class="as-sub">Capacidades</span><div class="as-casillas">' + "".join(casilla(n, v) for n, v in CAPACIDADES) + '</div>'
+    + '<span class="as-sub">Esfuerzos permitidos</span><div class="as-casillas">' + "".join(casilla(n, v) for n, v in ESFUERZOS) + '</div>'
     + '<span class="as-sub">Límites</span>' + tentrada("Contexto (tokens)", "mCtx", "", req=True) + tentrada("Salida máxima (tokens)", "mOut", "", req=True, err="errOut")
-    + '<span class="as-sub">Tarifas especiales · por millón de tokens</span>' + tentrada("Lectura de caché", "mCacheL", "", din=True) + tentrada("Escritura de caché", "mCacheE", "", din=True)
-    + '<span class="as-sub">Contexto largo</span>'
+    + '<span class="as-sub">Caché · por millón de tokens</span>' + tentrada("Lectura de caché", "mCacheL", "", req=True, din=True)
+    + tentrada("Escritura de 5 minutos", "mCache5", "", req=True, din=True) + tentrada("Escritura de 1 hora", "mCache1", "", req=True, din=True)
+    + f'<span class="as-sub">Contexto largo {OPCIONAL}</span>'
     + tentrada("Desde (tokens)", "mLargoDesde", "") + tentrada("Entrada por millón", "mLargoEnt", "", din=True) + tentrada("Salida por millón", "mLargoSal", "", din=True)
+    + tentrada("Lectura de caché", "mLargoCL", "", din=True) + tentrada("Escritura de 5 minutos", "mLargoC5", "", din=True) + tentrada("Escritura de 1 hora", "mLargoC1", "", din=True)
     + '</div></sc-if></div>'
     '<div class="as-thp"><button type="button" class="cb cb-pri" onClick="{{cerrarModelo}}">{{botonModelo}}</button>'
     '<button type="button" class="cb cb-sec" onClick="{{cerrarModelo}}">Cancelar</button></div></div></sc-if>')
@@ -664,8 +680,10 @@ JS_T_CONFIG_PLAT = MODELO_JS + """    return {
       tituloModelo: edita ? 'Editar modelo' : 'Agregar modelo',
       botonModelo: edita ? 'Guardar cambios' : 'Agregar modelo',
       mNombre: M.n || '', mId: M.id || '', mEnt: M.ent || '', mSal: M.sal || '', mCtx: M.ctx || '', mOut: M.out || '',
-      mCacheL: M.cl || '', mCacheE: M.ce || '', mLargoDesde: '', mLargoEnt: '', mLargoSal: '',
-      cImg: M.img ? 'on' : '', cPdf: M.pdf ? 'on' : '', cHer: M.her ? 'on' : '', cAct: 'on',
+      mCacheL: M.cl || '', mCache5: M.c5 || '', mCache1: M.c1 || '',
+      mLargoDesde: M.ld || '', mLargoEnt: M.le || '', mLargoSal: M.ls || '', mLargoCL: M.lcl || '', mLargoC5: M.lc5 || '', mLargoC1: M.lc1 || '',
+      cTxt: M.todo ? 'on' : '', cHer: M.todo ? 'on' : '', cImg: M.todo ? 'on' : '', cPdf: M.todo ? 'on' : '', cPen: M.todo ? 'on' : '',
+      eBajo: M.todo ? 'on' : '', eMedio: M.todo ? 'on' : '', eAlto: M.todo ? 'on' : '', cAct: 'on',
       errOut: modo === 'error' ? 'No puede superar el contexto.' : '', errOutClase: modo === 'error' ? 'mal' : '',
       avAbierto: av, avExp: av ? 'true' : 'false', alternarAv: () => this.setState({ av: !av }),
       agregarModelo: () => this.setState({ modo: 'nuevo', av: false }), cerrarModelo: () => this.setState({ modo: null, av: undefined }),

@@ -317,6 +317,7 @@ DECISIONES = {
         ("Confirmá que sos vos", "", "Antes de una acción sensible de Plataforma, si el último código no es reciente: el código del autenticador en un diálogo (una hoja en el teléfono), con el error debajo y «Usar un código de recuperación». Dibujado al guardar permisos (Etapa 9).", "Dibujada"),
         ("Restablecer el autenticador", "", "En el ⋮ de un operador, con motivo: cierra sus sesiones y anula sus códigos de recuperación; al volver a entrar, lo configura de nuevo (Etapa 9).", "Dibujada"),
         ("WhatsApp de atención, al día", "", "Plantillas del sistema: las 16 del catálogo (0049), de a 10; el bot de Plataforma manda el enlace para entrar o registrarse; «Mis mensajes con empresas» muestra las conversaciones; Cargar teléfonos con el panel de Administración vigente (Etapa 11).", "Dibujada"),
+        ("Catálogo de modelos: datos técnicos completos", "", "«Avanzado» suma Texto y Pensamiento adaptativo, los esfuerzos permitidos, la caché (lectura y escritura de 5 minutos y de 1 hora) y el contexto largo con su caché; editar muestra Claude Haiku 5.5, el único con tramo largo (contrato del back 853b5aed).", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
