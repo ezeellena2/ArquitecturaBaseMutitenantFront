@@ -60,14 +60,16 @@ for (const [width, opened] of [[1440, true], [390, false], [390, true]]) test(`C
   } finally { await browser.close(); }
 });
 
-test("el rechazo real de Recuperar se lee del contrato y describe el campo nuevo", async () => {
+for (const width of [1440, 390]) test(`el rechazo real de Recuperar se lee del contrato y describe el campo nuevo a ${width}`, async () => {
   const browser = await chromium.launch({ headless: true });
   try {
-    const page = await browser.newPage();
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
     const message = "Ese método de ingreso ya es de otra cuenta.";
     await page.setContent(`<label>Correo electrónico nuevo<input aria-invalid="true" aria-describedby="error"></label><p id="error">${message}</p>`);
     const response = { status: () => 400, json: async () => ({ code: "Platform.AccountRecovery.MethodInUse", errors: { email: [message] } }) };
     await expectRecoveryEmailInUse(page, response);
+    await assert.rejects(expectRecoveryEmailInUse(page, { ...response, status: () => 202 }), { name: "AssertionError" });
+    await assert.rejects(expectRecoveryEmailInUse(page, { ...response, json: async () => ({ code: "Platform.AccountRecovery.PhoneMethodInUse", errors: { email: [message] } }) }), { name: "AssertionError" });
     await page.getByRole("textbox").evaluate((input) => input.removeAttribute("aria-describedby"));
     await assert.rejects(expectRecoveryEmailInUse(page, response), /debe describir el correo nuevo/);
     await assert.rejects(expectRecoveryEmailInUse(page, { ...response, json: async () => ({ code: "Platform.AccountRecovery.MethodInUse", errors: { phone: [message] } }) }), /campo email/);

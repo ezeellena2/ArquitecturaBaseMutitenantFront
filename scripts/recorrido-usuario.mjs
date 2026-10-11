@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { setTimeout as delay } from "node:timers/promises";
 import { chromium } from "playwright";
 import { baseUrl, createEnvironment } from "./recorrido-usuario-entorno.mjs";
-import { fillOtp } from "./test-e2e-real-ui.mjs";
+import { expectRecoveryEmailInUse, fillOtp } from "./test-e2e-real-ui.mjs";
 import { pickupCode } from "./test-e2e-real-mail.mjs";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, runE8Journey } from "./recorrido-usuario-whatsapp.mjs";
 
@@ -454,9 +454,9 @@ async function runWidth({ width, context, env, record, output, signal }) {
     await page.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(email);
     await page.getByRole("button", { name: "Seguir", exact: true }).click();
     await page.getByRole("textbox", { name: "Correo electrónico nuevo", exact: true }).fill(businessEmail);
-    await page.getByRole("button", { name: "Enviar código", exact: true }).click();
-    await visibleText("Ese correo ya es de otra cuenta.");
-    return "La recuperación rechazó el nuevo correo ocupado con su explicación específica.";
+    const response = await clickResponse(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/account-recovery/code");
+    await expectRecoveryEmailInUse(page, response);
+    return "La recuperación rechazó el correo nuevo ocupado con HTTP 400 Platform.AccountRecovery.MethodInUse, el mensaje del servicio asociado al campo y sin avanzar al código.";
   });
   await step("21", async () => {
     await page.goto(new URL("/login", baseUrl).href);
