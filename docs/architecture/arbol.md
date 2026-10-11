@@ -65,6 +65,8 @@ ArquitecturaBaseMutitenantFront/
 │   ├── recorrido-usuario-whatsapp.mjs               El transporte se adapta sólo cuando Back publique control para…
 │   ├── recorrido-usuario-asistente.mjs              [E8b] prepara los seis guiones y sus 21 pasos; todavía no ejecuta el recorrido real
 │   ├── recorrido-usuario-asistente.test.mjs         [E8b] valida orden, integridad, rutas y privacidad de la preparación de guiones
+│   ├── test-e2e-real-assistant.mjs                   [E8b] prepara el canal ConsoleFake aislado; el E2E real todavía no está conectado
+│   ├── test-e2e-real-assistant.test.mjs              [E8b] verifica aislamiento, comandos privados, límites y evidencias saneadas de la preparación
 │   ├── recorrido-usuario-entorno.test.mjs           tests de recorrido-usuario-entorno
 │   ├── capturar-etapa-8b.test.mjs                   tests de capturar-etapa-8b
 │   ├── assistant-open-stream.test.mjs               tests de assistant-open-stream
