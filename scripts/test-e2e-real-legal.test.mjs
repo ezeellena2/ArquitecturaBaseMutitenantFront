@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { assertPendingTerms, assertPublishedTerms, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
+import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedTerms, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
 
 const receipt = { id: "11111111-1111-4111-8111-111111111111", version: 3 };
 test("acepta el recibo efectivo v3 sin fijar una versión en Front", () => {
@@ -20,4 +20,60 @@ test("Me pendiente debe exigir el documento exacto; ni vacío ni otro documento 
   assertPendingTerms({ pendingLegalDocuments: [{ ...receipt, kind: "Terms" }] }, receipt);
   for (const pendingLegalDocuments of [[], [{ ...receipt, kind: "Terms", version: 2 }], [{ ...receipt, kind: "Privacy" }], [{ ...receipt, kind: "Terms", id: "other" }]])
     assert.throws(() => assertPendingTerms({ pendingLegalDocuments }, receipt));
+});
+
+const protectedPath = "/api/platform/legal-documents";
+function reply(method, pathname, status, documents = [receipt]) {
+  const request = { url: () => `https://localtest.me:5174${pathname}`, method: () => method, postDataJSON: () => ({ documents }) };
+  return { url: () => `https://localtest.me:5174${pathname}`, status: () => status,
+    request: () => request };
+}
+function pageForAcceptance(responses) {
+  const waiting = []; const steps = []; const listeners = new Set(); let ignored = 0;
+  return {
+    steps, ignored: () => ignored,
+    on(event, listener) { assert.equal(event, "request"); listeners.add(listener); },
+    off(event, listener) { assert.equal(event, "request"); listeners.delete(listener); },
+    listeners: () => listeners.size,
+    waitForResponse(predicate) { return new Promise((resolve) => { waiting.push({ predicate, resolve, complete: false }); }); },
+    getByRole(role) {
+      return { waitFor: async (options) => { steps.push(options?.state === "hidden" ? "hidden" : "visible"); },
+        check: async () => { assert.equal(role, "checkbox"); steps.push("checked"); },
+        click: async () => {
+          assert.equal(role, "button"); assert.equal(waiting.length, 2, "Las dos esperas deben existir antes del clic."); steps.push("clicked");
+          for (const response of responses.filter((value) => value.earlyRequest)) for (const listener of listeners) listener(response.request());
+          for (const response of responses) {
+            if (!response.earlyRequest) for (const listener of listeners) listener(response.request());
+            let matched = false;
+            for (const waiter of waiting) if (!waiter.complete && waiter.predicate(response)) {
+              waiter.complete = true; waiter.resolve(response); matched = true;
+            }
+            if (!matched) ignored++;
+          }
+        } };
+    },
+  };
+}
+
+test("aceptación correlacionada exige POST 204 del documento y GET protegido 200 antes de F5", async () => {
+  const returned = reply("GET", protectedPath, 200);
+  const oldRequest = { ...reply("GET", protectedPath, 200), earlyRequest: true };
+  const page = pageForAcceptance([reply("GET", protectedPath, 200), reply("GET", "/api/legal/accept", 200),
+    reply("POST", "/api/legal/accept", 204), oldRequest, returned]);
+  assert.equal(await acceptPublishedLegalAndReturn(page, receipt, protectedPath), returned);
+  assert.equal(page.ignored(), 3, "Un GET iniciado antes de aceptar no prueba el retorno, aunque responda después del POST.");
+  assert.equal(page.listeners(), 0);
+  assert.deepEqual(page.steps, ["visible", "checked", "clicked", "hidden"]);
+});
+
+for (const [label, acceptance, returned] of [
+  ["aceptación HTTP 400", reply("POST", "/api/legal/accept", 400), reply("GET", protectedPath, 200)],
+  ["versión vieja", reply("POST", "/api/legal/accept", 204, [{ ...receipt, version: 2 }]), reply("GET", protectedPath, 200)],
+  ["documento ajeno", reply("POST", "/api/legal/accept", 204, [{ ...receipt, id: "other" }]), reply("GET", protectedPath, 200)],
+  ["retorno HTTP 403", reply("POST", "/api/legal/accept", 204), reply("GET", protectedPath, 403)],
+]) test(`la preparación rechaza ${label} sin tomar el título oculto como éxito`, async () => {
+  const page = pageForAcceptance([acceptance, returned]);
+  await assert.rejects(acceptPublishedLegalAndReturn(page, receipt, protectedPath));
+  assert.ok(!page.steps.includes("hidden"));
+  assert.equal(page.listeners(), 0);
 });

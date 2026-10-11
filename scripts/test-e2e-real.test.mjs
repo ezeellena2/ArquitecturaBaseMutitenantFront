@@ -12,7 +12,7 @@ import { pickupCode, plainTextBody } from "./test-e2e-real-mail.mjs";
 import { accountAddMethodName, ensureBusinessPageDraft, expectOrganizationModules, expectRecoveryEmailInUse, fillOtp, openAccountEmailDialog, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
 import { waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { reloadResponse, responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
-import { assertPendingTerms, assertPublishedTerms, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
+import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedTerms, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { chromium } from "playwright";
 
@@ -1526,9 +1526,11 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         ["5d: publicar y aceptar legales, consultar auditoría y guardar configuración", async (platformPage, setStage) => {
           setStage("ingresa el operador para legales y configuración");
           await loginThroughUi(platformPage, operatorEmails["5d"], "platform", setStage);
-          setStage("publica por pantalla una versión de Privacidad vigente hoy");
+          setStage("abre Documentos legales para publicar Privacidad");
           await platformNavigate(platformPage, "Administración", "Documentos legales");
+          setStage("abre Publicar versión nueva de Privacidad");
           await platformPage.getByRole("link", { name: "Publicar versión nueva", exact: true }).click();
+          setStage("completa Privacidad con vigencia de hoy y contenidos en ambos idiomas");
           await platformPage.getByRole("combobox", { name: "Documento" }).click();
           await platformPage.getByRole("option", { name: "Política de privacidad", exact: true }).click();
           const civil = new Intl.DateTimeFormat("es-AR", { timeZone: "America/Argentina/Buenos_Aires", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date());
@@ -1536,9 +1538,15 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await platformPage.getByRole("textbox", { name: "En español" }).fill("Política de privacidad publicada por el operador en el recorrido real T25.");
           await platformPage.getByRole("textbox", { name: "En inglés" }).fill("Privacy policy published by the operator during the real T25 journey.");
           await platformPage.getByRole("button", { name: "Publicar", exact: true }).click();
-          await platformPage.getByRole("alertdialog").getByRole("button", { name: "Publicar", exact: true }).click();
-          await platformPage.getByRole("heading", { name: "Actualizamos los términos" }).waitFor();
-          await acceptCurrentTerms(platformPage);
+          setStage("confirma la publicación de Privacidad y observa HTTP 201");
+          const [publication] = await responsesForAction(platformPage,
+            [(response) => new URL(response.url()).pathname === "/api/platform/legal-documents" && response.request().method() === "POST"],
+            () => platformPage.getByRole("alertdialog").getByRole("button", { name: "Publicar", exact: true }).click());
+          assert.equal(publication.status(), 201);
+          const publishedPrivacy = parseLegalPublicationReceipt(await publication.text());
+          setStage("acepta la Privacidad publicada con POST 204 y retorno protegido 200");
+          await acceptPublishedLegalAndReturn(platformPage, publishedPrivacy, "/api/platform/legal-documents");
+          setStage("F5 conserva Documentos legales y Privacidad versión 2 vigente");
           await platformPage.reload();
           await platformPage.getByRole("heading", { name: "Documentos legales", exact: true }).waitFor();
           await platformPage.getByText(/Versión 2 · vigente desde/).waitFor();
