@@ -59,7 +59,10 @@ describe("composición real de accesos e inicios", () => {
       http.get("/api/platform/tenants/paged", () => HttpResponse.json(platformTenantsPage(organizations, 100))),
       http.get("/api/platform/recoveries/paged", () => HttpResponse.json({ items: recoveries, page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })));
     const app = mount("/plataforma", platform);
-    const pending = await screen.findByRole("region", { name: "Para resolver" });
+    // State pendiente y el inicio final pueden montar regiones distintas; esperar datos en el DOM actual.
+    await waitFor(() => expect(within(screen.getByRole("region", { name: "Para resolver" })).getByText("Gamma S.A.")).toBeVisible());
+    const pending = screen.getByRole("region", { name: "Para resolver" });
+    expect(pending).toBeInTheDocument();
     expect(await within(pending).findByText("Gamma S.A.")).toBeVisible();
     expect(within(pending).getByText("Julio Pérez")).toBeVisible();
     expect(within(pending).getByText("pa•••@kappa.ejemplo.com")).toBeVisible();
