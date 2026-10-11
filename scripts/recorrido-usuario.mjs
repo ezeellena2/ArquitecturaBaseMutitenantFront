@@ -89,6 +89,18 @@ export async function waitForTransientNotices(page) {
   await page.locator('[data-sonner-toast]:not([data-type="error"]):not([data-type="loading"])').first().waitFor({ state: "detached" });
 }
 
+export async function waitForPlatformHome(page) {
+  await page.waitForURL((url) => url.origin === baseUrl.origin && url.pathname === "/plataforma");
+  await page.getByRole("heading", { name: "Inicio", exact: true }).waitFor();
+}
+
+export async function platformAssistantLimitation(response) {
+  if (response.ok()) return "El asistente pertenece a E8b y no se acredita en este paso del núcleo.";
+  assert.equal(response.status(), 501);
+  assert.equal((await response.json()).code, "General.Contract.NotImplemented");
+  return "Limitación separada: GET /api/platform/assistant HTTP 501 General.Contract.NotImplemented; asistente contractual E8b pendiente, no aprobado. El panel de error se conserva en la captura.";
+}
+
 const definitions = [
   ["01", "1 · Persona sin cuenta", "Desde la portada, Ingresá rechaza el correo desconocido y ofrece Crear mi cuenta sin enviar código."],
   ["02", "1 · Registro desde el ingreso", "El correo viene escrito; aceptar términos y verificar el .eml lleva al inicio Personal."],
@@ -135,6 +147,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
   const siteName = `Empresa del recorrido ${width}`;
   const site = new URL(baseUrl); site.hostname = `${slug}.${baseUrl.hostname}`;
   let platformPage;
+  let platformAssistantResponse;
   let added;
   let validCode;
   let lastHttp = "";
@@ -153,6 +166,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
     target.on("console", (message) => { if (message.type() === "error") error(message.text()); });
     target.on("response", async (response) => {
     const url = new URL(response.url());
+    if (target === platformPage && url.pathname === "/api/platform/assistant" && response.request().method() === "GET") platformAssistantResponse = response;
     if (url.pathname.startsWith("/connect/") || url.pathname === "/" || response.status() >= 400) {
       connection.push(`${response.request().method()} ${url.pathname} HTTP ${response.status()}`);
       if (connection.length > 10) connection.shift();
@@ -353,8 +367,11 @@ async function runWidth({ width, context, env, record, output, signal }) {
   await step("11", async () => {
     platformPage = await context.newPage(); await platformPage.setViewportSize(viewport(width)); observe(platformPage);
     await login(operator, "platform", platformPage);
-    await heading("Organizaciones", platformPage);
-    return "El operador ingresó a Plataforma con el código de su .eml; la captura muestra su pestaña.";
+    await waitForPlatformHome(platformPage);
+    const assistantState = platformAssistantResponse ?? await responseFor(platformPage, "/api/platform/assistant", "GET");
+    const limitation = await platformAssistantLimitation(assistantState);
+    if (assistantState.status() === 501) await platformPage.getByText("No pudimos abrir esta pantalla", { exact: true }).waitFor();
+    return `El operador ingresó a Inicio en /plataforma con el código de su .eml; la captura muestra su pestaña. ${limitation}`;
   });
   await step("12", async () => {
     await page.goto(baseUrl.href);
@@ -363,7 +380,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
     assert.equal(await page.getByRole("heading", { name: /Esta cuenta es de un operador/ }).count(), 0);
     assert.equal((await verify(page, await requestCode(page, email))).status(), 200);
     await awaitApp(page);
-    await platformPage.reload(); await heading("Organizaciones", platformPage);
+    await platformPage.reload(); await waitForPlatformHome(platformPage);
     await platformPage.screenshot({ path: path.join(output, `12-plataforma-${width}.png`), fullPage: true, animations: "disabled" });
     return "La segunda pestaña ingresó a Personal; Plataforma siguió abierta tras F5, sin nuevo código.";
   });
@@ -379,7 +396,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
     await page.getByRole("link", { name: "Ir a Plataforma", exact: true }).waitFor();
     return "Pidió el código sin revelar Plataforma y después mostró el estado privado con Ir a Plataforma y Salir.";
   });
-  await signOut(); await platformPage.reload(); await heading("Organizaciones", platformPage);
+  await signOut(); await platformPage.reload(); await waitForPlatformHome(platformPage);
   await step("14", async () => {
     await login(email); await openAccount();
     await page.getByRole("textbox", { name: "Nombre", exact: true }).fill("Alex");

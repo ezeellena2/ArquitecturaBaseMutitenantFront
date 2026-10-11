@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { chromium } from "playwright";
-import { journeyDate, journeyFailure, renderIndex, recordedStep, safeDiagnostic, signOutMobile, waitCodeMessage, waitForTransientNotices, withCleanup } from "./recorrido-usuario.mjs";
+import { journeyDate, journeyFailure, platformAssistantLimitation, renderIndex, recordedStep, safeDiagnostic, signOutMobile, waitCodeMessage, waitForPlatformHome, waitForTransientNotices, withCleanup } from "./recorrido-usuario.mjs";
+import { baseUrl } from "./recorrido-usuario-entorno.mjs";
 import { execFileSync } from "node:child_process";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
@@ -184,4 +185,55 @@ test("la captura espera todos los avisos transitorios y conserva el error persis
     assert.equal(await page.locator('[data-sonner-toast]:not([data-type="error"])').count(), 0);
     assert.equal(await page.locator('[data-sonner-toast][data-type="error"]').innerText(), "Error persistente");
   } finally { await browser.close(); }
+});
+
+for (const width of [1440, 390]) {
+  test(`Plataforma comprueba Inicio en la raíz y tras F5, conservando el error E8b a ${width}`, async () => {
+    // Documento local del núcleo vigente; no levanta el producto ni sustituye el recorrido real.
+    const browser = await chromium.launch({ headless: true });
+    try {
+      const page = await browser.newPage({ viewport: { width, height: 900 } });
+      page.setDefaultTimeout(500);
+      const visits = [];
+      await page.route(`${baseUrl.origin}/**`, (route) => {
+        visits.push(new URL(route.request().url()).pathname);
+        return route.fulfill({ contentType: "text/html", body: '<h1>Inicio</h1><div role="alert">No pudimos abrir esta pantalla</div><h2>Para resolver</h2>' });
+      });
+      await page.goto(new URL("/plataforma", baseUrl).href);
+      await waitForPlatformHome(page);
+      await page.reload();
+      await waitForPlatformHome(page);
+      assert.deepEqual(visits, ["/plataforma", "/plataforma"]);
+      assert.equal(await page.getByRole("alert").innerText(), "No pudimos abrir esta pantalla");
+      assert.equal(await page.getByRole("heading", { name: "Para resolver", exact: true }).count(), 1);
+    } finally { await browser.close(); }
+  });
+}
+
+test("Plataforma no confunde la lista Organizaciones ni otra ruta con su Inicio", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    page.setDefaultTimeout(500);
+    page.setDefaultNavigationTimeout(500);
+    await page.route(`${baseUrl.origin}/**`, (route) => route.fulfill({ contentType: "text/html", body: '<h1>Organizaciones</h1>' }));
+    await page.goto(new URL("/plataforma", baseUrl).href);
+    await assert.rejects(waitForPlatformHome(page), { name: "TimeoutError" });
+    await page.goto(new URL("/plataforma/organizaciones", baseUrl).href);
+    await page.setContent('<h1>Inicio</h1>');
+    await assert.rejects(waitForPlatformHome(page), { name: "TimeoutError" });
+  } finally { await browser.close(); }
+});
+
+test("el ingreso al núcleo registra por separado el stub E8b, sin aprobar el asistente", async () => {
+  const limitation = await platformAssistantLimitation({ ok: () => false, status: () => 501, json: async () => ({ code: "General.Contract.NotImplemented" }) });
+  for (const detail of ["/api/platform/assistant", "501", "General.Contract.NotImplemented", "E8b pendiente, no aprobado", "panel de error se conserva"]) assert.ok(limitation.includes(detail), detail);
+  const ready = await platformAssistantLimitation({ ok: () => true });
+  assert.ok(ready.includes("no se acredita"));
+});
+
+test("el informe no disfraza otro fallo HTTP o código como la limitación contractual E8b", async () => {
+  for (const [status, code] of [[503, "General.Contract.NotImplemented"], [501, "Tenancy.Access.PlatformOnly"]]) {
+    await assert.rejects(platformAssistantLimitation({ ok: () => false, status: () => status, json: async () => ({ code }) }), { name: "AssertionError" });
+  }
 });
