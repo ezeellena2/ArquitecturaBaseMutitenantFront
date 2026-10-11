@@ -2,7 +2,7 @@ import type {
   AssistantConversationResponse, AssistantConversationSummaryCursorResponse, AssistantModelPricePageResponse,
   AssistantModelPriceResponse, AssistantStateResponse, AssistantStreamHttpResponse, AssistantTurnResultResponse,
   MeResponse, OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse, ApiProblemDetails,
-  AssistantQuickResponse,
+  AssistantQuickResponse, AssistantUsagePageResponse, AssistantUsageRowResponse,
   AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantLinkResponse,
 } from "@/shared/api/types";
 import { galleryImage, galleryPdf, galleryPdfTooLarge, type GalleryUploadFile } from "./galleryUploadFiles.ts";
@@ -37,6 +37,49 @@ export function galleryMe(scope: Scope, configure = true): MeResponse {
     effectivePermissions: { organization: scope === "business" ? ["assistant.use", ...(configure ? ["assistant.configure"] : [])] : [], companies: {}, platform: scope === "platform" ? ["platform.assistant.use"] : [] },
     moduleCapabilities: scope === "platform" ? [{ key: "assistant", available: true, canConfigure: configure, canReadUsage: false }] : [],
   };
+}
+
+/** Datos ficticios de Uso para la galería; no acredita T06 ni la ejecución real del backend. */
+export function usageScenario(board: string, state: string): GalleryApp | undefined {
+  const states: Record<string, readonly string[]> = {
+    "Asistente-Uso-Org": ["Por día", "Por persona", "Cerca del tope", "Llegó al tope", "Sin uso este mes"],
+    "M-Asistente-Uso-Org": ["Por día", "Por persona", "Cerca del tope"],
+    "Plat-Asistente-Uso": ["Por organización", "Sin uso este mes"],
+    "M-Plat-Asistente-Uso": ["Por organización"],
+  };
+  if (!states[board]?.includes(state)) return undefined;
+  const platform = board.includes("Plat-");
+  const app = baseApp(platform ? "platform" : "business", `${platform ? "/plataforma" : "/org"}/asistente/uso?month=2026-10${state === "Por persona" ? "&groupBy=person" : ""}`);
+  if (platform) {
+    const me = galleryMe("platform");
+    me.effectivePermissions.platform.push("platform.assistant.read");
+    me.moduleCapabilities = [{ key: "assistant", available: true, canConfigure: true, canReadUsage: true }];
+    app.responses[0] = api("GET", "/api/me", me);
+  }
+  const base: AssistantUsageRowResponse = { kind: "day", displayName: "", queries: 212, inputTokens: 2457600000, outputTokens: 4000,
+    cacheReadTokens: 200, cacheWriteTokens: 500, cost: { amount: 6.1, currency: "USD" }, dailyUsage: null, peopleCount: 8, fundingMode: null, budgetProgress: null };
+  const days: Array<[string, number, number, number]> = [["07", 212, 8, 6.1], ["06", 248, 9, 7.3], ["05", 31, 2, 0.9], ["04", 44, 3, 1.2], ["03", 236, 9, 7], ["02", 261, 9, 7.6], ["01", 252, 8, 7.3]];
+  const people: Array<[string, number, number, number]> = [["Lucía Fernández", 50, 310, 9.03], ["Carolina Vega", 38, 228, 6.64], ["Marcos Giménez", 31, 196, 5.71], ["Paula Méndez", 29, 171, 4.98], ["Sofía Herrera", 24, 142, 4.14], ["Tomás Acosta", 19, 98, 2.85], ["Martín Paz", 14, 74, 2.16], ["Julieta Sosa", 7, 41, 1.19], ["Diego Ríos", 0, 24, 0.7]];
+  let rows: AssistantUsageRowResponse[] = state === "Por persona" ? people.map(([name, today, queries, cost], index) => ({ ...base, kind: "person", personId: `gallery-person-${index}`, displayName: name, peopleCount: null,
+    queries, cost: { amount: cost, currency: "USD" }, dailyUsage: { dayUtc: "2026-10-10", resetAtUtc: "2026-10-11T00:00:00Z", scope: "PlatformKey", queries: today, limit: 50, limitReached: index === 0 } }))
+    : days.map(([day, queries, peopleCount, cost]) => ({ ...base, day: `2026-10-${day}`, queries, peopleCount, cost: { amount: cost, currency: "USD" } }));
+  if (platform) rows = [
+    { ...base, kind: "organization", organizationId: "gallery-delta", displayName: "Grupo Delta", peopleCount: null, queries: 1284, fundingMode: "PlatformKey", cost: { amount: 37.4, currency: "USD" }, monthlyBudget: { amount: 100, currency: "USD" }, budgetProgress: { fraction: 0.374, status: "WithinLimit" } },
+    { ...base, kind: "organization", organizationId: "gallery-sigma", displayName: "Sigma S.A.", peopleCount: null, queries: 720, fundingMode: "PlatformKey", cost: { amount: 21.1, currency: "USD" }, monthlyBudget: { amount: 100, currency: "USD" }, budgetProgress: { fraction: 0.211, status: "WithinLimit" } },
+    { ...base, kind: "organization", organizationId: "gallery-kappa", displayName: "Kappa S.A.", peopleCount: null, queries: 2140, fundingMode: "OwnKey", cost: { amount: 44.2, currency: "USD" }, monthlyBudget: { amount: 300, currency: "USD" }, budgetProgress: { fraction: 0.147333, status: "WithinLimit" } },
+    { ...base, kind: "personal", displayName: "Personas", peopleCount: null, queries: 566, fundingMode: "PlatformKey", cost: { amount: 8.3, currency: "USD" } },
+    { ...base, kind: "operator", displayName: "Operadores", peopleCount: null, queries: 210, fundingMode: "PlatformKey", cost: { amount: 1.4, currency: "USD" } },
+  ];
+  const empty = state === "Sin uso este mes";
+  const data: AssistantUsagePageResponse = { month: "2026-10", cost: { amount: empty ? 0 : platform ? 112.4 : state === "Cerca del tope" ? 84 : state === "Llegó al tope" ? 100 : 37.4, currency: "USD" },
+    budget: platform ? null : { amount: 100, currency: "USD" }, platformKeyCost: platform ? { amount: empty ? 0 : 68.2, currency: "USD" } : null,
+    totalQueries: empty ? 0 : platform ? 4920 : 1284, peopleCount: empty || platform ? 0 : 9, organizationCount: platform ? empty ? 0 : 3 : null,
+    budgetProgress: platform || empty ? null : { fraction: state === "Cerca del tope" ? 0.84 : state === "Llegó al tope" ? 1 : 0.374, status: state === "Cerca del tope" ? "NearLimit" : state === "Llegó al tope" ? "LimitReached" : "WithinLimit" },
+    rows: { items: empty ? [] : rows, page: 1, pageSize: 10, totalCount: empty ? 0 : rows.length, totalPages: empty ? 0 : 1, hasPrevious: false, hasNext: false } };
+  app.responses.push(api("GET", `${platform ? "/api/platform" : "/api/organization"}/assistant/usage`, data));
+  app.readySelector = empty ? "main" : board.startsWith("M-") ? "main li" : "main table";
+  if (empty) app.readyText = "Sin uso este mes";
+  return app;
 }
 export const galleryModels: AssistantModelPriceResponse[] = [{
   id: "11111111-1111-4111-8111-111111111111", name: "Modelo de prueba A", provider: "Anthropic", providerModelId: "test-a",
@@ -227,9 +270,24 @@ function createChatScenario(board: string, state: string): GalleryApp | undefine
 
 export function chatScenario(board: string, state: string): GalleryApp | undefined {
   if (state === "Consultando" || state === "Escribiendo") return galleryOpenStreamProbe(board, state);
-  // El lienzo exige Ver uso. RegisteredAssistant todavía no entrega onUsage (T13).
-  if (state === "Tope del mes") return undefined;
+  if (state === "Tope del mes") return galleryMonthlyBudgetScenario(board);
   return createChatScenario(board, state);
+}
+
+/** Escena mensual publicada por State, con permiso y acción de Uso; sin provocar un POST rechazado. */
+export function galleryMonthlyBudgetScenario(board: string): GalleryApp | undefined {
+  if (board !== "Asistente-Org" && board !== "M-Asistente-Org") return undefined;
+  const app = baseApp("business", "/org/asistente");
+  const prefix = "/api/organization/assistant";
+  const initial: AssistantStateResponse = { ...galleryState("business"), monthlyBudgetProgress: { fraction: 1, status: "LimitReached" } };
+  app.responses.push(api("GET", prefix, initial),
+    { ...api("GET", `${prefix}/conversations`, { items: [galleryConversation.conversation], hasMore: false } satisfies AssistantConversationSummaryCursorResponse), query: { saved: "false" } },
+    { ...api("GET", `${prefix}/conversations`, { items: [], hasMore: false } satisfies AssistantConversationSummaryCursorResponse), query: { saved: "true" } },
+    api("GET", `${prefix}/conversations/gallery-chat`, galleryConversation));
+  app.actions = [...(board.startsWith("M-") ? [click("Conversaciones")] : []), click("Mi consulta")];
+  app.readySelector = '[role="status"] button';
+  app.readyTexts = ["Grupo Delta llegó al tope del mes del asistente.", "Ver uso"];
+  return app;
 }
 
 // Probe dirigido del 429 actual, sin contarlo como escena de galería completa.

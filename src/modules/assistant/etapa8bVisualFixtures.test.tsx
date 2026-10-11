@@ -14,10 +14,10 @@ import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { galleryImage, galleryPdf, galleryPdfTooLarge, galleryUploadBytes } from "@/test/galleryUploadFiles";
 import type { AssistantAttachmentSummaryResponse, AssistantConversationResponse, AssistantStreamHttpResponse } from "@/shared/api/types";
-import { chatScenario, configurationScenario, galleryConversation, galleryMe, galleryMonthlyLimitProbe, galleryOpenStreamProbe, galleryStream, galleryStreamEvents, type GalleryApp } from "@/test/etapa8bVisualFixtures";
+import { chatScenario, configurationScenario, galleryConversation, galleryMe, galleryMonthlyLimitProbe, galleryOpenStreamProbe, galleryStream, galleryStreamEvents, usageScenario, type GalleryApp } from "@/test/etapa8bVisualFixtures";
 import type { AssistantTurnState } from "@/modules/assistant/runtime/assistantTurnState";
 
-beforeAll(async () => { await import("@/modules/assistant/settings/OrganizationAssistantSettingsPage"); await import("@/modules/assistant/settings/PlatformAssistantSettingsPage"); await import("@/modules/assistant/pages/RegisteredAssistant"); });
+beforeAll(async () => { await import("@/modules/assistant/settings/OrganizationAssistantSettingsPage"); await import("@/modules/assistant/settings/PlatformAssistantSettingsPage"); await import("@/modules/assistant/pages/RegisteredAssistant"); await import("@/modules/assistant/usage/OrganizationAssistantUsagePage"); await import("@/modules/assistant/usage/PlatformAssistantUsagePage"); });
 beforeEach(() => { Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = vi.fn(() => "blob:gallery-fixture"); URL.revokeObjectURL = vi.fn(); });
 const responseListeners: (() => void)[] = [];
 afterEach(() => { responseListeners.splice(0).forEach((dispose) => dispose()); vi.unstubAllGlobals(); });
@@ -446,14 +446,41 @@ it("Historial móvil conserva bienvenida bajo la hoja y permite seleccionar", as
 });
 
 it("Tope del mes se obtiene de HTTP 429 y conserva conversación sin enviar otra vez", async () => {
-  expect(chatScenario("Asistente-Org", "Tope del mes")).toBeUndefined();
   const app = galleryMonthlyLimitProbe("Asistente-Org"); const mounted = mount(app);
   await actions(app, mounted.user);
   expect(screen.getByText("de prueba", { selector: "strong" })).toBeVisible();
   expect(screen.queryByRole("button", { name: "Enviar" })).not.toBeInTheDocument();
   expect(mounted.calls.filter((call) => call.endsWith("/messages"))).toHaveLength(1);
   expect(screen.getByRole("button", { name: "Mi consulta" })).toBeVisible();
-  expect(screen.queryByRole("button", { name: "Ver uso" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Ver uso" })).toBeVisible();
+});
+
+it.each(["Asistente-Org", "M-Asistente-Org"])("%s tope mensual de State conserva Ver uso sin enviar una consulta", async (board) => {
+  const restore = board.startsWith("M-") ? asPhone() : () => {};
+  try {
+    const app = chatScenario(board, "Tope del mes")!; const mounted = mount(app);
+    await actions(app, mounted.user);
+    expect(screen.getByRole("button", { name: "Ver uso" })).toBeVisible();
+    expect(mounted.calls.some((call) => call.startsWith("POST"))).toBe(false);
+    expect(screen.getByText("de prueba", { selector: "strong" })).toBeVisible();
+  } finally { restore(); }
+});
+
+it.each([
+  { board: "Asistente-Uso-Org", states: ["Por día", "Por persona", "Cerca del tope", "Llegó al tope", "Sin uso este mes"] },
+  { board: "M-Asistente-Uso-Org", states: ["Por día", "Por persona", "Cerca del tope"] },
+  { board: "Plat-Asistente-Uso", states: ["Por organización", "Sin uso este mes"] },
+  { board: "M-Plat-Asistente-Uso", states: ["Por organización"] },
+].flatMap(({ board, states }) => states.map((state) => ({ board, state }))))("$board $state prepara la pantalla real sólo con su lectura mensual", async ({ board, state }) => {
+  const restore = board.startsWith("M-") ? asPhone() : () => {};
+  try {
+    const app = usageScenario(board, state)!; const mounted = mount(app);
+    await actions(app, mounted.user);
+    // StrictMode puede cancelar y repetir una lectura al montar la ruta lazy; el recurso sigue siendo único.
+    const usageCalls = mounted.calls.filter((call) => call.endsWith("/assistant/usage"));
+    expect([...new Set(usageCalls)]).toEqual([`GET /api/${board.includes("Plat-") ? "platform" : "organization"}/assistant/usage`]);
+    expect(mounted.calls.some((call) => call.endsWith("/assistant") || call.endsWith("/assistant/settings") || call.includes("/conversations"))).toBe(false);
+  } finally { restore(); }
 });
 
 it.each(["Asistente-Personal", "M-Asistente-Personal"])("%s my_messages vacío usa Quick gratis y adopta su detalle sin llamar Messages", async (board) => {

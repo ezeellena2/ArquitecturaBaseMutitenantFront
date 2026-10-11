@@ -8,22 +8,24 @@ import { installApiMocks, runAppActions } from "./capturar-etapa-3a.mjs";
 
 test("inventario del HTML actual preserva estados y asimetría", () => {
   const cases = inventory();
-  assert.equal(cases.length, 129);
-  assert.equal(cases.filter((entry) => entry.group === "chat").length, 96);
-  assert.equal(cases.filter((entry) => entry.group === "configuracion").length, 22);
+  assert.equal(cases.length, 138);
+  assert.equal(cases.filter((entry) => entry.group === "chat").length, 98);
+  assert.equal(cases.filter((entry) => entry.group === "configuracion").length, 29);
   assert.equal(cases.filter((entry) => entry.group === "uso").length, 11);
   assert.ok(cases.some((entry) => entry.board === "Asistente-Org" && entry.state === "Detenida"));
   assert.ok(!cases.some((entry) => entry.board === "M-Asistente-Org" && entry.state === "Detenida"));
 });
 
-test("completa bloquea y selección parcial nunca declara galería completa", async () => {
+test("Uso y tope mensual están preparados; los pendientes ajenos a T13 bloquean la galería completa", async () => {
   const manifest = await buildManifest();
-  assert.equal(manifest.cases.filter((entry) => entry.group === "configuracion").length, 22);
-  assert.ok(manifest.pending.some((entry) => entry.group === "uso"));
-  assert.equal(manifest.cases.length, 116);
-  assert.equal(manifest.pending.length, 13);
-  assert.equal(manifest.cases.filter((entry) => entry.group === "chat").length, 94);
-  assert.deepEqual([...new Set(manifest.pending.filter((entry) => entry.group === "chat").map((entry) => entry.state))], ["Tope del mes"]);
+  assert.equal(manifest.cases.filter((entry) => entry.group === "configuracion").length, 23);
+  assert.equal(manifest.cases.length, 130);
+  assert.equal(manifest.pending.length, 8);
+  assert.equal(manifest.cases.filter((entry) => entry.group === "chat").length, 96);
+  assert.equal(manifest.cases.filter((entry) => entry.group === "uso").length, 11);
+  const monthly = manifest.cases.filter((entry) => entry.state === "Tope del mes");
+  assert.equal(monthly.length, 2);
+  assert.ok(monthly.every((entry) => entry.app.readyTexts.includes("Ver uso") && !entry.app.responses.some((response) => response.method === "POST" || response.status === 429)));
   const streaming = manifest.cases.filter((entry) => ["Consultando", "Escribiendo"].includes(entry.state));
   assert.equal(streaming.length, 12);
   assert.equal(new Set(streaming.map((entry) => entry.board)).size, 6);
@@ -32,13 +34,17 @@ test("completa bloquea y selección parcial nunca declara galería completa", as
     && !entry.app.readyTexts.some((text) => ["Información consultada", "Consultando información…", "Escribiendo…"].includes(text))));
   const oversized = manifest.cases.filter((entry) => entry.state === "Adjunto de más de 10 MB");
   assert.equal(oversized.length, 3);
-  assert.ok(oversized.every((entry) => entry.viewport.width === 1440 && entry.app.readyTexts.includes("planilla-ventas.pdf pesa más de 10 MB.")
+  assert.ok(oversized.every((entry) => entry.viewport.width === 1440 && entry.app.readyTexts.includes("planilla-ventas.pdf pesa más de 10,5 MB.")
     && entry.app.actions.flatMap((action) => action.type === "upload" ? action.files : []).map((file) => file.byteLength).join(",") === "240000,14800000"));
-  assert.throws(() => selectCases(manifest), /13 estados pendientes/);
-  const selection = selectCases(manifest, { groups: ["configuracion"] });
-  assert.equal(selection.cases.length, 22);
+  assert.equal(manifest.complete, false);
+  assert.throws(() => selectCases(manifest), /8 estados pendientes/);
+  assert.ok(manifest.pending.every((entry) => entry.group !== "uso" && entry.state !== "Tope del mes"));
+  const selection = selectCases(manifest, { ids: [manifest.cases[0].id] });
+  assert.equal(selection.cases.length, 1);
   assert.equal(selection.complete, false);
-  assert.throws(() => selectCases(manifest, { groups: ["uso"] }), /pendientes/);
+  const usage = selectCases(manifest, { groups: ["uso"] });
+  assert.equal(usage.cases.length, 11); assert.equal(usage.complete, false);
+  assert.throws(() => selectCases(manifest, { groups: ["configuracion"] }), /6 estados pendientes/);
   assert.throws(() => selectCases(manifest, { ids: ["inexistente"] }), /desconocida/);
 });
 
@@ -80,7 +86,7 @@ test("validator no acepta estados, viewports, mappers ni omisiones falsos", asyn
   for (const mutate of [
     (copy) => { copy.cases[0].state = "Inventado"; },
     (copy) => { copy.cases[0].viewport.width = 390; },
-    (copy) => { copy.pending.pop(); },
+    (copy) => { copy.cases.pop(); },
     (copy) => { copy.cases[0].props = { asistente: "Primera vez" }; },
     (copy) => { copy.cases[0].app.path = "/org/asistente"; },
   ]) {

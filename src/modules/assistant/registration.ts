@@ -28,6 +28,9 @@ const OrganizationPolicy = lazy(() => import("./policy/OrganizationAssistantPoli
 const configure = (me: MeResponse) => assistantAccess(me, "configure");
 const OrganizationSettings = lazy(() => import("./settings/OrganizationAssistantSettingsPage").then((module) => ({ default: module.OrganizationAssistantSettingsPage })));
 const PlatformSettings = lazy(() => import("./settings/PlatformAssistantSettingsPage").then((module) => ({ default: module.PlatformAssistantSettingsPage })));
+const usage = (me: MeResponse) => assistantAccess(me, "usage");
+const OrganizationUsage = lazy(() => import("./usage/OrganizationAssistantUsagePage").then((module) => ({ default: module.OrganizationAssistantUsagePage })));
+const PlatformUsage = lazy(() => import("./usage/PlatformAssistantUsagePage").then((module) => ({ default: module.PlatformAssistantUsagePage })));
 const settingsNavigation = { labelKey: "assistant:settings.title", icon: Sparkles, placement: "administration" as const, section: { labelKey: "assistant:title", icon: Sparkles } };
 
 export const assistantRegistration: ModuleRegistration = {
@@ -41,6 +44,8 @@ export const assistantRegistration: ModuleRegistration = {
   routes: [
     { access: "business", path: "/org/asistente/configuracion", guard: configure, Page: OrganizationSettings, navigation: settingsNavigation },
     { access: "platform", path: "/plataforma/asistente/configuracion", guard: configure, Page: PlatformSettings, navigation: settingsNavigation },
+    { access: "business", path: "/org/asistente/uso", guard: usage, Page: OrganizationUsage, navigation: { ...settingsNavigation, labelKey: "assistant:usage.title" } },
+    { access: "platform", path: "/plataforma/asistente/uso", guard: usage, Page: PlatformUsage, navigation: { ...settingsNavigation, labelKey: "assistant:usage.title" } },
     { access: "consumer", path: "/asistente", guard: chat, Page: Phone, navigation: { labelKey: "assistant:title", icon: Sparkles, placement: "phone" } },
     { access: "business", path: "/org/asistente", guard: chat, Page: Phone, navigation: { labelKey: "assistant:title", icon: Sparkles, placement: "phone" } },
     { access: "platform", path: "/plataforma/asistente", guard: chat, Page: Phone, navigation: { labelKey: "assistant:title", icon: Sparkles, placement: "phone" } },

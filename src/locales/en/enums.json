@@ -1,4 +1,13 @@
 {
+  "AssistantMode": {
+    "PlatformKey": "The platform's",
+    "OwnKey": "Its own"
+  },
+  "AssistantBudgetStatus": {
+    "WithinLimit": "Within budget",
+    "NearLimit": "Near the limit",
+    "LimitReached": "Limit reached"
+  },
   "AccountRecoveryStatus": { "Pending": "Pending", "Approved": "Approved", "Rejected": "Rejected" },
   "PlatformAccountState": {
     "Active": "Active",

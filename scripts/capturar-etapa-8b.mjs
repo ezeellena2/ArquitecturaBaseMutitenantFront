@@ -42,11 +42,9 @@ export async function buildManifest(canvasRoot = canvas) {
   const cases = []; const pending = [];
   for (const entry of inventory(canvasRoot)) {
     const app = entry.group === "configuracion" ? fixtures.configurationScenario(entry.board, entry.state)
-      : entry.group === "chat" ? fixtures.chatScenario(entry.board, entry.state) : undefined;
+      : entry.group === "chat" ? fixtures.chatScenario(entry.board, entry.state) : fixtures.usageScenario(entry.board, entry.state);
     if (app) cases.push({ ...entry, label: entry.state, captureExtent: "viewport", app, scenarioSha256: jsonHash(app) });
-    else pending.push({ ...entry, reason: entry.group === "uso" ? "Uso CC04 pendiente de aprobación y publicación conjunta; sin página ni fixture."
-      : entry.state === "Tope del mes" ? "El lienzo exige Ver uso, pero RegisteredAssistant aún no entrega onUsage ni hay ruta Uso autorizada/publicada (T13/CC04). El 429 se prueba como comportamiento; escena completa pendiente."
-      : "Escenario/acciones todavía sin preparar en este corte; no se declara cobertura." });
+    else pending.push({ ...entry, reason: "Escenario/acciones todavía sin preparar en este corte; no se declara cobertura." });
   }
   return { version: 1, stage: "etapa-8b-preparacion", evidence: "API y sesión ficticias del arnés; no E2E/proveedor", issuer,
     sourceCommit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(), fixtureSha256: fixturesHash(), transportSources: transportSources(),
