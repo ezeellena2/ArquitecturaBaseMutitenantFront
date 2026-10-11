@@ -12,7 +12,7 @@ import { pickupCode, plainTextBody } from "./test-e2e-real-mail.mjs";
 import { accountAddMethodName, ensureBusinessPageDraft, expectOrganizationModules, expectRecoveryEmailInUse, fillOtp, openAccountEmailDialog, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
 import { waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { reloadResponse, responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
-import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedTerms, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
+import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedTerms, observeLegalTransition, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { chromium } from "playwright";
 
@@ -1538,18 +1538,24 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await platformPage.getByRole("textbox", { name: "En español" }).fill("Política de privacidad publicada por el operador en el recorrido real T25.");
           await platformPage.getByRole("textbox", { name: "En inglés" }).fill("Privacy policy published by the operator during the real T25 journey.");
           await platformPage.getByRole("button", { name: "Publicar", exact: true }).click();
-          setStage("confirma la publicación de Privacidad y observa HTTP 201");
-          const [publication] = await responsesForAction(platformPage,
-            [(response) => new URL(response.url()).pathname === "/api/platform/legal-documents" && response.request().method() === "POST"],
-            () => platformPage.getByRole("alertdialog").getByRole("button", { name: "Publicar", exact: true }).click());
-          assert.equal(publication.status(), 201);
-          const publishedPrivacy = parseLegalPublicationReceipt(await publication.text());
-          setStage("acepta la Privacidad publicada con POST 204 y retorno protegido 200");
-          await acceptPublishedLegalAndReturn(platformPage, publishedPrivacy, "/api/platform/legal-documents");
-          setStage("F5 conserva Documentos legales y Privacidad versión 2 vigente");
-          await platformPage.reload();
-          await platformPage.getByRole("heading", { name: "Documentos legales", exact: true }).waitFor();
-          await platformPage.getByText(/Versión 2 · vigente desde/).waitFor();
+          const legalObservation = observeLegalTransition(platformPage);
+          try {
+            setStage("confirma la publicación de Privacidad y observa HTTP 201");
+            const [publication] = await responsesForAction(platformPage,
+              [(response) => new URL(response.url()).pathname === "/api/platform/legal-documents" && response.request().method() === "POST"],
+              () => platformPage.getByRole("alertdialog").getByRole("button", { name: "Publicar", exact: true }).click());
+            assert.equal(publication.status(), 201);
+            const publishedPrivacy = parseLegalPublicationReceipt(await publication.text());
+            setStage("acepta la Privacidad publicada con POST 204 y retorno protegido 200");
+            await acceptPublishedLegalAndReturn(platformPage, publishedPrivacy, "/api/platform/legal-documents");
+            setStage("F5 conserva Documentos legales y Privacidad versión 2 vigente");
+            await platformPage.reload();
+            await platformPage.getByRole("heading", { name: "Documentos legales", exact: true }).waitFor();
+            await platformPage.getByText(/Versión 2 · vigente desde/).waitFor();
+          } finally {
+            legalObservation.close();
+            console.info(`E8 legales diagnóstico: ${JSON.stringify(await legalObservation.snapshot())}`);
+          }
           setStage("consulta un movimiento y su detalle en Auditoría");
           await platformNavigate(platformPage, "Administración", "Auditoría");
           await platformPage.getByRole("button", { name: /^Ver el detalle:/ }).first().click();

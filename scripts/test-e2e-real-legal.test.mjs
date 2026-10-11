@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedTerms, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
+import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedTerms, legalMeMetadata, observeLegalTransition, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
 
 const receipt = { id: "11111111-1111-4111-8111-111111111111", version: 3 };
 test("acepta el recibo efectivo v3 sin fijar una versión en Front", () => {
@@ -76,4 +76,57 @@ for (const [label, acceptance, returned] of [
   await assert.rejects(acceptPublishedLegalAndReturn(page, receipt, protectedPath));
   assert.ok(!page.steps.includes("hidden"));
   assert.equal(page.listeners(), 0);
+});
+
+test("metadata de Me conserva tipos/versiones y elimina identidad e IDs privados", () => {
+  const metadata = legalMeMetadata(200, { email: "private@example.test", phone: "+5491100000000", token: "private-token",
+    pendingLegalDocuments: [{ id: "private-id", kind: "Privacy", version: 2 }] });
+  assert.deepEqual(metadata, { status: 200, pendingValid: true, pendingKinds: [{ kind: "Privacy", version: 2 }] });
+  assert.ok(!JSON.stringify(metadata).includes("private"));
+  assert.deepEqual(legalMeMetadata(403, undefined), { status: 403, pendingValid: false, pendingKinds: [] });
+  assert.deepEqual(legalMeMetadata(200, { pendingLegalDocuments: [] }), { status: 200, pendingValid: true, pendingKinds: [] });
+});
+
+test("metadata inválida no publica tipos o versiones arbitrarios", () => {
+  assert.deepEqual(legalMeMetadata(200, { pendingLegalDocuments: [{ kind: "private-secret", version: "private" }, { kind: "Privacy", version: -1 }] }),
+    { status: 200, pendingValid: false, pendingKinds: [] });
+});
+
+function observedPage(url = "https://localtest.me:5174/aceptar-terminos?private-token#private") {
+  const listeners = new Map();
+  return { url: () => url,
+    on(event, callback) { listeners.set(event, callback); }, off(event, callback) { assert.equal(listeners.get(event), callback); listeners.delete(event); },
+    getByRole: (_role, { name }) => ({ isVisible: async () => name === "Actualizamos los términos" }),
+    emit(event, value) { listeners.get(event)?.(value); }, listeners: () => listeners.size,
+  };
+}
+
+test("observa sólo después del POST 201 y distingue Me iniciado antes de publicar", async () => {
+  const page = observedPage(); const observer = observeLegalTransition(page);
+  const me = { ...reply("GET", "/api/me", 200), json: async () => ({ pendingLegalDocuments: [{ kind: "Privacy", version: 2, id: "private-id" }] }) };
+  page.emit("request", me.request()); page.emit("response", me);
+  page.emit("response", reply("POST", protectedPath, 201));
+  page.emit("response", reply("GET", protectedPath, 403)); page.emit("response", me);
+  const fresh = { ...reply("GET", "/api/me", 200), json: me.json };
+  page.emit("request", fresh.request()); page.emit("response", fresh);
+  observer.close();
+  const metadata = await observer.snapshot();
+  assert.equal(page.listeners(), 0); assert.equal(metadata.route, "/aceptar-terminos");
+  assert.deepEqual(metadata.headings, ["Actualizamos los términos"]);
+  assert.deepEqual(metadata.events.map((event) => event.startedAfterPublication), [undefined, false, true]);
+  assert.equal(metadata.events[2].bodyAvailable, true);
+  assert.equal(metadata.events[0].legalStatus, 403);
+  assert.ok(!JSON.stringify(metadata).includes("private"));
+});
+
+test("un cuerpo ilegible y una ruta privada quedan saneados sin ocultar el estado HTTP", async () => {
+  const page = observedPage("https://localtest.me:5174/private-id?token=private"); const observer = observeLegalTransition(page);
+  page.emit("response", reply("POST", protectedPath, 201));
+  const me = { ...reply("GET", "/api/me", 200), json: async () => { throw new Error("private-body"); } };
+  page.emit("request", me.request()); page.emit("response", me); observer.close();
+  const metadata = await observer.snapshot();
+  assert.equal(metadata.route, "otra ruta");
+  assert.equal(metadata.events[0].bodyAvailable, false);
+  assert.deepEqual(metadata.events[0].me, { status: 200, pendingValid: false, pendingKinds: [] });
+  assert.ok(!JSON.stringify(metadata).includes("private"));
 });
