@@ -319,6 +319,9 @@ DECISIONES = {
         ("WhatsApp de atención, al día", "", "Plantillas del sistema: las 16 del catálogo (0049), de a 10; el bot de Plataforma manda el enlace para entrar o registrarse; «Mis mensajes con empresas» muestra las conversaciones; Cargar teléfonos con el panel de Administración vigente (Etapa 11).", "Dibujada"),
         ("Catálogo de modelos: datos técnicos completos", "", "«Avanzado» suma Texto y Pensamiento adaptativo, los esfuerzos permitidos, la caché (lectura y escritura de 5 minutos y de 1 hora) y el contexto largo con su caché; editar muestra Claude Haiku 5.5, el único con tramo largo (contrato del back 853b5aed).", "Dibujada"),
     ],
+    "El usuario · 11/10": [
+        ("Uso del asistente de la organización", "", "El resumen del mes deja solo el gasto contra el tope, las consultas y las personas: la clave y los topes pueden cambiar a mitad de mes, así que se ven en Configuración.", "Dibujada"),
+    ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
     ],

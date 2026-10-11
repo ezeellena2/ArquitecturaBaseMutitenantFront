@@ -209,13 +209,13 @@ def medidor(titulo, extra_cab=""):
     return (f'<div class="w-caja"><div class="w-cab"><span>{titulo}</span>{extra_cab}</div><div class="as-med">'
             '<div class="as-cifra"><b>{{gasto}}</b><span>de {{tope}}</span><sc-if value="{{conPill}}" hint-placeholder-val="{{no}}"><span class="pill {{clasePill}}">{{textoPill}}</span></sc-if></div>'
             '<div class="as-barra"><span class="{{claseBarra}}"></span></div>'
-            '<div class="as-res"><span><b>{{consultas}}</b> consultas</span><span><b>{{personas}}</b> personas</span><span><b>50</b> consultas por persona por día</span></div>'
+            '<div class="as-res"><span><b>{{consultas}}</b> consultas</span><span><b>{{personas}}</b> personas</span></div>'
             '</div></div>')
 
 
 USO_ORG = (
     banda("Uso", "Octubre de 2026", MES)
-    + '<div class="w-body">' + medidor("Tope del mes", f'<span class="as-cab-d">Con la clave de la plataforma {INFO_I("El tope lo fija la plataforma.")}</span>')
+    + '<div class="w-body">' + medidor("Tope del mes")
     + '<sc-if value="{{conUso}}" hint-placeholder-val="{{si}}"><div class="as-tabs" role="tablist">'
       '<button type="button" role="tab" aria-selected="{{selDia}}" class="{{tabDia}}" onClick="{{verDia}}">Por día</button>'
       '<button type="button" role="tab" aria-selected="{{selPer}}" class="{{tabPer}}" onClick="{{verPer}}">Por persona</button></div>'
