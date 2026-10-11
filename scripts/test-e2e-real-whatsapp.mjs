@@ -4,7 +4,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { createServer } from "vite";
 import { chromium } from "playwright";
-import { fillOtp, openAccountEmailDialog, openPhoneMore, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
+import { fillOtp, openAccountEmailDialog, openPhoneMore, openPlatformAccountSearch, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
 import { caseDelay, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { decideAfterRecoveryNotice, newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
@@ -220,21 +220,27 @@ async function addBackupEmail(page, phone, width) {
 }
 
 async function platformPhoneAccount(page, phone, identity) {
+  detail("abrir lista de Cuentas");
   let [response] = await responsesForAction(page, [(reply) => pathname(reply) === "/api/platform/accounts/paged"], () => page.goto(`${base}/plataforma/cuentas`));
   await page.getByRole("heading", { name: "Cuentas", exact: true }).waitFor();
+  detail("abrir buscador de Cuentas si está cerrado");
+  const search = await openPlatformAccountSearch(page);
+  detail("buscar cuenta Phone por UI y observar GET");
   [response] = await responsesForAction(page,
     [(reply) => pathname(reply) === "/api/platform/accounts/paged" && new URL(reply.url()).searchParams.get("search") === phone],
-    () => page.getByRole("searchbox", { name: "Buscar por nombre, correo o teléfono", exact: true }).fill(phone));
+    () => search.fill(phone));
   assert.equal(response.status(), 200);
   const item = (await response.json()).items.find((account) => account.id === identity.id);
   assert.ok(item); assert.equal(item.displayName, null); assert.equal(item.maskedPrimaryPhone, identity.mask);
   const endpoint = `/api/platform/accounts/${identity.id}`;
   const link = page.getByRole("link").and(page.locator(`a[href='/plataforma/cuentas/${identity.id}']`));
   const row = page.getByRole(page.viewportSize().width === 390 ? "listitem" : "row").filter({ has: link });
+  detail("comprobar máscara, correo de respaldo oculto y acciones");
   await row.waitFor(); assert.equal(await row.count(), 1);
   await row.getByText(identity.mask, { exact: true }).waitFor();
   assert.equal(await row.getByText(identity.email, { exact: true }).count(), 0);
   await row.getByRole("button", { name: `Acciones de ${identity.mask}`, exact: true }).waitFor();
+  detail("abrir ficha y comprobar métodos de ingreso por GET");
   const [detailResponse] = await responsesForAction(page, [(reply) => pathname(reply) === endpoint], () => link.click());
   assert.equal(detailResponse.status(), 200); const account = await detailResponse.json();
   assert.equal(account.id, identity.id); assert.equal(account.displayName, null); assert.equal(account.maskedPrimaryPhone, identity.mask);
@@ -244,6 +250,7 @@ async function platformPhoneAccount(page, phone, identity) {
   assert.ok(backup?.verifiedAtUtc); assert.equal(backup.canSignIn, true);
   await page.getByRole("heading", { name: identity.mask, exact: true }).waitFor();
   await page.getByRole("list", { name: "Métodos de ingreso", exact: true }).getByText(backup.maskedValue, { exact: true }).waitFor();
+  detail("comprobar identidad Phone persistida por F5 y GET");
   const persisted = await reloadResponse(page, (reply) => pathname(reply) === endpoint);
   assert.equal(persisted.status(), 200); assert.equal((await persisted.json()).maskedPrimaryPhone, identity.mask);
   await page.getByRole("heading", { name: identity.mask, exact: true }).waitFor();

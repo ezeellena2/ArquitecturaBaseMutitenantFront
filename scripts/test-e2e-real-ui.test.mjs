@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { chromium } from "playwright";
-import { ensureBusinessPageDraft, expectOrganizationModules, expectRecoveryEmailInUse, fillOtp, openAccountEmailDialog, openPhoneMore, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
+import { ensureBusinessPageDraft, expectOrganizationModules, expectRecoveryEmailInUse, fillOtp, openAccountEmailDialog, openPhoneMore, openPlatformAccountSearch, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
 
 for (const width of [1440, 390]) for (const whatsapp of [false, true]) test(`Agregar correo conserva el destino con WhatsApp ${whatsapp} en ${width}`, async () => {
   const browser = await chromium.launch({ headless: true });
@@ -39,6 +39,24 @@ for (const bar of [false, true]) test(`Más móvil usa ${bar ? "la barra visible
       await more.evaluate((link) => link.removeAttribute("aria-current"));
       await assert.rejects(openPhoneMore(page), /Más debe volver a estar presente y marcado/);
     }
+  } finally { await browser.close(); }
+});
+
+for (const [width, opened] of [[1440, true], [390, false], [390, true]]) test(`Cuentas abre búsqueda en ${width} con buscador ${opened ? "abierto" : "cerrado"} sin cerrar uno visible`, async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    const label = "Buscar por nombre, correo o teléfono";
+    // DOM local: la lupa monta/muestra el campo; sin abrirla el fill no puede actuar.
+    await page.setContent(`${width === 390 ? `<button aria-label="${label}" aria-pressed="${opened}" onclick="const search=document.querySelector('form');search.hidden=!search.hidden;this.setAttribute('aria-pressed',String(!search.hidden));document.body.dataset.toggles=String(Number(document.body.dataset.toggles||0)+1)">Buscar</button>` : ""}
+      <form ${opened ? "" : "hidden"}><input type="search" aria-label="${label}"></form>`);
+    assert.equal(await page.getByRole("searchbox", { name: label, exact: true }).isVisible(), opened);
+    const search = await openPlatformAccountSearch(page);
+    await search.fill("cuenta de prueba");
+    assert.equal(await search.inputValue(), "cuenta de prueba");
+    assert.equal(await search.isVisible(), true);
+    assert.equal(await page.locator("body").getAttribute("data-toggles"), width === 390 && !opened ? "1" : null);
+    if (width === 390) assert.equal(await page.getByRole("button", { name: label, exact: true }).getAttribute("aria-pressed"), "true");
   } finally { await browser.close(); }
 });
 

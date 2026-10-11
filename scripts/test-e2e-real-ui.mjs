@@ -26,6 +26,16 @@ export async function openPhoneMore(page) {
   return more;
 }
 
+/** Cuentas muestra la lupa en el teléfono; tocarla sólo si el buscador todavía está cerrado. */
+export async function openPlatformAccountSearch(page) {
+  const name = "Buscar por nombre, correo o teléfono";
+  const search = page.getByRole("searchbox", { name, exact: true });
+  if (page.viewportSize().width === 390 && !await search.isVisible())
+    await page.getByRole("button", { name, exact: true }).click();
+  await search.waitFor();
+  return search;
+}
+
 /** El contrato ubica el rechazo en el campo y entrega su texto traducido. */
 export async function expectRecoveryEmailInUse(page, response) {
   assert.equal(response.status(), 400);
