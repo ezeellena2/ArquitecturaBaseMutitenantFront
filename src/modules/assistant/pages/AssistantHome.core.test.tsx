@@ -21,7 +21,7 @@ const home: HomeResponse = { organization: { users: { total: 2 }, roles: { total
   pending: [{ area: "publicPage", kind: "publicPageDraft", subject: null, urgent: false, sinceUtc: null, dueAtUtc: null, targetId: null }] };
 const state: AssistantStateResponse = { configured: false, canConfigure: false, models: [], quickQueries: [], dailyLimit: 50,
   dailyResetAtUtc: "2026-10-10T21:00:00Z", remainingMessages: 50, noticeVersion: "v1", noticeAccepted: false,
-  retentionDays: 30, maxAttachmentBytes: 10_485_760, maxAttachments: 5 };
+  retentionDays: 30, maxAttachmentBytes: 10_485_760, maxAttachments: 5, monthlyBudgetProgress: null };
 
 beforeAll(async () => { await import("@/areas/business/home/pages/BusinessHomePage"); await import("./RegisteredAssistant"); });
 beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); });

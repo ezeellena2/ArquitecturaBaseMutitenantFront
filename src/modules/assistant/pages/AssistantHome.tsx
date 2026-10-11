@@ -95,7 +95,7 @@ function AssistantSession(props: AssistantHomeProps) {
   const runtime = useAssistantRuntime({ scope, conversationId: selectedId, enabled: true, ui: {
     onNew: async (message) => {
       const current = latest.current;
-      if (!operations.lifetime.getSnapshot() || !current.state.data?.configured || !current.state.data.noticeAccepted || current.state.data.remainingMessages === 0 || current.isPending || operations.pending) throw new MessageNotSentError();
+      if (!operations.lifetime.getSnapshot() || !current.state.data?.configured || !current.state.data.noticeAccepted || current.state.data.remainingMessages === 0 || current.state.data.monthlyBudgetProgress?.status === "LimitReached" || current.isPending || operations.pending) throw new MessageNotSentError();
       const text = message.content.filter((part) => part.type === "text").map((part) => part.text).join("\n").trim();
       if (!text || !await send(text, (message.attachments ?? []).map((item) => item.id))) throw new MessageNotSentError();
     },
@@ -386,7 +386,8 @@ function AssistantSession(props: AssistantHomeProps) {
   if (!state) return withCore(<p role="status">{t("loading")}</p>);
   const code = runtime.blockedCode ?? (operations.error instanceof ApiError ? operations.error.code : null);
   const configured = state.configured && code !== "Assistant.Settings.NotConfigured";
-  const limited = state.remainingMessages === 0 || code === "Assistant.Limit.DailyReached" || code === "Assistant.Limit.MonthlyReached";
+  const monthly = state.monthlyBudgetProgress?.status === "LimitReached" || code === "Assistant.Limit.MonthlyReached";
+  const limited = state.remainingMessages === 0 || code === "Assistant.Limit.DailyReached" || monthly;
   const notice = configured && (!state.noticeAccepted || code === "Assistant.Notice.AcceptanceRequired");
   const busy = operations.pending || runtime.isPending;
   const actionError = actionErrorMessage(operations.error, t);
@@ -422,8 +423,8 @@ function AssistantSession(props: AssistantHomeProps) {
       {phone ? <><AppBarTools placement="leading"><AppIconButton ref={historyTrigger} label={t("history.title")} onClick={() => setHistoryOpen(true)}><Menu className="size-[22px]" /></AppIconButton></AppBarTools><AppBarTools><AppIconButton label={t("history.new")} onClick={() => select(null)}><SquarePen className="size-[22px]" /></AppIconButton></AppBarTools></> : null}
       {!configured ? <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5"><NotConfigured canConfigure={state.canConfigure} onConfigure={props.onConfigure} />{props.children}</div></div> : <>
         {selectedId ? <AssistantThread turn={runtime.turn} turnPending={runtime.isPending} messages={runtime.messages} links={{ scope, hasPermission: props.hasPermission, organizationIds: props.organizationIds, organizationNames: props.organizationNames, onOpenOrganization: props.onOpenOrganization }} canOpenLink={props.canOpenLink} pending={busy}
-          onDownload={download} retry={runtime.messages.at(-1)?.status === "Failed" && runtime.canSend && canRetryAssistantFailure(runtime.turn?.error) ? { messageId: runtime.messages.at(-1)!.id, retryAfter: runtime.turn?.error?.retryAfter, onRetry: retryFailed } : undefined} /> : <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5"><div className="mb-1 flex items-center justify-center gap-3 max-md:flex-col"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-5" aria-hidden="true" /></span><h2 className="text-center text-[26px] font-semibold">{t("welcome")}</h2></div>{props.welcome}{!phone ? limited ? <LimitReached organizationName={props.organizationName} monthly={code === "Assistant.Limit.MonthlyReached"} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer : null}{queries}{props.children}</div></div>}
-        {selectedId || phone ? <div className="mx-auto flex w-full max-w-[824px] flex-col gap-3 px-5 pb-4 md:px-8">{limited ? <LimitReached organizationName={props.organizationName} monthly={code === "Assistant.Limit.MonthlyReached"} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer}</div> : null}
+          onDownload={download} retry={runtime.messages.at(-1)?.status === "Failed" && runtime.canSend && canRetryAssistantFailure(runtime.turn?.error) ? { messageId: runtime.messages.at(-1)!.id, retryAfter: runtime.turn?.error?.retryAfter, onRetry: retryFailed } : undefined} /> : <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5"><div className="mb-1 flex items-center justify-center gap-3 max-md:flex-col"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-5" aria-hidden="true" /></span><h2 className="text-center text-[26px] font-semibold">{t("welcome")}</h2></div>{props.welcome}{!phone ? limited ? <LimitReached organizationName={props.organizationName} monthly={monthly} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer : null}{queries}{props.children}</div></div>}
+        {selectedId || phone ? <div className="mx-auto flex w-full max-w-[824px] flex-col gap-3 px-5 pb-4 md:px-8">{limited ? <LimitReached organizationName={props.organizationName} monthly={monthly} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer}</div> : null}
       </>}
       {actionError && !dialog && !notice ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{actionError}</p> : null}
       {runtimeError ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{runtimeError}</p> : null}

@@ -16,7 +16,7 @@ import { changeCulture, configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 
 const state: AssistantStateResponse = { configured: true, canConfigure: true, models: [], quickQueries: [{ key: "active_users", labelKey: "unknown" }], dailyLimit: 50,
-  dailyResetAtUtc: "2026-10-10T21:00:00Z", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5 };
+  dailyResetAtUtc: "2026-10-10T21:00:00Z", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5, monthlyBudgetProgress: null };
 const message = (id: string, role: AssistantMessageResponse["role"], text: string, status: AssistantMessageResponse["status"] = "Complete"): AssistantMessageResponse => ({
   id, role, text, status, version: 1, createdAtUtc: "2026-10-10T12:00:00Z", attachments: [], links: [],
 });
@@ -160,6 +160,26 @@ describe("interfaz del asistente", () => {
     await app.user.click(screen.getByRole("button", { name: "Enviar" }));
     await screen.findByText("Gamma S.R.L. llegó al tope del mes del asistente.");
     expect(screen.queryByText("Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos.")).not.toBeInTheDocument();
+  });
+  it.each([false, true])("LimitReached publicado bloquea el envío libre y conserva consultas fijas (teléfono %s)", async (phone) => {
+    // La fracción contradice deliberadamente al estado: sólo decide el estado publicado, sin cálculo en Front.
+    const app = setup({ ...state, monthlyBudgetProgress: { fraction: 0.1, status: "LimitReached" } }, phone);
+    app.rerenderAssistant({ ...props, organizationName: "Gamma S.R.L." });
+    expect(await screen.findByText("Gamma S.R.L. llegó al tope del mes del asistente.")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Enviar" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Usuarios activos" })).toBeEnabled();
+    expect(app.created()).toBe(0); expect(app.requests).toHaveLength(0);
+  });
+  it.each(["WithinLimit", "NearLimit"] as const)("%s no deriva un bloqueo de la fracción ni agrega un aviso", async (status) => {
+    setup({ ...state, monthlyBudgetProgress: { fraction: 1.2, status } });
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled();
+    expect(screen.queryByText(/llegó al tope del mes/)).not.toBeInTheDocument();
+  });
+  it("Sin configurar conserva precedencia sobre el tope mensual publicado", async () => {
+    setup({ ...state, configured: false, monthlyBudgetProgress: { fraction: 1, status: "LimitReached" } });
+    expect(await screen.findByRole("heading", { name: "El asistente todavía no está configurado" })).toBeVisible();
+    expect(screen.queryByText(/llegó al tope del mes/)).not.toBeInTheDocument();
   });
   it.each(["send", "stop"] as const)("el 5xx de %s se muestra una sola vez en el asistente", async (action) => {
     const app = setup();

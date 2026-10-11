@@ -41,9 +41,13 @@ export function galleryMe(scope: Scope, configure = true): MeResponse {
 export const galleryModels: AssistantModelPriceResponse[] = [{
   id: "11111111-1111-4111-8111-111111111111", name: "Modelo de prueba A", provider: "Anthropic", providerModelId: "test-a",
   inputPricePerMillion: { amount: 0.125, currency: "USD" }, outputPricePerMillion: { amount: 1, currency: "USD" }, isActive: true, version: 3,
+  technicalRevision: "fixture-v1", technical: { supportsText: true, supportsTools: true, supportsImages: true, supportsPdf: true, supportsAdaptiveThinking: true,
+    efforts: ["low", "medium", "high"], maxInputTokens: 200000, maxOutputTokens: 4096,
+    cacheReadPricePerMillion: { amount: 0.01, currency: "USD" }, cacheWrite5MinutesPricePerMillion: { amount: 0.15, currency: "USD" }, cacheWrite1HourPricePerMillion: { amount: 0.25, currency: "USD" }, longContext: null },
 }, {
   id: "22222222-2222-4222-8222-222222222222", name: "Modelo de prueba B", provider: "Anthropic", providerModelId: "test-b",
   inputPricePerMillion: { amount: 1, currency: "USD" }, outputPricePerMillion: { amount: 2, currency: "USD" }, isActive: true, version: 4,
+  technical: null, technicalRevision: null,
 }];
 export const galleryModelPage: AssistantModelPricePageResponse = { items: galleryModels, page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false };
 export const galleryOrganizationSettings: OrganizationAssistantSettingsResponse = {
@@ -59,7 +63,7 @@ export function galleryState(scope: Scope): AssistantStateResponse {
   const keys = scope === "business" ? ["active_users", "expired_invitations", "owners", "recent_changes"] : scope === "consumer" ? ["my_organizations", "my_signin", "my_messages"] : ["pending_organizations", "pending_recoveries", "today_security", "assistant_usage"];
   return { configured: true, canConfigure: scope !== "consumer", models: [], quickQueries: keys.map((key) => ({ key, labelKey: `quick.${key}` })),
     dailyLimit: 50, dailyResetAtUtc: "2026-10-11T00:00:00Z", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true,
-    retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5 };
+    retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5, monthlyBudgetProgress: null };
 }
 export const galleryConversation: AssistantConversationResponse = {
   conversation: { id: "gallery-chat", title: "Mi consulta", version: 2, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z" },

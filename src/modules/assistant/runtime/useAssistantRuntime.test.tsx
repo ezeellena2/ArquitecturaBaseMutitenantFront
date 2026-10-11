@@ -13,7 +13,7 @@ const scope: AssistantScope = { access: "business", tenantId: "org", userId: "us
 const state: AssistantStateResponse = {
   configured: true, canConfigure: false, models: [], quickQueries: [], dailyLimit: 100,
   dailyResetAtUtc: "2026-10-10T03:00:00Z", remainingMessages: 80, noticeVersion: "v1", noticeAccepted: true,
-  retentionDays: 30, maxAttachmentBytes: 1024, maxAttachments: 2,
+  retentionDays: 30, maxAttachmentBytes: 1024, maxAttachments: 2, monthlyBudgetProgress: null,
 };
 const message = (id: string, role: AssistantMessageResponse["role"], status: AssistantMessageResponse["status"] = "Complete", text = "Respuesta"): AssistantMessageResponse => ({
   id, role, status, text, version: 2, createdAtUtc: "2026-10-09T12:00:00Z", attachments: [], links: [],
@@ -1007,11 +1007,18 @@ describe("Assistant runtime HTTP + Query + SDK", () => {
     hook.unmount();
   });
 
-  it.each([{ ...state, configured: false }, { ...state, noticeAccepted: false }, { ...state, remainingMessages: 0 }])("bloquea envío por configuración/aviso/límite sin alterar State", async (data) => {
+  it.each([{ ...state, configured: false }, { ...state, noticeAccepted: false }, { ...state, remainingMessages: 0 },
+    { ...state, monthlyBudgetProgress: { fraction: 0.1, status: "LimitReached" as const } }])("bloquea envío por configuración/aviso/límite sin alterar State", async (data) => {
     const hook = setup(data);
     await waitFor(() => expect(hook.result.current.state.data).toEqual(data));
     expect(hook.result.current.canSend).toBe(false);
     expect(hook.result.current.runtime.thread.getState().isRunning).toBe(false);
+    hook.unmount();
+  });
+  it.each(["WithinLimit", "NearLimit"] as const)("State %s conserva admisión local sin calcular la fracción", async (status) => {
+    const hook = setup({ ...state, monthlyBudgetProgress: { fraction: 1.2, status } });
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    expect(hook.result.current.state.data?.monthlyBudgetProgress).toEqual({ fraction: 1.2, status });
     hook.unmount();
   });
 

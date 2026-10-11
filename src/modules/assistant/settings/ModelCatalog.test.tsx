@@ -178,6 +178,15 @@ describe("catálogo y configuración de plataforma", () => {
     expect(within(dialog).getByRole("button", { name: "Agregar modelo" })).toBeEnabled();
     fireEvent.change(within(dialog).getByRole("textbox", { name: "Nombre" }), { target: { value: "Nuevo modelo" } });
     fireEvent.change(within(dialog).getByRole("textbox", { name: "ID" }), { target: { value: "new-model" } });
+    await app.user.click(within(dialog).getByRole("button", { name: "Avanzado: datos técnicos" }));
+    await app.user.click(within(dialog).getByRole("checkbox", { name: "Texto" }));
+    await app.user.click(within(dialog).getByRole("checkbox", { name: "Medio" }));
+    const cache = within(dialog).getByRole("group", { name: "Caché · por millón de tokens" });
+    for (const [name, value] of [["Contexto (tokens)", "200000"], ["Salida máxima (tokens)", "4096"],
+      ["Lectura de caché", "0,01"], ["Escritura de 5 minutos", "0,15"], ["Escritura de 1 hora", "0,25"]]) {
+      const field = within(name.endsWith("(tokens)") ? dialog : cache).getByRole("textbox", { name });
+      fireEvent.change(field, { target: { value } }); fireEvent.blur(field);
+    }
     const input = within(dialog).getByRole("textbox", { name: "Precio de entrada por millón" });
     const output = within(dialog).getByRole("textbox", { name: "Precio de salida por millón" });
     await waitFor(() => expect(input).toBeEnabled());
@@ -191,6 +200,9 @@ describe("catálogo y configuración de plataforma", () => {
     await act(() => mutation.execute(mutation.state.variables));
     expect(wire[1]).toEqual(wire[0]); expect(wire[0].key).toBeTruthy();
     expect(wire[0].body).toMatchObject({ inputPricePerMillion: { amount: 0.125, currency: "USD" }, outputPricePerMillion: { amount: 0.123456, currency: "USD" }, provider: "Anthropic", isActive: true });
+    expect(wire[0].body.technical).toMatchObject({ supportsText: true, efforts: ["medium"], maxInputTokens: 200000, maxOutputTokens: 4096, longContext: null,
+      cacheReadPricePerMillion: { amount: 0.01, currency: "USD" }, cacheWrite5MinutesPricePerMillion: { amount: 0.15, currency: "USD" }, cacheWrite1HourPricePerMillion: { amount: 0.25, currency: "USD" } });
+    expect(wire[0].body).not.toHaveProperty("technicalRevision");
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); expect(add).toHaveFocus();
   });
   it("editar usa versión de apertura y cerrar abandona Retry; catálogo conserva presentación MinorUnits", async () => {

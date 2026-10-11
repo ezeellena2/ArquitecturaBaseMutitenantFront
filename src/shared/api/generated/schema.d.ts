@@ -164,7 +164,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. */
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
         get: {
             parameters: {
                 query?: never;
@@ -1780,7 +1780,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. */
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
         get: {
             parameters: {
                 query?: never;
@@ -3671,7 +3671,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. */
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
         get: {
             parameters: {
                 query?: never;
@@ -5287,7 +5287,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Desactivar modelos referidos; sin endpoint de borrado. */
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Datos técnicos completos obligatorios al crear/editar; lectura technical y technicalRevision nullable sólo para filas heredadas incompletas. Revisión calculada por servidor con las tarifas y capacidades efectivas. La selección usa la base actual sin archivo ni reinicio: activo, texto, herramientas, pensamiento adaptativo, esfuerzo admitido y capacidad mínima 51200/2048. Límites menores coherentes se guardan pero no se ofrecen para chat. Tarifas técnicas USD positivas con hasta seis decimales; contexto largo null o umbral menor que la entrada y cinco tarifas completas. Desactivar modelos referidos; sin endpoint de borrado. */
         get: {
             parameters: {
                 query?: {
@@ -5368,7 +5368,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Desactivar modelos referidos; sin endpoint de borrado. */
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Datos técnicos completos obligatorios al crear/editar; lectura technical y technicalRevision nullable sólo para filas heredadas incompletas. Revisión calculada por servidor con las tarifas y capacidades efectivas. La selección usa la base actual sin archivo ni reinicio: activo, texto, herramientas, pensamiento adaptativo, esfuerzo admitido y capacidad mínima 51200/2048. Límites menores coherentes se guardan pero no se ofrecen para chat. Tarifas técnicas USD positivas con hasta seis decimales; contexto largo null o umbral menor que la entrada y cinco tarifas completas. Desactivar modelos referidos; sin endpoint de borrado. */
         post: {
             parameters: {
                 query?: never;
@@ -5396,7 +5396,7 @@ export interface paths {
                         "application/json": components["schemas"]["AssistantCreatedModelResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -5484,7 +5484,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Desactivar modelos referidos; sin endpoint de borrado. */
+        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Datos técnicos completos obligatorios al crear/editar; lectura technical y technicalRevision nullable sólo para filas heredadas incompletas. Revisión calculada por servidor con las tarifas y capacidades efectivas. La selección usa la base actual sin archivo ni reinicio: activo, texto, herramientas, pensamiento adaptativo, esfuerzo admitido y capacidad mínima 51200/2048. Límites menores coherentes se guardan pero no se ofrecen para chat. Tarifas técnicas USD positivas con hasta seis decimales; contexto largo null o umbral menor que la entrada y cinco tarifas completas. Desactivar modelos referidos; sin endpoint de borrado. */
         put: {
             parameters: {
                 query?: never;
@@ -5511,7 +5511,7 @@ export interface paths {
                         "application/json": components["schemas"]["VersionResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
+                /** @description Bad Request; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed; Validation.Failed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -17179,6 +17179,24 @@ export interface components {
         AssistantMessageStatus: "Complete" | "Stopped" | "Failed" | "Generating";
         /** @enum {string} */
         AssistantMode: "PlatformKey" | "OwnKey";
+        AssistantModelLongContextHttpRequest: {
+            /** Format: int32 */
+            inputTokensThreshold: number;
+            inputPricePerMillion: components["schemas"]["AssistantMoney"];
+            outputPricePerMillion: components["schemas"]["AssistantMoney"];
+            cacheWrite5MinutesPricePerMillion: components["schemas"]["AssistantMoney"];
+            cacheWrite1HourPricePerMillion: components["schemas"]["AssistantMoney"];
+            cacheReadPricePerMillion: components["schemas"]["AssistantMoney"];
+        };
+        AssistantModelLongContextResponse: {
+            /** Format: int32 */
+            inputTokensThreshold: number;
+            inputPricePerMillion: components["schemas"]["AssistantMoney"];
+            outputPricePerMillion: components["schemas"]["AssistantMoney"];
+            cacheWrite5MinutesPricePerMillion: components["schemas"]["AssistantMoney"];
+            cacheWrite1HourPricePerMillion: components["schemas"]["AssistantMoney"];
+            cacheReadPricePerMillion: components["schemas"]["AssistantMoney"];
+        };
         AssistantModelOptionResponse: {
             /** Format: uuid */
             id: string;
@@ -17195,6 +17213,40 @@ export interface components {
             isActive: boolean;
             /** Format: uint32 */
             version: number;
+            technical: null | components["schemas"]["AssistantModelTechnicalResponse"];
+            technicalRevision: null | string;
+        };
+        AssistantModelTechnicalHttpRequest: {
+            supportsText: boolean;
+            supportsTools: boolean;
+            supportsImages: boolean;
+            supportsPdf: boolean;
+            supportsAdaptiveThinking: boolean;
+            efforts: components["schemas"]["AssistantEffort"][];
+            /** Format: int32 */
+            maxInputTokens: number;
+            /** Format: int32 */
+            maxOutputTokens: number;
+            cacheWrite5MinutesPricePerMillion: components["schemas"]["AssistantMoney"];
+            cacheWrite1HourPricePerMillion: components["schemas"]["AssistantMoney"];
+            cacheReadPricePerMillion: components["schemas"]["AssistantMoney"];
+            longContext?: null | components["schemas"]["AssistantModelLongContextHttpRequest"];
+        };
+        AssistantModelTechnicalResponse: {
+            supportsText: boolean;
+            supportsTools: boolean;
+            supportsImages: boolean;
+            supportsPdf: boolean;
+            supportsAdaptiveThinking: boolean;
+            efforts: components["schemas"]["AssistantEffort"][];
+            /** Format: int32 */
+            maxInputTokens: number;
+            /** Format: int32 */
+            maxOutputTokens: number;
+            cacheWrite5MinutesPricePerMillion: components["schemas"]["AssistantMoney"];
+            cacheWrite1HourPricePerMillion: components["schemas"]["AssistantMoney"];
+            cacheReadPricePerMillion: components["schemas"]["AssistantMoney"];
+            longContext: null | components["schemas"]["AssistantModelLongContextResponse"];
         };
         AssistantMoney: {
             /** Format: decimal */
@@ -17340,6 +17392,8 @@ export interface components {
             maxAttachmentBytes: number;
             /** Format: int32 */
             maxAttachments: number;
+            /** @description Siempre presente. Consumer/Platform null; Business con presupuesto positivo aplicable usa usedCost registrado confirmado o conservador dividido por monthlyBudget snapshot de la misma financiación efectiva y mes civil. Sin reservas, suma de financiaciones, repricing ni recorte; NearLimit desde 0,8 y LimitReached desde 1. Presupuesto cero/null/no aplicable: null, sin división por cero. Configured=false conserva precedencia; consultas fijas siguen disponibles y State no garantiza admisión. */
+            monthlyBudgetProgress: null | components["schemas"]["AssistantBudgetProgressResponse"];
         };
         AssistantStreamHttpResponse: components["schemas"]["AssistantStreamHttpResponseAssistantStartStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantDeltaStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantToolStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantTitleStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantDoneStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantErrorStreamHttpResponse"];
         AssistantStreamHttpResponseAssistantDeltaStreamHttpResponse: {
@@ -17460,13 +17514,13 @@ export interface components {
             displayName: string;
             /** Format: int32 */
             queries: number;
-            /** Format: int32 */
+            /** Format: int64 */
             inputTokens: number;
-            /** Format: int32 */
+            /** Format: int64 */
             outputTokens: number;
-            /** Format: int32 */
+            /** Format: int64 */
             cacheWriteTokens: number;
-            /** Format: int32 */
+            /** Format: int64 */
             cacheReadTokens: number;
             cost: components["schemas"]["AssistantMoney"];
             /** Format: int32 */
@@ -17670,6 +17724,7 @@ export interface components {
             inputPricePerMillion?: null | components["schemas"]["AssistantMoney"];
             outputPricePerMillion?: null | components["schemas"]["AssistantMoney"];
             isActive?: null | boolean;
+            technical: components["schemas"]["AssistantModelTechnicalHttpRequest"];
         };
         /** @description Solo el número de identificación fiscal: el tipo sale del país de la organización. */
         CreateCompanyHttpRequest: {
@@ -19021,6 +19076,7 @@ export interface components {
             isActive?: null | boolean;
             /** Format: uint32 */
             version?: null | number;
+            technical: components["schemas"]["AssistantModelTechnicalHttpRequest"];
         };
         UpdateAssistantPolicyHttpRequest: {
             allowOwnKey?: null | boolean;

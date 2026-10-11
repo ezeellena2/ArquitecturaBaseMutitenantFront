@@ -322,7 +322,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
     "Assistant.Settings.NotConfigured", "Assistant.Notice.AcceptanceRequired", "Legal.AcceptanceRequired"].includes(sendErrorCode)
     ? sendErrorCode : null;
   const canSend = active && !!conversationId && !!detail.data && state.data?.configured === true && state.data.noticeAccepted
-    && state.data.remainingMessages !== 0 && !pendingMutations && !isAssistantTurnPending(turn)
+    && state.data.remainingMessages !== 0 && state.data.monthlyBudgetProgress?.status !== "LimitReached" && !pendingMutations && !isAssistantTurnPending(turn)
     && !durablePending && !blockedCode;
 
   const send = (request: SendAssistantMessageRequest, onAdmitted?: () => void) => {
