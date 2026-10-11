@@ -68,6 +68,7 @@ ArquitecturaBaseMutitenantFront/
 │   ├── assistant-open-stream.test.mjs               tests de assistant-open-stream
 │   ├── assistant-open-stream.mjs                    servidor local para capturar respuestas SSE abiertas
 │   ├── capturar-etapa-8b.mjs                        prepara y captura la galería visual E8b
+│   ├── test-e2e-real-legal.mjs                      Correlaciona términos publicados y pendientes del E2E real.
 │   ├── test-e2e-real-legal.test.mjs                 tests de test-e2e-real-legal
 │   └── recorrido-lienzo/                            recorrido del lienzo tablero por tablero (recorrido.mjs) y vista en vivo de una pantalla junto a su tablero (vivo.mjs)
 ├── src/                                             ver abajo
