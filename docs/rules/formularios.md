@@ -35,12 +35,13 @@
 - Paneles/filas expandidos salvo permisos; columnas distintas en una caja; controles a medio ancho sin contenido.
 - Casillas sueltas, switch para guardar, ayudas no pedidas o error de formulario pasajero.
 - Input number para montos, input date crudo, opciones/decimales locales o base tomada de un GET ajeno.
+- Límites numéricos a mano en `maxLength={número}` o `.max(número)`: salen de `validationConstraints`; los rangos int32 también se generan del formato del contrato.
 
 ## Copiá de
 - `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4) y `src/areas/personal/account/components/AccountDeletionDialog.tsx` (E4).
 
 ## Lo verifica
-- `submit-buttons.test.ts` (E7), `harness.test.ts` (E0): botones y formato/referencias.
+- `submit-buttons.test.ts` (E7), `harness.test.ts` (E0): botones y formato/referencias; `validation-limits.test.ts` (C10): límites sin literales en áreas y módulos.
 
 ## Detalle
 [Lienzo](../design/lienzo/README.md), [tema](../architecture/tema.md) y [responsive](responsive.md).

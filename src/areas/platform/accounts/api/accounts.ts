@@ -1,6 +1,7 @@
 import type { PagedResultOfPlatformAccountResponse } from "@/shared/api/types";
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
+import { effectiveCulture } from "@/shared/i18n";
 import type { PagedRequest, PlatformAccountDetailResponse, PlatformAccountFilterCounts, PlatformAccountKind, PlatformAccountReasonRequest, PlatformAccountState, PlatformAuditCursorResponse } from "@/shared/api/types";
 
 export interface AccountsQuery extends PagedRequest { state?: PlatformAccountState; kind?: PlatformAccountKind }
@@ -9,7 +10,7 @@ export type AccountAction = "suspend" | "reactivate" | "revoke-sessions" | "dele
 export const accountsQueryRoot = ["platform-accounts"] as const;
 export const accountsQueryKey = (query: AccountsQuery) => [...accountsQueryRoot, "paged", query] as const;
 export const accountCountsQueryKey = (query: AccountCountsQuery) => [...accountsQueryRoot, "counts", query] as const;
-export const accountQueryKey = (id: string) => [...accountsQueryRoot, "detail", id] as const;
+export const accountQueryKey = (id: string) => [...accountsQueryRoot, "detail", id, effectiveCulture()] as const;
 export const accountHistoryQueryKey = (id: string) => [...accountsQueryRoot, "history", id] as const;
 export function fetchAccountHistory(id: string, after: string | null): Promise<PlatformAuditCursorResponse> {
   const query = new URLSearchParams({ accountId: id, period: "all", limit: "50" });

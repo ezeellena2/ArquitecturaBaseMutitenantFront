@@ -67,7 +67,11 @@ describe("Ficha de Cuenta de Plataforma", () => {
     server.use(http.post("/api/platform/accounts/:id/suspend", () => new HttpResponse(null, { status: 204 })));
     const user = userEvent.setup(); const { container, queryClient } = open();
     await screen.findByRole("heading", { name: "•••• 4521", level: 1 });
-    if (culture === "en-US") await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture }); });
+    if (culture === "en-US") {
+      await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture }); });
+      await waitFor(() => expect(reads).toBeGreaterThan(1));
+      await waitFor(() => expect(queryClient.isFetching({ queryKey: accountQueryKey(data.id) })).toBe(0));
+    }
     expect(await screen.findByRole("heading", { name: empty, level: 1 })).toBeVisible();
     if (!phone) expect(screen.getByRole("navigation", { name: breadcrumbs })).toHaveTextContent(empty);
     const trigger = screen.getByRole("button", { name: actions });
@@ -286,11 +290,15 @@ describe("Ficha de Cuenta de Plataforma", () => {
     expect(screen.queryByRole("button", { name: "Cambiar permisos" })).not.toBeInTheDocument();
   });
   it("en-US localiza métodos, fecha, Dueño y grupos de la ficha", async () => {
-    data.organizations = data.organizations.map((organization) => ({ ...organization, roleName: organization.roleName === "Dueño" ? "Owner" : organization.roleName }));
+    server.use(http.get("/api/platform/accounts/:id", ({ request }) => {
+      reads++;
+      return HttpResponse.json({ ...data, organizations: data.organizations.map((organization) => ({ ...organization,
+        roleName: request.headers.get("Accept-Language")?.startsWith("en") && organization.roleName === "Dueño" ? "Owner" : organization.roleName })) });
+    }));
     const { queryClient } = open(); await screen.findByRole("heading", { name: "Lucía Fernández", level: 1 });
     await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture: "en-US" }); });
     expect(await screen.findByRole("tab", { name: "Sign-in methods 3" })).toBeVisible(); expect(screen.getAllByText(/Email/).length).toBeGreaterThan(0);
-    const user = userEvent.setup(); await user.click(screen.getByRole("tab", { name: "Organizations 2" })); expect(screen.getByText("Owner")).toBeVisible(); expect(screen.getAllByText("01/12/2026").length).toBeGreaterThan(0);
+    const user = userEvent.setup(); await user.click(screen.getByRole("tab", { name: "Organizations 2" })); expect(await screen.findByText("Owner")).toBeVisible(); expect(screen.getAllByText("01/12/2026").length).toBeGreaterThan(0);
   });
   it("sin accounts.read la ruta no consulta cuenta", async () => {
     let requested = 0; server.use(http.get("/api/platform/accounts/:id", () => { requested++; return HttpResponse.json(data); }));
