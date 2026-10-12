@@ -1,13 +1,14 @@
 """Tablero «Criterio · Decisiones por pantalla»: lo que el usuario eligió en cada pantalla y las reglas que dejó.
 Cada decisión nueva suma una fila en DECISIONES; si deja una regla, va también a REGLAS y al tablero de esa pieza.
-Va en dos columnas (2960 de ancho): el lienzo recorta un tablero a 8000 de alto y en una columna ya no entraba."""
+Va en tres columnas (4440 de ancho): el lienzo recorta un tablero a 8000 de alto, y en dos columnas ya no entraba (v120)."""
 import json
 import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 8200
-ANCHO = 2960
+ALTO = 6000
+ANCHO = 4440
+COLUMNAS = 3
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -34,7 +35,7 @@ CSS = """  <style data-criterio="decisiones">
 .est.alerta::before { background: oklch(0.72 0.15 70); }
 .est.off { color: var(--t2); }
 .est.off::before { background: oklch(0.75 0.01 78); }
-.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; align-items: start; }
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; align-items: start; }
 .cols > div { display: flex; flex-direction: column; gap: 36px; }
   </style>"""
 
@@ -360,14 +361,14 @@ def peso_filas(filas, i_texto):
 
 
 total = peso_filas(REGLAS, 0) + sum(peso_filas(f, 2) for f in DECISIONES.values())
-col1, col2, acumulado = [], [], peso_filas(REGLAS, 0)
+# Las secciones van en orden, repartidas por peso entre las columnas; la primera empieza con las reglas.
+columnas, acumulado, k = [[] for _ in range(COLUMNAS)], peso_filas(REGLAS, 0), 0
 for pagina, filas in DECISIONES.items():
     p = peso_filas(filas, 2)
-    if not col2 and acumulado + p / 2 <= total / 2:
-        col1.append(seccion(pagina, filas))
-        acumulado += p
-    else:
-        col2.append(seccion(pagina, filas))
+    if k < COLUMNAS - 1 and acumulado + p / 2 > total * (k + 1) / COLUMNAS:
+        k += 1
+    columnas[k].append(seccion(pagina, filas))
+    acumulado += p
 
 BODY = f"""<div class="crit">
   <div>
@@ -384,12 +385,9 @@ BODY = f"""<div class="crit">
     </div>
   </section>
 
-{chr(10).join(col1)}
+{chr(10).join(columnas[0])}
   </div>
-  <div>
-{chr(10).join(col2)}
-  </div>
-  </div>
+{"".join("  <div>" + chr(10) + chr(10).join(c) + chr(10) + "  </div>" + chr(10) for c in columnas[1:])}  </div>
 </div>"""
 
 SCRIPT = f"""<script type="text/x-dc" data-dc-script data-props='{{"$preview":{{"width":{ANCHO},"height":{ALTO}}}}}'>

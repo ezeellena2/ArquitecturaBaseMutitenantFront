@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 2960px; min-height: 8200px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 4440px; min-height: 6000px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -590,7 +590,7 @@
 .est.alerta::before { background: oklch(0.72 0.15 70); }
 .est.off { color: var(--t2); }
 .est.off::before { background: oklch(0.75 0.01 78); }
-.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; align-items: start; }
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; align-items: start; }
 .cols > div { display: flex; flex-direction: column; gap: 36px; }
   </style>
 </helmet>
@@ -678,6 +678,8 @@
       <div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Números</strong><span>La plataforma tiene el suyo (códigos, avisos, bot de ingreso y soporte). Cada organización conecta uno o más, y cada uno atiende a toda la organización o a una empresa. La persona B2C no tiene: escribe y recibe.</span><span class="est ok">Decidido</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Quién escribe</strong><span><span class="op">A</span>Es empleado si el número está verificado en la cuenta de un miembro activo; lo que puede hacer sale de sus roles. Si no, es cliente.</span><span class="est ok">Decidido</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Conexión</strong><span><span class="op">A</span>Alta embebida de Meta (la plataforma como Tech Provider), con coexistencia: se puede conectar el número que ya usa la app WhatsApp Business.</span><span class="est ok">Decidido</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Pago</strong><span><span class="op">A</span>Cada organización le paga a Meta con su tarjeta. Desde el 01/10/2026: 1.000 respuestas gratis por número y por mes; sin medio de pago, no responde.</span><span class="est ok">Decidido</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Bot</strong><span><span class="op">A</span>Respuestas automáticas y un menú (una lista de WhatsApp, hasta 10 opciones) que contesta o pasa a un equipo. Sin sub-menús por ahora.</span><span class="est ok">Decidido</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Equipos</strong><span><span class="op">A</span>Cada equipo atiende una bandeja (Clientes o Internos). Alguien toma el chat y lo puede pasar.</span><span class="est ok">Decidido</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Cliente con cuenta</strong><span><span class="op">C</span>La persona decide vincular la conversación a su cuenta: la organización ve su nombre verificado y ella ve sus charlas en «Mensajes».</span><span class="est ok">Decidido</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Plantillas y difusiones</strong><span><span class="op">A</span>Las plantillas se crean desde la plataforma y Meta las aprueba. Las difusiones van solo a quienes aceptaron, muestran el costo antes de mandar y respetan «Baja».</span><span class="est ok">Decidido</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Módulo y avisos</strong><span><span class="op">A · B</span>La plataforma lo prende por organización. Si nadie toma un chat a tiempo, sale un correo al equipo.</span><span class="est ok">Decidido</span></div>
     </div>
   </section>
+  </div>
+  <div>
   <section>
     <h2>WhatsApp · pantallas</h2>
     <div class="dec">
@@ -699,8 +701,6 @@
       <div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Usuarios · Roles · Empresas</strong><span>Listas de borde a borde con ⋮ en cada fila y «+» para invitar, crear rol o crear empresa. En Usuarios, «Cargar teléfonos» va en el ⋮ de arriba.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Ficha de empresa</strong><span>Pestañas «Miembros | Roles»; cada miembro con su rol y estado, ⋮ y «+» para agregar.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Editar usuario</strong><span>Grupos «Acceso a la organización» (Estado, Roles) y «Empresas» con «Sumar empresa»; abajo, fijos, «Descartar cambios» y «Guardar cambios».</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Editar un rol</strong><span>Nombre, Vale en y Descripción; los permisos se abren por área, con casillas; abajo, fijos, «Descartar cambios» y «Guardar cambios» (al crear un rol, «Cancelar» y «Crear rol»).</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Configuración · Página pública</strong><span>Campos a lo ancho y grupos (Dominio de correo; Publicación, Página y Contacto); abajo, fijos, «Descartar cambios» y «Guardar cambios».</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Diálogos</strong><span>Invitar usuario, Sumar empresa, Agregar y Verificar dominio como hojas; Quitar dominio, confirmación sin ✕ y con el botón rojo.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Auditoría</strong><span>Qué pasó con la fecha, y dónde y quién debajo; «Cargar más» al final.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Inicio</strong><span><span class="op">C</span>Como una billetera: cabecera de color con «Hola, Lucía» y la organización; atajos redondos con un globito rojo con lo pendiente de cada área; «Para resolver» en filas con ícono redondo del color de la urgencia y la acción en un botón cápsula.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Editar usuario · Estado y Roles</strong><span><span class="op">A</span>«Estado» y «Roles de la organización» abren hojas de opciones: el estado con tilde, que se cierra al elegir; los roles con casillas y «Listo». Hasta guardar, «Cambios sin guardar».</span><span class="est ok">Dibujada</span></div>
     </div>
   </section>
-  </div>
-  <div>
   <section>
     <h2>Ingreso y avisos · teléfonos (como app)</h2>
     <div class="dec">
@@ -736,6 +736,8 @@
       <div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Portada</strong><span><span class="op">B</span>Sin la etiqueta del héroe; después de «Dos lados separados», la sección «Empresas en ArquitecturaBase» con buscador, tres empresas y «Ver todas las empresas», que lleva al directorio. «Empresas», arriba, baja a esa sección. Enter en el buscador abre /empresas con lo escrito. Sin empresas publicadas, dice «Todavía no hay empresas publicadas», como el directorio vacío, y sale «Ver todas las empresas».</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Directorio</strong><span><span class="op">B</span>El encabezado de la portada con «Empresas» marcado y las empresas en tarjetas (logo, nombre, descripción y dirección), con la paginación debajo. Con sesión, igual.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Página pública</strong><span><span class="op">B</span>Una tarjeta centrada: logo, nombre, descripción, los cuatro datos de contacto y «Ingresá para continuar»; ingresar o registrarse desde ahí vuelve a la misma página. Con sesión, que la página recupera sola, sin el botón y con tu menú de siempre arriba, con tus organizaciones. «No disponible», en la misma tarjeta, sin decir por qué.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Portada · teléfono</strong><span><span class="op">A</span>Web en una columna: la marca, «Ingresar» y ☰ (Personas, Cómo empezar, Empresas e «Ingresá como empresa»); la sección de empresas en tarjetas, una debajo de otra.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Directorio · teléfono</strong><span>El ☰ de la portada con «Empresas» marcado; buscador a lo ancho y tarjetas en una columna. Dirección: /empresas.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Página pública · teléfono</strong><span>La misma tarjeta de la compu, con sus tres estados; sin ☰, porque es la página de la organización.</span><span class="est ok">Dibujada</span></div>
     </div>
   </section>
+  </div>
+  <div>
   <section>
     <h2>Alineación con la app · 04/10</h2>
     <div class="dec">
@@ -818,7 +820,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2960,"height":8200}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":4440,"height":6000}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };
