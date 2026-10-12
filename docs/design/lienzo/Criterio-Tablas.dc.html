@@ -634,6 +634,8 @@
 .cb-pri { background: linear-gradient(180deg, var(--marca) 0%, var(--marca-h) 100%) !important; box-shadow: 0 1px 2px var(--marca-sombra), inset 0 1px 0 rgb(255 255 255 / 0.15); }
 .cb-pri:hover, .cb-pri.h { filter: brightness(1.05); }
 </style>
+<style data-vuelta="1004-v120">
+</style>
 </helmet>
 
 <div class="crit">
@@ -667,7 +669,7 @@
         <li><strong>Las acciones van en ⋮:</strong> las comunes arriba; las de peligro abajo, en rojo y separadas.</li>
         <li><strong>Más de 10 filas, paginado:</strong> al pie, adentro de la misma caja. De entrada, 10 por página. Lo que solo crece (auditoría, eventos) usa «Cargar más», sin total.</li>
         <li><strong>A ancho completo.</strong> Si no entra, se saca una columna; no se achica la letra.</li>
-        <li><strong>«Para resolver»</strong> (en los inicios) muestra solo estados que ya existen, que quien mira puede resolver y que tienen una acción. Se calcula, no se guarda, y se va solo cuando se resuelve (ADR 0040).</li>
+        <li><strong>«Para resolver»</strong> (en los inicios) muestra solo estados que ya existen, que quien mira puede resolver y que tienen una acción. Se calcula, no se guarda, y se va solo cuando se resuelve (ADR 0040). Cada tipo de pendiente va en su grupo, con su área y su total, y muestra hasta 10 filas; si hay más, «Ver todos» lleva al listado ya filtrado.</li>
       </ul>
     </div>
   </section>

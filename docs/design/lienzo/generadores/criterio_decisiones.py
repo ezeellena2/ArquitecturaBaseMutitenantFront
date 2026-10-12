@@ -6,7 +6,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 8000
+ALTO = 8200
 ANCHO = 2960
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
@@ -321,6 +321,9 @@ DECISIONES = {
     ],
     "El usuario · 11/10": [
         ("Uso del asistente de la organización", "", "El resumen del mes deja solo el gasto contra el tope, las consultas y las personas: la clave y los topes pueden cambiar a mitad de mes, así que se ven en Configuración.", "Dibujada"),
+    ],
+    "El usuario · 12/10": [
+        ("Para resolver", "", "Cada tipo de pendiente va en su grupo, con su área y su total, y muestra hasta 10 filas; si hay más, «Ver todos» lleva al listado ya filtrado (Usuarios con «Vencidas» o «Baja pedida», Organizaciones con «Pendiente de aprobación», Recuperaciones con «Pendientes»). Con 10 o menos no hay «Ver todos». En los inicios de la organización, de Plataforma y del miembro, en compu y teléfono.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

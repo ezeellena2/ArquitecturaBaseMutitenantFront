@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 2960px; min-height: 8000px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 2960px; min-height: 8200px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -800,6 +800,13 @@
     </div>
   </section>
   <section>
+    <h2>El usuario · 12/10</h2>
+    <div class="dec">
+      <div class="c" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><span>Pantalla</span><span>Qué se eligió</span><span>En el lienzo</span></div>
+      <div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Para resolver</strong><span>Cada tipo de pendiente va en su grupo, con su área y su total, y muestra hasta 10 filas; si hay más, «Ver todos» lleva al listado ya filtrado (Usuarios con «Vencidas» o «Baja pedida», Organizaciones con «Pendiente de aprobación», Recuperaciones con «Pendientes»). Con 10 o menos no hay «Ver todos». En los inicios de la organización, de Plataforma y del miembro, en compu y teléfono.</span><span class="est ok">Dibujada</span></div>
+    </div>
+  </section>
+  <section>
     <h2>Lo que sigue</h2>
     <div class="dec">
       <div class="c" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><span>Pantalla</span><span>Qué se eligió</span><span>En el lienzo</span></div>
@@ -811,7 +818,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2960,"height":8000}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2960,"height":8200}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };
