@@ -5,6 +5,12 @@ export const validationConstraints = {
       "maxLength": 4096
     }
   },
+  "AccountLoginMethodsResponse": {
+    "accountDeletionGraceDays": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "AddLoginMethodHttpRequest": {
     "email": {
       "maxLength": 254
@@ -28,10 +34,42 @@ export const validationConstraints = {
       "maximum": 4294967295
     }
   },
+  "AssistantDailyUsageResponse": {
+    "queries": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "limit": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "AssistantDeltaEventResponse": {
+    "sequence": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "AssistantErrorEventResponse": {
+    "retryAfter": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "AssistantFeedbackHttpRequest": {
     "version": {
       "minimum": 0,
       "maximum": 4294967295
+    }
+  },
+  "AssistantLinkQueryResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
     }
   },
   "AssistantMessageResponse": {
@@ -42,12 +80,14 @@ export const validationConstraints = {
   },
   "AssistantModelLongContextHttpRequest": {
     "inputTokensThreshold": {
-      "minimum": 1
+      "minimum": 1,
+      "maximum": 2147483647
     }
   },
   "AssistantModelLongContextResponse": {
     "inputTokensThreshold": {
-      "minimum": 1
+      "minimum": 1,
+      "maximum": 2147483647
     }
   },
   "AssistantModelPriceResponse": {
@@ -58,18 +98,22 @@ export const validationConstraints = {
   },
   "AssistantModelTechnicalHttpRequest": {
     "maxInputTokens": {
-      "minimum": 1
+      "minimum": 1,
+      "maximum": 2147483647
     },
     "maxOutputTokens": {
-      "minimum": 1
+      "minimum": 1,
+      "maximum": 2147483647
     }
   },
   "AssistantModelTechnicalResponse": {
     "maxInputTokens": {
-      "minimum": 1
+      "minimum": 1,
+      "maximum": 2147483647
     },
     "maxOutputTokens": {
-      "minimum": 1
+      "minimum": 1,
+      "maximum": 2147483647
     }
   },
   "AssistantMoney": {
@@ -84,16 +128,108 @@ export const validationConstraints = {
       "maximum": 4294967295
     }
   },
+  "AssistantQuickDataResponseAssistantInvitationsQuickDataResponse": {
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "AssistantQuickDataResponseAssistantOrganizationsQuickDataResponse": {
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "AssistantQuickDataResponseAssistantPeopleQuickDataResponse": {
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "AssistantQuickDataResponseAssistantRecoveriesQuickDataResponse": {
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "AssistantQuickHttpRequest": {
     "version": {
       "minimum": 0,
       "maximum": 4294967295
     }
   },
+  "AssistantStateResponse": {
+    "dailyLimit": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "remainingMessages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "retentionDays": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "maxAttachments": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "AssistantTitleEventResponse": {
     "version": {
       "minimum": 0,
       "maximum": 4294967295
+    }
+  },
+  "AssistantTurnUsageResponse": {
+    "inputTokens": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "outputTokens": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "cacheWriteTokens": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "cacheReadTokens": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "remainingMessages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "AssistantUsagePageResponse": {
+    "totalQueries": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "peopleCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "organizationCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "AssistantUsageRowResponse": {
+    "queries": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "dailyLimit": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "peopleCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
     }
   },
   "BusinessSignupHttpRequest": {
@@ -120,6 +256,54 @@ export const validationConstraints = {
       "maxLength": 500
     }
   },
+  "CompanyFilterCountsResponse": {
+    "all": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "active": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "inactive": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "CompanyMemberFilterCountsResponse": {
+    "all": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "active": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pendingDeletion": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "inactive": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "invited": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "CompanyResponse": {
+    "memberCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "CountryReferenceHttpResponse": {
+    "sortOrder": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "CreateCompanyHttpRequest": {
     "name": {
       "maxLength": 120
@@ -144,6 +328,39 @@ export const validationConstraints = {
       "maxLength": 500
     }
   },
+  "CultureReferenceHttpResponse": {
+    "sortOrder": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "CurrencyReferenceHttpResponse": {
+    "minorUnits": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "sortOrder": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "HomeCompanyCard": {
+    "memberCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "HomeCount": {
+    "total": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "HomeResponse": {
+    "pending": {
+      "maxItems": 0
+    }
+  },
   "InviteOrganizationUserHttpRequest": {
     "email": {
       "maxLength": 254
@@ -154,20 +371,376 @@ export const validationConstraints = {
       "maxLength": 254
     }
   },
+  "LegalAcceptanceItem": {
+    "version": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "LegalDocumentContentHttpRequest": {
     "text": {
       "maxLength": 100000
     }
   },
+  "LegalDocumentRow": {
+    "version": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "LoginMethodCodeResponse": {
+    "resendAfterSeconds": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "OrganizationAssistantSettingsResponse": {
+    "dailyMessageLimit": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "retentionDays": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
     "version": {
       "minimum": 0,
       "maximum": 4294967295
     }
   },
+  "OrganizationDomainResponse": {
+    "managedEmailCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "OrganizationUserFilterCountsResponse": {
+    "all": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "active": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pendingDeletion": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "invited": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "expired": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "inactive": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "companyAll": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "withoutCompany": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedRequest": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfAssistantModelPriceResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfAssistantUsageRowResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfCompanyCandidateResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfCompanyMemberHttpResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfCompanyResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfConsumerInteractionResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfDirectoryEntryRow": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfOrganizationAuditActorResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfOrganizationDomainResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfOrganizationUserHttpResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfPlatformAccountResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfPlatformAuditOrganizationResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfPlatformRecoveryResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfPlatformTenantResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfRoleResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "PendingGroup": {
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
     "items": {
       "maxItems": 10
+    }
+  },
+  "PendingLegalDocumentResponse": {
+    "version": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
     }
   },
   "PlatformAccountActionHttpRequest": {
@@ -175,15 +748,115 @@ export const validationConstraints = {
       "maxLength": 500
     }
   },
+  "PlatformAccountFilterCounts": {
+    "total": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformAccountKindCount": {
+    "count": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "PlatformAccountReasonHttpRequest": {
     "reason": {
       "maxLength": 500
     }
   },
+  "PlatformAccountResponse": {
+    "organizationCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformAccountStateCount": {
+    "count": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "PlatformAssistantSettingsResponse": {
+    "dailyMessageLimit": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "retentionDays": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
     "version": {
       "minimum": 0,
       "maximum": 4294967295
+    }
+  },
+  "PlatformLegalDocumentGroupResponse": {
+    "currentVersion": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformLegalDocumentResponse": {
+    "version": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformLegalVersionResponse": {
+    "version": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformRecoveryFilterCounts": {
+    "total": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformRecoveryStatusCount": {
+    "count": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformSettingsResponse": {
+    "maxOwnedOrganizations": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformTenantDetailResponse": {
+    "companyCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "memberCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformTenantFilterCounts": {
+    "total": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformTenantResponse": {
+    "companyCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "memberCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformTenantSourceCount": {
+    "count": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
     }
   },
   "PlatformTenantStateHttpRequest": {
@@ -191,9 +864,35 @@ export const validationConstraints = {
       "maxLength": 500
     }
   },
+  "PlatformTenantStatusCount": {
+    "count": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "PreviewAccountRecoveryHttpRequest": {
     "previousEmail": {
       "maxLength": 254
+    }
+  },
+  "ProblemDetails": {
+    "status": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "retryAfter": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "attemptsLeft": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PublishedLegalDocumentResponse": {
+    "version": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
     }
   },
   "RequestAccountDeletionHttpRequest": {
@@ -206,9 +905,41 @@ export const validationConstraints = {
       "maxLength": 254
     }
   },
+  "RequestLoginCodeResponse": {
+    "resendAfterSeconds": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "RequestRecoveryCodeHttpRequest": {
     "email": {
       "maxLength": 254
+    }
+  },
+  "RoleFilterCountsResponse": {
+    "anyCompany": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "RoleResponse": {
+    "userCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "RoleScopeCounts": {
+    "all": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "organization": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "company": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
     }
   },
   "SignupHttpRequest": {
@@ -222,6 +953,18 @@ export const validationConstraints = {
     },
     "previousEmail": {
       "maxLength": 254
+    }
+  },
+  "TaxIdTypeReferenceHttpResponse": {
+    "sortOrder": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "TimeZoneReferenceHttpResponse": {
+    "sortOrder": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
     }
   },
   "UpdateAssistantConversationHttpRequest": {
@@ -256,6 +999,10 @@ export const validationConstraints = {
     }
   },
   "UpdateOrganizationAssistantSettingsHttpRequest": {
+    "dailyMessageLimit": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
     "version": {
       "minimum": 0,
       "maximum": 4294967295
@@ -267,6 +1014,14 @@ export const validationConstraints = {
     }
   },
   "UpdatePlatformAssistantSettingsHttpRequest": {
+    "dailyMessageLimit": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "retentionDays": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
     "version": {
       "minimum": 0,
       "maximum": 4294967295

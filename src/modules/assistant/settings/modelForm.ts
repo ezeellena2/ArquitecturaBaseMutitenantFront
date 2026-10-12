@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import type { TFunction } from "i18next";
 import type { FieldPath } from "react-hook-form";
 import { z } from "zod";
@@ -7,7 +8,7 @@ import { assistantDescriptionMaxLength, assistantMoneySchema } from "./settingsF
 const moneyValue = z.object({ amount: z.number(), currency: z.string() });
 export function modelFormSchema(t: TFunction) {
   const requiredInteger = z.number().int(t("assistant:settings.validation.limit"))
-    .min(1, t("assistant:settings.validation.limit")).max(2147483647, t("assistant:settings.validation.limit"))
+    .min(1, t("assistant:settings.validation.limit")).max(validationConstraints.AssistantModelTechnicalHttpRequest.maxInputTokens.maximum, t("assistant:settings.validation.limit"))
     .nullable().transform((value, ctx) => {
       if (value !== null) return value;
       ctx.addIssue({ code: "custom", message: t("assistant:settings.validation.limit") });

@@ -35,6 +35,11 @@ export function renderValidationContracts(source) {
     for (const [property, definition] of Object.entries(component.properties ?? {})) {
       const limits = Object.fromEntries(["minLength", "maxLength", "minimum", "maximum", "maxItems"]
         .filter((key) => definition[key] !== undefined).map((key) => [key, definition[key]]));
+      // int32 is a wire constraint even when no validator narrows its range.
+      if (definition.format === "int32") {
+        limits.minimum ??= -(2 ** 31);
+        limits.maximum ??= 2 ** 31 - 1;
+      }
       if (Object.keys(limits).length) properties[property] = limits;
     }
     if (Object.keys(properties).length) constraints[name] = properties;

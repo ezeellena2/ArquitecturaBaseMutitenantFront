@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { z } from "zod";
 import type {
   AssistantAttachmentSummaryResponse, AssistantDeltaEventResponse, AssistantErrorEventResponse,
@@ -16,7 +17,7 @@ export class AssistantStreamError extends Error {
   }
 }
 
-const version = z.number().int().min(0).max(4294967295);
+const version = z.number().int().min(0).max(validationConstraints.AssistantAttachmentSummaryResponse.version.maximum);
 const integer = z.number().int();
 const money = z.object({ amount: z.number(), currency: z.string() });
 const attachment: z.ZodType<AssistantAttachmentSummaryResponse> = z.object({

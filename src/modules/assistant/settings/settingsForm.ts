@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import type { TFunction } from "i18next";
 import { z } from "zod";
 import type { OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse } from "@/shared/api/types";
@@ -8,7 +9,7 @@ export const assistantKeyMaxLength = 4000;
 const moneySchema = (t: TFunction) => z.object({ amount: z.number(), currency: z.string() }).refine((value) => value.amount >= 0 && value.amount < 1e12 && value.currency.length > 0, t("assistant:settings.validation.money"));
 export const assistantMoneySchema = (t: TFunction) => moneySchema(t).nullable().refine((value) => value !== null, t("assistant:settings.validation.money"));
 export function settingsSchema(t: TFunction, platform: boolean) {
-  const positiveInteger = z.number().int(t("assistant:settings.validation.limit")).min(1, t("assistant:settings.validation.limit")).max(2147483647, t("assistant:settings.validation.limit")).nullable();
+  const positiveInteger = z.number().int(t("assistant:settings.validation.limit")).min(1, t("assistant:settings.validation.limit")).max(validationConstraints.UpdatePlatformAssistantSettingsHttpRequest.dailyMessageLimit.maximum, t("assistant:settings.validation.limit")).nullable();
   return z.object({ mode: z.enum(["PlatformKey", "OwnKey"]), modelId: z.string(), effort: z.enum(["low", "medium", "high"]),
     dailyMessageLimit: positiveInteger, monthlyBudget: moneySchema(t).nullable(),
     allowedModelIds: z.array(z.string()), personalEnabled: z.boolean(), retentionDays: positiveInteger,
