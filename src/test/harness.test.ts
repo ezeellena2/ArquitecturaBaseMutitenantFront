@@ -6,7 +6,7 @@ import { areStagesClosed, ClosedStages, HarnessStage, isStageClosed } from "./Ha
 const root = path.resolve(import.meta.dirname, "../..");
 const src = path.join(root, "src");
 const rules = path.join(root, "docs/rules");
-const arnes = readFileSync(path.join(root, "docs/architecture/arnes.md"), "utf8");
+const arnes = readFileSync(path.join(root, "docs/architecture/arbol.md"), "utf8");
 
 function allFiles(directory: string): string[] {
   if (!existsSync(directory)) return [];
@@ -30,7 +30,7 @@ function section(markdown: string, title: string): string {
 }
 
 function mappedDirectories(): string[] {
-  const map = section(arnes, "2. Mapa de carpetas → punteros");
+  const map = section(arnes, "Mapa de carpetas → punteros");
   const patterns = map.split("\n").flatMap((line) => {
     const firstCell = line.split("|")[1] ?? "";
     return [...firstCell.matchAll(/`(src\/[^`]+\/)`/g)].map((match) => match[1]);
