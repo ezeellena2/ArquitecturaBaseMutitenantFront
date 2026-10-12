@@ -171,6 +171,7 @@ describe("arnés de reglas", () => {
     expect(ficheFiles.length).toBeGreaterThan(0);
     for (const file of ficheFiles) {
       const content = readFileSync(file, "utf8");
+      expect(content.trimEnd().split(/\r?\n/).length, `${path.basename(file)} debe tener hasta 60 líneas`).toBeLessThanOrEqual(60);
       for (const required of [
         /^# .+/m,
         /^\*\*Regla:\*\* .+/m,

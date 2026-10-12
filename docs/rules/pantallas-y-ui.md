@@ -36,13 +36,7 @@
 - el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (solo los tableros validados); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` y `RoleEditorPage.tsx` (E4), `src/shared/ui/Page.tsx`, `Section.tsx` y `docs/architecture/tema.md`
 
 ## Lo verifica
-- El tablero validado y la revisión final de la galería lado a lado, una sola vez al cerrar la etapa.
-- Tests de pantalla (tests.md), con su caso «en el teléfono …» (`asPhone()`). `oxlint`.
-- `Page.test.tsx` (E7): con un solo grupo, la ficha va sin la barra de pestañas, en la compu y en el teléfono; con dos, la barra abre el contenido y cambia de grupo. `tabs.test.tsx` (E7): la barra del tablero Empresa. `CompanyDetailPage.test.tsx` (E7): el Administrador de empresa ve la ficha de su empresa sin pestañas.
-- `button.test.tsx` (E7): el principal con el degradé y el estado «Guardando» (aro, 0,85, no se achica). `AuthCodeStep.test.tsx` y `EmailCodeForm.test.tsx` (E7): «Verificando…» y «Enviando…» mientras esperan. `ChangeLoginMethodDialog.test.tsx` (E7): «Quitando…» y «Desvinculando…», y `AccountDeletionDialog.test.tsx` (E7): «Dando de baja…», con el aro mientras esperan. `FormField.test.tsx` (E7): el campo del ingreso y el registro, de 44 también en el teléfono.
-- `theme-tokens.test.ts` (E0): los tokens de tema.md existen en `index.css`, ningún componente usa un color literal, y ninguna ficha ni componente usa una variable de color que no sea de tema.md (salvo los alias de shadcn en `index.css`).
-- `DetailGrid.test.tsx` (E5): el detalle conserva las clases de la grilla de Auditoría en la compu y los rótulos encima de los valores en el teléfono, con axe; `AuditPage.test.tsx` (E7) conserva lo visible al consumir la pieza compartida.
-- Las capturas a 1440 y 390 contra el tablero, al cerrar la etapa.
+- `theme-tokens.test.ts` (E0)
 
 ## Detalle
 [frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [responsive](responsive.md) · tableros `Criterio-Marco`, `Criterio-Botones`, `Criterio-Formularios`, `Criterio-Tablas`, `Criterio-Dialogos`, `Criterio-Menus`, `Criterio-Avisos` y `Criterio-Decisiones`.

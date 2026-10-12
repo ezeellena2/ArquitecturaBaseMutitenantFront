@@ -40,11 +40,7 @@
 - `src/areas/public/auth/pages/RecoverAccountPage.tsx` y `src/areas/platform/tenants/tabs/OrganizationDomainTab.tsx` (E5): nonce sólo en memoria y comparación del cuerpo/recorrido; acción directa con dueño por recurso y reintentos nativos.
 
 ## Lo verifica
-- `useCountdown.test.ts` (E7) y `useRetryAfterCountdown.test.tsx` (E3): tiempo transcurrido, reanudación, reinicio y botón sin reenvío automático.
-- `contracts:check` (E1): obligatorio en local; en CI comprueba `generated/schema.d.ts` cuando está el repo hermano y deja aviso si falta.
-- `referenceData.test.ts` (E1): catálogos, `ETag`, caché y estado de carga.
-- `tsc` estricto (E0); `httpClient.test.ts` (E1).
-- `RecoverAccountPage.test.tsx` y `OrganizationDomainTab.test.tsx` (E5): misma clave al reintentar la misma operación y abandono al corregir, volver o cambiar de recurso; `platform-contract.test.ts` (E5): permisos de `/api/me`, principal nullable de Cuenta y versiones de las acciones.
+- `platform-contract.test.ts` (E5)
 
 ## Detalle
 [frontend.md §4, "Datos y API"](../architecture/frontend.md#datos-y-api)

@@ -5,7 +5,6 @@
 ## Cómo se hace
 
 Las pestañas copian la distribución móvil del tablero: `PageTabs.phoneColumns: 2` dispone dos por fila y permite filas adicionales (M-Cuenta-Plat). Conserva los grupos autorizados y el teclado de Radix; no se comprimen ni se ocultan grupos para que entren.
-
 | Pieza | ≥ 1024 (computadora) | 768–1023 (tablet) | < 768 (teléfono) |
 |---|---|---|---|
 | Menú lateral y barra de arriba | menú fijo y colapsable; migas y tu menú | menú colapsado a íconos | no hay: arriba va la barra de la app con el título (`AppBar`) y abajo, la barra con «Inicio» y «Más» (`BottomNav`); «Más» (`/mas`) reúne perfiles, Administración, Mi cuenta y Salir |
@@ -19,7 +18,6 @@ Las pestañas copian la distribución móvil del tablero: `PageTabs.phoneColumns
 | Avisos | abajo a la derecha; los carteles debajo de la banda | igual | lo pasajero, en una franja oscura abajo; lo que sigue, en una banda debajo de la barra |
 | Pantallas públicas | dos mitades (formulario + panel de la marca) | igual | una columna, sin el panel; el sitio público, web con ☰ (la página de una organización, sin ☰) |
 | Directorio público | tarjetas, buscador web y paginado con rango/página/flechas | igual | misma forma web: sin selector de tamaño, Cargar más ni BottomNav |
-
 - **Cada listado declara su fila del teléfono** con `mobileRow`, y cada columna, si se ve cuando no hay fila propia:
   ```tsx
   <DataTable columns={columns} rows={rows} rowKey={(row) => row.id}
@@ -50,13 +48,7 @@ Las pestañas copian la distribución móvil del tablero: `PageTabs.phoneColumns
 - `src/areas/business/roles/pages/RolesPage.tsx` y `roles/columns.tsx` (`rolePhoneRow`) (E4) · `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4: los datos sueltos y los botones fijos abajo de M-Rol) · `src/shared/ui/Page.tsx` · los tableros M-* del [lienzo vigente](../design/lienzo/README.md).
 
 ## Lo verifica
-- `src/shared/ui/app/lists.test.tsx` (E5): la tabla es una lista de filas en el teléfono, los filtros son íconos con su hoja y el paginado es «Cargar más».
-- `src/shared/ui/app/app.test.tsx` (E5): la barra, la barra de abajo, el «+», los botones fijos y los grupos.
-- `src/shared/ui/RowActions.test.tsx` (E7): en el teléfono, el ⋮ abre la hoja con el dato de la fila y las de peligro al final.
-- `src/layouts/PrivateLayoutFrame.test.tsx` (E7): una pantalla cuyo ‹ vuelve al Inicio marca Inicio en la barra de abajo.
-- `SiteLayout.test.tsx` (E7), `DirectoryPage.test.tsx` (E7) y `PublicPage.session.test.tsx` (E7): marco/Sheet públicos, paginado web móvil y hoja Tu cuenta sin BottomNav; `navigation.test.tsx` (E7) y `MorePage.personal.test.tsx` (E7): módulos Personal visibles y límite de cuatro/Más.
-- `columns-mobile.test.ts` (E1): toda definición de columnas tiene exactamente una `primary`.
-- Los tests «en el teléfono …» de cada pantalla (con `asPhone()`), el recorrido del teléfono del E2E real y las capturas a 390 y 1440 contra el tablero antes de cerrar la etapa.
+- `columns-mobile.test.ts` (E1)
 
 ## Detalle
 [frontend.md §4, «UI y pantallas» › «Teléfono»](../architecture/frontend.md#ui-y-pantallas)

@@ -35,14 +35,7 @@
 - `src/areas/business/roles/pages/RolesPage.test.tsx` y `RoleEditorPage.test.tsx` (E4): cada caso con axe y su caso en el teléfono · `src/areas/business/roles/lib/permissionPicker.test.ts` (E4): la lógica de una feature, sin pantalla
 
 ## Lo verifica
-- El CI (`npm test`) y `harness.test.ts` (E0), que usa `HarnessStage` para exigir solo los tests de etapas cerradas.
-- `isolation.test.tsx` (E7): el aviso de un test no aparece en el siguiente.
-- `scripts/test-e2e-real.test.mjs` (E3): ninguna etapa desde E3a se cierra si el recorrido real está rojo.
-- `scripts/test-e2e-real-mail.test.mjs` (E6): el pickup reconoce el párrafo del código; números en organizaciones, enlaces o avisos no cuentan como OTP.
-- `scripts/test-e2e-real-ui.test.mjs` (E6): la entrega del correo no prueba que las casillas estén listas; el helper espera sus seis controles visibles antes de completarlos. El test usa Chromium con un documento local cuyo paso aparece después del título, sin sleeps; el E2E de producto mantiene front/API/correo reales.
-- `scripts/recorrido-usuario.test.mjs` (E7): fecha de Buenos Aires, orden/escape del índice, captura e informe ante falla, apagado incluso si falla el recorrido o el cierre del navegador, lectura del mensaje de código junto con sus detalles, salida móvil desde Mi cuenta con «Volver a Más» y espera de los avisos transitorios antes de capturar, conservando los errores persistentes. Los tres últimos casos usan Chromium con un DOM local, sin red, API ni base; toda la suite liviana tarda unos pocos segundos.
-- `routes-by-host.test.ts` (E7), `publicSite.test.ts` (E7) y `usePublicSite.test.tsx` (E7): host/rutas, URL segura y 404 público exacto. `LandingPage.test.tsx` (E7), `DirectoryPage.test.tsx` (E7) y `Pagination.test.tsx` (E7): recurso real compartido, URL y modo web móvil.
-- `authConfig.test.ts` (E7), `recoveryAccess.test.ts` (E7), `SessionRecovery.test.tsx` (E7) y `PublicPage.session.test.tsx` (E7): autoridad/retorno, Consumer, CTA/menú y salida. `LoginPage.test.tsx` (E7), `SignupPage.test.tsx` (E7), `navigation.test.tsx` (E7) y `MorePage.personal.test.tsx` (E7): retorno por Registro y gates/límite de navegación Personal.
+- `harness.test.ts` (E0): formato y referencias de la ficha.
 
 ## Detalle
 [frontend.md §4, "Tests"](../architecture/frontend.md#tests)

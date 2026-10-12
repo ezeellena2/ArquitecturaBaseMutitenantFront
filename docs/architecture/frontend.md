@@ -52,7 +52,7 @@ Los punteros de capa, área, feature y módulo enlazan ficha y modelo; las subca
 Copiá [Roles](../../src/areas/business/roles/AGENTS.md) para un recurso nuevo.
 [Estructura y features](../rules/estructura-y-features.md) define los límites de imports.
 
-## 3. Ruta, manifiesto y permiso
+## 3. Rutas
 
 Declarar una ruta una vez en `layouts/navigation/<área>.ts` permite reutilizar camino,
 permiso, rótulo e ícono en el menú, Más y el router. La página del núcleo usa lazyPage

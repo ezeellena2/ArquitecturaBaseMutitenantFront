@@ -6,8 +6,6 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 
 **En el teléfono** (tableros M-*): cada listado declara su fila (`mobileRow` con `ListRow`), de borde a borde y con hasta tres líneas; la lupa y el filtro son íconos de la barra y el filtro abre una hoja con las opciones y su conteo; el paginado es «Cargar más», que pide el tamaño de página siguiente; crear es un «+» flotante ([responsive](responsive.md)).
 
-**El directorio público es web** (Directorio y M-Directorio): comparte `usePagedQuery` y el recurso HTTP con la portada, muestra `CompanyCard` en tarjetas y arma el buscador del tablero con `Input`. Su `Pagination` declara `variant="web"` y `mobile={phone}` desde la pantalla fuera del marco: en el teléfono conserva rango, página y flechas, sin selector de tamaño ni «Cargar más». La variante predeterminada `app` mantiene el paginado privado. `Pagination.test.tsx` verifica ambos recorridos y `DirectoryPage.test.tsx`, la URL, el debounce y la página real del backend.
-
 ## Cómo se hace
 - **Un listado paginado es `usePagedQuery`**: compone `useFilters(keys)`, `usePagination`, la búsqueda con 300 ms de debounce, la consulta con `placeholderData: keepPreviousData`, la corrección de una página fuera de rango y las props de `Pagination`:
   ```ts
@@ -20,7 +18,6 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
   {paginationProps ? <Pagination {...paginationProps} /> : null}
   ```
   `filterKeys` es una constante del módulo; `query` es la consulta ya armada (los conteos toman de ahí la búsqueda y los filtros) y `pagination` da la búsqueda escrita, el orden y sus cambios para `FilterBar` y `DataTable`.
-- `/empresas` usa `usePagedQuery` con `filterKeys: []`, `fetchDirectory` y `directoryQueryKey` de `public/site/api/directory.ts`, sin duplicar HTTP/keys en la portada. La búsqueda aplica 300 ms y vuelve a página 1; el tamaño inicial es 10. `Pagination variant="web"` muestra rango/página/flechas en ambos anchos y omite el selector. El vacío general y el vacío de búsqueda tienen textos distintos; este último ofrece Limpiar búsqueda. Los errores usan `apiErrorMessage` y Reintentar.
 - **Uso del asistente (T13)** tiene una respuesta mensual con resumen y listado `rows` anidado, cuyos metadatos publicados son opcionales. La página conserva esa respuesta indivisible con `useQuery`, señal de cancelación, `useFilters` y `usePagination`, sin aplanar el contrato ni fabricar metadatos para `PagedResult`. Corrige una página vacía sólo con `rows.totalPages` entregado por el servidor. Las claves separan actor, acceso, organización y consulta; al cambiar actor se retiran resumen y filas anteriores. `AssistantUsagePage.test.tsx` verifica la corrección con metadatos que no coinciden con un cálculo local y el retiro de datos durante la lectura del actor nuevo.
 - Las columnas son ordenables con `sortable: true`, y su `id` es el campo del backend.
 - **La segunda línea gris** (lo que aclara la celda: el correo debajo del nombre, los roles debajo de la empresa, «Vence…» debajo del estado) la declara la columna con `detail: (row) => …` y la dibuja `DataTable`, en 12 y `--t3`; sin nada que aclarar, `null`. Si alguna fila la tiene, todas las filas de la tabla miden 52. Debajo de un estado va con `StatusDetail`, bajo la palabra y no bajo el punto. La celda nunca arma su propia segunda línea.
@@ -57,16 +54,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 - `src/areas/platform/audit/pages/SecurityAuditPage.tsx` y `src/areas/platform/tenants/tabs/useOrganizationHistory.ts` (E5): filtros en la URL, tandas por cursor opaco y Cargar más sin total.
 
 ## Lo verifica
-- `usePagination.test.tsx` (E0/E1): conserva el estado en la URL y vuelve a la página 1, canoniza página/tamaño inválidos con `replace`, alterna el orden descendente predeterminado y omite `pageSize=10` en la URL.
-- `usePagedQuery.test.tsx` (E7): la URL llega a la consulta, la búsqueda con debounce, la corrección de una página fuera de rango (solo con `items` vacíos y `totalCount > 0`) y las props de `Pagination`; `RolesPage.test.tsx` (E7): al inactivar el único rol de la última página, vuelve a la anterior.
-- `pageSizes.test.ts` (E2): exige concordancia exacta con `PagedRequest.properties.pageSize.enum` del OpenAPI; el repo hermano es obligatorio en local y solo ese chequeo se omite con aviso en CI aislado.
-- Tests de pantalla: sin coincidencias y cambio de página; en el teléfono, la lista y su «+».
-- `OrganizationsPage.test.tsx`, `AccountsPage.test.tsx` y `RecoveriesPage.test.tsx` (E5): banda global, filtros cruzados, búsqueda en URL, vacío/sin coincidencias y 1/50 filas; Recuperaciones no muestra pie con total 0. `SecurityAuditPage.test.tsx` y `OrganizationPage.test.tsx` (E5): cursor, filtros y Cargar más sin total.
-- `src/shared/ui/app/lists.test.tsx` (E5): en el teléfono, filas de lista, filtros en una hoja y «Cargar más».
-- `DirectoryPage.test.tsx` (E7): búsqueda URL/debounce, página/tamaño, reset y aislamiento del paginado web móvil; `LandingPage.test.tsx` (E7): primera página de diez, tres tarjetas y Enter al directorio; `Pagination.test.tsx` (E7): `variant="web"` conserva flechas y omite selector/Cargar más sin alterar el modo privado.
-- `Pagination.test.tsx` (E7): el pie en 12 y «1 de 1» con una sola fila en la página, en es-AR y en-US; `LoadMore.test.tsx` (E7): en la compu, «Cargar más» es el botón normal.
-- `useCursorList.test.tsx` (E7): las tandas por cursor opaco, sin total; con otros filtros vuelve a la primera tanda y muestra la anterior mientras llega la nueva; lleva su `meta`; y es lo único que usa `useInfiniteQuery`. `AuditPage.test.tsx` (E7): «Cargar más» pide la tanda siguiente con el cursor y los mismos filtros, y un 403 del historial muestra «No tenés permiso».
-- `DataTable.test.tsx` (E7): la segunda línea que declara la columna, gris de 12, y las filas de 52 si alguna la tiene; si no, de 40. `UsersPage.test.tsx`, `CompaniesPage.test.tsx`, `CompanyDetailPage.test.tsx` y `RolesPage.test.tsx` (E7): el correo, los roles de la empresa, «Vence…», el CUIT y «De sistema» van en esa línea.
+- `pageSizes.test.ts` (E0)
 
 ## Detalle
 [frontend.md §4, "Paginado, orden y búsqueda"](../architecture/frontend.md#paginado-orden-y-búsqueda) · back: `docs/rules/paginado-y-busqueda.md`

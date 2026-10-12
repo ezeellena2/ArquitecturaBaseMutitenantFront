@@ -34,14 +34,7 @@
 - `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4: el 409 y el error de guardado con `useEditPage`; el alta con `mutate(variables, { onSuccess, onError })`; el rechazo de un dato en su campo con `errors.ts`) · `src/areas/business/roles/pages/RolesPage.tsx` (E4: acciones de fila con `toastActionError`) · `src/areas/personal/account/components/AccountDeletionDialog.tsx` (E4: el error de un diálogo arriba de sus botones) · `src/shared/api/formErrors.ts` (E1) · `src/shared/api/errorMessage.ts`
 
 ## Lo verifica
-- Tests de pantalla: cada `code` que traduce la feature tiene un test (tests.md). `errors.test.ts` (E7), de Roles: cada rechazo del back va en su campo; el de `shared/account`: el código incorrecto va debajo de los casilleros; el de `public/auth`: la dirección y el CUIT que rechaza el registro de empresas van en su campo; el de Empresas: lo que el back rechaza de la empresa o del miembro va en su campo, también el CUIT repetido, y el último administrador, en la franja.
-- `formErrors.test.ts` (E1), `queryClient.test.ts` (E1; el 403 de la consulta principal, de una secundaria y de los términos nuevos).
-- `CompanyDetailPage.test.tsx` (E7): el 403 de los roles (secundaria) no reemplaza la ficha; el de la ficha, sí.
-- `UserDetailPage.test.tsx` (E7): si la última Dueña sale de la organización, lo dice la franja de la ficha y no el aviso de abajo.
-- `LegalAcceptanceGate.test.tsx` (E7): si falla `/api/me`, la pantalla de error con «Reintentar», sin el aviso de abajo. `LoadErrorPage.test.tsx` (E7): la pantalla de error en la compu y en el teléfono; `UserDetailPage`, `CompanyDetailPage`, `RoleEditorPage`, `SettingsPage` y `PublicPagePage` (E7): si la ficha no carga, la pantalla de error, y «Reintentar» la vuelve a pedir. `UserDetailPage`, `CompanyDetailPage` y `RoleEditorPage` (E7): si el back no encuentra la ficha (404), «No encontramos esta página» con «Ir al inicio», sin «Reintentar». `AccountPage.test.tsx` (E7): si falla la relectura después de guardar, la franja lo dice una sola vez.
-- `errorMessage.test.ts` (E7): el texto de cada error y que la pantalla no repita lo que avisó el `MutationCache`; `queryClient.test.ts` (E7): los avisos de las mutaciones y `meta.handlesError`; `RoleEditorPage.test.tsx` (E7): sin conexión al guardar, un solo aviso con «Reintentar», que vuelve a guardar.
-- `sonner.test.tsx` (E7): el aviso de un 5xx (`toastErrorWithCode`) lleva «Copiar código» debajo del texto en la compu y al lado en el teléfono.
-- `ReasonDialog.test.tsx` y `useDialogFailure.test.ts` (E5): franja de negocio sobre los botones, relectura al cerrar concurrencia y los 409 de estado declarados; el reintento de red ejecuta el mismo éxito y entrega también la respuesta void, sin repetir el aviso en la franja.
+- `harness.test.ts` (E0): formato y referencias de la ficha.
 
 ## Detalle
 [frontend.md §4, "Errores"](../architecture/frontend.md#errores)

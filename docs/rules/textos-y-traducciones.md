@@ -25,12 +25,7 @@
 - `src/locales/es/roles.json` (E4)
 
 ## Lo verifica
-- `parity.test.ts` (E1): mismas claves en todos los idiomas habilitados del catálogo (es y en al inicio).
-- `keys.test.ts` (E5): cada clave escrita en el código existe en los textos; una clave inexistente se vería cruda en pantalla.
-- `errors.test.ts` (E7): el mensaje del paso del código toma «Te quedan N intentos.» de `common:code`.
-- `referenceData.test.ts` (E1): nombres traducidos provenientes del catálogo.
-- `i18n.test.tsx` (E7): la precedencia de la cultura efectiva (`resolveCulture`); `useFormat.account.test.tsx` (E7): con la cultura de la cuenta distinta de la de este navegador, la usan los textos, los formatos, el catálogo y `Accept-Language`.
-- `oxlint` con la regla de literales en JSX (E0, `react/jsx-no-literals`).
+- `parity.test.ts` (E1)
 
 ## Detalle
 [frontend.md §4, "Idioma y cultura"](../architecture/frontend.md#idioma-y-cultura) · [datos de referencia del back](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md#5-traducciones-de-la-interfaz-no-son-datos-de-referencia)

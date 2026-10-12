@@ -34,9 +34,7 @@
 - **Términos nuevos:** si una respuesta trae `Legal.AcceptanceRequired`, se muestra la pantalla de aceptación, que bloquea.
 - **La cuenta** (`/cuenta`) es de la identidad y conserva el acceso actual: persona, empresa o plataforma.
 - El `companyId` sale de la URL (`/org/empresas/:companyId`, con `useParams`, como `RequirePermission` y `CompanyDetailPage`); nunca hay una "empresa activa" guardada.
-
 - **Inicio de Plataforma con módulo (E8b A2):** la compu conserva Inicio en `/plataforma`. En el teléfono, la barra usa Organizaciones (`/plataforma/organizaciones`), Asistente y Cuentas según permisos, más Más; `/plataforma` lleva con `replace` a la primera sección permitida de esa barra. El registro neutral decide qué módulos contribuyen; no se agrega una pestaña Inicio vacía ni se adelantan las Consultas de E11. Sin contribución de Inicio se conserva la entrada histórica y su selección por permiso.
-
 - **Más con contribuciones de módulos (E8b M3):** las secciones aportadas por el registro llevan `NavigationSection.moreGroup` y conservan su título y grupo propios, después de Administración. Las secciones del núcleo conservan sus filas aprobadas dentro de Administración. Gestión reúne sus opciones permitidas que no están en la barra. Una contribución `phone` entra en Más sólo cuando desborda sus cuatro lugares; los módulos Personal declarados como `feature` conservan su acceso histórico desde Secciones.
 
 ## Prohibido
@@ -53,17 +51,7 @@
 - `src/tenancy/publicSite.ts`, `src/tenancy/usePublicSite.ts` y `src/tenancy/PublicAccessMenu.tsx` (E7): host, datos y menú público compartidos; `src/areas/storefront/site/pages/PublicPage.tsx` (E7): ingreso Consumer.
 
 ## Lo verifica
-- `routes.test.tsx` (E3): cada ruta del manifiesto pide su permiso; `visible.test.ts` (E7): el menú son rutas del manifiesto y cada enlace se ve solo con su permiso y su módulo; `RequirePermission.test.tsx` (E7): sin el permiso, «No tenés permiso»; con el módulo apagado, la ruta no existe; con el permiso de empresa como alternativa, abre la ficha de su empresa y no la de otra. `CompanyDetailPage.test.tsx` (E7): un Administrador de empresa sin roles de la organización ve los miembros, los roles y los filtros de su empresa.
-- `PlatformLayout.test.tsx`, `administration.test.ts` y `Breadcrumbs.test.tsx` (E5): un solo panel de Plataforma abierto, su opción marcada y el camino de cada ficha. `routes.test.tsx` (E5): las nueve páginas lazy, soporte de rutas parciales, permiso de cada entrada y primera pantalla permitida al ingresar sin `platform.tenants.read`. `currentUsers.test.tsx`: los operadores no tienen perfiles, los permisos copian el catálogo y Node puede importar sus datos para las capturas.
-- `usePermissions.test.ts` y `platform-contract.test.ts` (E5): `canPlatform` consume la lista requerida `effectivePermissions.platform`; Consumer/Business no reciben permisos de Plataforma.
-- `PrivateLayoutFrame.test.tsx`, `MorePage.test.tsx` y `visible.test.ts` (E5): barra inferior de Plataforma por permiso y sección actual, Administración vuelve a Más, ruta canónica de Más, identidad y enlaces permitidos sin Perfiles ni WhatsApp. `SessionRecovery.test.tsx`: F5 en `/plataforma/cuentas` canjea la cookie con `access=platform` y conserva la ruta.
-- `AccessRoute.test.tsx` (E3), `useSwitchAccess.test.tsx` (E3) y `AccessMenu.test.tsx` (E3): limpia la caché al cambiar; una persona sin organizaciones no ve «Ir a mi empresa» y en B2C nunca aparece «Registrá tu empresa».
-- `routes-by-host.test.ts` (E7): un subdominio no monta rutas de `/org`.
-- `publicSite.test.ts` (E7): issuer/puerto, slug válido y rechazos, URL pública y retorno seguro al principal; `usePublicSite.test.tsx` (E7): sólo el 404 público exacto es No disponible; `PublicPagePage.test.tsx` (E7) conserva su edición/vista previa al usar la función común.
-- `authConfig.test.ts` (E7), `recoveryAccess.test.ts` (E7), `SessionRecovery.test.tsx` (E7) y `PublicPage.session.test.tsx` (E7): autoridad fija, retorno propio, recuperación Consumer, CTA oculta y menú/salida del sitio publicado; `LoginPage.test.tsx` (E7) y `SignupPage.test.tsx` (E7): Registro conserva la autorización original.
-- `navigation.test.tsx` (E7) y `MorePage.personal.test.tsx` (E7): feature Personal en menú/barra, límite de cuatro y las demás accesibles en Más.
-- `usePermissions.test.ts` (E7): `can` lee `effectivePermissions`; `canInCompany`, la empresa del mapa o, si no figura, la organización; los códigos son los del catálogo del back.
-- `access.test.ts` (E7): el inicio, la puerta, la ruta y los estados de cada acceso; `access-paths.test.ts` (E7): ningún literal `"/org"` ni `"/login/empresa"` fuera de `tenancy/access.ts`; `useSignOut.test.tsx` (E7).
+- `platform-contract.test.ts` (E5)
 
 ## Detalle
 [frontend.md §3](../architecture/frontend.md#3-rutas) · back: `docs/architecture/multitenancy.md` y `docs/rules/modulos-habilitados.md`

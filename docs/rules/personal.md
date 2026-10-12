@@ -24,9 +24,7 @@
 - `src/areas/storefront/site/pages/PublicPage.tsx` (E7): publicación y CTA Consumer, sin administración.
 
 ## Lo verifica
-- `navigation.test.tsx` (E7) y `MorePage.personal.test.tsx` (E7): feature habilitada/apagada, Inicio/Mi cuenta, límite de cuatro y acceso desde Más.
-- `visible.test.ts` (E7), `RequirePermission.test.tsx` (E7) y `structure.test.ts` (E0): filtro único, gate y fronteras entre features.
-- El back prueba el aislamiento y la retención con `PersonalIsolationTests` (E7), `EngagementTests` (E7), `PartyPolicyTests` (E7) y `AccountDeletionTests` (E7); sus referencias están en la ficha funcional Personal.
+- `structure.test.ts` (E0)
 
 ## Detalle
 [frontend.md §3](../architecture/frontend.md#3-rutas) · [accesos y permisos](accesos-y-permisos.md) · [Personal del back](../../../ArquitecturaBaseMutitenant/docs/features/personal.md)

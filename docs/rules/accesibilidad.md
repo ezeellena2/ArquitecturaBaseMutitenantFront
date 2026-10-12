@@ -34,9 +34,7 @@
 - `src/areas/business/users/pages/UsersPage.test.tsx` (E6): axe en la lista y en el diálogo para invitar.
 
 ## Lo verifica
-- `vitest-axe` (E0) en cada test de pantalla (`toHaveNoViolations`); `harness.test.ts` (E7) falla si un `pages/*Page.test.tsx` no corre axe.
-- `FormField.test.tsx` (E7): con un `Select` adentro, el desplegable se rotula, es obligatorio y lleva su error.
-- `CompanyDetailPage.test.tsx` y `CompaniesPage.test.tsx` (E7): cada diálogo le devuelve el foco a lo que lo abrió, al botón o al ⋮ de la fila. `UserDetailPage.test.tsx` (E7): «Cambiar roles» del ⋮ de una empresa le devuelve el foco a ese ⋮.
+- `harness.test.ts` (E7): formato y referencias de la ficha.
 
 ## Detalle
 [frontend.md §4, "Accesibilidad y diseño adaptable"](../architecture/frontend.md)

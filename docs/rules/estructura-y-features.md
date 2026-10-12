@@ -21,7 +21,6 @@ Las carpetas que la feature no necesita no se crean (`audit/` tiene solo `api/` 
 - Imports con alias `@/`. `import type` para los tipos.
 
 ### Módulos opcionales (E8b)
-
 - Cada módulo en `src/modules/<nombre>/` aporta un `registration.ts` con rutas, navegación e inicio mediante el contrato neutral `shared/modules/types.ts`. Sólo `app/moduleComposition.ts` importa registros concretos; el núcleo, las áreas y los layouts no importan páginas ni APIs de módulos. Quitar esa entrada y su carpeta deja los inicios del núcleo operativos.
 - `ModuleRoutePage` decide desde `/api/me` antes de montar React.lazy: espera la sesión, muestra 404 si no está instalado/habilitado y 403 sin permiso. No usar `route.lazy` para páginas de módulos: React Router lo carga antes de renderizar las guardas padre. AccessRoute y los términos siguen por encima.
 - `useNavigation` compone el mismo manifiesto para el marco y Más; conserva permisos del núcleo y contribuciones independientes. Los permisos propios viven en el registro, sin ampliar los arrays de `auth/usePermissions`. Una ruta sólo aporta un enlace cuando tiene su página real.
@@ -42,8 +41,7 @@ Las carpetas que la feature no necesita no se crean (`audit/` tiene solo `api/` 
 - `src/areas/platform/tenants/` y `src/shared/platform/ReasonDialog.tsx` (E5): features separadas por recurso y confirmación compartida; `src/shared/hooks/useDialogFailure.ts`, `src/shared/ui/DetailGrid.tsx` y `src/tenancy/publicSite.ts` son las extracciones de T20d.
 
 ## Lo verifica
-- `tsc -b` estricto y `oxlint`.
-- `structure.test.ts` (E0): sin imports entre features ni entre áreas.
+- `structure.test.ts` (E0)
 
 ## Detalle
 [frontend.md §2](../architecture/frontend.md#2-estructura) · [arbol.md](../architecture/arbol.md)
