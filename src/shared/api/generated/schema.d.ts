@@ -18583,6 +18583,7 @@ export interface components {
             companyName: string;
             status: components["schemas"]["CompanyMembershipStatus"];
             roles: components["schemas"]["OrganizationUserRoleRow"][];
+            companyStatus?: null | components["schemas"]["CompanyStatus"];
         };
         OrganizationUserFilterCountsResponse: {
             /** Format: int32 */
@@ -19461,6 +19462,7 @@ export interface components {
             version: number;
             /** Format: date-time */
             createdAtUtc: string;
+            companyName?: null | string;
         };
         /**
          * @description Ámbito de un rol de organización.

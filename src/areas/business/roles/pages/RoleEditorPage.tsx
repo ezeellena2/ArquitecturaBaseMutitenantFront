@@ -1,4 +1,4 @@
-import { companyOptions as companyOptionResource, fetchCompanyOption } from "@/shared/api/resourceOptions";
+import { companyOptions as companyOptionResource, companyQuery } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -139,9 +139,9 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
 
   const permissionGroups = useQuery({ ...permissionGroupsQuery, enabled: Boolean(role) || editable });
   const companies = useResourceOptions(companyOptionResource, can("companies.read") && (!role || role.scope === "SpecificCompany"));
-  const selectedCompany = useQuery({ queryKey: ["companies", "detail", companyId],
-    queryFn: ({ signal }) => fetchCompanyOption(companyId, signal), enabled: can("companies.read") && Boolean(companyId) && Boolean(companies.data) && !companies.knownItems.some((item) => item.id === companyId), meta: { silent: true } });
-  const knownCompanies = [...companies.knownItems, ...(selectedCompany.data ? [selectedCompany.data] : [])];
+  const selectedCompany = useQuery({ ...companyQuery(companyId), enabled: can("companies.read") && Boolean(companyId) && !role?.companyName && Boolean(companies.data) && !companies.knownItems.some((item) => item.id === companyId) });
+  const knownCompanies = [...companies.knownItems, ...(selectedCompany.data ? [selectedCompany.data] : []),
+    ...(role?.companyId && role.companyName ? [{ id: role.companyId, name: role.companyName }] : [])];
   const companyOptions = companies.data?.items ?? [];
   const scopeGroups = useMemo(() => groupsForScope(permissionGroups.data ?? [], scope), [permissionGroups.data, scope]);
   const count = selectionCount(scopeGroups.flatMap((group) => group.permissions), permissions);
@@ -208,7 +208,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   const companyName = (id: string | null | undefined) => id ? knownCompanies.find((company) => company.id === id)?.name : undefined;
   // «Vale en toda la organización» (lienzo v96): en la oración, el alcance va en minúscula.
   const scopeInSentence = (current: RoleResponse) => current.scope === "SpecificCompany"
-    ? companyName(current.companyId) ?? t("roles:scopeInSentence.specificCompany")
+    ? current.companyName ?? companyName(current.companyId) ?? t("roles:scopeInSentence.specificCompany")
     : t(current.scope === "Organization" ? "roles:scopeInSentence.organization" : "roles:scopeInSentence.company");
   const summary = role ? t("roles:scopeAndUsers", { scope: scopeInSentence(role), count: role.userCount }) : undefined;
   const title = role ? role.name : t("roles:createTitle");

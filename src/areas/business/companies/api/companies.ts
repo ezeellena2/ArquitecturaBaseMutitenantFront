@@ -9,7 +9,6 @@ import type {
   CompanyFilterCountsResponse,
   CompanyMemberFilterCountsResponse,
   CompanyMemberState,
-  CompanyResponse,
   CompanyStatus,
   CreateCompanyRequest,
   PagedRequest,
@@ -26,10 +25,11 @@ export type CompanyMembersQuery = PagedRequest & {
   withoutRoles?: boolean;
 };
 
-export const companiesQueryRoot = ["companies"] as const;
+import { companiesQueryRoot } from "@/shared/api/resourceOptions";
+export { companiesQueryRoot, companyQueryKey, fetchCompany } from "@/shared/api/resourceOptions";
 export const companiesQueryKey = (query: CompaniesQuery) => [...companiesQueryRoot, query] as const;
 export const companiesCountQueryKey = (search?: string) => [...companiesQueryRoot, "counts", search ?? ""] as const;
-export const companyQueryKey = (companyId: string) => [...companiesQueryRoot, "detail", companyId] as const;
+
 export const companyMembersQueryRoot = (companyId: string) => [...companiesQueryRoot, companyId, "members"] as const;
 export const companyMembersQueryKey = (companyId: string, query: CompanyMembersQuery) => [...companyMembersQueryRoot(companyId), query] as const;
 export const companyMembersCountQueryKey = (companyId: string, search?: string) => [...companyMembersQueryRoot(companyId), "counts", search ?? ""] as const;
@@ -43,10 +43,6 @@ export function fetchCompanies(query: CompaniesQuery): Promise<PagedResultOfComp
 export function fetchCompanyCounts(search?: string): Promise<CompanyFilterCountsResponse> {
   const query = toSearch({ search });
   return api.get<CompanyFilterCountsResponse>(`/api/companies/filter-counts${query ? `?${query}` : ""}`);
-}
-
-export function fetchCompany(companyId: string): Promise<CompanyResponse> {
-  return api.get<CompanyResponse>(`/api/companies/${encodeURIComponent(companyId)}`);
 }
 
 export function createCompany(request: CreateCompanyRequest, idempotencyKey: string): Promise<string> {

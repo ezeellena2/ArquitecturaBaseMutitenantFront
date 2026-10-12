@@ -16,8 +16,15 @@ export function fetchCompanyOptions(query: PagedRequest = optionPage, signal?: A
   return api.get(`/api/companies/paged?${toSearch({ ...query, status: "Active" })}`, { signal });
 }
 
-export function fetchCompanyOption(companyId: string, signal?: AbortSignal): Promise<CompanyResponse> {
+export const companiesQueryRoot = ["companies"] as const;
+export const companyQueryKey = (companyId: string) => [...companiesQueryRoot, "detail", companyId] as const;
+
+export function fetchCompany(companyId: string, signal?: AbortSignal): Promise<CompanyResponse> {
   return api.get(`/api/companies/${encodeURIComponent(companyId)}`, { signal });
+}
+
+export function companyQuery(companyId: string) {
+  return { queryKey: companyQueryKey(companyId), queryFn: ({ signal }: { signal: AbortSignal }) => fetchCompany(companyId, signal), meta: { silent: true } };
 }
 
 export const companyOptions: ResourceOptions<CompanyResponse> = {

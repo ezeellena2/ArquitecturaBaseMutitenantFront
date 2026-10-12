@@ -11,12 +11,7 @@
   "discard": "Discard changes",
   "save": "Save changes",
   "system": "System",
-  "systemRoles": {
-    "owner": "Owner",
-    "ownerDescription": "Has all permissions in the organization.",
-    "companyAdmin": "Administrator",
-    "companyAdminDescription": "Manages each company's members."
-  },
+
   "custom": "Custom",
   "removed": "Role {{name}} was deactivated.",
   "created": "Role {{name}} was created.",

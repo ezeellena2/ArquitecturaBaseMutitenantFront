@@ -16,7 +16,7 @@ interface RoleScopeFieldProps {
   readonly readOnly?: boolean;
   readonly error?: string;
   readonly remote?: RemoteOptions;
-  readonly knownCompanies?: readonly Pick<CompanyResponse, "id" | "name" | "status">[];
+  readonly knownCompanies?: readonly Pick<CompanyResponse, "id" | "name">[];
 }
 
 const companyPrefix = "company:";

@@ -39,6 +39,7 @@ const companyReader: RoleResponse = {
   description: "Ve los miembros de la empresa.",
   scope: "SpecificCompany",
   companyId: "company-1",
+  companyName: "Delta S.A.",
   isSystemRole: false,
   userCount: 0,
   permissions: ["company.members.read"],

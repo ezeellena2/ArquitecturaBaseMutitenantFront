@@ -11,12 +11,7 @@
   "discard": "Descartar cambios",
   "save": "Guardar cambios",
   "system": "De sistema",
-  "systemRoles": {
-    "owner": "Dueño",
-    "ownerDescription": "Tiene todos los permisos de la organización.",
-    "companyAdmin": "Administrador",
-    "companyAdminDescription": "Administra los miembros de cada empresa."
-  },
+
   "custom": "Personalizado",
   "removed": "Inactivamos el rol {{name}}.",
   "created": "Creamos el rol {{name}}.",

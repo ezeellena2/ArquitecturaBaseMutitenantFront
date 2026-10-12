@@ -1,6 +1,6 @@
-import { companyOptions, fetchCompanyOption } from "@/shared/api/resourceOptions";
+import { companyOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
-import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import { ShieldIcon } from "@/shared/ui/icons";
 import { useState } from "react";
@@ -69,10 +69,6 @@ export function RolesPage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  const rowCompanyIds = [...new Set((roles.data?.items ?? []).flatMap((role) => role.companyId ? [role.companyId] : []))];
-  const rowCompanies = useQueries({ queries: rowCompanyIds.map((companyId) => ({ queryKey: ["companies", "detail", companyId],
-    queryFn: ({ signal }: { signal: AbortSignal }) => fetchCompanyOption(companyId, signal), enabled: can("companies.read") && Boolean(companies.data) && !companies.knownItems.some((item) => item.id === companyId), meta: { silent: true } })) });
-  const companyNames = new Map([...companies.knownItems, ...rowCompanies.flatMap((query) => query.data ? [query.data] : [])].map((company) => [company.id, company.name]));
   const rowActions = (role: RoleResponse) => <RowActions
         label={t("roles:rowActions", { name: role.name })}
         title={role.name}
@@ -89,7 +85,7 @@ export function RolesPage() {
         ]}
       />;
   const columns: Column<RoleResponse>[] = [
-    ...createRoleColumns(t, companyNames),
+    ...createRoleColumns(t),
     { id: "actions", header: t("roles:columns.actions"), type: "actions", cell: rowActions },
   ];
 
@@ -133,7 +129,7 @@ export function RolesPage() {
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={columns}
-            mobileRow={(role) => rolePhoneRow(role, t, companyNames, rowActions(role))}
+            mobileRow={(role) => rolePhoneRow(role, t, rowActions(role))}
             rows={roles.data?.items ?? []}
             rowKey={(role) => role.id}
             isLoading={roles.isPending}

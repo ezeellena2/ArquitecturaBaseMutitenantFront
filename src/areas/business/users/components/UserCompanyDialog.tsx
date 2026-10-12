@@ -35,7 +35,7 @@ export function UserCompanyDialog({ mode, assignment, companyName, companies, ro
   /** La empresa cuyos roles se cambian, para el título. */
   companyName: string;
   /** Las empresas que se pueden sumar. */
-  companies: readonly CompanyResponse[];
+  companies: readonly Pick<CompanyResponse, "id" | "name" | "status">[];
   /** Los roles de empresa: los de cualquier empresa y los de una en particular. */
   roles: readonly RoleResponse[];
   /** Etiquetas de los roles ya asignados, aunque no estén en las páginas de opciones cargadas. */

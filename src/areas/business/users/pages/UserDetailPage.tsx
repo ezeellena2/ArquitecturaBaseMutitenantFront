@@ -1,4 +1,4 @@
-import { companyOptions, fetchCompanyOption, roleOptions } from "@/shared/api/resourceOptions";
+import { companyOptions, companyQuery, roleOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { RemoteOptionFooter, RemoteOptionSearch } from "@/shared/ui/RemoteOptionControls";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -136,10 +136,11 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const companyRoleQuery = useResourceOptions(roleOptions("Company"), canManage);
   const companies = useResourceOptions(companyOptions, canManage);
   const assignedCompanies = useQueries({ queries: member.companies.map((assignment) => ({
-    queryKey: ["companies", "detail", assignment.companyId], queryFn: ({ signal }: { signal: AbortSignal }) => fetchCompanyOption(assignment.companyId, signal),
-    enabled: canManage && Boolean(companies.data) && !companies.knownItems.some((company) => company.id === assignment.companyId), meta: { silent: true },
+    ...companyQuery(assignment.companyId),
+    enabled: canManage && !assignment.companyStatus && Boolean(companies.data) && !companies.knownItems.some((company) => company.id === assignment.companyId),
   })) });
-  const registry = [...companies.knownItems, ...assignedCompanies.flatMap((query) => query.data ? [query.data] : [])];
+  const registry = [...companies.knownItems, ...assignedCompanies.flatMap((query) => query.data ? [query.data] : []),
+    ...member.companies.flatMap((assignment) => assignment.companyStatus ? [{ id: assignment.companyId, name: assignment.companyName, status: assignment.companyStatus }] : [])];
   const orgRoles = orgOptions.items;
   const companyRoles = companyRoleQuery.knownItems;
   const activeCompanies = registry.filter((company) => company.status === "Active");

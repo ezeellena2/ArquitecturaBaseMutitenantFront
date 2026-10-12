@@ -27,7 +27,7 @@ export function roleScopeLabel(scope: RoleScope, t: TranslateRole, companyName?:
 
 const visiblePermissionCount = (role: RoleResponse) => permissionCountInScope(role.permissions, role.scope);
 
-export function createRoleColumns(t: TranslateRole, companyNames: ReadonlyMap<string, string> = new Map()): Column<RoleResponse>[] {
+export function createRoleColumns(t: TranslateRole): Column<RoleResponse>[] {
   return [
     {
       // Anchos del tablero Roles: 1.6fr, 1.3fr, 100 px y 100 px, más los márgenes de cada celda. Debajo del nombre, «De
@@ -39,7 +39,7 @@ export function createRoleColumns(t: TranslateRole, companyNames: ReadonlyMap<st
       cell: (role) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/roles/${encodeURIComponent(role.id)}`}>{role.name}</Link>,
       detail: (role) => role.isSystemRole ? t("roles:system") : null,
     },
-    { ...roleColumnDefinitions.scope, header: t("roles:columns.scope"), type: "custom", cell: (role) => <span>{roleScopeLabel(role.scope, t, role.companyId ? companyNames.get(role.companyId) : undefined)}</span> },
+    { ...roleColumnDefinitions.scope, header: t("roles:columns.scope"), type: "custom", cell: (role) => <span>{roleScopeLabel(role.scope, t, role.companyName ?? undefined)}</span> },
     { ...roleColumnDefinitions.userCount, header: t("roles:columns.users"), className: "w-[112px]" },
     { ...roleColumnDefinitions.permissions, header: t("roles:columns.permissions"), className: "w-[112px]", value: visiblePermissionCount },
   ];
@@ -47,8 +47,8 @@ export function createRoleColumns(t: TranslateRole, companyNames: ReadonlyMap<st
 
 /// Tablero M-Roles: en el teléfono cada rol es una fila con cuántos lo tienen a la derecha, dónde vale (y si es de
 /// sistema) y cuántos permisos tiene.
-export function rolePhoneRow(role: RoleResponse, t: TranslateRole & ((key: string, options: { count: number }) => string), companyNames: ReadonlyMap<string, string>, trailing: ReactNode): ReactNode {
-  const scope = roleScopeLabel(role.scope, t, role.companyId ? companyNames.get(role.companyId) : undefined);
+export function rolePhoneRow(role: RoleResponse, t: TranslateRole & ((key: string, options: { count: number }) => string), trailing: ReactNode): ReactNode {
+  const scope = roleScopeLabel(role.scope, t, role.companyName ?? undefined);
   return <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name} meta={t("roles:phone.users", { count: role.userCount })}
     lines={[role.isSystemRole ? `${t("roles:system")} · ${scope}` : scope, t("roles:phone.permissions", { count: visiblePermissionCount(role) })]} trailing={trailing} />;
 }
