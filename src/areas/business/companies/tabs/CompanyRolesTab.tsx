@@ -1,5 +1,5 @@
 import { Pencil } from "lucide-react";
-import { useState } from "react";
+import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
@@ -13,14 +13,15 @@ import type { CompanyRoles } from "./useCompanyRoles";
 
 /**
  * Pestaña Roles de la ficha (tableros Empresa y M-Empresa): los roles que valen solo en esta empresa (alcance
- * SpecificCompany). Se paginan acá: el pie es el mismo que el de Miembros.
+ * SpecificCompany). El servidor pagina los roles propios; el pie es el mismo que el de Miembros.
  */
 export function CompanyRolesTab({ roles }: { roles: CompanyRoles }) {
   const { t } = useTranslation(["companies", "roles", "common"]);
   const navigate = useNavigate();
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const { query, own } = roles;
+  const { result: query, paginationProps } = usePagedQuery({ filterKeys: [] as const, defaultSort: "name",
+    toQuery: ({ page, pageSize }) => ({ page, pageSize, sort: "name" }),
+    queryKey: (page) => [...roles.own.queryKeyRoot, page], queryFn: (page) => roles.own.queryFn(page),
+    enabled: roles.canReadRoles, staleTime: 30_000, meta: { silent: true } });
   const roleActions = (role: RoleResponse) => <RowActions label={t("companies:roleActions", { name: role.name })} title={role.name} actions={[
     { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); } },
   ]} />;
@@ -34,13 +35,11 @@ export function CompanyRolesTab({ roles }: { roles: CompanyRoles }) {
   ];
 
   return <Surface className="overflow-hidden" phoneFlush>
-    <DataTable columns={columns} rows={own.slice((page - 1) * pageSize, page * pageSize)} rowKey={(role) => role.id}
+    <DataTable columns={columns} rows={query.data?.items ?? []} rowKey={(role) => role.id}
       mobileRow={(role) => <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name}
         meta={t("roles:phone.users", { count: role.userCount })} lines={[t("roles:phone.permissions", { count: role.permissions.length })]} trailing={roleActions(role)} />}
       isLoading={query.isPending} isFetching={query.isFetching} error={query.error ? apiErrorMessage(query.error, t) : undefined}
       onRetry={() => { void query.refetch(); }} emptyTitle={t("companies:detail.rolesEmpty")} />
-    {query.data ? <Pagination page={page} pageSize={pageSize} totalCount={own.length} totalPages={Math.max(1, Math.ceil(own.length / pageSize))}
-      hasPrevious={page > 1} hasNext={page * pageSize < own.length} onPageChange={setPage}
-      onPageSizeChange={(size) => { setPageSize(size); setPage(1); }} /> : null}
+    {paginationProps ? <Pagination {...paginationProps} /> : null}
   </Surface>;
 }

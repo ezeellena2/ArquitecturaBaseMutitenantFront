@@ -1,3 +1,4 @@
+import type { PagedResultOfPlatformRecoveryResponse } from "@/shared/api/types";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -5,7 +6,6 @@ import { useLocation } from "react-router";
 import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
-import type { PagedResult } from "@/shared/api/pagedResult";
 import type { AccountRecoveryStatus, PlatformRecoveryResponse } from "@/shared/api/types";
 import { useFormat } from "@/shared/format/useFormat";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
@@ -76,7 +76,7 @@ export function RecoveriesPage() {
     {activeConfirmation ? <ReviewRecoveryDialog key={`${activeConfirmation.recovery.id}:${activeConfirmation.recovery.status}:${route}`} recovery={activeConfirmation.recovery} returnFocusTo={activeConfirmation.trigger} onClose={() => setConfirmation(null)} onResolved={(response, operation) => {
       const written: OwnWrite = { version: response.version, status: operation.action === "approve" ? "Approved" : "Rejected", reason: operation.reason };
       setOwnWrites((previous) => new Map(previous).set(operation.id, written));
-      client.setQueriesData<PagedResult<PlatformRecoveryResponse>>({ queryKey: [...recoveriesQueryRoot, "paged"] }, (data) => data ? { ...data, items: data.items.map((row) => row.id === operation.id ? { ...row, ...written } : row) } : data);
+      client.setQueriesData<PagedResultOfPlatformRecoveryResponse>({ queryKey: [...recoveriesQueryRoot, "paged"] }, (data) => data ? { ...data, items: data.items.map((row) => row.id === operation.id ? { ...row, ...written } : row) } : data);
       toast.success(t(operation.action === "approve" ? "platformRecoveries:messages.approved" : "platformRecoveries:messages.rejected", { method: activeConfirmation.recovery.newMethod, account: activeConfirmation.recovery.accountName || format.formatEmpty() }));
       void client.invalidateQueries({ queryKey: recoveriesQueryRoot });
     }} /> : null}

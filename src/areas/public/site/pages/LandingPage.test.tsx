@@ -1,3 +1,4 @@
+import type { PagedResultOfDirectoryEntryRow } from "@/shared/api/types";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
@@ -6,7 +7,6 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { SiteLayout } from "@/layouts/SiteLayout";
 import { changeCulture, configureI18n } from "@/shared/i18n";
-import type { PagedResult } from "@/shared/api/pagedResult";
 import type { DirectoryEntryRow } from "@/shared/api/types";
 import { publicSiteHost, publicSiteUrl } from "@/tenancy/publicSite";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -22,8 +22,8 @@ const companies: DirectoryEntryRow[] = [
   { slug: "cuarta-publicada", name: "Cuarta publicada", description: "No entra en la vista previa.", logoUrl: null },
 ];
 
-function directoryResponse(items: readonly DirectoryEntryRow[] = companies): PagedResult<DirectoryEntryRow> {
-  return { items, page: 1, pageSize: 10, totalCount: items.length, totalPages: items.length === 0 ? 0 : 1, hasPrevious: false, hasNext: false };
+function directoryResponse(items: readonly DirectoryEntryRow[] = companies): PagedResultOfDirectoryEntryRow {
+  return { items: [...items], page: 1, pageSize: 10, totalCount: items.length, totalPages: items.length === 0 ? 0 : 1, hasPrevious: false, hasNext: false };
 }
 
 beforeEach(async () => {

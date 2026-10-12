@@ -1,6 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
 import { useTranslation } from "react-i18next";
-import type { PagedResult } from "@/shared/api/pagedResult";
+import type { PagedResultOfRoleResponse } from "@/shared/api/types";
 import { pageSizes } from "@/shared/api/pageSizes";
 import { cn } from "@/shared/lib/utils";
 import { useFormat } from "@/shared/format/useFormat";
@@ -9,10 +9,10 @@ import { Button } from "./button";
 import { LoadMore } from "./LoadMore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 
-export type PaginationProps = Pick<
-  PagedResult<unknown>,
+export type PaginationProps = Required<Pick<
+  PagedResultOfRoleResponse,
   "page" | "pageSize" | "totalCount" | "totalPages" | "hasPrevious" | "hasNext"
-> & {
+>> & {
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   /** El directorio público conserva rango, página y flechas; los listados privados usan la app. */

@@ -109,7 +109,7 @@ export function CompanyDetailPage() {
       tabs={{ label: t("companies:detail.tabsLabel"), value: tab, onValueChange: (value) => setTab(value as CompanyTab), items: [
         { value: "members", label: t("companies:detail.members"), count: members.result.data?.totalCount ?? data.memberCount,
           className: "flex flex-col gap-3 md:gap-4", content: <CompanyMembersTab company={data} list={members} roles={roles.assignable} /> },
-        { value: "roles", label: t("companies:detail.roles"), count: roles.own.length, hidden: !canReadRoles, content: <CompanyRolesTab roles={roles} /> },
+        { value: "roles", label: t("companies:detail.roles"), count: roles.ownCount, hidden: !canReadRoles, content: <CompanyRolesTab roles={roles} /> },
       ] }} />
 
     {/* Cada diálogo se monta solo mientras está abierto, es dueño de su borrador y de su error y devuelve el foco. */}

@@ -1,7 +1,7 @@
+import type { PagedResultOfPlatformAccountResponse } from "@/shared/api/types";
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
-import type { PagedResult } from "@/shared/api/pagedResult";
-import type { PagedRequest, PlatformAccountDetailResponse, PlatformAccountFilterCounts, PlatformAccountKind, PlatformAccountReasonRequest, PlatformAccountResponse, PlatformAccountState, PlatformAuditCursorResponse } from "@/shared/api/types";
+import type { PagedRequest, PlatformAccountDetailResponse, PlatformAccountFilterCounts, PlatformAccountKind, PlatformAccountReasonRequest, PlatformAccountState, PlatformAuditCursorResponse } from "@/shared/api/types";
 
 export interface AccountsQuery extends PagedRequest { state?: PlatformAccountState; kind?: PlatformAccountKind }
 export type AccountCountsQuery = Pick<AccountsQuery, "search" | "state" | "kind">;
@@ -16,7 +16,7 @@ export function fetchAccountHistory(id: string, after: string | null): Promise<P
   if (after) query.set("after", after);
   return api.get(`/api/platform/audit?${query}`);
 }
-export function fetchAccounts(query: AccountsQuery): Promise<PagedResult<PlatformAccountResponse>> { return api.get(`/api/platform/accounts/paged${toSearch(query, true)}`); }
+export function fetchAccounts(query: AccountsQuery): Promise<PagedResultOfPlatformAccountResponse> { return api.get(`/api/platform/accounts/paged${toSearch(query, true)}`); }
 export function fetchAccountCounts(query: AccountCountsQuery): Promise<PlatformAccountFilterCounts> { return api.get(`/api/platform/accounts/filter-counts${toSearch(query, true)}`); }
 export function fetchAccount(id: string): Promise<PlatformAccountDetailResponse> { return api.get(`/api/platform/accounts/${encodeURIComponent(id)}`); }
 export function changeAccount(id: string, action: AccountAction, request: PlatformAccountReasonRequest, key: string): Promise<void> {

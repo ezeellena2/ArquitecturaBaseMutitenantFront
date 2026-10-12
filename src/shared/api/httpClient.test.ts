@@ -6,7 +6,7 @@ import { changeCulture, configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
 import { ApiError } from "./ApiError";
 import { api, configureHttpClient, resetHttpClient } from "./httpClient";
-import type { PagedResult } from "./pagedResult";
+import type { ResourceOptions } from "./resourceOptions";
 import { getAccessError } from "./accessErrorStore";
 import { now } from "@/shared/time/serverClock";
 
@@ -130,7 +130,7 @@ describe("httpClient", () => {
       totalPages: 1, hasPrevious: false, hasNext: false,
     })));
 
-    const page = await api.get<PagedResult<{ id: string }>>("/api/items");
+    const page = await api.get<Awaited<ReturnType<ResourceOptions<{ id: string }>["queryFn"]>>>("/api/items");
     expect(page.items[0].id).toBe("first");
     expect(page.pageSize).toBe(10);
     expect(page.totalCount).toBe(1);

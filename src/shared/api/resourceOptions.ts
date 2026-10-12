@@ -1,18 +1,18 @@
+import type { PagedResultOfRoleResponse, PagedResultOfCompanyResponse } from "@/shared/api/types";
 import { api } from "./httpClient";
 import { toSearch } from "./toSearch";
-import type { PagedResult } from "./pagedResult";
-import type { ApiSchemas, CompanyCandidateResponse, CompanyResponse, PagedRequest, RoleResponse, RoleScopeFilter } from "./types";
+import type { CompanyCandidateResponse, CompanyResponse, PagedRequest, RoleResponse, RoleScopeFilter } from "./types";
 
 export const optionPage: PagedRequest = { page: 1, pageSize: 10, sort: "name" };
 
 export interface ResourceOptions<T> {
   readonly queryKeyRoot: readonly unknown[];
   readonly lookupKeyRoot?: readonly unknown[];
-  readonly queryFn: (query: PagedRequest, signal?: AbortSignal) => Promise<Omit<ApiSchemas["PagedResultOfRoleResponse"], "items"> & { items: readonly T[] }>;
+  readonly queryFn: (query: PagedRequest, signal?: AbortSignal) => Promise<Omit<PagedResultOfRoleResponse, "items"> & { items: readonly T[] }>;
   readonly id: (item: T) => string;
 }
 
-export function fetchCompanyOptions(query: PagedRequest = optionPage, signal?: AbortSignal): Promise<PagedResult<CompanyResponse>> {
+export function fetchCompanyOptions(query: PagedRequest = optionPage, signal?: AbortSignal): Promise<PagedResultOfCompanyResponse> {
   return api.get(`/api/companies/paged?${toSearch({ ...query, status: "Active" })}`, { signal });
 }
 
@@ -36,6 +36,15 @@ export function companyRoleOptions(companyId: string, canReadMembers: boolean): 
   return {
     queryKeyRoot: ["roles", "options", "company", companyId], id: (role) => role.id,
     queryFn: (query, signal) => api.get(`/api/companies/${encodeURIComponent(companyId)}/roles/paged?${toSearch(query)}`, { signal }),
+  };
+}
+
+export function ownCompanyRoleOptions(companyId: string, canReadMembers: boolean): ResourceOptions<RoleResponse> {
+  return {
+    queryKeyRoot: ["roles", "company-own", { companyId, canReadMembers }], id: (role) => role.id,
+    queryFn: (query, signal) => api.get<PagedResultOfRoleResponse>(
+      canReadMembers ? `/api/companies/${encodeURIComponent(companyId)}/roles/paged?${toSearch({ ...query, onlyOwn: true })}`
+        : `/api/roles/paged?${toSearch({ ...query, companyId, onlyOwn: true })}`, { signal }),
   };
 }
 

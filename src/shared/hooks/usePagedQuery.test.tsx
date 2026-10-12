@@ -3,17 +3,17 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { MemoryRouter, useLocation, useNavigate } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { PagedResult } from "@/shared/api/pagedResult";
+import type { ResourceOptions } from "@/shared/api/resourceOptions";
 import { usePagedQuery } from "./usePagedQuery";
 
 type Row = { id: string };
 type ListQuery = { page: number; pageSize: number; sort?: string; search?: string; status?: string };
 
-function paged(items: Row[], page: number, totalCount: number): PagedResult<Row> {
+function paged(items: Row[], page: number, totalCount: number): Awaited<ReturnType<ResourceOptions<Row>["queryFn"]>> {
   return { items, page, pageSize: 10, totalCount, totalPages: Math.ceil(totalCount / 10), hasPrevious: page > 1, hasNext: page * 10 < totalCount };
 }
 
-function renderList(url: string, fetchPage: (query: ListQuery) => Promise<PagedResult<Row>>, previousUrl?: string) {
+function renderList(url: string, fetchPage: (query: ListQuery) => Promise<Awaited<ReturnType<ResourceOptions<Row>["queryFn"]>>>, previousUrl?: string) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   function Wrapper({ children }: { children: ReactNode }) {
     return <QueryClientProvider client={client}>

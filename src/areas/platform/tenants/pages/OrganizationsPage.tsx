@@ -1,3 +1,4 @@
+import type { PagedResultOfPlatformTenantResponse } from "@/shared/api/types";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Power, RotateCw, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
@@ -6,7 +7,6 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
-import type { PagedResult } from "@/shared/api/pagedResult";
 import type { PlatformTenantResponse, TenantRegistrationSource, TenantStatus, VersionResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { maskEmail } from "@/shared/format/personalData";
@@ -88,7 +88,7 @@ export function OrganizationsPage() {
   const invalidate = async () => client.invalidateQueries({ queryKey: tenantsQueryRoot });
   function wrote(id: string, version: number, status: TenantStatus) {
     setOwnWrites((previous) => new Map(previous).set(id, { version, status }));
-    client.setQueriesData<PagedResult<PlatformTenantResponse>>({ queryKey: [...tenantsQueryRoot, "paged"] }, (data) => data ? { ...data, items: data.items.map((item) => item.id === id ? { ...item, version, status } : item) } : data);
+    client.setQueriesData<PagedResultOfPlatformTenantResponse>({ queryKey: [...tenantsQueryRoot, "paged"] }, (data) => data ? { ...data, items: data.items.map((item) => item.id === id ? { ...item, version, status } : item) } : data);
   }
   const retry = useIdempotentMutation((organization: PlatformTenantResponse, key) => retryTenantProvisioning(organization.id, { version: organization.version }, key), {
     sameOperation: (previous, next) => previous.id === next.id && previous.version === next.version,

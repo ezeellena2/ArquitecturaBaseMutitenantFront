@@ -1,14 +1,13 @@
+import type { PagedResultOfCompanyResponse, PagedResultOfCompanyMemberHttpResponse } from "@/shared/api/types";
 import { companyRoleOptions, optionPage, type ResourceOptions } from "@/shared/api/resourceOptions";
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
-import type { PagedResult } from "@/shared/api/pagedResult";
 import type {
   AddCompanyMemberRequest,
   ChangeCompanyMemberStatusRequest,
   ChangeCompanyStatusRequest,
   CompanyFilterCountsResponse,
   CompanyMemberFilterCountsResponse,
-  CompanyMemberResponse,
   CompanyMemberState,
   CompanyResponse,
   CompanyStatus,
@@ -36,9 +35,9 @@ export const companyMembersQueryKey = (companyId: string, query: CompanyMembersQ
 export const companyMembersCountQueryKey = (companyId: string, search?: string) => [...companyMembersQueryRoot(companyId), "counts", search ?? ""] as const;
 
 
-export function fetchCompanies(query: CompaniesQuery): Promise<PagedResult<CompanyResponse>> {
+export function fetchCompanies(query: CompaniesQuery): Promise<PagedResultOfCompanyResponse> {
   const search = toSearch(query);
-  return api.get<PagedResult<CompanyResponse>>(`/api/companies/paged${search ? `?${search}` : ""}`);
+  return api.get<PagedResultOfCompanyResponse>(`/api/companies/paged${search ? `?${search}` : ""}`);
 }
 
 export function fetchCompanyCounts(search?: string): Promise<CompanyFilterCountsResponse> {
@@ -62,9 +61,9 @@ export function changeCompanyStatus(companyId: string, request: ChangeCompanySta
   return api.put<VersionResponse>(`/api/companies/${encodeURIComponent(companyId)}/status`, request);
 }
 
-export function fetchCompanyMembers(companyId: string, query: CompanyMembersQuery): Promise<PagedResult<CompanyMemberResponse>> {
+export function fetchCompanyMembers(companyId: string, query: CompanyMembersQuery): Promise<PagedResultOfCompanyMemberHttpResponse> {
   const search = toSearch(query);
-  return api.get<PagedResult<CompanyMemberResponse>>(`/api/companies/${encodeURIComponent(companyId)}/members/paged${search ? `?${search}` : ""}`);
+  return api.get<PagedResultOfCompanyMemberHttpResponse>(`/api/companies/${encodeURIComponent(companyId)}/members/paged${search ? `?${search}` : ""}`);
 }
 
 export function fetchCompanyMemberCounts(companyId: string, search?: string): Promise<CompanyMemberFilterCountsResponse> {

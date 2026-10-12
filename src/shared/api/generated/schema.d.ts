@@ -11878,6 +11878,7 @@ export interface paths {
                     PageSize?: 10 | 20 | 50 | 100;
                     Sort?: string;
                     Search?: string;
+                    OnlyOwn?: boolean;
                 };
                 header?: never;
                 path: {
@@ -14065,6 +14066,7 @@ export interface paths {
                     Search?: string;
                     Scope?: components["schemas"]["RoleScopeFilter"];
                     CompanyId?: string;
+                    OnlyOwn?: boolean;
                 };
                 header?: never;
                 path?: never;

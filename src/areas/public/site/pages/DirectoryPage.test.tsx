@@ -1,10 +1,10 @@
+import type { PagedResultOfDirectoryEntryRow } from "@/shared/api/types";
 import { act, fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { changeCulture, configureI18n } from "@/shared/i18n";
-import type { PagedResult } from "@/shared/api/pagedResult";
 import type { DirectoryEntryRow } from "@/shared/api/types";
 import { publicSiteHost, publicSiteUrl } from "@/tenancy/publicSite";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -18,7 +18,7 @@ const companies: DirectoryEntryRow[] = Array.from({ length: 50 }, (_, index) => 
 const delta: DirectoryEntryRow = { slug: "grupo-delta", name: "Grupo Delta publicado", description: "Datos públicos de Delta.", logoUrl: null };
 let requests: URL[];
 
-function paged(items: readonly DirectoryEntryRow[], query: URLSearchParams): PagedResult<DirectoryEntryRow> {
+function paged(items: readonly DirectoryEntryRow[], query: URLSearchParams): PagedResultOfDirectoryEntryRow {
   const page = Number(query.get("page") ?? 1);
   const pageSize = Number(query.get("pageSize") ?? 10);
   return {

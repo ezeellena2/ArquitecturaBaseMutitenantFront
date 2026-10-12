@@ -248,3 +248,19 @@ export type AssistantExportQuery = ApiPaths["/api/me/assistant/conversations/{id
 export type OrganizationAssistantUsageQuery = NonNullable<ApiPaths["/api/organization/assistant/usage"]["get"]["parameters"]["query"]>;
 export type PlatformAssistantUsageQuery = NonNullable<ApiPaths["/api/platform/assistant/usage"]["get"]["parameters"]["query"]>;
 export type AssistantModelListQuery = ApiPaths["/api/platform/assistant/models"]["get"]["parameters"]["query"];
+
+export type PagedResultOfRoleResponse = ApiSchemas["PagedResultOfRoleResponse"];
+
+export type PagedResultOfDirectoryEntryRow = ApiSchemas["PagedResultOfDirectoryEntryRow"];
+
+export type PagedResultOfOrganizationUserHttpResponse = ApiSchemas["PagedResultOfOrganizationUserHttpResponse"];
+
+export type PagedResultOfCompanyResponse = ApiSchemas["PagedResultOfCompanyResponse"];
+
+export type PagedResultOfCompanyMemberHttpResponse = ApiSchemas["PagedResultOfCompanyMemberHttpResponse"];
+
+export type PagedResultOfPlatformTenantResponse = ApiSchemas["PagedResultOfPlatformTenantResponse"];
+
+export type PagedResultOfPlatformAccountResponse = ApiSchemas["PagedResultOfPlatformAccountResponse"];
+
+export type PagedResultOfPlatformRecoveryResponse = ApiSchemas["PagedResultOfPlatformRecoveryResponse"];

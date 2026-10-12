@@ -1,6 +1,6 @@
+import type { PagedResultOfRoleResponse } from "@/shared/api/types";
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
-import type { PagedResult } from "@/shared/api/pagedResult";
 import type {
   CreateRoleRequest,
   PagedRequest,
@@ -20,9 +20,9 @@ export const roleCountsQueryKey = (search?: string) => [...rolesQueryKeyRoot, "f
 export const roleQueryKey = (roleId: string) => [...rolesQueryKeyRoot, "detail", roleId] as const;
 export const permissionGroupsQueryKey = ["permissions"] as const;
 
-export function fetchRoles(query: RolesQuery): Promise<PagedResult<RoleResponse>> {
+export function fetchRoles(query: RolesQuery): Promise<PagedResultOfRoleResponse> {
   const search = toSearch(query);
-  return api.get<PagedResult<RoleResponse>>(`/api/roles/paged${search ? `?${search}` : ""}`);
+  return api.get<PagedResultOfRoleResponse>(`/api/roles/paged${search ? `?${search}` : ""}`);
 }
 
 export function fetchRoleCounts(search?: string): Promise<RoleFilterCountsResponse> {

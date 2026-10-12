@@ -17,6 +17,7 @@ interface PagedQueryOptions<K extends string, TQuery, TPage extends PagedRespons
   readonly queryKey: (query: TQuery) => QueryKey;
   readonly queryFn: (query: TQuery) => Promise<TPage>;
   readonly enabled?: boolean;
+  readonly staleTime?: number;
   readonly meta?: QueryMeta;
 }
 
@@ -25,13 +26,13 @@ interface PagedQueryOptions<K extends string, TQuery, TPage extends PagedRespons
 /// la nueva; si llega una página vacía con filas en otras (se borró la última fila de la última página), salta sola a
 /// la última que tiene, con replace; y entrega las props de `Pagination`.
 export function usePagedQuery<K extends string, TQuery, TPage extends PagedResponse>({
-  filterKeys, defaultSort, toQuery, queryKey, queryFn, enabled, meta,
+  filterKeys, defaultSort, toQuery, queryKey, queryFn, enabled, staleTime, meta,
 }: PagedQueryOptions<K, TQuery, TPage>) {
   const filters = useFilters(filterKeys);
   const pagination = usePagination({ defaultSort });
   const search = useDebouncedValue(pagination.search ?? "");
   const query = toQuery({ page: pagination.page, pageSize: pagination.pageSize, sort: pagination.sort, search: search || undefined }, filters.values);
-  const result = useQuery({ queryKey: queryKey(query), queryFn: () => queryFn(query), enabled, placeholderData: keepPreviousData, meta });
+  const result = useQuery({ queryKey: queryKey(query), queryFn: () => queryFn(query), enabled, staleTime, placeholderData: keepPreviousData, meta });
 
   // Solo con la respuesta de esta página: la anterior, que se muestra mientras llega, no dice nada de esta.
   const settled = result.isPlaceholderData ? undefined : result.data;

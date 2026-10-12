@@ -42,7 +42,7 @@ function detailApi(members: unknown[]) {
     http.get("/api/companies/company-1", () => HttpResponse.json(company)),
     http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: members, page: 1, pageSize: 10, totalCount: members.length, totalPages: 1, hasPrevious: false, hasNext: false })),
     http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: members.length, active: 1, pendingDeletion: 1, inactive: 1, invited: 0 })),
-    http.get("/api/companies/company-1/roles/paged", () => HttpResponse.json({ items: [companyAdmin, ownRole], page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+    http.get("/api/companies/company-1/roles/paged", ({ request }) => { const items = new URL(request.url).searchParams.get("onlyOwn") === "true" ? [ownRole] : [companyAdmin, ownRole]; return HttpResponse.json({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false }); }),
   );
 }
 
@@ -53,7 +53,7 @@ function rolesApi(put: () => Response) {
     http.get("/api/companies/company-1", () => { reads.company += 1; return HttpResponse.json(company); }),
     http.get("/api/companies/company-1/members/paged", () => { reads.members += 1; return HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false }); }),
     http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, inactive: 0, invited: 0 })),
-    http.get("/api/companies/company-1/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+    http.get("/api/companies/company-1/roles/paged", ({ request }) => { const items = new URL(request.url).searchParams.get("onlyOwn") === "true" ? [] : [companyAdmin]; return HttpResponse.json({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false }); }),
     http.put("/api/companies/company-1/members/member-1/roles", put),
   );
   return reads;
@@ -81,6 +81,27 @@ function expectAboveButtons(dialog: HTMLElement, alert: HTMLElement, lastField: 
 }
 
 describe("CompanyDetailPage", () => {
+  it("pide roles propios paginados al servidor y conserva el total de la pestaña", async () => {
+    const user = userEvent.setup(); detailApi([member]);
+    const own = Array.from({ length: 12 }, (_, index) => ({ ...ownRole, id: `role-${index}`, name: `Rol propio ${index}` }));
+    const requests: URL[] = [];
+    server.use(http.get("/api/companies/company-1/roles/paged", ({ request }) => {
+      const url = new URL(request.url); requests.push(url);
+      const page = Number(url.searchParams.get("page") ?? 1);
+      const rows = url.searchParams.get("onlyOwn") === "true" ? own : [companyAdmin, ...own];
+      return HttpResponse.json({ items: rows.slice((page - 1) * 10, page * 10), page, pageSize: 10, totalCount: rows.length, totalPages: 2, hasPrevious: page > 1, hasNext: page < 2 });
+    }));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    const rolesTab = await screen.findByRole("tab", { name: /^Roles/ });
+    await waitFor(() => expect(rolesTab).toHaveTextContent("12"));
+    await user.click(rolesTab);
+    expect(await screen.findByRole("link", { name: own[0].name })).toBeVisible();
+    expect(screen.queryByRole("link", { name: companyAdmin.name })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: own[11].name })).not.toBeInTheDocument();
+    await user.click(within(screen.getByRole("tabpanel")).getByRole("button", { name: "Página siguiente" }));
+    expect(await screen.findByRole("link", { name: own[11].name })).toBeVisible();
+    expect(requests.filter((url) => url.searchParams.get("onlyOwn") === "true").map((url) => url.searchParams.get("page"))).toEqual(["1", "2"]);
+  });
   it("tablero Empresa: banda, columnas y filtros accesibles de Miembros", async () => {
     detailApi([member]);
     const { container } = renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });

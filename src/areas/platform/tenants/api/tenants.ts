@@ -1,7 +1,7 @@
+import type { PagedResultOfPlatformTenantResponse } from "@/shared/api/types";
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
-import type { PagedResult } from "@/shared/api/pagedResult";
-import type { OrganizationDomainPageResponse, CreatePlatformTenantRequest, CreatedPlatformTenantResponse, OrganizationDomainResponse, PagedRequest, PlatformFeatureResponse, PlatformPublicSiteResponse, PlatformTenantDetailResponse, PlatformTenantFilterCounts, PlatformTenantHistoryCursorResponse, PlatformTenantResponse, PlatformTenantRetryRequest, PlatformTenantStateRequest, TenantRegistrationSource, TenantStatus, UpdatePlatformFeatureRequest, VersionResponse } from "@/shared/api/types";
+import type { OrganizationDomainPageResponse, CreatePlatformTenantRequest, CreatedPlatformTenantResponse, OrganizationDomainResponse, PagedRequest, PlatformFeatureResponse, PlatformPublicSiteResponse, PlatformTenantDetailResponse, PlatformTenantFilterCounts, PlatformTenantHistoryCursorResponse, PlatformTenantRetryRequest, PlatformTenantStateRequest, TenantRegistrationSource, TenantStatus, UpdatePlatformFeatureRequest, VersionResponse } from "@/shared/api/types";
 
 export interface TenantsQuery extends PagedRequest { status?: TenantStatus; source?: TenantRegistrationSource }
 export type TenantCountsQuery = Pick<TenantsQuery, "search" | "status" | "source">;
@@ -52,8 +52,8 @@ export function fetchTenantHistory(id: string, after: string | null, limit = 25)
   return api.get<PlatformTenantHistoryCursorResponse>(`/api/platform/tenants/${encodeURIComponent(id)}/history?${params}`);
 }
 
-export function fetchTenants(query: TenantsQuery): Promise<PagedResult<PlatformTenantResponse>> {
-  return api.get<PagedResult<PlatformTenantResponse>>(`/api/platform/tenants/paged${toSearch(query, true)}`);
+export function fetchTenants(query: TenantsQuery): Promise<PagedResultOfPlatformTenantResponse> {
+  return api.get<PagedResultOfPlatformTenantResponse>(`/api/platform/tenants/paged${toSearch(query, true)}`);
 }
 export function fetchTenantCounts(query: TenantCountsQuery): Promise<PlatformTenantFilterCounts> {
   return api.get<PlatformTenantFilterCounts>(`/api/platform/tenants/filter-counts${toSearch(query, true)}`);

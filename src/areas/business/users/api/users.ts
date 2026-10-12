@@ -1,3 +1,4 @@
+import type { PagedResultOfOrganizationUserHttpResponse } from "@/shared/api/types";
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
 import type {
@@ -11,7 +12,6 @@ import type {
   UpdateOrganizationUserRequest,
   VersionResponse,
 } from "@/shared/api/types";
-import type { PagedResult } from "@/shared/api/pagedResult";
 
 export interface UsersQuery extends PagedRequest {
   state?: OrganizationUserState;
@@ -25,9 +25,9 @@ export const userQueryKey = (memberId: string) => [...usersQueryRoot, "detail", 
 export const userCountsQueryKey = (query: Pick<UsersQuery, "search" | "state" | "companyId" | "withoutCompany">) => [...usersQueryRoot, "counts", query] as const;
 
 
-export function fetchUsers(query: UsersQuery): Promise<PagedResult<OrganizationUserResponse>> {
+export function fetchUsers(query: UsersQuery): Promise<PagedResultOfOrganizationUserHttpResponse> {
   const search = toSearch(query);
-  return api.get<PagedResult<OrganizationUserResponse>>(`/api/users/paged${search ? `?${search}` : ""}`);
+  return api.get<PagedResultOfOrganizationUserHttpResponse>(`/api/users/paged${search ? `?${search}` : ""}`);
 }
 
 export function fetchUserCounts(query: Pick<UsersQuery, "search" | "state" | "companyId" | "withoutCompany">): Promise<OrganizationUserFilterCountsResponse> {

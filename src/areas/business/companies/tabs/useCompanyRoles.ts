@@ -1,4 +1,5 @@
-import { companyRoleOptions } from "@/shared/api/resourceOptions";
+import { companyRoleOptions, ownCompanyRoleOptions, optionPage } from "@/shared/api/resourceOptions";
+import { useQuery } from "@tanstack/react-query";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 
 /// Los roles de la empresa, en una sola consulta (B4: por la ruta de la empresa si se ven sus miembros): los que se
@@ -6,11 +7,14 @@ import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 /// empresa, que son la pestaña Roles. El rol Dueño no se asigna en una empresa.
 export function useCompanyRoles(companyId: string, { canReadRoles, canReadMembers }: { canReadRoles: boolean; canReadMembers: boolean }) {
   const query = useResourceOptions(companyRoleOptions(companyId, canReadMembers), (canReadRoles || canReadMembers) && Boolean(companyId));
+  const own = ownCompanyRoleOptions(companyId, canReadMembers);
+  const ownQuery = useQuery({ queryKey: [...own.queryKeyRoot, optionPage], queryFn: () => own.queryFn(optionPage),
+    enabled: canReadRoles && Boolean(companyId), staleTime: 30_000, meta: { silent: true } });
   const active = query.data?.items ?? [];
   return {
     query,
     assignable: active.filter((role) => role.scope === "AnyCompany" || role.companyId === companyId),
-    own: active.filter((role) => role.scope === "SpecificCompany" && role.companyId === companyId),
+    own, ownCount: ownQuery.data?.totalCount, canReadRoles,
   };
 }
 
