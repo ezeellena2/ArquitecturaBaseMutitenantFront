@@ -5,17 +5,12 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
 ## Raíz
 
 ```text
-├── .artifacts/
-│   └── etapa-5-propuesta/
 ├── .github/
 │   └── workflows/
-├── contracts/
 ├── docs/
 │   ├── architecture/
 │   ├── design/
-│   ├── plans/
 │   ├── rules/  fichas del arnés: README + 14 temas, incluida personal.md (receta front y ficha funcional del back)
-│   └── specs/
 ├── public/
 ├── scripts/
 │   ├── capturas/  casos de cada etapa
@@ -110,16 +105,7 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │       └── site/  feature normal; API/keys en tenancy/usePublicSite, sin crossimports
     │           └── pages/
     ├── assets/
-    │   └── fonts/
     ├── auth/
-    ├── features/
-    │   ├── companies/
-    │   ├── members/
-    │   ├── profile/
-    │   ├── reports/
-    │   ├── roles/
-    │   ├── settings/
-    │   └── users/
     ├── layouts/
     │   ├── components/
     │   └── navigation/
@@ -137,17 +123,6 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │       ├── runtime/
     │       ├── settings/
     │       └── usage/
-    ├── platform/
-    │   ├── api/
-    │   ├── app/
-    │   ├── context/
-    │   ├── features/
-    │   │   ├── accessLost/
-    │   │   ├── audit/
-    │   │   ├── profile/
-    │   │   ├── tenants/
-    │   │   └── whatsApp/
-    │   └── layouts/
     ├── shared/
     │   ├── account/  lo de la cuenta que usan varias áreas (ADR 0033)
     │   │   └── api/
@@ -163,15 +138,11 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │   ├── platform/  piezas compartidas por las features de Plataforma
     │   ├── referenceData/  cinco catálogos de GET /api/reference-data
     │   ├── time/  zona efectiva de cuenta/empresa/organización
-    │   │   ├── api/
-    │   │   └── components/
     │   └── ui/  solo primitivas shadcn independientes de la base y piezas nuevas sin dependencias posteriores; al copiarlas, --color-* pasa a los tokens de tema.md
     │       ├── app/  el marco de app del teléfono (tableros M-*, «Criterio · Marco y pantallas»)
     │       ├── fields/  cómo se CARGA cada dato (parsea la cultura y emite el contrato)
     │       └── format/  cómo se VE cada dato (siempre por acá)
     ├── tenancy/  accesos (B2C / B2B / plataforma)
-    │   ├── api/
-    │   └── components/
     └── test/
         ├── mocks/  no se copia en E0
         └── utils/
