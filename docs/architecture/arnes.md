@@ -15,7 +15,7 @@ Para una pantalla, el **«Copiá de» es el [tablero correspondiente del lienzo 
 
 ## 2. Mapa de carpetas → punteros
 
-El mapa de responsabilidades y punteros vive en [arbol.md](arbol.md#mapa-de-carpetas--punteros).
+El mapa de responsabilidades y punteros vive en [arbol.md](arbol.md#mapa-de-carpetas-punteros).
 
 ## 3. "Si vas a tocar X, leé Y"
 
