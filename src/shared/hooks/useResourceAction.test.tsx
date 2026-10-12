@@ -7,6 +7,24 @@ import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useResourceAction } from "./useResourceAction";
 
 describe("useResourceAction", () => {
+  it("el primer envío propio queda pendiente aunque todavía no haya otro evento de la mutación", async () => {
+    const client = new QueryClient();
+    let finish: () => void = () => {};
+    const pending = new Promise<void>((resolve) => { finish = resolve; });
+    const hook = renderHook(() => {
+      const action = useResourceAction<{ id: string }>({ matches: (meta) => meta?.resource === "A", isCurrent: (sent) => sent.id === "first" });
+      const mutation = useIdempotentMutation(action.guarded(async () => { await pending; return true; }), { meta: { resource: "A" } });
+      return { action, mutation };
+    }, { wrapper: ({ children }: { children: ReactNode }) => createElement(QueryClientProvider, { client }, children) });
+    let request: Promise<unknown> = Promise.resolve();
+    await act(async () => { request = hook.result.current.mutation.mutateAsync({ id: "first" }); await Promise.resolve(); });
+    expect(client.isMutating()).toBe(1);
+    expect(hook.result.current.action.isPending).toBe(true);
+    await act(async () => { finish(); await request; });
+    expect(hook.result.current.action.isPending).toBe(false);
+    hook.unmount(); client.clear();
+  });
+
   it("un Retry nativo sin observer conserva las variables y avisa sólo el error final de su recurso", async () => {
     const client = new QueryClient();
     const onError = vi.fn();

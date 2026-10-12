@@ -1,5 +1,5 @@
-import { useIsMutating, useQueryClient, type Mutation, type MutationMeta, type MutationOptions } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef } from "react";
+import { useQueryClient, type Mutation, type MutationMeta, type MutationOptions } from "@tanstack/react-query";
+import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 import { ApiError } from "@/shared/api/ApiError";
 import { useMountedRef } from "./useMountedRef";
 
@@ -24,6 +24,13 @@ export function useResourceAction<TVariables extends object>({ matches = noMutat
   // de state.variables (unknown) ni se acepta una operación de otro formulario.
   const variables = useRef(new WeakMap<object, TVariables>());
   const bindings = useRef(new WeakMap<Mutation, NativeCallbacks>());
+  const ownershipListeners = useRef(new Set<() => void>());
+  function own(sent: TVariables) {
+    if (variables.current.has(sent)) return;
+    variables.current.set(sent, sent);
+    // El estado pending se publica antes de llamar mutationFn. Registrar al dueño también cambia el snapshot.
+    ownershipListeners.current.forEach((notify) => notify());
+  }
   const protect = useCallback((mutation: Mutation) => {
     const binding = bindings.current.get(mutation);
     if (!binding) return;
@@ -49,20 +56,24 @@ export function useResourceAction<TVariables extends object>({ matches = noMutat
     if (sent === undefined || (isCurrent && !isCurrent(sent)) || !(error instanceof ApiError)) return;
     onError?.(error, sent);
   }), [client, mounted, matches, isCurrent, onError, protect]);
-  const isPending = useIsMutating({ predicate: (mutation) => {
+  const isPending = useSyncExternalStore((notify) => {
+    const unsubscribe = client.getMutationCache().subscribe(notify);
+    ownershipListeners.current.add(notify);
+    return () => { unsubscribe(); ownershipListeners.current.delete(notify); };
+  }, () => client.getMutationCache().findAll({ status: "pending" }).some((mutation) => {
     if (!matches(mutation.meta)) return false;
     if (!isCurrent) return true;
     const raw = mutation.state.variables;
     if (typeof raw !== "object" || raw === null) return false;
     const sent = variables.current.get(raw);
     return sent !== undefined && isCurrent(sent);
-  } }) > 0;
+  }));
 
   function guarded<TData, TArgs extends unknown[]>(perform: (sent: TVariables, ...args: TArgs) => Promise<TData>, committed?: (response: TData, sent: TVariables) => void) {
     return async (sent: TVariables, ...args: TArgs): Promise<TData> => {
       const current = () => mounted.current && (isCurrent?.(sent) ?? true);
       if (!current()) throw new DOMException("", "AbortError");
-      variables.current.set(sent, sent);
+      own(sent);
       try {
         const response = await perform(sent, ...args);
         if (!current()) throw new DOMException("", "AbortError");
@@ -88,7 +99,7 @@ export function useResourceAction<TVariables extends object>({ matches = noMutat
       };
       bindings.current.set(mutation, next); binding = next;
     }
-    variables.current.set(sent, sent);
+    own(sent);
     protect(mutation);
     return { valid: binding.valid, protect: () => protect(mutation) };
   }
