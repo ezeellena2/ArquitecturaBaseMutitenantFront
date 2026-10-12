@@ -29,12 +29,18 @@ SPA del multitenant. La arquitectura canónica está en [`docs/architecture/fron
 Si una regla no está escrita: **copiá cómo lo resuelve ArquitecturaBase** (`../ArquitecturaBase`, `../ArquitecturaBaseFront`); si tampoco está ahí, **decidí vos lo más simple y coherente con estos docs, anotalo en una línea del plan de la etapa y seguí**. `../ArquitecturaBaseFront` es solo un respaldo para lo que no está escrito acá: su forma de trabajo (dibujar y esperar una elección por pantalla) no rige. Frená y preguntá **solo** si la decisión cambia el producto (qué ve o puede hacer un usuario, una pantalla del lienzo, el modelo de accesos) o contradice una regla escrita. Una duda técnica menor nunca frena una etapa.
 
 ## Forma de trabajo
-- Commits chicos, en español, con conventional commits. Cada cambio coherente se commitea con sus tests focales en verde, más `npx tsc -b`, `npm run lint` y `npx vitest run <carpeta afectada>`.
+- Commits chicos, en español, con conventional commits. Cada cambio coherente se commitea con los tests de su carpeta (`npx vitest run <carpeta>`) y `npm run lint` en verde. `npx tsc -b` se corre al terminar la tarea.
 - Desde E7, **modo rápido** (pedido del usuario, 2026-10-07): programar directo lo aprobado, tests donde importan, sin visto bueno por pantalla ni capturas por avance. Una pantalla nueva sin tablero se dibuja antes. Si a un tablero vigente le falta un estado, se le pide a Diseño y se sigue con el resto. No se reabre una decisión ya autorizada. **Una sola puerta final:** suites completas, E2E real, documentación en 0, galería lado a lado y recorrido de usuario. Desde E8, contrato primero y back/front en paralelo según [la guía del back](../ArquitecturaBaseMutitenant/docs/guides/etapa-en-paralelo.md). Ver [complemento E8/E8b](docs/design/alineamiento-etapas-8-y-8b.md).
 - **Velocidad y cierre liviano** (pedido explícito del usuario, 2026-10-11, igual que en el [AGENTS.md del back](../ArquitecturaBaseMutitenant/AGENTS.md)). Las etapas que quedan (11, 9 y 10) tienen que salir mucho más rápido que la 8 y la 8b. **El trabajo es programar.**
   - **Cada verificación pasa completa una sola vez por etapa.** Build, lint, tests, contrato, E2E y recorrido tienen que dar, cada uno, una corrida completa en verde. Después de un arreglo se corre solo lo que ese arreglo toca. No se repite todo al final ni se arma un corte nuevo por cada arreglo.
   - **Sin actas.** El estado de un plan es una tabla, y la documentación se toca cuando cambia una regla, un contrato o una decisión.
   - **Lo técnico lo decide quien programa, y lo avisa después.** Al usuario se le pregunta solo lo de producto.
+  - **Lo que no se hace** (en la puerta de la 8 hubo 177 corridas y 558 archivos de evidencia):
+    - revisiones independientes por tarea o por arreglo, como subagentes revisores de especificación o de calidad: hay una sola revisión de código, al cerrar la etapa;
+    - repetir un test que ya pasó, ni corridas «de estabilidad»: un test que se pasó de tiempo se corre solo una vez más, aislado;
+    - guardar evidencia (recibos, hashes, logs de diagnóstico): las salidas quedan en `.local/` y en el plan va solo la tabla final;
+    - recapturar pantallas de etapas anteriores: la galería es solo de las pantallas nuevas o cambiadas en la etapa;
+    - worktrees o etiquetas fuera de la puerta.
 - Tests focales donde importan: lógica, permisos, privacidad, carreras y recorridos, sin rojo ceremonial por cada estado visual. Al cerrar una etapa, se corren una vez `npm run build`, `npm run lint`, `npm test` y `npm run contracts:check`, completos y limpios. El CI corre los mismos, pero todavía no compara los contratos: descarga un solo repo y salta `contracts:check`. El chequeo cruzado llega con la Etapa 10 (ADR 0016).
 
 ## Reglas
