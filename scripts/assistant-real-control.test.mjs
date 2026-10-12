@@ -28,3 +28,10 @@ test("filtros de ancho y no-build impiden corridas ajenas", () => {
   assert.throws(() => parseAssistantArguments(["--width=1440", "--width=390"]));
   assert.throws(() => parseAssistantArguments(["--private-key=secret"]), /no admitidos/);
 });
+
+test("el primer hito y su continuación preservan verdes sin aceptar opciones ajenas", () => {
+  assert.deepEqual(parseAssistantArguments(["--no-build", "--width=1440", "--only=E8B-10-1"]), { build: false, widths: [1440], onlyNotice: true });
+  assert.deepEqual(parseAssistantArguments(["--no-build", "--width=1440", "--after=E8B-10-1"]), { build: false, widths: [1440], afterNotice: true });
+  assert.throws(() => parseAssistantArguments(["--only=E8B-10-1", "--after=E8B-10-1"]));
+  assert.throws(() => parseAssistantArguments(["--only=E8B-20-1"]), /no admitidos/);
+});

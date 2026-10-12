@@ -22,8 +22,10 @@ export function createAssistantControl(command) {
 }
 
 export function parseAssistantArguments(args) {
-  assert.ok(args.every((argument) => ["--no-build", "--width=1440", "--width=390"].includes(argument)), "Argumentos Asistente no admitidos.");
+  assert.ok(args.every((argument) => ["--no-build", "--width=1440", "--width=390", "--only=E8B-10-1", "--after=E8B-10-1"].includes(argument)), "Argumentos Asistente no admitidos.");
   const widths = args.filter((argument) => argument.startsWith("--width="));
   assert.ok(widths.length <= 1, "Seleccioná un solo ancho.");
-  return { build: !args.includes("--no-build"), widths: widths.length ? [Number(widths[0].slice(8))] : [1440, 390] };
+  assert.ok(!(args.includes("--only=E8B-10-1") && args.includes("--after=E8B-10-1")), "Seleccioná el hito pendiente o su continuación.");
+  return { build: !args.includes("--no-build"), widths: widths.length ? [Number(widths[0].slice(8))] : [1440, 390],
+    ...(args.includes("--only=E8B-10-1") ? { onlyNotice: true } : {}), ...(args.includes("--after=E8B-10-1") ? { afterNotice: true } : {}) };
 }

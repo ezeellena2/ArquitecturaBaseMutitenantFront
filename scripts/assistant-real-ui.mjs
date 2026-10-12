@@ -156,7 +156,8 @@ const calls = (value) => value.calls + value.titleCalls;
 
 /** Los 21 hitos usan controles de la app; los casos técnicos suplementarios usan la API real. */
 export async function runAssistantJourney({ page, platformPage, width, env, base, businessEmail, operatorEmail,
-  record, organizationName = "Empresa E2E", login = (target, email, access) => assistantLogin(target, env, base, email, access), signOut }) {
+  record, organizationName = "Empresa E2E", login = (target, email, access) => assistantLogin(target, env, base, email, access), signOut,
+  onlyNotice = false, afterNotice = false }) {
   const control = createAssistantControl(env.command);
   const root = prefix("business");
   await login(page, businessEmail, "business");
@@ -169,15 +170,18 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
   await home(page, base, "business", width);
   const step = (id, action, target = page) => record(id, width, () => target, action, () => "El control real no cumplió la comprobación.");
   let id; let title; let admission;
-  await step("E8B-10-1", async () => {
+  // Una continuación nueva necesita aceptar por UI el aviso del contexto fresco, sin repetir el CHECK aprobado.
+  if (afterNotice) await acceptNotice(page);
+  else await step("E8B-10-1", async () => {
     const notice = page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true });
     await notice.waitFor();
-    assert.equal(await page.getByRole("textbox", { name: "Tu consulta", exact: true }).isEnabled(), false);
+    assert.equal(await page.getByRole("textbox", { name: "Tu consulta", exact: true, includeHidden: true }).isEnabled(), false);
     const before = await control("providerCounters");
     const draft = await assistantApi(page, { route: `${root}/conversations`, method: "POST", body: {}, key: randomUUID() });
-    assert.equal(draft.status, 201);
-    const blocked = await assistantApi(page, { route: `${root}/conversations/${draft.body.id}/messages`, method: "POST", key: randomUUID(),
-      body: { text: "[E2E:answer] No aceptar implícitamente.", attachmentIds: [], conversationVersion: draft.body.version }, stream: true });
+    assert.equal(draft.status, 400); assert.equal(draft.code, "Assistant.Notice.AcceptanceRequired");
+    // La política del aviso precede al lookup de conversación: ni crear ni enviar admiten aceptación implícita.
+    const blocked = await assistantApi(page, { route: `${root}/conversations/${randomUUID()}/messages`, method: "POST", key: randomUUID(),
+      body: { text: "[E2E:answer] No aceptar implícitamente.", attachmentIds: [], conversationVersion: 1 }, stream: true });
     assert.equal(blocked.status, 400); assert.equal(blocked.code, "Assistant.Notice.AcceptanceRequired");
     assert.equal(calls(await control("providerCounters")), calls(before));
     await acceptNotice(page);
@@ -185,6 +189,7 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     assert.equal(state.status, 200); assert.equal(state.body.noticeAccepted, true);
     return "Entendido quedó persistido antes de permitir consultar.";
   });
+  if (onlyNotice) return;
   await step("E8B-10-2", async () => {
     await page.getByRole("heading", { name: "¿Qué querés consultar?", exact: true }).waitFor();
     await page.reload();

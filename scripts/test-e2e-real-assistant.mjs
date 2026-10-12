@@ -61,8 +61,9 @@ export function assistantFixtureProtocol(input, output, { environment = process.
 }
 
 /** E2E real completo E8b. Fake reemplaza sólo el proveedor; front/auth/DB/archivos son reales. */
-export async function runAssistantRealE2E({ build = false, widths = [1440, 390] } = {}) {
+export async function runAssistantRealE2E({ build = false, widths = [1440, 390], onlyNotice = false, afterNotice = false } = {}) {
   assert.ok(widths.length > 0 && widths.every((width) => [1440, 390].includes(width)) && new Set(widths).size === widths.length, "Anchos Asistente inválidos.");
+  assert.ok(!onlyNotice || !afterNotice, "Seleccioná el hito pendiente o su continuación.");
   const env = await createEnvironment({ build });
   let browser;
   try {
@@ -85,11 +86,19 @@ export async function runAssistantRealE2E({ build = false, widths = [1440, 390] 
           await exit.first().click();
           await target.waitForURL((url) => !url.pathname.startsWith("/org") && !url.pathname.startsWith("/plataforma"));
         };
-        await runAssistantJourney({ page, platformPage, width, env, base: baseUrl, businessEmail: env.businessEmail, operatorEmail, signOut,
+        await runAssistantJourney({ page, platformPage, width, env, base: baseUrl, businessEmail: env.businessEmail, operatorEmail, signOut, onlyNotice, afterNotice,
           record: async (id, currentWidth, _getPage, action) => {
             process.stdout.write(assistantCheck("INICIO", id, currentWidth));
             try { await action(); process.stdout.write(assistantCheck("OK", id, currentWidth)); }
-            catch { process.stdout.write(assistantCheck("FALLO", id, currentWidth)); throw new Error(`Falló ${id} a ${currentWidth}; no se publican datos privados.`); }
+            catch (error) {
+              process.stdout.write(assistantCheck("FALLO", id, currentWidth));
+              const type = ["AssertionError", "TimeoutError", "ApiError", "Error", "AbortError"].includes(error?.name) ? error.name : "Error";
+              const status = Number.isInteger(error?.status) ? ` status=${error.status}` : "";
+              const code = typeof error?.code === "string" && /^Assistant\.[A-Za-z.]+$/.test(error.code) ? ` code=${error.code}` : "";
+              const assertion = typeof error?.actual === "number" || typeof error?.actual === "boolean" ? ` actual=${error.actual}` : "";
+              const location = /[/\\]scripts[/\\](assistant-real-ui\.mjs|test-e2e-real-assistant\.mjs):(\d+):\d+/.exec(error?.stack ?? "");
+              throw new Error(`Falló ${id} a ${currentWidth}; tipo=${type}${status}${code}${assertion}${location ? ` ${location[1]}:${location[2]}` : ""}; no se publican datos privados.`);
+            }
           },
         });
       } finally { await context.close(); }
