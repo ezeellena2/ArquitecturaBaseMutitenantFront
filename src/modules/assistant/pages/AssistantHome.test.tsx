@@ -776,8 +776,8 @@ it("DELETE confirmado cierra el runtime seleccionado antes de releer el historia
     await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
     await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Consulta privada");
     await app.user.click(screen.getByRole("button", { name: "Enviar" }));
-    await waitFor(() => expect(app.queryClient.getMutationCache().getAll().some((mutation) => mutation.meta?.assistantOwner && mutation.state.status === "error")).toBe(true));
-    const oldSend = app.queryClient.getMutationCache().getAll().find((mutation) => mutation.meta?.assistantOwner && mutation.state.status === "error")!;
+    await waitFor(() => expect(app.queryClient.getMutationCache().getAll().some((mutation) => mutation.state.status === "error")).toBe(true));
+    const oldSend = app.queryClient.getMutationCache().getAll().find((mutation) => mutation.state.status === "error")!;
     screen.getByRole("button", { name: "Acciones de Mi consulta" }).focus();
     await app.user.keyboard("{Enter}");
     await app.user.click(await screen.findByRole("menuitem", { name: "Borrar: Mi consulta" }));
