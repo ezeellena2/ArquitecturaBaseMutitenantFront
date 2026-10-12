@@ -57,9 +57,12 @@ describe("contrato funcional de cuenta entre repos", () => {
       expect(contract).toContain(`"${field}"`);
     }
     const callback = readBack("src/ArquitecturaBaseMultitenant.Api/Controllers/Auth/ExternalLoginController.cs");
-    expect(callback).toContain('"/cuenta?google=linked"');
+    const returnUrls = readBack("src/ArquitecturaBaseMultitenant.Application/Models/Auth/ReturnUrls.cs");
+    expect(callback).toContain('ReturnUrls.AccountPath + "?google=linked"');
+    expect(returnUrls).toContain('AccountPath = "/cuenta"');
     expect(callback).toContain("pendingCookie.Write(HttpContext, result.Error)");
-    expect(callback).toContain('"/login/empresa"');
+    expect(callback).toContain("ReturnUrls.BusinessLoginPath");
+    expect(returnUrls).toContain('BusinessLoginPath = "/login/empresa"');
     expect(contract).toContain('"/cuenta"');
     // La puerta de empresa a la que vuelve el back vive con las demás rutas de cada acceso.
     expect(readFront("src/tenancy/access.ts")).toContain('"/login/empresa"');

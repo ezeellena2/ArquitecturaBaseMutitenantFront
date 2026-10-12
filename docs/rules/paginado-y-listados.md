@@ -14,7 +14,6 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
     toQuery: (page, values): RolesQuery => ({ ...page, scope: values.vale === "Organization" ? "Organization" : undefined }),
     queryKey: rolesQueryKey, queryFn: fetchRoles, enabled: canRead, meta: { silent: true, blocksView: true },
   });
-  // …
   {paginationProps ? <Pagination {...paginationProps} /> : null}
   ```
   `filterKeys` es una constante del módulo; `query` es la consulta ya armada (los conteos toman de ahí la búsqueda y los filtros) y `pagination` da la búsqueda escrita, el orden y sus cambios para `FilterBar` y `DataTable`.
@@ -32,7 +31,6 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
   const audit = useCursorList([...auditQueryRoot, baseQuery],
     (after) => fetchAudit({ ...baseQuery, after: after ?? undefined, limit: 25 }),
     { meta: { silent: true, blocksView: true } });
-  // …
   <DataTable rows={audit.items} … />
   <LoadMore hasMore={audit.hasNextPage} isLoading={audit.isFetchingNextPage} onLoadMore={() => { void audit.fetchNextPage(); }} />
   ```

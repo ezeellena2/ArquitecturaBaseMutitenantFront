@@ -69,7 +69,7 @@ describe("contrato de invitaciones entre back y front", () => {
     expect(contract).toContain('"RequestVerificationToken"');
     expect(contract).toContain('"Idempotency-Key"');
     expect(readBack("src/ArquitecturaBaseMultitenant.Application/Services/Invitations/InvitationDeliveryIssuer.cs"))
-      .toContain('"/invitacion"');
+      .toContain("origin.Absolute(ReturnUrls.InvitationPath)");
     expect(readBack("src/ArquitecturaBaseMultitenant.Application/Services/Invitations/InvitationSessionRestorer.cs"))
       .toContain("accepted.OrganizationId");
   });

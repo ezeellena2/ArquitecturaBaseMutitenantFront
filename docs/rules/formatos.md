@@ -3,12 +3,10 @@
 ## Cómo se hace
 - useFormat resuelve cultura efectiva, zona de `/api/me` y moneda del dato; sin sesión, relaciones del catálogo.
 - Los instantes se comparan con `shared/time`: el reloj toma `Date` de cada respuesta API y avanza con `performance.now`, independiente de la fecha del dispositivo. Las esperas de reenvío usan tiempo monotónico y su texto m:ss sale de `shared/format/countdown`.
-- Cultura: cuenta → selección del navegador → predeterminada habilitada. Define idioma y formato a la vez.
-- La zona en pantalla es la de la cuenta en los tres accesos; fechas civiles y períodos no se convierten.
+- Cultura: cuenta → selección del navegador → predeterminada habilitada; define idioma y formato. La zona es la de la cuenta en los tres accesos; fechas civiles y períodos no se convierten.
 - La moneda del dato es explícita; DefaultCurrency solo precarga un importe nuevo.
 - shared/referenceData entrega todas las filas traducidas con isEnabled; los selectores ofrecen habilitadas y el formato acepta valores guardados deshabilitados.
-- Cultures aporta patrones, separadores y AmDesignator/PmDesignator; cultureProfiles adapta sin perfiles fijos por cultura.
-- Currencies aporta MinorUnits; CurrencyTranslations, DisplaySymbol. Símbolos alfabéticos pegados al número reciben espacio CLDR.
+- Cultures aporta patrones, separadores y AmDesignator/PmDesignator; cultureProfiles adapta sin perfiles fijos. Currencies aporta MinorUnits; CurrencyTranslations, DisplaySymbol. Símbolos alfabéticos pegados al número reciben espacio CLDR.
 - El signo se decide tras redondear: un negativo presentado como cero no lleva menos. Compactos/tamaños promueven unidad al llegar a mil.
 - parseDecimal permite hasta 15 dígitos significativos y exige que Number recomponga el valor canónico. Si pierde precisión, conserva texto, emite null y marca invalidez.
 - DataTable toma tipo, alineación, vacío y tooltip de cada columna; números, montos y porcentajes van a la derecha con tabular-nums.
@@ -37,8 +35,7 @@
 | Booleano | BooleanText | Sí/No o Yes/No; en tabla de estado se puede usar StatusDot |
 | Vacío | EmptyValue | null → raya larga tenue, aria-label Sin dato |
 | Texto | texto | Tal cual; largo truncado con elipsis y tooltip |
-- DateField emite DateOnly sin zona; DateTimeField convierte desde zona efectiva a UTC; PercentField devuelve fracción.
-- Los fields leen opciones del catálogo y muestran carga; TaxIdNumberField normaliza separadores antes de limitar dígitos.
+- DateField emite DateOnly sin zona; DateTimeField convierte desde zona efectiva a UTC; PercentField devuelve fracción. Los fields leen opciones del catálogo y muestran carga; TaxIdNumberField normaliza separadores antes de limitar dígitos.
 - MonthField usa YYYY-MM, años 0001–9999, popup único accesible, sin limitar historia ni elegir por la persona.
 - parseMonth distingue vacío e inválido; useFormat localiza meses y obtiene mes actual con reloj central y zona efectiva, sin definir facturación.
 - Deshabilitar, cargar o cambiar el valor de MonthField desmonta popup/borrador; invalidez no se acepta como vacío.
