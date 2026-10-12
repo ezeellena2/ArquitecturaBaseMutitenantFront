@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
-import { fillOtp } from "./test-e2e-real-ui.mjs";
+import { fillOtp, openPlatformAccountSearch } from "./test-e2e-real-ui.mjs";
 import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
 import { decideAfterRecoveryNotice, recoveryRow, selectRecovery } from "./test-e2e-real-whatsapp-recovery.mjs";
 
@@ -328,8 +328,9 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
     });
     await step("19", async () => {
       await platformPage.goto(url("/plataforma/cuentas")); await heading("Cuentas", platformPage);
+      const search = await openPlatformAccountSearch(platformPage);
       const [reply] = await responsesForAction(platformPage, [(response) => responseFor("/api/platform/accounts/paged")(response) && new URL(response.url()).searchParams.get("search") === phone],
-        () => platformPage.getByRole("searchbox", { name: "Buscar por nombre, correo o teléfono", exact: true }).fill(phone));
+        () => search.fill(phone));
       assert.equal(reply.status(), 200); const item = (await reply.json()).items.find((account) => account.id === me.id);
       assert.equal(item?.displayName, null); assert.equal(item.maskedPrimaryPhone, me.mask);
       const link = platformPage.getByRole("link").and(platformPage.locator(`a[href='/plataforma/cuentas/${me.id}']`));
