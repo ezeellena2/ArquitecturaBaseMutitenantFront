@@ -7,6 +7,18 @@ import { execFileSync } from "node:child_process";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
 
+test("E8 conserva las dos pestañas tras F5 y propaga una sesión de Plataforma que no vuelve", async () => {
+  const events = [];
+  const person = { reload: async () => events.push("F5 Personal") };
+  const platform = { reload: async () => events.push("F5 Plataforma") };
+  const awaitApp = async (page) => { assert.equal(page, person); events.push("sesión Personal"); };
+  const awaitPlatformHome = async (page) => { assert.equal(page, platform); events.push("inicio privado Plataforma"); };
+  await whatsappJourney.reloadJourneySessions(person, platform, { awaitApp, awaitPlatformHome });
+  assert.deepEqual(events, ["F5 Personal", "sesión Personal", "F5 Plataforma", "inicio privado Plataforma"]);
+  const failure = new Error("La sesión independiente no volvió.");
+  await assert.rejects(whatsappJourney.reloadJourneySessions(person, platform, { awaitApp, awaitPlatformHome: async () => { throw failure; } }), (error) => error === failure);
+});
+
 test("la puerta canónica exige una autorización consumer con state y PKCE S256 antes de enviar", () => {
   const previous = { access: "business", state: true, pkce: true, method: "S256" };
   const initial = { access: "consumer", state: true, pkce: true, method: "S256" };
@@ -224,24 +236,32 @@ test("la captura espera todos los avisos transitorios y conserva el error persis
 });
 
 for (const width of [1440, 390]) {
-  test(`Plataforma comprueba Inicio en la raíz y tras F5, conservando el error E8b a ${width}`, async () => {
+  test(`Plataforma comprueba su inicio privado vigente y tras F5 a ${width}`, async () => {
     // Documento local del núcleo vigente; no levanta el producto ni sustituye el recorrido real.
     const browser = await chromium.launch({ headless: true });
     try {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
       page.setDefaultTimeout(500);
       const visits = [];
+      const routePath = width === 390 ? "/plataforma/organizaciones" : "/plataforma";
+      const content = width === 390 ? '<h1>Organizaciones</h1><nav aria-label="Secciones"><a href="/plataforma/mas">Más</a></nav>'
+        : '<h1>Inicio</h1><button aria-label="Operador, Plataforma">Cuenta</button><div role="alert">No pudimos abrir esta pantalla</div><h2>Para resolver</h2>';
       await page.route(`${baseUrl.origin}/**`, (route) => {
         visits.push(new URL(route.request().url()).pathname);
-        return route.fulfill({ contentType: "text/html", body: '<h1>Inicio</h1><div role="alert">No pudimos abrir esta pantalla</div><h2>Para resolver</h2>' });
+        return route.fulfill({ contentType: "text/html", body: content });
       });
-      await page.goto(new URL("/plataforma", baseUrl).href);
+      await page.goto(new URL(routePath, baseUrl).href);
       await waitForPlatformHome(page);
       await page.reload();
       await waitForPlatformHome(page);
-      assert.deepEqual(visits, ["/plataforma", "/plataforma"]);
-      assert.equal(await page.getByRole("alert").innerText(), "No pudimos abrir esta pantalla");
-      assert.equal(await page.getByRole("heading", { name: "Para resolver", exact: true }).count(), 1);
+      assert.deepEqual(visits, [routePath, routePath]);
+      if (width === 1440) {
+        assert.equal(await page.getByRole("alert").innerText(), "No pudimos abrir esta pantalla");
+        assert.equal(await page.getByRole("heading", { name: "Para resolver", exact: true }).count(), 1);
+      } else {
+        await page.setContent('<h1>Organizaciones</h1>');
+        await assert.rejects(waitForPlatformHome(page), { name: "TimeoutError" });
+      }
     } finally { await browser.close(); }
   });
 }

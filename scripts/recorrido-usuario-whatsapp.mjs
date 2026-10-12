@@ -65,6 +65,13 @@ export function assertNoAuthorizationBeforeProof(authorizations, readyCount) {
     "No debe iniciarse otra autorización antes de verificar posesión.");
 }
 
+export async function reloadJourneySessions(page, platformPage, { awaitApp, awaitPlatformHome }) {
+  await page.reload();
+  await awaitApp(page);
+  await platformPage.reload();
+  await awaitPlatformHome(platformPage);
+}
+
 /** Sólo catálogo de códigos, estado y espera; nunca cuerpos ni destinos privados. */
 export function safeJourneyHttp(status, problem = {}) {
   const code = problem?.code;
@@ -91,7 +98,7 @@ export async function sendWithCooldown(send, { signal, observe = () => {}, wait 
 }
 
 /** No crea navegador/contexto ni limpia cookies: continúa las pestañas reales de E7. */
-export async function runE8Journey({ page, platformPage, width, env, base, site, record, signOut, awaitApp, signal }) {
+export async function runE8Journey({ page, platformPage, width, env, base, site, record, signOut, awaitApp, awaitPlatformHome, signal }) {
   const begin = requireE8Control(env);
   const phone = width === 1440 ? "+5491134567880" : "+5491134567881";
   const next = width === 1440 ? "+5491134567882" : "+5491134567883";
@@ -236,7 +243,7 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
       return "Verificó el OTP por UI; ninguna prueba privada se publica.";
     });
     await step("05", async () => { await awaitApp(page); assertOidc(since); return "Terminó OIDC consumer con state/PKCE actuales y retorno propio."; });
-    await step("06", async () => { await page.reload(); await awaitApp(page); await platformPage.reload(); await heading("Organizaciones", platformPage); return "F5 conservó Personal y la pestaña independiente de Plataforma."; });
+    await step("06", async () => { await reloadJourneySessions(page, platformPage, { awaitApp, awaitPlatformHome }); return "F5 conservó Personal y la pestaña independiente de Plataforma."; });
     await step("07", async () => { await page.goto(url("/cuenta")); await heading("Mi cuenta"); await page.getByRole("button", { name: "Agregar correo o teléfono", exact: true }).click(); return "Abrió Agregar correo o teléfono en Mi cuenta."; });
     await step("08", async () => {
       fixture = await begin(`walkthrough-add-${width}`, next); const dialog = page.getByRole("dialog");
@@ -387,6 +394,6 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
       return "Alta empresarial Phone y organización por UI/OTP controlado; bienvenida E8b fuera del alcance.";
     });
     await step("25", async () => { await registrationLogin(businessPhone, "business", org); await identity(businessPhone, "business", org); await signOut(page, org); return "Empresa existente ingresó por Phone: business /org, OIDC actual, máscara en marco/F5 y sin Phone en URL/storage."; });
-    await platformPage.goto(url("/plataforma")); await heading("Organizaciones", platformPage);
+    await platformPage.goto(url("/plataforma")); await awaitPlatformHome(platformPage);
   } finally { proof = undefined; link = undefined; page.off("request", onRequest); }
 }

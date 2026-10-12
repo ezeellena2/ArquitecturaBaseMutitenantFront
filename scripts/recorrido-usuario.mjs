@@ -90,8 +90,11 @@ export async function waitForTransientNotices(page) {
 }
 
 export async function waitForPlatformHome(page) {
-  await page.waitForURL((url) => url.origin === baseUrl.origin && url.pathname === "/plataforma");
-  await page.getByRole("heading", { name: "Inicio", exact: true }).waitFor();
+  const phone = page.viewportSize().width === 390;
+  const route = phone ? "/plataforma/organizaciones" : "/plataforma";
+  await page.waitForURL((url) => url.origin === baseUrl.origin && url.pathname === route);
+  await page.getByRole("heading", { name: phone ? "Organizaciones" : "Inicio", exact: true }).waitFor();
+  await (phone ? page.getByRole("navigation", { name: "Secciones", exact: true }) : page.getByRole("button", { name: /, Plataforma$/ })).waitFor();
 }
 
 export async function platformAssistantLimitation(response) {
@@ -368,6 +371,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
     platformPage = await context.newPage(); await platformPage.setViewportSize(viewport(width)); observe(platformPage);
     await login(operator, "platform", platformPage);
     await waitForPlatformHome(platformPage);
+    if (width === 390) return "El operador ingresó a Organizaciones en /plataforma/organizaciones con su barra privada; el inicio móvil no abre el asistente de E8b.";
     const assistantState = platformAssistantResponse ?? await responseFor(platformPage, "/api/platform/assistant", "GET");
     const limitation = await platformAssistantLimitation(assistantState);
     if (assistantState.status() === 501) await platformPage.getByText("No pudimos abrir esta pantalla", { exact: true }).waitFor();
@@ -570,7 +574,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
   });
   await page.keyboard.press("Escape"); await signOut();
   // La publicación E7 aún está visible; E8 usa las mismas pestañas y sesiones.
-  await runE8Journey({ page, platformPage, width, env, base: baseUrl, site, record, signOut, awaitApp, signal });
+  await runE8Journey({ page, platformPage, width, env, base: baseUrl, site, record, signOut, awaitApp, awaitPlatformHome: waitForPlatformHome, signal });
   await step("30", async () => {
     await login(businessEmail, "business");
     await page.goto(new URL("/org/pagina", baseUrl).href);
