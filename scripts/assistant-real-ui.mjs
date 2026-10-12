@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
+import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { createAssistantControl } from "./assistant-real-control.mjs";
@@ -9,6 +10,17 @@ export const assistantHomeRoute = (access, width) => ({ business: width === 390 
   consumer: width === 390 ? "/asistente" : "/", platform: width === 390 ? "/plataforma/asistente" : "/plataforma" })[access];
 const prefix = (access) => `/api/${{ business: "organization", consumer: "me", platform: "platform" }[access]}/assistant`;
 const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jh5kAAAAASUVORK5CYII=", "base64");
+
+/** Conserva el mismo download real para abrirlo después de la corrida de la puerta. */
+export async function assistantExportPath(download, width, format, directory = process.env.MT_E2E_EXPORT_DIR) {
+  if (!directory) return download.path();
+  assert.ok(path.isAbsolute(directory), "La carpeta de exportes E8b debe ser absoluta.");
+  assert.ok([1440, 390].includes(width) && ["markdown", "pdf"].includes(format), "Exporte E8b inválido.");
+  const target = path.join(directory, `asistente-${width}.${format === "pdf" ? "pdf" : "md"}`);
+  await mkdir(directory, { recursive: true });
+  await download.saveAs(target);
+  return target;
+}
 
 export async function acceptAssistantTerms(page) {
   const terms = page.getByRole("heading", { name: "Actualizamos los términos", exact: true });
@@ -237,7 +249,7 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
       const downloaded = page.waitForEvent("download");
       await conversationAction(page, width, title, name);
       const file = await downloaded; assert.equal(await file.failure(), null);
-      const bytes = await readFile(await file.path());
+      const bytes = await readFile(await assistantExportPath(file, width, format));
       if (format === "pdf") assert.equal(bytes.subarray(0, 5).toString("ascii"), "%PDF-");
       else assert.ok(bytes.toString("utf8").includes("Respuesta de prueba con acentos"));
       const exported = await assistantApi(page, { route: `${root}/conversations/${id}/export?format=${format}` });
@@ -287,13 +299,13 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     return "F5 conserva OwnKey y la respuesta expone sólo la máscara, sin devolver la clave.";
   });
   await step("E8B-60-1", async () => {
-    await control("quotas", { ...actor, remainingMessages: 10 });
+    await control("quotas", { ...actor, remainingMessages: 10, monthlyFraction: 0 });
     await home(page, base, "business", width);
     await page.getByText("Te quedan 10 consultas hoy.", { exact: true }).waitFor();
     return "La cuota persistida entrega diez consultas restantes y la UI muestra el contador.";
   });
   await step("E8B-60-2", async () => {
-    await control("quotas", { ...actor, remainingMessages: 0 });
+    await control("quotas", { ...actor, remainingMessages: 0, monthlyFraction: 0 });
     await home(page, base, "business", width);
     await page.getByText(/Llegaste a las .* consultas de hoy/).waitFor();
     const before = await control("providerCounters");
