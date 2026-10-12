@@ -11,6 +11,8 @@ interface MoneyFieldProps {
   precision?: "currency" | "technical-tariff";
   /** Moneda del recurso cuando todavía no hay importe (sin reemplazar la selección del usuario). */
   currencyCode?: string;
+  /** Un recurso que fija su moneda la muestra como unidad y no permite elegir otra. */
+  fixedCurrency?: boolean;
   value: MoneyValue | null;
   onChange: (value: MoneyValue | null) => void;
   onValidityChange?: (isValid: boolean) => void;
@@ -24,7 +26,7 @@ interface MoneyFieldProps {
 }
 
 /** Importe y código ISO viajan juntos; precisión y opciones vienen de Currencies. */
-export function MoneyField({ value, onChange, onValidityChange, id, name, disabled, required, placeholder, precision = "currency", currencyCode,
+export function MoneyField({ value, onChange, onValidityChange, id, name, disabled, required, placeholder, precision = "currency", currencyCode, fixedCurrency = false,
   "aria-invalid": externalInvalid, "aria-describedby": externalDescription }: MoneyFieldProps) {
   const format = useFormat();
   const { t } = useTranslation();
@@ -35,10 +37,10 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
   const [invalid, setInvalid] = useState(false);
   const [touched, setTouched] = useState(false);
   const [currencyOverride, setCurrencyOverride] = useState<{ base: string | null; selected: string } | null>(null);
-  const currency = currencyOverride?.base === (value?.currency ?? null)
+  const currency = fixedCurrency ? currencyCode ?? value?.currency ?? (format.isLoading ? "" : format.currency ?? "") : currencyOverride?.base === (value?.currency ?? null)
     ? currencyOverride.selected : value?.currency ?? currencyCode ?? (format.isLoading ? "" : format.currency ?? "");
   const currencyRow = format.isLoading ? null
-    : format.referenceData.currencies.find((row) => row.code === value?.currency);
+    : format.referenceData.currencies.find((row) => row.code === currency);
   const displayed = !format.isLoading && value !== null && currencyRow?.minorUnits !== null
     && currencyRow?.minorUnits !== undefined
     ? format.formatDecimal(value.amount, precision === "technical-tariff" ? 6 : currencyRow.minorUnits) : "";
@@ -63,12 +65,12 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
   const showError = invalid && touched;
   const description = [externalDescription, showError ? messageId : undefined].filter(Boolean).join(" ") || undefined;
   return <div className="flex flex-col gap-2">
-    <Input ref={inputRef} id={id} name={name} type="text" inputMode="decimal" value={inputValue}
+    <div className="relative">{fixedCurrency ? <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--t2)]">{currency}</span> : null}<Input ref={inputRef} id={id} name={name} type="text" inputMode="decimal" value={inputValue} className={fixedCurrency ? "pl-14" : undefined}
       onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
       onChange={(event) => change(event.target.value, currency)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
-      aria-invalid={externalInvalid || showError} aria-describedby={description} />
-    <div className="flex flex-col gap-1.5">
+      aria-invalid={externalInvalid || showError} aria-describedby={description} /></div>
+    {!fixedCurrency ? <div className="flex flex-col gap-1.5">
       <Label htmlFor={currencyId}>{t("fields.currency")}</Label>
       <CurrencySelect id={currencyId} value={currency} placeholder={t("fields.selectCurrency")}
         onChange={(selected) => {
@@ -76,7 +78,7 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
           if (inputValue !== "") change(inputValue, selected);
         }}
         disabled={disabled} aria-invalid={externalInvalid || showError} />
-    </div>
+    </div> : null}
     {showError && <p id={messageId} role="alert" className="text-[13px] text-[var(--peligro)]">{t("fields.invalidMoney")}</p>}
   </div>;
 }

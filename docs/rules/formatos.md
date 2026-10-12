@@ -43,6 +43,7 @@
 - parseMonth distingue vacío e inválido; useFormat localiza meses y obtiene mes actual con reloj central y zona efectiva, sin definir facturación.
 - Deshabilitar, cargar o cambiar el valor de MonthField desmonta popup/borrador; invalidez no se acepta como vacío.
 - MoneyField precision="technical-tariff" conserva seis decimales y rechaza siete ([ADR 0051](../../../ArquitecturaBaseMutitenant/docs/decisions/0051-precision-tecnica-de-costos-ia.md)); presupuestos y presentación mantienen MinorUnits.
+- MoneyField `fixedCurrency` muestra la unidad sin selector cuando el contrato fija la moneda: sale de `currencyCode` o del Money recibido. Sin esa opción conserva el selector habitual. Lo verifica `MoneyField.test.tsx`.
 - LoginMethodText conserva máscaras recibidas; un Phone completo delega en PhoneText sin enlace ni reconstrucción.
 - defineStatusTones exige un tono por enum; StatusMark presenta solo el punto. Colores y tonos salen del [tema](../architecture/tema.md).
 - formatTimeZone obtiene offset con cultura fija de Intl; la ciudad viene traducida, sin interpretar texto localizado del navegador.

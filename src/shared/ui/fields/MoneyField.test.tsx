@@ -14,6 +14,21 @@ import { NumberField } from "./NumberField";
 describe("NumberField y MoneyField", () => {
   beforeEach(() => { queryClient.clear(); resetHttpClient(); localStorage.clear(); });
 
+  it("conserva la moneda fija del contrato sin permitir cambiarla", async () => {
+    const onChange = vi.fn();
+    render(<AppProviders><FormField label="Tarifa"><MoneyField fixedCurrency currencyCode="ARS" precision="technical-tariff" value={null} onChange={onChange} /></FormField></AppProviders>);
+    const input = await screen.findByRole("textbox", { name: "Tarifa" });
+    await waitFor(() => expect(input).toBeEnabled());
+    expect(screen.queryByRole("combobox", { name: "Moneda" })).not.toBeInTheDocument();
+    expect(screen.getByText("ARS")).toBeVisible();
+    fireEvent.change(input, { target: { value: "0,123456" } });
+    expect(onChange).toHaveBeenLastCalledWith({ amount: 0.123456, currency: "ARS" });
+    fireEvent.change(input, { target: { value: "0,1234567" } });
+    fireEvent.blur(input);
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(onChange).toHaveBeenLastCalledWith(null);
+  });
+
   it("conserva tarifas técnicas de seis decimales al salir y rechaza siete", async () => {
     function Tariff() {
       const [value, setValue] = useState({ amount: 0.125, currency: "ARS" } as { amount: number; currency: string } | null);
