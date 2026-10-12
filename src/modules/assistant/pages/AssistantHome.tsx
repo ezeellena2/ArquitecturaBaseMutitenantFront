@@ -338,7 +338,7 @@ function AssistantSession(props: AssistantHomeProps) {
           void client.invalidateQueries({ queryKey: [...root, "conversations"] });
           return;
         }
-      } else await updateAssistantConversation(scope, original.conversation.id, { title, version: original.conversation.version }, context.signal);
+      } else await updateAssistantConversation(scope, original.conversation.id, { title, isSaved: original.conversation.isSaved, version: original.conversation.version }, context.signal);
       assertDialog();
       await invalidateHistory(context);
       assertDialog();

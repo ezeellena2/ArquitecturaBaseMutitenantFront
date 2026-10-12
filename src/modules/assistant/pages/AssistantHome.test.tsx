@@ -527,20 +527,20 @@ describe("interfaz del asistente", () => {
     expect(app.requests).toEqual([]);
   });
 
-  it("renombrar conserva la versión original aunque el historial cambie mientras se edita", async () => {
+  it.each([false, true])("renombrar conserva versión y estado guardado %s originales aunque el historial cambie mientras se edita", async (isSaved) => {
     const app = setup();
-    app.changeDetail(detail());
+    app.changeDetail({ ...detail(), conversation: { ...detail().conversation, isSaved } });
     (await screen.findByRole("button", { name: "Acciones de Mi consulta" })).focus();
     await app.user.keyboard("{Enter}");
     await app.user.click(await screen.findByRole("menuitem", { name: "Renombrar: Mi consulta" }));
-    app.changeDetail({ ...detail(), conversation: { ...detail().conversation, version: 9 } });
+    app.changeDetail({ ...detail(), conversation: { ...detail().conversation, version: 9, isSaved: !isSaved } });
     await act(async () => { await app.queryClient.invalidateQueries({ queryKey: ["assistant", "business", "org", "user", "conversations"] }); });
     let body: unknown;
     server.use(http.put("/api/organization/assistant/conversations/chat", async ({ request }) => { body = await request.json(); return HttpResponse.json({ version: 10 }); }));
     await app.user.clear(screen.getByRole("textbox", { name: "Nombre" }));
     await app.user.type(screen.getByRole("textbox", { name: "Nombre" }), "Otro nombre");
     await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
-    await waitFor(() => expect(body).toEqual({ title: "Otro nombre", version: 1 }));
+    await waitFor(() => expect(body).toEqual({ title: "Otro nombre", isSaved, version: 1 }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
