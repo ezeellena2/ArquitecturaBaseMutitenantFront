@@ -14,6 +14,7 @@ import { waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { reloadResponse, responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
 import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedLegalVersion, assertPublishedTerms, observeLegalTransition, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
+import { runAssistantRealE2E } from "./test-e2e-real-assistant.mjs";
 import { chromium } from "playwright";
 
 // Esta prueba arranca su propio AppHost y un PostgreSQL efímero, fuera del volumen Development.
@@ -2571,6 +2572,10 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
 
 // Segundo test superior: Node lo ejecuta después del recorrido general y de su finally/aspire stop.
 // Este fixture usa Kestrel/Testcontainers propios y no inicia otro Aspire.
+test("Asistente real E8b en 1440 y 390: seis guiones, SSE durable, archivos y financiación", { timeout: 1_200_000 }, async () => {
+  await runAssistantRealE2E({ build: false });
+});
+
 test("WhatsApp real en 1440 y 390: OTP, recuperación humana, enlaces y baja", { timeout: 1_920_000 }, async (t) => {
   const backend = fileURLToPath(new URL("../../ArquitecturaBaseMutitenant/", import.meta.url));
   const runner = fileURLToPath(new URL("./test-e2e-real-whatsapp.mjs", import.meta.url));

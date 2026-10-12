@@ -11,6 +11,8 @@ import { baseUrl, createEnvironment } from "./recorrido-usuario-entorno.mjs";
 import { expectRecoveryEmailInUse, fillOtp } from "./test-e2e-real-ui.mjs";
 import { pickupCode } from "./test-e2e-real-mail.mjs";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, runE8Journey } from "./recorrido-usuario-whatsapp.mjs";
+import { loadAssistantJourneyDefinitions } from "./recorrido-usuario-asistente.mjs";
+import { runAssistantJourney } from "./assistant-real-ui.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const widths = [1440, 390];
@@ -36,7 +38,7 @@ export function safeDiagnostic(message) {
 
 export function journeyFailure(activeStep, errors) {
   // Assert y Playwright pueden incluir un OTP, fragmento o cuerpo HTTP en su mensaje.
-  const detail = activeStep.startsWith("E8-")
+  const detail = activeStep.startsWith("E8-") || activeStep.startsWith("E8B-")
     ? errors.map((error) => /^[A-Za-z]+$/.test(error.name) ? error.name : "Error").join("; ")
     : safeDiagnostic(errors.map((error) => error.message).join("; "));
   return `Falló ${activeStep}; ${detail}. Los pasos pendientes no cuentan como aprobados.`;
@@ -105,10 +107,8 @@ export async function waitForPlatformHome(page) {
 }
 
 export async function platformAssistantLimitation(response) {
-  if (response.ok()) return "El asistente pertenece a E8b y no se acredita en este paso del núcleo.";
-  assert.equal(response.status(), 501);
-  assert.equal((await response.json()).code, "General.Contract.NotImplemented");
-  return "Limitación separada: GET /api/platform/assistant HTTP 501 General.Contract.NotImplemented; asistente contractual E8b pendiente, no aprobado. El panel de error se conserva en la captura.";
+  assert.equal(response.ok(), true, "State del asistente debe responder sin stubs antes del recorrido E8b.");
+  return "State del asistente está disponible; los seis guiones E8b se verifican después del núcleo.";
 }
 
 const definitions = [
@@ -381,7 +381,6 @@ async function runWidth({ width, context, env, record, output, signal }) {
     if (width === 390) return "El operador ingresó a Organizaciones en /plataforma/organizaciones con su barra privada; el inicio móvil no abre el asistente de E8b.";
     const assistantState = platformAssistantResponse ?? await responseFor(platformPage, "/api/platform/assistant", "GET");
     const limitation = await platformAssistantLimitation(assistantState);
-    if (assistantState.status() === 501) await platformPage.getByText("No pudimos abrir esta pantalla", { exact: true }).waitFor();
     return `El operador ingresó a Inicio en /plataforma con el código de su .eml; la captura muestra su pestaña. ${limitation}`;
   });
   await step("12", async () => {
@@ -591,6 +590,8 @@ async function runWidth({ width, context, env, record, output, signal }) {
     assert.equal(await page.getByRole("link", { name: "Ir a ArquitecturaBase", exact: true }).getAttribute("href"), baseUrl.href);
     return "Tras despublicar por UI, el mismo subdominio mostró Esta página no está disponible y un regreso al inicio.";
   });
+  await runAssistantJourney({ page, platformPage, width, env, base: baseUrl, businessEmail, operatorEmail: operator,
+    organizationName: organization, record, signOut });
   // Salida real de la sesión de Plataforma, sin tocar cookies a mano entre recorridos.
   await platformPage.setViewportSize(viewport(1440)); await signOut(platformPage, "Plataforma");
   await platformPage.close(); await page.close();
@@ -604,7 +605,9 @@ export async function main({ build = true, widths: selectedWidths = widths } = {
   await mkdir(output, { recursive: true });
   const steps = definitions.map(([id, title, expected]) => ({ id, title, expected }));
   steps.splice(29, 0, ...e8Definitions);
-  const report = { date, stage: "Etapas 7 y 8", widths: selectedWidths, sourceRevision: e8SourceRevision, manual: e8ManualChecks, startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: steps.map((step) => ({ ...step, results: selectedWidths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
+  steps.push(...await loadAssistantJourneyDefinitions());
+  const report = { date, stage: "Etapas 7, 8 y 8b", widths: selectedWidths, sourceRevision: e8SourceRevision,
+    manual: [...e8ManualChecks, "Anthropic real: cargar la clave y probar el proveedor externo."], startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: steps.map((step) => ({ ...step, results: selectedWidths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
   const persist = async () => {
     await writeFile(path.join(output, "resultados.json"), `${JSON.stringify(report, null, 2)}\n`);
     await writeFile(path.join(output, "index.html"), renderIndex(report));

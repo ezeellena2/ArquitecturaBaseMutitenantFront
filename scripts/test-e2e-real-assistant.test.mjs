@@ -66,9 +66,9 @@ test("conserva una operación pendiente y sanea el error privado del host", asyn
   } finally { own.ipc.close(); }
 });
 
-test("la entrada todavía pendiente falla sin imprimir un pase E2E ni iniciar la app", async () => {
-  await assert.rejects(promisify(execFile)(process.execPath, [fileURLToPath(new URL("./test-e2e-real-assistant.mjs", import.meta.url))]),
-    (error) => error.code === 1 && error.stdout === "" && error.stderr === "T14 pendiente: el runner real todavía no está conectado al fixture Asistente.\n");
+test("la entrada rechaza opciones inválidas antes de iniciar la app y no imprime un pase", async () => {
+  await assert.rejects(promisify(execFile)(process.execPath, [fileURLToPath(new URL("./test-e2e-real-assistant.mjs", import.meta.url)), "--unapproved"]),
+    (error) => error.code === 1 && error.stdout === "" && error.stderr === "Argumentos Asistente no admitidos.\n");
 });
 
 for (const [label, reply, message] of [

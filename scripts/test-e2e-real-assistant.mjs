@@ -1,6 +1,11 @@
 import { pathToFileURL } from "node:url";
 import { assistantJourneySources } from "./recorrido-usuario-asistente.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
+import assert from "node:assert/strict";
+import { chromium } from "playwright";
+import { baseUrl, createEnvironment } from "./recorrido-usuario-entorno.mjs";
+import { assistantLogin, runAssistantJourney } from "./assistant-real-ui.mjs";
+import { parseAssistantArguments } from "./assistant-real-control.mjs";
 
 // Preparación ConsoleFake T14. No configura servicios ni sustituye HTTP, Meta o E11.
 const kinds = new Set(["prepare", "quotas", "clock", "providerScenario", "providerCounters"]);
@@ -55,8 +60,44 @@ export function assistantFixtureProtocol(input, output, { environment = process.
   };
 }
 
-// El host aún no puede lanzar este archivo como un recorrido aprobado vacío.
+/** E2E real completo E8b. Fake reemplaza sólo el proveedor; front/auth/DB/archivos son reales. */
+export async function runAssistantRealE2E({ build = false, widths = [1440, 390] } = {}) {
+  assert.ok(widths.length > 0 && widths.every((width) => [1440, 390].includes(width)) && new Set(widths).size === widths.length, "Anchos Asistente inválidos.");
+  const env = await createEnvironment({ build });
+  let browser;
+  try {
+    await env.command("platform", { kind: "prepare" });
+    browser = await chromium.launch({ headless: true });
+    for (const width of widths) {
+      const context = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR", viewport: { width, height: width === 390 ? 844 : 900 } });
+      try {
+        const page = await context.newPage(); const platformPage = await context.newPage();
+        page.setDefaultTimeout(30_000); platformPage.setDefaultTimeout(30_000);
+        // Sólo espera disponibilidad; no simula una sesión ni altera las cookies.
+        await page.goto(new URL("/alive", baseUrl).href);
+        const operatorEmail = width === 1440 ? "e2e-a3-operator@example.test" : "e2e-a1-operator@example.test";
+        await assistantLogin(platformPage, env, baseUrl, operatorEmail, "platform");
+        const signOut = async (target) => {
+          const mobileMore = target.getByRole("navigation", { name: "Secciones", exact: true }).getByRole("link", { name: "Más", exact: true });
+          if (await mobileMore.isVisible()) await mobileMore.click();
+          else if (!await target.getByRole("button", { name: "Salir", exact: true }).isVisible()) await target.getByRole("button", { name: /, .+$/ }).last().click();
+          const exit = target.getByRole("button", { name: "Salir", exact: true }).or(target.getByRole("menuitem", { name: "Salir", exact: true }));
+          await exit.first().click();
+          await target.waitForURL((url) => !url.pathname.startsWith("/org") && !url.pathname.startsWith("/plataforma"));
+        };
+        await runAssistantJourney({ page, platformPage, width, env, base: baseUrl, businessEmail: env.businessEmail, operatorEmail, signOut,
+          record: async (id, currentWidth, _getPage, action) => {
+            process.stdout.write(assistantCheck("INICIO", id, currentWidth));
+            try { await action(); process.stdout.write(assistantCheck("OK", id, currentWidth)); }
+            catch { process.stdout.write(assistantCheck("FALLO", id, currentWidth)); throw new Error(`Falló ${id} a ${currentWidth}; no se publican datos privados.`); }
+          },
+        });
+      } finally { await context.close(); }
+    }
+  } finally { await browser?.close(); await env.stop(); }
+}
+
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
-  process.stderr.write("T14 pendiente: el runner real todavía no está conectado al fixture Asistente.\n");
-  process.exitCode = 1;
+  try { await runAssistantRealE2E(parseAssistantArguments(process.argv.slice(2))); }
+  catch (error) { process.stderr.write(`${error.message}\n`); process.exitCode = 1; }
 }

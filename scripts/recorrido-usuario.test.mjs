@@ -321,11 +321,10 @@ test("Plataforma no confunde la lista Organizaciones ni otra ruta con su Inicio"
   } finally { await browser.close(); }
 });
 
-test("el ingreso al núcleo registra por separado el stub E8b, sin aprobar el asistente", async () => {
-  const limitation = await platformAssistantLimitation({ ok: () => false, status: () => 501, json: async () => ({ code: "General.Contract.NotImplemented" }) });
-  for (const detail of ["/api/platform/assistant", "501", "General.Contract.NotImplemented", "E8b pendiente, no aprobado", "panel de error se conserva"]) assert.ok(limitation.includes(detail), detail);
+test("el ingreso exige State disponible y reserva la acreditación para los seis guiones E8b", async () => {
+  await assert.rejects(platformAssistantLimitation({ ok: () => false, status: () => 501 }), { name: "AssertionError" });
   const ready = await platformAssistantLimitation({ ok: () => true });
-  assert.ok(ready.includes("no se acredita"));
+  assert.ok(ready.includes("seis guiones E8b"));
 });
 
 test("el informe no disfraza otro fallo HTTP o código como la limitación contractual E8b", async () => {
