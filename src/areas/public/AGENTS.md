@@ -1,3 +1,3 @@
-Piezas de la SPA.
+Features del acceso público.
 Leé [docs/rules/estructura-y-features.md](../../../docs/rules/estructura-y-features.md).
 Copiá de [businessSignup.ts](auth/api/businessSignup.ts).

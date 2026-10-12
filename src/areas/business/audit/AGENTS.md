@@ -1,3 +1,3 @@
-Feature: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas.
+Feature audit: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas.
 Leé [docs/rules/formatos.md](../../../../docs/rules/formatos.md).
-Copiá de [columns.tsx](../roles/columns.tsx).
+Copiá de [audit.ts](api/audit.ts).
