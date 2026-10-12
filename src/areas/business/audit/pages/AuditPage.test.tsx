@@ -1,4 +1,5 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { pagedOptions } from "@/test/mocks/pagedOptions";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -21,11 +22,38 @@ async function openMenu(user: ReturnType<typeof userEvent.setup>, name: string) 
 }
 
 describe("AuditPage", () => {
+  it("busca y elige la persona 101 sin cambiar la búsqueda del historial", async () => {
+    const requests: URL[] = [];
+    const person = { actorId: "actor-101", actorKind: "User", actorText: "Persona", displayName: "Persona 101" };
+    server.use(http.get("/api/organization/audit", () => HttpResponse.json({ items: [], hasMore: false })),
+      http.get("/api/organization/audit/actors/paged", ({ request }) => {
+        const url = new URL(request.url); requests.push(url);
+        return HttpResponse.json(url.searchParams.get("search") === "101" ? pagedOptions([person])
+          : { ...pagedOptions(Array.from({ length: 10 }, (_, index) => ({ ...person, actorId: `actor-${index + 1}`, displayName: `Persona ${index + 1}` }))), totalCount: 101, totalPages: 11, hasNext: true });
+      }));
+    const user = userEvent.setup();
+    const { router } = renderRouteWithProviders("/org/auditoria?search=historial", { as: "business-e6-admin" });
+    await screen.findByText("Nada coincide con los filtros");
+    await openMenu(user, "Quién: todos");
+    await screen.findByRole("menuitemradio", { name: "Persona 1" });
+    const input = screen.getByRole("searchbox", { name: "Filtrar por persona" });
+    act(() => input.focus());
+    vi.useFakeTimers();
+    fireEvent.change(input, { target: { value: "101" } });
+    await act(async () => { await vi.advanceTimersByTimeAsync(300); });
+    vi.useRealTimers();
+    await user.click(await screen.findByRole("menuitemradio", { name: "Persona 101" }));
+    expect(router.state.location.search).toContain("actorId=actor-101");
+    expect(router.state.location.search).toContain("search=historial");
+    expect(requests.at(-1)?.searchParams.get("auditSearch")).toBe("historial");
+    expect(requests.at(-1)?.searchParams.get("pageSize")).toBe("10");
+  });
+
   it("con filtros y sin resultados: «Nada coincide con los filtros» y «Limpiar filtros»", async () => {
     const user = userEvent.setup();
     server.use(
       http.get("/api/organization/audit", () => HttpResponse.json({ items: [], nextCursor: null, hasMore: false })),
-      http.get("/api/organization/audit/actors", () => HttpResponse.json([])),
+      http.get("/api/organization/audit/actors/paged", () => HttpResponse.json(pagedOptions([]))),
     );
     const { router } = renderRouteWithProviders("/org/auditoria?category=roles", { as: "business-e6-admin" });
     expect(await screen.findByText("Nada coincide con los filtros")).toBeVisible();
@@ -48,9 +76,9 @@ describe("AuditPage", () => {
           changes: [{ field: "Roles en la empresa", oldValue: "Sin roles", newValue: "Solo lectura" }],
         }], nextCursor: null, hasMore: false });
       }),
-      http.get("/api/organization/audit/actors", () => HttpResponse.json([
+      http.get("/api/organization/audit/actors/paged", () => HttpResponse.json(pagedOptions([
         { actorId: "actor-1", actorKind: "User", actorText: "Persona", displayName: "Lucía" },
-      ])),
+      ]))),
     );
 
     const { container } = renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
@@ -109,7 +137,7 @@ describe("AuditPage", () => {
           ? { items: [entry("audit-2", "Deshabilitó a Tomás Acosta")], nextCursor: null, hasMore: false }
           : { items: [entry("audit-1", "Habilitó a Tomás Acosta")], nextCursor: "cursor-1", hasMore: true });
       }),
-      http.get("/api/organization/audit/actors", () => HttpResponse.json([])),
+      http.get("/api/organization/audit/actors/paged", () => HttpResponse.json(pagedOptions([]))),
     );
     renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
 
@@ -129,7 +157,7 @@ describe("AuditPage", () => {
   it("un 403 del historial muestra la pantalla sin permiso", async () => {
     server.use(
       http.get("/api/organization/audit", () => HttpResponse.json({ code: "Authorization.Forbidden", detail: "No tenés permiso." }, { status: 403 })),
-      http.get("/api/organization/audit/actors", () => HttpResponse.json([])),
+      http.get("/api/organization/audit/actors/paged", () => HttpResponse.json(pagedOptions([]))),
     );
     renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
 
@@ -146,12 +174,12 @@ describe("AuditPage", () => {
         requests.push(new URL(request.url).searchParams);
         return HttpResponse.json({ items: [], nextCursor: null, hasMore: false });
       }),
-      http.get("/api/organization/audit/actors", () => HttpResponse.json([
+      http.get("/api/organization/audit/actors/paged", () => HttpResponse.json(pagedOptions([
         { actorId: "user-carolina", actorKind: "User", actorText: "Persona", displayName: "Carolina Vega" },
         { actorId: "user-lucia", actorKind: "User", actorText: "Persona", displayName: "Lucía Fernández" },
         { actorId: null, actorKind: "System", actorText: "Sistema", displayName: null },
         { actorId: null, actorKind: "PlatformOperator", actorText: "Plataforma", displayName: null },
-      ])),
+      ]))),
     );
     const { router } = renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
     expect(await screen.findByText("No hay movimientos para mostrar")).toBeVisible();
@@ -195,7 +223,7 @@ describe("AuditPage", () => {
           { ...entry, id: "audit-1", occurredAtUtc: "2026-10-02T12:00:00Z", actionText: "Habilitó a Tomás Acosta" },
           { ...entry, id: "audit-2", occurredAtUtc: "2025-12-30T12:00:00Z", actionText: "Deshabilitó a Tomás Acosta" },
         ], nextCursor: null, hasMore: false })),
-        http.get("/api/organization/audit/actors", () => HttpResponse.json([])),
+        http.get("/api/organization/audit/actors/paged", () => HttpResponse.json(pagedOptions([]))),
       );
       renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
 
@@ -226,7 +254,7 @@ describe("AuditPage", () => {
           actorKind: "User", actorText: "Persona", actorId: "actor-1", actorDisplayName: "Lucía Fernández", actorEmail: "lucia.fernandez@delta.ejemplo.com",
           changes: [{ field: "Roles en la empresa", oldValue: "Sin roles", newValue: "Solo lectura" }],
         }], nextCursor: null, hasMore: false })),
-        http.get("/api/organization/audit/actors", () => HttpResponse.json([])),
+        http.get("/api/organization/audit/actors/paged", () => HttpResponse.json(pagedOptions([]))),
       );
       renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
       const user = userEvent.setup();

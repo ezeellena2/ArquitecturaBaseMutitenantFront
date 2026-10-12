@@ -1,6 +1,5 @@
 import { matchQuery, useQueries, useQueryClient } from "@tanstack/react-query";
 import { useState, useSyncExternalStore } from "react";
-import type { PagedResult } from "@/shared/api/pagedResult";
 import { optionPage, type ResourceOptions } from "@/shared/api/resourceOptions";
 import { useDebouncedValue } from "./useDebouncedValue";
 
@@ -18,11 +17,12 @@ export interface RemoteOptions {
 export function useResourceOptions<T>(resource: ResourceOptions<T>, enabled = true) {
   const client = useQueryClient();
   const cache = client.getQueryCache();
+  const lookupKey = resource.lookupKeyRoot ?? resource.queryKeyRoot;
   // Otro selector puede haber encontrado lo elegido en una búsqueda distinta: su etiqueta también se actualiza aquí.
   useSyncExternalStore((notify) => cache.subscribe((event) => {
     if ((event.type === "removed" || event.type === "updated" && (event.action.type === "success" || event.action.type === "error"))
-      && matchQuery({ queryKey: resource.queryKeyRoot }, event.query)) notify();
-  }), () => cache.findAll({ queryKey: resource.queryKeyRoot })
+      && matchQuery({ queryKey: lookupKey }, event.query)) notify();
+  }), () => cache.findAll({ queryKey: lookupKey })
     .filter((query) => query.state.data !== undefined || query.state.error !== null)
     .map((query) => `${query.queryHash}:${query.state.dataUpdateCount}:${query.state.errorUpdateCount}`).join("|"));
   const [search, setSearch] = useState("");
@@ -37,7 +37,7 @@ export function useResourceOptions<T>(resource: ResourceOptions<T>, enabled = tr
   const pages = useQueries({ queries: Array.from({ length: pageCount }, (_, index) => forPage(index + 1)) });
   const items = pages.flatMap((page) => page.data?.items ?? []);
   const known = new Map<string, T>();
-  for (const [, page] of client.getQueriesData<PagedResult<T>>({ queryKey: resource.queryKeyRoot })) {
+  for (const [, page] of client.getQueriesData<Awaited<ReturnType<ResourceOptions<T>["queryFn"]>>>({ queryKey: lookupKey })) {
     for (const item of page?.items ?? []) known.set(resource.id(item), item);
   }
   for (const item of items) known.set(resource.id(item), item);
@@ -61,7 +61,7 @@ export function useResourceOptions<T>(resource: ResourceOptions<T>, enabled = tr
     }
   }
 
-  const allCount = client.getQueryData<PagedResult<T>>(forPage(1, "").queryKey)?.totalCount;
+  const allCount = client.getQueryData<Awaited<ReturnType<ResourceOptions<T>["queryFn"]>>>(forPage(1, "").queryKey)?.totalCount;
   return { data: pages[0]?.data ? { ...pages[0].data, items } : undefined, items, knownItems: [...known.values()], remote, allItems, allCount,
     isPending: pages[0]?.isPending ?? false, isFetching, isError: Boolean(error), error,
     refetch: () => Promise.all(pages.map((page) => page.refetch())) };

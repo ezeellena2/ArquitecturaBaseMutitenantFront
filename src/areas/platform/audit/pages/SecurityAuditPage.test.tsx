@@ -1,4 +1,5 @@
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { pagedOptions } from "@/test/mocks/pagedOptions";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -31,7 +32,7 @@ beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures);
   await changeCulture("es-AR");
   server.use(http.get("/api/platform/audit", () => HttpResponse.json(page())),
-    http.get("/api/platform/audit/organizations", () => HttpResponse.json([{ id: "org-1", name: "Grupo Delta" }])));
+    http.get("/api/platform/audit/organizations/paged", () => HttpResponse.json(pagedOptions([{ id: "org-1", name: "Grupo Delta" }]))));
 });
 
 function mount(path = "/plataforma/auditoria", account: MeResponse = auditOnly) {
@@ -47,6 +48,32 @@ async function openMenu(user: ReturnType<typeof userEvent.setup>, name: string) 
 }
 
 describe("SecurityAuditPage", () => {
+  it("busca la organización 101 dentro del filtro y conserva la búsqueda del historial", async () => {
+    const requests: URL[] = [];
+    const organization = { id: "org-101", name: "Organización 101" };
+    server.use(http.get("/api/platform/audit/organizations/paged", ({ request }) => {
+      const url = new URL(request.url); requests.push(url);
+      return HttpResponse.json(url.searchParams.get("search") === "101" ? pagedOptions([organization])
+        : { ...pagedOptions(Array.from({ length: 10 }, (_, index) => ({ id: `org-${index + 1}`, name: `Organización ${index + 1}` }))), totalCount: 101, totalPages: 11, hasNext: true });
+    }));
+    const user = userEvent.setup();
+    const { router } = mount("/plataforma/auditoria?search=historial");
+    await screen.findByText("Suspendió la cuenta");
+    await openMenu(user, "Organización: todas");
+    await screen.findByRole("menuitemradio", { name: "Organización 1" });
+    const input = screen.getByRole("searchbox", { name: "Filtrar por organización" });
+    act(() => input.focus());
+    vi.useFakeTimers();
+    fireEvent.change(input, { target: { value: "101" } });
+    await act(async () => { await vi.advanceTimersByTimeAsync(300); });
+    vi.useRealTimers();
+    await user.click(await screen.findByRole("menuitemradio", { name: "Organización 101" }));
+    expect(router.state.location.search).toContain("tenantId=org-101");
+    expect(router.state.location.search).toContain("search=historial");
+    expect(requests.at(-1)?.searchParams.get("auditSearch")).toBe("historial");
+    expect(requests.at(-1)?.searchParams.get("pageSize")).toBe("10");
+  });
+
   it("sólo audit.read carga la lista con período 30, cinco columnas y filtros sin cantidades", async () => {
     const urls: URL[] = [];
     server.use(http.get("/api/platform/audit", ({ request }) => { urls.push(new URL(request.url)); return HttpResponse.json(page()); }));
@@ -77,19 +104,19 @@ describe("SecurityAuditPage", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
-  it("cargar más lleva el cursor opaco y los mismos filtros, sin paginado en opciones", async () => {
+  it("cargar más lleva el cursor opaco y los mismos filtros, con páginas propias de opciones", async () => {
     const user = userEvent.setup();
     const requests: URLSearchParams[] = []; const options: URLSearchParams[] = [];
     server.use(http.get("/api/platform/audit", ({ request }) => {
       const params = new URL(request.url).searchParams; requests.push(params);
       return HttpResponse.json(params.has("after") ? page([{ ...event, id: "event-2", summary: "Reactivó la cuenta" }]) : page([event], "AQopaque/+=="));
-    }), http.get("/api/platform/audit/organizations", ({ request }) => { options.push(new URL(request.url).searchParams); return HttpResponse.json([{ id: "org-1", name: "Grupo Delta" }]); }));
+    }), http.get("/api/platform/audit/organizations/paged", ({ request }) => { options.push(new URL(request.url).searchParams); return HttpResponse.json(pagedOptions([{ id: "org-1", name: "Grupo Delta" }])); }));
     mount("/plataforma/auditoria?period=7&type=accounts&tenantId=org-1&accountId=account-1&search=Ana");
     await user.click(await screen.findByRole("button", { name: "Cargar más" }));
     expect(await screen.findByText("Reactivó la cuenta")).toBeVisible();
     expect(screen.getByText("Suspendió la cuenta")).toBeVisible();
     expect(Object.fromEntries(requests.at(-1)!)).toEqual({ period: "7", type: "accounts", tenantId: "org-1", accountId: "account-1", search: "Ana", after: "AQopaque/+==", limit: "25" });
-    expect(Object.fromEntries(options[0])).toEqual({ period: "7", type: "accounts", accountId: "account-1", search: "Ana" });
+    expect(Object.fromEntries(options[0])).toEqual({ period: "7", type: "accounts", accountId: "account-1", auditSearch: "Ana", page: "1", pageSize: "10", sort: "name" });
     expect(screen.queryByRole("button", { name: "Cargar más" })).not.toBeInTheDocument();
   });
 
@@ -126,7 +153,7 @@ describe("SecurityAuditPage", () => {
   });
 
   it("un 403 principal reemplaza la página; el selector secundario no la bloquea", async () => {
-    server.use(http.get("/api/platform/audit/organizations", () => HttpResponse.json({ code: "Authorization.Forbidden", detail: "Sin permiso para las opciones." }, { status: 403 })));
+    server.use(http.get("/api/platform/audit/organizations/paged", () => HttpResponse.json({ code: "Authorization.Forbidden", detail: "Sin permiso para las opciones." }, { status: 403 })));
     const view = mount();
     expect(await screen.findByText("Suspendió la cuenta")).toBeVisible();
     view.unmount();
@@ -138,7 +165,7 @@ describe("SecurityAuditPage", () => {
   it("sin audit.read la ruta no consulta auditoría ni sus organizaciones", async () => {
     let requests = 0;
     server.use(http.get("/api/platform/audit", () => { requests++; return HttpResponse.json(page()); }),
-      http.get("/api/platform/audit/organizations", () => { requests++; return HttpResponse.json([]); }));
+      http.get("/api/platform/audit/organizations/paged", () => { requests++; return HttpResponse.json(pagedOptions([])); }));
     mount("/plataforma/auditoria", { ...auditOnly, effectivePermissions: { ...auditOnly.effectivePermissions, platform: ["platform.accounts.read"] } });
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
     expect(requests).toBe(0);

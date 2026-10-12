@@ -1,4 +1,4 @@
-import { companyRoleOptions, optionPage } from "@/shared/api/resourceOptions";
+import { companyRoleOptions, optionPage, type ResourceOptions } from "@/shared/api/resourceOptions";
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
 import type { PagedResult } from "@/shared/api/pagedResult";
@@ -87,7 +87,7 @@ export function changeCompanyMemberStatus(companyId: string, memberId: string, r
 /// Los roles que se asignan en una empresa, ya filtrados por el back: los de cualquier empresa y los propios. Quien ve sus
 /// miembros los pide a la ruta de la empresa, que pide `company.members.read` (B4: el Administrador de empresa no tiene
 /// `roles.read`); quien solo ve los roles de la organización, a `/api/roles/paged` con la empresa.
-export function fetchAssignableCompanyRoles(companyId: string, canReadMembers: boolean, query: PagedRequest = optionPage): Promise<PagedResult<RoleResponse>> {
+export function fetchAssignableCompanyRoles(companyId: string, canReadMembers: boolean, query: PagedRequest = optionPage): ReturnType<ResourceOptions<RoleResponse>["queryFn"]> {
   return companyRoleOptions(companyId, canReadMembers).queryFn(query);
 }
 

@@ -1,3 +1,4 @@
+import { pagedOptions } from "./pagedOptions";
 import type { ApiSchemas } from "@/shared/api/types";
 
 // Los ejemplos de v111 usan los resúmenes y máscaras que produce la API (E5, decisión 24).
@@ -44,7 +45,7 @@ export function platformAuditCaptureResponses() {
     { method: "GET", path: "/api/platform/audit", query: { tenantId: delta }, status: 200, body: filtered },
     { method: "GET", path: "/api/platform/audit", query: { after: nextCursor }, status: 200, body: next },
     { method: "GET", path: "/api/platform/audit", status: 200, body: page },
-    { method: "GET", path: "/api/platform/audit/organizations", query: { search: "Grupo Delta" }, status: 200, body: [organizations[0]] },
-    { method: "GET", path: "/api/platform/audit/organizations", status: 200, body: organizations },
+    { method: "GET", path: "/api/platform/audit/organizations/paged", query: { auditSearch: "Grupo Delta" }, status: 200, body: pagedOptions([organizations[0]]) },
+    { method: "GET", path: "/api/platform/audit/organizations/paged", status: 200, body: pagedOptions(organizations) },
   ];
 }

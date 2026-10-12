@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { PlatformAuditEventResponse } from "@/shared/api/types";
@@ -20,7 +20,7 @@ import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
-import { fetchAuditOrganizations, fetchSecurityEvents, securityEventsQueryRoot } from "../api/securityEvents";
+import { auditOrganizationOptions, fetchSecurityEvents, securityEventsQueryRoot } from "../api/securityEvents";
 
 const auditFilterKeys = ["period", "type", "tenantId", "accountId"] as const;
 const eventTypes = ["signins", "organizations", "accounts", "operators", "settings"] as const;
@@ -41,11 +41,7 @@ export function SecurityAuditPage() {
     { meta: { silent: true, blocksView: true } });
   // Las opciones cruzan los otros filtros y nunca su propio tenantId, cursor o límite.
   const organizationQuery = { period, type, accountId, search: search || undefined };
-  const organizations = useQuery({
-    queryKey: [...securityEventsQueryRoot, "organizations", organizationQuery],
-    queryFn: () => fetchAuditOrganizations(organizationQuery),
-    meta: { silent: true },
-  });
+  const organizations = useResourceOptions(auditOrganizationOptions(organizationQuery));
   const scope = JSON.stringify({ period, type, tenantId, accountId, search: pagination.search });
   const [selection, setSelection] = useState<{ scope: string; event: PlatformAuditEventResponse } | null>(null);
   // La selección pertenece a los filtros que la abrieron, incluso durante el debounce.
@@ -81,9 +77,9 @@ export function SecurityAuditPage() {
             { key: "type", label: t("filters.type"), menuLabel: t("filters.typeMenu"), value: type ?? "", active: type !== undefined,
               onChange: (value) => filters.setFilter("type", value === "all" ? undefined : value),
               options: [{ value: "all", label: t("filters.allTypes") }, ...eventTypes.map((value) => ({ value, label: t(`types.${value}`) }))] },
-            { key: "organization", label: t("filters.organization"), menuLabel: t("filters.organizationMenu"), value: tenantId ?? "", active: tenantId !== undefined,
+            { key: "organization", label: t("filters.organization"), menuLabel: t("filters.organizationMenu"), remote: organizations.remote, selectedLabel: organizations.knownItems.find((item) => item.id === tenantId)?.name, value: tenantId ?? "", active: tenantId !== undefined,
               onChange: (value) => filters.setFilter("tenantId", value === "all" ? undefined : value),
-              options: [{ value: "all", label: t("filters.allOrganizations") }, ...(organizations.data ?? []).map((organization) => ({ value: organization.id, label: organization.name }))] },
+              options: [{ value: "all", label: t("filters.allOrganizations") }, ...organizations.items.map((organization) => ({ value: organization.id, label: organization.name }))] },
           ]} clearLabel={t("common:actions.clear")} onClear={filters.clear} />
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={columns} rows={audit.items} rowKey={(row) => row.id}

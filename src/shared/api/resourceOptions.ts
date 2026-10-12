@@ -1,13 +1,14 @@
 import { api } from "./httpClient";
 import { toSearch } from "./toSearch";
 import type { PagedResult } from "./pagedResult";
-import type { CompanyCandidateResponse, CompanyResponse, PagedRequest, RoleResponse, RoleScopeFilter } from "./types";
+import type { ApiSchemas, CompanyCandidateResponse, CompanyResponse, PagedRequest, RoleResponse, RoleScopeFilter } from "./types";
 
 export const optionPage: PagedRequest = { page: 1, pageSize: 10, sort: "name" };
 
 export interface ResourceOptions<T> {
   readonly queryKeyRoot: readonly unknown[];
-  readonly queryFn: (query: PagedRequest, signal?: AbortSignal) => Promise<PagedResult<T>>;
+  readonly lookupKeyRoot?: readonly unknown[];
+  readonly queryFn: (query: PagedRequest, signal?: AbortSignal) => Promise<Omit<ApiSchemas["PagedResultOfRoleResponse"], "items"> & { items: readonly T[] }>;
   readonly id: (item: T) => string;
 }
 

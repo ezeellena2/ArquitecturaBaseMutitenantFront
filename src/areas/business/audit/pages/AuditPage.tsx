@@ -1,5 +1,5 @@
+import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { organizationAuditCategories as auditCategories } from "@/shared/api/generated/validation";
-import { useQuery } from "@tanstack/react-query";
 import { ClipboardIcon } from "@/shared/ui/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,7 +22,7 @@ import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Surface } from "@/shared/ui/Surface";
 import { DateText } from "@/shared/ui/format/DateText";
 import type { OrganizationAuditEntryResponse } from "@/shared/api/types";
-import { auditActorKinds, auditQueryRoot, fetchAudit, fetchAuditActors } from "../api/audit";
+import { auditActorKinds, auditQueryRoot, fetchAudit, auditActorOptions } from "../api/audit";
 
 const auditFilterKeys = ["period", "category", "actorId", "actorKind"] as const;
 
@@ -44,11 +44,7 @@ export function AuditPage() {
   const audit = useCursorList([...auditQueryRoot, baseQuery],
     (after) => fetchAudit({ ...baseQuery, after: after ?? undefined, limit: 25 }),
     { meta: { silent: true, blocksView: true } });
-  const actors = useQuery({
-    queryKey: [...auditQueryRoot, "actors", { period, category, search: search || undefined }],
-    queryFn: () => fetchAuditActors({ period, category, search: search || undefined }),
-    meta: { silent: true },
-  });
+  const actors = useResourceOptions(auditActorOptions({ period, category, search: search || undefined }));
   const [selected, setSelected] = useState<OrganizationAuditEntryResponse | null>(null);
   const { phone } = useAppChrome();
 
@@ -101,13 +97,13 @@ export function AuditPage() {
             {
               // Tablero Auditoria-Org: las personas, «Sistema» y «Plataforma», en el orden del back. Una persona va por su id;
               // el sistema y la plataforma, que no tienen, por su tipo. Los dos viajan en un solo cambio de la URL.
-              key: "actor", label: t("audit:filters.actor"), menuLabel: t("audit:filters.actorMenu"),
+              key: "actor", label: t("audit:filters.actor"), menuLabel: t("audit:filters.actorMenu"), remote: actors.remote, selectedLabel: actors.knownItems.find((actor) => (actor.actorId ?? actor.actorKind) === (actorId ?? actorKind))?.displayName ?? actors.knownItems.find((actor) => (actor.actorId ?? actor.actorKind) === (actorId ?? actorKind))?.actorText,
               value: actorKind ?? actorId ?? "", active: actorId !== undefined || actorKind !== undefined,
               onChange: (value) => {
                 const kind = auditActorKinds.find((item) => item === value);
                 updateQuery({ actorId: value === "all" || kind ? undefined : value, actorKind: kind, page: undefined });
               },
-              options: [{ value: "all", label: t("audit:filters.allActors") }, ...(actors.data ?? []).flatMap((actor) => {
+              options: [{ value: "all", label: t("audit:filters.allActors") }, ...actors.items.flatMap((actor) => {
                 const value = actor.actorId ?? auditActorKinds.find((kind) => kind === actor.actorKind);
                 return value ? [{ value, label: actor.displayName ?? actor.actorText }] : [];
               })],

@@ -1,5 +1,7 @@
 import { api } from "@/shared/api/httpClient";
-import type { OrganizationAuditActorResponse, OrganizationAuditCursorResponse } from "@/shared/api/types";
+import type { OrganizationAuditActorResponse, OrganizationAuditCursorResponse, PagedRequest, PagedResultOfOrganizationAuditActorResponse } from "@/shared/api/types";
+import { optionPage, type ResourceOptions } from "@/shared/api/resourceOptions";
+import { toSearch } from "@/shared/api/toSearch";
 
 /// «Quién» sin persona (tablero Auditoria-Org): el sistema y la plataforma no tienen id y se filtran por su tipo.
 export const auditActorKinds = ["System", "PlatformOperator"] as const;
@@ -31,7 +33,14 @@ export function fetchAudit(query: AuditQuery): Promise<OrganizationAuditCursorRe
   return api.get<OrganizationAuditCursorResponse>(`/api/organization/audit${search ? `?${search}` : ""}`);
 }
 
-export function fetchAuditActors(query: Omit<AuditQuery, "after" | "actorId" | "actorKind" | "limit">): Promise<OrganizationAuditActorResponse[]> {
-  const search = queryString(query);
-  return api.get<OrganizationAuditActorResponse[]>(`/api/organization/audit/actors${search ? `?${search}` : ""}`);
+type ActorOptionsFilters = Omit<AuditQuery, "after" | "actorId" | "actorKind" | "limit">;
+
+export function fetchAuditActors(filters: ActorOptionsFilters, page: PagedRequest = optionPage, signal?: AbortSignal): Promise<PagedResultOfOrganizationAuditActorResponse> {
+  const { search: auditSearch, ...otherFilters } = filters;
+  return api.get(`/api/organization/audit/actors/paged?${toSearch({ ...otherFilters, auditSearch, ...page })}`, { signal });
+}
+
+export function auditActorOptions(filters: ActorOptionsFilters): ResourceOptions<OrganizationAuditActorResponse> {
+  return { queryKeyRoot: [...auditQueryRoot, "actor-options", filters], lookupKeyRoot: [...auditQueryRoot, "actor-options"],
+    id: (actor) => actor.actorId ?? actor.actorKind, queryFn: (query, signal) => fetchAuditActors(filters, query, signal) };
 }

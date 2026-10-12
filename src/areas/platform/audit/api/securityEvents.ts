@@ -1,5 +1,7 @@
 import { api } from "@/shared/api/httpClient";
-import type { PlatformAuditCursorResponse, PlatformAuditOrganizationResponse } from "@/shared/api/types";
+import type { PagedRequest, PagedResultOfPlatformAuditOrganizationResponse, PlatformAuditCursorResponse, PlatformAuditOrganizationResponse } from "@/shared/api/types";
+import { optionPage, type ResourceOptions } from "@/shared/api/resourceOptions";
+import { toSearch } from "@/shared/api/toSearch";
 
 export interface SecurityEventsQuery {
   after?: string;
@@ -26,7 +28,14 @@ export function fetchSecurityEvents(query: SecurityEventsQuery): Promise<Platfor
   return api.get<PlatformAuditCursorResponse>(`/api/platform/audit${search ? `?${search}` : ""}`);
 }
 
-export function fetchAuditOrganizations(query: Omit<SecurityEventsQuery, "after" | "limit" | "tenantId">): Promise<PlatformAuditOrganizationResponse[]> {
-  const search = queryString(query);
-  return api.get<PlatformAuditOrganizationResponse[]>(`/api/platform/audit/organizations${search ? `?${search}` : ""}`);
+type OrganizationOptionsFilters = Omit<SecurityEventsQuery, "after" | "limit" | "tenantId">;
+
+export function fetchAuditOrganizations(filters: OrganizationOptionsFilters, page: PagedRequest = optionPage, signal?: AbortSignal): Promise<PagedResultOfPlatformAuditOrganizationResponse> {
+  const { search: auditSearch, ...otherFilters } = filters;
+  return api.get(`/api/platform/audit/organizations/paged?${toSearch({ ...otherFilters, auditSearch, ...page })}`, { signal });
+}
+
+export function auditOrganizationOptions(filters: OrganizationOptionsFilters): ResourceOptions<PlatformAuditOrganizationResponse> {
+  return { queryKeyRoot: [...securityEventsQueryRoot, "organization-options", filters], lookupKeyRoot: [...securityEventsQueryRoot, "organization-options"],
+    id: (organization) => organization.id, queryFn: (query, signal) => fetchAuditOrganizations(filters, query, signal) };
 }

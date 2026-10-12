@@ -31,7 +31,7 @@ function Harness<T>({ resource, id, name, multiple = false }: {
       : <SearchSelect options={options} value={value} onChange={setValue} selectedLabel={query.knownItems.find((item) => id(item) === value) ? name(query.knownItems.find((item) => id(item) === value)!) : undefined}
           placeholder="Elegí" searchLabel="Buscar" remote={query.remote} />}</FormField>
     <output aria-label="Elegido">{multiple ? values.join(",") : value}</output>
-    {multiple ? <button type="button" onClick={() => { void query.allItems().then((items) => setValues(items.map(id))); }}>Elegir todos</button> : null}
+    {multiple ? <button type="button" onClick={() => { void query.allItems().then((items) => setValues(items.map(id))); }}>{"Elegir todos"}</button> : null}
   </>;
 }
 
