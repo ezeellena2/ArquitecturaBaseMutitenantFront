@@ -16,6 +16,13 @@ declare module "vitest" {
 
 expect.extend(axeMatchers);
 
+// JSDOM puede devolver Document como relatedTarget al retirar el control que tenía foco.
+// El navegador deja ese retorno vacío; Sonner conserva sólo elementos a los que puede volver.
+document.addEventListener("focusin", (event) => {
+  if (event instanceof FocusEvent && event.relatedTarget instanceof Document)
+    Object.defineProperty(event, "relatedTarget", { value: null });
+}, true);
+
 // Cada llamada HTTP debe tener un handler explícito. Los handlers de sesión llegan en E3.
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => server.resetHandlers());

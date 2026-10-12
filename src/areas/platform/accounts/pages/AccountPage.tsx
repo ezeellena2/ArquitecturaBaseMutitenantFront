@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
@@ -73,12 +73,11 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
   const { t } = useTranslation(["platformAccounts", "common"]); const { phone } = useAppChrome(); const format = useFormat(); const client = useQueryClient(); const navigate = useNavigate();
   const [tab, setTab] = useState(data.kind === "Operator" ? "permissions" : "methods");
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
-  const operationId = useId(); const active = useMountedRef();
+  const active = useMountedRef();
   const invitation = isOperatorInvitation(data); const operator = data.kind === "Operator"; const name = accountLabel(data, t);
   const mutable = !self && !["PendingDeletion", "Deleted"].includes(data.state);
   const canResend = mutable && canOperators && invitation;
   const action = useResourceAction<{ id: string; name: string }>({
-    matches: (meta) => meta?.accountDetailResend === operationId,
     isCurrent: () => canResend,
     onError: (error) => {
     toastActionError(error, t);
@@ -87,7 +86,7 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
   });
   const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendOperatorInvitation(operation.id, key),
     (_response, operation) => { toast.success(t("platformAccounts:messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); }),
-    { meta: { accountDetailResend: operationId }, sameOperation: (previous, next) => previous.id === next.id });
+    { meta: action.meta, sameOperation: (previous, next) => previous.id === next.id });
   const busy = action.isPending;
   const accountActions: AccountAction[] = mutable && canManage && !operator && !invitation
     ? ["revoke-sessions", ...(data.state === "Suspended" ? ["reactivate"] as const : []), ...(["Active", "NeedsRecovery"].includes(data.state) ? ["suspend"] as const : [])] : [];
@@ -114,8 +113,11 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
   const matchingMemberships = data.organizations.filter((membership) => membership.name === managed?.managedByOrganizationName);
   const ended = matchingMemberships.length === 1 && ["Inactive", "Removed"].includes(matchingMemberships[0].status) ? matchingMemberships[0] : undefined;
   const banner = data.state === "Suspended" ? <Banner tone="warning"><Trans t={t} i18nKey="platformAccounts:detail.suspended" components={{ strong: <strong />, date: <DateText value={data.lastStateChange?.atUtc} />, reason: <>{data.lastStateChange?.reason || <EmptyValue />}</> }} /></Banner>
-    : data.state === "PendingDeletion" ? <Banner tone="warning"><strong>{t(data.deletion?.requestedByPlatform ? "platformAccounts:detail.platformDeletion" : "platformAccounts:detail.personalDeletion")} <DateText value={data.deletion?.requestedAtUtc} />{"."}</strong>{" "}{t("platformAccounts:detail.scheduled")} <DateText value={data.deletion?.scheduledForUtc} />{"."}</Banner>
-      : data.state === "NeedsRecovery" ? <Banner tone="warning"><strong>{t("platformAccounts:detail.recovery")}</strong>{" "}{t("platformAccounts:detail.recoveryDescription", { organization: managed?.managedByOrganizationName || format.formatEmpty() })} <DateText value={ended?.endedAtUtc} />{". "}<Link className="font-semibold text-[var(--marca-tx)] hover:underline" to="/plataforma/recuperaciones">{t("platformAccounts:detail.recoveries")}</Link></Banner> : undefined;
+    : data.state === "PendingDeletion" ? <Banner tone="warning"><Trans t={t} i18nKey={data.deletion?.requestedByPlatform ? "platformAccounts:detail.platformDeletion" : "platformAccounts:detail.personalDeletion"}
+        components={{ strong: <strong />, requested: <DateText value={data.deletion?.requestedAtUtc} />, scheduled: <DateText value={data.deletion?.scheduledForUtc} /> }} /></Banner>
+      : data.state === "NeedsRecovery" ? <Banner tone="warning"><Trans t={t} i18nKey="platformAccounts:detail.recoveryDescription"
+          values={{ organization: managed?.managedByOrganizationName || format.formatEmpty() }}
+          components={{ strong: <strong />, ended: <DateText value={ended?.endedAtUtc} />, recoveries: <Link className="font-semibold text-[var(--marca-tx)] hover:underline" to="/plataforma/recuperaciones" /> }} /></Banner> : undefined;
   return <>
     <Page icon={UsersIcon} title={name} backTo={{ to: "/plataforma/cuentas", label: t("platformAccounts:detail.back") }} phoneBody="flush" banner={banner}
       summary={<><StatusBadge tones={accountStateTones} value={data.state} /><SublineSeparator />{operator ? operatorSummary : personSummary}</>}

@@ -64,7 +64,6 @@ function DomainActions({ organizationId, domain, editable, onWrite, onConflict, 
 }) {
   const { t } = useTranslation("platformTenants"); const client = useQueryClient();
   const action = useResourceAction<VerifyOperation>({
-    matches: (meta) => meta?.tenantDomainVerification === true && meta.organizationId === organizationId && meta.domain === domain.domain,
     onError: (error) => {
     toastActionError(error, t); if (conflicted(error)) { onConflict(domain.domain); void client.invalidateQueries({ queryKey: tenantsQueryRoot }); }
     },
@@ -76,7 +75,7 @@ function DomainActions({ organizationId, domain, editable, onWrite, onConflict, 
       client.setQueriesData<OrganizationDomainPageResponse>({ queryKey: tenantDomainsQueryKey(operation.id) }, (data) => data ? { ...data, items: data.items.map((item) => item.domain === operation.domain ? { ...item, version: response.version, status: "Verified", txtRecordName: null, txtRecordValue: null } : item) } : data);
       toast.success(t("domains.verified", { domain: operation.domain })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
     }), {
-    meta: { tenantDomainVerification: true, organizationId, domain: domain.domain },
+    meta: action.meta,
     sameOperation: (previous, next) => previous.id === next.id && previous.domain === next.domain && previous.version === next.version && previous.reason === next.reason,
   });
   const verifyDomain = () => verify.mutate({ id: organizationId, domain: domain.domain, version: domain.version, reason: t("domains.verifyReason") });

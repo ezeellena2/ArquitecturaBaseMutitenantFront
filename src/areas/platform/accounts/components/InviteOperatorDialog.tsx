@@ -1,7 +1,7 @@
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { TFunction } from "i18next";
-import { useId, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -34,7 +34,7 @@ function sameInvitation(previous: InvitePlatformOperatorRequest, next: InvitePla
 }
 export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => void; onInvited: () => Promise<unknown> }) {
   const { t } = useTranslation(["platformAccounts", "common"]);
-  const operationId = useId(); const restoreFocus = useRestoreFocusOnClose();
+  const restoreFocus = useRestoreFocusOnClose();
   const schema = useMemo(() => inviteSchema(t), [t]);
   const form = useForm<InviteForm>({ resolver: zodResolver(schema), defaultValues: { email: "", permissions: [] } });
   const { getValues, setError } = form;
@@ -46,7 +46,6 @@ export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => vo
   };
   const [failure, setFailure] = useState<unknown>();
   const action = useResourceAction<InvitePlatformOperatorRequest>({
-    matches: (meta) => meta?.operatorInvite === operationId,
     isCurrent: matchesDraft,
     onError: (error) => {
     if (applyApiErrorToForm(error, setError, serverFields)) return;
@@ -56,7 +55,7 @@ export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => vo
   });
   const invite = useIdempotentMutation(action.guarded((request, key: string) => inviteOperator(request, key),
     (_response, request) => { toast.success(t("platformAccounts:messages.invited", { email: request.email })); onClose(); void onInvited(); }),
-    { meta: { operatorInvite: operationId }, sameOperation: sameInvitation });
+    { meta: action.meta, sameOperation: sameInvitation });
   const busy = action.isPending;
   const clear = (field: keyof InviteForm) => { form.clearErrors(field); setFailure(undefined); };
   const submit = form.handleSubmit((values) => { setFailure(undefined); invite.mutate(values); });

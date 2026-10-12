@@ -1,10 +1,9 @@
 import { useQueryClient, type Mutation, type MutationMeta, type MutationOptions } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useSyncExternalStore } from "react";
 import { ApiError } from "@/shared/api/ApiError";
 import { useMountedRef } from "./useMountedRef";
 
 interface ResourceActionOptions<TVariables> {
-  matches?: (meta: MutationMeta | undefined) => boolean;
   isCurrent?: (variables: TVariables) => boolean;
   onError?: (error: ApiError, variables: TVariables) => void;
 }
@@ -14,11 +13,13 @@ interface NativeCallbacks {
   original: MutationOptions<unknown, Error, unknown, unknown>;
   guarded: MutationOptions<unknown, Error, unknown, unknown>;
 }
-const noMutations = () => false;
 
 /** Observa la operación del recurso aun cuando otro envío haya retirado su observer nativo. */
-export function useResourceAction<TVariables extends object>({ matches = noMutations, isCurrent, onError }: ResourceActionOptions<TVariables> = {}) {
+export function useResourceAction<TVariables extends object>({ isCurrent, onError }: ResourceActionOptions<TVariables> = {}) {
   const client = useQueryClient();
+  const owner = useId();
+  const meta = useMemo<MutationMeta>(() => ({ resourceActionOwner: owner }), [owner]);
+  const matches = useCallback((candidate: MutationMeta | undefined) => candidate?.resourceActionOwner === owner, [owner]);
   const mounted = useMountedRef();
   // Sólo las variables que entraron por guarded pertenecen a este dueño. No se fuerza el tipo
   // de state.variables (unknown) ni se acepta una operación de otro formulario.
@@ -103,8 +104,5 @@ export function useResourceAction<TVariables extends object>({ matches = noMutat
     protect(mutation);
     return { valid: binding.valid, protect: () => protect(mutation) };
   }
-  function run<TData>(sent: TVariables, perform: () => Promise<TData>, committed?: (response: TData, sent: TVariables) => void) {
-    return guarded(perform, committed)(sent);
-  }
-  return { guarded, run, isPending, bindCallbacks, canAct: (sent: TVariables) => mounted.current && (isCurrent?.(sent) ?? true) };
+  return { guarded, meta, isPending, bindCallbacks };
 }

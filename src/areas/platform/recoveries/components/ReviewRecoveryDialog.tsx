@@ -1,5 +1,6 @@
+import type { MutationMeta } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { RecoveryMethodText } from "./RecoveryMethodText";
@@ -31,10 +32,10 @@ function sameOperation(previous: RecoveryOperation, next: RecoveryOperation) { r
 
 // El dueño nativo se desmonta al abandonar el borrador o la elección. Un Retry viejo conserva
 // su propia clave abortada y no puede rotar la clave del dueño nuevo; el formulario queda afuera.
-function RecoveryMutationOwner({ operation, operationId, execute }: {
-  operation: RecoveryOperation; operationId: string; execute: (operation: RecoveryOperation, key: string) => Promise<VersionResponse>;
+function RecoveryMutationOwner({ operation, meta, execute }: {
+  operation: RecoveryOperation; meta: MutationMeta; execute: (operation: RecoveryOperation, key: string) => Promise<VersionResponse>;
 }) {
-  const { mutate } = useIdempotentMutation(execute, { meta: { recoveryReview: operationId }, sameOperation });
+  const { mutate } = useIdempotentMutation(execute, { meta, sameOperation });
   useEffect(() => {
     let mounted = true;
     // En StrictMode la primera preparación se limpia antes de enviar; el dueño definitivo envía una vez.
@@ -48,7 +49,7 @@ export function ReviewRecoveryDialog({ recovery, returnFocusTo, onClose, onResol
   recovery: PlatformRecoveryResponse; returnFocusTo: HTMLElement | null; onClose: () => void; onResolved: (response: VersionResponse, operation: RecoveryOperation) => void;
 }) {
   const { t } = useTranslation(["platformRecoveries", "common"]); const format = useFormat(); const { phone } = useAppChrome();
-  const operationId = useId(); const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
+  const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const [submittedAction, setSubmittedAction] = useState<RecoveryAction | null>(null);
   const [operation, setOperation] = useState<RecoveryOperation | null>(null);
   const pending = recovery.status === "Pending"; const hasAccount = Boolean(recovery.accountId); const base = useRef(recovery.version); const draft = useRef(0); const choice = useRef<RecoveryAction | null>(null);
@@ -57,17 +58,16 @@ export function ReviewRecoveryDialog({ recovery, returnFocusTo, onClose, onResol
   const { getValues, setError } = form; const { failure, fail, clear, close } = useDialogFailure(onClose, recoveriesQueryRoot, recoveryStateConflictCodes);
   const current = useCallback((operation: RecoveryOperation) => pending && operation.id === recovery.id && operation.version === base.current && operation.draft === draft.current && operation.action === choice.current && operation.reason === getValues().reason.trim() && (operation.action === "reject" || hasAccount), [pending, recovery.id, getValues, hasAccount]);
   const action = useResourceAction<RecoveryOperation>({
-    matches: (meta) => meta?.recoveryReview === operationId,
     isCurrent: current,
     onError: (error) => {
     if (applyApiErrorToForm(error, setError, { reason: "reason" })) return;
     fail(recoveryActionError(error, t));
     },
   });
-  const execute = (operation: RecoveryOperation, key: string) => action.run(operation, async () => {
+  const execute = (operation: RecoveryOperation, key: string) => action.guarded(async (operation: RecoveryOperation, key: string) => {
     setSubmittedAction(operation.action);
     return changeRecovery(operation.id, operation.action, { version: operation.version, reason: operation.reason }, key);
-  }, (response, sent) => { base.current = response.version; onResolved(response, sent); onClose(); });
+  }, (response, sent) => { base.current = response.version; onResolved(response, sent); onClose(); })(operation, key);
   const busy = action.isPending;
   const submit = (action: RecoveryAction) => form.handleSubmit((values) => {
     if (!pending || (action === "approve" && !hasAccount)) return;
@@ -85,7 +85,7 @@ export function ReviewRecoveryDialog({ recovery, returnFocusTo, onClose, onResol
     ] : []),
   ];
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}><DialogContent onCloseAutoFocus={restoreFocus}>
-    {operation ? <RecoveryMutationOwner key={operation.draft} operation={operation} operationId={operationId} execute={execute} /> : null}
+    {operation ? <RecoveryMutationOwner key={operation.draft} operation={operation} meta={action.meta} execute={execute} /> : null}
     <DialogHeader><DialogTitle>{t(pending ? "platformRecoveries:review.title" : "platformRecoveries:review.resolvedTitle")}</DialogTitle></DialogHeader>
     <form noValidate onSubmit={(event) => { event.preventDefault(); }} className="flex min-h-0 flex-col">
       <DialogBody><DialogDescription>{t("platformRecoveries:review.requested", { date: format.formatDateTime(recovery.createdAtUtc) })}</DialogDescription>

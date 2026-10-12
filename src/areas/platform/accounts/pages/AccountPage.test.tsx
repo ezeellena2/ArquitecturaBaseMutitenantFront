@@ -49,7 +49,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
     await screen.findByRole("heading", { name: "Sin dato", level: 1 });
     if (["Reactivar", "Cerrar sesiones", "Cambiar permisos"].includes(action)) await user.click(screen.getByRole("button", { name: action }));
     else await menu(user, action);
-    expect(await screen.findByRole("dialog", { name: title })).toBeVisible();
+    expect(await screen.findByRole("dialog")).toHaveAccessibleName(title);
     if (action === "Dar de baja") await screen.findByRole("textbox", { name: "Motivo" });
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -128,7 +128,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
     open(); await screen.findByRole("heading", { name: "Pablo Ortiz", level: 1 });
     expect(screen.getByText(/Su único método de ingreso/)).toHaveTextContent("la membresía terminó el 20/09/2026.");
   });
-  it("organizaciones: Dueño por clave, null vacío, estados de membresía y vínculo", async () => {
+  it("organizaciones: nombre traducido por API, null vacío, estados de membresía y vínculo", async () => {
     data.organizations.push({ ...data.organizations[0], tenantId: "ended", name: "Terminada", status: "Removed" });
     const user = userEvent.setup(); open(); await user.click(await screen.findByRole("tab", { name: "Organizaciones 3" }));
     expect(screen.getByRole("link", { name: "Grupo Delta" })).toHaveAttribute("href", "/plataforma/organizaciones/tenant-1");
@@ -286,6 +286,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
     expect(screen.queryByRole("button", { name: "Cambiar permisos" })).not.toBeInTheDocument();
   });
   it("en-US localiza métodos, fecha, Dueño y grupos de la ficha", async () => {
+    data.organizations = data.organizations.map((organization) => ({ ...organization, roleName: organization.roleName === "Dueño" ? "Owner" : organization.roleName }));
     const { queryClient } = open(); await screen.findByRole("heading", { name: "Lucía Fernández", level: 1 });
     await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture: "en-US" }); });
     expect(await screen.findByRole("tab", { name: "Sign-in methods 3" })).toBeVisible(); expect(screen.getAllByText(/Email/).length).toBeGreaterThan(0);

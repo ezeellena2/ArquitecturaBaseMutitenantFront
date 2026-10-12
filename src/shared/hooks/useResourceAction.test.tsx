@@ -12,8 +12,8 @@ describe("useResourceAction", () => {
     let finish: () => void = () => {};
     const pending = new Promise<void>((resolve) => { finish = resolve; });
     const hook = renderHook(() => {
-      const action = useResourceAction<{ id: string }>({ matches: (meta) => meta?.resource === "A", isCurrent: (sent) => sent.id === "first" });
-      const mutation = useIdempotentMutation(action.guarded(async () => { await pending; return true; }), { meta: { resource: "A" } });
+      const action = useResourceAction<{ id: string }>({ isCurrent: (sent) => sent.id === "first" });
+      const mutation = useIdempotentMutation(action.guarded(async () => { await pending; return true; }), { meta: action.meta });
       return { action, mutation };
     }, { wrapper: ({ children }: { children: ReactNode }) => createElement(QueryClientProvider, { client }, children) });
     let request: Promise<unknown> = Promise.resolve();
@@ -31,11 +31,11 @@ describe("useResourceAction", () => {
     const keys: string[] = [];
     let attempts = 0;
     const hook = renderHook(() => {
-      const action = useResourceAction<{ id: string }>({ matches: (meta) => meta?.resource === "A", onError });
+      const action = useResourceAction<{ id: string }>({ onError });
       const mutation = useIdempotentMutation(action.guarded(async (_sent, key: string) => {
         keys.push(key); attempts++;
         throw ApiError.network();
-      }), { meta: { resource: "A" } });
+      }), { meta: action.meta });
       return { action, mutation };
     }, { wrapper: ({ children }: { children: ReactNode }) => createElement(QueryClientProvider, { client }, children) });
     const original = { id: "first" };
@@ -56,8 +56,8 @@ describe("useResourceAction", () => {
     const onError = vi.fn(); const send = vi.fn();
     let revision = 0; let finish!: () => void;
     const hook = renderHook(() => {
-      const action = useResourceAction<{ revision: number }>({ matches: (meta) => meta?.resource === "A", isCurrent: (sent) => sent.revision === revision, onError });
-      const mutation = useIdempotentMutation(action.guarded(async () => { send(); await new Promise<void>((resolve) => { finish = resolve; }); throw ApiError.network(); }), { meta: { resource: "A" } });
+      const action = useResourceAction<{ revision: number }>({ isCurrent: (sent) => sent.revision === revision, onError });
+      const mutation = useIdempotentMutation(action.guarded(async () => { send(); await new Promise<void>((resolve) => { finish = resolve; }); throw ApiError.network(); }), { meta: action.meta });
       return mutation;
     }, { wrapper: ({ children }: { children: ReactNode }) => createElement(QueryClientProvider, { client }, children) });
     let request!: Promise<unknown>;

@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useId, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -30,7 +30,7 @@ export function OperatorPermissionsDialog({ account, returnFocusTo, onClose, onS
   onSaved: (response: VersionResponse, permissions: string[]) => void;
 }) {
   const { t } = useTranslation(["platformAccounts", "common"]);
-  const operationId = useId(); const conflict = useRef(false); const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
+  const conflict = useRef(false); const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const schema = useMemo(() => z.object({ permissions: z.array(z.string()), reason: z.string().trim().min(1, t("common:reasonDialog.reasonRequired")) }), [t]);
   const initial = account.operatorPermissions ?? [];
   const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: { permissions: initial, reason: "" } });
@@ -38,7 +38,6 @@ export function OperatorPermissionsDialog({ account, returnFocusTo, onClose, onS
   const [failure, setFailure] = useState<unknown>(); const close = () => onClose(conflict.current);
   const matches = (request: ChangePlatformOperatorRequest) => sameRequest(request, { ...getValues(), reason: getValues().reason.trim(), version: account.operatorVersion });
   const action = useResourceAction<ChangePlatformOperatorRequest>({
-    matches: (meta) => meta?.operatorPermissions === operationId,
     isCurrent: matches,
     onError: (error) => {
     if (error.code === "General.ConcurrencyConflict") conflict.current = true;
@@ -48,7 +47,7 @@ export function OperatorPermissionsDialog({ account, returnFocusTo, onClose, onS
     },
   });
   const save = useIdempotentMutation(action.guarded((request, key: string) => changeOperatorPermissions(account.id, request, key),
-    (response, request) => { onSaved(response, request.permissions ?? []); onClose(false); }), { meta: { operatorPermissions: operationId }, sameOperation: sameRequest });
+    (response, request) => { onSaved(response, request.permissions ?? []); onClose(false); }), { meta: action.meta, sameOperation: sameRequest });
   const busy = action.isPending;
   const submit = form.handleSubmit((values) => { setFailure(undefined); save.mutate({ ...values, version: account.operatorVersion }); });
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}><DialogContent onCloseAutoFocus={restoreFocus}>

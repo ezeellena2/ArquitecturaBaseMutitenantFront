@@ -2,7 +2,7 @@ import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { useCallback, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -166,13 +166,12 @@ function SettingsReasonConfirmation({ confirmation, current, onClose, execute }:
   const { t } = useTranslation(["platformSettings", "common"]);
   const active = useMountedRef(); const revision = useRef(0); const [reasonRevision, setReasonRevision] = useState(0);
   const reasonValue = useRef(""); const submittedRevision = useRef<number | null>(null); const submission = useRef(0);
-  const operationId = useId();
-  const resource = useResourceAction<ReasonDialogValues>({ matches: (meta) => meta?.settingsReason === operationId });
+  const resource = useResourceAction<ReasonDialogValues>();
   return <div onSubmitCapture={() => { submittedRevision.current = revision.current; submission.current++; }} onChangeCapture={(event) => {
     if (event.target instanceof HTMLTextAreaElement && event.target.name === "reason") { reasonValue.current = event.target.value.trim(); revision.current++; setReasonRevision(revision.current); }
   }}>
     <ReasonDialog title={t("platformSettings:confirmTitle")} description={t("platformSettings:confirmDescription")} confirmLabel={t("platformSettings:confirm")} pendingLabel={t("platformSettings:saving")}
-      queryRoot={platformSettingsKey} meta={{ settingsReason: operationId }} onClose={onClose} mutationFn={async (values) => {
+      queryRoot={platformSettingsKey} meta={resource.meta} onClose={onClose} mutationFn={async (values) => {
         const sentRevision = submittedRevision.current; const sentSubmission = submission.current;
         const valid = () => active.current && current() && reasonRevision === revision.current && sentRevision === revision.current && sentSubmission === submission.current && values.reason === reasonValue.current;
         const owner = resource.bindCallbacks(values, valid);

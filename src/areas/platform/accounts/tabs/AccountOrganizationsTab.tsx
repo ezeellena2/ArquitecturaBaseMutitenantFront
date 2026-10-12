@@ -11,7 +11,7 @@ import { Surface } from "@/shared/ui/Surface";
 export function AccountOrganizationsTab({ organizations }: { organizations: readonly PlatformAccountMembershipResponse[] }) {
   const { t } = useTranslation("platformAccounts");
   const path = (id: string) => `/plataforma/organizaciones/${encodeURIComponent(id)}`;
-  const role = (membership: PlatformAccountMembershipResponse) => membership.roleName === "TenantAdmin" ? t("detail.owner") : membership.roleName || <EmptyValue />;
+  const role = (membership: PlatformAccountMembershipResponse) => membership.roleName || <EmptyValue />;
   const state = (membership: PlatformAccountMembershipResponse) => <StatusDot tone={membership.status === "Active" ? "success" : membership.status === "Invited" ? "pending" : "neutral"}
     label={t(membership.status === "Active" ? "detail.membershipActive" : membership.status === "Invited" ? "detail.membershipInvited" : "detail.membershipEnded")} />;
   const columns: Column<PlatformAccountMembershipResponse>[] = [

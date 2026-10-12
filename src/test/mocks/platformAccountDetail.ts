@@ -11,14 +11,14 @@ const method = (id: string, maskedValue: string, verifiedAtUtc: string, isPrimar
 const membership = (tenantId: string, name: string, joinedAtUtc: string, roleName: string | null = null): Detail["organizations"][number] =>
   ({ tenantId, name, roleName, joinedAtUtc, status: "Active", tenantStatus: "Active", endedAtUtc: null });
 
-// Identidad y métodos del tablero v111. Las claves de rol vienen del índice global real.
+// Identidad y métodos del tablero v111. Los nombres de rol llegan traducidos por Application.
 export function platformAccountDetailFixture({ state = "Activa", kind = "Persona" } = {}): Detail {
   const base: Detail = { id: "account-lucia", displayName: "Lucía Fernández", primaryEmail: "lucia.fer@gmail.com", kind: "Person", state: states[state] ?? "Active",
     createdAtUtc: "2026-01-12T11:40:00Z", deletedAtUtc: null, lastSignInAtUtc: personLastSignInAtUtc, lastSignInMethod: "Code", invitationExpiresAtUtc: null,
     hasPersonalSpace: true, deletion: null, lastStateChange: null, operatorPermissions: null, operatorVersion: null, soleOwnerOrganizations: ["Grupo Delta"],
     loginMethods: [method("method-managed", "lu•••@delta.ejemplo.com", "2026-01-12T11:40:00Z", false, "Grupo Delta"),
       { ...method("method-phone", "•••• 4521", "2026-02-03T14:47:00Z"), type: "Phone", canSignIn: false }, method("method-primary", "lu•••@gmail.com", "2026-05-10T17:20:00Z", true)],
-    organizations: [membership("tenant-1", "Grupo Delta", "2026-01-12T11:40:00Z", "TenantAdmin"), membership("tenant-beta", "Beta S.R.L.", "2026-02-03T14:47:00Z")],
+    organizations: [membership("tenant-1", "Grupo Delta", "2026-01-12T11:40:00Z", "Dueño"), membership("tenant-beta", "Beta S.R.L.", "2026-02-03T14:47:00Z")],
   };
   if (kind.startsWith("Operador")) return { ...base, id: "account-laura", displayName: "Laura Díaz", primaryEmail: "laura.diaz@arquitecturabase.ejemplo.com", kind: "Operator", state: "Active",
     hasPersonalSpace: false, createdAtUtc: operatorInvitedAtUtc, lastSignInAtUtc: "2026-09-22T20:35:00Z",
@@ -32,7 +32,7 @@ export function platformAccountDetailFixture({ state = "Activa", kind = "Persona
   if (state === "Suspendida") return { ...base, lastStateChange: { atUtc: "2026-09-27T20:00:00Z", action: "Suspendió la cuenta", reason: "Denuncia de uso indebido." } };
   if (state === "Necesita recuperación") return { ...base, id: "account-pablo", displayName: "Pablo Ortiz", primaryEmail: "pablo@kappa.ejemplo.com", createdAtUtc: "2026-03-15T12:30:00Z", lastSignInAtUtc: "2026-09-19T21:12:00Z",
     loginMethods: [{ ...method("method-kappa", "pa•••@kappa.ejemplo.com", "2026-03-15T12:30:00Z", true, "Kappa S.R.L."), canSignIn: false }],
-    organizations: [{ ...membership("tenant-kappa", "Kappa S.R.L.", "2026-03-15T12:30:00Z", "TenantAdmin"), status: "Inactive", endedAtUtc: "2026-09-20T13:00:00Z" }], soleOwnerOrganizations: [] };
+    organizations: [{ ...membership("tenant-kappa", "Kappa S.R.L.", "2026-03-15T12:30:00Z", "Dueño"), status: "Inactive", endedAtUtc: "2026-09-20T13:00:00Z" }], soleOwnerOrganizations: [] };
   if (base.state === "PendingDeletion") return { ...base, id: "account-diego", displayName: "Diego Ríos", primaryEmail: "diego.rios@delta.ejemplo.com", createdAtUtc: "2026-02-18T13:05:00Z", lastSignInAtUtc: "2026-09-27T12:12:00Z",
     deletion: { requestedAtUtc: state === "Baja iniciada por la plataforma" ? "2026-09-27T13:30:00Z" : "2026-09-27T12:15:00Z", scheduledForUtc: "2026-10-27T12:15:00Z", requestedByPlatform: state === "Baja iniciada por la plataforma" },
     loginMethods: [method("method-diego", "di•••@delta.ejemplo.com", "2026-02-18T13:05:00Z", true, "Grupo Delta")], organizations: [membership("tenant-1", "Grupo Delta", "2026-02-18T13:05:00Z")], soleOwnerOrganizations: [] };

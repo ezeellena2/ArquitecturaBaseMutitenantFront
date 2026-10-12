@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Power, RotateCw, Trash2 } from "lucide-react";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { toast } from "sonner";
@@ -34,10 +34,8 @@ const states: readonly (PlatformAccountState | undefined)[] = [undefined, "Activ
 /** El hook vive por cuenta: Retry A funciona aunque otro envío haya retirado su observer. */
 function AccountActions({ account, self, canManage, canInvite, route, onConfirm }: { account: PlatformAccountResponse; self: boolean; canManage: boolean; canInvite: boolean; route: string; onConfirm: (confirmation: Confirmation) => void }) {
   const { t } = useTranslation("platformAccounts"); const client = useQueryClient(); const invitation = isOperatorInvitation(account);
-  const operationId = useId();
   const allowed = !self && canInvite && invitation;
   const action = useResourceAction<{ id: string; name: string }>({
-    matches: (meta) => meta?.operatorResend === operationId,
     isCurrent: () => allowed,
     onError: (error) => {
     toastActionError(error, t);
@@ -46,7 +44,7 @@ function AccountActions({ account, self, canManage, canInvite, route, onConfirm 
   });
   const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendOperatorInvitation(operation.id, key),
     (_response, operation) => { toast.success(t("messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); }),
-    { meta: { operatorResend: operationId }, sameOperation: (previous, next) => previous.id === next.id });
+    { meta: action.meta, sameOperation: (previous, next) => previous.id === next.id });
   const busy = action.isPending;
   if (self || account.state === "PendingDeletion" || account.state === "Deleted") return null;
   const confirm = (action: Confirmation["action"], trigger: HTMLElement | null) => onConfirm({ account, action, trigger, route });
