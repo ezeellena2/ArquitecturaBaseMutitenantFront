@@ -82,8 +82,10 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   });
   useEffect(() => { confirmOwnRead(); }, [settings, ownRead?.saved.version]);
   const revision = useRef(0);
-  const savedHasKey = ownRead?.saved.hasKey ?? settings.hasKey;
-  const inputKey = changingKey || !savedHasKey || values.keyAction === "replace";
+  const keyRead = ownRead?.saved ?? settings;
+  const savedHasKey = keyRead.hasKey;
+  const modeChanged = !platform && "mode" in keyRead && values.mode !== keyRead.mode;
+  const inputKey = changingKey || !savedHasKey || values.keyAction === "replace" || modeChanged;
   function fieldError(name: keyof SettingsValues, message: string) { form.setError(name, { type: "server", message }); }
 
   function policyAllows(sent?: SettingsOperation) {

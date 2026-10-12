@@ -16,7 +16,8 @@ const scope = { access: "business" as const, tenantId: businessManager.activeTen
 const secret = "test-private-key-never-cache";
 async function ownKey(app: ReturnType<typeof mountSettings>) {
   await app.user.click(await screen.findByRole("radio", { name: "La nuestra" }));
-  await app.user.click(screen.getByRole("button", { name: "Cambiar" }));
+  const change = screen.queryByRole("button", { name: "Cambiar" });
+  if (change) await app.user.click(change);
   fireEvent.change(await screen.findByLabelText(/Clave de Anthropic/), { target: { value: secret } });
 }
 function publicCaches(app: ReturnType<typeof mountSettings>) {
@@ -28,10 +29,31 @@ async function savedMutation(app: ReturnType<typeof mountSettings>) {
 }
 
 describe("configuración real de gestión", () => {
+  it.each([false, true])("cambiar PlatformKey a OwnKey no presta la máscara y conserva keyAction hasta escribir=%s", async (writing) => {
+    let current = { ...organizationSettings(), hasKey: true, maskedKeySuffix: "plat" };
+    const sent: UpdateOrganizationAssistantSettingsRequest[] = [];
+    server.use(http.get("/api/organization/assistant/settings", () => HttpResponse.json(current)),
+      http.put("/api/organization/assistant/settings", async ({ request }) => {
+        sent.push(await request.json() as UpdateOrganizationAssistantSettingsRequest);
+        current = { ...current, mode: "OwnKey", version: 11, maskedKeySuffix: "own1" };
+        return HttpResponse.json({ version: 11 });
+      }));
+    const app = mountSettings();
+    await app.user.click(await screen.findByRole("radio", { name: "La nuestra" }));
+    const key = await screen.findByRole("textbox", { name: "Clave de Anthropic" });
+    expect(key).toHaveValue("");
+    expect(screen.queryByText(/plat$/)).not.toBeInTheDocument();
+    if (writing) fireEvent.change(key, { target: { value: secret } });
+    await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(sent[0]).toMatchObject({ mode: "OwnKey", keyAction: writing ? "replace" : "keep", version: 10 }));
+    expect(sent[0]?.apiKey ?? null).toBe(writing ? secret : null);
+    expect(await screen.findByText(/own1$/)).toBeVisible();
+    expect(publicCaches(app)).not.toContain(secret);
+  });
   it.each([businessManager, platformManager])("$access: la clave no es un campo de contraseña ni ofrece autocompletar", async (me) => {
     const app = mountSettings(me, me.access === "platform" ? "/plataforma/asistente/configuracion" : "/org/asistente/configuracion");
     if (me.access === "business") await app.user.click(await screen.findByRole("radio", { name: "La nuestra" }));
-    await app.user.click(await screen.findByRole("button", { name: "Cambiar" }));
+    if (me.access === "platform") await app.user.click(await screen.findByRole("button", { name: "Cambiar" }));
     const input = screen.getByLabelText(me.access === "platform" ? /Clave de la plataforma/ : /Clave de Anthropic/);
     expect(input).toHaveAttribute("type", "text");
     expect(input).toHaveClass("[-webkit-text-security:disc]");
