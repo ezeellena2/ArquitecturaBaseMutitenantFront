@@ -65,7 +65,7 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
   const showError = invalid && touched;
   const description = [externalDescription, showError ? messageId : undefined].filter(Boolean).join(" ") || undefined;
   return <div className="flex flex-col gap-2">
-    <div className="relative">{fixedCurrency ? <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--t2)]">{currency}</span> : null}<Input ref={inputRef} id={id} name={name} type="text" inputMode="decimal" value={inputValue} className={fixedCurrency ? "pl-14" : undefined}
+    <div className="relative">{fixedCurrency ? <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--t2)]">{currency}</span> : null}<Input ref={inputRef} id={id} name={name} type="text" inputMode="decimal" value={inputValue} className={fixedCurrency ? "pl-14 max-md:pl-14" : undefined}
       onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
       onChange={(event) => change(event.target.value, currency)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
