@@ -2899,7 +2899,7 @@
       "label": "Bienvenida",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -2948,7 +2948,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -3206,6 +3211,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyText": "¿Qué querés consultar?"
@@ -3227,7 +3289,7 @@
       "label": "Primera vez",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -3269,7 +3331,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -3471,6 +3538,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyText": "Antes de tu primera consulta"
@@ -3492,7 +3616,7 @@
       "label": "Con adjuntos",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -3561,7 +3685,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -3772,6 +3901,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ]
       }
@@ -3792,7 +3978,7 @@
       "label": "Adjunto de más de 10 MB",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -3861,7 +4047,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -4072,6 +4263,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyTexts": [
@@ -4099,7 +4347,7 @@
       "label": "Consultando",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -4179,7 +4427,11 @@
                 "organization": [
                   "assistant.use",
                   "assistant.configure",
-                  "users.read"
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -4630,6 +4882,63 @@
             "contentType": "text/event-stream; charset=utf-8",
             "openStream": true,
             "rawBody": "event: start\ndata: {\"turnId\":\"gallery-turn\",\"userMessageId\":\"gallery-user\",\"assistantMessageId\":\"gallery-assistant\",\"conversationVersion\":4}\n\nevent: tool\ndata: {\"turnId\":\"gallery-turn\",\"toolKey\":\"org_companies\",\"labelKey\":\"Tool.org_companies\",\"state\":\"complete\"}\n\nevent: tool\ndata: {\"turnId\":\"gallery-turn\",\"toolKey\":\"org_users\",\"labelKey\":\"Tool.org_users\",\"state\":\"running\"}\n\n"
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyTexts": [
@@ -4655,7 +4964,7 @@
       "label": "Escribiendo",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -4735,7 +5044,11 @@
                 "organization": [
                   "assistant.use",
                   "assistant.configure",
-                  "users.read"
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -5186,6 +5499,63 @@
             "contentType": "text/event-stream; charset=utf-8",
             "openStream": true,
             "rawBody": "event: start\ndata: {\"turnId\":\"gallery-turn\",\"userMessageId\":\"gallery-user\",\"assistantMessageId\":\"gallery-assistant\",\"conversationVersion\":4}\n\nevent: tool\ndata: {\"turnId\":\"gallery-turn\",\"toolKey\":\"org_companies\",\"labelKey\":\"Tool.org_companies\",\"state\":\"complete\"}\n\nevent: tool\ndata: {\"turnId\":\"gallery-turn\",\"toolKey\":\"org_users\",\"labelKey\":\"Tool.org_users\",\"state\":\"complete\"}\n\nevent: delta\ndata: {\"turnId\":\"gallery-turn\",\"sequence\":1,\"text\":\"En la planilla hay 6 personas. 4 ya son usuarios de Delta Norte; faltan\"}\n\n"
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyTexts": [
@@ -5211,7 +5581,7 @@
       "label": "Respuesta",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -5273,7 +5643,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -5581,6 +5956,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyText": "de prueba"
@@ -5602,7 +6034,7 @@
       "label": "Historial plegado",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -5657,7 +6089,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -5909,6 +6346,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ]
       }
@@ -5929,7 +6423,7 @@
       "label": "Detenida",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -5978,7 +6472,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -6230,6 +6729,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyText": "Detuviste la respuesta."
@@ -6251,7 +6807,7 @@
       "label": "Falló la respuesta",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -6264,7 +6820,7 @@
             "exact": true
           }
         ],
-        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"status\"]",
+        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"alert\"]",
         "responses": [
           {
             "method": "GET",
@@ -6300,7 +6856,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -6552,6 +7113,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyText": "El asistente no responde ahora."
@@ -6573,7 +7191,7 @@
       "label": "Menú de una conversación",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -6629,7 +7247,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -6881,6 +7504,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ]
       }
@@ -6901,7 +7581,7 @@
       "label": "Renombrar",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -6963,7 +7643,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -7215,6 +7900,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyText": "Renombrar la conversación"
@@ -7236,7 +7978,7 @@
       "label": "Borrar",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -7298,7 +8040,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -7550,6 +8297,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyText": "Se borra para siempre, con sus adjuntos."
@@ -7571,7 +8375,7 @@
       "label": "Quedan 10 consultas",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -7620,7 +8424,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -7872,6 +8681,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyText": "consultas hoy."
@@ -7893,7 +8759,7 @@
       "label": "Tope del día",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -7942,7 +8808,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -8194,6 +9065,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyText": "Se renuevan a las"
@@ -8215,7 +9143,7 @@
       "label": "Tope del mes",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -8264,7 +9192,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -8519,6 +9452,63 @@
               },
               "activeTurnId": null
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyTexts": [
@@ -8543,7 +9533,7 @@
       "label": "Sin configurar (Dueño)",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -8585,7 +9575,12 @@
               "effectivePermissions": {
                 "organization": [
                   "assistant.use",
-                  "assistant.configure"
+                  "assistant.configure",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -8787,6 +9782,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyText": "El asistente todavía no está configurado"
@@ -8808,7 +9860,7 @@
       "label": "Sin configurar (otro rol)",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-owner",
@@ -8849,7 +9901,12 @@
               ],
               "effectivePermissions": {
                 "organization": [
-                  "assistant.use"
+                  "assistant.use",
+                  "users.read",
+                  "roles.read",
+                  "companies.read",
+                  "settings.read",
+                  "audit.read"
                 ],
                 "companies": {},
                 "platform": []
@@ -9050,6 +10107,63 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
           }
         ],
         "readyText": "El asistente todavía no está configurado"
@@ -9071,7 +10185,7 @@
       "label": "Bienvenida",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -9131,7 +10245,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -9385,7 +10499,7 @@
       "label": "Primera vez",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -9438,7 +10552,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -9640,7 +10754,7 @@
       "label": "Con adjuntos",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -9720,7 +10834,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -9930,7 +11044,7 @@
       "label": "Adjunto de más de 10 MB",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -10010,7 +11124,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -10227,7 +11341,7 @@
       "label": "Consultando",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -10304,7 +11418,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -10656,7 +11770,7 @@
       "label": "Escribiendo",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -10733,7 +11847,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -11086,7 +12200,7 @@
       "label": "Respuesta",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -11159,7 +12273,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -11467,7 +12581,7 @@
       "label": "Historial plegado",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -11533,7 +12647,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -11784,7 +12898,7 @@
       "label": "Detenida",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -11844,7 +12958,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -12096,7 +13210,7 @@
       "label": "Falló la respuesta",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -12109,7 +13223,7 @@
             "exact": true
           }
         ],
-        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"status\"]",
+        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"alert\"]",
         "responses": [
           {
             "method": "GET",
@@ -12156,7 +13270,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -12408,7 +13522,7 @@
       "label": "Menú de una conversación",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -12475,7 +13589,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -12726,7 +13840,7 @@
       "label": "Renombrar",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -12799,7 +13913,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -13051,7 +14165,7 @@
       "label": "Borrar",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -13124,7 +14238,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -13376,7 +14490,7 @@
       "label": "Quedan 10 consultas",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -13436,7 +14550,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -13688,7 +14802,7 @@
       "label": "Tope del día",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -13748,7 +14862,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -14000,7 +15114,7 @@
       "label": "Sin configurar",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -14053,7 +15167,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -14255,7 +15369,7 @@
       "label": "Mis mensajes con empresas: sin mensajes",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2F",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-personal",
@@ -14315,7 +15429,7 @@
               "currencyCode": "ARS",
               "organizationCountryCode": null,
               "version": 42,
-              "needsPersonalLoginMethod": false,
+              "needsPersonalLoginMethod": true,
               "pendingLegalDocuments": [],
               "moduleCapabilities": []
             }
@@ -14635,7 +15749,7 @@
       "label": "Bienvenida",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -14668,7 +15782,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -14926,6 +16042,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyText": "¿Qué querés consultar?"
@@ -14947,7 +16149,7 @@
       "label": "Primera vez",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -14973,7 +16175,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -15175,6 +16379,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyText": "Antes de tu primera consulta"
@@ -15196,7 +16486,7 @@
       "label": "Con adjuntos",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -15249,7 +16539,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -15460,6 +16752,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ]
       }
@@ -15480,7 +16858,7 @@
       "label": "Adjunto de más de 10 MB",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -15533,7 +16911,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -15744,6 +17124,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyTexts": [
@@ -15771,7 +17237,7 @@
       "label": "Consultando",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -15822,7 +17288,8 @@
                 "companies": {},
                 "platform": [
                   "platform.assistant.use",
-                  "platform.tenants.read"
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -16190,6 +17657,92 @@
             "contentType": "text/event-stream; charset=utf-8",
             "openStream": true,
             "rawBody": "event: start\ndata: {\"turnId\":\"gallery-turn\",\"userMessageId\":\"gallery-user\",\"assistantMessageId\":\"gallery-assistant\",\"conversationVersion\":3}\n\nevent: tool\ndata: {\"turnId\":\"gallery-turn\",\"toolKey\":\"platform_assistant_usage\",\"labelKey\":\"Tool.platform_assistant_usage\",\"state\":\"running\"}\n\n"
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyTexts": [
@@ -16214,7 +17767,7 @@
       "label": "Escribiendo",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -16265,7 +17818,8 @@
                 "companies": {},
                 "platform": [
                   "platform.assistant.use",
-                  "platform.tenants.read"
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -16633,6 +18187,92 @@
             "contentType": "text/event-stream; charset=utf-8",
             "openStream": true,
             "rawBody": "event: start\ndata: {\"turnId\":\"gallery-turn\",\"userMessageId\":\"gallery-user\",\"assistantMessageId\":\"gallery-assistant\",\"conversationVersion\":3}\n\nevent: tool\ndata: {\"turnId\":\"gallery-turn\",\"toolKey\":\"platform_assistant_usage\",\"labelKey\":\"Tool.platform_assistant_usage\",\"state\":\"complete\"}\n\nevent: delta\ndata: {\"turnId\":\"gallery-turn\",\"sequence\":1,\"text\":\"En octubre el asistente costó USD 112,40. Las que\"}\n\n"
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyTexts": [
@@ -16658,7 +18298,7 @@
       "label": "Respuesta",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -16704,7 +18344,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -17012,6 +18654,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyText": "de prueba"
@@ -17033,7 +18761,7 @@
       "label": "Historial plegado",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -17072,7 +18800,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -17324,6 +19054,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ]
       }
@@ -17344,7 +19160,7 @@
       "label": "Detenida",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -17377,7 +19193,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -17629,6 +19447,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyText": "Detuviste la respuesta."
@@ -17650,7 +19554,7 @@
       "label": "Falló la respuesta",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -17663,7 +19567,7 @@
             "exact": true
           }
         ],
-        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"status\"]",
+        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"alert\"]",
         "responses": [
           {
             "method": "GET",
@@ -17683,7 +19587,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -17935,6 +19841,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyText": "El asistente no responde ahora."
@@ -17956,7 +19948,7 @@
       "label": "Menú de una conversación",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -17996,7 +19988,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -18248,6 +20242,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ]
       }
@@ -18268,7 +20348,7 @@
       "label": "Renombrar",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -18314,7 +20394,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -18566,6 +20648,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyText": "Renombrar la conversación"
@@ -18587,7 +20755,7 @@
       "label": "Borrar",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -18633,7 +20801,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -18885,6 +21055,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyText": "Se borra para siempre, con sus adjuntos."
@@ -18906,7 +21162,7 @@
       "label": "Quedan 10 consultas",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -18939,7 +21195,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -19191,6 +21449,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyText": "consultas hoy."
@@ -19212,7 +21556,7 @@
       "label": "Tope del día",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -19245,7 +21589,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -19497,6 +21843,92 @@
             "query": {
               "saved": "false"
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
           }
         ],
         "readyText": "Se renuevan a las"
@@ -19518,7 +21950,7 @@
       "label": "Sin configurar",
       "captureExtent": "viewport",
       "app": {
-        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fasistente",
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma",
         "captureMode": "harness",
         "site": "main",
         "userFixture": "visual-operator",
@@ -19544,7 +21976,9 @@
                 "organization": [],
                 "companies": {},
                 "platform": [
-                  "platform.assistant.use"
+                  "platform.assistant.use",
+                  "platform.tenants.read",
+                  "platform.recoveries.manage"
                 ]
               },
               "features": [],
@@ -19745,6 +22179,92 @@
             },
             "query": {
               "saved": "false"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
             }
           }
         ],
@@ -25395,7 +27915,7 @@
             "exact": true
           }
         ],
-        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"status\"]",
+        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"alert\"]",
         "responses": [
           {
             "method": "GET",
@@ -30714,7 +33234,7 @@
             "exact": true
           }
         ],
-        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"status\"]",
+        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"alert\"]",
         "responses": [
           {
             "method": "GET",
@@ -35744,7 +38264,7 @@
             "exact": true
           }
         ],
-        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"status\"]",
+        "readySelector": "[role=\"group\"][aria-label=\"Asistente\"] [role=\"alert\"]",
         "responses": [
           {
             "method": "GET",

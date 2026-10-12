@@ -1,7 +1,7 @@
 import type {
   AssistantConversationResponse, AssistantConversationSummaryCursorResponse, AssistantModelPricePageResponse,
   AssistantModelPriceResponse, AssistantStateResponse, AssistantStreamHttpResponse, AssistantTurnResultResponse,
-  MeResponse, OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse, ApiProblemDetails,
+  MeResponse, OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse, ApiProblemDetails, HomeResponse,
   AssistantQuickResponse, AssistantUsagePageResponse, AssistantUsageRowResponse,
   AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantLinkResponse,
 } from "@/shared/api/types";
@@ -9,6 +9,8 @@ import { galleryImage, galleryPdf, galleryPdfTooLarge, type GalleryUploadFile } 
 import { currentUsers } from "./mocks/currentUsers.ts";
 import type { CurrentUserFixture } from "./mocks/currentUsers.ts";
 import { referenceDataFixture } from "./mocks/handlers.ts";
+import { platformTenantRows, platformTenantsPage } from "./mocks/platformTenants.ts";
+import { platformRecoveries } from "./mocks/platformRecoveries.ts";
 
 // Contratos reales; datos y claves exclusivamente ficticios del arnés.
 export interface GalleryApiResponse {
@@ -255,7 +257,7 @@ function createChatScenario(board: string, state: string): GalleryApp | undefine
         ...galleryConversation.messages.items[1], text: state === "Detenida" ? "Respuesta parcial del arnés." : "", status: state === "Detenida" ? "Stopped" : "Failed",
       }], hasMore: false } };
       app.responses[app.responses.length - 1] = api("GET", `${prefix}/conversations/gallery-chat`, terminal);
-      app.readySelector = '[role="group"][aria-label="Asistente"] [role="status"]';
+      app.readySelector = state === "Detenida" ? '[role="group"][aria-label="Asistente"] [role="status"]' : '[role="group"][aria-label="Asistente"] [role="alert"]';
       app.readyText = state === "Detenida" ? "Detuviste la respuesta." : "El asistente no responde ahora."; break;
     }
     case "Tope del mes": {
@@ -303,9 +305,31 @@ function createChatScenario(board: string, state: string): GalleryApp | undefine
 }
 
 export function chatScenario(board: string, state: string): GalleryApp | undefined {
-  if (state === "Consultando" || state === "Escribiendo") return galleryOpenStreamProbe(board, state);
-  if (state === "Tope del mes") return galleryMonthlyBudgetScenario(board);
-  return createChatScenario(board, state);
+  const app = state === "Consultando" || state === "Escribiendo" ? galleryOpenStreamProbe(board, state)
+    : state === "Tope del mes" ? galleryMonthlyBudgetScenario(board) : createChatScenario(board, state);
+  if (!app || board.startsWith("M-")) return app;
+  // En la computadora el tablero representa Inicio, que aporta los bloques del núcleo.
+  const scope: Scope = board.includes("Personal") ? "consumer" : board.includes("Plat") ? "platform" : "business";
+  const url = new URL(app.path, "http://localtest.me:5192");
+  url.searchParams.set("route", scope === "consumer" ? "/" : scope === "platform" ? "/plataforma" : "/org");
+  app.path = url.pathname + url.search;
+  const me = app.responses.find((item) => item.path === "/api/me")!.body as MeResponse;
+  if (scope === "consumer") me.needsPersonalLoginMethod = true;
+  if (scope === "business") {
+    me.effectivePermissions.organization = [...new Set([...me.effectivePermissions.organization, "users.read", "roles.read", "companies.read", "settings.read", "audit.read"])];
+    const home: HomeResponse = { organization: { users: { total: 11 }, roles: { total: 7 }, companies: { total: 3 }, publicPage: { state: "Published" }, settings: { domain: "delta.ejemplo.com" }, audit: { lastChangeAtUtc: "2026-10-03T13:42:00Z" } }, companies: [], pending: [
+      { area: "users", kind: "invitationExpired", subject: "carla.bianchi@delta.ejemplo.com", urgent: false, sinceUtc: "2026-09-25T15:00:00Z", dueAtUtc: null, targetId: "member-carla" },
+      { area: "users", kind: "deletionRequested", subject: "Diego Ríos", urgent: false, sinceUtc: "2026-09-27T15:00:00Z", dueAtUtc: "2026-10-27T15:00:00Z", targetId: "member-diego" },
+      { area: "settings", kind: "domainUnverified", subject: "delta.ejemplo.com", urgent: false, sinceUtc: "2026-10-01T15:00:00Z", dueAtUtc: null, targetId: "domain-1" },
+    ] };
+    app.responses.push(api("GET", "/api/home", home));
+  } else if (scope === "platform") {
+    me.effectivePermissions.platform = [...new Set([...me.effectivePermissions.platform, "platform.tenants.read", "platform.recoveries.manage"])];
+    const recoveries = platformRecoveries.filter((item) => item.status === "Pending");
+    app.responses.push(api("GET", "/api/platform/tenants/paged", platformTenantsPage(platformTenantRows.filter((item) => item.status === "PendingApproval"), 100)),
+      api("GET", "/api/platform/recoveries/paged", { items: recoveries, page: 1, pageSize: 100, totalCount: recoveries.length, totalPages: 1, hasPrevious: false, hasNext: false }));
+  }
+  return app;
 }
 
 /** Escena mensual publicada por State, con permiso y acción de Uso; sin provocar un POST rechazado. */

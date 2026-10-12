@@ -85,7 +85,7 @@ export function ModelEditorDialog({ scope, cancellationSignal, model, currency, 
         <ReadOnlyField label={t("assistant:settings.provider")}>{t("enums:AssistantProvider.Anthropic")}</ReadOnlyField>
         <div className="md:col-span-2"><FormField label={t("assistant:settings.providerModelId")} required error={errors.providerModelId?.message}><Input {...form.register("providerModelId")} maxLength={assistantDescriptionMaxLength} /></FormField></div>
         {(["inputPricePerMillion", "outputPricePerMillion"] as const).map((name) => <Controller key={name} control={form.control} name={name} render={({ field }) => <FormField label={t(name === "inputPricePerMillion" ? "assistant:settings.inputPrice" : "assistant:settings.outputPrice")} required error={errors[name]?.message}>
-          <MoneyField precision="technical-tariff" currencyCode={currency} value={field.value} onChange={(value) => { changed(); field.onChange(value); }} />
+          <MoneyField fixedCurrency precision="technical-tariff" currencyCode={currency} value={field.value} onChange={(value) => { changed(); field.onChange(value); }} />
         </FormField>} />)}
         <Controller control={form.control} name="isActive" render={({ field }) => <CheckboxField label={t("assistant:settings.active")} checked={field.value} onCheckedChange={(value) => { changed(); field.onChange(value); }} />} />
         <Button type="button" variant="link" aria-expanded={advanced} aria-controls={advancedId} className="mt-1 min-h-11 justify-start rounded-none border-x-0 border-b-0 border-t border-[var(--borde)] px-0 text-[var(--t1)] hover:no-underline md:col-span-2" onClick={() => setAdvanced(!advanced)}>
@@ -95,7 +95,7 @@ export function ModelEditorDialog({ scope, cancellationSignal, model, currency, 
           <ModelTechnicalFields form={form} currency={currency} changed={changed} validity={validity} />
         </div>
       </div><FormError message={actionErrorMessage(failure, t)} /></DialogBody>
-      <DialogFooter><Button type="button" variant="outline" onClick={close}>{t("common:actions.cancel")}</Button><Button type="submit" disabled={Boolean(model) && !isDirty} pending={operation.pending}>{t(model ? "assistant:settings.save" : "assistant:settings.addModel")}</Button></DialogFooter>
+      <DialogFooter className="max-md:flex-col-reverse max-md:[&_button]:flex-none"><Button type="button" variant="outline" onClick={close}>{t("common:actions.cancel")}</Button><Button type="submit" disabled={Boolean(model) && !isDirty} pending={operation.pending}>{t(model ? "assistant:settings.save" : "assistant:settings.addModel")}</Button></DialogFooter>
     </form>
   </DialogContent></Dialog>;
 }

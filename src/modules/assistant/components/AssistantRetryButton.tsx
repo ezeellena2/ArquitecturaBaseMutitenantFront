@@ -7,7 +7,7 @@ export function AssistantRetryButton({ retryAfter, pending, onRetry }: { retryAf
   const { t } = useTranslation("assistant");
   const { formatDuration } = useFormat();
   const { seconds, isRunning } = useCountdown(Math.max(0, retryAfter ?? 0));
-  return <Button variant="link" disabled={pending || isRunning} onClick={onRetry}>
+  return <Button variant="outline" className="shrink-0" disabled={pending || isRunning} onClick={onRetry}>
     {isRunning ? t("errors:retryIn", { time: formatDuration(seconds) }) : t("retry")}
   </Button>;
 }

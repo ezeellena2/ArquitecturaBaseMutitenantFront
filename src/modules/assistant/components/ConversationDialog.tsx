@@ -23,7 +23,7 @@ export function ConversationDialog({ value, pending, error, onClose, onConfirm }
       <DialogBody>{value.kind === "rename" ? <FormField label={t("history.name")} required error={form.formState.errors.title?.message}><Input {...form.register("title")} /></FormField> : <DialogDescription>{t("history.deleteBody")}</DialogDescription>}
         {error ? <p role="alert" className="text-[var(--peligro)]">{error}</p> : null}
       </DialogBody>
-      <DialogFooter><Button type="button" variant="outline" disabled={pending} onClick={onClose}>{t("cancel")}</Button>
+      <DialogFooter className="max-md:flex-col-reverse max-md:[&_button]:flex-none"><Button type="button" variant="outline" disabled={pending} onClick={onClose}>{t("cancel")}</Button>
         <Button type="submit" variant={value.kind === "delete" ? "destructive" : "default"} disabled={Boolean(rename) && !form.formState.isDirty} pending={pending} pendingLabel={t(value.kind === "delete" ? "history.deleting" : "common:states.saving")}>{t(value.kind === "delete" ? "history.delete" : "history.saveChanges")}</Button></DialogFooter>
     </form>
   </DialogContent></Dialog>;

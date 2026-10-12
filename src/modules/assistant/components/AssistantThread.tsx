@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { AssistantAttachmentSummaryResponse, AssistantMessageResponse, AssistantRouteKey } from "@/shared/api/types";
 import { Button } from "@/shared/ui/button";
-import { Sparkles } from "lucide-react";
+import { Sparkles, TriangleAlert } from "lucide-react";
 import { AssistantMarkdown } from "./AssistantMarkdown";
 import { AssistantMessageActions } from "./AssistantMessageActions";
 import { resolveAssistantLink, type AssistantLinkContext } from "../lib/assistantLinks";
@@ -52,9 +52,10 @@ function Message() {
       return target?.to ? <Link key={index} className="text-[var(--marca-tx)] underline" to={target.to}>{t(target.labelKey)}</Link>
         : target?.organizationId ? <Button key={index} variant="link" onClick={() => context.links.onOpenOrganization?.(target.organizationId!)}>{t(target.labelKey, { name: target.organizationName })}</Button> : null;
     })}
-    {status?.type === "incomplete" ? <p role={streamError ? "alert" : "status"} className="text-sm text-[var(--t2)]">{status.reason === "cancelled" ? t("status.stopped") : streamError ? assistantStreamErrorMessage(streamError, t) : t("status.failed")}</p> : null}
-    {context.retry?.messageId === id ? <AssistantRetryButton key={context.turn?.start?.turnId ?? id} retryAfter={context.retry.retryAfter} pending={context.pending} onRetry={context.retry.onRetry} /> : null}
-    {role === "assistant" && status?.type !== "running" ? <AssistantMessageActions message={durable} pending={context.pending} /> : null}
+    {status?.type === "incomplete" ? status.reason === "cancelled" ? <p role="status" className="text-sm text-[var(--t2)]">{t("status.stopped")}</p>
+      : <div role="alert" className="flex items-center gap-3 rounded-lg bg-[var(--peligro-banda)] px-3 py-2 text-[var(--peligro-tx)]"><TriangleAlert className="size-4 shrink-0" aria-hidden="true" /><p className="flex-1 text-sm">{streamError ? assistantStreamErrorMessage(streamError, t) : t("status.failed")}</p>
+        {context.retry?.messageId === id ? <AssistantRetryButton key={context.turn?.start?.turnId ?? id} retryAfter={context.retry.retryAfter} pending={context.pending} onRetry={context.retry.onRetry} /> : null}</div> : null}
+    {role === "assistant" && status?.type !== "running" && durable?.status !== "Failed" ? <AssistantMessageActions message={durable} pending={context.pending} /> : null}
     </div>
   </MessagePrimitive.Root>;
 }
@@ -64,7 +65,7 @@ export function AssistantThread(context: MessageContextValue) {
   return <MessageContext.Provider value={context}>
     <ThreadPrimitive.Root className="flex min-h-0 flex-1 flex-col" role="group" aria-label={t("title")}>
       <ThreadPrimitive.Viewport className="flex min-h-0 flex-1 flex-col gap-6 overflow-auto p-5 md:px-8 md:py-6">
-        <div className="mx-auto flex w-full max-w-[760px] flex-col gap-6"><ThreadPrimitive.Messages components={{ Message }} />{context.turnPending && !context.turn?.start ? <ToolStatus turn={null} pending /> : null}</div>
+        <div className="mx-auto mt-auto flex w-full max-w-[760px] shrink-0 flex-col gap-6"><ThreadPrimitive.Messages components={{ Message }} />{context.turnPending && !context.turn?.start ? <ToolStatus turn={null} pending /> : null}</div>
       </ThreadPrimitive.Viewport>
     </ThreadPrimitive.Root>
   </MessageContext.Provider>;

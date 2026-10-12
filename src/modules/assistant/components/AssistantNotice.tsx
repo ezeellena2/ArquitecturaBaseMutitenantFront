@@ -9,6 +9,6 @@ export function AssistantNotice({ pending, error, onAccept, onPrivacy }: { pendi
   return <Dialog open><DialogContent size="sm" showCloseButton={false} onEscapeKeyDown={(e) => e.preventDefault()} onCloseAutoFocus={restore}>
     <DialogHeader><DialogTitle>{t("notice.title")}</DialogTitle></DialogHeader>
     <DialogBody><DialogDescription>{t("notice.body")}</DialogDescription>{error ? <p role="alert">{error}</p> : null}</DialogBody>
-    <DialogFooter><Button variant="link" onClick={onPrivacy}>{t("notice.privacy")}</Button><Button pending={pending} pendingLabel={t("common:states.saving")} onClick={onAccept}>{t("notice.accept")}</Button></DialogFooter>
+    <DialogFooter className="max-md:flex-col-reverse max-md:[&_button]:flex-none"><Button variant="outline" onClick={onPrivacy}>{t("notice.privacy")}</Button><Button pending={pending} pendingLabel={t("common:states.saving")} onClick={onAccept}>{t("notice.accept")}</Button></DialogFooter>
   </DialogContent></Dialog>;
 }

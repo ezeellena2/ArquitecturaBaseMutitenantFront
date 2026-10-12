@@ -24,7 +24,7 @@ export function QuickQueries({ scope, queries, disabled, onSelect }: {
       onSelect(key);
     },
   });
-  return <AssistantRuntimeProvider runtime={runtime}><div className="flex flex-wrap justify-center gap-2">
+  return <AssistantRuntimeProvider runtime={runtime}><div className="flex flex-wrap justify-center gap-2 max-md:flex-col max-md:items-center">
     <ThreadPrimitive.Suggestions>{() => <SuggestionPrimitive.Trigger send clearComposer={false} asChild><button type="button" disabled={disabled}
         className="min-h-[34px] rounded-full border border-[var(--borde)] bg-[var(--lado-activo)] px-3.5 text-[13.5px] text-[var(--t1)] hover:border-[var(--marca)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] max-md:min-h-11 disabled:opacity-50">
         <SuggestionPrimitive.Title />

@@ -50,7 +50,7 @@ export function ModelTechnicalFields({ form, currency, changed, validity }: {
         {(["cacheReadPricePerMillion", "cacheWrite5MinutesPricePerMillion", "cacheWrite1HourPricePerMillion"] as const).map((name) =>
           <Controller key={name} control={form.control} name={`technical.${name}`} render={({ field }) =>
             <FormField label={t(`assistant:settings.technical.${name}`)} required error={errors?.[name]?.message}>
-              <MoneyField precision="technical-tariff" currencyCode={currency} value={field.value} onValidityChange={(valid) => validity(`technical.${name}`, valid)} onChange={(value) => { changed(); field.onChange(value); }} />
+              <MoneyField fixedCurrency precision="technical-tariff" currencyCode={currency} value={field.value} onValidityChange={(valid) => validity(`technical.${name}`, valid)} onChange={(value) => { changed(); field.onChange(value); }} />
             </FormField>} />)}
       </div>
     </fieldset>
@@ -63,7 +63,7 @@ export function ModelTechnicalFields({ form, currency, changed, validity }: {
         {(["inputPricePerMillion", "outputPricePerMillion", "cacheReadPricePerMillion", "cacheWrite5MinutesPricePerMillion", "cacheWrite1HourPricePerMillion"] as const).map((name) =>
           <Controller key={name} control={form.control} name={`technical.longContext.${name}`} render={({ field }) =>
             <FormField label={t(`assistant:settings.technical.${name}`)} error={errors?.longContext?.[name]?.message}>
-              <MoneyField precision="technical-tariff" currencyCode={currency} value={field.value} onValidityChange={(valid) => validity(`technical.longContext.${name}`, valid)} onChange={(value) => { changed(); field.onChange(value); }} />
+              <MoneyField fixedCurrency precision="technical-tariff" currencyCode={currency} value={field.value} onValidityChange={(valid) => validity(`technical.longContext.${name}`, valid)} onChange={(value) => { changed(); field.onChange(value); }} />
             </FormField>} />)}
       </div>
     </fieldset>

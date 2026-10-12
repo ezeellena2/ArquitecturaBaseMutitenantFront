@@ -51,6 +51,6 @@ export function AssistantUsageRows({ rows, platform, group, fetching, error, ret
       lines={[platform ? <><NumberText value={row.queries} /> {t("usage.queriesNoun", { count: row.queries })}{" · "}<EnumText enum="AssistantMode" value={row.fundingMode} />{row.fundingMode === "OwnKey" && row.monthlyBudget ? <>{" · "}{t("usage.ownBudget")} <MoneyText value={row.monthlyBudget} /></> : null}</>
         : group === "day" ? <><NumberText value={row.queries} /> {t("usage.queriesNoun", { count: row.queries })}{" · "}<NumberText value={row.peopleCount} /> {t("usage.peopleNoun", { count: row.peopleCount ?? undefined })}</>
           : <>{t("usage.today")} <TodayUsage row={row} />{" · "}<NumberText value={row.queries} /> {t("usage.inMonth")}</>]}
-      wrapLines trailing={<MoneyText value={row.cost} className={`pr-3 text-[14px] ${platform && row.fundingMode === "OwnKey" ? "text-[var(--t3)]" : ""}`} />} />} />
+      className="[&>span>span>span.truncate]:whitespace-normal [&>span>span>span.truncate]:overflow-visible" wrapLines trailing={<MoneyText value={row.cost} className={`pr-3 text-[14px] ${platform && row.fundingMode === "OwnKey" ? "text-[var(--t3)]" : ""}`} />} />} />
   </Surface>;
 }

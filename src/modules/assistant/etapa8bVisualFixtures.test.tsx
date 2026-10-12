@@ -92,7 +92,9 @@ it.each(["Asistente-Org", "Asistente-Personal", "Asistente-Plat"].flatMap((acces
     vi.stubGlobal("FormData", nativeForm.constructor);
     vi.stubGlobal("File", FetchFile);
     const app = galleryOpenStreamProbe(board, state);
-    expect(chatScenario(board, state)).toEqual(app);
+    const prepared = chatScenario(board, state)!;
+    expect(prepared.actions).toEqual(app.actions);
+    expect(prepared.responses.filter((item) => item.path.includes("/assistant"))).toEqual(app.responses.filter((item) => item.path.includes("/assistant")));
     mounted = mount(app);
     for (const action of app.actions) {
       if (action.type === "upload") {
@@ -290,6 +292,9 @@ it("Sin configurar de otro rol conserva use y no ofrece configuración", async (
   const app = chatScenario("Asistente-Org", "Sin configurar (otro rol)")!; const mounted = mount(app);
   await actions(app, mounted.user);
   expect(screen.queryByRole("button", { name: "Revisar configuración" })).not.toBeInTheDocument();
+  expect(await screen.findByRole("heading", { name: "Inicio" })).toBeVisible();
+  expect(await screen.findByRole("heading", { name: "Para resolver" })).toBeVisible();
+  expect(mounted.calls).toContain("GET /api/home");
 });
 
 it.each(["Asistente-Config-Org", "Plat-Asistente-Config"])("%s rechaza clave ficticia mediante PUT real y borra el password", async (board) => {
