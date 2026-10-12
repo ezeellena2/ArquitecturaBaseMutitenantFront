@@ -1,3 +1,4 @@
+import { organizationAuditCategories as auditCategories } from "@/shared/api/generated/validation";
 import { useQuery } from "@tanstack/react-query";
 import { ClipboardIcon } from "@/shared/ui/icons";
 import { useState } from "react";
@@ -24,7 +25,7 @@ import type { OrganizationAuditEntryResponse } from "@/shared/api/types";
 import { auditActorKinds, auditQueryRoot, fetchAudit, fetchAuditActors } from "../api/audit";
 
 const auditFilterKeys = ["period", "category", "actorId", "actorKind"] as const;
-const auditCategories = ["users", "roles", "companies", "settings", "organization"] as const;
+
 
 export function AuditPage() {
   const { t } = useTranslation(["audit", "common"]);

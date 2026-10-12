@@ -7,7 +7,7 @@ import { fetchAssignableCompanyRoles } from "../api/companies";
 export function useCompanyRoles(companyId: string, { canReadRoles, canReadMembers }: { canReadRoles: boolean; canReadMembers: boolean }) {
   const query = useQuery({ queryKey: ["roles", "company-options", companyId, canReadMembers], queryFn: () => fetchAssignableCompanyRoles(companyId, canReadMembers),
     enabled: (canReadRoles || canReadMembers) && Boolean(companyId), meta: { silent: true } });
-  const active = (query.data?.items ?? []).filter((role) => !role.isSystemRole || role.name !== "TenantAdmin");
+  const active = query.data?.items ?? [];
   return {
     query,
     assignable: active.filter((role) => role.scope === "AnyCompany" || role.companyId === companyId),

@@ -12,7 +12,7 @@ import { asPhone } from "@/test/utils/phone";
 
 const owner: RoleResponse = {
   id: "role-owner",
-  name: "TenantAdmin",
+  name: "Dueño",
   description: "Tiene todos los permisos de la organización.",
   scope: "Organization",
   companyId: null,
@@ -26,7 +26,7 @@ const owner: RoleResponse = {
 const companyAdmin: RoleResponse = {
   ...owner,
   id: "role-company-admin",
-  name: "CompanyAdmin",
+  name: "Administrador",
   description: "Administra los miembros de cada empresa.",
   scope: "AnyCompany",
   permissions: ["company.members.read", "company.members.manage"],

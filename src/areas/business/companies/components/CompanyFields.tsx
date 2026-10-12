@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { useController, type UseFormReturn } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { FormField } from "@/shared/ui/FormField";
@@ -32,7 +33,7 @@ export function CompanyFields({ form, onEdit, taxIdType, newNumberType }: {
       {/* Tableros Empresas y Empresa: el nombre que falta lo dice el campo, con el texto del tablero, y no el aviso del
           navegador (el control no lleva `required`; FormField le pone `aria-required`). */}
       <FormField label={t("form.name")} required error={errors.name?.message}>
-        <Input maxLength={120} autoComplete="organization" {...form.register("name", { onChange: onEdit })} />
+        <Input maxLength={validationConstraints.CreateCompanyHttpRequest.name.maxLength} autoComplete="organization" {...form.register("name", { onChange: onEdit })} />
       </FormField>
       {taxIdType ? <FormField label={taxIdType.name} error={errors.taxNumber?.message}>
         <TaxIdNumberField taxIdType={taxIdType} newNumberType={newNumberType} name={taxNumber.field.name}

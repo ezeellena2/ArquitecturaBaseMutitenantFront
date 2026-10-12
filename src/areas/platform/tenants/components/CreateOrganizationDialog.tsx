@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { TFunction } from "i18next";
 import { useMemo, useState } from "react";
@@ -75,14 +76,14 @@ export function CreateOrganizationDialog({ onClose, onCreated }: { onClose: () =
         <DialogBody>
           <div className="grid gap-3.5 md:grid-cols-2">
             <FormField label={t("platformTenants:create.name")} required error={form.formState.errors.name?.message}>
-              <Input autoComplete="organization" maxLength={120} {...form.register("name", { onChange: clearFailure })} />
+              <Input autoComplete="organization" maxLength={validationConstraints.CreatePlatformTenantHttpRequest.name.maxLength} {...form.register("name", { onChange: clearFailure })} />
             </FormField>
             <FormField label={t("platformTenants:create.firstCompany")} required error={form.formState.errors.firstCompanyName?.message}>
-              <Input autoComplete="organization" maxLength={120} {...form.register("firstCompanyName", { onChange: clearFailure })} />
+              <Input autoComplete="organization" maxLength={validationConstraints.CreatePlatformTenantHttpRequest.firstCompanyName.maxLength} {...form.register("firstCompanyName", { onChange: clearFailure })} />
             </FormField>
           </div>
           <FormField label={t("platformTenants:create.email")} required error={form.formState.errors.ownerEmail?.message}>
-            <EmailField name={emailName} ref={emailRef} value={emailValue} onBlur={emailBlur} maxLength={254} onChange={(value) => { emailChange(value ?? ""); clearFailure(); }} />
+            <EmailField name={emailName} ref={emailRef} value={emailValue} onBlur={emailBlur} maxLength={validationConstraints.CreatePlatformTenantHttpRequest.ownerEmail.maxLength} onChange={(value) => { emailChange(value ?? ""); clearFailure(); }} />
           </FormField>
           <div className="grid gap-3.5 md:grid-cols-2">
             <FormField label={t("platformTenants:create.zone")} error={form.formState.errors.timeZoneId?.message}>

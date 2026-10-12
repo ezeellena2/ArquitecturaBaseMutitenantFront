@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
@@ -45,10 +46,9 @@ import { PermissionPicker } from "../components/PermissionPicker";
 import { RoleScopeField } from "../components/RoleScopeField";
 import { roleErrorField } from "../errors";
 import { canonicalPermissions, groupsForScope, selectionCount } from "../lib/permissionPicker";
-import { displayRoleDescription, displayRoleName } from "../lib/systemRoles";
 
-const nameMaxLength = 60;
-const descriptionMaxLength = 500;
+const nameMaxLength = validationConstraints.CreateRoleHttpRequest.name.maxLength;
+const descriptionMaxLength = validationConstraints.CreateRoleHttpRequest.description.maxLength;
 
 /// Lo que se valida antes de mandar: cada dato que falta lo dice debajo de su campo («Criterio · Botones»).
 function roleFormSchema(t: TFunction) {
@@ -94,7 +94,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
     enabled: mode === "edit" && Boolean(roleId),
     meta: { silent: true, blocksView: true },
   });
-  useBreadcrumbLeaf(mode === "create" ? t("roles:createTitle") : role.data ? displayRoleName(role.data, t) : undefined);
+  useBreadcrumbLeaf(mode === "create" ? t("roles:createTitle") : role.data ? role.data.name : undefined);
 
   if (mode === "create") return <RoleEditor />;
   if (role.isPending) return <Page icon={ShieldIcon} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
@@ -213,7 +213,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
     ? companyName(current.companyId) ?? t("roles:scopeInSentence.specificCompany")
     : t(current.scope === "Organization" ? "roles:scopeInSentence.organization" : "roles:scopeInSentence.company");
   const summary = role ? t("roles:scopeAndUsers", { scope: scopeInSentence(role), count: role.userCount }) : undefined;
-  const title = role ? displayRoleName(role, t) : t("roles:createTitle");
+  const title = role ? role.name : t("roles:createTitle");
   const saving = create.isPending || update.isPending;
 
   return <>
@@ -255,7 +255,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
                 ? <FormField label={t("roles:fields.description")} error={errors.description?.message}>
                   <Textarea {...form.register("description")} maxLength={descriptionMaxLength} />
                 </FormField>
-                : <ReadOnlyField long label={t("roles:fields.description")}>{(role ? displayRoleDescription(role, t) : null) ?? t("roles:noDescription")}</ReadOnlyField>}
+                : <ReadOnlyField long label={t("roles:fields.description")}>{(role ? role.description : null) ?? t("roles:noDescription")}</ReadOnlyField>}
             </div>
           </SectionFields>
         </Section>

@@ -52,6 +52,8 @@ describe("BusinessSignupPage", () => {
     try {
       const { container } = show("/registro/empresa?google=complete", 390);
       const input = await screen.findByRole("textbox", { name: label });
+      expect(input).toHaveAttribute("placeholder", referenceDataFixture().taxIdTypes.find((type) => type.code === "AR-CUIT")!.mask);
+      expect(input).not.toHaveAttribute("maxlength");
       await waitFor(() => expect(screen.getByRole("button", { name: submit })).toBeEnabled());
       const textboxes = screen.getAllByRole("textbox");
       fireEvent.change(textboxes[0], { target: { value: "A10" } });
@@ -253,7 +255,7 @@ describe("BusinessSignupPage", () => {
     expect(screen.queryByText("¿Tu empresa ya está registrada?")).not.toBeInTheDocument();
     for (const name of ["Nombre de la organización", "Primera empresa"]) expect(screen.getByRole("textbox", { name })).toHaveAttribute("aria-required", "true");
     expect(screen.getByRole("textbox", { name: /Dirección de tu página/ })).toHaveAttribute("aria-required", "true");
-    expect(screen.getByRole("textbox", { name: "CUIT de la empresa" })).not.toHaveAttribute("aria-required");
+    expect(await screen.findByRole("textbox", { name: "CUIT de la empresa" })).not.toHaveAttribute("aria-required");
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Crear organización" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Crear organización" }));

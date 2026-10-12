@@ -11851,7 +11851,7 @@ export interface paths {
                     After?: string;
                     Limit?: number;
                     Period?: string;
-                    Category?: string;
+                    Category?: "users" | "roles" | "companies" | "settings" | "organization";
                     ActorId?: string;
                     ActorKind?: string;
                     Search?: string;
@@ -11932,7 +11932,7 @@ export interface paths {
                     After?: string;
                     Limit?: number;
                     Period?: string;
-                    Category?: string;
+                    Category?: "users" | "roles" | "companies" | "settings" | "organization";
                     ActorId?: string;
                     ActorKind?: string;
                     Search?: string;

@@ -29,7 +29,6 @@ import {
   type RolesQuery,
 } from "../api/roles";
 import { createRoleColumns, rolePhoneRow } from "../columns";
-import { displayRoleName } from "../lib/systemRoles";
 
 // «Vale en» (tablero Roles): toda la organización o una empresa por nombre, en un solo filtro.
 const roleFilterKeys = ["vale"] as const;
@@ -87,8 +86,8 @@ export function RolesPage() {
 
   const companyNames = new Map((companies.data?.items ?? []).map((company) => [company.id, company.name]));
   const rowActions = (role: RoleResponse) => <RowActions
-        label={t("roles:rowActions", { name: displayRoleName(role, t) })}
-        title={displayRoleName(role, t)}
+        label={t("roles:rowActions", { name: role.name })}
+        title={role.name}
         actions={[
           { label: t("roles:viewPermissions"), accessibleName: t("roles:viewPermissions"), icon: Eye, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); }, hidden: !role.isSystemRole && canManage },
           { label: t("roles:edit"), accessibleName: t("roles:edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); }, hidden: role.isSystemRole || !canManage },

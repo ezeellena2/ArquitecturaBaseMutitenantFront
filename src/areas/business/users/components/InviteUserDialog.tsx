@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueries } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
@@ -98,7 +99,7 @@ export function InviteUserDialog({ companies, onClose, onInvited }: {
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <FormField label={t("users:invite.email")} required error={form.formState.errors.email?.message}>
-            <Input autoComplete="email" type="email" maxLength={254} placeholder={t("users:invite.emailPlaceholder")} {...form.register("email")} />
+            <Input autoComplete="email" type="email" maxLength={validationConstraints.InviteOrganizationUserHttpRequest.email.maxLength} placeholder={t("users:invite.emailPlaceholder")} {...form.register("email")} />
           </FormField>
           <FormField label={t("users:invite.organizationRoles")}>
             <MultiSelect options={organizationRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value} onChange={roleIds.field.onChange} placeholder={t("users:invite.noRoles")} />

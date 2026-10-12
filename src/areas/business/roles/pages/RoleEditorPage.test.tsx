@@ -330,7 +330,7 @@ describe("RoleEditorPage", () => {
   it("muestra los roles de sistema en solo lectura", async () => {
     const user = userEvent.setup();
     server.use(
-      http.get("/api/roles/role-owner", () => HttpResponse.json({ ...role, id: "role-owner", name: "TenantAdmin", isSystemRole: true, permissions: ["roles.read", "roles.manage", "company.members.read", "company.members.manage"] })),
+      http.get("/api/roles/role-owner", () => HttpResponse.json({ ...role, id: "role-owner", name: "Dueño", isSystemRole: true, permissions: ["roles.read", "roles.manage", "company.members.read", "company.members.manage"] })),
       http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
     );
 

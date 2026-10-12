@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { contractPaths, renderContracts } from "./generate-contracts.mjs";
+import { contractPaths, renderContracts, renderValidationContracts, validationTarget } from "./generate-contracts.mjs";
 
 export async function checkContracts({ source, target }, ci = process.env.CI === "true") {
   const backendRoot = path.dirname(path.dirname(path.dirname(source)));
@@ -16,6 +16,8 @@ export async function checkContracts({ source, target }, ci = process.env.CI ===
   // Una copia nueva en Windows (core.autocrlf) trae el schema con CRLF: se comparan los tipos, no los finales de línea.
   const actual = readFileSync(target, "utf8").replace(/\r\n/g, "\n");
   if (actual !== expected) throw new Error("Generated schema.d.ts is stale. Run npm run contracts.");
+  const validation = readFileSync(validationTarget(target), "utf8").replace(/\r\n/g, "\n");
+  if (validation !== renderValidationContracts(source)) throw new Error("Generated validation.ts is stale. Run npm run contracts.");
   console.log("Generated TypeScript schema matches OpenAPI.");
 }
 

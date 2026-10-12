@@ -4,7 +4,6 @@ import { Link } from "react-router";
 import type { ReactNode } from "react";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import { permissionCountInScope } from "./lib/permissionPicker";
-import { displayRoleName } from "./lib/systemRoles";
 
 type TranslateRole = (key: string) => string;
 
@@ -37,7 +36,7 @@ export function createRoleColumns(t: TranslateRole, companyNames: ReadonlyMap<st
       header: t("roles:columns.name"),
       type: "custom",
       className: "w-[39%]",
-      cell: (role) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/roles/${encodeURIComponent(role.id)}`}>{displayRoleName(role, t)}</Link>,
+      cell: (role) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/roles/${encodeURIComponent(role.id)}`}>{role.name}</Link>,
       detail: (role) => role.isSystemRole ? t("roles:system") : null,
     },
     { ...roleColumnDefinitions.scope, header: t("roles:columns.scope"), type: "custom", cell: (role) => <span>{roleScopeLabel(role.scope, t, role.companyId ? companyNames.get(role.companyId) : undefined)}</span> },
@@ -50,6 +49,6 @@ export function createRoleColumns(t: TranslateRole, companyNames: ReadonlyMap<st
 /// sistema) y cuántos permisos tiene.
 export function rolePhoneRow(role: RoleResponse, t: TranslateRole & ((key: string, options: { count: number }) => string), companyNames: ReadonlyMap<string, string>, trailing: ReactNode): ReactNode {
   const scope = roleScopeLabel(role.scope, t, role.companyId ? companyNames.get(role.companyId) : undefined);
-  return <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={displayRoleName(role, t)} meta={t("roles:phone.users", { count: role.userCount })}
+  return <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name} meta={t("roles:phone.users", { count: role.userCount })}
     lines={[role.isSystemRole ? `${t("roles:system")} · ${scope}` : scope, t("roles:phone.permissions", { count: visiblePermissionCount(role) })]} trailing={trailing} />;
 }

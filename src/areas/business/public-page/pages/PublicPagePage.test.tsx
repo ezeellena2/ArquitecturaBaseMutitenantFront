@@ -65,6 +65,17 @@ beforeEach(async () => {
 });
 
 describe("PublicPagePage (tablero Pagina-Org)", () => {
+  it("la descripción limita el pegado al máximo que acepta el servidor", async () => {
+    api(page);
+    renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+    const description = await screen.findByRole("textbox", { name: "Descripción" });
+    expect(description).toHaveAttribute("maxlength", "500");
+    const user = userEvent.setup();
+    await user.clear(description);
+    await user.click(description);
+    await user.paste("x".repeat(600));
+    expect(description).toHaveValue("x".repeat(500));
+  });
   // Tablero M-Pagina-Org: en el teléfono, grupos con el título gris y tarjetas blancas sobre gris; «Ver página» en
   // texto en la barra, el estado debajo del título y «Descartar cambios» y «Guardar cambios» fijos abajo.
   it("en el teléfono son grupos sobre gris, con «Ver página» en la barra", async () => {

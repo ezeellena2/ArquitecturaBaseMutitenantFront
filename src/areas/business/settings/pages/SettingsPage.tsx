@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Globe, Trash2 } from "lucide-react";
@@ -195,7 +196,7 @@ function SettingsEditor({ settings, loadError, reload }: {
             <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
               {/* Tablero «Criterio · Formularios»: sin permiso para cambiar, los datos se leen como texto, sin campos grises. */}
               {canManage ? <>
-                <FormField label={t("settings:fields.name")} required error={errors.name?.message}><Input {...form.register("name")} maxLength={120} /></FormField>
+                <FormField label={t("settings:fields.name")} required error={errors.name?.message}><Input {...form.register("name")} maxLength={validationConstraints.UpdateOrganizationSettingsHttpRequest.name.maxLength} /></FormField>
                 <FormField label={t("settings:fields.culture")} error={errors.defaultCulture?.message}><CultureSelect value={culture.field.value} onChange={culture.field.onChange} placeholder={t("settings:chooseCulture")} /></FormField>
                 <FormField label={t("settings:fields.timeZone")} error={errors.defaultTimeZoneId?.message}><TimeZoneSelect value={timeZone.field.value} onChange={timeZone.field.onChange} placeholder={t("settings:chooseTimeZone")} /></FormField>
                 <FormField label={t("settings:fields.currency")} error={errors.defaultCurrency?.message}><CurrencySelect value={currency.field.value} onChange={currency.field.onChange} placeholder={t("settings:chooseCurrency")} /></FormField>

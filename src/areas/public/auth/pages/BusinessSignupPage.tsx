@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
@@ -29,6 +30,7 @@ import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import { useHasLoginChannel } from "@/shared/account/useLoginChannels";
 import { cn } from "@/shared/lib/utils";
 import { Input } from "@/shared/ui/input";
+import { TaxIdNumberField } from "@/shared/ui/fields/TaxIdNumberField";
 import { taxIdValidationMessage } from "@/shared/ui/fields/taxIdValidation";
 import type { TaxIdTypeReference } from "@/shared/referenceData/referenceData";
 import { useCuitType } from "@/shared/referenceData/useCuitType";
@@ -309,7 +311,7 @@ export function BusinessSignupPage() {
                 <AuthMessage message={limitReached ? { text: limitCount === null ? t("businessSignup.limitTitleNoCount") : t("businessSignup.limitTitle", { count: limitCount }),
                   details: [t("businessSignup.limitDetail")] } : null} />
                 <FormField label={t("businessSignup.organizationName")} variant="auth" required error={errors.organizationName?.message}>
-                  <Input {...organizationForm.register("organizationName", { onChange: () => setLimitReached(false) })} autoComplete="organization" maxLength={120} />
+                  <Input {...organizationForm.register("organizationName", { onChange: () => setLimitReached(false) })} autoComplete="organization" maxLength={validationConstraints.BusinessSignupHttpRequest.organizationName.maxLength} />
                 </FormField>
                 <FormField label={t("businessSignup.pageAddress")} variant="auth" required
                   error={slugError
@@ -326,13 +328,13 @@ export function BusinessSignupPage() {
                     : slugAvailability === "Available" && !slugError ? <span role="status" className="inline-flex items-center gap-1 text-[var(--ok)]"><Check size={14} />{t("businessSignup.slugAvailable")}</span> : null}
                 </div>
                 <FormField label={t("businessSignup.firstCompany")} variant="auth" required error={errors.firstCompanyName?.message}>
-                  <Input {...organizationForm.register("firstCompanyName")} autoComplete="organization" maxLength={120} />
+                  <Input {...organizationForm.register("firstCompanyName")} autoComplete="organization" maxLength={validationConstraints.BusinessSignupHttpRequest.firstCompanyName.maxLength} />
                 </FormField>
-                <FormField label={t("businessSignup.taxId")} variant="auth" error={errors.taxNumber?.message}>
-                  <Input name={taxNumberField.field.name} value={taxNumberField.field.value} onBlur={taxNumberField.field.onBlur}
-                    onChange={(event) => taxNumberField.field.onChange(event.target.value.replace(/\D/g, "").slice(0, 11))}
-                    inputMode="numeric" autoComplete="off" placeholder="30-12345678-1" maxLength={11} />
-                </FormField>
+                {cuitType && <FormField label={t("businessSignup.taxId")} variant="auth" error={errors.taxNumber?.message}>
+                  <TaxIdNumberField taxIdType={cuitType} name={taxNumberField.field.name}
+                    value={taxNumberField.field.value} onBlur={taxNumberField.field.onBlur}
+                    onChange={taxNumberField.field.onChange} />
+                </FormField>}
                 <FormError message={requestErrorText} />
                 {/* «Criterio · Botones»: no se apaga por lo escrito (los términos ya se aceptaron en el primer paso); solo
                     mientras carga la protección del envío. */}

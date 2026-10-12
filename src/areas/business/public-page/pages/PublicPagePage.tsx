@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { GlobeIcon } from "@/shared/ui/icons";
@@ -269,24 +270,24 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
               {/* El sufijo va sobre el borde derecho del campo: FormField ata el rótulo a su único hijo, el Input. */}
               <div className="relative">
                 <FormField label={t("publicPage:fields.slug")} required error={errors.slug?.message}>
-                  <Input name={slugField.field.name} value={slugField.field.value} onBlur={slugField.field.onBlur} maxLength={63} autoComplete="off" className="pr-[124px] max-md:pr-[140px]"
+                  <Input name={slugField.field.name} value={slugField.field.value} onBlur={slugField.field.onBlur} maxLength={validationConstraints.UpdatePublicPageHttpRequest.slug.maxLength} autoComplete="off" className="pr-[124px] max-md:pr-[140px]"
                     onChange={(event) => slugField.field.onChange(event.target.value.toLowerCase())} />
                 </FormField>
                 <span aria-hidden="true" className="absolute bottom-px right-px flex h-[32px] items-center rounded-r-[7px] border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[13px] text-[var(--t2)] lg:h-[34px] max-md:h-[46px] max-md:rounded-r-[11px] max-md:border-[var(--borde2)] max-md:bg-[var(--s3)] max-md:text-[15px]">{publicSiteSuffix}</span>
               </div>
               {slugChanged && slugState ? <p className={`text-[13px] ${slugState === "Available" ? "text-[var(--ok)]" : "text-[var(--peligro)]"}`}>{slugStateText(slugState, t)}</p> : null}
             </div>
-            <FormField label={t("publicPage:fields.name")} required error={errors.name?.message}><Input {...form.register("name")} maxLength={120} /></FormField>
-            <div className="md:col-span-2"><FormField label={t("publicPage:fields.description")} error={errors.description?.message}><Textarea {...form.register("description")} maxLength={1000} /></FormField></div>
+            <FormField label={t("publicPage:fields.name")} required error={errors.name?.message}><Input {...form.register("name")} maxLength={validationConstraints.UpdatePublicPageHttpRequest.name.maxLength} /></FormField>
+            <div className="md:col-span-2"><FormField label={t("publicPage:fields.description")} error={errors.description?.message}><Textarea {...form.register("description")} maxLength={validationConstraints.UpdatePublicPageHttpRequest.description.maxLength} /></FormField></div>
           </SectionFields>
         </Section>
 
         <Section title={t("publicPage:contactTitle")}>
           <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
-            <FormField label={t("publicPage:fields.email")} error={errors.contactEmail?.message}><Input type="email" {...form.register("contactEmail")} maxLength={254} /></FormField>
+            <FormField label={t("publicPage:fields.email")} error={errors.contactEmail?.message}><Input type="email" {...form.register("contactEmail")} maxLength={validationConstraints.UpdatePublicPageHttpRequest.contactEmail.maxLength} /></FormField>
             <FormField label={t("publicPage:fields.phone")} error={errors.contactPhone?.message}><PhoneField value={phoneField.field.value} onChange={phoneField.field.onChange} /></FormField>
-            <FormField label={t("publicPage:fields.address")} error={errors.address?.message}><Input {...form.register("address")} maxLength={500} /></FormField>
-            <FormField label={t("publicPage:fields.website")} error={errors.website?.message}><Input type="url" {...form.register("website")} maxLength={2048} /></FormField>
+            <FormField label={t("publicPage:fields.address")} error={errors.address?.message}><Input {...form.register("address")} maxLength={validationConstraints.UpdatePublicPageHttpRequest.address.maxLength} /></FormField>
+            <FormField label={t("publicPage:fields.website")} error={errors.website?.message}><Input type="url" {...form.register("website")} maxLength={validationConstraints.UpdatePublicPageHttpRequest.website.maxLength} /></FormField>
           </SectionFields>
         </Section>
       </form>
