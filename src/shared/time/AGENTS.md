@@ -1,3 +1,3 @@
-la zona efectiva para mostrar instantes UTC (useEffectiveTimeZone) y la del navegador.
+Reloj y zona del navegador para la presentación central.
 Leé [docs/rules/formatos.md](../../../docs/rules/formatos.md).
-Copiá de [useEffectiveTimeZone.ts](useEffectiveTimeZone.ts).
+Copiá de [browserTimeZone.ts](browserTimeZone.ts).
