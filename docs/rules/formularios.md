@@ -44,6 +44,8 @@
   Nunca se reintenta solo. Página pública conserva pendiente el guardado hasta completar la relectura y actualizar su base; su `onSuccess` asíncrono pertenece al hook de la mutación y devuelve la promesa. Guardar y publicar esperan ambas escrituras propias, para que una no mande la versión anterior mientras termina la otra.
 - **Teléfono** (tableros M-*): la franja de error usa la letra de los avisos del teléfono (14,5 con interlineado 1,4, relleno 12/14 y radio 12, M-Avisos), también en las páginas públicas (M-Ingreso, M-Registro, M-Registro-Empresa y M-Invitacion); en la compu, 13. El formulario es de una sola columna, en grupos blancos sobre gris o con los campos sueltos (`Section`). El diálogo se abre como una hoja desde abajo, con manija y botones de 48 a lo ancho. En una pantalla de edición, «Descartar cambios» y «Guardar cambios» (al crear, «Cancelar» y la acción) van fijos abajo (`FixedActions`); una fila con «›» abre una hoja para elegir ([responsive](responsive.md)).
 
+El vencimiento del código de Mi cuenta lo decide la API (`Auth.LoginCode.Expired`, en la franja); el diálogo no promete diez minutos ni mantiene un countdown de vencimiento.
+
 ## Prohibido
 - Un diálogo sobre otro, o una tabla dentro de un diálogo.
 - Una confirmación destructiva con botón de cierre ✕ o acción primaria que no sea sólida roja.

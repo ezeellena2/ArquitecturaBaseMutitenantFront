@@ -1,5 +1,3 @@
-# Configuración de la organización
-
-Leé las reglas de formularios, catálogos de referencia, concurrencia e idempotencia.
-La pantalla copia Configuración y sus móviles del lienzo vigente.
-Los dominios se verifican por TXT; al quitar uno se conservan los vínculos de correo existentes.
+Feature: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas.
+Leé [docs/rules/formatos.md](../../../../docs/rules/formatos.md).
+Copiá de [settings.ts](api/settings.ts).

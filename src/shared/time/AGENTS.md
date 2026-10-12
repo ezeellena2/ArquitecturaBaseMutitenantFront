@@ -1,3 +1,3 @@
-Zona horaria efectiva para mostrar instantes UTC. Leé `docs/architecture/frontend.md` «Fechas y zona» y `docs/architecture/formatos.md` §1.
-`useEffectiveTimeZone` consume la zona efectiva de `/api/me` en 3a.
-La prioridad cuenta → empresa → organización o navegador está probada en `useEffectiveTimeZone.test.tsx`.
+la zona efectiva para mostrar instantes UTC (useEffectiveTimeZone) y la del navegador.
+Leé [docs/rules/formatos.md](../../../docs/rules/formatos.md).
+Copiá de [useEffectiveTimeZone.ts](useEffectiveTimeZone.ts).

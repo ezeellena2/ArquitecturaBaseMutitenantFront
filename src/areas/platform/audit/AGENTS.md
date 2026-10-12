@@ -1,5 +1,3 @@
-# Auditoría de Plataforma
-Leé datos-y-api, accesos-y-permisos, paginado-y-listados, errores y textos-y-traducciones.
-Sólo platform.audit.read. SecurityEvents/LoginAudits globales, sin datos privados ni tenant scope.
-La API entrega summary humano y la IP tapada: nunca reconstruir action/diff ni destapar datos.
-Copiá AuditPage business y DetailGrid; tableros Auditoria-Plat/M-Auditoria-Plat y su detalle v111.
+Feature: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas.
+Leé [docs/rules/formatos.md](../../../../docs/rules/formatos.md).
+Copiá de [securityEvents.ts](api/securityEvents.ts).

@@ -1,7 +1,3 @@
-# Hooks compartidos
-
-Acá van hooks reutilizables, cada uno con su test al lado; no se duplican dentro de una feature.
-Leé [paginado y listados](../../../docs/rules/paginado-y-listados.md) y [formularios](../../../docs/rules/formularios.md).
-Un listado paginado usa [usePagedQuery.ts](usePagedQuery.ts); uno que solo crece, `useCursorList.ts`.
-Una pantalla que edita algo que ya existe arma su formulario con [useEditForm.ts](useEditForm.ts) (la versión que manda el guardado es la de la lectura con la que arrancó o se reinició y, después de guardar, la que respondió el guardado; nunca la de una relectura) y usa [useEditPage.tsx](useEditPage.tsx): cartel del 409, «Cambios sin guardar», franja de error y «¿Salir sin guardar?».
-El error de un diálogo vive en [useDialogFailure.ts](useDialogFailure.ts): recibe `queryRoot` y los códigos de estado; después de concurrencia o esos 409, relee al cerrar aunque se haya borrado la franja.
+hooks compartidos, cada uno con su test: el listado paginado (usePagedQuery, sobre.
+Leé [docs/rules/paginado-y-listados.md](../../../docs/rules/paginado-y-listados.md).
+Copiá de [usePagedQuery.ts](usePagedQuery.ts).

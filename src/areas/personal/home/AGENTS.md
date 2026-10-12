@@ -1,3 +1,3 @@
-Inicio del acceso personal. Leé [personal](../../../../docs/rules/personal.md) y `docs/architecture/frontend.md` §3.
-Muestra la banda «Inicio» y, si la cuenta no tiene un método de ingreso propio, el aviso (`PersonalLoginMethodNotice`, de `shared/account`); lo demás lo define cada producto.
-No muestres organizaciones dentro del cuerpo personal.
+Feature: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas.
+Leé [docs/features/inicio.md](../../../../../ArquitecturaBaseMutitenant/docs/features/inicio.md).
+Copiá de [PersonalHomePage.tsx](pages/PersonalHomePage.tsx).

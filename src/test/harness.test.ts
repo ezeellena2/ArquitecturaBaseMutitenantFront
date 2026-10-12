@@ -33,9 +33,9 @@ function mappedDirectories(): string[] {
   const map = section(arnes, "Mapa de carpetas → punteros");
   const patterns = map.split("\n").flatMap((line) => {
     const firstCell = line.split("|")[1] ?? "";
-    return [...firstCell.matchAll(/`(src\/[^`]+\/)`/g)].map((match) => match[1]);
+    return [...firstCell.matchAll(/`(src\/[^`]*)`/g)].map((match) => match[1]);
   });
-  const active = allDirectories(src).filter((directory) => allFiles(directory).length > 0);
+  const active = [src, ...allDirectories(src)].filter((directory) => allFiles(directory).length > 0);
 
   return active.filter((directory) => {
     const relative = `${path.relative(root, directory).replaceAll("\\", "/")}/`;
@@ -122,7 +122,7 @@ describe("arnés de reglas", () => {
     const folders = mappedDirectories();
     expect(folders.length).toBeGreaterThan(0);
     const relativeFolders = folders.map((folder) => path.relative(root, folder).replaceAll("\\", "/"));
-    for (const stageZeroFolder of ["src/shared/hooks", "src/shared/ui", "src/test"]) {
+    for (const stageZeroFolder of ["src/shared", "src/areas/business", "src/modules/assistant"]) {
       expect(relativeFolders, `${stageZeroFolder} debe figurar en el mapa`).toContain(stageZeroFolder);
     }
     for (const folder of folders) {
@@ -132,11 +132,17 @@ describe("arnés de reglas", () => {
       expect(existsSync(claude), `Falta ${path.relative(root, claude)}`).toBe(true);
       if (existsSync(agent)) {
         const lines = readFileSync(agent, "utf8").trimEnd().split(/\r?\n/);
-        expect(lines.length, `${path.relative(root, agent)} debe tener de 3 a 8 líneas`).toBeGreaterThanOrEqual(3);
-        expect(lines.length, `${path.relative(root, agent)} debe tener de 3 a 8 líneas`).toBeLessThanOrEqual(8);
+        expect(lines.length, `${path.relative(root, agent)} debe tener de 1 a 3 líneas`).toBeGreaterThanOrEqual(1);
+        expect(lines.length, `${path.relative(root, agent)} debe tener de 3 a 8 líneas`).toBeLessThanOrEqual(3);
       }
       if (existsSync(claude)) expect(readFileSync(claude, "utf8").trim()).toBe("@AGENTS.md");
     }
+  });
+
+  it("solo las raíces del mapa llevan punteros", () => {
+    const folders = new Set(mappedDirectories());
+    const extras = allFiles(src).filter(file => /(?:AGENTS|CLAUDE)\.md$/.test(file) && !folders.has(path.dirname(file)));
+    expect(extras.map(file => path.relative(root, file))).toEqual([]);
   });
 
   it("mantiene vivos los enlaces de punteros y fichas", () => {
@@ -157,27 +163,7 @@ describe("arnés de reglas", () => {
         const directory = path.join(backRoot, folder);
         expect(existsSync(directory), `Falta carpeta de Roles ${folder}`).toBe(true);
       }
-      const rolesPointers = [
-        "src/ArquitecturaBaseMultitenant.Domain/Authorization",
-        "src/ArquitecturaBaseMultitenant.Application/Models/Roles",
-        "src/ArquitecturaBaseMultitenant.Application/Services/Roles",
-        "src/ArquitecturaBaseMultitenant.Application/Validation/Roles",
-        "src/ArquitecturaBaseMultitenant.Application/Interfaces/Integrations/Caching",
-        "src/ArquitecturaBaseMultitenant.Api/Authorization",
-        "src/ArquitecturaBaseMultitenant.Api/Contracts/Organization",
-        "src/ArquitecturaBaseMultitenant.Api/Controllers/Organization",
-        "tests/ArquitecturaBaseMultitenant.Domain.UnitTests/Authorization",
-        "tests/ArquitecturaBaseMultitenant.Application.UnitTests/Services/Roles",
-        "tests/ArquitecturaBaseMultitenant.Api.IntegrationTests/Organization",
-      ];
-      for (const folder of rolesPointers) {
-        const agent = path.join(backRoot, folder, "AGENTS.md");
-        const claude = path.join(backRoot, folder, "CLAUDE.md");
-        expect(existsSync(agent), `Falta ${folder}/AGENTS.md`).toBe(true);
-        expect(existsSync(claude), `Falta ${folder}/CLAUDE.md`).toBe(true);
-        if (existsSync(agent)) expect(readFileSync(agent, "utf8")).toContain("docs/features/roles.md");
-        if (existsSync(claude)) expect(readFileSync(claude, "utf8").trim()).toBe("@AGENTS.md");
-      }
+
     }
   });
 

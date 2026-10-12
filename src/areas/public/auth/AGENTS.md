@@ -1,3 +1,3 @@
-Ingreso (las dos puertas comparten pantalla), registro de personas, «Registrá tu empresa» e invitación. Leé `docs/architecture/frontend.md` «Auth», `docs/rules/accesos-y-permisos.md` y los tableros Ingreso, Registro, Registro-Empresa, Invitacion y Sesion.
-El código de correo o WhatsApp es un paso de la misma pantalla, sin ruta propia; estado y código usan `components/`. Los países WhatsApp salen de las capacidades API mediante PhoneField. RecoverAccountPage en `/recuperar` es público: anterior y nuevo Email/Phone, nonce sólo en memoria y tres POST con clave por cuerpo/recorrido. `/login/enlace` retira el fragmento y hace preview; sólo Continuar canjea el enlace e inicia OIDC Consumer nuevo. Leé la ficha Identidad del back y las ADR 0043, 0045 y 0049.
-Los textos salen de `src/locales/`; el token no sale de `src/auth/`.
+Feature: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas.
+Leé [docs/features/identidad.md](../../../../../ArquitecturaBaseMutitenant/docs/features/identidad.md).
+Copiá de [businessSignup.ts](api/businessSignup.ts).

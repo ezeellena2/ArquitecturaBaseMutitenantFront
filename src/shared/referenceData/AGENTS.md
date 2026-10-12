@@ -1,4 +1,3 @@
-# Datos de referencia
-
-Leé [datos-y-api](../../../docs/rules/datos-y-api.md), [formatos](../../../docs/rules/formatos.md) y [datos de referencia](../../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md). Los cinco catálogos se reciben de `GET /api/reference-data` mediante `httpClient` y TanStack Query. Nunca agregues opciones, patrones ni nombres de referencia a mano; el backend los traduce. Los campos usan `enabledOptions` para nuevas selecciones y `shared/format` muestra los valores existentes.
-`useCuitType` mantiene el acuerdo de CUIT argentino opcional en Registro-Empresa. Empresas usa `useCompanyTaxIdType`: el país viene del campo `organizationCountryCode` de `MeResponse`, no de la cultura personal ni de una consulta a Configuración. `companyTaxIdType` conserva el tipo guardado para el mismo número; el tipo nuevo se ordena por `sortOrder` y código ordinal, como el back.
+carga los cinco catálogos y patrones de GET /api/reference-data.
+Leé [docs/rules/datos-y-api.md](../../../docs/rules/datos-y-api.md).
+Copiá de [useReferenceData.ts](useReferenceData.ts).

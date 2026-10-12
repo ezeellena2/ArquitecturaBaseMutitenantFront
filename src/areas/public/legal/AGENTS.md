@@ -1,3 +1,3 @@
-Documentos legales públicos. Leé `docs/rules/datos-y-api.md` y `docs/rules/textos-y-traducciones.md`.
-La versión y el cuerpo salen de `/api/legal/terms` o `/api/legal/privacy`.
-El layout sigue el tablero Legal; no fijes versiones en el código.
+Feature: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas.
+Leé [docs/rules/formatos.md](../../../../docs/rules/formatos.md).
+Copiá de [acceptance.ts](api/acceptance.ts).

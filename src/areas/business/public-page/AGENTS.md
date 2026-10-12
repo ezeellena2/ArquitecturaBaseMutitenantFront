@@ -1,5 +1,3 @@
-# Página pública de la organización
-
-Leé las fichas de textos, formularios, archivos y concurrencia.
-La pantalla copia Pagina-Org y sus estados y móviles del lienzo vigente.
-Logo, contacto, slug, publicación y bloqueo de moderación usan el contrato generado.
+Feature: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas.
+Leé [docs/features/sitio-publico.md](../../../../../ArquitecturaBaseMutitenant/docs/features/sitio-publico.md).
+Copiá de [publicPage.ts](api/publicPage.ts).

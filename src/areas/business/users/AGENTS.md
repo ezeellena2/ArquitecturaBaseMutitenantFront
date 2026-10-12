@@ -1,5 +1,3 @@
-# Usuarios de la organización
-
-La ficha del backend es `docs/features/identidad.md`; leé además las reglas de pantallas, paginado, invitaciones y accesos.
-Copiá Usuarios, Usuario, M-Usuarios y M-Usuario del lienzo vigente.
-Las acciones de invitación reutilizan `InvitationIssuer` mediante rutas de Usuarios; protegé al último Dueño.
+Feature: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas.
+Leé [docs/features/organizaciones.md](../../../../../ArquitecturaBaseMutitenant/docs/features/organizaciones.md).
+Copiá de [users.ts](api/users.ts).

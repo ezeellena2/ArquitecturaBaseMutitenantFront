@@ -8,7 +8,7 @@
 |---|---|
 | 0. Índice | `AGENTS.md` raíz (+ `CLAUDE.md` = `@AGENTS.md`) con la tabla "si vas a tocar X, leé Y" |
 | 1. Fichas | `docs/rules/<tema>.md` (formato: Regla · Cómo se hace · Prohibido · Copiá de · Lo verifica · Detalle) |
-| 2. Punteros | `AGENTS.md` + `CLAUDE.md` en cada carpeta del mapa (§2), de 3 a 8 líneas |
+| 2. Punteros | `AGENTS.md` + `CLAUDE.md` en cada carpeta del mapa (§2), de 1 a 3 líneas |
 | 3. Verificación | tests de Vitest, `oxlint`, `tsc` estricto, `format-usage.test.ts`, `parity.test.ts`, `theme-tokens.test.ts`, `harness.test.ts` |
 
 Para una pantalla, el **«Copiá de» es el [tablero correspondiente del lienzo versionado](../design/lienzo/README.md)**; prevalece sobre cualquier descripción textual. Los archivos de código de la columna «Copiá de» muestran la convención de implementación cuando ya existen.
