@@ -56,7 +56,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 
 ## Lo verifica
 - `pageSizes.test.ts` (E0)
-- `option-pagination.test.ts` y `RemoteOptions.test.tsx` (C2): prohíben el corte fijo en 100 y eligen recursos fuera de la primera página con búsqueda remota.
+- `option-pagination.test.ts` y `RemoteOptions.test.tsx` (E4), correctivo C2: prohíben el corte fijo en 100 y eligen recursos fuera de la primera página con búsqueda remota.
 
 ## Detalle
 [frontend.md §4, "Paginado, orden y búsqueda"](../architecture/frontend.md#paginado-orden-y-búsqueda) · back: `docs/rules/paginado-y-busqueda.md`

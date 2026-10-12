@@ -372,6 +372,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
       <RemoteOptionFooter remote={orgOptions.remote} />
     </ChoiceSheet>
     {companyDialog ? <UserCompanyDialog mode={companyDialog.mode} assignment={companyDialog.assignment} companyName={companyName(companyDialog.assignment.companyId)}
+      assignedRoles={member.companies.find((company) => company.companyId === companyDialog.assignment.companyId)?.roles}
       excludedCompanyIds={[...assignedCompanyIds]} companies={activeCompanies.filter((company) => !assignedCompanyIds.has(company.id))} roles={companyRoles} pending={save.isPending} error={dialogError}
       returnFocusTo={companyDialog.returnFocusTo} onEdit={() => setDialogFailure(undefined)} onClose={closeCompanyDialog}
       onSave={(assignment) => saveCompanyDialog(companyDialog, assignment)} /> : null}

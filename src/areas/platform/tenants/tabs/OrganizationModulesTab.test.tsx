@@ -6,6 +6,7 @@ import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { platformOperator } from "@/test/mocks/currentUsers";
+import { domainPage } from "@/test/mocks/domainPage";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { tenantFeaturesQueryKey } from "../api/tenants";
 import { menuAction, openTab, problem, renderTabs, setupTabs, submitReason, TestFeatures, testOrganization } from "./testSupport";
@@ -64,7 +65,7 @@ describe("Módulos de Organización", () => {
   });
   it("con sólo read muestra estados sin acciones ni pestañas privadas ni GET privados", async () => {
     const user = userEvent.setup(); let privateReads = 0;
-    server.use(http.get("/api/me", () => HttpResponse.json({ ...platformOperator, effectivePermissions: { ...platformOperator.effectivePermissions, platform: ["platform.tenants.read"] } })), http.get("/api/platform/tenants/delta/domains", () => { privateReads++; return HttpResponse.json([]); }), http.get("/api/platform/tenants/delta/public-site", () => { privateReads++; return HttpResponse.json({}); }));
+    server.use(http.get("/api/me", () => HttpResponse.json({ ...platformOperator, effectivePermissions: { ...platformOperator.effectivePermissions, platform: ["platform.tenants.read"] } })), http.get("/api/platform/tenants/delta/domains/paged", () => { privateReads++; return HttpResponse.json(domainPage([])); }), http.get("/api/platform/tenants/delta/public-site", () => { privateReads++; return HttpResponse.json({}); }));
     const page = renderTabs(); await openTab(user, "Módulos"); await act(async () => { page.queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, effectivePermissions: { ...platformOperator.effectivePermissions, platform: ["platform.tenants.read"] } }); });
     expect(await screen.findByText("WhatsApp")).toBeVisible(); expect(screen.queryByRole("button", { name: /Acciones de WhatsApp/ })).not.toBeInTheDocument(); expect(screen.queryByRole("tab", { name: /Dominio verificado|Página pública/ })).not.toBeInTheDocument(); expect(privateReads).toBe(0);
   });
@@ -107,7 +108,7 @@ describe("Módulos de Organización", () => {
   });
   it.each([["features", "Módulos"], ["domains", "Dominio verificado"], ["public-site", "Página pública"]])("%s muestra carga común antes de la respuesta", async (path, tab) => {
     const user = userEvent.setup(); let release: (() => void) | undefined;
-    server.use(http.get(`/api/platform/tenants/delta/${path}`, async () => { await new Promise<void>((resolve) => { release = resolve; }); return HttpResponse.json(path === "public-site" ? { slug: "delta", name: "Grupo Delta", version: 0, isPublished: false } : path === "features" ? TestFeatures : []); }));
+    server.use(http.get(`/api/platform/tenants/delta/${path === "domains" ? "domains/paged" : path}`, async () => { await new Promise<void>((resolve) => { release = resolve; }); return HttpResponse.json(path === "public-site" ? { slug: "delta", name: "Grupo Delta", version: 0, isPublished: false } : path === "features" ? TestFeatures : domainPage([])); }));
     const page = renderTabs(); await openTab(user, tab); expect(await screen.findByRole("status")).toHaveTextContent("Cargando…"); await act(async () => { release?.(); }); await waitFor(() => expect(screen.queryByRole("status")).not.toBeInTheDocument()); page.unmount();
   });
 });

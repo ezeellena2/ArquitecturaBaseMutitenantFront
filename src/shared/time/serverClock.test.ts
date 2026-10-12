@@ -24,3 +24,13 @@ it("no deja que respuestas sin fecha o concurrentes anteriores atrasen el reloj 
   synchronizeServerClock("Mon, 12 Oct 2026 11:59:00 GMT");
   expect(now()).toBe(Date.parse("2026-10-12T12:00:00Z"));
 });
+
+it("una respuesta demorada no hace volver a estar vigente un vencimiento", () => {
+  const elapsed = vi.spyOn(performance, "now").mockReturnValue(100);
+  synchronizeServerClock("Mon, 12 Oct 2026 12:00:00 GMT");
+  elapsed.mockReturnValue(60_100);
+  expect(isPast("2026-10-12T12:00:30Z")).toBe(true);
+  synchronizeServerClock("Mon, 12 Oct 2026 12:00:01 GMT");
+  expect(now()).toBe(Date.parse("2026-10-12T12:01:00Z"));
+  expect(isPast("2026-10-12T12:00:30Z")).toBe(true);
+});

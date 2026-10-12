@@ -29,7 +29,7 @@ type CompanyForm = z.infer<ReturnType<typeof companyFormSchema>>;
 /// qué falta. «Guardar» de «Cambiar roles» se apaga sin cambios: sacar un rol y volver a ponerlo no cuenta (`orderLike`).
 /// «Roles en la empresa» aparece al elegir la empresa y es opcional. Guarda al momento, con el guardado de la
 /// ficha; su error, también el 409, va arriba de sus botones y se va al cambiar algo.
-export function UserCompanyDialog({ mode, assignment, companyName, companies, roles, excludedCompanyIds = [], pending, error, returnFocusTo, onEdit, onSave, onClose }: {
+export function UserCompanyDialog({ mode, assignment, companyName, companies, roles, assignedRoles = [], excludedCompanyIds = [], pending, error, returnFocusTo, onEdit, onSave, onClose }: {
   mode: "add" | "roles";
   assignment: CompanyAssignment;
   /** La empresa cuyos roles se cambian, para el título. */
@@ -38,6 +38,8 @@ export function UserCompanyDialog({ mode, assignment, companyName, companies, ro
   companies: readonly CompanyResponse[];
   /** Los roles de empresa: los de cualquier empresa y los de una en particular. */
   roles: readonly RoleResponse[];
+  /** Etiquetas de los roles ya asignados, aunque no estén en las páginas de opciones cargadas. */
+  assignedRoles?: readonly Pick<RoleResponse, "id" | "name">[];
   excludedCompanyIds?: readonly string[];
   pending: boolean;
   error: string | null;
@@ -57,7 +59,7 @@ export function UserCompanyDialog({ mode, assignment, companyName, companies, ro
   const companyQuery = useResourceOptions(companyOptions, mode === "add");
   const roleQuery = useResourceOptions(roleOptions("Company", company.field.value), Boolean(company.field.value));
   const companyRoles = roleQuery.items.filter((role) => role.scope === "AnyCompany" || role.companyId === company.field.value);
-  const knownRoles = [...new Map([...roles, ...roleQuery.knownItems].map((role) => [role.id, role])).values()];
+  const knownRoles = [...new Map([...assignedRoles, ...roles, ...roleQuery.knownItems].map((role) => [role.id, role])).values()];
   const submit = form.handleSubmit((values) => onSave(values));
 
   return <Dialog open onOpenChange={(open) => { if (!open && !pending) onClose(); }}>
@@ -72,7 +74,7 @@ export function UserCompanyDialog({ mode, assignment, companyName, companies, ro
               placeholder={t("users:invite.chooseCompany")} searchLabel={t("common:actions.search")} aria-label={t("users:invite.company")}
               options={companyQuery.items.filter((item) => item.status === "Active" && !excludedCompanyIds.includes(item.id)).map((option) => ({ value: option.id, label: option.name }))} />
           </FormField> : null}
-          {company.field.value ? <RolesField label={t("users:invite.companyRoles")} allLabel={t("users:detail.allRoles")}
+          {company.field.value ? <RolesField key={company.field.value} label={t("users:invite.companyRoles")} allLabel={t("users:detail.allRoles")}
             remote={roleQuery.remote} allCount={roleQuery.allCount} selectedOptions={knownRoles.map((role) => ({ value: role.id, label: role.name }))} allOptions={async () => (await roleQuery.allItems()).map((role) => ({ value: role.id, label: role.name }))}
             options={companyRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value}
             onChange={(next) => { roleIds.field.onChange(orderLike(form.formState.defaultValues?.roleIds, next)); onEdit(); }} placeholder={t("users:detail.noRoles")} /> : null}

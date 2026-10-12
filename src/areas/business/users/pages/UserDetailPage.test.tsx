@@ -410,6 +410,19 @@ describe("UserDetailPage (tablero Usuario)", () => {
   });
 
   // accesibilidad.md: la opción del ⋮ se va con el menú; el diálogo que abre le devuelve el foco al ⋮ de la fila.
+  it("Cambiar roles conserva la etiqueta asignada aunque el rol no esté en la primera página", async () => {
+    const user = userEvent.setup();
+    api({ ...member, companies: [{ companyId: company.id, companyName: company.name, status: "Active",
+      roles: [{ ...ownerRole, id: "role-company-11", name: "Rol de segunda página", isSystemRole: false }] }] });
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+    await open(user, within(screen.getByRole("region", { name: "Empresas" })).getByRole("button", { name: "Acciones de Delta S.A." }));
+    await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
+    const dialog = await screen.findByRole("dialog", { name: "Roles en Delta S.A." });
+    expect(within(dialog).getByRole("button", { name: "Roles en la empresa" })).toHaveTextContent("Rol de segunda página");
+    expect(within(dialog).getByRole("button", { name: "Guardar" })).toBeDisabled();
+  });
+
   it("«Cambiar roles» del ⋮ le devuelve el foco al ⋮ de la fila al cerrarse", async () => {
     const user = userEvent.setup();
     api({ ...member, companies: [{ companyId: company.id, companyName: company.name, status: "Active", roles: [] }] });

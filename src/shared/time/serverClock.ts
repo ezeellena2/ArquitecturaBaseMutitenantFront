@@ -9,8 +9,9 @@ export function monotonicNow(): number { return performance.now(); }
 export function synchronizeServerClock(httpDate: string | null): void {
   if (!httpDate) return;
   const serverMs = Date.parse(httpDate);
-  if (!Number.isFinite(serverMs) || (anchor && serverMs <= anchor.serverMs)) return;
-  anchor = { serverMs, elapsedMs: monotonicNow() };
+  const elapsedMs = monotonicNow();
+  if (!Number.isFinite(serverMs) || (anchor && serverMs <= anchor.serverMs + Math.max(0, elapsedMs - anchor.elapsedMs))) return;
+  anchor = { serverMs, elapsedMs };
 }
 
 export function resetServerClock(): void { anchor = undefined; }
