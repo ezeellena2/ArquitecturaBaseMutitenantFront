@@ -7,7 +7,12 @@ import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { firstModel, mountSettings, platformManager, settingsHandlers } from "./settingsTestSupport";
 
-beforeAll(async () => { await import("./PlatformAssistantSettingsPage"); });
+beforeAll(async () => {
+  await import("./PlatformAssistantSettingsPage");
+  // Precarga el motor antes del primer recorrido; la auditoría del diálogo
+  // completo conserva sus mismas aserciones en escritorio y teléfono.
+  await axe("<main></main>");
+});
 beforeEach(() => settingsHandlers());
 afterEach(() => vi.unstubAllGlobals());
 const catalogPath = "/plataforma/asistente/configuracion?tab=catalog";
