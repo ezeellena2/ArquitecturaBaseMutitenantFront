@@ -13628,6 +13628,81 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/roles/filter-counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Search?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RoleFilterCountsResponse"];
+                        "application/json": components["schemas"]["RoleFilterCountsResponse"];
+                        "text/json": components["schemas"]["RoleFilterCountsResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/roles/paged": {
         parameters: {
             query?: never;
@@ -18171,6 +18246,13 @@ export interface components {
             expired: number;
             /** Format: int32 */
             inactive: number;
+            /** Format: int32 */
+            companyAll?: null | number;
+            /** Format: int32 */
+            withoutCompany?: null | number;
+            companies?: null | {
+                [key: string]: number;
+            };
         };
         OrganizationUserHttpResponse: {
             /** Format: uuid */
@@ -18948,6 +19030,16 @@ export interface components {
         } | {
             phone: components["schemas"]["PhoneInputHttpRequest"];
         });
+        /** @description Una lectura para menú y resumen; una empresa sin roles propios comparte el conteo AnyCompany. */
+        RoleFilterCountsResponse: {
+            matching: components["schemas"]["RoleScopeCounts"];
+            total: components["schemas"]["RoleScopeCounts"];
+            /** Format: int32 */
+            anyCompany: number;
+            companies: {
+                [key: string]: number;
+            };
+        };
         /** @description Representación HTTP-independent de un rol; version conserva el xmin de PostgreSQL. */
         RoleResponse: {
             /** Format: uuid */
@@ -18971,6 +19063,14 @@ export interface components {
          * @enum {string}
          */
         RoleScope: "Organization" | "AnyCompany" | "SpecificCompany";
+        RoleScopeCounts: {
+            /** Format: int32 */
+            all: number;
+            /** Format: int32 */
+            organization: number;
+            /** Format: int32 */
+            company: number;
+        };
         /** @enum {null|string} */
         RoleScopeFilter: "Organization" | "Company" | null;
         SendAssistantMessageHttpRequest: {
