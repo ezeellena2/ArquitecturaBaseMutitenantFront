@@ -164,7 +164,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
         get: {
             parameters: {
                 query?: never;
@@ -256,7 +256,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consentimiento explícito por usuario y versión, después de aceptar documentos legales vigentes; 204, sin inferir aceptación. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consentimiento explícito por usuario y versión, después de aceptar documentos legales vigentes; 204, sin inferir aceptación. */
         post: {
             parameters: {
                 query?: never;
@@ -369,7 +369,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
         get: {
             parameters: {
                 query?: {
@@ -449,7 +449,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Crea sin IA, title=null/isSaved=false; 201 con Location. DurableReference no copia título al store global. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Crea sin IA, title=null/isSaved=false; 201 con Location. DurableReference no copia título al store global. */
         post: {
             parameters: {
                 query?: never;
@@ -566,7 +566,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
         get: {
             parameters: {
                 query?: {
@@ -646,7 +646,7 @@ export interface paths {
                 };
             };
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
         put: {
             parameters: {
                 query?: never;
@@ -739,7 +739,7 @@ export interface paths {
             };
         };
         post?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
         delete: {
             parameters: {
                 query: {
@@ -839,7 +839,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. POST SSE autenticado, sin EventSource anónimo. Primera admisión 200 text/event-stream; replay terminal 200 application/json TurnResult. Preflight antes de abrir stream; en curso 409. Sin copia de contenido en el store global. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. POST SSE autenticado, sin EventSource anónimo. Primera admisión 200 text/event-stream; replay terminal 200 application/json TurnResult. Preflight antes de abrir stream; en curso 409. Sin copia de contenido en el store global. */
         post: {
             parameters: {
                 query?: never;
@@ -991,7 +991,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
         post: {
             parameters: {
                 query?: never;
@@ -1109,7 +1109,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consulta fija sin IA, títulos automáticos, cuota ni costo; revalida permisos de la herramienta. DurableReference reconstruye el resultado privado tras revalidar dueño/lado/organización/legales/módulo/permisos. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consulta fija sin IA, títulos automáticos, cuota ni costo; revalida permisos de la herramienta. DurableReference reconstruye el resultado privado tras revalidar dueño/lado/organización/legales/módulo/permisos. */
         post: {
             parameters: {
                 query?: never;
@@ -1227,7 +1227,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Solo respuesta assistant propia; up/down/null y versión. Sin detalle libre. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Solo respuesta assistant propia; up/down/null y versión. Sin detalle libre. */
         put: {
             parameters: {
                 query?: never;
@@ -1336,7 +1336,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         post: {
             parameters: {
                 query?: never;
@@ -1470,7 +1470,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         get: {
             parameters: {
                 query?: never;
@@ -1574,7 +1574,7 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         delete: {
             parameters: {
                 query: {
@@ -1682,7 +1682,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Descarga Markdown UTF-8 o PDF privada, no-store; solo conversación propia. Sin tool payloads, claves ni bytes originales de adjuntos; sin IA, cuota ni costo. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Descarga Markdown UTF-8 o PDF privada, no-store; solo conversación propia. Sin tool payloads, claves ni bytes originales de adjuntos; sin IA, cuota ni costo. */
         get: {
             parameters: {
                 query?: {
@@ -1780,7 +1780,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
         get: {
             parameters: {
                 query?: never;
@@ -1872,7 +1872,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consentimiento explícito por usuario y versión, después de aceptar documentos legales vigentes; 204, sin inferir aceptación. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consentimiento explícito por usuario y versión, después de aceptar documentos legales vigentes; 204, sin inferir aceptación. */
         post: {
             parameters: {
                 query?: never;
@@ -1985,7 +1985,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
         get: {
             parameters: {
                 query?: {
@@ -2065,7 +2065,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Crea sin IA, title=null/isSaved=false; 201 con Location. DurableReference no copia título al store global. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Crea sin IA, title=null/isSaved=false; 201 con Location. DurableReference no copia título al store global. */
         post: {
             parameters: {
                 query?: never;
@@ -2182,7 +2182,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
         get: {
             parameters: {
                 query?: {
@@ -2262,7 +2262,7 @@ export interface paths {
                 };
             };
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
         put: {
             parameters: {
                 query?: never;
@@ -2355,7 +2355,7 @@ export interface paths {
             };
         };
         post?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
         delete: {
             parameters: {
                 query: {
@@ -2455,7 +2455,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. POST SSE autenticado, sin EventSource anónimo. Primera admisión 200 text/event-stream; replay terminal 200 application/json TurnResult. Preflight antes de abrir stream; en curso 409. Sin copia de contenido en el store global. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. POST SSE autenticado, sin EventSource anónimo. Primera admisión 200 text/event-stream; replay terminal 200 application/json TurnResult. Preflight antes de abrir stream; en curso 409. Sin copia de contenido en el store global. */
         post: {
             parameters: {
                 query?: never;
@@ -2607,7 +2607,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
         post: {
             parameters: {
                 query?: never;
@@ -2725,7 +2725,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consulta fija sin IA, títulos automáticos, cuota ni costo; revalida permisos de la herramienta. DurableReference reconstruye el resultado privado tras revalidar dueño/lado/organización/legales/módulo/permisos. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consulta fija sin IA, títulos automáticos, cuota ni costo; revalida permisos de la herramienta. DurableReference reconstruye el resultado privado tras revalidar dueño/lado/organización/legales/módulo/permisos. */
         post: {
             parameters: {
                 query?: never;
@@ -2843,7 +2843,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Solo respuesta assistant propia; up/down/null y versión. Sin detalle libre. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Solo respuesta assistant propia; up/down/null y versión. Sin detalle libre. */
         put: {
             parameters: {
                 query?: never;
@@ -2952,7 +2952,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         post: {
             parameters: {
                 query?: never;
@@ -3086,7 +3086,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         get: {
             parameters: {
                 query?: never;
@@ -3190,7 +3190,7 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         delete: {
             parameters: {
                 query: {
@@ -3298,7 +3298,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Descarga Markdown UTF-8 o PDF privada, no-store; solo conversación propia. Sin tool payloads, claves ni bytes originales de adjuntos; sin IA, cuota ni costo. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Descarga Markdown UTF-8 o PDF privada, no-store; solo conversación propia. Sin tool payloads, claves ni bytes originales de adjuntos; sin IA, cuota ni costo. */
         get: {
             parameters: {
                 query?: {
@@ -3396,7 +3396,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
         get: {
             parameters: {
                 query?: never;
@@ -3471,7 +3471,7 @@ export interface paths {
                 };
             };
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
         put: {
             parameters: {
                 query?: never;
@@ -3575,7 +3575,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Agregados mensuales paginados YYYY-MM; sin texto, conversationId, títulos ni archivos. Costo platform-key separado de own-key. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Agregados mensuales paginados YYYY-MM; sin texto, conversationId, títulos ni archivos. Costo platform-key separado de own-key. */
         get: {
             parameters: {
                 query: {
@@ -3671,7 +3671,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
         get: {
             parameters: {
                 query?: never;
@@ -3763,7 +3763,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consentimiento explícito por usuario y versión, después de aceptar documentos legales vigentes; 204, sin inferir aceptación. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consentimiento explícito por usuario y versión, después de aceptar documentos legales vigentes; 204, sin inferir aceptación. */
         post: {
             parameters: {
                 query?: never;
@@ -3876,7 +3876,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
         get: {
             parameters: {
                 query?: {
@@ -3956,7 +3956,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Crea sin IA, title=null/isSaved=false; 201 con Location. DurableReference no copia título al store global. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Crea sin IA, title=null/isSaved=false; 201 con Location. DurableReference no copia título al store global. */
         post: {
             parameters: {
                 query?: never;
@@ -4073,7 +4073,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
         get: {
             parameters: {
                 query?: {
@@ -4153,7 +4153,7 @@ export interface paths {
                 };
             };
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
         put: {
             parameters: {
                 query?: never;
@@ -4246,7 +4246,7 @@ export interface paths {
             };
         };
         post?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Edición/borrado con uint/xmin y owner firmado; borrar cancela turno y elimina textos/adjuntos con limpieza física diferida fiable. */
         delete: {
             parameters: {
                 query: {
@@ -4346,7 +4346,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. POST SSE autenticado, sin EventSource anónimo. Primera admisión 200 text/event-stream; replay terminal 200 application/json TurnResult. Preflight antes de abrir stream; en curso 409. Sin copia de contenido en el store global. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. POST SSE autenticado, sin EventSource anónimo. Primera admisión 200 text/event-stream; replay terminal 200 application/json TurnResult. Preflight antes de abrir stream; en curso 409. Sin copia de contenido en el store global. */
         post: {
             parameters: {
                 query?: never;
@@ -4498,7 +4498,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
         post: {
             parameters: {
                 query?: never;
@@ -4616,7 +4616,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consulta fija sin IA, títulos automáticos, cuota ni costo; revalida permisos de la herramienta. DurableReference reconstruye el resultado privado tras revalidar dueño/lado/organización/legales/módulo/permisos. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Consulta fija sin IA, títulos automáticos, cuota ni costo; revalida permisos de la herramienta. DurableReference reconstruye el resultado privado tras revalidar dueño/lado/organización/legales/módulo/permisos. */
         post: {
             parameters: {
                 query?: never;
@@ -4734,7 +4734,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Solo respuesta assistant propia; up/down/null y versión. Sin detalle libre. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Solo respuesta assistant propia; up/down/null y versión. Sin detalle libre. */
         put: {
             parameters: {
                 query?: never;
@@ -4843,7 +4843,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         post: {
             parameters: {
                 query?: never;
@@ -4977,7 +4977,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         get: {
             parameters: {
                 query?: never;
@@ -5081,7 +5081,7 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         delete: {
             parameters: {
                 query: {
@@ -5189,7 +5189,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Descarga Markdown UTF-8 o PDF privada, no-store; solo conversación propia. Sin tool payloads, claves ni bytes originales de adjuntos; sin IA, cuota ni costo. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Descarga Markdown UTF-8 o PDF privada, no-store; solo conversación propia. Sin tool payloads, claves ni bytes originales de adjuntos; sin IA, cuota ni costo. */
         get: {
             parameters: {
                 query?: {
@@ -5287,7 +5287,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Datos técnicos completos obligatorios al crear/editar; lectura technical y technicalRevision nullable sólo para filas heredadas incompletas. Revisión calculada por servidor con las tarifas y capacidades efectivas. La selección usa la base actual sin archivo ni reinicio: activo, texto, herramientas, pensamiento adaptativo, esfuerzo admitido y capacidad mínima 51200/2048. Límites menores coherentes se guardan pero no se ofrecen para chat. Tarifas técnicas USD positivas con hasta seis decimales; contexto largo null o umbral menor que la entrada y cinco tarifas completas. Desactivar modelos referidos; sin endpoint de borrado. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Datos técnicos completos obligatorios al crear/editar; lectura technical y technicalRevision nullable sólo para filas heredadas incompletas. Revisión calculada por servidor con las tarifas y capacidades efectivas. La selección usa la base actual sin archivo ni reinicio: activo, texto, herramientas, pensamiento adaptativo, esfuerzo admitido y capacidad mínima 51200/2048. Límites menores coherentes se guardan pero no se ofrecen para chat. Tarifas técnicas USD positivas con hasta seis decimales; contexto largo null o umbral menor que la entrada y cinco tarifas completas. Desactivar modelos referidos; sin endpoint de borrado. */
         get: {
             parameters: {
                 query?: {
@@ -5368,7 +5368,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Datos técnicos completos obligatorios al crear/editar; lectura technical y technicalRevision nullable sólo para filas heredadas incompletas. Revisión calculada por servidor con las tarifas y capacidades efectivas. La selección usa la base actual sin archivo ni reinicio: activo, texto, herramientas, pensamiento adaptativo, esfuerzo admitido y capacidad mínima 51200/2048. Límites menores coherentes se guardan pero no se ofrecen para chat. Tarifas técnicas USD positivas con hasta seis decimales; contexto largo null o umbral menor que la entrada y cinco tarifas completas. Desactivar modelos referidos; sin endpoint de borrado. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Datos técnicos completos obligatorios al crear/editar; lectura technical y technicalRevision nullable sólo para filas heredadas incompletas. Revisión calculada por servidor con las tarifas y capacidades efectivas. La selección usa la base actual sin archivo ni reinicio: activo, texto, herramientas, pensamiento adaptativo, esfuerzo admitido y capacidad mínima 51200/2048. Límites menores coherentes se guardan pero no se ofrecen para chat. Tarifas técnicas USD positivas con hasta seis decimales; contexto largo null o umbral menor que la entrada y cinco tarifas completas. Desactivar modelos referidos; sin endpoint de borrado. */
         post: {
             parameters: {
                 query?: never;
@@ -5484,7 +5484,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Datos técnicos completos obligatorios al crear/editar; lectura technical y technicalRevision nullable sólo para filas heredadas incompletas. Revisión calculada por servidor con las tarifas y capacidades efectivas. La selección usa la base actual sin archivo ni reinicio: activo, texto, herramientas, pensamiento adaptativo, esfuerzo admitido y capacidad mínima 51200/2048. Límites menores coherentes se guardan pero no se ofrecen para chat. Tarifas técnicas USD positivas con hasta seis decimales; contexto largo null o umbral menor que la entrada y cinco tarifas completas. Desactivar modelos referidos; sin endpoint de borrado. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Catálogo Anthropic, precios no negativos en USD, unicidad provider/providerModelId. Datos técnicos completos obligatorios al crear/editar; lectura technical y technicalRevision nullable sólo para filas heredadas incompletas. Revisión calculada por servidor con las tarifas y capacidades efectivas. La selección usa la base actual sin archivo ni reinicio: activo, texto, herramientas, pensamiento adaptativo, esfuerzo admitido y capacidad mínima 51200/2048. Límites menores coherentes se guardan pero no se ofrecen para chat. Tarifas técnicas USD positivas con hasta seis decimales; contexto largo null o umbral menor que la entrada y cinco tarifas completas. Desactivar modelos referidos; sin endpoint de borrado. */
         put: {
             parameters: {
                 query?: never;
@@ -5590,7 +5590,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Gestión global sin abrir conversaciones ni devolver claves. Ausente: allowOwnKey=false/version=0; PUT requiere motivo y SecurityEvent, revalida configuración/turnos. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Gestión global sin abrir conversaciones ni devolver claves. Ausente: allowOwnKey=false/version=0; PUT requiere motivo y SecurityEvent, revalida configuración/turnos. */
         get: {
             parameters: {
                 query?: never;
@@ -5667,7 +5667,7 @@ export interface paths {
                 };
             };
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Gestión global sin abrir conversaciones ni devolver claves. Ausente: allowOwnKey=false/version=0; PUT requiere motivo y SecurityEvent, revalida configuración/turnos. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Gestión global sin abrir conversaciones ni devolver claves. Ausente: allowOwnKey=false/version=0; PUT requiere motivo y SecurityEvent, revalida configuración/turnos. */
         put: {
             parameters: {
                 query?: never;
@@ -5773,7 +5773,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
         get: {
             parameters: {
                 query?: never;
@@ -5848,7 +5848,7 @@ export interface paths {
                 };
             };
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
         put: {
             parameters: {
                 query?: never;
@@ -5952,7 +5952,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description T01: contrato publicado, conducta pendiente; el servicio devuelve General.Contract.NotImplemented (501). Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Agregados mensuales paginados YYYY-MM; sin texto, conversationId, títulos ni archivos. Costo platform-key separado de own-key. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Agregados mensuales paginados YYYY-MM; sin texto, conversationId, títulos ni archivos. Costo platform-key separado de own-key. */
         get: {
             parameters: {
                 query: {
