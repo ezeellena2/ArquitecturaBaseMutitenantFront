@@ -1,4 +1,4 @@
-import { installApiMocks, runAppActions } from "../capturar-etapa-3a.mjs";
+import { installApiMocks, runAppActions } from "../capturar-etapa.mjs";
 
 /// Abre la vista en vivo en una pestaña. Al elegir una pantalla, la página le pide a Playwright los datos de prueba de
 /// ese caso (las mismas respuestas de la API que usan las capturas) y, cuando la app termina de cargar, sus acciones

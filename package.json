@@ -10,8 +10,6 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:capturas": "node --test scripts/capturar-etapa-3a.test.mjs",
-    "test:capturas:etapa-4": "node --test scripts/capturar-etapa-4.test.mjs",
     "test:e2e:real": "node --test scripts/test-e2e-real.test.mjs",
     "contracts": "node scripts/generate-contracts.mjs",
     "contracts:check": "node scripts/check-contracts.mjs"

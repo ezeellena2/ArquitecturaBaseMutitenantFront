@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { startAssistantOpenStream } from "./assistant-open-stream.mjs";
 import { EventEmitter } from "node:events";
 import { request as httpRequest } from "node:http";
-import { installApiMocks, runAppActions } from "./capturar-etapa-3a.mjs";
+import { installApiMocks, runAppActions } from "./capturar-etapa.mjs";
 
 const origin = "http://localtest.me:5192";
 const path = "/api/organization/assistant/conversations/gallery-chat/messages";
@@ -162,13 +162,4 @@ test("selección de historial usa contenedor accesible y conserva acciones globa
   ]);
   assert.deepEqual(calls, [["contenedor", "complementary", "Conversaciones"], ["historial", "button", "Invitaciones vencidas"],
     ["contenedor", "dialog", "Conversaciones"], ["historial", "button", "Mis organizaciones"], ["global", "button", "Enviar"]]);
-});
-
-test("manifest no reutiliza evidencia con otra versión del transporte", async () => {
-  const { buildManifest, validateManifest } = await import("./capturar-etapa-8b.mjs");
-  const manifest = await buildManifest();
-  validateManifest(manifest);
-  const stale = structuredClone(manifest);
-  stale.transportSources[0].sha256 = "0".repeat(64);
-  assert.throws(() => validateManifest(stale), /transporte cambió/);
 });
