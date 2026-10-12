@@ -1,3 +1,4 @@
+import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
 import type { PagedResult } from "@/shared/api/pagedResult";
 import type {
@@ -20,13 +21,6 @@ export const permissionGroupsQueryKey = ["permissions"] as const;
 /// Las empresas para «Vale en»: el filtro de la lista y el editor.
 export const roleCompanyOptionsQueryKey = ["role-company-options"] as const;
 
-function toSearch(query: RolesQuery): string {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query)) {
-    if (value !== undefined && value !== null && value !== "") params.set(key, String(value));
-  }
-  return params.toString();
-}
 
 export function fetchRoles(query: RolesQuery): Promise<PagedResult<RoleResponse>> {
   const search = toSearch(query);

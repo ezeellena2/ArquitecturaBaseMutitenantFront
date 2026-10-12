@@ -12,6 +12,3 @@ export function beginCodeStep(destination: string, sentAtMs: number, loginDestin
   return { kind: "code", destination, sentAtMs, ...(loginDestination ? { loginDestination } : {}), ...(resendAfterSeconds !== undefined ? { resendAfterSeconds } : {}) };
 }
 
-export function secondsUntilResend(sentAtMs: number, nowMs: number): number {
-  return Math.max(0, Math.ceil((sentAtMs + 60_000 - nowMs) / 1_000));
-}

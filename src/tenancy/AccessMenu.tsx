@@ -1,9 +1,10 @@
+import { initials } from "@/shared/lib/initials";
 import { Check } from "lucide-react";
 import { Link } from "react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { activeOrganization } from "./access";
-import { initials, useProfiles, type ProfileEntry } from "./useProfiles";
+import { useProfiles, type ProfileEntry } from "./useProfiles";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";

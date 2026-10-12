@@ -11,6 +11,7 @@ import type { CompanyMemberState } from "@/shared/api/types";
 import { DateText } from "@/shared/ui/format/DateText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { StatusDetail } from "@/shared/ui/StatusDot";
+import { isPast } from "@/shared/time/serverClock";
 
 /// Tableros Empresas y Empresa: la empresa activa en verde y la inactiva en gris. También los usa la banda de la ficha.
 export const companyStatusTones = defineStatusTones("CompanyStatus", { Active: "success", Inactive: "neutral" });
@@ -50,7 +51,7 @@ export function isCompanyInvitation(member: CompanyMember): boolean {
 // fecha ya pasó, «Invitación vencida» (el back la deja en «Invitado», B8); si no, el de la persona.
 function memberState(member: CompanyMember): CompanyMemberDisplayState {
   if (member.membershipStatus === "Inactive") return "Inactive";
-  return isCompanyInvitation(member) && member.invitationExpiresAtUtc && Date.parse(member.invitationExpiresAtUtc) <= Date.now() ? "Expired" : member.state;
+  return isCompanyInvitation(member) && member.invitationExpiresAtUtc && isPast(member.invitationExpiresAtUtc) ? "Expired" : member.state;
 }
 
 /// Hasta cuándo vale una invitación: «Vence …» o «Venció …» debajo del estado en la compu (Criterio · Tablas) y «vence …»

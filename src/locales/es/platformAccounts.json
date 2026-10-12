@@ -194,7 +194,7 @@
     "operatorInline": "operador",
     "closeSessions": "Cerrar sesiones",
     "resending": "Reenviando…",
-    "suspended": "Suspendida el",
+    "suspended": "<strong>Suspendida el <date/>.</strong> Motivo: <reason/>",
     "reason": "Motivo:",
     "personalDeletion": "Pidió la baja el",
     "platformDeletion": "La plataforma inició la baja el",

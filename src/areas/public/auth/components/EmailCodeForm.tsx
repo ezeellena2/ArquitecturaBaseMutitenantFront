@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { monotonicNow } from "@/shared/time/serverClock";
 import { ApiError } from "@/shared/api/ApiError";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -58,7 +59,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access =
     const destination = destinationFromFields(values);
     try {
       const response = await request.mutateAsync({ destination, journey });
-      onCodeRequested(beginCodeStep(destination.type === "email" ? destination.email : "", Date.now(), destination, response.resendAfterSeconds));
+      onCodeRequested(beginCodeStep(destination.type === "email" ? destination.email : "", monotonicNow(), destination, response.resendAfterSeconds));
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
       setAccountMissing(caught.code === "Auth.LoginCode.AccountNotFound" || caught.code === accountErrorCodes.phoneAccountNotFound);

@@ -22,6 +22,9 @@ function violations(relative: string, source: string): string[] {
   if (!inFormat && !inTime && /\b(?:toLocaleString|toLocaleDateString|toFixed)\s*\(|\bIntl\.|\bnew\s+Date\s*\(/.test(source)) {
     found.push("formato manual fuera de shared/format y shared/time");
   }
+  if (!inTime && /\bDate\s*\.\s*(?:now|parse)\s*\(/.test(source)) {
+    found.push("reloj o parsing de fecha fuera de shared/time");
+  }
   if (!inFormat && !inPhone && /(?:from\s*["']libphonenumber-js|import\s*\(["']libphonenumber-js)/.test(source)) {
     found.push("libphonenumber-js fuera de shared/format y shared/phone");
   }
@@ -37,6 +40,9 @@ function violations(relative: string, source: string): string[] {
 
 describe("uso exclusivo de formatos y catálogos", () => {
   it("detecta formatos, importaciones telefónicas y listas fijas de prueba", () => {
+    expect(violations("areas/business/companies/columns.tsx", "Date.now(); Date.parse(value)")).not.toEqual([]);
+    expect(violations("shared/format/formatters.ts", "Date.now()")).not.toEqual([]);
+    expect(violations("shared/time/serverClock.ts", "Date.now(); Date.parse(value)")).toEqual([]);
     expect(violations("shared/ui/DateText.tsx", "new Date(value).toLocaleDateString() ")).not.toEqual([]);
     expect(violations("shared/ui/PhoneText.tsx", 'import { parsePhoneNumber } from "libphonenumber-js"')).not.toEqual([]);
     expect(violations("shared/ui/fields/CurrencySelect.tsx", 'const currencies = ["ARS", "USD"]')).not.toEqual([]);

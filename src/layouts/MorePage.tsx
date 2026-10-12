@@ -1,3 +1,4 @@
+import { initials } from "@/shared/lib/initials";
 import { Check } from "lucide-react";
 import { LogOutIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
@@ -8,7 +9,7 @@ import { cn } from "@/shared/lib/utils";
 import { AppBar } from "@/shared/ui/app/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { GroupTitle, SettingsGroup, SettingsItem } from "@/shared/ui/app/SettingsGroup";
-import { initials, useProfiles } from "@/tenancy/useProfiles";
+import { useProfiles } from "@/tenancy/useProfiles";
 import { platformNavigation } from "./navigation/platform";
 import { useNavigation } from "./navigation/useNavigation";
 import { usePermissions } from "@/auth/usePermissions";

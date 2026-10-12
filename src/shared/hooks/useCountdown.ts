@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
+import { monotonicNow } from "@/shared/time/serverClock";
 
 /// Cuenta regresiva en segundos, para el reenvío del código.
 export function useCountdown(initialSeconds: number) {
   // `initialSeconds` solo importa al montar: el valor inicial ya lo toma `useState`, y para arrancar una
   // cuenta nueva más tarde (por ejemplo, al reenviar el código) quien use el hook llama a `restart`. Un
   // efecto que reflejara `initialSeconds` en el estado en cada cambio dispararía un render extra de más.
-  const [countdown, setCountdown] = useState(() => ({ seconds: initialSeconds, deadline: Date.now() + initialSeconds * 1000 }));
+  const [countdown, setCountdown] = useState(() => ({ seconds: initialSeconds, deadline: monotonicNow() + initialSeconds * 1000 }));
   const { seconds } = countdown;
   const restart = useCallback((duration: number) => {
-    setCountdown({ seconds: duration, deadline: Date.now() + duration * 1000 });
+    setCountdown({ seconds: duration, deadline: monotonicNow() + duration * 1000 });
   }, []);
 
   useEffect(() => {
@@ -18,7 +19,7 @@ export function useCountdown(initialSeconds: number) {
 
     // Los callbacks pueden atrasarse o pausarse: el vencimiento depende del reloj, no de sus vueltas.
     const refresh = () => {
-      const now = Date.now();
+      const now = monotonicNow();
       setCountdown((current) => ({ ...current, seconds: Math.max(0, Math.ceil((current.deadline - now) / 1000)) }));
     };
     const timer = setInterval(refresh, 1000);

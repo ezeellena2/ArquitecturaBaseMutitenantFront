@@ -3,6 +3,7 @@ import type { CultureReference, ReferenceData } from "@/shared/referenceData/ref
 import { getCultureProfile } from "./cultureProfiles";
 import { shiftDecimal } from "./decimalScale";
 import { parseMonth } from "./parsers";
+import { now as serverNow } from "@/shared/time/serverClock";
 
 type Translate = (key: string, options?: { count?: number }) => string;
 
@@ -134,7 +135,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   const profile = getCultureProfile(referenceData, culture);
   const fixedClock = now === undefined ? null : new Date(now);
   if (fixedClock && Number.isNaN(fixedClock.getTime())) throw new Error("El instante actual no es válido.");
-  const clock = () => fixedClock ?? new Date();
+  const clock = () => fixedClock ?? new Date(serverNow());
   const number = (value: number, minimum: number, maximum: number) =>
     formatNumber(value, minimum, maximum, profile.decimalSeparator, profile.groupSeparator, culture);
   const date = (value: string, pattern: string) =>

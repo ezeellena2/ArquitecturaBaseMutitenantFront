@@ -8,6 +8,7 @@ import { ApiError } from "./ApiError";
 import { api, configureHttpClient, resetHttpClient } from "./httpClient";
 import type { PagedResult } from "./pagedResult";
 import { getAccessError } from "./accessErrorStore";
+import { now } from "@/shared/time/serverClock";
 
 beforeAll(async () => {
   await configureI18n([
@@ -22,6 +23,19 @@ describe("httpClient", () => {
     vi.unstubAllGlobals();
     resetHttpClient();
     await changeCulture("es-AR");
+  });
+
+  it.each([200, 429])("sincroniza el reloj HTTP en una respuesta %i antes de entregar datos o errores", async (status) => {
+    vi.spyOn(Date, "now").mockReturnValue(Date.parse("2036-10-12T12:00:00Z"));
+    vi.spyOn(performance, "now").mockReturnValue(100);
+    server.use(http.get("/api/clock-test", () => HttpResponse.json({ code: "Http.TooManyRequests" }, {
+      status, headers: { Date: "Mon, 12 Oct 2026 12:00:00 GMT" },
+    })));
+    try {
+      if (status === 200) await api.get("/api/clock-test");
+      else await expect(api.get("/api/clock-test")).rejects.toBeInstanceOf(ApiError);
+      expect(now()).toBe(Date.parse("2026-10-12T12:00:00Z"));
+    } finally { vi.restoreAllMocks(); }
   });
 
   // F1: qué pantalla muestra un 403 lo decide la consulta (queryClient), no el transporte.

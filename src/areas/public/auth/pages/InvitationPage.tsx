@@ -1,3 +1,5 @@
+import { initials } from "@/shared/lib/initials";
+import { daysUntil } from "@/shared/time/serverClock";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
@@ -21,16 +23,7 @@ import { useSignOut } from "@/auth/useSignOut";
 import { accountPagePaths } from "@/shared/api/accountContract";
 import { homeOf, parseAccess } from "@/tenancy/access";
 
-function initials(value: string | null | undefined, fallback: string): string {
-  const name = value?.trim();
-  if (!name) return fallback;
-  return name.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toLocaleUpperCase();
-}
 
-// «Vence: En 6 días» del tablero, redondeado; el último medio día dice «Hoy».
-function daysUntil(value: string): number {
-  return Math.max(0, Math.round((Date.parse(value) - Date.now()) / 86_400_000));
-}
 
 // Tablero Invitacion (v106), «Sin cuenta: cargando»: lo que pasa mientras tanto, en una línea centrada y gris, con 48
 // arriba y abajo; en el teléfono, con la letra de 14,5 de M-Invitacion. También al entrar a la organización.

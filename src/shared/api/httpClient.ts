@@ -1,6 +1,7 @@
 import { ApiError } from "./ApiError";
 import { isProblemDetails, type ProblemDetails } from "./problemDetails";
 import { effectiveCulture } from "@/shared/i18n";
+import { resetServerClock, synchronizeServerClock } from "@/shared/time/serverClock";
 
 interface HttpClientOptions {
   getAccessToken?: () => string | undefined;
@@ -19,6 +20,7 @@ export function configureHttpClient(next: HttpClientOptions): void {
 }
 
 export function resetHttpClient(): void {
+  resetServerClock();
   options = defaults;
   notifiedExpiredToken = undefined;
   renewalInFlight = undefined;
@@ -98,7 +100,9 @@ async function send(path: string, init: RequestInit, token: string | undefined, 
     headers.set("content-type", "application/json");
   }
 
-  return fetch(path, { ...init, headers });
+  const response = await fetch(path, { ...init, headers });
+  synchronizeServerClock(response.headers.get("date"));
+  return response;
 }
 
 async function receive(path: string, init: RequestInit, allowNotModified = false,

@@ -2,6 +2,7 @@
 **Regla:** mostrar con shared/ui/format y cargar con shared/ui/fields. Solo shared/format formatea; el back usa DisplayFormatter con cultura y zona explícitas. Ambos consumen los mismos [casos](../../../ArquitecturaBaseMutitenant/docs/contracts/format-cases.json).
 ## Cómo se hace
 - useFormat resuelve cultura efectiva, zona de `/api/me` y moneda del dato; sin sesión, relaciones del catálogo.
+- Los instantes se comparan con `shared/time`: el reloj toma `Date` de cada respuesta API y avanza con `performance.now`, independiente de la fecha del dispositivo. Las esperas de reenvío usan tiempo monotónico y su texto m:ss sale de `shared/format/countdown`.
 - Cultura: cuenta → selección del navegador → predeterminada habilitada. Define idioma y formato a la vez.
 - La zona en pantalla es la de la cuenta en los tres accesos; fechas civiles y períodos no se convierten.
 - La moneda del dato es explícita; DefaultCurrency solo precarga un importe nuevo.
@@ -49,6 +50,7 @@
 - Sumar cultura agrega fila, traducciones, i18n y casos; expected/error del contrato manda sobre variantes de librerías.
 ## Prohibido
 - toLocaleString, toLocaleDateString, toFixed, Intl o new Date para mostrar fuera de shared/format y shared/time.
+- Date.now y Date.parse fuera de shared/time.
 - libphonenumber-js fuera de shared/phone y shared/format; nombres de países con Intl.DisplayNames.
 - Arrays/switch de monedas, culturas, países, zonas o tipos fiscales; calcular dinero/reglas de negocio en el front.
 - Sustituir null por N/A, guion corto, cadena vacía o cero; enums sin traducir; formatos sueltos en JSX.

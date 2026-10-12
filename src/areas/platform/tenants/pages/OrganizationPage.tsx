@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
@@ -100,7 +100,7 @@ function OrganizationDetail({ id }: { id: string }) {
   const actions = canManage ? data.status === "PendingApproval" ? ["reject", "approve"] as const : data.status === "Active" ? ["suspend"] as const : data.status === "Suspended" ? ["reactivate", "close"] as const : [] : [];
   const counts = data.companyCount === 0 ? t("platformTenants:columns.noCompanies") : t("platformTenants:detail.counts", { companies: format.formatInteger(data.companyCount), companyLabel: t("platformTenants:columns.company", { count: data.companyCount }), members: format.formatInteger(data.memberCount), memberLabel: t("platformTenants:columns.member", { count: data.memberCount }) });
   const banner = data.status === "Suspended" || data.status === "Closed" ? <Banner tone={data.status === "Suspended" ? "warning" : "info"}>
-    <strong>{t(`platformTenants:detail.banner.${data.status}`)} <DateText value={data.lastStateChange?.atUtc} />{"."}{data.status === "Closed" ? ` ${t("platformTenants:detail.readOnly")}` : null}</strong>{" "}{t("platformTenants:detail.reason")} {data.lastStateChange?.reason || <EmptyValue />}
+    <Trans t={t} i18nKey={`platformTenants:detail.banner.${data.status}`} components={{ strong: <strong />, date: <DateText value={data.lastStateChange?.atUtc} />, reason: <>{data.lastStateChange?.reason || <EmptyValue />}</> }} />
   </Banner> : undefined;
   return <>
     <Page icon={BuildingIcon} title={data.name} backTo={back} phoneBody="flush" banner={banner}

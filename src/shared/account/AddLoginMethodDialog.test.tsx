@@ -234,7 +234,7 @@ it.each(["Email", "Phone"] as const)("verifica %s después de once minutos local
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={close} onComplete={complete} method={{ id: "pending", type, value: type === "Phone" ? "+5491155554521" : "nuevo@example.test", isVerified: false, isPrimary: false, canRemove: true, canMakePrimary: false }} />);
   await screen.findByRole("textbox", { name: "Código 1" });
   await user.type(screen.getByRole("textbox", { name: "Código 1" }), "123456");
-  const now = Date.now(); const clock = vi.spyOn(Date, "now").mockReturnValue(now + 660_000);
+  const now = performance.now(); const clock = vi.spyOn(performance, "now").mockReturnValue(now + 660_000);
   try {
     act(() => window.dispatchEvent(new Event("focus")));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -261,7 +261,7 @@ it.each([0, 660_000])("muestra Expired de la API tras %i ms locales y conserva e
   }));
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={complete} method={{ id: "pending", type: "Phone", value: "+5491155554521", isVerified: false, isPrimary: false, canRemove: true, canMakePrimary: false }} />);
   const first = await screen.findByRole("textbox", { name: "Código 1" }); await user.type(first, "123456");
-  const now = Date.now(); const clock = vi.spyOn(Date, "now").mockReturnValue(now + elapsed);
+  const now = performance.now(); const clock = vi.spyOn(performance, "now").mockReturnValue(now + elapsed);
   try {
     act(() => window.dispatchEvent(new Event("focus")));
     await user.click(screen.getByRole("button", { name: "Verificar" }));
@@ -303,7 +303,7 @@ it("respeta Retry-After tras once minutos sin reenviar solo, conserva OTP y bloq
   }));
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} method={{ id: "pending", type: "Phone", value: "+5491155554521", isVerified: false, isPrimary: false, canRemove: true, canMakePrimary: false }} />);
   const first = await screen.findByRole("textbox", { name: "Código 1" }); await user.type(first, "123456");
-  const now = Date.now(); const clock = vi.spyOn(Date, "now").mockReturnValue(now + 660_000);
+  const now = performance.now(); const clock = vi.spyOn(performance, "now").mockReturnValue(now + 660_000);
   try {
     act(() => window.dispatchEvent(new Event("focus")));
     await user.click(screen.getByRole("button", { name: "Reenviar código" }));
@@ -403,7 +403,7 @@ it.each([
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} />);
   await chooseWhatsApp(user); await user.click(screen.getByRole("button", { name: "Enviar código" }));
   const first = await screen.findByRole("textbox", { name: "Código 1" }); await user.type(first, "123456");
-  const clock = vi.spyOn(Date, "now").mockReturnValue(Date.now() + 660_000);
+  const clock = vi.spyOn(performance, "now").mockReturnValue(performance.now() + 660_000);
   try {
     act(() => window.dispatchEvent(new Event("focus")));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();

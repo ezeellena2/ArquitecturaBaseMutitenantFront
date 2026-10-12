@@ -1,3 +1,4 @@
+import { initials } from "@/shared/lib/initials";
 import { useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -8,7 +9,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/shared/ui/Sheet
 import { Avatar } from "@/shared/ui/Avatar";
 import { LogOutIcon, UserIcon } from "@/shared/ui/icons";
 import { AccessMenu } from "./AccessMenu";
-import { initials, useProfiles } from "./useProfiles";
+import { useProfiles } from "./useProfiles";
 
 /** El menú usa la sesión global, nunca los datos de la organización publicada. */
 function MobilePublicAccessMenu() {

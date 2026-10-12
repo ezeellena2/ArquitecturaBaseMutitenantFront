@@ -1,3 +1,4 @@
+import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
 import type { PagedResult } from "@/shared/api/pagedResult";
 import type {
@@ -35,13 +36,6 @@ export const companyMembersQueryKey = (companyId: string, query: CompanyMembersQ
 export const companyMembersCountQueryKey = (companyId: string, search?: string) => [...companyMembersQueryRoot(companyId), "counts", search ?? ""] as const;
 export const companyCandidatesQueryKey = (companyId: string) => [...companiesQueryRoot, companyId, "candidates"] as const;
 
-function toSearch(query: object): string {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query)) {
-    if (value !== undefined && value !== null && value !== "") params.set(key, String(value));
-  }
-  return params.toString();
-}
 
 export function fetchCompanies(query: CompaniesQuery): Promise<PagedResult<CompanyResponse>> {
   const search = toSearch(query);

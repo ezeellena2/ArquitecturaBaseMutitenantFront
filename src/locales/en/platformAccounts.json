@@ -194,7 +194,7 @@
     "operatorInline": "operator",
     "closeSessions": "Close sessions",
     "resending": "Resending…",
-    "suspended": "Suspended on",
+    "suspended": "<strong>Suspended on <date/>.</strong> Reason: <reason/>",
     "reason": "Reason:",
     "personalDeletion": "Requested deletion on",
     "platformDeletion": "The platform requested deletion on",

@@ -1,3 +1,4 @@
+import { initials } from "@/shared/lib/initials";
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { AlertTriangleIcon, ClockIcon, LockIcon, LogOutIcon } from "@/shared/ui/icons";
@@ -12,9 +13,6 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { GroupTitle, SettingsGroup, SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { isSelectable, loginPathOf, type UnavailableCode } from "@/tenancy/access";
 
-function initials(name: string): string {
-  return name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("");
-}
 
 export function OrganizationUnavailablePage({ code, organizationName, organizationId }: {
   code: UnavailableCode;

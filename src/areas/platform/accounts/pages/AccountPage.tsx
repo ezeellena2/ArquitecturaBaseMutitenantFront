@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useId, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -113,7 +113,7 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
   const managed = data.loginMethods.find((method) => !method.canSignIn && method.managedByOrganizationName);
   const matchingMemberships = data.organizations.filter((membership) => membership.name === managed?.managedByOrganizationName);
   const ended = matchingMemberships.length === 1 && ["Inactive", "Removed"].includes(matchingMemberships[0].status) ? matchingMemberships[0] : undefined;
-  const banner = data.state === "Suspended" ? <Banner tone="warning"><strong>{t("platformAccounts:detail.suspended")} <DateText value={data.lastStateChange?.atUtc} />{"."}</strong>{" "}{t("platformAccounts:detail.reason")} {data.lastStateChange?.reason || <EmptyValue />}</Banner>
+  const banner = data.state === "Suspended" ? <Banner tone="warning"><Trans t={t} i18nKey="platformAccounts:detail.suspended" components={{ strong: <strong />, date: <DateText value={data.lastStateChange?.atUtc} />, reason: <>{data.lastStateChange?.reason || <EmptyValue />}</> }} /></Banner>
     : data.state === "PendingDeletion" ? <Banner tone="warning"><strong>{t(data.deletion?.requestedByPlatform ? "platformAccounts:detail.platformDeletion" : "platformAccounts:detail.personalDeletion")} <DateText value={data.deletion?.requestedAtUtc} />{"."}</strong>{" "}{t("platformAccounts:detail.scheduled")} <DateText value={data.deletion?.scheduledForUtc} />{"."}</Banner>
       : data.state === "NeedsRecovery" ? <Banner tone="warning"><strong>{t("platformAccounts:detail.recovery")}</strong>{" "}{t("platformAccounts:detail.recoveryDescription", { organization: managed?.managedByOrganizationName || format.formatEmpty() })} <DateText value={ended?.endedAtUtc} />{". "}<Link className="font-semibold text-[var(--marca-tx)] hover:underline" to="/plataforma/recuperaciones">{t("platformAccounts:detail.recoveries")}</Link></Banner> : undefined;
   return <>

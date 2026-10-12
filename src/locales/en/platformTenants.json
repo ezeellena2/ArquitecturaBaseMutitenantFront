@@ -59,8 +59,8 @@
     "lastSignIn": "Last sign-in",
     "historyEmpty": "No history yet",
     "banner": {
-      "Closed": "Closed on",
-      "Suspended": "Suspended on"
+      "Closed": "<strong>Closed on <date/>. Read-only.</strong> Reason: <reason/>",
+      "Suspended": "<strong>Suspended on <date/>.</strong> Reason: <reason/>"
     },
     "reason": "Reason:",
     "history": "History",

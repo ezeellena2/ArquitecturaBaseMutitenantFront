@@ -21,7 +21,7 @@ function Wrapper({ children }: { children: ReactNode }) {
 
 describe("useRetryAfterCountdown", () => {
   it("traduce retryAfterSeconds a una cuenta regresiva del botón sin reintentar solo", () => {
-    vi.useFakeTimers();
+    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "performance"] });
     const { result } = renderHook(() => useRetryAfterCountdown(), { wrapper: Wrapper });
     const onRetry = vi.fn();
     act(() => result.current.startFromError(new ApiError(429, { code: "Http.TooManyRequests", retryAfter: 42 })));
@@ -44,7 +44,7 @@ describe("useRetryAfterCountdown", () => {
   });
 
   it("deshabilita el botón que originó el 429 hasta que venza el tiempo, sin enviarlo de nuevo", () => {
-    vi.useFakeTimers();
+    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "performance"] });
     const send = vi.fn();
     function RetryButton() {
       const { isRunning, label, startFromError } = useRetryAfterCountdown();

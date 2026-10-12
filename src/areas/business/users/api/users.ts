@@ -1,3 +1,4 @@
+import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
 import type {
   ChangeOrganizationUserStatusRequest,
@@ -28,13 +29,6 @@ export const userCountsQueryKey = (query: Pick<UsersQuery, "search" | "companyId
 export const userCompaniesQueryKey = ["organization-user-company-options"] as const;
 export const userRolesQueryKey = (scope: RoleScopeFilter) => ["organization-user-role-options", scope] as const;
 
-function toSearch<T extends object>(query: T): string {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query as Record<string, unknown>)) {
-    if (value !== undefined && value !== null && value !== "") params.set(key, String(value));
-  }
-  return params.toString();
-}
 
 export function fetchUsers(query: UsersQuery): Promise<PagedResult<OrganizationUserResponse>> {
   const search = toSearch(query);
