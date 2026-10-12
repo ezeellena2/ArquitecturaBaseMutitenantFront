@@ -2,11 +2,25 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { EventEmitter } from "node:events";
 import { chromium } from "playwright";
-import { journeyDate, journeyFailure, platformAssistantLimitation, renderIndex, recordedStep, safeDiagnostic, signOutMobile, waitCodeMessage, waitForPlatformHome, waitForTransientNotices, withCleanup } from "./recorrido-usuario.mjs";
+import { journeyDate, journeyFailure, parseJourneyArguments, platformAssistantLimitation, renderIndex, recordedStep, safeDiagnostic, signOutMobile, waitCodeMessage, waitForPlatformHome, waitForTransientNotices, withCleanup } from "./recorrido-usuario.mjs";
 import { baseUrl } from "./recorrido-usuario-entorno.mjs";
 import { execFileSync } from "node:child_process";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
+
+test("la selección de ancho conserva el recorrido completo por defecto y permite sólo un ancho vigente", () => {
+  assert.deepEqual(parseJourneyArguments([]), { build: true, widths: [1440, 390] });
+  assert.deepEqual(parseJourneyArguments(["--no-build", "--width=390"]), { build: false, widths: [390] });
+  assert.deepEqual(parseJourneyArguments(["--width=1440"]), { build: true, widths: [1440] });
+  for (const args of [["--width=800"], ["--width=390", "--width=1440"], ["--width=390", "--width=390"], ["--skip=all"]]) assert.throws(() => parseJourneyArguments(args));
+});
+
+test("el índice de una corrida móvil cuenta sólo sus 55 pasos y no inventa desktop pendiente", () => {
+  const report = { date: "2026-10-11", widths: [390], finished: true, cleanup: "apagado", steps: Array.from({ length: 55 }, (_, index) => ({ id: String(index + 1), title: "Paso", expected: "Guardas del guion", results: [{ width: 390, status: "passed", actual: "Pasó" }] })) };
+  const html = renderIndex(report);
+  assert.ok(html.includes("55/55")); assert.ok(html.includes("Recorrido aprobado"));
+  assert.equal(html.includes("1440 px"), false);
+});
 
 test("la identidad del recorrido conserva la ruta y el acceso de Me después de F5", async () => {
   const identityPage = (actualAccess, status = 200) => {

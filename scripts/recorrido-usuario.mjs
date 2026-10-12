@@ -1,4 +1,4 @@
-// node scripts/recorrido-usuario.mjs [--no-build]
+// node scripts/recorrido-usuario.mjs [--no-build] [--width=1440|--width=390]
 // Requiere Docker/Aspire y npm install. Base propia, correos pickup y un solo perfil Chromium temporal.
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
@@ -14,6 +14,12 @@ import { e8Definitions, e8ManualChecks, e8SourceRevision, runE8Journey } from ".
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const widths = [1440, 390];
+export function parseJourneyArguments(args) {
+  assert.ok(args.every((argument) => ["--no-build", "--width=1440", "--width=390"].includes(argument)), "Argumentos del recorrido no admitidos.");
+  const selected = args.filter((argument) => argument.startsWith("--width="));
+  assert.ok(selected.length <= 1, "El recorrido admite un solo ancho por argumento.");
+  return { build: !args.includes("--no-build"), widths: selected.length ? [Number(selected[0].slice(8))] : [...widths] };
+}
 const viewport = (width) => ({ width, height: width === 390 ? 844 : 900 });
 const escape = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 
@@ -37,11 +43,12 @@ export function journeyFailure(activeStep, errors) {
 }
 
 export function renderIndex(report) {
+  const selectedWidths = report.widths ?? widths;
   const passed = report.steps.reduce((count, step) => count + step.results.filter((item) => item.status === "passed").length, 0);
-  const total = report.steps.length * widths.length;
+  const total = report.steps.length * selectedWidths.length;
   const accepted = report.finished && report.cleanup === "apagado" && passed === total;
   const manual = report.manual ?? [];
-  const sections = report.steps.map((step) => `<section id="paso-${escape(step.id)}"><h2>${escape(step.id)} · ${escape(step.title)}</h2><p><strong>Esperado:</strong> ${escape(step.expected)}</p>${step.controlled ? "<p>OTP controlado o canal privado de Testing. La recepción en WhatsApp real sigue pendiente.</p>" : ""}${step.guion ? `<p>Guion ${escape(step.guion)} · paso ${escape(step.paso)} · fuente ${escape(e8SourceRevision)}.</p>` : ""}<div class="pair">${widths.map((width) => {
+  const sections = report.steps.map((step) => `<section id="paso-${escape(step.id)}"><h2>${escape(step.id)} · ${escape(step.title)}</h2><p><strong>Esperado:</strong> ${escape(step.expected)}</p>${step.controlled ? "<p>OTP controlado o canal privado de Testing. La recepción en WhatsApp real sigue pendiente.</p>" : ""}${step.guion ? `<p>Guion ${escape(step.guion)} · paso ${escape(step.paso)} · fuente ${escape(e8SourceRevision)}.</p>` : ""}<div class="pair">${selectedWidths.map((width) => {
     const result = step.results.find((item) => item.width === width) ?? { status: "pending", actual: "Pendiente" };
     return `<article><h3>${width} px · ${escape({ passed: "Pasó", failed: "Falló", pending: "Pendiente" }[result.status])}</h3><p><strong>Resultado:</strong> ${escape(result.actual ?? "Pendiente")}</p>${result.image ? `<a href="${escape(result.image)}"><img loading="lazy" src="${escape(result.image)}" alt="${escape(step.title)} a ${width} px"></a>` : ""}${result.extraImage ? `<p>La pestaña de Plataforma siguió abierta:</p><a href="${escape(result.extraImage)}"><img loading="lazy" src="${escape(result.extraImage)}" alt="Plataforma conservada a ${width} px"></a>` : ""}</article>`;
   }).join("")}</div></section>`).join("\n");
@@ -589,14 +596,15 @@ async function runWidth({ width, context, env, record, output, signal }) {
   await platformPage.close(); await page.close();
 }
 
-export async function main({ build = true } = {}) {
+export async function main({ build = true, widths: selectedWidths = widths } = {}) {
+  assert.ok(Array.isArray(selectedWidths) && selectedWidths.length > 0 && selectedWidths.every((width) => widths.includes(width)) && new Set(selectedWidths).size === selectedWidths.length, "Anchos del recorrido no admitidos.");
   const started = Date.now();
   const date = journeyDate();
   const output = path.join(root, "docs/design/capturas/recorrido", date);
   await mkdir(output, { recursive: true });
   const steps = definitions.map(([id, title, expected]) => ({ id, title, expected }));
   steps.splice(29, 0, ...e8Definitions);
-  const report = { date, stage: "Etapas 7 y 8", sourceRevision: e8SourceRevision, manual: e8ManualChecks, startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: steps.map((step) => ({ ...step, results: widths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
+  const report = { date, stage: "Etapas 7 y 8", widths: selectedWidths, sourceRevision: e8SourceRevision, manual: e8ManualChecks, startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: steps.map((step) => ({ ...step, results: selectedWidths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
   const persist = async () => {
     await writeFile(path.join(output, "resultados.json"), `${JSON.stringify(report, null, 2)}\n`);
     await writeFile(path.join(output, "index.html"), renderIndex(report));
@@ -644,7 +652,7 @@ export async function main({ build = true } = {}) {
         } });
         console.info(`PASÓ ${activeStep}`);
       };
-      for (const width of widths) await runWidth({ width, context, env, record, output, signal: cancellation.signal });
+      for (const width of selectedWidths) await runWidth({ width, context, env, record, output, signal: cancellation.signal });
       report.finished = true;
     }, [
       async () => { await context?.close(); },
@@ -662,12 +670,11 @@ export async function main({ build = true } = {}) {
     await persist();
     console.info(`Índice: ${path.join(output, "index.html")}`);
     const passed = report.steps.reduce((count, step) => count + step.results.filter((item) => item.status === "passed").length, 0);
-    console.info(`Resultado: ${passed}/${report.steps.length * widths.length}; ${report.finished && report.cleanup === "apagado" ? "automatizado completo; manual pendiente" : "FALLÓ"}; entorno ${report.cleanup}.`);
+    console.info(`Resultado: ${passed}/${report.steps.length * selectedWidths.length}; ${report.finished && report.cleanup === "apagado" ? "automatizado completo; manual pendiente" : "FALLÓ"}; entorno ${report.cleanup}.`);
   }
   return report;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  assert.ok(process.argv.slice(2).every((argument) => argument === "--no-build"), "Uso: node scripts/recorrido-usuario.mjs [--no-build]");
-  await main({ build: !process.argv.includes("--no-build") });
+  await main(parseJourneyArguments(process.argv.slice(2)));
 }
