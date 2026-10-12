@@ -55,4 +55,4 @@
 - `AuthCodeStep.test.tsx` (E3) y `PhoneAuthentication.test.tsx` (E8): código público con teléfono oculto, también en inglés, sin exponer el número completo.
 
 ## Detalle
-[formatos.md](../architecture/formatos.md) · back: `../ArquitecturaBaseMutitenant/docs/rules/telefonos.md`
+[formatos.md](formatos.md) · back: `../ArquitecturaBaseMutitenant/docs/rules/telefonos.md`

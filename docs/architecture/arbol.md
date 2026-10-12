@@ -231,3 +231,4 @@ Decisión del usuario (2026-10-11): cada raíz de capa, área, módulo, proyecto
 | `src/shared/ui/format/` | cómo se ve cada tipo de dato (DateText, MoneyText, PercentText, PhoneText, StatusBadge. | [formatos.md](../rules/formatos.md) | `src/shared/ui/format/MoneyText.tsx` | [AGENTS.md](../../src/shared/ui/format/AGENTS.md) |
 | `src/tenancy/` | sesión, accesos, cambio de acceso u organización, permisos. | [accesos-y-permisos.md](../rules/accesos-y-permisos.md) | `src/tenancy/AccessMenu.tsx` | [AGENTS.md](../../src/tenancy/AGENTS.md) |
 | `src/test/` | setup mínimo en E0. | [tests.md](../rules/tests.md) | `src/test/mocks/currentUsers.ts` | [AGENTS.md](../../src/test/AGENTS.md) |
+| `src/shared/ui/app/` | Piezas del área. | [tests](../rules/pantallas-y-ui.md) | `src/shared/ui/app/app.test.tsx` | [AGENTS.md](../../src/shared/ui/app/AGENTS.md) |
