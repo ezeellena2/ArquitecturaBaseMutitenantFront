@@ -1,6 +1,6 @@
 import { companyOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
-import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Plus, Power, RotateCw, Trash2 } from "lucide-react";
 import { CloseIcon, UsersIcon } from "@/shared/ui/icons";
 import { useState } from "react";
@@ -67,7 +67,7 @@ export function UsersPage() {
   });
   const { state, companyId, withoutCompany, search: debouncedSearch } = query;
   const companyFilter = withoutCompany ? withoutCompanyValue : companyId;
-  const countQuery = { search: debouncedSearch, companyId, withoutCompany };
+  const countQuery = { search: debouncedSearch, state, companyId, withoutCompany };
   const counts = useQuery({
     queryKey: userCountsQueryKey(countQuery), queryFn: () => fetchUserCounts(countQuery),
     placeholderData: keepPreviousData, meta: { silent: true },
@@ -75,10 +75,8 @@ export function UsersPage() {
   const companies = useResourceOptions(companyOptions, canFilterByCompany);
   // Conteos del filtro «Empresa»: cada empresa y «Sin empresa», con la búsqueda y el estado elegidos.
   const companyCountTargets = ["all", ...(companies.data?.items ?? []).filter((company) => company.status === "Active").map((company) => company.id), withoutCompanyValue];
-  const companyCounts = useQueries({ queries: companyCountTargets.map((target) => {
-    const targetQuery = { search: debouncedSearch || undefined, ...(target === withoutCompanyValue ? { withoutCompany: true } : target === "all" ? {} : { companyId: target }) };
-    return { queryKey: userCountsQueryKey(targetQuery), queryFn: () => fetchUserCounts(targetQuery), enabled: canFilterByCompany, meta: { silent: true } };
-  }) });
+  const companyCount = (target: string) => target === "all" ? counts.data?.companyAll ?? undefined
+    : target === withoutCompanyValue ? counts.data?.withoutCompany ?? undefined : counts.data?.companies?.[target] ?? (counts.data?.companies ? 0 : undefined);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [target, setTarget] = useState<OrganizationUserResponse | null>(null);
   const [confirmAction, setConfirmAction] = useState<"revoke" | "disable" | "remove" | null>(null);
@@ -137,7 +135,7 @@ export function UsersPage() {
           filters={[
             { key: "state", label: t("users:filters.state"), menuLabel: t("users:filters.stateMenu"), value: currentState, active: state !== undefined, onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value), options: userStates.map((value) => ({ value: value ?? "all", label: t(`users:filters.states.${value ?? "all"}`), count: stateCount(value) })) },
             ...(canFilterByCompany ? [{ key: "companyId", label: t("users:filters.company"), menuLabel: t("users:filters.companyMenu"), remote: companies.remote, selectedLabel: companies.knownItems.find((item) => item.id === companyFilter)?.name, value: companyFilter ?? "", active: companyFilter !== undefined, onChange: (value: string) => filters.setFilter("companyId", value === "all" ? undefined : value), options: [
-              ...companyCountTargets.map((target, index) => ({ value: target, label: target === "all" ? t("users:filters.allCompanies") : target === withoutCompanyValue ? t("users:filters.withoutCompany") : companies.data?.items.find((item) => item.id === target)?.name ?? target, count: countFor(companyCounts[index]?.data, state) })),
+              ...companyCountTargets.map((target) => ({ value: target, label: target === "all" ? t("users:filters.allCompanies") : target === withoutCompanyValue ? t("users:filters.withoutCompany") : companies.data?.items.find((item) => item.id === target)?.name ?? target, count: companyCount(target) })),
             ] }] : []),
           ]}
           clearLabel={t("common:actions.clear")}

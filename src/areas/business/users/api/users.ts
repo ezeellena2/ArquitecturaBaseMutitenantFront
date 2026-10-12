@@ -22,7 +22,7 @@ export interface UsersQuery extends PagedRequest {
 export const usersQueryRoot = ["organization-users"] as const;
 export const usersQueryKey = (query: UsersQuery) => [...usersQueryRoot, query] as const;
 export const userQueryKey = (memberId: string) => [...usersQueryRoot, "detail", memberId] as const;
-export const userCountsQueryKey = (query: Pick<UsersQuery, "search" | "companyId" | "withoutCompany">) => [...usersQueryRoot, "counts", query] as const;
+export const userCountsQueryKey = (query: Pick<UsersQuery, "search" | "state" | "companyId" | "withoutCompany">) => [...usersQueryRoot, "counts", query] as const;
 
 
 export function fetchUsers(query: UsersQuery): Promise<PagedResult<OrganizationUserResponse>> {
@@ -30,7 +30,7 @@ export function fetchUsers(query: UsersQuery): Promise<PagedResult<OrganizationU
   return api.get<PagedResult<OrganizationUserResponse>>(`/api/users/paged${search ? `?${search}` : ""}`);
 }
 
-export function fetchUserCounts(query: Pick<UsersQuery, "search" | "companyId" | "withoutCompany">): Promise<OrganizationUserFilterCountsResponse> {
+export function fetchUserCounts(query: Pick<UsersQuery, "search" | "state" | "companyId" | "withoutCompany">): Promise<OrganizationUserFilterCountsResponse> {
   const search = toSearch(query);
   return api.get<OrganizationUserFilterCountsResponse>(`/api/users/filter-counts${search ? `?${search}` : ""}`);
 }

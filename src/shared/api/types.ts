@@ -60,6 +60,7 @@ export type PendingDeletionState = ApiSchemas["PendingDeletionState"];
 export type PagedRequest = ApiSchemas["PagedRequest"];
 export type DirectoryEntryRow = ApiSchemas["DirectoryEntryRow"];
 export type RoleResponse = ApiSchemas["RoleResponse"];
+export type RoleFilterCountsResponse = ApiSchemas["RoleFilterCountsResponse"];
 export type PermissionGroupResponse = ApiSchemas["PermissionGroupResponse"];
 export type PermissionItem = ApiSchemas["PermissionItem"];
 export type RoleScope = ApiSchemas["RoleScope"];

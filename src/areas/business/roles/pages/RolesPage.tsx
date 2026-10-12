@@ -1,6 +1,6 @@
 import { companyOptions, fetchCompanyOption } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
-import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import { ShieldIcon } from "@/shared/ui/icons";
 import { useState } from "react";
@@ -24,6 +24,8 @@ import type { RoleResponse } from "@/shared/api/types";
 import {
   deleteRole,
   fetchRoles,
+  fetchRoleCounts,
+  roleCountsQueryKey,
   rolesQueryKey,
   rolesQueryKeyRoot,
   type RolesQuery,
@@ -32,7 +34,6 @@ import { createRoleColumns, rolePhoneRow } from "../columns";
 
 // «Vale en» (tablero Roles): toda la organización o una empresa por nombre, en un solo filtro.
 const roleFilterKeys = ["vale"] as const;
-const roleCountScopes = [undefined, "Organization", "Company"] as const;
 
 export function RolesPage() {
   const { t } = useTranslation(["roles", "common"]);
@@ -54,20 +55,9 @@ export function RolesPage() {
   const debouncedSearch = query.search ?? undefined;
   const companies = useResourceOptions(companyOptions, can("companies.read"));
   const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");
-  const companyCounts = useQueries({ queries: activeCompanies.map((company) => ({
-    queryKey: [...rolesQueryKeyRoot, "company-count", company.id, debouncedSearch ?? ""],
-    queryFn: () => fetchRoles({ page: 1, pageSize: 10, search: debouncedSearch || undefined, companyId: company.id }),
-    meta: { silent: true },
-  })) });
-  // Tablero Roles: el menú de «Vale en» cuenta lo que coincide con la búsqueda; el resumen de la banda, todos los roles.
-  // Sin búsqueda son las mismas consultas.
-  const countsFor = (search: string) => roleCountScopes.map((countScope) => ({
-    queryKey: [...rolesQueryKeyRoot, "scope-count", countScope ?? "all", search],
-    queryFn: () => fetchRoles({ page: 1, pageSize: 10, search: search || undefined, scope: countScope }),
-    meta: { silent: true },
-  }));
-  const scopeCounts = useQueries({ queries: countsFor(debouncedSearch ?? "") });
-  const totalCounts = useQueries({ queries: countsFor("") });
+  // Un solo pedido trae los conteos de la búsqueda y el resumen de todos los roles.
+  const counts = useQuery({ queryKey: roleCountsQueryKey(debouncedSearch),
+    queryFn: () => fetchRoleCounts(debouncedSearch), meta: { silent: true } });
   const [roleToDelete, setRoleToDelete] = useState<RoleResponse | null>(null);
   const remove = useMutation({
     mutationFn: (role: RoleResponse) => deleteRole(role.id, role.version),
@@ -103,13 +93,11 @@ export function RolesPage() {
     { id: "actions", header: t("roles:columns.actions"), type: "actions", cell: rowActions },
   ];
 
-  const listSummary = roles.data ? totalCounts.every((count) => count.data !== undefined)
-    ? t("roles:listSummary", { total: totalCounts[0].data?.totalCount ?? roles.data.totalCount, count: totalCounts[0].data?.totalCount ?? roles.data.totalCount,
-      organization: totalCounts[1].data?.totalCount ?? 0, company: totalCounts[2].data?.totalCount ?? 0 })
+  const totals = counts.data?.total;
+  const listSummary = roles.data ? totals
+    ? t("roles:listSummary", { total: totals.all, count: totals.all, organization: totals.organization, company: totals.company })
     : t("roles:listSummaryFallback", { count: roles.data.totalCount }) : undefined;
-  // Sin filtro el botón dice «Vale en: todos» y el menú ofrece «Todos», como el tablero.
   const filterValue = vale ?? "";
-  const countFor = (index: number) => scopeCounts[index].data?.totalCount;
 
   return <>
     <Page
@@ -134,9 +122,9 @@ export function RolesPage() {
             active: vale !== undefined, remote: companies.remote, selectedLabel: companies.knownItems.find((item) => item.id === vale)?.name,
             onChange: (value) => filters.setFilter("vale", value === "all" ? undefined : value),
             options: [
-              { value: "all", label: t("roles:filters.allScopes"), count: countFor(0) },
-              { value: "Organization", label: t("roles:scope.organization"), count: countFor(1) },
-              ...activeCompanies.map((company, index) => ({ value: company.id, label: company.name, count: companyCounts[index]?.data?.totalCount })),
+              { value: "all", label: t("roles:filters.allScopes"), count: counts.data?.matching.all },
+              { value: "Organization", label: t("roles:scope.organization"), count: counts.data?.matching.organization },
+              ...activeCompanies.map((company) => ({ value: company.id, label: company.name, count: counts.data ? counts.data.companies[company.id] ?? counts.data.anyCompany : undefined })),
             ],
           }]}
           clearLabel={t("common:actions.clear")}

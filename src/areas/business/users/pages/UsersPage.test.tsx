@@ -139,9 +139,9 @@ describe("UsersPage", () => {
       }),
       http.get("/api/users/filter-counts", ({ request }) => {
         const url = new URL(request.url);
-        return HttpResponse.json(url.searchParams.get("withoutCompany") === "true" ? counts(2)
+        return HttpResponse.json({ ...(url.searchParams.get("withoutCompany") === "true" ? counts(2)
           : url.searchParams.get("companyId") === "company-1" ? counts(5)
-            : url.searchParams.get("companyId") === "company-2" ? counts(3) : counts(11));
+            : url.searchParams.get("companyId") === "company-2" ? counts(3) : counts(11)), companyAll: 11, withoutCompany: 2, companies: { "company-1": 5, "company-2": 3 } });
       }),
       http.get("/api/companies/paged", () => HttpResponse.json({ items: companies, page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
     );

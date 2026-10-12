@@ -6,6 +6,7 @@ import type {
   PagedRequest,
   PermissionGroupResponse,
   RoleResponse,
+  RoleFilterCountsResponse,
   RoleScopeFilter,
   UpdateRoleRequest,
   VersionResponse,
@@ -15,12 +16,18 @@ export type RolesQuery = PagedRequest & { scope?: RoleScopeFilter; companyId?: s
 
 export const rolesQueryKeyRoot = ["roles"] as const;
 export const rolesQueryKey = (query: RolesQuery) => [...rolesQueryKeyRoot, query] as const;
+export const roleCountsQueryKey = (search?: string) => [...rolesQueryKeyRoot, "filter-counts", search ?? ""] as const;
 export const roleQueryKey = (roleId: string) => [...rolesQueryKeyRoot, "detail", roleId] as const;
 export const permissionGroupsQueryKey = ["permissions"] as const;
 
 export function fetchRoles(query: RolesQuery): Promise<PagedResult<RoleResponse>> {
   const search = toSearch(query);
   return api.get<PagedResult<RoleResponse>>(`/api/roles/paged${search ? `?${search}` : ""}`);
+}
+
+export function fetchRoleCounts(search?: string): Promise<RoleFilterCountsResponse> {
+  const query = toSearch({ search });
+  return api.get<RoleFilterCountsResponse>(`/api/roles/filter-counts${query ? `?${query}` : ""}`);
 }
 
 export function fetchRole(roleId: string): Promise<RoleResponse> {

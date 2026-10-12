@@ -52,6 +52,12 @@ const companies = { items: [
 beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures);
   await changeCulture("es-AR");
+  server.use(http.get("/api/roles/filter-counts", ({ request }) => {
+    const search = new URL(request.url).searchParams.get("search")?.toLowerCase();
+    const matches = [owner, companyAdmin, companyReader].filter((role) => !search || `${role.name} ${role.description}`.toLowerCase().includes(search));
+    return HttpResponse.json({ matching: { all: matches.length, organization: matches.filter((role) => role.scope === "Organization").length, company: matches.filter((role) => role.scope !== "Organization").length },
+      total: { all: 3, organization: 1, company: 2 }, anyCompany: matches.filter((role) => role.scope === "AnyCompany").length, companies: { "company-1": matches.filter((role) => role.scope === "AnyCompany" || role.companyId === "company-1").length } });
+  }));
 });
 
 describe("RolesPage", () => {
