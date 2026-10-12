@@ -1,5 +1,5 @@
 import { QueryObserver, type QueryClient, type QueryKey } from "@tanstack/react-query";
-import type { AssistantConversationResponse } from "@/shared/api/types";
+import type { AssistantConversationResponse } from "@/modules/assistant/api/types";
 
 /** Query.clear no cancela MutationCache: cada operación posee una señal del módulo. */
 export class AssistantLifetime {

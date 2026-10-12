@@ -29,6 +29,10 @@ export interface ModuleRoute {
 }
 export interface ModuleRegistration {
   id: string;
+  /** Textos propios, también enums aportados al namespace compartido. */
+  resources?: Readonly<Record<string, Readonly<Record<string, Readonly<Record<string, unknown>>>>>>;
+  /** Datos exclusivos del arnés, cargados sólo por sus consumidores de prueba. */
+  fixtures?: () => Promise<{ scenario: (board: string, state: string) => unknown }>;
   /** Códigos propios para la paridad del catálogo completo, sin ampliar las uniones del núcleo. */
   permissions?: {
     readonly organization: readonly string[];

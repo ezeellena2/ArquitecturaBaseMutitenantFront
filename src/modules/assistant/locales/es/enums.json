@@ -1,0 +1,19 @@
+{
+  "AssistantMode": {
+    "PlatformKey": "La de la plataforma",
+    "OwnKey": "La suya"
+  },
+  "AssistantBudgetStatus": {
+    "WithinLimit": "Dentro del tope",
+    "NearLimit": "Cerca del tope",
+    "LimitReached": "Llegó al tope"
+  },
+  "AssistantProvider": {
+    "Anthropic": "Anthropic"
+  },
+  "AssistantEffort": {
+    "low": "Bajo",
+    "medium": "Medio",
+    "high": "Alto"
+  }
+}

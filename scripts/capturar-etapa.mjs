@@ -75,9 +75,8 @@ export async function runAppActions(page, actions = []) {
   for (const action of actions) {
     const surface = action.within ? page.getByRole(action.within.role, { name: action.within.name, exact: true }) : page;
     if (action.type === "upload") {
-      const { galleryUploadBytes } = await import("../src/test/galleryUploadFiles.ts");
       await page.getByLabel(action.label, { exact: action.exact ?? false }).and(page.locator('input[type="file"]')).setInputFiles(action.files.map((file) => ({
-        name: file.name, mimeType: file.mimeType, buffer: Buffer.from(galleryUploadBytes(file)),
+        name: file.name, mimeType: file.mimeType, buffer: Buffer.concat([Buffer.from(file.base64, "base64"), Buffer.alloc(file.byteLength)], file.byteLength),
       })));
     } else if (action.type === "fill") {
       const target = action.label ? surface.getByLabel(action.label, { exact: action.exact ?? false })

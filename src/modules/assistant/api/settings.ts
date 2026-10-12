@@ -1,5 +1,6 @@
 import { api } from "@/shared/api/httpClient";
-import type { OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse, UpdateOrganizationAssistantSettingsRequest, UpdatePlatformAssistantSettingsRequest, VersionResponse } from "@/shared/api/types";
+import type { VersionResponse } from "@/shared/api/types";
+import type { OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse, UpdateOrganizationAssistantSettingsRequest, UpdatePlatformAssistantSettingsRequest } from "@/modules/assistant/api/types";
 import { assistantPath, assistantQueryKeyRoot, type AssistantScope } from "./assistant";
 
 export const assistantSettingsKey = (scope: AssistantScope) => [...assistantQueryKeyRoot(scope), "settings"] as const;

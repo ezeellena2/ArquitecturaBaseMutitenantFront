@@ -1,5 +1,5 @@
 import type { TFunction } from "i18next";
-import type { AssistantErrorEventResponse } from "@/shared/api/types";
+import type { AssistantErrorEventResponse } from "@/modules/assistant/api/types";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 
 const streamTexts: Readonly<Record<string, string>> = {

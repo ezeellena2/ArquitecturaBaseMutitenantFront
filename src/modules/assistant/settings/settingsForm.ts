@@ -1,7 +1,7 @@
 import { validationConstraints } from "@/shared/api/generated/validation";
 import type { TFunction } from "i18next";
 import { z } from "zod";
-import type { OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse } from "@/shared/api/types";
+import type { OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse } from "@/modules/assistant/api/types";
 
 // TextLimits.Description/LongText del backend; el schema HTTP no publica maxLength.
 export const assistantDescriptionMaxLength = 500;

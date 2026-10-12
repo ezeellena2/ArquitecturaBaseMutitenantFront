@@ -1,0 +1,19 @@
+{
+  "AssistantMode": {
+    "PlatformKey": "The platform's",
+    "OwnKey": "Its own"
+  },
+  "AssistantBudgetStatus": {
+    "WithinLimit": "Within budget",
+    "NearLimit": "Near the limit",
+    "LimitReached": "Limit reached"
+  },
+  "AssistantProvider": {
+    "Anthropic": "Anthropic"
+  },
+  "AssistantEffort": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  }
+}

@@ -1,6 +1,6 @@
 # Datos y API
 
-**Regla:** todo pasa por `shared/api/httpClient`. Los datos del servidor viven en TanStack Query. `generated/` contiene `schema.d.ts` y `validation.ts` (restricciones y categorías del mismo OpenAPI) y no se edita a mano; los alias escritos a mano viven en `shared/api/types.ts`, que reexporta desde ese schema.
+**Regla:** todo pasa por `shared/api/httpClient`. Los datos del servidor viven en TanStack Query. `generated/` contiene `schema.d.ts` y `validation.ts` (restricciones y categorías del mismo OpenAPI) y no se edita a mano; los alias escritos a mano viven en `shared/api/types.ts`, que reexporta desde ese schema. Los alias exclusivos de un módulo opcional viven en `src/modules/<nombre>/api/types.ts` y apuntan al mismo schema generado; el núcleo conserva sólo los alias neutrales.
 
 ## Cómo se hace
 - `api/<feature>.ts`:

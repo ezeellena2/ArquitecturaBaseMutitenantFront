@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { changeCulture } from "@/shared/i18n";
-import type { AssistantUsagePageResponse, AssistantUsageRowResponse } from "@/shared/api/types";
+import type { AssistantUsagePageResponse, AssistantUsageRowResponse } from "@/modules/assistant/api/types";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";

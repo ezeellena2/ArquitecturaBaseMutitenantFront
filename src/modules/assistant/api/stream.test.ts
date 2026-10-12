@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
-import type { AssistantStreamHttpResponse, AssistantTurnResultResponse } from "@/shared/api/types";
+import type { AssistantStreamHttpResponse, AssistantTurnResultResponse } from "@/modules/assistant/api/types";
 import { decodeAssistantStream, AssistantStreamError } from "./stream";
 
 const result = {

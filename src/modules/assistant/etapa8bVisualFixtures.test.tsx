@@ -12,9 +12,9 @@ import { decodeAssistantStream } from "@/modules/assistant/api/stream";
 import { fixtureAuth } from "@/test/mocks/authContext";
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
-import { galleryImage, galleryPdf, galleryPdfTooLarge, galleryUploadBytes } from "@/test/galleryUploadFiles";
-import type { AssistantAttachmentSummaryResponse, AssistantConversationResponse, AssistantStreamHttpResponse } from "@/shared/api/types";
-import { chatScenario, configurationScenario, galleryConversation, galleryMe, galleryMonthlyLimitProbe, galleryOpenStreamProbe, galleryStream, galleryStreamEvents, usageScenario, type GalleryApp } from "@/test/etapa8bVisualFixtures";
+import { galleryImage, galleryPdf, galleryPdfTooLarge, galleryUploadBytes } from "@/modules/assistant/testing/galleryUploadFiles";
+import type { AssistantAttachmentSummaryResponse, AssistantConversationResponse, AssistantStreamHttpResponse } from "@/modules/assistant/api/types";
+import { chatScenario, configurationScenario, galleryConversation, galleryMe, galleryMonthlyLimitProbe, galleryOpenStreamProbe, galleryStream, galleryStreamEvents, usageScenario, type GalleryApp } from "@/modules/assistant/testing/etapa8bVisualFixtures";
 import type { AssistantTurnState } from "@/modules/assistant/runtime/assistantTurnState";
 
 beforeAll(async () => { await import("@/modules/assistant/settings/OrganizationAssistantSettingsPage"); await import("@/modules/assistant/settings/PlatformAssistantSettingsPage"); await import("@/modules/assistant/pages/RegisteredAssistant"); await import("@/modules/assistant/usage/OrganizationAssistantUsagePage"); await import("@/modules/assistant/usage/PlatformAssistantUsagePage"); });

@@ -2,7 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Sparkles } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import type { OrganizationAssistantUsageQuery } from "@/shared/api/types";
+import type { OrganizationAssistantUsageQuery } from "@/modules/assistant/api/types";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { useFormat } from "@/shared/format/useFormat";
 import { useFilters } from "@/shared/hooks/useFilters";

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import type { AssistantModelPriceResponse } from "@/shared/api/types";
+import type { AssistantModelPriceResponse } from "@/modules/assistant/api/types";
 import { useFormat } from "@/shared/format/useFormat";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 

@@ -1,3 +1,4 @@
+import { moduleComposition } from "@/app/moduleComposition";
 import i18n, { type Resource } from "i18next";
 import { useSyncExternalStore } from "react";
 import { initReactI18next } from "react-i18next";
@@ -42,6 +43,12 @@ const packagedResources: Resource = {};
 for (const [path, content] of Object.entries(localeFiles)) {
   const match = /\/([^/]+)\/([^/]+)\.json$/.exec(path);
   if (match) (packagedResources[match[1]] ??= {})[match[2]] = content;
+}
+for (const module of moduleComposition) {
+  for (const [language, namespaces] of Object.entries(module.resources ?? {})) {
+    const resources = packagedResources[language] ??= {};
+    for (const [namespace, content] of Object.entries(namespaces)) resources[namespace] = { ...(typeof resources[namespace] === "object" ? resources[namespace] : {}), ...content };
+  }
 }
 const documentLanguage = typeof document === "undefined" ? "es" : document.documentElement.lang.split("-")[0];
 const initialLanguage = packagedResources[documentLanguage] ? documentLanguage : "es";

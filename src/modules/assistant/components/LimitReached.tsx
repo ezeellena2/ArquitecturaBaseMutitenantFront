@@ -1,5 +1,5 @@
 import { Trans, useTranslation } from "react-i18next";
-import type { AssistantStateResponse } from "@/shared/api/types";
+import type { AssistantStateResponse } from "@/modules/assistant/api/types";
 import { DateText } from "@/shared/ui/format/DateText";
 import { NumberText } from "@/shared/ui/format/NumberText";
 import { Button } from "@/shared/ui/button";

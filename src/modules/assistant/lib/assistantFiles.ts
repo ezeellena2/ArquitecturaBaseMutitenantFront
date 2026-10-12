@@ -1,4 +1,4 @@
-import type { AssistantStateResponse } from "@/shared/api/types";
+import type { AssistantStateResponse } from "@/modules/assistant/api/types";
 
 export const assistantAttachmentTypes = ["image/png", "image/jpeg", "image/webp", "application/pdf"] as const;
 export type AssistantAttachmentLimits = Pick<AssistantStateResponse, "maxAttachments" | "maxAttachmentBytes">;

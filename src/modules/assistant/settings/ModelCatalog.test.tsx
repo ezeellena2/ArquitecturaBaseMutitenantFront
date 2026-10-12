@@ -2,7 +2,7 @@ import { act, fireEvent, screen, waitFor, within } from "@testing-library/react"
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import type { AssistantModelPriceResponse, CreateAssistantModelRequest, UpdateAssistantModelRequest, UpdatePlatformAssistantSettingsRequest } from "@/shared/api/types";
+import type { AssistantModelPriceResponse, CreateAssistantModelRequest, UpdateAssistantModelRequest, UpdatePlatformAssistantSettingsRequest } from "@/modules/assistant/api/types";
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { assistantSettingsKey } from "../api/settings";

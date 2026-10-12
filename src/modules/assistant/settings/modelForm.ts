@@ -2,7 +2,7 @@ import { validationConstraints } from "@/shared/api/generated/validation";
 import type { TFunction } from "i18next";
 import type { FieldPath } from "react-hook-form";
 import { z } from "zod";
-import type { AssistantModelPriceResponse } from "@/shared/api/types";
+import type { AssistantModelPriceResponse } from "@/modules/assistant/api/types";
 import { assistantDescriptionMaxLength, assistantMoneySchema } from "./settingsForm";
 
 const moneyValue = z.object({ amount: z.number(), currency: z.string() });

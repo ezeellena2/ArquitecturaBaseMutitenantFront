@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
-import type { AssistantModelPriceResponse, CreateAssistantModelRequest, UpdateAssistantModelRequest } from "@/shared/api/types";
+import type { AssistantModelPriceResponse, CreateAssistantModelRequest, UpdateAssistantModelRequest } from "@/modules/assistant/api/types";
 import { useFormat } from "@/shared/format/useFormat";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";

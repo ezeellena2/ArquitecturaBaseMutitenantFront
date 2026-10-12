@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { ActionBarPrimitive } from "@assistant-ui/react";
 import { Button } from "@/shared/ui/button";
-import type { AssistantMessageResponse } from "@/shared/api/types";
+import type { AssistantMessageResponse } from "@/modules/assistant/api/types";
 import { Copy, ThumbsDown, ThumbsUp } from "lucide-react";
 
 export function AssistantMessageActions({ message, pending }: {

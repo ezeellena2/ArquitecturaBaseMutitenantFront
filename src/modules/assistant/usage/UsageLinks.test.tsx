@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
-import type { AssistantStateResponse } from "@/shared/api/types";
+import type { AssistantStateResponse } from "@/modules/assistant/api/types";
 import { server } from "@/test/mocks/server";
 import { businessManager, mountSettings, settingsHandlers } from "../settings/settingsTestSupport";
 

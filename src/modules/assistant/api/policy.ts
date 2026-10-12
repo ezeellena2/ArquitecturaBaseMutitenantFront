@@ -1,4 +1,5 @@
-import type { AssistantPolicyResponse, MeResponse, UpdateAssistantPolicyRequest, VersionResponse } from "@/shared/api/types";
+import type { MeResponse, VersionResponse } from "@/shared/api/types";
+import type { AssistantPolicyResponse, UpdateAssistantPolicyRequest } from "@/modules/assistant/api/types";
 import { api } from "@/shared/api/httpClient";
 
 export const assistantPolicyQueryRoot = (me: Pick<MeResponse, "access" | "id" | "activeTenantId">) => ["assistant-policy", me.access, me.id, me.activeTenantId ?? null] as const;

@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { server } from "@/test/mocks/server";
-import type { AssistantUsagePageResponse } from "@/shared/api/types";
+import type { AssistantUsagePageResponse } from "@/modules/assistant/api/types";
 import { assistantUsageQueryKey, fetchAssistantUsage } from "./usage";
 import type { AssistantScope } from "./assistant";
 

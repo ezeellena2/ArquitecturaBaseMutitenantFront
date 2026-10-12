@@ -1,12 +1,7 @@
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
-import type {
-  AssistantConversationListQuery, AssistantConversationResponse, AssistantConversationSummaryCursorResponse,
-  AssistantConversationSummaryResponse, AssistantFeedbackRequest, AssistantMessageListQuery,
-  AssistantNoticeRequest, AssistantQuickRequest, AssistantQuickResponse, AssistantStateResponse,
-  CreateAssistantConversationRequest, SendAssistantMessageRequest, StopAssistantTurnRequest,
-  UpdateAssistantConversationRequest, VersionResponse,
-} from "@/shared/api/types";
+import type { VersionResponse } from "@/shared/api/types";
+import type { AssistantConversationListQuery, AssistantConversationResponse, AssistantConversationSummaryCursorResponse, AssistantConversationSummaryResponse, AssistantFeedbackRequest, AssistantMessageListQuery, AssistantNoticeRequest, AssistantQuickRequest, AssistantQuickResponse, AssistantStateResponse, CreateAssistantConversationRequest, SendAssistantMessageRequest, StopAssistantTurnRequest, UpdateAssistantConversationRequest } from "@/modules/assistant/api/types";
 import type { Access } from "@/tenancy/access";
 
 // Identidad local para caché y vida del runtime. La autorización HTTP sale solo del token.

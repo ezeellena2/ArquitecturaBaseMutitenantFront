@@ -5,7 +5,7 @@ import { StrictMode, type PropsWithChildren } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { server } from "@/test/mocks/server";
 import { resetHttpClient } from "@/shared/api/httpClient";
-import type { AssistantConversationResponse, AssistantMessageResponse, AssistantStateResponse, AssistantTurnResultResponse } from "@/shared/api/types";
+import type { AssistantConversationResponse, AssistantMessageResponse, AssistantStateResponse, AssistantTurnResultResponse } from "@/modules/assistant/api/types";
 import { assistantConversationQueryKey, type AssistantScope } from "../api/assistant";
 import { useAssistantRuntime } from "./useAssistantRuntime";
 

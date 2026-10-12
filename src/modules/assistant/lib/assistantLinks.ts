@@ -1,4 +1,4 @@
-import type { AssistantLinkResponse, AssistantRouteKey } from "@/shared/api/types";
+import type { AssistantLinkResponse, AssistantRouteKey } from "@/modules/assistant/api/types";
 import { homeOf } from "@/tenancy/access";
 import type { AssistantScope } from "../api/assistant";
 

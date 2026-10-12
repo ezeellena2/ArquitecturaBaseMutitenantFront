@@ -1,3 +1,7 @@
+import es from "./locales/es/assistant.json";
+import en from "./locales/en/assistant.json";
+import esEnums from "./locales/es/enums.json";
+import enEnums from "./locales/en/enums.json";
 import { lazy } from "react";
 import { Sparkles } from "lucide-react";
 import type { MeResponse } from "@/shared/api/types";
@@ -35,6 +39,10 @@ const settingsNavigation = { labelKey: "assistant:settings.title", icon: Sparkle
 
 export const assistantRegistration: ModuleRegistration = {
   id: "assistant",
+  resources: { es: { assistant: es, enums: esEnums }, en: { assistant: en, enums: enEnums } },
+  fixtures: () => import("./testing/etapa8bVisualFixtures").then((fixtures) => ({
+    scenario: (board, state) => fixtures.chatScenario(board, state) ?? fixtures.configurationScenario(board, state) ?? fixtures.usageScenario(board, state),
+  })),
   permissions: {
     organization: ["assistant.use", "assistant.configure"],
     platform: ["platform.assistant.use", "platform.assistant.configure", "platform.assistant.read"],

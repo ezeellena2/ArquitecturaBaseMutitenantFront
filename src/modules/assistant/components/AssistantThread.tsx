@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import { MessagePrimitive, ThreadPrimitive, useAuiState } from "@assistant-ui/react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { AssistantAttachmentSummaryResponse, AssistantMessageResponse, AssistantRouteKey } from "@/shared/api/types";
+import type { AssistantAttachmentSummaryResponse, AssistantMessageResponse, AssistantRouteKey } from "@/modules/assistant/api/types";
 import { Button } from "@/shared/ui/button";
 import { Sparkles, TriangleAlert } from "lucide-react";
 import { AssistantMarkdown } from "./AssistantMarkdown";

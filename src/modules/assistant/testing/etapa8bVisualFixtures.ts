@@ -1,16 +1,11 @@
-import type {
-  AssistantConversationResponse, AssistantConversationSummaryCursorResponse, AssistantModelPricePageResponse,
-  AssistantModelPriceResponse, AssistantStateResponse, AssistantStreamHttpResponse, AssistantTurnResultResponse,
-  MeResponse, OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse, ApiProblemDetails, HomeResponse,
-  AssistantQuickResponse, AssistantUsagePageResponse, AssistantUsageRowResponse,
-  AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantLinkResponse,
-} from "@/shared/api/types";
+import type { MeResponse, ApiProblemDetails, HomeResponse } from "@/shared/api/types";
+import type { AssistantConversationResponse, AssistantConversationSummaryCursorResponse, AssistantModelPricePageResponse, AssistantModelPriceResponse, AssistantStateResponse, AssistantStreamHttpResponse, AssistantTurnResultResponse, OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse, AssistantQuickResponse, AssistantUsagePageResponse, AssistantUsageRowResponse, AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantLinkResponse } from "@/modules/assistant/api/types";
 import { galleryImage, galleryPdf, galleryPdfTooLarge, type GalleryUploadFile } from "./galleryUploadFiles.ts";
-import { currentUsers } from "./mocks/currentUsers.ts";
-import type { CurrentUserFixture } from "./mocks/currentUsers.ts";
-import { referenceDataFixture } from "./mocks/handlers.ts";
-import { platformTenantRows, platformTenantsPage } from "./mocks/platformTenants.ts";
-import { platformRecoveries } from "./mocks/platformRecoveries.ts";
+import { currentUsers } from "../../../test/mocks/currentUsers.ts";
+import type { CurrentUserFixture } from "../../../test/mocks/currentUsers.ts";
+import { referenceDataFixture } from "../../../test/mocks/handlers.ts";
+import { platformTenantRows, platformTenantsPage } from "../../../test/mocks/platformTenants.ts";
+import { platformRecoveries } from "../../../test/mocks/platformRecoveries.ts";
 
 // Contratos reales; datos y claves exclusivamente ficticios del arnés.
 export interface GalleryApiResponse {

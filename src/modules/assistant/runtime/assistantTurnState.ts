@@ -1,4 +1,4 @@
-import type { AssistantErrorEventResponse, AssistantStartEventResponse, AssistantStreamHttpResponse, AssistantTitleEventResponse, AssistantToolEventResponse, AssistantTurnResultResponse, SendAssistantMessageRequest } from "@/shared/api/types";
+import type { AssistantErrorEventResponse, AssistantStartEventResponse, AssistantStreamHttpResponse, AssistantTitleEventResponse, AssistantToolEventResponse, AssistantTurnResultResponse, SendAssistantMessageRequest } from "@/modules/assistant/api/types";
 
 /** Proyección efímera: start no trae fechas ni versiones de mensajes. */
 export interface AssistantTurnState {

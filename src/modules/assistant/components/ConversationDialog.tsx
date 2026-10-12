@@ -7,7 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { FormField } from "@/shared/ui/FormField";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
-import type { AssistantConversationSummaryResponse } from "@/shared/api/types";
+import type { AssistantConversationSummaryResponse } from "@/modules/assistant/api/types";
 
 export interface ConversationDialogState { kind: "rename" | "delete"; conversation: AssistantConversationSummaryResponse; trigger: HTMLButtonElement | null }
 export function ConversationDialog({ value, pending, error, onClose, onConfirm }: {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { AssistantLinkResponse, AssistantRouteKey } from "@/shared/api/types";
+import type { AssistantLinkResponse, AssistantRouteKey } from "@/modules/assistant/api/types";
 import { resolveAssistantLink } from "./assistantLinks";
 
 const context = { scope: { access: "platform" as const, userId: "u", tenantId: null }, hasPermission: () => true };

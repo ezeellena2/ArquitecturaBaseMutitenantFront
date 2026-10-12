@@ -1,8 +1,15 @@
+import { moduleComposition } from "@/app/moduleComposition";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const resources = import.meta.glob<Record<string, unknown>>("./*/*.json", { eager: true, import: "default" });
+for (const module of moduleComposition) for (const [language, namespaces] of Object.entries(module.resources ?? {})) {
+  for (const [namespace, content] of Object.entries(namespaces)) {
+    const file = './' + language + '/' + namespace + '.json';
+    resources[file] = { ...resources[file], ...content };
+  }
+}
 const cultureSource = path.resolve(import.meta.dirname,
   "../../../ArquitecturaBaseMutitenant/src/ArquitecturaBaseMultitenant.Infrastructure/Persistence/Seed/ReferenceData/cultures.json");
 const hasCultureSource = existsSync(cultureSource);

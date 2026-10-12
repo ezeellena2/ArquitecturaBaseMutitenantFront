@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import { useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExportedMessageRepository, MessageNotSentError, useExternalStoreRuntime, type ExternalStoreAdapter, type ThreadMessageLike } from "@assistant-ui/react";
-import type { AssistantConversationResponse, AssistantMessageResponse, SendAssistantMessageRequest } from "@/shared/api/types";
+import type { AssistantConversationResponse, AssistantMessageResponse, SendAssistantMessageRequest } from "@/modules/assistant/api/types";
 import { ApiError } from "@/shared/api/ApiError";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { parseUtcInstant } from "@/shared/time/parseUtcInstant";

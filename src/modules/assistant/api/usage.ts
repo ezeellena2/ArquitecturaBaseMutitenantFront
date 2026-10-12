@@ -1,5 +1,5 @@
 import { api } from "@/shared/api/httpClient";
-import type { AssistantUsagePageResponse, OrganizationAssistantUsageQuery, PlatformAssistantUsageQuery } from "@/shared/api/types";
+import type { AssistantUsagePageResponse, OrganizationAssistantUsageQuery, PlatformAssistantUsageQuery } from "@/modules/assistant/api/types";
 import { assistantPath, assistantQueryKeyRoot, withAssistantQuery, type AssistantScope } from "./assistant";
 
 export const assistantUsageQueryKey = (scope: AssistantScope, query: OrganizationAssistantUsageQuery) =>

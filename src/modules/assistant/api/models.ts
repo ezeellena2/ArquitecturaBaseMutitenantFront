@@ -1,5 +1,6 @@
 import { api } from "@/shared/api/httpClient";
-import type { AssistantCreatedModelResponse, AssistantModelListQuery, AssistantModelPricePageResponse, AssistantModelPriceResponse, CreateAssistantModelRequest, UpdateAssistantModelRequest, VersionResponse } from "@/shared/api/types";
+import type { VersionResponse } from "@/shared/api/types";
+import type { AssistantCreatedModelResponse, AssistantModelListQuery, AssistantModelPricePageResponse, AssistantModelPriceResponse, CreateAssistantModelRequest, UpdateAssistantModelRequest } from "@/modules/assistant/api/types";
 import { assistantQueryKeyRoot, withAssistantQuery, type AssistantScope } from "./assistant";
 
 const path = "/api/platform/assistant/models";

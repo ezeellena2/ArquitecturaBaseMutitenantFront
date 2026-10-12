@@ -1,6 +1,6 @@
 import { AssistantRuntimeProvider, ThreadListItemPrimitive, ThreadListPrimitive, useExternalStoreRuntime, type ThreadMessageLike } from "@assistant-ui/react";
 import { useTranslation } from "react-i18next";
-import type { AssistantConversationSummaryResponse } from "@/shared/api/types";
+import type { AssistantConversationSummaryResponse } from "@/modules/assistant/api/types";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { Button } from "@/shared/ui/button";
 import { RowActions, type RowAction } from "@/shared/ui/RowActions";

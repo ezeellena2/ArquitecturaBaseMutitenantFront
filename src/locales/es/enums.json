@@ -1,13 +1,4 @@
 {
-  "AssistantMode": {
-    "PlatformKey": "La de la plataforma",
-    "OwnKey": "La suya"
-  },
-  "AssistantBudgetStatus": {
-    "WithinLimit": "Dentro del tope",
-    "NearLimit": "Cerca del tope",
-    "LimitReached": "Llegó al tope"
-  },
   "AccountRecoveryStatus": { "Pending": "Pendiente", "Approved": "Aprobado", "Rejected": "Rechazado" },
   "PlatformAccountState": {
     "Active": "Activa",
@@ -91,8 +82,6 @@
     "Deleted": "Eliminado"
   },
   "LegalDocumentKind": { "Terms": "Términos y condiciones", "Privacy": "Política de privacidad" },
-  "AssistantProvider": { "Anthropic": "Anthropic" },
-  "AssistantEffort": { "low": "Bajo", "medium": "Medio", "high": "Alto" },
   "LoginMethodType": {
     "Email": "Correo",
     "Phone": "WhatsApp",

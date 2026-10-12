@@ -1,10 +1,6 @@
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { z } from "zod";
-import type {
-  AssistantAttachmentSummaryResponse, AssistantDeltaEventResponse, AssistantErrorEventResponse,
-  AssistantLinkResponse, AssistantMessageResponse, AssistantStartEventResponse, AssistantStreamHttpResponse,
-  AssistantTitleEventResponse, AssistantToolEventResponse, AssistantTurnResultResponse, AssistantTurnUsageResponse,
-} from "@/shared/api/types";
+import type { AssistantAttachmentSummaryResponse, AssistantDeltaEventResponse, AssistantErrorEventResponse, AssistantLinkResponse, AssistantMessageResponse, AssistantStartEventResponse, AssistantStreamHttpResponse, AssistantTitleEventResponse, AssistantToolEventResponse, AssistantTurnResultResponse, AssistantTurnUsageResponse } from "@/modules/assistant/api/types";
 
 export class AssistantStreamError extends Error {
   readonly code: "Assistant.Stream.Protocol" | "Assistant.Stream.Incomplete";

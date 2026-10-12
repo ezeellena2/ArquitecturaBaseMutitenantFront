@@ -5,7 +5,7 @@ import { http, HttpResponse } from "msw";
 import { useLayoutEffect, useMemo } from "react";
 import { MemoryRouter } from "react-router";
 import { beforeEach, expect, it, vi } from "vitest";
-import type { AssistantConversationSummaryResponse } from "@/shared/api/types";
+import type { AssistantConversationSummaryResponse } from "@/modules/assistant/api/types";
 import { configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";

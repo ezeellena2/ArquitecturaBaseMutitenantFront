@@ -1,5 +1,5 @@
 import { api } from "@/shared/api/httpClient";
-import type { AssistantExportQuery } from "@/shared/api/types";
+import type { AssistantExportQuery } from "@/modules/assistant/api/types";
 import { assistantConversationPath, withAssistantQuery } from "./assistant";
 import type { AssistantScope } from "./assistant";
 

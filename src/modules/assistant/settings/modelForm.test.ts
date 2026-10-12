@@ -1,8 +1,8 @@
 import { createInstance } from "i18next";
 import { beforeAll, describe, expect, it } from "vitest";
-import type { AssistantModelPriceResponse } from "@/shared/api/types";
-import es from "@/locales/es/assistant.json";
-import en from "@/locales/en/assistant.json";
+import type { AssistantModelPriceResponse } from "@/modules/assistant/api/types";
+import es from "@/modules/assistant/locales/es/assistant.json";
+import en from "@/modules/assistant/locales/en/assistant.json";
 import { modelErrorFields, modelFormSchema, modelFormValues } from "./modelForm";
 
 const translation = createInstance();

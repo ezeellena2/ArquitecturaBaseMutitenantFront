@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { AssistantRuntimeProvider, MessageNotSentError, SuggestionPrimitive, ThreadPrimitive, useExternalStoreRuntime, type ThreadMessageLike } from "@assistant-ui/react";
-import type { AssistantStateResponse } from "@/shared/api/types";
+import type { AssistantStateResponse } from "@/modules/assistant/api/types";
 import type { AssistantScope } from "../api/assistant";
 
 const keys = {

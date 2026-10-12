@@ -3,9 +3,9 @@ import { createInstance } from "i18next";
 import { I18nextProvider } from "react-i18next";
 import { expect, it } from "vitest";
 import { axe } from "vitest-axe";
-import es from "@/locales/es/assistant.json";
-import en from "@/locales/en/assistant.json";
-import type { AssistantToolEventResponse } from "@/shared/api/types";
+import es from "@/modules/assistant/locales/es/assistant.json";
+import en from "@/modules/assistant/locales/en/assistant.json";
+import type { AssistantToolEventResponse } from "@/modules/assistant/api/types";
 import { beginAssistantTurn, reduceAssistantTurn } from "../runtime/assistantTurnState";
 import { ToolStatus } from "./ToolStatus";
 

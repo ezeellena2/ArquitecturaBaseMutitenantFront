@@ -1,7 +1,7 @@
 import { Pencil } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
-import type { AssistantModelListQuery, AssistantModelPriceResponse } from "@/shared/api/types";
+import type { AssistantModelListQuery, AssistantModelPriceResponse } from "@/modules/assistant/api/types";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import { DataTable, type Column } from "@/shared/ui/DataTable";

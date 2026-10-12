@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import type { AssistantUsageRowResponse } from "@/shared/api/types";
+import type { AssistantUsageRowResponse } from "@/modules/assistant/api/types";
 import type { Column } from "@/shared/ui/DataTable";
 import { DataTable } from "@/shared/ui/DataTable";
 import { ListRow } from "@/shared/ui/app/ListRow";

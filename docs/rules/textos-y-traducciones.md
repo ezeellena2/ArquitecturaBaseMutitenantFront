@@ -1,6 +1,6 @@
 # Textos y traducciones
 
-**Regla:** todo texto de la interfaz sale de `src/locales/<idioma>/<namespace>.json`, con las mismas claves en todos los idiomas habilitados. Los nombres de monedas, países, zonas y tipos fiscales son datos traducidos de `GET /api/reference-data`. Español rioplatense con voseo. "Tenant" nunca aparece.
+**Regla:** todo texto de la interfaz sale de `src/locales/<idioma>/<namespace>.json`, con las mismas claves en todos los idiomas habilitados. Un módulo opcional conserva sus textos en `src/modules/<nombre>/locales/` y aporta esos recursos desde `registration.ts`, también sus entradas del namespace `enums`; i18n y la paridad componen las contribuciones neutrales. Los nombres de monedas, países, zonas y tipos fiscales son datos traducidos de `GET /api/reference-data`. Español rioplatense con voseo. "Tenant" nunca aparece.
 
 ## Cómo se hace
 - Un namespace por módulo (`useTranslation("roles")`). Lo compartido va en `common:` y los enums en `enums:<Enum>.<Valor>`.

@@ -1,5 +1,5 @@
 import { api } from "@/shared/api/httpClient";
-import type { AssistantAttachmentSummaryResponse, AssistantUploadRequest } from "@/shared/api/types";
+import type { AssistantAttachmentSummaryResponse, AssistantUploadRequest } from "@/modules/assistant/api/types";
 import { assistantConversationPath, withAssistantQuery } from "./assistant";
 import type { AssistantScope } from "./assistant";
 

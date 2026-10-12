@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import type { AssistantBudgetProgressResponse, AssistantUsagePageResponse } from "@/shared/api/types";
+import type { AssistantBudgetProgressResponse, AssistantUsagePageResponse } from "@/modules/assistant/api/types";
 import { defineStatusTones } from "@/shared/format/statusTones";
 import { useFormat } from "@/shared/format/useFormat";
 import { MoneyText } from "@/shared/ui/format/MoneyText";

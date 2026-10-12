@@ -7,7 +7,7 @@ import { axe } from "vitest-axe";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { server } from "@/test/mocks/server";
 import { resetHttpClient } from "@/shared/api/httpClient";
-import type { AssistantAttachmentSummaryResponse, AssistantConversationResponse, AssistantMessageResponse, AssistantQuickResponse, AssistantStateResponse, AssistantTurnResultResponse, SendAssistantMessageRequest } from "@/shared/api/types";
+import type { AssistantAttachmentSummaryResponse, AssistantConversationResponse, AssistantMessageResponse, AssistantQuickResponse, AssistantStateResponse, AssistantTurnResultResponse, SendAssistantMessageRequest } from "@/modules/assistant/api/types";
 import { AssistantHome, type AssistantHomeProps } from "./AssistantHome";
 import { AppChromeProvider } from "@/shared/ui/app/AppChrome";
 import { File as FetchFile } from "node:buffer";

@@ -3,7 +3,7 @@ import { flushSync } from "react-dom";
 import { Trans, useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { AssistantRuntimeProvider, MessageNotSentError } from "@assistant-ui/react";
-import type { AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantMessageResponse, AssistantRouteKey, SendAssistantMessageRequest } from "@/shared/api/types";
+import type { AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantMessageResponse, AssistantRouteKey, SendAssistantMessageRequest } from "@/modules/assistant/api/types";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
 import { toastError } from "@/shared/ui/sonner";
