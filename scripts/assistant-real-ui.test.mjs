@@ -2,7 +2,33 @@ import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { test } from "node:test";
-import { assistantExportPath } from "./assistant-real-ui.mjs";
+import { assistantExportPath, acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
+import { chromium } from "playwright";
+
+test("el foco de acceso espera Inicio y pulsa Entendido explícitamente sólo si aparece el aviso", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    const stages = [];
+    await page.setContent('<main></main>');
+    await page.evaluate(() => {
+      setTimeout(() => {
+        document.querySelector("main").innerHTML = '<h2 aria-hidden="true">¿Qué querés consultar?</h2><div role="dialog" aria-label="Antes de tu primera consulta"><button>Entendido</button></div>';
+        document.querySelector("button").addEventListener("click", () => {
+          document.body.dataset.accepted = "explicit";
+          document.querySelector('[role="dialog"]').remove();
+          document.querySelector("h2").removeAttribute("aria-hidden");
+        });
+      }, 20);
+    });
+    await acceptAssistantNoticeFromHome(page, (stage) => stages.push(stage));
+    assert.equal(await page.locator("body").getAttribute("data-accepted"), "explicit");
+    assert.equal(stages.length, 2);
+    await acceptAssistantNoticeFromHome(page, () => { throw new Error("El aviso aceptado no se acepta otra vez."); });
+    await page.setContent('<h2>El asistente todavía no está configurado</h2>');
+    await acceptAssistantNoticeFromHome(page, () => { throw new Error("Sin configuración no hay aceptación implícita."); });
+  } finally { await browser.close(); }
+});
 
 test("los exportes reales quedan con nombres fijos por ancho y formato en la carpeta indicada", async (t) => {
   const parent = path.resolve(import.meta.dirname, "../.local");

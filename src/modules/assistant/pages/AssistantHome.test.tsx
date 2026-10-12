@@ -284,16 +284,20 @@ describe("interfaz del asistente", () => {
   it("persiste Entendido antes de habilitar consulta o atajos", async () => {
     const app = setup({ ...state, noticeAccepted: false });
     let noticeBody: unknown;
+    let historyReads = 0;
+    server.use(http.get("/api/organization/assistant/conversations", () => { historyReads++; return HttpResponse.json({ items: [], hasMore: false }); }));
     server.use(http.post("/api/organization/assistant/notice", async ({ request }) => { noticeBody = await request.json(); app.changeState(state); return new HttpResponse(null, { status: 204 }); }));
     const dialog = await screen.findByRole("dialog");
     expect(screen.getByRole("button", { name: "Usuarios activos", hidden: true })).toBeDisabled();
     const unavailableSend = screen.getByRole("button", { name: "Enviar", hidden: true });
     expect(unavailableSend).toBeDisabled();
     expect(within(unavailableSend).queryByText("Guardando…")).not.toBeInTheDocument();
+    expect(historyReads).toBe(0);
     await app.user.click(within(dialog).getByRole("button", { name: "Entendido" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(noticeBody).toEqual({ noticeVersion: "v1" });
     expect(screen.getByRole("button", { name: "Usuarios activos" })).toBeEnabled();
+    await waitFor(() => expect(historyReads).toBe(2));
   });
   it("un módulo apagado no pide HTTP ni muestra datos y clear vacía el DOM", async () => {
     const app = setup();
@@ -318,6 +322,7 @@ describe("interfaz del asistente", () => {
     app.rerenderAssistant({ ...props, onConfigure: configure });
     await screen.findByRole("heading", { name: "El asistente todavía no está configurado" });
     expect(screen.queryByRole("button", { name: "Revisar configuración" })).not.toBeInTheDocument();
+    expect(await screen.findByText("Todavía no hay conversaciones")).toBeVisible();
   });
   it("el historial del teléfono abre una hoja accesible por teclado", async () => {
     const app = setup(state, true);

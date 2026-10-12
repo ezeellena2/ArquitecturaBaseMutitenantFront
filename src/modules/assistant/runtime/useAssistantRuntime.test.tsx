@@ -36,15 +36,16 @@ function deferred<T>() {
 
 function setup(initialState = state, strict = false, initialDurable = conversation()) {
   let durable = initialDurable;
+  let detailReads = 0;
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
   server.use(http.get("/api/organization/assistant", () => HttpResponse.json(initialState)),
-    http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.json(durable)));
+    http.get("/api/organization/assistant/conversations/chat", () => { detailReads++; return HttpResponse.json(durable); }));
   const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={client}>{strict ? <StrictMode>{children}</StrictMode> : children}</QueryClientProvider>;
   const initialProps: { currentScope?: AssistantScope; currentConversationId?: string; enabled?: boolean } = { currentScope: scope, enabled: true };
   const hook = renderHook(({ currentScope = scope, currentConversationId = "chat", enabled = true }) => useAssistantRuntime({ scope: currentScope, conversationId: currentConversationId, enabled }), {
     wrapper, initialProps,
   });
-  return { ...hook, client, setDurable: (next: AssistantConversationResponse) => { durable = next; } };
+  return { ...hook, client, detailReads: () => detailReads, setDurable: (next: AssistantConversationResponse) => { durable = next; } };
 }
 
 function stream() {
@@ -123,8 +124,11 @@ describe("páginas cronológicas del runtime", () => {
 
   it("aceptar el aviso y refrescar Estado libera el error durable de aceptación", async () => {
     const failed = conversation([message("u", "user"), message("a", "assistant", "Failed", "")]);
-    const hook = setup({ ...state, noticeAccepted: false }, false, failed);
+    const hook = setup(state, false, failed);
     await waitFor(() => expect(hook.result.current.detail.data).toEqual(failed));
+    // El detalle se leyó con un aviso vigente; luego el servidor exige una aceptación nueva.
+    server.use(http.get("/api/organization/assistant", () => HttpResponse.json({ ...state, noticeAccepted: false })));
+    await act(async () => { await hook.result.current.refreshState(); });
     act(() => hook.client.setQueryData(["assistant", "business", "org", "user", "turn", "chat"], {
       conversationId: "chat", request: { text: "Consulta" }, phase: "Failed", text: "", sequence: -1, tools: [],
       error: { code: "Assistant.Notice.AcceptanceRequired", traceId: "trace", status: "Failed" },
@@ -179,6 +183,16 @@ describe("páginas cronológicas del runtime", () => {
 });
 
 describe("Assistant runtime HTTP + Query + SDK", () => {
+  it("lee el detalle sólo después del aviso aunque el envío ya no esté configurado ni tenga presupuesto", async () => {
+    const hook = setup({ ...state, noticeAccepted: false });
+    await waitFor(() => expect(hook.result.current.state.isSuccess).toBe(true));
+    expect(hook.detailReads()).toBe(0);
+    server.use(http.get("/api/organization/assistant", () => HttpResponse.json({ ...state, configured: false, remainingMessages: 0 })));
+    await act(async () => { await hook.result.current.refreshState(); });
+    await waitFor(() => expect(hook.result.current.detail.isSuccess).toBe(true));
+    expect(hook.detailReads()).toBe(1);
+    expect(hook.result.current.canSend).toBe(false);
+  });
   it.each(["Generating", "admitted"] as const)("reabre %s con activeTurnId y Stop relee ficha/version y Estado", async (phase) => {
     const initial = { ...conversation(phase === "Generating" ? [message("u", "user"), message("a", "assistant", "Generating", "Parcial")] : [message("u", "user")]), activeTurnId: "durable-turn" };
     const hook = setup(state, false, initial);

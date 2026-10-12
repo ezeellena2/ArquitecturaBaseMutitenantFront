@@ -162,7 +162,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
   const detail = useQuery({
     queryKey: detailKey,
     staleTime: 0,
-    enabled: active && conversationId !== null,
+    enabled: active && conversationId !== null && state.data?.noticeAccepted === true,
     queryFn: ({ signal }) => readDetail(conversationId!, signal),
     refetchInterval: (query) => isAssistantConversationPending(query.state.data) ? 1_000 : false,
     meta: { blocksView: true, silent: true },

@@ -395,7 +395,7 @@ function AssistantSession(props: AssistantHomeProps) {
     ? runtime.error instanceof ApiError ? apiErrorMessage(runtime.error, t)
       : runtime.turn?.start ? null : assistantStreamErrorMessage(runtime.error, t) : null;
   const canViewUsage = scope.access === "business" ? props.hasPermission("assistant.configure") : scope.access === "platform" && props.hasPermission("platform.assistant.read");
-  const history = <ConversationList scope={scope} lifetime={operations.lifetime} enabled={operations.active} selectedId={selectedId} retentionDays={state.retentionDays} onNew={() => select(null)} onSelect={select} actions={actions}
+  const history = <ConversationList scope={scope} lifetime={operations.lifetime} enabled={operations.active && state.noticeAccepted && code !== "Assistant.Notice.AcceptanceRequired"} selectedId={selectedId} retentionDays={state.retentionDays} onNew={() => select(null)} onSelect={select} actions={actions}
     onRetentionInfo={() => { setHistoryOpen(false); setRetentionOpen(true); }}
     onActions={phone ? (conversation) => { setHistoryOpen(false); setPhoneActions({ title: conversation.title ?? null, items: actions(conversation) }); } : undefined} />;
   const composer = <><AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} pending={busy} canStop={runtime.canStop}

@@ -15,6 +15,7 @@ import { reloadResponse, responsesForAction } from "./test-e2e-real-whatsapp-act
 import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedLegalVersion, assertPublishedTerms, observeLegalTransition, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { runAssistantRealE2E } from "./test-e2e-real-assistant.mjs";
+import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
 import { chromium } from "playwright";
 
 // Esta prueba arranca su propio AppHost y un PostgreSQL efímero, fuera del volumen Development.
@@ -663,7 +664,11 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       const page = await context.newPage();
       await waitForAlive(context.request);
 
-      const signupEmail = `e2e-${randomUUID()}@example.test`;
+      const onlyCase = process.env.MT_E2E_ONLY_CASE;
+      const focusedAccessCases = onlyCase && onlyCase.split(",").every((term) => ["A1:", "A8:"].includes(term.trim()));
+      // A1/A8 necesitan la cuenta real ya creada por RealE2ESetup, sin repetir el recorrido inicial aprobado.
+      const signupEmail = focusedAccessCases ? businessEmail : `e2e-${randomUUID()}@example.test`;
+      if (!focusedAccessCases) {
       await page.goto(new URL("/registro", baseUrl).href);
       await page.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
       await page.getByRole("textbox", { name: "Correo electrónico" }).fill(signupEmail);
@@ -697,6 +702,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       await expectPath(page, "/", "cambio desde Perfiles");
       await expectProfile(page, "Personal", "cambio desde Perfiles");
       await signOut(page, "Personal");
+      }
 
 
       // Cada recorrido usa una identidad/contexto propios; un fallo no saltea los otros.
@@ -707,8 +713,10 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       const accountCases = [
         ["A8: sesiones antiguas abren ambas puertas y conservan Plataforma a 1440 y 390", async (platformPage, setStage) => {
           const person = await registerBusinessByEmail(platformPage, readyFile, setStage);
+          setStage("sale de la organización recién registrada para probar el operador antiguo");
           await signOut(platformPage, person.organizationName);
           await loginThroughUi(platformPage, operatorEmails.a8, "platform", setStage);
+          await acceptAssistantNoticeFromHome(platformPage, setStage);
           const publicPage = await platformPage.context().newPage();
           publicPage.setDefaultTimeout(30_000);
           try {
@@ -750,9 +758,11 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
                 await expectProfile(platformPage, "Plataforma", "descartar el legado conserva la cookie independiente");
                 await publicPage.setViewportSize({ width: 1440, height: 900 });
                 await expectProfile(publicPage, profile, "confirma la cuenta elegida después de ingresar");
+                setStage(`sale explícitamente del perfil ${door} a ${width}`);
                 await signOut(publicPage, profile);
               }
             }
+            setStage("sale de Plataforma después de conservar ambas puertas públicas");
             await signOut(platformPage, "Plataforma");
           } finally { await publicPage.close(); }
         }],
@@ -1147,6 +1157,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         ["A1: operador probado en ambas puertas sale del lado público y conserva Plataforma", async (platformPage, setStage) => {
           setStage("ingresa el operador a su sesión de Plataforma");
           await loginThroughUi(platformPage, operatorEmails["a1"], "platform", setStage);
+          await acceptAssistantNoticeFromHome(platformPage, setStage);
           await expectProfile(platformPage, "Plataforma", "operador en su cookie exclusiva");
           const publicPage = await platformPage.context().newPage();
           publicPage.setDefaultTimeout(30_000);
@@ -1222,7 +1233,9 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await expectProfile(publicPage, "Personal", "la salida permite usar otra cuenta");
             await platformPage.reload();
             await expectProfile(platformPage, "Plataforma", "operador y persona siguen conviviendo");
+            setStage("sale de la otra persona después de conservar la sesión independiente");
             await signOut(publicPage, "Personal");
+            setStage("sale explícitamente del operador de Plataforma");
             await signOut(platformPage, "Plataforma");
           } finally { await publicPage.close(); }
         }],
@@ -2363,7 +2376,6 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         }]),
 
       ];
-      const onlyCase = process.env.MT_E2E_ONLY_CASE;
       const selectedAccountCases = onlyCase
         ? accountCases.filter(([name]) => onlyCase.split(",").some((term) => name.includes(term.trim())))
         : accountCases;

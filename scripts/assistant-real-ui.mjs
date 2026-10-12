@@ -111,11 +111,20 @@ async function home(page, base, access, width) {
   await page.getByRole("heading", { name: "¿Qué querés consultar?", exact: true })
     .or(page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true })).first().waitFor();
 }
-async function acceptNotice(page) {
+/** Los focos de acceso esperan State por su UI y aceptan el aviso sólo con el botón visible. */
+export async function acceptAssistantNoticeFromHome(page, onStage = () => {}) {
+  const notice = page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true });
+  await notice.or(page.getByRole("heading", { name: "¿Qué querés consultar?", exact: true }))
+    .or(page.getByRole("heading", { name: "El asistente todavía no está configurado", exact: true })).first().waitFor();
+  await acceptNotice(page, onStage);
+}
+async function acceptNotice(page, onStage = () => {}) {
   const notice = page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true });
   if (await notice.isVisible()) {
+    onStage("acepta explícitamente el aviso del asistente por Entendido");
     await notice.getByRole("button", { name: "Entendido", exact: true }).click();
     await notice.waitFor({ state: "hidden" });
+    onStage("el aviso quedó aceptado antes de interactuar con el perfil");
   }
 }
 async function sendFromUi(page, text) {
