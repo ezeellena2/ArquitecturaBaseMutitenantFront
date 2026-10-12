@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, type QueryKey } from "@tanstack/react-query";
+import { useMutation, type MutationMeta, type QueryKey } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
 import { useController, useForm } from "react-hook-form";
@@ -30,6 +30,7 @@ export interface ReasonDialogProps<TData> {
   queryRoot: QueryKey;
   stateConflictCodes?: readonly string[];
   blockedReason?: ReactNode;
+  meta?: MutationMeta;
   date?: { initialValue?: string | null };
   mutationFn: (values: ReasonDialogValues) => Promise<TData>;
   onSuccess: (data: TData, values: ReasonDialogValues) => void | Promise<void>;
@@ -48,7 +49,7 @@ const serverFields: Record<string, keyof ReasonForm> = { reason: "reason", expir
 /** Confirmación con motivo de Plataforma (§11). Se monta sólo abierta. El caller recibe la respuesta original antes
  * del cierre: la versión de esa respuesta es la base siguiente, aunque la relectura de fondo tenga otra. */
 export function ReasonDialog<TData>({ title, description, confirmLabel, pendingLabel, destructive, onClose, returnFocusTo,
-  queryRoot, stateConflictCodes, blockedReason, date, mutationFn, onSuccess }: ReasonDialogProps<TData>) {
+  queryRoot, stateConflictCodes, blockedReason, meta, date, mutationFn, onSuccess }: ReasonDialogProps<TData>) {
   const { t } = useTranslation("common");
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const { failure, clear, fail, close } = useDialogFailure(onClose, queryRoot, stateConflictCodes);
@@ -65,6 +66,7 @@ export function ReasonDialog<TData>({ title, description, confirmLabel, pendingL
   }
 
   const action = useMutation({
+    meta,
     mutationFn: (values: ReasonDialogValues) => mutationFn(values),
     // El reintento del aviso global ejecuta este mismo éxito, también para acciones de cuenta que responden void.
     onSuccess: async (data, values) => { await onSuccess(data, values); close(); },

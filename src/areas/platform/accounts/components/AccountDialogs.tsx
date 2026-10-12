@@ -1,5 +1,6 @@
+import { useMountedRef } from "@/shared/hooks/useMountedRef";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
@@ -21,8 +22,7 @@ interface AccountOperation { id: string; action: AccountAction; reason: string }
 type Confirmation = AccountConfirmation;
 /** El POST y la relectura conservan un recorrido. La baja muestra la fecha del servidor. */
 export function AccountReasonDialog({ confirmation, blockedReason, onLastAdmin, onClose, onSuccess }: { confirmation: Confirmation; blockedReason?: string; onLastAdmin?: () => Promise<PlatformAccountDetailResponse | undefined>; onClose: () => void; onSuccess: (detail: PlatformAccountDetailResponse | undefined) => void }) {
-  const { t } = useTranslation("platformAccounts"); const active = useRef(true);
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
+  const { t } = useTranslation("platformAccounts"); const active = useMountedRef();
   const action = useIdempotentMutation(async (operation: AccountOperation, key) => {
     if (!active.current) throw new DOMException("", "AbortError");
     try {
@@ -66,8 +66,7 @@ export function AccountDeletionDialog({ confirmation, onClose, onSuccess }: { co
 }
 
 export function RevokeInvitationDialog({ confirmation, onClose, onSuccess }: { confirmation: Confirmation; onClose: () => void; onSuccess: () => void }) {
-  const { t } = useTranslation(["platformAccounts", "common"]); const active = useRef(true); const restoreFocus = useRestoreFocusOnClose(true, confirmation.trigger);
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
+  const { t } = useTranslation(["platformAccounts", "common"]); const active = useMountedRef(); const restoreFocus = useRestoreFocusOnClose(true, confirmation.trigger);
   const { failure, fail, clear, close } = useDialogFailure(onClose, accountsQueryRoot, accountStateConflictCodes);
   const revoke = useMutation({ mutationFn: async () => {
     if (!active.current) throw new DOMException("", "AbortError");

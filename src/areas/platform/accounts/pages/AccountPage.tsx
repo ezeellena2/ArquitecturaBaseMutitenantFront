@@ -1,16 +1,17 @@
-import { useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useId, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
-import { ApiError } from "@/shared/api/ApiError";
 import { isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
 import type { PlatformAccountDetailResponse, VersionResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useFormat } from "@/shared/format/useFormat";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
+import { useMountedRef } from "@/shared/hooks/useMountedRef";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
@@ -72,25 +73,22 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
   const { t } = useTranslation(["platformAccounts", "common"]); const { phone } = useAppChrome(); const format = useFormat(); const client = useQueryClient(); const navigate = useNavigate();
   const [tab, setTab] = useState(data.kind === "Operator" ? "permissions" : "methods");
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
-  const operationId = useId(); const active = useRef(true);
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
+  const operationId = useId(); const active = useMountedRef();
   const invitation = isOperatorInvitation(data); const operator = data.kind === "Operator"; const name = accountLabel(data, t);
   const mutable = !self && !["PendingDeletion", "Deleted"].includes(data.state);
   const canResend = mutable && canOperators && invitation;
-  useEffect(() => client.getMutationCache().subscribe((event) => {
-    if (!active.current || !canResend || event.type !== "updated" || event.action.type !== "error" || event.mutation.meta?.accountDetailResend !== operationId || !(event.mutation.state.error instanceof ApiError)) return;
-    const error = event.mutation.state.error; toastActionError(error, t);
+  const action = useResourceAction<{ id: string; name: string }>({
+    matches: (meta) => meta?.accountDetailResend === operationId,
+    isCurrent: () => canResend,
+    onError: (error) => {
+    toastActionError(error, t);
     if (accountStateConflictCodes.some((code) => code === error.code)) void client.invalidateQueries({ queryKey: accountsQueryRoot });
-  }), [canResend, client, operationId, t]);
-  const resend = useIdempotentMutation(async (operation: { id: string; name: string }, key) => {
-    if (!active.current || !canResend) throw new DOMException("", "AbortError");
-    try {
-      const response = await resendOperatorInvitation(operation.id, key);
-      if (!active.current || !canResend) throw new DOMException("", "AbortError");
-      toast.success(t("platformAccounts:messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); return response;
-    } catch (error) { if (!active.current || !canResend) throw new DOMException("", "AbortError"); throw error; }
-  }, { meta: { accountDetailResend: operationId }, sameOperation: (previous, next) => previous.id === next.id });
-  const busy = useIsMutating({ predicate: (mutation) => mutation.meta?.accountDetailResend === operationId }) > 0;
+    },
+  });
+  const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendOperatorInvitation(operation.id, key),
+    (_response, operation) => { toast.success(t("platformAccounts:messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); }),
+    { meta: { accountDetailResend: operationId }, sameOperation: (previous, next) => previous.id === next.id });
+  const busy = action.isPending;
   const accountActions: AccountAction[] = mutable && canManage && !operator && !invitation
     ? ["revoke-sessions", ...(data.state === "Suspended" ? ["reactivate"] as const : []), ...(["Active", "NeedsRecovery"].includes(data.state) ? ["suspend"] as const : [])] : [];
   function open(action: Confirmation["action"], trigger: HTMLElement | null) {

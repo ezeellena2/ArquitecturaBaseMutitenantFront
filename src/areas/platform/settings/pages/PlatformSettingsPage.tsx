@@ -1,10 +1,10 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery, useQueryClient, type Mutation, type MutationOptions } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useId, useMemo, useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { UNSAFE_DataRouterContext, UNSAFE_DataRouterStateContext } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
@@ -15,6 +15,8 @@ import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { MeResponse, PlatformSettingsResponse, VersionResponse } from "@/shared/api/types";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
+import { useMountedRef } from "@/shared/hooks/useMountedRef";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { ReasonDialog, type ReasonDialogValues } from "@/shared/platform/ReasonDialog";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
@@ -33,7 +35,7 @@ function settingsFormSchema(t: TFunction) {
   // Validación exacta del tablero Config-Plat; NumberField y EmailField normalizan la entrada.
   const email = z.string().nullable().refine((value) => value !== null && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value), t("platformSettings:validation.email"));
   return z.object({ consumerSignup: z.enum(["Open", "Closed"]), businessSignup: z.enum(["Open", "RequiresApproval", "Closed"]),
-    maxOwnedOrganizations: z.number().nullable().refine((value) => value !== null && Number.isInteger(value) && value >= 1 && value <= 50, t("platformSettings:validation.range")), salesEmail: email, supportEmail: email });
+    maxOwnedOrganizations: z.number().nullable().refine((value) => value !== null && Number.isInteger(value) && value >= validationConstraints.UpdatePlatformSettingsHttpRequest.maxOwnedOrganizations.minimum && value <= validationConstraints.UpdatePlatformSettingsHttpRequest.maxOwnedOrganizations.maximum, t("platformSettings:validation.range")), salesEmail: email, supportEmail: email });
 }
 type SettingsForm = z.infer<ReturnType<typeof settingsFormSchema>>;
 type SettingsConfirmation = { values: SettingsForm; version: number; draft: number; read: PlatformSettingsResponse };
@@ -65,23 +67,11 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
   const consumer = useController({ control: form.control, name: "consumerSignup" }); const business = useController({ control: form.control, name: "businessSignup" });
   const count = useController({ control: form.control, name: "maxOwnedOrganizations" }); const sales = useController({ control: form.control, name: "salesEmail" }); const support = useController({ control: form.control, name: "supportEmail" });
   const [failure, setFailure] = useState<unknown>(); const [confirmation, setConfirmation] = useState<SettingsConfirmation | null>(null); const [busy, setBusy] = useState(false);
-  const active = useRef(true); const draft = useRef(0); const choice = useRef<SettingsConfirmation | null>(null);
+  const active = useMountedRef(); const draft = useRef(0); const choice = useRef<SettingsConfirmation | null>(null);
   const ownRead = useRef<{ previous: PlatformSettingsResponse; saved: PlatformSettingsResponse } | null>(null);
-  const router = useContext(UNSAFE_DataRouterContext)?.router; const routerState = useContext(UNSAFE_DataRouterStateContext); const navigation = useRef(router);
-  const navigationBlocked = [...(routerState?.blockers.values() ?? [])].some((blocker) => blocker.state === "blocked");
-  const blocked = useCallback(() => [...(navigation.current?.state.blockers.values() ?? [])].some((blocker) => blocker.state === "blocked"), []);
-  const eligible = useCallback(() => active.current && !blocked() && navigation.current?.state.location.pathname === "/plataforma/configuracion"
-    && (client.getQueryData<MeResponse>(currentUserQueryKey)?.effectivePermissions.platform.includes("platform.settings.manage") ?? false), [blocked, client]);
+  function eligible(): boolean { return active.current && edit.canAct()
+    && (client.getQueryData<MeResponse>(currentUserQueryKey)?.effectivePermissions.platform.includes("platform.settings.manage") ?? false); }
   const abandon = useCallback(() => { draft.current++; choice.current = null; setConfirmation(null); setBusy(false); }, []);
-  useEffect(() => { active.current = true; return () => { active.current = false; choice.current = null; }; }, []);
-  useEffect(() => {
-    let wasBlocked = false;
-    return router?.subscribe((state) => {
-      const isBlocked = [...state.blockers.values()].some((blocker) => blocker.state === "blocked");
-      if (isBlocked && !wasBlocked) abandon();
-      wasBlocked = isBlocked;
-    });
-  }, [router, abandon]);
   const current = (sent: SettingsConfirmation) => eligible() && choice.current === sent && draft.current === sent.draft && sameValues(sent.values, form.getValues());
   const seeNew = async () => {
     if (!eligible()) return;
@@ -91,7 +81,7 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
     ownRead.current = null; resetTo(fresh); setFailure(undefined);
   };
   const isDirty = canManage && form.formState.isDirty;
-  const edit = useEditPage({ isDirty, error: failure, onSeeNew: () => { void seeNew(); }, onContinueEditing: () => { abandon(); setFailure(undefined); } });
+  const edit = useEditPage({ isDirty, error: failure, onNavigationAttempt: abandon, onSeeNew: () => { void seeNew(); }, onContinueEditing: () => { abandon(); setFailure(undefined); } });
 
   function changed(field: keyof SettingsForm) { abandon(); form.clearErrors(field); setFailure(undefined); }
   function discard() {
@@ -165,76 +155,31 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
         </SectionFields></Section>
       </form>
     </Page>
-    {confirmation && !navigationBlocked ? <SettingsReasonConfirmation confirmation={confirmation} current={() => current(confirmation)}
+    {confirmation && !edit.isBlocked ? <SettingsReasonConfirmation confirmation={confirmation} current={() => current(confirmation)}
       onClose={() => { if (choice.current === confirmation) abandon(); }} execute={(reason, reasonCurrent) => execute(confirmation, reason, reasonCurrent)} /> : null}
     {edit.leaveDialog}
   </>;
 }
 
-interface NativeCallbacks {
-  readonly valid: () => boolean;
-  original: MutationOptions<unknown, Error, unknown, unknown>;
-  guarded: MutationOptions<unknown, Error, unknown, unknown>;
-}
-
-// ReasonDialog conserva RHF y foco. Guardamos también sus callbacks nativos: un Retry abandonado sigue siendo
-// AbortError en MutationCache, pero no agrega una franja ni cierra la confirmación actual.
 function SettingsReasonConfirmation({ confirmation, current, onClose, execute }: { confirmation: SettingsConfirmation; current: () => boolean; onClose: () => void;
   execute: (reason: ReasonDialogValues, reasonCurrent: () => boolean) => Promise<VersionResponse> }) {
-  const { t } = useTranslation(["platformSettings", "common"]); const client = useQueryClient();
-  const active = useRef(true); const revision = useRef(0); const [reasonRevision, setReasonRevision] = useState(0);
+  const { t } = useTranslation(["platformSettings", "common"]);
+  const active = useMountedRef(); const revision = useRef(0); const [reasonRevision, setReasonRevision] = useState(0);
   const reasonValue = useRef(""); const submittedRevision = useRef<number | null>(null); const submission = useRef(0);
-  const bindings = useRef(new WeakMap<Mutation, NativeCallbacks>());
-  const protect = useCallback((mutation: Mutation) => {
-    const binding = bindings.current.get(mutation);
-    if (!binding) return;
-    const options = mutation.options;
-    if (options.onSuccess === binding.guarded.onSuccess && options.onError === binding.guarded.onError && options.onSettled === binding.guarded.onSettled) return;
-    binding.original = { ...options,
-      onSuccess: options.onSuccess === binding.guarded.onSuccess ? binding.original.onSuccess : options.onSuccess,
-      onError: options.onError === binding.guarded.onError ? binding.original.onError : options.onError,
-      onSettled: options.onSettled === binding.guarded.onSettled ? binding.original.onSettled : options.onSettled,
-    };
-    mutation.setOptions({ ...options, onSuccess: binding.guarded.onSuccess, onError: binding.guarded.onError, onSettled: binding.guarded.onSettled });
-  }, []);
-  function bind(values: ReasonDialogValues, valid: () => boolean) {
-    // Las variables son la identidad pública de esta ejecución de ReasonDialog; no se toca ninguna mutación ajena.
-    const mutation = client.getMutationCache().find({ predicate: (candidate) => candidate.state.variables === values });
-    if (!mutation) return undefined;
-    let binding = bindings.current.get(mutation);
-    if (!binding) {
-      const original = mutation.options;
-      const next: NativeCallbacks = { valid, original, guarded: {} };
-      next.guarded = {
-        onSuccess: (...args) => next.valid() ? next.original.onSuccess?.(...args) : undefined,
-        onError: (...args) => next.valid() ? next.original.onError?.(...args) : undefined,
-        onSettled: (...args) => next.valid() ? next.original.onSettled?.(...args) : undefined,
-      };
-      bindings.current.set(mutation, next); binding = next;
-    }
-    // El primer intento fija su dueño: Observer puede cambiar mutationFn, pero un Retry nunca adopta otro submit.
-    protect(mutation); return { mutation, valid: binding.valid };
-  }
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
-  useEffect(() => client.getMutationCache().subscribe((event) => {
-    // Observer.setOptions avisa antes de actualizar la mutación pendiente. Se protege después, sin alterar el observer.
-    if (event.type === "observerOptionsUpdated" && event.mutation) {
-      const mutation = event.mutation;
-      queueMicrotask(() => protect(mutation));
-    }
-  }), [client, protect]);
+  const operationId = useId();
+  const resource = useResourceAction<ReasonDialogValues>({ matches: (meta) => meta?.settingsReason === operationId });
   return <div onSubmitCapture={() => { submittedRevision.current = revision.current; submission.current++; }} onChangeCapture={(event) => {
     if (event.target instanceof HTMLTextAreaElement && event.target.name === "reason") { reasonValue.current = event.target.value.trim(); revision.current++; setReasonRevision(revision.current); }
   }}>
     <ReasonDialog title={t("platformSettings:confirmTitle")} description={t("platformSettings:confirmDescription")} confirmLabel={t("platformSettings:confirm")} pendingLabel={t("platformSettings:saving")}
-      queryRoot={platformSettingsKey} onClose={onClose} mutationFn={async (values) => {
+      queryRoot={platformSettingsKey} meta={{ settingsReason: operationId }} onClose={onClose} mutationFn={async (values) => {
         const sentRevision = submittedRevision.current; const sentSubmission = submission.current;
         const valid = () => active.current && current() && reasonRevision === revision.current && sentRevision === revision.current && sentSubmission === submission.current && values.reason === reasonValue.current;
-        const owner = bind(values, valid);
+        const owner = resource.bindCallbacks(values, valid);
         try {
           if (!owner) throw new DOMException("", "AbortError");
-          const response = await execute(values, owner.valid); protect(owner.mutation); return response;
-        } catch (error) { if (owner) protect(owner.mutation); throw error; }
+          const response = await execute(values, owner.valid); owner.protect(); return response;
+        } catch (error) { if (owner) owner.protect(); throw error; }
       }} onSuccess={() => {}}
       key={confirmation.draft} />
   </div>;

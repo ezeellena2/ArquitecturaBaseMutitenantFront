@@ -1,5 +1,6 @@
-import { useIsMutating, useQueryClient, type UseQueryResult } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useMountedRef } from "@/shared/hooks/useMountedRef";
+import { useQueryClient, type UseQueryResult } from "@tanstack/react-query";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
@@ -7,6 +8,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { OrganizationDomainResponse, PlatformTenantDetailResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { tenantDomainStatusTones } from "@/shared/format/statusTones";
 import { ReasonDialog } from "@/shared/platform/ReasonDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
@@ -60,37 +62,24 @@ function DomainActions({ organizationId, domain, editable, onWrite, onConflict, 
   onWrite: (domain: string, write: OwnDomainWrite) => void; onConflict: (domain: string) => void; onRemove: (confirmation: Confirmation) => void;
 }) {
   const { t } = useTranslation("platformTenants"); const client = useQueryClient();
-  const active = useRef(true);
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
-  useEffect(() => client.getMutationCache().subscribe((event) => {
-    // Sólo el evento final avisa: los intentos Request.InProgress siguen dentro del hook común.
-    if (!active.current || event.type !== "updated" || event.action.type !== "error"
-      || event.mutation.meta?.tenantDomainVerification !== true || event.mutation.meta.organizationId !== organizationId
-      || event.mutation.meta.domain !== domain.domain || !(event.mutation.state.error instanceof ApiError)) return;
-    const error = event.mutation.state.error;
+  const action = useResourceAction<VerifyOperation>({
+    matches: (meta) => meta?.tenantDomainVerification === true && meta.organizationId === organizationId && meta.domain === domain.domain,
+    onError: (error) => {
     toastActionError(error, t); if (conflicted(error)) { onConflict(domain.domain); void client.invalidateQueries({ queryKey: tenantsQueryRoot }); }
-  }), [client, domain.domain, organizationId, onConflict, t]);
-  const verify = useIdempotentMutation(async (operation: VerifyOperation, key) => {
-    if (!active.current) throw new DOMException("", "AbortError");
-    try {
-      const response = await verifyTenantDomain(operation.id, operation.domain, { version: operation.version, reason: operation.reason }, key);
-      if (!active.current) throw new DOMException("", "AbortError");
+    },
+  });
+  const verify = useIdempotentMutation(action.guarded((operation, key: string) => verifyTenantDomain(operation.id, operation.domain, { version: operation.version, reason: operation.reason }, key),
+    (response, operation) => {
       // MutationCache puede ejecutar un retry después de que otro envío retiró su observer.
       onWrite(operation.domain, { version: response.version, status: "Verified" });
       client.setQueryData<OrganizationDomainResponse[]>(tenantDomainsQueryKey(operation.id), (data) => data?.map((item) => item.domain === operation.domain ? { ...item, version: response.version, status: "Verified", txtRecordName: null, txtRecordValue: null } : item));
       toast.success(t("domains.verified", { domain: operation.domain })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
-      return response;
-    } catch (error) {
-      if (!active.current) throw new DOMException("", "AbortError");
-      throw error;
-    }
-  }, {
+    }), {
     meta: { tenantDomainVerification: true, organizationId, domain: domain.domain },
     sameOperation: (previous, next) => previous.id === next.id && previous.domain === next.domain && previous.version === next.version && previous.reason === next.reason,
   });
   const verifyDomain = () => verify.mutate({ id: organizationId, domain: domain.domain, version: domain.version, reason: t("domains.verifyReason") });
-  const verifying = useIsMutating({ predicate: (mutation) => mutation.meta?.tenantDomainVerification === true
-    && mutation.meta.organizationId === organizationId && mutation.meta.domain === domain.domain }) > 0;
+  const verifying = action.isPending;
   return <RowActions label={t("rowActions", { name: domain.domain })} title={domain.domain} actions={[
     { label: t("domains.verify"), accessibleName: t("domains.verify"), icon: CircleCheckIcon, hidden: !editable || domain.status !== "Pending" || verifying, onSelect: verifyDomain },
     { label: t("domains.remove"), accessibleName: t("domains.remove"), icon: TrashIcon, destructive: true, hidden: !editable || verifying, onSelect: (trigger) => onRemove({ domain, trigger }) },
@@ -101,8 +90,7 @@ function DomainReasonDialog({ organization, confirmation, onClose, onSuccess }: 
   organization: PlatformTenantDetailResponse; confirmation: Confirmation; onClose: (conflicted: boolean) => void; onSuccess: () => void;
 }) {
   const { t } = useTranslation("platformTenants"); const conflict = useRef(false);
-  const active = useRef(true);
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
+  const active = useMountedRef();
   return <ReasonDialog title={t("domains.confirm.title", { domain: confirmation.domain.domain })} description={t("domains.confirm.description", { name: organization.name })}
     confirmLabel={t("domains.remove")} pendingLabel={t("domains.confirm.pending")} destructive returnFocusTo={confirmation.trigger} queryRoot={tenantsQueryRoot}
     stateConflictCodes={conflicts} onClose={() => onClose(conflict.current)} mutationFn={async (values) => {

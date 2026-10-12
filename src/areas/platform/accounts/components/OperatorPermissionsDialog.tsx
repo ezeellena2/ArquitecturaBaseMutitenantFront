@@ -1,16 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useIsMutating, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { platformPermissions } from "@/auth/usePermissions";
-import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { ChangePlatformOperatorRequest, PlatformAccountDetailResponse, VersionResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { orderLike } from "@/shared/lib/orderLike";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
@@ -30,37 +29,27 @@ export function OperatorPermissionsDialog({ account, returnFocusTo, onClose, onS
   account: PlatformAccountDetailResponse; returnFocusTo: HTMLElement | null; onClose: (conflicted: boolean) => void;
   onSaved: (response: VersionResponse, permissions: string[]) => void;
 }) {
-  const { t } = useTranslation(["platformAccounts", "common"]); const client = useQueryClient();
-  const operationId = useId(); const active = useRef(true); const conflict = useRef(false); const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
+  const { t } = useTranslation(["platformAccounts", "common"]);
+  const operationId = useId(); const conflict = useRef(false); const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const schema = useMemo(() => z.object({ permissions: z.array(z.string()), reason: z.string().trim().min(1, t("common:reasonDialog.reasonRequired")) }), [t]);
   const initial = account.operatorPermissions ?? [];
   const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: { permissions: initial, reason: "" } });
   const { getValues, setError } = form; const permissions = useController({ control: form.control, name: "permissions" });
   const [failure, setFailure] = useState<unknown>(); const close = () => onClose(conflict.current);
   const matches = (request: ChangePlatformOperatorRequest) => sameRequest(request, { ...getValues(), reason: getValues().reason.trim(), version: account.operatorVersion });
-  useEffect(() => client.getMutationCache().subscribe((event) => {
-    if (!active.current || event.type !== "updated" || event.action.type !== "error" || event.mutation.meta?.operatorPermissions !== operationId) return;
-    const request = event.mutation.state.variables as ChangePlatformOperatorRequest | undefined;
-    if (!request || !sameRequest(request, { ...getValues(), reason: getValues().reason.trim(), version: account.operatorVersion })) return;
-    const error = event.mutation.state.error; if (!(error instanceof ApiError)) return;
+  const action = useResourceAction<ChangePlatformOperatorRequest>({
+    matches: (meta) => meta?.operatorPermissions === operationId,
+    isCurrent: matches,
+    onError: (error) => {
     if (error.code === "General.ConcurrencyConflict") conflict.current = true;
     if (applyApiErrorToForm(error, setError, { permissions: "permissions", reason: "reason" })) return;
     const rejected = operatorInvitationError(error, t);
     if (rejected?.field === "permissions") setError("permissions", { type: "server", message: rejected.message }); else setFailure(error);
-  }), [account.operatorVersion, client, getValues, operationId, setError, t]);
-  const save = useIdempotentMutation(async (request: ChangePlatformOperatorRequest, key) => {
-    if (!active.current || !matches(request)) throw new DOMException("", "AbortError");
-    try {
-      const response = await changeOperatorPermissions(account.id, request, key);
-      if (!active.current || !matches(request)) throw new DOMException("", "AbortError");
-      onSaved(response, request.permissions ?? []); onClose(false); return response;
-    } catch (error) {
-      if (!active.current || !matches(request)) throw new DOMException("", "AbortError");
-      throw error;
-    }
-  }, { meta: { operatorPermissions: operationId }, sameOperation: sameRequest });
-  const busy = useIsMutating({ predicate: (mutation) => mutation.meta?.operatorPermissions === operationId }) > 0;
+    },
+  });
+  const save = useIdempotentMutation(action.guarded((request, key: string) => changeOperatorPermissions(account.id, request, key),
+    (response, request) => { onSaved(response, request.permissions ?? []); onClose(false); }), { meta: { operatorPermissions: operationId }, sameOperation: sameRequest });
+  const busy = action.isPending;
   const submit = form.handleSubmit((values) => { setFailure(undefined); save.mutate({ ...values, version: account.operatorVersion }); });
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}><DialogContent onCloseAutoFocus={restoreFocus}>
     <DialogHeader><DialogTitle>{t("platformAccounts:operator.changeTitle", { name: accountLabel(account, t) })}</DialogTitle></DialogHeader>

@@ -29,6 +29,14 @@ async function send(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe("Configuración de Plataforma", () => {
+  it("guarda desde una dirección con barra final, sin comparar la ruta a mano", async () => {
+    const user = userEvent.setup(); renderRouteWithProviders("/plataforma/configuracion/", { as: "platform-operator" });
+    await screen.findByRole("textbox", { name: "Correo de ventas" });
+    change("Correo de ventas", "nuevo@ejemplo.com");
+    await send(user);
+    expect(await screen.findByText("Guardamos la configuración.")).toBeVisible();
+    expect(screen.getByRole("textbox", { name: "Correo de ventas" })).toHaveValue("nuevo@ejemplo.com");
+  });
   it("lo guardado, cinco campos, dos Sections, Guardar apagado, descarte y axe", async () => {
     const user = userEvent.setup(); const { container } = renderRouteWithProviders("/plataforma/configuracion", { as: "platform-operator" });
     expect(await screen.findByRole("textbox", { name: "Correo de ventas" })).toHaveValue("ventas@ejemplo.com");

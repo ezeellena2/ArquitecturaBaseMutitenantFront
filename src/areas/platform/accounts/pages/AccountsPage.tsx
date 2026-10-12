@@ -1,17 +1,17 @@
-import { keepPreviousData, useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Power, RotateCw, Trash2 } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
-import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { PlatformAccountDetailResponse, PlatformAccountKind, PlatformAccountResponse, PlatformAccountState } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useFormat } from "@/shared/format/useFormat";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { Button } from "@/shared/ui/button";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { FilterBar } from "@/shared/ui/FilterBar";
@@ -34,27 +34,20 @@ const states: readonly (PlatformAccountState | undefined)[] = [undefined, "Activ
 /** El hook vive por cuenta: Retry A funciona aunque otro envío haya retirado su observer. */
 function AccountActions({ account, self, canManage, canInvite, route, onConfirm }: { account: PlatformAccountResponse; self: boolean; canManage: boolean; canInvite: boolean; route: string; onConfirm: (confirmation: Confirmation) => void }) {
   const { t } = useTranslation("platformAccounts"); const client = useQueryClient(); const invitation = isOperatorInvitation(account);
-  const operationId = useId(); const active = useRef(true);
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
+  const operationId = useId();
   const allowed = !self && canInvite && invitation;
-  useEffect(() => client.getMutationCache().subscribe((event) => {
-    if (!active.current || !allowed || event.type !== "updated" || event.action.type !== "error" || event.mutation.meta?.operatorResend !== operationId || !(event.mutation.state.error instanceof ApiError)) return;
-    const error = event.mutation.state.error;
+  const action = useResourceAction<{ id: string; name: string }>({
+    matches: (meta) => meta?.operatorResend === operationId,
+    isCurrent: () => allowed,
+    onError: (error) => {
     toastActionError(error, t);
     if (error.code === "General.ConcurrencyConflict" || accountStateConflictCodes.some((code) => code === error.code)) void client.invalidateQueries({ queryKey: accountsQueryRoot });
-  }), [allowed, client, operationId, t]);
-  const resend = useIdempotentMutation(async (operation: { id: string; name: string }, key) => {
-    if (!active.current || !allowed) throw new DOMException("", "AbortError");
-    try {
-      const response = await resendOperatorInvitation(operation.id, key);
-      if (!active.current || !allowed) throw new DOMException("", "AbortError");
-      toast.success(t("messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); return response;
-    } catch (error) {
-      if (!active.current || !allowed) throw new DOMException("", "AbortError");
-      throw error;
-    }
-  }, { meta: { operatorResend: operationId }, sameOperation: (previous, next) => previous.id === next.id });
-  const busy = useIsMutating({ predicate: (mutation) => mutation.meta?.operatorResend === operationId }) > 0;
+    },
+  });
+  const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendOperatorInvitation(operation.id, key),
+    (_response, operation) => { toast.success(t("messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); }),
+    { meta: { operatorResend: operationId }, sameOperation: (previous, next) => previous.id === next.id });
+  const busy = action.isPending;
   if (self || account.state === "PendingDeletion" || account.state === "Deleted") return null;
   const confirm = (action: Confirmation["action"], trigger: HTMLElement | null) => onConfirm({ account, action, trigger, route });
   return <RowActions label={t("rowActions", { name: accountLabel(account, t) })} title={accountLabel(account, t)} actions={[

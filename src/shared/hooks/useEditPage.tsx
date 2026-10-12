@@ -8,7 +8,7 @@ import { Banner } from "@/shared/ui/Banner";
 import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { AlertCircleIcon } from "@/shared/ui/icons";
-import { useUnsavedChangesGuard } from "./useUnsavedChangesGuard";
+import { useAbandonOnLeave } from "./useAbandonOnLeave";
 
 export interface EditPageOptions {
   /** Retira operaciones del editor al intentar salir, aunque la guarda frene la navegación. */
@@ -29,6 +29,8 @@ export interface EditPageOptions {
 
 export interface EditPage {
   readonly isBlocked: boolean;
+  /** Comprueba la salida en curso dentro de callbacks y respuestas tardías, sin APIs internas del router. */
+  readonly canAct: () => boolean;
   /** El cartel del 409 `General.ConcurrencyConflict`, para el `banner` de `Page`; en el teléfono, también la banda del
    * error de guardado, debajo de la barra (M-Usuario y M-Pagina-Org, v106). */
   readonly banner: ReactNode;
@@ -49,12 +51,13 @@ export interface EditPage {
 export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, errorMessage, searchKeys, onNavigationAttempt }: EditPageOptions): EditPage {
   const { t } = useTranslation("errors");
   const { phone } = useAppChrome();
-  const guard = useUnsavedChangesGuard(isDirty, searchKeys, onNavigationAttempt);
+  const guard = useAbandonOnLeave(isDirty, searchKeys, onNavigationAttempt);
   const conflict = error instanceof ApiError && error.code === "General.ConcurrencyConflict";
   const message = conflict ? null : errorMessage ? errorMessage(error) : actionErrorMessage(error, t);
 
   return {
     isBlocked: guard.isBlocked,
+    canAct: guard.canAct,
     banner: <>
       <ConcurrencyBanner error={error} isDirty={isDirty} onSeeNew={onSeeNew} onContinueEditing={onContinueEditing} />
       {/* Tableros M-Usuario y M-Pagina-Org («Error al guardar»): en el teléfono, el error con el texto del back va en la

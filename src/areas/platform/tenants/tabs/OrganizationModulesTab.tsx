@@ -1,5 +1,6 @@
+import { useMountedRef } from "@/shared/hooks/useMountedRef";
 import { useQueryClient, type UseQueryResult } from "@tanstack/react-query";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
@@ -102,8 +103,7 @@ function ModuleReasonDialog({ organization, moduleLabel, confirmation, onClose, 
   organization: PlatformTenantDetailResponse; moduleLabel: string; confirmation: Confirmation; onClose: (conflicted: boolean) => void; onSuccess: (write: OwnFeatureWrite) => void;
 }) {
   const { t } = useTranslation("platformTenants"); const conflict = useRef(false);
-  const active = useRef(true);
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
+  const active = useMountedRef();
   const { feature, action } = confirmation;
   return <ReasonDialog title={t(`modules.confirm.${action}.title`, { module: moduleLabel })} description={t(`modules.confirm.${action}.description`, { name: organization.name })}
     confirmLabel={t(`modules.actions.${action}`)} pendingLabel={t(`modules.confirm.${action}.pending`)} destructive={action === "disable"}

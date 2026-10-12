@@ -1,18 +1,18 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useIsMutating, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 import { platformPermissions } from "@/auth/usePermissions";
-import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { InvitePlatformOperatorRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { EmailField } from "@/shared/ui/fields/EmailField";
@@ -33,9 +33,8 @@ function sameInvitation(previous: InvitePlatformOperatorRequest, next: InvitePla
     && (previous.permissions ?? []).every((permission, index) => permission === next.permissions?.[index]);
 }
 export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => void; onInvited: () => Promise<unknown> }) {
-  const { t } = useTranslation(["platformAccounts", "common"]); const client = useQueryClient();
-  const operationId = useId(); const active = useRef(true); const restoreFocus = useRestoreFocusOnClose();
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
+  const { t } = useTranslation(["platformAccounts", "common"]);
+  const operationId = useId(); const restoreFocus = useRestoreFocusOnClose();
   const schema = useMemo(() => inviteSchema(t), [t]);
   const form = useForm<InviteForm>({ resolver: zodResolver(schema), defaultValues: { email: "", permissions: [] } });
   const { getValues, setError } = form;
@@ -46,29 +45,19 @@ export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => vo
     return sameInvitation(request, { email: current.email.trim().toLowerCase(), permissions: current.permissions });
   };
   const [failure, setFailure] = useState<unknown>();
-  useEffect(() => client.getMutationCache().subscribe((event) => {
-    if (!active.current || event.type !== "updated" || event.action.type !== "error" || event.mutation.meta?.operatorInvite !== operationId) return;
-    const request = event.mutation.state.variables as InvitePlatformOperatorRequest | undefined;
-    const current = getValues();
-    if (!request || !sameInvitation(request, { email: current.email.trim().toLowerCase(), permissions: current.permissions })) return;
-    const error = event.mutation.state.error;
-    if (!(error instanceof ApiError)) return;
+  const action = useResourceAction<InvitePlatformOperatorRequest>({
+    matches: (meta) => meta?.operatorInvite === operationId,
+    isCurrent: matchesDraft,
+    onError: (error) => {
     if (applyApiErrorToForm(error, setError, serverFields)) return;
     const rejected = operatorInvitationError(error, t);
     if (rejected) setError(rejected.field, { type: "server", message: rejected.message }); else setFailure(error);
-  }), [client, getValues, operationId, setError, t]);
-  const invite = useIdempotentMutation(async (request: InvitePlatformOperatorRequest, key) => {
-    if (!active.current || !matchesDraft(request)) throw new DOMException("", "AbortError");
-    try {
-      const response = await inviteOperator(request, key);
-      if (!active.current || !matchesDraft(request)) throw new DOMException("", "AbortError");
-      toast.success(t("platformAccounts:messages.invited", { email: request.email })); onClose(); void onInvited(); return response;
-    } catch (error) {
-      if (!active.current || !matchesDraft(request)) throw new DOMException("", "AbortError");
-      throw error;
-    }
-  }, { meta: { operatorInvite: operationId }, sameOperation: sameInvitation });
-  const busy = useIsMutating({ predicate: (mutation) => mutation.meta?.operatorInvite === operationId }) > 0;
+    },
+  });
+  const invite = useIdempotentMutation(action.guarded((request, key: string) => inviteOperator(request, key),
+    (_response, request) => { toast.success(t("platformAccounts:messages.invited", { email: request.email })); onClose(); void onInvited(); }),
+    { meta: { operatorInvite: operationId }, sameOperation: sameInvitation });
+  const busy = action.isPending;
   const clear = (field: keyof InviteForm) => { form.clearErrors(field); setFailure(undefined); };
   const submit = form.handleSubmit((values) => { setFailure(undefined); invite.mutate(values); });
   return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent onCloseAutoFocus={restoreFocus}>
@@ -76,7 +65,7 @@ export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => vo
     <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
       <DialogBody>
         <FormField label={t("platformAccounts:invite.email")} required error={form.formState.errors.email?.message}>
-          <EmailField name={emailName} ref={emailRef} value={emailValue} onBlur={emailBlur} onChange={(value) => { emailChange(value ?? ""); clear("email"); }} maxLength={254} disabled={busy} />
+          <EmailField name={emailName} ref={emailRef} value={emailValue} onBlur={emailBlur} onChange={(value) => { emailChange(value ?? ""); clear("email"); }} maxLength={validationConstraints.InvitePlatformOperatorHttpRequest.email.maxLength} disabled={busy} />
         </FormField>
         <FormField label={t("platformAccounts:invite.permissions")} error={form.formState.errors.permissions?.message}>
           <MultiSelect options={platformPermissions.map((value) => ({ value, label: t(`platformAccounts:permissions.${value}.name`), description: t(`platformAccounts:permissions.${value}.description`) }))}

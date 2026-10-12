@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useMountedRef } from "@/shared/hooks/useMountedRef";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ApiError } from "@/shared/api/ApiError";
 import type { PlatformAccountDetailResponse } from "@/shared/api/types";
@@ -12,8 +13,7 @@ import { accountStateConflictCodes } from "../errors";
 export function RemoveOperatorDialog({ account, returnFocusTo, onClose, onRemoved }: {
   account: PlatformAccountDetailResponse; returnFocusTo: HTMLElement | null; onClose: (conflicted: boolean) => void; onRemoved: () => void;
 }) {
-  const { t } = useTranslation("platformAccounts"); const active = useRef(true); const conflict = useRef(false);
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
+  const { t } = useTranslation("platformAccounts"); const active = useMountedRef(); const conflict = useRef(false);
   const remove = useIdempotentMutation(async (operation: { version: number | null | undefined; reason: string }, key) => {
     if (!active.current) throw new DOMException("", "AbortError");
     try {

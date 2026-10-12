@@ -1,11 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useIsMutating, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { RecoveryMethodText } from "./RecoveryMethodText";
 import { z } from "zod";
-import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { PlatformRecoveryResponse, VersionResponse } from "@/shared/api/types";
@@ -13,6 +11,7 @@ import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useFormat } from "@/shared/format/useFormat";
 import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
@@ -48,37 +47,28 @@ function RecoveryMutationOwner({ operation, operationId, execute }: {
 export function ReviewRecoveryDialog({ recovery, returnFocusTo, onClose, onResolved }: {
   recovery: PlatformRecoveryResponse; returnFocusTo: HTMLElement | null; onClose: () => void; onResolved: (response: VersionResponse, operation: RecoveryOperation) => void;
 }) {
-  const { t } = useTranslation(["platformRecoveries", "common"]); const format = useFormat(); const { phone } = useAppChrome(); const client = useQueryClient();
-  const operationId = useId(); const active = useRef(true); const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
+  const { t } = useTranslation(["platformRecoveries", "common"]); const format = useFormat(); const { phone } = useAppChrome();
+  const operationId = useId(); const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const [submittedAction, setSubmittedAction] = useState<RecoveryAction | null>(null);
   const [operation, setOperation] = useState<RecoveryOperation | null>(null);
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
   const pending = recovery.status === "Pending"; const hasAccount = Boolean(recovery.accountId); const base = useRef(recovery.version); const draft = useRef(0); const choice = useRef<RecoveryAction | null>(null);
   const schema = useMemo(() => z.object({ reason: z.string().trim().min(1, t("common:reasonDialog.reasonRequired")) }), [t]);
   const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: { reason: "" }, reValidateMode: "onSubmit" });
   const { getValues, setError } = form; const { failure, fail, clear, close } = useDialogFailure(onClose, recoveriesQueryRoot, recoveryStateConflictCodes);
-  const current = useCallback((operation: RecoveryOperation) => active.current && pending && operation.id === recovery.id && operation.version === base.current && operation.draft === draft.current && operation.action === choice.current && operation.reason === getValues().reason.trim() && (operation.action === "reject" || hasAccount), [pending, recovery.id, getValues, hasAccount]);
-  useEffect(() => client.getMutationCache().subscribe((event) => {
-    if (event.type !== "updated" || event.action.type !== "error" || event.mutation.meta?.recoveryReview !== operationId) return;
-    const operation = event.mutation.state.variables as RecoveryOperation | undefined;
-    const error = event.mutation.state.error;
-    if (!operation || !current(operation) || !(error instanceof ApiError)) return;
+  const current = useCallback((operation: RecoveryOperation) => pending && operation.id === recovery.id && operation.version === base.current && operation.draft === draft.current && operation.action === choice.current && operation.reason === getValues().reason.trim() && (operation.action === "reject" || hasAccount), [pending, recovery.id, getValues, hasAccount]);
+  const action = useResourceAction<RecoveryOperation>({
+    matches: (meta) => meta?.recoveryReview === operationId,
+    isCurrent: current,
+    onError: (error) => {
     if (applyApiErrorToForm(error, setError, { reason: "reason" })) return;
     fail(recoveryActionError(error, t));
-  }), [client, operationId, current, setError, t, fail]);
-  const execute = async (operation: RecoveryOperation, key: string) => {
-    if (!current(operation)) throw new DOMException("", "AbortError");
+    },
+  });
+  const execute = (operation: RecoveryOperation, key: string) => action.run(operation, async () => {
     setSubmittedAction(operation.action);
-    try {
-      const response = await changeRecovery(operation.id, operation.action, { version: operation.version, reason: operation.reason }, key);
-      if (!current(operation)) throw new DOMException("", "AbortError");
-      base.current = response.version; onResolved(response, operation); onClose(); return response;
-    } catch (error) {
-      if (!current(operation)) throw new DOMException("", "AbortError");
-      throw error;
-    }
-  };
-  const busy = useIsMutating({ predicate: (mutation) => mutation.meta?.recoveryReview === operationId }) > 0;
+    return changeRecovery(operation.id, operation.action, { version: operation.version, reason: operation.reason }, key);
+  }, (response, sent) => { base.current = response.version; onResolved(response, sent); onClose(); });
+  const busy = action.isPending;
   const submit = (action: RecoveryAction) => form.handleSubmit((values) => {
     if (!pending || (action === "approve" && !hasAccount)) return;
     if (choice.current && choice.current !== action) draft.current++;

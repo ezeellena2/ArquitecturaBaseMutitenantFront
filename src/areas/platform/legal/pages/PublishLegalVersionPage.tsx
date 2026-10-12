@@ -1,19 +1,21 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useId, useMemo, useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { UNSAFE_DataRouterContext, UNSAFE_DataRouterStateContext, useNavigate, useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
-import { ApiError } from "@/shared/api/ApiError";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { LegalDocumentKind, PlatformLegalDocumentGroupResponse } from "@/shared/api/types";
 import { useFormat } from "@/shared/format/useFormat";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
+import { useMountedRef } from "@/shared/hooks/useMountedRef";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { enabledOptions, type CultureReference } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { Banner } from "@/shared/ui/Banner";
@@ -32,8 +34,7 @@ import { legalErrorField } from "../errors";
 import { samePublication, type LegalPublicationOperation } from "../lib/legalPublication";
 import { nextVersion } from "../lib/legalVersions";
 
-// TextLimits.LegalDocument del productor real; el schema OpenAPI aún no publica el maxLength de ChildRules.
-const legalDocumentMaxLength = 100_000;
+const legalDocumentMaxLength = validationConstraints.LegalDocumentContentHttpRequest.text.maxLength;
 function contentLabel(culture: CultureReference, t: TFunction) {
   return culture.languageCode === "es" ? t("platformLegal:fields.es") : culture.languageCode === "en" ? t("platformLegal:fields.en") : t("platformLegal:fields.other", { culture: culture.name });
 }
@@ -67,76 +68,53 @@ function LegalVersionEditor({ initialKind, cultures, documents }: { initialKind:
   const { form } = useEditForm<undefined, LegalForm, LegalForm>({ read: undefined, toValues: () => ({ kind: initialKind, effectiveOn: null, dateValid: true, contents: cultures.map((culture) => ({ culture: culture.code, text: "" })) }), resolver: zodResolver(schema), reValidateMode: "onSubmit" });
   const kind = useController({ control: form.control, name: "kind" }); const date = useController({ control: form.control, name: "effectiveOn" });
   const [failure, setFailure] = useState<unknown>(); const [confirmation, setConfirmation] = useState<LegalPublicationOperation | null>(null); const [operation, setOperation] = useState<LegalPublicationOperation | null>(null);
-  const operationId = useId(); const active = useRef(true); const draft = useRef(0); const choice = useRef(false);
-  // useEditPage conserva el único blocker. Leemos su estado del router para coordinar los dos diálogos, sin props de React.
-  const router = useContext(UNSAFE_DataRouterContext)?.router;
-  const routerState = useContext(UNSAFE_DataRouterStateContext);
-  const navigationBlocked = [...(routerState?.blockers.values() ?? [])].some((blocker) => blocker.state === "blocked");
-  const navigation = useRef(router);
-  // La referencia al router es estable; state es el actual incluso dentro del execute de un dueño anterior.
-  const blocked = useCallback(() => [...(navigation.current?.state.blockers.values() ?? [])].some((blocker) => blocker.state === "blocked"), []);
-  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
-  const edit = useEditPage({ isDirty: form.formState.isDirty, error: failure, onSeeNew: () => { setFailure(undefined); }, onContinueEditing: () => setFailure(undefined) });
+  const operationId = useId(); const active = useMountedRef(); const draft = useRef(0); const choice = useRef(false);
+  const abandon = useCallback(() => { draft.current++; choice.current = false; setOperation(null); setConfirmation(null); setFailure(undefined); }, []);
+  const edit = useEditPage({ isDirty: form.formState.isDirty, error: failure, onNavigationAttempt: abandon, onSeeNew: () => { setFailure(undefined); }, onContinueEditing: () => setFailure(undefined) });
+  const { canAct } = edit;
   const current = useCallback((sent: LegalPublicationOperation) => {
     const values = form.getValues();
-    return active.current && !blocked() && choice.current && samePublication(sent, { kind: values.kind, effectiveOn: values.effectiveOn ?? "", contents: values.contents, draft: draft.current });
-  }, [form, blocked]);
-  const abandon = useCallback(() => { draft.current++; choice.current = false; setOperation(null); setConfirmation(null); setFailure(undefined); }, []);
-  useEffect(() => {
-    let wasBlocked = false;
-    return router?.subscribe((state) => {
-      const isBlocked = [...state.blockers.values()].some((blocker) => blocker.state === "blocked");
-      if (isBlocked && !wasBlocked) abandon();
-      wasBlocked = isBlocked;
-    });
-  }, [router, abandon]);
+    return active.current && canAct() && choice.current && samePublication(sent, { kind: values.kind, effectiveOn: values.effectiveOn ?? "", contents: values.contents, draft: draft.current });
+  }, [form, active, canAct]);
   const { setError } = form;
-  useEffect(() => client.getMutationCache().subscribe((event) => {
-    if (event.type !== "updated" || event.action.type !== "error" || event.mutation.meta?.legalPublication !== operationId) return;
-    const sent = event.mutation.state.variables as LegalPublicationOperation | undefined; const error = event.mutation.state.error;
-    if (!sent || !current(sent) || !(error instanceof ApiError)) return;
+  const action = useResourceAction<LegalPublicationOperation>({
+    matches: (meta) => meta?.legalPublication === operationId,
+    isCurrent: current,
+    onError: (error, sent) => {
     setConfirmation(null);
     const fields: Record<string, "kind" | "effectiveOn" | `contents.${number}.text`> = { kind: "kind", effectiveOn: "effectiveOn" };
     sent.contents.forEach((_content, index) => { fields[`contents[${index}].text`] = `contents.${index}.text`; fields[`contents[${index}].Text`] = `contents.${index}.text`; });
     if (applyApiErrorToForm(error, setError, fields)) return;
     const field = legalErrorField(error);
     if (field) setError(field, { type: "server", message: error.detail ?? "" }); else setFailure(error);
-  }), [client, operationId, current, setError]);
-  const busy = useIsMutating({ predicate: (mutation) => {
-    const sent = mutation.state.variables as LegalPublicationOperation | undefined;
-    return mutation.meta?.legalPublication === operationId && !!sent && current(sent);
-  } }) > 0;
+    },
+  });
+  const busy = action.isPending;
   const number = nextVersion(documents.find((document) => document.kind === kind.field.value));
   const name = t(`enums:LegalDocumentKind.${kind.field.value}`);
-  const execute = async (sent: LegalPublicationOperation, key: string) => {
-    if (!current(sent)) throw new DOMException("", "AbortError");
-    try {
-      const response = await publishLegalDocument({ kind: sent.kind, effectiveOn: sent.effectiveOn, contents: sent.contents }, key);
-      if (!current(sent)) throw new DOMException("", "AbortError");
+  const execute = (sent: LegalPublicationOperation, key: string) => action.run(sent,
+    () => publishLegalDocument({ kind: sent.kind, effectiveOn: sent.effectiveOn, contents: sent.contents }, key),
+    (response) => {
       toast.success(t("platformLegal:published", { version: format.formatInteger(response.version), name: t(`enums:LegalDocumentKind.${sent.kind}`) }));
-      choice.current = false; active.current = false; form.reset(); edit.allowNextNavigation(); void navigate("/plataforma/legales");
-      void client.invalidateQueries({ queryKey: legalDocumentsQueryKey }); return response;
-    } catch (error) {
-      if (!current(sent)) throw new DOMException("", "AbortError");
-      throw error;
-    }
-  };
+      choice.current = false; form.reset(); edit.allowNextNavigation(); void navigate("/plataforma/legales");
+      void client.invalidateQueries({ queryKey: legalDocumentsQueryKey });
+    });
   function submit(event: React.FormEvent<HTMLFormElement>) {
     const submittedDraft = draft.current;
     return form.handleSubmit((values) => {
-      if (!active.current || blocked() || draft.current !== submittedDraft || !values.effectiveOn) return;
+      if (!active.current || !edit.canAct() || draft.current !== submittedDraft || !values.effectiveOn) return;
       setFailure(undefined); setConfirmation({ kind: values.kind, effectiveOn: values.effectiveOn, contents: values.contents, draft: submittedDraft });
     })(event);
   }
   const confirm = () => {
     const values = form.getValues();
-    if (!confirmation || busy || !active.current || blocked() || !samePublication(confirmation, { kind: values.kind, effectiveOn: values.effectiveOn ?? "", contents: values.contents, draft: draft.current })) return;
+    if (!confirmation || busy || !active.current || !edit.canAct() || !samePublication(confirmation, { kind: values.kind, effectiveOn: values.effectiveOn ?? "", contents: values.contents, draft: draft.current })) return;
     choice.current = true;
     setOperation(confirmation);
   };
   const title = t("platformLegal:newVersion");
   return <>
-    {operation && !navigationBlocked ? <LegalPublicationOwner key={operation.draft} operation={operation} operationId={operationId} execute={execute} /> : null}
+    {operation && !edit.isBlocked ? <LegalPublicationOwner key={operation.draft} operation={operation} operationId={operationId} execute={execute} /> : null}
     <Page title={title} summary={t("platformLegal:draftSummary", { name, version: format.formatInteger(number) })} status={edit.unsaved ?? undefined} phoneSubtitle={edit.unsaved ?? name}
       backTo={{ to: "/plataforma/legales", label: t("platformLegal:backToList") }} banner={edit.banner}
       actions={<><Button type="button" variant="outline" onClick={() => { abandon(); void navigate("/plataforma/legales"); }}>{t("common:actions.cancel")}</Button><Button type="submit" form="legal-editor" pending={busy} pendingLabel={t("platformLegal:publishing")}>{t("platformLegal:publish")}</Button></>}>
@@ -161,7 +139,7 @@ function LegalVersionEditor({ initialKind, cultures, documents }: { initialKind:
         </SectionFields></Section>
       </form>
     </Page>
-    {confirmation && !navigationBlocked ? <Dialog open onOpenChange={(open) => { if (!open) abandon(); }}><DialogContent role="alertdialog" size="sm" showCloseButton={false}>
+    {confirmation && !edit.isBlocked ? <Dialog open onOpenChange={(open) => { if (!open) abandon(); }}><DialogContent role="alertdialog" size="sm" showCloseButton={false}>
       <DialogHeader><DialogTitle>{t("platformLegal:confirmTitle", { version: format.formatInteger(number), name: t(`enums:LegalDocumentKind.${confirmation.kind}`) })}</DialogTitle></DialogHeader>
       <DialogBody><DialogDescription>{t("platformLegal:confirmDescription", { date: format.formatDate(confirmation.effectiveOn) })}</DialogDescription></DialogBody>
       <DialogFooter><Button type="button" variant="outline" onClick={abandon}>{t("common:actions.cancel")}</Button><Button type="button" pending={busy} pendingLabel={t("platformLegal:publishing")} onClick={confirm}>{t("platformLegal:publish")}</Button></DialogFooter>
