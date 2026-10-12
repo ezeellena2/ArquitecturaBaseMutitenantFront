@@ -156,7 +156,7 @@ describe("configuración real de gestión", () => {
     expect(publicCaches(app)).not.toContain(secret);
     await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     const mutation = await savedMutation(app);
-    expect(typeof mutation.state.variables).toBe("string"); expect(publicCaches(app)).not.toContain(secret);
+    expect(mutation.state.variables).toEqual({ id: expect.any(String) }); expect(publicCaches(app)).not.toContain(secret);
     expect(screen.getByLabelText(/Clave de Anthropic/)).toHaveValue("");
     act(() => { app.client.setQueryData(["unrelated-list"], { value: true }); app.client.removeQueries({ queryKey: ["unrelated-list"] }); });
     await act(() => mutation.execute(mutation.state.variables));

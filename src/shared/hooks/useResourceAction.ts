@@ -6,6 +6,8 @@ import { useMountedRef } from "./useMountedRef";
 interface ResourceActionOptions<TVariables> {
   isCurrent?: (variables: TVariables) => boolean;
   onError?: (error: ApiError, variables: TVariables) => void;
+  /** Retira cuerpos locales cuando su mutación sale del caché. */
+  onRetire?: (variables: TVariables) => void;
 }
 
 interface NativeCallbacks {
@@ -15,7 +17,7 @@ interface NativeCallbacks {
 }
 
 /** Observa la operación del recurso aun cuando otro envío haya retirado su observer nativo. */
-export function useResourceAction<TVariables extends object>({ isCurrent, onError }: ResourceActionOptions<TVariables> = {}) {
+export function useResourceAction<TVariables extends object>({ isCurrent, onError, onRetire }: ResourceActionOptions<TVariables> = {}) {
   const client = useQueryClient();
   const owner = useId();
   const meta = useMemo<MutationMeta>(() => ({ resourceActionOwner: owner }), [owner]);
@@ -49,6 +51,13 @@ export function useResourceAction<TVariables extends object>({ isCurrent, onErro
       const mutation = event.mutation;
       queueMicrotask(() => protect(mutation));
     }
+    if (mounted.current && event.type === "removed" && matches(event.mutation.meta)) {
+      const raw = event.mutation.state.variables;
+      if (typeof raw === "object" && raw !== null) {
+        const sent = variables.current.get(raw);
+        if (sent !== undefined) onRetire?.(sent);
+      }
+    }
     if (!mounted.current || event.type !== "updated" || event.action.type !== "error" || !matches(event.mutation.meta)) return;
     const raw = event.mutation.state.variables;
     if (typeof raw !== "object" || raw === null) return;
@@ -56,7 +65,7 @@ export function useResourceAction<TVariables extends object>({ isCurrent, onErro
     const error = event.mutation.state.error;
     if (sent === undefined || (isCurrent && !isCurrent(sent)) || !(error instanceof ApiError)) return;
     onError?.(error, sent);
-  }), [client, mounted, matches, isCurrent, onError, protect]);
+  }), [client, mounted, matches, isCurrent, onError, onRetire, protect]);
   const isPending = useSyncExternalStore((notify) => {
     const unsubscribe = client.getMutationCache().subscribe(notify);
     ownershipListeners.current.add(notify);

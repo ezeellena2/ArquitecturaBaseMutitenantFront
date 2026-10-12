@@ -1,5 +1,6 @@
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { useIsMutating, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { AssistantLifetime } from "../runtime/assistantLifetime";
 import { assistantQueryKeyRoot, type AssistantScope } from "../api/assistant";
@@ -27,7 +28,6 @@ export function useAssistantOperations(scope: AssistantScope, generation: number
     if (!resource) { resource = new AbortController(); resources.conversations.set(id, resource); }
     return resource;
   };
-  const owner = useMemo(() => ({ lifetime, id: crypto.randomUUID() }), [lifetime]).id;
   const [failure, setFailure] = useState<{ lifetime: AssistantLifetime; error: unknown } | null>(null);
   useEffect(() => {
     lifetime.attach();
@@ -39,7 +39,8 @@ export function useAssistantOperations(scope: AssistantScope, generation: number
     });
     return () => { lifetime.close(); unsubscribe(); };
   }, [lifetime, resources]);
-  const mutation = useIdempotentMutation(async (operation: Operation, key) => {
+  const action = useResourceAction<Operation>({ isCurrent: (operation) => operation.lifetime.getSnapshot() && !operation.resource?.signal.aborted });
+  const mutation = useIdempotentMutation(action.guarded(async (operation: Operation, key: string) => {
     operation.lifetime.assertActive();
     operation.resource?.signal.throwIfAborted();
     operation.key ??= key;
@@ -59,8 +60,8 @@ export function useAssistantOperations(scope: AssistantScope, generation: number
       setFailure({ lifetime: operation.lifetime, error });
       throw error;
     } finally { operation.lifetime.release(controller); }
-  }, { meta: { assistantUiOwner: owner }, sameOperation: (a, b) => a.id === b.id });
-  const pending = useIsMutating({ predicate: (m) => m.meta?.assistantUiOwner === owner }) > 0;
+  }), { meta: action.meta, sameOperation: (a, b) => a.id === b.id });
+  const pending = action.isPending;
   const run = (execute: Operation["execute"], conversationId?: string | null) => mutation.mutateAsync({ id: crypto.randomUUID(), lifetime, execute, resource: conversationId ? resourceFor(conversationId) : undefined });
   // Conserva la señal abortada: ni un Retry ni un callback viejo puede revivir el recurso.
   const retireConversation = (id: string) => resourceFor(id).abort();

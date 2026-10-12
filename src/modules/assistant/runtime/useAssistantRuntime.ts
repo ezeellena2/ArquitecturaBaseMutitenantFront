@@ -1,5 +1,6 @@
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
-import { useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExportedMessageRepository, MessageNotSentError, useExternalStoreRuntime, type ExternalStoreAdapter, type ThreadMessageLike } from "@assistant-ui/react";
 import type { AssistantConversationResponse, AssistantMessageResponse, SendAssistantMessageRequest } from "@/modules/assistant/api/types";
 import { ApiError } from "@/shared/api/ApiError";
@@ -78,7 +79,6 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
   const admissions = useRef(new Map<string, { lifetime: AssistantLifetime; callback: () => void }>());
   const reconciliationControllers = useRef(new Set<AbortController>());
   const stopBeforeStart = useRef<{ resolve: () => void; reject: (error: unknown) => void } | null>(null);
-  const owner = useMemo(() => ({ lifetime, id: globalThis.crypto.randomUUID() }), [lifetime]).id;
   useEffect(() => {
     const ownedAdmissions = admissions.current;
     if (enabled) lifetime.attach();
@@ -105,7 +105,9 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
     stopBeforeStart.current?.reject(new DOMException("", "AbortError"));
     stopBeforeStart.current = null;
   }, [active]);
-  const pendingMutations = useIsMutating({ predicate: (mutation) => mutation.meta?.assistantOwner === owner });
+  const sendAction = useResourceAction<SendOperation>({ isCurrent: (operation) => operation.lifetime.getSnapshot() });
+  const stopAction = useResourceAction<StopOperation>({ isCurrent: (operation) => operation.lifetime.getSnapshot() });
+  const pendingMutations = Number(sendAction.isPending) + Number(stopAction.isPending);
   const localSendOwner = (ownerLifetime: AssistantLifetime) => lastOperation.current?.lifetime === ownerLifetime ? lastOperation.current : undefined;
 
   const readDetail = async (id: string, querySignal: AbortSignal, ownerLifetime = lifetime, requestScope = identity) => {
@@ -204,7 +206,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
     }
   }
 
-  const stopMutation = useIdempotentMutation(async (operation: StopOperation, key) => {
+  const performStop = async (operation: StopOperation, key: string) => {
     operation.idempotencyKey ??= key;
     const controller = operation.lifetime.controller();
     try {
@@ -230,9 +232,10 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
       if (localSendOwner(operation.lifetime) !== operation.localSend) throw new DOMException("", "AbortError");
       throw error;
     } finally { operation.lifetime.release(controller); }
-  }, { meta: { assistantOwner: owner, handlesError: true }, sameOperation: (a, b) => a.lifetime === b.lifetime && a.turnId === b.turnId });
+  };
+  const stopMutation = useIdempotentMutation((operation: StopOperation, key) => stopAction.guarded(performStop)(operation, key), { meta: { ...stopAction.meta, handlesError: true }, sameOperation: (a, b) => a.lifetime === b.lifetime && a.turnId === b.turnId });
 
-  const sendMutation = useIdempotentMutation(async (operation: SendOperation, key) => {
+  const performSend = async (operation: SendOperation, key: string) => {
     operation.idempotencyKey ??= key;
     operation.lifetime.assertActive();
     if (lastOperation.current !== operation) throw new ApiError(409, { code: "Assistant.Runtime.OperationExpired" });
@@ -306,7 +309,8 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
       stopBeforeStart.current = null;
       waiting?.reject(new ApiError(409, { code: "Assistant.Turn.NotGenerating" }));
     }
-  }, { meta: { assistantOwner: owner, handlesError: true }, sameOperation: (a, b) => a.operationId === b.operationId });
+  };
+  const sendMutation = useIdempotentMutation((operation: SendOperation, key) => sendAction.guarded(performSend)(operation, key), { meta: { ...sendAction.meta, handlesError: true }, sameOperation: (a, b) => a.operationId === b.operationId });
 
   const durableMessages = pagedMessages ?? detail.data?.messages.items ?? [];
   const durableGenerating = durableMessages.some((message) => message.status === "Generating");
