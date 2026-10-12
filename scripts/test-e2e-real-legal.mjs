@@ -68,6 +68,23 @@ export function assertPendingTerms(account, receipt) {
     && document.id === receipt.id && document.version === receipt.version), "Me debe exigir el documento recién publicado antes de probar F5.");
 }
 
+/** El tipo se confirma en la lectura real: el recibo HTTP sólo publica ID y versión. */
+export function assertPublishedLegalVersion(groups, document, receipt, expectedContents) {
+  assert.ok(document?.id === receipt.id && document.kind === "Privacy" && document.version === receipt.version,
+    "La lectura debe corresponder a la Privacidad recién publicada.");
+  assert.ok(document.isCurrent === true && typeof document.effectiveAtUtc === "string" && document.effectiveAtUtc.endsWith("Z"),
+    "La Privacidad publicada debe estar vigente y entregar su fecha UTC.");
+  const group = groups.find((entry) => entry.kind === "Privacy");
+  assert.ok(group?.currentVersion === receipt.version && group.currentEffectiveAtUtc === document.effectiveAtUtc,
+    "El grupo Privacidad debe mostrar la versión y vigencia del recibo real.");
+  assert.ok(group.versions.some((version) => version.id === receipt.id && version.version === receipt.version
+    && version.effectiveAtUtc === document.effectiveAtUtc && version.isCurrent === true),
+    "La fila vigente de Privacidad debe identificar el documento publicado.");
+  assert.ok(Array.isArray(expectedContents) && expectedContents.length > 0 && Array.isArray(document.contents)
+    && expectedContents.every((expected) => document.contents.some((actual) => actual.culture === expected.culture && actual.text === expected.text)),
+    "La lectura debe conservar los contenidos publicados en cada cultura.");
+}
+
 /** Aceptar exige el POST efectivo y el regreso protegido; ocultar el título no alcanza. */
 export async function acceptPublishedLegalAndReturn(page, receipt, protectedPath) {
   const terms = page.getByRole("heading", { name: "Actualizamos los términos", exact: true });

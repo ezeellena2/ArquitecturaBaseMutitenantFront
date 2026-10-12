@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedTerms, legalMeMetadata, observeLegalTransition, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
+import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedLegalVersion, assertPublishedTerms, legalMeMetadata, observeLegalTransition, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
 
 const receipt = { id: "11111111-1111-4111-8111-111111111111", version: 3 };
 test("acepta el recibo efectivo v3 sin fijar una versión en Front", () => {
@@ -20,6 +20,22 @@ test("Me pendiente debe exigir el documento exacto; ni vacío ni otro documento 
   assertPendingTerms({ pendingLegalDocuments: [{ ...receipt, kind: "Terms" }] }, receipt);
   for (const pendingLegalDocuments of [[], [{ ...receipt, kind: "Terms", version: 2 }], [{ ...receipt, kind: "Privacy" }], [{ ...receipt, kind: "Terms", id: "other" }]])
     assert.throws(() => assertPendingTerms({ pendingLegalDocuments }, receipt));
+});
+
+test("el recibo real Privacy v3 no se sustituye con la versión 2 de Terms", () => {
+  const expectedContents = [{ culture: "es-AR", text: "Privacidad de prueba" }, { culture: "en-US", text: "Test privacy" }];
+  const document = { ...receipt, kind: "Privacy", effectiveAtUtc: "2026-10-11T03:00:00Z", isCurrent: true, contents: expectedContents };
+  const group = { kind: "Privacy", currentVersion: receipt.version, currentEffectiveAtUtc: document.effectiveAtUtc,
+    versions: [{ ...receipt, effectiveAtUtc: document.effectiveAtUtc, isCurrent: true }] };
+  const terms = { kind: "Terms", currentVersion: 2, versions: [{ id: "other", version: 2, isCurrent: true }] };
+  assertPublishedLegalVersion([terms, group], document, receipt, expectedContents);
+  for (const changed of [{ ...document, id: "other" }, { ...document, kind: "Terms" }, { ...document, version: 2 },
+    { ...document, isCurrent: false }, { ...document, contents: [] }])
+    assert.throws(() => assertPublishedLegalVersion([terms, group], changed, receipt, expectedContents));
+  for (const changed of [{ ...group, currentVersion: 2 }, { ...group, currentEffectiveAtUtc: "2026-10-10T03:00:00Z" },
+    { ...group, versions: [{ ...group.versions[0], id: "other" }] }])
+    assert.throws(() => assertPublishedLegalVersion([terms, changed], document, receipt, expectedContents));
+  assert.throws(() => assertPublishedLegalVersion([terms], document, receipt, expectedContents));
 });
 
 const protectedPath = "/api/platform/legal-documents";

@@ -12,7 +12,7 @@ import { pickupCode, plainTextBody } from "./test-e2e-real-mail.mjs";
 import { accountAddMethodName, ensureBusinessPageDraft, expectOrganizationModules, expectRecoveryEmailInUse, fillOtp, openAccountEmailDialog, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
 import { waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { reloadResponse, responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
-import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedTerms, observeLegalTransition, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
+import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedLegalVersion, assertPublishedTerms, observeLegalTransition, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { chromium } from "playwright";
 
@@ -1548,10 +1548,20 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             const publishedPrivacy = parseLegalPublicationReceipt(await publication.text());
             setStage("acepta la Privacidad publicada con POST 204 y retorno protegido 200");
             await acceptPublishedLegalAndReturn(platformPage, publishedPrivacy, "/api/platform/legal-documents");
-            setStage("F5 conserva Documentos legales y Privacidad versión 2 vigente");
-            await platformPage.reload();
+            setStage("F5 conserva la Privacidad del recibo real, con su versión y vigencia");
+            const afterReload = await reloadResponse(platformPage,
+              (response) => new URL(response.url()).pathname === "/api/platform/legal-documents" && response.request().method() === "GET");
+            assert.equal(afterReload.status(), 200);
             await platformPage.getByRole("heading", { name: "Documentos legales", exact: true }).waitFor();
-            await platformPage.getByText(/Versión 2 · vigente desde/).waitFor();
+            const authorization = accountTokens.get(platformPage);
+            assert.ok(authorization, "El operador debe conservar el acceso real para leer la versión publicada.");
+            const details = await platformPage.request.get(new URL(`/api/platform/legal-documents/${publishedPrivacy.id}`, baseUrl).href, { headers: { Authorization: authorization } });
+            assert.equal(details.status(), 200);
+            assertPublishedLegalVersion(await afterReload.json(), await details.json(), publishedPrivacy, publication.request().postDataJSON().contents);
+            const privacyCard = platformPage.getByRole("list", { name: "Documentos legales", exact: true }).getByRole("listitem")
+              .filter({ has: platformPage.getByText("Política de privacidad", { exact: true }) });
+            assert.equal(await privacyCard.count(), 1);
+            await privacyCard.getByText(`Versión ${publishedPrivacy.version} · vigente desde ${civil}`, { exact: true }).waitFor();
           } finally {
             legalObservation.close();
             console.info(`E8 legales diagnóstico: ${JSON.stringify(await legalObservation.snapshot())}`);
