@@ -6,9 +6,7 @@ const path = "/api/platform/assistant/models";
 export const assistantModelsRoot = (scope: AssistantScope) => [...assistantQueryKeyRoot(scope), "models"] as const;
 export const assistantModelsKey = (scope: AssistantScope, query: AssistantModelListQuery) => [...assistantModelsRoot(scope), query] as const;
 export async function fetchAssistantModels(query: AssistantModelListQuery, signal?: AbortSignal) {
-  const response = await api.get<AssistantModelPricePageResponse>(withAssistantQuery(path, query), { signal });
-  const totalPages = response.totalPages ?? Math.ceil(response.totalCount / response.pageSize);
-  return { ...response, totalPages, hasPrevious: response.hasPrevious ?? response.page > 1, hasNext: response.hasNext ?? response.page < totalPages };
+  return api.get<AssistantModelPricePageResponse>(withAssistantQuery(path, query), { signal });
 }
 /** La selección incluye todas las páginas; los inactivos permiten identificar una selección guardada inválida. */
 export async function fetchAssistantModelOptions(signal?: AbortSignal): Promise<AssistantModelPriceResponse[]> {

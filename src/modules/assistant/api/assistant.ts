@@ -1,3 +1,4 @@
+import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
 import type {
   AssistantConversationListQuery, AssistantConversationResponse, AssistantConversationSummaryCursorResponse,
@@ -33,12 +34,7 @@ export function assistantConversationPath(scope: AssistantScope, id: string): st
 }
 
 export function withAssistantQuery(path: string, query: object | undefined): string {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query ?? {})) {
-    if (value !== undefined && value !== null) params.set(key, String(value));
-  }
-  const search = params.toString();
-  return search ? `${path}?${search}` : path;
+  return `${path}${toSearch(query ?? {}, true)}`;
 }
 
 export function fetchAssistantState(scope: AssistantScope, signal?: AbortSignal): Promise<AssistantStateResponse> {
