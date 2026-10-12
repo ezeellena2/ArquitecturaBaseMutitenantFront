@@ -7685,6 +7685,7 @@ export interface paths {
                     PageSize?: 10 | 20 | 50 | 100;
                     Sort?: string;
                     Search?: string;
+                    Status?: components["schemas"]["TenantDomainStatus"];
                 };
                 header?: never;
                 path: {
@@ -12419,6 +12420,7 @@ export interface paths {
                     PageSize?: 10 | 20 | 50 | 100;
                     Sort?: string;
                     Search?: string;
+                    Status?: components["schemas"]["TenantDomainStatus"];
                 };
                 header?: never;
                 path?: never;
@@ -18087,7 +18089,7 @@ export interface components {
         /** @enum {string} */
         CompanyMembershipStatus: "Active" | "Inactive";
         /** @enum {string} */
-        CompanyMemberState: "Active" | "PendingDeletion" | "Inactive" | "Invited";
+        CompanyMemberState: "Active" | "PendingDeletion" | "Inactive" | "Invited" | "Expired";
         CompanyResponse: {
             /** Format: uuid */
             id: string;
@@ -18315,6 +18317,7 @@ export interface components {
             organization?: null | components["schemas"]["HomeOrganizationSummary"];
             companies: components["schemas"]["HomeCompanyCard"][];
             pending: components["schemas"]["PendingItem"][];
+            pendingGroups?: null | components["schemas"]["PendingGroup"][];
         };
         /** @description El dominio de correo de la organización; `null` si no tiene. */
         HomeSettings: {
@@ -18867,6 +18870,17 @@ export interface components {
             returnUrl: string;
             /** Format: date-time */
             expiresAtUtc: string;
+        };
+        /** @description Un tipo de pendiente y su ámbito: total real y primeras filas ordenadas en SQL. */
+        PendingGroup: {
+            area: string;
+            kind: string;
+            /** Format: int32 */
+            totalCount: number;
+            items: components["schemas"]["PendingItem"][];
+            /** Format: uuid */
+            companyId?: null | string;
+            companyName?: null | string;
         };
         /**
          * @description Una fila de «Para resolver». `Area` y `Kind` son claves estables: el front arma el texto, el estado y la
