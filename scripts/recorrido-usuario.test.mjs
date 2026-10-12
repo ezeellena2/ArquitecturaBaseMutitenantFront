@@ -1,11 +1,37 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { EventEmitter } from "node:events";
 import { chromium } from "playwright";
 import { journeyDate, journeyFailure, platformAssistantLimitation, renderIndex, recordedStep, safeDiagnostic, signOutMobile, waitCodeMessage, waitForPlatformHome, waitForTransientNotices, withCleanup } from "./recorrido-usuario.mjs";
 import { baseUrl } from "./recorrido-usuario-entorno.mjs";
 import { execFileSync } from "node:child_process";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
+
+test("la identidad del recorrido conserva la ruta y el acceso de Me después de F5", async () => {
+  const identityPage = (actualAccess, status = 200) => {
+    const page = new EventEmitter(); const main = {}; const request = { method: () => "GET" }; const calls = [];
+    let filter; let complete;
+    const me = { access: actualAccess, displayName: null, maskedPrimaryPhone: "•••• 1111" };
+    page.mainFrame = () => main;
+    page.goto = async (url) => { calls.push(new URL(url).pathname); };
+    page.waitForResponse = (predicate) => { filter = predicate; return new Promise((resolve) => { complete = resolve; }); };
+    page.reload = async () => {
+      calls.push("F5"); page.emit("framenavigated", main); page.emit("request", request);
+      const reply = { url: () => new URL("/api/me", baseUrl).href, request: () => request, status: () => status, json: async () => me };
+      assert.ok(filter(reply)); complete(reply);
+    };
+    return { page, calls, me };
+  };
+  for (const [access, home] of [["consumer", "/"], ["business", "/org"]]) {
+    const { page, calls, me } = identityPage(access);
+    assert.equal(await whatsappJourney.readJourneyIdentity(page, { base: baseUrl, access }), me);
+    assert.deepEqual(calls, [home, "F5"]);
+    assert.equal(page.listenerCount("request"), 0);
+  }
+  await assert.rejects(whatsappJourney.readJourneyIdentity(identityPage("consumer").page, { base: baseUrl, access: "business" }));
+  await assert.rejects(whatsappJourney.readJourneyIdentity(identityPage("business", 401).page, { base: baseUrl, access: "business" }));
+});
 
 test("E8 conserva las dos pestañas tras F5 y propaga una sesión de Plataforma que no vuelve", async () => {
   const events = [];

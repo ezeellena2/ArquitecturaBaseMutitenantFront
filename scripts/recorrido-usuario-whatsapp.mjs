@@ -72,6 +72,16 @@ export async function reloadJourneySessions(page, platformPage, { awaitApp, awai
   await awaitPlatformHome(platformPage);
 }
 
+export async function readJourneyIdentity(page, { base, access }) {
+  assert.ok(access === "consumer" || access === "business", "La identidad del recorrido requiere un acceso personal o empresarial.");
+  await page.goto(new URL(access === "business" ? "/org" : "/", base).href);
+  const reply = await reloadResponse(page, (response) => new URL(response.url()).pathname === "/api/me" && response.request().method() === "GET");
+  assert.equal(reply.status(), 200);
+  const me = await reply.json();
+  assert.ok(me.access === access, "Me debe conservar el acceso de la identidad tras F5.");
+  return me;
+}
+
 /** Sólo catálogo de códigos, estado y espera; nunca cuerpos ni destinos privados. */
 export function safeJourneyHttp(status, problem = {}) {
   const code = problem?.code;
@@ -152,9 +162,7 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
     assert.ok((await avatar.getAttribute("class")).split(/\s+/).includes("bg-[var(--s3)]"));
   };
   const identity = async (destination, access = "consumer", organization = "Personal") => {
-    await page.goto(url("/"));
-    const reply = await reloadResponse(page, responseFor("/api/me")); assert.equal(reply.status(), 200);
-    const me = await reply.json(); assert.equal(me.displayName, null); assert.equal(me.access, access);
+    const me = await readJourneyIdentity(page, { base, access }); assert.equal(me.displayName, null);
     assert.ok(typeof me.maskedPrimaryPhone === "string" && me.maskedPrimaryPhone.endsWith(destination.slice(-4)));
     const mask = me.maskedPrimaryPhone;
     if (width === 390) {
