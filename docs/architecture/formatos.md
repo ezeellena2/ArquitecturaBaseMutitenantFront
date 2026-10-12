@@ -7,13 +7,13 @@
 | Preferencia | Orden de resolución | Por defecto |
 |---|---|---|
 | **Cultura** (idioma + región: `es-AR`, `en-US`) | cuenta del usuario → organización, en el acceso B2B (`TenantSettings.DefaultCulture`) → navegador, al registrarse | `es-AR` |
-| **Zona horaria** (IANA) | cuenta → empresa de la pantalla → organización (en B2B) | `America/Argentina/Buenos_Aires` |
+| **Zona horaria** (IANA) | en pantalla, la de la cuenta (`timeZoneId` de `/api/me`), igual en los tres accesos; sin sesión, la del catálogo | `America/Argentina/Buenos_Aires` |
 | **Moneda** | la que trae el dato; `TenantSettings.DefaultCurrency` solo para cargar un importe nuevo | `ARS` |
 
 - La cultura decide dos cosas: el **idioma** de los textos (`es`) y el **formato** de fechas y números (`es-AR`).
 - `useFormat()` resuelve las tres preferencias una sola vez y toma los patrones de `Cultures`, cargados por `shared/referenceData` desde `GET /api/reference-data`. Ningún componente lee preferencias ni arma patrones por su cuenta.
 - La cultura es la efectiva (`useEffectiveCulture`), la misma de los textos: la de la cuenta, si no la elegida en este navegador, si no la predeterminada del catálogo (`resolveCulture`, frontend.md «Idioma y cultura»). Antes de `/api/me`, la zona y la moneda son las relaciones del catálogo (hoy `America/Argentina/Buenos_Aires` y `ARS`); con sesión, las efectivas de `/api/me`. No hay constantes ni listas de opciones en el componente.
-- **E3a:** `useEffectiveTimeZone` lee `timeZoneId` efectivo de `/api/me`; el argumento `companyId` se conecta a los datos de empresa cuando existan en E6. La precedencia cuenta → empresa → organización o navegador se mantiene en un helper probado desde E3a.
+- La zona en pantalla es `timeZoneId` de `/api/me`, la de la cuenta: la usan `useFormat` y `useEffectiveTimeZone()`.
 
 ## 2. Patrones de formato por cultura (datos, no código)
 
@@ -57,7 +57,7 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 | Teléfono | E.164 | `<PhoneText>` / carga con `PhoneField` (país con bandera SVG, buscador, formato al escribir) | `011 15-2345-6789` (si es del país de la cultura) · `+598 94 123 456` | internacional | País, nombre y prefijo salen de `Countries`; `libphonenumber-js` valida y formatea. Detalle: [rules/telefonos.md](../rules/telefonos.md) |
 | Zona horaria | ID IANA (`America/Argentina/Buenos_Aires`) | `<TimeZoneText>` / `TimeZoneSelect` | `Buenos Aires (GMT−3)` | `Buenos Aires (GMT−3)` | Nunca el ID crudo. La ciudad traducida sale de `GET /api/reference-data`; el desfase se calcula al mostrar, sin guardarlo. Selector por `SortOrder`, offset y ciudad |
 | Idioma y región | `es-AR` | `<CultureText>` / `CultureSelect` | `Español (Argentina)` | `Spanish (Argentina)` | Opciones habilitadas y nombre salen del catálogo; nunca el código crudo. En `CultureSelect`, cada opción va en su propia lengua (`English (United States)`), con el nombre del catálogo de respaldo |
-| CUIT / id fiscal | salida API E6 `{ country: "AR", type: "AR-CUIT", number }`; entrada de `TaxIdField` `{ type, number }` (`type` = `TaxIdTypes.Code`, `number` sin separadores) | `<TaxIdText>` / carga con `TaxIdField` | `20-12345678-6` | `20-12345678-6` | El tipo, país, etiqueta y máscara salen de `TaxIdTypes`; el back valida que el país corresponda al tipo. En E1 el front valida con `stdnum`; el value object y la salida completa del back llegan en E6. Detalle: `../ArquitecturaBaseMutitenant/docs/rules/identificacion-fiscal.md` |
+| CUIT / id fiscal | salida API `{ country: "AR", type: "AR-CUIT", number }`; entrada: el número sin separadores, y el tipo si el contrato lo pide | `<TaxIdText>` / carga con `TaxIdNumberField` | `20-12345678-6` | `20-12345678-6` | El tipo, país, etiqueta y máscara salen de `TaxIdTypes`; el back valida que el país corresponda al tipo. El front valida con `taxIdValidationMessage` (`stdnum`). Detalle: `../ArquitecturaBaseMutitenant/docs/rules/identificacion-fiscal.md` |
 | Correo | texto normalizado (minúsculas) | texto; carga con `EmailField` | `juan@gmail.com` | `juan@gmail.com` | Trim, NFC y minúsculas; dominio IDN legible. Los casos inválidos del contrato se rechazan; límites por bytes UTF-8 |
 | Enum o estado | `"Active"` | `<EnumText enum="UserStatus">` / `<StatusBadge>` | `Activo` | `Active` | Clave i18n `enums.<Enum>.<Valor>`; el tono de cada estado lo registra su feature con `defineStatusTones` (`statusTones.ts`), tipado por el enum del contrato, y sus colores salen de [tema.md](tema.md) |
 | Booleano | `true`/`false` | `<BooleanText>` | `Sí` / `No` | `Yes` / `No` | En tablas, una columna de estado va mejor como `StatusDot` |
@@ -76,7 +76,7 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 4. **Campos de entrada con la misma regla:** `DateField`, `DateTimeField`, `TimeField`, `NumberField`, `MoneyField`, `PercentField` y `PhoneField` en `shared/ui/fields`.
    - Aceptan lo que el usuario escribe en su cultura (`1.234,5`) y emiten el contrato de la API (`1234.5`; `0.125` para un 12,5 %; ISO en UTC para un instante, convertido desde la zona efectiva).
    - Un `DateField` de fecha civil emite `DateOnly` sin convertir zona.
-   - `CurrencySelect`, `CountrySelect`, `TimeZoneSelect`, `CultureSelect` y los tipos de `TaxIdField` leen `shared/referenceData`. Mientras carga el catálogo muestran estado de carga; nunca traen un array local de opciones. `TaxIdField` emite `{ type, number }`, con `type = TaxIdTypes.Code` (por ejemplo, `AR-CUIT`), número sin separadores y validación `stdnum` en E1.
+   - `CurrencySelect`, `CountrySelect`, `TimeZoneSelect` y `CultureSelect` leen `shared/referenceData`. Mientras carga el catálogo muestran estado de carga; nunca traen un array local de opciones. `TaxIdNumberField` recibe el tipo de `TaxIdTypes` que resuelve el formulario, emite el número sin separadores y se valida con `taxIdValidationMessage` (`stdnum`).
    - `EmailField` (trim y minúsculas al escribir) también vive en `shared/ui/fields`.
 5. **El front no calcula dinero.** Solo muestra lo que llega; totales, impuestos y redondeos vienen del backend.
 6. **Los errores y textos del backend** que llevan números o fechas ya vienen formateados por `DisplayFormatter`, en la cultura del `Accept-Language`.
@@ -99,7 +99,7 @@ src/shared/format/
 ├── parsers.test.ts
 └── format-usage.test.ts       prohíbe formatear fuera de shared/format
 src/shared/time/
-└── useEffectiveTimeZone.ts    [E3] cuenta → empresa → organización (en B2B)
+└── useEffectiveTimeZone.ts    [E3] la zona de la cuenta, de /api/me
 src/shared/referenceData/
 ├── referenceData.ts           GET /api/reference-data: todas las filas de los cinco catálogos, traducidas y con isEnabled
 ├── useReferenceData.ts        TanStack Query, staleTime: Infinity; ETag al revalidar
@@ -110,5 +110,5 @@ src/shared/ui/format/
 └── EnumText.tsx · StatusBadge.tsx · BooleanText.tsx · EmptyValue.tsx
 src/shared/ui/fields/
 └── DateField.tsx · DateTimeField.tsx · TimeField.tsx · NumberField.tsx · MoneyField.tsx · PercentField.tsx · PhoneField.tsx
-    · EmailField.tsx · TaxIdField.tsx · CurrencySelect.tsx · CountrySelect.tsx · TimeZoneSelect.tsx · CultureSelect.tsx
+    · EmailField.tsx · TaxIdNumberField.tsx · CurrencySelect.tsx · CountrySelect.tsx · TimeZoneSelect.tsx · CultureSelect.tsx
 ```

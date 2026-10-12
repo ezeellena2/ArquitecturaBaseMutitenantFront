@@ -1,6 +1,6 @@
 # Accesibilidad
 
-**Regla:** toda pantalla cumple WCAG 2.2 AA. Cada test de pantalla corre **axe** y falla con cualquier violación. Lo que axe no ve (teclado, foco, contraste real) lo cubren las piezas de `shared/ui` y la revisión antes de cerrar cada etapa.
+**Regla:** toda pantalla cumple WCAG 2.2 AA. Cada test de pantalla corre **axe** y falla con cualquier violación. Lo que axe no ve en jsdom (teclado, foco, contraste real) lo cubren las piezas de `shared/ui` y los tokens de color, definidos con contraste AA.
 
 ## Cómo se hace
 - **En cada test de pantalla**, al final del caso de carga:
@@ -37,7 +37,6 @@
 - `vitest-axe` (E0) en cada test de pantalla (`toHaveNoViolations`); `harness.test.ts` (E7) falla si un `pages/*Page.test.tsx` no corre axe.
 - `FormField.test.tsx` (E7): con un `Select` adentro, el desplegable se rotula, es obligatorio y lleva su error.
 - `CompanyDetailPage.test.tsx` y `CompaniesPage.test.tsx` (E7): cada diálogo le devuelve el foco a lo que lo abrió, al botón o al ⋮ de la fila. `UserDetailPage.test.tsx` (E7): «Cambiar roles» del ⋮ de una empresa le devuelve el foco a ese ⋮.
-- Antes de cerrar una etapa: una pasada de axe en el navegador real, a 1440 y a 390, que cubre el contraste y no se puede hacer en jsdom.
 
 ## Detalle
 [frontend.md §4, "Accesibilidad y diseño adaptable"](../architecture/frontend.md)

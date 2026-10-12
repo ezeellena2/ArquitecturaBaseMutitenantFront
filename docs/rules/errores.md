@@ -22,7 +22,7 @@
 - Query que maneja su error en pantalla: `meta: { silent: true }`. También `/api/me` (`useCurrentUser`, con `blocksView`): si falla, `LegalAcceptanceGate` muestra la pantalla de error (`LoadErrorPage`), sin el aviso de abajo; si falla la relectura de Mi cuenta, lo dice su franja.
 - Si falla el catálogo inicial, `AppProviders` muestra el error y un botón «Reintentar»; el Toaster sigue montado aunque el contenido principal espere datos o traducciones.
 - Si Vite emite `vite:preloadError`, `AppShell` muestra la franja de versión nueva sin cancelar el evento. Los fallos de render y de ruta se contienen en la misma pantalla de error (`AppErrorPage` usa `LoadErrorPage`); «Reintentar» recarga la página y la recarga sucede solo al pulsarlo.
-- **Genéricos:** `shared/api` y `AppShell` resuelven red, 5xx, 429 (`retryAfterSeconds` y cuenta regresiva en el botón, sin reintento automático), 409, salir sin guardar y versión nueva en E1. La sesión vencida requiere Auth y se conecta en E3; módulo apagado, en E5. Una pantalla no los reimplementa ([frontend.md, "Errores"](../architecture/frontend.md#errores)).
+- **Genéricos:** `shared/api` y `AppShell` resuelven red, 5xx, 429 (`retryAfterSeconds` y cuenta regresiva en el botón, sin reintento automático), 409, salir sin guardar y versión nueva; la sesión vencida la resuelve `auth/`, y el módulo apagado, `RequirePermission`. Una pantalla no los reimplementa ([frontend.md, "Errores"](../architecture/frontend.md#errores)).
 
 ## Prohibido
 - `if (error.detail.includes(...))`.

@@ -29,7 +29,7 @@ Para una pantalla, el **«Copiá de» es el [tablero correspondiente del lienzo 
 | `src/shared/referenceData/` | carga los cinco catálogos y patrones de `GET /api/reference-data`; sin opciones fijas en código | datos-y-api, formatos, textos-y-traducciones | `useReferenceData.ts` (E1) |
 | `src/shared/ui/` | piezas genéricas; shadcn en minúscula y propios en PascalCase; sin lógica de negocio | pantallas-y-ui | `DataTable.tsx`, `Page.tsx` (E1) |
 | `src/shared/ui/format/` | cómo se ve cada tipo de dato (`DateText`, `MoneyText`, `PercentText`, `PhoneText`, `StatusBadge`, `EmptyValue`…); no formatea por su cuenta, usa `shared/format` | formatos, telefonos | `MoneyText.tsx` (E1) |
-| `src/shared/ui/fields/` | un campo por tipo y selectores de catálogos (`CurrencySelect`, `CountrySelect`, `TimeZoneSelect`, `CultureSelect`, `TaxIdField`); sin listas fijas | formularios, formatos, telefonos, datos-y-api | `MoneyField.tsx`, `CountrySelect.tsx` (E1) |
+| `src/shared/ui/fields/` | un campo por tipo (`TaxIdNumberField` para un número fiscal) y selectores de catálogos (`CurrencySelect`, `CountrySelect`, `TimeZoneSelect`, `CultureSelect`); sin listas fijas | formularios, formatos, telefonos, datos-y-api | `MoneyField.tsx`, `CountrySelect.tsx` (E1) |
 | `src/shared/phone/` | interpretación telefónica y banderas SVG; los países salen de `shared/referenceData`; `libphonenumber-js` solo acá y en `shared/format` | telefonos | `CountryFlag.tsx` (E1) |
 | `src/shared/time/` | la zona efectiva para mostrar instantes UTC (`useEffectiveTimeZone`) y la del navegador; no formatea: eso es `shared/format` | formatos | `useEffectiveTimeZone.ts` (E3) |
 | `src/shared/account/` | lo de la cuenta que usan varias áreas (ADR 0033): agregar y cambiar un método de ingreso, el aviso de método propio; Mi cuenta y el Inicio personal lo importan de acá | formularios, pantallas-y-ui | `AddLoginMethodDialog.tsx` |
@@ -56,10 +56,10 @@ La tabla vive solo en el [`AGENTS.md` raíz](../../AGENTS.md#antes-de-escribir-c
 - un "Lo verifica" nombra un test cuya etapa `(E#)` ya cerró y que no existe. Los tests de etapas futuras pueden no existir todavía;
 - un `pages/*Page.test.tsx` no corre axe ([accesibilidad](../rules/accesibilidad.md)).
 
-Hasta que ambos repos estén en GitHub, cada CI usa solo su propio checkout. Los enlaces al repo hermano se verifican cuando ese checkout está presente; el checkout cruzado y su verificación obligatoria se incorporan cuando ambos repos estén en GitHub.
+Hasta la Etapa 10, cada CI usa solo su propio checkout. Los enlaces al repo hermano se verifican cuando ese checkout está presente; el checkout cruzado y su verificación obligatoria llegan con la Etapa 10 (ADR 0016).
 
 ## 5. Cadencia de verificación
 
 Cada cambio coherente se cierra con un test focal rojo/verde cuando hay lógica y con las comprobaciones de build y lint del alcance afectado en verde antes del commit. La puerta de etapa ejecuta `npm run build`, `npm run lint`, `npm test` y `npm run contracts:check` completos; el CI corre los mismos, pero salta `contracts:check` porque descarga un solo repo: el chequeo cruzado llega con la Etapa 10 (ADR 0016). La puerta de etapa conserva además el E2E real desde E3a y la comparación visual con el tablero aprobado. Para una pantalla nueva, los tests cubren solo los estados y recorridos que realmente existen, además de los controles críticos aplicables de [tests](../rules/tests.md).
 
-Mantenimiento: igual que en el back ([arnes.md §6](../../../ArquitecturaBaseMutitenant/docs/architecture/arnes.md#6-mantenimiento)).
+Mantenimiento: igual que en el back ([arnes.md §6](../../../ArquitecturaBaseMutitenant/docs/architecture/arnes.md#6-mantenimiento)), salvo la puerta de documentación a ciegas, que no forma parte de la puerta de etapa: la documentación se verifica con `realinear-docs --detectar` en 0.

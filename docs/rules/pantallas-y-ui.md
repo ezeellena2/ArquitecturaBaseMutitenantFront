@@ -30,7 +30,7 @@
 - El mismo estado en dos lugares: arriba y otra vez en la fila.
 - La web achicada en el teléfono (la marca arriba, la banda con ícono, cajas con cabecera arena o el ☰ con sesión) o una versión aparte hecha a mano.
 - Colores sueltos (`#fff`, `text-gray-500`).
-- Programar una pantalla sin tablero.
+- Programar una pantalla nueva sin su tablero aprobado. Si a un tablero vigente le falta un estado, se le pide a Diseño y se sigue con el resto, sin frenar la etapa.
 
 ## Copiá de
 - el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (solo los tableros validados); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` y `RoleEditorPage.tsx` (E4), `src/shared/ui/Page.tsx`, `Section.tsx` y `docs/architecture/tema.md`
