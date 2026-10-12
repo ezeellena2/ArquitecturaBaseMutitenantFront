@@ -7,7 +7,7 @@ Mismo formato que las del back: **Regla · Cómo se hace · Prohibido · Copiá 
 | [estructura-y-features](estructura-y-features.md) | áreas, features, qué va en cada carpeta |
 | [datos-y-api](datos-y-api.md) | httpClient, TanStack Query, tipos generados |
 | [errores](errores.md) | `ApiError`, decidir por `code`, errores de formulario |
-| [formatos](formatos.md) | fechas, números, moneda, %, vacíos (resumen de `architecture/formatos.md`) |
+| [formatos](formatos.md) | fechas, números, moneda, %, vacíos |
 | [telefonos](telefonos.md) | `PhoneField` (país con bandera, búsqueda, formato al escribir) y `PhoneText` |
 | [paginado-y-listados](paginado-y-listados.md) | `usePagedQuery`, `DataTable`, filtros, cursor |
 | [formularios](formularios.md) | diálogo o pantalla, fields, validación |
