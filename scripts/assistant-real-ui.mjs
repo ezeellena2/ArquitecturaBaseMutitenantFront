@@ -34,8 +34,23 @@ export async function assistantLogin(page, env, base, email, access) {
   const routes = { consumer: "/login", business: "/login/empresa", platform: "/plataforma" };
   await page.goto(new URL(routes[access], base).href);
   await page.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(email);
+  process.stdout.write(`TECH DATA auth.login-route ${JSON.stringify({ access, expectedRoute: new URL(page.url()).pathname === routes[access] })}\n`);
   const before = new Set(await env.files());
-  await page.getByRole("button", { name: "Enviar código", exact: true }).click();
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const send = page.getByRole("button", { name: "Enviar código", exact: true });
+    await send.click({ trial: true });
+    const responsePromise = page.waitForResponse((reply) => new URL(reply.url()).pathname === "/api/auth/login-code" && reply.request().method() === "POST");
+    await send.click();
+    const response = await responsePromise;
+    const problem = response.ok() ? null : await response.json();
+    const code = typeof problem?.code === "string" && /^[A-Za-z0-9.]+$/.test(problem.code) ? problem.code : "none";
+    process.stdout.write(`TECH DATA auth.login-code ${JSON.stringify({ access, status: response.status(), code })}\n`);
+    if (response.ok()) break;
+    assert.equal(response.status(), 429, "El ingreso debe respetar sólo el cooldown informado por el servicio real.");
+    assert.ok(Number.isFinite(problem.retryAfter) && problem.retryAfter >= 0 && problem.retryAfter <= 300);
+    await delay((problem.retryAfter + 1) * 1000);
+    assert.ok(attempt < 4, "El ingreso no completó después de respetar cinco cooldowns reales.");
+  }
   await page.getByRole("heading", { name: "Revisá tu correo", exact: true }).waitFor();
   await fillOtp(page, await env.code(email, before));
   await page.getByRole("button", { name: "Verificar", exact: true }).click();
@@ -144,10 +159,11 @@ async function selectConversation(page, width, title) {
   await openHistory(page, width);
   await page.getByRole("button", { name: title, exact: true }).first().click();
 }
-async function conversationAction(page, width, title, action) {
+export async function conversationAction(page, width, title, action, { saved = false } = {}) {
   await openHistory(page, width);
-  await page.getByRole("button", { name: `Acciones de ${title}`, exact: true }).click();
-  await page.getByRole("menuitem", { name: action, exact: true }).click();
+  const group = saved ? page.getByRole("heading", { name: "Guardadas", exact: true }).locator("..") : page;
+  await group.getByRole("button", { name: `Acciones de ${title}`, exact: true }).click();
+  await page.getByRole("menuitem", { name: `${action}: ${title}`, exact: true }).click();
 }
 async function newConversation(page) {
   await page.getByRole("button", { name: "Nueva conversación", exact: true }).first().click();
@@ -157,7 +173,7 @@ const calls = (value) => value.calls + value.titleCalls;
 /** Los 21 hitos usan controles de la app; los casos técnicos suplementarios usan la API real. */
 export async function runAssistantJourney({ page, platformPage, width, env, base, businessEmail, operatorEmail,
   record, organizationName = "Empresa E2E", login = (target, email, access) => assistantLogin(target, env, base, email, access), signOut,
-  onlyNotice = false, afterNotice = false }) {
+  onlyNotice = false, afterNotice = false, fromTools = false, fromHistory = false, fromTransport = false, fromRename = false, fromKey = false, keySaveOnly = false, crossOnly = false, keyChangedOnly = false }) {
   const control = createAssistantControl(env.command);
   const root = prefix("business");
   await login(page, businessEmail, "business");
@@ -171,7 +187,7 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
   const step = (id, action, target = page) => record(id, width, () => target, action, () => "El control real no cumplió la comprobación.");
   let id; let title; let admission;
   // Una continuación nueva necesita aceptar por UI el aviso del contexto fresco, sin repetir el CHECK aprobado.
-  if (afterNotice) await acceptNotice(page);
+  if (afterNotice || fromTools || fromHistory || fromTransport || fromRename || fromKey || crossOnly) await acceptNotice(page);
   else await step("E8B-10-1", async () => {
     const notice = page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true });
     await notice.waitFor();
@@ -190,6 +206,17 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     return "Entendido quedó persistido antes de permitir consultar.";
   });
   if (onlyNotice) return;
+  if (crossOnly) {
+    const created = await assistantApi(page, { route: `${root}/conversations`, method: "POST", body: {}, key: randomUUID() });
+    assert.equal(created.status, 201);
+    // Reproduce la página de salida del bloque aprobado, sin volver a comprobar su navegación.
+    await page.goto(new URL("/org/asistente/uso", base).href);
+    await page.getByRole("heading", { name: "Uso", exact: true }).waitFor();
+    await assistantAccessCases({ page, platformPage, width, base, control, actor, ownBusinessId: created.body.id, businessEmail, operatorEmail, organizationName, login, signOut });
+    return;
+  }
+  const toolQuestion = "[E2E:tool] [E2E:slow] ¿Quiénes son los usuarios activos?";
+  if (!fromTools && !fromHistory && !fromTransport && !fromRename && !fromKey) {
   await step("E8B-10-2", async () => {
     await page.getByRole("heading", { name: "¿Qué querés consultar?", exact: true }).waitFor();
     await page.reload();
@@ -220,9 +247,17 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
   await step("E8B-30-1", async () => {
     await page.locator('input[type="file"]').setInputFiles({ name: "información.png", mimeType: "image/png", buffer: png });
     await page.getByRole("button", { name: "Quitar información.png", exact: true }).waitFor();
-    admission = await sendFromUi(page, "[E2E:tool] ¿Quiénes son los usuarios activos?"); id = admission.id;
+    admission = await sendFromUi(page, toolQuestion); id = admission.id;
     return "La imagen se subió por multipart autenticado y el envío abrió SSE a través de Vite.";
   });
+  } else if (fromKey) {
+    const created = await assistantApi(page, { route: `${root}/conversations`, method: "POST", body: {}, key: randomUUID() });
+    assert.equal(created.status, 201); id = created.body.id;
+  } else {
+    // Dependencia mínima del contexto fresco: una pregunta por UI, sin repetir upload, atajo, navegación ni CHECK verdes.
+    admission = await sendFromUi(page, toolQuestion); id = admission.id;
+  }
+  if (!fromHistory && !fromTransport && !fromRename && !fromKey) {
   await step("E8B-30-2", async () => {
     await page.getByText("Consultando usuarios…", { exact: true }).or(page.getByText("Consultó Usuarios", { exact: true })).first().waitFor();
     return "La herramienta real de Usuarios informa su estado sin mostrar argumentos privados.";
@@ -243,16 +278,18 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     assert.equal((await readConversation(page, root, id)).messages.items.at(-1).rating, "up");
     return "La respuesta completa y su feedback están en PostgreSQL; el contador acredita la herramienta y sus ciclos.";
   });
+  } else if (!fromKey) await waitAssistantTerminal(page, root, id);
+  if (!fromTransport && !fromRename && !fromKey) {
   await step("E8B-40-1", async () => {
     title = (await readConversation(page, root, id)).conversation.title ?? "Nueva conversación";
     await openHistory(page, width);
     await page.getByRole("button", { name: `Acciones de ${title}`, exact: true }).click();
-    await page.getByRole("menuitem", { name: "Guardar", exact: true }).waitFor();
+    await page.getByRole("menuitem", { name: `Guardar: ${title}`, exact: true }).waitFor();
     return "El menú ofrece guardar, renombrar, exportar y borrar la conversación propia.";
   });
   await step("E8B-40-2", async () => {
     const saved = page.waitForResponse((item) => new URL(item.url()).pathname === `${root}/conversations/${id}` && item.request().method() === "PUT");
-    await page.getByRole("menuitem", { name: "Guardar", exact: true }).click(); assert.equal((await saved).status(), 200);
+    await page.getByRole("menuitem", { name: `Guardar: ${title}`, exact: true }).click(); assert.equal((await saved).status(), 200);
     if (width === 390) await page.keyboard.press("Escape");
     assert.equal((await readConversation(page, root, id)).conversation.isSaved, true);
     return "Guardar usa la versión real y la conversación pasa a Guardadas sin vencimiento.";
@@ -261,7 +298,7 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     const before = await control("providerCounters");
     for (const [format, name, type] of [["markdown", "Exportar en Markdown", "text/markdown"], ["pdf", "Exportar en PDF", "application/pdf"]]) {
       const downloaded = page.waitForEvent("download");
-      await conversationAction(page, width, title, name);
+      await conversationAction(page, width, title, name, { saved: true });
       const file = await downloaded; assert.equal(await file.failure(), null);
       const bytes = await readFile(await assistantExportPath(file, width, format));
       if (format === "pdf") assert.equal(bytes.subarray(0, 5).toString("ascii"), "%PDF-");
@@ -273,8 +310,14 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     assert.equal(calls(await control("providerCounters")), calls(before), "Exportar no llama al modelo.");
     return "Markdown UTF-8 y PDF binario descargan por HTTP privado, sin otro consumo del modelo.";
   });
+  } else if (!fromKey) {
+    // La prueba de retención posterior necesita una conversación guardada propia como preparación real.
+    const saved = await readConversation(page, root, id);
+    assert.equal((await assistantApi(page, { route: `${root}/conversations/${id}`, method: "PUT", body: { isSaved: true, version: saved.conversation.version } })).status, 200);
+  }
   // Navegación, stop, replay y bordes de archivos pertenecen a la integración real.
-  await assistantTransportCases({ page, width, base, control, root, actor, savedId: id });
+  if (!fromKey) await assistantTransportCases({ page, width, base, control, root, actor, savedId: id, resumeOnly: fromTransport && !keyChangedOnly, historyOnly: fromRename, keyChangedOnly });
+  if (!fromKey) {
   await step("E8B-50-1", async () => {
     const me = await assistantApi(page, { route: "/api/me" });
     const organizationId = me.body.activeTenantId;
@@ -289,19 +332,61 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     await dialog.waitFor({ state: "hidden" });
     return "Plataforma habilita la clave propia con autorización, motivo y versión reales.";
   }, platformPage);
-  await step("E8B-50-2", async () => {
+  } else {
+    // La acción UI ya aprobada se prepara por su servicio real, con operador, versión y motivo explícitos.
+    await platformPage.goto(new URL(`/plataforma/organizaciones/${actor.tenantId}?tab=modules`, base).href);
+    await platformPage.getByRole("tab", { name: /^Módulos/ }).waitFor();
+    const route = `/api/platform/tenants/${actor.tenantId}/assistant/policy`;
+    const policy = await assistantApi(platformPage, { route }); assert.equal(policy.status, 200);
+    assert.equal((await assistantApi(platformPage, { route, method: "PUT", body: { allowOwnKey: true, reason: "Preparación explícita de la continuación E8b", version: policy.body.version } })).status, 200);
+  }
+  const selectOwnKey = async () => {
     await page.goto(new URL("/org/asistente/configuracion", base).href);
     await page.getByRole("radio", { name: "La nuestra", exact: true }).click();
     await page.getByRole("textbox", { name: "Clave de Anthropic", exact: true }).waitFor();
     return "El Dueño puede elegir su clave tras el permiso explícito de Plataforma.";
-  });
+  };
+  if (keySaveOnly) await selectOwnKey(); else await step("E8B-50-2", selectOwnKey);
   await step("E8B-50-3", async () => {
-    await page.getByRole("textbox", { name: "Clave de Anthropic", exact: true }).fill("e2e-own-assistant-key");
     await page.getByRole("textbox", { name: "Consultas por persona por día", exact: true }).fill("50");
     await page.getByRole("textbox", { name: "Tope del mes", exact: true }).fill("10");
-    const response = page.waitForResponse((item) => new URL(item.url()).pathname === `${root}/settings` && item.request().method() === "PUT");
+    // Cambiar topes abandona cualquier secreto previo; se escribe la clave al finalizar la edición.
+    await page.getByRole("textbox", { name: "Clave de Anthropic", exact: true }).fill("e2e-own-assistant-key");
+    const read = await assistantApi(page, { route: `${root}/settings` }); assert.equal(read.status, 200);
+    const metadata = await page.evaluate(async (settings) => {
+      const { settingsValues, settingsSchema } = await import("/src/modules/assistant/settings/settingsForm.ts");
+      const projected = settingsValues(settings);
+      const result = settingsSchema((key) => key, false).safeParse({ ...projected, mode: "OwnKey", dailyMessageLimit: 50,
+        monthlyBudget: { amount: 10, currency: settings.monthlyBudget?.currency ?? "USD" }, keyAction: "replace" });
+      const fields = new Set(["mode", "modelId", "effort", "dailyMessageLimit", "monthlyBudget", "allowedModelIds", "personalEnabled", "retentionDays", "keyAction"]);
+      return { effort: ["low", "medium", "high", "Low", "Medium", "High"].includes(settings.effort) ? settings.effort : "unknown",
+        allowOwnKey: settings.allowOwnKey === true, hasAlertRecipient: settings.hasAlertRecipient === true,
+        modelCompatible: settings.ownKeyModels.some((model) => model.id === settings.modelId && model.isActive),
+        projectedInvalidFields: result.success ? [] : result.error.issues.map((issue) => fields.has(issue.path[0]) ? issue.path[0] : "unknown") };
+    }, read.body);
+    const keyPresent = await page.getByRole("textbox", { name: "Clave de Anthropic", exact: true }).evaluate((input) => input.value.trim().length > 0);
+    process.stdout.write(`TECH DATA settings.key-save ${width} ${JSON.stringify({ ...metadata, keyPresent })}\n`);
+    const response = page.waitForResponse((item) => new URL(item.url()).pathname === `${root}/settings` && item.request().method() === "PUT")
+      .catch(() => null);
     await page.getByRole("button", { name: "Guardar cambios", exact: true }).click();
-    assert.equal((await response).status(), 200);
+    await delay(100);
+    const visible = await page.evaluate(async () => {
+      const { default: i18n } = await import("/src/shared/i18n/index.ts");
+      const form = document.querySelector("#assistant-settings");
+      const labels = new Set(["Clave de Anthropic", "Consultas por persona por día", "Tope del mes", "Modelo", "Esfuerzo", "Qué clave usa"]);
+      const labelFor = (field) => field.id ? Array.from(form.querySelectorAll("label")).find((item) => item.htmlFor === field.id)?.textContent?.trim().replace(/\s*\*\s*$/, "") : null;
+      const invalid = Array.from(form?.querySelectorAll("input:invalid,textarea:invalid,[aria-invalid=true]") ?? [])
+        .map((field) => { const label = labelFor(field); return labels.has(label) ? label : "unknown"; });
+      const keys = ["assistant:settings.validation.money", "assistant:settings.validation.model", "assistant:settings.validation.limit", "assistant:settings.validation.key", "fields.invalidMoney", "fields.invalidNumber"];
+      const errors = Array.from(form?.querySelectorAll('[role="alert"]') ?? []).map((alert) => keys.find((key) => i18n.t(key) === alert.textContent?.trim()) ?? "unknown");
+      return { nativeValid: form?.checkValidity() === true, invalidFields: invalid, validationKeys: errors };
+    });
+    process.stdout.write(`TECH DATA settings.key-save-ui ${width} ${JSON.stringify(visible)}\n`);
+    assert.equal(metadata.projectedInvalidFields.length, 0, "El contrato leído debe satisfacer el esquema público.");
+    assert.equal(metadata.allowOwnKey && metadata.hasAlertRecipient && metadata.modelCompatible, true, "La preparación debe habilitar guardar OwnKey.");
+    const reply = await response;
+    assert.ok(reply, "Guardar debe emitir su PUT después de validar el formulario.");
+    assert.equal(reply.status(), 200);
     return "La clave se valida contra FakeChatClient y se guarda por el servicio productivo, con sus topes.";
   });
   await step("E8B-50-4", async () => {
@@ -333,7 +418,7 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     await page.goto(new URL("/org/asistente/uso", base).href);
     await page.getByRole("heading", { name: "Uso", exact: true }).waitFor();
     await page.getByRole("group", { name: "Resumen de uso", exact: true }).waitFor();
-    assert.equal(await page.getByText("[E2E:tool] ¿Quiénes son los usuarios activos?", { exact: true }).count(), 0);
+    assert.equal(await page.getByText(toolQuestion, { exact: true }).count(), 0);
     return "Uso muestra períodos y costo agregados sin textos de conversaciones.";
   });
   await step("E8B-60-4", async () => {
@@ -355,55 +440,91 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     await page.getByRole("heading", { name: "Uso", exact: true }).waitFor();
     return "El presupuesto persistido bloquea IA y Ver uso abre el resumen privado.";
   });
+  await assistantAccessCases({ page, platformPage, width, base, control, actor, ownBusinessId: id, businessEmail, operatorEmail, organizationName, login, signOut });
+}
+
+async function assistantAccessCases({ page, platformPage, width, base, control, actor, ownBusinessId, businessEmail, operatorEmail, organizationName, login, signOut }) {
+  let stage = "access.consumer-login";
+  try {
+  process.stdout.write(`TECH INICIO ${stage} ${width}\n`);
   await control("quotas", { ...actor, remainingMessages: 50, monthlyFraction: 0 });
   // Los tres accesos comparten cuenta/cuota donde corresponde y separan chats.
-  const ownBusinessId = id;
   await signOut(page, organizationName);
   await login(page, businessEmail, "consumer");
   const personal = await assistantApi(page, { route: "/api/me" });
   assert.equal(personal.status, 200);
+  assert.equal(personal.body.access, "consumer");
   await control("prepare", { email: businessEmail, access: "consumer", ...(personal.body.activeTenantId ? { tenantId: personal.body.activeTenantId } : {}) });
   await home(page, base, "consumer", width); await acceptNotice(page);
   const consumer = prefix("consumer");
+  stage = "access.consumer-isolation";
   assert.equal((await assistantApi(page, { route: `${consumer}/conversations/${ownBusinessId}` })).status, 404);
+  process.stdout.write(`TECH OK ${stage} ${width}\n`);
+  stage = "access.consumer-quick";
   await page.getByRole("button", { name: "Cómo entro a mi cuenta", exact: true }).click();
   await page.getByRole("link", { name: "Ver mi cuenta", exact: true }).waitFor();
+  process.stdout.write(`TECH OK ${stage} ${width}\n`);
   await signOut(page, "Personal");
   await control("prepare", { email: operatorEmail, access: "platform" });
   await home(platformPage, base, "platform", width); await acceptNotice(platformPage);
+  stage = "access.platform-isolation";
   assert.equal((await assistantApi(platformPage, { route: `${prefix("platform")}/conversations/${ownBusinessId}` })).status, 404);
+  process.stdout.write(`TECH OK ${stage} ${width}\n`);
+  stage = "access.platform-quick";
   await platformPage.getByRole("button", { name: "Organizaciones por aprobar", exact: true }).click();
   await platformPage.getByRole("link", { name: "Ver en Organizaciones", exact: true }).waitFor();
+  process.stdout.write(`TECH OK ${stage} ${width}\n`);
+  } catch (error) { error.assistantStage = stage; throw error; }
 }
 
-async function assistantTransportCases({ page, width, base, control, root, actor, savedId }) {
+async function assistantTransportCases({ page, width, base, control, root, actor, savedId, resumeOnly = false, historyOnly = false, keyChangedOnly = false }) {
+  let stage = historyOnly ? "history.rename-conflict" : keyChangedOnly ? "transport.keychanged" : resumeOnly ? "transport.resume" : "transport.sse";
+  const advance = (next) => { process.stdout.write(`TECH OK ${stage} ${width}\n`); stage = next; process.stdout.write(`TECH INICIO ${stage} ${width}\n`); };
+  process.stdout.write(`TECH INICIO ${stage} ${width}\n`);
+  try {
   // Un primer delta real llega antes de done; replay conserva IDs y no factura otra vez.
   const created = await assistantApi(page, { route: `${root}/conversations`, method: "POST", body: {}, key: randomUUID() });
   assert.equal(created.status, 201);
   const id = created.body.id;
   let detail = await readConversation(page, root, id);
+  let failing;
+  if (!historyOnly) {
   const request = { text: "[E2E:answer] Respuesta incremental para comprobar transporte.", attachmentIds: [], conversationVersion: detail.conversation.version };
   const key = randomUUID();
+  if (!resumeOnly) {
   const streamed = await assistantApi(page, { route: `${root}/conversations/${id}/messages`, method: "POST", body: request, key, stream: true });
-  assert.equal(streamed.status, 200); assert.equal(streamed.contentType, "text/event-stream");
+  assert.equal(streamed.status, 200);
+  if (!keyChangedOnly) {
+  assert.equal(streamed.contentType, "text/event-stream");
   assert.equal(streamed.events[0], "start"); assert.equal(streamed.events.at(-1), "done");
   assert.ok(streamed.firstDeltaAt < streamed.doneAt, "Vite debe entregar un delta antes de cerrar el SSE.");
+  advance("transport.replay");
   const before = await control("providerCounters");
   const replay = await assistantApi(page, { route: `${root}/conversations/${id}/messages`, method: "POST", body: request, key });
   assert.equal(replay.status, 200); assert.equal(replay.contentType, "application/json");
   assert.equal(replay.body.turnId, streamed.terminal.turnId); assert.equal(calls(await control("providerCounters")), calls(before));
+  advance("transport.keychanged");
+  }
+  const changedHeaders = page.waitForResponse((reply) => new URL(reply.url()).pathname === `${root}/conversations/${id}/messages` && reply.request().method() === "POST")
+    .then((reply) => { const mime = reply.headers()["content-type"]?.split(";", 1)[0]; return { contentType: ["application/json", "application/problem+json", "text/html", "text/plain"].includes(mime) ? mime : "unknown" }; }).catch(() => ({ contentType: "unavailable" }));
   const changed = await assistantApi(page, { route: `${root}/conversations/${id}/messages`, method: "POST", body: { ...request, text: "Otro cuerpo" }, key });
+  process.stdout.write(`TECH DATA transport.keychanged ${width} ${JSON.stringify({ status: changed.status, code: typeof changed.code === "string" && /^[A-Za-z0-9.]+$/.test(changed.code) ? changed.code : "none", ...await changedHeaders })}\n`);
   assert.equal(changed.status, 422);
+  advance("transport.disconnect");
+  }
   // Desmontar sólo cierra transporte. Reabrir observa el final del mismo turno.
   detail = await readConversation(page, root, id);
   const lost = await assistantApi(page, { route: `${root}/conversations/${id}/messages`, method: "POST",
     body: { text: "[E2E:slow] Continuá al cerrar la pestaña.", attachmentIds: [], conversationVersion: detail.conversation.version }, key: randomUUID(), stream: true, disconnect: true });
   assert.equal(lost.status, 200); assert.ok(lost.events.includes("delta"));
+  if (!resumeOnly) advance("transport.resume");
   await page.goto(new URL("/org/usuarios", base).href);
+  await page.getByRole("heading", { name: "Usuarios", exact: true }).waitFor();
   detail = await waitAssistantTerminal(page, root, id); assert.equal(detail.messages.items.at(-1).status, "Complete");
   await home(page, base, "business", width);
   await selectConversation(page, width, detail.conversation.title ?? "Nueva conversación");
   await page.getByText(/Respuesta de prueba con acentos/).first().waitFor();
+  advance("transport.stop");
   // Detener por UI envía stop durable, no confunde cierre de lector con cancelación.
   await newConversation(page);
   const slow = await sendFromUi(page, "[E2E:slow] Esta respuesta se detiene explícitamente.");
@@ -411,10 +532,12 @@ async function assistantTransportCases({ page, width, base, control, root, actor
   await page.getByRole("button", { name: "Detener", exact: true }).click();
   detail = await waitAssistantTerminal(page, root, slow.id); assert.equal(detail.messages.items.at(-1).status, "Stopped");
   await page.getByText("Detuviste la respuesta.", { exact: true }).waitFor();
+  advance("transport.failed");
   await newConversation(page);
-  const failing = await sendFromUi(page, "[E2E:error] Fallo después de un parcial.");
+  failing = await sendFromUi(page, "[E2E:error] Fallo después de un parcial.");
   detail = await waitAssistantTerminal(page, root, failing.id); assert.equal(detail.messages.items.at(-1).status, "Failed");
   await page.getByRole("button", { name: "Reintentar", exact: true }).waitFor();
+  advance("attachments.signature-limit");
   // Bordes de upload reales: firma, +1 byte, dueño/conversación y borrar pendiente.
   detail = await readConversation(page, root, id);
   const route = `${root}/conversations/${id}/attachments`;
@@ -428,6 +551,7 @@ async function assistantTransportCases({ page, width, base, control, root, actor
     key: randomUUID(), file: { name: "diez-mib.png", type: "image/png", bytes: Array.from(png), size: 10 * 1024 * 1024 } });
   assert.equal(exactLimit.status, 201, "El límite exacto del archivo se admite.");
   assert.equal((await assistantApi(page, { route: `${route}/${exactLimit.body.id}?version=${exactLimit.body.version}`, method: "DELETE" })).status, 204);
+  advance("attachments.owner-delete");
   detail = await readConversation(page, root, id);
   const attachment = await assistantApi(page, { route, method: "POST", body: { conversationVersion: detail.conversation.version },
     key: randomUUID(), file: { name: "válida.png", type: "image/png", bytes: Array.from(png) } });
@@ -437,6 +561,7 @@ async function assistantTransportCases({ page, width, base, control, root, actor
   assert.equal((await assistantApi(page, { route: `${root}/conversations/${savedId}/attachments/${attachment.body.id}` })).status, 404);
   assert.equal((await assistantApi(page, { route: `${route}/${attachment.body.id}?version=${attachment.body.version}`, method: "DELETE" })).status, 204);
   assert.equal((await assistantApi(page, { route: `${route}/${attachment.body.id}` })).status, 404);
+  advance("attachments.five-six");
   const attachments = [];
   for (let index = 0; index < 5; index++) {
     detail = await readConversation(page, root, id);
@@ -453,9 +578,19 @@ async function assistantTransportCases({ page, width, base, control, root, actor
   assert.equal(five.status, 200); assert.equal(five.events.at(-1), "done");
   detail = await waitAssistantTerminal(page, root, id);
   assert.equal(detail.messages.items.findLast((message) => message.role === "user").attachments.length, 5);
+  advance("history.rename-conflict");
+  } else {
+    const failed = await assistantApi(page, { route: `${root}/conversations`, method: "POST", body: {}, key: randomUUID() });
+    assert.equal(failed.status, 201);
+    failing = { id: failed.body.id };
+    await assistantApi(page, { route: `${root}/conversations/${failing.id}/messages`, method: "POST", key: randomUUID(), stream: true,
+      body: { text: "[E2E:error] Preparación de conversación temporal.", attachmentIds: [], conversationVersion: failed.body.version } });
+    await waitAssistantTerminal(page, root, failing.id);
+    await home(page, base, "business", width);
+  }
   const saved = await readConversation(page, root, savedId);
   const savedName = `Guardada E8b ${width}`;
-  await conversationAction(page, width, saved.conversation.title ?? "Nueva conversación", "Renombrar");
+  await conversationAction(page, width, saved.conversation.title ?? "Nueva conversación", "Renombrar", { saved: true });
   const rename = page.getByRole("dialog", { name: "Renombrar la conversación", exact: true });
   await rename.getByRole("textbox", { name: "Nombre", exact: true }).fill(savedName);
   const renamed = page.waitForResponse((item) => new URL(item.url()).pathname === `${root}/conversations/${savedId}` && item.request().method() === "PUT");
@@ -465,6 +600,7 @@ async function assistantTransportCases({ page, width, base, control, root, actor
   const stale = await assistantApi(page, { route: `${root}/conversations/${savedId}`, method: "PUT",
     body: { title: "Nombre obsoleto", isSaved: true, version: saved.conversation.version } });
   assert.equal(stale.status, 409, "Una versión anterior no sobrescribe el nombre guardado.");
+  advance("history.delete-retention");
   const failed = await readConversation(page, root, failing.id);
   const temporaryTitle = `Temporal E8b ${width}`;
   assert.equal((await assistantApi(page, { route: `${root}/conversations/${failing.id}`, method: "PUT",
@@ -478,4 +614,6 @@ async function assistantTransportCases({ page, width, base, control, root, actor
   await control("clock", { ...actor, retentionExpired: true });
   assert.equal((await assistantApi(page, { route: `${root}/conversations/${id}` })).status, 404, "El worker purga chats vencidos.");
   assert.equal((await assistantApi(page, { route: `${root}/conversations/${savedId}` })).status, 200, "El worker conserva las guardadas.");
+  process.stdout.write(`TECH OK ${stage} ${width}\n`);
+  } catch (error) { error.assistantStage = stage; throw error; }
 }

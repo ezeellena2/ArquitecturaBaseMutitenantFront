@@ -35,3 +35,21 @@ test("el primer hito y su continuación preservan verdes sin aceptar opciones aj
   assert.throws(() => parseAssistantArguments(["--only=E8B-10-1", "--after=E8B-10-1"]));
   assert.throws(() => parseAssistantArguments(["--only=E8B-20-1"]), /no admitidos/);
 });
+
+test("continúa desde la herramienta pendiente sin combinar cortes ni hitos arbitrarios", () => {
+  assert.deepEqual(parseAssistantArguments(["--no-build", "--width=1440", "--from=E8B-30-2"]), { build: false, widths: [1440], fromTools: true });
+  assert.throws(() => parseAssistantArguments(["--from=E8B-30-2", "--after=E8B-10-1"]));
+  assert.throws(() => parseAssistantArguments(["--from=E8B-30-3"]), /no admitidos/);
+});
+
+test("continúa desde el historial pendiente sin volver a comprobar la respuesta aprobada", () => {
+  assert.deepEqual(parseAssistantArguments(["--no-build", "--width=1440", "--from=E8B-40-1"]), { build: false, widths: [1440], fromHistory: true });
+  assert.throws(() => parseAssistantArguments(["--from=E8B-40-1", "--from=E8B-30-2"]));
+  assert.throws(() => parseAssistantArguments(["--from=E8B-40-2"]), /no admitidos/);
+});
+
+test("continúa desde reanudar transporte conservando hitos y prefijo técnico aprobados", () => {
+  assert.deepEqual(parseAssistantArguments(["--no-build", "--width=1440", "--from=transport-resume"]), { build: false, widths: [1440], fromTransport: true });
+  assert.throws(() => parseAssistantArguments(["--from=transport-resume", "--from=E8B-40-1"]));
+  assert.throws(() => parseAssistantArguments(["--from=transport-private"]), /no admitidos/);
+});

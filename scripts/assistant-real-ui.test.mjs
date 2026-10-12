@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { test } from "node:test";
-import { assistantExportPath, acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
+import { assistantExportPath, acceptAssistantNoticeFromHome, conversationAction } from "./assistant-real-ui.mjs";
 import { chromium } from "playwright";
 
 test("el foco de acceso espera Inicio y pulsa Entendido explícitamente sólo si aparece el aviso", async () => {
@@ -27,6 +27,25 @@ test("el foco de acceso espera Inicio y pulsa Entendido explícitamente sólo si
     await acceptAssistantNoticeFromHome(page, () => { throw new Error("El aviso aceptado no se acepta otra vez."); });
     await page.setContent('<h2>El asistente todavía no está configurado</h2>');
     await acceptAssistantNoticeFromHome(page, () => { throw new Error("Sin configuración no hay aceptación implícita."); });
+  } finally { await browser.close(); }
+});
+
+test("las acciones de la guardada no confunden otra conversación del mismo título", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent('<section><h2>Guardadas</h2><button aria-label="Acciones de Consulta de prueba" data-group="saved">⋮</button></section><section><h2>Recientes</h2><button aria-label="Acciones de Consulta de prueba" data-group="recent">⋮</button></section>');
+    await page.evaluate(() => {
+      for (const button of document.querySelectorAll("button")) button.addEventListener("click", () => {
+        document.body.dataset.group = button.dataset.group;
+        const action = document.createElement("button"); action.setAttribute("role", "menuitem"); action.setAttribute("aria-label", "Renombrar: Consulta de prueba");
+        action.addEventListener("click", () => { document.body.dataset.action = "rename"; });
+        document.body.append(action);
+      });
+    });
+    await conversationAction(page, 1440, "Consulta de prueba", "Renombrar", { saved: true });
+    assert.equal(await page.locator("body").getAttribute("data-group"), "saved");
+    assert.equal(await page.locator("body").getAttribute("data-action"), "rename");
   } finally { await browser.close(); }
 });
 
