@@ -3,7 +3,6 @@ import { api } from "@/shared/api/httpClient";
 import type { PagedResult } from "@/shared/api/pagedResult";
 import type {
   CreateRoleRequest,
-  CompanyResponse,
   PagedRequest,
   PermissionGroupResponse,
   RoleResponse,
@@ -18,9 +17,6 @@ export const rolesQueryKeyRoot = ["roles"] as const;
 export const rolesQueryKey = (query: RolesQuery) => [...rolesQueryKeyRoot, query] as const;
 export const roleQueryKey = (roleId: string) => [...rolesQueryKeyRoot, "detail", roleId] as const;
 export const permissionGroupsQueryKey = ["permissions"] as const;
-/// Las empresas para «Vale en»: el filtro de la lista y el editor.
-export const roleCompanyOptionsQueryKey = ["role-company-options"] as const;
-
 
 export function fetchRoles(query: RolesQuery): Promise<PagedResult<RoleResponse>> {
   const search = toSearch(query);
@@ -33,10 +29,6 @@ export function fetchRole(roleId: string): Promise<RoleResponse> {
 
 export function fetchPermissionGroups(): Promise<PermissionGroupResponse[]> {
   return api.get<PermissionGroupResponse[]>("/api/permissions");
-}
-
-export function fetchCompanyOptions(): Promise<PagedResult<CompanyResponse>> {
-  return api.get<PagedResult<CompanyResponse>>("/api/companies/paged?page=1&pageSize=100&sort=name");
 }
 
 export function createRole(request: CreateRoleRequest, idempotencyKey: string): Promise<string> {

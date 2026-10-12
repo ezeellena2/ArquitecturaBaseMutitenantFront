@@ -8,10 +8,7 @@ import type {
   OrganizationUserResponse,
   OrganizationUserState,
   PagedRequest,
-  RoleResponse,
-  RoleScopeFilter,
   UpdateOrganizationUserRequest,
-  CompanyResponse,
   VersionResponse,
 } from "@/shared/api/types";
 import type { PagedResult } from "@/shared/api/pagedResult";
@@ -26,8 +23,6 @@ export const usersQueryRoot = ["organization-users"] as const;
 export const usersQueryKey = (query: UsersQuery) => [...usersQueryRoot, query] as const;
 export const userQueryKey = (memberId: string) => [...usersQueryRoot, "detail", memberId] as const;
 export const userCountsQueryKey = (query: Pick<UsersQuery, "search" | "companyId" | "withoutCompany">) => [...usersQueryRoot, "counts", query] as const;
-export const userCompaniesQueryKey = ["organization-user-company-options"] as const;
-export const userRolesQueryKey = (scope: RoleScopeFilter) => ["organization-user-role-options", scope] as const;
 
 
 export function fetchUsers(query: UsersQuery): Promise<PagedResult<OrganizationUserResponse>> {
@@ -67,12 +62,4 @@ export function changeUserStatus(memberId: string, request: ChangeOrganizationUs
 
 export function removeUser(memberId: string, version: number): Promise<void> {
   return api.delete<void>(`/api/users/${encodeURIComponent(memberId)}?version=${version}`);
-}
-
-export function fetchCompanyOptions(): Promise<PagedResult<CompanyResponse>> {
-  return api.get<PagedResult<CompanyResponse>>("/api/companies/paged?page=1&pageSize=100&sort=name");
-}
-
-export function fetchAssignableRoles(scope: RoleScopeFilter): Promise<PagedResult<RoleResponse>> {
-  return api.get<PagedResult<RoleResponse>>(`/api/roles/paged?scope=${scope}&page=1&pageSize=100&sort=name`);
 }

@@ -1,3 +1,5 @@
+import { companyRoleOptions } from "@/shared/api/resourceOptions";
+import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useController, useForm } from "react-hook-form";
@@ -46,6 +48,7 @@ export function MemberRolesDialog({ companyId, member, roles, onClose, returnFoc
   const queryClient = useQueryClient();
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const form = useForm<MemberRolesForm>({ resolver: zodResolver(memberRolesFormSchema), defaultValues: { roleIds: member.roles.map((role) => role.id) } });
+  const roleQuery = useResourceOptions(companyRoleOptions(companyId, true));
   const roleIds = useController({ control: form.control, name: "roleIds" });
   const { failure, clear, fail, close } = useDialogFailure(onClose, companiesQueryRoot);
   const save = useMutation({ mutationFn: (request: UpdateCompanyMemberRolesRequest) => updateCompanyMemberRoles(companyId, member.memberId, request) });
@@ -76,7 +79,7 @@ export function MemberRolesDialog({ companyId, member, roles, onClose, returnFoc
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <FormField label={t("companies:editMemberRoles.roles")} error={form.formState.errors.roleIds?.message}>
-            <MultiSelect options={roles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value}
+            <MultiSelect remote={roleQuery.remote} selectedOptions={[...roles, ...member.roles, ...roleQuery.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={roleQuery.items.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value}
               onChange={(next) => { roleIds.field.onChange(orderLike(form.formState.defaultValues?.roleIds, next)); clear(); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* Tablero Empresa (v97): el error, una sola vez, en la franja con su ícono arriba de los botones. */}

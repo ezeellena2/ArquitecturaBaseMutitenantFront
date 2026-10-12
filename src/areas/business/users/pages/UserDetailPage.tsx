@@ -1,3 +1,6 @@
+import { companyOptions, fetchCompanyOption, roleOptions } from "@/shared/api/resourceOptions";
+import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
+import { RemoteOptionFooter, RemoteOptionSearch } from "@/shared/ui/RemoteOptionControls";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
 import { Building2, Settings2, Trash2 } from "lucide-react";
@@ -36,7 +39,7 @@ import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { DateText } from "@/shared/ui/format/DateText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { activeOrganization, homeOf } from "@/tenancy/access";
-import { fetchAssignableRoles, fetchCompanyOptions, fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userCompaniesQueryKey, userQueryKey, userRolesQueryKey, usersQueryRoot } from "../api/users";
+import { fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userQueryKey, usersQueryRoot } from "../api/users";
 import { userStateTones } from "../columns";
 import { ChoiceSheet, CheckRow, RadioRow } from "../components/AccessSheets";
 import { RolesField } from "../components/RolesField";
@@ -129,13 +132,17 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     onContinueEditing: () => setFailure(undefined),
     errorMessage: (error) => userErrorMessage(error, t, { self, action: failure?.action ?? "save" }),
   });
-  const roles = useQueries({ queries: (["Organization", "Company"] as const).map((scope) => ({
-    queryKey: userRolesQueryKey(scope), queryFn: () => fetchAssignableRoles(scope), enabled: canManage, meta: { silent: true },
+  const orgOptions = useResourceOptions(roleOptions("Organization"), canManage);
+  const companyRoleQuery = useResourceOptions(roleOptions("Company"), canManage);
+  const companies = useResourceOptions(companyOptions, canManage);
+  const assignedCompanies = useQueries({ queries: member.companies.map((assignment) => ({
+    queryKey: ["companies", "detail", assignment.companyId], queryFn: ({ signal }: { signal: AbortSignal }) => fetchCompanyOption(assignment.companyId, signal),
+    enabled: canManage && Boolean(companies.data) && !companies.knownItems.some((company) => company.id === assignment.companyId), meta: { silent: true },
   })) });
-  const companies = useQuery({ queryKey: userCompaniesQueryKey, queryFn: fetchCompanyOptions, enabled: canManage, meta: { silent: true } });
-  const orgRoles = roles[0].data?.items ?? [];
-  const companyRoles = roles[1].data?.items ?? [];
-  const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");
+  const registry = [...companies.knownItems, ...assignedCompanies.flatMap((query) => query.data ? [query.data] : [])];
+  const orgRoles = orgOptions.items;
+  const companyRoles = companyRoleQuery.knownItems;
+  const activeCompanies = registry.filter((company) => company.status === "Active");
   const refresh = () => Promise.all([client.invalidateQueries({ queryKey: userQueryKey(memberId) }), client.invalidateQueries({ queryKey: usersQueryRoot })]);
   const save = useMutation({
     mutationFn: ({ request }: SaveVariables) => updateUser(memberId, request),
@@ -172,8 +179,9 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const displayName = member.displayName || member.email || "";
   const shownState: UserState = isMember ? (current.isActive ? "Active" : "Inactive") : member.state;
   const dialogError = actionErrorMessage(dialogFailure, t);
-  const { preserved: preservedCompanyIds, changeable: changeableAssignments } = companyAssignments(member.companies, companies.data?.items ?? []);
+  const { preserved: preservedCompanyIds, changeable: changeableAssignments } = companyAssignments(member.companies, registry);
   const assignedCompanyIds = new Set(member.companies.map((company) => company.companyId));
+  const activeAssignedCount = new Set(registry.filter((company) => company.status === "Active" && assignedCompanyIds.has(company.id)).map((company) => company.id)).size;
   const companyName = (companyId: string) => activeCompanies.find((company) => company.id === companyId)?.name
     ?? member.companies.find((company) => company.companyId === companyId)?.companyName ?? "";
   const managedDomain = member.hasManagedEmail && member.email ? member.email.slice(member.email.indexOf("@") + 1) : null;
@@ -265,7 +273,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const confirmation = confirmAction ? confirmations[confirmAction] : null;
   // Tableros Usuario y M-Usuario: punto de color y palabra, sin pastilla, con los tonos de Usuarios.
   const stateLabel = <StatusBadge tones={userStateTones} value={shownState} className="text-[var(--t3)]" />;
-  const roleNames = current.roleIds.map((id) => orgRoles.find((role) => role.id === id)?.name ?? member.roles.find((role) => role.id === id)?.name)
+  const roleNames = current.roleIds.map((id) => orgOptions.knownItems.find((role) => role.id === id)?.name ?? member.roles.find((role) => role.id === id)?.name)
     .filter(Boolean).join(", ");
 
   const detail = isInvitation
@@ -320,7 +328,8 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
                 </Select>
               </FormField> : <ReadOnlyField label={t("users:detail.status")}>{t(`users:states.${member.state}`)}</ReadOnlyField>}
               {editable ? <RolesField label={t("users:detail.organizationRoles")} allLabel={t("users:detail.allRoles")}
-                options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={current.roleIds}
+                remote={orgOptions.remote} allCount={orgOptions.allCount} allOptions={async () => (await orgOptions.allItems()).map((role) => ({ value: role.id, label: role.name }))}
+                selectedOptions={[...member.roles, ...orgOptions.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={current.roleIds}
                 onChange={(roleIds) => changeAccess({ roleIds })} placeholder={t("users:detail.noRoles")} />
                 : <ReadOnlyField label={t("users:detail.organizationRoles")}>{member.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || t("users:detail.noRoles")}</ReadOnlyField>}
             </SectionFields>}
@@ -328,7 +337,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
         </Section>
 
         <Section title={t("users:detail.companyAccess")} action={editable ? { label: t("users:detail.addCompany"),
-          disabled: !companies.data || activeCompanies.every((company) => assignedCompanyIds.has(company.id)) || save.isPending,
+          disabled: companies.isPending || (companies.allCount !== undefined && companies.allCount === activeAssignedCount) || save.isPending,
           onClick: () => openCompanyDialog({ mode: "add", assignment: { companyId: "", roleIds: [] }, version: member.version }) } : undefined}>
             {member.companies.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)] md:px-5">{t("users:detail.noCompanies")}</p> : <List label={t("users:detail.companyAccess")}>
               {member.companies.map((company) => {
@@ -357,11 +366,13 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     </ChoiceSheet>
     <ChoiceSheet open={sheet === "roles"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("users:detail.organizationRoles")}
       done={{ label: t("common:actions.done"), onClick: () => setSheet(null) }}>
+      <RemoteOptionSearch remote={orgOptions.remote} />
       {orgRoles.map((role) => <CheckRow key={role.id} label={role.name} checked={current.roleIds.includes(role.id)}
         onCheckedChange={(checked) => changeAccess({ roleIds: checked ? [...current.roleIds, role.id] : current.roleIds.filter((id) => id !== role.id) })} />)}
+      <RemoteOptionFooter remote={orgOptions.remote} />
     </ChoiceSheet>
     {companyDialog ? <UserCompanyDialog mode={companyDialog.mode} assignment={companyDialog.assignment} companyName={companyName(companyDialog.assignment.companyId)}
-      companies={activeCompanies.filter((company) => !assignedCompanyIds.has(company.id))} roles={companyRoles} pending={save.isPending} error={dialogError}
+      excludedCompanyIds={[...assignedCompanyIds]} companies={activeCompanies.filter((company) => !assignedCompanyIds.has(company.id))} roles={companyRoles} pending={save.isPending} error={dialogError}
       returnFocusTo={companyDialog.returnFocusTo} onEdit={() => setDialogFailure(undefined)} onClose={closeCompanyDialog}
       onSave={(assignment) => saveCompanyDialog(companyDialog, assignment)} /> : null}
     <ConfirmDialog open={confirmation !== null} onOpenChange={(open) => { if (!open) setConfirmAction(null); }} destructive

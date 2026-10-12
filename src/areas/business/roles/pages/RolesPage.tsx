@@ -1,4 +1,6 @@
-import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { companyOptions, fetchCompanyOption } from "@/shared/api/resourceOptions";
+import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import { ShieldIcon } from "@/shared/ui/icons";
 import { useState } from "react";
@@ -22,8 +24,6 @@ import type { RoleResponse } from "@/shared/api/types";
 import {
   deleteRole,
   fetchRoles,
-  fetchCompanyOptions,
-  roleCompanyOptionsQueryKey,
   rolesQueryKey,
   rolesQueryKeyRoot,
   type RolesQuery,
@@ -52,12 +52,7 @@ export function RolesPage() {
   });
   const vale = filters.values.vale;
   const debouncedSearch = query.search ?? undefined;
-  const companies = useQuery({
-    queryKey: roleCompanyOptionsQueryKey,
-    queryFn: fetchCompanyOptions,
-    enabled: can("companies.read"),
-    meta: { silent: true },
-  });
+  const companies = useResourceOptions(companyOptions, can("companies.read"));
   const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");
   const companyCounts = useQueries({ queries: activeCompanies.map((company) => ({
     queryKey: [...rolesQueryKeyRoot, "company-count", company.id, debouncedSearch ?? ""],
@@ -84,7 +79,10 @@ export function RolesPage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  const companyNames = new Map((companies.data?.items ?? []).map((company) => [company.id, company.name]));
+  const rowCompanyIds = [...new Set((roles.data?.items ?? []).flatMap((role) => role.companyId ? [role.companyId] : []))];
+  const rowCompanies = useQueries({ queries: rowCompanyIds.map((companyId) => ({ queryKey: ["companies", "detail", companyId],
+    queryFn: ({ signal }: { signal: AbortSignal }) => fetchCompanyOption(companyId, signal), enabled: can("companies.read") && Boolean(companies.data) && !companies.knownItems.some((item) => item.id === companyId), meta: { silent: true } })) });
+  const companyNames = new Map([...companies.knownItems, ...rowCompanies.flatMap((query) => query.data ? [query.data] : [])].map((company) => [company.id, company.name]));
   const rowActions = (role: RoleResponse) => <RowActions
         label={t("roles:rowActions", { name: role.name })}
         title={role.name}
@@ -133,7 +131,7 @@ export function RolesPage() {
             label: t("roles:filters.scope"),
             menuLabel: t("roles:filters.scopeMenu"),
             value: filterValue,
-            active: vale !== undefined,
+            active: vale !== undefined, remote: companies.remote, selectedLabel: companies.knownItems.find((item) => item.id === vale)?.name,
             onChange: (value) => filters.setFilter("vale", value === "all" ? undefined : value),
             options: [
               { value: "all", label: t("roles:filters.allScopes"), count: countFor(0) },

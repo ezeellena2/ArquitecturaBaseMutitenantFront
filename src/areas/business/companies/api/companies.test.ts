@@ -17,7 +17,7 @@ describe("roles que se asignan en una empresa", () => {
     }));
 
     await expect(fetchAssignableCompanyRoles("company-1", true)).resolves.toEqual(page([anyCompany]));
-    expect(queries).toEqual(["?page=1&pageSize=100&sort=name"]);
+    expect(queries).toEqual(["?page=1&pageSize=10&sort=name"]);
   });
 
   it("quien solo ve los roles de la organización los pide con la empresa, y el back filtra", async () => {
@@ -28,6 +28,6 @@ describe("roles que se asignan en una empresa", () => {
     }));
 
     await expect(fetchAssignableCompanyRoles("company-1", false)).resolves.toEqual(page([anyCompany]));
-    expect(queries).toEqual(["?companyId=company-1&page=1&pageSize=100&sort=name"]);
+    expect(queries).toEqual(["?page=1&pageSize=10&sort=name&scope=Company&companyId=company-1"]);
   });
 });

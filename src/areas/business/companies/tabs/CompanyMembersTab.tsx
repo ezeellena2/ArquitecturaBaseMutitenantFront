@@ -1,3 +1,5 @@
+import { companyRoleOptions, companyCandidateOptions } from "@/shared/api/resourceOptions";
+import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Power, RotateCw, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
@@ -52,6 +54,7 @@ export function CompanyMembersTab({ company, list, roles }: {
   const { can, canInCompany } = usePermissions();
   const canReadMembers = canInCompany(company.id, "company.members.read");
   const canManageMembers = canInCompany(company.id, "company.members.manage");
+  const roleOptions = useResourceOptions(companyRoleOptions(company.id, canReadMembers), canReadMembers);
   // La ficha de Usuario pide `users.read` de la organización: sin ese permiso, «Ver usuario» no se ofrece (B4).
   const canViewUsers = can("users.read");
   const { filters, pagination, query, result: members, paginationProps } = list;
@@ -68,7 +71,7 @@ export function CompanyMembersTab({ company, list, roles }: {
     onSuccess: async (_result, member) => {
       setRemoveTarget(null);
       toast.success(t(member.membershipStatus === "Active" ? "companies:messages.memberRemoved" : "companies:messages.memberRestored", { name: member.displayName }));
-      await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
+      await Promise.all([queryClient.invalidateQueries({ queryKey: companiesQueryRoot }), queryClient.invalidateQueries({ queryKey: companyCandidateOptions(company.id).queryKeyRoot })]);
     },
     onError: (error) => toastActionError(error, t),
   });
@@ -131,9 +134,9 @@ export function CompanyMembersTab({ company, list, roles }: {
     {counts.isError ? <FormError message={apiErrorMessage(counts.error, t)} /> : null}
     <FilterBar phoneTools="none" label={t("companies:detail.filters.label")} searchLabel={t("companies:detail.filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
       filters={[
-        { key: "roleId", label: t("companies:detail.filters.role"), menuLabel: t("companies:detail.filters.roleMenu"), value: filters.values.roleId ?? "", active: filters.values.roleId !== undefined,
+        { key: "roleId", label: t("companies:detail.filters.role"), menuLabel: t("companies:detail.filters.roleMenu"), remote: roleOptions.remote, selectedLabel: roleOptions.knownItems.find((role) => role.id === roleId)?.name, value: filters.values.roleId ?? "", active: filters.values.roleId !== undefined,
           onChange: (value) => filters.setFilter("roleId", value === "all" ? undefined : value),
-          options: [{ value: "all", label: t("companies:detail.filters.allRoles") }, { value: "none", label: t("companies:detail.filters.withoutRoles") }, ...roles.map((role) => ({ value: role.id, label: role.name }))] },
+          options: [{ value: "all", label: t("companies:detail.filters.allRoles") }, { value: "none", label: t("companies:detail.filters.withoutRoles") }, ...roleOptions.items.map((role) => ({ value: role.id, label: role.name }))] },
         { key: "state", label: t("companies:detail.filters.state"), menuLabel: t("companies:detail.filters.stateMenu"), value: state ?? "", active: state !== undefined,
           onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value),
           options: memberStates.map((value) => ({ value: value ?? "all", label: value ? t(`companies:detail.filters.states.${value}`) : t("companies:detail.filters.allStates"), count: countForState(value) })) },

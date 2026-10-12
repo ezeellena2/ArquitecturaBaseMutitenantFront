@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import { useMemo } from "react";
 import { useController, useForm } from "react-hook-form";
@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
-import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
+import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { AddCompanyMemberRequest, RoleResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -17,8 +17,10 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { addCompanyMember, companiesQueryRoot, companyCandidatesQueryKey, fetchCompanyCandidates } from "../api/companies";
+import { SearchSelect } from "@/shared/ui/SearchSelect";
+import { companyCandidateOptions, companyRoleOptions } from "@/shared/api/resourceOptions";
+import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
+import { addCompanyMember, companiesQueryRoot } from "../api/companies";
 import { memberErrorField } from "../errors";
 import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 
@@ -54,10 +56,10 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
   const member = useController({ control: form.control, name: "memberId" });
   const roleIds = useController({ control: form.control, name: "roleIds" });
   const { failure, clear, fail, close } = useDialogFailure(onClose, companiesQueryRoot);
-  const candidateQuery = useQuery({ queryKey: companyCandidatesQueryKey(companyId), queryFn: () => fetchCompanyCandidates(companyId), meta: { silent: true } });
+  const candidateQuery = useResourceOptions(companyCandidateOptions(companyId));
+  const roleQuery = useResourceOptions(companyRoleOptions(companyId, true));
   const candidates = candidateQuery.data?.items ?? [];
   const addMember = useIdempotentMutation((request: AddCompanyMemberRequest, key) => addCompanyMember(companyId, request, key));
-  const loading = candidateQuery.isPending;
 
   // Lo que el back rechaza de la persona o de los roles va debajo de ese campo (`errors.ts`); lo demás, en la franja.
   function rejected(error: unknown) {
@@ -70,12 +72,12 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
   // «Criterio · Botones»: «Agregar miembro» no se apaga; sin usuario, el campo dice qué falta (tablero Empresa) hasta que
   // elige uno. Lo que sigue al alta va en sus callbacks: «Reintentar» (sin conexión) los vuelve a correr.
   const submit = form.handleSubmit((values) => {
-    const name = candidates.find((candidate) => candidate.memberId === values.memberId)?.displayName ?? "";
+    const name = candidateQuery.knownItems.find((candidate) => candidate.memberId === values.memberId)?.displayName ?? "";
     addMember.mutate({ memberId: values.memberId, roleIds: values.roleIds }, {
       onSuccess: async () => {
         toast.success(t("companies:messages.memberAdded", { name }));
         onClose();
-        await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
+        await Promise.all([queryClient.invalidateQueries({ queryKey: companiesQueryRoot }), queryClient.invalidateQueries({ queryKey: companyCandidateOptions(companyId).queryKeyRoot })]);
       },
       onError: rejected,
     });
@@ -87,20 +89,17 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <FormField label={t("companies:addMember.user")} required error={form.formState.errors.memberId?.message}>
-            <Select value={member.field.value} onValueChange={(memberId) => { member.field.onChange(memberId); clear(); }} disabled={loading || candidates.length === 0}>
-              <SelectTrigger className="w-full" aria-label={t("companies:addMember.user")}><SelectValue placeholder={loading ? t("common:states.loading") : t("companies:addMember.chooseUser")} /></SelectTrigger>
-              {/* Tablero Empresa: cada candidato con su nombre y, debajo, el correo tapado en gris medio (.op2 .opd); sin
-                  nombre, el nombre ya es el correo tapado y no se repite. */}
-              <SelectContent>{candidates.map((candidate) => <SelectItem key={candidate.memberId} value={candidate.memberId} descriptionClassName="text-[var(--t2)]"
-                description={candidate.maskedEmailAddress === candidate.displayName ? undefined : candidate.maskedEmailAddress ?? t("companies:addMember.withoutEmail")}>
-                {candidate.displayName}</SelectItem>)}</SelectContent>
-            </Select>
+            <SearchSelect value={member.field.value} onChange={(memberId) => { member.field.onChange(memberId); clear(); }}
+              remote={candidateQuery.remote} selectedLabel={candidateQuery.knownItems.find((candidate) => candidate.memberId === member.field.value)?.displayName}
+              placeholder={t("companies:addMember.chooseUser")} searchLabel={t("common:actions.search")} aria-label={t("companies:addMember.user")}
+              options={candidates.map((candidate) => ({ value: candidate.memberId, label: candidate.displayName,
+                descriptionClassName: "text-[var(--t2)]",
+                description: candidate.maskedEmailAddress === candidate.displayName ? undefined : candidate.maskedEmailAddress ?? t("companies:addMember.withoutEmail") }))} />
           </FormField>
           <FormField label={t("companies:addMember.roles")} error={form.formState.errors.roleIds?.message}>
-            <MultiSelect options={roles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value} onChange={(next) => { roleIds.field.onChange(next); clear(); }} placeholder={t("companies:addMember.noRoles")} />
+            <MultiSelect remote={roleQuery.remote} selectedOptions={[...roles, ...roleQuery.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={roleQuery.items.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value} onChange={(next) => { roleIds.field.onChange(next); clear(); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
-          {candidateQuery.isError ? <FormError message={apiErrorMessage(candidateQuery.error, t)} /> : null}
           <FormError message={actionErrorMessage(failure, t)} />
         </DialogBody>
         <DialogFooter>

@@ -6,12 +6,15 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "./app/AppChrome";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./dialog";
+import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
+import { RemoteOptionFooter } from "./RemoteOptionControls";
 
 export interface SearchSelectOption {
   value: string;
   label: string;
   /** Segunda línea gris, como la vista previa de un idioma y región. */
   description?: string;
+  descriptionClassName?: string;
   /** A la izquierda del nombre, como la bandera de un país. */
   icon?: ReactNode;
   /** A la derecha, en gris, como el prefijo de un país. */
@@ -37,6 +40,7 @@ interface SearchSelectProps {
   id?: string;
   disabled?: boolean;
   busy?: boolean;
+  remote?: RemoteOptions;
   className?: string;
   "aria-invalid"?: ComponentProps<"button">["aria-invalid"];
   "aria-describedby"?: string;
@@ -64,7 +68,7 @@ function fieldLabel(id: string | undefined): string | undefined {
 /// arriba, que filtra sin tildes ni mayúsculas. Se elige con el mouse o con flechas y Enter. En el teléfono la lista
 /// es una hoja desde abajo, con el rótulo del campo como título (tablero M-Cuenta-Agregar, «País»).
 export function SearchSelect({
-  options, value, onChange, placeholder, searchLabel, selectedLabel, renderValue, title, id, disabled, busy, className,
+  options, value, onChange, placeholder, searchLabel, selectedLabel, renderValue, title, id, disabled, busy, className, remote,
   "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy, "aria-label": ariaLabel,
 }: SearchSelectProps): ReactNode {
   const { t } = useTranslation();
@@ -75,9 +79,9 @@ export function SearchSelect({
   const [sheetTitle, setSheetTitle] = useState("");
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
-  const withSearch = options.length > SEARCH_THRESHOLD;
+  const withSearch = Boolean(remote) || options.length > SEARCH_THRESHOLD;
   const term = normalize(query.trim());
-  const visible = term === "" ? options : options.filter((option) => normalize(`${option.label} ${option.value} ${option.keywords ?? ""}`).includes(term));
+  const visible = remote || term === "" ? options : options.filter((option) => normalize(`${option.label} ${option.value} ${option.keywords ?? ""}`).includes(term));
   const selected = options.find((option) => option.value === value);
   const optionId = (index: number) => `${listId}-${index}`;
 
@@ -85,6 +89,7 @@ export function SearchSelect({
     setOpen(next);
     if (!next) return;
     setQuery("");
+    remote?.onSearch("");
     setActive(Math.max(0, options.findIndex((option) => option.value === value)));
     if (phone) setSheetTitle(title ?? fieldLabel(id) ?? placeholder);
   }
@@ -120,7 +125,7 @@ export function SearchSelect({
     aria-expanded={open}
     aria-haspopup={phone ? "dialog" : "listbox"}
     aria-controls={open ? listId : undefined}
-    aria-busy={busy || undefined}
+    aria-busy={busy || remote?.loading || undefined}
     aria-invalid={ariaInvalid}
     aria-describedby={ariaDescribedBy}
     aria-label={ariaLabel}
@@ -149,10 +154,10 @@ export function SearchSelect({
       type="search"
       aria-label={searchLabel}
       placeholder={searchLabel}
-      value={query}
+      value={remote?.search ?? query}
       aria-controls={listId}
-      aria-activedescendant={visible.length > 0 ? optionId(active) : undefined}
-      onChange={(event) => { setQuery(event.target.value); setActive(0); }}
+      aria-activedescendant={visible[active] ? optionId(active) : undefined}
+      onChange={(event) => { if (remote) remote.onSearch(event.target.value); else setQuery(event.target.value); setActive(0); }}
       onKeyDown={navigate}
       className={cn("w-full border border-[var(--borde2)] bg-[var(--s2)] pr-3 text-[var(--t1)] outline-none placeholder:text-[var(--t3)] focus-visible:border-[var(--marca)]",
         phone ? "h-11 rounded-[12px] pl-11 text-[16px]" : "h-8 rounded-[8px] pl-8 text-[13px]")}
@@ -160,7 +165,7 @@ export function SearchSelect({
   </div> : null;
 
   const list = <>
-    {visible.length === 0 ? <p className={cn("text-[var(--t2)]", phone ? "px-5 py-3 text-[15px]" : "px-3.5 py-3 text-[13px]")}>{t("fields.noMatches")}</p> : null}
+    {visible.length === 0 && !remote?.loading && !remote?.error ? <p className={cn("text-[var(--t2)]", phone ? "px-5 py-3 text-[15px]" : "px-3.5 py-3 text-[13px]")}>{t("fields.noMatches")}</p> : null}
     <ul
       ref={listRef}
       id={listId}
@@ -178,6 +183,8 @@ export function SearchSelect({
           id={optionId(index)}
           role="option"
           aria-selected={isSelected}
+          aria-labelledby={`${optionId(index)}-label${option.trailing ? ` ${optionId(index)}-trailing` : ""}`}
+          aria-describedby={option.description ? `${optionId(index)}-description` : undefined}
           onMouseMove={() => setActive(index)}
           onClick={() => choose(option)}
           className={cn(
@@ -190,15 +197,16 @@ export function SearchSelect({
         >
           {option.icon}
           <span className="flex min-w-0 flex-1 flex-col leading-[1.35]">
-            <span className="truncate">{option.label}</span>
-            {option.description ? <span className={cn("truncate text-[var(--t3)]", phone ? "text-[13px]" : "text-[12px]")}>{option.description}</span> : null}
+            <span id={`${optionId(index)}-label`} className="truncate">{option.label}</span>
+            {option.description ? <span id={`${optionId(index)}-description`} className={cn("truncate", option.descriptionClassName ?? "text-[var(--t3)]", phone ? "text-[13px]" : "text-[12px]")}>{option.description}</span> : null}
           </span>
           {/* El espacio separa el nombre del prefijo también para los lectores de pantalla («Argentina +54»). */}
-          {option.trailing ? <>{" "}<span className="ml-auto shrink-0 font-normal text-[var(--t2)]">{option.trailing}</span></> : null}
+          {option.trailing ? <>{" "}<span id={`${optionId(index)}-trailing`} className="ml-auto shrink-0 font-normal text-[var(--t2)]">{option.trailing}</span></> : null}
           {isSelected ? <CheckIcon aria-hidden="true" className={cn("shrink-0", phone ? "size-5" : "size-4")} /> : null}
         </li>;
       })}
     </ul>
+    {remote ? <RemoteOptionFooter remote={remote} /> : null}
   </>;
 
   if (phone) return <>

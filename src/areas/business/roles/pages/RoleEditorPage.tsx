@@ -1,3 +1,5 @@
+import { companyOptions as companyOptionResource, fetchCompanyOption } from "@/shared/api/resourceOptions";
+import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -33,11 +35,9 @@ import { Textarea } from "@/shared/ui/textarea";
 import { homeOf } from "@/tenancy/access";
 import {
   createRole,
-  fetchCompanyOptions,
   fetchPermissionGroups,
   fetchRole,
   permissionGroupsQueryKey,
-  roleCompanyOptionsQueryKey,
   roleQueryKey,
   rolesQueryKeyRoot,
   updateRole,
@@ -138,12 +138,10 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   });
 
   const permissionGroups = useQuery({ ...permissionGroupsQuery, enabled: Boolean(role) || editable });
-  const companies = useQuery({
-    queryKey: roleCompanyOptionsQueryKey,
-    queryFn: fetchCompanyOptions,
-    enabled: can("companies.read") && (!role || role.scope === "SpecificCompany"),
-    meta: { silent: true },
-  });
+  const companies = useResourceOptions(companyOptionResource, can("companies.read") && (!role || role.scope === "SpecificCompany"));
+  const selectedCompany = useQuery({ queryKey: ["companies", "detail", companyId],
+    queryFn: ({ signal }) => fetchCompanyOption(companyId, signal), enabled: can("companies.read") && Boolean(companyId) && Boolean(companies.data) && !companies.knownItems.some((item) => item.id === companyId), meta: { silent: true } });
+  const knownCompanies = [...companies.knownItems, ...(selectedCompany.data ? [selectedCompany.data] : [])];
   const companyOptions = companies.data?.items ?? [];
   const scopeGroups = useMemo(() => groupsForScope(permissionGroups.data ?? [], scope), [permissionGroups.data, scope]);
   const count = selectionCount(scopeGroups.flatMap((group) => group.permissions), permissions);
@@ -207,7 +205,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
     setFailure(undefined);
   }
 
-  const companyName = (id: string | null | undefined) => id ? companyOptions.find((company) => company.id === id)?.name : undefined;
+  const companyName = (id: string | null | undefined) => id ? knownCompanies.find((company) => company.id === id)?.name : undefined;
   // «Vale en toda la organización» (lienzo v96): en la oración, el alcance va en minúscula.
   const scopeInSentence = (current: RoleResponse) => current.scope === "SpecificCompany"
     ? companyName(current.companyId) ?? t("roles:scopeInSentence.specificCompany")
@@ -248,7 +246,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
                 : <ReadOnlyField label={t("roles:fields.name")}>{title}</ReadOnlyField>}
             </div>
             <div className="min-w-0">
-              <RoleScopeField scope={scope} companyId={companyId} companies={companyOptions} onChange={changeScope} readOnly={Boolean(role)} error={errors.scope?.message} />
+              <RoleScopeField scope={scope} companyId={companyId} companies={companyOptions} remote={companies.remote} knownCompanies={knownCompanies} onChange={changeScope} readOnly={Boolean(role)} error={errors.scope?.message} />
             </div>
             <div data-slot="role-description" className="min-w-0 lg:col-span-2">
               {editable

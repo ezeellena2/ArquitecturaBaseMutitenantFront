@@ -2,6 +2,8 @@ import { useId, type ComponentProps, type ReactNode } from "react";
 import { ChevronDownIcon } from "./icons";
 import { cn } from "@/shared/lib/utils";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "./dropdown-menu";
+import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
+import { RemoteOptionFooter, RemoteOptionSearch } from "./RemoteOptionControls";
 
 export interface MultiSelectOption {
   value: string;
@@ -17,6 +19,9 @@ interface MultiSelectProps {
   /// Lo que dice el control mientras no hay nada elegido.
   placeholder: string;
   id?: string;
+  remote?: RemoteOptions;
+  selectedOptions?: readonly MultiSelectOption[];
+  disabled?: boolean;
   "aria-invalid"?: ComponentProps<"button">["aria-invalid"];
   "aria-describedby"?: string;
 }
@@ -33,11 +38,15 @@ export function MultiSelect({
   onChange,
   placeholder,
   id,
+  remote,
+  selectedOptions = options,
+  disabled,
   "aria-invalid": ariaInvalid,
   "aria-describedby": ariaDescribedBy,
 }: MultiSelectProps): ReactNode {
   // En el orden de las opciones y no en el de los clics: así el texto no cambia según cómo se llegó.
-  const picked = options.filter((option) => value.includes(option.value));
+  const picked = [...new Map(selectedOptions.map((option) => [option.value, option])).values()]
+    .filter((option) => value.includes(option.value));
   const optionId = useId();
 
   function toggle(optionValue: string, checked: boolean) {
@@ -48,6 +57,8 @@ export function MultiSelect({
     <DropdownMenu>
       <DropdownMenuTrigger
         id={id}
+        disabled={disabled}
+        aria-busy={remote?.loading || undefined}
         aria-invalid={ariaInvalid}
         aria-describedby={ariaDescribedBy}
         className={cn(
@@ -66,6 +77,7 @@ export function MultiSelect({
       {/* Tablero Usuario (.o-lst) y «Criterio · Formularios», Desplegable: la lista se abre debajo del campo y mide lo mismo
           que él, con 4 de margen adentro; cada opción, el nombre y debajo su descripción, en gris de 12 (.n2 y .d). */}
       <DropdownMenuContent side="bottom" align="start" className="w-(--radix-dropdown-menu-trigger-width) max-w-none min-w-0 p-1">
+        {remote ? <RemoteOptionSearch remote={remote} /> : null}
         {options.map((option, index) => (
           // El nombre de la opción es el rol; la descripción la acompaña como descripción, no como parte del nombre.
           <DropdownMenuCheckboxItem
@@ -84,6 +96,7 @@ export function MultiSelect({
             </span>
           </DropdownMenuCheckboxItem>
         ))}
+        {remote ? <RemoteOptionFooter remote={remote} /> : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );

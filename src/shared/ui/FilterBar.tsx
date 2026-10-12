@@ -16,6 +16,8 @@ import { AppIconButton } from "./app/AppBar";
 import { AppBarTools } from "./app/AppBarTools";
 import { useAppChrome } from "./app/AppChrome";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
+import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
+import { RemoteOptionFooter, RemoteOptionSearch } from "./RemoteOptionControls";
 
 export interface FilterOption {
   value: string;
@@ -32,6 +34,8 @@ export interface FilterBarFilter {
   active: boolean;
   options: readonly FilterOption[];
   onChange: (value: string) => void;
+  remote?: RemoteOptions;
+  selectedLabel?: string;
 }
 
 export interface FilterBarProps {
@@ -90,12 +94,14 @@ export function FilterBar({
             const checked = selected ? filter.value : filter.options[0]?.value ?? "";
             return <fieldset key={filter.key} className="m-0 border-0 p-0">
               <legend className="px-5 pt-2.5 pb-1 text-[13px] font-semibold text-[var(--t3)]">{filter.label.split(":")[0]}</legend>
+              {filter.remote ? <RemoteOptionSearch remote={filter.remote} label={filter.menuLabel} /> : null}
               {filter.options.map((option) => <label key={option.value} className="flex min-h-[54px] items-center gap-3 border-t border-[var(--borde)] px-5 text-[16px] text-[var(--t1)] first-of-type:border-t-0">
                 <span className="min-w-0 flex-1 truncate">{option.label}</span>
                 {option.count === undefined ? null : <span className="text-[13.5px] text-[var(--t3)]">{option.count}</span>}
                 <input type="radio" name={filter.key} value={option.value} checked={checked === option.value} className="size-5 accent-[var(--marca)]"
                   onChange={() => { filter.onChange(option.value); setSheetOpen(false); }} />
               </label>)}
+              {filter.remote ? <RemoteOptionFooter remote={filter.remote} /> : null}
             </fieldset>;
           })}
         </div>
@@ -146,7 +152,7 @@ export function FilterBar({
                     : "border-[var(--borde)] bg-[var(--lado-activo)] font-normal text-[var(--t2)]",
                 )}
               >
-                {selected?.label ?? filter.label}
+                {selected?.label ?? filter.selectedLabel ?? filter.label}
                 {filter.count === undefined ? null : (
                   <span className="text-xs text-[var(--t2)]">{filter.count}</span>
                 )}
@@ -156,6 +162,7 @@ export function FilterBar({
             {/* Tablero Usuarios (filtro abierto, .menu): 4 de relleno alrededor de las opciones; el ancho, el de «Criterio ·
                 Menús» (de 220 a 320; los tableros Empresa y Auditoria-Org lo dibujan de 210). */}
             <DropdownMenuContent align="start" aria-label={filter.menuLabel} className="min-w-[220px] p-1">
+              {filter.remote ? <RemoteOptionSearch remote={filter.remote} label={filter.menuLabel} /> : null}
               <DropdownMenuRadioGroup value={checked} onValueChange={filter.onChange}>
                 {filter.options.map((option) => (
                   <DropdownMenuRadioItem key={option.value} value={option.value}>
@@ -168,6 +175,7 @@ export function FilterBar({
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>
+              {filter.remote ? <RemoteOptionFooter remote={filter.remote} /> : null}
             </DropdownMenuContent>
           </DropdownMenu>
         );

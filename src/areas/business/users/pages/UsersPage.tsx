@@ -1,3 +1,5 @@
+import { companyOptions } from "@/shared/api/resourceOptions";
+import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Plus, Power, RotateCw, Trash2 } from "lucide-react";
 import { CloseIcon, UsersIcon } from "@/shared/ui/icons";
@@ -19,7 +21,7 @@ import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { toast } from "sonner";
-import { changeUserStatus, fetchCompanyOptions, fetchUserCounts, fetchUsers, removeUser, resendUserInvitation, revokeUserInvitation, userCompaniesQueryKey, userCountsQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
+import { changeUserStatus, fetchUserCounts, fetchUsers, removeUser, resendUserInvitation, revokeUserInvitation, userCountsQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
 import { createUserColumns, userPhoneRow } from "../columns";
 import { InviteUserDialog } from "../components/InviteUserDialog";
 import { activeOrganization } from "@/tenancy/access";
@@ -70,10 +72,7 @@ export function UsersPage() {
     queryKey: userCountsQueryKey(countQuery), queryFn: () => fetchUserCounts(countQuery),
     placeholderData: keepPreviousData, meta: { silent: true },
   });
-  const companies = useQuery({
-    queryKey: userCompaniesQueryKey, queryFn: fetchCompanyOptions, enabled: canFilterByCompany,
-    meta: { silent: true },
-  });
+  const companies = useResourceOptions(companyOptions, canFilterByCompany);
   // Conteos del filtro «Empresa»: cada empresa y «Sin empresa», con la búsqueda y el estado elegidos.
   const companyCountTargets = ["all", ...(companies.data?.items ?? []).filter((company) => company.status === "Active").map((company) => company.id), withoutCompanyValue];
   const companyCounts = useQueries({ queries: companyCountTargets.map((target) => {
@@ -81,7 +80,6 @@ export function UsersPage() {
     return { queryKey: userCountsQueryKey(targetQuery), queryFn: () => fetchUserCounts(targetQuery), enabled: canFilterByCompany, meta: { silent: true } };
   }) });
   const [inviteOpen, setInviteOpen] = useState(false);
-  const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");
   const [target, setTarget] = useState<OrganizationUserResponse | null>(null);
   const [confirmAction, setConfirmAction] = useState<"revoke" | "disable" | "remove" | null>(null);
 
@@ -138,7 +136,7 @@ export function UsersPage() {
           onSearchChange={pagination.setSearch}
           filters={[
             { key: "state", label: t("users:filters.state"), menuLabel: t("users:filters.stateMenu"), value: currentState, active: state !== undefined, onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value), options: userStates.map((value) => ({ value: value ?? "all", label: t(`users:filters.states.${value ?? "all"}`), count: stateCount(value) })) },
-            ...(canFilterByCompany ? [{ key: "companyId", label: t("users:filters.company"), menuLabel: t("users:filters.companyMenu"), value: companyFilter ?? "", active: companyFilter !== undefined, onChange: (value: string) => filters.setFilter("companyId", value === "all" ? undefined : value), options: [
+            ...(canFilterByCompany ? [{ key: "companyId", label: t("users:filters.company"), menuLabel: t("users:filters.companyMenu"), remote: companies.remote, selectedLabel: companies.knownItems.find((item) => item.id === companyFilter)?.name, value: companyFilter ?? "", active: companyFilter !== undefined, onChange: (value: string) => filters.setFilter("companyId", value === "all" ? undefined : value), options: [
               ...companyCountTargets.map((target, index) => ({ value: target, label: target === "all" ? t("users:filters.allCompanies") : target === withoutCompanyValue ? t("users:filters.withoutCompany") : companies.data?.items.find((item) => item.id === target)?.name ?? target, count: countFor(companyCounts[index]?.data, state) })),
             ] }] : []),
           ]}
@@ -165,7 +163,7 @@ export function UsersPage() {
       </div>
     </Page>
 
-    {inviteOpen ? <InviteUserDialog companies={activeCompanies} onClose={() => setInviteOpen(false)} onInvited={invalidate} /> : null}
+    {inviteOpen ? <InviteUserDialog onClose={() => setInviteOpen(false)} onInvited={invalidate} /> : null}
 
     <ConfirmDialog open={confirmAction !== null} onOpenChange={(open) => { if (!open) { setConfirmAction(null); setTarget(null); } }} destructive={confirmAction !== null}
       title={target ? t(`users:confirm.${confirmAction}`, { name: target.displayName || target.email || "", email: target.email ?? "", organization: organizationName }) : ""}

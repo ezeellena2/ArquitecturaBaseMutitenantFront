@@ -1,3 +1,4 @@
+import { companyRoleOptions, optionPage } from "@/shared/api/resourceOptions";
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
 import type { PagedResult } from "@/shared/api/pagedResult";
@@ -6,7 +7,6 @@ import type {
   ChangeCompanyMemberStatusRequest,
   ChangeCompanyStatusRequest,
   CompanyFilterCountsResponse,
-  CompanyCandidateResponse,
   CompanyMemberFilterCountsResponse,
   CompanyMemberResponse,
   CompanyMemberState,
@@ -34,7 +34,6 @@ export const companyQueryKey = (companyId: string) => [...companiesQueryRoot, "d
 export const companyMembersQueryRoot = (companyId: string) => [...companiesQueryRoot, companyId, "members"] as const;
 export const companyMembersQueryKey = (companyId: string, query: CompanyMembersQuery) => [...companyMembersQueryRoot(companyId), query] as const;
 export const companyMembersCountQueryKey = (companyId: string, search?: string) => [...companyMembersQueryRoot(companyId), "counts", search ?? ""] as const;
-export const companyCandidatesQueryKey = (companyId: string) => [...companiesQueryRoot, companyId, "candidates"] as const;
 
 
 export function fetchCompanies(query: CompaniesQuery): Promise<PagedResult<CompanyResponse>> {
@@ -88,17 +87,8 @@ export function changeCompanyMemberStatus(companyId: string, memberId: string, r
 /// Los roles que se asignan en una empresa, ya filtrados por el back: los de cualquier empresa y los propios. Quien ve sus
 /// miembros los pide a la ruta de la empresa, que pide `company.members.read` (B4: el Administrador de empresa no tiene
 /// `roles.read`); quien solo ve los roles de la organización, a `/api/roles/paged` con la empresa.
-export function fetchAssignableCompanyRoles(companyId: string, canReadMembers: boolean): Promise<PagedResult<RoleResponse>> {
-  const id = encodeURIComponent(companyId);
-  const page = "page=1&pageSize=100&sort=name";
-  return api.get<PagedResult<RoleResponse>>(canReadMembers ? `/api/companies/${id}/roles/paged?${page}` : `/api/roles/paged?companyId=${id}&${page}`);
-}
-
-/// A quién se puede sumar a la empresa (decisión 96): las personas activas de la organización que todavía no están en ella,
-/// con el nombre y el correo tapado. La pide quien administra la empresa, sin `users.read`, y también la Dueña: una sola
-/// forma. Se busca y se ordena solo por nombre.
-export function fetchCompanyCandidates(companyId: string): Promise<PagedResult<CompanyCandidateResponse>> {
-  return api.get<PagedResult<CompanyCandidateResponse>>(`/api/companies/${encodeURIComponent(companyId)}/candidates/paged?page=1&pageSize=100&sort=displayName`);
+export function fetchAssignableCompanyRoles(companyId: string, canReadMembers: boolean, query: PagedRequest = optionPage): Promise<PagedResult<RoleResponse>> {
+  return companyRoleOptions(companyId, canReadMembers).queryFn(query);
 }
 
 /// Reenviar o revocar la invitación de un miembro desde su empresa (decisión 97), con `company.members.manage` de esa

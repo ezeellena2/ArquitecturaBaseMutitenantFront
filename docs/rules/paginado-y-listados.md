@@ -26,6 +26,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 - Los tamaños disponibles viven una sola vez en `shared/api/pageSizes.ts`, tipados con el `PagedRequest` generado. El hook y `Pagination` los comparten; `pageSizes.test.ts` compara su lista y orden con el enum del OpenAPI del back.
 - Si llegan `items` vacíos con `totalCount > 0` (por ejemplo, se borró la única fila de la última página), `usePagedQuery` salta solo a la última página que tiene filas, con `replace` y sin agregar historial. Mira solo la respuesta de esa página, nunca la anterior que se muestra mientras carga. No expone `correctPage` a quien lo llama.
 - Los conteos de los filtros salen de `GET …/filter-counts`, con los mismos filtros.
+- **Opciones para elegir un recurso que crece:** `shared/api/resourceOptions` define una sola lectura y raíz de caché por recurso; `useResourceOptions` pide páginas de 10, busca en el servidor con 300 ms de debounce y ofrece «Cargar más». `SearchSelect`, `MultiSelect` y `FilterBar` reciben su `remote`, conservando teclado, carga, error y reintento. La etiqueta de lo elegido sale de `knownItems` en QueryCache o de su lectura por id, aunque no esté en la página actual. Las empresas ofrecidas son activas por filtro del servidor; las ya asignadas se leen por id cuando hace falta conocer su estado. «Todos» en roles lee todas las páginas sólo al pulsarlo. Una mutación invalida la raíz del recurso, incluidas sus opciones.
 - **Auditoría y actividad** (lo que solo crece) son **`useCursorList`** + `<LoadMore />`, la única forma de listar por cursor: de a tandas con el cursor opaco del back y sin total. Los filtros van en la clave y en la URL; el cursor, solo en la consulta. Al cambiar un filtro vuelve a la primera tanda y muestra la anterior mientras llega la nueva (`placeholderData: keepPreviousData`, como `usePagedQuery`); `meta` va como en cualquier consulta:
   ```ts
   const audit = useCursorList([...auditQueryRoot, baseQuery],
@@ -55,6 +56,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 
 ## Lo verifica
 - `pageSizes.test.ts` (E0)
+- `option-pagination.test.ts` y `RemoteOptions.test.tsx` (C2): prohíben el corte fijo en 100 y eligen recursos fuera de la primera página con búsqueda remota.
 
 ## Detalle
 [frontend.md §4, "Paginado, orden y búsqueda"](../architecture/frontend.md#paginado-orden-y-búsqueda) · back: `docs/rules/paginado-y-busqueda.md`
