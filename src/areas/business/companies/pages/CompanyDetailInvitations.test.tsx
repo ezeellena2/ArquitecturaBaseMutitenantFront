@@ -81,6 +81,21 @@ afterEach(() => {
 });
 
 describe("CompanyDetailPage: las invitaciones de la empresa (6e)", () => {
+  it("desde Inicio filtra sólo vencidas en el servidor y al limpiar recupera todos los miembros", async () => {
+    companyApi([valentina, sofia, martin]);
+    const states: (string | null)[] = [];
+    server.use(http.get("/api/companies/company-1/members/paged", ({ request }) => {
+      const state = new URL(request.url).searchParams.get("state"); states.push(state);
+      return HttpResponse.json(page(state === "Expired" ? [martin] : [valentina, sofia, martin]));
+    }));
+    renderRouteWithProviders("/org/empresas/company-1?state=Expired", { as: companyAdmin });
+    await screen.findByText("Martín Paz");
+    expect(states[0]).toBe("Expired");
+    expect(screen.queryByText("Sofía Herrera")).not.toBeInTheDocument();
+    await userEvent.setup().click(screen.getByRole("button", { name: "Limpiar" }));
+    expect(await screen.findByText("Sofía Herrera")).toBeVisible();
+    expect(states.at(-1)).toBeNull();
+  });
   // Tablero Empresa (v108): la invitación pendiente en petróleo y la vencida en ámbar, con la fecha debajo de la palabra.
   // El estado del back sigue siendo «Invitado» (B8): «vencida» sale de comparar la fecha con la hora actual (decisión 98).
   it.each([[companyAdmin], [owner]])("%s: Miembros muestra «Invitación pendiente» o «Invitación vencida» y, debajo, hasta cuándo vale", async (as) => {

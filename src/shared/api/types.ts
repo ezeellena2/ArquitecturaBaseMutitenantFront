@@ -81,6 +81,7 @@ export type HomeResponse = ApiSchemas["HomeResponse"];
 export type HomeOrganizationSummary = ApiSchemas["HomeOrganizationSummary"];
 export type HomeCompanyCard = ApiSchemas["HomeCompanyCard"];
 export type PendingItem = ApiSchemas["PendingItem"];
+export type PendingGroup = ApiSchemas["PendingGroup"];
 export type OrganizationInvitationIssuedResponse = ApiSchemas["OrganizationInvitationIssuedResponse"];
 export type UpdateOrganizationUserRequest = ApiSchemas["UpdateOrganizationUserHttpRequest"];
 export type ChangeOrganizationUserStatusRequest = ApiSchemas["ChangeOrganizationUserStatusHttpRequest"];

@@ -20,7 +20,7 @@ export const companyStatusTones = defineStatusTones("CompanyStatus", { Active: "
 export type CompanyMemberDisplayState = CompanyMemberState | "Expired";
 
 const contractMemberStateTones = defineStatusTones("CompanyMemberState", {
-  Active: "success", PendingDeletion: "warning", Inactive: "neutral", Invited: "pending",
+  Active: "success", PendingDeletion: "warning", Inactive: "neutral", Invited: "pending", Expired: "warning",
 });
 
 /// Tablero Empresa (miembros, v108): activo en verde, la baja pedida en ámbar e inactivo en gris; la invitación pendiente,

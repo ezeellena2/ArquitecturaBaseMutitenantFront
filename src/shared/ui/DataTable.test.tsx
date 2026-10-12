@@ -182,6 +182,15 @@ describe("DataTable", () => {
     expect(state?.querySelector('[data-slot="status-dot"]')).toHaveClass("size-2", "bg-[var(--punto-ok)]");
   });
 
+  it("los grupos comparten un encabezado y conservan filas y detalles de la tabla habitual", () => {
+    render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id}
+      rowGroups={[{ key: "pending", rows, header: <span>{"Invitaciones vencidas · Usuarios · 1000"}</span>, footer: <a href="/usuarios?state=Expired">{"Ver todos"}</a> }]} />);
+    expect(screen.getAllByRole("columnheader")).toHaveLength(columns.length);
+    expect(screen.getByText("Invitaciones vencidas · Usuarios · 1000").closest("td")).toHaveAttribute("colspan", String(columns.length));
+    expect(screen.getByText("Ana García")).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ver todos" })).toHaveAttribute("href", "/usuarios?state=Expired");
+  });
+
   it("a 390 px deja visibles el principal, estado y ⋮; a 768 oculta solo prioridad baja", () => {
     render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} />);
     expect(screen.getByRole("columnheader", { name: "Nombre" })).not.toHaveClass("hidden");

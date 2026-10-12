@@ -165,6 +165,11 @@ export const validationConstraints = {
       "maximum": 4294967295
     }
   },
+  "PendingGroup": {
+    "items": {
+      "maxItems": 10
+    }
+  },
   "PlatformAccountActionHttpRequest": {
     "reason": {
       "maxLength": 500

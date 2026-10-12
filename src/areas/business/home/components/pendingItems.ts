@@ -1,6 +1,7 @@
 import type { TFunction } from "i18next";
 import { BuildingIcon, ClipboardIcon, GlobeIcon, KeyIcon, SlidersHorizontalIcon, UsersIcon, type IconComponent } from "@/shared/ui/icons";
-import type { PendingItem } from "@/shared/api/types";
+import type { HomeResponse, PendingGroup, PendingItem } from "@/shared/api/types";
+import { validationConstraints } from "@/shared/api/generated/validation";
 import type { StatusTone } from "@/shared/ui/StatusDot";
 
 export type HomeArea = "users" | "roles" | "companies" | "publicPage" | "settings" | "audit";
@@ -30,6 +31,47 @@ export interface PendingRow {
   /** La empresa del pendiente, como la manda el back (B4): la de quien administra una empresa sin roles de la organización. */
   company: string | null;
 }
+
+export interface PendingRowGroup {
+  key: string;
+  title: string;
+  area: HomeArea;
+  areaLabel: string;
+  totalCount: number;
+  rows: readonly PendingRow[];
+  to: string;
+}
+
+/** Compatibilidad con respuestas anteriores: el grupo conserva su total antes de recortar la vista previa. */
+export function describePendingGroups(home: HomeResponse | undefined, t: TFunction,
+  formatDate: (value: string) => string): PendingRowGroup[] {
+  let source = home?.pendingGroups;
+  if (source == null) {
+    const legacy = new Map<string, PendingGroup>();
+    for (const item of home?.pending ?? []) {
+      const key = `${item.kind}:${item.companyId ?? ""}`;
+      const group = legacy.get(key) ?? { area: item.area, kind: item.kind, companyId: item.companyId, companyName: item.companyName, totalCount: 0, items: [] };
+      group.totalCount++;
+      if (group.items.length < validationConstraints.PendingGroup.items.maxItems) group.items.push(item);
+      legacy.set(key, group);
+    }
+    source = [...legacy.values()];
+  }
+  return source.flatMap((group) => {
+    const rows = group.items.map((item, index) => describePending({ ...item, companyId: group.companyId ?? item.companyId,
+      companyName: group.companyName ?? item.companyName }, index, t, formatDate)).filter((row): row is PendingRow => row !== null);
+    const first = rows[0];
+    if (!first || !["invitationExpired", "deletionRequested", "domainUnverified", "publicPageDraft", "publicPageBlocked"].includes(group.kind)) return [];
+    const to = group.kind === "invitationExpired" ? group.companyId
+      ? `/org/empresas/${encodeURIComponent(group.companyId)}?state=Expired` : "/org/usuarios?state=Expired"
+      : group.kind === "deletionRequested" ? "/org/usuarios?state=PendingDeletion"
+        : group.kind === "domainUnverified" ? "/org/configuracion?domainStatus=Pending" : first.to;
+    return [{ key: `${group.kind}:${group.companyId ?? ""}`, title: t(`home:pending.${group.kind}.group`),
+      area: first.area, areaLabel: group.companyName ?? first.areaLabel, totalCount: group.totalCount, rows, to }];
+  });
+}
+
+export const pendingTotal = (groups: readonly PendingRowGroup[]) => groups.reduce((sum, group) => sum + group.totalCount, 0);
 
 /** Arma el texto de una fila de «Para resolver» (ADR 0040). Un tipo que el front no conoce no se muestra. */
 export function describePending(item: PendingItem, index: number, t: TFunction,

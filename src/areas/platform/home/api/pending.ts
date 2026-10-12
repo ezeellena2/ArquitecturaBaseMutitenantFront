@@ -1,30 +1,22 @@
 import { api } from "@/shared/api/httpClient";
-import { pageSizes } from "@/shared/api/pageSizes";
+import { validationConstraints } from "@/shared/api/generated/validation";
 import type { ApiSchemas } from "@/shared/api/types";
 
 export const platformPendingQueryKey = (userId: string | undefined, area: "organizations" | "recoveries") => ["platform-home", userId, "pending", area] as const;
 
-/** El resumen conserva las páginas raw y el orden decidido por cada lectura. */
-export async function fetchPendingOrganizations(signal: AbortSignal): Promise<ApiSchemas["PagedResultOfPlatformTenantResponse"][]> {
-  const pages: ApiSchemas["PagedResultOfPlatformTenantResponse"][] = [];
-  for (let page = 1; ; page++) {
-    const query = new URLSearchParams({ status: "PendingApproval", sort: "-createdAtUtc", page: String(page), pageSize: String(pageSizes.at(-1)!) });
+/** Una sola vista previa con el total y el orden decididos por el servidor. */
+export async function fetchPendingOrganizations(signal: AbortSignal): Promise<ApiSchemas["PagedResultOfPlatformTenantResponse"]> {
+    const query = new URLSearchParams({ status: "PendingApproval", sort: "-createdAtUtc", page: "1", pageSize: String(validationConstraints.PendingGroup.items.maxItems) });
     const result = await api.get<ApiSchemas["PagedResultOfPlatformTenantResponse"]>(`/api/platform/tenants/paged?${query}`, { signal });
     signal.throwIfAborted();
-    if (result.page !== page || result.hasNext && page >= (result.totalPages ?? 0)) throw new Error("Invalid pending organizations pagination");
-    pages.push(result);
-    if (!result.hasNext) return pages;
-  }
+    if (result.page !== 1 || result.hasNext && (result.totalPages ?? 0) <= 1) throw new Error("Invalid pending organizations pagination");
+    return result;
 }
 
-export async function fetchPendingRecoveries(signal: AbortSignal): Promise<ApiSchemas["PagedResultOfPlatformRecoveryResponse"][]> {
-  const pages: ApiSchemas["PagedResultOfPlatformRecoveryResponse"][] = [];
-  for (let page = 1; ; page++) {
-    const query = new URLSearchParams({ status: "Pending", sort: "-createdAt", page: String(page), pageSize: String(pageSizes.at(-1)!) });
+export async function fetchPendingRecoveries(signal: AbortSignal): Promise<ApiSchemas["PagedResultOfPlatformRecoveryResponse"]> {
+    const query = new URLSearchParams({ status: "Pending", sort: "-createdAt", page: "1", pageSize: String(validationConstraints.PendingGroup.items.maxItems) });
     const result = await api.get<ApiSchemas["PagedResultOfPlatformRecoveryResponse"]>(`/api/platform/recoveries/paged?${query}`, { signal });
     signal.throwIfAborted();
-    if (result.page !== page || result.hasNext && page >= (result.totalPages ?? 0)) throw new Error("Invalid pending recoveries pagination");
-    pages.push(result);
-    if (!result.hasNext) return pages;
-  }
+    if (result.page !== 1 || result.hasNext && (result.totalPages ?? 0) <= 1) throw new Error("Invalid pending recoveries pagination");
+    return result;
 }

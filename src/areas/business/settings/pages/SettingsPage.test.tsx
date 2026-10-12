@@ -32,6 +32,30 @@ beforeEach(async () => {
 });
 
 describe("SettingsPage", () => {
+  it("desde Inicio pagina sólo dominios pendientes y limpiar recupera verificados", async () => {
+    const rows = Array.from({ length: 12 }, (_, index) => ({ ...pending, id: `pending-${index}`, domain: `pending-${index}.example.test` }));
+    const requests: URL[] = [];
+    server.use(http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains/paged", ({ request }) => {
+        const url = new URL(request.url); requests.push(url);
+        const filtered = url.searchParams.get("status") === "Pending";
+        const items = filtered ? rows : [verified, ...rows];
+        const page = Number(url.searchParams.get("page") ?? 1);
+        return HttpResponse.json({ items: items.slice((page - 1) * 10, page * 10), page, pageSize: 10, totalCount: items.length,
+          totalPages: 2, hasPrevious: page > 1, hasNext: page < 2 });
+      }));
+    renderRouteWithProviders("/org/configuracion?domainStatus=Pending", { as: "business-e6-admin" });
+    await screen.findByText(rows[0].domain);
+    expect(requests[0]?.searchParams.get("status")).toBe("Pending");
+    expect(screen.queryByText(verified.domain)).not.toBeInTheDocument();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Página siguiente" }));
+    expect(await screen.findByText(rows[11].domain)).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+    expect(await screen.findByText(verified.domain)).toBeVisible();
+    expect(requests.at(-1)?.searchParams.get("status")).toBeNull();
+    expect(requests.at(-1)?.searchParams.get("page")).toBe("1");
+  });
   it("pagina dominios en el servidor y permite llegar al dominio número 12", async () => {
     const user = userEvent.setup();
     const rows = Array.from({ length: 12 }, (_, index) => ({ ...verified, id: `domain-${index}`, domain: `domain-${index}.example.test` }));

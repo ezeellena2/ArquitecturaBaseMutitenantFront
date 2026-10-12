@@ -1,6 +1,6 @@
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
-import type { OrganizationDomainPageResponse, PagedRequest, OrganizationDomainResponse, OrganizationSettingsResponse, RegisterOrganizationDomainRequest, UpdateOrganizationSettingsRequest, VersionResponse } from "@/shared/api/types";
+import type { OrganizationDomainPageResponse, PagedRequest, TenantDomainStatus, OrganizationDomainResponse, OrganizationSettingsResponse, RegisterOrganizationDomainRequest, UpdateOrganizationSettingsRequest, VersionResponse } from "@/shared/api/types";
 
 export const organizationSettingsKey = ["organization-settings"] as const;
 export const organizationDomainsKey = ["organization-domains"] as const;
@@ -13,8 +13,9 @@ export function updateOrganizationSettings(request: UpdateOrganizationSettingsRe
   return api.put<VersionResponse>("/api/organization/settings", request);
 }
 
-export const organizationDomainsPageKey = (query: PagedRequest) => [...organizationDomainsKey, "paged", query] as const;
-export function fetchOrganizationDomainsPage(query: PagedRequest): Promise<OrganizationDomainPageResponse> {
+export type OrganizationDomainsQuery = PagedRequest & { status?: TenantDomainStatus };
+export const organizationDomainsPageKey = (query: OrganizationDomainsQuery) => [...organizationDomainsKey, "paged", query] as const;
+export function fetchOrganizationDomainsPage(query: OrganizationDomainsQuery): Promise<OrganizationDomainPageResponse> {
   return api.get(`/api/organization/settings/domains/paged?${toSearch(query)}`);
 }
 

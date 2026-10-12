@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
@@ -49,6 +49,74 @@ afterEach(() => {
 });
 
 describe("BusinessHomePage", () => {
+  it("al cambiar de acceso cancela la lectura tardía y retira grupos de la sesión anterior", async () => {
+    let receivedSignal: AbortSignal | undefined;
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    server.use(http.get("/api/home", async ({ request }) => {
+      receivedSignal = request.signal; await gate;
+      return HttpResponse.json({ organization, companies: [], pending: [pending[0]!] });
+    }));
+    const app = renderRouteWithProviders("/org", { as: "visual-owner" });
+    await waitFor(() => expect(receivedSignal).toBeDefined());
+    act(() => { app.queryClient.clear(); });
+    expect(receivedSignal?.aborted).toBe(true);
+    await act(async () => { release(); await gate; });
+    expect(screen.queryByText("carla.bianchi@delta.ejemplo.com")).not.toBeInTheDocument();
+    expect(app.queryClient.getQueryCache().findAll({ queryKey: ["organization-home"] }).some((query) => query.state.data !== undefined)).toBe(false);
+  });
+  it("legacy null conserva el total y acota cada tipo a diez filas", async () => {
+    const items = Array.from({ length: 1000 }, (_, index) => ({ ...pending[0]!, subject: `Legacy ${index}` }));
+    serveHome({ organization, companies: [], pending: items, pendingGroups: null });
+    renderRouteWithProviders("/org", { as: "visual-owner" });
+    const block = await screen.findByRole("region", { name: "Para resolver" });
+    expect(within(block).getAllByText("1.000")).toHaveLength(2);
+    expect(within(block).getAllByText(/^Legacy \d+$/)).toHaveLength(10);
+    expect(within(block).getByRole("link", { name: "Ver todos" })).toHaveAttribute("href", "/org/usuarios?state=Expired");
+  });
+  it("el miembro en teléfono mantiene grupos por empresa con sus totales y enlaces filtrados", async () => {
+    phone(true);
+    const companies = [{ companyId: "company-a", name: "Empresa A", roles: ["Administrador"], memberCount: 3 },
+      { companyId: "company-b", name: "Empresa B", roles: ["Administrador"], memberCount: 2 }];
+    serveHome({ organization: null, companies, pending: [], pendingGroups: companies.map((company) => ({
+      area: "users", kind: "invitationExpired", companyId: company.companyId, companyName: company.name, totalCount: 1000,
+      items: Array.from({ length: 10 }, (_, index) => ({ ...pending[0]!, subject: `${company.name} invitación ${index}` })),
+    })) });
+    renderRouteWithProviders("/org", { as: "visual-error-org" });
+    const block = await screen.findByRole("region", { name: "Para resolver" });
+    expect(within(block).getByText("2.000")).toBeVisible();
+    expect(within(block).getAllByText("1.000")).toHaveLength(2);
+    expect(within(block).getAllByText("Invitaciones vencidas")).toHaveLength(2);
+    expect(within(block).getAllByRole("link", { name: "Ver todos" }).map((link) => link.getAttribute("href")))
+      .toEqual(["/org/empresas/company-a?state=Expired", "/org/empresas/company-b?state=Expired"]);
+    expect(within(block).getAllByRole("listitem")).toHaveLength(20);
+    expect(within(block).getAllByRole("link", { name: "Reenviar" })[0]).toHaveAttribute("href", "/org/empresas/company-a");
+    expect(within(block).getAllByRole("listitem")[0]).not.toHaveTextContent("· Empresa A");
+  });
+  it.each([false, true])("total real y diez filas por grupo con mil pendientes, teléfono %s", async (onPhone) => {
+    phone(onPhone);
+    const items = Array.from({ length: 10 }, (_, index) => ({ ...pending[0]!, subject: `Invitada ${index}`, targetId: `member-${index}` }));
+    serveHome({ organization, companies: [], pending: [], pendingGroups: [
+      { area: "users", kind: "invitationExpired", totalCount: 1000, items },
+      { area: "users", kind: "deletionRequested", totalCount: 10, items: Array.from({ length: 10 }, (_, index) => ({ ...pending[1]!, subject: `Baja ${index}` })) },
+      { area: "unknown", kind: "unknown", totalCount: 999, items: [{ ...pending[0]!, kind: "unknown", subject: "No mostrar" }] },
+    ] });
+    renderRouteWithProviders("/org", { as: "visual-owner" });
+    const block = await screen.findByRole("region", { name: "Para resolver" });
+    expect(within(block).getByText("1.010")).toBeVisible();
+    expect(within(block).getByText("1.000")).toBeVisible();
+    expect(within(block).getByText("Invitaciones vencidas")).toBeVisible();
+    expect(within(block).getByText("Bajas pedidas")).toBeVisible();
+    expect(within(block).getAllByRole("link", { name: "Ver todos" })).toHaveLength(1);
+    expect(within(block).getByRole("link", { name: "Ver todos" })).toHaveAttribute("href", "/org/usuarios?state=Expired");
+    expect(within(block).getAllByText(/^Invitada \d+$/)).toHaveLength(10);
+    expect(within(block).getAllByText(/^Baja \d+$/)).toHaveLength(10);
+    expect(block).not.toHaveTextContent("No mostrar");
+    if (onPhone) {
+      expect(within(screen.getByRole("navigation", { name: "Áreas de la organización" })).getByRole("link", { name: "Usuarios, 1010 para resolver" })).toBeVisible();
+      expect(within(block).getByText("Invitada 0").closest("li")).not.toHaveTextContent("Usuarios");
+    } else expect(within(block).getAllByRole("columnheader").map((header) => header.textContent)).toEqual(["Pendiente", "Estado", "Desde", "Acción"]);
+  });
   // Relevamiento de la consolidación (N17): con un cambio de otro día, «Último cambio 01/10/2026 10:42» no entraba en la
   // tarjeta y la hora se cortaba. Hoy y ayer llevan la hora; otro día, la fecha sola.
   it("la tarjeta Auditoría dice la fecha sola si el último cambio no es de hoy ni de ayer", async () => {
@@ -91,7 +159,7 @@ describe("BusinessHomePage", () => {
     expect(invitation).toHaveTextContent("Invitación");
     // «Criterio · Tablas» (lienzo v92): lo que aclara el pendiente va en la segunda línea gris de la tabla.
     expect(within(invitation).getByText("Invitación")).toHaveAttribute("data-slot", "cell-detail");
-    expect(invitation).toHaveTextContent("Usuarios");
+    expect(invitation).not.toHaveTextContent("Usuarios");
     expect(invitation).toHaveTextContent("Vencida");
     expect(invitation).toHaveTextContent("25/09/2026");
     expect(within(invitation).getByRole("link", { name: "Reenviar" })).toHaveAttribute("href", "/org/usuarios?state=Expired");
@@ -100,7 +168,7 @@ describe("BusinessHomePage", () => {
     expect(deletion).toHaveTextContent("Baja pedida");
     expect(within(deletion).getByRole("link", { name: "Ver" })).toHaveAttribute("href", "/org/usuarios/member-diego");
     const domain = within(toResolve).getByText("Dominio de correo").closest("tr")!;
-    expect(domain).toHaveTextContent("Configuración");
+    expect(domain).not.toHaveTextContent("Configuración");
     expect(domain).toHaveTextContent("Pendiente");
     expect(within(domain).getByRole("link", { name: "Verificar" })).toHaveAttribute("href", "/org/configuracion");
     expect(await axe(container)).toHaveNoViolations();
@@ -156,9 +224,11 @@ describe("BusinessHomePage", () => {
 
     const toResolve = screen.getByRole("region", { name: "Para resolver" });
     const invitation = within(toResolve).getByText("carla.bianchi@delta.ejemplo.com").closest("li")!;
-    expect(invitation).toHaveTextContent("Invitación vencida · Usuarios");
+    expect(invitation).toHaveTextContent("Invitación vencida");
+    expect(invitation).not.toHaveTextContent("Usuarios");
     expect(within(invitation).getByRole("link", { name: "Reenviar" })).toHaveAttribute("href", "/org/usuarios?state=Expired");
-    expect(within(toResolve).getByText("Dominio de correo").closest("li")).toHaveTextContent("Pendiente · Configuración");
+    expect(within(toResolve).getByText("Dominio de correo").closest("li")).toHaveTextContent("Pendiente");
+    expect(within(toResolve).getByText("Dominio de correo").closest("li")).not.toHaveTextContent("Configuración");
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -200,9 +270,10 @@ describe("BusinessHomePage", () => {
     const companies = await screen.findByRole("region", { name: "Tus empresas" });
     expect(within(companies).getByRole("link", { name: /Delta Norte S\.A\./ })).toHaveTextContent("Administrador · 3 miembros");
     const toResolve = screen.getByRole("region", { name: "Para resolver" });
-    expect(within(toResolve).getByText("1")).toBeVisible();
+    expect(within(toResolve).getAllByText("1")).toHaveLength(2);
     const invitation = within(toResolve).getByText("martin.paz@delta.ejemplo.com").closest("li")!;
-    expect(invitation).toHaveTextContent("Invitación vencida · Delta Norte S.A.");
+    expect(invitation).toHaveTextContent("Invitación vencida");
+    expect(invitation).not.toHaveTextContent("Delta Norte S.A.");
     expect(within(invitation).getByRole("link", { name: "Reenviar" })).toHaveAttribute("href", "/org/empresas/company-dn");
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
@@ -216,9 +287,10 @@ describe("BusinessHomePage", () => {
 
     const toResolve = await screen.findByRole("region", { name: "Para resolver" });
     expect(within(toResolve).getAllByRole("columnheader").map((header) => header.textContent))
-      .toEqual(["Pendiente", "Empresa", "Estado", "Desde", "Acción"]);
+      .toEqual(["Pendiente", "Estado", "Desde", "Acción"]);
     const invitation = within(toResolve).getByText("martin.paz@delta.ejemplo.com").closest("tr")!;
-    expect(within(invitation).getByText("Delta Norte S.A.")).toBeVisible();
+    expect(within(toResolve).getByText("Delta Norte S.A.")).toBeVisible();
+    expect(invitation).not.toHaveTextContent("Delta Norte S.A.");
     expect(invitation).not.toHaveTextContent("Usuarios");
     expect(invitation).toHaveTextContent("Vencida");
     expect(within(invitation).getByRole("link", { name: "Reenviar" })).toHaveAttribute("href", "/org/empresas/company-dn");

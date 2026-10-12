@@ -7,6 +7,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 **En el teléfono** (tableros M-*): cada listado declara su fila (`mobileRow` con `ListRow`), de borde a borde y con hasta tres líneas; la lupa y el filtro son íconos de la barra y el filtro abre una hoja con las opciones y su conteo; el paginado es «Cargar más», que pide el tamaño de página siguiente; crear es un «+» flotante ([responsive](responsive.md)).
 
 ## Cómo se hace
+- **«Para resolver»** es una vista previa por tipo y empresa: `DataTable.rowGroups` conserva un solo encabezado de columnas y cada grupo muestra título, área y `totalCount` del servidor. El límite sale de `validationConstraints.PendingGroup.items.maxItems`, generado del OpenAPI; «Ver todos» aparece sólo si el total lo supera y abre el listado ya filtrado. En el teléfono, el área o empresa queda en el encabezado del grupo y cada fila muestra sólo su estado. Los globitos suman los totales de los grupos de su área, nunca las filas de la vista previa.
 - **Un listado paginado es `usePagedQuery`**: compone `useFilters(keys)`, `usePagination`, la búsqueda con 300 ms de debounce, la consulta con `placeholderData: keepPreviousData`, la corrección de una página fuera de rango y las props de `Pagination`:
   ```ts
   const { filters, pagination, query, result: roles, paginationProps } = usePagedQuery({

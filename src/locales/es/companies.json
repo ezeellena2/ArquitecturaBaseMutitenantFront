@@ -112,6 +112,7 @@
       "roleMenu": "Filtrar por rol",
       "stateMenu": "Filtrar por estado",
       "states": {
+        "Expired": "Vencidas",
         "Active": "Activos",
         "Inactive": "Inactivos",
         "PendingDeletion": "Baja pedida"

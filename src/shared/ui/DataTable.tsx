@@ -85,6 +85,8 @@ interface DataTableProps<TRow> {
   onSortChange?: (field: string) => void;
   /** En el teléfono, cada fila es una fila de borde a borde (`ListRow`) en lugar de una fila de tabla (tableros M-*). */
   mobileRow?: (row: TRow) => ReactNode;
+  /** Vistas previas: un encabezado de columnas y grupos con su total y salida al listado completo. */
+  rowGroups?: readonly { key: string; rows: readonly TRow[]; header: ReactNode; footer?: ReactNode }[];
 }
 
 /** También valida las columnas de features que todavía no existen en E1. */
@@ -189,6 +191,7 @@ export function DataTable<TRow>({
   sort,
   onSortChange,
   mobileRow,
+  rowGroups,
 }: DataTableProps<TRow>) {
   const { t } = useTranslation();
   const { phone } = useAppChrome();
@@ -203,11 +206,26 @@ export function DataTable<TRow>({
       : null;
   if (!error && isLoading) return <div className="flex justify-center p-10"><Spinner /></div>;
   if (list) return notice ?? <ul aria-busy={isFetching === true} className={cn("m-0 list-none p-0", isFetching ? "opacity-60" : undefined)}>
-    {rows.map((row) => <Fragment key={rowKey(row)}>{mobileRow(row)}</Fragment>)}
+    {rowGroups ? rowGroups.map((group) => <Fragment key={group.key}>
+      <li className="bg-[var(--s2)] px-5 py-2.5">{group.header}</li>
+      {group.rows.map((row) => <Fragment key={rowKey(row)}>{mobileRow(row)}</Fragment>)}
+      {group.footer ? <li className="px-5 py-3">{group.footer}</li> : null}
+    </Fragment>) : rows.map((row) => <Fragment key={rowKey(row)}>{mobileRow(row)}</Fragment>)}
   </ul>;
   // «Criterio · Tablas»: las filas miden 40; si alguna lleva segunda línea, todas las de la tabla miden 52.
   const details = notice ? [] : rows.map((row) => columns.map((column) => column.detail?.(row)));
   const twoLines = details.some((cells) => cells.some(hasContent));
+  const renderRow = (row: TRow) => <TableRow key={rowKey(row)} className={twoLines ? "h-[52px]" : "h-10"}>
+    {columns.map((column) => {
+      const detail = column.detail?.(row);
+      return <TableCell key={column.id} className={cn("overflow-hidden whitespace-nowrap", column.type === "actions" ? "py-0" : "py-2",
+        edgeClass(column), column.className, columnVisibility(column), alignClass(column))}>
+        {hasContent(detail) ? <span className="flex min-w-0 flex-col leading-[1.35]">
+          {columnCell(column, row)}<span data-slot="cell-detail" className="block truncate text-[12px] text-[var(--t3)]">{detail}</span>
+        </span> : columnCell(column, row)}
+      </TableCell>;
+    })}
+  </TableRow>;
 
   return (
     <Table aria-busy={isFetching === true} className={cn("table-fixed text-[13px]", isFetching ? "opacity-60" : undefined)}>
@@ -238,32 +256,11 @@ export function DataTable<TRow>({
       <TableBody>
         {notice ? <TableRow className="border-b-0 hover:bg-transparent">
           <TableCell colSpan={columns.length} className="p-0 whitespace-normal">{notice}</TableCell>
-        </TableRow> : rows.map((row, rowIndex) => (
-          <TableRow key={rowKey(row)} className={twoLines ? "h-[52px]" : "h-10"}>
-            {columns.map((column, columnIndex) => {
-              const detail = details[rowIndex][columnIndex];
-              return (
-                <TableCell
-                  key={column.id}
-                  className={cn(
-                    // El ⋮ (32) entra en una fila de 40 sin relleno; el texto lleva 8 arriba y abajo (52 con dos líneas).
-                    "overflow-hidden whitespace-nowrap",
-                    column.type === "actions" ? "py-0" : "py-2",
-                    edgeClass(column),
-                    column.className,
-                    columnVisibility(column),
-                    alignClass(column),
-                  )}
-                >
-                  {hasContent(detail) ? <span className="flex min-w-0 flex-col leading-[1.35]">
-                    {columnCell(column, row)}
-                    <span data-slot="cell-detail" className="block truncate text-[12px] text-[var(--t3)]">{detail}</span>
-                  </span> : columnCell(column, row)}
-                </TableCell>
-              );
-            })}
-          </TableRow>
-        ))}
+        </TableRow> : rowGroups ? rowGroups.map((group) => <Fragment key={group.key}>
+          <TableRow className="hover:bg-[var(--s2)]"><TableCell colSpan={columns.length} className="bg-[var(--s2)] px-5 py-2.5">{group.header}</TableCell></TableRow>
+          {group.rows.map(renderRow)}
+          {group.footer ? <TableRow><TableCell colSpan={columns.length} className="bg-[var(--lado-activo)] px-5 py-3">{group.footer}</TableCell></TableRow> : null}
+        </Fragment>) : rows.map(renderRow)}
       </TableBody>
     </Table>
   );

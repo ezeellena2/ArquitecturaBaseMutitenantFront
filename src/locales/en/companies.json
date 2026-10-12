@@ -112,6 +112,7 @@
       "roleMenu": "Filter by role",
       "stateMenu": "Filter by status",
       "states": {
+        "Expired": "Expired",
         "Active": "Active",
         "Inactive": "Inactive",
         "PendingDeletion": "Deletion requested"

@@ -42,6 +42,9 @@
   "members_one": "{{count}} miembro",
   "members_other": "{{count}} miembros",
   "toResolve": {
+    "viewAll": "Ver todos",
+    "organizationsGroup": "Organizaciones por aprobar",
+    "recoveriesGroup": "Recuperaciones pendientes",
     "title": "Para resolver",
     "empty": "Nada para resolver",
     "pending": "Pendiente",
@@ -53,27 +56,32 @@
   },
   "pending": {
     "invitationExpired": {
+      "group": "Invitaciones vencidas",
       "detail": "Invitación",
       "state": "Vencida",
       "phoneState": "Invitación vencida",
       "action": "Reenviar"
     },
     "deletionRequested": {
+      "group": "Bajas pedidas",
       "detail": "Se elimina el {{date}}",
       "state": "Baja pedida",
       "action": "Ver"
     },
     "domainUnverified": {
+      "group": "Dominios por verificar",
       "title": "Dominio de correo",
       "state": "Pendiente",
       "action": "Verificar"
     },
     "publicPageDraft": {
+      "group": "Páginas en borrador",
       "title": "Página pública",
       "state": "Borrador",
       "action": "Ver"
     },
     "publicPageBlocked": {
+      "group": "Páginas despublicadas por la plataforma",
       "title": "Página pública",
       "state": "Despublicada por la plataforma",
       "action": "Ver"

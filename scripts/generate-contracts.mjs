@@ -33,7 +33,7 @@ export function renderValidationContracts(source) {
   for (const [name, component] of Object.entries(schema.components?.schemas ?? {})) {
     const properties = {};
     for (const [property, definition] of Object.entries(component.properties ?? {})) {
-      const limits = Object.fromEntries(["minLength", "maxLength", "minimum", "maximum"]
+      const limits = Object.fromEntries(["minLength", "maxLength", "minimum", "maximum", "maxItems"]
         .filter((key) => definition[key] !== undefined).map((key) => [key, definition[key]]));
       if (Object.keys(limits).length) properties[property] = limits;
     }

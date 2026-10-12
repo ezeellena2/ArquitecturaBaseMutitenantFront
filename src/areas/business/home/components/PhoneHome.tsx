@@ -1,11 +1,13 @@
-import { ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import type { HomeCompanyCard, HomeOrganizationSummary } from "@/shared/api/types";
 import { initials } from "@/shared/lib/initials";
+import { validationConstraints } from "@/shared/api/generated/validation";
+import { NumberText } from "@/shared/ui/format/NumberText";
 import { companyDetail } from "./companyDetail";
-import { areaIcons, areaPaths, type HomeArea, type PendingRow } from "./pendingItems";
+import { areaIcons, areaPaths, pendingTotal, type HomeArea, type PendingRow, type PendingRowGroup } from "./pendingItems";
 
 const areas: readonly HomeArea[] = ["users", "roles", "companies", "publicPage", "settings", "audit"];
 
@@ -26,10 +28,10 @@ const titleClass = "text-[18px] leading-[normal] font-bold tracking-[-0.01em] te
  * color de la urgencia y botón cápsula. Con roles solo en empresas, «Tus empresas» en filas y, si administra alguna, su
  * «Para resolver». No es la compu achicada.
  */
-export function PhoneHome({ organization, companies, rows, firstName, organizationName }: {
+export function PhoneHome({ organization, companies, groups, firstName, organizationName }: {
   organization: HomeOrganizationSummary | null;
   companies: readonly HomeCompanyCard[];
-  rows: readonly PendingRow[];
+  groups: readonly PendingRowGroup[];
   firstName: string;
   organizationName: string;
 }) {
@@ -44,25 +46,25 @@ export function PhoneHome({ organization, companies, rows, firstName, organizati
     </div>
     <div className="relative z-[1] -mt-[26px] flex flex-1 flex-col overflow-hidden rounded-t-[24px] bg-[var(--lado-activo)]">
       {organization ? <>
-        <Shortcuts organization={organization} rows={rows} />
+        <Shortcuts organization={organization} groups={groups} />
         <div className="h-2 shrink-0 bg-[var(--s2)]" />
-        <ToResolveRows rows={rows} />
+        <ToResolveRows groups={groups} />
       </> : <>
         <YourCompanies companies={companies} />
         {/* M-Inicio-Miembro («Administra su empresa»): la franja gris, 8 debajo de las empresas, y su «Para resolver». */}
-        {rows.length > 0 ? <>
+        {groups.length > 0 ? <>
           <div className="mt-2 h-2 shrink-0 bg-[var(--s2)]" />
-          <ToResolveRows rows={rows} />
+          <ToResolveRows groups={groups} />
         </> : null}
       </>}
     </div>
   </div>;
 }
 
-function Shortcuts({ organization, rows }: { organization: HomeOrganizationSummary; rows: readonly PendingRow[] }) {
+function Shortcuts({ organization, groups }: { organization: HomeOrganizationSummary; groups: readonly PendingRowGroup[] }) {
   const { t } = useTranslation("home");
   const pendingByArea = new Map<HomeArea, number>();
-  for (const row of rows) pendingByArea.set(row.area, (pendingByArea.get(row.area) ?? 0) + 1);
+  for (const group of groups) pendingByArea.set(group.area, (pendingByArea.get(group.area) ?? 0) + group.totalCount);
 
   return <nav aria-label={t("areas")} className="grid grid-cols-4 gap-y-4 px-2 pb-[18px] pt-[22px]">
     {areas.filter((area) => organization[area] != null).map((area) => {
@@ -73,7 +75,7 @@ function Shortcuts({ organization, rows }: { organization: HomeOrganizationSumma
         className="flex flex-col items-center gap-[7px] text-center text-[12.5px] leading-[normal] font-medium text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
         <span className="relative inline-flex size-14 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]">
           <Icon aria-hidden="true" className="size-6" />
-          {count > 0 ? <span aria-hidden="true" className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-[10px] bg-[var(--peligro)] px-1.5 text-[11.5px] font-bold text-[var(--primary-foreground)] shadow-[0_0_0_2px_var(--lado-activo)]">{count}</span> : null}
+          {count > 0 ? <span aria-hidden="true" className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-[10px] bg-[var(--peligro)] px-1.5 text-[11.5px] font-bold text-[var(--primary-foreground)] shadow-[0_0_0_2px_var(--lado-activo)]"><NumberText value={count} /></span> : null}
         </span>
         {label}
       </Link>;
@@ -104,30 +106,35 @@ function YourCompanies({ companies }: { companies: readonly HomeCompanyCard[] })
 }
 
 /** M-Inicio-Org y M-Inicio-Miembro: «Para resolver», con la cantidad, en filas con ícono redondo y botón cápsula. */
-function ToResolveRows({ rows }: { rows: readonly PendingRow[] }) {
+function ToResolveRows({ groups }: { groups: readonly PendingRowGroup[] }) {
   const { t } = useTranslation("home");
   const titleId = useId();
 
   return <section aria-labelledby={titleId}>
     <div className={titleRow}>
       <h2 id={titleId} className={titleClass}>{t("toResolve.title")}</h2>
-      <span className="text-[14px] font-semibold text-[var(--t3)]">{rows.length}</span>
+      <span className="text-[14px] font-semibold text-[var(--t3)]"><NumberText value={pendingTotal(groups)} /></span>
     </div>
-    {rows.length === 0
+    {groups.length === 0
       ? <p className="px-5 py-4 text-[15px] font-semibold text-[var(--t1)]">{t("toResolve.empty")}</p>
-      : <ul>
-        {rows.map((row) => {
+      : groups.map((group) => <div key={group.key}>
+        <div className="flex items-baseline gap-1.5 px-5 pb-0.5 pt-3.5 text-[13px] text-[var(--t3)]">
+          <strong className="font-semibold text-[var(--t2)]">{group.title}</strong><span>{`· ${group.areaLabel}`}</span>
+          <span className="ml-auto font-semibold"><NumberText value={group.totalCount} /></span>
+        </div>
+        <ul>{group.rows.map((row) => {
           const Icon = areaIcons[row.area];
           return <li key={row.key} className={`${rowClass} ${rowLine}`}>
             <span aria-hidden="true" className={`inline-flex size-10 shrink-0 items-center justify-center rounded-full ${toneCircle[tone(row)]}`}><Icon className="size-5" /></span>
             <span className="flex min-w-0 flex-1 flex-col gap-0.5 leading-[normal]">
               <span className="truncate text-[15px] font-semibold text-[var(--t1)]">{row.title}</span>
-              {/* M-Inicio-Miembro: la fila de una empresa dice la empresa («· Delta Norte S.A.»); la de la organización, el área. */}
-              <span className="truncate text-[13px] text-[var(--t3)]"><span className={`font-medium ${toneText[tone(row)]}`}>{row.phoneState}</span>{` · ${row.company ?? row.areaLabel}`}</span>
+              <span className={`truncate text-[13px] font-medium ${toneText[tone(row)]}`}>{row.phoneState}</span>
             </span>
             <Link to={row.to} className="inline-flex h-[34px] shrink-0 items-center rounded-[17px] bg-[var(--marca-t)] px-3.5 text-[14px] font-semibold text-[var(--marca-tx)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">{row.action}</Link>
           </li>;
         })}
-      </ul>}
+        </ul>
+        {group.totalCount > validationConstraints.PendingGroup.items.maxItems ? <Link to={group.to} className="ml-[72px] mb-1.5 mt-0.5 inline-flex items-center gap-1.5 py-2 text-[15px] font-semibold text-[var(--marca-tx)]">{t("toResolve.viewAll")}<ArrowRight aria-hidden="true" className="size-3.5" /></Link> : null}
+      </div>)}
   </section>;
 }

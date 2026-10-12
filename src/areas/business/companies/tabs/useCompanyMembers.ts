@@ -14,7 +14,7 @@ export function useCompanyMembers(companyId: string, enabled: boolean) {
     defaultSort: "displayName",
     toQuery: (page, values): CompanyMembersQuery => ({
       ...page,
-      state: memberStates.find((item) => item === values.state),
+      state: values.state === "Expired" ? "Expired" : memberStates.find((item) => item === values.state),
       roleId: values.roleId === "none" ? undefined : values.roleId,
       withoutRoles: values.roleId === "none" ? true : undefined,
     }),

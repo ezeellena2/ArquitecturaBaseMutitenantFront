@@ -139,7 +139,8 @@ export function CompanyMembersTab({ company, list, roles }: {
           options: [{ value: "all", label: t("companies:detail.filters.allRoles") }, { value: "none", label: t("companies:detail.filters.withoutRoles") }, ...roleOptions.items.map((role) => ({ value: role.id, label: role.name }))] },
         { key: "state", label: t("companies:detail.filters.state"), menuLabel: t("companies:detail.filters.stateMenu"), value: state ?? "", active: state !== undefined,
           onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value),
-          options: memberStates.map((value) => ({ value: value ?? "all", label: value ? t(`companies:detail.filters.states.${value}`) : t("companies:detail.filters.allStates"), count: countForState(value) })) },
+          options: [...memberStates.map((value) => ({ value: value ?? "all", label: value ? t(`companies:detail.filters.states.${value}`) : t("companies:detail.filters.allStates"), count: countForState(value) })),
+            ...(state === "Expired" ? [{ value: "Expired", label: t("companies:detail.filters.states.Expired") }] : [])] },
       ]}
       clearLabel={t("common:actions.clear")} onClear={filters.clear} />
     <Surface className="overflow-hidden" phoneFlush>

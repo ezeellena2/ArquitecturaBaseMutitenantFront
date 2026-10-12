@@ -34,25 +34,32 @@ describe("Para resolver del núcleo de Plataforma", () => {
     expect(screen.queryByText(permissions[0] === "platform.tenants.read" ? "Pablo Ortiz" : "Gamma S.A.")).not.toBeInTheDocument();
   });
 
-  it("lee todas las páginas en orden del servidor y conserva la máscara del teléfono", async () => {
-    const rows = Array.from({ length: 101 }, (_, index) => ({ ...platformTenantRows[0]!, id: `org-${index}`, name: `Pendiente ${index}` }));
+  it("lee una sola página de diez, muestra el total real y conserva la máscara del teléfono", async () => {
+    const rows = Array.from({ length: 10 }, (_, index) => ({ ...platformTenantRows[0]!, id: `org-${index}`, name: `Pendiente ${index}` }));
     const pages: number[] = [];
+    let recoveryRequests = 0;
     server.use(http.get("/api/platform/tenants/paged", ({ request }) => {
       const query = new URL(request.url).searchParams; const page = Number(query.get("page")); pages.push(page);
-      expect(query.get("pageSize")).toBe("100"); expect(query.get("sort")).toBe("-createdAtUtc");
-      return HttpResponse.json({ items: rows.slice((page - 1) * 100, page * 100), page, pageSize: 100, totalCount: 101, totalPages: 2, hasPrevious: page > 1, hasNext: page < 2 } satisfies ApiSchemas["PagedResultOfPlatformTenantResponse"]);
+      expect(query.get("pageSize")).toBe("10"); expect(query.get("sort")).toBe("-createdAtUtc");
+      return HttpResponse.json({ items: rows, page, pageSize: 10, totalCount: 1000, totalPages: 100, hasPrevious: false, hasNext: true } satisfies ApiSchemas["PagedResultOfPlatformTenantResponse"]);
     }), http.get("/api/platform/recoveries/paged", ({ request }) => {
-      expect(new URL(request.url).searchParams.get("sort")).toBe("-createdAt");
-      return HttpResponse.json(recoveryPage([{ ...platformRecoveries[0]!, previousMethodType: "Phone", previousMethod: "+54 •••• 1234" }]));
+      recoveryRequests++;
+      const query = new URL(request.url).searchParams;
+      expect(query.get("sort")).toBe("-createdAt"); expect(query.get("page")).toBe("1"); expect(query.get("pageSize")).toBe("10");
+      return HttpResponse.json(recoveryPage(Array.from({ length: 10 }, (_, index) => ({ ...platformRecoveries[0]!, id: `recovery-${index}`, previousMethodType: "Phone", previousMethod: "+54 •••• 1234" }))));
     }));
     mount();
-    expect(await screen.findByText("Pendiente 100")).toBeVisible();
-    expect(pages).toEqual([1, 2]);
-    expect(screen.getByText("+54 •••• 1234")).toBeVisible();
+    expect(await screen.findByText("Pendiente 9")).toBeVisible();
+    expect(pages).toEqual([1]);
+    expect(screen.getAllByText("+54 •••• 1234")).toHaveLength(10);
+    expect(recoveryRequests).toBe(1);
     const table = screen.getByRole("table");
-    expect(within(table).getAllByRole("row")).toHaveLength(103);
-    expect(within(table).getAllByRole("row")[1]).toHaveTextContent("Pendiente 0");
-    expect(screen.getByText("102")).toBeVisible();
+    expect(within(table).getAllByRole("row")).toHaveLength(24);
+    expect(within(table).getAllByRole("row")[2]).toHaveTextContent("Pendiente 0");
+    expect(screen.getByText("1.010")).toBeVisible();
+    expect(screen.getByText("1.000")).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ver todos" })).toHaveAttribute("href", "/plataforma/organizaciones?status=PendingApproval");
+    expect(within(table).getAllByRole("columnheader").map((header) => header.textContent)).toEqual(["Pendiente", "Estado", "Desde", "Acción"]);
   });
 
   it("clear cancela una página tardía y no devuelve pendientes de la sesión anterior", async () => {

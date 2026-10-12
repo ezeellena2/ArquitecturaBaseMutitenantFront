@@ -42,6 +42,9 @@
   "members_one": "{{count}} member",
   "members_other": "{{count}} members",
   "toResolve": {
+    "viewAll": "View all",
+    "organizationsGroup": "Organizations awaiting approval",
+    "recoveriesGroup": "Pending recoveries",
     "title": "To resolve",
     "empty": "Nothing to resolve",
     "pending": "Pending",
@@ -53,27 +56,32 @@
   },
   "pending": {
     "invitationExpired": {
+      "group": "Expired invitations",
       "detail": "Invitation",
       "state": "Expired",
       "phoneState": "Invitation expired",
       "action": "Resend"
     },
     "deletionRequested": {
+      "group": "Deletion requests",
       "detail": "Deleted on {{date}}",
       "state": "Deletion requested",
       "action": "View"
     },
     "domainUnverified": {
+      "group": "Domains awaiting verification",
       "title": "Email domain",
       "state": "Pending",
       "action": "Verify"
     },
     "publicPageDraft": {
+      "group": "Draft pages",
       "title": "Public page",
       "state": "Draft",
       "action": "View"
     },
     "publicPageBlocked": {
+      "group": "Pages unpublished by the platform",
       "title": "Public page",
       "state": "Unpublished by the platform",
       "action": "View"

@@ -9,7 +9,7 @@ import { ModuleHome } from "@/shared/modules/ModuleRegistry";
 import { fetchHome, homeQueryKey } from "../api/home";
 import { AreaCards, CompanyCards } from "../components/HomeCards";
 import { PhoneHome } from "../components/PhoneHome";
-import { describePending, type PendingRow } from "../components/pendingItems";
+import { describePendingGroups } from "../components/pendingItems";
 import { ToResolve } from "../components/ToResolve";
 import { activeOrganization } from "@/tenancy/access";
 
@@ -22,31 +22,29 @@ export function BusinessHomePage() {
   const format = useFormat();
   const { data: currentUser } = useCurrentUser();
   const phone = useMediaQuery("(max-width: 767px)");
-  const home = useQuery({ queryKey: homeQueryKey, queryFn: fetchHome, meta: { blocksView: true } });
+  const home = useQuery({ queryKey: homeQueryKey, queryFn: ({ signal }) => fetchHome(signal), meta: { blocksView: true } });
   const organizationName = activeOrganization(currentUser)?.name ?? "";
-  const rows = (home.data?.pending ?? [])
-    .map((item, index) => describePending(item, index, t, format.formatDate))
-    .filter((row): row is PendingRow => row !== null);
+  const groups = describePendingGroups(home.data, t, format.formatDate);
   const organization = home.data?.organization;
 
   // Tableros M-Inicio-Org y M-Inicio-Miembro: en el teléfono, los dos inicios son la billetera.
   if (phone && home.data) {
-    return <PhoneHome organization={organization ?? null} companies={home.data.companies} rows={rows} organizationName={organizationName}
+    return <PhoneHome organization={organization ?? null} companies={home.data.companies} groups={groups} organizationName={organizationName}
       firstName={currentUser?.displayName?.trim().split(/\s+/)[0] ?? ""} />;
   }
   // Tableros Inicio-Org e Inicio-Miembro (.ini): los bloques del inicio van a 20 uno del otro.
   const content = <>
     {organization ? <div className="flex flex-col gap-5">
       <AreaCards organization={organization} />
-      <ToResolve rows={rows} />
+      <ToResolve groups={groups} />
     </div> : null}
     {home.data && !organization ? <div className="flex flex-col gap-5">
       <h2 className="mb-[-6px] mt-1 text-[15px] font-semibold text-[var(--t1)]">{t("home:yourCompanies")}</h2>
       <CompanyCards companies={home.data.companies} />
-      {rows.length > 0 ? <ToResolve rows={rows} byCompany /> : null}
+      {groups.length > 0 ? <ToResolve groups={groups} /> : null}
     </div> : null}
   </>;
   const original = <Page icon={HomeIcon} title={t("common:home.title")} summary={organizationName}>{content}</Page>;
-  const moduleContent = organization ? <div className="flex flex-col gap-5"><ToResolve rows={rows} /><AreaCards organization={organization} /></div> : content;
+  const moduleContent = organization ? <div className="flex flex-col gap-5"><ToResolve groups={groups} /><AreaCards organization={organization} /></div> : content;
   return phone ? original : <ModuleHome access="business" fallback={original}>{moduleContent}</ModuleHome>;
 }

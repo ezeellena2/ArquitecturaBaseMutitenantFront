@@ -45,6 +45,7 @@ import { toastError } from "@/shared/ui/sonner";
 import {
   fetchOrganizationDomainsPage, organizationDomainsPageKey, fetchOrganizationSettings, organizationDomainsKey, organizationSettingsKey,
   removeOrganizationDomain, updateOrganizationSettings, verifyOrganizationDomain,
+  type OrganizationDomainsQuery,
 } from "../api/settings";
 import { AddDomainDialog } from "../components/AddDomainDialog";
 import { activeOrganization } from "@/tenancy/access";
@@ -52,6 +53,7 @@ import { activeOrganization } from "@/tenancy/access";
 /// Los datos de la organización no tienen reglas propias en la pantalla: lo que el back rechaza de un dato va debajo de
 /// ese dato, y lo demás, en la franja.
 const settingsFormSchema = z.object({ name: z.string(), defaultCulture: z.string(), defaultTimeZoneId: z.string(), defaultCurrency: z.string() });
+const domainFilterKeys = ["domainStatus"] as const;
 type SettingsForm = z.infer<typeof settingsFormSchema>;
 
 // Los errores de validación del back, en camelCase, a su campo.
@@ -89,8 +91,9 @@ function SettingsEditor({ settings, loadError, reload }: {
   const organizationName = activeOrganization(currentUser)?.name ?? "";
   const { phone } = useAppChrome();
   const client = useQueryClient();
-  const { result: domains, paginationProps: domainPagination } = usePagedQuery({ filterKeys: [] as const, defaultSort: "domain",
-    toQuery: (page) => page, queryKey: organizationDomainsPageKey, queryFn: fetchOrganizationDomainsPage, meta: { silent: true } });
+  const { result: domains, filters: domainFilters, paginationProps: domainPagination } = usePagedQuery({ filterKeys: domainFilterKeys, defaultSort: "domain",
+    toQuery: (page, values): OrganizationDomainsQuery => ({ ...page, status: values.domainStatus === "Pending" ? "Pending" : undefined }),
+    queryKey: organizationDomainsPageKey, queryFn: fetchOrganizationDomainsPage, meta: { silent: true } });
   const { form, version, resetTo, wrote } = useEditForm({ read: settings, toValues: valuesFromSettings, resolver: zodResolver(settingsFormSchema) });
   const { errors } = form.formState;
   const culture = useController({ control: form.control, name: "defaultCulture" });
@@ -214,6 +217,9 @@ function SettingsEditor({ settings, loadError, reload }: {
         </Section>
 
         <Section title={t("settings:domains.title")} phone="inset" action={canManage ? { label: t("settings:domains.add"), onClick: () => setAddingDomain(true) } : undefined}>
+          {domainFilters.values.domainStatus === "Pending" ? <div className="flex items-center gap-3 px-4 py-2 text-[13px] text-[var(--t2)]">
+            <span>{t("settings:domains.status.Pending")}</span><Button type="button" variant="link" size="sm" onClick={domainFilters.clear}>{t("common:actions.clearFilters")}</Button>
+          </div> : null}
           {domains.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
             // Tableros Configuracion (.o-dom-vacio) y M-Configuracion-Dominio (.ap-it.apag): en el teléfono, una fila apagada.
             : activeDomains.length === 0 ? <p className="px-4 py-3.5 text-[13px] text-[var(--t3)] max-md:flex max-md:min-h-14 max-md:items-center max-md:py-2 max-md:pr-3.5 max-md:pl-4 max-md:text-[15.5px] max-md:font-medium max-md:text-[var(--t1)] max-md:opacity-55">{t("settings:domains.empty")}</p>
