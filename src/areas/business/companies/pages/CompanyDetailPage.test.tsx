@@ -40,7 +40,12 @@ const ownRole = {
 function detailApi(members: unknown[]) {
   server.use(
     http.get("/api/companies/company-1", () => HttpResponse.json(company)),
-    http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: members, page: 1, pageSize: 10, totalCount: members.length, totalPages: 1, hasPrevious: false, hasNext: false })),
+    http.get("/api/companies/company-1/members/paged", ({ request }) => {
+      const params = new URL(request.url).searchParams;
+      const page = Number(params.get("page") ?? 1), pageSize = Number(params.get("pageSize") ?? 10);
+      const totalPages = Math.ceil(members.length / pageSize);
+      return HttpResponse.json({ items: members.slice((page - 1) * pageSize, page * pageSize), page, pageSize, totalCount: members.length, totalPages, hasPrevious: page > 1, hasNext: page < totalPages });
+    }),
     http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: members.length, active: 1, pendingDeletion: 1, inactive: 1, invited: 0 })),
     http.get("/api/companies/company-1/roles/paged", ({ request }) => { const items = new URL(request.url).searchParams.get("onlyOwn") === "true" ? [ownRole] : [companyAdmin, ownRole]; return HttpResponse.json({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false }); }),
   );
@@ -101,6 +106,10 @@ describe("CompanyDetailPage", () => {
     await user.click(within(screen.getByRole("tabpanel")).getByRole("button", { name: "Página siguiente" }));
     expect(await screen.findByRole("link", { name: own[11].name })).toBeVisible();
     expect(requests.filter((url) => url.searchParams.get("onlyOwn") === "true").map((url) => url.searchParams.get("page"))).toEqual(["1", "2"]);
+    await user.click(screen.getByRole("tab", { name: /^Miembros/ }));
+    expect(await screen.findByText("Lucía Fernández")).toBeVisible();
+    await user.click(screen.getByRole("tab", { name: /^Roles/ }));
+    expect(await screen.findByRole("link", { name: own[11].name })).toBeVisible();
   });
   it("tablero Empresa: banda, columnas y filtros accesibles de Miembros", async () => {
     detailApi([member]);

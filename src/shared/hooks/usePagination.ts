@@ -11,6 +11,7 @@ function positiveInteger(value: string | null, fallback: number): number {
 
 interface PaginationOptions {
   readonly defaultSort?: string;
+  readonly prefix?: string;
 }
 
 /// Página, tamaño, orden y búsqueda de un listado, como los lleva la consulta.
@@ -23,25 +24,26 @@ export interface PageQuery {
 
 /// Página, orden y búsqueda viven en la URL: el listado se puede compartir y el botón atrás funciona. La corrección de
 /// una página fuera de rango necesita la respuesta del back, así que la hace `usePagedQuery`, que la tiene.
-export function usePagination({ defaultSort }: PaginationOptions = {}) {
+export function usePagination({ defaultSort, prefix = "" }: PaginationOptions = {}) {
   const [params] = useSearchParams();
 
-  const rawPage = params.get("page");
-  const rawPageSize = params.get("pageSize");
+  const pageKey = `${prefix}page`, sizeKey = `${prefix}pageSize`, sortKey = `${prefix}sort`, searchKey = `${prefix}search`;
+  const rawPage = params.get(pageKey);
+  const rawPageSize = params.get(sizeKey);
   const page = positiveInteger(rawPage, 1);
   const requestedSize = positiveInteger(rawPageSize, defaultPageSize);
   const pageSize = isPageSize(requestedSize) ? requestedSize : defaultPageSize;
-  const sort = params.get("sort") ?? defaultSort;
-  const search = params.get("search") ?? undefined;
+  const sort = params.get(sortKey) ?? defaultSort;
+  const search = params.get(searchKey) ?? undefined;
 
   const update = useQueryUpdate();
 
-  const setPage = useCallback((next: number) => update({ page: next === 1 ? undefined : String(next) }), [update]);
+  const setPage = useCallback((next: number) => update({ [pageKey]: next === 1 ? undefined : String(next) }), [update, pageKey]);
 
   // El tamaño por omisión no ensucia la URL, y al cambiarlo se vuelve al principio del listado.
   const setPageSize = useCallback(
-    (next: number) => update({ pageSize: next === defaultPageSize ? undefined : String(next), page: undefined }),
-    [update],
+    (next: number) => update({ [sizeKey]: next === defaultPageSize ? undefined : String(next), [pageKey]: undefined }),
+    [update, pageKey, sizeKey],
   );
 
   // Canoniza la URL en una sola escritura con replace: dos llamadas a useQueryUpdate en el mismo tick no se acumulan.
@@ -49,22 +51,22 @@ export function usePagination({ defaultSort }: PaginationOptions = {}) {
     const canonicalPage = page === 1 ? null : String(page);
     const canonicalSize = pageSize === defaultPageSize ? null : String(pageSize);
     const changes: Record<string, string | undefined> = {};
-    if (rawPage !== canonicalPage) changes.page = canonicalPage ?? undefined;
-    if (rawPageSize !== canonicalSize) changes.pageSize = canonicalSize ?? undefined;
+    if (rawPage !== canonicalPage) changes[pageKey] = canonicalPage ?? undefined;
+    if (rawPageSize !== canonicalSize) changes[sizeKey] = canonicalSize ?? undefined;
     if (Object.keys(changes).length > 0) update(changes);
-  }, [page, pageSize, rawPage, rawPageSize, update]);
+  }, [page, pageSize, rawPage, rawPageSize, update, pageKey, sizeKey]);
 
   // Cambiar la búsqueda o el orden vuelve a la primera página: si no, se puede quedar en una página que ya no existe.
-  const setSearch = useCallback((next: string) => update({ search: next, page: undefined }), [update]);
+  const setSearch = useCallback((next: string) => update({ [searchKey]: next, [pageKey]: undefined }), [update, pageKey, searchKey]);
 
   const toggleSort = useCallback(
     (field: string) => {
       const next = sort === field ? `-${field}`
         : sort === `-${field}` ? (defaultSort === `-${field}` ? field : undefined)
           : field;
-      update({ sort: next === defaultSort ? undefined : next, page: undefined });
+      update({ [sortKey]: next === defaultSort ? undefined : next, [pageKey]: undefined });
     },
-    [sort, defaultSort, update],
+    [sort, defaultSort, update, sortKey, pageKey],
   );
 
   const query = useMemo<PageQuery>(() => ({ page, pageSize, sort, search }), [page, pageSize, sort, search]);

@@ -41,5 +41,9 @@ it.each([
   await waitFor(() => expect(listRequests.at(-1)?.searchParams.get("search")).toBe("Delta"));
   await waitFor(() => expect(requests.filter((url) => url.searchParams.get("search") === "Delta")).toHaveLength(1));
   expect(requests).toHaveLength(2);
+  expect(listRequests.every((url) => !url.searchParams.has("companyId"))).toBe(true);
+  expect(listRequests.filter((url) => !url.searchParams.has("search"))).toHaveLength(1);
+  expect(listRequests.filter((url) => url.searchParams.get("search") === "Delta")).toHaveLength(1);
+  expect(listRequests).toHaveLength(2);
   expect(requests.every((url) => !url.searchParams.has("companyId"))).toBe(true);
 }, 15_000);

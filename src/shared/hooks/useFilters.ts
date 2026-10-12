@@ -19,7 +19,7 @@ export interface Filters<K extends string> {
 /// Cambiar un filtro vuelve a la página 1 por el mismo camino que ya usa el cambio de búsqueda. Sin eso, se
 /// puede quedar parada en una página que con el filtro nuevo ya no existe, y el listado se ve vacío por un
 /// motivo que no tiene nada que ver con lo que se filtró.
-export function useFilters<K extends string>(keys: readonly K[]): Filters<K> {
+export function useFilters<K extends string>(keys: readonly K[], prefix = ""): Filters<K> {
   const [params] = useSearchParams();
   const update = useQueryUpdate();
 
@@ -30,22 +30,22 @@ export function useFilters<K extends string>(keys: readonly K[]): Filters<K> {
   const values = useMemo(
     () =>
       Object.fromEntries(
-        keys.map((key) => [key, new URLSearchParams(search).get(key) ?? undefined]),
+        keys.map((key) => [key, new URLSearchParams(search).get(`${prefix}${key}`) ?? undefined]),
       ) as Record<K, string | undefined>,
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `keys` es una constante del módulo que lo usa.
-    [search],
+    [search, prefix],
   );
 
   const active = useMemo(() => keys.filter((key) => values[key] !== undefined), [keys, values]);
 
   const setFilter = useCallback(
-    (key: K, value: string | undefined) => update({ [key]: value, page: undefined }),
-    [update],
+    (key: K, value: string | undefined) => update({ [`${prefix}${key}`]: value, [`${prefix}page`]: undefined }),
+    [update, prefix],
   );
 
   const clear = useCallback(
-    () => update({ ...Object.fromEntries(keys.map((key) => [key, undefined])), search: undefined, page: undefined }),
-    [keys, update],
+    () => update({ ...Object.fromEntries(keys.map((key) => [`${prefix}${key}`, undefined])), [`${prefix}search`]: undefined, [`${prefix}page`]: undefined }),
+    [keys, update, prefix],
   );
 
   return useMemo(() => ({ values, active, setFilter, clear }), [values, active, setFilter, clear]);

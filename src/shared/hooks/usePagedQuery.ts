@@ -12,6 +12,7 @@ interface PagedQueryOptions<K extends string, TQuery, TPage extends PagedRespons
   /** Los filtros del listado que viven en la URL; una constante del módulo. */
   readonly filterKeys: readonly K[];
   readonly defaultSort?: string;
+  readonly prefix?: string;
   /** Arma la consulta de la API con la página, el orden, la búsqueda (ya con el debounce) y los filtros de la URL. */
   readonly toQuery: (page: PageQuery, filters: Readonly<Record<K, string | undefined>>) => TQuery;
   readonly queryKey: (query: TQuery) => QueryKey;
@@ -26,10 +27,10 @@ interface PagedQueryOptions<K extends string, TQuery, TPage extends PagedRespons
 /// la nueva; si llega una página vacía con filas en otras (se borró la última fila de la última página), salta sola a
 /// la última que tiene, con replace; y entrega las props de `Pagination`.
 export function usePagedQuery<K extends string, TQuery, TPage extends PagedResponse>({
-  filterKeys, defaultSort, toQuery, queryKey, queryFn, enabled, staleTime, meta,
+  filterKeys, defaultSort, prefix, toQuery, queryKey, queryFn, enabled, staleTime, meta,
 }: PagedQueryOptions<K, TQuery, TPage>) {
-  const filters = useFilters(filterKeys);
-  const pagination = usePagination({ defaultSort });
+  const filters = useFilters(filterKeys, prefix);
+  const pagination = usePagination({ defaultSort, prefix });
   const search = useDebouncedValue(pagination.search ?? "");
   const query = toQuery({ page: pagination.page, pageSize: pagination.pageSize, sort: pagination.sort, search: search || undefined }, filters.values);
   const result = useQuery({ queryKey: queryKey(query), queryFn: () => queryFn(query), enabled, staleTime, placeholderData: keepPreviousData, meta });

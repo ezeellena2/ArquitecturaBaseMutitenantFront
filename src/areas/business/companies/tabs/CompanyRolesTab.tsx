@@ -18,7 +18,7 @@ import type { CompanyRoles } from "./useCompanyRoles";
 export function CompanyRolesTab({ roles }: { roles: CompanyRoles }) {
   const { t } = useTranslation(["companies", "roles", "common"]);
   const navigate = useNavigate();
-  const { result: query, paginationProps } = usePagedQuery({ filterKeys: [] as const, defaultSort: "name",
+  const { result: query, paginationProps } = usePagedQuery({ filterKeys: [] as const, prefix: "roles.", defaultSort: "name",
     toQuery: ({ page, pageSize }) => ({ page, pageSize, sort: "name" }),
     queryKey: (page) => [...roles.own.queryKeyRoot, page], queryFn: (page) => roles.own.queryFn(page),
     enabled: roles.canReadRoles, staleTime: 30_000, meta: { silent: true } });
