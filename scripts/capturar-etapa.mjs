@@ -258,7 +258,7 @@ export async function openApp(context, appUrl, entry, openStream) {
     if (action.waitFor) await page.getByText(action.waitFor).first().waitFor();
     await runAppActions(page, [action]);
   }
-  await page.locator(app.readySelector ?? "main").first().waitFor();
+  await page.locator(app.readySelector ?? "main").filter({ visible: true }).first().waitFor();
   if (app.readyHeading) await page.getByRole("heading", { name: app.readyHeading }).first().waitFor();
   if (app.readyText) await page.getByText(app.readyText, { exact: false }).first().waitFor();
   for (const text of app.readyTexts ?? []) await page.getByText(text, { exact: false }).first().waitFor();
