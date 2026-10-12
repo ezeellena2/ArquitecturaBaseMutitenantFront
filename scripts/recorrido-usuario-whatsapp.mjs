@@ -19,7 +19,7 @@ export const e8Definitions = [
   definition("01", "Preparar una cuenta Phone por UI", "Registro por WhatsApp y OTP controlado crean una persona sin nombre, sin correo y con Phone principal.", { controlled: true }),
   definition("02", "Ingresar por WhatsApp · enviar", "Elige WhatsApp y envía un código a su número; el país viene de la API.", source("ingresar-por-whatsapp", 1, "/login")),
   definition("03", "Ingresar por WhatsApp · código", "La pantalla pide el OTP; se lee del outbox real por control privado, sin certificar entrega al celular.", source("ingresar-por-whatsapp", 2, "—", true)),
-  definition("04", "Ingresar por WhatsApp · verificar", "El OTP verifica posesión antes de iniciar la autorización OIDC.", source("ingresar-por-whatsapp", 3, "/login")),
+  definition("04", "Ingresar por WhatsApp · verificar", "El OTP verifica posesión antes de completar la autorización OIDC inicial, sin iniciar otra durante el envío.", source("ingresar-por-whatsapp", 3, "/login")),
   definition("05", "Ingresar por WhatsApp · sesión", "OIDC usa state y PKCE actuales, acceso consumer y retorno propio.", source("ingresar-por-whatsapp", 4, "/auth/callback")),
   definition("06", "Ingresar por WhatsApp · Personal", "Personal y F5 conservan el acceso, en el mismo contexto que Plataforma.", source("ingresar-por-whatsapp", 5, "/")),
   definition("07", "Agregar WhatsApp · abrir", "Mi cuenta ofrece Agregar correo o teléfono.", source("agregar-un-whatsapp", 1, "/cuenta")),
@@ -47,6 +47,22 @@ export const e8Definitions = [
 export function requireE8Control(env) {
   assert.equal(typeof env.whatsapp?.begin, "function", "Falta soporte privado WhatsApp publicado para el mismo entorno del recorrido.");
   return env.whatsapp.begin;
+}
+
+/** La puerta canónica prepara una autorización; el OTP continúa esa misma petición. */
+export function canonicalLoginBaseline(authorizations, beforeOpening) {
+  assert.ok(Number.isSafeInteger(beforeOpening) && beforeOpening >= 0, "La línea de base de la puerta debe ser válida.");
+  const fresh = authorizations.slice(beforeOpening);
+  assert.ok(fresh.length === 1, "La puerta debe preparar exactamente una autorización inicial.");
+  const initial = fresh[0];
+  assert.ok(initial.access === "consumer" && initial.state === true && initial.pkce === true && initial.method === "S256",
+    "La autorización inicial debe conservar consumer, state y PKCE S256.");
+  return authorizations.length;
+}
+
+export function assertNoAuthorizationBeforeProof(authorizations, readyCount) {
+  assert.ok(Number.isSafeInteger(readyCount) && readyCount >= 0 && authorizations.length === readyCount,
+    "No debe iniciarse otra autorización antes de verificar posesión.");
 }
 
 /** Sólo catálogo de códigos, estado y espera; nunca cuerpos ni destinos privados. */
@@ -181,7 +197,7 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
       assert.equal(stored, false); assert.equal(leaked, false);
     } finally { page.off("request", inspect); }
   };
-  let fixture; let proof; let since; let methodId; let me; let link; let pending;
+  let fixture; let proof; let since; let loginReadyCount; let methodId; let me; let link; let pending;
   try {
     await step("01", async () => {
       fixture = await begin(`walkthrough-signup-${width}`, phone);
@@ -201,17 +217,20 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
       phase = "countries";
       const countries = (await methods.json()).channels.find((item) => item.key === "whatsapp")?.countries;
       assert.ok(countries?.length); await channel(page, phone);
+      phase = "initial-oidc";
+      loginReadyCount = canonicalLoginBaseline(authorizations, since);
       phase = "send";
       const sent = await click(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 202);
       phase = "request-country";
-      checks = { countryMatch: countries.includes(sent.request().postDataJSON().phone.country), expectedAuthCount: since, actualAuthCount: authorizations.length };
+      checks = { countryMatch: countries.includes(sent.request().postDataJSON().phone.country), expectedAuthCount: loginReadyCount, actualAuthCount: authorizations.length };
       assert.ok(checks.countryMatch);
       phase = "code-screen";
-      await heading("Revisá tu WhatsApp"); phase = "before-oidc"; checks.actualAuthCount = authorizations.length; assert.equal(authorizations.length, since); return "Eligió WhatsApp con país permitido por la API y pidió el código antes de OIDC.";
+      await heading("Revisá tu WhatsApp"); phase = "before-oidc"; checks.actualAuthCount = authorizations.length; assertNoAuthorizationBeforeProof(authorizations, loginReadyCount); return "Eligió WhatsApp con país permitido por la API; el envío conserva la autorización inicial sin abrir otra antes de verificar.";
     });
     await step("03", async () => { proof = (await fixture("code")).proof; assert.match(proof, /^\d{6}$/); return "OTP controlado: leído del outbox real por canal privado. Celular/Meta pendiente."; });
     await step("04", async () => {
       await fillOtp(page, proof); proof = undefined;
+      assertNoAuthorizationBeforeProof(authorizations, loginReadyCount);
       await click(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 200);
       await awaitApp(page);
       return "Verificó el OTP por UI; ninguna prueba privada se publica.";

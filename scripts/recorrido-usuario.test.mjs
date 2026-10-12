@@ -7,6 +7,26 @@ import { execFileSync } from "node:child_process";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
 
+test("la puerta canónica exige una autorización consumer con state y PKCE S256 antes de enviar", () => {
+  const previous = { access: "business", state: true, pkce: true, method: "S256" };
+  const initial = { access: "consumer", state: true, pkce: true, method: "S256" };
+  assert.equal(whatsappJourney.canonicalLoginBaseline([previous, initial], 1), 2);
+  for (const patch of [{ access: "platform" }, { state: false }, { pkce: false }, { method: "plain" }])
+    assert.throws(() => whatsappJourney.canonicalLoginBaseline([previous, { ...initial, ...patch }], 1));
+  assert.throws(() => whatsappJourney.canonicalLoginBaseline([previous], 1));
+  assert.throws(() => whatsappJourney.canonicalLoginBaseline([previous, initial, initial], 1));
+});
+
+test("una autorización nueva tras Enviar código o durante el OTP sigue siendo un fallo", () => {
+  const initial = { access: "consumer", state: true, pkce: true, method: "S256" };
+  const authorizations = [initial];
+  const ready = whatsappJourney.canonicalLoginBaseline(authorizations, 0);
+  assert.doesNotThrow(() => whatsappJourney.assertNoAuthorizationBeforeProof(authorizations, ready));
+  authorizations.push(initial);
+  assert.throws(() => whatsappJourney.assertNoAuthorizationBeforeProof(authorizations, ready));
+  assert.throws(() => whatsappJourney.assertNoAuthorizationBeforeProof([initial], undefined));
+});
+
 test("diagnóstico HTTP del recorrido omite cuerpos, destinos, pruebas y valores arbitrarios", () => {
   assert.deepEqual(whatsappJourney.safeJourneyHttp(429, { code: "Auth.LoginCode.ResendTooSoon", retryAfter: 60, email: "private@example.test", proof: "private", detail: "private" }),
     { status: 429, code: "Auth.LoginCode.ResendTooSoon", retryAfter: 60 });
