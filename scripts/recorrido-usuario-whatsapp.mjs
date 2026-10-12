@@ -49,13 +49,24 @@ export function requireE8Control(env) {
   return env.whatsapp.begin;
 }
 
+/** Sólo catálogo de códigos, estado y espera; nunca cuerpos ni destinos privados. */
+export function safeJourneyHttp(status, problem = {}) {
+  const code = problem?.code;
+  return {
+    status: Number.isInteger(status) && status >= 100 && status <= 599 ? status : null,
+    code: typeof code === "string" && code.length <= 100 && /^(General|Auth|Http|Request|WhatsApp|Identity|Validation)\.[A-Za-z][A-Za-z0-9.]*$/u.test(code) && !/\d{5}/u.test(code) ? code : "none",
+    retryAfter: Number.isSafeInteger(problem?.retryAfter) && problem.retryAfter > 0 && problem.retryAfter <= 86400 ? problem.retryAfter : null,
+  };
+}
+
 /** Espera sólo el cooldown declarado; otros límites y errores siguen siendo fallos. */
-export async function sendWithCooldown(send, { signal, wait = (milliseconds) => delay(milliseconds, undefined, { signal }) } = {}) {
+export async function sendWithCooldown(send, { signal, observe = () => {}, wait = (milliseconds) => delay(milliseconds, undefined, { signal }) } = {}) {
   for (let attempt = 0; attempt < 5; attempt++) {
     const reply = await send();
-    if (reply.status() === 202) return reply;
+    if (reply.status() === 202) { observe(safeJourneyHttp(202)); return reply; }
+    const problem = await reply.json().catch(() => ({}));
+    observe(safeJourneyHttp(reply.status(), problem));
     assert.equal(reply.status(), 429);
-    const problem = await reply.json();
     assert.equal(problem.code, "Auth.LoginCode.ResendTooSoon");
     assert.ok(Number.isInteger(problem.retryAfter) && problem.retryAfter > 0, "El cooldown debe informar RetryAfter positivo.");
     if (attempt === 4) throw new Error("El envío sigue en cooldown después de cinco intentos.");
@@ -80,14 +91,19 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
       pkce: !!url.searchParams.get("code_challenge"), method: url.searchParams.get("code_challenge_method"), access: url.searchParams.get("access") });
   };
   page.on("request", onRequest);
-  const step = (id, action, target = page) => record(`E8-${id}`, width, () => target, action,
-    (error) => `Ruta ${new URL(target.url()).pathname}; tipo ${safeActionErrorKind(error)}. Las pruebas privadas se omiten.`);
+  let phase = "step"; let lastHttp = null; let checks = null;
+  const step = (id, action, target = page) => {
+    phase = "step"; lastHttp = null; checks = null;
+    return record(`E8-${id}`, width, () => target, action,
+      (error) => `Ruta ${new URL(target.url()).pathname}; tipo ${safeActionErrorKind(error)}; fase ${phase}; HTTP ${JSON.stringify(lastHttp)}; checks ${JSON.stringify(checks)}. Las pruebas privadas se omiten.`);
+  };
   const url = (route) => new URL(route, base).href;
   const heading = (text, target = page) => target.getByRole("heading", { name: text, exact: true }).waitFor();
   const responseFor = (endpoint, method = "GET") => (reply) => new URL(reply.url()).pathname === endpoint && reply.request().method() === method;
   const click = async (target, button, endpoint, status, method = "POST") => {
     const action = async () => (await responsesForAction(target, [responseFor(endpoint, method)], () => button.click()))[0];
-    const reply = status === 202 ? await sendWithCooldown(action, { signal }) : await action();
+    const reply = status === 202 ? await sendWithCooldown(action, { signal, observe: (value) => { lastHttp = value; } }) : await action();
+    if (status !== 202) lastHttp = safeJourneyHttp(reply.status(), reply.status() >= 400 ? await reply.json().catch(() => ({})) : {});
     assert.equal(reply.status(), status); return reply;
   };
   const channel = async (target, destination, label = /^(Tu )?número de WhatsApp$/i) => {
@@ -178,13 +194,20 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
     });
     await step("02", async () => {
       fixture = await begin(`walkthrough-login-${width}`, phone); since = authorizations.length;
+      phase = "methods";
       const [methods] = await responsesForAction(page, [responseFor("/api/auth/methods")], () => page.goto(url("/login")));
+      lastHttp = safeJourneyHttp(methods.status(), methods.status() >= 400 ? await methods.json().catch(() => ({})) : {});
       assert.equal(methods.status(), 200);
+      phase = "countries";
       const countries = (await methods.json()).channels.find((item) => item.key === "whatsapp")?.countries;
       assert.ok(countries?.length); await channel(page, phone);
+      phase = "send";
       const sent = await click(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 202);
-      assert.ok(countries.includes(sent.request().postDataJSON().phone.country));
-      await heading("Revisá tu WhatsApp"); assert.equal(authorizations.length, since); return "Eligió WhatsApp con país permitido por la API y pidió el código antes de OIDC.";
+      phase = "request-country";
+      checks = { countryMatch: countries.includes(sent.request().postDataJSON().phone.country), expectedAuthCount: since, actualAuthCount: authorizations.length };
+      assert.ok(checks.countryMatch);
+      phase = "code-screen";
+      await heading("Revisá tu WhatsApp"); phase = "before-oidc"; checks.actualAuthCount = authorizations.length; assert.equal(authorizations.length, since); return "Eligió WhatsApp con país permitido por la API y pidió el código antes de OIDC.";
     });
     await step("03", async () => { proof = (await fixture("code")).proof; assert.match(proof, /^\d{6}$/); return "OTP controlado: leído del outbox real por canal privado. Celular/Meta pendiente."; });
     await step("04", async () => {

@@ -7,6 +7,22 @@ import { execFileSync } from "node:child_process";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
 
+test("diagnóstico HTTP del recorrido omite cuerpos, destinos, pruebas y valores arbitrarios", () => {
+  assert.deepEqual(whatsappJourney.safeJourneyHttp(429, { code: "Auth.LoginCode.ResendTooSoon", retryAfter: 60, email: "private@example.test", proof: "private", detail: "private" }),
+    { status: 429, code: "Auth.LoginCode.ResendTooSoon", retryAfter: 60 });
+  for (const code of ["private@example.test", "Auth.Phone.1234567890", "private", "A".repeat(101)]) assert.equal(whatsappJourney.safeJourneyHttp(429, { code }).code, "none");
+  for (const retryAfter of [-1, 0, 1.5, "private", 86401]) assert.equal(whatsappJourney.safeJourneyHttp(429, { retryAfter }).retryAfter, null);
+  assert.deepEqual(whatsappJourney.safeJourneyHttp(0, null), { status: null, code: "none", retryAfter: null });
+});
+
+test("el diagnóstico conserva fallo por límite IP sin esperar ni reenviar", async () => {
+  const observed = []; let sends = 0; let waits = 0;
+  await assert.rejects(whatsappJourney.sendWithCooldown(async () => { sends++; return { status: () => 429, json: async () => ({ code: "Http.TooManyRequests", retryAfter: 30, phone: "private" }) }; },
+    { observe: (value) => observed.push(value), wait: async () => { waits++; } }));
+  assert.equal(sends, 1); assert.equal(waits, 0);
+  assert.deepEqual(observed, [{ status: 429, code: "Http.TooManyRequests", retryAfter: 30 }]);
+});
+
 test("el reenvío WhatsApp respeta cada RetryAfter del servidor y conserva la respuesta aceptada", async () => {
   const events = [];
   const replies = [
