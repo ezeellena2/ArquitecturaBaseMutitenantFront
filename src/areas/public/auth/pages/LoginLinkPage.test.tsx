@@ -20,6 +20,13 @@ const events: string[] = [];
 const removeUser = vi.fn(async () => { events.push("removeUser"); });
 const signinRedirect = vi.fn(async () => { events.push("signinRedirect"); });
 const signoutRedirect = vi.fn(async () => {});
+async function elapseRetryWait() {
+  const currentElapsed = performance.now();
+  vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
+  const elapsed = vi.spyOn(performance, "now").mockReturnValue(currentElapsed + 2100);
+  try { await act(async () => { await vi.advanceTimersByTimeAsync(2100); window.dispatchEvent(new Event("focus")); }); }
+  finally { elapsed.mockRestore(); vi.useRealTimers(); }
+}
 beforeAll(async () => { await configureI18n(referenceDataFixture().cultures); });
 beforeEach(() => {
   previewCalls.length = 0; redeemCalls.length = 0; events.length = 0; vi.clearAllMocks();
@@ -143,7 +150,7 @@ it("LockedOut después del preview es terminal sin otro canje ni cambiar la sesi
   expect(status.queryByRole("button")).not.toBeInTheDocument();
   expect(status.getAllByRole("link")).toEqual([status.getByRole("link", { name: "Ir al ingreso" })]);
   expect(screen.queryByRole("link", { name: "Volver a WhatsApp" })).not.toBeInTheDocument();
-  vi.useFakeTimers(); await act(async () => { await vi.advanceTimersByTimeAsync(2100); window.dispatchEvent(new Event("focus")); }); vi.useRealTimers();
+  await elapseRetryWait();
   expect(status.queryByRole("button")).not.toBeInTheDocument();
   expect(previewCalls).toEqual([{ token }]); expect(redeemCalls).toEqual([{ token, access: "consumer" }]); expect(events).toEqual(["redeem"]);
   expect(removeUser).not.toHaveBeenCalled(); expect(clear).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled(); expect(signoutRedirect).not.toHaveBeenCalled();
@@ -161,7 +168,7 @@ it("429 transitorio al canjear conserva espera y reintento manual", async () => 
   }));
   const { clear } = show(); await screen.findByText("Lucía Fernández"); fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
   expect(await screen.findByRole("button", { name: "Reintentá en 0:02" })).toBeDisabled();
-  vi.useFakeTimers(); await act(async () => { await vi.advanceTimersByTimeAsync(2100); window.dispatchEvent(new Event("focus")); }); vi.useRealTimers();
+  await elapseRetryWait();
   expect(redeemCalls).toHaveLength(1); expect(removeUser).not.toHaveBeenCalled(); expect(clear).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
   await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
@@ -171,7 +178,7 @@ it("429 cuenta Retry-After y no canjea por timer; reintentar preview no consume"
   let requests = 0;
   server.use(http.post("/api/auth/login-link/preview", () => { requests++; return requests === 1 ? HttpResponse.json({ code: "Auth.LoginLink.TooManyRequests", retryAfter: 2 }, { status: 429, headers: { "Retry-After": "2" } }) : HttpResponse.json({ displayName: "Lucía Fernández", maskedPhone: "•••• 4521" }); }));
   show(); expect(await screen.findByRole("button", { name: "Reintentá en 0:02" })).toBeDisabled();
-  vi.useFakeTimers(); await act(async () => { await vi.advanceTimersByTimeAsync(2100); window.dispatchEvent(new Event("focus")); }); vi.useRealTimers();
+  await elapseRetryWait();
   expect(requests).toBe(1); expect(redeemCalls).toEqual([]);
   fireEvent.click(screen.getByRole("button", { name: "Reintentar" })); await screen.findByText("Lucía Fernández"); expect(redeemCalls).toEqual([]);
 });
@@ -247,7 +254,7 @@ it("429 de cancelación conserva el panel, cuenta la espera y exige otro clic", 
     : HttpResponse.json({ returnUrl: "/login/enlace" })));
   show(); await openPendingAccount(); fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
   expect(await screen.findByRole("button", { name: "Reintentá en 0:02" })).toBeDisabled();
-  vi.useFakeTimers(); await act(async () => { await vi.advanceTimersByTimeAsync(2100); window.dispatchEvent(new Event("focus")); }); vi.useRealTimers();
+  await elapseRetryWait();
   expect(attempts).toBe(1); expect(signinRedirect).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" })); await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce()); expect(redeemCalls).toHaveLength(1);
 });
