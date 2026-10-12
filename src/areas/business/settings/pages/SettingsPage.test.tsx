@@ -1,3 +1,4 @@
+import { domainPage } from "@/test/mocks/domainPage";
 import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
@@ -31,11 +32,30 @@ beforeEach(async () => {
 });
 
 describe("SettingsPage", () => {
+  it("pagina dominios en el servidor y permite llegar al dominio número 12", async () => {
+    const user = userEvent.setup();
+    const rows = Array.from({ length: 12 }, (_, index) => ({ ...verified, id: `domain-${index}`, domain: `domain-${index}.example.test` }));
+    const requests: URL[] = [];
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains/paged", ({ request }) => {
+        const url = new URL(request.url); requests.push(url);
+        const page = Number(url.searchParams.get("page") ?? 1);
+        return HttpResponse.json({ items: rows.slice((page - 1) * 10, page * 10), page, pageSize: 10, totalCount: rows.length, totalPages: 2, hasPrevious: page > 1, hasNext: page < 2 });
+      }),
+    );
+    renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+    await screen.findByText(rows[0].domain);
+    expect(screen.queryByText(rows[11].domain)).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Página siguiente" }));
+    expect(await screen.findByText(rows[11].domain)).toBeVisible();
+    expect(requests.map((url) => url.searchParams.get("page"))).toEqual(["1", "2"]);
+  });
   it("al guardar otra región relee el país de la organización en el perfil sin cambiar la cultura personal", async () => {
     let current = settings;
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(current)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([]))),
       http.put("/api/organization/settings", async ({ request }) => {
         const body = await request.json() as typeof settings;
         current = { ...body, version: body.version + 1 };
@@ -63,7 +83,7 @@ describe("SettingsPage", () => {
     try {
       server.use(
         http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-        http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+        http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
       );
       renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
@@ -86,7 +106,7 @@ describe("SettingsPage", () => {
   it("«Sin dominio» tiene el tamaño del tablero: en el teléfono, una fila apagada de la lista", async () => {
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([]))),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
@@ -101,12 +121,12 @@ describe("SettingsPage", () => {
   it("el dominio verificado dice cuántos correos administra la organización; el pendiente, solo «Pendiente»", async () => {
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([
         { ...verified, managedEmailCount: 10 },
         { ...verified, id: "domain-2", domain: "delta-norte.example.test", managedEmailCount: 1 },
         { ...pending, id: "domain-3", domain: "delta-sur.example.test", managedEmailCount: 0 },
         { ...verified, id: "domain-4", domain: "delta-oeste.example.test", managedEmailCount: 0 },
-      ])),
+      ]))),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
@@ -125,7 +145,7 @@ describe("SettingsPage", () => {
   it("sin permiso para cambiar, muestra los datos como texto y sin botones", async () => {
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
     );
 
     renderRouteWithProviders("/org/configuracion", { as: "business-settings-reader" });
@@ -150,7 +170,7 @@ describe("SettingsPage", () => {
       http.get("/api/organization/settings", () => fail
         ? HttpResponse.json({ status: 500, title: "Error", traceId: "00-abc-01" }, { status: 500 })
         : HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
@@ -164,7 +184,7 @@ describe("SettingsPage", () => {
   it("el título lleva la rueda del tablero", async () => {
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
@@ -179,7 +199,7 @@ describe("SettingsPage", () => {
     let updateBody: unknown;
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
       http.put("/api/organization/settings", async ({ request }) => { updateBody = await request.json(); return HttpResponse.json({ version: 13 }); }),
     );
 
@@ -210,7 +230,7 @@ describe("SettingsPage", () => {
     let removeUrl: URL | undefined;
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([{ ...verified, managedEmailCount }])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([{ ...verified, managedEmailCount }]))),
       http.delete("/api/organization/settings/domains/:domainId", ({ request }) => { removeUrl = new URL(request.url); return new HttpResponse(null, { status: 204 }); }),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
@@ -231,7 +251,7 @@ describe("SettingsPage", () => {
     let verifications = 0;
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json(registered ? [pending] : [])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage(registered ? [pending] : []))),
       http.post("/api/organization/settings/domains", async ({ request }) => { registered = await request.json(); return HttpResponse.json(pending, { status: 201 }); }),
       http.post("/api/organization/settings/domains/domain-1/verify", () => {
         verifications += 1;
@@ -279,7 +299,7 @@ describe("SettingsPage", () => {
     let posts = 0;
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([]))),
       http.post("/api/organization/settings/domains", () => { posts += 1; return HttpResponse.json(pending, { status: 201 }); }),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
@@ -305,7 +325,7 @@ describe("SettingsPage", () => {
     const user = userEvent.setup();
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([]))),
       http.post("/api/organization/settings/domains", () => HttpResponse.json(
         { status: 409, code: "Settings.TenantDomain.AlreadyRegistered", title: "Conflicto", detail: "Ese dominio ya está registrado." }, { status: 409 })),
     );
@@ -335,7 +355,7 @@ describe("SettingsPage", () => {
       const user = userEvent.setup();
       server.use(
         http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-        http.get("/api/organization/settings/domains", () => HttpResponse.json([pending])),
+        http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([pending]))),
       );
       renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
@@ -362,7 +382,7 @@ describe("SettingsPage", () => {
     const user = userEvent.setup();
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([pending])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([pending]))),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
     expect(await screen.findByText("delta.example.test")).toBeVisible();
@@ -379,7 +399,7 @@ describe("SettingsPage", () => {
     const user = userEvent.setup();
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
       http.put("/api/organization/settings", () => HttpResponse.json({ version: 13 })),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
@@ -399,7 +419,7 @@ describe("SettingsPage", () => {
     const user = userEvent.setup();
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
     );
     const { router } = renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
@@ -427,7 +447,7 @@ describe("SettingsPage", () => {
     const user = userEvent.setup();
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
@@ -449,7 +469,7 @@ describe("SettingsPage", () => {
     const sent: unknown[] = [];
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(current)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
       http.put("/api/organization/settings", async ({ request }) => {
         const body = await request.json() as typeof settings;
         sent.push(body);
@@ -478,7 +498,7 @@ describe("SettingsPage", () => {
     const sent: Array<{ version: number }> = [];
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(current)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
       http.put("/api/organization/settings", async ({ request }) => {
         const body = await request.json() as typeof settings;
         sent.push(body);

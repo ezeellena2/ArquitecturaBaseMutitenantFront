@@ -1,3 +1,4 @@
+import { domainPage } from "./domainPage";
 import type { ApiSchemas } from "@/shared/api/types";
 import { platformOrganizationCaptureResponses, platformOrganizationTestFeatures as TestFeatures } from "./platformOrganization.ts";
 
@@ -23,7 +24,7 @@ export function platformOrganizationAdministrationCaptureResponses({ pendingDoma
   return [
     ...platformOrganizationCaptureResponses().filter((item) => !item.path.endsWith("/features")),
     { method: "GET", path: "/api/platform/tenants/tenant-1/features", status: 200, body: TestFeatures },
-    { method: "GET", path: "/api/platform/tenants/tenant-1/domains", status: 200, body: domains },
+    { method: "GET", path: "/api/platform/tenants/tenant-1/domains/paged", status: 200, body: domainPage(domains) },
     { method: "GET", path: "/api/platform/tenants/tenant-1/public-site", status: 200, body: page },
     ...TestFeatures.map((feature) => ({ method: "PUT", path: `/api/platform/tenants/tenant-1/features/${encodeURIComponent(feature.key)}`, status: 200, body: { version: 2 } })),
     { method: "POST", path: "/api/platform/tenants/tenant-1/domains/delta.ejemplo.com/verify", status: 200, body: { version: 2 } },

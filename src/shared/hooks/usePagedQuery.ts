@@ -1,19 +1,21 @@
 import { keepPreviousData, useQuery, type QueryKey, type QueryMeta } from "@tanstack/react-query";
 import { useEffect } from "react";
-import type { PagedResult } from "@/shared/api/pagedResult";
+import type { ResourceOptions } from "@/shared/api/resourceOptions";
 import type { PaginationProps } from "@/shared/ui/Pagination";
 import { useDebouncedValue } from "./useDebouncedValue";
 import { useFilters } from "./useFilters";
 import { usePagination, type PageQuery } from "./usePagination";
 
-interface PagedQueryOptions<K extends string, TQuery, TItem> {
+type PagedResponse = Awaited<ReturnType<ResourceOptions<unknown>["queryFn"]>>;
+
+interface PagedQueryOptions<K extends string, TQuery, TPage extends PagedResponse> {
   /** Los filtros del listado que viven en la URL; una constante del módulo. */
   readonly filterKeys: readonly K[];
   readonly defaultSort?: string;
   /** Arma la consulta de la API con la página, el orden, la búsqueda (ya con el debounce) y los filtros de la URL. */
   readonly toQuery: (page: PageQuery, filters: Readonly<Record<K, string | undefined>>) => TQuery;
   readonly queryKey: (query: TQuery) => QueryKey;
-  readonly queryFn: (query: TQuery) => Promise<PagedResult<TItem>>;
+  readonly queryFn: (query: TQuery) => Promise<TPage>;
   readonly enabled?: boolean;
   readonly meta?: QueryMeta;
 }
@@ -22,9 +24,9 @@ interface PagedQueryOptions<K extends string, TQuery, TItem> {
 /// URL; la búsqueda llega a la consulta con 300 ms de debounce; la consulta conserva la página anterior mientras llega
 /// la nueva; si llega una página vacía con filas en otras (se borró la última fila de la última página), salta sola a
 /// la última que tiene, con replace; y entrega las props de `Pagination`.
-export function usePagedQuery<K extends string, TQuery, TItem>({
+export function usePagedQuery<K extends string, TQuery, TPage extends PagedResponse>({
   filterKeys, defaultSort, toQuery, queryKey, queryFn, enabled, meta,
-}: PagedQueryOptions<K, TQuery, TItem>) {
+}: PagedQueryOptions<K, TQuery, TPage>) {
   const filters = useFilters(filterKeys);
   const pagination = usePagination({ defaultSort });
   const search = useDebouncedValue(pagination.search ?? "");
@@ -43,7 +45,8 @@ export function usePagedQuery<K extends string, TQuery, TItem>({
   }, [itemCount, totalCount, page, pageSize, setPage]);
 
   const data = result.data;
-  const paginationProps: PaginationProps | undefined = data ? {
+  const paginationProps: PaginationProps | undefined = data && data.page !== undefined && data.pageSize !== undefined
+    && data.totalCount !== undefined && data.totalPages !== undefined && data.hasPrevious !== undefined && data.hasNext !== undefined ? {
     page: data.page, pageSize: data.pageSize, totalCount: data.totalCount, totalPages: data.totalPages,
     hasPrevious: data.hasPrevious, hasNext: data.hasNext,
     onPageChange: pagination.setPage, onPageSizeChange: pagination.setPageSize,

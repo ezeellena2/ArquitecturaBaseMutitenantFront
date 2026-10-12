@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
-import type { OrganizationDomainResponse, PlatformTenantDetailResponse } from "@/shared/api/types";
+import type { OrganizationDomainResponse, OrganizationDomainPageResponse, PlatformTenantDetailResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { tenantDomainStatusTones } from "@/shared/format/statusTones";
@@ -14,6 +14,7 @@ import { ReasonDialog } from "@/shared/platform/ReasonDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { CircleCheckIcon, TrashIcon } from "@/shared/ui/icons";
 import { RowActions } from "@/shared/ui/RowActions";
+import { Pagination, type PaginationProps } from "@/shared/ui/Pagination";
 import { Surface } from "@/shared/ui/Surface";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
@@ -26,14 +27,14 @@ interface VerifyOperation { id: string; domain: string; version: number; reason:
 const conflicts = ["Settings.TenantDomain.AlreadyVerified", "Settings.TenantDomain.NotFound"] as const;
 function conflicted(error: unknown) { return error instanceof ApiError && (error.code === "General.ConcurrencyConflict" || error.status === 409 && conflicts.some((code) => error.code === code)); }
 
-export function OrganizationDomainTab({ organization, query, writes, onWrite, onConflict }: {
-  organization: PlatformTenantDetailResponse; query: UseQueryResult<OrganizationDomainResponse[]>; writes: ReadonlyMap<string, OwnDomainWrite>;
+export function OrganizationDomainTab({ organization, query, paginationProps, writes, onWrite, onConflict }: {
+  organization: PlatformTenantDetailResponse; query: UseQueryResult<OrganizationDomainPageResponse>; paginationProps?: PaginationProps; writes: ReadonlyMap<string, OwnDomainWrite>;
   onWrite: (domain: string, write: OwnDomainWrite) => void; onConflict: (domain: string) => void;
 }) {
   const { t } = useTranslation(["platformTenants", "common"]); const { canPlatform } = usePermissions(); const client = useQueryClient();
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const editable = canPlatform("platform.tenants.manage") && organization.status !== "Closed";
-  const rows = (query.data ?? []).map((row) => ({ ...row, ...writes.get(row.domain) })).filter((row) => row.status !== "Removed");
+  const rows = (query.data?.items ?? []).map((row) => ({ ...row, ...writes.get(row.domain) })).filter((row) => row.status !== "Removed");
   const rowActions = (domain: OrganizationDomainResponse) => <DomainActions key={domain.domain} organizationId={organization.id} domain={domain} editable={editable}
     onWrite={onWrite} onConflict={onConflict} onRemove={setConfirmation} />;
   const columns: Column<OrganizationDomainResponse>[] = [
@@ -45,12 +46,12 @@ export function OrganizationDomainTab({ organization, query, writes, onWrite, on
   return <>
     <Surface phoneFlush><DataTable columns={columns} rows={rows} rowKey={(row) => row.id} isLoading={query.isPending} isFetching={query.isFetching}
       mobileRow={(row) => <ListRow key={row.id} title={row.domain} meta={<StatusBadge tones={tenantDomainStatusTones} value={row.status} />} lines={[row.status === "Pending" ? row.txtRecordValue || <EmptyValue key="txt" /> : <EmptyValue key="txt" />]} trailing={rowActions(row)} />}
-      error={query.error ? apiErrorMessage(query.error, t) : undefined} onRetry={() => { void query.refetch(); }} emptyTitle={t("platformTenants:domains.empty")} /></Surface>
+      error={query.error ? apiErrorMessage(query.error, t) : undefined} onRetry={() => { void query.refetch(); }} emptyTitle={t("platformTenants:domains.empty")} />{paginationProps ? <Pagination {...paginationProps} /> : null}</Surface>
     {confirmation ? <DomainReasonDialog organization={organization} confirmation={confirmation} onClose={(stale) => {
       if (stale) onConflict(confirmation.domain.domain); setConfirmation((current) => current === confirmation ? null : current);
     }} onSuccess={() => {
       onWrite(confirmation.domain.domain, { version: confirmation.domain.version, status: "Removed" });
-      client.setQueryData<OrganizationDomainResponse[]>(tenantDomainsQueryKey(organization.id), (data) => data?.filter((row) => row.domain !== confirmation.domain.domain));
+      client.setQueriesData<OrganizationDomainPageResponse>({ queryKey: tenantDomainsQueryKey(organization.id) }, (data) => data ? { ...data, items: data.items.filter((row) => row.domain !== confirmation.domain.domain) } : data);
       toast.success(t("platformTenants:domains.removed", { domain: confirmation.domain.domain })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
     }} /> : null}
   </>;
@@ -72,7 +73,7 @@ function DomainActions({ organizationId, domain, editable, onWrite, onConflict, 
     (response, operation) => {
       // MutationCache puede ejecutar un retry después de que otro envío retiró su observer.
       onWrite(operation.domain, { version: response.version, status: "Verified" });
-      client.setQueryData<OrganizationDomainResponse[]>(tenantDomainsQueryKey(operation.id), (data) => data?.map((item) => item.domain === operation.domain ? { ...item, version: response.version, status: "Verified", txtRecordName: null, txtRecordValue: null } : item));
+      client.setQueriesData<OrganizationDomainPageResponse>({ queryKey: tenantDomainsQueryKey(operation.id) }, (data) => data ? { ...data, items: data.items.map((item) => item.domain === operation.domain ? { ...item, version: response.version, status: "Verified", txtRecordName: null, txtRecordValue: null } : item) } : data);
       toast.success(t("domains.verified", { domain: operation.domain })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
     }), {
     meta: { tenantDomainVerification: true, organizationId, domain: domain.domain },

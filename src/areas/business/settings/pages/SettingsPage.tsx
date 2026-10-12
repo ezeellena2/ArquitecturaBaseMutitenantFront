@@ -16,6 +16,8 @@ import { StatusMark } from "@/shared/ui/format/StatusBadge";
 import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { OrganizationDomainResponse, OrganizationSettingsResponse, UpdateOrganizationSettingsRequest } from "@/shared/api/types";
+import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
+import { Pagination } from "@/shared/ui/Pagination";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Button } from "@/shared/ui/button";
@@ -41,7 +43,7 @@ import { CurrencyText } from "@/shared/ui/format/CurrencyText";
 import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
 import { toastError } from "@/shared/ui/sonner";
 import {
-  fetchOrganizationDomains, fetchOrganizationSettings, organizationDomainsKey, organizationSettingsKey,
+  fetchOrganizationDomainsPage, organizationDomainsPageKey, fetchOrganizationSettings, organizationDomainsKey, organizationSettingsKey,
   removeOrganizationDomain, updateOrganizationSettings, verifyOrganizationDomain,
 } from "../api/settings";
 import { AddDomainDialog } from "../components/AddDomainDialog";
@@ -87,7 +89,8 @@ function SettingsEditor({ settings, loadError, reload }: {
   const organizationName = activeOrganization(currentUser)?.name ?? "";
   const { phone } = useAppChrome();
   const client = useQueryClient();
-  const domains = useQuery({ queryKey: organizationDomainsKey, queryFn: fetchOrganizationDomains, meta: { silent: true } });
+  const { result: domains, paginationProps: domainPagination } = usePagedQuery({ filterKeys: [] as const, defaultSort: "domain",
+    toQuery: (page) => page, queryKey: organizationDomainsPageKey, queryFn: fetchOrganizationDomainsPage, meta: { silent: true } });
   const { form, version, resetTo, wrote } = useEditForm({ read: settings, toValues: valuesFromSettings, resolver: zodResolver(settingsFormSchema) });
   const { errors } = form.formState;
   const culture = useController({ control: form.control, name: "defaultCulture" });
@@ -173,7 +176,7 @@ function SettingsEditor({ settings, loadError, reload }: {
 
   const error = loadError ?? domains.error;
   const showGeneralError = error ? apiErrorMessage(error, t) : undefined;
-  const activeDomains = (domains.data ?? []).filter((domain) => domain.status !== "Removed");
+  const activeDomains = (domains.data?.items ?? []).filter((domain) => domain.status !== "Removed");
 
   return <>
     {/* Tablero Configuracion: el título lleva la rueda; los deslizadores son el ícono del menú. */}
@@ -228,6 +231,7 @@ function SettingsEditor({ settings, loadError, reload }: {
                   { label: t("settings:domains.remove"), accessibleName: t("settings:domains.remove"), icon: Trash2, destructive: true, onSelect: () => setDomainToRemove(domain) },
                 ]} /> : null}
               </ListItem>)}</List>}
+          {domainPagination ? <Pagination {...domainPagination} /> : null}
         </Section>
       </div>
     </Page>

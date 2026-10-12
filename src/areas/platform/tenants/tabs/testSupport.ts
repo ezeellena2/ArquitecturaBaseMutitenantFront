@@ -1,3 +1,4 @@
+import { domainPage } from "@/test/mocks/domainPage";
 import { screen, within } from "@testing-library/react";
 import type userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
@@ -29,7 +30,7 @@ export async function setupTabs() {
     http.get("/api/platform/tenants/delta", () => HttpResponse.json(testOrganization)),
     http.get("/api/platform/tenants/delta/history", () => HttpResponse.json({ items: [], hasMore: false })),
     http.get("/api/platform/tenants/delta/features", () => HttpResponse.json(TestFeatures)),
-    http.get("/api/platform/tenants/delta/domains", () => HttpResponse.json([testDomain])),
+    http.get("/api/platform/tenants/delta/domains/paged", () => HttpResponse.json(domainPage([testDomain]))),
     http.get("/api/platform/tenants/delta/public-site", () => HttpResponse.json(testPublicPage)),
   );
 }

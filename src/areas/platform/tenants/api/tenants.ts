@@ -1,7 +1,7 @@
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
 import type { PagedResult } from "@/shared/api/pagedResult";
-import type { CreatePlatformTenantRequest, CreatedPlatformTenantResponse, OrganizationDomainResponse, PagedRequest, PlatformFeatureResponse, PlatformPublicSiteResponse, PlatformTenantDetailResponse, PlatformTenantFilterCounts, PlatformTenantHistoryCursorResponse, PlatformTenantResponse, PlatformTenantRetryRequest, PlatformTenantStateRequest, TenantRegistrationSource, TenantStatus, UpdatePlatformFeatureRequest, VersionResponse } from "@/shared/api/types";
+import type { OrganizationDomainPageResponse, CreatePlatformTenantRequest, CreatedPlatformTenantResponse, OrganizationDomainResponse, PagedRequest, PlatformFeatureResponse, PlatformPublicSiteResponse, PlatformTenantDetailResponse, PlatformTenantFilterCounts, PlatformTenantHistoryCursorResponse, PlatformTenantResponse, PlatformTenantRetryRequest, PlatformTenantStateRequest, TenantRegistrationSource, TenantStatus, UpdatePlatformFeatureRequest, VersionResponse } from "@/shared/api/types";
 
 export interface TenantsQuery extends PagedRequest { status?: TenantStatus; source?: TenantRegistrationSource }
 export type TenantCountsQuery = Pick<TenantsQuery, "search" | "status" | "source">;
@@ -21,6 +21,11 @@ export function fetchTenantFeatures(id: string): Promise<PlatformFeatureResponse
 export function updateTenantFeature(id: string, key: string, request: UpdatePlatformFeatureRequest): Promise<VersionResponse> {
   return api.put(`/api/platform/tenants/${encodeURIComponent(id)}/features/${encodeURIComponent(key)}`, request);
 }
+export const tenantDomainsPageKey = (id: string, query: PagedRequest) => [...tenantDomainsQueryKey(id), "paged", query] as const;
+export function fetchTenantDomainsPage(id: string, query: PagedRequest): Promise<OrganizationDomainPageResponse> {
+  return api.get(`/api/platform/tenants/${encodeURIComponent(id)}/domains/paged?${toSearch(query)}`);
+}
+
 export function fetchTenantDomains(id: string): Promise<OrganizationDomainResponse[]> {
   return api.get(`/api/platform/tenants/${encodeURIComponent(id)}/domains`);
 }
