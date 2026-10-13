@@ -2,8 +2,48 @@ import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { test } from "node:test";
-import { assistantExportPath, acceptAssistantNoticeFromHome, conversationAction, assistantTerminalDiagnostic } from "./assistant-real-ui.mjs";
+import { assistantExportPath, acceptAssistantNoticeFromHome, conversationAction, assistantTerminalDiagnostic, assistantAttachmentQuantityCases } from "./assistant-real-ui.mjs";
 import { chromium } from "playwright";
+
+function quantityPage({ lastEvent = "done", persisted = 5 } = {}) {
+  const root = "/api/organization/assistant";
+  const fresh = `${root}/conversations/fresh-quantity`;
+  const requests = [];
+  let version = 1;
+  let uploads = 0;
+  let complete = false;
+  return { root, requests, page: { evaluate: async (_operation, request) => {
+    requests.push(request);
+    if (request.route === `${root}/conversations` && request.method === "POST") return { status: 201, body: { id: "fresh-quantity", version } };
+    assert.ok(request.route.startsWith(fresh), "La cantidad nunca reutiliza la conversación de transporte.");
+    if (request.route === fresh) return { status: 200, body: { conversation: { version }, messages: { items: complete
+      ? [{ role: "user", status: "Complete", attachments: Array.from({ length: persisted }, (_, index) => ({ id: `attachment-${index}` })) }]
+      : [] } } };
+    assert.equal(request.body.conversationVersion, version, "Cada subida y envío relee la versión real.");
+    if (request.route === `${fresh}/attachments`) { version++; return { status: 201, body: { id: `attachment-${uploads++}` } }; }
+    assert.equal(request.route, `${fresh}/messages`);
+    if (request.body.attachmentIds.length === 6) return { status: 400 };
+    assert.equal(request.body.attachmentIds.length, 5);
+    assert.equal(new Set(request.body.attachmentIds).size, 5);
+    complete = true;
+    return { status: 200, events: ["start", lastEvent] };
+  } } };
+}
+
+test("la cantidad de adjuntos se mide en un chat nuevo y conserva seis rechazados y cinco persistidos", async () => {
+  const { page, root, requests } = quantityPage();
+  await assistantAttachmentQuantityCases(page, root, 1440);
+  assert.equal(requests[0].route, `${root}/conversations`);
+  assert.equal(requests.filter((request) => request.file).length, 5);
+  assert.deepEqual(requests.filter((request) => request.route.endsWith("/messages")).map((request) => request.body.attachmentIds.length), [6, 5]);
+});
+
+test("la cantidad conserva el fallo si cinco no terminan en done o no quedan cinco persistidos", async () => {
+  for (const options of [{ lastEvent: "error" }, { persisted: 4 }]) {
+    const { page, root } = quantityPage(options);
+    await assert.rejects(assistantAttachmentQuantityCases(page, root, 390), { code: "ERR_ASSERTION" });
+  }
+});
 
 test("el diagnóstico terminal sólo entrega lastEvent y código sin cuerpo ni datos privados", () => {
   assert.deepEqual(assistantTerminalDiagnostic({ events: ["start", "error"], terminal: {

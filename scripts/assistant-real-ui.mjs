@@ -179,6 +179,31 @@ export function assistantTerminalDiagnostic(response) {
   };
 }
 
+/** Aísla la cantidad de archivos del presupuesto usado por el historial de transporte. */
+export async function assistantAttachmentQuantityCases(page, root, width) {
+  const created = await assistantApi(page, { route: `${root}/conversations`, method: "POST", body: {}, key: randomUUID() });
+  assert.equal(created.status, 201);
+  const id = created.body.id;
+  const route = `${root}/conversations/${id}/attachments`;
+  const attachments = [];
+  for (let index = 0; index < 5; index++) {
+    const detail = await readConversation(page, root, id);
+    const uploaded = await assistantApi(page, { route, method: "POST", body: { conversationVersion: detail.conversation.version },
+      key: randomUUID(), file: { name: `adjunto-${index}.png`, type: "image/png", bytes: Array.from(png) } });
+    assert.equal(uploaded.status, 201); attachments.push(uploaded.body.id);
+  }
+  let detail = await readConversation(page, root, id);
+  const multiple = { text: "[E2E:answer] Cinco imágenes de prueba.", attachmentIds: attachments, conversationVersion: detail.conversation.version };
+  const sixth = await assistantApi(page, { route: `${root}/conversations/${id}/messages`, method: "POST",
+    body: { ...multiple, attachmentIds: [...attachments, attachments[0]] }, key: randomUUID(), stream: true });
+  assert.equal(sixth.status, 400, "Seis archivos se rechazan antes de llamar al modelo.");
+  const five = await assistantApi(page, { route: `${root}/conversations/${id}/messages`, method: "POST", body: multiple, key: randomUUID(), stream: true });
+  process.stdout.write(`TECH DATA attachments.five-six ${width} ${JSON.stringify(assistantTerminalDiagnostic(five))}\n`);
+  assert.equal(five.status, 200); assert.equal(five.events.at(-1), "done");
+  detail = await waitAssistantTerminal(page, root, id);
+  assert.equal(detail.messages.items.findLast((message) => message.role === "user").attachments.length, 5);
+}
+
 /** Los 21 hitos usan controles de la app; los casos técnicos suplementarios usan la API real. */
 export async function runAssistantJourney({ page, platformPage, width, env, base, businessEmail, operatorEmail,
   record, organizationName = "Empresa E2E", login = (target, email, access) => assistantLogin(target, env, base, email, access), signOut,
@@ -579,23 +604,7 @@ async function assistantTransportCases({ page, width, base, control, root, actor
   assert.equal((await assistantApi(page, { route: `${route}/${attachment.body.id}` })).status, 404);
   advance("attachments.five-six");
   }
-  const attachments = [];
-  for (let index = 0; index < 5; index++) {
-    detail = await readConversation(page, root, id);
-    const uploaded = await assistantApi(page, { route, method: "POST", body: { conversationVersion: detail.conversation.version },
-      key: randomUUID(), file: { name: `adjunto-${index}.png`, type: "image/png", bytes: Array.from(png) } });
-    assert.equal(uploaded.status, 201); attachments.push(uploaded.body.id);
-  }
-  detail = await readConversation(page, root, id);
-  const multiple = { text: "[E2E:answer] Cinco imágenes de prueba.", attachmentIds: attachments, conversationVersion: detail.conversation.version };
-  const sixth = await assistantApi(page, { route: `${root}/conversations/${id}/messages`, method: "POST",
-    body: { ...multiple, attachmentIds: [...attachments, attachments[0]] }, key: randomUUID(), stream: true });
-  assert.equal(sixth.status, 400, "Seis archivos se rechazan antes de llamar al modelo.");
-  const five = await assistantApi(page, { route: `${root}/conversations/${id}/messages`, method: "POST", body: multiple, key: randomUUID(), stream: true });
-  process.stdout.write(`TECH DATA attachments.five-six ${width} ${JSON.stringify(assistantTerminalDiagnostic(five))}\n`);
-  assert.equal(five.status, 200); assert.equal(five.events.at(-1), "done");
-  detail = await waitAssistantTerminal(page, root, id);
-  assert.equal(detail.messages.items.findLast((message) => message.role === "user").attachments.length, 5);
+  await assistantAttachmentQuantityCases(page, root, width);
   advance("history.rename-conflict");
   }
   if (historyOnly || attachmentsOnly) {
