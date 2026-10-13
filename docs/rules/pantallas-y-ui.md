@@ -24,15 +24,15 @@
 - **Una sola forma de armar secciones, pestañas y filtros** en todas las pantallas (decisión del usuario del 2026-10-13, en «Criterio · Menús»):
   - **Secciones de un área:** un segundo panel junto al menú lateral (`AdminPanel`, token `--panel`), con la flechita en el ítem del menú y un solo panel abierto a la vez; en el teléfono, un grupo de «Más». Así van Administración, WhatsApp y Formularios («Formularios» y «Catálogos»). No se agregan enlaces del área hasta que su tablero esté aprobado.
   - **Pestañas:** solo para los grupos de datos de una ficha, como Empresa, Organización o la ficha de un formulario (ver «Ficha»).
-  - **Filtros de un listado:** desplegables en la caja de `FilterBar`, con la cantidad por opción, lo elegido en petróleo (`--marca`) y «Limpiar filtros». En el teléfono, el botón «Filtros» de la barra abre una hoja, y lo elegido queda como chip con ✕ debajo de la barra.
-  - **Excepciones escritas:** en Chats, «Clientes | Internos» (dos bandejas, control segmentado), y en las plantillas de Plataforma, «Para consultas | Del sistema».
+  - **Filtros de un listado:** desplegables en la caja de `FilterBar`, con la cantidad por opción, lo elegido en petróleo (`--marca`) y «Limpiar filtros». En el teléfono, el botón «Filtros» de la barra abre una hoja, y un filtro elegido se marca con un punto en ese botón.
+  - **Dos vistas de la misma lista:** van con `SegmentedControl` arriba de la lista, en la compu y en el teléfono. Son las bandejas «Clientes | Internos» de Chats, «Para consultas | Del sistema» en las plantillas de Plataforma y «Por día | Por persona» en Uso del asistente.
 
 ## Prohibido
 - Inventar piezas visuales, columnas o acciones que no están en el tablero aprobado.
 - Superficies a medio ancho, todo en una sola tarjeta o bandas grises con rótulos en mayúsculas.
 - Una pestaña «Resumen» con rótulos y valores: los datos van en la banda.
 - Rótulos y valores sueltos sobre blanco, o en viñetas, en un detalle de solo lectura.
-- Pestañas para filtrar un listado o para ir a otra sección, dos filas de pestañas, o armar secciones, pestañas o filtros de otra forma que la de arriba, fuera de las excepciones escritas.
+- Pestañas para filtrar un listado, para ir a otra sección o para mostrar dos vistas de la misma lista; dos filas de pestañas; o armar secciones, vistas o filtros de otra forma que la de arriba.
 - Párrafos o líneas que explican en la pantalla: van detrás de un ⓘ.
 - El mismo estado en dos lugares: arriba y otra vez en la fila.
 - La web achicada en el teléfono (la marca arriba, la banda con ícono, cajas con cabecera arena o el ☰ con sesión) o una versión aparte hecha a mano.
@@ -40,12 +40,12 @@
 - Programar una pantalla nueva sin su tablero aprobado. Si a un tablero vigente le falta un estado, se le pide a Diseño y se sigue con el resto, sin frenar la etapa.
 
 ## Copiá de
-- el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (solo los tableros validados); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` y `RoleEditorPage.tsx` (E4), `src/shared/ui/Page.tsx`, `Section.tsx`, `DetailGrid.tsx` (el detalle de Auditoría), `FilterBar.tsx`, `src/layouts/components/AdminPanel.tsx` (el segundo panel) y `docs/architecture/tema.md`
+- el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (solo los tableros validados); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` y `RoleEditorPage.tsx` (E4), `src/shared/ui/Page.tsx`, `Section.tsx`, `DetailGrid.tsx` (el detalle de Auditoría), `FilterBar.tsx`, `SegmentedControl.tsx`, `src/layouts/components/AdminPanel.tsx` (el segundo panel) y `docs/architecture/tema.md`
 
 ## Lo verifica
 - `theme-tokens.test.ts` (E0)
 - `DetailGrid.test.tsx` (E5): la grilla en la compu y el rótulo encima del valor en el teléfono, con axe
-- `FilterBar.test.tsx` y `AdminPanel.test.tsx`: los filtros con «Limpiar» y el segundo panel
+- `FilterBar.test.tsx`, `SegmentedControl.test.tsx` y `AdminPanel.test.tsx`: los filtros con «Limpiar», las dos vistas y el segundo panel
 
 ## Detalle
 [frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [responsive](responsive.md) · tableros `Criterio-Marco`, `Criterio-Botones`, `Criterio-Formularios`, `Criterio-Tablas`, `Criterio-Dialogos`, `Criterio-Menus`, `Criterio-Avisos` y `Criterio-Decisiones`.
