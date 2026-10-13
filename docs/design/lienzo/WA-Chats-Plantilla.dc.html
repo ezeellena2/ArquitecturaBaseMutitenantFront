@@ -789,6 +789,8 @@ body { margin: 0; }
 </style>
 <style data-e11="plantilla">
 .w-cmp.e11-abre { position: relative; }
+.w-dlg:has(.e11-abre) { overflow: visible; }
+.w-dlg:has(.e11-abre) .dc { border-radius: 12px 12px 0 0; }
 .w-cmp.e11-abre .ct { border-color: var(--marca); box-shadow: 0 0 0 3px var(--marca-t); }
 .e11-ops { position: absolute; z-index: 3; left: 0; right: 0; top: calc(100% + 4px); background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); overflow: hidden; display: flex; flex-direction: column; }
 .e11-ops .op { display: flex; flex-direction: column; padding: 8px 12px; font-size: 13.5px; line-height: 1.35; color: var(--t1); }

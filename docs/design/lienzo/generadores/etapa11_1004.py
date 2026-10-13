@@ -649,6 +649,8 @@ def chats_tel():
 OPCIONES_PLANTILLA = [("Pedido listo", "Utilidad", True, False), ("Seguimos tu pedido", "Utilidad", False, False),
                       ("Aviso de turno", "En revisión en Meta", False, True), ("Oferta de octubre", "Rechazada por Meta", False, True)]
 CSS_OPS = """.w-cmp.e11-abre { position: relative; }
+.w-dlg:has(.e11-abre) { overflow: visible; }
+.w-dlg:has(.e11-abre) .dc { border-radius: 12px 12px 0 0; }
 .w-cmp.e11-abre .ct { border-color: var(--marca); box-shadow: 0 0 0 3px var(--marca-t); }
 .e11-ops { position: absolute; z-index: 3; left: 0; right: 0; top: calc(100% + 4px); background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); overflow: hidden; display: flex; flex-direction: column; }
 .e11-ops .op { display: flex; flex-direction: column; padding: 8px 12px; font-size: 13.5px; line-height: 1.35; color: var(--t1); }
@@ -713,6 +715,186 @@ def datos():
             escribir(nombre, n)
 
 
+# ---------------------------------------------------------------- Bot: editar las respuestas, elegir el número, tope de 10 y «Además»
+
+CHEV_DER = _svg('<path d="m9.5 5.5 6.5 6.5-6.5 6.5"/>', 18)
+TILDE_CHK = _svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 12, "3")
+BIENVENIDA = "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?"
+FUERA = "Hola, ahora estamos cerrados. Te respondemos el próximo día hábil desde las 9."
+DIAS = [("Lunes", True), ("Martes", True), ("Miércoles", True), ("Jueves", True), ("Viernes", True), ("Sábado", False), ("Domingo", False)]
+MENU_10 = [("Hacer un pedido", "Pasa a Ventas"), ("Consultar un pedido", "Pasa a Soporte"),
+           ("Horarios y dirección", "Contesta: «Estamos en Av. Corrientes 1234, de 9 a 18»"), ("Hablar con alguien", "Pasa a Atención general"),
+           ("Formas de pago", "Contesta: «Efectivo, transferencia o tarjeta»"), ("Envíos a domicilio", "Contesta: «Enviamos en CABA y GBA»"),
+           ("Pedir presupuesto", "Pasa a Ventas"), ("Reclamos", "Pasa a Soporte"), ("Cambios y devoluciones", "Pasa a Soporte"),
+           ("Trabajar con nosotros", "Contesta: «Dejanos tu CV en el local»")]
+NUMEROS_BOT = [("+54 9 11 5555-0100", "Toda la organización", True), ("+54 9 351 555-0200", "Delta Sur S.R.L.", False)]
+AVISO_TOPE = ("El menú ya tiene 10 opciones", "WhatsApp muestra hasta 10 opciones", "Es lo que entra en una lista de WhatsApp",
+              ["Quitá una opción para sumar otra", "O juntá dos opciones en una"])
+CSS_BOT = """.w-body > .w-caja { flex-shrink: 0; }
+.e11-dias { display: flex; flex-direction: column; border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; grid-column: 1 / -1; }
+.e11-dia { display: grid; grid-template-columns: 26px 1fr 96px 18px 96px; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; font-size: 13.5px; }
+.e11-dia + .e11-dia { border-top: 1px solid var(--borde); }
+.e11-dia:nth-child(even) { background: var(--s2); }
+.e11-dia .h { height: 32px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; background: #fff; display: flex; align-items: center; padding: 0 10px; }
+.e11-dia .a { color: var(--t3); text-align: center; }
+.e11-dia.off { color: var(--t3); }
+.e11-dia .cerrado { grid-column: 3 / -1; color: var(--t3); }
+.e11-chk { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--borde2); background: #fff; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
+.e11-chk.on { background: var(--marca); border-color: var(--marca); color: #fff; }
+.cb.e11-apag { opacity: 0.5; cursor: default; }
+.e11-ops.flota { position: absolute; z-index: 6; top: auto; right: auto; }
+"""
+CSS_BOT_TEL = """.e11-dia { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 10px; min-height: 52px; font-size: 16px; border-bottom: 1px solid var(--borde); }
+.e11-dia:last-child { border-bottom: 0; }
+.e11-dia .hs { color: var(--t2); font-size: 15px; }
+.e11-dia.off { color: var(--t3); }
+.e11-chk { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--borde2); background: #fff; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
+.e11-chk.on { background: var(--marca); border-color: var(--marca); color: #fff; }
+.ap-gtit a.e11-apag { opacity: 0.5; }
+.ap-hoja .hb { max-height: 600px; overflow: auto; }
+"""
+
+
+def dias_compu():
+    filas = []
+    for d, on in DIAS:
+        chk = f'<span class="e11-chk{" on" if on else ""}">{TILDE_CHK if on else ""}</span>'
+        hs = ('<span class="h">09:00</span><span class="a">a</span><span class="h">18:00</span>' if on else '<span class="cerrado">Cerrado</span>')
+        filas.append(f'<div class="e11-dia{"" if on else " off"}">{chk}<span>{d}</span>{hs}</div>')
+    return '<div class="w-cmp" style="grid-column: 1 / -1;"><span class="rt">Días y horarios de atención</span><div class="e11-dias">' + "".join(filas) + "</div></div>"
+
+
+def dias_tel():
+    filas = "".join(f'<div class="e11-dia{"" if on else " off"}"><span class="e11-chk{" on" if on else ""}">{TILDE_CHK if on else ""}</span><span>{d}</span>'
+                    f'<span class="hs">{"9 a 18" if on else "Cerrado"}</span></div>' for d, on in DIAS)
+    return f'<div class="ap-cmp"><span class="rt"><span>Días y horarios de atención</span></span><div>{filas}</div></div>'
+
+
+def sin_interruptores(t):
+    """D9 y el contrato: la bienvenida y el fuera de horario no se apagan; se editan."""
+    for r in ("Bienvenida", "Fuera de horario"):
+        t = t.replace(f'<span class="w-sw" role="switch" aria-checked="true" aria-label="{r}"></span>', "")
+    chev = re.search(r'<span class="chev">(<svg.*?</svg>)</span>', t, flags=re.S)
+    if chev:
+        for r, s in (("Bienvenida", "La primera vez que alguien escribe"), ("Fuera de horario", "Lunes a viernes, de 9 a 18")):
+            t = t.replace(f'<span class="tx"><b>{r}</b><span>{s}</span></span><span class="ap-sw" role="switch" aria-checked="true"></span>',
+                          f'<span class="tx"><b>{r}</b><span>{s}</span></span><span class="chev">{chev.group(1)}</span>')
+    return t
+
+
+def bot_estados():
+    for nombre in ("Plat-WA-Bot", "M-Plat-WA-Bot", "WA-Admin-Editar", "M-WA-Editar"):
+        t = leer(nombre)
+        n = sin_interruptores(t)
+        if n != t:
+            escribir(nombre, n)
+
+    t = leer("WA-Respuestas")
+    if 'data-e11="bot"' not in t:
+        t = estados_compu(sin_interruptores(t), "Configuración")
+        guardar = '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Guardar cambios</button>'
+        t = sumar_estado(t, "Editar bienvenida", encima=dlg("Bienvenida", f'<div class="w-cmp" style="grid-column: 1 / -1;"><span class="rt">Texto '
+                         f'<span style="color: var(--peligro);">*</span></span><div class="ct area">{BIENVENIDA}</div></div>', guardar, chico=False))
+        t = sumar_estado(t, "Editar fuera de horario", encima=dlg("Fuera de horario",
+                         f'<div class="w-cmp" style="grid-column: 1 / -1;"><span class="rt">Texto <span style="color: var(--peligro);">*</span></span>'
+                         f'<div class="ct area">{FUERA}</div></div>' + campo("Zona horaria", "Buenos Aires (GMT−3)") + dias_compu(), guardar, chico=False, una=False))
+        pil = '<span class="w-pil">Número: +54 9 11 5555-0100 · Toda la organización'
+        ops = ('<div class="e11-ops flota" role="listbox" aria-label="Número" style="left: 508px; top: 246px; width: 380px;">' + "".join(
+            f'<div class="op{" on" if on else ""}" role="option" aria-selected="{"true" if on else "false"}">{n}<span>{a}</span></div>'
+            for n, a, on in NUMEROS_BOT) + "</div>")
+        t = sumar_estado(t, "Elegir el número", [(pil, pil.replace('class="w-pil"', 'class="w-pil e11-pil-on"'))], encima=ops)
+        a, b = bloques(t, "e0")[0]
+        base = t[a:b]
+        menu = div_en(base, '<div class="w-caja"><div class="w-cab"><span>Menú</span>')
+        num_svg = re.search(r'<a class="ib" href="WA-Admin-Editar.dc.html" aria-label="Acciones de Hacer un pedido">(<svg.*?</svg>)</a>', menu, flags=re.S).group(1)
+        cab = div_en(menu, '<div class="w-cab">')
+        filas = "".join(f'<div class="w-it"><span class="num">{i}</span><span class="dato"><b>{n}</b><span>{s}</span></span>'
+                        f'<button type="button" class="ib" aria-label="Acciones de {n}">{num_svg}</button></div>' for i, (n, s) in enumerate(MENU_10, 1))
+        cab10 = cab.replace('<button type="button" class="cb cb-sec ch">', '<button type="button" class="cb cb-sec ch e11-apag" aria-disabled="true">')
+        menu10 = '<div class="w-caja">' + cab10 + filas + "</div>"
+        tope = [(menu, menu10), ("<p class=\"res\">4 opciones en el menú</p>", "<p class=\"res\">10 opciones en el menú</p>")]
+        t = sumar_estado(t, "Tope de 10 opciones", tope, encima="")
+        t = sumar_estado(t, "Tope de 10 · qué significa", tope, encima=aviso(*AVISO_TOPE))
+        sw = '<span class="w-sw" role="switch" aria-checked="true" aria-label="{}"></span>'
+        t = sumar_estado(t, "Además apagado", [(sw.format(r), sw.format(r).replace('class="w-sw"', 'class="w-sw off"').replace('"true"', '"false"'))
+                                               for r in ("Preguntar por promociones", "Ofrecer vincular su cuenta")], encima="")
+        escribir("WA-Respuestas", marcar(t, 'data-e11="bot"', CSS_COMPU + CSS_BOT + CSS_OPS
+                                          + ".w-pil.e11-pil-on { border-color: var(--marca); box-shadow: 0 0 0 3px var(--marca-t); }\n"))
+
+    t = leer("M-WA-Respuestas")
+    if 'data-e11="bot"' not in t:
+        t = con_estados_pantalla(sin_interruptores(t), "Configuración")
+        guardar = '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Guardar</button>'
+        area = '<div class="ap-cmp"><span class="rt"><span>Texto <span class="rq">*</span></span></span><div class="ct area">{}</div></div>'
+        t = sumar_estado_tel(t, "Editar bienvenida", al_final=hoja("Bienvenida", area.format(BIENVENIDA), guardar))
+        t = sumar_estado_tel(t, "Editar fuera de horario", al_final=hoja("Fuera de horario", area.format(FUERA)
+                             + campo_tel("Zona horaria", "Buenos Aires (GMT−3)") + dias_tel(), guardar))
+        ops = "".join(f'<div class="ap-op" role="option" aria-selected="{"true" if on else "false"}">{n} · {a}'
+                      + (f'<span class="tilde">{TILDE}</span>' if on else "") + "</div>" for n, a, on in NUMEROS_BOT)
+        t = sumar_estado_tel(t, "Elegir el número", al_final=('<div class="ap-velo"></div><div class="ap-hoja" role="dialog" aria-label="Número"><span class="asa"></span>'
+                             f'<div class="hc"><h2>Número</h2><button type="button" class="ap-ib" aria-label="Cerrar">{CERRAR_TEL}</button></div><div class="hb">{ops}</div></div>'))
+        a, b = bloques(t, "e0")[0]
+        base = t[a:b]
+        grupo = div_en(base[base.index('<span class="ap-gtit">Menú'):], '<div class="ap-grupo">')
+        chev = re.search(r'<span class="chev">(<svg.*?</svg>)</span>', grupo, flags=re.S).group(1)
+        filas = "".join(f'<div class="ap-it "><span class="num">{i}</span><span class="tx"><b>{n}</b><span>{s}</span></span><span class="chev">{chev}</span></div>'
+                        for i, (n, s) in enumerate(MENU_10, 1))
+        tope = [(grupo, f'<div class="ap-grupo">{filas}</div>'), ('<span class="ap-gtit">Menú<a href="#">Agregar opción</a></span>',
+                                                                    '<span class="ap-gtit">Menú<a href="#" class="e11-apag" aria-disabled="true">Agregar opción</a></span>')]
+        t = sumar_estado_tel(t, "Tope de 10 opciones", tope)
+        t = sumar_estado_tel(t, "Tope de 10 · qué significa", tope, al_final=aviso_tel(*AVISO_TOPE))
+        sw_tel = '<span class="tx"><b>{}</b><span>{}</span></span><span class="ap-sw" role="switch" aria-checked="true"></span>'
+        t = sumar_estado_tel(t, "Además apagado", [(sw_tel.format(r, s), sw_tel.format(r, s).replace('class="ap-sw"', 'class="ap-sw off"').replace('"true"', '"false"'))
+                                                   for r, s in (("Preguntar por promociones", "Al terminar la primera conversación"),
+                                                                ("Ofrecer vincular su cuenta", "Si el número es de una persona registrada"))])
+        escribir("M-WA-Respuestas", marcar(t, 'data-e11="bot"', CSS_TEL + CSS_BOT_TEL + CSS_OPS_TEL))
+
+
+# ---------------------------------------------------------------- Equipos (D6: aviso con «No avisar») y Plantillas («Por qué la rechazó Meta»)
+
+AVISOS_EQUIPO = [("A los 10 minutos", True), ("A los 15 minutos", False), ("A los 30 minutos", False), ("No avisar", False)]
+AVISO_RECHAZO = ("Meta rechazó «Promo semanal»", "El formato no cumple las reglas de Meta", "Revisada el 29/09/2026",
+                 ["Duplicala y corregí el texto", "Mandala de nuevo a Meta"])
+
+
+def equipos_plantillas():
+    t = leer("WA-Equipos-Crear")
+    if not ya(t):
+        t = estados_compu(t, "Crear equipo")
+        sel = '<div class="w-cmp" style="grid-column: 1 / -1;"><span class="rt">Aviso por correo si nadie lo toma</span><div class="ct">A los 10 minutos'
+        ops = '<div class="e11-ops" role="listbox" aria-label="Aviso por correo">' + "".join(
+            f'<div class="op{" on" if on else ""}" role="option" aria-selected="{"true" if on else "false"}">{n}</div>' for n, on in AVISOS_EQUIPO) + "</div>"
+        a, b = bloques(t, "e0")[1]
+        encima = t[a:b][t[a:b].index(">") + 1:-len("</sc-if>")]
+        i = encima.index(sel)
+        fin = cierre_div(encima, i)
+        abierto = encima[:i] + encima[i:fin - len("</div>")].replace('<div class="w-cmp" style=', '<div class="w-cmp e11-abre" style=', 1) + ops + "</div>" + encima[fin:]
+        t = sumar_estado(t, "Elegir el aviso", encima=abierto)
+        escribir("WA-Equipos-Crear", marcar(t, MARCA, CSS_COMPU + CSS_OPS))
+
+    t = leer("M-WA-Equipos-Crear")
+    if not ya(t):
+        t = con_estados_pantalla(t, "Crear equipo")
+        h = div_en(t, '<div class="ap-hoja"')
+        ops = "".join(f'<div class="ap-op" role="option" aria-selected="{"true" if on else "false"}">{n}' + (f'<span class="tilde">{TILDE}</span>' if on else "")
+                      + "</div>" for n, on in AVISOS_EQUIPO)
+        nueva = ('<div class="ap-hoja" role="dialog" aria-label="Aviso por correo"><span class="asa"></span><div class="hc"><h2>Aviso por correo si nadie lo toma</h2>'
+                 f'<button type="button" class="ap-ib" aria-label="Cerrar">{CERRAR_TEL}</button></div><div class="hb">{ops}</div></div>')
+        t = sumar_estado_tel(t, "Elegir el aviso", [(h, nueva)])
+        escribir("M-WA-Equipos-Crear", marcar(t, MARCA, CSS_TEL + CSS_OPS_TEL))
+
+    t = leer("WA-Plantillas")
+    if not ya(t):
+        t = estados_compu(t, "Lista")
+        t = sumar_estado(t, "Por qué la rechazó Meta", encima=aviso(*AVISO_RECHAZO))
+        escribir("WA-Plantillas", marcar(t, MARCA, CSS_COMPU))
+    t = leer("M-WA-Plantillas")
+    if not ya(t):
+        t = con_estados_pantalla(t, "Lista")
+        t = sumar_estado_tel(t, "Por qué la rechazó Meta", al_final=aviso_tel(*AVISO_RECHAZO))
+        escribir("M-WA-Plantillas", marcar(t, MARCA, CSS_TEL))
+
+
 if __name__ == "__main__":
     datos()
     numeros()
@@ -723,3 +905,5 @@ if __name__ == "__main__":
     chats_resto()
     chats_tel()
     plantilla_elegir()
+    bot_estados()
+    equipos_plantillas()
