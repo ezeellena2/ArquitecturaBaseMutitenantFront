@@ -6,7 +6,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 6000
+ALTO = 6600
 ANCHO = 4440
 COLUMNAS = 3
 ARCHIVO = "Criterio-Decisiones.dc.html"
@@ -325,6 +325,23 @@ DECISIONES = {
     ],
     "El usuario · 12/10": [
         ("Para resolver", "", "Cada tipo de pendiente va en su grupo, con su área y su total, y muestra hasta 10 filas; si hay más, «Ver todos» lleva al listado ya filtrado (Usuarios con «Vencidas» o «Baja pedida», Organizaciones con «Pendiente de aprobación», Recuperaciones con «Pendientes»). Con 10 o menos no hay «Ver todos». En los inicios de la organización, de Plataforma y del miembro, en compu y teléfono.", "Dibujada"),
+    ],
+    "E12 · Formularios · El usuario · 13/10": [
+        ("Formularios · listado", "A", "«Formularios» en el menú principal, debajo de WhatsApp; pestañas Todos, Publicados y Borradores con su total; nombre, prefijo, estado (el motivo de «No se pudo publicar» en ⓘ) y última publicación, con ⋮ y «Nuevo formulario».", "Dibujada"),
+        ("Formularios · nuevo", "A", "Un diálogo con solo «Nombre *»; al crear abre la ficha, donde se ve el prefijo propuesto. Errores debajo del campo y «Creando…».", "Dibujada"),
+        ("Formularios · ficha › Preguntas", "A", "Se guarda a mano, como el resto del lienzo: «Cambios sin guardar», «Descartar cambios», «Guardar cambios» y «Publicar». Lista numerada con Editar, Subir, Bajar y Quitar en el ⋮; «Botón final» aparte; la vista previa del teléfono al costado, en español o inglés. El 409 con el cartel «Otra persona cambió esto…».", "Dibujada"),
+        ("Formularios · pregunta", "A", "El diálogo va en español: tipo, pregunta, ayuda y «Obligatoria»; según el tipo, el largo máximo, los decimales (de 0 a 6) o las opciones. Cambiar el tipo avisa que es una pregunta nueva. El inglés se escribe en su pestaña.", "Dibujada"),
+        ("Formularios · ficha › Inglés", "A", "Una tabla con todos los textos: el español al lado y el campo en inglés; lo que falta, en ámbar con «Falta», y la cuenta en la pestaña. La vista previa en inglés dice «Falta», nunca el texto en español. Se guarda incompleto; para publicar, todo.", "Dibujada"),
+        ("Formularios · prefijo", "A", "Una caja «Datos» arriba de las preguntas, con «Nombre *» y «Prefijo *», que se guardan con el borrador. Debajo, «Las respuestas: INS-000001» con ⓘ. Tomado o con mal formato, el error debajo del campo; publicado, el mismo campo deshabilitado y gris.", "Dibujada"),
+        ("Formularios · publicar", "A", "El diálogo comprueba antes de publicar: «Qué cambia en la versión N», «Queda fijo al publicar» (el prefijo, la primera vez) y los problemas por pregunta con «Editar». Con problemas, «Publicar versión N» apagado; sin guardar, «Guardar cambios»; con otra en curso, «Ver la publicación»; sin WhatsApp, «Ir a WhatsApp».", "Dibujada"),
+        ("Formularios · publicación", "A", "La pestaña Publicación muestra la versión en curso con una palabra corta y su ⓘ (Publicando, Sin confirmar, No se pudo publicar con el motivo por pregunta) y la versión activa con la vista previa oficial de WhatsApp en español o inglés. La cabecera y el listado dicen lo mismo.", "Dibujada"),
+        ("WhatsApp · mandar formulario", "A", "En un chat de Internos, el botón «Formulario» al lado de «Enviar» abre el diálogo: formulario en un desplegable, mensaje de hasta 1024 con contador y la vista del mensaje con «Abrir formulario» («Le llega en español, el idioma de su cuenta.»). Apagado, el motivo en su ⓘ; después, «En cola» o «No se pudo mandar» con «Reintentar».", "Dibujada"),
+        ("WhatsApp · respuesta del formulario", "D", "Llega como un mensaje de quien respondió: cabecera con el ícono, el nombre del formulario, «Respuesta del formulario · versión N» y el número; debajo, renglones con el valor a la derecha, plegados a 3 con «Ver las N respuestas». «Sin respuesta» en gris. Sin permiso, solo el número con ⓘ; rechazada, en rojo con ⓘ; esperando y vencida, en el pie del envío.", "Dibujada"),
+        ("Formularios · teléfono", "A", "Se edita todo, como app: el listado con pestañas y «+» (la hoja «Nuevo formulario»); la ficha con Preguntas, Inglés y Publicación, el ⋮ de cada pregunta en una hoja, y «Publicar» o «Descartar cambios» y «Guardar cambios» fijos abajo.", "Dibujada"),
+        ("Formularios · pregunta en el teléfono", "A", "Una hoja desde abajo sobre la ficha, con los mismos campos, tipos y errores que el diálogo de la compu.", "Dibujada"),
+        ("WhatsApp · mandar formulario en el teléfono", "C", "«Mandar formulario» va en el ⋮ del chat, debajo de «Pasar» y «Ver ficha del contacto»: el menú aguanta lo que sumen las etapas 13 a 17 sin llenar de botones donde se escribe. Apagado, en gris con el motivo debajo. Abre la hoja «Mandar formulario», copia de «Mandar plantilla».", "Dibujada"),
+        ("WhatsApp · respuesta en el teléfono", "B", "La misma tarjeta plegada de la compu; «Ver las N respuestas» abre una hoja con todas en grilla, así la burbuja no crece con formularios largos.", "Dibujada"),
+        ("Detalle de solo lectura", "", "Vale para diálogos, pestañas y listas de cambios: grilla con líneas, el rótulo sobre arena (Publicar y Publicación de Formularios, 13/10).", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

@@ -974,7 +974,7 @@
       "x": 10640,
       "y": 260,
       "w": 4440,
-      "h": 6000,
+      "h": 6600,
       "title": "Criterio · Decisiones por pantalla",
       "page": "criterio"
     },
@@ -1780,6 +1780,126 @@
       "title": "Inicio con el asistente · /plataforma",
       "page": "plataforma",
       "is_interactive": true
+    },
+    "FRM-Listado.dc.html": {
+      "x": 0,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · /org/formularios",
+      "page": "formularios"
+    },
+    "FRM-Nuevo.dc.html": {
+      "x": 1520,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · nuevo formulario",
+      "page": "formularios"
+    },
+    "FRM-Ficha.dc.html": {
+      "x": 3040,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · ficha · /org/formularios/:id",
+      "page": "formularios"
+    },
+    "FRM-Pregunta.dc.html": {
+      "x": 4560,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · agregar o editar una pregunta",
+      "page": "formularios"
+    },
+    "FRM-Ingles.dc.html": {
+      "x": 6080,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · ficha · Inglés",
+      "page": "formularios"
+    },
+    "FRM-Prefijo.dc.html": {
+      "x": 7600,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · prefijo de numeración",
+      "page": "formularios"
+    },
+    "FRM-Publicar.dc.html": {
+      "x": 9120,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · publicar (comprobación)",
+      "page": "formularios"
+    },
+    "FRM-Publicacion.dc.html": {
+      "x": 10640,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · ficha · Publicación",
+      "page": "formularios"
+    },
+    "WA-Chats-Formulario.dc.html": {
+      "x": 0,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · mandar formulario",
+      "page": "formularios"
+    },
+    "WA-Chats-Respuesta.dc.html": {
+      "x": 1520,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · respuesta del formulario",
+      "page": "formularios"
+    },
+    "M-FRM-Listado.dc.html": {
+      "x": 0,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Formularios · teléfono",
+      "page": "formularios"
+    },
+    "M-FRM-Ficha.dc.html": {
+      "x": 470,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Formularios · ficha · teléfono",
+      "page": "formularios"
+    },
+    "M-FRM-Pregunta.dc.html": {
+      "x": 940,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Formularios · pregunta · teléfono",
+      "page": "formularios"
+    },
+    "M-WA-Chats-Formulario.dc.html": {
+      "x": 1410,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "WhatsApp · Internos · mandar formulario · teléfono",
+      "page": "formularios"
+    },
+    "M-WA-Conversacion-Respuesta.dc.html": {
+      "x": 1880,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "WhatsApp · Internos · respuesta del formulario · teléfono",
+      "page": "formularios"
     }
   },
   "createdOnFiles": {
@@ -1945,6 +2065,15 @@
       "maxW": 8000,
       "text": "Organización · WhatsApp",
       "page": "propuesta-whatsapp"
+    },
+    "t-formularios": {
+      "kind": "title1",
+      "x": 0,
+      "y": 0,
+      "w": 600,
+      "maxW": 8000,
+      "text": "Organización · Formularios",
+      "page": "formularios"
     }
   },
   "order": [
@@ -2148,7 +2277,22 @@
     "Plat-Asistente-Config.dc.html",
     "Plat-Asistente-Uso.dc.html",
     "M-Plat-Asistente-Config.dc.html",
-    "M-Plat-Asistente-Uso.dc.html"
+    "M-Plat-Asistente-Uso.dc.html",
+    "FRM-Listado.dc.html",
+    "FRM-Nuevo.dc.html",
+    "FRM-Ficha.dc.html",
+    "FRM-Pregunta.dc.html",
+    "FRM-Ingles.dc.html",
+    "FRM-Prefijo.dc.html",
+    "FRM-Publicar.dc.html",
+    "FRM-Publicacion.dc.html",
+    "WA-Chats-Formulario.dc.html",
+    "WA-Chats-Respuesta.dc.html",
+    "M-FRM-Listado.dc.html",
+    "M-FRM-Ficha.dc.html",
+    "M-FRM-Pregunta.dc.html",
+    "M-WA-Chats-Formulario.dc.html",
+    "M-WA-Conversacion-Respuesta.dc.html"
   ],
   "pages": [
     {
@@ -2178,6 +2322,10 @@
     {
       "id": "propuesta-whatsapp",
       "name": "Organización · WhatsApp"
+    },
+    {
+      "id": "formularios",
+      "name": "Organización · Formularios"
     },
     {
       "id": "plataforma",
