@@ -16,6 +16,11 @@ export const validationConstraints = {
       "maxLength": 254
     }
   },
+  "AddWhatsAppNoteHttpRequest": {
+    "text": {
+      "maxLength": 4096
+    }
+  },
   "AssistantAttachmentSummaryResponse": {
     "version": {
       "minimum": 0,
@@ -313,6 +318,28 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "ConnectPlatformWhatsAppNumberHttpRequest": {
+    "code": {
+      "maxLength": 1024
+    },
+    "phoneNumberId": {
+      "maxLength": 32
+    },
+    "wabaId": {
+      "maxLength": 32
+    }
+  },
+  "ConnectWhatsAppNumberHttpRequest": {
+    "code": {
+      "maxLength": 1024
+    },
+    "phoneNumberId": {
+      "maxLength": 32
+    },
+    "wabaId": {
+      "maxLength": 32
+    }
+  },
   "CountryReferenceHttpResponse": {
     "sortOrder": {
       "minimum": -2147483648,
@@ -349,6 +376,37 @@ export const validationConstraints = {
     },
     "description": {
       "maxLength": 500
+    }
+  },
+  "CreateWhatsAppBroadcastHttpRequest": {
+    "name": {
+      "maxLength": 60
+    },
+    "variables": {
+      "maxItems": 10
+    }
+  },
+  "CreateWhatsAppTeamHttpRequest": {
+    "name": {
+      "maxLength": 60
+    },
+    "notifyAfterMinutes": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "CreateWhatsAppTemplateHttpRequest": {
+    "name": {
+      "maxLength": 60
+    },
+    "language": {
+      "maxLength": 20
+    },
+    "body": {
+      "maxLength": 1024
+    },
+    "variables": {
+      "maxItems": 10
     }
   },
   "CultureReferenceHttpResponse": {
@@ -661,6 +719,24 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "PagedResultOfPersonalWhatsAppConversationResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "PagedResultOfPlatformAccountResponse": {
     "page": {
       "minimum": -2147483648,
@@ -734,6 +810,258 @@ export const validationConstraints = {
     }
   },
   "PagedResultOfRoleResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfstring": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppBroadcastResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppChatMessageResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppContactBroadcastResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppContactConversationResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppContactResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppConversationRowResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppImportRejectionResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppNumberResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppRecipientResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppReferenceResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppTeamResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppTemplateOptionResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppTemplateResponse": {
     "page": {
       "minimum": -2147483648,
       "maximum": 2147483647
@@ -893,6 +1221,17 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "PlatformWhatsAppBotResponse": {
+    "menu": {
+      "maxItems": 10
+    }
+  },
+  "PlatformWhatsAppNumberResponse": {
+    "systemMessagesThisMonth": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "PreviewAccountRecoveryHttpRequest": {
     "previousEmail": {
       "maxLength": 254
@@ -971,6 +1310,16 @@ export const validationConstraints = {
     },
     "attachmentIds": {
       "maxItems": 5
+    }
+  },
+  "SendWhatsAppMessageHttpRequest": {
+    "text": {
+      "maxLength": 4096
+    }
+  },
+  "SendWhatsAppTemplateHttpRequest": {
+    "variables": {
+      "maxItems": 10
     }
   },
   "SignupHttpRequest": {
@@ -1096,6 +1445,17 @@ export const validationConstraints = {
       "maxLength": 500
     }
   },
+  "UpdatePlatformWhatsAppBotHttpRequest": {
+    "welcome": {
+      "maxLength": 1024
+    },
+    "outOfHours": {
+      "maxLength": 1024
+    },
+    "menu": {
+      "maxItems": 10
+    }
+  },
   "UpdatePublicPageHttpRequest": {
     "slug": {
       "maxLength": 63
@@ -1124,6 +1484,34 @@ export const validationConstraints = {
       "maxLength": 500
     }
   },
+  "UpdateWhatsAppBotHttpRequest": {
+    "welcome": {
+      "maxLength": 1024
+    },
+    "outOfHours": {
+      "maxLength": 1024
+    },
+    "menu": {
+      "maxItems": 10
+    }
+  },
+  "UpdateWhatsAppContactHttpRequest": {
+    "name": {
+      "maxLength": 100
+    },
+    "tags": {
+      "maxItems": 10
+    }
+  },
+  "UpdateWhatsAppTeamHttpRequest": {
+    "name": {
+      "maxLength": 60
+    },
+    "notifyAfterMinutes": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "VerifyLoginCodeHttpRequest": {
     "email": {
       "maxLength": 254
@@ -1137,6 +1525,207 @@ export const validationConstraints = {
   "VerifySignupHttpRequest": {
     "email": {
       "maxLength": 254
+    }
+  },
+  "WhatsAppAudienceInput": {
+    "tag": {
+      "maxLength": 40
+    }
+  },
+  "WhatsAppBotMenuOptionInput": {
+    "label": {
+      "maxLength": 24
+    },
+    "reply": {
+      "maxLength": 1024
+    }
+  },
+  "WhatsAppBotResponse": {
+    "menu": {
+      "maxItems": 10
+    }
+  },
+  "WhatsAppBotSchedule": {
+    "days": {
+      "maxItems": 7
+    }
+  },
+  "WhatsAppBotScheduleInput": {
+    "days": {
+      "maxItems": 7
+    }
+  },
+  "WhatsAppBroadcastEstimateResponse": {
+    "recipients": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppBroadcastResponse": {
+    "recipients": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "delivered": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "read": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "replied": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "unsubscribed": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "failed": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppContactConversationResponse": {
+    "messageCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppContactListResponse": {
+    "total": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "accepting": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppContactResponse": {
+    "tags": {
+      "maxItems": 10
+    }
+  },
+  "WhatsAppConversationCountsResponse": {
+    "customers": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "internal": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "untaken": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppImportRejectionResponse": {
+    "row": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppImportResponse": {
+    "imported": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "updated": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppNumberResponse": {
+    "serviceMessagesThisMonth": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "freeServiceMessages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "chargedServiceMessagesThisMonth": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppPhoneImportHttpRequest": {
+    "phones": {
+      "maxItems": 200
+    }
+  },
+  "WhatsAppPhoneImportPreviewResponse": {
+    "rows": {
+      "maxItems": 200
+    },
+    "alreadyMembers": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "invites": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "invalid": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppPhoneImportResponse": {
+    "linked": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "invited": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "invalid": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppPhoneImportRowResponse": {
+    "row": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppTeamDetailResponse": {
+    "notifyAfterMinutes": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppTeamResponse": {
+    "memberCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "notifyAfterMinutes": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppTemplateOptionResponse": {
+    "variables": {
+      "maxItems": 10
+    }
+  },
+  "WhatsAppTemplateResponse": {
+    "variables": {
+      "maxItems": 10
+    }
+  },
+  "WhatsAppTemplateVariableInput": {
+    "label": {
+      "maxLength": 60
+    },
+    "example": {
+      "maxLength": 200
     }
   }
 } as const;
