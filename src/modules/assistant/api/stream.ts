@@ -1,3 +1,4 @@
+import { assistantAttachmentTypes } from "../lib/assistantFiles";
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { z } from "zod";
 import type { AssistantAttachmentSummaryResponse, AssistantDeltaEventResponse, AssistantErrorEventResponse, AssistantLinkResponse, AssistantMessageResponse, AssistantStartEventResponse, AssistantStreamHttpResponse, AssistantTitleEventResponse, AssistantToolEventResponse, AssistantTurnResultResponse, AssistantTurnUsageResponse } from "@/modules/assistant/api/types";
@@ -17,7 +18,7 @@ const version = z.number().int().min(0).max(validationConstraints.AssistantAttac
 const integer = z.number().int();
 const money = z.object({ amount: z.number(), currency: z.string() });
 const attachment: z.ZodType<AssistantAttachmentSummaryResponse> = z.object({
-  id: z.string(), fileName: z.string(), mediaType: z.string(), byteLength: integer, version,
+  id: z.string(), fileName: z.string(), mediaType: z.enum(assistantAttachmentTypes), byteLength: integer, version,
 });
 const link: z.ZodType<AssistantLinkResponse> = z.object({
   routeKey: z.enum(["business.users", "business.roles", "business.companies", "business.audit", "business.home",

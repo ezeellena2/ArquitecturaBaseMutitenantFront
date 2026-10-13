@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { createInstance } from "i18next";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { AssistantModelPriceResponse } from "@/modules/assistant/api/types";
@@ -18,6 +19,15 @@ const tier = { inputTokensThreshold: 100000, inputPricePerMillion: { amount: 0.5
   cacheReadPricePerMillion: { amount: 0.1, currency: "USD" }, cacheWrite5MinutesPricePerMillion: { amount: 0.6, currency: "USD" }, cacheWrite1HourPricePerMillion: { amount: 0.8, currency: "USD" } };
 
 describe("formulario técnico del catálogo", () => {
+  it.each(["name", "providerModelId"] as const)("respeta la longitud publicada de %s y conserva el valor máximo", (field) => {
+    const maximum = validationConstraints.CreateAssistantModelHttpRequest[field].maxLength;
+    const next = values(); next[field] = "x".repeat(maximum);
+    expect(parse(next).success).toBe(true);
+    next[field] += "x";
+    const result = parse(next); expect(result.success).toBe(false);
+    if (result.success) throw new Error("El texto excedido no puede pasar.");
+    expect(result.error.issues).toEqual(expect.arrayContaining([expect.objectContaining({ path: [field] })]));
+  });
   it("conserva las capacidades publicadas y tarifas, admite base cero y no copia revisión ni versión al formulario", () => {
     const result = parse(values()); expect(result.success).toBe(true);
     if (!result.success) throw result.error;

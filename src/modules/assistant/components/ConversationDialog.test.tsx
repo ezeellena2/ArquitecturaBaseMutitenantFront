@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
@@ -77,4 +78,21 @@ describe("confirmación de conversaciones", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(trigger).toHaveFocus();
   });
+});
+
+it("no envía un título excedido y acepta la longitud máxima publicada al corregirlo", async () => {
+  const onConfirm = vi.fn();
+  renderWithProviders(<ConversationDialog value={{ kind: "rename", trigger: null, conversation: {
+    id: "chat", title: "Original", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z",
+  } }} pending={false} error={null} onClose={() => {}} onConfirm={onConfirm} />);
+  const input = await screen.findByRole("textbox", { name: "Nombre" });
+  const maximum = validationConstraints.UpdateAssistantConversationHttpRequest.title.maxLength;
+  fireEvent.change(input, { target: { value: "x".repeat(maximum + 1) } });
+  fireEvent.click(screen.getByRole("button", { name: "Guardar cambios" }));
+  expect(await screen.findByText("Escribí un texto más corto.")).toBeVisible();
+  expect(onConfirm).not.toHaveBeenCalled();
+  const title = "x".repeat(maximum);
+  fireEvent.change(input, { target: { value: title } });
+  fireEvent.click(screen.getByRole("button", { name: "Guardar cambios" }));
+  await waitFor(() => expect(onConfirm).toHaveBeenCalledWith(title));
 });

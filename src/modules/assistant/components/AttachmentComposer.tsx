@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { AttachmentPrimitive, ComposerPrimitive, useAuiState } from "@assistant-ui/react";
 import { useTranslation } from "react-i18next";
@@ -57,7 +58,7 @@ export function AttachmentComposer({ files, limits, errorId, placeholder, unavai
     <FilesContext.Provider value={{ files, errorId, pending }}><ul className="flex flex-wrap gap-2 empty:hidden"><ComposerPrimitive.Attachments components={{ Attachment: ComposerFile }} /></ul></FilesContext.Provider>
     <div className="[&_label]:sr-only max-md:mx-9"><FormField label={t("composer.label")} error={required ? t("composer.required") : undefined}>
       <ComposerPrimitive.Input asChild addAttachmentOnPaste={false} onChange={() => setRequired(false)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && (!text.trim() || invalid)) { event.preventDefault(); if (!text.trim()) setRequired(true); } }}>
-        <Textarea rows={1} placeholder={placeholder} disabled={unavailable || pending} className="min-h-16 resize-none border-0 shadow-none max-md:min-h-9 max-md:max-h-28 max-md:px-0 max-md:py-2 max-md:leading-5" />
+        <Textarea rows={1} maxLength={validationConstraints.SendAssistantMessageHttpRequest.text.maxLength} placeholder={placeholder} disabled={unavailable || pending} className="min-h-16 resize-none border-0 shadow-none max-md:min-h-9 max-md:max-h-28 max-md:px-0 max-md:py-2 max-md:leading-5" />
       </ComposerPrimitive.Input>
     </FormField></div>
     <div className="flex items-center gap-2 max-md:absolute max-md:inset-x-2 max-md:bottom-2 max-md:pointer-events-none max-md:[&_button]:pointer-events-auto">

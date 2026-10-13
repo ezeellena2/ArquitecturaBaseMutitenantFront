@@ -1,3 +1,4 @@
+import { toSearch } from "@/shared/api/toSearch";
 import type { AssistantLinkResponse, AssistantRouteKey } from "@/modules/assistant/api/types";
 import { homeOf } from "@/tenancy/access";
 import type { AssistantScope } from "../api/assistant";
@@ -40,17 +41,17 @@ export function resolveAssistantLink(link: AssistantLinkResponse, context: Assis
   }
   const id = route.id ? link.parameters[route.id] : null;
   if (id && !uuid.test(id)) return null;
-  const params = new URLSearchParams();
+  const query: Record<string, string | number> = {};
   if (!id) {
     const status = link.query.status;
-    if (link.routeKey === "business.users" && status) params.set("state", status === "Pending" ? "Invited" : status);
-    if (link.routeKey === "platform.organizations" && status) params.set("status", status === "Pending" ? "PendingApproval" : status);
-    if (link.routeKey === "platform.recoveries" && status) params.set("status", status);
-    if (link.query.search) params.set("search", link.query.search);
+    if (link.routeKey === "business.users" && status) query.state = status === "Pending" ? "Invited" : status;
+    if (link.routeKey === "platform.organizations" && status) query.status = status === "Pending" ? "PendingApproval" : status;
+    if (link.routeKey === "platform.recoveries" && status) query.status = status;
+    if (link.query.search) query.search = link.query.search;
     for (const key of ["page", "pageSize"] as const) {
       const value = link.query[key];
-      if (value != null && Number.isSafeInteger(value) && value > 0) params.set(key, String(value));
+      if (value != null && Number.isSafeInteger(value) && value > 0) query[key] = value;
     }
   }
-  return { to: `${route.path}${id ? `/${encodeURIComponent(id)}` : ""}${params.size ? `?${params}` : ""}`, labelKey: `links.${link.routeKey}` };
+  return { to: `${route.path}${id ? `/${encodeURIComponent(id)}` : ""}${toSearch(query, true)}`, labelKey: `links.${link.routeKey}` };
 }

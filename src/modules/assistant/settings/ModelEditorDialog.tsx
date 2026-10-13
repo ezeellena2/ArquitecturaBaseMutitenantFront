@@ -24,7 +24,7 @@ import type { AssistantScope } from "../api/assistant";
 import { assistantModelsRoot, createAssistantModel, updateAssistantModel } from "../api/models";
 import { modelErrorFields, modelFormSchema, modelFormValues, type ModelFormOutput, type ModelFormValues } from "./modelForm";
 import { ModelTechnicalFields } from "./ModelTechnicalFields";
-import { assistantDescriptionMaxLength } from "./settingsForm";
+import { assistantModelNameMaxLength, assistantProviderModelIdMaxLength } from "./settingsForm";
 import { usePrivateSettingsOperation } from "./usePrivateSettingsOperation";
 
 export function ModelEditorDialog({ scope, cancellationSignal, model, currency, trigger, onClose }: {
@@ -81,9 +81,9 @@ export function ModelEditorDialog({ scope, cancellationSignal, model, currency, 
     <DialogHeader><DialogTitle>{t(model ? "assistant:settings.editModel" : "assistant:settings.addModel")}</DialogTitle></DialogHeader>
     <form noValidate onSubmit={(event) => { void submit(event); }} onChangeCapture={changed} className="flex min-h-0 flex-col">
       <DialogBody><div className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">
-        <FormField label={t("assistant:settings.name")} required error={errors.name?.message}><Input {...form.register("name")} maxLength={assistantDescriptionMaxLength} /></FormField>
+        <FormField label={t("assistant:settings.name")} required error={errors.name?.message}><Input {...form.register("name")} maxLength={assistantModelNameMaxLength} /></FormField>
         <ReadOnlyField label={t("assistant:settings.provider")}>{t("enums:AssistantProvider.Anthropic")}</ReadOnlyField>
-        <div className="md:col-span-2"><FormField label={t("assistant:settings.providerModelId")} required error={errors.providerModelId?.message}><Input {...form.register("providerModelId")} maxLength={assistantDescriptionMaxLength} /></FormField></div>
+        <div className="md:col-span-2"><FormField label={t("assistant:settings.providerModelId")} required error={errors.providerModelId?.message}><Input {...form.register("providerModelId")} maxLength={assistantProviderModelIdMaxLength} /></FormField></div>
         {(["inputPricePerMillion", "outputPricePerMillion"] as const).map((name) => <Controller key={name} control={form.control} name={name} render={({ field }) => <FormField label={t(name === "inputPricePerMillion" ? "assistant:settings.inputPrice" : "assistant:settings.outputPrice")} required error={errors[name]?.message}>
           <MoneyField fixedCurrency precision="technical-tariff" currencyCode={currency} value={field.value} onChange={(value) => { changed(); field.onChange(value); }} />
         </FormField>} />)}

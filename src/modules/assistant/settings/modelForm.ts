@@ -3,19 +3,19 @@ import type { TFunction } from "i18next";
 import type { FieldPath } from "react-hook-form";
 import { z } from "zod";
 import type { AssistantModelPriceResponse } from "@/modules/assistant/api/types";
-import { assistantDescriptionMaxLength, assistantMoneySchema } from "./settingsForm";
+import { assistantModelNameMaxLength, assistantProviderModelIdMaxLength, assistantMoneySchema } from "./settingsForm";
 
 const moneyValue = z.object({ amount: z.number(), currency: z.string() });
 export function modelFormSchema(t: TFunction) {
   const requiredInteger = z.number().int(t("assistant:settings.validation.limit"))
-    .min(1, t("assistant:settings.validation.limit")).max(validationConstraints.AssistantModelTechnicalHttpRequest.maxInputTokens.maximum, t("assistant:settings.validation.limit"))
+    .min(validationConstraints.AssistantModelTechnicalHttpRequest.maxInputTokens.minimum, t("assistant:settings.validation.limit")).max(validationConstraints.AssistantModelTechnicalHttpRequest.maxInputTokens.maximum, t("assistant:settings.validation.limit"))
     .nullable().transform((value, ctx) => {
       if (value !== null) return value;
       ctx.addIssue({ code: "custom", message: t("assistant:settings.validation.limit") });
       return z.NEVER;
     });
   const tariff = moneyValue.nullable().transform((value, ctx) => {
-    if (value && value.amount > 0 && value.amount < 1e12 && value.currency === "USD") return value;
+    if (value && value.amount > validationConstraints.AssistantInputMoney.amount.minimum && value.amount < validationConstraints.AssistantInputMoney.amount.exclusiveMaximum && value.currency === "USD") return value;
     ctx.addIssue({ code: "custom", message: t("assistant:settings.validation.technicalPrice") });
     return z.NEVER;
   });
@@ -34,8 +34,8 @@ export function modelFormSchema(t: TFunction) {
       return z.NEVER;
     });
   return z.object({
-    name: z.string().trim().min(1, t("assistant:settings.validation.name")).max(assistantDescriptionMaxLength, t("assistant:settings.validation.textLength")),
-    providerModelId: z.string().trim().min(1, t("assistant:settings.validation.providerId")).max(assistantDescriptionMaxLength, t("assistant:settings.validation.textLength")),
+    name: z.string().trim().min(1, t("assistant:settings.validation.name")).max(assistantModelNameMaxLength, t("assistant:settings.validation.textLength")),
+    providerModelId: z.string().trim().min(1, t("assistant:settings.validation.providerId")).max(assistantProviderModelIdMaxLength, t("assistant:settings.validation.textLength")),
     inputPricePerMillion: assistantMoneySchema(t), outputPricePerMillion: assistantMoneySchema(t), isActive: z.boolean(),
     technical: z.object({ supportsText: z.boolean(), supportsTools: z.boolean(), supportsImages: z.boolean(), supportsPdf: z.boolean(), supportsAdaptiveThinking: z.boolean(),
       efforts: z.array(z.enum(["low", "medium", "high"])).min(1, t("assistant:settings.validation.efforts"))

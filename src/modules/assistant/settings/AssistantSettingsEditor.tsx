@@ -1,3 +1,4 @@
+import { useQueryUpdate } from "@/shared/hooks/useQueryUpdate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Sparkles } from "lucide-react";
@@ -56,7 +57,8 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   const settingsKey = assistantSettingsKey(scope);
   const navigation = useNavigation();
   const [navigationOwner, setNavigationOwner] = useState(() => new AbortController());
-  const [params, setParams] = useSearchParams(); const tab = platform && params.get("tab") === "catalog" ? "catalog" : "general";
+  const [params] = useSearchParams();
+  const updateQuery = useQueryUpdate(); const tab = platform && params.get("tab") === "catalog" ? "catalog" : "general";
   const catalog = useQuery({ queryKey: [...assistantModelsRoot(scope), "options"], queryFn: ({ signal }) => fetchAssistantModelOptions(signal), enabled: platform, meta: { silent: true } });
   const schema = useMemo(() => settingsSchema(t, platform), [t, platform]);
   const { form, version, wrote, resetTo } = useEditForm({ read: settings, toValues: settingsValues, resolver: zodResolver(schema) });
@@ -230,7 +232,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   return <>
     <Page icon={Sparkles} title={t("assistant:settings.title")} summary={edit.unsaved ?? (platform && !savedHasKey ? <span className="font-medium text-[var(--alerta)]">{t("assistant:settings.unconfigured")}</span> : null)} phoneSubtitle={t("assistant:title")} backTo={phone ? { to: platform ? "/plataforma/mas" : "/mas", label: t("assistant:settings.back") } : undefined}
       banner={edit.banner} actions={actions} phoneBody={tab === "catalog" ? "flush" : "padded"}
-      tabs={platform ? { label: t("assistant:settings.title"), value: tab, onValueChange: (value) => { const next = new URLSearchParams(params); next.set("tab", value); setParams(next); }, items: [
+      tabs={platform ? { label: t("assistant:settings.title"), value: tab, onValueChange: (value) => updateQuery({ tab: value }), items: [
         { value: "general", label: t("assistant:settings.general"), content: general },
         { value: "catalog", label: t("assistant:settings.catalog"), count: catalog.data ? <NumberText value={catalog.data.length} /> : undefined, content: <ModelCatalog scope={scope} onEdit={(model, trigger) => setModelDialog({ model, trigger })} /> },
       ] } : undefined}>{general}</Page>

@@ -1,6 +1,7 @@
+import { schemaEnumValues } from "@/shared/api/generated/validation";
 import type { AssistantStateResponse } from "@/modules/assistant/api/types";
 
-export const assistantAttachmentTypes = ["image/png", "image/jpeg", "image/webp", "application/pdf"] as const;
+export const assistantAttachmentTypes = schemaEnumValues.AssistantAttachmentSummaryResponse.mediaType;
 export type AssistantAttachmentLimits = Pick<AssistantStateResponse, "maxAttachments" | "maxAttachmentBytes">;
 export interface PendingAssistantFile { id: string; file: File; invalid?: "tooLarge" }
 export function validateAssistantFiles(files: readonly File[], count: number, limits: AssistantAttachmentLimits): "tooMany" | "tooLarge" | "invalidType" | null {

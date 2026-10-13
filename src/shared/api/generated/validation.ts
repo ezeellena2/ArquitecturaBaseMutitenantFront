@@ -62,6 +62,16 @@ export const validationConstraints = {
       "maximum": 4294967295
     }
   },
+  "AssistantInputMoney": {
+    "amount": {
+      "minimum": 0,
+      "exclusiveMaximum": 1000000000000
+    },
+    "currency": {
+      "minLength": 3,
+      "maxLength": 3
+    }
+  },
   "AssistantLinkQueryResponse": {
     "page": {
       "minimum": -2147483648,
@@ -120,6 +130,11 @@ export const validationConstraints = {
     "currency": {
       "minLength": 3,
       "maxLength": 3
+    }
+  },
+  "AssistantNoticeHttpRequest": {
+    "noticeVersion": {
+      "maxLength": 500
     }
   },
   "AssistantPolicyResponse": {
@@ -302,6 +317,14 @@ export const validationConstraints = {
     "sortOrder": {
       "minimum": -2147483648,
       "maximum": 2147483647
+    }
+  },
+  "CreateAssistantModelHttpRequest": {
+    "name": {
+      "maxLength": 500
+    },
+    "providerModelId": {
+      "maxLength": 500
     }
   },
   "CreateCompanyHttpRequest": {
@@ -942,6 +965,14 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "SendAssistantMessageHttpRequest": {
+    "text": {
+      "maxLength": 8000
+    },
+    "attachmentIds": {
+      "maxItems": 5
+    }
+  },
   "SignupHttpRequest": {
     "email": {
       "maxLength": 254
@@ -968,12 +999,21 @@ export const validationConstraints = {
     }
   },
   "UpdateAssistantConversationHttpRequest": {
+    "title": {
+      "maxLength": 80
+    },
     "version": {
       "minimum": 0,
       "maximum": 4294967295
     }
   },
   "UpdateAssistantModelHttpRequest": {
+    "name": {
+      "maxLength": 500
+    },
+    "providerModelId": {
+      "maxLength": 500
+    },
     "version": {
       "minimum": 0,
       "maximum": 4294967295
@@ -983,6 +1023,9 @@ export const validationConstraints = {
     "version": {
       "minimum": 0,
       "maximum": 4294967295
+    },
+    "reason": {
+      "maxLength": 500
     }
   },
   "UpdateCompanyHttpRequest": {
@@ -1003,6 +1046,9 @@ export const validationConstraints = {
       "minimum": -2147483648,
       "maximum": 2147483647
     },
+    "apiKey": {
+      "maxLength": 4000
+    },
     "version": {
       "minimum": 0,
       "maximum": 4294967295
@@ -1021,6 +1067,9 @@ export const validationConstraints = {
     "retentionDays": {
       "minimum": -2147483648,
       "maximum": 2147483647
+    },
+    "apiKey": {
+      "maxLength": 4000
     },
     "version": {
       "minimum": 0,
@@ -1089,6 +1138,65 @@ export const validationConstraints = {
     "email": {
       "maxLength": 254
     }
+  }
+} as const;
+
+export const schemaEnumValues = {
+  "AssistantAttachmentSummaryResponse": {
+    "mediaType": [
+      "image/png",
+      "image/jpeg",
+      "image/webp",
+      "application/pdf"
+    ]
+  },
+  "AssistantStreamHttpResponseAssistantDeltaStreamHttpResponse": {
+    "event": [
+      "delta"
+    ]
+  },
+  "AssistantStreamHttpResponseAssistantDoneStreamHttpResponse": {
+    "event": [
+      "done"
+    ]
+  },
+  "AssistantStreamHttpResponseAssistantErrorStreamHttpResponse": {
+    "event": [
+      "error"
+    ]
+  },
+  "AssistantStreamHttpResponseAssistantStartStreamHttpResponse": {
+    "event": [
+      "start"
+    ]
+  },
+  "AssistantStreamHttpResponseAssistantTitleStreamHttpResponse": {
+    "event": [
+      "title"
+    ]
+  },
+  "AssistantStreamHttpResponseAssistantToolStreamHttpResponse": {
+    "event": [
+      "tool"
+    ]
+  },
+  "LoginLinkRedeemResponse": {
+    "access": [
+      "consumer"
+    ]
+  },
+  "PagedRequest": {
+    "pageSize": [
+      10,
+      20,
+      50,
+      100
+    ]
+  },
+  "RedeemLoginLinkHttpRequest": {
+    "access": [
+      "consumer"
+    ]
   }
 } as const;
 

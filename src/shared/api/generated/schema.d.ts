@@ -164,7 +164,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 80%; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
         get: {
             parameters: {
                 query?: never;
@@ -221,15 +221,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -345,15 +336,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -430,15 +412,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -542,15 +515,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -628,15 +592,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -727,15 +682,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         post?: never;
@@ -807,15 +753,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -954,15 +891,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
                 /** @description Service Unavailable; Assistant.Provider.Unavailable */
                 503: {
                     headers: {
@@ -1083,15 +1011,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -1202,15 +1121,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -1309,15 +1219,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         post?: never;
@@ -1336,7 +1237,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         post: {
             parameters: {
                 query?: never;
@@ -1446,15 +1347,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -1470,7 +1362,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         get: {
             parameters: {
                 query?: never;
@@ -1561,20 +1453,11 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
         post?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         delete: {
             parameters: {
                 query: {
@@ -1652,15 +1535,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1754,15 +1628,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -1780,7 +1645,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 80%; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
         get: {
             parameters: {
                 query?: never;
@@ -1837,15 +1702,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1961,15 +1817,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -2046,15 +1893,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -2158,15 +1996,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -2244,15 +2073,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -2343,15 +2163,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         post?: never;
@@ -2423,15 +2234,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -2570,15 +2372,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
                 /** @description Service Unavailable; Assistant.Provider.Unavailable */
                 503: {
                     headers: {
@@ -2699,15 +2492,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -2818,15 +2602,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -2925,15 +2700,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         post?: never;
@@ -2952,7 +2718,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         post: {
             parameters: {
                 query?: never;
@@ -3062,15 +2828,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -3086,7 +2843,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         get: {
             parameters: {
                 query?: never;
@@ -3177,20 +2934,11 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
         post?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         delete: {
             parameters: {
                 query: {
@@ -3268,15 +3016,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -3370,15 +3109,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -3460,15 +3190,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Clave write-only: keyAction keep/replace/clear; apiKey solo en replace, sin key/cipher en salidas o logs. OwnKey requiere política y Dueño activo con Email verificado utilizable. PlatformKey rechaza topes propios. Gestión Plataforma accesible sin clave de chat. */
@@ -3543,15 +3264,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -3645,15 +3357,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -3671,7 +3374,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 0,8; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Estado efectivo: apagado404; habilitado sin clave configured=false. remainingMessages=null si >10. Retención30 días salvo guardados, maxAttachmentBytes10485760/maxAttachments5. monthlyBudgetProgress siempre presente: Consumer/Platform null; Business usa costo registrado y presupuesto snapshot de la misma financiación efectiva y mes civil, sin reservas, suma de financiaciones ni recorte. NearLimit desde 80%; LimitReached desde 1. Presupuesto no aplicable/cero/null devuelve null. Sin configurar conserva precedencia y las consultas fijas siguen disponibles; State no garantiza admisión. */
         get: {
             parameters: {
                 query?: never;
@@ -3728,15 +3431,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -3852,15 +3546,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -3937,15 +3622,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4049,15 +3725,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -4135,15 +3802,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4234,15 +3892,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         post?: never;
@@ -4314,15 +3963,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4461,15 +4101,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
                 /** @description Service Unavailable; Assistant.Provider.Unavailable */
                 503: {
                     headers: {
@@ -4590,15 +4221,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -4709,15 +4331,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -4816,15 +4429,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         post?: never;
@@ -4843,7 +4447,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         post: {
             parameters: {
                 query?: never;
@@ -4953,15 +4557,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -4977,7 +4572,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         get: {
             parameters: {
                 query?: never;
@@ -5068,20 +4663,11 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
         post?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta cinco al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
         delete: {
             parameters: {
                 query: {
@@ -5159,15 +4745,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -5261,15 +4838,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -5349,15 +4917,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -5452,15 +5011,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -5565,15 +5115,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         post?: never;
@@ -5649,15 +5190,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -5748,15 +5280,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         post?: never;
@@ -5830,15 +5353,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -5927,15 +5441,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         post?: never;
@@ -6014,15 +5519,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -17449,7 +16945,8 @@ export interface components {
             /** Format: uuid */
             id: string;
             fileName: string;
-            mediaType: string;
+            /** @enum {string} */
+            mediaType: "image/png" | "image/jpeg" | "image/webp" | "application/pdf";
             /** Format: int64 */
             byteLength: number;
             /** Format: uint32 */
@@ -17540,6 +17037,11 @@ export interface components {
             title: string;
             text: string;
         };
+        AssistantInputMoney: {
+            /** Format: decimal */
+            amount: number;
+            currency: string;
+        };
         AssistantInvitationRowResponse: {
             /** Format: uuid */
             id: string;
@@ -17607,11 +17109,11 @@ export interface components {
         AssistantModelLongContextHttpRequest: {
             /** Format: int32 */
             inputTokensThreshold: number;
-            inputPricePerMillion: components["schemas"]["AssistantMoney"];
-            outputPricePerMillion: components["schemas"]["AssistantMoney"];
-            cacheWrite5MinutesPricePerMillion: components["schemas"]["AssistantMoney"];
-            cacheWrite1HourPricePerMillion: components["schemas"]["AssistantMoney"];
-            cacheReadPricePerMillion: components["schemas"]["AssistantMoney"];
+            inputPricePerMillion: components["schemas"]["AssistantInputMoney"];
+            outputPricePerMillion: components["schemas"]["AssistantInputMoney"];
+            cacheWrite5MinutesPricePerMillion: components["schemas"]["AssistantInputMoney"];
+            cacheWrite1HourPricePerMillion: components["schemas"]["AssistantInputMoney"];
+            cacheReadPricePerMillion: components["schemas"]["AssistantInputMoney"];
         };
         AssistantModelLongContextResponse: {
             /** Format: int32 */
@@ -17652,9 +17154,9 @@ export interface components {
             maxInputTokens: number;
             /** Format: int32 */
             maxOutputTokens: number;
-            cacheWrite5MinutesPricePerMillion: components["schemas"]["AssistantMoney"];
-            cacheWrite1HourPricePerMillion: components["schemas"]["AssistantMoney"];
-            cacheReadPricePerMillion: components["schemas"]["AssistantMoney"];
+            cacheWrite5MinutesPricePerMillion: components["schemas"]["AssistantInputMoney"];
+            cacheWrite1HourPricePerMillion: components["schemas"]["AssistantInputMoney"];
+            cacheReadPricePerMillion: components["schemas"]["AssistantInputMoney"];
             longContext?: null | components["schemas"]["AssistantModelLongContextHttpRequest"];
         };
         AssistantModelTechnicalResponse: {
@@ -17817,7 +17319,7 @@ export interface components {
             maxAttachmentBytes: number;
             /** Format: int32 */
             maxAttachments: number;
-            /** @description Siempre presente. Consumer/Platform null; Business con presupuesto positivo aplicable usa usedCost registrado confirmado o conservador dividido por monthlyBudget snapshot de la misma financiación efectiva y mes civil. Sin reservas, suma de financiaciones, repricing ni recorte; NearLimit desde 0,8 y LimitReached desde 1. Presupuesto cero/null/no aplicable: null, sin división por cero. Configured=false conserva precedencia; consultas fijas siguen disponibles y State no garantiza admisión. */
+            /** @description Siempre presente. Consumer/Platform null; Business con presupuesto positivo aplicable usa usedCost registrado confirmado o conservador dividido por monthlyBudget snapshot de la misma financiación efectiva y mes civil. Sin reservas, suma de financiaciones, repricing ni recorte; NearLimit desde 80% y LimitReached desde 1. Presupuesto cero/null/no aplicable: null, sin división por cero. Configured=false conserva precedencia; consultas fijas siguen disponibles y State no garantiza admisión. */
             monthlyBudgetProgress: null | components["schemas"]["AssistantBudgetProgressResponse"];
         };
         AssistantStreamHttpResponse: components["schemas"]["AssistantStreamHttpResponseAssistantStartStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantDeltaStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantToolStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantTitleStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantDoneStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantErrorStreamHttpResponse"];
@@ -17959,7 +17461,7 @@ export interface components {
             peopleCount: null | number;
             /** @description organization Platform agrupa OrganizationId + financiación histórica + mes con consumo contabilizado; costos, consultas y tokens pertenecen sólo al grupo. La organización puede tener dos filas; PlatformKey→OwnKey→PlatformKey acumula dos grupos. personal/operator PlatformKey; day/person Business null. Orden estable con desempate por fundingMode; configuración sin consumo no crea filas. */
             fundingMode: null | components["schemas"]["AssistantMode"];
-            /** @description Sólo organization Platform con presupuesto mensual positivo aplicable: costo confirmado o estimado registrado del mismo org/financiador/mes dividido por snapshot histórico reflejado en monthlyBudget, sin reservas ni Settings actuales. PlatformKey usa tope Plataforma; OwnKey su tope propio, sin sumar topes. Fracción sin recorte; NearLimit desde 0,8, LimitReached desde 1. Presupuesto cero/null y otras filas null. */
+            /** @description Sólo organization Platform con presupuesto mensual positivo aplicable: costo confirmado o estimado registrado del mismo org/financiador/mes dividido por snapshot histórico reflejado en monthlyBudget, sin reservas ni Settings actuales. PlatformKey usa tope Plataforma; OwnKey su tope propio, sin sumar topes. Fracción sin recorte; NearLimit desde 80%, LimitReached desde 1. Presupuesto cero/null y otras filas null. */
             budgetProgress: null | components["schemas"]["AssistantBudgetProgressResponse"];
         };
         /** @description Recibe los datos de la primera organización y empresa sin imprimir datos fiscales en logs. */
@@ -18146,8 +17648,8 @@ export interface components {
             name?: null | string;
             provider?: null | components["schemas"]["AssistantProvider"];
             providerModelId?: null | string;
-            inputPricePerMillion?: null | components["schemas"]["AssistantMoney"];
-            outputPricePerMillion?: null | components["schemas"]["AssistantMoney"];
+            inputPricePerMillion?: null | components["schemas"]["AssistantInputMoney"];
+            outputPricePerMillion?: null | components["schemas"]["AssistantInputMoney"];
             isActive?: null | boolean;
             technical: components["schemas"]["AssistantModelTechnicalHttpRequest"];
         };
@@ -19577,8 +19079,8 @@ export interface components {
             name?: null | string;
             provider?: null | components["schemas"]["AssistantProvider"];
             providerModelId?: null | string;
-            inputPricePerMillion?: null | components["schemas"]["AssistantMoney"];
-            outputPricePerMillion?: null | components["schemas"]["AssistantMoney"];
+            inputPricePerMillion?: null | components["schemas"]["AssistantInputMoney"];
+            outputPricePerMillion?: null | components["schemas"]["AssistantInputMoney"];
             isActive?: null | boolean;
             /** Format: uint32 */
             version?: null | number;
@@ -19619,7 +19121,7 @@ export interface components {
             effort?: null | components["schemas"]["AssistantEffort"];
             /** Format: int32 */
             dailyMessageLimit?: null | number;
-            monthlyBudget?: null | components["schemas"]["AssistantMoney"];
+            monthlyBudget?: null | components["schemas"]["AssistantInputMoney"];
             keyAction?: null | components["schemas"]["AssistantKeyAction"];
             apiKey?: null | string;
             /** Format: uint32 */
@@ -19647,7 +19149,7 @@ export interface components {
             effort?: null | components["schemas"]["AssistantEffort"];
             /** Format: int32 */
             dailyMessageLimit?: null | number;
-            monthlyOrganizationBudget?: null | components["schemas"]["AssistantMoney"];
+            monthlyOrganizationBudget?: null | components["schemas"]["AssistantInputMoney"];
             personalEnabled?: null | boolean;
             /** Format: int32 */
             retentionDays?: null | number;

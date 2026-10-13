@@ -1,3 +1,4 @@
+import { assistantAttachmentTypes } from "../lib/assistantFiles";
 import { api } from "@/shared/api/httpClient";
 import type { AssistantAttachmentSummaryResponse, AssistantUploadRequest } from "@/modules/assistant/api/types";
 import { assistantConversationPath, withAssistantQuery } from "./assistant";
@@ -17,7 +18,7 @@ export function uploadAssistantAttachment(scope: AssistantScope, id: string, req
 
 export function downloadAssistantAttachment(scope: AssistantScope, id: string, attachmentId: string, signal?: AbortSignal): Promise<Response> {
   return api.response(`${assistantConversationPath(scope, id)}/attachments/${encodeURIComponent(attachmentId)}`, {
-    method: "GET", signal, cache: "no-store", headers: { Accept: "image/png, image/jpeg, image/webp, application/pdf" },
+    method: "GET", signal, cache: "no-store", headers: { Accept: assistantAttachmentTypes.join(", ") },
   });
 }
 

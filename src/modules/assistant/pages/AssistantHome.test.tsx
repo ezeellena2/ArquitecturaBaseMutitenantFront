@@ -439,7 +439,8 @@ describe("interfaz del asistente", () => {
         const file = body.get("file") as File;
         uploads.push({ name: file.name, size: file.size, version: String(body.get("conversationVersion")), key: request.headers.get("Idempotency-Key") });
         version = 4;
-        const attachment: AssistantAttachmentSummaryResponse = { id: "png", fileName: file.name, mediaType: file.type, byteLength: file.size, version: 999 };
+        expect(file.type).toBe("image/png");
+        const attachment: AssistantAttachmentSummaryResponse = { id: "png", fileName: file.name, mediaType: "image/png", byteLength: file.size, version: 999 };
         return HttpResponse.json(attachment);
       }));
     await screen.findByRole("textbox", { name: "Tu consulta" });

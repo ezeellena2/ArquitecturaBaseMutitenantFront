@@ -3,10 +3,10 @@ import type { TFunction } from "i18next";
 import { z } from "zod";
 import type { OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse } from "@/modules/assistant/api/types";
 
-// TextLimits.Description/LongText del backend; el schema HTTP no publica maxLength.
-export const assistantDescriptionMaxLength = 500;
-export const assistantKeyMaxLength = 4000;
-const moneySchema = (t: TFunction) => z.object({ amount: z.number(), currency: z.string() }).refine((value) => value.amount >= 0 && value.amount < 1e12 && value.currency.length > 0, t("assistant:settings.validation.money"));
+export const assistantModelNameMaxLength = validationConstraints.CreateAssistantModelHttpRequest.name.maxLength;
+export const assistantProviderModelIdMaxLength = validationConstraints.CreateAssistantModelHttpRequest.providerModelId.maxLength;
+export const assistantKeyMaxLength = validationConstraints.UpdateOrganizationAssistantSettingsHttpRequest.apiKey.maxLength;
+const moneySchema = (t: TFunction) => z.object({ amount: z.number(), currency: z.string() }).refine((value) => value.amount >= validationConstraints.AssistantInputMoney.amount.minimum && value.amount < validationConstraints.AssistantInputMoney.amount.exclusiveMaximum && value.currency.length > 0, t("assistant:settings.validation.money"));
 export const assistantMoneySchema = (t: TFunction) => moneySchema(t).nullable().refine((value) => value !== null, t("assistant:settings.validation.money"));
 export function settingsSchema(t: TFunction, platform: boolean) {
   const positiveInteger = z.number().int(t("assistant:settings.validation.limit")).min(1, t("assistant:settings.validation.limit")).max(validationConstraints.UpdatePlatformAssistantSettingsHttpRequest.dailyMessageLimit.maximum, t("assistant:settings.validation.limit")).nullable();
