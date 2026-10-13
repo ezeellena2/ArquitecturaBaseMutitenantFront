@@ -46,7 +46,7 @@
 ## Lo verifica
 - `theme-tokens.test.ts` (E0)
 - `DetailGrid.test.tsx` (E5): la grilla en la compu y el rótulo encima del valor en el teléfono, con axe
-- `FilterBar.test.tsx`, `SegmentedControl.test.tsx` y `AdminPanel.test.tsx`: los filtros con «Limpiar», las dos vistas y el segundo panel
+- `FilterBar.test.tsx` (E1), `SegmentedControl.test.tsx` (E1) y `AdminPanel.test.tsx` (E3): los filtros con «Limpiar», las dos vistas y el segundo panel
 
 ## Detalle
 [frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [responsive](responsive.md) · tableros `Criterio-Marco`, `Criterio-Botones`, `Criterio-Formularios`, `Criterio-Tablas`, `Criterio-Dialogos`, `Criterio-Menus`, `Criterio-Avisos` y `Criterio-Decisiones`.
