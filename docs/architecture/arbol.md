@@ -118,10 +118,14 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │       ├── components/
     │       ├── hooks/
     │       ├── lib/
+    │       ├── locales/  textos y enums propios, aportados por registration.ts
+    │       │   ├── en/
+    │       │   └── es/
     │       ├── pages/
     │       ├── policy/
     │       ├── runtime/
     │       ├── settings/
+    │       ├── test/  fixtures de pruebas y galería; registro sólo en DEV
     │       └── usage/
     ├── shared/
     │   ├── account/  lo de la cuenta que usan varias áreas (ADR 0033)
