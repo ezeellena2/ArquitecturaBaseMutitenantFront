@@ -5,6 +5,54 @@ import path from "node:path";
 import * as environment from "./recorrido-usuario-entorno.mjs";
 
 const temporaryRoot = path.resolve(import.meta.dirname, "../.local");
+
+test("el arranque del Front espera el escaneo frío y reintenta transporte y HTTP no listo", async () => {
+  let instant = 0;
+  const requestTimeouts = [];
+  await environment.waitForFront({
+    now: () => instant,
+    sleep: async (milliseconds) => { instant += milliseconds; },
+    request: async (timeout) => {
+      requestTimeouts.push(timeout);
+      instant += timeout;
+      if (requestTimeouts.length === 2) return 503;
+      if (instant < 96_000) throw new Error("El socket todavía no responde.");
+      return 200;
+    },
+  });
+  assert.ok(instant > 30_000 && instant < 180_000);
+  assert.equal(requestTimeouts.length, 19);
+  assert.ok(requestTimeouts.every((timeout) => timeout === 5_000));
+});
+
+test("el plazo de arranque del Front limita el último pedido y omite errores privados", async () => {
+  let instant = 0;
+  const requests = [];
+  const sleeps = [];
+  await assert.rejects(environment.waitForFront({
+    timeout: 1_000,
+    now: () => instant,
+    sleep: async (milliseconds) => { sleeps.push(milliseconds); instant += milliseconds; },
+    request: async (timeout) => {
+      requests.push(timeout);
+      instant += Math.min(400, timeout);
+      throw new Error("ticket privado 123456");
+    },
+  }), (error) => /Front.*arranque/.test(error.message) && !error.message.includes("123456"));
+  assert.deepEqual(requests, [1_000, 350]);
+  assert.deepEqual(sleeps, [250]);
+  assert.equal(instant, 1_000);
+});
+
+test("el plazo de arranque no acepta un HTTP 200 que llega después del vencimiento", async () => {
+  let instant = 0;
+  await assert.rejects(environment.waitForFront({
+    timeout: 1_000,
+    now: () => instant,
+    sleep: async () => assert.fail("El plazo ya terminó."),
+    request: async () => { instant = 1_001; return 200; },
+  }), /Front.*arranque/);
+});
 async function workspace(t) {
   const directory = await mkdtemp(path.join(temporaryRoot, "arquitecturabase-recorrido-ipc-"));
   t.after(async () => {

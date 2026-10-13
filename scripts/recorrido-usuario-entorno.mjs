@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { get } from "node:https";
 import { execFile } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdtemp, readdir, readFile, rename, rm, unlink, writeFile } from "node:fs/promises";
@@ -31,6 +32,30 @@ async function waitFile(file, timeout = 240_000) {
     await delay(250);
   }
   throw new Error("El preparador aislado no completó la orden local.");
+}
+
+function frontStatus(timeout) {
+  return new Promise((resolve, reject) => {
+    const request = get(new URL("alive", baseUrl), {
+      // Certificado de desarrollo del AppHost aislado.
+      rejectUnauthorized: false, signal: AbortSignal.timeout(timeout),
+    }, (response) => { response.resume(); resolve(response.statusCode); });
+    request.once("error", reject);
+  });
+}
+
+/** La Api lista no implica que el optimizador de Vite haya terminado el arranque. */
+export async function waitForFront({ timeout = 180_000, request = frontStatus, now = Date.now, sleep = delay } = {}) {
+  const deadline = now() + timeout;
+  while (now() < deadline) {
+    let status;
+    try { status = await request(Math.min(5_000, deadline - now())); }
+    catch { status = 0; }
+    if (status === 200 && now() <= deadline) return;
+    const remaining = deadline - now();
+    if (remaining > 0) await sleep(Math.min(250, remaining));
+  }
+  throw new Error("El Front aislado no respondió durante el plazo de arranque.");
 }
 
 /** IPC publicado por Back: una orden local, respuesta atómica y pruebas sólo en memoria. */
@@ -115,6 +140,7 @@ export async function createEnvironment({ build = true } = {}) {
       MT_E2E_PICKUP_DIR: directory, MT_E2E_READY_FILE: readyFile,
     });
     await waitFile(readyFile);
+    await waitForFront();
     const files = async () => (await readdir(directory)).filter((name) => name.endsWith(".eml"));
     const messages = async (email, before) => {
       const items = [];
