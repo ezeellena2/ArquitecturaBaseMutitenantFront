@@ -37,12 +37,19 @@ const OrganizationUsage = lazy(() => import("./usage/OrganizationAssistantUsageP
 const PlatformUsage = lazy(() => import("./usage/PlatformAssistantUsagePage").then((module) => ({ default: module.PlatformAssistantUsagePage })));
 const settingsNavigation = { labelKey: "assistant:settings.title", icon: Sparkles, placement: "administration" as const, section: { labelKey: "assistant:title", icon: Sparkles } };
 
+// El arnés pide los fixtures; el optimizador de la app no necesita recorrer sus dependencias.
+const loadFixtures = async () => {
+  const fixturePath = "./test/etapa8bVisualFixtures.ts";
+  const fixtures: typeof import("./test/etapa8bVisualFixtures") = await import(/* @vite-ignore */ fixturePath);
+  return {
+    scenario: (board: string, state: string) => fixtures.chatScenario(board, state) ?? fixtures.configurationScenario(board, state) ?? fixtures.usageScenario(board, state),
+  };
+};
+
 export const assistantRegistration: ModuleRegistration = {
   id: "assistant",
   resources: { es: { assistant: es, enums: esEnums }, en: { assistant: en, enums: enEnums } },
-  fixtures: import.meta.env.DEV ? () => import("./test/etapa8bVisualFixtures").then((fixtures) => ({
-    scenario: (board, state) => fixtures.chatScenario(board, state) ?? fixtures.configurationScenario(board, state) ?? fixtures.usageScenario(board, state),
-  })) : undefined,
+  fixtures: import.meta.env.DEV ? loadFixtures : undefined,
   permissions: {
     organization: ["assistant.use", "assistant.configure"],
     platform: ["platform.assistant.use", "platform.assistant.configure", "platform.assistant.read"],

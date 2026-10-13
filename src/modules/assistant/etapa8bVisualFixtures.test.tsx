@@ -16,6 +16,7 @@ import { galleryImage, galleryPdf, galleryPdfTooLarge, galleryUploadBytes } from
 import type { AssistantAttachmentSummaryResponse, AssistantConversationResponse, AssistantStreamHttpResponse } from "@/modules/assistant/api/types";
 import { chatScenario, configurationScenario, galleryConversation, galleryMe, galleryMonthlyLimitProbe, galleryOpenStreamProbe, galleryStream, galleryStreamEvents, usageScenario, type GalleryApp } from "@/modules/assistant/test/etapa8bVisualFixtures";
 import type { AssistantTurnState } from "@/modules/assistant/runtime/assistantTurnState";
+import { assistantRegistration } from "@/modules/assistant/registration";
 
 beforeAll(async () => { await import("@/modules/assistant/settings/OrganizationAssistantSettingsPage"); await import("@/modules/assistant/settings/PlatformAssistantSettingsPage"); await import("@/modules/assistant/pages/RegisteredAssistant"); await import("@/modules/assistant/usage/OrganizationAssistantUsagePage"); await import("@/modules/assistant/usage/PlatformAssistantUsagePage"); });
 beforeEach(() => { Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = vi.fn(() => "blob:gallery-fixture"); URL.revokeObjectURL = vi.fn(); });
@@ -407,7 +408,8 @@ it.each(["Asistente-Org", "M-Asistente-Personal"])("%s conserva adjuntos en el c
 });
 
 it("la escena de PDF excesivo conserva ambos adjuntos y la alerta nombrada sin subirlos", async () => {
-  const app = chatScenario("Asistente-Org", "Adjunto de más de 10 MB")!; const mounted = mount(app);
+  const fixtures = await assistantRegistration.fixtures!();
+  const app = fixtures.scenario("Asistente-Org", "Adjunto de más de 10 MB") as GalleryApp; const mounted = mount(app);
   await actions(app, mounted.user);
   expect(screen.getByRole("alert")).toHaveTextContent("planilla-ventas.pdf pesa más de 10,5 MB.");
   expect(screen.getByRole("button", { name: "Quitar captura-usuarios.png" })).toBeVisible();
