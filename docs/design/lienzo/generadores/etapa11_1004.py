@@ -548,13 +548,13 @@ def chats_compu():
     t = sumar_estado(t, "Lo tomó otra persona", [(bandeja, b_st), (hilo, h_st), ("5 conversaciones · 2 sin tomar", "5 conversaciones · 1 sin tomar")], encima=toast)
 
     # Número desconectado (D7): sus chats quedan para leer.
-    h_desc = ('<div class="w-hilo">' + cab_hilo("CR", "Carla Ruiz", "+54 9 351 555-0731 · Delta Sur S.R.L.", pasar=False) + '<div class="w-msjs">'
+    h_desc = ('<div class="w-hilo">' + cab_hilo("CR", "Carla Ruiz", "+54 9 11 5555-1146 · Delta Sur S.R.L.", pasar=False) + '<div class="w-msjs">'
               + hilo_msjs(CARLA) + "</div>" + escr_estado('<span class="w-est off">Número desconectado</span>', nota=False) + "</div>")
     t = sumar_estado(t, "Número desconectado", [(bandeja, seleccionar(bandeja, "CR")), (hilo, h_desc)], encima="")
     t = sumar_estado(t, "Número desconectado · qué significa", [(bandeja, seleccionar(bandeja, "CR")), (hilo, h_desc)], encima=aviso(*AVISO_DESC))
 
     # Sin medio de pago y pasado el tope (WhatsApp.Conversation.PaymentRequired).
-    h_pago = ('<div class="w-hilo">' + cab_hilo("CR", "Carla Ruiz", "+54 9 351 555-0731 · Delta Sur S.R.L.") + '<div class="w-msjs">'
+    h_pago = ('<div class="w-hilo">' + cab_hilo("CR", "Carla Ruiz", "+54 9 11 5555-1146 · Delta Sur S.R.L.") + '<div class="w-msjs">'
               + hilo_msjs(CARLA_PAGO) + "</div>" + escr_estado('<span class="w-est mal">Sin medio de pago</span>', mal=True) + "</div>")
     fila_cr = filas["CR"].replace("<span>Vos: Te esperamos.</span>", "<span>¿Me lo pueden mandar por moto?</span>")
     b_pago = seleccionar(bandeja, "CR", fila_cr)
@@ -713,6 +713,204 @@ def datos():
              else t.replace("+54 9 11 5555-4521", "+54 9 11 5555-7310"))
         if n != t:
             escribir(nombre, n)
+    # Cada contacto con su número: Javier Pereyra (el de los chats) y Carla Ruiz (el de Contactos).
+    for nombre in ("WA-Contactos", "WA-Contactos-Importar", "M-WA-Contactos", "M-WA-Contactos-Importar", "WA-Chats"):
+        t = leer(nombre)
+        n = t.replace("+54 9 11 5555-7310 · Vinculado", "+54 9 11 5555-3388 · Vinculado").replace("+54 9 351 555-0731 · Delta Sur", "+54 9 11 5555-1146 · Delta Sur")
+        if n != t:
+            escribir(nombre, n)
+    # Las difusiones van solo a quienes aceptan: Federico Díaz y Sergio Gómez no aceptan, así que no figuran entre los destinatarios.
+    for nombre in ("WA-Difusion-Resultados", "M-WA-Difusion-Resultados"):
+        t = leer(nombre)
+        n = (t.replace("Federico Díaz", "Lucas Benítez").replace("+54 9 11 5555-2087", "+54 9 11 5555-4410")
+             .replace("Sergio Gómez", "Valeria Sosa").replace("+54 9 11 5555-9021", "+54 9 11 5555-6120")
+             .replace('<span class="w-av">FD</span>', '<span class="w-av">LB</span>').replace('<span class="w-av">SG</span>', '<span class="w-av">VS</span>'))
+        if n != t:
+            escribir(nombre, n)
+    # La lista de contactos con los totales que usan las difusiones (312 aceptan) y su primera página completa.
+    extra = [("Lucas Benítez", "+54 9 11 5555-4410", "Minorista", "", "Acepta", "25/09/2026"),
+             ("Valeria Sosa", "+54 9 11 5555-6120", "Minorista", "", "Acepta", "25/09/2026"),
+             ("Diego Romero", "+54 9 11 5555-8834", "", " off", "Sin respuesta", "24/09/2026")]
+    for nombre in ("WA-Contactos", "WA-Contactos-Importar"):
+        t = leer(nombre)
+        if "486 contactos" in t:
+            continue
+        t = rep(t, "7 contactos · 3 aceptan promociones", "486 contactos · 312 aceptan promociones")
+        filas = "".join(f'<div class="w-tr k"><span class="dos"><b>{n}</b><span>{tel}</span></span><span>{et or GUION}</span>'
+                        f'<span><span class="w-est{c}">{p}</span></span><span>{f}</span><span style="display: flex; justify-content: flex-end;">'
+                        f'<button type="button" class="ib" aria-label="Acciones de {n}">{PUNTOS}</button></span></div>' for n, tel, et, c, p, f in extra)
+        t = rep(t, '<div class="w-pie"><span>1–7 de 7</span><span>10 por página · Página 1 de 1</span></div>',
+                filas + '<div class="w-pie"><span>1–10 de 486</span><span>10 por página · Página 1 de 49</span></div>')
+        escribir(nombre, t)
+    # «Horario de fiestas» es la que se arma en Nueva difusión: Mayorista, 48 contactos.
+    for nombre, viejo, nuevo in (("WA-Difusiones", '<b style="font-weight: 400;">Todos los que aceptan</b><span>312 contactos</span>',
+                                  '<b style="font-weight: 400;">Mayorista</b><span>48 contactos</span>'),
+                                 ("M-WA-Difusiones", "Aviso de horario · Los que aceptan · 312 contactos", "Aviso de horario · Mayorista · 48 contactos")):
+        t = leer(nombre)
+        if viejo in t:
+            escribir(nombre, t.replace(viejo, nuevo))
+
+
+GUION = '<span style="color: var(--t3);">—</span>'
+
+# ---------------------------------------------------------------- Contactos: editar, sin vínculo e importar con filas rechazadas
+
+CSS_FICHA = """.e11-dg { display: grid; grid-template-columns: 160px minmax(0, 1fr); border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; grid-column: 1 / -1; font-size: 13px; }
+.e11-dg > span { padding: 9px 12px; border-top: 1px solid var(--borde); line-height: 1.4; }
+.e11-dg > span:nth-child(-n+2) { border-top: 0; }
+.e11-dg > span:nth-child(odd) { background: oklch(0.97 0.012 76); color: var(--t2); font-weight: 500; }
+.e11-dg .mal { color: oklch(0.5 0.19 25); }
+.e11-solo { font-size: 13.5px; min-height: 36px; display: flex; align-items: center; }
+.e11-seg { display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); }
+.e11-seg span { height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--t2); }
+.e11-seg span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
+.f-toast.ok { border-color: var(--borde); }
+.f-toast .ok { color: oklch(0.55 0.13 155); display: inline-flex; }
+.w-dlg.e11-ancho { width: 600px; }
+"""
+CSS_FICHA_TEL = """.e11-dg { display: flex; flex-direction: column; border: 1px solid var(--borde); border-radius: 14px; overflow: hidden; font-size: 15px; }
+.e11-dg > div { display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; }
+.e11-dg > div + div { border-top: 1px solid var(--borde); }
+.e11-dg > div > span:first-child { font-size: 13px; font-weight: 600; color: var(--t2); }
+.e11-dg .mal { color: oklch(0.5 0.19 25); }
+.e11-solo { font-size: 16px; min-height: 28px; display: flex; align-items: center; }
+.e11-seg { display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; gap: 3px; padding: 3px; border-radius: 12px; background: var(--s3); }
+.e11-seg span { height: 40px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; font-size: 14.5px; font-weight: 600; color: var(--t2); }
+.e11-seg span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
+.f-snack .ok { color: oklch(0.78 0.14 155); display: inline-flex; }
+"""
+OK = _svg('<circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/>')
+RECHAZADAS = [("Fila 12", "«11 5555» no es un teléfono"), ("Fila 27", "Falta el teléfono"), ("Fila 33", "El teléfono está repetido en el archivo")]
+
+
+def dg(filas):
+    return '<div class="e11-dg">' + "".join(f"<span>{a}</span><span>{b}</span>" for a, b in filas) + "</div>"
+
+
+def dg_tel(filas):
+    return '<div class="e11-dg">' + "".join(f"<div><span>{a}</span><span>{b}</span></div>" for a, b in filas) + "</div>"
+
+
+def seg(opciones, on):
+    return '<div class="e11-seg" role="radiogroup">' + "".join(
+        (f'<span class="on" role="radio" aria-checked="true">{o}</span>' if o == on else f'<span role="radio" aria-checked="false">{o}</span>') for o in opciones) + "</div>"
+
+
+def contactos():
+    pie = '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Guardar cambios</button>'
+    promos = ["Acepta", "No acepta", "Sin respuesta"]
+    t = leer("WA-Contacto")
+    if not ya(t):
+        t = estados_compu(t, "Ficha")
+        cuerpo = (campo("Nombre", "Martina López", select=False, ancho=False)
+                  + '<div class="w-cmp"><span class="rt">Teléfono</span><span class="e11-solo">+54 9 11 5555-7310</span></div>'
+                  + campo("Etiquetas", "Mayorista", req=False) + '<div class="w-cmp" style="grid-column: 1 / -1;"><span class="rt">Promociones</span>'
+                  + seg(promos, "Acepta") + "</div>")
+        t = sumar_estado(t, "Editar contacto", encima=dlg("Editar contacto", cuerpo, pie, chico=False, una=False))
+        t = sumar_estado(t, "Sin vínculo", [("+54 9 11 5555-7310 · Vinculada a su cuenta · Mayorista", "+54 9 11 5555-7310 · Mayorista")], encima="")
+        escribir("WA-Contacto", marcar(t, MARCA, CSS_COMPU + CSS_FICHA))
+
+    t = leer("M-WA-Contacto")
+    if not ya(t):
+        t = con_estados_pantalla(t, "Ficha")
+        cuerpo = (campo_tel("Nombre", "Martina López", select=False)
+                  + '<div class="ap-cmp"><span class="rt"><span>Teléfono</span></span><span class="e11-solo">+54 9 11 5555-7310</span></div>'
+                  + campo_tel("Etiquetas", "Mayorista", req=False) + '<div class="ap-cmp"><span class="rt"><span>Promociones</span></span>' + seg(promos, "Acepta") + "</div>")
+        t = sumar_estado_tel(t, "Editar contacto", al_final=hoja("Editar contacto", cuerpo,
+                             '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Guardar</button>'))
+        t = sumar_estado_tel(t, "Sin vínculo", [("+54 9 11 5555-7310 · Vinculada a su cuenta<br>", "+54 9 11 5555-7310<br>")])
+        escribir("M-WA-Contacto", marcar(t, MARCA, CSS_TEL + CSS_FICHA_TEL))
+
+    # Importar: la vista previa (CC05) muestra lo que entra y lo que no, antes de guardar.
+    resumen = [("Para importar", "48 contactos: 41 nuevos y 7 que ya estaban"), ("No se importan", '<span class="mal">3 filas</span>')] + RECHAZADAS
+    t = leer("WA-Contactos-Importar")
+    if not ya(t):
+        t = estados_compu(t, "Archivo elegido")
+        a, b = bloques(t, "e0")[1]
+        encima = t[a:b][t[a:b].index(">") + 1:-len("</sc-if>")]
+        etiqueta = div_en(encima, '<div class="w-cmp" style="grid-column: 1 / -1;"><span class="rt">Etiqueta para todos</span>')
+        revisar = encima.replace(etiqueta, etiqueta + dg(resumen)).replace('<div class="w-dlg" role="dialog"', '<div class="w-dlg e11-ancho" role="dialog"', 1)
+        t = sumar_estado(t, "Con filas que no entran", encima=revisar)
+        toast = f'<div class="f-toast ok" role="status"><span class="ok">{OK}</span><span>Importamos 48 contactos.</span></div>'
+        t = sumar_estado(t, "Importado", encima=toast)
+        escribir("WA-Contactos-Importar", marcar(t, MARCA, CSS_COMPU + CSS_FICHA))
+
+    t = leer("M-WA-Contactos-Importar")
+    if not ya(t):
+        t = con_estados_pantalla(t, "Archivo elegido")
+        h = div_en(t, '<div class="ap-hoja"')
+        etiqueta = div_en(h, '<div class="ap-cmp"><span class="rt"><span>Etiqueta para todos</span>')
+        t = sumar_estado_tel(t, "Con filas que no entran", [(etiqueta, etiqueta + dg_tel(resumen))])
+        snack = f'<div class="f-snack" role="status"><span class="ok">{OK}</span><span class="tx">Importamos 48 contactos.</span></div>'
+        velo = '<div class="ap-velo"></div>'
+        t = sumar_estado_tel(t, "Importado", [(velo, ""), (h, snack)])
+        escribir("M-WA-Contactos-Importar", marcar(t, MARCA, CSS_TEL + CSS_FICHA_TEL))
+
+
+# ---------------------------------------------------------------- Difusiones: programar con la zona, cancelar una programada y «Por qué no llegó»
+
+AVISO_NO_LLEGO = ("No le llegó a +54 9 11 5555-6650", "Ese número no tiene WhatsApp", "Meta lo informó el 25/09/2026 a las 09:30",
+                  ["Revisá el número con la persona", "Si cambió de número, importala de nuevo con el número nuevo"])
+PROGRAMAR = [("Plantilla", "Aviso de horario · Marketing"), ("Destinatarios", "48 contactos con la etiqueta «Mayorista» que aceptan promociones"),
+             ("Cuándo", "20/12/2026 a las 09:00, hora de Buenos Aires (GMT−3)"), ("Costo estimado", "US$ 2,97")]
+CANCELAR_TXT = '<p class="e11-tx">No se va a mandar a los 48 contactos. Podés duplicarla para programarla de nuevo.</p>'
+CANCELAR_PIE = '<button type="button" class="cb cb-sec">Volver</button><button type="button" class="cb cb-pel lleno">Cancelar difusión</button>'
+
+
+def difusiones():
+    t = leer("WA-Difusiones")
+    if not ya(t):
+        t = estados_compu(t, "Lista")
+        menu = ('<div class="o-menu" role="menu" aria-label="Acciones de Horario de fiestas" style="top: 354px; right: 34px;">'
+                '<span class="it" role="menuitem">Duplicar</span><div class="sep2" role="separator"></div><span class="it pel" role="menuitem">Cancelar difusión</span></div>')
+        t = sumar_estado(t, "Menú de la programada", encima=menu)
+        t = sumar_estado(t, "Cancelar difusión", encima=dlg("¿Cancelar «Horario de fiestas»?", CANCELAR_TXT, CANCELAR_PIE, cerrar=False))
+        t = sumar_estado(t, "Cancelada", [('<span class="w-est prog">Programada</span>', '<span class="w-est off">Cancelada</span>'),
+                                          ("3 difusiones · 1 programada", "3 difusiones")], encima="")
+        escribir("WA-Difusiones", marcar(t, MARCA, CSS_COMPU))
+
+    t = leer("M-WA-Difusiones")
+    if not ya(t):
+        t = con_estados_pantalla(t, "Lista")
+        acciones = ('<div class="ap-velo"></div><div class="ap-hoja" role="dialog" aria-label="Horario de fiestas"><span class="asa"></span>'
+                    f'<div class="hc"><h2>Horario de fiestas</h2><button type="button" class="ap-ib" aria-label="Cerrar">{CERRAR_TEL}</button></div>'
+                    '<div class="hb"><div class="ap-op" role="menuitem">Duplicar</div>'
+                    '<div class="ap-op" role="menuitem" style="color: oklch(0.52 0.19 25);">Cancelar difusión</div></div></div>')
+        t = sumar_estado_tel(t, "Acciones de la programada", al_final=acciones)
+        t = sumar_estado_tel(t, "Cancelar difusión", al_final=hoja("¿Cancelar «Horario de fiestas»?", CANCELAR_TXT, CANCELAR_PIE, cerrar=False))
+        t = sumar_estado_tel(t, "Cancelada", [('<span class="w-est prog">Programada</span>', '<span class="w-est off">Cancelada</span>')])
+        escribir("M-WA-Difusiones", marcar(t, MARCA, CSS_TEL + CSS_OPS_TEL))
+
+    t = leer("WA-Difusion-Nueva")
+    if not ya(t):
+        t = estados_compu(t, "Borrador")
+        t = sumar_estado(t, "Confirmar la programación", encima=dlg("¿Programar «Horario de fiestas»?", dg(PROGRAMAR),
+                         '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Programar</button>', chico=False))
+        escribir("WA-Difusion-Nueva", marcar(t, MARCA, CSS_COMPU + CSS_FICHA))
+    t = leer("M-WA-Difusion-Nueva")
+    if not ya(t):
+        t = con_estados_pantalla(t, "Borrador")
+        t = sumar_estado_tel(t, "Confirmar la programación", al_final=hoja("¿Programar «Horario de fiestas»?", dg_tel(PROGRAMAR),
+                             '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Programar</button>'))
+        escribir("M-WA-Difusion-Nueva", marcar(t, MARCA, CSS_TEL + CSS_FICHA_TEL))
+
+    t = leer("WA-Difusion-Resultados")
+    if not ya(t):
+        t = estados_compu(t, "Resultados")
+        t = sumar_estado(t, "Por qué no llegó", encima=aviso(*AVISO_NO_LLEGO))
+        escribir("WA-Difusion-Resultados", marcar(t, MARCA, CSS_COMPU))
+    t = leer("M-WA-Difusion-Resultados")
+    if not ya(t):
+        # El resumen no filtra como si fueran pestañas (regla del 13/10): los filtros van en el botón «Filtros» de la barra.
+        filtros = re.search(r'<button type="button" class="ap-ib" aria-label="Filtros">.*?</button>', leer("M-WA-Chats"), flags=re.S).group(0)
+        t = rep(t, '<div class="ap-chips" role="tablist" aria-label="Filtrar por estado"><span class="on" role="tab">',
+                '<div class="ap-chips e11-res" role="list" aria-label="Resultados"><span role="listitem">')
+        t = t.replace('<span role="tab">', '<span role="listitem">')
+        t = rep(t, '<button type="button" class="ap-ib" aria-label="Buscar">', filtros + '<button type="button" class="ap-ib" aria-label="Buscar">')
+        t = con_estados_pantalla(t, "Resultados")
+        t = sumar_estado_tel(t, "Por qué no llegó", al_final=aviso_tel(*AVISO_NO_LLEGO))
+        escribir("M-WA-Difusion-Resultados", marcar(t, MARCA, CSS_TEL + ".ap-chips.e11-res span { background: #fff; border-color: var(--borde); color: var(--t1); }\n"
+                                                    ".ap-chips.e11-res span i { color: var(--t3); }\n"))
 
 
 # ---------------------------------------------------------------- Bot: editar las respuestas, elegir el número, tope de 10 y «Además»
@@ -907,3 +1105,5 @@ if __name__ == "__main__":
     plantilla_elegir()
     bot_estados()
     equipos_plantillas()
+    contactos()
+    difusiones()
