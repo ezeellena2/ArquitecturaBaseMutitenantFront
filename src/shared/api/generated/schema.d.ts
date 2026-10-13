@@ -26,9 +26,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["PagedResultOfWhatsAppBroadcastResponse"];
-                        "application/json": components["schemas"]["PagedResultOfWhatsAppBroadcastResponse"];
-                        "text/json": components["schemas"]["PagedResultOfWhatsAppBroadcastResponse"];
+                        "text/plain": components["schemas"]["WhatsAppBroadcastListResponse"];
+                        "application/json": components["schemas"]["WhatsAppBroadcastListResponse"];
+                        "text/json": components["schemas"]["WhatsAppBroadcastListResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -174,6 +174,180 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/whatsapp/broadcasts/template-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PagedResultOfWhatsAppTemplateOptionResponse"];
+                        "application/json": components["schemas"]["PagedResultOfWhatsAppTemplateOptionResponse"];
+                        "text/json": components["schemas"]["PagedResultOfWhatsAppTemplateOptionResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/whatsapp/broadcasts/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PagedResultOfstring"];
+                        "application/json": components["schemas"]["PagedResultOfstring"];
+                        "text/json": components["schemas"]["PagedResultOfstring"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1148,6 +1322,105 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organization/whatsapp/contacts/import/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        File?: components["schemas"]["IFormFile"];
+                        Tag?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WhatsAppImportPreviewResponse"];
+                        "application/json": components["schemas"]["WhatsAppImportPreviewResponse"];
+                        "text/json": components["schemas"]["WhatsAppImportPreviewResponse"];
+                    };
+                };
+                /** @description Bad Request; WhatsApp.Import.InvalidFile; WhatsApp.Import.TooManyRows */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organization/whatsapp/contacts/import": {
         parameters: {
             query?: never;
@@ -2055,6 +2328,184 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organization/whatsapp/customers/conversations/{id}/transfer-options/teams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PagedResultOfWhatsAppTransferTeamResponse"];
+                        "application/json": components["schemas"]["PagedResultOfWhatsAppTransferTeamResponse"];
+                        "text/json": components["schemas"]["PagedResultOfWhatsAppTransferTeamResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; WhatsApp.Team.NotFound; WhatsApp.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/whatsapp/customers/conversations/{id}/transfer-options/people": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PagedResultOfWhatsAppTransferPersonResponse"];
+                        "application/json": components["schemas"]["PagedResultOfWhatsAppTransferPersonResponse"];
+                        "text/json": components["schemas"]["PagedResultOfWhatsAppTransferPersonResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; WhatsApp.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organization/whatsapp/internal/conversations": {
         parameters: {
             query?: never;
@@ -2842,6 +3293,184 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organization/whatsapp/internal/conversations/{id}/transfer-options/teams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PagedResultOfWhatsAppTransferTeamResponse"];
+                        "application/json": components["schemas"]["PagedResultOfWhatsAppTransferTeamResponse"];
+                        "text/json": components["schemas"]["PagedResultOfWhatsAppTransferTeamResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; WhatsApp.Team.NotFound; WhatsApp.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/whatsapp/internal/conversations/{id}/transfer-options/people": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PagedResultOfWhatsAppTransferPersonResponse"];
+                        "application/json": components["schemas"]["PagedResultOfWhatsAppTransferPersonResponse"];
+                        "text/json": components["schemas"]["PagedResultOfWhatsAppTransferPersonResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; WhatsApp.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/whatsapp/conversations": {
         parameters: {
             query?: never;
@@ -3623,6 +4252,184 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/whatsapp/conversations/{id}/transfer-options/teams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PagedResultOfWhatsAppTransferTeamResponse"];
+                        "application/json": components["schemas"]["PagedResultOfWhatsAppTransferTeamResponse"];
+                        "text/json": components["schemas"]["PagedResultOfWhatsAppTransferTeamResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; WhatsApp.Team.NotFound; WhatsApp.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/whatsapp/conversations/{id}/transfer-options/people": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PagedResultOfWhatsAppTransferPersonResponse"];
+                        "application/json": components["schemas"]["PagedResultOfWhatsAppTransferPersonResponse"];
+                        "text/json": components["schemas"]["PagedResultOfWhatsAppTransferPersonResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; WhatsApp.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -4560,9 +5367,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["PagedResultOfWhatsAppTemplateResponse"];
-                        "application/json": components["schemas"]["PagedResultOfWhatsAppTemplateResponse"];
-                        "text/json": components["schemas"]["PagedResultOfWhatsAppTemplateResponse"];
+                        "text/plain": components["schemas"]["WhatsAppTemplateListResponse"];
+                        "application/json": components["schemas"]["WhatsAppTemplateListResponse"];
+                        "text/json": components["schemas"]["WhatsAppTemplateListResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -5010,9 +5817,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["PagedResultOfWhatsAppTemplateResponse"];
-                        "application/json": components["schemas"]["PagedResultOfWhatsAppTemplateResponse"];
-                        "text/json": components["schemas"]["PagedResultOfWhatsAppTemplateResponse"];
+                        "text/plain": components["schemas"]["WhatsAppTemplateListResponse"];
+                        "application/json": components["schemas"]["WhatsAppTemplateListResponse"];
+                        "text/json": components["schemas"]["WhatsAppTemplateListResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -5431,6 +6238,80 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organization/whatsapp/untaken": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WhatsAppUntakenResponse"];
+                        "application/json": components["schemas"]["WhatsAppUntakenResponse"];
+                        "text/json": components["schemas"]["WhatsAppUntakenResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/me/whatsapp/conversations": {
         parameters: {
             query?: never;
@@ -5606,7 +6487,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/me/whatsapp/links/{id}": {
+    "/api/me/whatsapp/conversations/{id}/link": {
         parameters: {
             query?: never;
             header?: never;
@@ -24884,6 +25765,12 @@ export interface components {
             /** Format: int32 */
             total: number;
         };
+        /** @description La tarjeta de un módulo prendido (por ejemplo «WhatsApp · 2 números»): el front arma el texto con la clave. */
+        HomeModuleCard: {
+            key: string;
+            /** Format: int32 */
+            total: number;
+        };
         /** @description Una tarjeta por área, con su dato real; `null` si quien mira no tiene el permiso del área. */
         HomeOrganizationSummary: {
             users?: null | components["schemas"]["HomeCount"];
@@ -24907,6 +25794,7 @@ export interface components {
             companies: components["schemas"]["HomeCompanyCard"][];
             pending: components["schemas"]["PendingItem"][];
             pendingGroups?: null | components["schemas"]["PendingGroup"][];
+            moduleCards?: null | components["schemas"]["HomeModuleCard"][];
         };
         /** @description El dominio de correo de la organización; `null` si no tiene. */
         HomeSettings: {
@@ -25650,6 +26538,34 @@ export interface components {
         /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
         PagedResultOfWhatsAppTemplateResponse: {
             items: components["schemas"]["WhatsAppTemplateResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfWhatsAppTransferPersonResponse: {
+            items: components["schemas"]["WhatsAppTransferPersonResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfWhatsAppTransferTeamResponse: {
+            items: components["schemas"]["WhatsAppTransferTeamResponse"][];
             /** Format: int32 */
             page: number;
             /** Format: int32 */
@@ -26741,6 +27657,11 @@ export interface components {
             recipients: number;
             estimatedCost: components["schemas"]["Money"];
         };
+        WhatsAppBroadcastListResponse: {
+            broadcasts: components["schemas"]["PagedResultOfWhatsAppBroadcastResponse"];
+            /** Format: int32 */
+            scheduled: number;
+        };
         WhatsAppBroadcastResponse: {
             /** Format: uuid */
             id: string;
@@ -26857,8 +27778,11 @@ export interface components {
             /** Format: uuid */
             id: string;
             inbox?: null | components["schemas"]["WhatsAppInbox"];
+            /** Format: uuid */
+            contactId?: null | string;
             contactName?: null | string;
             displayNumber: string;
+            tags: string[];
             lastMessagePreview?: null | string;
             /** Format: date-time */
             lastMessageAtUtc: string;
@@ -26873,6 +27797,16 @@ export interface components {
             accountId?: null | string;
             /** Format: uint32 */
             version: number;
+        };
+        /** @description Lo que haría la importación, sin guardar: filas nuevas, actualizadas y rechazadas. */
+        WhatsAppImportPreviewResponse: {
+            /** Format: int32 */
+            rows: number;
+            /** Format: int32 */
+            new: number;
+            /** Format: int32 */
+            updated: number;
+            rejected: components["schemas"]["PagedResultOfWhatsAppImportRejectionResponse"];
         };
         WhatsAppImportRejectionResponse: {
             /** Format: int32 */
@@ -26892,8 +27826,11 @@ export interface components {
         WhatsAppMediaKind: "Image" | "Audio" | "Video" | "Document" | "Sticker" | "Location" | "Other" | null;
         /** @enum {string} */
         WhatsAppMessageDirection: "Inbound" | "Outbound";
+        /** @description La lista de números, cuántos no tienen medio de pago y los datos del alta. */
         WhatsAppNumberListResponse: {
             numbers: components["schemas"]["PagedResultOfWhatsAppNumberResponse"];
+            /** Format: int32 */
+            paymentMissing: number;
             signup?: null | components["schemas"]["WhatsAppSignupConfigResponse"];
         };
         /** @description Un número conectado. El cupo gratis es de mensajes de servicio entregados en el mes de la cuenta de Meta. */
@@ -27002,11 +27939,17 @@ export interface components {
         WhatsAppTemplateCategory: "Utility" | "Marketing" | "Authentication";
         /** @enum {null|string} */
         WhatsAppTemplateGroup: "Consultations" | "System" | null;
+        WhatsAppTemplateListResponse: {
+            templates: components["schemas"]["PagedResultOfWhatsAppTemplateResponse"];
+            /** Format: int32 */
+            approved: number;
+        };
         WhatsAppTemplateOptionResponse: {
             /** Format: uuid */
             templateId: string;
             name: string;
             category: components["schemas"]["WhatsAppTemplateCategory"];
+            body: string;
             variables: string[];
             estimatedCost: components["schemas"]["Money"];
         };
@@ -27031,6 +27974,29 @@ export interface components {
         WhatsAppTemplateVariableInput: {
             label?: null | string;
             example?: null | string;
+        };
+        /** @description Una persona del equipo del chat a la que se le puede pasar, con los chats que ya tiene tomados. */
+        WhatsAppTransferPersonResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: int32 */
+            takenCount: number;
+        };
+        /** @description Un equipo al que se puede pasar el chat, con la cantidad de personas. */
+        WhatsAppTransferTeamResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: int32 */
+            memberCount: number;
+        };
+        /** @description Los sin tomar de cada bandeja que la persona puede ver; null en la que no tiene permiso. */
+        WhatsAppUntakenResponse: {
+            /** Format: int32 */
+            customers?: null | number;
+            /** Format: int32 */
+            internal?: null | number;
         };
         /** @description Envelope Meta. Entry conserva su estructura externa; T05 procesa firma sobre los bytes originales. */
         WhatsAppWebhookHttpRequest: {

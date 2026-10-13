@@ -437,9 +437,18 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "HomeModuleCard": {
+    "total": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "HomeResponse": {
     "pending": {
       "maxItems": 0
+    },
+    "moduleCards": {
+      "maxItems": 10
     }
   },
   "InviteOrganizationUserHttpRequest": {
@@ -1079,6 +1088,42 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "PagedResultOfWhatsAppTransferPersonResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfWhatsAppTransferTeamResponse": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "PendingGroup": {
     "totalCount": {
       "minimum": -2147483648,
@@ -1561,6 +1606,12 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "WhatsAppBroadcastListResponse": {
+    "scheduled": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "WhatsAppBroadcastResponse": {
     "recipients": {
       "minimum": -2147483648,
@@ -1622,6 +1673,25 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "WhatsAppConversationRowResponse": {
+    "tags": {
+      "maxItems": 10
+    }
+  },
+  "WhatsAppImportPreviewResponse": {
+    "rows": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "new": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "updated": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "WhatsAppImportRejectionResponse": {
     "row": {
       "minimum": -2147483648,
@@ -1634,6 +1704,12 @@ export const validationConstraints = {
       "maximum": 2147483647
     },
     "updated": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppNumberListResponse": {
+    "paymentMissing": {
       "minimum": -2147483648,
       "maximum": 2147483647
     }
@@ -1710,6 +1786,12 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "WhatsAppTemplateListResponse": {
+    "approved": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "WhatsAppTemplateOptionResponse": {
     "variables": {
       "maxItems": 10
@@ -1726,6 +1808,28 @@ export const validationConstraints = {
     },
     "example": {
       "maxLength": 200
+    }
+  },
+  "WhatsAppTransferPersonResponse": {
+    "takenCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppTransferTeamResponse": {
+    "memberCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppUntakenResponse": {
+    "customers": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "internal": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
     }
   }
 } as const;
