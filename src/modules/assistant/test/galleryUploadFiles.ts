@@ -1,5 +1,6 @@
+import type { AssistantAttachmentSummaryResponse } from "../api/types";
 // Archivos ficticios del arnés. Se construyen en memoria, nunca se guardan binarios.
-export interface GalleryUploadFile { name: string; mimeType: string; base64: string; byteLength: number }
+export interface GalleryUploadFile { name: string; mimeType: AssistantAttachmentSummaryResponse["mediaType"]; base64: string; byteLength: number }
 export const galleryImage: GalleryUploadFile = {
   name: "captura-usuarios.png", mimeType: "image/png", byteLength: 240_000,
   base64: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=",

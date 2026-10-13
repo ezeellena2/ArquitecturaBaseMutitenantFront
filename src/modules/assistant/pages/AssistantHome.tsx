@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import { ApiError } from "@/shared/api/ApiError";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
@@ -15,8 +16,9 @@ export function AssistantHome(props: AssistantHomeProps) {
 }
 
 function AssistantSession(props: AssistantHomeProps) {
+  const { t } = useTranslation("assistant");
   const session = useAssistantSession(props);
-  const { operations, unavailable, runtime, scope, selectedId, t, state } = session;
+  const { operations, unavailable, runtime, scope, selectedId, state } = session;
   if (!operations.active || unavailable && props.onUnavailable) return null;
   const error = runtime.state.error ?? runtime.detail.error;
   if (error instanceof ApiError && error.status === 403) return <ForbiddenPage homePath={homeOf(scope.access)} />;

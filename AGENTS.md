@@ -45,7 +45,7 @@ Si una regla no está escrita: **copiá cómo lo resuelve ArquitecturaBase** (`.
 
 ## Reglas
 1. TS estricto: sin `any` ni `@ts-ignore`; `import type`.
-2. Los tipos de la API salen de `src/shared/api/generated/schema.d.ts`, que se regenera con `npm run contracts` y no se edita a mano. Los alias escritos a mano van en `src/shared/api/types.ts`.
+2. Los tipos de la API salen de `src/shared/api/generated/schema.d.ts`, que se regenera con `npm run contracts` y no se edita a mano. Los alias escritos a mano del núcleo van en `src/shared/api/types.ts`; los exclusivos de un módulo, en `src/modules/<nombre>/api/types.ts`.
 3. Datos solo con TanStack Query y `httpClient`. Nada de `useEffect` con fetch.
 4. Los errores se deciden por `code`, nunca por el texto.
 5. Todo texto de interfaz sale de i18n, en los idiomas habilitados; los nombres de datos de referencia vienen traducidos de la API. "Tenant" nunca en pantalla: se dice "Organización".

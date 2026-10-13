@@ -81,7 +81,7 @@ El backend decide la autorización: la guarda del front mejora la experiencia.
 
 Usá httpClient y TanStack Query; el estado del servidor pertenece a Query.
 `shared/api/generated/schema.d.ts` nace de `npm run contracts` y no se edita.
-Los alias escritos a mano van en types.ts y derivan del schema generado.
+Los alias escritos a mano del núcleo van en `shared/api/types.ts` y los exclusivos de un módulo en `modules/<nombre>/api/types.ts`; todos derivan del mismo schema generado. Los módulos contienen sus locales y fixtures, y los aportan desde `registration.ts` mediante el contrato neutral de módulos; los fixtures se cargan sólo en desarrollo.
 La feature reúne sus query keys y funciones HTTP en api/; sus inputs reproducen el contrato.
 Las mutaciones que crean o envían usan useIdempotentMutation, con una clave por recorrido
 y el cuerpo original en cada retry. PUT y DELETE viajan con la versión que corresponda.

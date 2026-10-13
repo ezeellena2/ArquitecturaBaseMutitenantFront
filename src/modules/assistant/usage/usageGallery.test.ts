@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { MeResponse } from "@/shared/api/types";
 import type { AssistantStateResponse, AssistantUsagePageResponse } from "@/modules/assistant/api/types";
-import { galleryMonthlyBudgetScenario, usageScenario } from "@/modules/assistant/testing/etapa8bVisualFixtures";
+import { galleryMonthlyBudgetScenario, usageScenario } from "@/modules/assistant/test/etapa8bVisualFixtures";
 
 describe("preparación visual de Uso, independiente de operatividad Back", () => {
   it.each(["Asistente-Org", "M-Asistente-Org"])("%s prepara el tope del servidor con Ver uso, sin provocar un 429", (board) => {

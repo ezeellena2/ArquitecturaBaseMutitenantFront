@@ -1,4 +1,4 @@
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
@@ -24,7 +24,8 @@ import type { AssistantStateResponse } from "../api/types";
 import type { useAssistantSession } from "../hooks/useAssistantSession";
 
 export function AssistantWorkspace({ props, session, state }: { props: AssistantHomeProps; session: ReturnType<typeof useAssistantSession>; state: AssistantStateResponse }) {
-  const { scope, t, format, phone, selectedId, generation, collapsed, setCollapsed, historyOpen, setHistoryOpen, retentionOpen, setRetentionOpen, phoneActions, setPhoneActions, historyTrigger, restoreHistory, restoreRetention, restoreActions, dialog, files, fileError, fileErrorId, invalidFiles, hasAttachmentError, operations, runtime, select, quick, actions, download, retryFailed, acceptNotice, confirmDialog, closeDialog, setFileError } = session;
+  const { t } = useTranslation("assistant");
+  const { scope, format, phone, selectedId, generation, collapsed, setCollapsed, historyOpen, setHistoryOpen, retentionOpen, setRetentionOpen, phoneActions, setPhoneActions, historyTrigger, restoreHistory, restoreRetention, restoreActions, dialog, files, fileError, fileErrorId, invalidFiles, hasAttachmentError, operations, runtime, select, quick, actions, download, retryFailed, acceptNotice, confirmDialog, closeDialog, setFileError } = session;
   const code = runtime.blockedCode ?? (operations.error instanceof ApiError ? operations.error.code : null);
   const configured = state.configured && code !== "Assistant.Settings.NotConfigured";
   const monthly = state.monthlyBudgetProgress?.status === "LimitReached" || code === "Assistant.Limit.MonthlyReached";

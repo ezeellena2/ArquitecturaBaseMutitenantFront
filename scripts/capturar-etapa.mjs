@@ -75,9 +75,12 @@ export async function runAppActions(page, actions = []) {
   for (const action of actions) {
     const surface = action.within ? page.getByRole(action.within.role, { name: action.within.name, exact: true }) : page;
     if (action.type === "upload") {
-      await page.getByLabel(action.label, { exact: action.exact ?? false }).and(page.locator('input[type="file"]')).setInputFiles(action.files.map((file) => ({
-        name: file.name, mimeType: file.mimeType, buffer: Buffer.concat([Buffer.from(file.base64, "base64"), Buffer.alloc(file.byteLength)], file.byteLength),
-      })));
+      await page.getByLabel(action.label, { exact: action.exact ?? false }).and(page.locator('input[type="file"]')).setInputFiles(action.files.map((file) => {
+        if (!Number.isSafeInteger(file.byteLength) || file.byteLength <= 0 || file.byteLength > 15 * 1024 * 1024) throw new Error("Archivo ficticio fuera del límite de memoria de 15 MiB");
+        const bytes = Buffer.from(file.base64, "base64");
+        if (bytes.length > file.byteLength) throw new Error("Archivo ficticio truncado");
+        return { name: file.name, mimeType: file.mimeType, buffer: Buffer.concat([bytes, Buffer.alloc(file.byteLength, file.mimeType === "application/pdf" ? 32 : 0)], file.byteLength) };
+      }));
     } else if (action.type === "fill") {
       const target = action.label ? surface.getByLabel(action.label, { exact: action.exact ?? false })
         : surface.getByRole(action.role, { name: action.name, exact: action.exact ?? false });

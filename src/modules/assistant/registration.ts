@@ -40,9 +40,9 @@ const settingsNavigation = { labelKey: "assistant:settings.title", icon: Sparkle
 export const assistantRegistration: ModuleRegistration = {
   id: "assistant",
   resources: { es: { assistant: es, enums: esEnums }, en: { assistant: en, enums: enEnums } },
-  fixtures: () => import("./testing/etapa8bVisualFixtures").then((fixtures) => ({
+  fixtures: import.meta.env.DEV ? () => import("./test/etapa8bVisualFixtures").then((fixtures) => ({
     scenario: (board, state) => fixtures.chatScenario(board, state) ?? fixtures.configurationScenario(board, state) ?? fixtures.usageScenario(board, state),
-  })),
+  })) : undefined,
   permissions: {
     organization: ["assistant.use", "assistant.configure"],
     platform: ["platform.assistant.use", "platform.assistant.configure", "platform.assistant.read"],
