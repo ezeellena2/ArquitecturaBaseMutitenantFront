@@ -1,3 +1,5 @@
+import { changeCulture, configureI18n } from "@/shared/i18n";
+import { referenceDataFixture } from "@/test/mocks/handlers";
 import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { server } from "@/test/mocks/server";
@@ -21,10 +23,13 @@ describe("Contrato HTTP de Cuentas", () => {
     expect(Object.fromEntries(urls[0].searchParams)).toEqual({ page: "2", pageSize: "50", sort: "-name", search: "Lucía & Hijos", kind: "Person", state: "Suspended" });
     expect(Object.fromEntries(urls[1].searchParams)).toEqual({ search: "Lucía & Hijos", kind: "Person", state: "Suspended" });
   });
-  it("detalle usa id opaco escapado y raíz común", async () => {
+  it("detalle usa id opaco escapado y separa su lectura por cultura efectiva", async () => {
+    await configureI18n(referenceDataFixture().cultures, "es-AR");
     server.use(http.get("/api/platform/accounts/account%2F1", () => HttpResponse.json({ id: "account/1", soleOwnerOrganizations: ["Delta"] })));
     expect(await fetchAccount("account/1")).toMatchObject({ id: "account/1", soleOwnerOrganizations: ["Delta"] });
-    expect(accountQueryKey("account/1")).toEqual([...accountsQueryRoot, "detail", "account/1"]);
+    expect(accountQueryKey("account/1")).toEqual([...accountsQueryRoot, "detail", "account/1", "es-AR"]);
+    await changeCulture("en-US");
+    expect(accountQueryKey("account/1")).toEqual([...accountsQueryRoot, "detail", "account/1", "en-US"]);
   });
   it.each(["suspend", "reactivate", "revoke-sessions", "deletion"] as const)("%s manda sólo motivo y clave; 204 no tiene versión", async (action) => {
     let body: unknown; let key: string | null = null;
