@@ -304,8 +304,13 @@ def plataforma():
 
 def bot():
     # El bot: «Configuración | Recorrido» son dos vistas de la misma configuración → control segmentado (el usuario, 13/10: «B»).
-    for nombre in ("WA-Respuestas", "WA-Bot-Recorrido", "M-WA-Respuestas", "M-WA-Bot-Recorrido", "Plat-WA-Bot", "Plat-WA-Bot-Recorrido", "M-Plat-WA-Bot"):
+    for nombre in ("WA-Respuestas", "WA-Bot-Recorrido", "M-WA-Respuestas", "M-WA-Bot-Recorrido", "Plat-WA-Bot", "Plat-WA-Bot-Recorrido", "M-Plat-WA-Bot",
+                   "WA-Admin-Editar", "M-WA-Editar"):
         t = leer(nombre)
+        if "Activo · " in t:
+            # D9 (el usuario, 13/10): el bot no se apaga; con un número conectado siempre responde.
+            escribir(nombre, t.replace('<p class="res">Activo · ', '<p class="res">'))
+            t = leer(nombre)
         if ya(t):
             continue
         tel = nombre.startswith("M-")
