@@ -919,7 +919,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted cancela sólo al lector del stream; la admisión persistida continúa. */
         post: {
             parameters: {
                 query?: never;
@@ -2400,7 +2400,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted cancela sólo al lector del stream; la admisión persistida continúa. */
         post: {
             parameters: {
                 query?: never;
@@ -4129,7 +4129,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted solicita stop; la admisión persistida no se deshace. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Stop idempotente y durable. RequestAborted cancela sólo al lector del stream; la admisión persistida continúa. */
         post: {
             parameters: {
                 query?: never;
