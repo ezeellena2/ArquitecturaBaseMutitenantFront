@@ -21,13 +21,18 @@
 - Colores solo con los tokens de [tema.md](../architecture/tema.md), por nombre (`bg-[var(--fondo)]`, `text-[var(--t2)]`). Las variables de shadcn (`--primary`, `--ring`, `--destructive`…) son solo alias de esos tokens en `index.css`. Si falta un color, se agrega un token en `index.css` y en la tabla de tema.md.
 - shadcn se genera con `npx shadcn@4.21.0 add` y se edita lo mínimo; las piezas propias van en PascalCase.
 - En JSX, ternario en lugar de `&&`. El estado derivado se calcula en el render.
-- La Administración es un segundo panel junto al menú lateral (token `--panel`); en el teléfono, un grupo de «Más». No se agregan enlaces del área hasta que su tablero esté aprobado.
+- **Una sola forma de armar secciones, pestañas y filtros** en todas las pantallas (decisión del usuario del 2026-10-13, en «Criterio · Menús»):
+  - **Secciones de un área:** un segundo panel junto al menú lateral (`AdminPanel`, token `--panel`), con la flechita en el ítem del menú y un solo panel abierto a la vez; en el teléfono, un grupo de «Más». Así van Administración, WhatsApp y Formularios («Formularios» y «Catálogos»). No se agregan enlaces del área hasta que su tablero esté aprobado.
+  - **Pestañas:** solo para los grupos de datos de una ficha, como Empresa, Organización o la ficha de un formulario (ver «Ficha»).
+  - **Filtros de un listado:** desplegables en la caja de `FilterBar`, con la cantidad por opción, lo elegido en petróleo (`--marca`) y «Limpiar filtros». En el teléfono, el botón «Filtros» de la barra abre una hoja, y lo elegido queda como chip con ✕ debajo de la barra.
+  - **Excepciones escritas:** en Chats, «Clientes | Internos» (dos bandejas, control segmentado), y en las plantillas de Plataforma, «Para consultas | Del sistema».
 
 ## Prohibido
 - Inventar piezas visuales, columnas o acciones que no están en el tablero aprobado.
 - Superficies a medio ancho, todo en una sola tarjeta o bandas grises con rótulos en mayúsculas.
 - Una pestaña «Resumen» con rótulos y valores: los datos van en la banda.
 - Rótulos y valores sueltos sobre blanco, o en viñetas, en un detalle de solo lectura.
+- Pestañas para filtrar un listado o para ir a otra sección, dos filas de pestañas, o armar secciones, pestañas o filtros de otra forma que la de arriba, fuera de las excepciones escritas.
 - Párrafos o líneas que explican en la pantalla: van detrás de un ⓘ.
 - El mismo estado en dos lugares: arriba y otra vez en la fila.
 - La web achicada en el teléfono (la marca arriba, la banda con ícono, cajas con cabecera arena o el ☰ con sesión) o una versión aparte hecha a mano.
@@ -35,11 +40,12 @@
 - Programar una pantalla nueva sin su tablero aprobado. Si a un tablero vigente le falta un estado, se le pide a Diseño y se sigue con el resto, sin frenar la etapa.
 
 ## Copiá de
-- el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (solo los tableros validados); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` y `RoleEditorPage.tsx` (E4), `src/shared/ui/Page.tsx`, `Section.tsx`, `DetailGrid.tsx` (el detalle de Auditoría) y `docs/architecture/tema.md`
+- el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (solo los tableros validados); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` y `RoleEditorPage.tsx` (E4), `src/shared/ui/Page.tsx`, `Section.tsx`, `DetailGrid.tsx` (el detalle de Auditoría), `FilterBar.tsx`, `src/layouts/components/AdminPanel.tsx` (el segundo panel) y `docs/architecture/tema.md`
 
 ## Lo verifica
 - `theme-tokens.test.ts` (E0)
 - `DetailGrid.test.tsx` (E5): la grilla en la compu y el rótulo encima del valor en el teléfono, con axe
+- `FilterBar.test.tsx` y `AdminPanel.test.tsx`: los filtros con «Limpiar» y el segundo panel
 
 ## Detalle
 [frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [responsive](responsive.md) · tableros `Criterio-Marco`, `Criterio-Botones`, `Criterio-Formularios`, `Criterio-Tablas`, `Criterio-Dialogos`, `Criterio-Menus`, `Criterio-Avisos` y `Criterio-Decisiones`.
