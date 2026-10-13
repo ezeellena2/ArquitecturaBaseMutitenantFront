@@ -156,6 +156,26 @@ CSS_COMPU = """.e11-tx { margin: 0; font-size: 13.5px; line-height: 1.5; color: 
 .o-menu .it.pel { color: oklch(0.52 0.19 25); }
 .o-menu .sep2 { height: 6px; background: var(--s2); border-top: 1px solid var(--borde); }
 .e11-cobra { color: oklch(0.55 0.13 70); }
+.o-mot { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 10px; background: var(--peligro-t); color: oklch(0.42 0.16 25); grid-column: 1 / -1; }
+.o-mot svg { flex-shrink: 0; margin-top: 1px; }
+.o-mot b { display: block; font-size: 15px; font-weight: 600; color: oklch(0.38 0.15 25); }
+.o-mot span { font-size: 12.5px; }
+.o-sub { font-size: 12.5px; font-weight: 600; color: var(--t3); grid-column: 1 / -1; }
+.o-pasos { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; grid-column: 1 / -1; }
+.o-pasos li { display: flex; gap: 10px; align-items: center; font-size: 13.5px; }
+.o-pasos .n { width: 22px; height: 22px; border-radius: 50%; background: var(--s3); color: var(--t2); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.f-toast { position: absolute; z-index: 41; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px; max-width: 460px; background: #fff; border: 1px solid oklch(0.57 0.2 25 / 0.45); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); font-size: 13px; color: var(--t1); }
+.f-toast .mal { color: oklch(0.55 0.2 25); display: inline-flex; }
+.f-toast .ib { width: 28px; height: 28px; }
+.e11-adj { display: inline-flex !important; align-items: center; gap: 8px; color: var(--t2); font-style: italic; }
+.e11-adj svg { color: var(--t3); flex-shrink: 0; }
+.e11-est { display: flex; align-items: center; gap: 8px; flex: 1; font-size: 13px; color: var(--t2); }
+.e11-est.mal { color: oklch(0.5 0.19 25); }
+.e11-est .o-i { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: 0; background: none; color: inherit; border-radius: 50%; }
+.e11-est .w-est { display: inline-flex; align-items: center; gap: 6px; }
+.e11-est .w-est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }
+.e11-est .w-est.mal::before { background: oklch(0.57 0.2 25); }
+.e11-est .w-est.off::before { background: oklch(0.75 0.01 78); }
 """
 CSS_TEL = """.e11-tx { margin: 0; font-size: 15px; line-height: 1.5; color: var(--t1); }
 .ap-menu { position: absolute; z-index: 8; right: 8px; top: 100px; width: 236px; background: #fff; border-radius: 14px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.2), 0 0 0 1px var(--borde); overflow: hidden; display: flex; flex-direction: column; }
@@ -166,6 +186,27 @@ CSS_TEL = """.e11-tx { margin: 0; font-size: 15px; line-height: 1.5; color: var(
 .ap-cmp .rq { color: var(--peligro); }
 .ap-cmp .ct { min-height: 48px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; font-size: 16px; background: #fff; }
 .ap-cmp .ct.area { display: block; padding: 12px 14px; line-height: 1.55; min-height: 104px; }
+.ap-mot { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 14px; background: var(--peligro-t); color: oklch(0.42 0.16 25); }
+.ap-mot svg { flex-shrink: 0; margin-top: 1px; }
+.ap-mot b { display: block; font-size: 15.5px; font-weight: 600; color: oklch(0.38 0.15 25); }
+.ap-mot span { font-size: 13.5px; }
+.ap-sub { font-size: 13px; font-weight: 600; color: var(--t3); margin-bottom: -2px; }
+.ap-pasos { display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.ap-pasos li { display: flex; gap: 12px; align-items: center; font-size: 15px; }
+.ap-pasos .n { width: 28px; height: 28px; border-radius: 50%; background: var(--s3); color: var(--t2); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.f-snack { position: absolute; z-index: 5; left: 12px; right: 12px; bottom: 96px; display: flex; align-items: center; gap: 10px; padding: 10px 6px 10px 16px; border-radius: 14px; background: oklch(0.27 0.012 60); color: #fff; font-size: 14.5px; line-height: 1.4; box-shadow: 0 8px 24px oklch(0.2 0.01 60 / 0.3); }
+.f-snack .tx { flex: 1; min-width: 0; }
+.f-snack .mal { color: oklch(0.75 0.15 25); display: inline-flex; }
+.f-snack .ap-ib { color: #fff; }
+.e11-adj { display: inline-flex !important; align-items: center; gap: 8px; color: var(--t2); font-style: italic; }
+.e11-adj svg { color: var(--t3); flex-shrink: 0; }
+.e11-est { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: var(--t2); white-space: nowrap; }
+.e11-est.mal { color: oklch(0.5 0.19 25); }
+.e11-est .ap-i { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border: 0; background: none; color: inherit; border-radius: 50%; }
+.e11-est .w-est { display: inline-flex; align-items: center; gap: 6px; }
+.e11-est .w-est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }
+.e11-est .w-est.mal::before { background: oklch(0.57 0.2 25); }
+.e11-est .w-est.off::before { background: oklch(0.75 0.01 78); }
 .ap-menu span.pel { color: oklch(0.52 0.19 25); }
 .ap-menu .sep2 { min-height: 6px !important; height: 6px; padding: 0 !important; background: var(--s2); }
 .ap-menu span.off { color: var(--t3); flex-direction: column; align-items: flex-start; justify-content: center; padding: 10px 18px; }
@@ -333,8 +374,352 @@ def alta():
     escribir("WA-Alta", marcar(t, MARCA))
 
 
+# ---------------------------------------------------------------- Chats (D7: adjuntos y número desconectado; tomar; pago; Internos)
+
+def _svg(d, w=18, sw="2"):
+    return (f'<svg width="{w}" height="{w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{sw}" stroke-linecap="round" '
+            f'stroke-linejoin="round" aria-hidden="true">{d}</svg>')
+
+
+ALERTA = _svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/>')
+INFO = _svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><path d="M12 7.8h.01"/>', 16)
+FOTO = _svg('<rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m20.5 16-5-5-8 8"/>')
+DOC = _svg('<path d="M14.5 3.5H7a1.5 1.5 0 0 0-1.5 1.5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3.5V8h4.5"/>')
+AUDIO = _svg('<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5v3"/>')
+NOTA = _svg('<path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4"/><path d="M8.5 12h7"/><path d="M8.5 16h5"/>', 18, "1.75")
+NOTA_TEL = _svg('<path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4"/><path d="M8.5 12h7"/><path d="M8.5 16h5"/>', 22, "1.75")
+PUNTOS = ('<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/>'
+          '<circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg>')
+
+
+def div_en(t, inicio):
+    """El <div …> completo que empieza con `inicio` (la primera vez)."""
+    i = t.index(inicio)
+    return t[i:cierre_div(t, i)]
+
+
+def pasos_html(pasos, clase):
+    return f'<ol class="{clase}">' + "".join(f'<li><span class="n">{n}</span>{p}</li>' for n, p in enumerate(pasos, 1)) + "</ol>"
+
+
+def aviso(titulo, motivo, detalle, pasos):
+    """El aviso importante (Criterio · Diálogos): el motivo en rojo suave, «Qué podés hacer» y «Entendido»."""
+    cuerpo = (f'<div class="o-mot">{ALERTA}<div><b>{motivo}</b><span>{detalle}</span></div></div><span class="o-sub">Qué podés hacer</span>'
+              + pasos_html(pasos, "o-pasos"))
+    return dlg(titulo, cuerpo, '<button type="button" class="cb cb-pri">Entendido</button>')
+
+
+def aviso_tel(titulo, motivo, detalle, pasos):
+    cuerpo = (f'<div class="ap-mot">{ALERTA}<div><b>{motivo}</b><span>{detalle}</span></div></div><span class="ap-sub">Qué podés hacer</span>'
+              + pasos_html(pasos, "ap-pasos"))
+    return hoja(titulo, cuerpo, '<button type="button" class="cb cb-pri">Entendido</button>')
+
+
+def burbuja(icono, texto, hora, tel=False):
+    return f'<div class="{"ap-m" if tel else "w-m"} ent"><span class="gl e11-adj">{icono} {texto}</span><span class="pie">{hora}</span></div>'
+
+
+def conv(ini, nombre, hora, l2, l3, on=False, nuevo=False):
+    clase = "w-conv" + (" on" if on else "") + (" nuevo" if nuevo else "")
+    punto = '<span class="w-punto" aria-label="Sin leer"></span>' if nuevo else ""
+    return (f'<div class="{clase}"><span class="w-av">{ini}</span><span class="tx"><span class="l1"><b>{nombre}</b><span>{hora}</span></span>'
+            f'<span class="l2"><span>{l2}</span>{punto}</span><span class="l3{" sin" if "Sin tomar" in l3 else ""}">{l3}</span></span></div>')
+
+
+def hilo_msjs(lista, tel=False):
+    h = []
+    for m in lista:
+        if m[0] == "dia":
+            h.append(f'<span class="{"ap-dia" if tel else "w-dia"}">{m[1]}</span>')
+        elif m[0] == "sis":
+            h.append(f'<span class="{"ap-sis" if tel else "o-sis"}">{m[1]}</span>')
+        else:
+            h.append(f'<div class="{"ap-m" if tel else "w-m"} {m[0]}"><span class="gl">{m[1]}</span><span class="pie">{m[2]}</span></div>')
+    return "".join(h)
+
+
+# Las conversaciones que se suman. Delta Sur atiende con +54 9 351 555-0200, el número sin medio de pago o desconectado de Números.
+CARLA = [("dia", "Lunes"), ("ent", "Hola, ¿tienen tarugos del 8?", "11:02"), ("sis", "Eligió «Hacer un pedido» · pasó a Ventas"),
+         ("sis", "Lucía Fernández tomó la conversación"), ("sal", "Sí, tenemos. ¿Cuántas cajas?", "Lucía Fernández · 11:05"),
+         ("ent", "Tres. Paso a la tarde.", "11:06"), ("sal", "Te esperamos.", "Lucía Fernández · 11:07")]
+CARLA_PAGO = CARLA[:-1] + [("ent", "¿Me lo pueden mandar por moto?", "11:20")]
+JAVIER = [("dia", "Ayer"), ("ent", "Hola, ¿me confirman cuándo sale el pedido 1038?", "16:20"), ("sis", "Eligió «Consultar un pedido» · pasó a Soporte"),
+          ("sis", "Tomás Acosta tomó la conversación"), ("sal", "Hola, Javier. Sale mañana a la mañana.", "Tomás Acosta · 16:24"),
+          ("ent", "Perfecto, gracias.", "16:25")]
+TOMAS = [("dia", "Hoy"), ("ent", "Hola, Lucía. Ya terminé la visita en Ferretería Rosales.", "10:48"), ("sis", "Pasó a Carga de pedidos"),
+         ("sis", "Lucía Fernández tomó la conversación"), ("sal", "Genial, Tomás. ¿Cómo te fue?", "Lucía Fernández · 10:50"),
+         ("ent", "Bien. Me pidieron 20 cajas de tarugos del 8. ¿Hay stock?", "10:51")]
+AVISO_DESC = ("Carla Ruiz escribió a un número desconectado", "+54 9 351 555-0200 está desconectado", "Sus chats quedan para leer, sin responder",
+              ["Pedile a quien administra WhatsApp que lo conecte de nuevo"])
+AVISO_PAGO = ("No se puede responder a Carla Ruiz", "Falta medio de pago en Meta", "+54 9 351 555-0200 ya usó los 1.000 mensajes gratis de este mes",
+              ["Pedile a quien administra WhatsApp que agregue un medio de pago en Meta", "O esperá al 1/11, cuando vuelven los 1.000 gratis"])
+AVISO_24H = ("Pasaron 24 horas", "Martina López escribió por última vez ayer a las 10:42", "Pasadas 24 horas, WhatsApp solo deja mandarle una plantilla aprobada",
+             ["Tocá «Elegir plantilla» y mandale una", "Cuando conteste, podés volver a escribirle por 24 horas"])
+TOMADO = "No pudimos mandar tu mensaje: Tomás Acosta tomó el chat antes."
+
+
+def cab_hilo(ini, nombre, sub, pasar=True):
+    acc = '<button type="button" class="cb cb-sec ch">Pasar</button>' if pasar else ""
+    return (f'<div class="hc"><span class="w-av">{ini}</span><span class="tx"><b>{nombre}</b><span>{sub}</span></span><span class="acc">{acc}'
+            f'<button type="button" class="ib" aria-label="Acciones de {nombre}">{PUNTOS}</button></span></div>')
+
+
+def escr_estado(texto, mal=False, nota=True, info=True):
+    n = f'<button type="button" class="o-nt" aria-label="Nota interna" aria-pressed="false" title="Nota interna">{NOTA}</button>' if nota else ""
+    i = f'<button type="button" class="o-i" aria-label="Qué significa">{INFO}</button>' if info else ""
+    return f'<div class="w-escr">{n}<span class="e11-est{" mal" if mal else ""}">{texto}{i}</span></div>'
+
+
+def escr_estado_tel(texto, mal=False, nota=True, info=True):
+    n = f'<button type="button" class="ap-red nt" aria-label="Nota interna" aria-pressed="false">{NOTA_TEL}</button>' if nota else ""
+    i = f'<button type="button" class="ap-i" aria-label="Qué significa">{INFO}</button>' if info else ""
+    return f'<div class="ap-escr">{n}<span class="e11-est{" mal" if mal else ""}">{texto}{i}</span></div>'
+
+
+def a_chats_seg(t):
+    """Las bandejas ya se ven segmentadas: se les da el papel de control segmentado, no de pestañas."""
+    for clase in ("o-seg", "ap-seg"):
+        t = t.replace(f'<div class="{clase}" role="tablist" aria-label="Bandeja">', f'<div class="{clase}" role="radiogroup" aria-label="Bandeja">')
+    t = t.replace('<span class="on" role="tab" aria-selected="true">', '<span class="on" role="radio" aria-checked="true">')
+    t = t.replace('<span role="tab" aria-selected="false">', '<span role="radio" aria-checked="false">')
+    return t.replace('<span class="on" role="tab">', '<span class="on" role="radio" aria-checked="true">').replace('<span role="tab">', '<span role="radio" aria-checked="false">')
+
+
+def chats_compu():
+    nombre = "WA-Chats"
+    t = leer(nombre)
+    if ya(t):
+        return
+    t = estados_compu(a_chats_seg(t), "Clientes")
+    bandeja = div_en(t, '<div class="w-bandeja">')
+    hilo = div_en(t, '<div class="w-hilo">')
+    escr = div_en(hilo, '<div class="w-escr">')
+    msjs = div_en(hilo, '<div class="w-msjs">')
+    filas = {}
+    for ini in ("ML", "JP", "CR"):
+        k = bandeja.index(f'<span class="w-av">{ini}</span>')
+        i = bandeja.rindex("<div", 0, k)
+        filas[ini] = bandeja[i:cierre_div(bandeja, i)]
+
+    def on(f):
+        return re.sub(r'^<div class="w-conv[^"]*">', '<div class="w-conv on">', f)
+
+    def seleccionar(b, ini, fila_nueva=None):
+        b = b.replace(filas["ML"], filas["ML"].replace('<div class="w-conv on">', '<div class="w-conv">', 1))
+        return b.replace(filas[ini], on(fila_nueva or filas[ini]))
+
+    # Internos: empleados, sin menú, directo a su equipo.
+    seg = div_en(bandeja, '<div class="o-seg"')
+    seg_int = (seg.replace('<span class="on" role="radio" aria-checked="true">Clientes', '<span role="radio" aria-checked="false">Clientes')
+               .replace('<span role="radio" aria-checked="false">Internos', '<span class="on" role="radio" aria-checked="true">Internos'))
+    filtro = div_en(bandeja, '<div class="filtro">')
+    b_int = ('<div class="w-bandeja">' + seg_int + filtro
+             + conv("TA", "Tomás Acosta", "10:51", "Bien. Me pidieron 20 cajas de tarugos del 8. ¿Hay stock?", "Carga de pedidos · Lucía Fernández", on=True)
+             + conv("MP", "Martín Paz", "Ayer", "Mañana paso por el depósito.", "Carga de pedidos · Sin tomar", nuevo=True) + "</div>")
+    h_int = ('<div class="w-hilo">' + cab_hilo("TA", "Tomás Acosta", "+54 9 11 5555-4521 · Empleado · Delta S.A.")
+             + '<div class="w-msjs">' + hilo_msjs(TOMAS) + "</div>" + escr + "</div>")
+    t = sumar_estado(t, "Internos", [(bandeja, b_int), (hilo, h_int)], encima="")
+
+    # Fotos, audios y documentos: «Mandó…», sin descarga (D7; la descarga llega con la E14).
+    adj = burbuja(FOTO, "Mandó una foto", "10:43") + burbuja(DOC, "Mandó un documento", "10:43") + burbuja(AUDIO, "Mandó un audio", "10:44")
+    fila_ml = filas["ML"].replace("<span>10:42</span>", "<span>10:44</span>").replace("<span>2 cajas de tornillos. ¿Atienden hasta las 18?</span>", "<span>Mandó un audio</span>")
+    t = sumar_estado(t, "Foto, audio o documento", [(msjs, msjs[:-len("</div>")] + adj + "</div>"), (filas["ML"], fila_ml)], encima="")
+
+    # Un chat que tomó otra persona: se lee y lleva notas; no se responde.
+    h_otro = ('<div class="w-hilo">' + cab_hilo("JP", "Javier Pereyra", "+54 9 11 5555-3388 · Soporte") + '<div class="w-msjs">' + hilo_msjs(JAVIER)
+              + "</div>" + escr_estado("Lo atiende Tomás Acosta", info=False) + "</div>")
+    t = sumar_estado(t, "Lo atiende otra persona", [(bandeja, seleccionar(bandeja, "JP")), (hilo, h_otro)], encima="")
+
+    # Carrera al tomar (WhatsApp.Conversation.TakenByOther): el mensaje no sale.
+    st = leer("WA-Chats-SinTomar")
+    h_st = div_en(st, '<div class="w-hilo">')
+    h_st = re.sub(r'<button type="button" class="cb cb-pri[^"]*">Tomar</button>', "", h_st)
+    h_st = rep(h_st, "<span>Sin tomar · Ventas</span>", "<span>Ventas · Tomás Acosta</span>")
+    m_st = div_en(h_st, '<div class="w-msjs">')
+    h_st = h_st.replace(m_st, m_st[:-len("</div>")] + '<span class="o-sis">Tomás Acosta tomó la conversación · 10:16</span></div>')
+    h_st = h_st.replace(div_en(h_st, '<div class="w-escr">'), escr_estado("Lo atiende Tomás Acosta", info=False))
+    i = bandeja.index('<div class="w-conv nuevo"><span class="w-av g">')
+    fila_st = bandeja[i:cierre_div(bandeja, i)]
+    fila_st2 = (on(fila_st).replace('<span class="w-punto" aria-label="Sin leer"></span>', "")
+                .replace('<span class="l3 sin">Ventas · Sin tomar</span>', '<span class="l3">Ventas · Tomás Acosta</span>'))
+    b_st = bandeja.replace(filas["ML"], filas["ML"].replace('<div class="w-conv on">', '<div class="w-conv">', 1)).replace(fila_st, fila_st2)
+    toast = (f'<div class="f-toast" role="alert" style="bottom: 84px;"><span class="mal">{ALERTA}</span><span>{TOMADO}</span>'
+             f'<button type="button" class="ib" aria-label="Cerrar">{CERRAR}</button></div>')
+    t = sumar_estado(t, "Lo tomó otra persona", [(bandeja, b_st), (hilo, h_st), ("5 conversaciones · 2 sin tomar", "5 conversaciones · 1 sin tomar")], encima=toast)
+
+    # Número desconectado (D7): sus chats quedan para leer.
+    h_desc = ('<div class="w-hilo">' + cab_hilo("CR", "Carla Ruiz", "+54 9 351 555-0731 · Delta Sur S.R.L.", pasar=False) + '<div class="w-msjs">'
+              + hilo_msjs(CARLA) + "</div>" + escr_estado('<span class="w-est off">Número desconectado</span>', nota=False) + "</div>")
+    t = sumar_estado(t, "Número desconectado", [(bandeja, seleccionar(bandeja, "CR")), (hilo, h_desc)], encima="")
+    t = sumar_estado(t, "Número desconectado · qué significa", [(bandeja, seleccionar(bandeja, "CR")), (hilo, h_desc)], encima=aviso(*AVISO_DESC))
+
+    # Sin medio de pago y pasado el tope (WhatsApp.Conversation.PaymentRequired).
+    h_pago = ('<div class="w-hilo">' + cab_hilo("CR", "Carla Ruiz", "+54 9 351 555-0731 · Delta Sur S.R.L.") + '<div class="w-msjs">'
+              + hilo_msjs(CARLA_PAGO) + "</div>" + escr_estado('<span class="w-est mal">Sin medio de pago</span>', mal=True) + "</div>")
+    fila_cr = filas["CR"].replace("<span>Vos: Te esperamos.</span>", "<span>¿Me lo pueden mandar por moto?</span>")
+    b_pago = seleccionar(bandeja, "CR", fila_cr)
+    t = sumar_estado(t, "Sin medio de pago", [(bandeja, b_pago), (hilo, h_pago)], encima="")
+    t = sumar_estado(t, "Sin medio de pago · qué significa", [(bandeja, b_pago), (hilo, h_pago)], encima=aviso(*AVISO_PAGO))
+    escribir(nombre, marcar(t, MARCA, CSS_COMPU))
+
+
+def chats_resto():
+    """Los otros tableros de Chats en la compu: el papel de segmentado y el ⓘ de las 24 horas."""
+    for nombre in ("WA-Chats-Nota", "WA-Chats-Pasar", "WA-Chats-SinTomar", "WA-Chats-Plantilla"):
+        t = leer(nombre)
+        if not ya(t):
+            escribir(nombre, marcar(a_chats_seg(t), MARCA))
+    t = leer("WA-Chats-24h")
+    if not ya(t):
+        t = estados_compu(a_chats_seg(t), "Pasaron 24 horas")
+        t = sumar_estado(t, "Qué significa", encima=aviso(*AVISO_24H))
+        escribir("WA-Chats-24h", marcar(t, MARCA, CSS_COMPU))
+
+
+def cbar(t, ini, nombre, sub, clase_av="w-av"):
+    """La barra de la conversación del teléfono con otra persona."""
+    b = div_en(t, '<div class="ap-cbar">')
+    i = b.index('<span class="w-av')
+    j = b.index('<button type="button" class="ap-ib" aria-label="Acciones de')
+    k = b.index('">', j) + 2
+    return (b[:i] + f'<span class="{clase_av}">{ini}</span><span class="tx"><b>{nombre}</b><span>{sub}</span></span>'
+            + f'<button type="button" class="ap-ib" aria-label="Acciones de {nombre}">' + b[k:])
+
+
+def snack_mal(texto):
+    return (f'<div class="f-snack" role="alert"><span class="mal">{ALERTA}</span><span class="tx">{texto}</span>'
+            f'<button type="button" class="ap-ib" aria-label="Cerrar">{CERRAR_TEL}</button></div>')
+
+
+def conv_tel(*a, **k):
+    c = conv(*a, **k)
+    return re.sub(r'^<div class="([^"]*)">', lambda m: f'<a class="{m.group(1)}" href="#">', c)[:-len("</div>")] + "</a>"
+
+
+def chats_tel():
+    t = leer("M-WA-Conversacion")
+    if not ya(t):
+        t = con_estados_pantalla(t, "Conversación")
+        barra = div_en(t, '<div class="ap-cbar">')
+        chat = div_en(t, '<div class="ap-chat">')
+        escr = div_en(t, '<div class="ap-escr">')
+        adj = burbuja(FOTO, "Mandó una foto", "10:43", True) + burbuja(DOC, "Mandó un documento", "10:43", True) + burbuja(AUDIO, "Mandó un audio", "10:44", True)
+        t = sumar_estado_tel(t, "Foto, audio o documento", [(chat, chat[:-len("</div>")] + adj + "</div>")])
+        t = sumar_estado_tel(t, "Lo atiende otra persona", [
+            (barra, cbar(t, "JP", "Javier Pereyra", "Soporte · Tomás Acosta")),
+            (chat, '<div class="ap-chat">' + hilo_msjs(JAVIER, True) + "</div>"), (escr, escr_estado_tel("Lo atiende Tomás Acosta", info=False))])
+        st = leer("M-WA-Chats-SinTomar")
+        b_st = rep(div_en(st, '<div class="ap-cbar">'), '<span class="sin">Sin tomar · Ventas</span>', "<span>Ventas · Tomás Acosta</span>")
+        c_st = div_en(st, '<div class="ap-chat">')
+        c_st = c_st[:-len("</div>")] + '<span class="ap-sis">Tomás Acosta tomó la conversación · 10:16</span></div>'
+        t = sumar_estado_tel(t, "Lo tomó otra persona", [(barra, b_st), (chat, c_st), (escr, escr_estado_tel("Lo atiende Tomás Acosta", info=False))],
+                             al_final=snack_mal(TOMADO))
+        desc = [(barra, cbar(t, "CR", "Carla Ruiz", "Delta Sur S.R.L.")), (chat, '<div class="ap-chat">' + hilo_msjs(CARLA, True) + "</div>"),
+                (escr, escr_estado_tel('<span class="w-est off">Número desconectado</span>', nota=False))]
+        t = sumar_estado_tel(t, "Número desconectado", desc)
+        t = sumar_estado_tel(t, "Número desconectado · qué significa", desc, al_final=aviso_tel(*AVISO_DESC))
+        pago = [(barra, cbar(t, "CR", "Carla Ruiz", "Delta Sur S.R.L.")), (chat, '<div class="ap-chat">' + hilo_msjs(CARLA_PAGO, True) + "</div>"),
+                (escr, escr_estado_tel('<span class="w-est mal">Sin medio de pago</span>', mal=True))]
+        t = sumar_estado_tel(t, "Sin medio de pago", pago)
+        t = sumar_estado_tel(t, "Sin medio de pago · qué significa", pago, al_final=aviso_tel(*AVISO_PAGO))
+        escribir("M-WA-Conversacion", marcar(t, MARCA, CSS_TEL))
+
+    t = leer("M-WA-24h")
+    if not ya(t):
+        t = con_estados_pantalla(t, "Pasaron 24 horas")
+        t = sumar_estado_tel(t, "Qué significa", al_final=aviso_tel(*AVISO_24H))
+        escribir("M-WA-24h", marcar(t, MARCA, CSS_TEL))
+
+    t = leer("M-WA-Chats")
+    if not ya(t):
+        t = con_estados_pantalla(a_chats_seg(t), "Clientes")
+        seg = div_en(t, '<div class="ap-seg"')
+        seg_int = (seg.replace('<span class="on" role="radio" aria-checked="true">Clientes', '<span role="radio" aria-checked="false">Clientes')
+                   .replace('<span role="radio" aria-checked="false">Internos', '<span class="on" role="radio" aria-checked="true">Internos'))
+        cuerpo = div_en(t, '<div class="ap-cuerpo">')
+        lista = ('<div class="ap-cuerpo">'
+                 + conv_tel("TA", "Tomás Acosta", "10:51", "Bien. Me pidieron 20 cajas de tarugos del 8. ¿Hay stock?", "Carga de pedidos · Lucía Fernández")
+                 + conv_tel("MP", "Martín Paz", "Ayer", "Mañana paso por el depósito.", "Carga de pedidos · Sin tomar", nuevo=True) + "</div>")
+        t = sumar_estado_tel(t, "Internos", [(seg, seg_int), (cuerpo, lista)])
+        escribir("M-WA-Chats", marcar(t, MARCA, CSS_TEL))
+
+
+# ---------------------------------------------------------------- Plantilla al elegirla: las que no se pueden usar, apagadas con su motivo (regla del 13/10)
+
+OPCIONES_PLANTILLA = [("Pedido listo", "Utilidad", True, False), ("Seguimos tu pedido", "Utilidad", False, False),
+                      ("Aviso de turno", "En revisión en Meta", False, True), ("Oferta de octubre", "Rechazada por Meta", False, True)]
+CSS_OPS = """.w-cmp.e11-abre { position: relative; }
+.w-cmp.e11-abre .ct { border-color: var(--marca); box-shadow: 0 0 0 3px var(--marca-t); }
+.e11-ops { position: absolute; z-index: 3; left: 0; right: 0; top: calc(100% + 4px); background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); overflow: hidden; display: flex; flex-direction: column; }
+.e11-ops .op { display: flex; flex-direction: column; padding: 8px 12px; font-size: 13.5px; line-height: 1.35; color: var(--t1); }
+.e11-ops .op + .op { border-top: 1px solid var(--borde); }
+.e11-ops .op span { font-size: 12px; color: var(--t3); }
+.e11-ops .op.on { background: var(--marca-t); color: var(--marca-tx); }
+.e11-ops .op.apag { color: var(--t3); }
+"""
+CSS_OPS_TEL = """.ap-op { display: flex; align-items: center; gap: 12px; min-height: 52px; font-size: 16px; color: var(--t1); border-bottom: 1px solid var(--borde); }
+.ap-op:last-child { border-bottom: 0; }
+.ap-op[aria-selected="true"] { color: var(--marca-tx); font-weight: 500; }
+.ap-op .tilde { margin-left: auto; display: inline-flex; color: var(--marca-tx); }
+.ap-hoja .hb:has(.ap-op) { gap: 0; }
+.ap-op.apag { color: var(--t3); flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; padding: 10px 0; }
+.ap-op .sub { font-size: 13.5px; color: var(--t3); font-weight: 400; }
+"""
+TILDE = _svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 20, "2.4")
+
+
+def plantilla_elegir():
+    t = leer("WA-Chats-Plantilla")
+    if "Elegir la plantilla" not in t:
+        t = t.replace("Costo estimado: US$ 0,02", "Costo estimado: US$ 0,03")
+        t = estados_compu(t, "Plantilla elegida")
+        sel = ('<div class="w-cmp" style="grid-column: 1 / -1;"><span class="rt">Plantilla <span style="color: var(--peligro);">*</span></span>'
+               '<div class="ct">Pedido listo · Utilidad')
+        ops = '<div class="e11-ops" role="listbox" aria-label="Plantilla">' + "".join(
+            f'<div class="op{" on" if on else ""}{" apag" if apag else ""}" role="option" aria-selected="{"true" if on else "false"}"'
+            + (' aria-disabled="true"' if apag else "") + f'>{n}<span>{s}</span></div>' for n, s, on, apag in OPCIONES_PLANTILLA) + "</div>"
+        a, b = bloques(t, "e0")[1]
+        encima = t[a:b][t[a:b].index(">") + 1:-len("</sc-if>")]
+        i = encima.index(sel)
+        fin = cierre_div(encima, i)
+        campo_abierto = encima[i:fin - len("</div>")].replace('<div class="w-cmp" style=', '<div class="w-cmp e11-abre" style=', 1) + ops + "</div>"
+        t = sumar_estado(t, "Elegir la plantilla", encima=encima[:i] + campo_abierto + encima[fin:])
+        escribir("WA-Chats-Plantilla", marcar(t, 'data-e11="plantilla"', CSS_OPS))
+
+    t = leer("M-WA-Chats-Plantilla")
+    if not ya(t):
+        t = t.replace("Costo estimado: US$ 0,02", "Costo estimado: US$ 0,03")
+        t = con_estados_pantalla(t, "Plantilla elegida")
+        h = div_en(t, '<div class="ap-hoja"')
+        ops = "".join(
+            (f'<div class="ap-op apag" role="option" aria-selected="false" aria-disabled="true">{n}<span class="sub">{s}</span></div>' if apag else
+             f'<div class="ap-op" role="option" aria-selected="{"true" if on else "false"}">{n} · {s}' + (f'<span class="tilde">{TILDE}</span>' if on else "") + "</div>")
+            for n, s, on, apag in OPCIONES_PLANTILLA)
+        nueva = ('<div class="ap-hoja" role="dialog" aria-label="Plantilla"><span class="asa"></span><div class="hc"><h2>Plantilla</h2>'
+                 f'<button type="button" class="ap-ib" aria-label="Cerrar">{CERRAR_TEL}</button></div><div class="hb">{ops}</div></div>')
+        t = sumar_estado_tel(t, "Elegir la plantilla", [(h, nueva)])
+        escribir("M-WA-Chats-Plantilla", marcar(t, MARCA, CSS_TEL + CSS_OPS_TEL))
+
+
+def datos():
+    """Datos de ejemplo que contradecían las reglas: Martina López (cliente) tenía el número de Tomás Acosta (empleado de Delta S.A.,
+    en Internos y en «Cargar teléfonos»). Ningún número es a la vez de empleado y de cliente."""
+    for nombre in ("WA-Chats", "WA-Chats-24h", "WA-Chats-Nota", "WA-Chats-Pasar", "WA-Chats-Plantilla", "WA-Contacto", "WA-Contactos",
+                   "WA-Contactos-Importar", "M-WA-Contacto", "M-WA-Contactos", "M-WA-Contactos-Importar", "Criterio-Marco"):
+        t = leer(nombre)
+        n = (t.replace("+54 9 11 5555-4521 · Vinculada", "+54 9 11 5555-7310 · Vinculada") if nombre == "WA-Chats"
+             else t.replace("+54 9 11 5555-4521", "+54 9 11 5555-7310"))
+        if n != t:
+            escribir(nombre, n)
+
+
 if __name__ == "__main__":
+    datos()
     numeros()
     plataforma()
     bot()
     alta()
+    chats_compu()
+    chats_resto()
+    chats_tel()
+    plantilla_elegir()
