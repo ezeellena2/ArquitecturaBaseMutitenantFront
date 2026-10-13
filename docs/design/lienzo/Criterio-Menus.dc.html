@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 2900px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 3380px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -766,6 +766,22 @@
     </div>
   </section>
 
+  <section data-regla="secciones-1004">
+    <h2>Secciones, pestañas y filtros</h2>
+    <p style="margin: 0; color: var(--t2); max-width: 900px;">Una sola forma para cada cosa, en todas las pantallas. Una pantalla nueva usa una de estas cuatro; no inventa otra.</p>
+    <div class="medidas">
+      <div class="cab" style="grid-template-columns: 220px minmax(0, 1fr) minmax(0, 1fr) 300px;"><span>Qué es</span><span>En la compu</span><span>En el teléfono</span><span>Ejemplos</span></div>
+      <div class="fil" style="grid-template-columns: 220px minmax(0, 1fr) minmax(0, 1fr) 300px; font-size: 13px; line-height: 1.45;"><strong>Secciones de un área</strong><span>Un segundo panel al lado del menú. El ítem del menú lleva la flechita y abre el panel, uno a la vez.</span><span>Un grupo en «Más», con una fila por sección.</span><span style="color: var(--t2);">WhatsApp (Chats, Contactos, Difusiones), Formularios (Formularios, Catálogos) y Administración.</span></div><div class="fil" style="grid-template-columns: 220px minmax(0, 1fr) minmax(0, 1fr) 300px; font-size: 13px; line-height: 1.45;"><strong>Grupos de datos de una ficha</strong><span>Pestañas debajo de la banda, una por grupo de datos. La acción de la banda cambia con la pestaña.</span><span>Pestañas debajo de la barra.</span><span style="color: var(--t2);">Empresa (Miembros, Roles), la ficha de una organización y la de un formulario (Preguntas, Inglés, Publicación).</span></div><div class="fil" style="grid-template-columns: 220px minmax(0, 1fr) minmax(0, 1fr) 300px; font-size: 13px; line-height: 1.45;"><strong>Filtros de un listado</strong><span>Desplegables en la caja de filtros, con la cantidad de cada opción. Lo elegido va en petróleo, con «Limpiar filtros».</span><span>El botón «Filtros» de la barra abre una hoja. Con algo elegido, el botón lleva un punto.</span><span style="color: var(--t2);">Usuarios, Contactos, Formularios y Catálogos.</span></div><div class="fil" style="grid-template-columns: 220px minmax(0, 1fr) minmax(0, 1fr) 300px; font-size: 13px; line-height: 1.45;"><strong>Dos vistas de la misma lista</strong><span>Un control segmentado arriba de la lista.</span><span>Un control segmentado debajo de la barra.</span><span style="color: var(--t2);">Chats (Clientes | Internos), las plantillas de Plataforma (Para consultas | Del sistema) y Uso del asistente (Por día | Por persona).</span></div>
+    </div>
+    <p style="margin: 6px 0 0; font-weight: 600;">Prohibido</p>
+    <ul class="prohibido">
+      <li>Pestañas para filtrar un listado.</li>
+      <li>Pestañas para ir a otra sección del área.</li>
+      <li>Dos filas de pestañas en la misma pantalla.</li>
+      <li>Una forma nueva para una pantalla nueva.</li>
+    </ul>
+  </section>
+
   <section>
     <h2>Medidas</h2>
     <div class="medidas">
@@ -804,7 +820,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3380}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

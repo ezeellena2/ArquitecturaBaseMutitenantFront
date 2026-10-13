@@ -44,6 +44,20 @@ def info(texto):
 
 
 # ---------------------------------------------------------------- El marco: menú principal y, si va, el panel
+FLECHA = re.search(r'WhatsApp<span class="cnt">2</span><span class="fl">(<svg.*?</svg>)</span>', BASE, re.S).group(1)
+LISTA = svg('<path d="M9 6.5h10.5M9 12h10.5M9 17.5h10.5"/><circle cx="4.8" cy="6.5" r="1.1"/><circle cx="4.8" cy="12" r="1.1"/><circle cx="4.8" cy="17.5" r="1.1"/>', 18)
+
+
+def panel_formularios(activo="formularios"):
+    """Regla única (13/10): las secciones de un área van en un segundo panel, como WhatsApp. Formularios abre Formularios y Catálogos."""
+    panel = re.search(r'<aside class="w-panel".*?</aside>', BASE, re.S).group(0)
+    plegar = re.search(r'<button type="button" class="w-plegar".*?</button>', panel, re.S).group(0).replace("Cerrar Administración", "Cerrar Formularios")
+    on_f, on_c = ("on", "") if activo == "formularios" else ("", "on")
+    return (f'<aside class="w-panel" aria-label="Formularios">{plegar}<div class="pc">Formularios</div><nav class="w-nav">'
+            f'<a class="w-ln {on_f}" href="FRM-Listado.dc.html">{ICONO} Formularios</a>'
+            f'<a class="w-ln {on_c}" href="FRM-Catalogos.dc.html">{LISTA} Catálogos</a></nav></aside>')
+
+
 def menu_principal(formularios_en_menu, admin_abierto=False):
     sb = re.search(r'<aside class="w-sb".*?</aside>', BASE, re.S).group(0)
     nav = re.search(r'<nav class="w-nav">.*?</nav>', sb, re.S).group(0)
@@ -54,6 +68,8 @@ def menu_principal(formularios_en_menu, admin_abierto=False):
             nuevo = nuevo.replace('<a class="w-ln" href="FRM-Listado.dc.html">', '<a class="w-ln on" href="FRM-Listado.dc.html">')
         else:
             nuevo = nuevo.replace("</nav>", f'<a class="w-ln on" href="FRM-Listado.dc.html">{ICONO} Formularios</a></nav>')
+        if 'Formularios<span class="fl">' not in nuevo:
+            nuevo = nuevo.replace(f"{ICONO} Formularios</a>", f'{ICONO} Formularios<span class="fl">{FLECHA}</span></a>')
     else:
         nuevo = re.sub(r'<a class="w-ln" href="FRM-Listado\.dc\.html">.*?</a>', '', nuevo, flags=re.S)
     sb = sb.replace(nav, nuevo)
@@ -72,13 +88,13 @@ def panel_admin():
     return panel[:k] + f'<a class="w-ln on" href="FRM-Listado.dc.html">{ICONO} Formularios</a>' + panel[k:]
 
 
-def pagina(nombre, miga, banda, cuerpo, formularios_en_menu=True, css_extra="", estados=None, js=""):
+def pagina(nombre, miga, banda, cuerpo, formularios_en_menu=True, css_extra="", estados=None, js="", seccion="formularios"):
     """Arma un tablero de la compu desde WA-Contactos. `estados`: (prop, opciones) del Tweak."""
     t = BASE
     sb = re.search(r'<aside class="w-sb".*?</aside>', t, re.S).group(0)
     panel = re.search(r'<aside class="w-panel".*?</aside>', t, re.S).group(0)
     t = t.replace(sb, menu_principal(formularios_en_menu, admin_abierto=not formularios_en_menu))
-    t = t.replace(panel, "" if formularios_en_menu else panel_admin())
+    t = t.replace(panel, panel_formularios(seccion) if formularios_en_menu else panel_admin())
     t = t.replace("<span>Inicio / WhatsApp / Contactos</span>", f"<span>{miga}</span>")
     i = t.index('<div class="w-bnd">')
     j = t.index("</div></div></div>\n</x-dc>")
@@ -135,17 +151,35 @@ def listado_opciones():
     }
 
 
-# ---------------------------------------------------------------- FRM-Listado elegido (A, 13/10): en el menú principal, con pestañas
-ESTADOS_LISTADO = ["Todos", "Publicados", "Borradores", "Sin resultados", "Cargando", "Vacío", "Error"]
+# ---------------------------------------------------------------- FRM-Listado elegido (A, 13/10), con el filtro «Estado ▾» por la regla única del 13/10
+ESTADOS_LISTADO = ["Todos", "Filtro abierto", "Publicados", "Borradores", "Sin resultados", "Cargando", "Vacío", "Error"]
 CSS_LISTADO = """.esq { align-self: stretch; display: flex; flex-direction: column; gap: 14px; padding: 4px 0; }
 .esq span { height: 12px; border-radius: 6px; background: oklch(0.93 0.01 78); }
 .f-cuerpo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px 16px; text-align: center; color: var(--t2); }
 .f-cuerpo.izq { align-items: stretch; padding: 20px 16px; }
 .f-cuerpo b { color: var(--t1); font-size: 14px; }
 .f-cuerpo .cb { flex: 0 0 auto; }
-.o-tabs > span { cursor: pointer; }
 .w-bus.lleno { color: var(--t1); }
 """
+CSS_FILTRO = """.f-env { position: relative; display: inline-flex; }
+.w-caja.o-fb { overflow: visible; position: relative; z-index: 5; }
+.w-pil { cursor: pointer; }
+.w-pil.con { color: var(--marca-tx); border-color: oklch(0.51 0.099 195 / 0.35); background: var(--marca-t); font-weight: 500; }
+.f-mn { position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; width: 240px; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); padding: 4px; display: flex; flex-direction: column; font-size: 13.5px; }
+.f-mn > span { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 36px; padding: 0 10px; border-radius: 6px; color: var(--t1); cursor: pointer; }
+.f-mn > span.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 500; }
+.f-mn .cnt { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--s3); color: var(--t2); }
+.o-fb .cb-enl { font-size: 13px; height: 36px; }
+"""
+
+
+def filtro(nombre, opciones, prefijo):
+    """Un filtro de la caja de filtros (Criterio · Menús): «Nombre ▾», y con algo elegido «Nombre: valor» en petróleo y «Limpiar filtros».
+    opciones: [(clave, texto, cuenta)]; la primera es «todos». Usa {{<prefijo>Clase}}, {{<prefijo>Texto}}, {{<prefijo>Menu}} y {{<prefijo>On_<k>}}."""
+    items = "".join(f'<span role="option" class="{{{{{prefijo}On_{k}}}}}" onClick="{{{{{prefijo}Elegir_{k}}}}}">{n}<span class="cnt">{{{{{prefijo}C_{k}}}}}</span></span>'
+                    for k, n, _ in opciones)
+    return (f'<span class="f-env"><span class="w-pil {{{{{prefijo}Clase}}}}" role="button" aria-haspopup="listbox" onClick="{{{{{prefijo}Alternar}}}}">{{{{{prefijo}Texto}}}} {CHEV}</span>'
+            f'<sc-if value="{{{{{prefijo}Menu}}}}" hint-placeholder-val="{{{{no}}}}"><span class="f-mn" role="listbox" aria-label="Filtrar por {nombre.lower()}">{items}</span></sc-if></span>')
 
 
 def listado():
@@ -155,13 +189,12 @@ def listado():
         filas.append(f'<sc-if value="{{{{{grupo}}}}}" hint-placeholder-val="{{{{si}}}}">' + fila(*f) + "</sc-if>")
     cab = ('<div class="w-th f"><span>Formulario</span><span>Prefijo</span><span>Estado</span><span>Última publicación</span>'
            '<span class="sr">Acciones</span></div>')
-    cant = lambda v: f'<sc-if value="{{{{conCant}}}}" hint-placeholder-val="{{{{si}}}}"> <span class="c">{{{{{v}}}}}</span></sc-if>'  # noqa: E731
-    pestanas = ('<sc-if value="{{conFiltros}}" hint-placeholder-val="{{si}}"><div class="o-tabs" role="tablist">'
-                '<span class="{{tabTodos}}" role="tab" aria-selected="{{selTodos}}" onClick="{{verTodos}}">Todos' + cant("cTodos") + '</span>'
-                '<span class="{{tabPub}}" role="tab" aria-selected="{{selPub}}" onClick="{{verPublicados}}">Publicados' + cant("cPub") + '</span>'
-                '<span class="{{tabBor}}" role="tab" aria-selected="{{selBor}}" onClick="{{verBorradores}}">Borradores' + cant("cBor") + '</span></div>'
-                f'<div class="w-caja o-fb"><span class="w-bus {{{{busClase}}}}">{BUSCAR} {{{{busqueda}}}}</span></div></sc-if>')
-    cuerpo = ('<div class="w-body">' + pestanas + '<div class="w-caja">' + cab
+    caja = ('<sc-if value="{{conFiltros}}" hint-placeholder-val="{{si}}"><div class="w-caja o-fb">'
+            f'<span class="w-bus {{{{busClase}}}}">{BUSCAR} {{{{busqueda}}}}</span>'
+            + filtro("Estado", [("t", "Todos los estados", 4), ("p", "Publicados", 2), ("b", "Borradores", 2)], "est")
+            + '<sc-if value="{{hayFiltro}}" hint-placeholder-val="{{no}}"><button type="button" class="cb cb-enl" onClick="{{limpiar}}">Limpiar filtros</button></sc-if>'
+            "</div></sc-if>")
+    cuerpo = ('<div class="w-body">' + caja + '<div class="w-caja">' + cab
               + '<sc-if value="{{conFilas}}" hint-placeholder-val="{{si}}">' + "".join(filas)
               + '<div class="w-pie"><span>{{rango}}</span><span>10 por página · Página 1 de 1</span></div></sc-if>'
               '<sc-if value="{{cargando}}" hint-placeholder-val="{{no}}"><div class="f-cuerpo izq"><div class="esq"><span style="width: 80%;"></span>'
@@ -174,23 +207,27 @@ def listado():
               "</div></div>")
     banda_l = banda("Formularios", "{{resumen}}", f'<a class="cb cb-pri" href="FRM-Nuevo.dc.html">{MAS} Nuevo formulario</a>')
     js = """    const f = this.state.f ?? e;
-    const ir = (x) => this.setState({ f: x });
-    const lista = ['Todos', 'Publicados', 'Borradores'].includes(f);
+    const ir = (x) => this.setState({ f: x, m: false });
+    const lista = ['Todos', 'Filtro abierto', 'Publicados', 'Borradores'].includes(f);
+    const elegido = f === 'Publicados' || f === 'Borradores' ? f : '';
+    const menu = this.state.m ?? f === 'Filtro abierto';
     return {
       si: true, no: false,
       resumen: f === 'Vacío' ? 'Sin formularios' : f === 'Cargando' || f === 'Error' ? '' : '4 formularios · 2 publicados',
-      conFiltros: f !== 'Vacío', conCant: f !== 'Cargando' && f !== 'Error',
-      cTodos: f === 'Sin resultados' ? '0' : '4', cPub: f === 'Sin resultados' ? '0' : '2', cBor: f === 'Sin resultados' ? '0' : '2',
-      tabTodos: f === 'Todos' || !lista ? 'on' : '', tabPub: f === 'Publicados' ? 'on' : '', tabBor: f === 'Borradores' ? 'on' : '',
-      selTodos: f === 'Todos' || !lista ? 'true' : 'false', selPub: f === 'Publicados' ? 'true' : 'false', selBor: f === 'Borradores' ? 'true' : 'false',
-      verTodos: () => ir('Todos'), verPublicados: () => ir('Publicados'), verBorradores: () => ir('Borradores'),
+      conFiltros: f !== 'Vacío',
+      estTexto: elegido ? 'Estado: ' + elegido : 'Estado', estClase: elegido ? 'con' : '', estMenu: menu,
+      estAlternar: () => this.setState({ m: !menu }),
+      estOn_t: elegido ? '' : 'on', estOn_p: f === 'Publicados' ? 'on' : '', estOn_b: f === 'Borradores' ? 'on' : '',
+      estC_t: '4', estC_p: '2', estC_b: '2',
+      estElegir_t: () => ir('Todos'), estElegir_p: () => ir('Publicados'), estElegir_b: () => ir('Borradores'),
+      hayFiltro: !!elegido,
       busqueda: f === 'Sin resultados' ? 'factura' : 'Buscar por nombre o prefijo', busClase: f === 'Sin resultados' ? 'lleno' : '',
       conFilas: lista, verPub: f !== 'Borradores', verBor: f !== 'Publicados',
-      rango: f === 'Todos' ? '1–4 de 4' : '1–2 de 2',
+      rango: elegido ? '1–2 de 2' : '1–4 de 4',
       cargando: f === 'Cargando', vacio: f === 'Vacío', sinResultados: f === 'Sin resultados', error: f === 'Error',
       limpiar: () => ir('Todos'),
     };"""
-    return pagina("Formularios · /org/formularios", "Inicio / Formularios", banda_l, cuerpo, css_extra=CSS_LISTADO,
+    return pagina("Formularios · /org/formularios", "Inicio / Formularios", banda_l, cuerpo, css_extra=CSS_LISTADO + CSS_FILTRO,
                   estados=("estado", ESTADOS_LISTADO), js=js)
 
 
@@ -445,7 +482,20 @@ def ficha_final():
 
 # ---------------------------------------------------------------- FRM-Pregunta elegida (A, 13/10): el diálogo en español; el inglés, en su pestaña
 ESTADOS_PREGUNTA = ["Texto corto", "Texto largo", "Número", "Fecha", "Sí o no", "Lista", "Nueva pregunta", "Sin texto", "Lista sin opciones",
-                    "Cambiar el tipo"]
+                    "Cambiar el tipo", "Elegir de un catálogo", "Elegir el catálogo", "Sin catálogos"]
+VARIANTE_CAT = "A"
+CSS_PREG_CAT = """.w-dlg { overflow: visible; }
+.w-dlg .dc { border-radius: 12px 12px 0 0; }
+.f-catsel { position: relative; }
+.f-catsel .ct.on { border-color: var(--marca); box-shadow: 0 0 0 1px var(--marca); }
+.f-catmn { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 30; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); padding: 4px; display: flex; flex-direction: column; }
+.f-catmn > span { display: flex; flex-direction: column; justify-content: center; min-height: 40px; padding: 4px 10px; border-radius: 6px; font-size: 13.5px; line-height: 1.3; }
+.f-catmn > span small { font-size: 12px; color: var(--t3); }
+.f-catmn > span.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 500; }
+.f-catmn > span.off { color: var(--t3); }
+.f-catmn > .pie { min-height: 34px; border-top: 1px solid var(--borde); border-radius: 0; margin-top: 4px; font-size: 12.5px; color: var(--t3); flex-direction: row; align-items: center; justify-content: flex-start; gap: 4px; }
+.f-vaciocat { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--t2); }
+"""
 CSS_PREGUNTA = """.w-dlg { width: 600px; }
 .f-chk { display: inline-flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--t1); min-height: 36px; }
 .f-chk i { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--borde2); background: #fff; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
@@ -487,8 +537,20 @@ def pregunta():
         '<sc-if value="{{sinOpciones}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">Agregá al menos una opción.</span></sc-if>'
         f'<button type="button" class="cb cb-enl">{MAS} Agregar opción</button>'
         f'<span class="f-chk"><i class="{{{{chkClase}}}}">{TILDE_CHK}</i>Obligatoria</span></div></sc-if>')
+    if VARIANTE_CAT == "A":
+        lista_cat = ('<span class="off" aria-disabled="true">Clientes mayoristas<small>No tiene opciones activas.</small></span>'
+                     '<span>Motivos de visita<small>A mano</small></span><span class="on">Supervisores<small>Con filtros</small></span>')
+    else:
+        lista_cat = ('<span>Motivos de visita<small>A mano</small></span><span class="on">Supervisores<small>Con filtros</small></span>'
+                     '<span class="pie">1 catálogo no se puede usar' + info("Clientes mayoristas: no tiene opciones activas.") + "</span>")
+    cuerpo += ('<sc-if value="{{esCat}}" hint-placeholder-val="{{no}}"><sc-if value="{{conCats}}" hint-placeholder-val="{{si}}">'
+               f'<div class="w-cmp ancho f-catsel"><span class="rt">Catálogo <span class="req">*</span></span><div class="ct sel {{{{catClase}}}}">Supervisores{CHEV}</div>'
+               f'<sc-if value="{{{{catAbierto}}}}" hint-placeholder-val="{{{{no}}}}"><div class="f-catmn" role="listbox" aria-label="Catálogo">{lista_cat}</div></sc-if></div></sc-if>'
+               '<sc-if value="{{sinCats}}" hint-placeholder-val="{{no}}"><div class="w-cmp ancho"><span class="rt">Catálogo <span class="req">*</span></span>'
+               '<span class="f-vaciocat">Todavía no hay catálogos.<a class="cb cb-enl" href="FRM-Catalogos.dc.html">Ir a Catálogos</a></span></div></sc-if>'
+               f'<div class="w-cmp ancho"><span class="f-chk"><i class="{{{{chkClase}}}}">{TILDE_CHK}</i>Obligatoria</span></div></sc-if>')
     pie = '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">{{boton}}</button>'
-    t = con_dialogo(fondo, dialogo("{{titulo}}", cuerpo, pie, una=False), CSS_PREGUNTA)
+    t = con_dialogo(fondo, dialogo("{{titulo}}", cuerpo, pie, una=False), CSS_PREGUNTA + CSS_PREG_CAT)
     props = {"tipo": {"editor": "enum", "options": ESTADOS_PREGUNTA, "default": ESTADOS_PREGUNTA[0], "section": "Estado"}, "$preview": {"width": 1440, "height": 900}}
     t = t.replace("""data-props='{"$preview":{"width":1440,"height":900}}'""", "data-props='" + json.dumps(props, ensure_ascii=False, separators=(",", ":")) + "'")
     t = t.replace("    return { si: true, no: false };", """    const e = this.props.tipo ?? 'Texto corto';
@@ -498,6 +560,8 @@ def pregunta():
       'Fecha': ['Fecha', 'Fecha de la visita', 0, ''], 'Sí o no': ['Sí o no', '¿Se concretó la venta?', 0, ''], 'Lista': ['Lista', 'Motivo', 0, ''],
       'Nueva pregunta': ['Texto corto', '', 0, '80'], 'Sin texto': ['Texto corto', '', 0, '80'], 'Lista sin opciones': ['Lista', 'Motivo', 0, ''],
       'Cambiar el tipo': ['Texto largo', 'Cliente', 1, '600'],
+      'Elegir de un catálogo': ['Elegir de un catálogo', 'Supervisor a cargo', 1, ''], 'Elegir el catálogo': ['Elegir de un catálogo', 'Supervisor a cargo', 1, ''],
+      'Sin catálogos': ['Elegir de un catálogo', 'Supervisor a cargo', 1, ''],
     }[e];
     const tipo = P[0];
     const nueva = e === 'Nueva pregunta' || e === 'Sin texto';
@@ -509,7 +573,9 @@ def pregunta():
       ayuda: 'Opcional', chkClase: P[2] ? 'on' : '',
       conLargo: tipo === 'Texto corto' || tipo === 'Texto largo', largo: P[3],
       conDecimales: tipo === 'Número', chkAncho: tipo === 'Fecha' || tipo === 'Sí o no' ? 'ancho' : '',
-      esLista: tipo === 'Lista', noLista: tipo !== 'Lista',
+      esLista: tipo === 'Lista', noLista: tipo !== 'Lista' && tipo !== 'Elegir de un catálogo',
+      esCat: tipo === 'Elegir de un catálogo', conCats: e !== 'Sin catálogos', sinCats: e === 'Sin catálogos',
+      catAbierto: e === 'Elegir el catálogo', catClase: e === 'Elegir el catálogo' ? 'on' : '',
       conOpciones: e !== 'Lista sin opciones', sinOpciones: e === 'Lista sin opciones',
       cambiaTipo: e === 'Cambiar el tipo',
     };""")
@@ -934,6 +1000,7 @@ TINFO = re.search(r'<button type="button" class="ap-i" aria-label="Por qué la r
 TVOLVER = re.search(r'<a class="ap-ib" aria-label="Volver" href="M-WA-Menu\.dc\.html">(<svg.*?</svg>)</a>', TBASE, re.S).group(1)
 TFAB = re.search(r'<a class="ap-fab" aria-label="Nueva plantilla" href="M-WA-Plantilla-Nueva\.dc\.html">(<svg.*?</svg>)</a>', TBASE, re.S).group(1)
 TLUPA = svg('<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>', 22)
+TFILTROS = re.search(r'<button type="button" class="ap-ib" aria-label="Filtros">(<svg.*?</svg>)</button>', (PROJ / "M-Usuarios.dc.html").read_text(encoding="utf-8"), re.S).group(1)
 CSS_TEL = """.ap-tabs { display: flex; border-bottom: 1px solid var(--borde); flex-shrink: 0; }
 .ap-tabs > span, .ap-tabs > a { flex: 1; text-align: center; padding: 12px 6px; font-size: 15px; font-weight: 600; color: var(--t2); border-bottom: 2px solid transparent; margin-bottom: -1px; text-decoration: none; }
 .ap-tabs > .on { color: var(--marca-tx); border-bottom-color: var(--marca); }
@@ -951,12 +1018,14 @@ CSS_TEL = """.ap-tabs { display: flex; border-bottom: 1px solid var(--borde); fl
 """
 
 
-def pagina_tel(titulo, sub, cuerpo, volver="M-WA-Menu.dc.html", fab="", estados=None, js="", css="", extra=""):
+def pagina_tel(titulo, sub, cuerpo, volver="M-WA-Menu.dc.html", fab="", estados=None, js="", css="", extra="", filtros=False):
     t = TBASE
     i = t.index('<div class="ap-bar int">')
     j = t.index('<nav class="ap-nav"')
     bar = (f'<div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="{volver}">{TVOLVER}</a><div class="tit"><h1>{titulo}</h1><span class="sub">{sub}</span></div>'
-           f'<button type="button" class="ap-ib" aria-label="Buscar">{TLUPA}</button></div>') if titulo else ""
+           f'<button type="button" class="ap-ib" aria-label="Buscar">{TLUPA}</button>'
+           + (f'<button type="button" class="ap-ib {{{{filClase}}}}" aria-label="Filtros" onClick="{{{{abrirFiltros}}}}">{TFILTROS}</button>' if filtros else "")
+           + '</div>') if titulo else ""
     t = t[:i] + bar + cuerpo + fab + t[j:]
     if extra:
         k = t.index('<span class="ap-raya"></span></div>') + len('<span class="ap-raya"></span>')
@@ -970,7 +1039,19 @@ def pagina_tel(titulo, sub, cuerpo, volver="M-WA-Menu.dc.html", fab="", estados=
     return t
 
 
-ESTADOS_TLISTADO = ["Todos", "Publicados", "Borradores", "Sin resultados", "Cargando", "Vacío", "Error", "Nuevo formulario"]
+# Regla única (13/10): en el teléfono, los filtros de un listado van en el botón «Filtros» de la barra, como Usuarios y Contactos.
+ESTADOS_TLISTADO = ["Todos", "Filtros", "Publicados", "Borradores", "Sin resultados", "Cargando", "Vacío", "Error", "Nuevo formulario"]
+CSS_TFILTRO = """.ap-ib.con { position: relative; }
+.ap-ib.con::after { content: ""; position: absolute; top: 9px; right: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--marca); box-shadow: 0 0 0 2px #fff; }
+.ap-flt { flex-shrink: 0; display: flex; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--borde); }
+.ap-flt .ch { height: 32px; display: inline-flex; align-items: center; gap: 6px; padding: 0 8px 0 12px; border-radius: 16px; background: var(--marca-t); color: var(--marca-tx); font-size: 14px; font-weight: 500; border: 1px solid oklch(0.51 0.099 195 / 0.35); }
+.ap-flt .ch svg { width: 16px; height: 16px; }
+.t-opc { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; border-top: 1px solid var(--borde); font-size: 16px; }
+.t-opc:first-child { border-top: 0; }
+.t-opc .d { display: inline-flex; align-items: center; gap: 10px; color: var(--t3); font-size: 14px; }
+.t-opc.on { color: var(--marca-tx); font-weight: 600; }
+.ap-hoja .hb.lst { gap: 0; }
+"""
 
 
 def tel_listado():
@@ -982,10 +1063,7 @@ def tel_listado():
         filas.append(f'<sc-if value="{{{{{grupo}}}}}" hint-placeholder-val="{{{{si}}}}"><a class="ap-fila" href="M-FRM-Ficha.dc.html"><div class="tx">'
                      f'<span class="l1">{n}{f}</span><span class="l2">{pre}</span><span class="l3"><span class="w-est {clase}">{estado}</span>{i}</span></div>'
                      f'<button type="button" class="ap-ib" aria-label="Acciones de {n}">{TKEBAB}</button></a></sc-if>')
-    tabs = ('<sc-if value="{{conFiltros}}" hint-placeholder-val="{{si}}"><div class="ap-tabs" role="tablist">'
-            '<span class="{{tabTodos}}" role="tab" onClick="{{verTodos}}">Todos <span class="c">{{cTodos}}</span></span>'
-            '<span class="{{tabPub}}" role="tab" onClick="{{verPublicados}}">Publicados <span class="c">{{cPub}}</span></span>'
-            '<span class="{{tabBor}}" role="tab" onClick="{{verBorradores}}">Borradores <span class="c">{{cBor}}</span></span></div></sc-if>')
+    tabs = ""  # Con un filtro elegido, el botón «Filtros» lleva un punto, como FilterBar (13/10); sin chips.
     cuerpo = ('<div class="ap-cuerpo">' + tabs
               + '<sc-if value="{{conFilas}}" hint-placeholder-val="{{si}}">' + "".join(filas) + "</sc-if>"
               '<sc-if value="{{cargando}}" hint-placeholder-val="{{no}}"><div class="ap-esq"><span style="width: 80%;"></span><span style="width: 60%;"></span>'
@@ -1000,19 +1078,29 @@ def tel_listado():
              + thoja("Nuevo formulario", tcampo("Nombre", "Inspección de obra", req=True),
                      '<button type="button" class="cb cb-pri lleno">Crear formulario</button><button type="button" class="cb cb-sec">Cancelar</button>')
              + "</sc-if>")
-    js = """    const f = this.state.f ?? (e === 'Nuevo formulario' ? 'Todos' : e);
-    const ir = (x) => this.setState({ f: x });
+    tilde = svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 18, "2.25")
+    opc = "".join(f'<span class="t-opc {{{{on_{k}}}}}" onClick="{{{{ver_{k}}}}}">{n}<span class="d">{c}<sc-if value="{{{{sel_{k}}}}}" hint-placeholder-val="{{{{no}}}}">{tilde}</sc-if></span></span>'
+                  for k, n, c in [("t", "Todos los estados", 4), ("p", "Publicados", 2), ("b", "Borradores", 2)])
+    hoja_f = ('<sc-if value="{{hojaFiltros}}" hint-placeholder-val="{{no}}">'
+              + thoja("Filtrar por estado", opc, "").replace('<div class="hb">', '<div class="hb lst">', 1) + "</sc-if>")
+    nuevo += hoja_f
+    js = """    const f = this.state.f ?? (e === 'Nuevo formulario' || e === 'Filtros' ? 'Todos' : e);
+    const hoja = this.state.h ?? e === 'Filtros';
+    const ir = (x) => this.setState({ f: x, h: false });
     const lista = ['Todos', 'Publicados', 'Borradores'].includes(f);
+    const elegido = f === 'Publicados' || f === 'Borradores' ? f : '';
     return {
       si: true, no: false,
-      conFiltros: f !== 'Vacío', cTodos: f === 'Sin resultados' ? '0' : '4', cPub: f === 'Sin resultados' ? '0' : '2', cBor: f === 'Sin resultados' ? '0' : '2',
-      tabTodos: f === 'Todos' || !lista ? 'on' : '', tabPub: f === 'Publicados' ? 'on' : '', tabBor: f === 'Borradores' ? 'on' : '',
-      verTodos: () => ir('Todos'), verPublicados: () => ir('Publicados'), verBorradores: () => ir('Borradores'),
+      hayFiltro: !!elegido, elegido, filClase: elegido ? 'con' : '', abrirFiltros: () => this.setState({ h: true }), hojaFiltros: hoja,
+      on_t: elegido ? '' : 'on', on_p: f === 'Publicados' ? 'on' : '', on_b: f === 'Borradores' ? 'on' : '',
+      sel_t: !elegido, sel_p: f === 'Publicados', sel_b: f === 'Borradores',
+      ver_t: () => ir('Todos'), ver_p: () => ir('Publicados'), ver_b: () => ir('Borradores'),
+      verTodos: () => ir('Todos'),
       conFilas: lista, verPub: f !== 'Borradores', verBor: f !== 'Publicados',
       cargando: f === 'Cargando', vacio: f === 'Vacío', sinResultados: f === 'Sin resultados', error: f === 'Error',
       limpiar: () => ir('Todos'), nuevo: e === 'Nuevo formulario',
     };"""
-    t = pagina_tel("Formularios", "Grupo Delta", cuerpo, fab=fab, estados=("estado", ESTADOS_TLISTADO), js=js)
+    t = pagina_tel("Formularios", "Grupo Delta", cuerpo, fab=fab, estados=("estado", ESTADOS_TLISTADO), js=js, css=CSS_TFILTRO, filtros=True)
     k = t.index('<nav class="ap-nav"')
     k2 = t.index("</nav>", k) + len("</nav>")
     t = t[:k2] + nuevo + t[k2:]

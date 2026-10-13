@@ -68,6 +68,40 @@ if "M-FRM-Listado.dc.html" not in t:
     t = t[:fin] + grupo + t[fin:]
     guardar("M-WA-Menu", t)
 
+# ---- Regla única (13/10): «Formularios» abre su segundo panel (Formularios y Catálogos), como WhatsApp, así que lleva la flechita.
+for f in sorted(PROJ.glob("*.dc.html")):
+    nombre = f.name[:-8]
+    if nombre.startswith("M-") or nombre in ARCHIVO:
+        continue
+    t = f.read_text(encoding="utf-8")
+    cambio = False
+    for m in list(re.finditer(r'<aside class="w-sb".*?</aside>', t, re.S)):
+        sb = m.group(0)
+        if 'href="FRM-Listado.dc.html"' not in sb or 'Formularios<span class="fl">' in sb:
+            continue
+        flecha = re.search(r'WhatsApp(?:<span class="cnt">\d+</span>)?<span class="fl">(<svg.*?</svg>)</span>', sb, re.S)
+        if not flecha:
+            continue
+        nuevo = re.sub(r'(<a class="w-ln[^"]*" href="FRM-Listado\.dc\.html">(?:(?!</a>).)*?) Formularios</a>',
+                       lambda x: x.group(1) + f' Formularios<span class="fl">{flecha.group(1)}</span></a>', sb, count=1, flags=re.S)
+        t = t.replace(sb, nuevo, 1)
+        cambio = nuevo != sb or cambio
+    li = re.search(r'<li><a class="ab-sidebar__link" href="FRM-Listado\.dc\.html">(?:(?!</li>).)*</li>', t, re.S)
+    wa = re.search(r'<li><button type="button" class="ab-sidebar__link wa-btn".*?</button></li>', t, re.S)
+    if li and wa and li.group(0).count("<svg") == 1:
+        chev = re.findall(r"<svg.*?</svg>", wa.group(0), re.S)[-1]
+        t = t.replace(li.group(0), li.group(0).replace("Formularios</span></a>", f"Formularios</span>{chev}</a>"), 1)
+        cambio = True
+    if cambio:
+        guardar(nombre, t)
+
+# «Más» del teléfono: el grupo Formularios suma «Catálogos».
+t = (PROJ / "M-WA-Menu.dc.html").read_text(encoding="utf-8")
+if "M-FRM-Catalogos.dc.html" not in t:
+    it = re.search(r'<a class="ap-it " href="M-FRM-Listado\.dc\.html">.*?</a>', t, re.S).group(0)
+    t = t.replace(it, it + it.replace("M-FRM-Listado", "M-FRM-Catalogos").replace("<b>Formularios</b>", "<b>Catálogos</b>"), 1)
+    guardar("M-WA-Menu", t)
+
 # ---- Rol: el área Formularios.
 AREA = ("  { n: 'Formularios', ps: [['forms.read', 'Ver formularios', 'La lista de formularios y su ficha.'], "
         "['forms.manage', 'Diseñar formularios', 'Crear formularios y editar sus preguntas y textos.'], "

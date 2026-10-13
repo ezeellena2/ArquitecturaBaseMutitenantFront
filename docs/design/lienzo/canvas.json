@@ -105,7 +105,7 @@
       "y": 260
     },
     "Criterio-Menus.dc.html": {
-      "h": 2900,
+      "h": 3380,
       "page": "criterio",
       "title": "Criterio · Menús y desplegables",
       "w": 1440,
@@ -1900,6 +1900,46 @@
       "h": 844,
       "title": "WhatsApp · Internos · respuesta del formulario · teléfono",
       "page": "formularios"
+    },
+    "FRM-Catalogos.dc.html": {
+      "x": 0,
+      "y": 3320,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · Catálogos",
+      "page": "formularios"
+    },
+    "FRM-Catalogo-Nuevo.dc.html": {
+      "x": 1520,
+      "y": 3320,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · nuevo catálogo",
+      "page": "formularios"
+    },
+    "FRM-Catalogo.dc.html": {
+      "x": 3040,
+      "y": 3320,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · catálogo a mano",
+      "page": "formularios"
+    },
+    "FRM-Catalogo-Opcion.dc.html": {
+      "x": 4560,
+      "y": 3320,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · opción de un catálogo",
+      "page": "formularios"
+    },
+    "FRM-Catalogo-Filtros.dc.html": {
+      "x": 6080,
+      "y": 3320,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · catálogo con filtros",
+      "page": "formularios"
     }
   },
   "createdOnFiles": {
@@ -2292,7 +2332,12 @@
     "M-FRM-Ficha.dc.html",
     "M-FRM-Pregunta.dc.html",
     "M-WA-Chats-Formulario.dc.html",
-    "M-WA-Conversacion-Respuesta.dc.html"
+    "M-WA-Conversacion-Respuesta.dc.html",
+    "FRM-Catalogos.dc.html",
+    "FRM-Catalogo-Nuevo.dc.html",
+    "FRM-Catalogo.dc.html",
+    "FRM-Catalogo-Opcion.dc.html",
+    "FRM-Catalogo-Filtros.dc.html"
   ],
   "pages": [
     {
