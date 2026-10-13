@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 121 · 12 de octubre de 2026"
+VERSION = "versión 122 · 13 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -114,6 +114,16 @@ CAPITULOS = [
         ("asistente-uso", "Uso del asistente", "Administración › Asistente › Uso", "no", "8b", ["Asistente-Uso-Org", "Plat-Asistente-Uso"],
          ["M-Asistente-Uso-Org", "M-Plat-Asistente-Uso"], [],
          "El tope del mes y el uso por día y por persona; en Plataforma, el costo por organización. Nunca el texto de las conversaciones."),
+    ]),
+    ("formularios", "Diseña formularios", "Formularios que se completan dentro de WhatsApp: la organización los diseña, los publica y se los manda a sus empleados desde un chat.", [
+        ("frm-listado", "Formularios", "/org/formularios", "no", "12", ["FRM-Listado"], ["M-FRM-Listado"], ["FRM-Nuevo"],
+         "Cada formulario con su prefijo, su estado y su última publicación. «Nuevo formulario» pide solo el nombre."),
+        ("frm-ficha", "Ficha de un formulario", "/org/formularios/:id", "no", "12", ["FRM-Ficha"], ["M-FRM-Ficha"], ["FRM-Pregunta", "FRM-Prefijo", "FRM-Ingles", "M-FRM-Pregunta"],
+         "Las preguntas con la vista previa del teléfono, el prefijo de las respuestas y los textos en inglés. Se guarda a mano."),
+        ("frm-publicar", "Publicar", "/org/formularios/:id", "no", "12", ["FRM-Publicar"], [], ["FRM-Publicacion"],
+         "La comprobación antes de publicar, y la pestaña Publicación con la versión en curso y la activa."),
+        ("frm-chat", "Mandar un formulario", "WhatsApp › Chats › Internos", "no", "12", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta"],
+         "En un chat con un empleado: elegir el formulario y el mensaje, y la respuesta que vuelve al chat con su número. En el teléfono, desde el ⋮."),
     ]),
     ("plataforma", "La plataforma", "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales y el WhatsApp propio.", [
         ("organizaciones", "Organizaciones", "/plataforma/organizaciones", "no", "5", ["Organizaciones"], ["M-Organizaciones"], [],

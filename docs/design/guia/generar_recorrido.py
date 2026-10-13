@@ -72,7 +72,8 @@ def pantalla(p, n):
 
 
 RECORRIDOS = AQUI.parent / "recorridos"
-ETAPAS = ["Ingreso y registro", "Organización", "Página pública y directorio", "Plataforma", "Mi cuenta", "Etapa 8 · WhatsApp", "Etapa 8b · Asistente"]
+ETAPAS = ["Ingreso y registro", "Organización", "Página pública y directorio", "Plataforma", "Mi cuenta", "Etapa 8 · WhatsApp", "Etapa 8b · Asistente",
+          "Etapa 12 · Formularios"]
 
 
 def recorridos():

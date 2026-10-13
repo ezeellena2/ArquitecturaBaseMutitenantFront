@@ -1,0 +1,74 @@
+{
+  "id": "publicar-un-formulario",
+  "titulo": "Publicar un formulario",
+  "etapa": "Etapa 12 · Formularios",
+  "orden": 10,
+  "resumen": "Lucía cambia una pregunta, guarda y publica la versión 4; WhatsApp la revisa y queda publicada.",
+  "pasos": [
+    {
+      "tablero": "FRM-Listado",
+      "tweaks": { "estado": "Todos" },
+      "resaltar": "a:text-is(\"Visita a cliente\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Abre el formulario",
+      "texto": "El listado muestra cada formulario con su prefijo y su estado. «Visita a cliente» está publicado en la versión 3.",
+      "avanzar": "Tocá «Visita a cliente».",
+      "ruta": "/org/formularios",
+      "accion": "Abre «Visita a cliente»."
+    },
+    {
+      "tablero": "FRM-Ficha",
+      "tweaks": { "estado": "Cambios sin guardar" },
+      "resaltar": "button.cb-pri:has-text(\"Guardar cambios\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Guarda el borrador",
+      "texto": "Los cambios se guardan a mano. Al costado, la vista previa muestra cómo se ve en el teléfono.",
+      "avanzar": "Tocá «Guardar cambios».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Guarda los cambios."
+    },
+    {
+      "tablero": "FRM-Ficha",
+      "tweaks": { "estado": "Guardado" },
+      "resaltar": "a.cb-pri:text-is(\"Publicar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Pide publicar",
+      "texto": "Con todo guardado, «Publicar» pasa a ser el botón principal.",
+      "avanzar": "Tocá «Publicar».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Toca «Publicar»."
+    },
+    {
+      "tablero": "FRM-Publicar",
+      "tweaks": { "estado": "Sin problemas" },
+      "resaltar": ".cb-pri:has-text(\"Publicar versión 4\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Revisa qué cambia",
+      "texto": "El diálogo comprueba el formulario antes de mandarlo y muestra qué cambia en la versión 4.",
+      "avanzar": "Tocá «Publicar versión 4».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Publica la versión 4."
+    },
+    {
+      "tablero": "FRM-Publicacion",
+      "tweaks": { "estado": "Publicando" },
+      "actor": "Sistema",
+      "titulo": "WhatsApp la revisa",
+      "texto": "La pestaña Publicación muestra la versión en curso; mientras tanto sigue activa la 3.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id",
+      "accion": "Ve «Publicando v4»."
+    },
+    {
+      "tablero": "FRM-Publicacion",
+      "tweaks": { "estado": "Publicado · v4" },
+      "resaltar": "a.cb-sec:has-text(\"Abrir vista previa\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Queda publicada",
+      "texto": "La versión 4 es la activa. La vista previa oficial de WhatsApp se abre en español o en inglés.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/:id",
+      "accion": "Ve «Publicado · v4»."
+    }
+  ]
+}
