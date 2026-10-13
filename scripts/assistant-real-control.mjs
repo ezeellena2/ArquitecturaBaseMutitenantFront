@@ -22,7 +22,7 @@ export function createAssistantControl(command) {
 }
 
 export function parseAssistantArguments(args) {
-  assert.ok(args.every((argument) => ["--no-build", "--width=1440", "--width=390", "--only=E8B-10-1", "--after=E8B-10-1", "--from=E8B-30-2", "--from=E8B-40-1", "--from=transport-resume", "--from=transport-keychanged", "--from=history-rename", "--from=E8B-50-2", "--from=E8B-50-3", "--from=access-cross"].includes(argument)), "Argumentos Asistente no admitidos.");
+  assert.ok(args.every((argument) => ["--no-build", "--width=1440", "--width=390", "--only=E8B-10-1", "--after=E8B-10-1", "--from=E8B-30-2", "--from=E8B-40-1", "--from=transport-resume", "--from=transport-keychanged", "--from=history-rename", "--from=attachments-five", "--from=E8B-50-2", "--from=E8B-50-3", "--from=access-cross"].includes(argument)), "Argumentos Asistente no admitidos.");
   const widths = args.filter((argument) => argument.startsWith("--width="));
   assert.ok(widths.length <= 1, "Seleccioná un solo ancho.");
   assert.ok(args.filter((argument) => /^(--only|--after|--from)=/.test(argument)).length <= 1, "Seleccioná el hito pendiente o su continuación.");
@@ -31,6 +31,7 @@ export function parseAssistantArguments(args) {
     ...(args.includes("--from=E8B-30-2") ? { fromTools: true } : {}), ...(args.includes("--from=E8B-40-1") ? { fromHistory: true } : {}),
     ...(args.includes("--from=transport-resume") ? { fromTransport: true } : {}), ...(args.includes("--from=history-rename") ? { fromRename: true } : {}),
     ...(args.includes("--from=transport-keychanged") ? { fromTransport: true, keyChangedOnly: true } : {}),
+    ...(args.includes("--from=attachments-five") ? { fromAttachments: true } : {}),
     ...(args.includes("--from=E8B-50-2") ? { fromKey: true } : {}), ...(args.includes("--from=E8B-50-3") ? { fromKey: true, keySaveOnly: true } : {}),
     ...(args.includes("--from=access-cross") ? { crossOnly: true } : {}) };
 }

@@ -2,8 +2,16 @@ import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { test } from "node:test";
-import { assistantExportPath, acceptAssistantNoticeFromHome, conversationAction } from "./assistant-real-ui.mjs";
+import { assistantExportPath, acceptAssistantNoticeFromHome, conversationAction, assistantTerminalDiagnostic } from "./assistant-real-ui.mjs";
 import { chromium } from "playwright";
+
+test("el diagnóstico terminal sólo entrega lastEvent y código sin cuerpo ni datos privados", () => {
+  assert.deepEqual(assistantTerminalDiagnostic({ events: ["start", "error"], terminal: {
+    code: "Assistant.Provider.ContextTooLarge", text: "respuesta privada", traceId: "trace privado", token: "secret" }, body: "cuerpo privado" }),
+  { lastEvent: "error", terminal: { code: "Assistant.Provider.ContextTooLarge" } });
+  assert.deepEqual(assistantTerminalDiagnostic({ events: ["valor privado"], terminal: { code: "texto privado" } }), { lastEvent: "none", terminal: { code: "none" } });
+  assert.deepEqual(assistantTerminalDiagnostic({ events: ["done"] }), { lastEvent: "done", terminal: { code: "none" } });
+});
 
 test("el foco de acceso espera Inicio y pulsa Entendido explícitamente sólo si aparece el aviso", async () => {
   const browser = await chromium.launch({ headless: true });

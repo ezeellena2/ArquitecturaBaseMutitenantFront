@@ -170,10 +170,19 @@ async function newConversation(page) {
 }
 const calls = (value) => value.calls + value.titleCalls;
 
+export function assistantTerminalDiagnostic(response) {
+  const event = response.events?.at(-1);
+  const code = response.terminal?.code;
+  return {
+    lastEvent: ["start", "delta", "tool", "title", "done", "error"].includes(event) ? event : "none",
+    terminal: { code: typeof code === "string" && /^[A-Za-z0-9.]+$/.test(code) ? code : "none" },
+  };
+}
+
 /** Los 21 hitos usan controles de la app; los casos técnicos suplementarios usan la API real. */
 export async function runAssistantJourney({ page, platformPage, width, env, base, businessEmail, operatorEmail,
   record, organizationName = "Empresa E2E", login = (target, email, access) => assistantLogin(target, env, base, email, access), signOut,
-  onlyNotice = false, afterNotice = false, fromTools = false, fromHistory = false, fromTransport = false, fromRename = false, fromKey = false, keySaveOnly = false, crossOnly = false, keyChangedOnly = false }) {
+  onlyNotice = false, afterNotice = false, fromTools = false, fromHistory = false, fromTransport = false, fromRename = false, fromAttachments = false, fromKey = false, keySaveOnly = false, crossOnly = false, keyChangedOnly = false }) {
   const control = createAssistantControl(env.command);
   const root = prefix("business");
   await login(page, businessEmail, "business");
@@ -187,7 +196,7 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
   const step = (id, action, target = page) => record(id, width, () => target, action, () => "El control real no cumplió la comprobación.");
   let id; let title; let admission;
   // Una continuación nueva necesita aceptar por UI el aviso del contexto fresco, sin repetir el CHECK aprobado.
-  if (afterNotice || fromTools || fromHistory || fromTransport || fromRename || fromKey || crossOnly) await acceptNotice(page);
+  if (afterNotice || fromTools || fromHistory || fromTransport || fromRename || fromAttachments || fromKey || crossOnly) await acceptNotice(page);
   else await step("E8B-10-1", async () => {
     const notice = page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true });
     await notice.waitFor();
@@ -216,7 +225,7 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     return;
   }
   const toolQuestion = "[E2E:tool] [E2E:slow] ¿Quiénes son los usuarios activos?";
-  if (!fromTools && !fromHistory && !fromTransport && !fromRename && !fromKey) {
+  if (!fromTools && !fromHistory && !fromTransport && !fromRename && !fromAttachments && !fromKey) {
   await step("E8B-10-2", async () => {
     await page.getByRole("heading", { name: "¿Qué querés consultar?", exact: true }).waitFor();
     await page.reload();
@@ -250,14 +259,20 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     admission = await sendFromUi(page, toolQuestion); id = admission.id;
     return "La imagen se subió por multipart autenticado y el envío abrió SSE a través de Vite.";
   });
-  } else if (fromKey) {
+  } else if (fromKey || fromAttachments) {
     const created = await assistantApi(page, { route: `${root}/conversations`, method: "POST", body: {}, key: randomUUID() });
     assert.equal(created.status, 201); id = created.body.id;
+    if (fromAttachments) {
+      // El historial posterior requiere una guardada visible; no vuelve a probar herramientas ni transporte.
+      const prepared = await assistantApi(page, { route: `${root}/conversations/${id}/messages`, method: "POST", key: randomUUID(), stream: true,
+        body: { text: "[E2E:answer] Preparación de conversación guardada.", attachmentIds: [], conversationVersion: created.body.version } });
+      assert.equal(prepared.status, 200);
+    }
   } else {
     // Dependencia mínima del contexto fresco: una pregunta por UI, sin repetir upload, atajo, navegación ni CHECK verdes.
     admission = await sendFromUi(page, toolQuestion); id = admission.id;
   }
-  if (!fromHistory && !fromTransport && !fromRename && !fromKey) {
+  if (!fromHistory && !fromTransport && !fromRename && !fromAttachments && !fromKey) {
   await step("E8B-30-2", async () => {
     await page.getByText("Consultando usuarios…", { exact: true }).or(page.getByText("Consultó Usuarios", { exact: true })).first().waitFor();
     return "La herramienta real de Usuarios informa su estado sin mostrar argumentos privados.";
@@ -279,7 +294,7 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     return "La respuesta completa y su feedback están en PostgreSQL; el contador acredita la herramienta y sus ciclos.";
   });
   } else if (!fromKey) await waitAssistantTerminal(page, root, id);
-  if (!fromTransport && !fromRename && !fromKey) {
+  if (!fromTransport && !fromRename && !fromAttachments && !fromKey) {
   await step("E8B-40-1", async () => {
     title = (await readConversation(page, root, id)).conversation.title ?? "Nueva conversación";
     await openHistory(page, width);
@@ -316,7 +331,7 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
     assert.equal((await assistantApi(page, { route: `${root}/conversations/${id}`, method: "PUT", body: { isSaved: true, version: saved.conversation.version } })).status, 200);
   }
   // Navegación, stop, replay y bordes de archivos pertenecen a la integración real.
-  if (!fromKey) await assistantTransportCases({ page, width, base, control, root, actor, savedId: id, resumeOnly: fromTransport && !keyChangedOnly, historyOnly: fromRename, keyChangedOnly });
+  if (!fromKey) await assistantTransportCases({ page, width, base, control, root, actor, savedId: id, resumeOnly: fromTransport && !keyChangedOnly, historyOnly: fromRename, attachmentsOnly: fromAttachments, keyChangedOnly });
   if (!fromKey) {
   await step("E8B-50-1", async () => {
     const me = await assistantApi(page, { route: "/api/me" });
@@ -477,8 +492,8 @@ async function assistantAccessCases({ page, platformPage, width, base, control, 
   } catch (error) { error.assistantStage = stage; throw error; }
 }
 
-async function assistantTransportCases({ page, width, base, control, root, actor, savedId, resumeOnly = false, historyOnly = false, keyChangedOnly = false }) {
-  let stage = historyOnly ? "history.rename-conflict" : keyChangedOnly ? "transport.keychanged" : resumeOnly ? "transport.resume" : "transport.sse";
+async function assistantTransportCases({ page, width, base, control, root, actor, savedId, resumeOnly = false, historyOnly = false, attachmentsOnly = false, keyChangedOnly = false }) {
+  let stage = historyOnly ? "history.rename-conflict" : attachmentsOnly ? "attachments.five-six" : keyChangedOnly ? "transport.keychanged" : resumeOnly ? "transport.resume" : "transport.sse";
   const advance = (next) => { process.stdout.write(`TECH OK ${stage} ${width}\n`); stage = next; process.stdout.write(`TECH INICIO ${stage} ${width}\n`); };
   process.stdout.write(`TECH INICIO ${stage} ${width}\n`);
   try {
@@ -488,7 +503,9 @@ async function assistantTransportCases({ page, width, base, control, root, actor
   const id = created.body.id;
   let detail = await readConversation(page, root, id);
   let failing;
+  const route = `${root}/conversations/${id}/attachments`;
   if (!historyOnly) {
+  if (!attachmentsOnly) {
   const request = { text: "[E2E:answer] Respuesta incremental para comprobar transporte.", attachmentIds: [], conversationVersion: detail.conversation.version };
   const key = randomUUID();
   if (!resumeOnly) {
@@ -540,7 +557,6 @@ async function assistantTransportCases({ page, width, base, control, root, actor
   advance("attachments.signature-limit");
   // Bordes de upload reales: firma, +1 byte, dueño/conversación y borrar pendiente.
   detail = await readConversation(page, root, id);
-  const route = `${root}/conversations/${id}/attachments`;
   const misleading = await assistantApi(page, { route, method: "POST", body: { conversationVersion: detail.conversation.version },
     key: randomUUID(), file: { name: "imagen.png", type: "image/png", bytes: Array.from(Buffer.from("archivo que no es PNG")) } });
   assert.equal(misleading.status, 400);
@@ -562,6 +578,7 @@ async function assistantTransportCases({ page, width, base, control, root, actor
   assert.equal((await assistantApi(page, { route: `${route}/${attachment.body.id}?version=${attachment.body.version}`, method: "DELETE" })).status, 204);
   assert.equal((await assistantApi(page, { route: `${route}/${attachment.body.id}` })).status, 404);
   advance("attachments.five-six");
+  }
   const attachments = [];
   for (let index = 0; index < 5; index++) {
     detail = await readConversation(page, root, id);
@@ -575,11 +592,13 @@ async function assistantTransportCases({ page, width, base, control, root, actor
     body: { ...multiple, attachmentIds: [...attachments, attachments[0]] }, key: randomUUID(), stream: true });
   assert.equal(sixth.status, 400, "Seis archivos se rechazan antes de llamar al modelo.");
   const five = await assistantApi(page, { route: `${root}/conversations/${id}/messages`, method: "POST", body: multiple, key: randomUUID(), stream: true });
+  process.stdout.write(`TECH DATA attachments.five-six ${width} ${JSON.stringify(assistantTerminalDiagnostic(five))}\n`);
   assert.equal(five.status, 200); assert.equal(five.events.at(-1), "done");
   detail = await waitAssistantTerminal(page, root, id);
   assert.equal(detail.messages.items.findLast((message) => message.role === "user").attachments.length, 5);
   advance("history.rename-conflict");
-  } else {
+  }
+  if (historyOnly || attachmentsOnly) {
     const failed = await assistantApi(page, { route: `${root}/conversations`, method: "POST", body: {}, key: randomUUID() });
     assert.equal(failed.status, 201);
     failing = { id: failed.body.id };

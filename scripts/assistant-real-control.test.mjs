@@ -53,3 +53,9 @@ test("continúa desde reanudar transporte conservando hitos y prefijo técnico a
   assert.throws(() => parseAssistantArguments(["--from=transport-resume", "--from=E8B-40-1"]));
   assert.throws(() => parseAssistantArguments(["--from=transport-private"]), /no admitidos/);
 });
+
+test("continúa desde attachments-five sin repetir transporte ni combinar cortes", () => {
+  assert.deepEqual(parseAssistantArguments(["--no-build", "--width=1440", "--from=attachments-five"]), { build: false, widths: [1440], fromAttachments: true });
+  assert.throws(() => parseAssistantArguments(["--from=attachments-five", "--from=transport-resume"]));
+  assert.throws(() => parseAssistantArguments(["--from=attachments-owner"]), /no admitidos/);
+});

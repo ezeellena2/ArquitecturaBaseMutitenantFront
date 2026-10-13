@@ -61,9 +61,9 @@ export function assistantFixtureProtocol(input, output, { environment = process.
 }
 
 /** E2E real completo E8b. Fake reemplaza sólo el proveedor; front/auth/DB/archivos son reales. */
-export async function runAssistantRealE2E({ build = false, widths = [1440, 390], onlyNotice = false, afterNotice = false, fromTools = false, fromHistory = false, fromTransport = false, fromRename = false, fromKey = false, keySaveOnly = false, crossOnly = false, keyChangedOnly = false } = {}) {
+export async function runAssistantRealE2E({ build = false, widths = [1440, 390], onlyNotice = false, afterNotice = false, fromTools = false, fromHistory = false, fromTransport = false, fromRename = false, fromAttachments = false, fromKey = false, keySaveOnly = false, crossOnly = false, keyChangedOnly = false } = {}) {
   assert.ok(widths.length > 0 && widths.every((width) => [1440, 390].includes(width)) && new Set(widths).size === widths.length, "Anchos Asistente inválidos.");
-  assert.ok([onlyNotice, afterNotice, fromTools, fromHistory, fromTransport, fromRename, fromKey, crossOnly].filter(Boolean).length <= 1, "Seleccioná el hito pendiente o su continuación.");
+  assert.ok([onlyNotice, afterNotice, fromTools, fromHistory, fromTransport, fromRename, fromAttachments, fromKey, crossOnly].filter(Boolean).length <= 1, "Seleccioná el hito pendiente o su continuación.");
   const env = await createEnvironment({ build });
   let browser;
   try {
@@ -87,7 +87,7 @@ export async function runAssistantRealE2E({ build = false, widths = [1440, 390],
           await exit.first().click();
           await target.waitForURL((url) => !url.pathname.startsWith("/org") && !url.pathname.startsWith("/plataforma"));
         };
-        await runAssistantJourney({ page, platformPage, width, env, base: baseUrl, businessEmail: env.businessEmail, operatorEmail, signOut, onlyNotice, afterNotice, fromTools, fromHistory, fromTransport, fromRename, fromKey, keySaveOnly, crossOnly, keyChangedOnly,
+        await runAssistantJourney({ page, platformPage, width, env, base: baseUrl, businessEmail: env.businessEmail, operatorEmail, signOut, onlyNotice, afterNotice, fromTools, fromHistory, fromTransport, fromRename, fromAttachments, fromKey, keySaveOnly, crossOnly, keyChangedOnly,
           record: async (id, currentWidth, _getPage, action) => {
             process.stdout.write(assistantCheck("INICIO", id, currentWidth));
             try { await action(); process.stdout.write(assistantCheck("OK", id, currentWidth)); }
