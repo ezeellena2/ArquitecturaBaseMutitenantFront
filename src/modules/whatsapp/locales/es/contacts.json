@@ -106,6 +106,7 @@
     "submitCount_other": "Importar {{n}} contactos",
     "importing": "Importando…",
     "done_one": "Importamos {{n}} contacto.",
-    "done_other": "Importamos {{n}} contactos."
+    "done_other": "Importamos {{n}} contactos.",
+    "tagTooLong": "La etiqueta puede tener hasta {{count}} caracteres."
   }
 }

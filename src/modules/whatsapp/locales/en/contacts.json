@@ -106,6 +106,7 @@
     "submitCount_other": "Import {{n}} contacts",
     "importing": "Importing…",
     "done_one": "We imported {{n}} contact.",
-    "done_other": "We imported {{n}} contacts."
+    "done_other": "We imported {{n}} contacts.",
+    "tagTooLong": "The tag can have up to {{count}} characters."
   }
 }

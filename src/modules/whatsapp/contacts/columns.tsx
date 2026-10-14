@@ -60,18 +60,20 @@ export function contactPhoneRow(contact: WhatsAppContactResponse, t: TFunction, 
 
 export function createContactConversationColumns(t: TFunction): Column<WhatsAppContactConversationResponse>[] {
   return [
-    { id: "startedAtUtc", header: t("whatsapp:contacts.conversations.columns.conversation"), type: "relative", mobile: "primary", value: (row) => row.startedAtUtc },
+    // Tablero WA-Contacto: la fecha y debajo el último mensaje (CC18).
+    { id: "startedAtUtc", header: t("whatsapp:contacts.conversations.columns.conversation"), type: "relative", mobile: "primary", className: "w-[36%]",
+      value: (row) => row.startedAtUtc, detail: (row) => row.lastMessagePreview ?? null },
     { id: "team", header: t("whatsapp:contacts.conversations.columns.team"), type: "text", value: (row) => row.team?.name },
     { id: "assignee", header: t("whatsapp:contacts.conversations.columns.assignee"), type: "text", value: (row) => row.assignee?.name },
     { id: "messageCount", header: t("whatsapp:contacts.conversations.columns.messages"), type: "integer", className: "w-[120px]", value: (row) => row.messageCount },
   ];
 }
 
-/// M-WA-Contacto: la fecha con los mensajes a la derecha y debajo el equipo y quién la atendió.
+/// M-WA-Contacto: la fecha con los mensajes a la derecha, el último mensaje y debajo el equipo y quién la atendió.
 export function contactConversationPhoneRow(row: WhatsAppContactConversationResponse, t: TFunction, format: FormatState, trailing?: ReactNode): ReactNode {
   const attended = [row.team?.name, row.assignee?.name].filter(Boolean).join(" · ");
   return <ListRow key={row.conversationId} to={chatPath(row.conversationId)} title={<DateText value={row.startedAtUtc} kind="relative" />}
-    meta={t("whatsapp:contacts.conversations.messages", countOf(format, row.messageCount))} lines={[attended || <EmptyValue key="empty" />]} trailing={trailing} />;
+    meta={t("whatsapp:contacts.conversations.messages", countOf(format, row.messageCount))} lines={[row.lastMessagePreview, attended || <EmptyValue key="empty" />]} trailing={trailing} />;
 }
 
 export function createContactBroadcastColumns(t: TFunction): Column<WhatsAppContactBroadcastResponse>[] {

@@ -63,8 +63,6 @@ function ContactDetail({ contact, back }: { contact: WhatsAppContactResponse; ba
     queryKey: (query) => contactConversationsQueryKey(contact.id, query), queryFn: (query) => fetchContactConversations(contact.id, query), meta: { silent: true } });
   const broadcasts = usePagedQuery({ filterKeys: noFilters, prefix: "difusiones.", toQuery: paged,
     queryKey: (query) => contactBroadcastsQueryKey(contact.id, query), queryFn: (query) => fetchContactBroadcasts(contact.id, query), meta: { silent: true } });
-  // «Abrir chat» lleva a la conversación más reciente, la primera de su lista.
-  const latest = conversations.query.page === 1 ? conversations.result.data?.items[0] : undefined;
   const title = contact.name ?? (format.isLoading ? "" : format.formatPhone(contact.displayNumber));
   // Tablero WA-Contacto: «+54 9 11 5555-6203 · Vinculada a su cuenta · Mayorista · Acepta promociones».
   const details = [
@@ -82,7 +80,8 @@ function ContactDetail({ contact, back }: { contact: WhatsAppContactResponse; ba
     ...createContactConversationColumns(t),
     { id: "actions", header: t("whatsapp:contacts.columns.actions"), type: "actions", cell: conversationActions },
   ];
-  const openChat = latest ? <Button asChild><Link to={chatPath(latest.conversationId)}>{t("whatsapp:contacts.openChat")}</Link></Button> : null;
+  // «Abrir chat» lleva a la conversación más reciente del contacto (CC18); sin conversaciones, no va.
+  const openChat = contact.latestConversationId ? <Button asChild><Link to={chatPath(contact.latestConversationId)}>{t("whatsapp:contacts.openChat")}</Link></Button> : null;
 
   return <>
     <Page icon={ContactsIcon} title={title} backTo={back} summary={summary} phoneSubtitle={summary} phoneBody="flush"

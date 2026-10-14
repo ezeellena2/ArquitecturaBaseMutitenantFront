@@ -13,7 +13,7 @@ beforeAll(async () => { await import("./ContactPage"); });
 afterEach(() => vi.unstubAllGlobals());
 
 const conversations = paged([
-  { conversationId: "conversation-2", startedAtUtc: "2026-10-01T12:00:00Z", team: { id: "team-sales", name: "Ventas" }, assignee: { id: "member-1", name: "Lucía Fernández" }, messageCount: 8 },
+  { conversationId: "conversation-2", startedAtUtc: "2026-10-01T12:00:00Z", team: { id: "team-sales", name: "Ventas" }, assignee: { id: "member-1", name: "Lucía Fernández" }, messageCount: 8, lastMessagePreview: "Quiero hacer un pedido." },
   { conversationId: "conversation-1", startedAtUtc: "2026-09-12T13:00:00Z", team: { id: "team-support", name: "Soporte" }, assignee: null, messageCount: 9 },
 ]);
 const broadcasts = paged([{ broadcastId: "broadcast-1", name: "20 % en empanadas", sentAtUtc: "2026-09-25T12:00:00Z", status: "Read" }], 3);
@@ -38,8 +38,10 @@ describe("Ficha del contacto", () => {
     const tabs = screen.getByRole("tablist", { name: "Datos del contacto" });
     expect(await within(tabs).findByRole("tab", { name: /Conversaciones\s*2/ })).toBeVisible();
     expect(within(tabs).getByRole("tab", { name: /Difusiones\s*3/ })).toBeVisible();
-    expect(await screen.findByRole("link", { name: "Abrir chat" })).toHaveAttribute("href", "/org/whatsapp/chats/conversation-2");
-    expect(screen.getByText("Ventas")).toBeVisible();
+    // «Abrir chat» va a la más reciente que dice el contacto (CC18), no a la primera de la lista.
+    expect(await screen.findByRole("link", { name: "Abrir chat" })).toHaveAttribute("href", "/org/whatsapp/chats/conversation-3");
+    expect(await screen.findByText("Ventas")).toBeVisible();
+    expect(screen.getByText("Quiero hacer un pedido.")).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
     await user.click(within(tabs).getByRole("tab", { name: /Difusiones/ }));
     expect(await screen.findByRole("link", { name: "20 % en empanadas" })).toHaveAttribute("href", "/org/whatsapp/difusiones/broadcast-1");

@@ -1,3 +1,4 @@
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { api } from "@/shared/api/httpClient";
 import type { ResourceOptions } from "@/shared/api/resourceOptions";
 import { toSearch } from "@/shared/api/toSearch";
@@ -16,6 +17,10 @@ import type {
 } from "../../api/types";
 
 const base = "/api/organization/whatsapp/contacts";
+
+/// CC22: el largo de una etiqueta. La importación y el filtro de la lista la mandan como dato suelto (multipart y query),
+/// que `validation.ts` no publica: vale el de cada etiqueta del contacto.
+export const tagMaxLength = validationConstraints.UpdateWhatsAppContactHttpRequest.tags.items.maxLength;
 
 export type ContactsQuery = PagedRequest & { tag?: string; consent?: WhatsAppConsent };
 

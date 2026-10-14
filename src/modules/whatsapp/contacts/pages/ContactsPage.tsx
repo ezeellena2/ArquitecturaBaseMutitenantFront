@@ -17,7 +17,7 @@ import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { ContactsIcon } from "../../components/icons";
 import type { WhatsAppConsent, WhatsAppContactResponse } from "../../api/types";
-import { contactsQueryKey, contactTagOptions, fetchContacts, type ContactsQuery } from "../api/contacts";
+import { contactsQueryKey, contactTagOptions, fetchContacts, tagMaxLength, type ContactsQuery } from "../api/contacts";
 import { contactPath, contactPhoneRow, createContactColumns } from "../columns";
 import { EditContactDialog } from "../components/EditContactDialog";
 import { ImportContactsDialog } from "../components/ImportContactsDialog";
@@ -42,7 +42,8 @@ export function ContactsPage(_props: ModuleContentProps) {
   const navigate = useNavigate();
   const { filters, pagination, query, result: contacts, paginationProps } = usePagedQuery({
     filterKeys: contactFilterKeys,
-    toQuery: (page, values): ContactsQuery => ({ ...page, tag: values.tag, consent: consents.find((consent) => consent !== undefined && consent === values.consent) }),
+    // Una etiqueta más larga que el límite (una URL escrita a mano) no existe: no filtra.
+    toQuery: (page, values): ContactsQuery => ({ ...page, tag: values.tag && values.tag.length <= tagMaxLength ? values.tag : undefined, consent: consents.find((consent) => consent !== undefined && consent === values.consent) }),
     queryKey: contactsQueryKey, queryFn: (contactsQuery) => fetchContacts(contactsQuery), meta: { silent: true, blocksView: true },
   });
   const tags = useResourceOptions(contactTagOptions);

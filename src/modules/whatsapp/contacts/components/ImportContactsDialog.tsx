@@ -19,7 +19,7 @@ import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { SearchSelect } from "@/shared/ui/SearchSelect";
 import type { WhatsAppImportPreviewResponse } from "../../api/types";
-import { contactsQueryRoot, contactTagOptions, fetchImportSample, importContacts, previewImport, type ImportContactsInput } from "../api/contacts";
+import { contactsQueryRoot, contactTagOptions, fetchImportSample, importContacts, previewImport, tagMaxLength, type ImportContactsInput } from "../api/contacts";
 import { importErrorField } from "../errors";
 import { saveResponseAs } from "../lib/saveFile";
 import { FileInput } from "./FileInput";
@@ -45,6 +45,7 @@ export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () =
   const [file, setFile] = useState<File | null>(null);
   const [tag, setTag] = useState(noTag);
   const [fileError, setFileError] = useState<string>();
+  const [tagError, setTagError] = useState<string>();
   const tagOptions = useResourceOptions(contactTagOptions);
   const { failure, clear, fail, close } = useDialogFailure(onClose, contactsQueryRoot);
   const sample = useMutation({ mutationFn: async () => saveResponseAs(await fetchImportSample(), t("whatsapp:contacts.import.sampleFileName")) });
@@ -68,6 +69,7 @@ export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () =
   function submit() {
     clear();
     if (!file) { setFileError(t("whatsapp:contacts.import.fileRequired")); return; }
+    if (tag.length > tagMaxLength) { setTagError(t("whatsapp:contacts.import.tagTooLong", { count: tagMaxLength })); return; }
     importer.mutate({ file, tag: tag || null }, {
       onSuccess: async (result) => {
         toast.success(t("whatsapp:contacts.import.done", countOf(format, result.imported)));
@@ -94,8 +96,8 @@ export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () =
             <FileInput accept={acceptedFiles} fileName={file?.name ?? null} placeholder={t("whatsapp:contacts.import.noFile")}
               action={t(file ? "whatsapp:contacts.import.change" : "whatsapp:contacts.import.choose")} onFile={choose} />
           </FormField>
-          <FormField label={t("whatsapp:contacts.import.tag")}>
-            <SearchSelect value={tag} onChange={(next) => { setTag(next); clear(); }} remote={tagOptions.remote}
+          <FormField label={t("whatsapp:contacts.import.tag")} error={tagError}>
+            <SearchSelect value={tag} onChange={(next) => { setTag(next); setTagError(undefined); clear(); }} remote={tagOptions.remote}
               options={[{ value: noTag, label: t("whatsapp:contacts.import.noTag") }, ...tagOptions.items.map(tagOption)]}
               selectedLabel={tag || t("whatsapp:contacts.import.noTag")}
               placeholder={t("whatsapp:contacts.import.noTag")} searchLabel={t("common:actions.search")} />

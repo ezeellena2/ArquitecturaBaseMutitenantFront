@@ -8,6 +8,7 @@ import type { WhatsAppContactResponse } from "../../api/types";
 export const martina: WhatsAppContactResponse = {
   id: "contact-martina", name: "Martina López", displayNumber: "+5491155556203", tags: ["Mayorista"], consent: "Accepted",
   consentSource: "Bot", consentChangedAtUtc: "2026-09-12T13:00:00Z", linkedToAccount: true, lastConversationAtUtc: "2026-10-01T12:00:00Z", version: 4,
+  latestConversationId: "conversation-3",
 };
 
 export const unnamed: WhatsAppContactResponse = {
