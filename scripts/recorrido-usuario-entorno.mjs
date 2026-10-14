@@ -88,6 +88,22 @@ export function createPrivateCommand(readyFile, { wait = (file) => waitFile(file
 }
 
 /** Binding del control publicado: nunca reinicia ni sustituye el destinatario de un cursor. */
+// E11 (WhatsAppBrowserControl.Organization del back): el número de una organización sin Meta, lo que escribe o toca la
+// persona, el turno del bot y lo que salió. El escenario va hasta 40 porque el PhoneNumberId lo lleva y tiene tope 60.
+const organizationOrders = { orgNumber: ["tenantId"], orgInbound: ["text", "reply"], orgProcess: [], orgOutbound: [] };
+const botButtons = ["bot.link", "bot.promotions.yes", "bot.promotions.no", "bot.unsubscribe"];
+
+function organizationOrder(kind, scenario, extra) {
+  assert.ok(scenario.length <= 40, "El escenario de una organización va hasta 40 caracteres.");
+  if (kind === "orgNumber") assert.ok(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(extra.tenantId ?? ""), "La organización no es válida.");
+  if (kind !== "orgInbound") return;
+  const { text, reply } = extra;
+  assert.ok((text === undefined) !== (reply === undefined), "Lo que entra es un texto o una respuesta, nunca los dos.");
+  if (text !== undefined) assert.ok(typeof text === "string" && text.trim().length > 0 && text.length <= 200 && !/\p{Cc}/u.test(text), "El texto va en una línea, hasta 200.");
+  else assert.ok(Object.keys(reply ?? {}).every((key) => key === "type" || key === "id")
+    && (reply.type === "list" ? /^bot\.option\.[0-9a-f]{32}$/.test(reply.id) : reply.type === "button" && botButtons.includes(reply.id)), "La respuesta no es una que ofrece el bot.");
+}
+
 export function createWhatsAppControl(command) {
   const started = new Set();
   return {
@@ -99,8 +115,10 @@ export function createWhatsAppControl(command) {
       const reply = await command("whatsapp", { kind: "begin", scenario, phone });
       assert.ok(reply?.ok === true, "El preparador no pudo iniciar el escenario privado.");
       return async (kind, extra = {}) => {
-        assert.ok(["code", "inbound", "bot", "events", "recoveryNotice"].includes(kind), "La orden privada no está admitida por el recorrido.");
-        assert.ok(Object.keys(extra).every((key) => kind === "recoveryNotice" && key === "recoveryId"), "Los parámetros no pueden sustituir el cursor ni el destino.");
+        assert.ok(["code", "inbound", "bot", "events", "recoveryNotice", ...Object.keys(organizationOrders)].includes(kind), "La orden privada no está admitida por el recorrido.");
+        const allowed = kind === "recoveryNotice" ? ["recoveryId"] : organizationOrders[kind] ?? [];
+        assert.ok(Object.keys(extra).every((key) => allowed.includes(key)), "Los parámetros no pueden sustituir el cursor ni el destino.");
+        if (kind in organizationOrders) organizationOrder(kind, scenario, extra);
         return command("whatsapp", { kind, ...extra, scenario, phone });
       };
     },

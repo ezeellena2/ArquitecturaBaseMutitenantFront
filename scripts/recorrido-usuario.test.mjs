@@ -7,6 +7,7 @@ import { baseUrl } from "./recorrido-usuario-entorno.mjs";
 import { execFileSync } from "node:child_process";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
+import { botOption, e11Definitions, e11ManualChecks, nationalPhone, outboundCount, runE11Journey } from "./recorrido-usuario-e11.mjs";
 
 test("la selección de ancho conserva el recorrido completo por defecto y permite sólo un ancho vigente", () => {
   assert.deepEqual(parseJourneyArguments([]), { build: true, widths: [1440, 390] });
@@ -331,4 +332,34 @@ test("el informe no disfraza otro fallo HTTP o código como la limitación contr
   for (const [status, code] of [[503, "General.Contract.NotImplemented"], [501, "Tenancy.Access.PlatformOnly"]]) {
     await assert.rejects(platformAssistantLimitation({ ok: () => false, status: () => status, json: async () => ({ code }) }), { name: "AssertionError" });
   }
+});
+
+test("el recorrido E11 tiene sus pasos en orden, declara los del canal privado y deja Meta para probar a mano", () => {
+  assert.deepEqual(e11Definitions.map((step) => step.id), Array.from({ length: 15 }, (_, index) => `E11-${String(index + 1).padStart(2, "0")}`));
+  for (const step of e11Definitions) assert.ok(step.title.startsWith("E11 · ") && step.expected);
+  // Lo que pasa por WhatsAppBrowserControl (número, entrada, bot y outbox, OTP) se declara controlado; lo demás es la app.
+  assert.deepEqual(e11Definitions.filter((step) => step.controlled).map((step) => step.id), ["E11-02", "E11-05", "E11-06", "E11-07", "E11-08", "E11-10", "E11-11"]);
+  for (const external of ["Meta real", "WhatsApp real"]) assert.ok(e11ManualChecks.some((item) => item.startsWith(external)), external);
+  assert.ok(e11ManualChecks.some((item) => /Cargar teléfonos/.test(item)));
+});
+
+test("E11 toca la fila del menú por su título y cuenta lo que salió sin aceptar una nota", () => {
+  const turn = { text: "¡Hola!", list: [{ id: `bot.option.${"b".repeat(32)}`, title: "Hacer un pedido" }], buttons: [] };
+  assert.deepEqual(botOption(turn, "Hacer un pedido"), { type: "list", id: `bot.option.${"b".repeat(32)}` });
+  assert.throws(() => botOption(turn, "Reclamos"), /no mostró/);
+  assert.throws(() => botOption({ text: null, list: [], buttons: [] }, "Hacer un pedido"), /no mostró/);
+  assert.equal(outboundCount([{ kind: "Text", status: "Pending" }, { kind: "Text", status: "Sent" }]), 2);
+  assert.throws(() => outboundCount([{ kind: "Note", status: "Pending" }]), /nota/);
+  assert.throws(() => outboundCount([{ kind: "Text", status: "Sent", text: undefined, body: "Hola" }].map(({ kind }) => ({ kind }))), /tipo y estado/);
+  assert.equal(nationalPhone("+5491134567884"), "11 3456-7884");
+  assert.throws(() => nationalPhone("+541155554521"), /sintético/);
+});
+
+test("sin el control publicado, E11 no abre pantallas ni se declara aprobada", async () => {
+  const touched = [];
+  const page = new Proxy({}, { get: (_, name) => { touched.push(String(name)); return () => {}; } });
+  const record = async () => { touched.push("record"); };
+  await assert.rejects(runE11Journey({ page, platformPage: page, width: 1440, env: {}, base: baseUrl, record, signOut: async () => {}, awaitApp: async () => {},
+    loginBusiness: async () => { touched.push("login"); }, organization: "Recorrido" }), /soporte privado.*mismo entorno/);
+  assert.deepEqual(touched, []);
 });

@@ -12,6 +12,7 @@ import { expectRecoveryEmailInUse, fillOtp } from "./test-e2e-real-ui.mjs";
 import { pickupCode } from "./test-e2e-real-mail.mjs";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, runE8Journey } from "./recorrido-usuario-whatsapp.mjs";
 import { loadAssistantJourneyDefinitions } from "./recorrido-usuario-asistente.mjs";
+import { e11Definitions, e11ManualChecks, runE11Journey } from "./recorrido-usuario-e11.mjs";
 import { runAssistantJourney } from "./assistant-real-ui.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -592,6 +593,9 @@ async function runWidth({ width, context, env, record, output, signal }) {
   });
   await runAssistantJourney({ page, platformPage, width, env, base: baseUrl, businessEmail, operatorEmail: operator,
     organizationName: organization, record, signOut });
+  // E11 en las mismas pestañas: la organización de la E7 y el canal privado de la E8, sin Meta.
+  await runE11Journey({ page, platformPage, width, env, base: baseUrl, record, signOut, awaitApp,
+    loginBusiness: () => login(businessEmail, "business"), organization });
   // Salida real de la sesión de Plataforma, sin tocar cookies a mano entre recorridos.
   await platformPage.setViewportSize(viewport(1440)); await signOut(platformPage, "Plataforma");
   await platformPage.close(); await page.close();
@@ -605,9 +609,9 @@ export async function main({ build = true, widths: selectedWidths = widths } = {
   await mkdir(output, { recursive: true });
   const steps = definitions.map(([id, title, expected]) => ({ id, title, expected }));
   steps.splice(29, 0, ...e8Definitions);
-  steps.push(...await loadAssistantJourneyDefinitions());
-  const report = { date, stage: "Etapas 7, 8 y 8b", widths: selectedWidths, sourceRevision: e8SourceRevision,
-    manual: [...e8ManualChecks, "Anthropic real: cargar la clave y probar el proveedor externo."], startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: steps.map((step) => ({ ...step, results: selectedWidths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
+  steps.push(...await loadAssistantJourneyDefinitions(), ...e11Definitions);
+  const report = { date, stage: "Etapas 7, 8, 8b y 11", widths: selectedWidths, sourceRevision: e8SourceRevision,
+    manual: [...e8ManualChecks, "Anthropic real: cargar la clave y probar el proveedor externo.", ...e11ManualChecks], startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: steps.map((step) => ({ ...step, results: selectedWidths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
   const persist = async () => {
     await writeFile(path.join(output, "resultados.json"), `${JSON.stringify(report, null, 2)}\n`);
     await writeFile(path.join(output, "index.html"), renderIndex(report));

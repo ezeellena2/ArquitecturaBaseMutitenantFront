@@ -135,3 +135,36 @@ test("el binding no publica órdenes para destinos reales, escenarios inválidos
   await assert.rejects(whatsapp.begin("walkthrough-rejected", "+5491134567880"), (error) => /iniciar/.test(error.message) && !error.message.includes("123456"));
   assert.equal(sent, 1);
 });
+
+test("las órdenes de la E11 llevan solo la organización, un texto o una respuesta que ofrece el bot", async () => {
+  const calls = [];
+  const whatsapp = environment.createWhatsAppControl(async (suffix, request) => { calls.push(request); return { ok: true }; });
+  const org = await whatsapp.begin("walkthrough-e11-org-1440", "+5491134567884");
+  const tenantId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+  const option = { type: "list", id: `bot.option.${"a".repeat(32)}` };
+  await org("orgNumber", { tenantId });
+  await org("orgInbound", { text: "Hola" });
+  await org("orgInbound", { reply: option });
+  await org("orgInbound", { reply: { type: "button", id: "bot.link" } });
+  await org("orgProcess"); await org("orgOutbound");
+  assert.deepEqual(calls.slice(1).map(({ kind, scenario, phone, ...extra }) => [kind, scenario, phone, extra]), [
+    ["orgNumber", "walkthrough-e11-org-1440", "+5491134567884", { tenantId }],
+    ["orgInbound", "walkthrough-e11-org-1440", "+5491134567884", { text: "Hola" }],
+    ["orgInbound", "walkthrough-e11-org-1440", "+5491134567884", { reply: option }],
+    ["orgInbound", "walkthrough-e11-org-1440", "+5491134567884", { reply: { type: "button", id: "bot.link" } }],
+    ["orgProcess", "walkthrough-e11-org-1440", "+5491134567884", {}],
+    ["orgOutbound", "walkthrough-e11-org-1440", "+5491134567884", {}],
+  ]);
+  const sent = calls.length;
+  for (const [kind, extra, error] of [
+    ["orgNumber", { tenantId: "otra" }, /organización/], ["orgNumber", {}, /organización/],
+    ["orgInbound", { text: "Hola", reply: option }, /nunca los dos/], ["orgInbound", {}, /nunca los dos/],
+    ["orgInbound", { text: "Hola\nchau" }, /una línea/], ["orgInbound", { text: "x".repeat(201) }, /hasta 200/],
+    ["orgInbound", { reply: { type: "list", id: "bot.option.1" } }, /ofrece el bot/], ["orgInbound", { reply: { type: "button", id: "bot.sign-in" } }, /ofrece el bot/],
+    ["orgInbound", { reply: { ...option, title: "Otra" } }, /ofrece el bot/],
+    ["orgProcess", { tenantId }, /parámetros/], ["orgOutbound", { phone: "+5491134567880" }, /parámetros/], ["orgNumber", { tenantId, scenario: "otro" }, /parámetros/],
+  ]) await assert.rejects(org(kind, extra), error, kind);
+  const long = await whatsapp.begin(`walkthrough-${"e".repeat(30)}`, "+5491134567885");
+  await assert.rejects(long("orgProcess"), /40 caracteres/);
+  assert.equal(calls.length, sent + 1);
+});
