@@ -1634,6 +1634,12 @@ export const validationConstraints = {
     }
   },
   "WhatsAppBroadcastResponse": {
+    "variables": {
+      "maxItems": 10,
+      "items": {
+        "maxLength": 200
+      }
+    },
     "recipients": {
       "minimum": -2147483648,
       "maximum": 2147483647
@@ -1847,6 +1853,14 @@ export const validationConstraints = {
     }
   },
   "WhatsAppTemplateVariableInput": {
+    "label": {
+      "maxLength": 60
+    },
+    "example": {
+      "maxLength": 200
+    }
+  },
+  "WhatsAppTemplateVariableResponse": {
     "label": {
       "maxLength": 60
     },

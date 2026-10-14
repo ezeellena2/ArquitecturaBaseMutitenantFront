@@ -27887,11 +27887,13 @@ export interface components {
             /** Format: int32 */
             scheduled: number;
         };
+        /** @description variables son los valores con que se creó la difusión, para duplicarla. */
         WhatsAppBroadcastResponse: {
             /** Format: uuid */
             id: string;
             name: string;
             template: components["schemas"]["WhatsAppReferenceResponse"];
+            variables: string[];
             audience: components["schemas"]["WhatsAppAudienceResponse"];
             /** Format: int32 */
             recipients: number;
@@ -28200,6 +28202,11 @@ export interface components {
         WhatsAppTemplateCategory: "Utility" | "Marketing" | "Authentication";
         /** @enum {null|string} */
         WhatsAppTemplateGroup: "Consultations" | "System" | null;
+        /** @description Un idioma de la plantilla: culture es un código del catálogo de culturas (es-AR), nunca el de Meta (es_AR). */
+        WhatsAppTemplateLanguageResponse: {
+            culture: string;
+            category: components["schemas"]["WhatsAppTemplateCategory"];
+        };
         /** @description La lista con las aprobadas y, en Plataforma, cuántas hay por grupo (consultations y system); en la organización van en null. */
         WhatsAppTemplateListResponse: {
             templates: components["schemas"]["PagedResultOfWhatsAppTemplateResponse"];
@@ -28220,17 +28227,18 @@ export interface components {
             estimatedCost: components["schemas"]["Money"];
         };
         /**
-         * @description Una plantilla de Meta. languages son sus idiomas (hasta 10; las del sistema traen es y en); title es el nombre visible de las
-         *     del sistema y null en las demás.
+         * @description Una plantilla de Meta. languages son sus idiomas, el principal primero (hasta 10; las del sistema traen es y en), cada uno con
+         *     su categoría; category es la del primero. variables trae el nombre y el ejemplo de cada una, el mismo par del alta. title es
+         *     el nombre visible de las del sistema y null en las demás.
          */
         WhatsAppTemplateResponse: {
             /** Format: uuid */
             id: string;
             name: string;
             category: components["schemas"]["WhatsAppTemplateCategory"];
-            languages: string[];
+            languages: components["schemas"]["WhatsAppTemplateLanguageResponse"][];
             body: string;
-            variables: string[];
+            variables: components["schemas"]["WhatsAppTemplateVariableResponse"][];
             status: components["schemas"]["WhatsAppTemplateStatus"];
             rejectionReason?: null | string;
             isSystem: boolean;
@@ -28245,6 +28253,10 @@ export interface components {
         WhatsAppTemplateVariableInput: {
             label?: null | string;
             example?: null | string;
+        };
+        WhatsAppTemplateVariableResponse: {
+            label: string;
+            example: string;
         };
         /** @description Una persona del equipo del chat a la que se le puede pasar, con los chats que ya tiene tomados. */
         WhatsAppTransferPersonResponse: {
