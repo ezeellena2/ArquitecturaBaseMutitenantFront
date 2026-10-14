@@ -1,1 +1,54 @@
-{}
+{
+  "title": "Plantillas",
+  "summary_one": "{{count}} plantilla",
+  "summary_other": "{{count}} plantillas",
+  "approved_one": "{{count}} aprobada",
+  "approved_other": "{{count}} aprobadas",
+  "create": "Nueva plantilla",
+  "send": "Mandar a Meta",
+  "sending": "Mandando…",
+  "empty": "Todavía no hay plantillas",
+  "view": "Ver",
+  "rowActions": "Acciones de {{name}}",
+  "duplicate": "Duplicar",
+  "delete": "Borrar",
+  "confirmDelete": "¿Borrar «{{name}}»?",
+  "whyRejected": "Por qué la rechazó Meta",
+  "columns": {
+    "name": "Plantilla",
+    "category": "Tipo",
+    "status": "Estado en Meta",
+    "updated": "Última modificación",
+    "actions": "Acciones"
+  },
+  "form": {
+    "name": "Nombre",
+    "category": "Tipo",
+    "body": "Texto",
+    "contactName": "Nombre del contacto",
+    "contactNameLabel": "nombre",
+    "otherData": "Otro dato",
+    "variableLabel": "Dato {{number}}",
+    "variableExample": "Ejemplo del dato {{number}}",
+    "nameRequired": "Escribí el nombre de la plantilla.",
+    "bodyRequired": "Escribí el texto de la plantilla.",
+    "variablesOutOfOrder": "Numerá los datos desde el 1 y sin saltear ninguno.",
+    "variableLabelRequired": "Escribí cómo se llama este dato.",
+    "variableExampleRequired": "Escribí un ejemplo: Meta lo pide para revisarla."
+  },
+  "rejected": {
+    "title": "Meta rechazó «{{name}}»",
+    "noReason": "Meta no dijo el motivo",
+    "reviewed": "Revisada el {{date}}",
+    "duplicate": "Duplicala y corregí el texto",
+    "resend": "Mandala de nuevo a Meta"
+  },
+  "messages": {
+    "sent": "Mandamos «{{name}}» a Meta para que la revise.",
+    "duplicated": "Duplicamos la plantilla: «{{name}}» quedó en revisión.",
+    "deleted": "Borramos la plantilla «{{name}}»."
+  },
+  "errors": {
+    "metaRejected": "Meta no recibió la plantilla. Probá de nuevo en un rato."
+  }
+}

@@ -1,1 +1,17 @@
-{}
+{
+  "WhatsAppTemplateStatus": {
+    "Pending": "En revisión",
+    "Approved": "Aprobada",
+    "Rejected": "Rechazada",
+    "Paused": "Pausada"
+  },
+  "WhatsAppTemplateCategory": {
+    "Utility": "Utilidad",
+    "Marketing": "Marketing",
+    "Authentication": "Autenticación"
+  },
+  "WhatsAppTemplateGroup": {
+    "Consultations": "Para consultas",
+    "System": "Del sistema"
+  }
+}

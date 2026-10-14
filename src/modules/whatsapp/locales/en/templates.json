@@ -1,1 +1,54 @@
-{}
+{
+  "title": "Templates",
+  "summary_one": "{{count}} template",
+  "summary_other": "{{count}} templates",
+  "approved_one": "{{count}} approved",
+  "approved_other": "{{count}} approved",
+  "create": "New template",
+  "send": "Send to Meta",
+  "sending": "Sending…",
+  "empty": "There are no templates yet",
+  "view": "View",
+  "rowActions": "Actions for {{name}}",
+  "duplicate": "Duplicate",
+  "delete": "Delete",
+  "confirmDelete": "Delete “{{name}}”?",
+  "whyRejected": "Why Meta rejected it",
+  "columns": {
+    "name": "Template",
+    "category": "Type",
+    "status": "Status in Meta",
+    "updated": "Last changed",
+    "actions": "Actions"
+  },
+  "form": {
+    "name": "Name",
+    "category": "Type",
+    "body": "Text",
+    "contactName": "Contact name",
+    "contactNameLabel": "name",
+    "otherData": "Other data",
+    "variableLabel": "Data {{number}}",
+    "variableExample": "Example for data {{number}}",
+    "nameRequired": "Enter the template name.",
+    "bodyRequired": "Enter the template text.",
+    "variablesOutOfOrder": "Number the data from 1 without skipping any.",
+    "variableLabelRequired": "Enter what this data is called.",
+    "variableExampleRequired": "Enter an example: Meta needs it to review the template."
+  },
+  "rejected": {
+    "title": "Meta rejected “{{name}}”",
+    "noReason": "Meta did not give a reason",
+    "reviewed": "Reviewed on {{date}}",
+    "duplicate": "Duplicate it and fix the text",
+    "resend": "Send it to Meta again"
+  },
+  "messages": {
+    "sent": "We sent “{{name}}” to Meta for review.",
+    "duplicated": "We duplicated the template: “{{name}}” is in review.",
+    "deleted": "We deleted the template “{{name}}”."
+  },
+  "errors": {
+    "metaRejected": "Meta did not receive the template. Try again in a while."
+  }
+}
