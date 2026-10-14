@@ -67,7 +67,7 @@ async function run(app: GalleryApp, user: ReturnType<typeof userEvent.setup>) {
   for (const action of app.actions) {
     const surface = action.within ? within(await screen.findByRole(action.within.role, { name: action.within.name })) : screen;
     const target = action.label ? await surface.findByLabelText(action.label, { exact: false })
-      : await surface.findByRole(action.role!, { name: action.name, exact: action.exact ?? false });
+      : await surface.findByRole(action.role!, { name: action.name });
     if (action.type === "click") await user.click(target);
     else if (action.type === "press") { target.focus(); await user.keyboard(`{${action.key}}`); }
     else fireEvent.change(target, { target: { value: action.value } });
