@@ -127,11 +127,61 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │   │   ├── settings/
     │   │   ├── test/  fixtures de pruebas y galería; registro sólo en DEV
     │   │   └── usage/
-    │   └── whatsapp/  una carpeta por área (numbers, chats, contacts, broadcasts, bot, teams, templates, personal, phones), cada una con su routes.ts
-    │       ├── api/  alias del schema (types.ts) y el contador del menú
-    │       ├── components/  piezas que comparten las áreas
+    │   └── whatsapp/  una carpeta por área, cada una con su routes.ts; registration.ts las compone
+    │       ├── api/  alias del schema (types.ts) y el contador del menú (CC09)
+    │       ├── bot/  /org/whatsapp/bot y /plataforma/whatsapp/bot: Configuración | Recorrido
+    │       │   ├── api/
+    │       │   ├── components/
+    │       │   ├── lib/
+    │       │   └── pages/
+    │       ├── broadcasts/  /org/whatsapp/difusiones: lista, nueva y resultados
+    │       │   ├── api/
+    │       │   ├── components/
+    │       │   ├── lib/
+    │       │   ├── pages/
+    │       │   └── test/  datos de prueba de Difusiones
+    │       ├── chats/  /org/whatsapp/chats y /plataforma/whatsapp: bandejas, conversación, tomar, pasar, notas y plantillas
+    │       │   ├── api/
+    │       │   ├── components/  el hilo y el compositor, también para Mensajes
+    │       │   ├── lib/
+    │       │   └── pages/
+    │       ├── components/  piezas que comparten las áreas: íconos y contadores
+    │       ├── contacts/  /org/whatsapp/contactos: lista, ficha e importación
+    │       │   ├── api/
+    │       │   ├── components/
+    │       │   ├── lib/
+    │       │   ├── pages/
+    │       │   └── test/  datos de prueba de Contactos
     │       ├── lib/  cantidades en los textos, comunes a las áreas
-    │       └── locales/  un archivo por área en el namespace whatsapp y sus enums
+    │       ├── locales/  un archivo por área en el namespace whatsapp, y sus enums
+    │       │   ├── en/  mismos archivos
+    │       │   │   └── enums/
+    │       │   └── es/
+    │       │       └── enums/  los enums de cada área, aportados al namespace enums
+    │       ├── numbers/  /org/whatsapp/numeros y /plataforma/whatsapp/numero: números, alta de Meta y medio de pago
+    │       │   ├── api/
+    │       │   ├── components/
+    │       │   ├── pages/
+    │       │   └── signup/  SDK de Facebook y el evento WA_EMBEDDED_SIGNUP del alta embebida
+    │       ├── personal/  /mensajes: las conversaciones vinculadas de la persona (solo lectura)
+    │       │   ├── api/
+    │       │   └── pages/
+    │       ├── phones/  /org/usuarios/cargar-telefonos: invitaciones por teléfono sin revelar cuentas
+    │       │   ├── api/
+    │       │   ├── components/
+    │       │   ├── lib/
+    │       │   └── pages/
+    │       ├── teams/  /org/whatsapp/equipos y /plataforma/whatsapp/equipos
+    │       │   ├── api/
+    │       │   ├── components/
+    │       │   ├── lib/
+    │       │   └── pages/
+    │       ├── templates/  /org/whatsapp/plantillas y /plataforma/whatsapp/plantillas: Para consultas | Del sistema
+    │       │   ├── api/
+    │       │   ├── components/
+    │       │   ├── lib/
+    │       │   └── pages/
+    │       └── test/  soporte de pruebas del módulo: usuarios con permisos y montar una ruta
     ├── shared/
     │   ├── account/  lo de la cuenta que usan varias áreas (ADR 0033)
     │   │   └── api/
