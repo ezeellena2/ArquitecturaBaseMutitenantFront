@@ -1,1 +1,127 @@
-{}
+{
+  "title": "Chats",
+  "back": "Back to Chats",
+  "conversations_one": "{{count}} conversation",
+  "conversations_other": "{{count}} conversations",
+  "untakenCount_one": "{{count}} unassigned",
+  "untakenCount_other": "{{count}} unassigned",
+  "inbox": "Inbox",
+  "filters": {
+    "label": "Chat filters",
+    "search": "Search by name or number",
+    "team": "Team: all",
+    "teamMenu": "Team",
+    "allTeams": "All",
+    "stateMenu": "Status"
+  },
+  "list": {
+    "label": "Conversations",
+    "untaken": "Unassigned",
+    "unread": "Unread",
+    "empty": "There are no conversations yet",
+    "noMatches": "No conversation matches the filters"
+  },
+  "day": {
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "header": {
+    "linkedToAccount": "Linked to their account",
+    "employee": "Employee",
+    "actionsOf": "Actions for {{name}}",
+    "chatActions": "Chat actions",
+    "take": "Take",
+    "taking": "Taking…",
+    "transfer": "Transfer",
+    "viewContact": "View contact",
+    "viewAccount": "View account"
+  },
+  "thread": {
+    "label": "Messages with {{name}}",
+    "loadEarlier": "See earlier messages",
+    "automaticReply": "Automatic reply",
+    "note": "Internal note",
+    "pending": "Queued",
+    "failed": "Couldn't send",
+    "media": {
+      "Image": "Sent a photo",
+      "Audio": "Sent an audio",
+      "Video": "Sent a video",
+      "Document": "Sent a document",
+      "Sticker": "Sent a sticker",
+      "Location": "Sent a location",
+      "Other": "Sent a file"
+    }
+  },
+  "composer": {
+    "note": "Internal note",
+    "message": "Message",
+    "messagePlaceholder": "Write a message",
+    "messagePlaceholderPhone": "Message",
+    "notePlaceholder": "Write a note for the team",
+    "notePlaceholderPhone": "Note for the team",
+    "send": "Send",
+    "sending": "Sending…",
+    "saveNote": "Save note",
+    "savingNote": "Saving…",
+    "required": "Write something to send.",
+    "takenBy": "{{name}} is handling it",
+    "windowClosed": "24 hours have passed",
+    "readOnly": "Number disconnected",
+    "paymentMissing": "No payment method",
+    "whatItMeans": "What it means",
+    "chooseTemplate": "Choose template"
+  },
+  "notices": {
+    "window": {
+      "title": "24 hours have passed",
+      "reason": "{{name}} last wrote {{when}}",
+      "reasonUnknown": "{{name}} hasn't written in more than 24 hours",
+      "detail": "After 24 hours, WhatsApp only lets you send them an approved template",
+      "stepTemplate": "Tap “Choose template” and send one",
+      "stepReply": "When they reply, you can write to them again for 24 hours"
+    },
+    "readOnly": {
+      "title": "{{name}} wrote to a disconnected number",
+      "reason": "The WhatsApp number is disconnected",
+      "detail": "Its chats stay readable, without replies",
+      "step": "Ask whoever manages WhatsApp to connect it again"
+    },
+    "payment": {
+      "title": "You can't reply to {{name}}",
+      "reason": "Payment method missing in Meta",
+      "step": "Ask whoever manages WhatsApp to add a payment method in Meta"
+    }
+  },
+  "errors": {
+    "takenByOtherSend": "We couldn't send your message: {{name}} took the chat first.",
+    "takenByOtherTake": "We couldn't take the chat: {{name}} took it first."
+  },
+  "transfer": {
+    "title": "Transfer to",
+    "teams": "Teams",
+    "people": "People",
+    "teamPeople": "People in {{team}}",
+    "memberCount_one": "{{count}} person",
+    "memberCount_other": "{{count}} people",
+    "takenCount_one": "{{count}} chat taken",
+    "takenCount_other": "{{count}} chats taken",
+    "empty": "There's no one to transfer it to"
+  },
+  "template": {
+    "title": "Send template to {{name}}",
+    "titleShort": "Send template",
+    "template": "Template",
+    "choose": "Choose a template",
+    "search": "Search template",
+    "preview": "Preview",
+    "estimatedCost": "Estimated cost:",
+    "required": "Fill in this field.",
+    "send": "Send",
+    "sending": "Sending…"
+  },
+  "platform": {
+    "title": "Inquiries",
+    "back": "Back to Inquiries"
+  }
+}

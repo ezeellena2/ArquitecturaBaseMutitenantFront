@@ -1,1 +1,39 @@
-{}
+{
+  "WhatsAppChatMessageStatus": {
+    "Received": "Received",
+    "Pending": "Queued",
+    "Sent": "Sent",
+    "Delivered": "Delivered",
+    "Read": "Read",
+    "Failed": "Couldn't send"
+  },
+  "WhatsAppChatMessageKind": {
+    "Text": "Text",
+    "Template": "Template",
+    "Note": "Internal note",
+    "Event": "Event",
+    "Media": "File"
+  },
+  "WhatsAppInbox": {
+    "Customers": "Customers",
+    "Internal": "Internal"
+  },
+  "WhatsAppMediaKind": {
+    "Image": "Photo",
+    "Audio": "Audio",
+    "Video": "Video",
+    "Document": "Document",
+    "Sticker": "Sticker",
+    "Location": "Location",
+    "Other": "File"
+  },
+  "WhatsAppConversationFilter": {
+    "All": "All",
+    "Untaken": "Unassigned",
+    "Mine": "Mine"
+  },
+  "WhatsAppMessageDirection": {
+    "Inbound": "Received",
+    "Outbound": "Sent"
+  }
+}

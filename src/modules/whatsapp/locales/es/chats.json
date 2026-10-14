@@ -1,1 +1,127 @@
-{}
+{
+  "title": "Chats",
+  "back": "Volver a Chats",
+  "conversations_one": "{{count}} conversación",
+  "conversations_other": "{{count}} conversaciones",
+  "untakenCount_one": "{{count}} sin tomar",
+  "untakenCount_other": "{{count}} sin tomar",
+  "inbox": "Bandeja",
+  "filters": {
+    "label": "Filtros de chats",
+    "search": "Buscar por nombre o número",
+    "team": "Equipo: todos",
+    "teamMenu": "Equipo",
+    "allTeams": "Todos",
+    "stateMenu": "Estado"
+  },
+  "list": {
+    "label": "Conversaciones",
+    "untaken": "Sin tomar",
+    "unread": "Sin leer",
+    "empty": "Todavía no hay conversaciones",
+    "noMatches": "Ninguna conversación coincide con los filtros"
+  },
+  "day": {
+    "today": "Hoy",
+    "yesterday": "Ayer"
+  },
+  "header": {
+    "linkedToAccount": "Vinculada a su cuenta",
+    "employee": "Empleado",
+    "actionsOf": "Acciones de {{name}}",
+    "chatActions": "Acciones del chat",
+    "take": "Tomar",
+    "taking": "Tomando…",
+    "transfer": "Pasar",
+    "viewContact": "Ver ficha del contacto",
+    "viewAccount": "Ver la cuenta"
+  },
+  "thread": {
+    "label": "Mensajes con {{name}}",
+    "loadEarlier": "Ver mensajes anteriores",
+    "automaticReply": "Respuesta automática",
+    "note": "Nota interna",
+    "pending": "En cola",
+    "failed": "No se pudo mandar",
+    "media": {
+      "Image": "Mandó una foto",
+      "Audio": "Mandó un audio",
+      "Video": "Mandó un video",
+      "Document": "Mandó un documento",
+      "Sticker": "Mandó un sticker",
+      "Location": "Mandó una ubicación",
+      "Other": "Mandó un archivo"
+    }
+  },
+  "composer": {
+    "note": "Nota interna",
+    "message": "Mensaje",
+    "messagePlaceholder": "Escribí un mensaje",
+    "messagePlaceholderPhone": "Mensaje",
+    "notePlaceholder": "Escribí una nota para el equipo",
+    "notePlaceholderPhone": "Nota para el equipo",
+    "send": "Enviar",
+    "sending": "Enviando…",
+    "saveNote": "Guardar nota",
+    "savingNote": "Guardando…",
+    "required": "Escribí algo para mandar.",
+    "takenBy": "Lo atiende {{name}}",
+    "windowClosed": "Pasaron 24 horas",
+    "readOnly": "Número desconectado",
+    "paymentMissing": "Sin medio de pago",
+    "whatItMeans": "Qué significa",
+    "chooseTemplate": "Elegir plantilla"
+  },
+  "notices": {
+    "window": {
+      "title": "Pasaron 24 horas",
+      "reason": "{{name}} escribió por última vez {{when}}",
+      "reasonUnknown": "{{name}} no escribe hace más de 24 horas",
+      "detail": "Pasadas 24 horas, WhatsApp solo deja mandarle una plantilla aprobada",
+      "stepTemplate": "Tocá «Elegir plantilla» y mandale una",
+      "stepReply": "Cuando conteste, podés volver a escribirle por 24 horas"
+    },
+    "readOnly": {
+      "title": "{{name}} escribió a un número desconectado",
+      "reason": "El número de WhatsApp está desconectado",
+      "detail": "Sus chats quedan para leer, sin responder",
+      "step": "Pedile a quien administra WhatsApp que lo conecte de nuevo"
+    },
+    "payment": {
+      "title": "No se puede responder a {{name}}",
+      "reason": "Falta medio de pago en Meta",
+      "step": "Pedile a quien administra WhatsApp que agregue un medio de pago en Meta"
+    }
+  },
+  "errors": {
+    "takenByOtherSend": "No pudimos mandar tu mensaje: {{name}} tomó el chat antes.",
+    "takenByOtherTake": "No pudimos tomar el chat: {{name}} lo tomó antes."
+  },
+  "transfer": {
+    "title": "Pasar a",
+    "teams": "Equipos",
+    "people": "Personas",
+    "teamPeople": "Personas de {{team}}",
+    "memberCount_one": "{{count}} persona",
+    "memberCount_other": "{{count}} personas",
+    "takenCount_one": "{{count}} chat tomado",
+    "takenCount_other": "{{count}} chats tomados",
+    "empty": "No hay a quién pasarlo"
+  },
+  "template": {
+    "title": "Mandar plantilla a {{name}}",
+    "titleShort": "Mandar plantilla",
+    "template": "Plantilla",
+    "choose": "Elegí una plantilla",
+    "search": "Buscar plantilla",
+    "preview": "Vista previa",
+    "estimatedCost": "Costo estimado:",
+    "required": "Completá este dato.",
+    "send": "Mandar",
+    "sending": "Mandando…"
+  },
+  "platform": {
+    "title": "Consultas",
+    "back": "Volver a Consultas"
+  }
+}

@@ -1,1 +1,39 @@
-{}
+{
+  "WhatsAppChatMessageStatus": {
+    "Received": "Recibido",
+    "Pending": "En cola",
+    "Sent": "Enviado",
+    "Delivered": "Entregado",
+    "Read": "Leído",
+    "Failed": "No se pudo mandar"
+  },
+  "WhatsAppChatMessageKind": {
+    "Text": "Texto",
+    "Template": "Plantilla",
+    "Note": "Nota interna",
+    "Event": "Evento",
+    "Media": "Archivo"
+  },
+  "WhatsAppInbox": {
+    "Customers": "Clientes",
+    "Internal": "Internos"
+  },
+  "WhatsAppMediaKind": {
+    "Image": "Foto",
+    "Audio": "Audio",
+    "Video": "Video",
+    "Document": "Documento",
+    "Sticker": "Sticker",
+    "Location": "Ubicación",
+    "Other": "Archivo"
+  },
+  "WhatsAppConversationFilter": {
+    "All": "Todos",
+    "Untaken": "Sin tomar",
+    "Mine": "Míos"
+  },
+  "WhatsAppMessageDirection": {
+    "Inbound": "Recibido",
+    "Outbound": "Enviado"
+  }
+}
