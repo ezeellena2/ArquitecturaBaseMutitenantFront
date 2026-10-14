@@ -56,6 +56,14 @@ function valuesFromTeam(team: WhatsAppTeamDetailResponse | undefined): TeamForm 
     : { name: "", inbox: "Customers", memberIds: [], notice: String(noticeMinutes[0]) };
 }
 
+/// Otro envío con lo mismo conserva la clave del alta; con algo corregido, va con una nueva (datos-y-api.md).
+function sameTeam(previous: CreateWhatsAppTeamRequest, next: CreateWhatsAppTeamRequest): boolean {
+  const before = previous.memberIds ?? [];
+  const after = next.memberIds ?? [];
+  return previous.name === next.name && previous.inbox === next.inbox && previous.notifyAfterMinutes === next.notifyAfterMinutes
+    && before.length === after.length && before.every((id, index) => id === after[index]);
+}
+
 /**
  * «Crear equipo» y su edición (tableros WA-Equipos-Crear, M-WA-Equipos-Crear y Plat-WA-Equipos): el nombre, la bandeja
  * (solo en la organización; Plataforma no elige bandeja), quiénes lo forman y el aviso por correo si nadie toma un chat.
@@ -102,7 +110,7 @@ function TeamFormBody({ scope, team, onClose }: { scope: TeamScope; team?: Whats
   const options = useResourceOptions(teamMemberOptions(scope));
   const known = [...(team?.members.items ?? []), ...options.knownItems];
   const { failure, clear, fail, close } = useDialogFailure(onClose, teamsQueryRoot(scope));
-  const create = useIdempotentMutation((request: CreateWhatsAppTeamRequest, key) => createTeam(scope, request, key));
+  const create = useIdempotentMutation((request: CreateWhatsAppTeamRequest, key) => createTeam(scope, request, key), { sameOperation: sameTeam });
   const update = useMutation({ mutationFn: ({ id, request }: { id: string; request: UpdateWhatsAppTeamRequest }) => updateTeam(scope, id, request) });
   const organization = scope === "organization";
   const errors = form.formState.errors;
