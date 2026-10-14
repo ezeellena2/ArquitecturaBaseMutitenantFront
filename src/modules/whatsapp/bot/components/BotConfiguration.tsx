@@ -18,6 +18,7 @@ import { maxMenuOptions, optionDetail, scheduleSummary, teamName, type BotData, 
 import { EmployeesTeamDialog } from "./EmployeesTeamDialog";
 import { OptionDialog } from "./OptionDialog";
 import { OutOfHoursDialog } from "./OutOfHoursDialog";
+import { PhoneTapRow } from "./PhoneTapRow";
 import { WelcomeDialog } from "./WelcomeDialog";
 
 type Open =
@@ -85,7 +86,8 @@ export function BotConfiguration({ bot, variant, teams, onSave }: {
   const row = ({ key, title, detail, leading, onOpen, actions, trailing }: {
     key: string; title: string; detail: ReactNode; leading?: ReactNode; onOpen?: () => void; actions?: ReactNode; trailing?: ReactNode;
   }) => phone
-    ? <SettingsItem key={key} title={title} detail={detail} leading={leading} onClick={trailing ? undefined : onOpen} trailing={trailing} />
+    ? onOpen && !trailing ? <PhoneTapRow key={key} title={title} detail={detail} leading={leading} onClick={onOpen} />
+      : <SettingsItem key={key} title={title} detail={detail} leading={leading} trailing={trailing} />
     : <ListItem key={key} icon={leading} title={title} detail={detail}>{trailing ?? actions}</ListItem>;
   const group = (label: string, rows: ReactNode) => phone ? <ul aria-label={label} className="m-0 list-none p-0">{rows}</ul> : <List label={label}>{rows}</List>;
 
