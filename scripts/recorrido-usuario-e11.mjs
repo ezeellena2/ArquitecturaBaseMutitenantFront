@@ -61,7 +61,8 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
   const begin = requireE8Control(env);
   const customer = width === 1440 ? "+5491134567884" : "+5491134567885";
   const option = "Hacer un pedido";
-  const tag = `Recorrido ${width}`;
+  // No empieza como la organización («Recorrido 1440 …»), para que buscarla no encuentre otra cosa.
+  const tag = `VIP ${width}`;
   const answer = `Hola, ya te tomamos el pedido (${width}).`;
   const note = `Revisar stock antes de confirmar (${width}).`;
   const organizationApi = "/api/organization/whatsapp";
@@ -122,7 +123,7 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     const number = list.numbers.items.find((item) => item.id === numberId);
     assert.equal(number?.status, "Connected"); assert.equal(number.displayNumber, e11OrganizationNumber);
     const main = page.getByRole("main");
-    await main.getByText(/3456-7700/).first().waitFor(); await main.getByText("Conectado", { exact: true }).first().waitFor();
+    await main.getByText(/3456-7700/).first().waitFor(); await main.getByText(/\bConectado\b/).first().waitFor();
     await page.reload(); await main.getByText(/3456-7700/).first().waitFor();
     return "Número conectado por el control, sin Meta; la Dueña lo ve Conectado y F5 lo conserva.";
   });
@@ -260,7 +261,9 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     assert.ok((await saved.json()).tags.includes(tag));
     await dialog.waitFor({ state: "hidden" });
     const reread = await reloadResponse(page, responseFor(`${organizationApi}/contacts/${conversation.contactId}`));
-    assert.ok((await reread.json()).tags.includes(tag)); await page.getByRole("main").getByText(tag, { exact: true }).first().waitFor();
+    assert.ok((await reread.json()).tags.includes(tag));
+    // La ficha dice sus etiquetas juntas en el subtítulo («… · Mayorista, VIP 1440 · …»); en el teléfono, en la barra.
+    await page.getByText(tag).first().waitFor();
     return "La ficha sumó una etiqueta nueva creada en el campo y F5 la conserva.";
   });
   await step("14", async () => {
@@ -272,7 +275,8 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
       await page.getByRole("textbox", { name: "Uno por renglón, hasta 200", exact: true }).fill(`${nationalPhone(customer)}\n11 4444`);
       await act(page, () => page.getByRole("button", { name: /^Revisar \d+ teléfonos$/ }).first().click(), `${organizationApi}/phone-imports/preview`);
       const main = page.getByRole("main");
-      await main.getByText("2 teléfonos · 1 invitación · 1 inválido", { exact: true }).waitFor();
+      // El resumen va en la banda; en el teléfono, corto (sin los inválidos) y en la barra de arriba.
+      await page.getByText(width === 390 ? "2 teléfonos · 1 invitación" : "2 teléfonos · 1 invitación · 1 inválido", { exact: true }).first().waitFor();
       await page.getByRole("button", { name: "Vincular y mandar 1 invitación", exact: true }).first().waitFor();
       assert.equal(/cuenta/i.test(await main.innerText()), false, "La revisión no dice si un teléfono tiene cuenta.");
       assert.equal(invited, 0);
