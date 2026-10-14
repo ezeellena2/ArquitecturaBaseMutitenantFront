@@ -1,5 +1,5 @@
 import type { WhatsAppReferenceResponse, WhatsAppTeamResponse } from "../api/types";
-import { api, click, fill, galleryApp, galleryCase, galleryPending, page, press, type GalleryAction, type GalleryCase, type GalleryPending, type GalleryScope } from "../test/gallery";
+import { api, click, fill, galleryApp, galleryCase, page, press, type GalleryAction, type GalleryCase, type GalleryPending, type GalleryScope } from "../test/gallery";
 
 // Los equipos de los tableros WA-Equipos y Plat-WA-Equipos, con sus nombres, bandejas, personas y avisos.
 const team = (id: string, name: string, inbox: WhatsAppTeamResponse["inbox"], memberPreview: string[], notifyAfterMinutes: number | null): WhatsAppTeamResponse =>
@@ -33,9 +33,10 @@ function teamsApp(scope: Exclude<GalleryScope, "consumer">, options: { actions?:
 
 const dialog = { role: "dialog", name: "Crear equipo" } as const;
 // Elegir en un `MultiSelect`: cada opción es un `menuitemcheckbox` que se nombra con su `aria-labelledby`; Escape cierra
-// el desplegable y deja el diálogo abierto.
+// el desplegable y deja el diálogo abierto. El rótulo va exacto: en Plataforma, «Menú de Martín Sosa» (la cuenta, arriba)
+// también lo contiene.
 const choose = (names: readonly string[], field: string): GalleryAction[] => [click(field, "button", dialog),
-  ...names.map((name): GalleryAction => ({ type: "click", label: name })), { type: "press", label: names.at(-1), key: "Escape" }];
+  ...names.map((name): GalleryAction => ({ type: "click", label: name, exact: true })), { type: "press", label: names.at(-1), exact: true, key: "Escape" }];
 
 /** WA-Equipos-Crear: «Soporte · Delta Sur», bandeja Clientes, Carolina Vega y Paula Méndez, y el aviso a los 10 minutos. */
 const createOrganization: GalleryAction[] = [click("Crear equipo"), fill("Nombre", "Soporte · Delta Sur", dialog), ...choose(["Carolina Vega", "Paula Méndez"], "Personas")];
@@ -53,9 +54,7 @@ export const teamsGalleryCases: readonly GalleryCase[] = [
   ]),
   galleryCase("equipos", "Plat-WA-Equipos", "Lista", teamsApp("platform", { readyText: "Martín Sosa, Laura Díaz" })),
   galleryCase("equipos", "M-Plat-WA-Equipos", "Lista", teamsApp("platform", { readyText: "Martín Sosa, Laura Díaz" })),
-  galleryCase("equipos", "M-Plat-WA-Equipos", "Crear equipo", teamsApp("platform", { actions: createPlatform, readySelector: "[role='dialog']", readyText: "Aviso por correo si nadie lo toma" })),
+  ...(["Plat-WA-Equipos", "M-Plat-WA-Equipos"] as const).map((board) =>
+    galleryCase("equipos", board, "Crear equipo", teamsApp("platform", { actions: createPlatform, readySelector: "[role='dialog']", readyText: "Aviso por correo si nadie lo toma" }))),
 ];
-export const teamsGalleryPending: readonly GalleryPending[] = [
-  galleryPending("equipos", "Plat-WA-Equipos", "Crear equipo", "el arnés no puede elegir a Martín Sosa en «Operadores»: la acción por rótulo busca sin `exact` y "
-    + "también encuentra el menú de la cuenta («Menú de Martín Sosa») de la barra de arriba, que en la compu nombra al mismo operador"),
-];
+export const teamsGalleryPending: readonly GalleryPending[] = [];

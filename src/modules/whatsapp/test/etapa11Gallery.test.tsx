@@ -66,7 +66,7 @@ function mount(app: GalleryApp) {
 async function run(app: GalleryApp, user: ReturnType<typeof userEvent.setup>) {
   for (const action of app.actions) {
     const surface = action.within ? within(await screen.findByRole(action.within.role, { name: action.within.name })) : screen;
-    const target = action.label ? await surface.findByLabelText(action.label, { exact: false })
+    const target = action.label ? await surface.findByLabelText(action.label, { exact: action.exact ?? false })
       : await surface.findByRole(action.role!, { name: action.name });
     if (action.type === "click") await user.click(target);
     else if (action.type === "press") { target.focus(); await user.keyboard(`{${action.key}}`); }
@@ -104,11 +104,13 @@ describe("galería de la E11", () => {
 
   it.each(etapa11GalleryCases.map((entry) => [entry.id, entry] as const))("%s se arma solo con sus respuestas", async (_id, entry) => {
     const restore = entry.viewport.width === 390 ? asPhone() : () => {};
+    // Como capturar-etapa.mjs (context.clock.setFixedTime): la hora del caso, para que la ventana de 24 h sea la del tablero.
+    vi.useFakeTimers({ toFake: ["Date"], now: new Date(entry.app.now) });
     try {
       const { missing, user } = mount(entry.app);
       await run(entry.app, user);
       expect(missing).toEqual([]);
-    } finally { restore(); }
+    } finally { vi.useRealTimers(); restore(); }
   }, 10_000);
 
   it("escribe los casos para capturar-etapa.mjs si se lo piden", () => {
