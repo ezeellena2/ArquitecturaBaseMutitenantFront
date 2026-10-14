@@ -95,7 +95,9 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
   const rows = data?.conversations.items ?? [];
   const selectedId = conversationId ?? (phone ? undefined : rows[0]?.id);
   const counts = data?.counts;
-  const total = counts ? platform ? counts.customers + counts.internal : counts[inbox] : undefined;
+  // Los counts cuentan la bandeja entera, sin la búsqueda ni los filtros. Plataforma tiene una sola: todas las consultas
+  // vienen en `customers` (`internal` llega en 0).
+  const total = counts ? platform ? counts.customers : counts[inbox] : undefined;
   const filtered = Boolean(search) || state !== undefined || teamId !== undefined;
 
   const filterBar: readonly FilterBarFilter[] = [

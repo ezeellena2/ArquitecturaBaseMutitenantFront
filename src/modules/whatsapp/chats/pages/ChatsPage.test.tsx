@@ -219,7 +219,8 @@ describe("Consultas de Plataforma", () => {
   const platform = "/api/platform/whatsapp/conversations";
   function consultations(conversation: WhatsAppConversationRowResponse) {
     server.use(
-      http.get(platform, () => HttpResponse.json(list([conversation], { customers: 4, internal: 0, untaken: 2 }))),
+      // Plataforma tiene una sola bandeja: el total es `customers`, aunque `internal` llegara con algo.
+      http.get(platform, () => HttpResponse.json(list([conversation], { customers: 4, internal: 3, untaken: 2 }))),
       http.get(`${platform}/:id`, () => HttpResponse.json(detail(conversation))),
       http.get("/api/platform/whatsapp/teams", () => HttpResponse.json(paged([]))),
     );
