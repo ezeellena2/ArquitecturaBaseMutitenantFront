@@ -1,0 +1,33 @@
+{
+  "title": "WhatsApp",
+  "nav": {
+    "chats": "Chats",
+    "contacts": "Contactos",
+    "broadcasts": "Difusiones",
+    "numbers": "Números",
+    "number": "Número",
+    "bot": "Bot",
+    "teams": "Equipos",
+    "templates": "Plantillas",
+    "consultations": "Consultas",
+    "messages": "Mensajes"
+  },
+  "users": {
+    "loadPhones": "Cargar teléfonos"
+  },
+  "home": {
+    "card": {
+      "title": "WhatsApp",
+      "short": "WhatsApp",
+      "numbers_one": "{{count}} número",
+      "numbers_other": "{{count}} números"
+    },
+    "pending": {
+      "numberPaymentMissing": {
+        "group": "Números sin medio de pago",
+        "state": "Falta medio de pago",
+        "action": "Cargar"
+      }
+    }
+  }
+}

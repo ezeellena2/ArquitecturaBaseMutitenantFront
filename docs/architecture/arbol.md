@@ -113,20 +113,24 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │   ├── en/  mismos archivos
     │   └── es/
     ├── modules/
-    │   └── assistant/
-    │       ├── api/
-    │       ├── components/
-    │       ├── hooks/
-    │       ├── lib/
-    │       ├── locales/  textos y enums propios, aportados por registration.ts
-    │       │   ├── en/
-    │       │   └── es/
-    │       ├── pages/
-    │       ├── policy/
-    │       ├── runtime/
-    │       ├── settings/
-    │       ├── test/  fixtures de pruebas y galería; registro sólo en DEV
-    │       └── usage/
+    │   ├── assistant/
+    │   │   ├── api/
+    │   │   ├── components/
+    │   │   ├── hooks/
+    │   │   ├── lib/
+    │   │   ├── locales/  textos y enums propios, aportados por registration.ts
+    │   │   │   ├── en/
+    │   │   │   └── es/
+    │   │   ├── pages/
+    │   │   ├── policy/
+    │   │   ├── runtime/
+    │   │   ├── settings/
+    │   │   ├── test/  fixtures de pruebas y galería; registro sólo en DEV
+    │   │   └── usage/
+    │   └── whatsapp/  una carpeta por área (numbers, chats, contacts, broadcasts, bot, teams, templates, personal, phones), cada una con su routes.ts
+    │       ├── api/  alias del schema (types.ts) y el contador del menú
+    │       ├── components/  piezas que comparten las áreas
+    │       └── locales/  un archivo por área en el namespace whatsapp y sus enums
     ├── shared/
     │   ├── account/  lo de la cuenta que usan varias áreas (ADR 0033)
     │   │   └── api/
@@ -192,6 +196,7 @@ Decisión del usuario (2026-10-11): cada raíz de capa, área, módulo, proyecto
 | `src/locales/` | Componentes y servicios de . | [docs/rules/textos-y-traducciones.md](../rules/textos-y-traducciones.md) | `src/locales/es/roles.json` | [AGENTS.md](../../src/locales/AGENTS.md) |
 | `src/modules/assistant/` | Componentes y servicios de assistant. | [docs/features/asistente.md](../../../ArquitecturaBaseMutitenant/docs/features/asistente.md) | `src/modules/assistant/registration.ts` | [AGENTS.md](../../src/modules/assistant/AGENTS.md) |
 | `src/modules/assistant/usage/` | Pantallas y componentes de uso del asistente. | [docs/features/asistente.md](../../../ArquitecturaBaseMutitenant/docs/features/asistente.md) | `src/modules/assistant/usage/AssistantUsagePage.tsx` | [AGENTS.md](../../src/modules/assistant/usage/AGENTS.md) |
+| `src/modules/whatsapp/` | Atención por WhatsApp (E11): números, chats, contactos, difusiones, bot, equipos, plantillas y Mensajes; cada área en su carpeta. | [docs/features/whatsapp.md](../../../ArquitecturaBaseMutitenant/docs/features/whatsapp.md) | `src/modules/whatsapp/registration.ts` | [AGENTS.md](../../src/modules/whatsapp/AGENTS.md) |
 | `src/shared/` | Componentes, hooks y servicios comunes a todas las áreas. | [docs/rules/estructura-y-features.md](../rules/estructura-y-features.md) | `src/shared/account/AddLoginMethodDialog.tsx` | [AGENTS.md](../../src/shared/AGENTS.md) |
 | `src/shared/account/` | Componentes y servicios de account. | [docs/rules/formularios.md](../rules/formularios.md) | `src/shared/account/AddLoginMethodDialog.tsx` | [AGENTS.md](../../src/shared/account/AGENTS.md) |
 | `src/shared/api/` | Cliente HTTP, contratos generados y alias tipados. | [docs/rules/datos-y-api.md](../rules/datos-y-api.md) | `src/shared/api/ApiError.ts` | [AGENTS.md](../../src/shared/api/AGENTS.md) |

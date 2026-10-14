@@ -1,0 +1,33 @@
+{
+  "title": "WhatsApp",
+  "nav": {
+    "chats": "Chats",
+    "contacts": "Contacts",
+    "broadcasts": "Broadcasts",
+    "numbers": "Numbers",
+    "number": "Number",
+    "bot": "Bot",
+    "teams": "Teams",
+    "templates": "Templates",
+    "consultations": "Inquiries",
+    "messages": "Messages"
+  },
+  "users": {
+    "loadPhones": "Load phones"
+  },
+  "home": {
+    "card": {
+      "title": "WhatsApp",
+      "short": "WhatsApp",
+      "numbers_one": "{{count}} number",
+      "numbers_other": "{{count}} numbers"
+    },
+    "pending": {
+      "numberPaymentMissing": {
+        "group": "Numbers without a payment method",
+        "state": "Payment method missing",
+        "action": "Add"
+      }
+    }
+  }
+}
