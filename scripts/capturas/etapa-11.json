@@ -44584,6 +44584,50 @@
       "reason": "Elegir el archivo es subir uno, y la base de la galería no tiene la acción «upload»: sin archivo no hay vista previa ni importación."
     },
     {
+      "id": "wa-contacto-crear-vip",
+      "group": "contactos",
+      "board": "WA-Contacto",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Crear «VIP»",
+      "reason": "tablero pendiente: Diseño todavía no dibujó «Crear «VIP»» (D10) en Editar contacto ni en Importar"
+    },
+    {
+      "id": "m-wa-contacto-crear-vip",
+      "group": "contactos",
+      "board": "M-WA-Contacto",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Crear «VIP»",
+      "reason": "tablero pendiente: Diseño todavía no dibujó «Crear «VIP»» (D10) en Editar contacto ni en Importar"
+    },
+    {
+      "id": "wa-contactos-importar-crear-vip",
+      "group": "contactos",
+      "board": "WA-Contactos-Importar",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Crear «VIP»",
+      "reason": "tablero pendiente: Diseño todavía no dibujó «Crear «VIP»» (D10) en Editar contacto ni en Importar"
+    },
+    {
+      "id": "m-wa-contactos-importar-crear-vip",
+      "group": "contactos",
+      "board": "M-WA-Contactos-Importar",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Crear «VIP»",
+      "reason": "tablero pendiente: Diseño todavía no dibujó «Crear «VIP»» (D10) en Editar contacto ni en Importar"
+    },
+    {
       "id": "wa-alta-conectado",
       "group": "numeros",
       "board": "WA-Alta",

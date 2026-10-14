@@ -78,4 +78,7 @@ export const contactsGalleryCases: readonly GalleryCase[] = [
 export const contactsGalleryPending: readonly GalleryPending[] = [
   ...["WA-Contactos-Importar", "M-WA-Contactos-Importar"].flatMap((board) => ["Archivo elegido", "Con filas que no entran", "Importado"]
     .map((state) => galleryPending(group, board, state, fileUpload))),
+  // D10: crear una etiqueta escribiéndola en el campo. La app lo hace; el tablero todavía no lo dibuja.
+  ...["WA-Contacto", "M-WA-Contacto", "WA-Contactos-Importar", "M-WA-Contactos-Importar"].map((board) =>
+    galleryPending(group, board, "Crear «VIP»", "tablero pendiente: Diseño todavía no dibujó «Crear «VIP»» (D10) en Editar contacto ni en Importar")),
 ];
