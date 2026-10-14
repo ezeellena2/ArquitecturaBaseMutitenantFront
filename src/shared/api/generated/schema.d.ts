@@ -5739,7 +5739,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict; WhatsApp.Template.NameTaken */
+                /** @description Conflict; WhatsApp.Template.NameTaken; WhatsApp.Template.NumberRequired */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -6083,7 +6083,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict; WhatsApp.Template.NameTaken */
+                /** @description Conflict; WhatsApp.Template.NameTaken; WhatsApp.Template.NumberRequired */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -26045,6 +26045,9 @@ export interface components {
             companies?: null | string[];
             roles?: null | string[];
             currentAccountName?: null | string;
+            phone?: null | string;
+            /** @default false */
+            canUsePhoneCode: boolean;
         };
         /** @enum {string} */
         InvitationPreviewState: "NoAccount" | "SignInRequired" | "Ready" | "WrongSession" | "Expired" | "Invalid" | "OrganizationSuspended" | "Accepted";
@@ -26305,6 +26308,7 @@ export interface components {
                 [key: string]: number;
             };
         };
+        /** @description Phone es el teléfono en E.164 de una invitación por teléfono (CC25); en esa fila Email viene null. */
         OrganizationUserHttpResponse: {
             /** Format: uuid */
             memberId: string;
@@ -26328,6 +26332,7 @@ export interface components {
             createdAtUtc: string;
             /** Format: date-time */
             deletionScheduledForUtc?: null | string;
+            phone?: null | string;
         };
         OrganizationUserRoleRow: {
             /** Format: uuid */
