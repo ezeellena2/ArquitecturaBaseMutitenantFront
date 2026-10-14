@@ -108,6 +108,32 @@ describe("Ficha del contacto", () => {
     expect(sent[0]).toMatchObject({ tags: ["Mayorista", "VIP Oro"], version: 4 });
   });
 
+  // Un contacto que llegó por WhatsApp sin nombre (el perfil de Meta no lo trajo): el nombre es opcional en el contrato.
+  it("un contacto sin nombre guarda una etiqueta nueva sin escribir nombre", async () => {
+    const sent: UpdateWhatsAppContactRequest[] = [];
+    const unnamed = { ...martina, name: null };
+    contactApi(() => unnamed);
+    server.use(
+      http.get("/api/organization/whatsapp/contacts/tags", () => HttpResponse.json(paged([]))),
+      http.put("/api/organization/whatsapp/contacts/contact-martina", async ({ request }) => {
+        sent.push(await request.json() as UpdateWhatsAppContactRequest);
+        return HttpResponse.json({ ...unnamed, tags: [...martina.tags, "Recorrido"], version: 5 });
+      }),
+    );
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/contactos/contact-martina");
+    await user.click(await screen.findByRole("button", { name: "Editar contacto" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar contacto" });
+    expect(within(dialog).getByRole("textbox", { name: "Nombre" })).not.toBeRequired();
+    await user.click(within(dialog).getByRole("button", { name: /Etiquetas/ }));
+    await user.type(await screen.findByRole("searchbox", { name: "Buscar" }), "Recorrido");
+    await user.click(await screen.findByRole("menuitem", { name: "Crear «Recorrido»" }));
+    await user.keyboard("{Escape}");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(sent).toHaveLength(1));
+    expect(sent[0]).toMatchObject({ name: null, tags: [...martina.tags, "Recorrido"], version: martina.version });
+    await waitFor(() => expect(dialog).not.toBeInTheDocument());
+  });
+
   it("una etiqueta más larga que la del contrato no se manda y lo dice en el campo", async () => {
     const sent: UpdateWhatsAppContactRequest[] = [];
     contactApi(() => martina);

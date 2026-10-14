@@ -38,7 +38,8 @@ const editableConsents: readonly WhatsAppConsent[] = ["Accepted", "Declined", "N
 
 function contactFormSchema(t: TFunction) {
   return z.object({
-    name: z.string().trim().min(1, t("whatsapp:contacts.edit.nameRequired")).max(nameMaxLength),
+    // El nombre es opcional: un contacto que llega por WhatsApp puede no traerlo (el perfil de Meta no lo manda).
+    name: z.string().trim().max(nameMaxLength),
     // El largo de cada etiqueta (también la que se crea acá) se dice en el campo, no en una de sus etiquetas.
     tags: z.array(z.string()).max(tagsMaxItems, t("whatsapp:contacts.edit.tooManyTags", { count: tagsMaxItems }))
       .refine((tags) => tags.every((tag) => tag.length <= tagMaxLength), t("whatsapp:contacts.edit.tagTooLong", { count: tagMaxLength })),
@@ -86,7 +87,8 @@ export function EditContactDialog({ contact, onClose, returnFocusTo }: {
   const submit = form.handleSubmit((values) => {
     clear();
     // El consentimiento viaja solo si se cambió a mano: así el origen guardado (bot, importación) no se pisa.
-    const request = { name: values.name, tags: values.tags, consent: values.consent === contact.consent ? null : values.consent, version };
+    // El PUT reemplaza el contacto: sin nombre va null, que es lo que el back guarda para un nombre vacío.
+    const request = { name: values.name === "" ? null : values.name, tags: values.tags, consent: values.consent === contact.consent ? null : values.consent, version };
     update.mutate(request, {
       onSuccess: async () => {
         toast.success(t("whatsapp:contacts.edit.saved"));
@@ -106,7 +108,7 @@ export function EditContactDialog({ contact, onClose, returnFocusTo }: {
       <DialogHeader><DialogTitle>{t("whatsapp:contacts.edit.title")}</DialogTitle></DialogHeader>
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody className="md:grid md:grid-cols-2 md:gap-x-5">
-          <FormField label={t("whatsapp:contacts.edit.name")} required error={errors.name?.message}>
+          <FormField label={t("whatsapp:contacts.edit.name")} error={errors.name?.message}>
             <Input {...form.register("name", { onChange: clear })} maxLength={nameMaxLength} autoComplete="off" />
           </FormField>
           <ReadOnlyField label={t("whatsapp:contacts.edit.phone")}><PhoneText value={contact.displayNumber} /></ReadOnlyField>
