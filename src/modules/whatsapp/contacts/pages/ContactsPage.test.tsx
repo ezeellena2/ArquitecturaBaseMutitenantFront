@@ -112,6 +112,37 @@ describe("Importar contactos", () => {
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Importar contactos" })).not.toBeInTheDocument());
   });
 
+  // D10 (decisión del usuario): «Etiqueta para todos» también puede crear una etiqueta; si existe igual sin distinguir
+  // mayúsculas, se elige la que existe.
+  it("al importar crea la etiqueta para todos; con «Mayorista» existente, «mayorista» no ofrece crear", async () => {
+    await useNativeForms();
+    const sentTags: (string | null)[] = [];
+    server.use(
+      http.get("/api/organization/whatsapp/contacts", () => HttpResponse.json(list())),
+      http.post("/api/organization/whatsapp/contacts/import/preview", () => HttpResponse.json({ rows: 2, new: 2, updated: 0, rejected: paged([]) })),
+      http.post("/api/organization/whatsapp/contacts/import", async ({ request }) => {
+        sentTags.push((await request.formData()).get("tag") as string | null);
+        return HttpResponse.json({ imported: 2, updated: 0, rejected: paged([]) });
+      }),
+    );
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/contactos");
+    await user.click(await screen.findByRole("button", { name: "Importar contactos" }));
+    const dialog = await screen.findByRole("dialog", { name: "Importar contactos" });
+    await user.upload(within(dialog).getByLabelText(/Archivo/), file());
+    const tag = within(dialog).getByRole("combobox", { name: /Etiqueta para todos/ });
+    await user.click(tag);
+    const search = await screen.findByRole("searchbox", { name: "Buscar" });
+    await user.type(search, "mayorista");
+    expect(await screen.findByRole("option", { name: "Mayorista" })).toBeVisible();
+    expect(screen.queryByRole("option", { name: /^Crear/ })).not.toBeInTheDocument();
+    await user.clear(search);
+    await user.type(search, "VIP Oro");
+    await user.click(await screen.findByRole("option", { name: "Crear «VIP Oro»" }));
+    expect(tag).toHaveTextContent("VIP Oro");
+    await user.click(await within(dialog).findByRole("button", { name: "Importar 2 contactos" }));
+    await waitFor(() => expect(sentTags).toEqual(["VIP Oro"]));
+  });
+
   it("un archivo que no sirve queda en su campo", async () => {
     await useNativeForms();
     server.use(

@@ -131,3 +131,32 @@ describe("SearchSelect · Criterio · Formularios", () => {
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
 });
+
+// D10 (E11): «Etiqueta para todos» al importar contactos. Lo buscado que no está se crea; lo que ya está, aunque cambien las
+// mayúsculas, se elige.
+describe("SearchSelect con creatable", () => {
+  function Creatable() {
+    const [value, setValue] = useState("");
+    return <>
+      <FormField label="Etiqueta">
+        <SearchSelect creatable options={[{ value: "VIP", label: "VIP" }]} value={value} onChange={setValue} placeholder="Sin etiqueta" searchLabel="Buscar" />
+      </FormField>
+      <output data-testid="value">{value}</output>
+    </>;
+  }
+
+  it("ofrece crear lo buscado que no está, sin distinguir mayúsculas, y lo deja elegido", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Creatable />);
+    await user.click(screen.getByRole("combobox", { name: "Etiqueta" }));
+    const search = await screen.findByRole("searchbox", { name: "Buscar" });
+    await user.type(search, "vip");
+    expect(screen.getByRole("option", { name: "VIP" })).toBeVisible();
+    expect(screen.queryByRole("option", { name: /^Crear/ })).not.toBeInTheDocument();
+    await user.clear(search);
+    await user.type(search, "Oro");
+    await user.keyboard("{Enter}");
+    expect(screen.getByTestId("value")).toHaveTextContent("Oro");
+    expect(screen.getByRole("combobox", { name: "Etiqueta" })).toHaveTextContent("Oro");
+  });
+});

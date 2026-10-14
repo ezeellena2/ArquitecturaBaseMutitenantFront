@@ -41,6 +41,9 @@ interface SearchSelectProps {
   disabled?: boolean;
   busy?: boolean;
   remote?: RemoteOptions;
+  /** Ofrece «Crear «X»» cuando lo buscado no está entre las opciones (sin distinguir mayúsculas), como `MultiSelect`:
+   * al elegirla, ese texto queda como valor nuevo. Sirve para lo que se crea al guardar, como una etiqueta. */
+  creatable?: boolean;
   className?: string;
   "aria-invalid"?: ComponentProps<"button">["aria-invalid"];
   "aria-describedby"?: string;
@@ -68,7 +71,7 @@ function fieldLabel(id: string | undefined): string | undefined {
 /// arriba, que filtra sin tildes ni mayúsculas. Se elige con el mouse o con flechas y Enter. En el teléfono la lista
 /// es una hoja desde abajo, con el rótulo del campo como título (tablero M-Cuenta-Agregar, «País»).
 export function SearchSelect({
-  options, value, onChange, placeholder, searchLabel, selectedLabel, renderValue, title, id, disabled, busy, className, remote,
+  options, value, onChange, placeholder, searchLabel, selectedLabel, renderValue, title, id, disabled, busy, className, remote, creatable = false,
   "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy, "aria-label": ariaLabel,
 }: SearchSelectProps): ReactNode {
   const { t } = useTranslation();
@@ -79,9 +82,15 @@ export function SearchSelect({
   const [sheetTitle, setSheetTitle] = useState("");
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
-  const withSearch = Boolean(remote) || options.length > SEARCH_THRESHOLD;
+  const withSearch = Boolean(remote) || creatable || options.length > SEARCH_THRESHOLD;
   const term = normalize(query.trim());
-  const visible = remote || term === "" ? options : options.filter((option) => normalize(`${option.label} ${option.value} ${option.keywords ?? ""}`).includes(term));
+  const found = remote || term === "" ? options : options.filter((option) => normalize(`${option.label} ${option.value} ${option.keywords ?? ""}`).includes(term));
+  // Se ofrece crear solo con la búsqueda ya respondida y si no hay una igual: así no se duplica una que existe.
+  const typed = (remote ? remote.search : query).trim();
+  const same = (text: string) => text.localeCompare(typed, undefined, { sensitivity: "accent" }) === 0;
+  const offerCreate = creatable && typed !== "" && !remote?.loading && !remote?.error
+    && !same(value) && !options.some((option) => same(option.value) || same(option.label));
+  const visible: readonly SearchSelectOption[] = offerCreate ? [...found, { value: typed, label: t("fields.createOption", { value: typed }) }] : found;
   const selected = options.find((option) => option.value === value);
   const optionId = (index: number) => `${listId}-${index}`;
 
@@ -115,7 +124,8 @@ export function SearchSelect({
     if (open) listRef.current?.querySelector(`#${CSS.escape(optionId(active))}`)?.scrollIntoView?.({ block: "nearest" });
   });
 
-  const shown = selected ? (renderValue?.(selected) ?? selected.label) : selectedLabel;
+  // Lo creado acá todavía no es una opción: el control muestra su texto.
+  const shown = selected ? (renderValue?.(selected) ?? selected.label) : selectedLabel ?? (creatable && value ? value : undefined);
 
   const trigger = <button
     type="button"

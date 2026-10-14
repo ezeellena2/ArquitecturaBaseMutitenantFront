@@ -97,7 +97,7 @@ export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () =
               action={t(file ? "whatsapp:contacts.import.change" : "whatsapp:contacts.import.choose")} onFile={choose} />
           </FormField>
           <FormField label={t("whatsapp:contacts.import.tag")} error={tagError}>
-            <SearchSelect value={tag} onChange={(next) => { setTag(next); setTagError(undefined); clear(); }} remote={tagOptions.remote}
+            <SearchSelect creatable value={tag} onChange={(next) => { setTag(next); setTagError(undefined); clear(); }} remote={tagOptions.remote}
               options={[{ value: noTag, label: t("whatsapp:contacts.import.noTag") }, ...tagOptions.items.map(tagOption)]}
               selectedLabel={tag || t("whatsapp:contacts.import.noTag")}
               placeholder={t("whatsapp:contacts.import.noTag")} searchLabel={t("common:actions.search")} />

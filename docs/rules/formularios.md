@@ -24,7 +24,7 @@
 - Fields inválidos conservan texto, emiten null/validity=false inmediatamente y muestran error tras blur; corregir devuelve valor/true.
 - DateField.invalidMessage omitido usa el común; texto lo reemplaza; null lo cede a FormField sin perder aria-invalid/valididez. Un mensaje, un aria-describedby.
 - Catálogos aportan opciones y valores guardados deshabilitados; búsqueda no oculta el elegido.
-- `MultiSelect creatable` (con búsqueda remota) ofrece «Crear «X»» si lo buscado no existe sin distinguir mayúsculas, como las etiquetas de un contacto (E11); el back valida el valor nuevo al guardar. TextLimits y máscaras fiscales salen del contrato/catálogo.
+- `MultiSelect creatable` (con búsqueda remota) y `SearchSelect creatable` ofrecen «Crear «X»» si lo buscado no existe sin distinguir mayúsculas, como las etiquetas de un contacto y la de una importación (E11, D10); el back valida el valor nuevo al guardar. TextLimits y máscaras fiscales salen del contrato/catálogo.
 - El tipo fiscal empresarial pertenece al formulario; taxIdValidationMessage distingue largo/algoritmo; normalizar separadores antes de limitar, sin maxLength HTML de dígitos.
 - Un alta/envío usa useIdempotentMutation desde apertura; [datos y API](datos-y-api.md) define cuerpo, clave, retry y abandono.
 - useEditPage.onNavigationAttempt avisa sincrónicamente ruta/searchKeys aunque se bloquee; cancelar AbortSignal antes de decidir salida, crear otro dueño sólo al quedarse/cambiar grupo.
