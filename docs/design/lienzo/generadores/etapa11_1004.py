@@ -7,7 +7,7 @@ import pathlib
 import re
 import sys
 
-from estados_util import con_estados_pantalla, marcar, rep, sumar_opcion
+from estados_util import con_estados_pantalla, marcar, ordenar_opciones, rep, sumar_opcion
 
 sys.stdout.reconfigure(encoding="utf-8")
 PROJ = pathlib.Path(__file__).resolve().parent.parent
@@ -709,14 +709,16 @@ def datos():
     for nombre in ("WA-Chats", "WA-Chats-24h", "WA-Chats-Nota", "WA-Chats-Pasar", "WA-Chats-Plantilla", "WA-Contacto", "WA-Contactos",
                    "WA-Contactos-Importar", "M-WA-Contacto", "M-WA-Contactos", "M-WA-Contactos-Importar", "Criterio-Marco"):
         t = leer(nombre)
-        n = (t.replace("+54 9 11 5555-4521 · Vinculada", "+54 9 11 5555-7310 · Vinculada") if nombre == "WA-Chats"
-             else t.replace("+54 9 11 5555-4521", "+54 9 11 5555-7310"))
+        n = (t.replace("+54 9 11 5555-4521 · Vinculada", "+54 9 11 5555-6203 · Vinculada") if nombre == "WA-Chats"
+             else t.replace("+54 9 11 5555-4521", "+54 9 11 5555-6203"))
+        # 7310 es de Martín Paz, empleado (Cargar teléfonos): Martina pasó a 6203.
+        n = n.replace("+54 9 11 5555-7310", "+54 9 11 5555-6203")
         if n != t:
             escribir(nombre, n)
     # Cada contacto con su número: Javier Pereyra (el de los chats) y Carla Ruiz (el de Contactos).
     for nombre in ("WA-Contactos", "WA-Contactos-Importar", "M-WA-Contactos", "M-WA-Contactos-Importar", "WA-Chats"):
         t = leer(nombre)
-        n = t.replace("+54 9 11 5555-7310 · Vinculado", "+54 9 11 5555-3388 · Vinculado").replace("+54 9 351 555-0731 · Delta Sur", "+54 9 11 5555-1146 · Delta Sur")
+        n = t.replace("+54 9 11 5555-6203 · Vinculado", "+54 9 11 5555-3388 · Vinculado").replace("+54 9 351 555-0731 · Delta Sur", "+54 9 11 5555-1146 · Delta Sur")
         if n != t:
             escribir(nombre, n)
     # Las difusiones van solo a quienes aceptan: Federico Díaz y Sergio Gómez no aceptan, así que no figuran entre los destinatarios.
@@ -803,22 +805,22 @@ def contactos():
     if not ya(t):
         t = estados_compu(t, "Ficha")
         cuerpo = (campo("Nombre", "Martina López", select=False, ancho=False)
-                  + '<div class="w-cmp"><span class="rt">Teléfono</span><span class="e11-solo">+54 9 11 5555-7310</span></div>'
+                  + '<div class="w-cmp"><span class="rt">Teléfono</span><span class="e11-solo">+54 9 11 5555-6203</span></div>'
                   + campo("Etiquetas", "Mayorista", req=False) + '<div class="w-cmp" style="grid-column: 1 / -1;"><span class="rt">Promociones</span>'
                   + seg(promos, "Acepta") + "</div>")
         t = sumar_estado(t, "Editar contacto", encima=dlg("Editar contacto", cuerpo, pie, chico=False, una=False))
-        t = sumar_estado(t, "Sin vínculo", [("+54 9 11 5555-7310 · Vinculada a su cuenta · Mayorista", "+54 9 11 5555-7310 · Mayorista")], encima="")
+        t = sumar_estado(t, "Sin vínculo", [("+54 9 11 5555-6203 · Vinculada a su cuenta · Mayorista", "+54 9 11 5555-6203 · Mayorista")], encima="")
         escribir("WA-Contacto", marcar(t, MARCA, CSS_COMPU + CSS_FICHA))
 
     t = leer("M-WA-Contacto")
     if not ya(t):
         t = con_estados_pantalla(t, "Ficha")
         cuerpo = (campo_tel("Nombre", "Martina López", select=False)
-                  + '<div class="ap-cmp"><span class="rt"><span>Teléfono</span></span><span class="e11-solo">+54 9 11 5555-7310</span></div>'
+                  + '<div class="ap-cmp"><span class="rt"><span>Teléfono</span></span><span class="e11-solo">+54 9 11 5555-6203</span></div>'
                   + campo_tel("Etiquetas", "Mayorista", req=False) + '<div class="ap-cmp"><span class="rt"><span>Promociones</span></span>' + seg(promos, "Acepta") + "</div>")
         t = sumar_estado_tel(t, "Editar contacto", al_final=hoja("Editar contacto", cuerpo,
                              '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Guardar</button>'))
-        t = sumar_estado_tel(t, "Sin vínculo", [("+54 9 11 5555-7310 · Vinculada a su cuenta<br>", "+54 9 11 5555-7310<br>")])
+        t = sumar_estado_tel(t, "Sin vínculo", [("+54 9 11 5555-6203 · Vinculada a su cuenta<br>", "+54 9 11 5555-6203<br>")])
         escribir("M-WA-Contacto", marcar(t, MARCA, CSS_TEL + CSS_FICHA_TEL))
 
     # Importar: la vista previa (CC05) muestra lo que entra y lo que no, antes de guardar.
@@ -1093,6 +1095,187 @@ def equipos_plantillas():
         escribir("M-WA-Plantillas", marcar(t, MARCA, CSS_TEL))
 
 
+# ---------------------------------------------------------------- Personas: Mensajes de la persona, Cargar teléfonos, Usuarios y permisos de Plataforma
+
+PERMISOS_WA = [("Administrar el WhatsApp de Plataforma", "Conectar el número y configurar el bot, los equipos y las plantillas de consultas."),
+               ("Atender consultas", "Ver y responder las consultas que llegan al número de Plataforma.")]
+TELEFONOS = ["11 5555-4521", "11 5555-7310", "11 5555-8812", "11 5555-9934", "11 5555-1200", "11 4444"]
+INVITADOS = ["+54 9 11 5555-8812", "+54 9 11 5555-9934", "+54 9 11 5555-1200"]
+DESVINCULAR_TXT = ('<p class="e11-tx">Deja de verse en Mensajes y La Clementina ya no la ve unida a tu cuenta. '
+                   'Podés seguir escribiéndole por WhatsApp.</p>')
+DESVINCULAR_PIE = '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pel lleno">Desvincular</button>'
+CSS_PERSONAS = """.e11-vacio { flex: 1; display: flex; align-items: center; justify-content: center; padding: 48px; font-size: 14px; font-weight: 600; color: var(--t2); }
+.w-cmp .ct.area.e11-alto { height: 168px; white-space: pre-line; }
+"""
+
+
+def permisos_plataforma():
+    for nombre in ("Cuenta-Plat", "M-Cuenta-Plat"):
+        t = leer(nombre)
+        if "Atender consultas" in t:
+            continue
+        aud = "Los eventos de seguridad de todo el servicio."
+        if nombre == "Cuenta-Plat":
+            t = re.sub(r'(<div class="o-fila"><span class="dos"><span class="c1">Ver la auditoría</span><span class="n2">' + aud
+                       + r'</span></span><span class="o-perm (?:si|no)">(?:<svg.*?</svg>|—)</span></div>)',
+                       lambda m: m.group(1) + "".join(f'<div class="o-fila"><span class="dos"><span class="c1">{n}</span><span class="n2">{d}</span></span>'
+                                                      '<span class="o-perm no">—</span></div>' for n, d in PERMISOS_WA), t, flags=re.S)
+            t = re.sub(r'(<label class="op2"><input type="checkbox"(?: checked)?><span><span class="opn">Ver la auditoría</span><span class="opd">' + aud
+                       + r'</span></span></label>)',
+                       lambda m: m.group(1) + "".join(f'<label class="op2"><input type="checkbox"><span><span class="opn">{n}</span><span class="opd">{d}</span></span></label>'
+                                                      for n, d in PERMISOS_WA), t)
+        else:
+            t = re.sub(r'(<div class="ap-fila"><div class="tx"><span class="l1"><span class="q">Ver la auditoría</span><span class="ap-perm (?:si|no)">(?:<svg.*?</svg>|—)</span></span>'
+                       r'<span class="l2">' + aud + r'</span></div></div>)',
+                       lambda m: m.group(1) + "".join(f'<div class="ap-fila"><div class="tx"><span class="l1"><span class="q">{n}</span><span class="ap-perm no">—</span></span>'
+                                                      f'<span class="l2">{d}</span></div></div>' for n, d in PERMISOS_WA), t, flags=re.S)
+        assert t.count("Atender consultas") >= 2, nombre
+        escribir(nombre, t)
+
+
+def usuarios_telefono():
+    # Las invitaciones de «Cargar teléfonos» figuran en Usuarios con el teléfono (ADR 0047: la identidad de la invitación es un Phone).
+    t = leer("Usuarios")
+    if INVITADOS[0] not in t:
+        nuevos = "".join(f"  {{ id: 'u1{i}', n: '', email: '{tel}', estado: 'invitado', vence: '20/10/2026', rolesOrg: [], empresas: [{{ c: 'c1', roles: ['Solo lectura'] }}] }},\n"
+                         for i, tel in enumerate(INVITADOS, 2))
+        marca = "  { id: 'u8', n: 'Marcos Giménez',"
+        t = rep(t, marca, nuevos + marca)
+        escribir("Usuarios", t)
+    t = leer("M-Usuarios")
+    if not ya(t):
+        wa = re.search(r'<span class="w-av g">(<svg.*?</svg>)</span>', leer("M-WA-Chats"), flags=re.S).group(1)
+        i = t.index('<span class="w-av">M</span><span class="tx"><span class="l1"><b>Marcos Giménez</b>')
+        i = t.rindex('<div class="w-conv"', 0, i)
+        fila = div_en(t[i:], '<div class="w-conv"')
+        boton = re.search(r'<button type="button" class="ap-ib" aria-label="Acciones de Marcos Giménez">.*?</button>', fila, flags=re.S).group(0)
+        filas = "".join(fila[:fila.index('<span class="w-av">')] + f'<span class="w-av g">{wa}</span><span class="tx"><span class="l1"><b>{tel}</b></span>'
+                        '<span class="l2"><span>Delta S.A. · Solo lectura</span></span><span class="l3"><span class="w-est azul">Invitación pendiente</span> · vence 20/10</span></span></a>'
+                        + boton.replace("Marcos Giménez", tel) + "</div>" for tel in INVITADOS)
+        t = t[:i] + filas + t[i:]
+        t = con_estados_pantalla(t, "Lista")
+        menu = '<div class="ap-menu" role="menu" style="top: 96px;"><a role="menuitem" href="M-WA-Telefonos.dc.html" style="color: inherit; text-decoration: none;"><span>Cargar teléfonos</span></a></div>'
+        t = sumar_estado_tel(t, "Menú", al_final=menu)
+        escribir("M-Usuarios", marcar(t, MARCA, CSS_TEL))
+
+
+def cargar_telefonos():
+    t = leer("WA-Telefonos")
+    if not ya(t):
+        t = estados_compu(t, "Revisar")
+        tabla = div_en(t, '<div class="w-caja"><div class="w-th p">')
+        campo_tels = ('<div class="w-caja"><div class="w-cab"><span>Teléfonos</span></div><div class="o-g2"><div class="w-cmp" style="grid-column: 1 / -1;">'
+                      '<span class="rt" style="display: flex; align-items: center; justify-content: space-between;"><span>Uno por renglón, hasta 200 '
+                      '<span style="color: var(--peligro);">*</span></span><a href="#" style="font-weight: 600; color: var(--marca-tx); text-decoration: none;">Subir un archivo</a></span>'
+                      f'<div class="ct area e11-alto">{chr(10).join(TELEFONOS)}</div></div></div></div>')
+        t = sumar_estado(t, "Pegar o subir", [(tabla, campo_tels), ("6 teléfonos · 2 ya son miembros · 3 invitaciones · 1 inválido", "Paso 1 de 2"),
+                                               (">Vincular y mandar 3 invitaciones<", ">Revisar 6 teléfonos<")], encima="")
+        t = ordenar_opciones(t, ["Pegar o subir", "Revisar"])
+        escribir("WA-Telefonos", marcar(t, MARCA, CSS_COMPU + CSS_PERSONAS))
+    t = leer("M-WA-Telefonos")
+    if not ya(t):
+        t = con_estados_pantalla(t, "Revisar")
+        cuerpo = div_en(t, '<div class="ap-cuerpo">')
+        grupo = div_en(cuerpo, '<div class="ap-grupo"')
+        corte = cuerpo.index(grupo) + len(grupo)
+        area = ('<span class="ap-gtit">Teléfonos</span><div class="ap-cmp" style="padding: 0 16px;"><span class="rt"><span>Uno por renglón, hasta 200 <span class="rq">*</span></span>'
+                '<a class="ej" href="#">Subir un archivo</a></span>'
+                f'<div class="ct area" style="white-space: pre-line; min-height: 190px;">{chr(10).join(TELEFONOS)}</div></div>')
+        t = sumar_estado_tel(t, "Pegar o subir", [(cuerpo, cuerpo[:corte] + area + "</div>"), ('<span class="sub">6 teléfonos · 3 invitaciones</span>', '<span class="sub">Paso 1 de 2</span>'),
+                                                  (">Vincular y mandar 3 invitaciones<", ">Revisar 6 teléfonos<")])
+        t = ordenar_opciones(t, ["Pegar o subir", "Revisar"])
+        escribir("M-WA-Telefonos", marcar(t, MARCA, CSS_TEL + ".ap-cmp .ej { text-decoration: none; font-size: 13.5px; font-weight: 600; color: var(--marca-tx); }\n"))
+
+
+def mensajes_persona():
+    t = leer("WA-Mensajes")
+    if not ya(t):
+        t = estados_compu(t, "Conversación")
+        chat = div_en(t, '<div class="w-chat">')
+        t = sumar_estado(t, "Vacío", [(chat, '<div class="w-body"><div class="w-caja e11-vacio">Todavía no tenés mensajes con organizaciones</div></div>'),
+                                      ('<p class="res">3 organizaciones</p>', '<p class="res">Ninguna organización</p>')], encima="")
+        menu = ('<div class="o-menu" role="menu" aria-label="Acciones de La Clementina" style="top: 168px; right: 24px;">'
+                '<span class="it pel" role="menuitem">Desvincular</span></div>')
+        t = sumar_estado(t, "Menú de la conversación", encima=menu)
+        t = sumar_estado(t, "Desvincular", encima=dlg("¿Desvincular la conversación con La Clementina?", DESVINCULAR_TXT, DESVINCULAR_PIE, cerrar=False))
+        escribir("WA-Mensajes", marcar(t, MARCA, CSS_COMPU + CSS_PERSONAS))
+    t = leer("M-WA-Mensajes")
+    if not ya(t):
+        t = con_estados_pantalla(t, "Lista")
+        cuerpo = div_en(t, '<div class="ap-cuerpo">')
+        t = sumar_estado_tel(t, "Vacío", [(cuerpo, '<div class="ap-cuerpo"><div class="e11-vacio">Todavía no tenés mensajes con organizaciones</div></div>')])
+        escribir("M-WA-Mensajes", marcar(t, MARCA, CSS_TEL + ".e11-vacio { flex: 1; display: flex; align-items: center; justify-content: center; padding: 48px 32px; "
+                                         "text-align: center; font-size: 16px; font-weight: 600; color: var(--t2); }\n"))
+    t = leer("M-WA-Mensaje")
+    if not ya(t):
+        t = con_estados_pantalla(t, "Conversación")
+        t = sumar_estado_tel(t, "Menú", al_final='<div class="ap-menu" role="menu"><span class="pel" role="menuitem">Desvincular</span></div>')
+        t = sumar_estado_tel(t, "Desvincular", al_final=hoja("¿Desvincular la conversación con La Clementina?", DESVINCULAR_TXT, DESVINCULAR_PIE, cerrar=False))
+        escribir("M-WA-Mensaje", marcar(t, MARCA, CSS_TEL))
+
+
+# ---------------------------------------------------------------- Textos: mensajes del sistema y «Decisiones por pantalla»
+
+MENSAJES_NUEVOS = {
+    "Chats esperando": """  {
+    n: 'Consultas esperando',
+    // Plataforma › WhatsApp: el mismo aviso que «Chats esperando», para un equipo de operadores. Solo el resumen, sin mensajes ni teléfonos.
+    correo: {
+      asunto: 'Tenés 2 consultas esperando en Soporte',
+      para: 'martin.sosa@arquitecturabase.ejemplo.com',
+      titulo: '2 consultas esperando en Soporte',
+      parrafos: [P('Hola, Martín. Hay 2 consultas de WhatsApp sin tomar en Soporte, de ArquitecturaBase. La más vieja espera hace 15 minutos.')],
+      boton: 'Ver las consultas',
+      pie: 'Te llega porque estás en el equipo Soporte. Quien administra el WhatsApp de Plataforma elige cuándo se manda este aviso.',
+    },
+  },
+""",
+    "Bot: cuenta de operador": """  {
+    n: 'Bot: ofrecer vincular',
+    // D2 (13/10): el bot de una organización lo ofrece solo si el número es un Phone verificado de una cuenta, al terminar la conversación.
+    wa: { mio: 'Gracias, era eso.', texto: [N('Este número es de una cuenta de ArquitecturaBase. ¿Querés ver esta conversación con Grupo Delta en Mensajes, en tu cuenta?')],
+      botones: [{ t: 'Vincular', resp: true }, { t: 'Ahora no', resp: true }] },
+  },
+  {
+    n: 'Bot: conversación vinculada',
+    // D5: Mensajes muestra la conversación desde que se vinculó.
+    wa: { mio: 'Vincular', texto: [N('Listo. Desde ahora ves esta conversación en Mensajes, en tu cuenta de ArquitecturaBase.')], botones: [] },
+  },
+""",
+}
+
+
+def mensajes_sistema():
+    t = leer("Mensajes")
+    if "Consultas esperando" in t:
+        return
+    # Con Consultas, el chat del número de la plataforma ya no sirve solo para entrar.
+    t = t.replace(" pie: 'Por ahora este chat solo sirve para entrar.',", "")
+    t = t.replace("pie: 'Te llega porque estás en el equipo Ventas. El Dueño elige cuándo se manda este aviso.',",
+                  "pie: 'Te llega porque estás en el equipo Ventas. Quien administra WhatsApp elige cuándo se manda este aviso.',")
+    for despues, bloque in MENSAJES_NUEVOS.items():
+        i = t.index(f"    n: '{despues}',")
+        i = t.rindex("  {\n", 0, i)
+        fin = t.index("\n  },\n", i) + len("\n  },\n")
+        t = t[:fin] + bloque + t[fin:]
+    # Los mensajes del bot de una organización salen de su número: el encabezado del teléfono dice quién manda.
+    t = rep(t, '<span class="logo" aria-hidden="true"></span>\n            <div><div class="n1">ArquitecturaBase <svg',
+            '<sc-if value="{{w.dePlataforma}}" hint-placeholder-val="{{si}}"><span class="logo" aria-hidden="true"></span></sc-if>'
+            '<sc-if value="{{w.deOrg}}" hint-placeholder-val="{{no}}"><span class="logo e11-org" aria-hidden="true">GD</span></sc-if>\n'
+            '            <div><div class="n1">{{w.de}} <svg')
+    t = rep(t, "        mio: w.mio || '', horaMia: '14:34', hora: '14:35',",
+            "        mio: w.mio || '', horaMia: '14:34', hora: '14:35', de: w.de || 'ArquitecturaBase', dePlataforma: !w.de, deOrg: !!w.de,")
+    t = t.replace("wa: { mio: 'Gracias, era eso.',", "wa: { de: 'Grupo Delta', mio: 'Gracias, era eso.',").replace("wa: { mio: 'Vincular',", "wa: { de: 'Grupo Delta', mio: 'Vincular',")
+    t = marcar(t, MARCA, ".wa-cab .logo.e11-org { background: var(--marca); background-image: none; color: #fff; display: inline-flex; align-items: center; "
+                         "justify-content: center; font-size: 13px; font-weight: 700; }\n"
+                         ".wa-cab .logo.e11-org::before, .wa-cab .logo.e11-org::after { display: none; }\n")
+    t = sumar_opcion(t, "Chats esperando", "Consultas esperando", "mensaje")
+    t = sumar_opcion(t, "Bot: cuenta de operador", "Bot: ofrecer vincular", "mensaje")
+    t = sumar_opcion(t, "Bot: ofrecer vincular", "Bot: conversación vinculada", "mensaje")
+    assert "solo sirve para entrar" not in t
+    escribir("Mensajes", t)
+
+
 if __name__ == "__main__":
     datos()
     numeros()
@@ -1107,3 +1290,8 @@ if __name__ == "__main__":
     equipos_plantillas()
     contactos()
     difusiones()
+    permisos_plataforma()
+    usuarios_telefono()
+    cargar_telefonos()
+    mensajes_persona()
+    mensajes_sistema()

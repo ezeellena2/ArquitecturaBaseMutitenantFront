@@ -157,7 +157,7 @@ DECISIONES = {
         ("Bot", "A y B", "Pestañas «Configuración» (cajas) y «Recorrido» (diagrama); la opción del menú pasa a un equipo o contesta un texto.", "Dibujada"),
         ("Equipos", "A", "Tabla; crear y editar en un diálogo.", "Dibujada"),
         ("Plantillas", "B", "Lista con estado en Meta; «Nueva plantilla» en un diálogo con nombre, tipo y texto.", "Dibujada"),
-        ("Cargar teléfonos de empleados", "A", "Desde Usuarios, en dos pasos: pegar o subir y revisar qué pasa con cada número: «Ya es miembro», «Se invita» o «Número inválido». Nunca dice si un número tiene cuenta (ADR 0041): la cuenta se vincula al aceptar la invitación.", "Dibujada"),
+        ("Cargar teléfonos de empleados", "A", "Desde Usuarios, en dos pasos: pegar o subir y revisar qué pasa con cada número: «Ya es miembro», «Se invita» o «Número inválido». Nunca dice si un número tiene cuenta (ADR 0043 y la precisión del 11/10 de la 0038): la cuenta se vincula al aceptar la invitación.", "Dibujada"),
         ("Mensajes de la persona", "A", "En el perfil personal, solo para leer, con «Seguir en WhatsApp».", "Dibujada"),
         ("Permisos", "A", "Área WhatsApp con 4: Atender clientes, Atender internos, Mandar difusiones y Administrar WhatsApp.", "Dibujada"),
         ("Correo «Chats esperando»", "A", "Solo el resumen y «Ver los chats», sin copiar mensajes ni teléfonos.", "Dibujada"),
@@ -342,6 +342,13 @@ DECISIONES = {
         ("WhatsApp · mandar formulario en el teléfono", "C", "«Mandar formulario» va en el ⋮ del chat, debajo de «Pasar» y «Ver ficha del contacto»: el menú aguanta lo que sumen las etapas 13 a 17 sin llenar de botones donde se escribe. Apagado, en gris con el motivo debajo. Abre la hoja «Mandar formulario», copia de «Mandar plantilla».", "Dibujada"),
         ("WhatsApp · respuesta en el teléfono", "B", "La misma tarjeta plegada de la compu; «Ver las N respuestas» abre una hoja con todas en grilla, así la burbuja no crece con formularios largos.", "Dibujada"),
         ("Detalle de solo lectura", "", "Vale para diálogos, pestañas y listas de cambios: grilla con líneas, el rótulo sobre arena (Publicar y Publicación de Formularios, 13/10).", "Dibujada"),
+    ],
+    "E11 · WhatsApp · El usuario · 13/10": [
+        ("WhatsApp · bot", "B", "«Configuración | Recorrido» son dos vistas de lo mismo: control segmentado arriba, no pestañas. El bot no se apaga (D9): sin «Activo» y sin interruptor en la bienvenida y el fuera de horario, que se editan.", "Dibujada"),
+        ("WhatsApp · números", "", "Cada número muestra siempre «N de 1.000 gratis»; pasado el tope, «1.240 · 240 se cobran». Sin medio de pago responde hasta 1.000 por mes y no manda plantillas ni difusiones (D1). Desconectar deja sus chats para leer (D7).", "Dibujada"),
+        ("WhatsApp · chats", "", "Fotos, audios y documentos se ven como «Mandó…», sin descarga (D7). Un chat que tomó otra persona se lee y lleva notas. Las plantillas en revisión o rechazadas aparecen apagadas con su motivo.", "Dibujada"),
+        ("WhatsApp · equipos", "", "El aviso por correo: a los 10, 15 o 30 minutos, o «No avisar» (D6).", "Dibujada"),
+        ("Plataforma · plantillas", "", "«Para consultas | Del sistema» con control segmentado; la invitación a una organización es Marketing en español y Utilidad en inglés.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
