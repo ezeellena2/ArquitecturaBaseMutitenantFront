@@ -142,7 +142,7 @@ export function startEmbeddedSignup(sdk: FacebookSdk, config: WhatsAppSignupConf
       if (wabaId && phoneNumberId) { finish = { phoneNumberId, wabaId, coexistence: false }; complete(); }
       else settle({ kind: "error", errorCode: null });
     } else if (message.event === "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING") {
-      // Meta puede no mandar el id del número en la coexistencia: el back lo resuelve con la cuenta.
+      // CC20: en la coexistencia Meta manda solo la cuenta; el alta va sin el id del número.
       if (wabaId) { finish = { phoneNumberId, wabaId, coexistence: true }; complete(); }
       else settle({ kind: "error", errorCode: null });
     } else if (message.event.startsWith("FINISH")) {

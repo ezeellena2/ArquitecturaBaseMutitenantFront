@@ -1,4 +1,5 @@
 import { api } from "@/shared/api/httpClient";
+import type { ResourceOptions } from "@/shared/api/resourceOptions";
 import { toSearch } from "@/shared/api/toSearch";
 import type { ApiSchemas } from "@/shared/api/types";
 import { whatsappQueryRoot } from "../../api/untaken";
@@ -6,11 +7,13 @@ import type {
   CheckWhatsAppNumberRequest,
   ConnectPlatformWhatsAppNumberRequest,
   ConnectWhatsAppNumberRequest,
+  PagedResultOfWhatsAppReferenceResponse,
   PlatformWhatsAppNumberResponse,
   UpdatePlatformWhatsAppNumberRequest,
   UpdateWhatsAppNumberRequest,
   WhatsAppNumberListResponse,
   WhatsAppNumberResponse,
+  WhatsAppReferenceResponse,
 } from "../../api/types";
 
 const organizationPath = "/api/organization/whatsapp/numbers";
@@ -28,6 +31,13 @@ export const fetchNumbers = (query: NumbersQuery, signal?: AbortSignal) =>
 
 export const numberQueryKey = (id: string) => [...numbersQueryRoot, "detail", id] as const;
 export const fetchNumber = (id: string, signal?: AbortSignal) => api.get<WhatsAppNumberResponse>(numberPath(id), { signal });
+
+/** CC21: las empresas que puede atender un número, de a 10 con búsqueda, con el mismo permiso que Números. */
+export const numberCompanyOptions: ResourceOptions<WhatsAppReferenceResponse> = {
+  queryKeyRoot: [...numbersQueryRoot, "company-options"], id: (company) => company.id,
+  queryFn: ({ page, pageSize, search }, signal) =>
+    api.get<PagedResultOfWhatsAppReferenceResponse>(`${organizationPath}/company-options?${toSearch({ page, pageSize, search })}`, { signal }),
+};
 
 /** El alta embebida: el `code` de Meta vive 30 s, así que el pedido sale apenas llegan el code y los ids. */
 export const connectNumber = (request: ConnectWhatsAppNumberRequest, key: string) =>

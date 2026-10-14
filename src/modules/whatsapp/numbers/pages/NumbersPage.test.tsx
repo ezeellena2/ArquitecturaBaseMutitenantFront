@@ -19,15 +19,13 @@ const south: WhatsAppNumberResponse = { ...central, id: "22222222-2222-4222-8222
 const signup = { appId: "1105469744", configId: "cfg-42", sdkVersion: "v26.0" };
 const list = (items: WhatsAppNumberResponse[] = [central, south], paymentMissing = 1): WhatsAppNumberListResponse => ({
   numbers: { items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false }, paymentMissing, signup });
-const companies = { items: [
-  { id: "company-2", name: "Delta Sur S.R.L.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 1, version: 1, createdAtUtc: "2026-09-27T12:00:00Z" },
-], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false };
+const companies = { items: [{ id: "company-2", name: "Delta Sur S.R.L." }], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false };
 
 function handlers(response = list()) {
   server.use(
     http.get("/api/organization/whatsapp/untaken", () => HttpResponse.json({ customers: 0, internal: 0 })),
     http.get("/api/organization/whatsapp/numbers", () => HttpResponse.json(response)),
-    http.get("/api/companies/paged", () => HttpResponse.json(companies)),
+    http.get("/api/organization/whatsapp/numbers/company-options", () => HttpResponse.json(companies)),
     http.get("/api/contact", () => HttpResponse.json({ supportEmail: "soporte@delta.ejemplo.com" })),
   );
 }
@@ -51,10 +49,15 @@ beforeEach(async () => {
 });
 afterEach(() => { Reflect.deleteProperty(window, "FB"); });
 
-async function openMeta() {
-  const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/numeros");
+async function openMeta(me = whatsappOwner, company?: string) {
+  const page = mountWhatsApp(me, "/org/whatsapp/numeros");
   await page.user.click(await screen.findByRole("button", { name: "Conectar número" }));
   const dialog = await screen.findByRole("dialog", { name: "Conectar número" });
+  if (company) {
+    within(dialog).getByRole("combobox", { name: "Atiende a" }).focus();
+    await page.user.keyboard("{Enter}");
+    await page.user.click(await screen.findByRole("option", { name: company }));
+  }
   await page.user.click(within(dialog).getByRole("button", { name: "Seguir en Meta" }));
   return page;
 }
@@ -86,6 +89,7 @@ describe("Números", () => {
     expect(await screen.findByRole("heading", { name: "No encontramos esta página" })).toBeVisible();
   });
 
+  // CC21: las empresas salen de Números; alcanza con «Administrar WhatsApp», sin permisos de Empresas.
   it("conectado: con el code y los ids de FINISH manda el alta idempotente con a quién atiende", async () => {
     handlers();
     const meta = fakeFacebook();
@@ -94,12 +98,12 @@ describe("Números", () => {
       sent.push({ body: await request.json() as ConnectWhatsAppNumberRequest, key: request.headers.get("Idempotency-Key") });
       return HttpResponse.json(central, { status: 201 });
     }));
-    await openMeta();
+    await openMeta(whatsappMember("whatsapp.manage"), "Delta Sur S.R.L.");
     expect(await screen.findByText("Ventana de Meta abierta")).toBeVisible();
     meta.post({ event: "FINISH", data: { phone_number_id: "106540352242922", waba_id: "524126980791429" } });
     meta.respond("AQBx-code");
     expect(await screen.findByText("Número conectado")).toBeVisible();
-    expect(sent).toEqual([{ body: { code: "AQBx-code", phoneNumberId: "106540352242922", wabaId: "524126980791429", coexistence: false, companyId: null },
+    expect(sent).toEqual([{ body: { code: "AQBx-code", phoneNumberId: "106540352242922", wabaId: "524126980791429", coexistence: false, companyId: "company-2" },
       key: expect.any(String) as string }]);
     expect(screen.queryByText("Ventana de Meta abierta")).toBeNull();
   });
