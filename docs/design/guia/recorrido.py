@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 122 · 13 de octubre de 2026"
+VERSION = "versión 123 · 13 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -88,21 +88,21 @@ CAPITULOS = [
     ("whatsapp", "Atiende por WhatsApp", "El módulo de WhatsApp de cada organización: chats con clientes y empleados, contactos, difusiones, bot y números.", [
         ("wa-chats", "Chats", "WhatsApp › Chats", "no", "11", ["WA-Chats"], ["M-WA-Chats"],
          ["WA-Chats-SinTomar", "WA-Chats-Nota", "WA-Chats-Pasar", "WA-Chats-24h", "WA-Chats-Plantilla", "M-WA-Conversacion", "M-WA-Chats-SinTomar", "M-WA-Chats-Nota", "M-WA-24h"],
-         "Las bandejas Clientes e Internos, tomar un chat, pasarlo, la nota interna y la ventana de 24 horas."),
+         "Las bandejas Clientes | Internos, tomar un chat (y si lo tomó otra persona), pasarlo, la nota interna, la ventana de 24 horas, las fotos, audios y documentos como «Mandó…», el número desconectado y sin medio de pago."),
         ("wa-contactos", "Contactos", "WhatsApp › Contactos", "no", "11", ["WA-Contactos"], ["M-WA-Contactos"], ["WA-Contacto", "WA-Contactos-Importar", "M-WA-Contacto"],
          "Quién escribió, con sus etiquetas y si acepta promociones; la ficha de cada contacto e importar."),
         ("wa-difusiones", "Difusiones", "WhatsApp › Difusiones", "no", "11", ["WA-Difusiones"], ["M-WA-Difusiones"], ["WA-Difusion-Nueva", "WA-Difusion-Resultados", "M-WA-Difusion-Nueva", "M-WA-Difusion-Resultados"],
          "Mensajes a muchos contactos que aceptaron, con la vista previa, el costo y los resultados."),
         ("wa-numeros", "Números y alta con Meta", "Administración › WhatsApp", "no", "11", ["WA-Admin"], ["M-WA-Admin"], ["WA-Alta", "WA-Alta-Meta", "WA-Alta-Coexistencia", "WA-Admin-Pago", "WA-Admin-Vacio"],
-         "Conectar un número con la ventana de Meta, a quién atiende y el medio de pago."),
+         "Conectar un número con la ventana de Meta, a quién atiende, el medio de pago, los 1.000 gratis del mes y desconectarlo."),
         ("wa-bot", "Bot", "Administración › WhatsApp", "no", "11", ["WA-Respuestas"], ["M-WA-Respuestas"], ["WA-Bot-Recorrido", "M-WA-Bot-Recorrido"],
-         "Respuestas automáticas y el menú que contesta o pasa a un equipo."),
+         "Configuración | Recorrido: la bienvenida, el fuera de horario con sus días y la zona, y el menú de hasta 10 opciones que contesta o pasa a un equipo. No se apaga."),
         ("wa-equipos", "Equipos", "Administración › WhatsApp", "no", "11", ["WA-Equipos"], ["M-WA-Equipos"], ["WA-Equipos-Crear"],
-         "Quién atiende cada bandeja."),
+         "Quién atiende cada bandeja y cuándo avisar por correo si nadie toma un chat."),
         ("wa-plantillas", "Plantillas", "Administración › WhatsApp", "no", "11", ["WA-Plantillas"], ["M-WA-Plantillas"], ["WA-Plantilla-Nueva"],
          "Los mensajes que aprueba Meta para escribir fuera de las 24 horas."),
         ("wa-telefonos", "Cargar teléfonos de empleados", "Usuarios › Cargar teléfonos", "no", "11", ["WA-Telefonos"], ["M-WA-Telefonos"], [],
-         "Pegar o subir números y ver qué pasa con cada uno, sin revelar quién tiene cuenta."),
+         "En dos pasos: pegar o subir los números y ver qué pasa con cada uno, sin revelar quién tiene cuenta. Las invitaciones quedan en Usuarios."),
     ]),
     ("asistente", "Le pregunta al asistente", "Un chat que responde solo sobre el sistema, con lo que cada uno ya puede ver. Es un módulo: lo prende la plataforma.", [
         ("asistente-inicio", "El asistente en el inicio", "/ · /org · /plataforma", "no", "8b", ["Asistente-Org", "Asistente-Personal", "Asistente-Plat"],
