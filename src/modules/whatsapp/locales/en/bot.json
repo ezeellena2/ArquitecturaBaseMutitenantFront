@@ -1,1 +1,114 @@
-{}
+{
+  "title": "Bot",
+  "summary_one": "{{value}} option in the menu",
+  "summary_other": "{{value}} options in the menu",
+  "views": "View",
+  "configuration": "Settings",
+  "noNumbers": "No numbers are connected yet.",
+  "number": {
+    "title": "Number",
+    "option": "{{number}} · {{company}}",
+    "pill": "Number: {{value}}",
+    "label": "Number: {{value}}"
+  },
+  "saved": "Changes saved",
+  "saveChanges": "Save changes",
+  "text": "Text",
+  "edit": "Edit",
+  "rowActions": "Actions for {{name}}",
+  "automatic": "Automatic replies",
+  "menu": "Menu",
+  "extra": "Also",
+  "welcome": {
+    "title": "Welcome",
+    "detail": "The first time someone writes"
+  },
+  "outOfHours": {
+    "title": "Out of hours",
+    "timeZone": "Time zone",
+    "days": "Service days and hours",
+    "from": "{{day}}, from",
+    "until": "{{day}}, until",
+    "to": "to",
+    "closed": "Closed"
+  },
+  "schedule": {
+    "alwaysClosed": "No service hours",
+    "day": "{{day}}, from {{from}} to {{to}}",
+    "pair": "{{first}} and {{last}}, from {{from}} to {{to}}",
+    "range": "{{first}} to {{last}}, from {{from}} to {{to}}",
+    "dayInText": {
+      "Monday": "Monday",
+      "Tuesday": "Tuesday",
+      "Wednesday": "Wednesday",
+      "Thursday": "Thursday",
+      "Friday": "Friday",
+      "Saturday": "Saturday",
+      "Sunday": "Sunday"
+    }
+  },
+  "option": {
+    "add": "Add option",
+    "addTitle": "Add option",
+    "editTitle": "Edit option {{number}}",
+    "label": "Option text",
+    "action": "What it does",
+    "team": "Team",
+    "chooseTeam": "Choose a team",
+    "noTeams": "There are no teams yet",
+    "toTeam": "Goes to {{team}}",
+    "replies": "Replies: «{{reply}}»",
+    "system": "Sends the link to sign in or sign up",
+    "systemTag": "System",
+    "remove": "Remove",
+    "removed": "«{{name}}» was removed",
+    "empty": "There are no menu options yet."
+  },
+  "promotions": {
+    "title": "Ask about promotions",
+    "detail": "When the first conversation ends"
+  },
+  "accountLink": {
+    "title": "Offer to link their account",
+    "detail": "If the number belongs to a registered person"
+  },
+  "employees": {
+    "title": "Employee messages",
+    "detail": "They go to {{team}}, without the menu",
+    "detailInbox": "They go to Internal, without the menu",
+    "noTeam": "No team"
+  },
+  "cap": {
+    "title_one": "The menu already has {{count}} option",
+    "title_other": "The menu already has {{count}} options",
+    "reason_one": "WhatsApp shows up to {{count}} option",
+    "reason_other": "WhatsApp shows up to {{count}} options",
+    "detail": "That is what fits in a WhatsApp list",
+    "remove": "Remove an option to add another",
+    "merge": "Or merge two options into one"
+  },
+  "flow": {
+    "title": "Flow",
+    "arrives": "A message arrives",
+    "employee": "Is it an employee?",
+    "employeeDetail": "Their number is on an account of the organization",
+    "yes": "Yes",
+    "no": "No",
+    "internal": "Internal",
+    "internalTeam": "Team · Internal inbox",
+    "welcome": "Welcome",
+    "welcomeDetail": "or «Out of hours»",
+    "menu": "Menu",
+    "options_one": "{{count}} option",
+    "options_other": "{{count}} options",
+    "team": "Team",
+    "reply": "Replies",
+    "systemTitle": "Link to sign in or sign up",
+    "systemDetail": "Sent by the bot"
+  },
+  "validation": {
+    "required": "Fill in this field.",
+    "hours": "Fill in both times.",
+    "hoursOrder": "The closing time has to be after the opening time."
+  }
+}

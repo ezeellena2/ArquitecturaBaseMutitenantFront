@@ -1,1 +1,114 @@
-{}
+{
+  "title": "Bot",
+  "summary_one": "{{value}} opción en el menú",
+  "summary_other": "{{value}} opciones en el menú",
+  "views": "Ver",
+  "configuration": "Configuración",
+  "noNumbers": "Todavía no hay números conectados.",
+  "number": {
+    "title": "Número",
+    "option": "{{number}} · {{company}}",
+    "pill": "Número: {{value}}",
+    "label": "Número: {{value}}"
+  },
+  "saved": "Cambios guardados",
+  "saveChanges": "Guardar cambios",
+  "text": "Texto",
+  "edit": "Editar",
+  "rowActions": "Acciones de {{name}}",
+  "automatic": "Respuestas automáticas",
+  "menu": "Menú",
+  "extra": "Además",
+  "welcome": {
+    "title": "Bienvenida",
+    "detail": "La primera vez que alguien escribe"
+  },
+  "outOfHours": {
+    "title": "Fuera de horario",
+    "timeZone": "Zona horaria",
+    "days": "Días y horarios de atención",
+    "from": "{{day}}, desde",
+    "until": "{{day}}, hasta",
+    "to": "a",
+    "closed": "Cerrado"
+  },
+  "schedule": {
+    "alwaysClosed": "Sin horario de atención",
+    "day": "{{day}}, de {{from}} a {{to}}",
+    "pair": "{{first}} y {{last}}, de {{from}} a {{to}}",
+    "range": "{{first}} a {{last}}, de {{from}} a {{to}}",
+    "dayInText": {
+      "Monday": "lunes",
+      "Tuesday": "martes",
+      "Wednesday": "miércoles",
+      "Thursday": "jueves",
+      "Friday": "viernes",
+      "Saturday": "sábado",
+      "Sunday": "domingo"
+    }
+  },
+  "option": {
+    "add": "Agregar opción",
+    "addTitle": "Agregar opción",
+    "editTitle": "Editar opción {{number}}",
+    "label": "Texto de la opción",
+    "action": "Qué hace",
+    "team": "Equipo",
+    "chooseTeam": "Elegí un equipo",
+    "noTeams": "Todavía no hay equipos",
+    "toTeam": "Pasa a {{team}}",
+    "replies": "Contesta: «{{reply}}»",
+    "system": "Manda el enlace para entrar o registrarse",
+    "systemTag": "Del sistema",
+    "remove": "Quitar",
+    "removed": "Se quitó «{{name}}»",
+    "empty": "Todavía no hay opciones en el menú."
+  },
+  "promotions": {
+    "title": "Preguntar por promociones",
+    "detail": "Al terminar la primera conversación"
+  },
+  "accountLink": {
+    "title": "Ofrecer vincular su cuenta",
+    "detail": "Si el número es de una persona registrada"
+  },
+  "employees": {
+    "title": "Mensajes de empleados",
+    "detail": "Pasan a {{team}}, sin menú",
+    "detailInbox": "Pasan a Internos, sin menú",
+    "noTeam": "Sin equipo"
+  },
+  "cap": {
+    "title_one": "El menú ya tiene {{count}} opción",
+    "title_other": "El menú ya tiene {{count}} opciones",
+    "reason_one": "WhatsApp muestra hasta {{count}} opción",
+    "reason_other": "WhatsApp muestra hasta {{count}} opciones",
+    "detail": "Es lo que entra en una lista de WhatsApp",
+    "remove": "Quitá una opción para sumar otra",
+    "merge": "O juntá dos opciones en una"
+  },
+  "flow": {
+    "title": "Recorrido",
+    "arrives": "Llega un mensaje",
+    "employee": "¿Es un empleado?",
+    "employeeDetail": "Su número está en una cuenta de la organización",
+    "yes": "Sí",
+    "no": "No",
+    "internal": "Internos",
+    "internalTeam": "Equipo · bandeja Internos",
+    "welcome": "Bienvenida",
+    "welcomeDetail": "o «Fuera de horario»",
+    "menu": "Menú",
+    "options_one": "{{count}} opción",
+    "options_other": "{{count}} opciones",
+    "team": "Equipo",
+    "reply": "Contesta",
+    "systemTitle": "Enlace para entrar o registrarse",
+    "systemDetail": "Lo manda el bot"
+  },
+  "validation": {
+    "required": "Completá este dato.",
+    "hours": "Completá las dos horas.",
+    "hoursOrder": "La hora de cierre tiene que ser después de la de apertura."
+  }
+}

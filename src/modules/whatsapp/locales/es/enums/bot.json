@@ -1,1 +1,15 @@
-{}
+{
+  "WhatsAppBotAction": {
+    "Team": "Pasa a un equipo",
+    "Reply": "Contesta un texto"
+  },
+  "DayOfWeek": {
+    "Monday": "Lunes",
+    "Tuesday": "Martes",
+    "Wednesday": "Miércoles",
+    "Thursday": "Jueves",
+    "Friday": "Viernes",
+    "Saturday": "Sábado",
+    "Sunday": "Domingo"
+  }
+}
