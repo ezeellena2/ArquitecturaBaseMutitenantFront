@@ -15,9 +15,11 @@ export function MessageBubble({ text }: { text: string }) {
 }
 
 /// «48 contactos» con a quiénes y el costo estimado (.o-costo): los dos tal como los manda el back, sin cuentas en el front.
+/// El país de la tarifa (CC16) se nombra con el catálogo de referencia, traducido.
 export function EstimateSummary({ estimate, kind, tag }: { estimate: WhatsAppBroadcastEstimateResponse; kind: WhatsAppAudienceKind; tag: string }) {
   const { t } = useTranslation("whatsapp");
   const format = useFormat();
+  const country = format.isLoading ? undefined : format.referenceData.countries.find((row) => row.code === estimate.country)?.name;
   return <div className="flex flex-col gap-2.5" aria-live="polite">
     <div className="flex flex-col leading-[1.35]">
       <strong className="text-[15px] font-semibold text-[var(--t1)]">{t("broadcasts.contacts", countOf(format, estimate.recipients))}</strong>
@@ -25,7 +27,7 @@ export function EstimateSummary({ estimate, kind, tag }: { estimate: WhatsAppBro
     </div>
     <div className="flex flex-col leading-[1.35]">
       <MoneyText value={estimate.estimatedCost} className="text-left text-[15px] font-semibold text-[var(--t1)]" />
-      <span className="text-[12px] text-[var(--t3)]">{t("broadcasts.preview.cost")}</span>
+      <span className="text-[12px] text-[var(--t3)]">{country ? t("broadcasts.preview.costIn", { country }) : t("broadcasts.preview.cost")}</span>
     </div>
   </div>;
 }

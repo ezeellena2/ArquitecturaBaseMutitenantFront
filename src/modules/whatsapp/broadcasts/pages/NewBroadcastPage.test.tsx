@@ -23,8 +23,8 @@ beforeEach(() => {
       const url = new URL(request.url);
       estimates.push(url);
       return HttpResponse.json(url.searchParams.get("kind") === "Tag"
-        ? { recipients: 48, estimatedCost: { amount: 2.97, currency: "ARS" } }
-        : { recipients: 312, estimatedCost: { amount: 19.28, currency: "ARS" } });
+        ? { recipients: 48, estimatedCost: { amount: 2.97, currency: "ARS" }, country: "AR" }
+        : { recipients: 312, estimatedCost: { amount: 19.28, currency: "ARS" }, country: "AR" });
     }),
   );
 });
@@ -48,6 +48,8 @@ describe("Nueva difusión", () => {
     expect(await screen.findByText("48 contactos")).toBeVisible();
     expect(screen.getByText("Tienen la etiqueta «Mayorista» y aceptan promociones")).toBeVisible();
     expect(screen.getByText("$ 2,97")).toBeVisible();
+    // CC16: el país de la tarifa, con su nombre del catálogo de referencia.
+    expect(screen.getByText("Costo estimado, según los precios de Meta para Argentina")).toBeVisible();
     expect(estimates.at(-1)?.searchParams.get("templateId")).toBe("template-hours");
     expect(estimates.at(-1)?.searchParams.get("tag")).toBe("Mayorista");
     expect(await axe(container)).toHaveNoViolations();

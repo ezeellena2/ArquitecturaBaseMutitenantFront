@@ -24,6 +24,9 @@ export const recipientStatusTones = defineStatusTones("WhatsAppRecipientStatus",
 export const broadcastsPath = "/org/whatsapp/difusiones";
 export const newBroadcastPath = `${broadcastsPath}/nueva`;
 export const broadcastPath = (id: string) => `${broadcastsPath}/${encodeURIComponent(id)}`;
+/** Duplicar (CC17): Nueva difusión con los datos de la original, que se lee por su id. */
+export const duplicateSource = "desde";
+export const duplicatePath = (id: string) => `${newBroadcastPath}?${duplicateSource}=${encodeURIComponent(id)}`;
 export const contactPath = (id: string) => `/org/whatsapp/contactos/${encodeURIComponent(id)}`;
 
 function dateCell(broadcast: WhatsAppBroadcastResponse, phone: boolean): ReactNode {

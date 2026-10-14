@@ -2,7 +2,6 @@ import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
-import type { PagedRequest } from "@/shared/api/types";
 import { useFormat } from "@/shared/format/useFormat";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import type { ModuleContentProps } from "@/shared/modules/types";
@@ -15,27 +14,32 @@ import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { BroadcastsIcon } from "../../components/icons";
-import type { WhatsAppBroadcastResponse } from "../../api/types";
-import { broadcastsQueryKey, fetchBroadcasts } from "../api/broadcasts";
+import type { WhatsAppBroadcastResponse, WhatsAppBroadcastStatus } from "../../api/types";
+import { broadcastsQueryKey, fetchBroadcasts, type BroadcastsQuery } from "../api/broadcasts";
 import { broadcastPhoneRow, createBroadcastColumns, newBroadcastPath } from "../columns";
 import { countOf } from "../../lib/values";
 import { useBroadcastActions } from "../lib/useBroadcastActions";
 
-const noFilters = [] as const;
+const broadcastFilterKeys = ["status"] as const;
+// Orden del filtro «Estado» del tablero WA-Difusiones: todos y después cada estado.
+const statuses: readonly (WhatsAppBroadcastStatus | undefined)[] = [undefined, "Scheduled", "Sending", "Sent", "Cancelled"];
+const allValue = "all";
 
 /**
  * Difusiones (tableros WA-Difusiones y M-WA-Difusiones): la banda con cuántas hay y cuántas están programadas (CC07), el
- * buscador y la tabla paginada por el back. Cada fila se duplica y, si está programada, se cancela.
+ * buscador con el filtro «Estado» en la URL (CC16) y la tabla paginada por el back. Cada fila se duplica y, si está programada, se cancela.
  */
 export function BroadcastsPage(_props: ModuleContentProps) {
   const { t } = useTranslation(["whatsapp", "common"]);
   const format = useFormat();
-  const { pagination, result: broadcasts, paginationProps } = usePagedQuery({
-    filterKeys: noFilters, toQuery: (page): PagedRequest => page,
+  const { filters, pagination, query, result: broadcasts, paginationProps } = usePagedQuery({
+    filterKeys: broadcastFilterKeys,
+    toQuery: (page, values): BroadcastsQuery => ({ ...page, status: statuses.find((status) => status !== undefined && status === values.status) }),
     queryKey: broadcastsQueryKey, queryFn: fetchBroadcasts, meta: { silent: true, blocksView: true },
   });
   const actions = useBroadcastActions();
   const data = broadcasts.data;
+  const filtered = Boolean(query.status || pagination.search);
 
   const rowActions = (broadcast: WhatsAppBroadcastResponse) => <RowActions label={t("whatsapp:broadcasts.rowActions", { name: broadcast.name })} title={broadcast.name} actions={[
     { label: t("whatsapp:broadcasts.actions.duplicate"), accessibleName: t("whatsapp:broadcasts.actions.duplicate"), icon: CopyIcon, onSelect: () => actions.duplicate(broadcast) },
@@ -58,15 +62,18 @@ export function BroadcastsPage(_props: ModuleContentProps) {
       actions={<Button asChild><Link to={newBroadcastPath}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("whatsapp:broadcasts.new")}</Link></Button>}>
       <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar label={t("whatsapp:broadcasts.filters.label")} searchLabel={t("whatsapp:broadcasts.filters.search")}
-          searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch} filters={[]}
-          clearLabel={t("common:actions.clearFilters")} onClear={() => pagination.setSearch("")} />
+          searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
+          filters={[{ key: "status", label: t("whatsapp:broadcasts.filters.status"), menuLabel: t("whatsapp:broadcasts.filters.statusMenu"),
+            value: query.status ?? "", active: query.status !== undefined, onChange: (value) => filters.setFilter("status", value === allValue ? undefined : value),
+            options: statuses.map((status) => ({ value: status ?? allValue, label: status ? format.formatEnum("WhatsAppBroadcastStatus", status) : t("whatsapp:broadcasts.filters.allStatuses") })) }]}
+          clearLabel={t("common:actions.clearFilters")} onClear={filters.clear} />
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={columns} rows={data?.items ?? []} rowKey={(broadcast) => broadcast.id}
             mobileRow={(broadcast) => broadcastPhoneRow(broadcast, t, format, rowActions(broadcast))}
             isLoading={broadcasts.isPending} isFetching={broadcasts.isFetching}
             error={broadcasts.error ? apiErrorMessage(broadcasts.error, t) : undefined} onRetry={() => { void broadcasts.refetch(); }}
-            emptyTitle={pagination.search ? t("whatsapp:broadcasts.empty.filtered") : t("whatsapp:broadcasts.empty.all")}
-            emptyAction={pagination.search ? <Button type="button" variant="outline" onClick={() => pagination.setSearch("")}>{t("common:actions.clearFilters")}</Button> : undefined} />
+            emptyTitle={filtered ? t("whatsapp:broadcasts.empty.filtered") : t("whatsapp:broadcasts.empty.all")}
+            emptyAction={filtered ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined} />
           {paginationProps ? <Pagination {...paginationProps} /> : null}
         </Surface>
       </div>

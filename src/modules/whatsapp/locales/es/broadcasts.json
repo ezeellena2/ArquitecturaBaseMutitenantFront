@@ -11,7 +11,6 @@
   "contacts_other": "{{n}} contactos",
   "results": "{{delivered}} entregados · {{read}} leídos",
   "rowActions": "Acciones de {{name}}",
-  "duplicated": "Duplicamos «{{name}}».",
   "audience": {
     "allAccepting": "Todos los que aceptan"
   },
@@ -29,11 +28,14 @@
   },
   "filters": {
     "label": "Filtros",
-    "search": "Buscar por nombre"
+    "search": "Buscar por nombre",
+    "status": "Estado: todos",
+    "statusMenu": "Estado",
+    "allStatuses": "Todos"
   },
   "empty": {
     "all": "Todavía no hay difusiones",
-    "filtered": "Ninguna difusión coincide con la búsqueda"
+    "filtered": "Ninguna difusión coincide con los filtros"
   },
   "cancel": {
     "title": "¿Cancelar «{{name}}»?",
@@ -120,7 +122,8 @@
     "withTag": "Tienen la etiqueta «{{tag}}» y aceptan promociones",
     "allAccepting": "Aceptan promociones",
     "cost": "Costo estimado, según los precios de Meta",
-    "costShort": "Costo estimado"
+    "costShort": "Costo estimado",
+    "costIn": "Costo estimado, según los precios de Meta para {{country}}"
   },
   "confirm": {
     "scheduleTitle": "¿Programar «{{name}}»?",

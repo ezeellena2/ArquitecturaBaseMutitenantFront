@@ -4,10 +4,11 @@ import type { TFunction } from "i18next";
 import { useMemo, useState } from "react";
 import { useController, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
+import { isNotFoundError } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -21,14 +22,20 @@ import { Button } from "@/shared/ui/button";
 import { DateTimeField } from "@/shared/ui/fields/DateTimeField";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
+import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
+import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { Page } from "@/shared/ui/Page";
 import { RadioGroupField } from "@/shared/ui/RadioGroupField";
 import { SearchSelect } from "@/shared/ui/SearchSelect";
 import { Section, SectionFields } from "@/shared/ui/Section";
+import { homeOf } from "@/tenancy/access";
 import { BroadcastsIcon } from "../../components/icons";
-import type { CreateWhatsAppBroadcastRequest, WhatsAppTemplateOptionResponse } from "../../api/types";
-import { broadcastsQueryRoot, broadcastTagOptions, broadcastTemplateOptions, createBroadcast, estimateQueryKey, fetchEstimate, type EstimateQuery } from "../api/broadcasts";
-import { broadcastPath, broadcastsPath } from "../columns";
+import type { CreateWhatsAppBroadcastRequest, WhatsAppBroadcastResponse, WhatsAppTemplateOptionResponse } from "../../api/types";
+import {
+  broadcastQueryKey, broadcastsQueryRoot, broadcastTagOptions, broadcastTemplateOptions, createBroadcast, estimateQueryKey, fetchBroadcast, fetchEstimate,
+  findTemplateOption, type EstimateQuery,
+} from "../api/broadcasts";
+import { broadcastPath, broadcastsPath, duplicateSource } from "../columns";
 import { ConfirmBroadcastDialog } from "../components/ConfirmBroadcastDialog";
 import { EstimateLine, EstimateSummary, MessageBubble } from "../components/BroadcastPreview";
 import { broadcastErrorField } from "../errors";
@@ -58,6 +65,14 @@ type BroadcastForm = z.input<ReturnType<typeof broadcastFormSchema>>;
 type BroadcastFormValues = z.output<ReturnType<typeof broadcastFormSchema>>;
 
 const emptyForm: BroadcastForm = { name: "", templateId: "", variables: [], kind: "AllAccepting", tag: "", when: "now", scheduledAtUtc: null };
+const sourcePage = { page: 1, pageSize: 10 } as const;
+
+/// Duplicar (CC17): el nombre, la plantilla (si sigue aprobada) y a quiénes de la original; cuándo se elige de nuevo. Las
+/// variables quedan vacías: la difusión no trae las que se usaron.
+function valuesFromSource(source: WhatsAppBroadcastResponse, template: WhatsAppTemplateOptionResponse | null): BroadcastForm {
+  return { ...emptyForm, name: source.name, templateId: template?.templateId ?? "", variables: (template?.variables ?? []).map(() => ""),
+    kind: source.audience.kind, tag: source.audience.kind === "Tag" ? source.audience.tag ?? "" : "" };
+}
 
 // Los errores de validación del back, en camelCase, a su campo.
 const serverFields: Record<string, keyof BroadcastForm> = {
@@ -85,17 +100,40 @@ function sameBroadcast(previous: CreateWhatsAppBroadcastRequest, next: CreateWha
  * Nueva difusión (tableros WA-Difusion-Nueva y M-WA-Difusion-Nueva): el nombre, una plantilla de Marketing aprobada
  * (CC04) con sus variables, a quiénes (los que aceptan o una etiqueta de ellos), y mandarla ya o programarla en la zona
  * de la cuenta. La vista previa muestra el mensaje, cuántos lo reciben y el costo estimado, tal como los calcula el back;
- * el envío se confirma en un diálogo y es un alta idempotente.
+ * el envío se confirma en un diálogo y es un alta idempotente. «Duplicar» llega con `?desde=<id>` y arranca con los datos
+ * de la original.
  */
 export function NewBroadcastPage(_props: ModuleContentProps) {
+  const { t } = useTranslation(["whatsapp", "common"]);
+  const [params] = useSearchParams();
+  const sourceId = params.get(duplicateSource) ?? "";
+  const source = useQuery({ queryKey: broadcastQueryKey(sourceId, sourcePage), queryFn: () => fetchBroadcast(sourceId, sourcePage),
+    enabled: Boolean(sourceId), meta: { silent: true, blocksView: true } });
+  const original = source.data?.broadcast;
+  const sourceTemplate = useQuery({ queryKey: [...broadcastsQueryRoot, "template-lookup", original?.template.id ?? ""],
+    queryFn: ({ signal }) => original ? findTemplateOption(original.template, signal) : null, enabled: Boolean(original), meta: { silent: true } });
+  useBreadcrumbLeaf(t("whatsapp:broadcasts.form.title"));
+  const back = { to: broadcastsPath, label: t("whatsapp:broadcasts.back") };
+
+  if (!sourceId) return <BroadcastEditor initial={emptyForm} />;
+  if (source.isPending || (original && sourceTemplate.isPending)) return <Page icon={BroadcastsIcon} title={t("whatsapp:broadcasts.form.title")} backTo={back}>
+    <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
+  </Page>;
+  if (!original) return isNotFoundError(source.error)
+    ? <NotFoundPage homePath={homeOf("business")} screen={t("whatsapp:broadcasts.form.title")} back={back} />
+    : <LoadErrorPage onRetry={() => { void source.refetch(); }} screen={t("whatsapp:broadcasts.form.title")} back={back} />;
+  const template = sourceTemplate.data ?? null;
+  return <BroadcastEditor key={original.id} initial={valuesFromSource(original, template)} initialTemplate={template ?? undefined} />;
+}
+
+function BroadcastEditor({ initial, initialTemplate }: { initial: BroadcastForm; initialTemplate?: WhatsAppTemplateOptionResponse }) {
   const { t } = useTranslation(["whatsapp", "common"]);
   const format = useFormat();
   const { phone } = useAppChrome();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  useBreadcrumbLeaf(t("whatsapp:broadcasts.form.title"));
   const schema = useMemo(() => broadcastFormSchema(t), [t]);
-  const form = useForm<BroadcastForm, unknown, BroadcastFormValues>({ defaultValues: emptyForm, resolver: zodResolver(schema) });
+  const form = useForm<BroadcastForm, unknown, BroadcastFormValues>({ defaultValues: initial, resolver: zodResolver(schema) });
   const { errors } = form.formState;
   const templateField = useController({ control: form.control, name: "templateId" });
   const kindField = useController({ control: form.control, name: "kind" });
@@ -105,7 +143,8 @@ export function NewBroadcastPage(_props: ModuleContentProps) {
   const [templateId, kind, tag, when, variables] = useWatch({ control: form.control, name: ["templateId", "kind", "tag", "when", "variables"] });
   const templates = useResourceOptions(broadcastTemplateOptions);
   const tags = useResourceOptions(broadcastTagOptions, kind === "Tag");
-  const template: WhatsAppTemplateOptionResponse | undefined = templates.knownItems.find((option) => option.templateId === templateId);
+  const knownTemplates = [...templates.knownItems, ...(initialTemplate ? [initialTemplate] : [])];
+  const template: WhatsAppTemplateOptionResponse | undefined = knownTemplates.find((option) => option.templateId === templateId);
 
   // CC04: cuántos la reciben y cuánto cuesta, con la plantilla y la audiencia elegidas. Solo a quienes aceptan: lo decide
   // el back; el front muestra lo que llega.
@@ -124,7 +163,7 @@ export function NewBroadcastPage(_props: ModuleContentProps) {
 
   function chooseTemplate(next: string) {
     templateField.field.onChange(next);
-    const chosen = templates.knownItems.find((option) => option.templateId === next);
+    const chosen = knownTemplates.find((option) => option.templateId === next);
     form.setValue("variables", (chosen?.variables ?? []).map(() => ""), { shouldDirty: true });
   }
 

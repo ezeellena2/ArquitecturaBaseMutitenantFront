@@ -2,12 +2,13 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
+import type { CreateWhatsAppBroadcastRequest } from "../../api/types";
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { mountWhatsApp, whatsappMember, whatsappOwner } from "../../test/support";
 import { frameHandlers, paged, recipients, scheduled, sent } from "../test/fixtures";
 
-beforeAll(async () => { await import("./BroadcastPage"); });
+beforeAll(async () => { await import("./BroadcastPage"); await import("./NewBroadcastPage"); });
 beforeEach(() => frameHandlers());
 afterEach(() => vi.unstubAllGlobals());
 
@@ -39,7 +40,7 @@ describe("Resultados de una difusión", () => {
     expect(requests).toHaveLength(1);
   });
 
-  it("el filtro de estado va a la URL y a la consulta", async () => {
+  it("la búsqueda y el filtro de estado van a la URL y a la consulta de los destinatarios", async () => {
     const requests: URL[] = [];
     server.use(http.get("/api/organization/whatsapp/broadcasts/broadcast-sent", ({ request }) => {
       requests.push(new URL(request.url));
@@ -51,6 +52,10 @@ describe("Resultados de una difusión", () => {
     await user.click(await screen.findByRole("menuitemradio", { name: "No llegó" }));
     await waitFor(() => expect(router.state.location.search).toContain("status=Failed"));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Failed"));
+    // CC16: el buscador ya filtra en el back.
+    await user.type(screen.getByRole("searchbox", { name: "Buscar por nombre o número" }), "Laura");
+    await waitFor(() => expect(requests.at(-1)?.searchParams.get("search")).toBe("Laura"));
+    expect(requests.at(-1)?.searchParams.get("status")).toBe("Failed");
   });
 
   it("cancelar una programada desde el ⋮ manda su versión y un 409 se avisa", async () => {
@@ -73,18 +78,23 @@ describe("Resultados de una difusión", () => {
     expect(bodies).toEqual([{ version: 7 }]);
   });
 
-  it("duplicar es un alta idempotente que lleva a la copia; a 390 px va en el ⋮ de la barra", async () => {
+  it("duplicar abre Nueva difusión con los datos de la original y crea con el alta de siempre; a 390 px va en el ⋮", async () => {
     asPhone();
+    const bodies: CreateWhatsAppBroadcastRequest[] = [];
     const keys: (string | null)[] = [];
-    const copy = { ...scheduled, id: "broadcast-copy", name: "Horario de fiestas (copia)" };
+    const promo = { templateId: "template-promo", name: "Promo semanal", category: "Marketing", body: "Esta semana, 20 % en empanadas.", variables: [], estimatedCost: { amount: 0.06, currency: "ARS" } };
     server.use(
       http.get("/api/organization/whatsapp/broadcasts/broadcast-sent", () => HttpResponse.json({ broadcast: sent, recipients: paged(recipients) })),
-      http.get("/api/organization/whatsapp/broadcasts/broadcast-copy", () => HttpResponse.json({ broadcast: copy, recipients: paged([]) })),
-      http.get("/api/organization/whatsapp/broadcasts", () => HttpResponse.json({ broadcasts: paged([sent, copy]), scheduled: 1 })),
-      http.post("/api/organization/whatsapp/broadcasts/broadcast-sent/duplicate", ({ request }) => {
+      http.get("/api/organization/whatsapp/broadcasts/template-options", ({ request }) =>
+        HttpResponse.json(paged(new URL(request.url).searchParams.get("search") === "Promo semanal" ? [promo] : []))),
+      http.get("/api/organization/whatsapp/broadcasts/tags", () => HttpResponse.json(paged(["Minorista"]))),
+      http.get("/api/organization/whatsapp/broadcasts/estimate", () => HttpResponse.json({ recipients: 124, estimatedCost: { amount: 7.66, currency: "ARS" }, country: "AR" })),
+      http.post("/api/organization/whatsapp/broadcasts", async ({ request }) => {
+        bodies.push(await request.json() as CreateWhatsAppBroadcastRequest);
         keys.push(request.headers.get("Idempotency-Key"));
-        return HttpResponse.json(copy, { status: 201 });
+        return HttpResponse.json({ ...sent, id: "broadcast-copy", status: "Sending" }, { status: 201 });
       }),
+      http.get("/api/organization/whatsapp/broadcasts/broadcast-copy", () => HttpResponse.json({ broadcast: { ...sent, id: "broadcast-copy" }, recipients: paged([]) })),
     );
     const { container, router, user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/broadcast-sent");
     expect(await screen.findByRole("list", { name: "Resultados" })).toBeVisible();
@@ -93,8 +103,17 @@ describe("Resultados de una difusión", () => {
     screen.getByRole("button", { name: "Acciones de la difusión" }).focus();
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitem", { name: "Duplicar" }));
+
+    await waitFor(() => expect(`${router.state.location.pathname}${router.state.location.search}`).toBe("/org/whatsapp/difusiones/nueva?desde=broadcast-sent"));
+    expect(await screen.findByDisplayValue("20 % en empanadas")).toBeVisible();
+    expect(screen.getByRole("combobox", { name: /Plantilla/ })).toHaveTextContent("Promo semanal · Marketing");
+    expect(screen.getByRole("radio", { name: "Una etiqueta" })).toBeChecked();
+    expect(screen.getByRole("combobox", { name: /Etiqueta/ })).toHaveTextContent("Minorista");
+    await user.click(screen.getByRole("button", { name: "Mandar" }));
+    const dialog = await screen.findByRole("dialog", { name: "¿Mandar «20 % en empanadas»?" });
+    await user.click(within(dialog).getByRole("button", { name: "Mandar" }));
     await waitFor(() => expect(router.state.location.pathname).toBe("/org/whatsapp/difusiones/broadcast-copy"));
-    expect(keys).toHaveLength(1);
+    expect(bodies).toEqual([{ name: "20 % en empanadas", templateId: "template-promo", variables: [], audience: { kind: "Tag", tag: "Minorista" }, scheduledAtUtc: null }]);
     expect(keys[0]).toBeTruthy();
   });
 });

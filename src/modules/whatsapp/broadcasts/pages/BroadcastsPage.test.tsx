@@ -28,6 +28,18 @@ describe("Difusiones", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("el filtro «Estado» va a la URL y a la consulta", async () => {
+    const requests: URL[] = [];
+    server.use(http.get("/api/organization/whatsapp/broadcasts", ({ request }) => { requests.push(new URL(request.url)); return HttpResponse.json(list()); }));
+    const { router, user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones");
+    (await screen.findByRole("button", { name: "Estado: todos" })).focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitemradio", { name: "Programada" }));
+    await waitFor(() => expect(router.state.location.search).toContain("status=Scheduled"));
+    await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Scheduled"));
+    expect(requests.at(-1)?.searchParams.has("sort")).toBe(false);
+  });
+
   it("sin «Mandar difusiones» no se ve", async () => {
     const broadcasts = vi.fn(() => HttpResponse.json(list()));
     server.use(http.get("/api/organization/whatsapp/broadcasts", broadcasts));

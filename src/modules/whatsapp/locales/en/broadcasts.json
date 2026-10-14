@@ -11,7 +11,6 @@
   "contacts_other": "{{n}} contacts",
   "results": "{{delivered}} delivered · {{read}} read",
   "rowActions": "Actions for {{name}}",
-  "duplicated": "We duplicated “{{name}}”.",
   "audience": {
     "allAccepting": "Everyone who accepts"
   },
@@ -29,11 +28,14 @@
   },
   "filters": {
     "label": "Filters",
-    "search": "Search by name"
+    "search": "Search by name",
+    "status": "Status: all",
+    "statusMenu": "Status",
+    "allStatuses": "All"
   },
   "empty": {
     "all": "There are no broadcasts yet",
-    "filtered": "No broadcasts match the search"
+    "filtered": "No broadcasts match the filters"
   },
   "cancel": {
     "title": "Cancel “{{name}}”?",
@@ -120,7 +122,8 @@
     "withTag": "They have the “{{tag}}” tag and accept promotions",
     "allAccepting": "They accept promotions",
     "cost": "Estimated cost, based on Meta’s prices",
-    "costShort": "Estimated cost"
+    "costShort": "Estimated cost",
+    "costIn": "Estimated cost, based on Meta’s prices for {{country}}"
   },
   "confirm": {
     "scheduleTitle": "Schedule “{{name}}”?",
