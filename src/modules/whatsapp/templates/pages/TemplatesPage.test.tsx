@@ -109,6 +109,21 @@ describe("Plantillas de la organización", () => {
     expect(screen.queryByText("Algo salió mal. Probá de nuevo en un rato.")).not.toBeInTheDocument();
   });
 
+  // CC27: sin un número conectado, el alta responde 409 con su texto, que va en la franja del diálogo como los demás.
+  it("sin número conectado, el 409 NumberRequired queda en la franja del diálogo", async () => {
+    server.use(http.post("/api/organization/whatsapp/templates", () => HttpResponse.json(
+      { status: 409, code: "WhatsApp.Template.NumberRequired", detail: "Conectá un número de WhatsApp antes de crear una plantilla." }, { status: 409 })));
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/plantillas");
+    await user.click(await screen.findByRole("button", { name: "Nueva plantilla" }));
+    const dialog = await screen.findByRole("dialog", { name: "Nueva plantilla" });
+    await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
+    await user.paste("Pedido listo");
+    await user.click(within(dialog).getByRole("textbox", { name: "Texto" }));
+    await user.paste("Tu pedido está listo");
+    await user.click(within(dialog).getByRole("button", { name: "Mandar a Meta" }));
+    expect(await within(dialog).findByText("Conectá un número de WhatsApp antes de crear una plantilla.")).toBeVisible();
+  });
+
   it("sin «Administrar WhatsApp» no se abre", async () => {
     mountWhatsApp(whatsappMember("whatsapp.broadcasts"), "/org/whatsapp/plantillas");
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
