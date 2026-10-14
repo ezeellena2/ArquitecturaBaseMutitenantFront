@@ -69,6 +69,7 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 - **Página pública** (tableros Pagina-Publica y M-Pagina-Publica, `shared/ui/PublicPageCard`): la tarjeta blanca de 560 como máximo, con radio de 20 (18 en el teléfono) y `--sombra-tarjeta` (`--sombra-tarjeta-movil` en el teléfono), sobre `--fondo` con el brillo `--fondo-brillo` arriba a la derecha.
 - **Tarjetas del directorio** (Landing, Landing-Movil, Directorio y M-Directorio, lienzo v112, `.lp-emp a:hover`): `--sombra-directorio` (`0 6px 18px oklch(0.24 0.014 78 / 0.08)`), junto con el borde `--borde2` al pasar sobre una empresa. Su logo o iniciales mide 44 y su radio es 12; la tarjeta tiene radio de 16.
 - **Diálogos y menús de la compu** («Criterio · Diálogos», `.cd`; los menús y listas que se abren, `.menu` y `.o-lst`): el diálogo lleva `--sombra-dialogo` (`0 24px 48px oklch(0.2 0.014 78 / 0.28)`) y el menú o la lista, `--sombra-menu` (`0 12px 32px oklch(0.24 0.014 78 / 0.14)`).
+- **Dos vistas de lo mismo** («Criterio · Menús», `.o-seg`; `SegmentedControl`): una vía `--s3` de radio 10 (12 en el teléfono) con 3 de relleno y las opciones en partes iguales, de 30 (38 en el teléfono); la elegida, en `--lado-activo` con `--sombra-segmento` (`0 1px 3px oklch(0.24 0.014 78 / 0.12)`).
 - **Avisos pasajeros en la compu** (tablero Avisos): abajo a la derecha, una tarjeta blanca de 340 con borde, radio de 10 y `--sombra-aviso` (`0 12px 32px oklch(0.24 0.014 78 / 0.16)`); solo el ícono lleva color (`--aviso-ok`, `--peligro`).
 
 ## Menú lateral y panel de Administración

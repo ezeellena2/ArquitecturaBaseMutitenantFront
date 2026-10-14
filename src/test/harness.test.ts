@@ -199,6 +199,17 @@ describe("arnés de reglas", () => {
     expect(withoutAxe, "tests de pantalla sin axe").toEqual([]);
   });
 
+  // pantallas-y-ui.md (regla del usuario del 2026-10-13): las pestañas son solo para los grupos de datos de una ficha
+  // y las arma `Page` con sus `tabs`. Dos vistas de lo mismo van con `SegmentedControl`; las secciones, en un panel.
+  it("solo Page importa las pestañas", () => {
+    const importers = allFiles(src)
+      .filter((file) => /\.tsx?$/.test(file) && !/\.test\.tsx?$/.test(file))
+      .map((file) => path.relative(root, file).replaceAll("\\", "/"))
+      .filter((file) => file !== "src/shared/ui/tabs.tsx")
+      .filter((file) => /from\s+["'](?:@\/shared\/ui\/tabs|\.\/tabs)["']/.test(readFileSync(path.join(root, file), "utf8")));
+    expect(importers).toEqual(["src/shared/ui/Page.tsx"]);
+  });
+
   // Revisión de la alineación al lienzo, Paquete 6: las capturas se comparan siempre con el lienzo vigente
   // (docs/design/lienzo), con sus props y sus pasos. Ningún generador apunta a una copia vieja (lienzo-v35) ni le
   // reescribe el código al tablero para inyectarle un estado.

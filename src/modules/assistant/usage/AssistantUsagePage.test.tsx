@@ -92,7 +92,7 @@ describe("Uso Business: contrato agregado sin permiso de chat", () => {
     }));
     const app = mountSettings(businessManager, orgPath + "&page=3");
     await screen.findByRole("columnheader", { name: "Día" });
-    await app.user.click(screen.getByRole("tab", { name: "Por persona" }));
+    await app.user.click(screen.getByRole("button", { name: "Por persona" }));
     expect(await screen.findByText("Lucía Test")).toBeVisible();
     const person = within(screen.getByRole("table")).getAllByRole("row")[1];
     expect(within(person).getAllByRole("cell")[1]).toHaveTextContent("7 de 50 · Llegó al tope");
@@ -164,7 +164,7 @@ describe("Uso Business: contrato agregado sin permiso de chat", () => {
     mountSettings(businessManager, orgPath);
     expect(await screen.findByText("Sin uso este mes")).toBeVisible(); expect(screen.queryByRole("table")).not.toBeInTheDocument();
     expect(screen.getByRole("group", { name: "Resumen de uso" })).toHaveTextContent("USD 0,00 de USD 100,00");
-    expect(screen.queryByRole("tablist", { name: "Uso por día o persona" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "Uso por día o persona" })).not.toBeInTheDocument();
   });
   it("501 muestra error reintentable; una respuesta válida posterior reemplaza el error", async () => {
     let reads = 0;

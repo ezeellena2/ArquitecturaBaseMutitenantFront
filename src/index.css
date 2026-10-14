@@ -85,6 +85,8 @@
   --sombra-directorio: 0 6px 18px oklch(0.24 0.014 78 / 0.08);
   /* Lienzo v107 (`.w-plegar`): la sombra de la flecha redonda que achica el menú. */
   --sombra-flecha: 0 1px 3px oklch(0.24 0.012 60 / 0.15);
+  /* «Criterio · Menús» (`.o-seg` de los tableros): la opción elegida de dos vistas, en blanco sobre la vía gris. */
+  --sombra-segmento: 0 1px 3px oklch(0.24 0.014 78 / 0.12);
   --foco: var(--marca);
   --foco-halo: oklch(0.51 0.099 195 / 0.15);
 

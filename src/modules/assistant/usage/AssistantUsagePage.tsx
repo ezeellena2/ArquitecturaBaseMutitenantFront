@@ -14,7 +14,7 @@ import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { Surface } from "@/shared/ui/Surface";
 import { MonthField } from "@/shared/ui/fields/MonthField";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { assistantUsageQueryKey, fetchAssistantUsage } from "../api/usage";
 import { AssistantUsageRows } from "./AssistantUsageRows";
 import { AssistantUsageSummary } from "./AssistantUsageSummary";
@@ -51,10 +51,14 @@ export function AssistantUsagePage({ me }: ModuleContentProps) {
     {!platform || hasRows ? <AssistantUsageSummary data={data} platform={platform} /> : null}
     {!hasRows && !query.isError ? <Surface phoneFlush><EmptyState title={t("usage.empty")} framed={false} /></Surface>
       : platform ? <AssistantUsageRows rows={data.rows.items} platform group={group} fetching={query.isFetching} error={error} retry={retry} />
-      : <Tabs value={group} onValueChange={(value) => filters.setFilter("groupBy", value === "person" ? "person" : undefined)}>
-        <TabsList aria-label={t("usage.grouping")} className="max-md:px-5"><TabsTrigger value="day">{t("usage.byDay")}</TabsTrigger><TabsTrigger value="person">{t("usage.byPerson")}</TabsTrigger></TabsList>
-        <TabsContent value={group}><AssistantUsageRows rows={data.rows.items} platform={false} group={group} fetching={query.isFetching} error={error} retry={retry} /></TabsContent>
-      </Tabs>}
+      : <>
+        {/* «Criterio · Menús»: dos vistas de la misma lista, con el segmentado arriba (Asistente-Uso-Org y su M-*). */}
+        <div className="max-md:px-5"><SegmentedControl aria-label={t("usage.grouping")} options={(["day", "person"] as const).map((key) => ({
+          key, label: t(key === "day" ? "usage.byDay" : "usage.byPerson"), pressed: group === key,
+          onSelect: () => filters.setFilter("groupBy", key === "person" ? "person" : undefined),
+        }))} /></div>
+        <AssistantUsageRows rows={data.rows.items} platform={false} group={group} fetching={query.isFetching} error={error} retry={retry} />
+      </>}
     {hasRows && rows?.totalPages !== undefined && rows.hasPrevious !== undefined && rows.hasNext !== undefined ? <Pagination page={rows.page} pageSize={rows.pageSize}
       totalCount={rows.totalCount} totalPages={rows.totalPages} hasPrevious={rows.hasPrevious} hasNext={rows.hasNext}
       onPageChange={pagination.setPage} onPageSizeChange={pagination.setPageSize} /> : null}
