@@ -10,7 +10,7 @@ import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import type { WhatsAppBroadcastResponse } from "../../api/types";
 import { broadcastsQueryRoot, cancelBroadcast, duplicateBroadcast } from "../api/broadcasts";
 import { broadcastPath } from "../columns";
-import { countOf } from "./broadcastText";
+import { countOf } from "../../lib/values";
 
 /**
  * «Duplicar» y «Cancelar difusión» (tableros WA-Difusiones y WA-Difusion-Resultados, con sus M-*): duplicar es un alta

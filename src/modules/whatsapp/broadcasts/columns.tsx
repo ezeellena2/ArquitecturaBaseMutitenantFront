@@ -10,7 +10,8 @@ import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { PhoneText } from "@/shared/ui/format/PhoneText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import type { WhatsAppBroadcastResponse, WhatsAppRecipientResponse } from "../api/types";
-import { audienceLabel, broadcastDate, countOf, resultsLabel } from "./lib/broadcastText";
+import { countOf } from "../lib/values";
+import { audienceLabel, broadcastDate, resultsLabel } from "./lib/broadcastText";
 
 /// Tableros WA-Difusiones y su M-* (.w-est): enviada en verde, programada en petróleo y cancelada en gris.
 export const broadcastStatusTones = defineStatusTones("WhatsAppBroadcastStatus", { Scheduled: "pending", Sending: "pending", Sent: "success", Cancelled: "neutral" });

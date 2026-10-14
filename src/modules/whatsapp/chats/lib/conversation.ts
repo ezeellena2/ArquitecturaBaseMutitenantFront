@@ -1,4 +1,4 @@
-import type { FormatState, MoneyValue } from "@/shared/format/useFormat";
+import type { FormatState } from "@/shared/format/useFormat";
 import { isPast } from "@/shared/time/serverClock";
 import type { WhatsAppChatMessageResponse, WhatsAppConversationRowResponse } from "../../api/types";
 
@@ -53,12 +53,6 @@ export function rowAssignment(row: WhatsAppConversationRowResponse, untaken: str
 /** El último mensaje que mandó la otra parte, para decir cuándo escribió por última vez (aviso de las 24 h). */
 export function lastInbound(messages: readonly WhatsAppChatMessageResponse[]): WhatsAppChatMessageResponse | undefined {
   return messages.findLast((message) => message.direction === "Inbound" && message.kind !== "Event" && message.kind !== "Note");
-}
-
-/** `Money` llega como `unknown` en el schema generado: se acepta solo con su importe y su moneda. */
-export function isMoney(value: unknown): value is MoneyValue {
-  return typeof value === "object" && value !== null && "amount" in value && "currency" in value
-    && typeof value.amount === "number" && typeof value.currency === "string";
 }
 
 /** Un trozo de la vista previa de una plantilla: texto tal cual o el valor de una variable (en negrita). */

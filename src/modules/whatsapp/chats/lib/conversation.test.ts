@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { WhatsAppConversationRowResponse } from "../../api/types";
-import { composerState, initialsOf, isMoney, rowAssignment, rowDescriptors, templatePreview, whatsappLink } from "./conversation";
+import { composerState, initialsOf, rowAssignment, rowDescriptors, templatePreview, whatsappLink } from "./conversation";
 
 const row = (overrides: Partial<WhatsAppConversationRowResponse> = {}): WhatsAppConversationRowResponse => ({
   id: "c", inbox: "Customers", contactId: null, contactName: "Martina López", displayNumber: "+5491155556203", tags: [], lastMessagePreview: null,
@@ -52,12 +52,6 @@ describe("plantilla", () => {
       { kind: "text", text: "Hola " }, { kind: "variable", index: 0, text: "Martina" }, { kind: "text", text: ", tu pedido " },
       { kind: "variable", index: 1, text: "{{2}}" }, { kind: "text", text: " está listo." },
     ]);
-  });
-
-  it("el costo se muestra solo si llega como Money, sin calcularlo", () => {
-    expect(isMoney({ amount: 0.0312, currency: "USD" })).toBe(true);
-    expect(isMoney({ amount: "0.03", currency: "USD" })).toBe(false);
-    expect(isMoney(null)).toBe(false);
   });
 });
 

@@ -23,7 +23,8 @@ import { Input } from "@/shared/ui/input";
 import { SearchSelect } from "@/shared/ui/SearchSelect";
 import type { SendWhatsAppTemplateRequest, WhatsAppChatMessageResponse, WhatsAppConversationRowResponse } from "../../api/types";
 import { chatsScopeQueryRoot, sendTemplate, templateOptions, type ChatsScope } from "../api/chats";
-import { isMoney, templatePreview } from "../lib/conversation";
+import { asMoney } from "../../lib/values";
+import { templatePreview } from "../lib/conversation";
 
 interface TemplateForm { templateId: string; variables: string[] }
 
@@ -101,7 +102,7 @@ export function TemplateDialog({ scope, row, name, onClose, onSent, onConflict }
               {templatePreview(selected.body, values).map((part, index) => part.kind === "variable" ? <b key={index} className="font-bold">{part.text}</b> : <span key={index}>{part.text}</span>)}
             </p>
             <p className="-mt-1.5 text-right text-[12.5px] text-[var(--t3)] max-md:text-[13.5px] md:col-span-2">
-              {t("chats.template.estimatedCost")}{" "}{isMoney(selected.estimatedCost) ? <MoneyText value={selected.estimatedCost} /> : <EmptyValue />}
+              {t("chats.template.estimatedCost")}{" "}{asMoney(selected.estimatedCost) ? <MoneyText value={asMoney(selected.estimatedCost)} /> : <EmptyValue />}
             </p>
           </> : null}
           <div className="md:col-span-2 empty:hidden"><FormError message={actionErrorMessage(failure, t)} /></div>

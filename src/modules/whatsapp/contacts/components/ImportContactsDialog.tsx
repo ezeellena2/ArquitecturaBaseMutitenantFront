@@ -7,7 +7,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useFormat } from "@/shared/format/useFormat";
-import { countOf } from "../lib/count";
+import { countOf } from "../../lib/values";
 import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";

@@ -18,7 +18,7 @@ import { BroadcastsIcon } from "../../components/icons";
 import type { WhatsAppBroadcastResponse } from "../../api/types";
 import { broadcastsQueryKey, fetchBroadcasts } from "../api/broadcasts";
 import { broadcastPhoneRow, createBroadcastColumns, newBroadcastPath } from "../columns";
-import { countOf } from "../lib/broadcastText";
+import { countOf } from "../../lib/values";
 import { useBroadcastActions } from "../lib/useBroadcastActions";
 
 const noFilters = [] as const;

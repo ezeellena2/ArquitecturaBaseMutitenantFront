@@ -21,7 +21,7 @@ import { contactsQueryKey, contactTagOptions, fetchContacts, type ContactsQuery 
 import { contactPath, contactPhoneRow, createContactColumns } from "../columns";
 import { EditContactDialog } from "../components/EditContactDialog";
 import { ImportContactsDialog } from "../components/ImportContactsDialog";
-import { countOf } from "../lib/count";
+import { countOf } from "../../lib/values";
 
 const contactFilterKeys = ["tag", "consent"] as const;
 // Orden del filtro «Promociones» del tablero WA-Contactos: todas y después cada respuesta.

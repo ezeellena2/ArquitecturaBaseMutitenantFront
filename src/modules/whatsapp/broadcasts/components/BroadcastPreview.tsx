@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
 import { MoneyText } from "@/shared/ui/format/MoneyText";
 import type { WhatsAppAudienceKind, WhatsAppBroadcastEstimateResponse } from "../../api/types";
-import { asMoney, countOf } from "../lib/broadcastText";
+import { asMoney, countOf } from "../../lib/values";
 
 /// La burbuja del mensaje tal como le llega a cada contacto, con el botón «No recibir más» de toda difusión (tableros
 /// WA-Difusion-Nueva y su M-*, .o-burb y .ap-burb).

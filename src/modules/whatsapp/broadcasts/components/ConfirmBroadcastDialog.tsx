@@ -10,7 +10,7 @@ import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { MoneyText } from "@/shared/ui/format/MoneyText";
 import { FormError } from "@/shared/ui/FormError";
 import type { CreateWhatsAppBroadcastRequest, WhatsAppBroadcastEstimateResponse, WhatsAppTemplateOptionResponse } from "../../api/types";
-import { asMoney, countOf } from "../lib/broadcastText";
+import { asMoney, countOf } from "../../lib/values";
 
 /**
  * «¿Programar «Horario de fiestas»?» (tableros WA-Difusion-Nueva y su M-*, «Confirmar la programación»): la plantilla, a

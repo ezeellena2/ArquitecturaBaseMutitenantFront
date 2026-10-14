@@ -130,6 +130,7 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │   └── whatsapp/  una carpeta por área (numbers, chats, contacts, broadcasts, bot, teams, templates, personal, phones), cada una con su routes.ts
     │       ├── api/  alias del schema (types.ts) y el contador del menú
     │       ├── components/  piezas que comparten las áreas
+    │       ├── lib/  lectura de Money y cantidades en los textos, comunes a las áreas
     │       └── locales/  un archivo por área en el namespace whatsapp y sus enums
     ├── shared/
     │   ├── account/  lo de la cuenta que usan varias áreas (ADR 0033)

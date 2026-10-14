@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { defineStatusTones } from "@/shared/format/statusTones";
 import type { FormatState } from "@/shared/format/useFormat";
-import { countOf } from "./lib/count";
+import { countOf } from "../lib/values";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import type { Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
