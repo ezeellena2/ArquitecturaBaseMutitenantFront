@@ -154,10 +154,11 @@ export function ConversationView({ scope, id, links, back, phone }: {
     return <Page title={name} backTo={back} phoneBody="flush"
       phoneSubtitle={untaken ? <span className="text-[var(--alerta)]">{subtitle}</span> : subtitle || undefined}
       moreActions={{ label: t("chats.header.actionsOf", { name }), items: [
+        // M-Plat-WA-Conversacion: «Ver la cuenta» va primero; en la organización, «Ver ficha del contacto» va al final.
+        { label: t("chats.header.viewAccount"), hidden: !accountPath, onSelect: () => { if (accountPath) void navigate(accountPath); } },
         { label: t("chats.header.take"), hidden: !untaken || readOnly, onSelect: () => take.mutate() },
         { label: t("chats.header.transfer"), hidden: readOnly, onSelect: (trigger) => setTransferOpen({ trigger }) },
         { label: t("chats.header.viewContact"), hidden: !contactPath, onSelect: () => { if (contactPath) void navigate(contactPath); } },
-        { label: t("chats.header.viewAccount"), hidden: !accountPath, onSelect: () => { if (accountPath) void navigate(accountPath); } },
       ] }}>
       <AppBarTools placement="leading"><ChatAvatar name={row.contactName} size="bar" /></AppBarTools>
       {thread}

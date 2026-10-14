@@ -62,11 +62,13 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
   const search = useDebouncedValue(pagination.search ?? "");
   const state = isState(filters.values.state) ? filters.values.state : undefined;
   const request: ConversationsQuery = { page: pagination.page, pageSize: pagination.pageSize, search: search || undefined, teamId: filters.values.teamId, state };
+  // En el teléfono, con un chat abierto, la bandeja no se ve: no se lee ni se sondea hasta volver.
+  const listVisible = !(phone && conversationId);
   const list = useQuery({
     queryKey: conversationsQueryKey(scope, request), queryFn: ({ signal }) => fetchConversations(scope, request, signal),
     // Al cambiar de bandeja no se muestran las filas de la otra mientras llegan las nuevas.
     placeholderData: (previous, previousQuery) => previousQuery?.queryKey[2] === conversationsQueryKey(scope, request)[2] ? keepPreviousData(previous) : undefined,
-    refetchInterval: inboxRefetchInterval, meta: { silent: true, blocksView: true },
+    refetchInterval: inboxRefetchInterval, enabled: listVisible, meta: { silent: true, blocksView: true },
   });
 
   // Como `usePagedQuery`: si la página quedó vacía con filas en otras, se va a la última que tiene.
@@ -79,7 +81,7 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
   }, [settled, page, pageSize, setPage]);
 
   // El filtro «Equipo» (CC14): los equipos de esta bandeja, para quien la atiende.
-  const teams = useResourceOptions(inboxTeamOptions(scope));
+  const teams = useResourceOptions(inboxTeamOptions(scope), listVisible);
   const teamId = filters.values.teamId;
   const links: ConversationLinks = platform
     ? me.effectivePermissions.platform.includes("platform.accounts.read") ? { account: (id) => `/plataforma/cuentas/${encodeURIComponent(id)}` } : {}

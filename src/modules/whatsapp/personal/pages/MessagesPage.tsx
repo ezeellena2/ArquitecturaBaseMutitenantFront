@@ -49,7 +49,7 @@ export function MessagesPage() {
   const request = { page: pagination.page, pageSize: pagination.pageSize, search: search || undefined };
   const list = useQuery({
     queryKey: personalConversationsQueryKey(request), queryFn: ({ signal }) => fetchPersonalConversations(request, signal),
-    placeholderData: keepPreviousData, meta: { silent: true, blocksView: true },
+    placeholderData: keepPreviousData, enabled: !(phone && conversationId), meta: { silent: true, blocksView: true },
   });
   const settled = list.isPlaceholderData ? undefined : list.data;
   const { page, pageSize, setPage, setPageSize } = pagination;
