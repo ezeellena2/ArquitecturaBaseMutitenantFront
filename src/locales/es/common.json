@@ -49,7 +49,8 @@
     "invalidTime": "Ingresá una hora válida.",
     "invalidNumber": "Ingresá un número válido.",
     "invalidMoney": "Ingresá un monto válido para la moneda elegida.",
-    "invalidPercent": "Ingresá un porcentaje válido."
+    "invalidPercent": "Ingresá un porcentaje válido.",
+    "createOption": "Crear «{{value}}»"
   },
   "errors": {
     "network": "No pudimos conectarnos. Revisá tu conexión.",

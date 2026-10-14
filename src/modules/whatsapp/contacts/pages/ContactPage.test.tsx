@@ -70,6 +70,41 @@ describe("Ficha del contacto", () => {
     await waitFor(() => expect(reads).toBeGreaterThan(before));
   });
 
+  // Decisión del usuario (E11): una etiqueta nueva se crea al editar el contacto; si ya existe sin distinguir mayúsculas,
+  // se elige la que existe.
+  it("crea una etiqueta nueva que va en el PUT; con «VIP» existente, «vip» no ofrece crear", async () => {
+    const sent: UpdateWhatsAppContactRequest[] = [];
+    contactApi(() => martina);
+    server.use(
+      http.get("/api/organization/whatsapp/contacts/tags", ({ request }) => {
+        const search = (new URL(request.url).searchParams.get("search") ?? "").toLowerCase();
+        return HttpResponse.json(paged(["Mayorista", "VIP"].filter((tag) => tag.toLowerCase().includes(search))));
+      }),
+      http.put("/api/organization/whatsapp/contacts/contact-martina", async ({ request }) => {
+        sent.push(await request.json() as UpdateWhatsAppContactRequest);
+        return HttpResponse.json({ ...martina, tags: ["Mayorista", "VIP Oro"], version: 5 });
+      }),
+    );
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/contactos/contact-martina");
+    await user.click(await screen.findByRole("button", { name: "Editar contacto" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar contacto" });
+    await user.click(within(dialog).getByRole("button", { name: /Etiquetas/ }));
+    const search = await screen.findByRole("searchbox", { name: "Buscar" });
+
+    await user.type(search, "vip");
+    expect(await screen.findByRole("menuitemcheckbox", { name: "VIP" })).toBeVisible();
+    expect(screen.queryByRole("menuitem", { name: /^Crear/ })).not.toBeInTheDocument();
+
+    await user.clear(search);
+    await user.type(search, "VIP Oro");
+    await user.click(await screen.findByRole("menuitem", { name: "Crear «VIP Oro»" }));
+    expect(screen.getByRole("menuitemcheckbox", { name: "VIP Oro" })).toHaveAttribute("aria-checked", "true");
+    await user.keyboard("{Escape}");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(sent).toHaveLength(1));
+    expect(sent[0]).toMatchObject({ tags: ["Mayorista", "VIP Oro"], version: 4 });
+  });
+
   it("a 390 px «Abrir chat» va abajo y «Editar contacto», en el ⋮ de la barra", async () => {
     asPhone();
     contactApi(() => ({ ...martina, linkedToAccount: false }));

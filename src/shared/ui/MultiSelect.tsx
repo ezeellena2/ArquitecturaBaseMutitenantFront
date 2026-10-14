@@ -1,7 +1,8 @@
 import { useId, type ComponentProps, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDownIcon } from "./icons";
 import { cn } from "@/shared/lib/utils";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "./dropdown-menu";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
 import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
 import { RemoteOptionFooter, RemoteOptionSearch } from "./RemoteOptionControls";
 
@@ -21,6 +22,9 @@ interface MultiSelectProps {
   id?: string;
   remote?: RemoteOptions;
   selectedOptions?: readonly MultiSelectOption[];
+  /// Con búsqueda remota, ofrece «Crear «VIP»» cuando lo buscado no está entre las opciones (sin distinguir mayúsculas):
+  /// al elegirla queda marcado ese texto como valor nuevo. Sirve para lo que se crea al guardar, como una etiqueta.
+  creatable?: boolean;
   disabled?: boolean;
   "aria-invalid"?: ComponentProps<"button">["aria-invalid"];
   "aria-describedby"?: string;
@@ -40,14 +44,25 @@ export function MultiSelect({
   id,
   remote,
   selectedOptions = options,
+  creatable = false,
   disabled,
   "aria-invalid": ariaInvalid,
   "aria-describedby": ariaDescribedBy,
 }: MultiSelectProps): ReactNode {
+  const { t } = useTranslation();
+  const known = new Map(selectedOptions.map((option) => [option.value, option]));
+  // Lo creado acá todavía no es una opción del servidor: se muestra con su texto y se puede desmarcar arriba de la lista.
+  const created = creatable ? value.filter((item) => !known.has(item) && !options.some((option) => option.value === item))
+    .map((item): MultiSelectOption => ({ value: item, label: item })) : [];
+  for (const option of created) known.set(option.value, option);
   // En el orden de las opciones y no en el de los clics: así el texto no cambia según cómo se llegó.
-  const picked = [...new Map(selectedOptions.map((option) => [option.value, option])).values()]
-    .filter((option) => value.includes(option.value));
+  const picked = [...known.values()].filter((option) => value.includes(option.value));
   const optionId = useId();
+  const typed = remote?.search.trim() ?? "";
+  const same = (text: string) => text.localeCompare(typed, undefined, { sensitivity: "accent" }) === 0;
+  // Se ofrece crear solo con la búsqueda ya respondida: así no se duplica una que existe y todavía no llegó.
+  const offerCreate = creatable && remote !== undefined && typed !== "" && !remote.loading && !remote.error
+    && ![...options, ...known.values()].some((option) => same(option.value) || same(option.label));
 
   function toggle(optionValue: string, checked: boolean) {
     onChange(checked ? [...value, optionValue] : value.filter((item) => item !== optionValue));
@@ -78,7 +93,14 @@ export function MultiSelect({
           que él, con 4 de margen adentro; cada opción, el nombre y debajo su descripción, en gris de 12 (.n2 y .d). */}
       <DropdownMenuContent side="bottom" align="start" className="w-(--radix-dropdown-menu-trigger-width) max-w-none min-w-0 p-1">
         {remote ? <RemoteOptionSearch remote={remote} /> : null}
-        {options.map((option, index) => (
+        {offerCreate ? <DropdownMenuItem onSelect={(event) => {
+          event.preventDefault();
+          // La opción desaparece al crearla: el foco vuelve al buscador para que la lista siga abierta.
+          if (event.target instanceof HTMLElement) event.target.closest('[role="menu"]')?.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
+          onChange([...value, typed]);
+          remote?.onSearch("");
+        }}>{t("fields.createOption", { value: typed })}</DropdownMenuItem> : null}
+        {[...created, ...options].map((option, index) => (
           // El nombre de la opción es el rol; la descripción la acompaña como descripción, no como parte del nombre.
           <DropdownMenuCheckboxItem
             key={option.value}

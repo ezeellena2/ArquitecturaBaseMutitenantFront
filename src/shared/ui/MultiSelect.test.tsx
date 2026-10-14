@@ -98,4 +98,29 @@ describe("MultiSelect", () => {
 
     expect(screen.getByRole("button", { name: "Roles" })).toHaveTextContent("Sin roles");
   });
+
+  // Una etiqueta del contacto (E11): lo buscado que no está se crea; lo que ya está, aunque cambien las mayúsculas, se elige.
+  it("with creatable, offers to create what was searched and is not an option, ignoring case", async () => {
+    function Creatable() {
+      const [value, setValue] = useState<string[]>([]);
+      const [search, setSearch] = useState("");
+      const remote = { search, onSearch: setSearch, hasMore: false, loading: false, error: null, onLoadMore: () => {}, onRetry: () => {} };
+      return <FormField label="Etiquetas">
+        <MultiSelect creatable remote={remote} options={[{ value: "VIP", label: "VIP" }]} value={value} onChange={setValue} placeholder="Sin etiquetas" />
+      </FormField>;
+    }
+    renderWithProviders(<Creatable />);
+    const user = userEvent.setup();
+    screen.getByRole("button", { name: "Etiquetas" }).focus();
+    await user.keyboard("{Enter}");
+    const search = await screen.findByRole("searchbox");
+    await user.type(search, "vip");
+    expect(screen.queryByRole("menuitem", { name: /^Crear/ })).not.toBeInTheDocument();
+    await user.clear(search);
+    await user.type(search, "Oro");
+    await user.click(await screen.findByRole("menuitem", { name: "Crear «Oro»" }));
+    expect(screen.getByRole("menuitemcheckbox", { name: "Oro" })).toHaveAttribute("aria-checked", "true");
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("button", { name: "Etiquetas" })).toHaveTextContent("Oro");
+  });
 });

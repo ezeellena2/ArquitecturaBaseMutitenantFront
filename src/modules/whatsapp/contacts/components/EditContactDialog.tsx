@@ -109,7 +109,7 @@ export function EditContactDialog({ contact, onClose, returnFocusTo }: {
           <ReadOnlyField label={t("whatsapp:contacts.edit.phone")}><PhoneText value={contact.displayNumber} /></ReadOnlyField>
           <div className="md:col-span-2">
             <FormField label={t("whatsapp:contacts.edit.tags")} error={errors.tags?.message}>
-              <MultiSelect remote={tagOptions.remote} options={tagOptions.items.map(tagOption)}
+              <MultiSelect creatable remote={tagOptions.remote} options={tagOptions.items.map(tagOption)}
                 selectedOptions={[...contact.tags, ...tagOptions.knownItems].map(tagOption)} value={tags.field.value}
                 onChange={(next) => { tags.field.onChange(next); clear(); }} placeholder={t("whatsapp:contacts.edit.noTags")} />
             </FormField>
