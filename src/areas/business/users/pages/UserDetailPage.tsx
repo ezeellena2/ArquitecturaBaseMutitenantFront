@@ -40,7 +40,8 @@ import { DateText } from "@/shared/ui/format/DateText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 import { fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userQueryKey, usersQueryRoot } from "../api/users";
-import { userStateTones } from "../columns";
+import { userContact, userContactText, userStateTones } from "../columns";
+import { useFormat } from "@/shared/format/useFormat";
 import { ChoiceSheet, CheckRow, RadioRow } from "../components/AccessSheets";
 import { RolesField } from "../components/RolesField";
 import { UserCompanyDialog } from "../components/UserCompanyDialog";
@@ -76,8 +77,9 @@ function Separator() {
 export function UserDetailPage() {
   const { t } = useTranslation(["users", "common"]);
   const { memberId = "" } = useParams();
+  const format = useFormat();
   const user = useQuery({ queryKey: userQueryKey(memberId), queryFn: () => fetchUser(memberId), enabled: Boolean(memberId), meta: { silent: true, blocksView: true } });
-  useBreadcrumbLeaf(user.data ? user.data.displayName || user.data.email || undefined : undefined);
+  useBreadcrumbLeaf(user.data ? user.data.displayName || userContactText(user.data, format) || undefined : undefined);
 
   if (user.isPending) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.loading")}><p role="status">{t("common:states.loading")}</p></Page>;
   // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar; si no existe (404),
@@ -96,6 +98,7 @@ export function UserDetailPage() {
 /// empresas se guardan al momento, desde su diálogo o el ⋮, y conservan lo que se está editando del acceso.
 function UserDetail({ memberId, member, reload }: { memberId: string; member: OrganizationUserResponse; reload: () => Promise<OrganizationUserResponse | undefined> }) {
   const { t } = useTranslation(["users", "common"]);
+  const format = useFormat();
   const { data: currentUser } = useCurrentUser();
   const { can } = usePermissions();
   const canInvite = can("users.invite");
@@ -172,12 +175,12 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   });
   const revoke = useMutation({
     mutationFn: (invitationId: string) => revokeUserInvitation(invitationId),
-    onSuccess: async () => { toast.success(sentence(t("users:detail.messages.revoked", { email: member.email ?? "" }))); await refresh(); },
+    onSuccess: async () => { toast.success(sentence(t("users:detail.messages.revoked", { email: userContactText(member, format) }))); await refresh(); },
     onError: (error) => toastActionError(error, t),
   });
   const resend = useIdempotentMutation((invitationId: string, key) => resendUserInvitation(invitationId, key));
 
-  const displayName = member.displayName || member.email || "";
+  const displayName = member.displayName || userContactText(member, format);
   const shownState: UserState = isMember ? (current.isActive ? "Active" : "Inactive") : member.state;
   const dialogError = actionErrorMessage(dialogFailure, t);
   const { preserved: preservedCompanyIds, changeable: changeableAssignments } = companyAssignments(member.companies, registry);
@@ -254,7 +257,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     if (!member.invitationId) return;
     resend.mutate(member.invitationId, {
       onSuccess: async () => {
-        toast.success(sentence(t("users:detail.messages.resent", { email: member.email ?? "" })));
+        toast.success(sentence(t("users:detail.messages.resent", { email: userContactText(member, format) })));
         await client.invalidateQueries({ queryKey: userQueryKey(memberId) });
       },
       onError: (error) => toastActionError(error, t),
@@ -269,7 +272,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const confirmations = {
     disable: { title: t("users:detail.confirm.disableTitle", { name: displayName }), description: t("users:detail.confirm.disableDescription", { organization: organizationName }), label: t("users:detail.confirm.disableConfirm"), run: () => saveAccess(form.getValues()) },
     remove: { title: t("users:detail.confirm.removeTitle", { name: displayName, organization: organizationName }), description: removeDescription, label: t("users:detail.confirm.removeConfirm"), run: () => { setFailure(undefined); remove.mutate(t("users:detail.messages.removed", { name: displayName, organization: organizationName })); } },
-    revoke: { title: t("users:detail.confirm.revokeTitle", { email: member.email ?? "" }), description: t("users:detail.confirm.revokeDescription"), label: t("users:detail.confirm.revokeConfirm"), run: () => { if (member.invitationId) revoke.mutate(member.invitationId); } },
+    revoke: { title: t("users:detail.confirm.revokeTitle", { email: userContactText(member, format) }), description: t("users:detail.confirm.revokeDescription"), label: t("users:detail.confirm.revokeConfirm"), run: () => { if (member.invitationId) revoke.mutate(member.invitationId); } },
   };
   const confirmation = confirmAction ? confirmations[confirmAction] : null;
   // Tableros Usuario y M-Usuario: punto de color y palabra, sin pastilla, con los tonos de Usuarios.
@@ -284,14 +287,15 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     <StatusBadge tones={userStateTones} value={shownState} />
     {edit.unsaved ? <><SublineSeparator />{edit.unsaved}</> : null}
     <SublineSeparator />
-    {member.email ? <>{member.email}<Separator /></> : null}
+    {/* CC25: una invitación por teléfono se nombra por el número invitado. */}
+    {userContact(member) ? <>{userContact(member)}<Separator /></> : null}
     {detail}
   </>;
 
   return <>
     <Page banner={edit.banner} icon={UserIcon} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
       // En el teléfono, con cambios, la barra dice «Cambios sin guardar» en lugar del correo, como Configuración (M-Avisos).
-      phoneSubtitle={edit.unsaved ?? member.email ?? undefined} phoneBody="gray"
+      phoneSubtitle={edit.unsaved ?? userContact(member) ?? undefined} phoneBody="gray"
       moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
         { label: t("users:actions.resend"), onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },
         { label: t("users:actions.revoke"), onSelect: () => setConfirmAction("revoke"), destructive: true, hidden: !isInvitation || !member.invitationId },

@@ -232,6 +232,27 @@ describe("UsersPage", () => {
     expect(await screen.findByText("Revocamos la invitación a sofia@example.com.")).toBeVisible();
   });
 
+  // CC25 (E11): una invitación por teléfono no trae correo; se nombra por el número invitado, en la fila y al revocarla.
+  it("una invitación por teléfono se nombra por el número, en la fila y al revocarla", async () => {
+    const user = userEvent.setup();
+    const invited = { ...member, memberId: "member-4", userId: null, displayName: "", email: null, phone: "+5493515550200", state: "Invited" as const, roles: [], invitationId: "invitation-4" };
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [member, invited], page: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 2, active: 1, pendingDeletion: 0, invited: 1, expired: 0, inactive: 0 })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.delete("/api/users/invitations/invitation-4", () => new HttpResponse(null, { status: 204 })),
+    );
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    expect(await screen.findByRole("link", { name: /555-0200/ })).toHaveAttribute("href", "/org/usuarios/member-4");
+    const trigger = await screen.findByRole("button", { name: /^Acciones de .*555-0200$/ });
+    trigger.focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Revocar invitación" }));
+    const revoke = await screen.findByRole("dialog", { name: /^¿Revocar la invitación a .*555-0200\?$/ });
+    await user.click(within(revoke).getByRole("button", { name: "Revocar" }));
+    expect(await screen.findByText(/^Revocamos la invitación a .*555-0200\.$/)).toBeVisible();
+  });
+
   // Límite de 20 s: invita dos veces, escribe los correos con user-event y elige roles y empresa en tres desplegables; con toda la suite tarda unos 6,5 s.
   it("tablero Usuarios, Invitar: una empresa con sus roles, todo opcional salvo el correo, e idempotente", async () => {
     const bodies: unknown[] = [];

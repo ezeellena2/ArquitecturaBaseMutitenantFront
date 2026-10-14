@@ -22,10 +22,11 @@ import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { toast } from "sonner";
 import { changeUserStatus, fetchUserCounts, fetchUsers, removeUser, resendUserInvitation, revokeUserInvitation, userCountsQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
-import { createUserColumns, userPhoneRow } from "../columns";
+import { createUserColumns, userContactText, userPhoneRow } from "../columns";
 import { InviteUserDialog } from "../components/InviteUserDialog";
 import { activeOrganization } from "@/tenancy/access";
 import { useModulePageActions } from "@/shared/modules/useModules";
+import { useFormat } from "@/shared/format/useFormat";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 
 const userFilterKeys = ["state", "companyId"] as const;
@@ -54,6 +55,7 @@ export function UsersPage() {
   const client = useQueryClient();
   const navigate = useNavigate();
   const pageActions = useModulePageActions("users");
+  const format = useFormat();
   const { phone } = useAppChrome();
   const { filters, pagination, query, result: users, paginationProps } = usePagedQuery({
     filterKeys: userFilterKeys,
@@ -89,26 +91,26 @@ export function UsersPage() {
   const invalidate = async () => client.invalidateQueries({ queryKey: usersQueryRoot });
   const revoke = useMutation({
     mutationFn: (user: OrganizationUserResponse) => revokeUserInvitation(user.invitationId!),
-    onSuccess: async (_result, user) => { toast.success(t("users:messages.revoked", { email: user.email ?? "" })); setTarget(null); setConfirmAction(null); await invalidate(); },
+    onSuccess: async (_result, user) => { toast.success(t("users:messages.revoked", { email: userContactText(user, format) })); setTarget(null); setConfirmAction(null); await invalidate(); },
     onError: (error) => toastActionError(error, t),
   });
   const changeStatus = useMutation({
     mutationFn: (user: OrganizationUserResponse & { isActive: boolean }) => changeUserStatus(user.memberId, { isActive: user.isActive, version: user.version }),
-    onSuccess: async (_result, user) => { toast.success(t(user.isActive ? "users:messages.enabled" : "users:messages.disabled", { name: user.displayName || user.email || "" })); setTarget(null); setConfirmAction(null); await invalidate(); },
+    onSuccess: async (_result, user) => { toast.success(t(user.isActive ? "users:messages.enabled" : "users:messages.disabled", { name: user.displayName || userContactText(user, format) })); setTarget(null); setConfirmAction(null); await invalidate(); },
     onError: (error) => toastActionError(error, t),
   });
   const remove = useMutation({
     mutationFn: (user: OrganizationUserResponse) => removeUser(user.memberId, user.version),
-    onSuccess: async (_result, user) => { toast.success(t("users:messages.removed", { name: user.displayName || user.email || "", organization: organizationName })); setTarget(null); setConfirmAction(null); await invalidate(); },
+    onSuccess: async (_result, user) => { toast.success(t("users:messages.removed", { name: user.displayName || userContactText(user, format), organization: organizationName })); setTarget(null); setConfirmAction(null); await invalidate(); },
     onError: (error) => toastActionError(error, t),
   });
 
   const rowActions = (member: OrganizationUserResponse) => <RowActions
-      label={t("users:rowActions", { name: member.displayName || member.email || "" })}
-      title={member.displayName || member.email || ""}
+      label={t("users:rowActions", { name: member.displayName || userContactText(member, format) })}
+      title={member.displayName || userContactText(member, format)}
       actions={[
         { label: t("users:actions.view"), accessibleName: t("users:actions.view"), icon: Pencil, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); } },
-        { label: t("users:actions.resend"), accessibleName: t("users:actions.resend"), icon: RotateCw, onSelect: () => { if (member.invitationId) resend.mutate(member.invitationId, { onSuccess: async () => { toast.success(t("users:messages.resent", { email: member.email ?? "" })); await invalidate(); }, onError: (error) => toastActionError(error, t) }); }, hidden: !canInvite || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
+        { label: t("users:actions.resend"), accessibleName: t("users:actions.resend"), icon: RotateCw, onSelect: () => { if (member.invitationId) resend.mutate(member.invitationId, { onSuccess: async () => { toast.success(t("users:messages.resent", { email: userContactText(member, format) })); await invalidate(); }, onError: (error) => toastActionError(error, t) }); }, hidden: !canInvite || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
         { label: t("users:actions.enable"), accessibleName: t("users:actions.enable"), icon: Power, onSelect: () => changeStatus.mutate({ ...member, isActive: true }), hidden: !canManage || member.state !== "Inactive" },
         { label: t("users:actions.disable"), accessibleName: t("users:actions.disable"), icon: Power, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("disable"); }, hidden: !canManage || member.state !== "Active" },
         // «Criterio · Menús» y tablero Usuarios (v109): abajo, después de la franja, en rojo y con la ✕.
@@ -174,7 +176,7 @@ export function UsersPage() {
     {inviteOpen ? <InviteUserDialog onClose={() => setInviteOpen(false)} onInvited={invalidate} /> : null}
 
     <ConfirmDialog open={confirmAction !== null} onOpenChange={(open) => { if (!open) { setConfirmAction(null); setTarget(null); } }} destructive={confirmAction !== null}
-      title={target ? t(`users:confirm.${confirmAction}`, { name: target.displayName || target.email || "", email: target.email ?? "", organization: organizationName }) : ""}
+      title={target ? t(`users:confirm.${confirmAction}`, { name: target.displayName || userContactText(target, format), email: userContactText(target, format), organization: organizationName }) : ""}
       description={confirmAction ? t(`users:confirm.${confirmAction}Description`, { organization: organizationName }) : undefined}
       confirmLabel={confirmAction ? t(`users:confirm.${confirmAction}Confirm`) : ""}
       onConfirm={() => {
