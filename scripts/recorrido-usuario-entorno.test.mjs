@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import * as environment from "./recorrido-usuario-entorno.mjs";
 
@@ -54,6 +54,8 @@ test("el plazo de arranque no acepta un HTTP 200 que llega después del vencimie
   }), /Front.*arranque/);
 });
 async function workspace(t) {
+  // `.local/` no viene en un clon nuevo (ni en CI): se crea antes del temporal propio.
+  await mkdir(temporaryRoot, { recursive: true });
   const directory = await mkdtemp(path.join(temporaryRoot, "arquitecturabase-recorrido-ipc-"));
   t.after(async () => {
     assert.equal(path.dirname(directory), temporaryRoot);
