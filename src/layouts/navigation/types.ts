@@ -1,5 +1,6 @@
 import type { IconComponent } from "@/shared/ui/icons";
 import type { CompanyPermission, OrganizationPermission, PlatformPermission } from "@/auth/usePermissions";
+import type { ModuleBadge } from "@/shared/modules/types";
 
 /// Una ruta del manifiesto de un área: su camino, el permiso y el módulo que pide para abrirse y, si va en el menú, su
 /// rótulo y su ícono. De acá salen `app/routes.tsx` (con `RequirePermission`) y el menú: nada se declara dos veces.
@@ -26,6 +27,10 @@ export interface AppRoute {
 export interface NavigationLink extends AppRoute {
   labelKey: string;
   icon: IconComponent;
+  /** La aporta un módulo: no es el Inicio del acceso aunque quede primera. */
+  contributed?: boolean;
+  /** El contador que acompaña la opción (los chats sin tomar). */
+  Badge?: ModuleBadge;
 }
 
 export interface NavigationPanel {
@@ -33,6 +38,13 @@ export interface NavigationPanel {
   icon: IconComponent;
   links: readonly NavigationLink[];
   sections?: readonly NavigationSection[];
+}
+
+/// El panel propio de un módulo de uso diario («Criterio · Menús»: WhatsApp, con Chats, Contactos y Difusiones). Se abre
+/// desde su ítem del menú lateral, como Administración, y uno a la vez. En el teléfono, sus opciones van en la barra o en
+/// el grupo del módulo en Más.
+export interface NavigationModulePanel extends NavigationPanel {
+  Badge?: ModuleBadge;
 }
 
 export interface NavigationSection {
@@ -57,6 +69,8 @@ export interface NavigationConfig {
   /** Un panel de uso diario, arriba: Gestión en Plataforma. Comparte el segundo panel con Administración. */
   management?: NavigationPanel | null;
   administration: NavigationPanel | null;
+  /** Los paneles de los módulos, después de las opciones del menú. */
+  panels?: readonly NavigationModulePanel[];
   /** La raíz de las migas cuando el inicio es una opción de un panel, como Organizaciones en Plataforma. */
   breadcrumbRoot?: { path: string; labelKey: string };
   /** Hasta cuatro secciones antes de Más. Sin esta declaración, Personal usa Inicio + módulos visibles; Empresa, Inicio. */

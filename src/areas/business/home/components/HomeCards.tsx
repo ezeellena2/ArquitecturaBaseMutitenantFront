@@ -9,6 +9,10 @@ import { initials } from "@/shared/lib/initials";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { companyDetail } from "./companyDetail";
 import { areaIcons, areaPaths, type HomeArea } from "./pendingItems";
+import type { ModuleHomeCard } from "@/shared/modules/types";
+
+/** La tarjeta de un módulo que mandó el back (`moduleCards`, CC08) con su total. */
+export interface ModuleCardRow { card: ModuleHomeCard; total: number }
 
 function Card({ to, icon, title, detail }: { to: string; icon: ReactNode; title: string; detail: ReactNode }) {
   return <Link to={to} style={{ boxShadow: "var(--shadow-card)" }}
@@ -25,7 +29,7 @@ function Card({ to, icon, title, detail }: { to: string; icon: ReactNode; title:
 const grid = "grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4";
 
 /** Tablero Inicio-Org: una tarjeta por área que la API devolvió, cada una con su dato real. */
-export function AreaCards({ organization }: { organization: HomeOrganizationSummary }) {
+export function AreaCards({ organization, moduleCards = [] }: { organization: HomeOrganizationSummary; moduleCards?: readonly ModuleCardRow[] }) {
   const { t } = useTranslation("home");
   const format = useFormat();
   const details: [HomeArea, ReactNode][] = [];
@@ -45,6 +49,9 @@ export function AreaCards({ organization }: { organization: HomeOrganizationSumm
       const Icon = areaIcons[area];
       return <Card key={area} to={areaPaths[area]} icon={<Icon className="size-[18px]" />} title={t(`cards.${area}.title`)} detail={detail} />;
     })}
+    {/* Inicio-Org: después de las del núcleo, las de los módulos («WhatsApp · 2 números»). */}
+    {moduleCards.map(({ card, total }) => <Card key={card.key} to={card.to} icon={<card.icon className="size-[18px]" />} title={t(card.titleKey)}
+      detail={t(card.detailKey, { count: total })} />)}
   </nav>;
 }
 

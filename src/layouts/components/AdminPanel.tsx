@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
 import { findAdministrationEntry } from "../navigation/administration";
 import type { NavigationLink, NavigationPanel, NavigationSection } from "../navigation/types";
+import { MenuBadge } from "./MenuBadge";
 import { menuGroupClass, menuLineClass, menuRowClass, panelEdgeButtonClass } from "./menuRow";
 
 // «Criterio · Menús» (lienzo v102): las mismas opciones del menú lateral, con la sección en la que estás en blanco. Un
@@ -51,7 +52,7 @@ export function AdminPanel({ panel, open, onClose, currentLink }: { panel: Navig
       {coreSections.map(renderSection)}
       {links.map((entry, index) => <li key={entry.labelKey} className={menuLineClass(coreSections.length + index)}>
         <Link to={entry.path} aria-current={entry === activeLink ? "page" : undefined} className={menuRowClass(entry === activeLink)}>
-          <entry.icon className="size-[18px] shrink-0" />{t(entry.labelKey)}
+          <entry.icon className="size-[18px] shrink-0" />{t(entry.labelKey)}<MenuBadge Badge={entry.Badge} />
         </Link>
       </li>)}
       {moduleSections.map((section, index) => renderSection(section, coreSections.length + links.length + index))}

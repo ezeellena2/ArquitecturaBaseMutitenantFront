@@ -9,13 +9,13 @@ import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { useLocalStorage } from "@/shared/hooks/useLocalStorage";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { AppChromeProvider, type AppChrome } from "@/shared/ui/app/AppChrome";
-import { BottomNav } from "@/shared/ui/app/BottomNav";
+import { BottomNav, BottomNavBadge } from "@/shared/ui/app/BottomNav";
 import { AppHomeIcon } from "@/shared/ui/icons";
 import { AdminPanel } from "./components/AdminPanel";
 import { Breadcrumbs } from "./components/Breadcrumbs";
 import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
-import { findNavigationPanelEntry, type NavigationPanelKey } from "./navigation/administration";
+import { findNavigationPanelEntry, navigationPanel, type NavigationPanelKey } from "./navigation/administration";
 import type { NavigationConfig } from "./navigation/types";
 import { visibleNavigation } from "./navigation/visible";
 import { activeOrganization } from "@/tenancy/access";
@@ -41,7 +41,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   const panelEntry = findNavigationPanelEntry(navigation, pathname);
   const [toggledPanel, setToggledPanel] = useState<{ pathname: string; panel: NavigationPanelKey | null } | null>(null);
   const selectedPanel = toggledPanel?.pathname === pathname ? toggledPanel.panel : panelEntry?.panel ?? null;
-  const openPanel = selectedPanel && shownNavigation[selectedPanel] ? selectedPanel : null;
+  const openPanel = selectedPanel && navigationPanel(shownNavigation, selectedPanel) ? selectedPanel : null;
   const togglePanel = (panel: NavigationPanelKey) => setToggledPanel({ pathname, panel: openPanel === panel ? null : panel });
   const [bottomNavHidden, setBottomNavHidden] = useState(false);
   const hideBottomNav = useCallback((hidden: boolean) => setBottomNavHidden(hidden), []);
@@ -58,7 +58,8 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   // Personal suma sus módulos visibles a Inicio; los demás accesos conservan las secciones del manifiesto.
   // Hasta cuatro secciones y Más, donde también se abren los módulos que quedan afuera.
   // Las pantallas de Administración se abren desde Más y vuelven a él con ‹.
-  const home = navigation.links.at(0);
+  // Una opción que aporta un módulo («WhatsApp» de Plataforma) nunca es el Inicio, aunque quede primera.
+  const home = navigation.links.find((link) => !link.contributed);
   // Una pantalla que vuelve al Inicio con ‹ (la ficha de la empresa de quien la administra sola) también es del Inicio.
   const onHome = home?.path === pathname || homeMarked;
   const onMore = navigation.moreTo === pathname;
@@ -66,8 +67,8 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
     ? shownNavigation.links.filter((link) => link === home || link.feature).slice(0, 4)
       .map((link) => ({ link, icon: link === home ? AppHomeIcon : link.icon })) : undefined), [shownNavigation, scope, home]);
   const bottomSection = !onMore ? bottomSections?.find((section) => section.link === panelEntry?.link || section.link.path === pathname
-    || (scope === "personal" && pathname.startsWith(`${section.link.path}/`))) : undefined;
-  const routePanel = panelEntry ? navigation[panelEntry.panel] : null;
+    || ((scope === "personal" || (section.link.contributed && !panelEntry)) && pathname.startsWith(`${section.link.path}/`))) : undefined;
+  const routePanel = panelEntry ? navigationPanel(navigation, panelEntry.panel) : null;
   const chrome = useMemo<AppChrome>(() => ({
     phone: isMobile,
     parent: isMobile && navigation.moreTo && !onHome && !onMore && !bottomSection ? { to: navigation.moreTo, label: t("layout.app.backToMore") } : null,
@@ -86,7 +87,8 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
       <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">{children ?? <Outlet />}</main>
       {navigation.moreTo && !bottomNavHidden ? <BottomNav label={t("navigation.sections")} items={[
         ...(bottomSections?.map(({ link, icon: Icon }) => ({
-          key: link.path, label: t(link.labelKey), to: link.path, icon: <Icon className="size-6" />, active: (link === bottomSection?.link || (link === home && onHome)) && !activeSectionHidden,
+          key: link.path, label: t(link.phoneLabelKey ?? link.labelKey), to: link.path, icon: <Icon className="size-6" />, active: (link === bottomSection?.link || (link === home && onHome)) && !activeSectionHidden,
+          ...(link.Badge ? { badge: <link.Badge>{(count) => <BottomNavBadge count={count} />}</link.Badge> } : {}),
         })) ?? (home ? [{ key: "home", label: t(home.labelKey), to: home.path, icon: <AppHomeIcon className="size-6" />, active: onHome && !activeSectionHidden }] : [])),
         { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: account?.avatarInitials, avatarMuted: account?.avatarMuted, active: !(bottomSections ? bottomSection || onHome : onHome) && !activeSectionHidden },
       ]} /> : null}
@@ -104,9 +106,11 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
         onToggleManagement={() => togglePanel("management")}
         administrationOpen={openPanel === "administration"}
         onToggleAdministration={() => togglePanel("administration")}
+        openModulePanel={openPanel?.startsWith("module:") ? openPanel : null}
+        onToggleModulePanel={togglePanel}
         onToggleCollapsed={() => setCollapsed((value) => !value)}
       />
-      <AdminPanel panel={openPanel ? shownNavigation[openPanel] ?? null : null} open={openPanel !== null}
+      <AdminPanel panel={openPanel ? navigationPanel(shownNavigation, openPanel) : null} open={openPanel !== null}
         currentLink={panelEntry?.panel === openPanel ? panelEntry.link : null}
         onClose={() => setToggledPanel({ pathname, panel: null })} />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">

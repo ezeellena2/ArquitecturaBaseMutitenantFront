@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 import { Avatar } from "../Avatar";
+import { NumberText } from "../format/NumberText";
 
 export interface BottomNavItem {
   key: string;
@@ -12,7 +13,16 @@ export interface BottomNavItem {
   /** «Más» lleva la inicial de la persona en lugar de un ícono. */
   avatar?: string;
   avatarMuted?: boolean;
+  /** El contador sobre el ícono (M-WA-Chats: los chats sin tomar). */
+  badge?: ReactNode;
   active: boolean;
+}
+
+/// El contador de una sección de la barra (`.ap-nav .b` de los tableros): petróleo, blanco, de 18, arriba a la derecha del ícono.
+export function BottomNavBadge({ count }: { count: number }) {
+  return <span data-slot="bottom-nav-badge" className="absolute -top-[3px] right-1 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[9px] bg-[var(--marca)] px-[5px] text-[11px] leading-none font-bold text-[var(--lado-activo)]">
+    <NumberText value={count} />
+  </span>;
 }
 
 // Tableros M-* (.ap-nav): hasta cuatro secciones y «Más». La elegida, en petróleo sobre una píldora clara.
@@ -26,8 +36,11 @@ export function BottomNav({ label, items }: { label: string; items: readonly Bot
           {item.avatar
             ? <Avatar size="nav" initials={item.avatar} muted={item.avatarMuted} className={item.active ? "shadow-[0_0_0_2px_var(--lado-activo),0_0_0_4px_var(--marca)]" : undefined} />
             : item.icon ?? null}
+          {item.badge ?? null}
         </span>
         {item.label}
+        {/* El ícono no se lee: la cantidad se repite para el lector, después del rótulo («Chats 2»). */}
+        {item.badge ? <>{" "}<span className="sr-only">{item.badge}</span></> : null}
       </Link>;
     })}
   </nav>;

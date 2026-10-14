@@ -3,6 +3,7 @@ import { BuildingIcon, ClipboardIcon, GlobeIcon, KeyIcon, SlidersHorizontalIcon,
 import type { HomeResponse, PendingGroup, PendingItem } from "@/shared/api/types";
 import { validationConstraints } from "@/shared/api/generated/validation";
 import type { StatusTone } from "@/shared/ui/StatusDot";
+import type { ModuleHomeCard, ModulePendingKind } from "@/shared/modules/types";
 
 export type HomeArea = "users" | "roles" | "companies" | "publicPage" | "settings" | "audit";
 
@@ -18,7 +19,9 @@ export const areaPaths: Record<HomeArea, string> = {
 
 export interface PendingRow {
   key: string;
-  area: HomeArea;
+  /** El área del núcleo o la tarjeta del módulo (`whatsapp`): la usan los globitos de los atajos del teléfono. */
+  area: string;
+  icon: IconComponent;
   areaLabel: string;
   title: string;
   detail?: string;
@@ -35,16 +38,22 @@ export interface PendingRow {
 export interface PendingRowGroup {
   key: string;
   title: string;
-  area: HomeArea;
+  area: string;
   areaLabel: string;
   totalCount: number;
   rows: readonly PendingRow[];
   to: string;
 }
 
+/** Lo que suman los módulos: sus tipos de pendiente y las tarjetas a las que pertenecen (su rótulo y su ícono). */
+export interface ModuleHomeParts {
+  readonly cards: readonly ModuleHomeCard[];
+  readonly pending: readonly ModulePendingKind[];
+}
+
 /** Compatibilidad con respuestas anteriores: el grupo conserva su total antes de recortar la vista previa. */
 export function describePendingGroups(home: HomeResponse | undefined, t: TFunction,
-  formatDate: (value: string) => string): PendingRowGroup[] {
+  formatDate: (value: string) => string, modules: ModuleHomeParts = { cards: [], pending: [] }): PendingRowGroup[] {
   let source = home?.pendingGroups;
   if (source == null) {
     const legacy = new Map<string, PendingGroup>();
@@ -57,7 +66,18 @@ export function describePendingGroups(home: HomeResponse | undefined, t: TFuncti
     }
     source = [...legacy.values()];
   }
-  return source.flatMap((group) => {
+  return source.flatMap((group): PendingRowGroup[] => {
+    const contributed = modules.pending.find((kind) => kind.kind === group.kind);
+    if (contributed) {
+      const card = modules.cards.find((entry) => entry.key === contributed.card);
+      if (!card) return [];
+      const state = t(contributed.stateKey);
+      const rows = group.items.map((item, index): PendingRow => ({ ...contributed.describe(item), key: `${index}-${group.kind}`, area: card.key, icon: card.icon,
+        areaLabel: t(card.titleKey), state, phoneState: state, tone: item.urgent ? "danger" : "warning", action: t(contributed.actionKey),
+        since: item.sinceUtc ?? null, company: item.companyName ?? null }));
+      return rows.length ? [{ key: `${group.kind}:${group.companyId ?? ""}`, title: t(contributed.groupKey), area: card.key,
+        areaLabel: group.companyName ?? t(card.titleKey), totalCount: group.totalCount, rows, to: contributed.to }] : [];
+    }
     const rows = group.items.map((item, index) => describePending({ ...item, companyId: group.companyId ?? item.companyId,
       companyName: group.companyName ?? item.companyName }, index, t, formatDate)).filter((row): row is PendingRow => row !== null);
     const first = rows[0];
@@ -79,7 +99,7 @@ export function describePending(item: PendingItem, index: number, t: TFunction,
   const base = (area: HomeArea, kind: string, fields: { title: string; detail?: string; to: string }): PendingRow => {
     const state = t(`home:pending.${kind}.state`);
     return {
-      key: `${index}-${kind}`, area, areaLabel: t(`home:cards.${area}.title`), state,
+      key: `${index}-${kind}`, area, icon: areaIcons[area], areaLabel: t(`home:cards.${area}.title`), state,
       phoneState: kind === "invitationExpired" ? t("home:pending.invitationExpired.phoneState") : state,
       tone: item.urgent ? "danger" : "warning", action: t(`home:pending.${kind}.action`), since: item.sinceUtc ?? null,
       company: item.companyName ?? null,

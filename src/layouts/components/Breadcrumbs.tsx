@@ -14,7 +14,7 @@ export function Breadcrumbs({ navigation, permissions }: { navigation: Navigatio
   const { t } = useTranslation();
   const pathname = useLocation().pathname.replace(/\/+$/, "") || "/";
   const leaf = useCurrentBreadcrumbLeaf();
-  const home = navigation.breadcrumbRoot ?? navigation.links.at(0);
+  const home = navigation.breadcrumbRoot ?? navigation.links.find((link) => !link.contributed);
   if (!home) return null;
 
   const crumbs: { label: string; to?: string; current?: boolean }[] = [];
@@ -28,8 +28,13 @@ export function Breadcrumbs({ navigation, permissions }: { navigation: Navigatio
       : canOpen(link, permissions) ? { label: t(link.labelKey), to: link.path } : { label: t(link.labelKey) });
     if (!onLink && leaf) crumbs.push({ label: leaf, current: true });
   } else {
-    const current = navigation.links.find((entry) => entry !== home && entry.path === pathname);
-    if (current) crumbs.push({ label: t(current.labelKey), current: true });
+    // Una opción de menú de un módulo y su detalle: «Plataforma / WhatsApp» y «Plataforma / WhatsApp / Carla Ruiz».
+    const current = navigation.links.find((entry) => entry !== home && (entry.path === pathname || (entry.contributed && pathname.startsWith(`${entry.path}/`))));
+    if (current?.path === pathname) crumbs.push({ label: t(current.labelKey), current: true });
+    else if (current) {
+      crumbs.push({ label: t(current.labelKey), to: current.path });
+      if (leaf) crumbs.push({ label: leaf, current: true });
+    }
   }
 
   return <nav aria-label={t("layout.breadcrumbs.label")} className="min-w-0 text-[13px] text-[var(--t2)]">

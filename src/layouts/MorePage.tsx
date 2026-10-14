@@ -14,6 +14,7 @@ import { platformNavigation } from "./navigation/platform";
 import { useNavigation } from "./navigation/useNavigation";
 import { usePermissions } from "@/auth/usePermissions";
 import { visibleNavigation } from "./navigation/visible";
+import type { NavigationLink } from "./navigation/types";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 
 /// Tableros M-Mas-Personal, M-WA-Menu y M-Mas-Plat: la pestaña «Más» del teléfono. Arriba quién sos; después tus perfiles, para
@@ -34,7 +35,16 @@ export function MorePage() {
 
   const panel = navigation.administration;
   const administration = panel ? [...(panel.sections ?? []).filter((section) => !section.moreGroup).flatMap((section) => section.links), ...panel.links] : [];
-  const moduleGroups = panel?.sections?.filter((section) => section.moreGroup) ?? [];
+  // El grupo de un módulo junta lo de su panel que no entra en la barra y su Administración (M-WA-Menu: WhatsApp con
+  // Difusiones, Números, Bot, Equipos y Plantillas), en el orden de los módulos.
+  const inBar = new Set(navigation.bottomSections?.map((section) => section.link.path) ?? []);
+  const moduleGroups: { labelKey: string; links: NavigationLink[] }[] = [];
+  const addGroup = (labelKey: string, links: readonly NavigationLink[]) => {
+    const group = moduleGroups.find((entry) => entry.labelKey === labelKey);
+    if (group) group.links.push(...links); else if (links.length) moduleGroups.push({ labelKey, links: [...links] });
+  };
+  for (const modulePanel of navigation.panels ?? []) addGroup(modulePanel.labelKey, modulePanel.links.filter((link) => !inBar.has(link.path)));
+  for (const section of panel?.sections?.filter((entry) => entry.moreGroup) ?? []) addGroup(section.labelKey, section.links);
   const management = navigation.management?.links.filter((link) => !navigation.bottomSections?.some((section) => section.link.path === link.path)) ?? [];
   const personalModules = (navigation.moreLinks ?? []).filter((link) => !management.some((entry) => entry.path === link.path));
   const subtitle = access === "platform" ? t("navigation.platform")

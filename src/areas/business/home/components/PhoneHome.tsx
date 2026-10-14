@@ -8,6 +8,7 @@ import { validationConstraints } from "@/shared/api/generated/validation";
 import { NumberText } from "@/shared/ui/format/NumberText";
 import { companyDetail } from "./companyDetail";
 import { areaIcons, areaPaths, pendingTotal, type HomeArea, type PendingRow, type PendingRowGroup } from "./pendingItems";
+import type { ModuleCardRow } from "./HomeCards";
 
 const areas: readonly HomeArea[] = ["users", "roles", "companies", "publicPage", "settings", "audit"];
 
@@ -28,8 +29,10 @@ const titleClass = "text-[18px] leading-[normal] font-bold tracking-[-0.01em] te
  * color de la urgencia y botón cápsula. Con roles solo en empresas, «Tus empresas» en filas y, si administra alguna, su
  * «Para resolver». No es la compu achicada.
  */
-export function PhoneHome({ organization, companies, groups, firstName, organizationName }: {
+export function PhoneHome({ organization, moduleCards = [], companies, groups, firstName, organizationName }: {
   organization: HomeOrganizationSummary | null;
+  /** Los atajos de los módulos (M-Inicio-Org: «WhatsApp»), después de los del núcleo. */
+  moduleCards?: readonly ModuleCardRow[];
   companies: readonly HomeCompanyCard[];
   groups: readonly PendingRowGroup[];
   firstName: string;
@@ -46,7 +49,7 @@ export function PhoneHome({ organization, companies, groups, firstName, organiza
     </div>
     <div className="relative z-[1] -mt-[26px] flex flex-1 flex-col overflow-hidden rounded-t-[24px] bg-[var(--lado-activo)]">
       {organization ? <>
-        <Shortcuts organization={organization} groups={groups} />
+        <Shortcuts organization={organization} moduleCards={moduleCards} groups={groups} />
         <div className="h-2 shrink-0 bg-[var(--s2)]" />
         <ToResolveRows groups={groups} />
       </> : <>
@@ -61,17 +64,19 @@ export function PhoneHome({ organization, companies, groups, firstName, organiza
   </div>;
 }
 
-function Shortcuts({ organization, groups }: { organization: HomeOrganizationSummary; groups: readonly PendingRowGroup[] }) {
+function Shortcuts({ organization, moduleCards, groups }: { organization: HomeOrganizationSummary; moduleCards: readonly ModuleCardRow[]; groups: readonly PendingRowGroup[] }) {
   const { t } = useTranslation("home");
-  const pendingByArea = new Map<HomeArea, number>();
+  const pendingByArea = new Map<string, number>();
   for (const group of groups) pendingByArea.set(group.area, (pendingByArea.get(group.area) ?? 0) + group.totalCount);
+  const shortcuts = [
+    ...areas.filter((area) => organization[area] != null).map((area) => ({ key: area, Icon: areaIcons[area], to: areaPaths[area], label: t(`cards.${area}.short`) })),
+    ...moduleCards.map(({ card }) => ({ key: card.key, Icon: card.icon, to: card.to, label: t(card.shortKey) })),
+  ];
 
   return <nav aria-label={t("areas")} className="grid grid-cols-4 gap-y-4 px-2 pb-[18px] pt-[22px]">
-    {areas.filter((area) => organization[area] != null).map((area) => {
-      const Icon = areaIcons[area];
+    {shortcuts.map(({ key: area, Icon, to, label }) => {
       const count = pendingByArea.get(area) ?? 0;
-      const label = t(`cards.${area}.short`);
-      return <Link key={area} to={areaPaths[area]} aria-label={count > 0 ? t("shortcutPending", { area: label, count }) : label}
+      return <Link key={area} to={to} aria-label={count > 0 ? t("shortcutPending", { area: label, count }) : label}
         className="flex flex-col items-center gap-[7px] text-center text-[12.5px] leading-[normal] font-medium text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
         <span className="relative inline-flex size-14 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]">
           <Icon aria-hidden="true" className="size-6" />
@@ -123,7 +128,7 @@ function ToResolveRows({ groups }: { groups: readonly PendingRowGroup[] }) {
           <span className="ml-auto font-semibold"><NumberText value={group.totalCount} /></span>
         </div>
         <ul>{group.rows.map((row) => {
-          const Icon = areaIcons[row.area];
+          const Icon = row.icon;
           return <li key={row.key} className={`${rowClass} ${rowLine}`}>
             <span aria-hidden="true" className={`inline-flex size-10 shrink-0 items-center justify-center rounded-full ${toneCircle[tone(row)]}`}><Icon className="size-5" /></span>
             <span className="flex min-w-0 flex-1 flex-col gap-0.5 leading-[normal]">

@@ -5,7 +5,7 @@ import { Pencil, Plus, Power, RotateCw, Trash2 } from "lucide-react";
 import { CloseIcon, UsersIcon } from "@/shared/ui/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
@@ -25,6 +25,8 @@ import { changeUserStatus, fetchUserCounts, fetchUsers, removeUser, resendUserIn
 import { createUserColumns, userPhoneRow } from "../columns";
 import { InviteUserDialog } from "../components/InviteUserDialog";
 import { activeOrganization } from "@/tenancy/access";
+import { useModulePageActions } from "@/shared/modules/useModules";
+import { useAppChrome } from "@/shared/ui/app/AppChrome";
 
 const userFilterKeys = ["state", "companyId"] as const;
 // Orden del filtro «Estado» del tablero Usuarios.
@@ -51,6 +53,8 @@ export function UsersPage() {
   const organizationName = activeOrganization(currentUser)?.name ?? "";
   const client = useQueryClient();
   const navigate = useNavigate();
+  const pageActions = useModulePageActions("users");
+  const { phone } = useAppChrome();
   const { filters, pagination, query, result: users, paginationProps } = usePagedQuery({
     filterKeys: userFilterKeys,
     defaultSort: "displayName",
@@ -122,10 +126,16 @@ export function UsersPage() {
   // Sin filtro el botón dice «Estado: todos» o «Empresa: todas» y el menú ofrece «Todos» o «Todas», como el tablero.
   const currentState = state ?? "";
 
+  // Lo que suman los módulos («Cargar teléfonos», tablero Usuarios): un secundario en la banda y, en el teléfono, el ⋮ de
+  // la barra (M-Usuarios).
+  const moduleActions = pageActions.map((action) => <Button key={action.to} asChild variant="outline"><Link to={action.to}>{t(action.labelKey)}</Link></Button>);
+  const invite = canInvite ? <Button type="button" onClick={() => setInviteOpen(true)}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("users:invite.open")}</Button> : null;
+
   return <>
     <Page icon={UsersIcon} title={t("users:title")} summary={listSummary} phoneBody="flush"
       fab={canInvite ? { label: t("users:invite.open"), onClick: () => setInviteOpen(true) } : undefined}
-      actions={canInvite ? <Button type="button" onClick={() => setInviteOpen(true)}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("users:invite.open")}</Button> : undefined}>
+      moreActions={phone && pageActions.length ? { label: t("users:detail.moreActions"), items: pageActions.map((action) => ({ label: t(action.labelKey), onSelect: () => { void navigate(action.to); } })) } : undefined}
+      actions={moduleActions.length || invite ? <>{phone ? null : moduleActions}{invite}</> : undefined}>
       <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar
           label={t("users:filters.label")}

@@ -62,7 +62,8 @@ export function OrganizationModulesTab({ organization, query, writes, onWrite, o
   </ModuleOrganizationUi>), [rows, organization, client, writes, moduleWrites, moduleWriteKey, onModuleWrite, onModuleConflict, dialogOwner, onContribution]);
   const state = (feature: PlatformFeatureResponse) => !feature.enabled ? "Off" : feature.source === "Trial" ? "Trial" : "On";
   const moduleName = (key: string) => {
-    const nameKey = registry.find((module) => module.id === key)?.organizationUi?.nameKey;
+    const registered = registry.find((module) => module.id === key);
+    const nameKey = registered?.organizationUi?.nameKey ?? registered?.nameKey;
     return nameKey ? t(nameKey, { defaultValue: key }) : t(`platformTenants:modules.${key}`, { defaultValue: key });
   };
   const status = (row: PlatformFeatureResponse) => <StatusDot tone={state(row) === "Trial" ? "pending" : state(row) === "On" ? "success" : "neutral"} label={state(row) === "Trial" ? t("platformTenants:modules.trialUntil", { date: row.expiresOn ? format.formatDate(row.expiresOn) : format.formatEmpty() }) : <EnumText enum="PlatformModuleState" value={state(row)} />} />;
