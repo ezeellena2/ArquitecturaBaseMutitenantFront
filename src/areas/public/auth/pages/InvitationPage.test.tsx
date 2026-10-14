@@ -25,6 +25,7 @@ const basePreview: InvitationPreviewResponse = {
   canUseEmailCode: false,
   canUseGoogle: false,
   needsPersonalLoginMethod: false,
+  canUsePhoneCode: false,
 };
 
 let previewResponse = basePreview;
@@ -93,6 +94,7 @@ function show(options: { entry?: string; signedInAs?: "business" | "consumer" } 
   const router = createMemoryRouter([
     { path: "/invitacion", element: <InvitationPage /> },
     { path: "/login", element: <main>{"Ingreso de la cuenta"}</main> },
+    { path: "/login/empresa", element: <main>{"Ingreso como empresa"}</main> },
     { path: "/org", element: <main>{"Destino organización"}</main> },
     { path: "/cuenta", element: <main>{"Destino cuenta"}</main> },
     { path: "/", element: <main>{"Destino personal"}</main> },
@@ -102,6 +104,30 @@ function show(options: { entry?: string; signedInAs?: "business" | "consumer" } 
 }
 
 describe("InvitationPage", () => {
+  // CC26 (E11, ADR 0047): una invitación por teléfono no trae correo. El código por WhatsApp a ese número prueba que es
+  // suyo y, al entrar, acepta la invitación: se pide en «Ingresá como empresa», con el número ya cargado.
+  it.each(["NoAccount", "SignInRequired"] as const)("por teléfono (%s) ofrece el código por WhatsApp con el número cargado", async (state) => {
+    previewResponse = { ...basePreview, state, email: null, phone: "+5493515550200", canUsePhoneCode: true };
+    const { router, container } = show();
+    const heading = await screen.findByRole("heading", { name: "Te sumás a Grupo Delta" });
+    expect(heading.parentElement).toHaveTextContent(/La invitación es para .*555-0200\./);
+    expect(screen.queryByRole("button", { name: "Aceptar invitación" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Ingresá para aceptar" })).not.toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+    fireEvent.click(screen.getByRole("button", { name: "Entrar con código por WhatsApp" }));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/login/empresa"));
+    expect(router.state.location.state).toEqual({ phone: { country: "AR", number: expect.stringContaining("555-0200") } });
+    expect(acceptRequests).toHaveLength(0);
+  });
+
+  it("por teléfono sin código disponible lo dice y no ofrece entrar", async () => {
+    previewResponse = { ...basePreview, email: null, phone: "+5493515550200", canUsePhoneCode: false };
+    show();
+    expect(await screen.findByText("Ahora no podemos mandarte el código por WhatsApp. Probá más tarde.")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Entrar con código por WhatsApp" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Aceptar invitación" })).not.toBeInTheDocument();
+  });
+
   it("consulta el token del fragmento por JSON, limpia la URL y acepta una identidad nueva sin Personal", async () => {
     // Tablero Invitacion, «Sin cuenta»: quién invita con su rol, Empresa, Roles y Vence; la leyenda reemplaza la casilla.
     vi.useFakeTimers({ toFake: ["Date"] });

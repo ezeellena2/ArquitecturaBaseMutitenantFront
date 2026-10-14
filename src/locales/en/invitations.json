@@ -19,6 +19,8 @@
     "joinsProfiles": "{{organization}} is added to your profiles.",
     "signInDescription": "You already have an account with {{email}}. Sign in with your code and your invitation will be waiting.",
     "signIn": "Sign in to accept",
+    "phoneCode": "Sign in with a WhatsApp code",
+    "phoneCodeUnavailable": "We can't send you a WhatsApp code right now. Try again later.",
     "signOutAndContinue": "Sign out and continue as {{email}}",
     "continueAs": "Continue as {{name}}",
     "accept": "Accept invitation",

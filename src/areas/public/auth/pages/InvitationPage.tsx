@@ -21,7 +21,10 @@ import { FormError } from "@/shared/ui/FormError";
 import { ClockIcon } from "@/shared/ui/icons";
 import { useSignOut } from "@/auth/useSignOut";
 import { accountPagePaths } from "@/shared/api/accountContract";
-import { homeOf, parseAccess } from "@/tenancy/access";
+import { homeOf, loginPathOf, parseAccess } from "@/tenancy/access";
+import { useFormat } from "@/shared/format/useFormat";
+import { phoneDraftFromE164 } from "@/shared/phone/phoneInput";
+import { destinationNavigationState } from "../lib/authDestinationForm";
 
 
 
@@ -43,6 +46,7 @@ function InvitationFlow() {
   const signOut = useSignOut();
   const location = useLocation();
   const navigate = useNavigate();
+  const format = useFormat();
   const [token, setToken] = useState<string | null>(null);
   const [loadedLocationKey, setLoadedLocationKey] = useState<string | null>(null);
   const [previewCacheKey, setPreviewCacheKey] = useState(() => crypto.randomUUID());
@@ -85,7 +89,10 @@ function InvitationFlow() {
   const entering = acceptedView && !needsPersonalMethod;
   const organizationId = accepted?.organizationId ?? invitation?.organizationId ?? undefined;
   const organizationName = invitation?.organizationName ?? t("organizationFallback");
-  const email = invitation?.email ?? "";
+  // CC26 (E11): una invitación por teléfono no trae correo; la pantalla nombra el número invitado.
+  const invitedPhone = invitation?.email ? null : invitation?.phone ?? null;
+  const email = invitation?.email ?? (invitedPhone && !format.isLoading ? format.formatPhone(invitedPhone) : "");
+  const phoneDraft = invitedPhone ? phoneDraftFromE164(invitedPhone) : null;
   const inviter = invitation?.inviterName ?? organizationName;
   const inviterRoles = invitation?.inviterRoles ?? [];
   const companies = invitation?.companies ?? [];
@@ -194,6 +201,15 @@ function InvitationFlow() {
               <Button type="button" size="lg" variant="outline" onClick={returnToOwnAccess}>{t("join.continueAs", { name: invitation.currentAccountName?.trim().split(/\s+/)[0]
                 || (typeof auth.user?.profile.name === "string" ? auth.user.profile.name : invitation.currentAccountEmail ?? t("accountFallback")) })}</Button>
             </div>
+          </> : invitedPhone && (invitation.state === "NoAccount" || invitation.state === "SignInRequired") ? <>
+            {/* ADR 0047 con CC26: el código por WhatsApp a ese número prueba que es suyo y, al entrar, acepta la invitación.
+                Se pide en «Ingresá como empresa», con el número ya cargado. */}
+            {invitation.canUsePhoneCode && phoneDraft?.country
+              ? <Button type="button" size="lg" onClick={() => {
+                setActionError(null);
+                void navigate(loginPathOf("business"), { state: destinationNavigationState({ type: "phone", phone: phoneDraft }) });
+              }}>{t("join.phoneCode")}</Button>
+              : <FormError tone="warning" message={t("join.phoneCodeUnavailable")} />}
           </> : invitation.state === "SignInRequired" ? <>
             <Button type="button" size="lg" onClick={() => {
               setActionError(null);

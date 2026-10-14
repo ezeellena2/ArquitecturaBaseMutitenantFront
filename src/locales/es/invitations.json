@@ -19,6 +19,8 @@
     "joinsProfiles": "{{organization}} se suma a tus perfiles.",
     "signInDescription": "Ya tenés una cuenta con {{email}}. Entrá con tu código y la invitación te espera.",
     "signIn": "Ingresá para aceptar",
+    "phoneCode": "Entrar con código por WhatsApp",
+    "phoneCodeUnavailable": "Ahora no podemos mandarte el código por WhatsApp. Probá más tarde.",
     "signOutAndContinue": "Salir y seguir como {{email}}",
     "continueAs": "Seguir como {{name}}",
     "accept": "Aceptar invitación",
