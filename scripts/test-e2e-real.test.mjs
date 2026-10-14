@@ -1923,12 +1923,14 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await companyAdminPage.getByRole("button", { name: "Más tarde", exact: true }).click();
             await expectPath(companyAdminPage, "/org", "entrada del Administrador de empresa");
 
-            setStage("el Administrador de empresa ve su «Para resolver», con la empresa de la fila");
+            setStage("el Administrador de empresa ve su «Para resolver», con la empresa en su grupo");
             await companyAdminPage.getByRole("heading", { level: 2, name: "Tus empresas" }).waitFor();
             const companyToResolve = companyAdminPage.getByRole("region", { name: "Para resolver" });
+            // Lienzo v120: la empresa va en el encabezado de su grupo («Invitaciones vencidas · Empresa E2E»), no en la fila.
+            await companyToResolve.getByRole("row").filter({ hasText: "Invitaciones vencidas" }).filter({ hasText: e2eCompanyName }).waitFor();
             const expiredRow = companyToResolve.getByRole("row").filter({ hasText: expiredEmail });
-            await expiredRow.getByText(e2eCompanyName, { exact: true }).waitFor();
             await expiredRow.getByText("Vencida", { exact: true }).waitFor();
+            assert.equal(await expiredRow.getByText(e2eCompanyName, { exact: true }).count(), 0);
             const resend = expiredRow.getByRole("link", { name: "Reenviar", exact: true });
             assert.equal(await resend.getAttribute("href"), `/org/empresas/${e2eCompanyId}`);
 
