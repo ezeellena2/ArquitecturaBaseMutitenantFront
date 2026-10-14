@@ -32,9 +32,12 @@ describe("estado del compositor", () => {
     expect(composerState(row(), { paymentRequired: false, windowClosed: true })).toEqual({ kind: "windowClosed" });
   });
 
-  it("sin medio de pago lo dice antes que la ventana, desde el número (CC13) o desde el 409", () => {
-    expect(composerState(row({ windowOpenUntilUtc: null }), { paymentRequired: true, windowClosed: false })).toEqual({ kind: "paymentRequired" });
-    expect(composerState(row({ channel: { id: "n", displayNumber: "+5493515550200", status: "PaymentMissing" } }), none)).toEqual({ kind: "paymentRequired" });
+  // D1: sin medio de pago el número responde hasta los 1.000 gratis del mes; las plantillas siempre lo exigen.
+  it("sin medio de pago se responde dentro de las 24 h; pasadas, o con el 409 del tope, no sale nada", () => {
+    const missing = { channel: { id: "n", displayNumber: "+5493515550200", status: "PaymentMissing" as const } };
+    expect(composerState(row(missing), none)).toEqual({ kind: "open" });
+    expect(composerState(row({ ...missing, windowOpenUntilUtc: null }), none)).toEqual({ kind: "paymentRequired", reason: "template" });
+    expect(composerState(row(), { paymentRequired: true, windowClosed: false })).toEqual({ kind: "paymentRequired", reason: "freeLimit" });
   });
 });
 

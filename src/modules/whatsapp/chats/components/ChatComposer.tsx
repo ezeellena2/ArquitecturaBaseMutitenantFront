@@ -11,7 +11,7 @@ import { InfoButton } from "@/shared/ui/InfoButton";
 import { Textarea } from "@/shared/ui/textarea";
 import type { ComposerState } from "../lib/conversation";
 
-export type ComposerNotice = "window" | "readOnly" | "payment";
+export type ComposerNotice = "window" | "readOnly" | "payment" | "paymentTemplate";
 
 const maxLength = validationConstraints.SendWhatsAppMessageHttpRequest.text.maxLength;
 const schema = z.object({ text: z.string().trim().min(1).max(maxLength) });
@@ -52,7 +52,7 @@ export function ChatComposer({ state, phone, sendPending, notePending, onSend, o
     if (state.kind === "takenByOther") return bar(<>{noteButton}<span className="flex-1 text-[13px] text-[var(--t2)] max-md:text-[14px]">{t("chats.composer.takenBy", { name: state.name })}</span></>);
     if (state.kind === "paymentRequired") return bar(<>{noteButton}<span className="flex flex-1 items-center gap-2 text-[13px] text-[var(--peligro-tx)] max-md:text-[14px]">
       <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-[var(--peligro)]" />{t("chats.composer.paymentMissing")}
-      <InfoButton label={t("chats.composer.whatItMeans")} onClick={() => onExplain("payment")} />
+      <InfoButton label={t("chats.composer.whatItMeans")} onClick={() => onExplain(state.reason === "template" ? "paymentTemplate" : "payment")} />
     </span></>);
     return bar(<>{noteButton}<span className={cn("flex min-w-0 flex-1 items-center gap-2 text-[var(--alerta-tx)]", phone ? "text-[14px] font-medium whitespace-nowrap" : "text-[13px]")}>
       <Clock aria-hidden="true" className="size-4 shrink-0" />{t("chats.composer.windowClosed")}

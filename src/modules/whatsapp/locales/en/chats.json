@@ -91,7 +91,9 @@
       "title": "You can't reply to {{name}}",
       "reason": "Payment method missing in Meta",
       "detail": "<number></number> already used this month's free messages",
-      "step": "Ask whoever manages WhatsApp to add a payment method in Meta"
+      "detailTemplate": "24 hours have passed: only a template can be sent, and <number></number> has no payment method to send it",
+      "step": "Ask whoever manages WhatsApp to add a payment method in Meta",
+      "stepReply": "Or wait for {{name}} to write again: you can reply for 24 hours after that"
     }
   },
   "errors": {

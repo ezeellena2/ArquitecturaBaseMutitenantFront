@@ -221,9 +221,12 @@ function ConversationNotice({ notice, name, number, messages, onClose }: {
   if (notice === "readOnly") return <ImportantNotice open onOpenChange={close} title={t("chats.notices.readOnly.title", { name })}
     reason={<Trans t={t} i18nKey="chats.notices.readOnly.reason" components={{ number: <PhoneText value={number} /> }} />}
     detail={t("chats.notices.readOnly.detail")} steps={[t("chats.notices.readOnly.step")]} />;
+  // Pasadas 24 h solo queda una plantilla, y sin medio de pago no sale; pasado el tope gratis, tampoco una respuesta (D1).
+  const template = notice === "paymentTemplate";
   return <ImportantNotice open onOpenChange={close} title={t("chats.notices.payment.title", { name })}
-    reason={t("chats.notices.payment.reason")} detail={<Trans t={t} i18nKey="chats.notices.payment.detail" components={{ number: <PhoneText value={number} /> }} />}
-    steps={[t("chats.notices.payment.step")]} />;
+    reason={t("chats.notices.payment.reason")}
+    detail={<Trans t={t} i18nKey={template ? "chats.notices.payment.detailTemplate" : "chats.notices.payment.detail"} components={{ number: <PhoneText value={number} /> }} />}
+    steps={[t("chats.notices.payment.step"), ...(template ? [t("chats.notices.payment.stepReply", { name })] : [])]} />;
 }
 
 /** Que el chat abierto ocupe el alto de la pantalla en la compu: la bandeja y el hilo se desplazan cada uno. */

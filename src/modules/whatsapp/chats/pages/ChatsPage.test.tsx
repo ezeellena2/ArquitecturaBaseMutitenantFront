@@ -188,16 +188,25 @@ describe("Chats de la organización", () => {
     expect(within(notice).getByText(/está desconectado/)).toHaveTextContent(/555-0200/);
   });
 
-  it("un número sin medio de pago lo dice desde que se abre el chat, con su número en el aviso", async () => {
-    inbox(row({ channel: { id: "number-delta", displayNumber: "+5493515550200", status: "PaymentMissing" } }));
+  // D1: sin medio de pago se responde igual dentro de las 24 h (hasta el tope gratis, que dice el back con su 409); pasadas,
+  // solo queda una plantilla, que exige medio de pago: el chat lo dice desde que se abre, con su número en el aviso.
+  it("un número sin medio de pago deja responder dentro de las 24 h y, pasadas, lo dice desde que se abre", async () => {
+    const missing = { channel: { id: "number-delta", displayNumber: "+5493515550200", status: "PaymentMissing" as const } };
+    inbox(row(missing));
+    const first = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    expect(await screen.findByRole("textbox", { name: "Mensaje" })).toBeVisible();
+    expect(screen.queryByText("Sin medio de pago")).not.toBeInTheDocument();
+    first.unmount();
+
+    inbox(row({ ...missing, windowOpenUntilUtc: closed }));
     const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
     expect(await screen.findByText("Sin medio de pago")).toBeVisible();
     expect(screen.queryByRole("textbox", { name: "Mensaje" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Nota interna" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Elegir plantilla" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Qué significa" }));
     const notice = await screen.findByRole("dialog", { name: "No se puede responder a Martina López" });
     expect(within(notice).getByText("Falta medio de pago en Meta")).toBeVisible();
-    expect(within(notice).getByText(/ya usó los mensajes gratis de este mes/)).toHaveTextContent(/555-0200/);
+    expect(within(notice).getByText(/solo se puede mandar una plantilla/)).toHaveTextContent(/555-0200/);
   });
 
   it("pasar a otro equipo manda la versión de la fila y relee la bandeja", async () => {

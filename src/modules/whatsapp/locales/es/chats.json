@@ -91,7 +91,9 @@
       "title": "No se puede responder a {{name}}",
       "reason": "Falta medio de pago en Meta",
       "detail": "<number></number> ya usó los mensajes gratis de este mes",
-      "step": "Pedile a quien administra WhatsApp que agregue un medio de pago en Meta"
+      "detailTemplate": "Pasaron 24 horas: solo se puede mandar una plantilla, y <number></number> no tiene medio de pago para mandarla",
+      "step": "Pedile a quien administra WhatsApp que agregue un medio de pago en Meta",
+      "stepReply": "O esperá a que {{name}} vuelva a escribir: hasta 24 horas después podés responderle"
     }
   },
   "errors": {

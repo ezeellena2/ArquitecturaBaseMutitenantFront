@@ -11,22 +11,25 @@ export function initialsOf(name: string): string {
  * Qué deja hacer el compositor del chat abierto (WA-Chats y sus estados), en este orden:
  * - `readOnly`: el número se desconectó (D7): solo leer, sin notas.
  * - `takenByOther`: lo atiende otra persona (CC13, `assignedToMe`); queda la nota interna.
- * - `paymentRequired`: el número no tiene medio de pago (CC13, `channel.status`) o el back rechazó un envío por eso.
+ * - `paymentRequired`: no sale nada por falta de medio de pago. D1: sin medio de pago el número igual responde hasta los
+ *   1.000 mensajes gratis del mes, así que `channel.status` (CC13) solo traba si pasaron 24 h, porque ahí queda solo una
+ *   plantilla y las plantillas siempre lo exigen (`template`); pasado el tope lo dice el back con su 409 (`freeLimit`).
  * - `windowClosed`: pasaron 24 h desde su último mensaje: solo plantilla.
  * - `open`: escribir (si estaba sin tomar, mandar lo toma).
  */
 export type ComposerState =
   | { kind: "readOnly" }
   | { kind: "takenByOther"; name: string }
-  | { kind: "paymentRequired" }
+  | { kind: "paymentRequired"; reason: "freeLimit" | "template" }
   | { kind: "windowClosed" }
   | { kind: "open" };
 
 export function composerState(row: WhatsAppConversationRowResponse, flags: { paymentRequired: boolean; windowClosed: boolean }): ComposerState {
   if (row.readOnly || row.channel.status === "Disconnected") return { kind: "readOnly" };
   if (row.assignee && !row.assignedToMe) return { kind: "takenByOther", name: row.assignee.name };
-  if (flags.paymentRequired || row.channel.status === "PaymentMissing") return { kind: "paymentRequired" };
-  if (flags.windowClosed || !row.windowOpenUntilUtc || isPast(row.windowOpenUntilUtc)) return { kind: "windowClosed" };
+  if (flags.paymentRequired) return { kind: "paymentRequired", reason: "freeLimit" };
+  if (flags.windowClosed || !row.windowOpenUntilUtc || isPast(row.windowOpenUntilUtc))
+    return row.channel.status === "PaymentMissing" ? { kind: "paymentRequired", reason: "template" } : { kind: "windowClosed" };
   return { kind: "open" };
 }
 
