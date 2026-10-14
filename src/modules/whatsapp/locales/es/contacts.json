@@ -3,10 +3,10 @@
   "back": "Volver a Contactos",
   "linked": "Vinculado a su cuenta",
   "linkedShort": "Vinculado",
-  "summaryTotal_one": "{{count}} contacto",
-  "summaryTotal_other": "{{count}} contactos",
-  "summaryAccepting_one": "{{count}} acepta promociones",
-  "summaryAccepting_other": "{{count}} aceptan promociones",
+  "summaryTotal_one": "{{n}} contacto",
+  "summaryTotal_other": "{{n}} contactos",
+  "summaryAccepting_one": "{{n}} acepta promociones",
+  "summaryAccepting_other": "{{n}} aceptan promociones",
   "rowActions": "Acciones de {{name}}",
   "openChat": "Abrir chat",
   "columns": {
@@ -53,8 +53,8 @@
       "assignee": "La atendió",
       "messages": "Mensajes"
     },
-    "messages_one": "{{count}} mensaje",
-    "messages_other": "{{count}} mensajes",
+    "messages_one": "{{n}} mensaje",
+    "messages_other": "{{n}} mensajes",
     "rowActions": "Acciones de {{date}}",
     "empty": "Todavía no hay conversaciones"
   },
@@ -94,17 +94,17 @@
     "tag": "Etiqueta para todos",
     "noTag": "Sin etiqueta",
     "toImport": "Para importar",
-    "toImportValue_one": "{{count}} contacto: {{new}} nuevos y {{updated}} que ya estaban",
-    "toImportValue_other": "{{count}} contactos: {{new}} nuevos y {{updated}} que ya estaban",
+    "toImportValue_one": "{{n}} contacto: {{new}} nuevos y {{updated}} que ya estaban",
+    "toImportValue_other": "{{n}} contactos: {{new}} nuevos y {{updated}} que ya estaban",
     "rejected": "No se importan",
-    "rejectedRows_one": "{{count}} fila",
-    "rejectedRows_other": "{{count}} filas",
+    "rejectedRows_one": "{{n}} fila",
+    "rejectedRows_other": "{{n}} filas",
     "row": "Fila {{row}}",
     "submit": "Importar contactos",
-    "submitCount_one": "Importar {{count}} contacto",
-    "submitCount_other": "Importar {{count}} contactos",
+    "submitCount_one": "Importar {{n}} contacto",
+    "submitCount_other": "Importar {{n}} contactos",
     "importing": "Importando…",
-    "done_one": "Importamos {{count}} contacto.",
-    "done_other": "Importamos {{count}} contactos."
+    "done_one": "Importamos {{n}} contacto.",
+    "done_other": "Importamos {{n}} contactos."
   }
 }

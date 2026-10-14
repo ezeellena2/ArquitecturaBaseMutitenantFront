@@ -21,6 +21,7 @@ import { contactsQueryKey, contactTagOptions, fetchContacts, type ContactsQuery 
 import { contactPath, contactPhoneRow, createContactColumns } from "../columns";
 import { EditContactDialog } from "../components/EditContactDialog";
 import { ImportContactsDialog } from "../components/ImportContactsDialog";
+import { countOf } from "../lib/count";
 
 const contactFilterKeys = ["tag", "consent"] as const;
 // Orden del filtro «Promociones» del tablero WA-Contactos: todas y después cada respuesta.
@@ -64,7 +65,7 @@ export function ContactsPage(_props: ModuleContentProps) {
 
   return <>
     <Page icon={ContactsIcon} title={t("whatsapp:contacts.title")} phoneBody="flush"
-      summary={summary ? <><span>{t("whatsapp:contacts.summaryTotal", { count: summary.total })}</span><SublineSeparator /><span>{t("whatsapp:contacts.summaryAccepting", { count: summary.accepting })}</span></> : undefined}
+      summary={summary ? <><span>{t("whatsapp:contacts.summaryTotal", countOf(format, summary.total))}</span><SublineSeparator /><span>{t("whatsapp:contacts.summaryAccepting", countOf(format, summary.accepting))}</span></> : undefined}
       // M-WA-Contactos: «Importar» en texto en la barra; en la compu, el botón principal de la banda.
       barAction={phone ? { label: t("whatsapp:contacts.import.short"), onClick: openImport } : undefined}
       actions={phone ? undefined : <Button type="button" onClick={openImport}>{t("whatsapp:contacts.import.open")}</Button>}>

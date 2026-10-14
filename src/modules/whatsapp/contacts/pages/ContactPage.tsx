@@ -97,7 +97,7 @@ function ContactDetail({ contact, back }: { contact: WhatsAppContactResponse; ba
       tabs={{ label: t("whatsapp:contacts.detail.tabs"), value: tab, onValueChange: (value) => setTab(value === "broadcasts" ? "broadcasts" : "conversations"), items: [
         { value: "conversations", label: t("whatsapp:contacts.conversations.title"), count: conversations.result.data?.totalCount, content: <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={conversationColumns} rows={conversations.result.data?.items ?? []} rowKey={(row) => row.conversationId}
-            mobileRow={(row) => contactConversationPhoneRow(row, t)}
+            mobileRow={(row) => contactConversationPhoneRow(row, t, format)}
             isLoading={conversations.result.isPending} isFetching={conversations.result.isFetching}
             error={conversations.result.error ? apiErrorMessage(conversations.result.error, t) : undefined} onRetry={() => { void conversations.result.refetch(); }}
             emptyTitle={t("whatsapp:contacts.conversations.empty")} />

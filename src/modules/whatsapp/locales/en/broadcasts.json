@@ -1,1 +1,136 @@
-{}
+{
+  "title": "Broadcasts",
+  "back": "Back to Broadcasts",
+  "new": "New broadcast",
+  "summaryTotal_one": "{{n}} broadcast",
+  "summaryTotal_other": "{{n}} broadcasts",
+  "summaryScheduled_one": "{{n}} scheduled",
+  "summaryScheduled_other": "{{n}} scheduled",
+  "template": "Template “{{name}}”",
+  "contacts_one": "{{n}} contact",
+  "contacts_other": "{{n}} contacts",
+  "results": "{{delivered}} delivered · {{read}} read",
+  "rowActions": "Actions for {{name}}",
+  "duplicated": "We duplicated “{{name}}”.",
+  "audience": {
+    "allAccepting": "Everyone who accepts"
+  },
+  "columns": {
+    "broadcast": "Broadcast",
+    "recipients": "Recipients",
+    "status": "Status",
+    "results": "Results",
+    "date": "Date",
+    "actions": "Actions"
+  },
+  "actions": {
+    "duplicate": "Duplicate",
+    "cancel": "Cancel broadcast"
+  },
+  "filters": {
+    "label": "Filters",
+    "search": "Search by name"
+  },
+  "empty": {
+    "all": "There are no broadcasts yet",
+    "filtered": "No broadcasts match the search"
+  },
+  "cancel": {
+    "title": "Cancel “{{name}}”?",
+    "description_one": "It won’t be sent to the contact. You can duplicate it to schedule it again.",
+    "description_other": "It won’t be sent to the {{n}} contacts. You can duplicate it to schedule it again.",
+    "back": "Go back",
+    "confirm": "Cancel broadcast",
+    "done": "We cancelled “{{name}}”."
+  },
+  "detail": {
+    "title": "Broadcast",
+    "loading": "Broadcast",
+    "more": "More actions",
+    "actions": "Broadcast actions",
+    "sentOn": "Sent on {{date}}",
+    "scheduledFor": "Scheduled for {{date}}"
+  },
+  "counters": {
+    "title": "Results",
+    "sent": "Sent",
+    "delivered": "Delivered",
+    "read": "Read",
+    "replied": "Replied",
+    "unsubscribed": "Unsubscribed",
+    "failed": "Not delivered"
+  },
+  "recipients": {
+    "columns": {
+      "contact": "Contact",
+      "status": "Status",
+      "changed": "Last change"
+    },
+    "search": "Search by name or number",
+    "filter": "Status: all",
+    "filterMenu": "Status",
+    "allStatuses": "All",
+    "rowActions": "Actions for {{name}}",
+    "viewContact": "View details",
+    "empty": {
+      "all": "There are no recipients yet",
+      "filtered": "No recipients match the filters"
+    }
+  },
+  "failure": {
+    "why": "Why it wasn’t delivered",
+    "title": "It wasn’t delivered to {{name}}",
+    "unknown": "Meta didn’t say why",
+    "informed": "Meta reported it on {{date}} at {{time}}",
+    "checkNumber": "Check the number with the person",
+    "importAgain": "If they changed their number, import them again with the new number"
+  },
+  "form": {
+    "title": "New broadcast",
+    "draft": "Draft",
+    "section": "Broadcast",
+    "name": "Name",
+    "template": "Template",
+    "chooseTemplate": "Choose a template",
+    "audience": "Recipients",
+    "allAccepting": "Everyone who accepts",
+    "allAcceptingShort": "Who accepts",
+    "oneTag": "One tag",
+    "tag": "Tag",
+    "chooseTag": "Choose a tag",
+    "when": "When",
+    "now": "Now",
+    "later": "Schedule",
+    "dateTime": "Date and time",
+    "nameRequired": "Enter the name.",
+    "templateRequired": "Choose the template.",
+    "variableRequired": "Fill in this variable.",
+    "tagRequired": "Choose the tag.",
+    "dateRequired": "Enter the date and time.",
+    "schedule": "Schedule",
+    "send": "Send",
+    "scheduling": "Scheduling…",
+    "sending": "Sending…",
+    "scheduled": "We scheduled “{{name}}”.",
+    "sent": "We sent “{{name}}”."
+  },
+  "preview": {
+    "title": "Preview",
+    "unsubscribe": "Stop receiving",
+    "withTag": "They have the “{{tag}}” tag and accept promotions",
+    "allAccepting": "They accept promotions",
+    "cost": "Estimated cost, based on Meta’s prices",
+    "costShort": "Estimated cost"
+  },
+  "confirm": {
+    "scheduleTitle": "Schedule “{{name}}”?",
+    "sendTitle": "Send “{{name}}”?",
+    "cost": "Estimated cost",
+    "recipientsWithTag_one": "{{n}} contact with the “{{tag}}” tag who accepts promotions",
+    "recipientsWithTag_other": "{{n}} contacts with the “{{tag}}” tag who accept promotions",
+    "recipientsAll_one": "{{n}} contact who accepts promotions",
+    "recipientsAll_other": "{{n}} contacts who accept promotions",
+    "whenScheduled": "{{date}} at {{time}}, {{zone}} time",
+    "whenNow": "Now"
+  }
+}

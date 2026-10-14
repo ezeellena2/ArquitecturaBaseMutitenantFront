@@ -2,6 +2,8 @@ import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { defineStatusTones } from "@/shared/format/statusTones";
+import type { FormatState } from "@/shared/format/useFormat";
+import { countOf } from "./lib/count";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import type { Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
@@ -10,15 +12,12 @@ import { PhoneText } from "@/shared/ui/format/PhoneText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import type { WhatsAppContactBroadcastResponse, WhatsAppContactConversationResponse, WhatsAppContactResponse } from "../api/types";
 import { ConsentOrigin, ContactAvatar, ContactTitle } from "./components/ContactParts";
+// Cómo le llegó cada difusión: el estado del destinatario se registra una sola vez, en Difusiones.
+import { recipientStatusTones } from "../broadcasts/columns";
 
 /// Tableros WA-Contactos y WA-Contacto (.w-est): «Acepta» en verde, «No acepta» y «Sin respuesta» en gris y «Se dio de
 /// baja» en ámbar.
 export const consentTones = defineStatusTones("WhatsAppConsent", { Accepted: "success", Declined: "neutral", NoAnswer: "neutral", Unsubscribed: "warning" });
-
-/// La ficha de difusiones de un contacto muestra cómo le llegó cada una, con los tonos de WA-Difusion-Resultados.
-export const contactRecipientTones = defineStatusTones("WhatsAppRecipientStatus", {
-  Pending: "neutral", Sent: "neutral", Delivered: "neutral", Read: "success", Replied: "success", Unsubscribed: "warning", Failed: "danger",
-});
 
 export const contactsPath = "/org/whatsapp/contactos";
 export const contactPath = (id: string) => `${contactsPath}/${encodeURIComponent(id)}`;
@@ -69,10 +68,10 @@ export function createContactConversationColumns(t: TFunction): Column<WhatsAppC
 }
 
 /// M-WA-Contacto: la fecha con los mensajes a la derecha y debajo el equipo y quién la atendió.
-export function contactConversationPhoneRow(row: WhatsAppContactConversationResponse, t: TFunction, trailing?: ReactNode): ReactNode {
+export function contactConversationPhoneRow(row: WhatsAppContactConversationResponse, t: TFunction, format: FormatState, trailing?: ReactNode): ReactNode {
   const attended = [row.team?.name, row.assignee?.name].filter(Boolean).join(" · ");
   return <ListRow key={row.conversationId} to={chatPath(row.conversationId)} title={<DateText value={row.startedAtUtc} kind="relative" />}
-    meta={t("whatsapp:contacts.conversations.messages", { count: row.messageCount })} lines={[attended || <EmptyValue key="empty" />]} trailing={trailing} />;
+    meta={t("whatsapp:contacts.conversations.messages", countOf(format, row.messageCount))} lines={[attended || <EmptyValue key="empty" />]} trailing={trailing} />;
 }
 
 export function createContactBroadcastColumns(t: TFunction): Column<WhatsAppContactBroadcastResponse>[] {
@@ -82,11 +81,11 @@ export function createContactBroadcastColumns(t: TFunction): Column<WhatsAppCont
       cell: (row) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={broadcastPath(row.broadcastId)}>{row.name}</Link>,
     },
     { id: "sentAtUtc", header: t("whatsapp:contacts.broadcasts.columns.sent"), type: "date", className: "w-[160px]", value: (row) => row.sentAtUtc },
-    { id: "status", header: t("whatsapp:contacts.broadcasts.columns.status"), type: "status", tones: contactRecipientTones, mobile: "status", value: (row) => row.status },
+    { id: "status", header: t("whatsapp:contacts.broadcasts.columns.status"), type: "status", tones: recipientStatusTones, mobile: "status", value: (row) => row.status },
   ];
 }
 
 export function contactBroadcastPhoneRow(row: WhatsAppContactBroadcastResponse): ReactNode {
   return <ListRow key={row.broadcastId} to={broadcastPath(row.broadcastId)} title={row.name} meta={<DateText value={row.sentAtUtc} kind="shortDate" />}
-    lines={[<StatusBadge key="status" tones={contactRecipientTones} value={row.status} className="text-[13px] text-[var(--t2)]" />]} />;
+    lines={[<StatusBadge key="status" tones={recipientStatusTones} value={row.status} className="text-[13px] text-[var(--t2)]" />]} />;
 }

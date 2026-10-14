@@ -3,10 +3,10 @@
   "back": "Back to Contacts",
   "linked": "Linked to their account",
   "linkedShort": "Linked",
-  "summaryTotal_one": "{{count}} contact",
-  "summaryTotal_other": "{{count}} contacts",
-  "summaryAccepting_one": "{{count}} accepts promotions",
-  "summaryAccepting_other": "{{count}} accept promotions",
+  "summaryTotal_one": "{{n}} contact",
+  "summaryTotal_other": "{{n}} contacts",
+  "summaryAccepting_one": "{{n}} accepts promotions",
+  "summaryAccepting_other": "{{n}} accept promotions",
   "rowActions": "Actions for {{name}}",
   "openChat": "Open chat",
   "columns": {
@@ -53,8 +53,8 @@
       "assignee": "Handled by",
       "messages": "Messages"
     },
-    "messages_one": "{{count}} message",
-    "messages_other": "{{count}} messages",
+    "messages_one": "{{n}} message",
+    "messages_other": "{{n}} messages",
     "rowActions": "Actions for {{date}}",
     "empty": "There are no conversations yet"
   },
@@ -94,17 +94,17 @@
     "tag": "Tag for everyone",
     "noTag": "No tag",
     "toImport": "To import",
-    "toImportValue_one": "{{count}} contact: {{new}} new and {{updated}} already there",
-    "toImportValue_other": "{{count}} contacts: {{new}} new and {{updated}} already there",
+    "toImportValue_one": "{{n}} contact: {{new}} new and {{updated}} already there",
+    "toImportValue_other": "{{n}} contacts: {{new}} new and {{updated}} already there",
     "rejected": "Not imported",
-    "rejectedRows_one": "{{count}} row",
-    "rejectedRows_other": "{{count}} rows",
+    "rejectedRows_one": "{{n}} row",
+    "rejectedRows_other": "{{n}} rows",
     "row": "Row {{row}}",
     "submit": "Import contacts",
-    "submitCount_one": "Import {{count}} contact",
-    "submitCount_other": "Import {{count}} contacts",
+    "submitCount_one": "Import {{n}} contact",
+    "submitCount_other": "Import {{n}} contacts",
     "importing": "Importing…",
-    "done_one": "We imported {{count}} contact.",
-    "done_other": "We imported {{count}} contacts."
+    "done_one": "We imported {{n}} contact.",
+    "done_other": "We imported {{n}} contacts."
   }
 }

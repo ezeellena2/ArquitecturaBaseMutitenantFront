@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useFormat } from "@/shared/format/useFormat";
+import { countOf } from "../lib/count";
 import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
@@ -37,6 +39,7 @@ const sameImport = (previous: ImportContactsInput, next: ImportContactsInput) =>
 export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () => void; returnFocusTo?: HTMLElement | null }) {
   const { t } = useTranslation(["whatsapp", "common"]);
   const { phone } = useAppChrome();
+  const format = useFormat();
   const queryClient = useQueryClient();
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const [file, setFile] = useState<File | null>(null);
@@ -67,7 +70,7 @@ export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () =
     if (!file) { setFileError(t("whatsapp:contacts.import.fileRequired")); return; }
     importer.mutate({ file, tag: tag || null }, {
       onSuccess: async (result) => {
-        toast.success(t("whatsapp:contacts.import.done", { count: result.imported }));
+        toast.success(t("whatsapp:contacts.import.done", countOf(format, result.imported)));
         onClose();
         await queryClient.invalidateQueries({ queryKey: contactsQueryRoot });
       },
@@ -103,7 +106,7 @@ export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () =
         <DialogFooter>
           <Button type="button" variant="outline" onClick={close}>{t("common:actions.cancel")}</Button>
           <Button type="submit" pending={importer.isPending} pendingLabel={t("whatsapp:contacts.import.importing")}>
-            {summary ? t("whatsapp:contacts.import.submitCount", { count: summary.rows }) : t("whatsapp:contacts.import.submit")}
+            {summary ? t("whatsapp:contacts.import.submitCount", countOf(format, summary.rows)) : t("whatsapp:contacts.import.submit")}
           </Button>
         </DialogFooter>
       </form>
@@ -115,9 +118,10 @@ export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () =
 /// filas no y, de cada una, por qué. Los totales y los motivos los da el back.
 function ImportPreview({ preview, phone }: { preview: WhatsAppImportPreviewResponse; phone: boolean }) {
   const { t } = useTranslation("whatsapp");
+  const format = useFormat();
   const items: DetailGridItem[] = [
-    { key: "rows", label: t("contacts.import.toImport"), value: t("contacts.import.toImportValue", { count: preview.rows, new: preview.new, updated: preview.updated }) },
-    { key: "rejected", label: t("contacts.import.rejected"), value: <span className="font-semibold text-[var(--peligro)]">{t("contacts.import.rejectedRows", { count: preview.rejected.totalCount })}</span> },
+    { key: "rows", label: t("contacts.import.toImport"), value: t("contacts.import.toImportValue", { ...countOf(format, preview.rows), new: format.formatInteger(preview.new), updated: format.formatInteger(preview.updated) }) },
+    { key: "rejected", label: t("contacts.import.rejected"), value: <span className="font-semibold text-[var(--peligro)]">{t("contacts.import.rejectedRows", countOf(format, preview.rejected.totalCount))}</span> },
     ...preview.rejected.items.map((rejection) => ({ key: `row-${rejection.row}`, label: t("contacts.import.row", { row: rejection.row }), value: rejection.reason })),
   ];
   return <div className="-mx-5 -mb-4 md:-mb-5"><DetailGrid items={items} phone={phone} /></div>;

@@ -1,1 +1,21 @@
-{}
+{
+  "WhatsAppBroadcastStatus": {
+    "Scheduled": "Scheduled",
+    "Sending": "Sending",
+    "Sent": "Sent",
+    "Cancelled": "Cancelled"
+  },
+  "WhatsAppRecipientStatus": {
+    "Pending": "Pending",
+    "Sent": "Sent",
+    "Delivered": "Delivered",
+    "Read": "Read",
+    "Replied": "Replied",
+    "Unsubscribed": "Unsubscribed",
+    "Failed": "Not delivered"
+  },
+  "WhatsAppAudienceKind": {
+    "AllAccepting": "Everyone who accepts",
+    "Tag": "One tag"
+  }
+}

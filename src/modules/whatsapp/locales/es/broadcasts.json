@@ -1,1 +1,136 @@
-{}
+{
+  "title": "Difusiones",
+  "back": "Volver a Difusiones",
+  "new": "Nueva difusión",
+  "summaryTotal_one": "{{n}} difusión",
+  "summaryTotal_other": "{{n}} difusiones",
+  "summaryScheduled_one": "{{n}} programada",
+  "summaryScheduled_other": "{{n}} programadas",
+  "template": "Plantilla «{{name}}»",
+  "contacts_one": "{{n}} contacto",
+  "contacts_other": "{{n}} contactos",
+  "results": "{{delivered}} entregados · {{read}} leídos",
+  "rowActions": "Acciones de {{name}}",
+  "duplicated": "Duplicamos «{{name}}».",
+  "audience": {
+    "allAccepting": "Todos los que aceptan"
+  },
+  "columns": {
+    "broadcast": "Difusión",
+    "recipients": "Destinatarios",
+    "status": "Estado",
+    "results": "Resultados",
+    "date": "Fecha",
+    "actions": "Acciones"
+  },
+  "actions": {
+    "duplicate": "Duplicar",
+    "cancel": "Cancelar difusión"
+  },
+  "filters": {
+    "label": "Filtros",
+    "search": "Buscar por nombre"
+  },
+  "empty": {
+    "all": "Todavía no hay difusiones",
+    "filtered": "Ninguna difusión coincide con la búsqueda"
+  },
+  "cancel": {
+    "title": "¿Cancelar «{{name}}»?",
+    "description_one": "No se va a mandar al contacto. Podés duplicarla para programarla de nuevo.",
+    "description_other": "No se va a mandar a los {{n}} contactos. Podés duplicarla para programarla de nuevo.",
+    "back": "Volver",
+    "confirm": "Cancelar difusión",
+    "done": "Cancelamos «{{name}}»."
+  },
+  "detail": {
+    "title": "Difusión",
+    "loading": "Difusión",
+    "more": "Más acciones",
+    "actions": "Acciones de la difusión",
+    "sentOn": "Enviada el {{date}}",
+    "scheduledFor": "Programada para el {{date}}"
+  },
+  "counters": {
+    "title": "Resultados",
+    "sent": "Mandados",
+    "delivered": "Entregados",
+    "read": "Leídos",
+    "replied": "Respondieron",
+    "unsubscribed": "Se dieron de baja",
+    "failed": "No llegaron"
+  },
+  "recipients": {
+    "columns": {
+      "contact": "Contacto",
+      "status": "Estado",
+      "changed": "Último cambio"
+    },
+    "search": "Buscar por nombre o número",
+    "filter": "Estado: todos",
+    "filterMenu": "Estado",
+    "allStatuses": "Todos",
+    "rowActions": "Acciones de {{name}}",
+    "viewContact": "Ver ficha",
+    "empty": {
+      "all": "Todavía no hay destinatarios",
+      "filtered": "Ningún destinatario coincide con los filtros"
+    }
+  },
+  "failure": {
+    "why": "Por qué no llegó",
+    "title": "No le llegó a {{name}}",
+    "unknown": "Meta no dijo por qué",
+    "informed": "Meta lo informó el {{date}} a las {{time}}",
+    "checkNumber": "Revisá el número con la persona",
+    "importAgain": "Si cambió de número, importala de nuevo con el número nuevo"
+  },
+  "form": {
+    "title": "Nueva difusión",
+    "draft": "Borrador",
+    "section": "Difusión",
+    "name": "Nombre",
+    "template": "Plantilla",
+    "chooseTemplate": "Elegí una plantilla",
+    "audience": "Destinatarios",
+    "allAccepting": "Todos los que aceptan",
+    "allAcceptingShort": "Los que aceptan",
+    "oneTag": "Una etiqueta",
+    "tag": "Etiqueta",
+    "chooseTag": "Elegí una etiqueta",
+    "when": "Cuándo",
+    "now": "Ahora",
+    "later": "Programar",
+    "dateTime": "Fecha y hora",
+    "nameRequired": "Escribí el nombre.",
+    "templateRequired": "Elegí la plantilla.",
+    "variableRequired": "Completá esta variable.",
+    "tagRequired": "Elegí la etiqueta.",
+    "dateRequired": "Escribí la fecha y la hora.",
+    "schedule": "Programar",
+    "send": "Mandar",
+    "scheduling": "Programando…",
+    "sending": "Mandando…",
+    "scheduled": "Programamos «{{name}}».",
+    "sent": "Mandamos «{{name}}»."
+  },
+  "preview": {
+    "title": "Vista previa",
+    "unsubscribe": "No recibir más",
+    "withTag": "Tienen la etiqueta «{{tag}}» y aceptan promociones",
+    "allAccepting": "Aceptan promociones",
+    "cost": "Costo estimado, según los precios de Meta",
+    "costShort": "Costo estimado"
+  },
+  "confirm": {
+    "scheduleTitle": "¿Programar «{{name}}»?",
+    "sendTitle": "¿Mandar «{{name}}»?",
+    "cost": "Costo estimado",
+    "recipientsWithTag_one": "{{n}} contacto con la etiqueta «{{tag}}» que acepta promociones",
+    "recipientsWithTag_other": "{{n}} contactos con la etiqueta «{{tag}}» que aceptan promociones",
+    "recipientsAll_one": "{{n}} contacto que acepta promociones",
+    "recipientsAll_other": "{{n}} contactos que aceptan promociones",
+    "whenScheduled": "{{date}} a las {{time}}, hora de {{zone}}",
+    "whenNow": "Ahora"
+  }
+}
