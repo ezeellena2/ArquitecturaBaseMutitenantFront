@@ -34,6 +34,8 @@ import { EstimateLine, EstimateSummary, MessageBubble } from "../components/Broa
 import { broadcastErrorField } from "../errors";
 import { fillTemplate } from "../lib/broadcastText";
 
+const variableLimit = validationConstraints.CreateWhatsAppBroadcastHttpRequest.variables.items.maxLength;
+
 const nameMaxLength = validationConstraints.CreateWhatsAppBroadcastHttpRequest.name.maxLength;
 const tagMaxLength = validationConstraints.WhatsAppAudienceInput.tag.maxLength;
 
@@ -41,7 +43,7 @@ function broadcastFormSchema(t: TFunction) {
   return z.object({
     name: z.string().trim().min(1, t("whatsapp:broadcasts.form.nameRequired")).max(nameMaxLength),
     templateId: z.string().min(1, t("whatsapp:broadcasts.form.templateRequired")),
-    variables: z.array(z.string().trim().min(1, t("whatsapp:broadcasts.form.variableRequired"))),
+    variables: z.array(z.string().trim().min(1, t("whatsapp:broadcasts.form.variableRequired")).max(variableLimit)),
     kind: z.enum(["AllAccepting", "Tag"]),
     tag: z.string().max(tagMaxLength),
     when: z.enum(["now", "schedule"]),
@@ -167,7 +169,7 @@ export function NewBroadcastPage(_props: ModuleContentProps) {
         placeholder={t("whatsapp:broadcasts.form.chooseTemplate")} searchLabel={t("common:actions.search")} />
     </FormField>
     {(template?.variables ?? []).map((variable, index) => <FormField key={`${templateId}-${index}`} label={variable} required error={errors.variables?.[index]?.message}>
-      <Input {...form.register(`variables.${index}`)} autoComplete="off" />
+      <Input maxLength={variableLimit} {...form.register(`variables.${index}`)} autoComplete="off" />
     </FormField>)}
     <FormField label={t("whatsapp:broadcasts.form.audience")} required error={kindError}>
       <RadioGroupField variant="segmented" label={t("whatsapp:broadcasts.form.audience")} value={kindField.field.value}

@@ -76,6 +76,7 @@
     "noTags": "Sin etiquetas",
     "nameRequired": "Escribí el nombre.",
     "tooManyTags": "Podés poner hasta {{count}} etiquetas.",
+    "tagTooLong": "Cada etiqueta puede tener hasta {{count}} caracteres.",
     "saved": "Guardamos los cambios del contacto.",
     "save": "Guardar cambios",
     "savePhone": "Guardar"

@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { useMemo } from "react";
 import { useController, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -26,6 +27,8 @@ import { chatsScopeQueryRoot, sendTemplate, templateOptions, type ChatsScope } f
 import { asMoney } from "../../lib/values";
 import { templatePreview } from "../lib/conversation";
 
+const variableLimit = validationConstraints.SendWhatsAppTemplateHttpRequest.variables.items.maxLength;
+
 interface TemplateForm { templateId: string; variables: string[] }
 
 /** Lo que el back rechaza de la plantilla va debajo de ella; lo demás, en la franja. */
@@ -49,7 +52,7 @@ export function TemplateDialog({ scope, row, name, onClose, onSent, onConflict }
   const { phone } = useAppChrome();
   const restoreFocus = useRestoreFocusOnClose();
   const required = t("chats.template.required");
-  const schema = useMemo(() => z.object({ templateId: z.string().min(1, required), variables: z.array(z.string().trim().min(1, required)) }), [required]);
+  const schema = useMemo(() => z.object({ templateId: z.string().min(1, required), variables: z.array(z.string().trim().min(1, required).max(variableLimit)) }), [required]);
   const form = useForm<TemplateForm>({ resolver: zodResolver(schema), defaultValues: { templateId: "", variables: [] } });
   const template = useController({ control: form.control, name: "templateId" });
   const values = useWatch({ control: form.control, name: "variables" });
@@ -95,7 +98,7 @@ export function TemplateDialog({ scope, row, name, onClose, onSent, onConflict }
             </FormField>
           </div>
           {selected?.variables.map((label, index) => <FormField key={`${selected.templateId}-${index}`} label={label} required error={form.formState.errors.variables?.[index]?.message}>
-            <Input {...form.register(`variables.${index}`, { onChange: clear })} />
+            <Input maxLength={variableLimit} {...form.register(`variables.${index}`, { onChange: clear })} />
           </FormField>)}
           {selected ? <>
             <p aria-label={t("chats.template.preview")} className="max-w-[90%] justify-self-end rounded-[12px] rounded-tr-[4px] bg-[var(--marca-t)] px-3.5 py-2.5 text-[13.5px] leading-[1.5] text-[var(--sugerencia-tx)] whitespace-pre-wrap max-md:self-end max-md:text-[15px] md:col-span-2">

@@ -3,6 +3,7 @@ import { http, HttpResponse } from "msw";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import type { UpdateWhatsAppContactRequest, WhatsAppContactResponse } from "../../api/types";
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { mountWhatsApp, whatsappOwner } from "../../test/support";
@@ -103,6 +104,26 @@ describe("Ficha del contacto", () => {
     await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(sent).toHaveLength(1));
     expect(sent[0]).toMatchObject({ tags: ["Mayorista", "VIP Oro"], version: 4 });
+  });
+
+  it("una etiqueta más larga que la del contrato no se manda y lo dice en el campo", async () => {
+    const sent: UpdateWhatsAppContactRequest[] = [];
+    contactApi(() => martina);
+    server.use(http.put("/api/organization/whatsapp/contacts/contact-martina", async ({ request }) => {
+      sent.push(await request.json() as UpdateWhatsAppContactRequest);
+      return HttpResponse.json(martina);
+    }));
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/contactos/contact-martina");
+    await user.click(await screen.findByRole("button", { name: "Editar contacto" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar contacto" });
+    await user.click(within(dialog).getByRole("button", { name: /Etiquetas/ }));
+    await user.click(await screen.findByRole("searchbox", { name: "Buscar" }));
+    await user.paste("x".repeat(validationConstraints.UpdateWhatsAppContactHttpRequest.tags.items.maxLength + 1));
+    await user.click(await screen.findByRole("menuitem", { name: /^Crear/ }));
+    await user.keyboard("{Escape}");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+    expect(await within(dialog).findByText(/Cada etiqueta puede tener hasta \d+ caracteres\./)).toBeVisible();
+    expect(sent).toEqual([]);
   });
 
   it("a 390 px «Abrir chat» va abajo y «Editar contacto», en el ⋮ de la barra", async () => {

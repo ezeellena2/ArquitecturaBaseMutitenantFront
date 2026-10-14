@@ -76,6 +76,7 @@
     "noTags": "No tags",
     "nameRequired": "Enter the name.",
     "tooManyTags": "You can add up to {{count}} tags.",
+    "tagTooLong": "Each tag can have up to {{count}} characters.",
     "saved": "We saved the contact's changes.",
     "save": "Save changes",
     "savePhone": "Save"

@@ -30,6 +30,7 @@ import { contactsQueryRoot, contactTagOptions, updateContact } from "../api/cont
 
 const nameMaxLength = validationConstraints.UpdateWhatsAppContactHttpRequest.name.maxLength;
 const tagsMaxItems = validationConstraints.UpdateWhatsAppContactHttpRequest.tags.maxItems;
+const tagMaxLength = validationConstraints.UpdateWhatsAppContactHttpRequest.tags.items.maxLength;
 
 /// Tableros WA-Contacto y M-WA-Contacto («Editar contacto»): lo que se elige a mano. «Se dio de baja» lo decide el
 /// contacto con el botón de la difusión: si es lo guardado, se muestra apagado.
@@ -38,7 +39,9 @@ const editableConsents: readonly WhatsAppConsent[] = ["Accepted", "Declined", "N
 function contactFormSchema(t: TFunction) {
   return z.object({
     name: z.string().trim().min(1, t("whatsapp:contacts.edit.nameRequired")).max(nameMaxLength),
-    tags: z.array(z.string()).max(tagsMaxItems, t("whatsapp:contacts.edit.tooManyTags", { count: tagsMaxItems })),
+    // El largo de cada etiqueta (también la que se crea acá) se dice en el campo, no en una de sus etiquetas.
+    tags: z.array(z.string()).max(tagsMaxItems, t("whatsapp:contacts.edit.tooManyTags", { count: tagsMaxItems }))
+      .refine((tags) => tags.every((tag) => tag.length <= tagMaxLength), t("whatsapp:contacts.edit.tagTooLong", { count: tagMaxLength })),
     consent: z.enum(["Accepted", "Declined", "NoAnswer", "Unsubscribed"]),
   });
 }
