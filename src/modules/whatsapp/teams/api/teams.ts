@@ -1,9 +1,10 @@
 import { api } from "@/shared/api/httpClient";
 import { optionPage, type ResourceOptions } from "@/shared/api/resourceOptions";
 import { toSearch } from "@/shared/api/toSearch";
-import type { PagedRequest, PagedResultOfOrganizationUserHttpResponse, PagedResultOfPlatformAccountResponse } from "@/shared/api/types";
+import type { PagedRequest } from "@/shared/api/types";
 import type {
   CreateWhatsAppTeamRequest,
+  PagedResultOfWhatsAppReferenceResponse,
   PagedResultOfWhatsAppTeamResponse,
   UpdateWhatsAppTeamRequest,
   WhatsAppReferenceResponse,
@@ -45,20 +46,12 @@ export function deleteTeam(scope: TeamScope, id: string, version: number): Promi
   return api.delete(`${one(scope, id)}${toSearch({ version }, true)}`);
 }
 
-/// Quiénes pueden estar en un equipo: en la organización, sus usuarios activos (el `memberId` de Usuarios); en
-/// Plataforma, los operadores activos. No hay una lectura propia del módulo: se usan las de Usuarios y Cuentas.
+/// Quiénes pueden estar en un equipo (CC11): los miembros activos de la organización (`memberId`) o los operadores de
+/// Plataforma (`accountId`), con el permiso de administrar WhatsApp.
 export function teamMemberOptions(scope: TeamScope): ResourceOptions<WhatsAppReferenceResponse> {
-  return scope === "organization" ? {
-    queryKeyRoot: ["whatsapp", scope, "team-members"], id: (member) => member.id,
-    queryFn: async (query = optionPage, signal) => {
-      const page = await api.get<PagedResultOfOrganizationUserHttpResponse>(`/api/users/paged?${toSearch({ ...query, sort: "displayName", state: "Active" })}`, { signal });
-      return { ...page, items: page.items.map((user) => ({ id: user.memberId, name: user.displayName })) };
-    },
-  } : {
-    queryKeyRoot: ["whatsapp", scope, "team-members"], id: (member) => member.id,
-    queryFn: async (query = optionPage, signal) => {
-      const page = await api.get<PagedResultOfPlatformAccountResponse>(`/api/platform/accounts/paged?${toSearch({ ...query, kind: "Operator", state: "Active" })}`, { signal });
-      return { ...page, items: page.items.map((account) => ({ id: account.id, name: account.displayName ?? account.primaryEmail ?? account.id })) };
-    },
+  return {
+    queryKeyRoot: [...teamsQueryRoot(scope), "member-options"], id: (member) => member.id,
+    queryFn: (query = optionPage, signal) => api.get<PagedResultOfWhatsAppReferenceResponse>(
+      `${base(scope)}/member-options${toSearch({ page: query.page, pageSize: query.pageSize, search: query.search }, true)}`, { signal }),
   };
 }

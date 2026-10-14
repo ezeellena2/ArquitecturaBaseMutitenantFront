@@ -45,7 +45,8 @@
     "noOperators": "Sin operadores",
     "nameRequired": "Escribí el nombre del equipo.",
     "membersRequired": "Elegí al menos una persona.",
-    "operatorsRequired": "Elegí al menos un operador."
+    "operatorsRequired": "Elegí al menos un operador.",
+    "membersTooMany": "Elegí hasta {{max}}."
   },
   "messages": {
     "created": "Creamos el equipo «{{name}}».",

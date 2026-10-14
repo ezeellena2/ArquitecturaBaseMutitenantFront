@@ -32,14 +32,16 @@ import { noNotice, noticeFieldValue, noticeMinutes, noticeMinutesFrom } from "..
 
 const inboxes = ["Customers", "Internal"] as const;
 const nameMaxLength = validationConstraints.CreateWhatsAppTeamHttpRequest.name.maxLength;
+const maxMembers = validationConstraints.CreateWhatsAppTeamHttpRequest.memberIds.maxItems;
 
-/// Se revisa al tocar el botón («Criterio · Botones»): el nombre y al menos una persona; la bandeja y el aviso siempre
+/// Se revisa al tocar el botón («Criterio · Botones»): el nombre y de una a 200 personas; la bandeja y el aviso siempre
 /// tienen una opción elegida.
 function teamFormSchema(t: TFunction, scope: TeamScope) {
   return z.object({
     name: z.string().trim().min(1, t("whatsapp:teams.form.nameRequired")),
     inbox: z.enum(inboxes),
-    memberIds: z.array(z.string()).min(1, t(scope === "organization" ? "whatsapp:teams.form.membersRequired" : "whatsapp:teams.form.operatorsRequired")),
+    memberIds: z.array(z.string()).min(1, t(scope === "organization" ? "whatsapp:teams.form.membersRequired" : "whatsapp:teams.form.operatorsRequired"))
+      .max(maxMembers, t("whatsapp:teams.form.membersTooMany", { max: maxMembers })),
     notice: z.string(),
   });
 }
@@ -52,7 +54,7 @@ const serverFields: Record<string, keyof TeamForm> = { name: "name", inbox: "inb
 
 /// Al editar, lo guardado; al crear, la bandeja Clientes y el aviso a los 10 minutos (WA-Equipos-Crear).
 function valuesFromTeam(team: WhatsAppTeamDetailResponse | undefined): TeamForm {
-  return team ? { name: team.name, inbox: team.inbox ?? "Customers", memberIds: team.members.items.map((member) => member.id), notice: noticeFieldValue(team.notifyAfterMinutes) }
+  return team ? { name: team.name, inbox: team.inbox ?? "Customers", memberIds: team.members.map((member) => member.id), notice: noticeFieldValue(team.notifyAfterMinutes) }
     : { name: "", inbox: "Customers", memberIds: [], notice: String(noticeMinutes[0]) };
 }
 
@@ -108,7 +110,7 @@ function TeamFormBody({ scope, team, onClose }: { scope: TeamScope; team?: Whats
   const members = useController({ control: form.control, name: "memberIds" });
   const notice = useController({ control: form.control, name: "notice" });
   const options = useResourceOptions(teamMemberOptions(scope));
-  const known = [...(team?.members.items ?? []), ...options.knownItems];
+  const known = [...(team?.members ?? []), ...options.knownItems];
   const { failure, clear, fail, close } = useDialogFailure(onClose, teamsQueryRoot(scope));
   const create = useIdempotentMutation((request: CreateWhatsAppTeamRequest, key) => createTeam(scope, request, key), { sameOperation: sameTeam });
   const update = useMutation({ mutationFn: ({ id, request }: { id: string; request: UpdateWhatsAppTeamRequest }) => updateTeam(scope, id, request) });

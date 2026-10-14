@@ -8,12 +8,9 @@ import type { WhatsAppTeamResponse } from "../../api/types";
 import { mountWhatsApp, whatsappMember, whatsappOperator, whatsappOwner } from "../../test/support";
 
 const page = <T,>(items: T[]) => ({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
-const sales: WhatsAppTeamResponse = { id: "team-1", name: "Ventas", inbox: "Customers", memberCount: 2, notifyAfterMinutes: 10, version: 3 };
-const orders: WhatsAppTeamResponse = { id: "team-2", name: "Carga de pedidos", inbox: "Internal", memberCount: 1, notifyAfterMinutes: null, version: 1 };
-const users = page([
-  { memberId: "member-1", displayName: "Carolina Vega", state: "Active", hasManagedEmail: false, roles: [], companies: [], version: 1, createdAtUtc: "2026-09-01T12:00:00Z" },
-  { memberId: "member-2", displayName: "Paula Méndez", state: "Active", hasManagedEmail: false, roles: [], companies: [], version: 1, createdAtUtc: "2026-09-01T12:00:00Z" },
-]);
+const sales: WhatsAppTeamResponse = { id: "team-1", name: "Ventas", inbox: "Customers", memberCount: 2, memberPreview: ["Lucía Fernández", "Carolina Vega"], notifyAfterMinutes: 10, version: 3 };
+const orders: WhatsAppTeamResponse = { id: "team-2", name: "Carga de pedidos", inbox: "Internal", memberCount: 1, memberPreview: ["Martín Paz"], notifyAfterMinutes: null, version: 1 };
+const members = page([{ id: "member-1", name: "Carolina Vega" }, { id: "member-2", name: "Paula Méndez" }]);
 
 beforeAll(async () => { await import("./TeamsPage"); });
 beforeEach(() => {
@@ -21,13 +18,13 @@ beforeEach(() => {
     http.get("/api/organization/whatsapp/untaken", () => HttpResponse.json({ customers: 0, internal: 0 })),
     http.get("/api/platform/whatsapp/conversations", () => HttpResponse.json({ conversations: page([]), counts: { customers: 0, internal: 0, untaken: 0 } })),
     http.get("/api/organization/whatsapp/teams", () => HttpResponse.json(page([sales, orders]))),
-    http.get("/api/users/paged", () => HttpResponse.json(users)),
+    http.get("/api/organization/whatsapp/teams/member-options", () => HttpResponse.json(members)),
   );
 });
 afterEach(() => vi.unstubAllGlobals());
 
 describe("Equipos de la organización", () => {
-  it("lista cada equipo con su bandeja, cuántos son y el aviso, y «Sin aviso» si no avisa", async () => {
+  it("lista cada equipo con su bandeja, quiénes y cuántos son y el aviso, y «Sin aviso» si no avisa", async () => {
     const { container } = mountWhatsApp(whatsappOwner, "/org/whatsapp/equipos");
     expect(await screen.findByRole("heading", { name: "Equipos" })).toBeVisible();
     expect(await screen.findByText("Ventas")).toBeVisible();
@@ -35,6 +32,7 @@ describe("Equipos de la organización", () => {
     expect(screen.getByText("Bandeja Clientes")).toBeVisible();
     expect(screen.getByText("A los 10 minutos")).toBeVisible();
     expect(screen.getByText("Sin aviso")).toBeVisible();
+    expect(screen.getByText("Lucía Fernández, Carolina Vega")).toBeVisible();
     expect(screen.getByText("1 persona")).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -88,7 +86,7 @@ describe("Equipos de la organización", () => {
   it("edita con la versión de su lectura, sin cambiar la bandeja", async () => {
     const puts: unknown[] = [];
     server.use(
-      http.get("/api/organization/whatsapp/teams/team-1", () => HttpResponse.json({ ...sales, members: page([{ id: "member-1", name: "Carolina Vega" }]) })),
+      http.get("/api/organization/whatsapp/teams/team-1", () => HttpResponse.json({ ...sales, members: [{ id: "member-1", name: "Carolina Vega" }] })),
       http.put("/api/organization/whatsapp/teams/team-1", async ({ request }) => { puts.push(await request.json()); return HttpResponse.json({ ...sales, notifyAfterMinutes: 30, version: 4 }); }),
     );
     const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/equipos");
@@ -110,6 +108,7 @@ describe("Equipos de la organización", () => {
     const { container } = mountWhatsApp(whatsappOwner, "/org/whatsapp/equipos");
     expect(await screen.findByText("Ventas")).toBeVisible();
     expect(screen.getByText("Aviso a los 10 min")).toBeVisible();
+    expect(screen.getByText("Lucía Fernández, Carolina Vega")).toBeVisible();
     expect(screen.getByText("Bandeja Clientes · 2 personas")).toBeVisible();
     expect(screen.getByRole("button", { name: "Crear equipo" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
@@ -120,8 +119,8 @@ describe("Equipos de Plataforma", () => {
   it("son de operadores y se crean sin bandeja", async () => {
     const bodies: unknown[] = [];
     server.use(
-      http.get("/api/platform/whatsapp/teams", () => HttpResponse.json(page([{ ...sales, name: "Soporte", inbox: null }]))),
-      http.get("/api/platform/accounts/paged", () => HttpResponse.json(page([{ id: "operator-1", displayName: "Martín Sosa", kind: "Operator", state: "Active", hasPersonalSpace: false, organizationCount: 0 }]))),
+      http.get("/api/platform/whatsapp/teams", () => HttpResponse.json(page([{ ...sales, name: "Soporte", inbox: null, memberPreview: ["Martín Sosa", "Laura Díaz"] }]))),
+      http.get("/api/platform/whatsapp/teams/member-options", () => HttpResponse.json(page([{ id: "operator-1", name: "Martín Sosa" }]))),
       http.post("/api/platform/whatsapp/teams", async ({ request }) => { bodies.push(await request.json()); return HttpResponse.json({ ...sales, id: "team-9", name: "Cuentas", inbox: null }, { status: 201 }); }),
     );
     const { user, container } = mountWhatsApp(whatsappOperator(), "/plataforma/whatsapp/equipos");
