@@ -73,6 +73,7 @@ function ThreadItem({ message, perspective, phone }: { message: WhatsAppChatMess
   </div>;
 
   // Del lado de quien mira: el equipo manda lo saliente; la persona, lo entrante (lo que ella le escribió a la organización).
+  // Un saliente sin autor es del bot (CC15).
   const own = perspective.kind === "team" ? message.direction === "Outbound" : message.direction === "Inbound";
   const sender = perspective.kind === "person"
     ? own ? null : perspective.organizationName

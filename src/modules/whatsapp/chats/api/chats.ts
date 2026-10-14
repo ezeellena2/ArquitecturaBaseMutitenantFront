@@ -6,19 +6,19 @@ import type { PagedRequest } from "@/shared/api/types";
 import type { inboxPermission } from "../../access";
 import type {
   AddWhatsAppNoteRequest,
-  PagedResultOfWhatsAppTeamResponse,
+  PagedResultOfWhatsAppReferenceResponse,
   PagedResultOfWhatsAppTemplateOptionResponse,
   PagedResultOfWhatsAppTransferPersonResponse,
   PagedResultOfWhatsAppTransferTeamResponse,
   SendWhatsAppMessageRequest,
   SendWhatsAppTemplateRequest,
   TransferWhatsAppConversationRequest,
+  WhatsAppReferenceResponse,
   WhatsAppChatMessageResponse,
   WhatsAppConversationFilter,
   WhatsAppConversationListResponse,
   WhatsAppConversationResponse,
   WhatsAppConversationRowResponse,
-  WhatsAppTeamResponse,
   WhatsAppTemplateOptionResponse,
   WhatsAppTransferPersonResponse,
   WhatsAppTransferTeamResponse,
@@ -113,11 +113,11 @@ export function templateOptions(scope: ChatsScope, id: string): ResourceOptions<
   };
 }
 
-/** Los equipos para el filtro «Equipo» de la bandeja: los lee quien administra WhatsApp. */
-export function teamFilterOptions(scope: ChatsScope): ResourceOptions<WhatsAppTeamResponse> {
-  const path = scope.kind === "platform" ? "/api/platform/whatsapp/teams" : "/api/organization/whatsapp/teams";
+/** CC14: los equipos de la bandeja para su filtro «Equipo», con el permiso de la bandeja (los ve quien la atiende). */
+export function inboxTeamOptions(scope: ChatsScope): ResourceOptions<WhatsAppReferenceResponse> {
+  const path = scope.kind === "platform" ? "/api/platform/whatsapp/inbox-teams" : `/api/organization/whatsapp/${scope.inbox}/inbox-teams`;
   return {
-    queryKeyRoot: [...chatsQueryRoot, "team-options", scope.kind], id: (team) => team.id,
-    queryFn: (query, signal) => api.get<PagedResultOfWhatsAppTeamResponse>(withQuery(path, optionQuery(query)), { signal }),
+    queryKeyRoot: [...chatsScopeQueryRoot(scope), "inbox-teams"], id: (team) => team.id,
+    queryFn: (query, signal) => api.get<PagedResultOfWhatsAppReferenceResponse>(withQuery(path, optionQuery(query)), { signal }),
   };
 }

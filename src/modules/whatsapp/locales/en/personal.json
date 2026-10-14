@@ -1,8 +1,8 @@
 {
   "title": "Messages",
   "back": "Back to Messages",
-  "organizations_one": "{{count}} organization",
-  "organizations_other": "{{count}} organizations",
+  "organizations_one": "{{n}} organization",
+  "organizations_other": "{{n}} organizations",
   "noOrganizations": "No organizations",
   "search": "Search by organization",
   "filters": "Search Messages",

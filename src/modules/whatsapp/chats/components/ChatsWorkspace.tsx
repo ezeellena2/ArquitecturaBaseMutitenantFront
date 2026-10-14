@@ -22,7 +22,8 @@ import { inboxPermission } from "../../access";
 import type { WhatsAppConversationFilter, WhatsAppConversationRowResponse } from "../../api/types";
 import { inboxRefetchInterval } from "../../api/untaken";
 import { ChatsIcon } from "../../components/icons";
-import { conversationsQueryKey, fetchConversations, teamFilterOptions, type ChatsScope, type ConversationsQuery, type InboxKey } from "../api/chats";
+import { countOf } from "../../lib/values";
+import { conversationsQueryKey, fetchConversations, inboxTeamOptions, type ChatsScope, type ConversationsQuery, type InboxKey } from "../api/chats";
 import { chatTime, isUntaken, phoneLabel, rowAssignment } from "../lib/conversation";
 import { ChatAvatar } from "./ChatAvatar";
 import { ChatColumns, ConversationView, type ConversationLinks } from "./ConversationView";
@@ -77,10 +78,8 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
     if (lastPage !== page) setPage(lastPage);
   }, [settled, page, pageSize, setPage]);
 
-  // El filtro «Equipo» lee los equipos de quien administra WhatsApp; en la organización, solo los de esta bandeja.
-  const canReadTeams = platform ? me.effectivePermissions.platform.includes("platform.whatsapp.manage") : organization.includes("whatsapp.manage");
-  const teams = useResourceOptions(teamFilterOptions(scope), canReadTeams);
-  const teamItems = platform ? teams.items : teams.items.filter((team) => team.inbox === inboxEnum[inbox]);
+  // El filtro «Equipo» (CC14): los equipos de esta bandeja, para quien la atiende.
+  const teams = useResourceOptions(inboxTeamOptions(scope));
   const teamId = filters.values.teamId;
   const links: ConversationLinks = platform
     ? me.effectivePermissions.platform.includes("platform.accounts.read") ? { account: (id) => `/plataforma/cuentas/${encodeURIComponent(id)}` } : {}
@@ -88,7 +87,7 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
 
   const title = t(platform ? "chats.platform.title" : "chats.title");
   const back = { to: `${basePath}${location.search}`, label: t(platform ? "chats.platform.back" : "chats.back") };
-  if (phone && conversationId) return <ConversationView key={conversationId} scope={scope} id={conversationId} me={me} links={links} back={back} phone />;
+  if (phone && conversationId) return <ConversationView key={conversationId} scope={scope} id={conversationId} links={links} back={back} phone />;
 
   const data = list.data;
   if (!data && list.isError) return <LoadErrorPage screen={title} onRetry={() => { void list.refetch(); }} />;
@@ -101,12 +100,12 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
   const filtered = Boolean(search) || state !== undefined || teamId !== undefined;
 
   const filterBar: readonly FilterBarFilter[] = [
-    ...(canReadTeams ? [{
+    {
       key: "teamId", label: t("chats.filters.team"), menuLabel: t("chats.filters.teamMenu"), value: teamId ?? "", active: teamId !== undefined,
       remote: teams.remote, selectedLabel: teams.knownItems.find((team) => team.id === teamId)?.name,
       onChange: (value: string) => filters.setFilter("teamId", value === "all" ? undefined : value),
-      options: [{ value: "all", label: t("chats.filters.allTeams") }, ...teamItems.map((team) => ({ value: team.id, label: team.name }))],
-    }] : []),
+      options: [{ value: "all", label: t("chats.filters.allTeams") }, ...teams.items.map((team) => ({ value: team.id, label: team.name }))],
+    },
     {
       key: "state", label: format.isLoading ? "" : format.formatEnum("WhatsAppConversationFilter", "All"), menuLabel: t("chats.filters.stateMenu"),
       value: state ?? "", active: state !== undefined && state !== "All",
@@ -146,13 +145,13 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
     {loadMore}
   </>;
 
-  const summary = counts && total !== undefined ? <>{t("chats.conversations", { count: total })}<SublineSeparator />{t("chats.untakenCount", { count: counts.untaken })}</> : undefined;
+  const summary = counts && total !== undefined ? <>{t("chats.conversations", countOf(format, total))}<SublineSeparator />{t("chats.untakenCount", countOf(format, counts.untaken))}</> : undefined;
   if (phone) return <Page title={title} phoneBody="flush">{inboxColumn}</Page>;
   return <div className="flex h-full min-h-0 flex-col">
     <Page icon={platform ? WhatsAppIcon : ChatsIcon} title={title} summary={summary} bodyClassName="flex min-h-0 flex-1 flex-col">
       <ChatColumns>
         <aside aria-label={t("chats.list.label")} className="flex w-[380px] shrink-0 flex-col border-r border-[var(--borde)]">{inboxColumn}</aside>
-        {selectedId ? <ConversationView key={selectedId} scope={scope} id={selectedId} me={me} links={links} back={back} phone={false} /> : <div className="flex-1 bg-[var(--s2)]" />}
+        {selectedId ? <ConversationView key={selectedId} scope={scope} id={selectedId} links={links} back={back} phone={false} /> : <div className="flex-1 bg-[var(--s2)]" />}
       </ChatColumns>
     </Page>
   </div>;

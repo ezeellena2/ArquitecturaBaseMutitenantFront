@@ -1,12 +1,11 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
 import { pageSizes, type PageSize } from "@/shared/api/pageSizes";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
-import type { MeResponse } from "@/shared/api/types";
 import { useFormat } from "@/shared/format/useFormat";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
@@ -16,6 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { IconButton } from "@/shared/ui/IconButton";
 import { MoreVerticalIcon } from "@/shared/ui/icons";
+import { PhoneText } from "@/shared/ui/format/PhoneText";
 import { ImportantNotice } from "@/shared/ui/ImportantNotice";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Page } from "@/shared/ui/Page";
@@ -43,10 +43,9 @@ export interface ConversationLinks {
 /// acciones (Tomar, Pasar, Ver ficha o Ver la cuenta), el hilo y la barra para escribir. Se relee cada 5 s (decisión
 /// técnica 12). Tomar, mandar, pasar y la plantilla vuelven a leer la bandeja y el contador del menú. En el teléfono es
 /// otra pantalla, con ‹ a la bandeja.
-export function ConversationView({ scope, id, me, links, back, phone }: {
+export function ConversationView({ scope, id, links, back, phone }: {
   scope: ChatsScope;
   id: string;
-  me: MeResponse;
   links: ConversationLinks;
   back: { to: string; label: string };
   phone: boolean;
@@ -127,8 +126,8 @@ export function ConversationView({ scope, id, me, links, back, phone }: {
   const messages = data.messages.items;
   const name = row.contactName ?? phoneLabel(format, row.displayNumber);
   const untaken = isUntaken(row);
-  const readOnly = row.readOnly || flags.readOnly;
-  const state = composerState({ ...row, readOnly }, me.id, flags);
+  const readOnly = row.readOnly || row.channel.status === "Disconnected" || flags.readOnly;
+  const state = composerState({ ...row, readOnly }, flags);
   const descriptors = rowDescriptors(row, { untaken: t("chats.list.untaken"), linked: t("chats.header.linkedToAccount"), employee: t("chats.header.employee") });
   const contactPath = row.contactId && links.contact ? links.contact(row.contactId) : null;
   const accountPath = row.accountId && links.account ? links.account(row.accountId) : null;
@@ -144,7 +143,7 @@ export function ConversationView({ scope, id, me, links, back, phone }: {
   const composer = <ChatComposer key={row.id} state={state} phone={phone} sendPending={send.isPending} notePending={note.isPending}
     onSend={onSend} onNote={onNote} onChooseTemplate={() => setTemplateOpen(true)} onExplain={setNotice} />;
   const dialogs = <>
-    {notice ? <ConversationNotice notice={notice} name={name} messages={messages} onClose={() => setNotice(null)} /> : null}
+    {notice ? <ConversationNotice notice={notice} name={name} number={row.channel.displayNumber} messages={messages} onClose={() => setNotice(null)} /> : null}
     {templateOpen ? <TemplateDialog scope={scope} row={row} name={name} onClose={() => setTemplateOpen(false)}
       onSent={() => { void refresh(); }} onConflict={(error) => rejected(error, "send")} /> : null}
     {transferOpen ? <TransferSheet scope={scope} row={row} onTransfer={onTransfer} onClose={() => setTransferOpen(null)} returnFocusTo={transferOpen.trigger} /> : null}
@@ -202,9 +201,11 @@ function HeaderMenu({ name, items }: { name: string; items: readonly { label: st
 }
 
 /// El ⓘ de la barra de abajo (WA-Chats «qué significa» y WA-Chats-24h): por qué no se puede responder y qué hacer.
-function ConversationNotice({ notice, name, messages, onClose }: {
+function ConversationNotice({ notice, name, number, messages, onClose }: {
   notice: ComposerNotice;
   name: string;
+  /** El número de la organización al que escribió (CC13, `channel.displayNumber`). */
+  number: string;
   messages: readonly WhatsAppChatMessageResponse[];
   onClose: () => void;
 }) {
@@ -218,9 +219,11 @@ function ConversationNotice({ notice, name, messages, onClose }: {
       detail={t("chats.notices.window.detail")} steps={[t("chats.notices.window.stepTemplate"), t("chats.notices.window.stepReply")]} />;
   }
   if (notice === "readOnly") return <ImportantNotice open onOpenChange={close} title={t("chats.notices.readOnly.title", { name })}
-    reason={t("chats.notices.readOnly.reason")} detail={t("chats.notices.readOnly.detail")} steps={[t("chats.notices.readOnly.step")]} />;
+    reason={<Trans t={t} i18nKey="chats.notices.readOnly.reason" components={{ number: <PhoneText value={number} /> }} />}
+    detail={t("chats.notices.readOnly.detail")} steps={[t("chats.notices.readOnly.step")]} />;
   return <ImportantNotice open onOpenChange={close} title={t("chats.notices.payment.title", { name })}
-    reason={t("chats.notices.payment.reason")} steps={[t("chats.notices.payment.step")]} />;
+    reason={t("chats.notices.payment.reason")} detail={<Trans t={t} i18nKey="chats.notices.payment.detail" components={{ number: <PhoneText value={number} /> }} />}
+    steps={[t("chats.notices.payment.step")]} />;
 }
 
 /** Que el chat abierto ocupe el alto de la pantalla en la compu: la bandeja y el hilo se desplazan cada uno. */

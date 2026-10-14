@@ -1,10 +1,10 @@
 {
   "title": "Chats",
   "back": "Volver a Chats",
-  "conversations_one": "{{count}} conversación",
-  "conversations_other": "{{count}} conversaciones",
-  "untakenCount_one": "{{count}} sin tomar",
-  "untakenCount_other": "{{count}} sin tomar",
+  "conversations_one": "{{n}} conversación",
+  "conversations_other": "{{n}} conversaciones",
+  "untakenCount_one": "{{n}} sin tomar",
+  "untakenCount_other": "{{n}} sin tomar",
   "inbox": "Bandeja",
   "filters": {
     "label": "Filtros de chats",
@@ -83,13 +83,14 @@
     },
     "readOnly": {
       "title": "{{name}} escribió a un número desconectado",
-      "reason": "El número de WhatsApp está desconectado",
+      "reason": "<number></number> está desconectado",
       "detail": "Sus chats quedan para leer, sin responder",
       "step": "Pedile a quien administra WhatsApp que lo conecte de nuevo"
     },
     "payment": {
       "title": "No se puede responder a {{name}}",
       "reason": "Falta medio de pago en Meta",
+      "detail": "<number></number> ya usó los mensajes gratis de este mes",
       "step": "Pedile a quien administra WhatsApp que agregue un medio de pago en Meta"
     }
   },
@@ -102,10 +103,10 @@
     "teams": "Equipos",
     "people": "Personas",
     "teamPeople": "Personas de {{team}}",
-    "memberCount_one": "{{count}} persona",
-    "memberCount_other": "{{count}} personas",
-    "takenCount_one": "{{count}} chat tomado",
-    "takenCount_other": "{{count}} chats tomados",
+    "memberCount_one": "{{n}} persona",
+    "memberCount_other": "{{n}} personas",
+    "takenCount_one": "{{n}} chat tomado",
+    "takenCount_other": "{{n}} chats tomados",
     "empty": "No hay a quién pasarlo"
   },
   "template": {

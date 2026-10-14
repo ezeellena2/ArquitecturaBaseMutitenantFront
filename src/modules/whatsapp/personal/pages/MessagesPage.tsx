@@ -29,6 +29,7 @@ import { ConversationItem } from "../../chats/components/ConversationItem";
 import { MessageThread } from "../../chats/components/MessageThread";
 import { chatTime, phoneLabel, whatsappLink } from "../../chats/lib/conversation";
 import { ChatsIcon } from "../../components/icons";
+import { countOf } from "../../lib/values";
 import { fetchPersonalConversation, fetchPersonalConversations, personalConversationQueryKey, personalConversationsQueryKey, personalMessagesQueryRoot, unlinkConversation } from "../api/messages";
 
 const basePath = "/mensajes";
@@ -88,7 +89,7 @@ export function MessagesPage() {
   const empty = <p className="flex flex-1 items-center justify-center p-12 text-center text-[14px] font-semibold text-[var(--t2)]">{t("personal.empty")}</p>;
 
   if (phone) return <Page title={title} phoneBody="flush">{none ? empty : listColumn}</Page>;
-  const summary = data ? data.totalCount === 0 ? t("personal.noOrganizations") : t("personal.organizations", { count: data.totalCount }) : undefined;
+  const summary = data ? data.totalCount === 0 ? t("personal.noOrganizations") : t("personal.organizations", countOf(format, data.totalCount)) : undefined;
   return <div className="flex h-full min-h-0 flex-col">
     <Page icon={ChatsIcon} title={title} summary={summary} bodyClassName={none ? undefined : "flex min-h-0 flex-1 flex-col"}>
       {none ? <Surface className="flex overflow-hidden">{empty}</Surface> : <ChatColumns>

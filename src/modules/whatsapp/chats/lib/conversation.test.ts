@@ -5,43 +5,47 @@ import { composerState, initialsOf, rowAssignment, rowDescriptors, templatePrevi
 const row = (overrides: Partial<WhatsAppConversationRowResponse> = {}): WhatsAppConversationRowResponse => ({
   id: "c", inbox: "Customers", contactId: null, contactName: "Martina López", displayNumber: "+5491155556203", tags: [], lastMessagePreview: null,
   lastMessageAtUtc: "2026-10-12T13:42:00Z", unread: false, team: { id: "t", name: "Ventas" }, assignee: { id: "yo", name: "Lucía Fernández" },
-  linkedToAccount: false, windowOpenUntilUtc: "2999-01-01T00:00:00Z", readOnly: false, accountId: null, version: 1, ...overrides,
+  linkedToAccount: false, windowOpenUntilUtc: "2999-01-01T00:00:00Z", readOnly: false, accountId: null, version: 1,
+  channel: { id: "n", displayNumber: "+5493515550200", status: "Connected" }, assignedToMe: true, ...overrides,
 });
 const none = { paymentRequired: false, windowClosed: false };
 
 describe("estado del compositor", () => {
   it("el número desconectado manda sobre todo lo demás (D7)", () => {
-    expect(composerState(row({ readOnly: true, assignee: { id: "otra", name: "Tomás" }, windowOpenUntilUtc: null }), "yo", { paymentRequired: true, windowClosed: true }))
+    expect(composerState(row({ readOnly: true, assignee: { id: "otra", name: "Tomás" }, assignedToMe: false, windowOpenUntilUtc: null }), { paymentRequired: true, windowClosed: true }))
       .toEqual({ kind: "readOnly" });
+    expect(composerState(row({ channel: { id: "n", displayNumber: "+5493515550200", status: "Disconnected" } }), none)).toEqual({ kind: "readOnly" });
   });
 
-  it("si lo atiende otra persona solo queda la nota", () => {
-    expect(composerState(row({ assignee: { id: "otra", name: "Tomás Acosta" } }), "yo", none)).toEqual({ kind: "takenByOther", name: "Tomás Acosta" });
+  it("si lo atiende otra persona solo queda la nota: lo dice `assignedToMe` (CC13)", () => {
+    expect(composerState(row({ assignee: { id: "otra", name: "Tomás Acosta" }, assignedToMe: false }), none)).toEqual({ kind: "takenByOther", name: "Tomás Acosta" });
+    expect(composerState(row({ assignee: { id: "otra", name: "Lucía Fernández" }, assignedToMe: true }), none)).toEqual({ kind: "open" });
   });
 
   it("sin tomar se puede escribir: mandar lo toma", () => {
-    expect(composerState(row({ assignee: null }), "yo", none)).toEqual({ kind: "open" });
+    expect(composerState(row({ assignee: null, assignedToMe: false }), none)).toEqual({ kind: "open" });
   });
 
   it("pasadas las 24 h, o sin ventana, o si el back lo dijo, solo plantilla", () => {
-    expect(composerState(row({ windowOpenUntilUtc: "2020-01-01T00:00:00Z" }), "yo", none)).toEqual({ kind: "windowClosed" });
-    expect(composerState(row({ windowOpenUntilUtc: null }), "yo", none)).toEqual({ kind: "windowClosed" });
-    expect(composerState(row(), "yo", { paymentRequired: false, windowClosed: true })).toEqual({ kind: "windowClosed" });
+    expect(composerState(row({ windowOpenUntilUtc: "2020-01-01T00:00:00Z" }), none)).toEqual({ kind: "windowClosed" });
+    expect(composerState(row({ windowOpenUntilUtc: null }), none)).toEqual({ kind: "windowClosed" });
+    expect(composerState(row(), { paymentRequired: false, windowClosed: true })).toEqual({ kind: "windowClosed" });
   });
 
-  it("sin medio de pago lo dice antes que la ventana", () => {
-    expect(composerState(row({ windowOpenUntilUtc: null }), "yo", { paymentRequired: true, windowClosed: false })).toEqual({ kind: "paymentRequired" });
+  it("sin medio de pago lo dice antes que la ventana, desde el número (CC13) o desde el 409", () => {
+    expect(composerState(row({ windowOpenUntilUtc: null }), { paymentRequired: true, windowClosed: false })).toEqual({ kind: "paymentRequired" });
+    expect(composerState(row({ channel: { id: "n", displayNumber: "+5493515550200", status: "PaymentMissing" } }), none)).toEqual({ kind: "paymentRequired" });
   });
 });
 
 describe("encabezado y fila", () => {
   const texts = { untaken: "Sin tomar", linked: "Vinculada a su cuenta", employee: "Empleado" };
   it("sin tomar dice el equipo; si no, lo que se sabe del contacto o quién lo atiende", () => {
-    expect(rowDescriptors(row({ assignee: null }), texts)).toEqual(["Sin tomar", "Ventas"]);
+    expect(rowDescriptors(row({ assignee: null, assignedToMe: false }), texts)).toEqual(["Sin tomar", "Ventas"]);
     expect(rowDescriptors(row({ linkedToAccount: true, tags: ["Mayorista"] }), texts)).toEqual(["Vinculada a su cuenta", "Mayorista"]);
     expect(rowDescriptors(row({ inbox: "Internal" }), texts)).toEqual(["Empleado"]);
     expect(rowDescriptors(row(), texts)).toEqual(["Ventas", "Lucía Fernández"]);
-    expect(rowAssignment(row({ assignee: null }), "Sin tomar")).toBe("Ventas · Sin tomar");
+    expect(rowAssignment(row({ assignee: null, assignedToMe: false }), "Sin tomar")).toBe("Ventas · Sin tomar");
     expect(initialsOf("Martina López")).toBe("ML");
   });
 });

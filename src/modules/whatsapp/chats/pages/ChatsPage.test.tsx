@@ -22,7 +22,8 @@ function row(overrides: Partial<WhatsAppConversationRowResponse> = {}): WhatsApp
     id: "c-martina", inbox: "Customers", contactId: "contact-martina", contactName: "Martina López", displayNumber: "+5491155556203", tags: ["Mayorista"],
     lastMessagePreview: "2 cajas de tornillos. ¿Atienden hasta las 18?", lastMessageAtUtc: "2026-10-12T13:42:00Z", unread: false,
     team: { id: "team-ventas", name: "Ventas" }, assignee: { id: whatsappOwner.id, name: "Lucía Fernández" }, linkedToAccount: true,
-    windowOpenUntilUtc: open, readOnly: false, accountId: null, version: 3, ...overrides,
+    windowOpenUntilUtc: open, readOnly: false, accountId: null, version: 3,
+    channel: { id: "number-delta", displayNumber: "+5493515550200", status: "Connected" }, assignedToMe: true, ...overrides,
   };
 }
 function message(overrides: Partial<WhatsAppChatMessageResponse> = {}): WhatsAppChatMessageResponse {
@@ -40,7 +41,7 @@ function inbox(conversation: WhatsAppConversationRowResponse, messages?: WhatsAp
   const requested: string[] = [];
   server.use(
     http.get(`${org}/untaken`, () => HttpResponse.json({ customers: 2, internal: 0 })),
-    http.get(`${org}/teams`, () => HttpResponse.json(paged([{ id: "team-ventas", name: "Ventas", inbox: "Customers", memberCount: 3, notifyAfterMinutes: null, version: 1 }]))),
+    http.get(`${org}/:inbox/inbox-teams`, ({ params }) => { requested.push(`${String(params.inbox)}/inbox-teams`); return HttpResponse.json(paged([{ id: "team-ventas", name: "Ventas" }])); }),
     http.get(`${org}/:inbox/conversations`, ({ params }) => { requested.push(String(params.inbox)); return HttpResponse.json(list([conversation])); }),
     http.get(`${org}/:inbox/conversations/:id`, () => HttpResponse.json(detail(conversation, messages))),
   );
@@ -70,16 +71,18 @@ describe("Chats de la organización", () => {
     expect(await screen.findByRole("heading", { level: 2, name: "Martina López" })).toBeVisible();
     expect(screen.getByText(/Empleado/)).toBeVisible();
     expect(screen.queryByRole("group", { name: "Bandeja" })).not.toBeInTheDocument();
-    expect(new Set(requested)).toEqual(new Set(["internal"]));
+    // CC14: el filtro «Equipo» lo ve quien atiende la bandeja, con los equipos de esa bandeja.
+    expect(screen.getByRole("button", { name: /Equipo: todos/ })).toBeVisible();
+    expect(new Set(requested)).toEqual(new Set(["internal", "internal/inbox-teams"]));
     // Sin «Atender clientes» no hay ficha de contacto que abrir.
     expect(screen.queryByRole("button", { name: "Acciones de Martina López" })).not.toBeInTheDocument();
   });
 
   it("tomar un chat que otra persona tomó antes avisa quién y relee la conversación", async () => {
     let reads = 0;
-    const untaken = row({ id: "c-nuevo", contactName: null, contactId: null, displayNumber: "+5493515550192", assignee: null, tags: [], linkedToAccount: false });
+    const untaken = row({ id: "c-nuevo", contactName: null, contactId: null, displayNumber: "+5493515550192", assignee: null, assignedToMe: false, tags: [], linkedToAccount: false });
     inbox(untaken);
-    server.use(http.get(`${org}/customers/conversations/c-nuevo`, () => { reads++; return HttpResponse.json(detail(reads > 1 ? { ...untaken, assignee: { id: "tomas", name: "Tomás Acosta" } } : untaken)); }),
+    server.use(http.get(`${org}/customers/conversations/c-nuevo`, () => { reads++; return HttpResponse.json(detail(reads > 1 ? { ...untaken, assignee: { id: "tomas", name: "Tomás Acosta" }, assignedToMe: false } : untaken)); }),
       http.post(`${org}/customers/conversations/c-nuevo/take`, () => HttpResponse.json(
         { code: "WhatsApp.Conversation.TakenByOther", detail: "Otra persona tomó esta conversación y tu mensaje no salió.", takenBy: "Tomás Acosta" }, { status: 409 })));
     const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
@@ -90,7 +93,7 @@ describe("Chats de la organización", () => {
   });
 
   it("si otra persona lo tomó mientras escribía, el mensaje no sale y lo dice", async () => {
-    const untaken = row({ assignee: null });
+    const untaken = row({ assignee: null, assignedToMe: false });
     inbox(untaken);
     let sent = 0;
     server.use(http.post(`${org}/customers/conversations/c-martina/messages`, ({ request }) => {
@@ -170,7 +173,8 @@ describe("Chats de la organización", () => {
   });
 
   it("con el número desconectado solo se lee: sin escribir, sin nota, sin tomar ni pasar", async () => {
-    inbox(row({ readOnly: true, assignee: null }), [message(), message({ id: "m-2", kind: "Media", mediaKind: "Audio", text: null })]);
+    inbox(row({ readOnly: true, assignee: null, assignedToMe: false, channel: { id: "number-delta", displayNumber: "+5493515550200", status: "Disconnected" } }),
+      [message(), message({ id: "m-2", kind: "Media", mediaKind: "Audio", text: null })]);
     const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
     expect(await screen.findByText("Número desconectado")).toBeVisible();
     expect(screen.getByText("Mandó un audio")).toBeVisible();
@@ -179,7 +183,21 @@ describe("Chats de la organización", () => {
     expect(screen.queryByRole("button", { name: "Tomar" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Pasar" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Qué significa" }));
-    expect(await screen.findByRole("dialog", { name: "Martina López escribió a un número desconectado" })).toBeVisible();
+    const notice = await screen.findByRole("dialog", { name: "Martina López escribió a un número desconectado" });
+    // CC13: el aviso nombra el número de la organización, como el tablero.
+    expect(within(notice).getByText(/está desconectado/)).toHaveTextContent(/555-0200/);
+  });
+
+  it("un número sin medio de pago lo dice desde que se abre el chat, con su número en el aviso", async () => {
+    inbox(row({ channel: { id: "number-delta", displayNumber: "+5493515550200", status: "PaymentMissing" } }));
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    expect(await screen.findByText("Sin medio de pago")).toBeVisible();
+    expect(screen.queryByRole("textbox", { name: "Mensaje" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Nota interna" })).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Qué significa" }));
+    const notice = await screen.findByRole("dialog", { name: "No se puede responder a Martina López" });
+    expect(within(notice).getByText("Falta medio de pago en Meta")).toBeVisible();
+    expect(within(notice).getByText(/ya usó los mensajes gratis de este mes/)).toHaveTextContent(/555-0200/);
   });
 
   it("pasar a otro equipo manda la versión de la fila y relee la bandeja", async () => {
@@ -222,7 +240,7 @@ describe("Consultas de Plataforma", () => {
       // Plataforma tiene una sola bandeja: el total es `customers`, aunque `internal` llegara con algo.
       http.get(platform, () => HttpResponse.json(list([conversation], { customers: 4, internal: 3, untaken: 2 }))),
       http.get(`${platform}/:id`, () => HttpResponse.json(detail(conversation))),
-      http.get("/api/platform/whatsapp/teams", () => HttpResponse.json(paged([]))),
+      http.get("/api/platform/whatsapp/inbox-teams", () => HttpResponse.json(paged([]))),
     );
   }
 

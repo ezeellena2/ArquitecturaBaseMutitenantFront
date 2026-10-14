@@ -1,8 +1,8 @@
 {
   "title": "Mensajes",
   "back": "Volver a Mensajes",
-  "organizations_one": "{{count}} organización",
-  "organizations_other": "{{count}} organizaciones",
+  "organizations_one": "{{n}} organización",
+  "organizations_other": "{{n}} organizaciones",
   "noOrganizations": "Ninguna organización",
   "search": "Buscar por organización",
   "filters": "Buscar en Mensajes",

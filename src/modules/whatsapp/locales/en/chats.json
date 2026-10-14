@@ -1,10 +1,10 @@
 {
   "title": "Chats",
   "back": "Back to Chats",
-  "conversations_one": "{{count}} conversation",
-  "conversations_other": "{{count}} conversations",
-  "untakenCount_one": "{{count}} unassigned",
-  "untakenCount_other": "{{count}} unassigned",
+  "conversations_one": "{{n}} conversation",
+  "conversations_other": "{{n}} conversations",
+  "untakenCount_one": "{{n}} unassigned",
+  "untakenCount_other": "{{n}} unassigned",
   "inbox": "Inbox",
   "filters": {
     "label": "Chat filters",
@@ -83,13 +83,14 @@
     },
     "readOnly": {
       "title": "{{name}} wrote to a disconnected number",
-      "reason": "The WhatsApp number is disconnected",
+      "reason": "<number></number> is disconnected",
       "detail": "Its chats stay readable, without replies",
       "step": "Ask whoever manages WhatsApp to connect it again"
     },
     "payment": {
       "title": "You can't reply to {{name}}",
       "reason": "Payment method missing in Meta",
+      "detail": "<number></number> already used this month's free messages",
       "step": "Ask whoever manages WhatsApp to add a payment method in Meta"
     }
   },
@@ -102,10 +103,10 @@
     "teams": "Teams",
     "people": "People",
     "teamPeople": "People in {{team}}",
-    "memberCount_one": "{{count}} person",
-    "memberCount_other": "{{count}} people",
-    "takenCount_one": "{{count}} chat taken",
-    "takenCount_other": "{{count}} chats taken",
+    "memberCount_one": "{{n}} person",
+    "memberCount_other": "{{n}} people",
+    "takenCount_one": "{{n}} chat taken",
+    "takenCount_other": "{{n}} chats taken",
     "empty": "There's no one to transfer it to"
   },
   "template": {
