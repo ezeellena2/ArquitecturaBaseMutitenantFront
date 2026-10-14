@@ -38,7 +38,7 @@ export function ChatComposer({ state, phone, sendPending, notePending, onSend, o
 
   if (state.kind === "readOnly") return bar(<span className="flex flex-1 items-center gap-2 text-[13px] text-[var(--t2)] max-md:text-[14px]">
     <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-[var(--punto-apagado)]" />{t("chats.composer.readOnly")}
-    <InfoButton label={t("chats.composer.whatItMeans")} onClick={() => onExplain("readOnly")} />
+    <InfoButton tone="inherit" label={t("chats.composer.whatItMeans")} onClick={() => onExplain("readOnly")} />
   </span>);
 
   const noteButton = <button type="button" aria-pressed={noteMode} aria-label={t("chats.composer.note")} title={t("chats.composer.note")} onClick={() => setNoteMode((value) => !value)}
@@ -56,7 +56,7 @@ export function ChatComposer({ state, phone, sendPending, notePending, onSend, o
     </span></>);
     return bar(<>{noteButton}<span className={cn("flex min-w-0 flex-1 items-center gap-2 text-[var(--alerta-tx)]", phone ? "text-[14px] font-medium whitespace-nowrap" : "text-[13px]")}>
       <Clock aria-hidden="true" className="size-4 shrink-0" />{t("chats.composer.windowClosed")}
-      <InfoButton label={t("chats.composer.whatItMeans")} onClick={() => onExplain("window")} />
+      <InfoButton tone="warning" label={t("chats.composer.whatItMeans")} onClick={() => onExplain("window")} />
     </span>
     <Button type="button" onClick={onChooseTemplate} className={phone ? "h-11 rounded-full px-[18px] text-[14.5px]" : undefined}>{t("chats.composer.chooseTemplate")}</Button></>);
   }
