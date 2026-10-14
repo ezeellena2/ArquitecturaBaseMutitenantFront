@@ -383,7 +383,10 @@ export const validationConstraints = {
       "maxLength": 60
     },
     "variables": {
-      "maxItems": 10
+      "maxItems": 10,
+      "items": {
+        "maxLength": 200
+      }
     }
   },
   "CreateWhatsAppTeamHttpRequest": {
@@ -1364,7 +1367,10 @@ export const validationConstraints = {
   },
   "SendWhatsAppTemplateHttpRequest": {
     "variables": {
-      "maxItems": 10
+      "maxItems": 10,
+      "items": {
+        "maxLength": 200
+      }
     }
   },
   "SignupHttpRequest": {
@@ -1545,7 +1551,10 @@ export const validationConstraints = {
       "maxLength": 100
     },
     "tags": {
-      "maxItems": 10
+      "maxItems": 10,
+      "items": {
+        "maxLength": 40
+      }
     }
   },
   "UpdateWhatsAppTeamHttpRequest": {
@@ -1656,7 +1665,10 @@ export const validationConstraints = {
   },
   "WhatsAppContactResponse": {
     "tags": {
-      "maxItems": 10
+      "maxItems": 10,
+      "items": {
+        "maxLength": 40
+      }
     }
   },
   "WhatsAppConversationCountsResponse": {
@@ -1675,7 +1687,10 @@ export const validationConstraints = {
   },
   "WhatsAppConversationRowResponse": {
     "tags": {
-      "maxItems": 10
+      "maxItems": 10,
+      "items": {
+        "maxLength": 40
+      }
     }
   },
   "WhatsAppImportPreviewResponse": {

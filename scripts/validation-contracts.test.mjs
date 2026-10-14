@@ -13,7 +13,7 @@ test("generates changed nested-input lengths, numeric ranges and audit options f
     const target = path.join(directory, "schema.d.ts");
     const schema = { openapi: "3.1.0", info: { title: "Fixture", version: "1" }, paths: {},
       components: { schemas: { LegalContent: { type: "object", properties: { text: { type: "string", maxLength: 4321 } } },
-        Settings: { type: "object", properties: { kind: { type: "string", enum: ["Image", "Document"] }, count: { type: "integer", minimum: 2, maximum: 17 }, tariff: { type: "number", exclusiveMinimum: 0, exclusiveMaximum: 12345 }, signed: { type: "integer", format: "int32" }, narrowed: { type: "integer", format: "int32", minimum: 1, maximum: 20 }, preview: { type: "array", maxItems: 7, items: { type: "string" } } } } } },
+        Settings: { type: "object", properties: { kind: { type: "string", enum: ["Image", "Document"] }, count: { type: "integer", minimum: 2, maximum: 17 }, tariff: { type: "number", exclusiveMinimum: 0, exclusiveMaximum: 12345 }, signed: { type: "integer", format: "int32" }, narrowed: { type: "integer", format: "int32", minimum: 1, maximum: 20 }, preview: { type: "array", maxItems: 7, items: { type: "string" } }, tags: { type: "array", maxItems: 10, items: { type: "string", maxLength: 40 } } } } } },
       "x-organization-audit-categories": ["new-category"] };
     writeFileSync(source, JSON.stringify(schema));
     await generateContracts({ source, target });
@@ -26,6 +26,9 @@ test("generates changed nested-input lengths, numeric ranges and audit options f
     assert.match(runtime, /"maximum": 17/);
     assert.match(runtime, /"tariff": \{\s*"exclusiveMinimum": 0,\s*"exclusiveMaximum": 12345/);
     assert.match(runtime, /"maxItems": 7/);
+    // Los límites de cada elemento de una lista (el largo de cada etiqueta) van en `items`; sin límites, no hay `items`.
+    assert.match(runtime, /"tags": \{\s*"maxItems": 10,\s*"items": \{\s*"maxLength": 40\s*\}/);
+    assert.match(runtime, /"preview": \{\s*"maxItems": 7\s*\}/);
     assert.match(runtime, /\["new-category"\]/);
     await checkContracts({ source, target }, false);
     schema.components.schemas.LegalContent.properties.text.maxLength = 5432;

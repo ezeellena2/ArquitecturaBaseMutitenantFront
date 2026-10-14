@@ -26,6 +26,21 @@ export async function renderContracts(source) {
   return generated.endsWith("\n") ? generated : `${generated}\n`;
 }
 
+const limitKeys = ["minLength", "maxLength", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "maxItems"];
+
+/** The limits of one property; a list also carries those of each element under `items` (each tag's maxLength). */
+function limitsOf(definition) {
+  const limits = Object.fromEntries(limitKeys.filter((key) => definition[key] !== undefined).map((key) => [key, definition[key]]));
+  // int32 is a wire constraint even when no validator narrows its range.
+  if (definition.format === "int32") {
+    limits.minimum ??= -(2 ** 31);
+    limits.maximum ??= 2 ** 31 - 1;
+  }
+  const items = definition.items && typeof definition.items === "object" && !definition.items.$ref ? limitsOf(definition.items) : {};
+  if (Object.keys(items).length) limits.items = items;
+  return limits;
+}
+
 /** Runtime restrictions extracted from the same OpenAPI used for TypeScript types. */
 export function renderValidationContracts(source) {
   const schema = JSON.parse(readFileSync(source, "utf8"));
@@ -36,13 +51,7 @@ export function renderValidationContracts(source) {
     const enums = {};
     for (const [property, definition] of Object.entries(component.properties ?? {})) {
       if (Array.isArray(definition.enum)) enums[property] = definition.enum;
-      const limits = Object.fromEntries(["minLength", "maxLength", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "maxItems"]
-        .filter((key) => definition[key] !== undefined).map((key) => [key, definition[key]]));
-      // int32 is a wire constraint even when no validator narrows its range.
-      if (definition.format === "int32") {
-        limits.minimum ??= -(2 ** 31);
-        limits.maximum ??= 2 ** 31 - 1;
-      }
+      const limits = limitsOf(definition);
       if (Object.keys(limits).length) properties[property] = limits;
     }
     if (Object.keys(properties).length) constraints[name] = properties;
