@@ -20,7 +20,7 @@ import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
 import { RadioGroupField } from "@/shared/ui/RadioGroupField";
 import { Textarea } from "@/shared/ui/textarea";
-import type { CreateWhatsAppTemplateRequest } from "../../api/types";
+import type { CreateWhatsAppTemplateRequest, WhatsAppTemplateResponse } from "../../api/types";
 import { createTemplate, templatesQueryRoot, type TemplateScope } from "../api/templates";
 import { templateErrorField, templateErrorMessage } from "../errors";
 import { insertPlaceholder, nextPlaceholder, placeholderNumbers, placeholdersInOrder, templateVariables } from "../lib/variables";
@@ -61,19 +61,35 @@ function sameTemplate(previous: CreateWhatsAppTemplateRequest, next: CreateWhats
     && before.length === after.length && before.every((variable, index) => variable.label === after[index]?.label && variable.example === after[index]?.example);
 }
 
+/// Lo de empezar: vacío o, al duplicar (CC17), lo de la original. Meta no devuelve los ejemplos de los datos: se
+/// vuelven a escribir.
+function initialValues(original: WhatsAppTemplateResponse | undefined): TemplateForm {
+  if (!original) return { name: "", category: "Utility", body: "", entries: {} };
+  return {
+    name: original.name, category: original.category === "Marketing" ? "Marketing" : "Utility", body: original.body,
+    entries: Object.fromEntries(original.variables.map((label, index) => [String(index + 1), { label, example: "" }])),
+  };
+}
+
 /**
  * «Nueva plantilla» (tableros WA-Plantilla-Nueva y M-WA-Plantilla-Nueva): el nombre, el tipo (Utilidad o Marketing) y el
  * texto, con «Nombre del contacto» y «Otro dato» para sumar datos, que se escriben `{{1}}`, `{{2}}`… como los numera
- * Meta. Va en el idioma de quien la escribe (la cultura del catálogo) y se manda a Meta a revisión.
+ * Meta. Va en la cultura del catálogo de quien la escribe (el back la traduce a la de Meta) y se manda a Meta a revisión.
+ * «Duplicar» abre este mismo diálogo con los datos y el idioma de la original, y crea otra.
  */
-export function TemplateDialog({ scope, onClose }: { scope: TemplateScope; onClose: () => void }) {
+export function TemplateDialog({ scope, original, onClose, returnFocusTo }: {
+  scope: TemplateScope;
+  original?: WhatsAppTemplateResponse;
+  onClose: () => void;
+  returnFocusTo?: HTMLElement | null;
+}) {
   const { t } = useTranslation(["whatsapp", "common"]);
   const format = useFormat();
   const queryClient = useQueryClient();
-  const restoreFocus = useRestoreFocusOnClose();
+  const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const schema = useMemo(() => templateFormSchema(t), [t]);
   const [failure, setFailure] = useState<unknown>();
-  const form = useForm<TemplateForm, unknown, TemplateValues>({ resolver: zodResolver(schema), defaultValues: { name: "", category: "Utility", body: "", entries: {} } });
+  const form = useForm<TemplateForm, unknown, TemplateValues>({ resolver: zodResolver(schema), defaultValues: initialValues(original) });
   const category = useController({ control: form.control, name: "category" });
   const bodyField = form.register("body", { onChange: () => setFailure(undefined) });
   const bodyElement = useRef<HTMLTextAreaElement | null>(null);
@@ -101,7 +117,9 @@ export function TemplateDialog({ scope, onClose }: { scope: TemplateScope; onClo
 
   const submit = form.handleSubmit((values) => {
     setFailure(undefined);
-    const request: CreateWhatsAppTemplateRequest = { name: values.name, category: values.category, language: format.culture, body: values.body,
+    const enabled = format.referenceData?.cultures.filter((culture) => culture.isEnabled).map((culture) => culture.code) ?? [];
+    const language = original?.languages.find((code) => enabled.includes(code)) ?? format.culture;
+    const request: CreateWhatsAppTemplateRequest = { name: values.name, category: values.category, language, body: values.body,
       variables: templateVariables(values.body, values.entries) };
     send.mutate(request, {
       onSuccess: async () => {

@@ -45,7 +45,6 @@
   },
   "messages": {
     "sent": "We sent “{{name}}” to Meta for review.",
-    "duplicated": "We duplicated the template: “{{name}}” is in review.",
     "deleted": "We deleted the template “{{name}}”."
   },
   "errors": {

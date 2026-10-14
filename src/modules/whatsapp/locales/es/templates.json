@@ -45,7 +45,6 @@
   },
   "messages": {
     "sent": "Mandamos «{{name}}» a Meta para que la revise.",
-    "duplicated": "Duplicamos la plantilla: «{{name}}» quedó en revisión.",
     "deleted": "Borramos la plantilla «{{name}}»."
   },
   "errors": {

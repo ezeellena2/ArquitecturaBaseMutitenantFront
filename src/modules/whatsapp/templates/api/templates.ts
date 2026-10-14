@@ -28,21 +28,18 @@ export function fetchTemplates(scope: TemplateScope, query: TemplatesQuery): Pro
   return api.get(`${base(scope)}${toSearch(query, true)}`);
 }
 
-/** La página de la lista con el resumen (`approved`, CC07) al lado: es lo que lee `usePagedQuery`. */
-export type TemplatePage = WhatsAppTemplateListResponse["templates"] & { approved: number };
+/** La página de la lista con el resumen al lado (`approved`, CC07, y en Plataforma los conteos por grupo, CC19): es lo
+ *  que lee `usePagedQuery`. */
+export type TemplatePage = WhatsAppTemplateListResponse["templates"] & Pick<WhatsAppTemplateListResponse, "approved" | "consultations" | "system">;
 
 export async function fetchTemplatePage(scope: TemplateScope, query: TemplatesQuery): Promise<TemplatePage> {
-  const response = await fetchTemplates(scope, query);
-  return { ...response.templates, approved: response.approved };
+  const { templates, approved, consultations, system } = await fetchTemplates(scope, query);
+  return { ...templates, approved, consultations, system };
 }
 
+/** También «Duplicar» (CC17): el formulario nuevo con los datos de la original, que se manda como una plantilla nueva. */
 export function createTemplate(scope: TemplateScope, request: CreateWhatsAppTemplateRequest, idempotencyKey: string): Promise<WhatsAppTemplateResponse> {
   return api.post(base(scope), request, { headers: { "Idempotency-Key": idempotencyKey } });
-}
-
-/** Una aprobada no se edita: se duplica, y la copia va a Meta a revisión. */
-export function duplicateTemplate(scope: TemplateScope, id: string, idempotencyKey: string): Promise<WhatsAppTemplateResponse> {
-  return api.post(`${one(scope, id)}/duplicate`, undefined, { headers: { "Idempotency-Key": idempotencyKey } });
 }
 
 /** La versión viaja en la consulta (`DELETE …?version=`), como la pide el contrato. */

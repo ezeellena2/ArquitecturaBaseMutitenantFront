@@ -9,7 +9,7 @@ import { mountWhatsApp, whatsappMember, whatsappOperator, whatsappOwner } from "
 
 const page = <T,>(items: T[]) => ({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
 const template = (values: Partial<WhatsAppTemplateResponse>): WhatsAppTemplateResponse => ({
-  id: "template-1", name: "Pedido listo", category: "Utility", language: "es-AR", body: "Hola {{1}}", variables: ["nombre"], status: "Approved",
+  id: "template-1", name: "Pedido listo", category: "Utility", languages: ["es-AR"], body: "Hola {{1}}", variables: ["nombre"], status: "Approved",
   isSystem: false, updatedAtUtc: "2026-09-20T15:00:00Z", version: 2, ...values,
 });
 const ready = template({});
@@ -48,20 +48,31 @@ describe("Plantillas de la organización", () => {
     expect(within(notice).getByText("Duplicala y corregí el texto")).toBeVisible();
   });
 
-  it("una aprobada no se edita: se duplica, con su clave", async () => {
+  it("una aprobada no se edita: «Duplicar» abre «Nueva plantilla» con sus datos y crea otra", async () => {
+    const bodies: unknown[] = [];
     const keys: (string | null)[] = [];
-    server.use(http.post("/api/organization/whatsapp/templates/template-1/duplicate", ({ request }) => {
+    server.use(http.post("/api/organization/whatsapp/templates", async ({ request }) => {
+      bodies.push(await request.json());
       keys.push(request.headers.get("Idempotency-Key"));
-      return HttpResponse.json(template({ id: "template-9", name: "Pedido listo (copia)", status: "Pending" }), { status: 201 });
+      return HttpResponse.json(template({ id: "template-9", name: "Pedido listo 2", status: "Pending" }), { status: 201 });
     }));
     const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/plantillas");
     await openActions(user, "Pedido listo");
     const menu = await screen.findByRole("menu");
     expect(within(menu).queryByRole("menuitem", { name: /Editar/ })).not.toBeInTheDocument();
     await user.click(within(menu).getByRole("menuitem", { name: "Duplicar" }));
-    expect(await screen.findByText("Duplicamos la plantilla: «Pedido listo (copia)» quedó en revisión.")).toBeVisible();
-    expect(keys).toHaveLength(1);
+    const dialog = await screen.findByRole("dialog", { name: "Nueva plantilla" });
+    expect(within(dialog).getByRole("textbox", { name: "Nombre" })).toHaveValue("Pedido listo");
+    expect(within(dialog).getByRole("textbox", { name: "Texto" })).toHaveValue("Hola {{1}}");
+    expect(within(dialog).getByRole("textbox", { name: "Dato 1" })).toHaveValue("nombre");
+    await user.clear(within(dialog).getByRole("textbox", { name: "Nombre" }));
+    await user.paste("Pedido listo 2");
+    await user.click(within(dialog).getByRole("textbox", { name: "Ejemplo del dato 1" }));
+    await user.paste("Ana");
+    await user.click(within(dialog).getByRole("button", { name: "Mandar a Meta" }));
+    await waitFor(() => expect(bodies).toEqual([{ name: "Pedido listo 2", category: "Utility", language: "es-AR", body: "Hola {{1}}", variables: [{ label: "nombre", example: "Ana" }] }]));
     expect(keys[0]).toMatch(/^[0-9a-f-]{36}$/i);
+    expect(await screen.findByText("Mandamos «Pedido listo 2» a Meta para que la revise.")).toBeVisible();
 
     // Una en revisión no se duplica: solo se borra.
     await openActions(user, "Novedades");
@@ -116,15 +127,15 @@ describe("Plantillas de la organización", () => {
 
 describe("Plantillas de Plataforma", () => {
   const consultation = template({ id: "p-1", name: "Seguimos tu consulta" });
-  const invitation = template({ id: "s-1", name: "invitacion_organizacion", category: "Marketing", isSystem: true });
-  const code = template({ id: "s-2", name: "codigo_ingreso", category: "Authentication", isSystem: true });
+  const invitation = template({ id: "s-1", name: "invitacion_organizacion", title: "Invitación a una organización", category: "Marketing", languages: ["es-AR", "en-US"], isSystem: true });
+  const code = template({ id: "s-2", name: "codigo_ingreso", title: "Código de ingreso", category: "Authentication", languages: ["es-AR", "en-US"], isSystem: true });
 
   it("«Para consultas | Del sistema» va en la URL, y las del sistema son de solo lectura con la categoría del back", async () => {
     const groups: (string | null)[] = [];
     server.use(http.get("/api/platform/whatsapp/templates", ({ request }) => {
       const group = new URL(request.url).searchParams.get("group");
       groups.push(group);
-      return HttpResponse.json(group === "System" ? { templates: page([invitation, code]), approved: 2 } : { templates: page([consultation]), approved: 1 });
+      return HttpResponse.json({ templates: page(group === "System" ? [invitation, code] : [consultation]), approved: 3, consultations: 1, system: 2 });
     }));
     const { user, router, container } = mountWhatsApp(whatsappOperator(), "/plataforma/whatsapp/plantillas");
     expect(await screen.findByText("Seguimos tu consulta")).toBeVisible();
@@ -136,13 +147,13 @@ describe("Plantillas de Plataforma", () => {
     expect(await axe(container)).toHaveNoViolations();
 
     await user.click(within(view).getByRole("button", { name: /Del sistema/ }));
-    expect(await screen.findByText("invitacion_organizacion")).toBeVisible();
+    expect(await screen.findByText("Invitación a una organización")).toBeVisible();
     expect(router.state.location.search).toBe("?grupo=sistema");
-    expect(groups).toContain("System");
-    expect(groups).toContain("Consultations");
-    const row = screen.getByText("invitacion_organizacion").closest("tr");
+    expect(groups).toEqual(["Consultations", "System"]);
+    const row = screen.getByText("Invitación a una organización").closest("tr");
     expect(row).not.toBeNull();
+    expect(row).toHaveTextContent("invitacion_organizacion · Español (Argentina), Inglés (Estados Unidos)");
     expect(within(row as HTMLElement).getByText("Marketing")).toBeVisible();
-    expect(screen.queryByRole("button", { name: "Acciones de invitacion_organizacion" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Acciones de Invitación a una organización" })).not.toBeInTheDocument();
   });
 });
