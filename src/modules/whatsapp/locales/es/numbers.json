@@ -1,1 +1,107 @@
-{}
+{
+  "title": "Números",
+  "summary": {
+    "count_one": "{{value}} número",
+    "count_other": "{{value}} números",
+    "paymentMissing_one": "{{value}} sin medio de pago",
+    "paymentMissing_other": "{{value}} sin medio de pago",
+    "none": "Sin números",
+    "noNumber": "Sin número"
+  },
+  "empty": "Todavía no hay números conectados.",
+  "columns": {
+    "number": "Número",
+    "company": "Atiende a",
+    "status": "Estado",
+    "month": "Este mes",
+    "actions": "Acciones"
+  },
+  "wholeOrganization": "Toda la organización",
+  "detail": {
+    "nameAndApp": "{{name}} · también en la app",
+    "app": "También en la app"
+  },
+  "usage": {
+    "free": "{{used}} de {{free}} gratis",
+    "freeMonth": "{{used}} de {{free}} gratis este mes",
+    "charged": "{{total}} · <charged>{{charged}} se cobran</charged>",
+    "chargedMonth": "{{total}} · <charged>{{charged}} se cobran</charged> este mes"
+  },
+  "rowActions": "Acciones de {{number}}",
+  "whatItMeans": "Qué significa",
+  "actions": {
+    "connect": "Conectar número",
+    "connecting": "Conectando…",
+    "changeCompany": "Cambiar a quién atiende",
+    "check": "Comprobar medio de pago",
+    "disconnect": "Desconectar"
+  },
+  "company": {
+    "title": "A quién atiende {{number}}",
+    "label": "Atiende a",
+    "save": "Guardar cambios",
+    "saved": "Cambios guardados"
+  },
+  "connect": {
+    "title": "Conectar número",
+    "company": "Atiende a",
+    "continue": "Seguir en Meta",
+    "connected": "Número conectado",
+    "cancelled": "No se conectó el número"
+  },
+  "metaWindow": {
+    "open": "Ventana de Meta abierta",
+    "back": "Volver a la ventana",
+    "cancel": "Cancelar"
+  },
+  "metaError": {
+    "title": "No se pudo conectar el número",
+    "reason": "Meta informó un error",
+    "code": "Código {{code}}",
+    "retry": "Volvé a tocar «Conectar número»",
+    "support": "Si vuelve a pasar, escribí a {{email}}",
+    "metaSupport": "Si vuelve a pasar, pasale el código al soporte de Meta"
+  },
+  "disconnect": {
+    "title": "¿Desconectar {{number}}?",
+    "description": "Sus chats quedan para leer, sin responder. Para volver a atender, conectalo de nuevo.",
+    "done": "{{number}} desconectado"
+  },
+  "payment": {
+    "title": "{{number}} no tiene medio de pago",
+    "reason": "Falta medio de pago en Meta",
+    "detail": "Responde hasta {{free}} mensajes por mes. Sin medio de pago no manda plantillas ni difusiones",
+    "steps": {
+      "manager": "Entrá a tu WhatsApp Manager de Meta",
+      "add": "Agregá un medio de pago a la cuenta",
+      "back": "Volvé acá y tocá «Comprobar»"
+    },
+    "check": "Comprobar",
+    "checking": "Comprobando…",
+    "goToMeta": "Ir a Meta",
+    "ok": "El número ya tiene medio de pago",
+    "stillMissing": "Todavía falta el medio de pago"
+  },
+  "platform": {
+    "title": "Número",
+    "number": "Número",
+    "since": "{{name}} · desde el {{date}}",
+    "sinceNoName": "Desde el {{date}}",
+    "sinceDate": "desde el {{date}}",
+    "whatItDoes": "Qué hace",
+    "system": "Códigos, invitaciones y avisos de la cuenta y de la organización",
+    "systemMessages_one": "{{value}} mensaje este mes",
+    "systemMessages_other": "{{value}} mensajes este mes",
+    "always": "Siempre",
+    "consultations": "Consultas",
+    "consultationsSwitch": "Atiende consultas",
+    "consultationsOn": "Consultas prendidas",
+    "consultationsOff": "Consultas apagadas",
+    "empty": "Todavía no hay un número conectado",
+    "whyNoMessages": "Por qué no puede mandar mensajes",
+    "paymentTitle": "{{number}} no puede mandar mensajes",
+    "paymentDetail": "Los códigos y los avisos salen solo por correo",
+    "paymentDetailConsultations": "Los códigos y los avisos salen solo por correo. Las consultas siguen hasta {{free}} por mes",
+    "connectOther": "Conectar otro número"
+  }
+}

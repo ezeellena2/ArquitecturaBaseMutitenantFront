@@ -1,1 +1,7 @@
-{}
+{
+  "WhatsAppNumberStatus": {
+    "Connected": "Connected",
+    "PaymentMissing": "Missing payment method",
+    "Disconnected": "Disconnected"
+  }
+}

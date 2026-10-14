@@ -1,1 +1,107 @@
-{}
+{
+  "title": "Numbers",
+  "summary": {
+    "count_one": "{{value}} number",
+    "count_other": "{{value}} numbers",
+    "paymentMissing_one": "{{value}} without a payment method",
+    "paymentMissing_other": "{{value}} without a payment method",
+    "none": "No numbers",
+    "noNumber": "No number"
+  },
+  "empty": "No numbers are connected yet.",
+  "columns": {
+    "number": "Number",
+    "company": "Serves",
+    "status": "Status",
+    "month": "This month",
+    "actions": "Actions"
+  },
+  "wholeOrganization": "The whole organization",
+  "detail": {
+    "nameAndApp": "{{name}} · also in the app",
+    "app": "Also in the app"
+  },
+  "usage": {
+    "free": "{{used}} of {{free}} free",
+    "freeMonth": "{{used}} of {{free}} free this month",
+    "charged": "{{total}} · <charged>{{charged}} are charged</charged>",
+    "chargedMonth": "{{total}} · <charged>{{charged}} are charged</charged> this month"
+  },
+  "rowActions": "Actions for {{number}}",
+  "whatItMeans": "What it means",
+  "actions": {
+    "connect": "Connect number",
+    "connecting": "Connecting…",
+    "changeCompany": "Change who it serves",
+    "check": "Check payment method",
+    "disconnect": "Disconnect"
+  },
+  "company": {
+    "title": "Who {{number}} serves",
+    "label": "Serves",
+    "save": "Save changes",
+    "saved": "Changes saved"
+  },
+  "connect": {
+    "title": "Connect number",
+    "company": "Serves",
+    "continue": "Continue in Meta",
+    "connected": "Number connected",
+    "cancelled": "The number was not connected"
+  },
+  "metaWindow": {
+    "open": "Meta window open",
+    "back": "Back to the window",
+    "cancel": "Cancel"
+  },
+  "metaError": {
+    "title": "The number could not be connected",
+    "reason": "Meta reported an error",
+    "code": "Code {{code}}",
+    "retry": "Tap «Connect number» again",
+    "support": "If it happens again, write to {{email}}",
+    "metaSupport": "If it happens again, give the code to Meta support"
+  },
+  "disconnect": {
+    "title": "Disconnect {{number}}?",
+    "description": "Its chats stay available to read, without replying. To serve again, connect it again.",
+    "done": "{{number}} disconnected"
+  },
+  "payment": {
+    "title": "{{number}} has no payment method",
+    "reason": "Missing payment method in Meta",
+    "detail": "It replies up to {{free}} messages a month. Without a payment method it does not send templates or broadcasts",
+    "steps": {
+      "manager": "Go to your Meta WhatsApp Manager",
+      "add": "Add a payment method to the account",
+      "back": "Come back here and tap «Check»"
+    },
+    "check": "Check",
+    "checking": "Checking…",
+    "goToMeta": "Go to Meta",
+    "ok": "The number now has a payment method",
+    "stillMissing": "The payment method is still missing"
+  },
+  "platform": {
+    "title": "Number",
+    "number": "Number",
+    "since": "{{name}} · since {{date}}",
+    "sinceNoName": "Since {{date}}",
+    "sinceDate": "since {{date}}",
+    "whatItDoes": "What it does",
+    "system": "Codes, invitations and notices for accounts and organizations",
+    "systemMessages_one": "{{value}} message this month",
+    "systemMessages_other": "{{value}} messages this month",
+    "always": "Always",
+    "consultations": "Inquiries",
+    "consultationsSwitch": "Handles inquiries",
+    "consultationsOn": "Inquiries turned on",
+    "consultationsOff": "Inquiries turned off",
+    "empty": "No number is connected yet",
+    "whyNoMessages": "Why it cannot send messages",
+    "paymentTitle": "{{number}} cannot send messages",
+    "paymentDetail": "Codes and notices go out only by email",
+    "paymentDetailConsultations": "Codes and notices go out only by email. Inquiries continue up to {{free}} a month",
+    "connectOther": "Connect another number"
+  }
+}
