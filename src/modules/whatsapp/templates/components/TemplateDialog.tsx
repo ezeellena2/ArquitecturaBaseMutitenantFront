@@ -62,13 +62,12 @@ function sameTemplate(previous: CreateWhatsAppTemplateRequest, next: CreateWhats
     && before.length === after.length && before.every((variable, index) => variable.label === after[index]?.label && variable.example === after[index]?.example);
 }
 
-/// Lo de empezar: vacío o, al duplicar (CC17), lo de la original. Meta no devuelve los ejemplos de los datos: se
-/// vuelven a escribir.
+/// Lo de empezar: vacío o, al duplicar (CC17 y CC23), lo de la original, con el nombre y el ejemplo de cada dato.
 function initialValues(original: WhatsAppTemplateResponse | undefined): TemplateForm {
   if (!original) return { name: "", category: "Utility", body: "", entries: {} };
   return {
     name: duplicateName(original.name, limits.name.maxLength), category: original.category === "Marketing" ? "Marketing" : "Utility", body: original.body,
-    entries: Object.fromEntries(original.variables.map((label, index) => [String(index + 1), { label, example: "" }])),
+    entries: Object.fromEntries(original.variables.map((variable, index) => [String(index + 1), { label: variable.label, example: variable.example }])),
   };
 }
 
@@ -119,7 +118,8 @@ export function TemplateDialog({ scope, original, onClose, returnFocusTo }: {
   const submit = form.handleSubmit((values) => {
     setFailure(undefined);
     const enabled = format.referenceData?.cultures.filter((culture) => culture.isEnabled).map((culture) => culture.code) ?? [];
-    const language = original?.languages.find((code) => enabled.includes(code)) ?? format.culture;
+    // El idioma principal de la original, si sigue habilitado; si no, la cultura de quien la escribe.
+    const language = original?.languages.find((entry) => enabled.includes(entry.culture))?.culture ?? format.culture;
     const request: CreateWhatsAppTemplateRequest = { name: values.name, category: values.category, language, body: values.body,
       variables: templateVariables(values.body, values.entries) };
     send.mutate(request, {

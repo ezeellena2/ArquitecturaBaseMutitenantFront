@@ -49,5 +49,6 @@
   },
   "errors": {
     "metaRejected": "Meta did not receive the template. Try again in a while."
-  }
+  },
+  "categoryIn": "{{category}} in {{language}}"
 }

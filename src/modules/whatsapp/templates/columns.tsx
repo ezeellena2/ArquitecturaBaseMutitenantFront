@@ -5,7 +5,7 @@ import type { Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EnumText } from "@/shared/ui/format/EnumText";
 import type { WhatsAppTemplateResponse } from "../api/types";
-import { TemplateLanguages } from "./components/TemplateLanguages";
+import { OtherCategories, TemplateLanguages } from "./components/TemplateLanguages";
 import { TemplateStatus } from "./components/TemplateStatus";
 
 /// El nombre visible: el `title` de una del sistema («Código de ingreso») o el nombre de las demás.
@@ -20,7 +20,8 @@ export function createTemplateColumns(t: TFunction, onWhyRejected: (template: Wh
       detail: (template) => template.isSystem
         ? <span>{template.name}{" · "}<TemplateLanguages languages={template.languages} /></span>
         : <TemplateLanguages languages={template.languages} /> },
-    { id: "category", header: t("whatsapp:templates.columns.category"), type: "enum", enum: "WhatsAppTemplateCategory", value: (template) => template.category },
+    { id: "category", header: t("whatsapp:templates.columns.category"), type: "enum", enum: "WhatsAppTemplateCategory", value: (template) => template.category,
+      detail: (template) => template.languages.slice(1).some((language) => language.category !== template.category) ? <OtherCategories template={template} /> : null },
     { id: "status", header: t("whatsapp:templates.columns.status"), type: "custom", cell: (template) => <TemplateStatus template={template} t={t} onWhyRejected={onWhyRejected} /> },
     { id: "updatedAtUtc", header: t("whatsapp:templates.columns.updated"), type: "date", value: (template) => template.updatedAtUtc },
   ];
@@ -32,5 +33,6 @@ export function templatePhoneRow(template: WhatsAppTemplateResponse, t: TFunctio
   const category = <EnumText enum="WhatsAppTemplateCategory" value={template.category} />;
   return <ListRow key={template.id} title={templateTitle(template)} meta={<DateText value={template.updatedAtUtc} kind="date" />}
     lines={[<span key="kind">{template.isSystem ? <>{template.name}{" · "}{category}</> : <>{category}{" · "}<TemplateLanguages languages={template.languages} /></>}</span>,
-      <TemplateStatus key="status" template={template} t={t} onWhyRejected={onWhyRejected} />]} trailing={trailing} />;
+      <span key="status" className="inline-flex flex-wrap items-center gap-x-1"><TemplateStatus template={template} t={t} onWhyRejected={onWhyRejected} />
+        {template.languages.slice(1).some((language) => language.category !== template.category) ? <>{"· "}<OtherCategories template={template} /></> : null}</span>]} trailing={trailing} />;
 }

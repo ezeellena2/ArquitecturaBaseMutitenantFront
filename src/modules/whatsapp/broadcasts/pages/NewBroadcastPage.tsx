@@ -67,10 +67,10 @@ type BroadcastFormValues = z.output<ReturnType<typeof broadcastFormSchema>>;
 const emptyForm: BroadcastForm = { name: "", templateId: "", variables: [], kind: "AllAccepting", tag: "", when: "now", scheduledAtUtc: null };
 const sourcePage = { page: 1, pageSize: 10 } as const;
 
-/// Duplicar (CC17): el nombre, la plantilla (si sigue aprobada) y a quiénes de la original; cuándo se elige de nuevo. Las
-/// variables quedan vacías: la difusión no trae las que se usaron.
+/// Duplicar (CC17 y CC23): el nombre, la plantilla (si sigue aprobada), los valores de sus variables y a quiénes de la
+/// original; cuándo se elige de nuevo.
 function valuesFromSource(source: WhatsAppBroadcastResponse, template: WhatsAppTemplateOptionResponse | null): BroadcastForm {
-  return { ...emptyForm, name: source.name, templateId: template?.templateId ?? "", variables: (template?.variables ?? []).map(() => ""),
+  return { ...emptyForm, name: source.name, templateId: template?.templateId ?? "", variables: (template?.variables ?? []).map((_variable, index) => source.variables[index] ?? ""),
     kind: source.audience.kind, tag: source.audience.kind === "Tag" ? source.audience.tag ?? "" : "" };
 }
 

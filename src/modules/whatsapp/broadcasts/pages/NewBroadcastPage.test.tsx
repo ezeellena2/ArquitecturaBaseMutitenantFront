@@ -90,6 +90,15 @@ describe("Nueva difusión", () => {
     expect(keys[1]).toBe(keys[0]);
   });
 
+  // CC17 y CC23: «Duplicar» arranca con el nombre, la plantilla (si sigue aprobada), los valores de sus variables y a quiénes.
+  it("duplicar arranca con los datos de la original, también los valores de sus variables", async () => {
+    server.use(http.get("/api/organization/whatsapp/broadcasts/broadcast-scheduled", () => HttpResponse.json({ broadcast: scheduled, recipients: paged([]) })));
+    mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/nueva?desde=broadcast-scheduled");
+    expect(await screen.findByLabelText(/^Nombre/, { selector: "input[name=name]" })).toHaveValue("Horario de fiestas");
+    expect(await screen.findByLabelText(/^Nombre/, { selector: "input[name='variables.0']" })).toHaveValue("Martina");
+    expect(await screen.findByText(/Hola Martina, el 24 y el 31 atendemos de 9 a 13\./)).toBeVisible();
+  });
+
   it("si nadie acepta, el rechazo del back queda en «Destinatarios»", async () => {
     server.use(http.post("/api/organization/whatsapp/broadcasts", () => HttpResponse.json(
       { status: 400, code: "WhatsApp.Broadcast.NoRecipients", detail: "Ningún contacto con esa etiqueta acepta promociones." }, { status: 400 })));

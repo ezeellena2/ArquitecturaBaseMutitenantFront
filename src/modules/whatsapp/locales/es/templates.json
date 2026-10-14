@@ -49,5 +49,6 @@
   },
   "errors": {
     "metaRejected": "Meta no recibió la plantilla. Probá de nuevo en un rato."
-  }
+  },
+  "categoryIn": "{{category}} en {{language}}"
 }

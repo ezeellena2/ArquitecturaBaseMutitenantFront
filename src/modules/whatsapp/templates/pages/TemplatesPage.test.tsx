@@ -9,7 +9,7 @@ import { mountWhatsApp, whatsappMember, whatsappOperator, whatsappOwner } from "
 
 const page = <T,>(items: T[]) => ({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
 const template = (values: Partial<WhatsAppTemplateResponse>): WhatsAppTemplateResponse => ({
-  id: "template-1", name: "Pedido listo", category: "Utility", languages: ["es-AR"], body: "Hola {{1}}", variables: ["nombre"], status: "Approved",
+  id: "template-1", name: "Pedido listo", category: "Utility", languages: [{ culture: "es-AR", category: "Utility" }], body: "Hola {{1}}", variables: [{ label: "nombre", example: "Ana" }], status: "Approved",
   isSystem: false, updatedAtUtc: "2026-09-20T15:00:00Z", version: 2, ...values,
 });
 const ready = template({});
@@ -65,9 +65,9 @@ describe("Plantillas de la organización", () => {
     // El nombre propuesto lleva «_2»; si ya terminara en «_N», el número siguiente.
     expect(within(dialog).getByRole("textbox", { name: "Nombre" })).toHaveValue("Pedido listo_2");
     expect(within(dialog).getByRole("textbox", { name: "Texto" })).toHaveValue("Hola {{1}}");
+    // CC23: cada dato llega con su nombre y su ejemplo, el mismo par del alta.
     expect(within(dialog).getByRole("textbox", { name: "Dato 1" })).toHaveValue("nombre");
-    await user.click(within(dialog).getByRole("textbox", { name: "Ejemplo del dato 1" }));
-    await user.paste("Ana");
+    expect(within(dialog).getByRole("textbox", { name: "Ejemplo del dato 1" })).toHaveValue("Ana");
     await user.click(within(dialog).getByRole("button", { name: "Mandar a Meta" }));
     await waitFor(() => expect(bodies).toEqual([{ name: "Pedido listo_2", category: "Utility", language: "es-AR", body: "Hola {{1}}", variables: [{ label: "nombre", example: "Ana" }] }]));
     expect(keys[0]).toMatch(/^[0-9a-f-]{36}$/i);
@@ -126,8 +126,10 @@ describe("Plantillas de la organización", () => {
 
 describe("Plantillas de Plataforma", () => {
   const consultation = template({ id: "p-1", name: "Seguimos tu consulta" });
-  const invitation = template({ id: "s-1", name: "invitacion_organizacion", title: "Invitación a una organización", category: "Marketing", languages: ["es-AR", "en-US"], isSystem: true });
-  const code = template({ id: "s-2", name: "codigo_ingreso", title: "Código de ingreso", category: "Authentication", languages: ["es-AR", "en-US"], isSystem: true });
+  const invitation = template({ id: "s-1", name: "invitacion_organizacion", title: "Invitación a una organización", category: "Marketing",
+    languages: [{ culture: "es-AR", category: "Marketing" }, { culture: "en-US", category: "Utility" }], isSystem: true });
+  const code = template({ id: "s-2", name: "codigo_ingreso", title: "Código de ingreso", category: "Authentication",
+    languages: [{ culture: "es-AR", category: "Authentication" }, { culture: "en-US", category: "Authentication" }], isSystem: true });
 
   it("«Para consultas | Del sistema» va en la URL, y las del sistema son de solo lectura con la categoría del back", async () => {
     const groups: (string | null)[] = [];
@@ -153,6 +155,10 @@ describe("Plantillas de Plataforma", () => {
     expect(row).not.toBeNull();
     expect(row).toHaveTextContent("invitacion_organizacion · Español (Argentina), Inglés (Estados Unidos)");
     expect(within(row as HTMLElement).getByText("Marketing")).toBeVisible();
+    // CC24: cada idioma trae su categoría; la invitación es Marketing en español y Utility en inglés.
+    expect(within(row as HTMLElement).getByText("Utilidad en Inglés (Estados Unidos)")).toBeVisible();
+    const login = screen.getByText("Código de ingreso").closest("tr") as HTMLElement;
+    expect(within(login).queryByText(/ en /)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Acciones de Invitación a una organización" })).not.toBeInTheDocument();
   });
 });
