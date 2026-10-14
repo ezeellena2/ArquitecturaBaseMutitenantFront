@@ -1,1 +1,56 @@
-{}
+{
+  "title": "Cargar teléfonos de empleados",
+  "phoneTitle": "Cargar teléfonos",
+  "breadcrumb": "Cargar teléfonos",
+  "back": "Volver a Usuarios",
+  "step": "Paso 1 de 2",
+  "invitees": "A los que se invitan",
+  "phones": "Teléfonos",
+  "review_zero": "Revisar teléfonos",
+  "review_one": "Revisar {{count}} teléfono",
+  "review_other": "Revisar {{count}} teléfonos",
+  "reviewing": "Revisando…",
+  "confirm_zero": "Vincular",
+  "confirm_one": "Vincular y mandar {{count}} invitación",
+  "confirm_other": "Vincular y mandar {{count}} invitaciones",
+  "sending": "Mandando…",
+  "form": {
+    "company": "Empresa",
+    "noCompany": "Ninguna",
+    "roles": "Roles en la empresa",
+    "noRoles": "Sin roles",
+    "chooseCompanyFirst": "Elegí primero la empresa",
+    "phones": "Uno por renglón, hasta {{max}}",
+    "upload": "Subir un archivo",
+    "phonesRequired": "Pegá o subí al menos un teléfono.",
+    "tooMany": "Son {{count}} teléfonos: cargá hasta {{max}} por vez."
+  },
+  "columns": {
+    "phone": "Teléfono",
+    "person": "Persona",
+    "outcome": "Qué va a pasar"
+  },
+  "outcome": {
+    "AlreadyMember": "Queda vinculado",
+    "Invite": "Le llega una invitación por WhatsApp",
+    "Invalid": "No se carga"
+  },
+  "summary": {
+    "phones_one": "{{count}} teléfono",
+    "phones_other": "{{count}} teléfonos",
+    "members_one": "{{count}} ya es miembro",
+    "members_other": "{{count}} ya son miembros",
+    "invites_one": "{{count}} invitación",
+    "invites_other": "{{count}} invitaciones",
+    "invalid_one": "{{count}} inválido",
+    "invalid_other": "{{count}} inválidos"
+  },
+  "messages": {
+    "done_zero": "Vinculamos {{linked}} teléfonos.",
+    "done_one": "Vinculamos {{linked}} teléfonos y mandamos {{count}} invitación.",
+    "done_other": "Vinculamos {{linked}} teléfonos y mandamos {{count}} invitaciones."
+  },
+  "errors": {
+    "channelUnavailable": "WhatsApp no puede mandar invitaciones ahora. Probá de nuevo en un rato."
+  }
+}

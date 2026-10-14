@@ -1,1 +1,56 @@
-{}
+{
+  "title": "Load employee phones",
+  "phoneTitle": "Load phones",
+  "breadcrumb": "Load phones",
+  "back": "Back to Users",
+  "step": "Step 1 of 2",
+  "invitees": "Who gets invited",
+  "phones": "Phones",
+  "review_zero": "Review phones",
+  "review_one": "Review {{count}} phone",
+  "review_other": "Review {{count}} phones",
+  "reviewing": "Reviewing…",
+  "confirm_zero": "Link",
+  "confirm_one": "Link and send {{count}} invitation",
+  "confirm_other": "Link and send {{count}} invitations",
+  "sending": "Sending…",
+  "form": {
+    "company": "Company",
+    "noCompany": "None",
+    "roles": "Roles in the company",
+    "noRoles": "No roles",
+    "chooseCompanyFirst": "Choose the company first",
+    "phones": "One per line, up to {{max}}",
+    "upload": "Upload a file",
+    "phonesRequired": "Paste or upload at least one phone.",
+    "tooMany": "There are {{count}} phones: load up to {{max}} at a time."
+  },
+  "columns": {
+    "phone": "Phone",
+    "person": "Person",
+    "outcome": "What will happen"
+  },
+  "outcome": {
+    "AlreadyMember": "Gets linked",
+    "Invite": "Gets an invitation on WhatsApp",
+    "Invalid": "Not loaded"
+  },
+  "summary": {
+    "phones_one": "{{count}} phone",
+    "phones_other": "{{count}} phones",
+    "members_one": "{{count}} already a member",
+    "members_other": "{{count}} already members",
+    "invites_one": "{{count}} invitation",
+    "invites_other": "{{count}} invitations",
+    "invalid_one": "{{count}} invalid",
+    "invalid_other": "{{count}} invalid"
+  },
+  "messages": {
+    "done_zero": "We linked {{linked}} phones.",
+    "done_one": "We linked {{linked}} phones and sent {{count}} invitation.",
+    "done_other": "We linked {{linked}} phones and sent {{count}} invitations."
+  },
+  "errors": {
+    "channelUnavailable": "WhatsApp can't send invitations right now. Try again in a while."
+  }
+}

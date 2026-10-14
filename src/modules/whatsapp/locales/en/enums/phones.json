@@ -1,1 +1,7 @@
-{}
+{
+  "WhatsAppPhoneImportOutcome": {
+    "AlreadyMember": "Already a member",
+    "Invite": "Gets invited",
+    "Invalid": "Invalid number"
+  }
+}
