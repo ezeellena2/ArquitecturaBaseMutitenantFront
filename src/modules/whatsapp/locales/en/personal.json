@@ -1,1 +1,18 @@
-{}
+{
+  "title": "Messages",
+  "back": "Back to Messages",
+  "organizations_one": "{{count}} organization",
+  "organizations_other": "{{count}} organizations",
+  "noOrganizations": "No organizations",
+  "search": "Search by organization",
+  "filters": "Search Messages",
+  "list": "Conversations with organizations",
+  "empty": "You don't have messages with organizations yet",
+  "noMatches": "No organization matches the search",
+  "linkedSince": "Linked since {{date}}",
+  "actionsOf": "Actions for {{name}}",
+  "unlink": "Unlink",
+  "unlinkTitle": "Unlink the conversation with {{name}}?",
+  "unlinkDescription": "It stops showing in Messages and {{name}} no longer sees it tied to your account. You can keep writing to them on WhatsApp.",
+  "continueOnWhatsApp": "Continue on WhatsApp"
+}

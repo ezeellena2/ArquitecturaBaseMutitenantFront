@@ -1,1 +1,18 @@
-{}
+{
+  "title": "Mensajes",
+  "back": "Volver a Mensajes",
+  "organizations_one": "{{count}} organización",
+  "organizations_other": "{{count}} organizaciones",
+  "noOrganizations": "Ninguna organización",
+  "search": "Buscar por organización",
+  "filters": "Buscar en Mensajes",
+  "list": "Conversaciones con organizaciones",
+  "empty": "Todavía no tenés mensajes con organizaciones",
+  "noMatches": "Ninguna organización coincide con la búsqueda",
+  "linkedSince": "Vinculada desde el {{date}}",
+  "actionsOf": "Acciones de {{name}}",
+  "unlink": "Desvincular",
+  "unlinkTitle": "¿Desvincular la conversación con {{name}}?",
+  "unlinkDescription": "Deja de verse en Mensajes y {{name}} ya no la ve unida a tu cuenta. Podés seguir escribiéndole por WhatsApp.",
+  "continueOnWhatsApp": "Seguir en WhatsApp"
+}
