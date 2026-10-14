@@ -54,7 +54,7 @@ describe("Plantillas de la organización", () => {
     server.use(http.post("/api/organization/whatsapp/templates", async ({ request }) => {
       bodies.push(await request.json());
       keys.push(request.headers.get("Idempotency-Key"));
-      return HttpResponse.json(template({ id: "template-9", name: "Pedido listo 2", status: "Pending" }), { status: 201 });
+      return HttpResponse.json(template({ id: "template-9", name: "Pedido listo_2", status: "Pending" }), { status: 201 });
     }));
     const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/plantillas");
     await openActions(user, "Pedido listo");
@@ -62,17 +62,16 @@ describe("Plantillas de la organización", () => {
     expect(within(menu).queryByRole("menuitem", { name: /Editar/ })).not.toBeInTheDocument();
     await user.click(within(menu).getByRole("menuitem", { name: "Duplicar" }));
     const dialog = await screen.findByRole("dialog", { name: "Nueva plantilla" });
-    expect(within(dialog).getByRole("textbox", { name: "Nombre" })).toHaveValue("Pedido listo");
+    // El nombre propuesto lleva «_2»; si ya terminara en «_N», el número siguiente.
+    expect(within(dialog).getByRole("textbox", { name: "Nombre" })).toHaveValue("Pedido listo_2");
     expect(within(dialog).getByRole("textbox", { name: "Texto" })).toHaveValue("Hola {{1}}");
     expect(within(dialog).getByRole("textbox", { name: "Dato 1" })).toHaveValue("nombre");
-    await user.clear(within(dialog).getByRole("textbox", { name: "Nombre" }));
-    await user.paste("Pedido listo 2");
     await user.click(within(dialog).getByRole("textbox", { name: "Ejemplo del dato 1" }));
     await user.paste("Ana");
     await user.click(within(dialog).getByRole("button", { name: "Mandar a Meta" }));
-    await waitFor(() => expect(bodies).toEqual([{ name: "Pedido listo 2", category: "Utility", language: "es-AR", body: "Hola {{1}}", variables: [{ label: "nombre", example: "Ana" }] }]));
+    await waitFor(() => expect(bodies).toEqual([{ name: "Pedido listo_2", category: "Utility", language: "es-AR", body: "Hola {{1}}", variables: [{ label: "nombre", example: "Ana" }] }]));
     expect(keys[0]).toMatch(/^[0-9a-f-]{36}$/i);
-    expect(await screen.findByText("Mandamos «Pedido listo 2» a Meta para que la revise.")).toBeVisible();
+    expect(await screen.findByText("Mandamos «Pedido listo_2» a Meta para que la revise.")).toBeVisible();
 
     // Una en revisión no se duplica: solo se borra.
     await openActions(user, "Novedades");

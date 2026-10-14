@@ -24,6 +24,7 @@ import type { CreateWhatsAppTemplateRequest, WhatsAppTemplateResponse } from "..
 import { createTemplate, templatesQueryRoot, type TemplateScope } from "../api/templates";
 import { templateErrorField, templateErrorMessage } from "../errors";
 import { insertPlaceholder, nextPlaceholder, placeholderNumbers, placeholdersInOrder, templateVariables } from "../lib/variables";
+import { duplicateName } from "../lib/names";
 
 const categories = ["Utility", "Marketing"] as const;
 const limits = validationConstraints.CreateWhatsAppTemplateHttpRequest;
@@ -66,7 +67,7 @@ function sameTemplate(previous: CreateWhatsAppTemplateRequest, next: CreateWhats
 function initialValues(original: WhatsAppTemplateResponse | undefined): TemplateForm {
   if (!original) return { name: "", category: "Utility", body: "", entries: {} };
   return {
-    name: original.name, category: original.category === "Marketing" ? "Marketing" : "Utility", body: original.body,
+    name: duplicateName(original.name, limits.name.maxLength), category: original.category === "Marketing" ? "Marketing" : "Utility", body: original.body,
     entries: Object.fromEntries(original.variables.map((label, index) => [String(index + 1), { label, example: "" }])),
   };
 }
