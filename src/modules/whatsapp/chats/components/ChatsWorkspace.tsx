@@ -1,12 +1,13 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import type { MeResponse } from "@/shared/api/types";
 import { useFormat } from "@/shared/format/useFormat";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useFilters } from "@/shared/hooks/useFilters";
 import { usePagination } from "@/shared/hooks/usePagination";
+import { useQueryUpdate } from "@/shared/hooks/useQueryUpdate";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { pageSizes } from "@/shared/api/pageSizes";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
@@ -45,6 +46,8 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
   const { phone } = useAppChrome();
   const { conversationId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
+  const updateQuery = useQueryUpdate();
   const platform = variant === "platform";
   const basePath = platform ? "/plataforma/whatsapp" : "/org/whatsapp/chats";
   // La conversación abierta: en Plataforma, debajo de «consultas», para no chocar con Número, Bot, Equipos y Plantillas.
@@ -121,7 +124,12 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
       <SegmentedControl fullWidth aria-label={t("chats.inbox")} options={inboxes.map((key) => ({
         key, label: format.isLoading ? "" : format.formatEnum("WhatsAppInbox", inboxEnum[key]), pressed: key === inbox,
         detail: counts ? format.formatInteger(counts[key]) : undefined,
-        onSelect: () => filters.setFilter("inbox", key === inboxes[0] ? undefined : key),
+        onSelect: () => {
+          // Los equipos y el chat abierto son de una bandeja: al cambiarla se sueltan.
+          const value = key === inboxes[0] ? undefined : key;
+          if (conversationId) void navigate({ pathname: basePath, search: value ? `?inbox=${value}` : "" });
+          else updateQuery({ inbox: value, teamId: undefined, page: undefined });
+        },
       }))} />
     </div> : null}
     <FilterBar label={t("chats.filters.label")} searchLabel={t("chats.filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}

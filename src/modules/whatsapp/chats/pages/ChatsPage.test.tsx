@@ -36,21 +36,21 @@ function list(rows: WhatsAppConversationRowResponse[], counts = { customers: 5, 
 const detail = (conversation: WhatsAppConversationRowResponse, messages = [message()]): WhatsAppConversationResponse => ({ conversation, messages: paged(messages) });
 
 /** La bandeja y su conversación, con el contador del menú. Devuelve las bandejas pedidas. */
-function inbox(conversation: WhatsAppConversationRowResponse, messages?: WhatsAppChatMessageResponse[], base = `${org}/customers/conversations`) {
+function inbox(conversation: WhatsAppConversationRowResponse, messages?: WhatsAppChatMessageResponse[]) {
   const requested: string[] = [];
   server.use(
     http.get(`${org}/untaken`, () => HttpResponse.json({ customers: 2, internal: 0 })),
     http.get(`${org}/teams`, () => HttpResponse.json(paged([{ id: "team-ventas", name: "Ventas", inbox: "Customers", memberCount: 3, notifyAfterMinutes: null, version: 1 }]))),
     http.get(`${org}/:inbox/conversations`, ({ params }) => { requested.push(String(params.inbox)); return HttpResponse.json(list([conversation])); }),
-    http.get(`${base}/:id`, () => HttpResponse.json(detail(conversation, messages))),
+    http.get(`${org}/:inbox/conversations/:id`, () => HttpResponse.json(detail(conversation, messages))),
   );
   return requested;
 }
 
 describe("Chats de la organización", () => {
   it("la Dueña ve las dos bandejas con su cantidad y la conversación abierta al lado", async () => {
-    inbox(row());
-    const { container } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    const requested = inbox(row());
+    const { container, user, router } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
     const inboxes = await screen.findByRole("group", { name: "Bandeja" });
     expect(await within(inboxes).findByRole("button", { name: /Clientes\s*5/ })).toHaveAttribute("aria-pressed", "true");
     expect(within(inboxes).getByRole("button", { name: /Internos\s*2/ })).toHaveAttribute("aria-pressed", "false");
@@ -59,10 +59,13 @@ describe("Chats de la organización", () => {
     expect(screen.getByText("Hola, buen día. Quiero hacer un pedido.")).toBeVisible();
     expect(screen.getByText(/5 conversaciones/)).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
+    await user.click(within(inboxes).getByRole("button", { name: /Internos/ }));
+    await waitFor(() => expect(requested).toContain("internal"));
+    expect(router.state.location.search).toBe("?inbox=internal");
   });
 
   it("quien atiende solo internos no ve el segmentado y lee solo esa bandeja", async () => {
-    const requested = inbox(row({ inbox: "Internal", tags: [], linkedToAccount: false }), undefined, `${org}/internal/conversations`);
+    const requested = inbox(row({ inbox: "Internal", tags: [], linkedToAccount: false }));
     mountWhatsApp(whatsappMember("whatsapp.internal"), "/org/whatsapp/chats");
     expect(await screen.findByRole("heading", { level: 2, name: "Martina López" })).toBeVisible();
     expect(screen.getByText(/Empleado/)).toBeVisible();
