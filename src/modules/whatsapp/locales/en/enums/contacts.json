@@ -1,1 +1,14 @@
-{}
+{
+  "WhatsAppConsent": {
+    "Accepted": "Accepts",
+    "Declined": "Doesn't accept",
+    "NoAnswer": "No answer",
+    "Unsubscribed": "Unsubscribed"
+  },
+  "WhatsAppConsentSource": {
+    "Bot": "Through the bot",
+    "Import": "Through an import",
+    "Manual": "By hand",
+    "Unsubscribe": "Through unsubscribing"
+  }
+}

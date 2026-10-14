@@ -1,1 +1,110 @@
-{}
+{
+  "title": "Contacts",
+  "back": "Back to Contacts",
+  "linked": "Linked to their account",
+  "linkedShort": "Linked",
+  "summaryTotal_one": "{{count}} contact",
+  "summaryTotal_other": "{{count}} contacts",
+  "summaryAccepting_one": "{{count}} accepts promotions",
+  "summaryAccepting_other": "{{count}} accept promotions",
+  "rowActions": "Actions for {{name}}",
+  "openChat": "Open chat",
+  "columns": {
+    "contact": "Contact",
+    "tags": "Tags",
+    "consent": "Promotions",
+    "lastConversation": "Last conversation",
+    "actions": "Actions"
+  },
+  "actions": {
+    "view": "View details",
+    "edit": "Edit contact"
+  },
+  "filters": {
+    "label": "Filters",
+    "search": "Search by name or number",
+    "tag": "Tag: all",
+    "tagMenu": "Tag",
+    "allTags": "All",
+    "consent": "Promotions: all",
+    "consentMenu": "Promotions",
+    "allConsents": "All"
+  },
+  "empty": {
+    "all": "There are no contacts yet",
+    "filtered": "No contacts match the filters"
+  },
+  "consentPhrase": {
+    "Accepted": "Accepts promotions",
+    "Declined": "Doesn't accept promotions",
+    "NoAnswer": "No answer about promotions",
+    "Unsubscribed": "Unsubscribed from promotions"
+  },
+  "detail": {
+    "title": "Contact",
+    "loading": "Contact",
+    "tabs": "Contact details"
+  },
+  "conversations": {
+    "title": "Conversations",
+    "columns": {
+      "conversation": "Conversation",
+      "team": "Team",
+      "assignee": "Handled by",
+      "messages": "Messages"
+    },
+    "messages_one": "{{count}} message",
+    "messages_other": "{{count}} messages",
+    "rowActions": "Actions for {{date}}",
+    "empty": "There are no conversations yet"
+  },
+  "broadcasts": {
+    "title": "Broadcasts",
+    "columns": {
+      "broadcast": "Broadcast",
+      "sent": "Sent",
+      "status": "Status"
+    },
+    "empty": "No broadcast has reached this contact yet"
+  },
+  "edit": {
+    "title": "Edit contact",
+    "name": "Name",
+    "phone": "Phone",
+    "tags": "Tags",
+    "consent": "Promotions",
+    "noTags": "No tags",
+    "nameRequired": "Enter the name.",
+    "tooManyTags": "You can add up to {{count}} tags.",
+    "saved": "We saved the contact's changes.",
+    "save": "Save changes",
+    "savePhone": "Save"
+  },
+  "import": {
+    "open": "Import contacts",
+    "short": "Import",
+    "title": "Import contacts",
+    "file": "File",
+    "sample": "Download sample",
+    "sampleFileName": "contacts-sample.xlsx",
+    "noFile": "No file chosen",
+    "choose": "Choose file",
+    "change": "Change",
+    "fileRequired": "Choose the file you want to import.",
+    "tag": "Tag for everyone",
+    "noTag": "No tag",
+    "toImport": "To import",
+    "toImportValue_one": "{{count}} contact: {{new}} new and {{updated}} already there",
+    "toImportValue_other": "{{count}} contacts: {{new}} new and {{updated}} already there",
+    "rejected": "Not imported",
+    "rejectedRows_one": "{{count}} row",
+    "rejectedRows_other": "{{count}} rows",
+    "row": "Row {{row}}",
+    "submit": "Import contacts",
+    "submitCount_one": "Import {{count}} contact",
+    "submitCount_other": "Import {{count}} contacts",
+    "importing": "Importing…",
+    "done_one": "We imported {{count}} contact.",
+    "done_other": "We imported {{count}} contacts."
+  }
+}

@@ -1,1 +1,110 @@
-{}
+{
+  "title": "Contactos",
+  "back": "Volver a Contactos",
+  "linked": "Vinculado a su cuenta",
+  "linkedShort": "Vinculado",
+  "summaryTotal_one": "{{count}} contacto",
+  "summaryTotal_other": "{{count}} contactos",
+  "summaryAccepting_one": "{{count}} acepta promociones",
+  "summaryAccepting_other": "{{count}} aceptan promociones",
+  "rowActions": "Acciones de {{name}}",
+  "openChat": "Abrir chat",
+  "columns": {
+    "contact": "Contacto",
+    "tags": "Etiquetas",
+    "consent": "Promociones",
+    "lastConversation": "Última conversación",
+    "actions": "Acciones"
+  },
+  "actions": {
+    "view": "Ver ficha",
+    "edit": "Editar contacto"
+  },
+  "filters": {
+    "label": "Filtros",
+    "search": "Buscar por nombre o número",
+    "tag": "Etiqueta: todas",
+    "tagMenu": "Etiqueta",
+    "allTags": "Todas",
+    "consent": "Promociones: todas",
+    "consentMenu": "Promociones",
+    "allConsents": "Todas"
+  },
+  "empty": {
+    "all": "Todavía no hay contactos",
+    "filtered": "Ningún contacto coincide con los filtros"
+  },
+  "consentPhrase": {
+    "Accepted": "Acepta promociones",
+    "Declined": "No acepta promociones",
+    "NoAnswer": "Sin respuesta sobre promociones",
+    "Unsubscribed": "Se dio de baja de las promociones"
+  },
+  "detail": {
+    "title": "Contacto",
+    "loading": "Contacto",
+    "tabs": "Datos del contacto"
+  },
+  "conversations": {
+    "title": "Conversaciones",
+    "columns": {
+      "conversation": "Conversación",
+      "team": "Equipo",
+      "assignee": "La atendió",
+      "messages": "Mensajes"
+    },
+    "messages_one": "{{count}} mensaje",
+    "messages_other": "{{count}} mensajes",
+    "rowActions": "Acciones de {{date}}",
+    "empty": "Todavía no hay conversaciones"
+  },
+  "broadcasts": {
+    "title": "Difusiones",
+    "columns": {
+      "broadcast": "Difusión",
+      "sent": "Enviada",
+      "status": "Estado"
+    },
+    "empty": "Todavía no le llegó ninguna difusión"
+  },
+  "edit": {
+    "title": "Editar contacto",
+    "name": "Nombre",
+    "phone": "Teléfono",
+    "tags": "Etiquetas",
+    "consent": "Promociones",
+    "noTags": "Sin etiquetas",
+    "nameRequired": "Escribí el nombre.",
+    "tooManyTags": "Podés poner hasta {{count}} etiquetas.",
+    "saved": "Guardamos los cambios del contacto.",
+    "save": "Guardar cambios",
+    "savePhone": "Guardar"
+  },
+  "import": {
+    "open": "Importar contactos",
+    "short": "Importar",
+    "title": "Importar contactos",
+    "file": "Archivo",
+    "sample": "Descargar ejemplo",
+    "sampleFileName": "ejemplo-contactos.xlsx",
+    "noFile": "Ningún archivo elegido",
+    "choose": "Elegir archivo",
+    "change": "Cambiar",
+    "fileRequired": "Elegí el archivo que querés importar.",
+    "tag": "Etiqueta para todos",
+    "noTag": "Sin etiqueta",
+    "toImport": "Para importar",
+    "toImportValue_one": "{{count}} contacto: {{new}} nuevos y {{updated}} que ya estaban",
+    "toImportValue_other": "{{count}} contactos: {{new}} nuevos y {{updated}} que ya estaban",
+    "rejected": "No se importan",
+    "rejectedRows_one": "{{count}} fila",
+    "rejectedRows_other": "{{count}} filas",
+    "row": "Fila {{row}}",
+    "submit": "Importar contactos",
+    "submitCount_one": "Importar {{count}} contacto",
+    "submitCount_other": "Importar {{count}} contactos",
+    "importing": "Importando…",
+    "done_one": "Importamos {{count}} contacto.",
+    "done_other": "Importamos {{count}} contactos."
+  }
+}
