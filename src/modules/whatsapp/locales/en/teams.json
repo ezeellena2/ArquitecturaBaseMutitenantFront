@@ -1,1 +1,55 @@
-{}
+{
+  "title": "Teams",
+  "summary_one": "{{count}} team",
+  "summary_other": "{{count}} teams",
+  "create": "Create team",
+  "editTitle": "Edit team",
+  "save": "Save changes",
+  "empty": "There are no teams yet",
+  "rowActions": "Actions for {{name}}",
+  "edit": "Edit",
+  "delete": "Delete",
+  "confirmDelete": "Delete “{{name}}”?",
+  "columns": {
+    "name": "Team",
+    "members": "People",
+    "operators": "Operators",
+    "notice": "Email alert",
+    "actions": "Actions"
+  },
+  "inbox": {
+    "Customers": "Customers inbox",
+    "Internal": "Internal inbox"
+  },
+  "inboxOption": {
+    "Customers": "Customers",
+    "Internal": "Internal"
+  },
+  "members_one": "{{count}} person",
+  "members_other": "{{count}} people",
+  "operators_one": "{{count}} operator",
+  "operators_other": "{{count}} operators",
+  "notice": {
+    "after": "After {{minutes}} minutes",
+    "short": "Alert after {{minutes}} min",
+    "none": "Don't alert",
+    "off": "No alert"
+  },
+  "form": {
+    "name": "Name",
+    "inbox": "Inbox",
+    "members": "People",
+    "operators": "Operators",
+    "notice": "Email alert if nobody takes it",
+    "noMembers": "No people",
+    "noOperators": "No operators",
+    "nameRequired": "Enter the team name.",
+    "membersRequired": "Choose at least one person.",
+    "operatorsRequired": "Choose at least one operator."
+  },
+  "messages": {
+    "created": "We created the team “{{name}}”.",
+    "updated": "We saved the team “{{name}}”.",
+    "deleted": "We deleted the team “{{name}}”."
+  }
+}

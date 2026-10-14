@@ -1,1 +1,55 @@
-{}
+{
+  "title": "Equipos",
+  "summary_one": "{{count}} equipo",
+  "summary_other": "{{count}} equipos",
+  "create": "Crear equipo",
+  "editTitle": "Editar equipo",
+  "save": "Guardar cambios",
+  "empty": "Todavía no hay equipos",
+  "rowActions": "Acciones de {{name}}",
+  "edit": "Editar",
+  "delete": "Borrar",
+  "confirmDelete": "¿Borrar «{{name}}»?",
+  "columns": {
+    "name": "Equipo",
+    "members": "Personas",
+    "operators": "Operadores",
+    "notice": "Aviso por correo",
+    "actions": "Acciones"
+  },
+  "inbox": {
+    "Customers": "Bandeja Clientes",
+    "Internal": "Bandeja Internos"
+  },
+  "inboxOption": {
+    "Customers": "Clientes",
+    "Internal": "Internos"
+  },
+  "members_one": "{{count}} persona",
+  "members_other": "{{count}} personas",
+  "operators_one": "{{count}} operador",
+  "operators_other": "{{count}} operadores",
+  "notice": {
+    "after": "A los {{minutes}} minutos",
+    "short": "Aviso a los {{minutes}} min",
+    "none": "No avisar",
+    "off": "Sin aviso"
+  },
+  "form": {
+    "name": "Nombre",
+    "inbox": "Bandeja",
+    "members": "Personas",
+    "operators": "Operadores",
+    "notice": "Aviso por correo si nadie lo toma",
+    "noMembers": "Sin personas",
+    "noOperators": "Sin operadores",
+    "nameRequired": "Escribí el nombre del equipo.",
+    "membersRequired": "Elegí al menos una persona.",
+    "operatorsRequired": "Elegí al menos un operador."
+  },
+  "messages": {
+    "created": "Creamos el equipo «{{name}}».",
+    "updated": "Guardamos el equipo «{{name}}».",
+    "deleted": "Borramos el equipo «{{name}}»."
+  }
+}
