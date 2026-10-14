@@ -65,6 +65,7 @@ export type WhatsAppContactBroadcastResponse = ApiSchemas["WhatsAppContactBroadc
 export type WhatsAppContactConversationResponse = ApiSchemas["WhatsAppContactConversationResponse"];
 export type WhatsAppContactListResponse = ApiSchemas["WhatsAppContactListResponse"];
 export type WhatsAppContactResponse = ApiSchemas["WhatsAppContactResponse"];
+export type WhatsAppConversationChannelResponse = ApiSchemas["WhatsAppConversationChannelResponse"];
 export type WhatsAppConversationCountsResponse = ApiSchemas["WhatsAppConversationCountsResponse"];
 export type WhatsAppConversationFilter = ApiSchemas["WhatsAppConversationFilter"];
 export type WhatsAppConversationListResponse = ApiSchemas["WhatsAppConversationListResponse"];

@@ -15,7 +15,7 @@ const central: WhatsAppNumberResponse = { id: "11111111-1111-4111-8111-111111111
 const south: WhatsAppNumberResponse = { ...central, id: "22222222-2222-4222-8222-222222222222", displayNumber: "+5493515550200",
   company: { id: "company-2", name: "Delta Sur S.R.L." }, status: "PaymentMissing" };
 const gone: WhatsAppNumberResponse = { ...central, id: "33333333-3333-4333-8333-333333333333", displayNumber: "+5491155550999", status: "Disconnected" };
-const team = (id: string, name: string, inbox: WhatsAppTeamResponse["inbox"] = "Customers"): WhatsAppTeamResponse => ({ id, name, inbox, memberCount: 2, version: 1 });
+const team = (id: string, name: string, inbox: WhatsAppTeamResponse["inbox"] = "Customers"): WhatsAppTeamResponse => ({ id, name, inbox, memberCount: 2, memberPreview: [], version: 1 });
 const teams = [team("t-sales", "Ventas"), team("t-support", "Soporte"), team("t-general", "Atención general"), team("t-orders", "Carga de pedidos", "Internal")];
 const option = (id: string, label: string, patch: Partial<WhatsAppBotMenuOption> = {}): WhatsAppBotMenuOption => ({ id, label, action: "Team", teamId: "t-sales", isSystem: false, ...patch });
 const menu = [option("o1", "Hacer un pedido"), option("o2", "Consultar un pedido", { teamId: "t-support" }),

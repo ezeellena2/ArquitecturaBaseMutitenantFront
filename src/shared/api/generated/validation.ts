@@ -393,6 +393,9 @@ export const validationConstraints = {
     "name": {
       "maxLength": 60
     },
+    "memberIds": {
+      "maxItems": 200
+    },
     "notifyAfterMinutes": {
       "minimum": -2147483648,
       "maximum": 2147483647
@@ -485,6 +488,12 @@ export const validationConstraints = {
     "resendAfterSeconds": {
       "minimum": -2147483648,
       "maximum": 2147483647
+    }
+  },
+  "Money": {
+    "currency": {
+      "minLength": 3,
+      "maxLength": 3
     }
   },
   "OrganizationAssistantSettingsResponse": {
@@ -1561,6 +1570,9 @@ export const validationConstraints = {
     "name": {
       "maxLength": 60
     },
+    "memberIds": {
+      "maxItems": 200
+    },
     "notifyAfterMinutes": {
       "minimum": -2147483648,
       "maximum": 2147483647
@@ -1786,6 +1798,9 @@ export const validationConstraints = {
     }
   },
   "WhatsAppTeamDetailResponse": {
+    "members": {
+      "maxItems": 200
+    },
     "notifyAfterMinutes": {
       "minimum": -2147483648,
       "maximum": 2147483647
@@ -1796,6 +1811,9 @@ export const validationConstraints = {
       "minimum": -2147483648,
       "maximum": 2147483647
     },
+    "memberPreview": {
+      "maxItems": 3
+    },
     "notifyAfterMinutes": {
       "minimum": -2147483648,
       "maximum": 2147483647
@@ -1803,6 +1821,14 @@ export const validationConstraints = {
   },
   "WhatsAppTemplateListResponse": {
     "approved": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "consultations": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "system": {
       "minimum": -2147483648,
       "maximum": 2147483647
     }
@@ -1813,6 +1839,9 @@ export const validationConstraints = {
     }
   },
   "WhatsAppTemplateResponse": {
+    "languages": {
+      "maxItems": 10
+    },
     "variables": {
       "maxItems": 10
     }

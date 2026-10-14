@@ -10,7 +10,7 @@ import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { MoneyText } from "@/shared/ui/format/MoneyText";
 import { FormError } from "@/shared/ui/FormError";
 import type { CreateWhatsAppBroadcastRequest, WhatsAppBroadcastEstimateResponse, WhatsAppTemplateOptionResponse } from "../../api/types";
-import { asMoney, countOf } from "../../lib/values";
+import { countOf } from "../../lib/values";
 
 /**
  * «¿Programar «Horario de fiestas»?» (tableros WA-Difusion-Nueva y su M-*, «Confirmar la programación»): la plantilla, a
@@ -47,7 +47,7 @@ export function ConfirmBroadcastDialog({ request, template, estimate, pending, f
         { key: "template", label: t("whatsapp:broadcasts.form.template"), value: templateLabel },
         { key: "recipients", label: t("whatsapp:broadcasts.form.audience"), value: recipients },
         { key: "when", label: t("whatsapp:broadcasts.form.when"), value: when },
-        { key: "cost", label: t("whatsapp:broadcasts.confirm.cost"), value: estimate ? <MoneyText value={asMoney(estimate.estimatedCost)} className="text-left" /> : <EmptyValue /> },
+        { key: "cost", label: t("whatsapp:broadcasts.confirm.cost"), value: estimate ? <MoneyText value={estimate.estimatedCost} className="text-left" /> : <EmptyValue /> },
       ]} />
       {failure ? <div className="px-5 pb-4"><FormError message={actionErrorMessage(failure, t)} /></div> : null}
       <DialogFooter>

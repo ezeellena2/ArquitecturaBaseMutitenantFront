@@ -15,7 +15,7 @@ const bot: PlatformWhatsAppBotResponse = { welcome: "Hola, somos ArquitecturaBas
     { id: "s1", label: "Entrar a mi cuenta", action: "Reply", reply: null, isSystem: true },
     { id: "o2", label: "No me llega el código", action: "Team", teamId: "t-support", isSystem: false },
   ] };
-const teams = { items: [{ id: "t-support", name: "Soporte", inbox: "Customers", memberCount: 3, version: 1 }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false };
+const teams = { items: [{ id: "t-support", name: "Soporte", inbox: "Customers", memberCount: 3, memberPreview: [], version: 1 }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false };
 
 function handlers() {
   const sent: UpdatePlatformWhatsAppBotRequest[] = [];

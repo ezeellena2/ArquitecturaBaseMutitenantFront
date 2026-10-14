@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
 import { MoneyText } from "@/shared/ui/format/MoneyText";
 import type { WhatsAppAudienceKind, WhatsAppBroadcastEstimateResponse } from "../../api/types";
-import { asMoney, countOf } from "../../lib/values";
+import { countOf } from "../../lib/values";
 
 /// La burbuja del mensaje tal como le llega a cada contacto, con el botón «No recibir más» de toda difusión (tableros
 /// WA-Difusion-Nueva y su M-*, .o-burb y .ap-burb).
@@ -24,7 +24,7 @@ export function EstimateSummary({ estimate, kind, tag }: { estimate: WhatsAppBro
       <span className="text-[12px] text-[var(--t3)]">{kind === "Tag" ? t("broadcasts.preview.withTag", { tag }) : t("broadcasts.preview.allAccepting")}</span>
     </div>
     <div className="flex flex-col leading-[1.35]">
-      <MoneyText value={asMoney(estimate.estimatedCost)} className="text-left text-[15px] font-semibold text-[var(--t1)]" />
+      <MoneyText value={estimate.estimatedCost} className="text-left text-[15px] font-semibold text-[var(--t1)]" />
       <span className="text-[12px] text-[var(--t3)]">{t("broadcasts.preview.cost")}</span>
     </div>
   </div>;
@@ -36,7 +36,7 @@ export function EstimateLine({ estimate }: { estimate: WhatsAppBroadcastEstimate
   const format = useFormat();
   return <span className="flex flex-col justify-center leading-[1.3]">
     {estimate ? <strong className="truncate text-[15px] font-semibold text-[var(--t1)]">
-      {t("broadcasts.contacts", countOf(format, estimate.recipients))}{" · "}<MoneyText value={asMoney(estimate.estimatedCost)} className="text-left" />
+      {t("broadcasts.contacts", countOf(format, estimate.recipients))}{" · "}<MoneyText value={estimate.estimatedCost} className="text-left" />
     </strong> : null}
     <span className="text-[12.5px] text-[var(--t3)]">{t("broadcasts.preview.costShort")}</span>
   </span>;
