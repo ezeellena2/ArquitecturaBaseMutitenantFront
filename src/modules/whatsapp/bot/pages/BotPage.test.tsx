@@ -172,6 +172,40 @@ describe("Bot de la organización", () => {
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
   });
 
+  it("en el teléfono la opción se quita desde su diálogo, con el menú sin ella; con 409 relee el bot", async () => {
+    const restore = asPhone();
+    try {
+      const reads = handlers();
+      let conflict = false;
+      const sent = saving((body) => conflict
+        ? HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Alguien cambió esto mientras lo editabas." }, { status: 409 })
+        : HttpResponse.json(bot({ menu: (body.menu ?? []).map((item, index) => option(item.id ?? `n${index}`, item.label ?? "")), version: 6 })));
+      const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+      await page.user.click(await screen.findByRole("button", { name: /Horarios y dirección/ }));
+      const dialog = await screen.findByRole("dialog", { name: "Editar opción 3" });
+      await page.user.click(within(dialog).getByRole("button", { name: "Quitar opción" }));
+      await waitFor(() => expect(sent).toHaveLength(1));
+      expect(sent[0]).toMatchObject({ version: 5 });
+      expect(sent[0].menu?.map((item) => item.label)).toEqual(["Hacer un pedido", "Consultar un pedido", "Hablar con alguien"]);
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+      conflict = true;
+      const before = reads.length;
+      await page.user.click(await screen.findByRole("button", { name: /Hacer un pedido/ }));
+      await page.user.click(within(await screen.findByRole("dialog", { name: "Editar opción 1" })).getByRole("button", { name: "Quitar opción" }));
+      await waitFor(() => expect(reads.length).toBeGreaterThan(before));
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    } finally { restore(); }
+  });
+
+  it("en la compu el diálogo de una opción no lleva «Quitar opción»: va en el ⋮", async () => {
+    handlers();
+    const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+    await page.user.click(within(await openMenu(page.user, "Hacer un pedido")).getByRole("menuitem", { name: "Editar" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar opción 1" });
+    expect(within(dialog).queryByRole("button", { name: "Quitar opción" })).not.toBeInTheDocument();
+  });
+
   it("en el teléfono: el número arriba, el segmentado y filas que se tocan", async () => {
     const restore = asPhone();
     try {

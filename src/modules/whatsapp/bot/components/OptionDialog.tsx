@@ -24,7 +24,7 @@ const actions: readonly WhatsAppBotAction[] = ["Team", "Reply"];
 
 /// «Editar opción 1» (WA-Admin-Editar y M-WA-Editar) y «Agregar opción»: el texto que ve el cliente en la lista, qué hace
 /// (pasa a un equipo o contesta un texto) y el equipo o el texto. Guarda el menú entero con la opción cambiada.
-export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusTo }: {
+export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusTo, onRemove, removing = false }: {
   menu: readonly WhatsAppBotMenuOption[];
   /** La opción que se edita; sin índice, se agrega al final. */
   index: number | null;
@@ -33,6 +33,9 @@ export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusT
   onSave: (patch: BotPatch) => Promise<unknown>;
   onClose: () => void;
   returnFocusTo?: HTMLElement | null;
+  /** En el teléfono, quitar la opción que se edita (no la del sistema): un botón de peligro debajo de Guardar. */
+  onRemove?: () => void;
+  removing?: boolean;
 }) {
   const { t } = useTranslation(["whatsapp", "common"]);
   const format = useFormat();
@@ -86,9 +89,11 @@ export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusT
           </FormField>}
           <FormError message={actionErrorMessage(failure, t)} />
         </DialogBody>
-        <DialogFooter>
+        <DialogFooter className={onRemove ? "flex-wrap" : undefined}>
           <Button type="button" variant="outline" onClick={close}>{t("common:actions.cancel")}</Button>
           <Button type="submit" disabled={Boolean(current) && !form.formState.isDirty} pending={pending}>{t("common:actions.save")}</Button>
+          {onRemove ? <Button type="button" variant="danger" className="basis-full" onClick={onRemove} pending={removing}
+            pendingLabel={t("whatsapp:bot.option.removing")}>{t("whatsapp:bot.option.removeOption")}</Button> : null}
         </DialogFooter>
       </form>
     </DialogContent>

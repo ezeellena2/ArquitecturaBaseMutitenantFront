@@ -70,6 +70,19 @@ describe("Bot de Plataforma", () => {
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
   });
 
+  it("en el teléfono se quita una opción propia desde su diálogo; la del sistema no se abre", async () => {
+    const restore = asPhone();
+    try {
+      const sent = handlers();
+      const page = mountWhatsApp(operator, "/plataforma/whatsapp/bot");
+      await page.user.click(await screen.findByRole("button", { name: /No me llega el código/ }));
+      await page.user.click(within(await screen.findByRole("dialog", { name: "Editar opción 2" })).getByRole("button", { name: "Quitar opción" }));
+      await waitFor(() => expect(sent).toHaveLength(1));
+      expect(sent[0].menu?.map((item) => item.label)).toEqual([]);
+      expect(screen.queryByRole("button", { name: /Entrar a mi cuenta/ })).not.toBeInTheDocument();
+    } finally { restore(); }
+  });
+
   it("en el teléfono, el segmentado y los grupos de la app", async () => {
     const restore = asPhone();
     try {

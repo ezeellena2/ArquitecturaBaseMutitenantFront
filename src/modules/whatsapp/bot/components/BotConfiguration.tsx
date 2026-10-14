@@ -67,11 +67,17 @@ export function BotConfiguration({ bot, variant, teams, onSave }: {
   const edit = (onSelect: (trigger: HTMLButtonElement | null) => void): RowAction =>
     ({ label: t("whatsapp:bot.edit"), accessibleName: t("whatsapp:bot.edit"), icon: Pencil, onSelect });
   const rowActions = (name: string, actions: readonly RowAction[]) => <RowActions label={t("whatsapp:bot.rowActions", { name })} title={name} actions={actions} />;
+  // Quitar una opción es un PUT directo con el menú sin ella; en el teléfono sale de su diálogo, que se cierra después.
+  const remove = (index: number, label: string, after?: () => void) => direct.mutate(
+    { patch: { menu: bot.menu.filter((_option, position) => position !== index) }, done: t("whatsapp:bot.option.removed", { name: label }) },
+    after ? { onSettled: after } : undefined);
   const optionActions = (index: number, label: string) => rowActions(label, [
     edit((trigger) => setOpen({ kind: "option", index, trigger })),
-    { label: t("whatsapp:bot.option.remove"), accessibleName: t("whatsapp:bot.option.remove"), icon: Trash2, destructive: true,
-      onSelect: () => direct.mutate({ patch: { menu: bot.menu.filter((_option, position) => position !== index) }, done: t("whatsapp:bot.option.removed", { name: label }) }) },
+    { label: t("whatsapp:bot.option.remove"), accessibleName: t("whatsapp:bot.option.remove"), icon: Trash2, destructive: true, onSelect: () => remove(index, label) },
   ]);
+  const editingIndex = open?.kind === "option" ? open.index : null;
+  const editing = editingIndex === null ? undefined : bot.menu[editingIndex];
+  const removeEditing = phone && editingIndex !== null && editing && !editing.isSystem ? () => remove(editingIndex, editing.label, close) : undefined;
   const toggle = (name: string, key: "askPromotions" | "offerAccountLink", checked: boolean | undefined) => <Switch aria-label={name} checked={checked ?? false}
     disabled={direct.isPending} onCheckedChange={(value) => direct.mutate({ patch: { [key]: value }, done: t("whatsapp:bot.saved") })} />;
 
@@ -122,7 +128,10 @@ export function BotConfiguration({ bot, variant, teams, onSave }: {
 
     {open?.kind === "welcome" ? <WelcomeDialog welcome={bot.welcome} onSave={onSave} onClose={close} returnFocusTo={open.trigger} /> : null}
     {open?.kind === "outOfHours" ? <OutOfHoursDialog outOfHours={bot.outOfHours} schedule={bot.schedule} onSave={onSave} onClose={close} returnFocusTo={open.trigger} /> : null}
-    {open?.kind === "option" ? <OptionDialog menu={bot.menu} index={open.index} teams={menuTeams} onSave={onSave} onClose={close} returnFocusTo={open.trigger} /> : null}
+    {open?.kind === "option" ? <OptionDialog menu={bot.menu} index={open.index} teams={menuTeams} onSave={onSave} onClose={close} returnFocusTo={open.trigger}
+      // En el teléfono la fila no tiene ⋮: «Quitar opción» va en el pie del diálogo (M-WA-Editar), como el «Quitar» de la compu.
+      onRemove={removeEditing}
+      removing={direct.isPending} /> : null}
     {open?.kind === "employees" ? <EmployeesTeamDialog teamId={bot.employeesTeamId ?? null} teams={internalTeams} onSave={onSave} onClose={close} returnFocusTo={open.trigger} /> : null}
     {open?.kind === "cap" ? <ImportantNotice open onOpenChange={(value) => { if (!value) close(); }} title={t("whatsapp:bot.cap.title", { count: maxMenuOptions })}
       reason={t("whatsapp:bot.cap.reason", { count: maxMenuOptions })} detail={t("whatsapp:bot.cap.detail")}

@@ -62,6 +62,8 @@
     "systemTag": "Del sistema",
     "remove": "Quitar",
     "removed": "Se quitó «{{name}}»",
+    "removeOption": "Quitar opción",
+    "removing": "Quitando…",
     "empty": "Todavía no hay opciones en el menú."
   },
   "promotions": {
