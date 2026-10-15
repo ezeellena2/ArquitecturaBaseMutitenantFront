@@ -257,7 +257,9 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     await dialog.getByRole("button", { name: /Etiquetas/ }).click();
     await page.getByRole("searchbox", { name: "Buscar", exact: true }).fill(tag);
     await page.getByRole("menuitem", { name: `Crear «${tag}»`, exact: true }).click(); await closeMenu();
-    const saved = await act(page, () => dialog.getByRole("button", { name: "Guardar cambios", exact: true }).click(), `${organizationApi}/contacts/${conversation.contactId}`, "PUT");
+    // En el teléfono la hoja dice «Guardar» (contacts.edit.savePhone); en la compu, «Guardar cambios».
+    const save = width === 390 ? "Guardar" : "Guardar cambios";
+    const saved = await act(page, () => dialog.getByRole("button", { name: save, exact: true }).click(), `${organizationApi}/contacts/${conversation.contactId}`, "PUT");
     assert.ok((await saved.json()).tags.includes(tag));
     await dialog.waitFor({ state: "hidden" });
     const reread = await reloadResponse(page, responseFor(`${organizationApi}/contacts/${conversation.contactId}`));
