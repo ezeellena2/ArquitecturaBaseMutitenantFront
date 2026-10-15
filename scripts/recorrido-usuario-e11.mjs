@@ -85,6 +85,9 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     for (const reply of replies) assert.equal(reply.status(), 200);
     return Promise.all(replies.map((reply) => reply.json()));
   };
+  // La salida del teléfono va por «Más» de la barra de secciones (signOutMobile): se sale desde el inicio del acceso,
+  // que la tiene, y no desde una pantalla propia («Cargar teléfonos», una conversación) que vuelve a otra.
+  const leave = async (profile, route) => { await page.goto(url(route)); await awaitApp(page, profile, route); await signOut(page, profile); };
   const closeMenu = async () => { if (await page.getByRole("menu").isVisible()) await page.keyboard.press("Escape"); };
   /** En el teléfono, lo que no está a la vista va en el ⋮ de la barra (moreActions de Page). */
   const barAction = async (label) => {
@@ -159,7 +162,7 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     await page.reload(); await page.getByRole("main").getByText(option, { exact: true }).first().waitFor();
     return "El menú del bot suma «Hacer un pedido» → Ventas y F5 la conserva.";
   });
-  await signOut(page, organization);
+  await leave(organization, "/org");
   await step("05", async () => {
     const signup = await begin(`walkthrough-e11-signup-${width}`, customer);
     await page.goto(url("/registro")); await channel(customer);
@@ -285,7 +288,7 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     } finally { page.off("request", count); }
     return "La revisión contó una invitación y un inválido, sin decir si hay cuenta y sin mandar nada.";
   });
-  await signOut(page, organization);
+  await leave(organization, "/org");
   await step("15", async () => {
     const login = await begin(`walkthrough-e11-login-${width}`, customer);
     await page.goto(url("/login")); await channel(customer);
@@ -305,7 +308,7 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     assert.ok(texts.includes(answer)); assert.equal(texts.includes(note), false, "La copia de la persona nunca lleva las notas.");
     await page.getByRole("log", { name: /^Mensajes con / }).getByText(answer, { exact: true }).waitFor();
     assert.equal(await page.getByText(note, { exact: true }).count(), 0);
-    await signOut();
+    await leave("Personal", "/");
     return "Entró por WhatsApp con OTP controlado y vio en «Mensajes» la respuesta de la organización, sin la nota.";
   });
 }
