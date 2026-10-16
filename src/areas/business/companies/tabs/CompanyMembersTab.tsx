@@ -1,5 +1,6 @@
 import { companyRoleOptions, companyCandidateOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Power, RotateCw, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
@@ -30,6 +31,25 @@ import {
 import { companyMemberPhoneRow, createCompanyMemberColumns, isCompanyInvitation } from "../columns";
 import { MemberRolesDialog } from "../components/MemberRolesDialog";
 import { memberStates, type CompanyMembersList } from "./useCompanyMembers";
+
+/// El ⋮ de una invitación de la empresa. El reenvío vive por invitación (R04), como AccountActions de Plataforma: cada una con
+/// su clave y su dueño, así reenviar otra no le cambia la clave y un reintento conserva sus avisos. Reenviar manda la misma
+/// invitación (decisión 97); la lista se vuelve a leer con la invitación nueva y su vencimiento.
+function InvitationRowActions({ company, member, hidden, onRevoke }: { company: CompanyResponse; member: CompanyMemberResponse; hidden: boolean;
+  onRevoke: (trigger: HTMLButtonElement | null) => void }) {
+  const { t } = useTranslation(["companies", "common"]);
+  const queryClient = useQueryClient();
+  const action = useResourceAction<{ invitationId: string; email: string }>({ onError: (error) => toastActionError(error, t) });
+  const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendCompanyInvitation(company.id, operation.invitationId, key),
+    (_response, operation) => { toast.success(t("companies:messages.invitationResent", { email: operation.email })); void queryClient.invalidateQueries({ queryKey: companiesQueryRoot }); }),
+    { meta: action.meta, sameOperation: (previous, next) => previous.invitationId === next.invitationId });
+  return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} actions={[
+    { label: t("companies:actions.resendInvitation"), accessibleName: t("companies:actions.resendInvitation"), icon: RotateCw, hidden,
+      onSelect: () => { if (member.invitationId) resend.mutate({ invitationId: member.invitationId, email: member.email ?? member.displayName }); } },
+    // «Criterio · Menús» y tablero Empresa (v109): abajo, después de la franja, en rojo y con la ✕.
+    { label: t("companies:actions.revokeInvitation"), accessibleName: t("companies:actions.revokeInvitation"), icon: CloseIcon, destructive: true, hidden, onSelect: onRevoke },
+  ]} />;
+}
 
 /// Un miembro elegido desde su ⋮: el diálogo le devuelve el foco a ese botón al cerrar.
 interface MemberTarget {
@@ -75,21 +95,12 @@ export function CompanyMembersTab({ company, list, roles }: {
     },
     onError: (error) => toastActionError(error, t),
   });
-  // Decisión 97: la invitación de un miembro se reenvía o se revoca desde su empresa. Reenviar manda la misma invitación,
-  // con su clave de idempotencia; la lista se vuelve a leer con la invitación nueva y su vencimiento.
-  const resendInvitation = useIdempotentMutation((member: CompanyMemberResponse, key) => resendCompanyInvitation(company.id, member.invitationId ?? "", key));
+  // Decisión 97: la invitación de un miembro se reenvía (InvitationRowActions) o se revoca desde su empresa.
   const revokeInvitation = useMutation({
     mutationFn: (member: CompanyMemberResponse) => revokeCompanyInvitation(company.id, member.invitationId ?? ""),
     onSuccess: async (_result, member) => {
       setRevokeTarget(null);
       toast.success(t("companies:messages.invitationRevoked", { email: member.email ?? member.displayName }));
-      await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
-    },
-    onError: (error) => toastActionError(error, t),
-  });
-  const resend = (member: CompanyMemberResponse) => resendInvitation.mutate(member, {
-    onSuccess: async () => {
-      toast.success(t("companies:messages.invitationResent", { email: member.email ?? member.displayName }));
       await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
     },
     onError: (error) => toastActionError(error, t),
@@ -102,13 +113,8 @@ export function CompanyMembersTab({ company, list, roles }: {
     // Tableros Empresa y M-Empresa (v108): el ⋮ de una invitación trae solo «Reenviar invitación» y, de peligro, «Revocar
     // invitación». Sin `invitationId` (una invitación que no se resuelve desde esta empresa) va sin ⋮.
     if (isCompanyInvitation(member)) {
-      const hidden = !canManageMembers || !editable || !member.invitationId;
-      return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} actions={[
-        { label: t("companies:actions.resendInvitation"), accessibleName: t("companies:actions.resendInvitation"), icon: RotateCw, hidden, onSelect: () => resend(member) },
-        // «Criterio · Menús» y tablero Empresa (v109): abajo, después de la franja, en rojo y con la ✕.
-        { label: t("companies:actions.revokeInvitation"), accessibleName: t("companies:actions.revokeInvitation"), icon: CloseIcon, destructive: true, hidden,
-          onSelect: (trigger) => setRevokeTarget({ member, trigger }) },
-      ]} />;
+      return <InvitationRowActions company={company} member={member} hidden={!canManageMembers || !editable || !member.invitationId}
+        onRevoke={(trigger) => setRevokeTarget({ member, trigger })} />;
     }
     const removing = member.membershipStatus === "Active";
     return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} actions={[

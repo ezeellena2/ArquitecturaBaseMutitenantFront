@@ -372,6 +372,44 @@ describe("UsersPage", () => {
     expect(posts).toBe(0);
   }, 10_000);
 
+  // R04 (datos-y-api): cada invitación reenvía con su propia clave. Si el reenvío de A se corta, reenviar B no usa la clave
+  // de A (el servidor la rechazaría con 422) y reintentar A después vuelve a mandar la de A.
+  it("reenviar A y B, y reintentar A después de B: cada una con su clave y sin 422", async () => {
+    const user = userEvent.setup();
+    const invitation = { ...member, userId: null, roles: [], state: "Invited" as const, invitationIssuedAtUtc: "2026-09-25T12:00:00Z", invitationExpiresAtUtc: "2027-10-02T12:00:00Z" };
+    const owners = new Map<string, string>(); const sent: { invitationId: string; key: string }[] = [];
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [
+        { ...invitation, memberId: "member-a", displayName: "Ana Gómez", email: "ana@example.com", invitationId: "inv-a" },
+        { ...invitation, memberId: "member-b", displayName: "Beto Ruiz", email: "beto@example.com", invitationId: "inv-b" },
+      ], page: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 2, active: 0, pendingDeletion: 0, invited: 2, expired: 0, inactive: 0 })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.post("/api/users/invitations/:invitationId/resend", ({ params, request }) => {
+        const invitationId = String(params.invitationId); const key = request.headers.get("Idempotency-Key") ?? "";
+        sent.push({ invitationId, key });
+        if (owners.has(key) && owners.get(key) !== invitationId) return HttpResponse.json({ code: "Request.IdempotencyKeyReused" }, { status: 422 });
+        owners.set(key, invitationId);
+        return sent.length === 1 ? HttpResponse.error() : HttpResponse.json("inv-new");
+      }),
+    );
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    const resend = async (name: string) => {
+      const trigger = await screen.findByRole("button", { name: `Acciones de ${name}` }); trigger.focus(); await user.keyboard("{Enter}");
+      await user.click(await screen.findByRole("menuitem", { name: "Reenviar invitación" }));
+    };
+
+    await resend("Ana Gómez");
+    await waitFor(() => expect(sent).toHaveLength(1));
+    await resend("Beto Ruiz");
+    expect(await screen.findByText("Reenviamos la invitación a beto@example.com.")).toBeVisible();
+    await resend("Ana Gómez");
+    expect(await screen.findByText("Reenviamos la invitación a ana@example.com.")).toBeVisible();
+    expect(sent.map((call) => call.invitationId)).toEqual(["inv-a", "inv-b", "inv-a"]);
+    expect(sent[2].key).toBe(sent[0].key);
+    expect(sent[1].key).not.toBe(sent[0].key);
+  });
+
   it("pagina una organización con 50 usuarios sin cargar más de una página", async () => {
     const items = Array.from({ length: 10 }, (_item, index) => ({
       ...member,

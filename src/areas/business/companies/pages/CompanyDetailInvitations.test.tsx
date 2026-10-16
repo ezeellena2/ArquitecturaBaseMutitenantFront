@@ -232,6 +232,35 @@ describe("CompanyDetailPage: las invitaciones de la empresa (6e)", () => {
   });
 });
 
+describe("CompanyDetailPage: reenvíos por invitación (R04)", () => {
+  // datos-y-api: cada invitación reenvía con su propia clave. Si el reenvío de Sofía se corta, reenviar el de Martín no usa
+  // la clave de Sofía (el servidor la rechazaría con 422) y reintentar el de Sofía vuelve a mandar la suya.
+  it("reenviar A y B, y reintentar A después de B: cada una con su clave y sin 422", async () => {
+    const user = userEvent.setup();
+    companyApi([valentina, sofia, martin]);
+    const owners = new Map<string, string>(); const sent: { invitationId: string; key: string }[] = [];
+    server.use(http.post("/api/companies/company-1/invitations/:invitationId/resend", ({ params, request }) => {
+      const invitationId = String(params.invitationId); const key = request.headers.get("Idempotency-Key") ?? "";
+      sent.push({ invitationId, key });
+      if (owners.has(key) && owners.get(key) !== invitationId) return HttpResponse.json({ code: "Request.IdempotencyKeyReused" }, { status: 422 });
+      owners.set(key, invitationId);
+      return sent.length === 1 ? HttpResponse.error() : HttpResponse.json("inv-new");
+    }));
+    renderRouteWithProviders("/org/empresas/company-1", { as: companyAdmin });
+    const resend = async (name: string) => { await openActions(user, name); await user.click(await screen.findByRole("menuitem", { name: "Reenviar invitación" })); };
+
+    await resend("Sofía Herrera");
+    await waitFor(() => expect(sent).toHaveLength(1));
+    await resend("Martín Paz");
+    expect(await screen.findByText("Reenviamos la invitación a martin.paz@delta.ejemplo.com.")).toBeVisible();
+    await resend("Sofía Herrera");
+    expect(await screen.findByText("Reenviamos la invitación a sofia.herrera@delta.ejemplo.com.")).toBeVisible();
+    expect(sent.map((call) => call.invitationId)).toEqual(["inv-sofia", "inv-martin", "inv-sofia"]);
+    expect(sent[2].key).toBe(sent[0].key);
+    expect(sent[1].key).not.toBe(sent[0].key);
+  });
+});
+
 describe("CompanyDetailPage en el teléfono: las invitaciones de la empresa (M-Empresa, 6e)", () => {
   // Tablero M-Empresa (v108): en la línea de abajo, los roles, el estado y «vence 02/10» o «venció 29/09», con la fecha
   // corta del teléfono.

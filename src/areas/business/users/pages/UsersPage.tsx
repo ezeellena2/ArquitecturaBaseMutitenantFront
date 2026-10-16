@@ -18,7 +18,8 @@ import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
-import { RowActions } from "@/shared/ui/RowActions";
+import { RowActions, type RowAction } from "@/shared/ui/RowActions";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { Surface } from "@/shared/ui/Surface";
 import { toast } from "sonner";
 import { changeUserStatus, fetchUserCounts, fetchUsers, removeUser, resendUserInvitation, revokeUserInvitation, userCountsQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
@@ -42,6 +43,21 @@ function countFor(counts: OrganizationUserFilterCountsResponse | undefined, stat
       : state === "PendingDeletion" ? counts.pendingDeletion
         : state === "Invited" ? counts.invited
           : state === "Expired" ? counts.expired : counts.inactive;
+}
+
+/// El ⋮ de un usuario. El reenvío vive por invitación (R04), como AccountActions de Plataforma: cada una con su clave y su
+/// dueño, así reenviar otra no le cambia la clave y un reintento conserva sus avisos.
+function UserRowActions({ member, label, title, actions }: { member: OrganizationUserResponse; label: string; title: string;
+  actions: (resend: () => void) => readonly RowAction[] }) {
+  const { t } = useTranslation(["users", "common"]);
+  const client = useQueryClient();
+  const action = useResourceAction<{ invitationId: string; email: string }>({ onError: (error) => toastActionError(error, t) });
+  const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendUserInvitation(operation.invitationId, key),
+    (_response, operation) => { toast.success(t("users:messages.resent", { email: operation.email })); void client.invalidateQueries({ queryKey: usersQueryRoot }); }),
+    { meta: action.meta, sameOperation: (previous, next) => previous.invitationId === next.invitationId });
+  const format = useFormat();
+  const send = () => { if (member.invitationId) resend.mutate({ invitationId: member.invitationId, email: userContactText(member, format) }); };
+  return <RowActions label={label} title={title} actions={actions(send)} />;
 }
 
 export function UsersPage() {
@@ -87,7 +103,6 @@ export function UsersPage() {
   const [target, setTarget] = useState<OrganizationUserResponse | null>(null);
   const [confirmAction, setConfirmAction] = useState<"revoke" | "disable" | "remove" | null>(null);
 
-  const resend = useIdempotentMutation((invitationId: string, key) => resendUserInvitation(invitationId, key));
   const invalidate = async () => client.invalidateQueries({ queryKey: usersQueryRoot });
   const revoke = useMutation({
     mutationFn: (user: OrganizationUserResponse) => revokeUserInvitation(user.invitationId!),
@@ -105,12 +120,12 @@ export function UsersPage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  const rowActions = (member: OrganizationUserResponse) => <RowActions
+  const rowActions = (member: OrganizationUserResponse) => <UserRowActions member={member}
       label={t("users:rowActions", { name: member.displayName || userContactText(member, format) })}
       title={member.displayName || userContactText(member, format)}
-      actions={[
+      actions={(resend) => [
         { label: t("users:actions.view"), accessibleName: t("users:actions.view"), icon: Pencil, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); } },
-        { label: t("users:actions.resend"), accessibleName: t("users:actions.resend"), icon: RotateCw, onSelect: () => { if (member.invitationId) resend.mutate(member.invitationId, { onSuccess: async () => { toast.success(t("users:messages.resent", { email: userContactText(member, format) })); await invalidate(); }, onError: (error) => toastActionError(error, t) }); }, hidden: !canInvite || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
+        { label: t("users:actions.resend"), accessibleName: t("users:actions.resend"), icon: RotateCw, onSelect: resend, hidden: !canInvite || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
         { label: t("users:actions.enable"), accessibleName: t("users:actions.enable"), icon: Power, onSelect: () => changeStatus.mutate({ ...member, isActive: true }), hidden: !canManage || member.state !== "Inactive" },
         { label: t("users:actions.disable"), accessibleName: t("users:actions.disable"), icon: Power, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("disable"); }, hidden: !canManage || member.state !== "Active" },
         // «Criterio · Menús» y tablero Usuarios (v109): abajo, después de la franja, en rojo y con la ✕.
