@@ -23,6 +23,23 @@ describe("httpClient con sesión", () => {
     expect(authorization).toBeNull();
   });
 
+  // E9: el desafío del segundo factor va solo con su cookie. Un 401 suyo no renueva ni cierra la sesión abierta.
+  it("getCookie no manda el token ni renueva la sesión ante un 401", async () => {
+    let authorization: string | null = "sin pedir";
+    server.use(http.get("/api/auth/platform-factor", ({ request }) => {
+      authorization = request.headers.get("authorization");
+      return HttpResponse.json({ code: "Auth.TwoFactor.ChallengeExpired" }, { status: 401 });
+    }));
+    const renewAccessToken = vi.fn(async () => "new-token");
+    const onSessionExpired = vi.fn();
+    configureHttpClient({ getAccessToken: () => "consumer-token", renewAccessToken, onSessionExpired });
+
+    await expect(api.getCookie("/api/auth/platform-factor")).rejects.toMatchObject({ status: 401, code: "Auth.TwoFactor.ChallengeExpired" });
+    expect(authorization).toBeNull();
+    expect(renewAccessToken).not.toHaveBeenCalled();
+    expect(onSessionExpired).not.toHaveBeenCalled();
+  });
+
   it("renueva el token tras 401 y repite una sola vez la misma petición", async () => {
     const seen: string[] = [];
     server.use(http.post("/api/protected", async ({ request }) => {

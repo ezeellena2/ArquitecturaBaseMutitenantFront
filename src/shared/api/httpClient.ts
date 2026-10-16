@@ -194,6 +194,9 @@ export const api = {
     request<T>(path, { ...init, method: "POST", body: body === undefined ? undefined : JSON.stringify(body) }),
   postForm: <T>(path: string, body: FormData, init?: RequestInit) =>
     request<T>(path, { ...init, method: "POST", body }),
+  // Solo con la cookie, sin token: un 401 de una cookie propia (el desafío del segundo factor) no renueva ni cierra la
+  // sesión que tenga abierta el navegador.
+  getCookie: <T>(path: string, init?: RequestInit) => request<T>(path, { ...init, method: "GET", credentials: "same-origin" }, true),
   postCookie: <T>(path: string, body?: unknown, init?: RequestInit) =>
     request<T>(path, { ...init, method: "POST", body: body === undefined ? undefined : JSON.stringify(body), credentials: "same-origin" }, true),
   put: <T>(path: string, body?: unknown, init?: RequestInit) =>

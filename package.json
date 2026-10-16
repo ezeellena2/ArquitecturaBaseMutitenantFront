@@ -29,6 +29,7 @@
     "libphonenumber-js": "1.13.14",
     "lucide-react": "^1.47.0",
     "oidc-client-ts": "^3.5.0",
+    "qrcode-generator": "2.0.4",
     "radix-ui": "^1.6.7",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

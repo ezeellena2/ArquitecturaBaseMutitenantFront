@@ -31,6 +31,7 @@ import type { LoginDestination, PendingDeletionState } from "@/shared/api/types"
 import { accountErrorCodes, pendingDeletionFromProblem } from "@/shared/api/accountContract";
 import { getPendingDeletion, cancelAccountDeletion } from "../api/deletion";
 import { PendingDeletionPanel } from "../components/PendingDeletionPanel";
+import { PlatformFactorStep } from "../components/PlatformFactorStep";
 import { toast } from "sonner";
 import { toastError } from "@/shared/ui/sonner";
 import { accessOfPath, homeOf, isUnavailableCode, loginPathOf, type UnavailableCode } from "@/tenancy/access";
@@ -52,7 +53,7 @@ const unavailableResults: Record<UnavailableCode, { title: string; description: 
 export function LoginPage({ access, completeLogin = followAuthorize }: LoginPageProps) {
   const { t } = useTranslation(["auth", "errors"]);
   const auth = useAuth();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const [initialPhone] = useState(() => phoneFromNavigation(location.state));
   const originalReturn = loginReturnUrl(searchParams.get("returnUrl"));
@@ -68,6 +69,10 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     return searchParams.get("session") === "expired" || stored;
   });
   const startedOidc = useRef(false);
+  // E9: el operador probó el primer factor (código o Google) y falta el segundo. `factor=pending` solo dice que hay que
+  // consultar el desafío: lo agrega la pantalla después del código, para que recargar lo vuelva a consultar, y el retorno de
+  // Google. Nada del desafío va en la URL ni en el storage.
+  const factorPending = searchParams.get("factor") === "pending";
   const [step, setStep] = useState<CodeStep | null>(null);
   const [lastDestination, setLastDestination] = useState<LoginDestination | null>(null);
   const [code, setCode] = useState("");
@@ -94,7 +99,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   }, [googlePending]);
 
   useEffect(() => {
-    if (returnUrl || pending || googlePending || startedOidc.current) return;
+    if (returnUrl || pending || googlePending || factorPending || startedOidc.current) return;
     startedOidc.current = true;
     if (initialEmail) carryLoginEmail(initialEmail);
     if (redirectError && !googleProofExpired) carryLoginRedirectError(redirectError);
@@ -108,13 +113,27 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
         ...(searchParams.get("session") === "expired" || searchParams.get("prompt") === "login" ? { prompt: "login" } : {}),
       },
     });
-  }, [access, auth, redirectError, returnUrl, searchParams, pending, googlePending, googleProofExpired, initialEmail]);
+  }, [access, auth, redirectError, returnUrl, searchParams, pending, googlePending, factorPending, googleProofExpired, initialEmail]);
 
   useEffect(() => {
     if (returnUrl) { forgetLoginRedirectError(); forgetLoginEmail(); }
   }, [returnUrl]);
 
-  if (!returnUrl && !pending) return null;
+  if (!returnUrl && !pending && !factorPending) return null;
+
+  function setFactor(next: boolean) {
+    setSearchParams((current) => {
+      const params = new URLSearchParams(current);
+      if (next) params.set("factor", "pending"); else params.delete("factor");
+      return params;
+    }, { replace: true });
+  }
+
+  // Sin desafío (venció, se anuló o lo completó otra pestaña) se vuelve al primer paso del ingreso.
+  function restartAfterFactor() {
+    setFactor(false);
+    backToEmail();
+  }
 
   async function finishLogin(url: string) {
     if (!originalReturn && initialPhone) await auth.signinRedirect({ extraQueryParams: { access }, state: { returnTo: homeOf(access) } });
@@ -159,6 +178,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     setError(null);
     try {
       const response = await verify.mutateAsync({ destination: step.loginDestination ?? { type: "email", email: step.destination }, code, returnUrl, access: !originalReturn && initialPhone ? access : undefined, journey: step.sentAtMs });
+      if (response.next === "platformFactor") { setFactor(true); return; }
       await finishLogin(response.returnUrl);
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
@@ -199,7 +219,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const unavailable = isUnavailableCode(result) ? unavailableResults[result] : null;
 
   return <AuthLayout access={access}>
-    {pending ? <PendingDeletionPanel pending={pending} onCancel={() => { void cancelDeletion(); }} busy={cancel.isPending} failure={cancelFailure} />
+    {factorPending ? <PlatformFactorStep onCompleted={completeLogin} onRestart={restartAfterFactor} />
+      : pending ? <PendingDeletionPanel pending={pending} onCancel={() => { void cancelDeletion(); }} busy={cancel.isPending} failure={cancelFailure} />
       : result === "platformOnly" ? <PlatformAccessResult access={access} onSignedOut={() => { backToEmail(); setLastDestination({ type: "email", email: "" }); dismissGoogleError(); setPending(null); setCancelFailure(null); }} />
       : result === "noBusiness" ? <BusinessAccessResult status="noBusiness" />
         : result === "inactive" ? <BusinessAccessResult status="inactive" organizationName={organizationName} />
