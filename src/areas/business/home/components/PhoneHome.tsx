@@ -1,6 +1,7 @@
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
+import { useFormat } from "@/shared/format/useFormat";
 import { Link } from "react-router";
 import type { HomeCompanyCard, HomeOrganizationSummary } from "@/shared/api/types";
 import { initials } from "@/shared/lib/initials";
@@ -91,6 +92,7 @@ function Shortcuts({ organization, moduleCards, groups }: { organization: HomeOr
 /** M-Inicio-Miembro: «Tus empresas», una fila por empresa con sus iniciales, «rol · miembros» y ›. */
 function YourCompanies({ companies }: { companies: readonly HomeCompanyCard[] }) {
   const { t } = useTranslation("home");
+  const format = useFormat();
   const titleId = useId();
 
   return <section aria-labelledby={titleId}>
@@ -101,7 +103,7 @@ function YourCompanies({ companies }: { companies: readonly HomeCompanyCard[] })
           <span aria-hidden="true" className="inline-flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-[var(--marca-t)] text-[14px] font-bold text-[var(--marca-tx)]">{initials(company.name)}</span>
           <span className="flex min-w-0 flex-1 flex-col gap-0.5 leading-[normal]">
             <span className="truncate text-[15px] font-semibold text-[var(--t1)]">{company.name}</span>
-            <span className="truncate text-[13px] text-[var(--t3)]">{companyDetail(company, t)}</span>
+            <span className="truncate text-[13px] text-[var(--t3)]">{companyDetail(company, t, format)}</span>
           </span>
           <ChevronRight aria-hidden="true" className="size-[18px] shrink-0 text-[var(--t3)]" />
         </Link>

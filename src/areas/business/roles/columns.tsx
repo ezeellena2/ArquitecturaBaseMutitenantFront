@@ -4,6 +4,8 @@ import { Link } from "react-router";
 import type { ReactNode } from "react";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import { permissionCountInScope } from "./lib/permissionPicker";
+import type { FormatState } from "@/shared/format/useFormat";
+import { countOf } from "@/shared/format/countOf";
 
 type TranslateRole = (key: string) => string;
 
@@ -47,8 +49,8 @@ export function createRoleColumns(t: TranslateRole): Column<RoleResponse>[] {
 
 /// Tablero M-Roles: en el teléfono cada rol es una fila con cuántos lo tienen a la derecha, dónde vale (y si es de
 /// sistema) y cuántos permisos tiene.
-export function rolePhoneRow(role: RoleResponse, t: TranslateRole & ((key: string, options: { count: number }) => string), trailing: ReactNode): ReactNode {
+export function rolePhoneRow(role: RoleResponse, t: TranslateRole & ((key: string, options: { count: number; n: string }) => string), format: FormatState, trailing: ReactNode): ReactNode {
   const scope = roleScopeLabel(role.scope, t, role.companyName ?? undefined);
-  return <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name} meta={t("roles:phone.users", { count: role.userCount })}
-    lines={[role.isSystemRole ? `${t("roles:system")} · ${scope}` : scope, t("roles:phone.permissions", { count: visiblePermissionCount(role) })]} trailing={trailing} />;
+  return <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name} meta={t("roles:phone.users", countOf(format, role.userCount))}
+    lines={[role.isSystemRole ? `${t("roles:system")} · ${scope}` : scope, t("roles:phone.permissions", countOf(format, visiblePermissionCount(role)))]} trailing={trailing} />;
 }

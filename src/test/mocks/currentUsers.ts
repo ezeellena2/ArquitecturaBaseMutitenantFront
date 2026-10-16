@@ -164,6 +164,7 @@ export const currentUsers = {
   "consumer-with-organizations": consumerWithOrganizations,
   "business-admin": businessUser,
   "business-e6-admin": businessE6Admin,
+  "business-e6-admin-english": { ...businessE6Admin, culture: "en-US" },
   "business-settings-reader": businessSettingsReader,
   "business-role-manager": businessRoleManager,
   "business-no-permissions": businessWithoutPermissions,

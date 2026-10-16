@@ -1,6 +1,7 @@
 import * as React from "react"
 import { cn } from "cn"
 import { Tabs as TabsPrimitive } from "radix-ui"
+import { NumberText } from "./format/NumberText"
 
 // Tablero «Criterio · Marco», Pestañas: una por cada grupo de datos de una ficha, o dos vistas del mismo contenido; con
 // un solo grupo, no hay barra. `Page` las arma con los grupos de `tabs`, para toda ficha.
@@ -54,10 +55,10 @@ function TabsTrigger({
   )
 }
 
-/** La cantidad de una pestaña: en gris, al lado del nombre, sin etiqueta. */
+/** La cantidad de una pestaña: en gris, al lado del nombre, sin etiqueta; un número, con los separadores de la cultura. */
 function TabCount({ children }: { children: React.ReactNode }) {
   // El espacio separa el número del nombre para el lector de pantalla («Miembros 6»); en pantalla lo separa el gap.
-  return <>{" "}<span data-slot="tab-count" className="font-normal text-[var(--t3)] max-md:font-medium">{children}</span></>
+  return <>{" "}<span data-slot="tab-count" className="font-normal text-[var(--t3)] max-md:font-medium">{typeof children === "number" ? <NumberText value={children} /> : children}</span></>
 }
 
 function TabsContent({

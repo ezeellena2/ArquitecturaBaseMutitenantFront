@@ -1,7 +1,7 @@
 {
   "title": "Empresas",
-  "summaryFallback_one": "{{total}} empresa",
-  "summaryFallback_other": "{{total}} empresas",
+  "summaryFallback_one": "{{n}} empresa",
+  "summaryFallback_other": "{{n}} empresas",
   "create": "Crear empresa",
   "createTitle": "Crear empresa",
   "editTitle": "Editar empresa",
@@ -145,13 +145,13 @@
     "roles": "Roles en la empresa",
     "save": "Guardar cambios"
   },
-  "summaryTotal_one": "{{count}} empresa",
-  "summaryTotal_other": "{{count}} empresas",
-  "summaryActive_one": "{{count}} activa",
-  "summaryActive_other": "{{count}} activas",
+  "summaryTotal_one": "{{n}} empresa",
+  "summaryTotal_other": "{{n}} empresas",
+  "summaryActive_one": "{{n}} activa",
+  "summaryActive_other": "{{n}} activas",
   "roleActions": "Acciones para {{name}}",
   "phone": {
-    "members_one": "{{count}} miembro",
-    "members_other": "{{count}} miembros"
+    "members_one": "{{n}} miembro",
+    "members_other": "{{n}} miembros"
   }
 }

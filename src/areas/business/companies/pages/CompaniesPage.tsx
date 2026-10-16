@@ -28,6 +28,8 @@ import {
   type CompaniesQuery,
 } from "../api/companies";
 import { createCompanyColumns, companyPhoneRow } from "../columns";
+import { useFormat } from "@/shared/format/useFormat";
+import { countOf } from "@/shared/format/countOf";
 import { CompanyDialog } from "../components/CompanyDialog";
 
 const statusValues = [undefined, "Active", "Inactive"] as const;
@@ -38,6 +40,7 @@ const sentence = (text: string) => text.replace("..", ".");
 
 export function CompaniesPage() {
   const { t } = useTranslation(["companies", "common"]);
+  const format = useFormat();
   const { can } = usePermissions();
   const canManage = can("companies.manage");
   const queryClient = useQueryClient();
@@ -90,8 +93,8 @@ export function CompaniesPage() {
     { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: rowActions },
   ];
   const listSummary = counts.data
-    ? `${t("companies:summaryTotal", { count: counts.data.all })} · ${t("companies:summaryActive", { count: counts.data.active })}`
-    : companies.data ? t("companies:summaryFallback", { count: companies.data.totalCount, total: companies.data.totalCount }) : undefined;
+    ? `${t("companies:summaryTotal", countOf(format, counts.data.all))} · ${t("companies:summaryActive", countOf(format, counts.data.active))}`
+    : companies.data ? t("companies:summaryFallback", countOf(format, companies.data.totalCount)) : undefined;
 
   return <>
     <Page icon={BuildingIcon} title={t("companies:title")} summary={listSummary} phoneBody="flush"
@@ -117,7 +120,7 @@ export function CompaniesPage() {
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={columns}
-            mobileRow={(company) => companyPhoneRow(company, t, rowActions(company))}
+            mobileRow={(company) => companyPhoneRow(company, t, format, rowActions(company))}
             rows={companies.data?.items ?? []}
             rowKey={(company) => company.id}
             isLoading={companies.isPending}

@@ -8,6 +8,7 @@ import { ShieldIcon } from "@/shared/ui/icons";
 import { useMemo, useState } from "react";
 import { useController, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { useFormat } from "@/shared/format/useFormat";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -46,6 +47,7 @@ import { PermissionPicker } from "../components/PermissionPicker";
 import { RoleScopeField } from "../components/RoleScopeField";
 import { roleErrorField } from "../errors";
 import { canonicalPermissions, groupsForScope, selectionCount } from "../lib/permissionPicker";
+import { countOf } from "@/shared/format/countOf";
 
 const nameMaxLength = validationConstraints.CreateRoleHttpRequest.name.maxLength;
 const descriptionMaxLength = validationConstraints.CreateRoleHttpRequest.description.maxLength;
@@ -112,6 +114,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
 /// «¿Salir sin guardar?» los pone `useEditPage`.
 function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Promise<RoleResponse | undefined> }) {
   const { t } = useTranslation(["roles", "common"]);
+  const format = useFormat();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -210,7 +213,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   const scopeInSentence = (current: RoleResponse) => current.scope === "SpecificCompany"
     ? current.companyName ?? companyName(current.companyId) ?? t("roles:scopeInSentence.specificCompany")
     : t(current.scope === "Organization" ? "roles:scopeInSentence.organization" : "roles:scopeInSentence.company");
-  const summary = role ? t("roles:scopeAndUsers", { scope: scopeInSentence(role), count: role.userCount }) : undefined;
+  const summary = role ? t("roles:scopeAndUsers", { scope: scopeInSentence(role), ...countOf(format, role.userCount) }) : undefined;
   const title = role ? role.name : t("roles:createTitle");
   const saving = create.isPending || update.isPending;
 

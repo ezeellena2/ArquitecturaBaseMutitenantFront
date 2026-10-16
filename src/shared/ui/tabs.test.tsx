@@ -2,8 +2,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { MemoryRouter } from "react-router";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Page } from "./Page";
+
+// La cantidad pasa por NumberText; acá basta un formato que la deje igual.
+vi.mock("@/shared/format/useFormat", () => ({ useFormat: () => ({ isLoading: false, formatInteger: (value: number) => String(value) }) }));
 
 // La ficha con dos grupos: `Page` arma la barra con las piezas de tabs.tsx.
 function CompanyGroups() {
@@ -37,7 +40,7 @@ describe("Tabs · Criterio · Marco", () => {
     const members = screen.getByRole("tab", { name: "Miembros 6" });
     expect(members).toHaveClass("text-[14px]", "data-[state=active]:text-[var(--marca-tx)]", "data-[state=active]:shadow-[inset_0_-2px_0_var(--marca)]");
     expect(members).not.toHaveClass("flex-1");
-    expect(screen.getByText("6")).toHaveClass("font-normal", "text-[var(--t3)]");
+    expect(screen.getByText("6").closest("[data-slot=tab-count]")).toHaveClass("font-normal", "text-[var(--t3)]");
     await userEvent.click(screen.getByRole("tab", { name: "Roles 3" }));
     expect(screen.getByText("Lista de roles")).toBeVisible();
   });
@@ -52,6 +55,6 @@ describe("Tabs · Criterio · Marco", () => {
     const roles = screen.getByRole("tab", { name: "Roles 3" });
     expect(roles).toHaveClass("max-md:h-[50.5px]", "max-md:pb-[2.5px]", "max-md:text-[15px]", "max-md:font-semibold",
       "max-md:data-[state=active]:shadow-[inset_0_-2.5px_0_var(--marca)]");
-    expect(screen.getByText("3")).toHaveClass("max-md:font-medium");
+    expect(screen.getByText("3").closest("[data-slot=tab-count]")).toHaveClass("max-md:font-medium");
   });
 });

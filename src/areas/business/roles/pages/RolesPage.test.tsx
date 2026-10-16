@@ -161,6 +161,30 @@ describe("RolesPage", () => {
     expect(confirm).toHaveTextContent("Deja de aparecer para asignar. Nadie lo tiene, así que no le cambia nada a ningún usuario.");
   });
 
+  // R21: el plural usa el número y la cifra pasa por el formato de la cultura, en el resumen y en la fila del teléfono.
+  it.each([["es-AR", "business-e6-admin", "1.000 roles · 1.000 de la organización · 0 de empresas", "1.000 usuarios", "1.200 permisos"],
+    ["en-US", "business-e6-admin-english", "1,000 roles · 1,000 organization · 0 companies", "1,000 users", "1,200 permissions"]] as const)(
+    "con %s, las cifras de cuatro dígitos llevan separador de miles", async (culture, as, summary, users, permissions) => {
+      await changeCulture(culture);
+      const crowded = { ...owner, userCount: 1_000, permissions: Array.from({ length: 1_200 }, (_, index) => `roles.p${index}`) };
+      server.use(
+        http.get("/api/companies/paged", () => HttpResponse.json(companies)),
+        http.get("/api/roles/filter-counts", () => HttpResponse.json({ matching: { all: 1_000, organization: 1_000, company: 0 },
+          total: { all: 1_000, organization: 1_000, company: 0 }, anyCompany: 0, companies: {} })),
+        http.get("/api/roles/paged", () => HttpResponse.json({ items: [crowded], page: 1, pageSize: 10, totalCount: 1_000, totalPages: 100, hasPrevious: false, hasNext: true })),
+      );
+      // El resumen va en la banda de la compu; la fila con usuarios y permisos, en el teléfono.
+      const desktop = renderRouteWithProviders("/org/roles", { as });
+      expect(await screen.findByText(summary)).toBeVisible();
+      desktop.unmount();
+      const restore = asPhone();
+      try {
+        renderRouteWithProviders("/org/roles", { as });
+        expect(await screen.findByText(users)).toBeVisible();
+        expect(screen.getByText(permissions)).toBeVisible();
+      } finally { restore(); }
+    });
+
   // B6: si se inactiva el único rol de la última página, la lista vuelve a la anterior en vez de quedar vacía.
   it("al inactivar el único rol de la última página, vuelve a la anterior", async () => {
     const user = userEvent.setup();

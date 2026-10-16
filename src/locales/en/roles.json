@@ -11,7 +11,6 @@
   "discard": "Discard changes",
   "save": "Save changes",
   "system": "System",
-
   "custom": "Custom",
   "removed": "Role {{name}} was deactivated.",
   "created": "Role {{name}} was created.",
@@ -24,11 +23,11 @@
   "rowActions": "Actions for {{name}}",
   "noDescription": "No description",
   "empty": "No matching roles",
-  "listSummary_one": "{{total}} role · {{organization}} organization · {{company}} company",
-  "listSummary_other": "{{total}} roles · {{organization}} organization · {{company}} companies",
-  "listSummaryFallback": "{{count}} roles",
-  "scopeAndUsers_one": "Applies to {{scope}} · {{count}} user has this role",
-  "scopeAndUsers_other": "Applies to {{scope}} · {{count}} users have this role",
+  "listSummary_one": "{{n}} role · {{organization}} organization · {{company}} company",
+  "listSummary_other": "{{n}} roles · {{organization}} organization · {{company}} companies",
+  "listSummaryFallback": "{{n}} roles",
+  "scopeAndUsers_one": "Applies to {{scope}} · {{n}} user has this role",
+  "scopeAndUsers_other": "Applies to {{scope}} · {{n}} users have this role",
   "permissionCount": "{{selected}} of {{total}} selected",
   "groupCount": "{{selected}} of {{total}}",
   "allPermissions": "All {{area}} permissions",
@@ -79,14 +78,14 @@
     "permissionsRequired": "Choose at least one permission."
   },
   "errors": {
-    "hasUsers_one": "Cannot deactivate: {{count}} user has the role {{name}}. Remove it first.",
-    "hasUsers_other": "Cannot deactivate: {{count}} users have the role {{name}}. Remove it from them first."
+    "hasUsers_one": "Cannot deactivate: {{n}} user has the role {{name}}. Remove it first.",
+    "hasUsers_other": "Cannot deactivate: {{n}} users have the role {{name}}. Remove it from them first."
   },
   "emptyFiltered": "No role matches the filters",
   "phone": {
-    "users_one": "{{count}} user",
-    "users_other": "{{count}} users",
-    "permissions_one": "{{count}} permission",
-    "permissions_other": "{{count}} permissions"
+    "users_one": "{{n}} user",
+    "users_other": "{{n}} users",
+    "permissions_one": "{{n}} permission",
+    "permissions_other": "{{n}} permissions"
   }
 }

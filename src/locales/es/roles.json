@@ -11,7 +11,6 @@
   "discard": "Descartar cambios",
   "save": "Guardar cambios",
   "system": "De sistema",
-
   "custom": "Personalizado",
   "removed": "Inactivamos el rol {{name}}.",
   "created": "Creamos el rol {{name}}.",
@@ -24,11 +23,11 @@
   "rowActions": "Acciones para {{name}}",
   "noDescription": "Sin descripción",
   "empty": "No hay roles que coincidan",
-  "listSummary_one": "{{total}} rol · {{organization}} de la organización · {{company}} de empresas",
-  "listSummary_other": "{{total}} roles · {{organization}} de la organización · {{company}} de empresas",
-  "listSummaryFallback": "{{count}} roles",
-  "scopeAndUsers_one": "Vale en {{scope}} · {{count}} usuario lo tiene",
-  "scopeAndUsers_other": "Vale en {{scope}} · {{count}} usuarios lo tienen",
+  "listSummary_one": "{{n}} rol · {{organization}} de la organización · {{company}} de empresas",
+  "listSummary_other": "{{n}} roles · {{organization}} de la organización · {{company}} de empresas",
+  "listSummaryFallback": "{{n}} roles",
+  "scopeAndUsers_one": "Vale en {{scope}} · {{n}} usuario lo tiene",
+  "scopeAndUsers_other": "Vale en {{scope}} · {{n}} usuarios lo tienen",
   "permissionCount": "{{selected}} de {{total}} elegidos",
   "groupCount": "{{selected}} de {{total}}",
   "allPermissions": "Todos los permisos de {{area}}",
@@ -79,14 +78,14 @@
     "permissionsRequired": "Elegí al menos un permiso."
   },
   "errors": {
-    "hasUsers_one": "No se puede inactivar: {{count}} usuario tiene el rol {{name}}. Quitáselo primero.",
-    "hasUsers_other": "No se puede inactivar: {{count}} usuarios tienen el rol {{name}}. Quitáselo primero."
+    "hasUsers_one": "No se puede inactivar: {{n}} usuario tiene el rol {{name}}. Quitáselo primero.",
+    "hasUsers_other": "No se puede inactivar: {{n}} usuarios tienen el rol {{name}}. Quitáselo primero."
   },
   "emptyFiltered": "Ningún rol coincide con los filtros",
   "phone": {
-    "users_one": "{{count}} usuario",
-    "users_other": "{{count}} usuarios",
-    "permissions_one": "{{count}} permiso",
-    "permissions_other": "{{count}} permisos"
+    "users_one": "{{n}} usuario",
+    "users_other": "{{n}} usuarios",
+    "permissions_one": "{{n}} permiso",
+    "permissions_other": "{{n}} permisos"
   }
 }

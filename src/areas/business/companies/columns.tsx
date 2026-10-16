@@ -12,6 +12,8 @@ import { DateText } from "@/shared/ui/format/DateText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { StatusDetail } from "@/shared/ui/StatusDot";
 import { isPast } from "@/shared/time/serverClock";
+import type { FormatState } from "@/shared/format/useFormat";
+import { countOf } from "@/shared/format/countOf";
 
 /// Tableros Empresas y Empresa: la empresa activa en verde y la inactiva en gris. También los usa la banda de la ficha.
 export const companyStatusTones = defineStatusTones("CompanyStatus", { Active: "success", Inactive: "neutral" });
@@ -31,9 +33,9 @@ export const companyMemberStateTones: StatusTones<CompanyMemberDisplayState> = {
 
 /// Tablero M-Empresas: en el teléfono cada empresa es una fila con sus miembros a la derecha, el CUIT y, abajo, el
 /// estado con su punto y la zona.
-export function companyPhoneRow(company: CompanyResponse, t: TFunction, trailing: ReactNode): ReactNode {
+export function companyPhoneRow(company: CompanyResponse, t: TFunction, format: FormatState, trailing: ReactNode): ReactNode {
   return <ListRow key={company.id} to={`/org/empresas/${encodeURIComponent(company.id)}`} title={company.name}
-    meta={t("companies:phone.members", { count: company.memberCount })}
+    meta={t("companies:phone.members", countOf(format, company.memberCount))}
     lines={[company.taxId ? <TaxIdText key="taxId" value={company.taxId} withType /> : t("companies:withoutTaxId"),
       <span key="state" className="inline-flex max-w-full items-center gap-1"><StatusBadge tones={companyStatusTones} value={company.status} className="text-[13px] text-[var(--t2)]" />
         <span className="truncate">{" · "}<TimeZoneText value={company.timeZoneId} /></span></span>]}

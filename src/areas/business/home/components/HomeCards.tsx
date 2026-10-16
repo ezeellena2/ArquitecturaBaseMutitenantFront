@@ -5,6 +5,7 @@ import { Link } from "react-router";
 import type { HomeCompanyCard, HomeOrganizationSummary } from "@/shared/api/types";
 import { publicPageStateTones } from "@/shared/format/statusTones";
 import { useFormat } from "@/shared/format/useFormat";
+import { countOf } from "@/shared/format/countOf";
 import { initials } from "@/shared/lib/initials";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { companyDetail } from "./companyDetail";
@@ -33,9 +34,9 @@ export function AreaCards({ organization, moduleCards = [] }: { organization: Ho
   const { t } = useTranslation("home");
   const format = useFormat();
   const details: [HomeArea, ReactNode][] = [];
-  if (organization.users) details.push(["users", t("cards.users.count", { count: organization.users.total })]);
-  if (organization.roles) details.push(["roles", t("cards.roles.count", { count: organization.roles.total })]);
-  if (organization.companies) details.push(["companies", t("cards.companies.count", { count: organization.companies.total })]);
+  if (organization.users) details.push(["users", t("cards.users.count", countOf(format, organization.users.total))]);
+  if (organization.roles) details.push(["roles", t("cards.roles.count", countOf(format, organization.roles.total))]);
+  if (organization.companies) details.push(["companies", t("cards.companies.count", countOf(format, organization.companies.total))]);
   if (organization.publicPage) {
     details.push(["publicPage", <StatusBadge key="page" tones={publicPageStateTones} value={organization.publicPage.state} />]);
   }
@@ -58,8 +59,9 @@ export function AreaCards({ organization, moduleCards = [] }: { organization: Ho
 /** Tablero Inicio-Miembro: las empresas donde la persona tiene roles. */
 export function CompanyCards({ companies }: { companies: readonly HomeCompanyCard[] }) {
   const { t } = useTranslation("home");
+  const format = useFormat();
   return <div className={grid}>
     {companies.map((company) => <Card key={company.companyId} to={`/org/empresas/${company.companyId}`} icon={initials(company.name)}
-      title={company.name} detail={companyDetail(company, t)} />)}
+      title={company.name} detail={companyDetail(company, t, format)} />)}
   </div>;
 }

@@ -5,20 +5,20 @@
     "users": {
       "title": "Users",
       "short": "Users",
-      "count_one": "{{count}} user",
-      "count_other": "{{count}} users"
+      "count_one": "{{n}} user",
+      "count_other": "{{n}} users"
     },
     "roles": {
       "title": "Roles and permissions",
       "short": "Roles",
-      "count_one": "{{count}} role",
-      "count_other": "{{count}} roles"
+      "count_one": "{{n}} role",
+      "count_other": "{{n}} roles"
     },
     "companies": {
       "title": "Companies",
       "short": "Companies",
-      "count_one": "{{count}} company",
-      "count_other": "{{count}} companies"
+      "count_one": "{{n}} company",
+      "count_other": "{{n}} companies"
     },
     "publicPage": {
       "title": "Public page",
@@ -39,8 +39,8 @@
   "greeting": "Hi, {{name}}",
   "greetingUnnamed": "Hi",
   "yourCompanies": "Your companies",
-  "members_one": "{{count}} member",
-  "members_other": "{{count}} members",
+  "members_one": "{{n}} member",
+  "members_other": "{{n}} members",
   "toResolve": {
     "viewAll": "View all",
     "organizationsGroup": "Organizations awaiting approval",

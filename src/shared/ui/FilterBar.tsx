@@ -18,6 +18,10 @@ import { useAppChrome } from "./app/AppChrome";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
 import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
 import { RemoteOptionFooter, RemoteOptionSearch } from "./RemoteOptionControls";
+import { NumberText } from "./format/NumberText";
+
+/** La cantidad de un filtro o una opción: un número, con los separadores de la cultura. */
+const countText = (count: ReactNode) => typeof count === "number" ? <NumberText value={count} /> : count;
 
 export interface FilterOption {
   value: string;
@@ -97,7 +101,7 @@ export function FilterBar({
               {filter.remote ? <RemoteOptionSearch remote={filter.remote} label={filter.menuLabel} /> : null}
               {filter.options.map((option) => <label key={option.value} className="flex min-h-[54px] items-center gap-3 border-t border-[var(--borde)] px-5 text-[16px] text-[var(--t1)] first-of-type:border-t-0">
                 <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                {option.count === undefined ? null : <span className="text-[13.5px] text-[var(--t3)]">{option.count}</span>}
+                {option.count === undefined ? null : <span className="text-[13.5px] text-[var(--t3)]">{countText(option.count)}</span>}
                 <input type="radio" name={filter.key} value={option.value} checked={checked === option.value} className="size-5 accent-[var(--marca)]"
                   onChange={() => { filter.onChange(option.value); setSheetOpen(false); }} />
               </label>)}
@@ -154,7 +158,7 @@ export function FilterBar({
               >
                 {selected?.label ?? filter.selectedLabel ?? filter.label}
                 {filter.count === undefined ? null : (
-                  <span className="text-xs text-[var(--t2)]">{filter.count}</span>
+                  <span className="text-xs text-[var(--t2)]">{countText(filter.count)}</span>
                 )}
                 <ChevronDownIcon strokeWidth={2} className="size-3.5" />
               </Button>
@@ -169,7 +173,7 @@ export function FilterBar({
                     {option.label}
                     {option.count === undefined ? null : (
                       <span className="ml-auto pl-4 text-xs text-[var(--t3)] tabular-nums">
-                        {option.count}
+                        {countText(option.count)}
                       </span>
                     )}
                   </DropdownMenuRadioItem>

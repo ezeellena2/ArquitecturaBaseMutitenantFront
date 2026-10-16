@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
@@ -6,6 +6,8 @@ import { AppChromeProvider } from "./app/AppChrome";
 import { Page, SublineSeparator } from "./Page";
 import { UsersIcon } from "./icons";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
+import { changeCulture, configureI18n } from "@/shared/i18n";
+import { referenceDataFixture } from "@/test/mocks/handlers";
 
 describe("Page", () => {
   it("names the screen with a single level-one heading", () => {
@@ -243,6 +245,15 @@ describe("Page", () => {
       </AppChromeProvider>,
     );
 
+    // R21: la cantidad de la pestaña pasa por el formato de la cultura, en la compu y en el teléfono.
+    it.each([["es-AR", false, "1.000"], ["en-US", true, "1,000"]])("con %s (teléfono: %s), la cantidad lleva separador de miles", async (culture, phone, shown) => {
+      await configureI18n(referenceDataFixture().cultures);
+      await changeCulture(culture);
+      const tabs = groups(true);
+      renderPage({ ...tabs, items: [{ ...tabs.items[0], count: 1_000 }, tabs.items[1]] }, phone);
+      expect(await screen.findByRole("tab", { name: `Miembros ${shown}` })).toBeVisible();
+    });
+
     // Tableros M-* (.ap-bar .sub): en el teléfono, debajo del título, el «·» va como texto, « · », y no con los 6 de la compu.
     it("en el teléfono, el separador de la línea de abajo del título es « · »", () => {
       renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
@@ -313,7 +324,7 @@ describe("Page", () => {
       renderPage(tabs, phone);
 
       const list = screen.getByRole("tablist", { name: "Partes de la empresa" });
-      expect(within(list).getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Miembros 6", "Roles 2"]);
+      await waitFor(() => expect(within(list).getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Miembros 6", "Roles 2"]));
       expect(screen.getByRole("tabpanel")).toHaveTextContent("los miembros");
       await user.click(screen.getByRole("tab", { name: /Roles/ }));
       expect(tabs.onValueChange).toHaveBeenCalledWith("roles");

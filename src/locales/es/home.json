@@ -5,20 +5,20 @@
     "users": {
       "title": "Usuarios",
       "short": "Usuarios",
-      "count_one": "{{count}} usuario",
-      "count_other": "{{count}} usuarios"
+      "count_one": "{{n}} usuario",
+      "count_other": "{{n}} usuarios"
     },
     "roles": {
       "title": "Roles y permisos",
       "short": "Roles",
-      "count_one": "{{count}} rol",
-      "count_other": "{{count}} roles"
+      "count_one": "{{n}} rol",
+      "count_other": "{{n}} roles"
     },
     "companies": {
       "title": "Empresas",
       "short": "Empresas",
-      "count_one": "{{count}} empresa",
-      "count_other": "{{count}} empresas"
+      "count_one": "{{n}} empresa",
+      "count_other": "{{n}} empresas"
     },
     "publicPage": {
       "title": "Página pública",
@@ -39,8 +39,8 @@
   "greeting": "Hola, {{name}}",
   "greetingUnnamed": "Hola",
   "yourCompanies": "Tus empresas",
-  "members_one": "{{count}} miembro",
-  "members_other": "{{count}} miembros",
+  "members_one": "{{n}} miembro",
+  "members_other": "{{n}} miembros",
   "toResolve": {
     "viewAll": "Ver todos",
     "organizationsGroup": "Organizaciones por aprobar",

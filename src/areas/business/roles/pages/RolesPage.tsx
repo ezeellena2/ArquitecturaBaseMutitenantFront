@@ -31,12 +31,15 @@ import {
   type RolesQuery,
 } from "../api/roles";
 import { createRoleColumns, rolePhoneRow } from "../columns";
+import { useFormat } from "@/shared/format/useFormat";
+import { countOf } from "@/shared/format/countOf";
 
 // «Vale en» (tablero Roles): toda la organización o una empresa por nombre, en un solo filtro.
 const roleFilterKeys = ["vale"] as const;
 
 export function RolesPage() {
   const { t } = useTranslation(["roles", "common"]);
+  const format = useFormat();
   const { can } = usePermissions();
   const canManage = can("roles.manage");
   const queryClient = useQueryClient();
@@ -77,7 +80,7 @@ export function RolesPage() {
           { label: t("roles:edit"), accessibleName: t("roles:edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); }, hidden: role.isSystemRole || !canManage },
           { label: t("roles:deactivate"), accessibleName: t("roles:deactivate"), icon: Trash2, onSelect: () => {
             if (role.userCount > 0) {
-              toastError(t("roles:errors.hasUsers", { count: role.userCount, name: role.name }));
+              toastError(t("roles:errors.hasUsers", { ...countOf(format, role.userCount), name: role.name }));
             } else {
               setRoleToDelete(role);
             }
@@ -91,8 +94,8 @@ export function RolesPage() {
 
   const totals = counts.data?.total;
   const listSummary = roles.data ? totals
-    ? t("roles:listSummary", { total: totals.all, count: totals.all, organization: totals.organization, company: totals.company })
-    : t("roles:listSummaryFallback", { count: roles.data.totalCount }) : undefined;
+    ? t("roles:listSummary", { ...countOf(format, totals.all), organization: format.formatInteger(totals.organization), company: format.formatInteger(totals.company) })
+    : t("roles:listSummaryFallback", countOf(format, roles.data.totalCount)) : undefined;
   const filterValue = vale ?? "";
 
   return <>
@@ -129,7 +132,7 @@ export function RolesPage() {
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={columns}
-            mobileRow={(role) => rolePhoneRow(role, t, rowActions(role))}
+            mobileRow={(role) => rolePhoneRow(role, t, format, rowActions(role))}
             rows={roles.data?.items ?? []}
             rowKey={(role) => role.id}
             isLoading={roles.isPending}

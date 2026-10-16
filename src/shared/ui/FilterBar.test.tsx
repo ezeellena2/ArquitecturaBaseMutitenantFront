@@ -3,6 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { FilterBar } from "./FilterBar";
 
+// La cantidad pasa por NumberText; acá basta un formato que la deje igual.
+vi.mock("@/shared/format/useFormat", () => ({ useFormat: () => ({ isLoading: false, formatInteger: (value: number) => String(value) }) }));
+
 describe("FilterBar", () => {
   it("places the full-width search before the filter pills on phones", () => {
     const { container } = render(
@@ -112,7 +115,7 @@ describe("FilterBar", () => {
     }
     const all = screen.getByRole("menuitemradio", { name: /^Todos/ });
     expect(all).toHaveClass("data-[state=checked]:bg-[var(--marca-t)]", "data-[state=checked]:font-medium");
-    expect(within(all).getByText("3")).toHaveClass("ml-auto", "pl-4", "text-xs", "text-[var(--t3)]", "tabular-nums");
+    expect(within(all).getByText("3").parentElement).toHaveClass("ml-auto", "pl-4", "text-xs", "text-[var(--t3)]", "tabular-nums");
   });
 
   it("keeps clear hidden until a search or a filter is active", async () => {

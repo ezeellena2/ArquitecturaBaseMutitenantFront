@@ -124,7 +124,7 @@ export function UsersPage() {
   ];
   const stateCount = (value: OrganizationUserState | undefined) => countFor(counts.data, value);
   // «N invitaciones» del tablero: las pendientes y las vencidas.
-  const listSummary = counts.data ? <span className="max-md:text-[12px]">{t("users:summary", { total: counts.data.all, active: counts.data.active, invited: counts.data.invited + counts.data.expired })}</span> : undefined;
+  const listSummary = counts.data ? <span className="max-md:text-[12px]">{t("users:summary", { total: format.formatInteger(counts.data.all), active: format.formatInteger(counts.data.active), invited: format.formatInteger(counts.data.invited + counts.data.expired) })}</span> : undefined;
   // Sin filtro el botón dice «Estado: todos» o «Empresa: todas» y el menú ofrece «Todos» o «Todas», como el tablero.
   const currentState = state ?? "";
 
