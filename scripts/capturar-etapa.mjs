@@ -74,6 +74,9 @@ export async function startCanvasServer(canvasRoot = defaultCanvas) {
 export async function runAppActions(page, actions = []) {
   for (const action of actions) {
     const surface = action.within ? page.getByRole(action.within.role, { name: action.within.name, exact: true }) : page;
+    // Como el test de la galería: una acción ubica su elemento por la etiqueta o, si no la trae, por rol y nombre.
+    const target = () => action.label ? surface.getByLabel(action.label, { exact: action.exact ?? false })
+      : surface.getByRole(action.role, { name: action.name, exact: action.exact ?? false });
     if (action.type === "upload") {
       await page.getByLabel(action.label, { exact: action.exact ?? false }).and(page.locator('input[type="file"]')).setInputFiles(action.files.map((file) => {
         if (!Number.isSafeInteger(file.byteLength) || file.byteLength <= 0 || file.byteLength > 15 * 1024 * 1024) throw new Error("Archivo ficticio fuera del límite de memoria de 15 MiB");
@@ -82,15 +85,12 @@ export async function runAppActions(page, actions = []) {
         return { name: file.name, mimeType: file.mimeType, buffer: Buffer.concat([bytes, Buffer.alloc(file.byteLength, file.mimeType === "application/pdf" ? 32 : 0)], file.byteLength) };
       }));
     } else if (action.type === "fill") {
-      const target = action.label ? surface.getByLabel(action.label, { exact: action.exact ?? false })
-        : surface.getByRole(action.role, { name: action.name, exact: action.exact ?? false });
-      await target.fill(action.value);
+      await target().fill(action.value);
     } else if (action.type === "click") {
-      await surface.getByRole(action.role, { name: action.name, exact: action.exact ?? false }).click({ force: action.force ?? false });
+      await target().click({ force: action.force ?? false });
     } else if (action.type === "press") {
-      const target = surface.getByRole(action.role, { name: action.name, exact: action.exact ?? false });
-      await target.focus();
-      await target.press(action.key);
+      await target().focus();
+      await target().press(action.key);
     } else if (action.type === "otp") {
       await page.getByRole("textbox", { name: "Código 1" }).click();
       await page.keyboard.type(action.value);
@@ -262,8 +262,9 @@ export async function openApp(context, appUrl, entry, openStream) {
   }
   await page.locator(app.readySelector ?? "main").filter({ visible: true }).first().waitFor();
   if (app.readyHeading) await page.getByRole("heading", { name: app.readyHeading }).first().waitFor();
-  if (app.readyText) await page.getByText(app.readyText, { exact: false }).first().waitFor();
-  for (const text of app.readyTexts ?? []) await page.getByText(text, { exact: false }).first().waitFor();
+  // Como el test de la galería, los textos de listo se comprueban presentes: una opción de un desplegable nativo no se ve.
+  if (app.readyText) await page.getByText(app.readyText, { exact: false }).first().waitFor({ state: "attached" });
+  for (const text of app.readyTexts ?? []) await page.getByText(text, { exact: false }).first().waitFor({ state: "attached" });
   await page.mouse.move(0, 0);
   await page.waitForTimeout(app.readyText && /^(Guardamos|Agregamos|Quitamos|Desde ahora|Vinculamos|Desvinculamos|Cancelamos)/.test(app.readyText) ? 800 : 300);
   await waitForAppFont(page);
