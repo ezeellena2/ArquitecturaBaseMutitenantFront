@@ -1,6 +1,21 @@
 import { describe, expect, it } from "vitest";
-import type { WhatsAppConversationRowResponse } from "../../api/types";
-import { composerState, initialsOf, rowAssignment, rowDescriptors, templatePreview, whatsappLink } from "./conversation";
+import type { WhatsAppChatMessageResponse, WhatsAppConversationRowResponse } from "../../api/types";
+import { chronological, composerState, initialsOf, lastInbound, rowAssignment, rowDescriptors, templatePreview, whatsappLink } from "./conversation";
+
+const at = (id: string, createdAtUtc: string, direction: WhatsAppChatMessageResponse["direction"] = "Inbound"): WhatsAppChatMessageResponse =>
+  ({ id, kind: "Text", direction, author: null, text: id, mediaKind: null, status: "Received", failureReason: null, createdAtUtc });
+
+describe("orden del hilo", () => {
+  it("la página llega con lo más nuevo primero (CC15) y el hilo va del más viejo al más nuevo, como WhatsApp", () => {
+    const page = [at("respuesta", "2026-10-15T21:00:05Z", "Outbound"), at("hola", "2026-10-15T21:00:00Z"), at("ayer", "2026-10-14T20:46:00Z")];
+    expect(chronological(page).map((message) => message.id)).toEqual(["ayer", "hola", "respuesta"]);
+    expect(lastInbound(chronological(page))?.id).toBe("hola");
+  });
+
+  it("a la misma hora da vuelta el orden del contrato", () => {
+    expect(chronological([at("segundo", "2026-10-15T21:00:00Z"), at("primero", "2026-10-15T21:00:00Z")]).map((message) => message.id)).toEqual(["primero", "segundo"]);
+  });
+});
 
 const row = (overrides: Partial<WhatsAppConversationRowResponse> = {}): WhatsAppConversationRowResponse => ({
   id: "c", inbox: "Customers", contactId: null, contactName: "Martina López", displayNumber: "+5491155556203", tags: [], lastMessagePreview: null,

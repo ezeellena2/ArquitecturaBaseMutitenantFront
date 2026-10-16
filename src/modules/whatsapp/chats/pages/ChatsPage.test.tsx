@@ -172,6 +172,36 @@ describe("Chats de la organización", () => {
     expect(messages).toBe(0);
   });
 
+  it("el hilo va del más viejo al más nuevo aunque la página llegue con lo más nuevo primero", async () => {
+    inbox(row(), [
+      message({ id: "m-bot", direction: "Outbound", text: "Gracias por escribirnos.", status: "Delivered", createdAtUtc: "2026-10-12T13:40:00Z" }),
+      message({ id: "m-hola", text: "Hola, buen día.", createdAtUtc: "2026-10-12T13:39:00Z" }),
+    ]);
+    mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    const log = await screen.findByRole("log");
+    const hola = await within(log).findByText("Hola, buen día.");
+    const bot = within(log).getByText("Gracias por escribirnos.");
+    expect(hola.compareDocumentPosition(bot) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("lo que se escribe mientras sale un mensaje no se borra cuando ese mensaje termina", async () => {
+    inbox(row());
+    let release!: () => void;
+    const answered = new Promise<void>((resolve) => { release = resolve; });
+    server.use(http.post(`${org}/customers/conversations/c-martina/messages`, async () => {
+      await answered;
+      return HttpResponse.json(message({ id: "m-a", direction: "Outbound", author: "Lucía Fernández", text: "Primero", status: "Pending" }), { status: 201 });
+    }));
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    const field = await screen.findByRole("textbox", { name: "Mensaje" });
+    await user.type(field, "Primero{Enter}");
+    await user.clear(field);
+    await user.type(field, "Segundo");
+    release();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Enviar" })).not.toHaveAttribute("aria-busy", "true"));
+    expect(field).toHaveValue("Segundo");
+  });
+
   it("con el número desconectado solo se lee: sin escribir, sin nota, sin tomar ni pasar", async () => {
     inbox(row({ readOnly: true, assignee: null, assignedToMe: false, channel: { id: "number-delta", displayNumber: "+5493515550200", status: "Disconnected" } }),
       [message(), message({ id: "m-2", kind: "Media", mediaKind: "Audio", text: null })]);

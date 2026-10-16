@@ -23,7 +23,7 @@ import { toastError } from "@/shared/ui/sonner";
 import type { AddWhatsAppNoteRequest, SendWhatsAppMessageRequest, WhatsAppChatMessageResponse } from "../../api/types";
 import { conversationRefetchInterval, platformUntakenQueryKey, untakenQueryKey } from "../../api/untaken";
 import { addNote, chatsScopeQueryRoot, conversationQueryKey, fetchConversation, sendMessage, takeConversation, transferConversation, type ChatsScope } from "../api/chats";
-import { composerState, isUntaken, lastInbound, phoneLabel, rowDescriptors } from "../lib/conversation";
+import { chronological, composerState, isUntaken, lastInbound, phoneLabel, rowDescriptors } from "../lib/conversation";
 import { ChatAvatar } from "./ChatAvatar";
 import { ChatComposer, type ComposerNotice } from "./ChatComposer";
 import { MessageThread } from "./MessageThread";
@@ -123,7 +123,7 @@ export function ConversationView({ scope, id, links, back, phone }: {
   }
 
   const row = data.conversation;
-  const messages = data.messages.items;
+  const messages = chronological(data.messages.items);
   const name = row.contactName ?? phoneLabel(format, row.displayNumber);
   const untaken = isUntaken(row);
   const readOnly = row.readOnly || row.channel.status === "Disconnected" || flags.readOnly;

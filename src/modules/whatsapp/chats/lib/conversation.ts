@@ -53,7 +53,15 @@ export function rowAssignment(row: WhatsAppConversationRowResponse, untaken: str
   return [row.team?.name, row.assignee?.name ?? untaken].filter(Boolean).join(" · ");
 }
 
-/** El último mensaje que mandó la otra parte, para decir cuándo escribió por última vez (aviso de las 24 h). */
+/**
+ * CC15: la página 1 trae los mensajes más recientes primero. El hilo va del más viejo al más nuevo, como WhatsApp;
+ * a igual hora, se da vuelta el orden del contrato.
+ */
+export function chronological(messages: readonly WhatsAppChatMessageResponse[]): WhatsAppChatMessageResponse[] {
+  return [...messages].reverse().sort((a, b) => (a.createdAtUtc < b.createdAtUtc ? -1 : a.createdAtUtc > b.createdAtUtc ? 1 : 0));
+}
+
+/** El último mensaje que mandó la otra parte, para decir cuándo escribió por última vez (aviso de las 24 h). Recibe el hilo en orden. */
 export function lastInbound(messages: readonly WhatsAppChatMessageResponse[]): WhatsAppChatMessageResponse | undefined {
   return messages.findLast((message) => message.direction === "Inbound" && message.kind !== "Event" && message.kind !== "Note");
 }

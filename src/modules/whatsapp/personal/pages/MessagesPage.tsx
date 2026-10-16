@@ -27,7 +27,7 @@ import { OrganizationAvatar } from "../../chats/components/ChatAvatar";
 import { ChatColumns } from "../../chats/components/ConversationView";
 import { ConversationItem } from "../../chats/components/ConversationItem";
 import { MessageThread } from "../../chats/components/MessageThread";
-import { chatTime, phoneLabel, whatsappLink } from "../../chats/lib/conversation";
+import { chatTime, chronological, phoneLabel, whatsappLink } from "../../chats/lib/conversation";
 import { ChatsIcon } from "../../components/icons";
 import { countOf } from "../../lib/values";
 import { fetchPersonalConversation, fetchPersonalConversations, personalConversationQueryKey, personalConversationsQueryKey, personalMessagesQueryRoot, unlinkConversation } from "../api/messages";
@@ -133,7 +133,7 @@ function PersonalConversation({ id, back, phone }: { id: string; back: { to: str
   const name = conversation.organizationName;
   const since = format.isLoading ? "" : t("personal.linkedSince", { date: format.formatDate(conversation.linkedAtUtc) });
   const larger = pageSizes.find((size) => size > pageSize);
-  const thread = <MessageThread messages={data.messages.items} perspective={{ kind: "person", organizationName: name }} phone={phone}
+  const thread = <MessageThread messages={chronological(data.messages.items)} perspective={{ kind: "person", organizationName: name }} phone={phone}
     label={t("chats.thread.label", { name })} hasEarlier={data.messages.hasNext === true && larger !== undefined}
     loadingEarlier={query.isFetching && query.isPlaceholderData} onLoadEarlier={() => { if (larger) setPageSize(larger); }} />;
   const follow = <Button asChild><a href={whatsappLink(conversation.displayNumber)} target="_blank" rel="noreferrer">

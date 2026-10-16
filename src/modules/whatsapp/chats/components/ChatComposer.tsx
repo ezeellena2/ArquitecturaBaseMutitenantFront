@@ -63,7 +63,9 @@ export function ChatComposer({ state, phone, sendPending, notePending, onSend, o
 
   const pending = noteMode ? notePending : sendPending;
   const submit = form.handleSubmit(({ text }) => {
-    const done = () => { form.reset({ text: "" }); setNoteMode(false); };
+    // Se limpia solo si el campo sigue con lo que se mandó: lo que se escribió mientras salía no se pierde.
+    const draft = form.getValues("text");
+    const done = () => { if (form.getValues("text") === draft) { form.reset({ text: "" }); setNoteMode(false); } };
     if (noteMode) onNote(text, done); else onSend(text, done);
   }, () => form.setFocus("text"));
   const label = noteMode ? t("chats.composer.saveNote") : t("chats.composer.send");
