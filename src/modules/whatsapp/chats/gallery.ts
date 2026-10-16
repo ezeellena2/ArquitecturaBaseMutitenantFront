@@ -50,7 +50,8 @@ const carla = row({ id: "c-carla", contactId: "contact-carla", contactName: "Car
 const counts = { customers: 5, internal: 2, untaken: 2 };
 const customersList = (rows: readonly Row[], untaken = 2) => api("GET", `${org}/customers/conversations`, { conversations: page(rows), counts: { ...counts, untaken } });
 const customerTeams = api("GET", `${org}/customers/inbox-teams`, page([ventas, soporte, { id: "team-general", name: "Atención general" }]));
-const conversation = (path: string, conversationRow: Row, messages: readonly Message[]) => api("GET", path, { conversation: conversationRow, messages: page(messages) });
+// Los mensajes se escriben en orden de lectura; la página del contrato trae lo más nuevo primero (CC15).
+const conversation = (path: string, conversationRow: Row, messages: readonly Message[]) => api("GET", path, { conversation: conversationRow, messages: page([...messages].reverse()) });
 
 const martinaMessages = (at: (time: string) => string = today): Message[] => [
   received("m-1", "Hola, buen día. Quiero hacer un pedido.", at("10:39")),

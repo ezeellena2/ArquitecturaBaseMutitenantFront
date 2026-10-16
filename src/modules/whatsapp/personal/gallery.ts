@@ -23,7 +23,8 @@ const messages = [
   message("c-5", "Inbound", "Gracias, paso a las 17.", "13:42"),
 ];
 const withConversations: GalleryApiResponse[] = [
-  api("GET", `${base}/link-clementina`, { conversation: clementina, messages: page(messages) }),
+  // En orden de lectura; la página del contrato trae lo más nuevo primero (CC15).
+  api("GET", `${base}/link-clementina`, { conversation: clementina, messages: page([...messages].reverse()) }),
   api("GET", base, page(conversations)),
 ];
 const empty = [api("GET", base, page([]))];

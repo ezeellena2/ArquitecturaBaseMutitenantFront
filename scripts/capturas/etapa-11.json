@@ -69,59 +69,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
+                    "id": "m-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "m-6",
@@ -135,15 +91,59 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -514,37 +514,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "t-1",
+                    "id": "t-5",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, Lucía. Ya terminé la visita en Ferretería Rosales.",
+                    "text": "Bien. Me pidieron 20 cajas de tarugos del 8. ¿Hay stock?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:48:00Z"
-                  },
-                  {
-                    "id": "t-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Pasó a Carga de pedidos",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:48:00Z"
-                  },
-                  {
-                    "id": "t-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:49:00Z"
+                    "createdAtUtc": "2026-10-13T13:51:00Z"
                   },
                   {
                     "id": "t-4",
@@ -558,15 +536,37 @@
                     "createdAtUtc": "2026-10-13T13:50:00Z"
                   },
                   {
-                    "id": "t-5",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "t-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Bien. Me pidieron 20 cajas de tarugos del 8. ¿Hay stock?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:51:00Z"
+                    "createdAtUtc": "2026-10-13T13:49:00Z"
+                  },
+                  {
+                    "id": "t-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Pasó a Carga de pedidos",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:48:00Z"
+                  },
+                  {
+                    "id": "t-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, Lucía. Ya terminé la visita en Ferretería Rosales.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:48:00Z"
                   }
                 ],
                 "page": 1,
@@ -840,92 +840,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
-                  },
-                  {
-                    "id": "m-6",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Lucía Fernández",
-                    "text": "Hola, Martina. ¿Qué te gustaría pedir?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
-                  },
-                  {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
-                  },
-                  {
-                    "id": "m-8",
+                    "id": "m-10",
                     "kind": "Media",
                     "direction": "Inbound",
                     "author": null,
                     "text": null,
-                    "mediaKind": "Image",
+                    "mediaKind": "Audio",
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:43:00Z"
+                    "createdAtUtc": "2026-10-13T13:44:00Z"
                   },
                   {
                     "id": "m-9",
@@ -939,15 +862,92 @@
                     "createdAtUtc": "2026-10-13T13:43:00Z"
                   },
                   {
-                    "id": "m-10",
+                    "id": "m-8",
                     "kind": "Media",
                     "direction": "Inbound",
                     "author": null,
                     "text": null,
-                    "mediaKind": "Audio",
+                    "mediaKind": "Image",
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:44:00Z"
+                    "createdAtUtc": "2026-10-13T13:43:00Z"
+                  },
+                  {
+                    "id": "m-7",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                  },
+                  {
+                    "id": "m-6",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": "Lucía Fernández",
+                    "text": "Hola, Martina. ¿Qué te gustaría pedir?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Lucía Fernández tomó la conversación",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -1316,37 +1316,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "j-1",
+                    "id": "j-5",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿me confirman cuándo sale el pedido 1038?",
+                    "text": "Perfecto, gracias.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T19:20:00Z"
-                  },
-                  {
-                    "id": "j-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Consultar un pedido» · pasó a Soporte",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T19:20:00Z"
-                  },
-                  {
-                    "id": "j-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Tomás Acosta tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T19:21:00Z"
+                    "createdAtUtc": "2026-10-12T19:25:00Z"
                   },
                   {
                     "id": "j-4",
@@ -1360,15 +1338,37 @@
                     "createdAtUtc": "2026-10-12T19:24:00Z"
                   },
                   {
-                    "id": "j-5",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "j-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Perfecto, gracias.",
+                    "text": "Tomás Acosta tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T19:25:00Z"
+                    "createdAtUtc": "2026-10-12T19:21:00Z"
+                  },
+                  {
+                    "id": "j-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Consultar un pedido» · pasó a Soporte",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T19:20:00Z"
+                  },
+                  {
+                    "id": "j-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿me confirman cuándo sale el pedido 1038?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T19:20:00Z"
                   }
                 ],
                 "page": 1,
@@ -1751,37 +1751,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "n-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hola, quiero hacer un pedido.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
-                  },
-                  {
-                    "id": "n-2",
-                    "kind": "Text",
+                    "id": "n-5",
+                    "kind": "Event",
                     "direction": "Outbound",
                     "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
-                  },
-                  {
-                    "id": "n-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
+                    "text": "Tomás Acosta tomó la conversación · 10:16",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:15:00Z"
+                    "createdAtUtc": "2026-10-13T13:16:00Z"
                   },
                   {
                     "id": "n-4",
@@ -1795,15 +1773,37 @@
                     "createdAtUtc": "2026-10-13T13:15:00Z"
                   },
                   {
-                    "id": "n-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
+                    "id": "n-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
                     "author": null,
-                    "text": "Tomás Acosta tomó la conversación · 10:16",
+                    "text": "Hacer un pedido",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:16:00Z"
+                    "createdAtUtc": "2026-10-13T13:15:00Z"
+                  },
+                  {
+                    "id": "n-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
+                  },
+                  {
+                    "id": "n-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
                   }
                 ],
                 "page": 1,
@@ -2041,26 +2041,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "n-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "n-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Hola, quiero hacer un pedido.",
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
-                  },
-                  {
-                    "id": "n-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
+                    "createdAtUtc": "2026-10-13T13:15:00Z"
                   },
                   {
                     "id": "n-3",
@@ -2074,15 +2063,26 @@
                     "createdAtUtc": "2026-10-13T13:15:00Z"
                   },
                   {
-                    "id": "n-4",
-                    "kind": "Event",
+                    "id": "n-2",
+                    "kind": "Text",
                     "direction": "Outbound",
                     "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
+                  },
+                  {
+                    "id": "n-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, quiero hacer un pedido.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:15:00Z"
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
                   }
                 ],
                 "page": 1,
@@ -2453,48 +2453,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "k-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hola, ¿tienen tarugos del 8?",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:03:00Z"
-                  },
-                  {
-                    "id": "k-4",
+                    "id": "k-6",
                     "kind": "Text",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Sí, tenemos. ¿Cuántas cajas?",
+                    "text": "Te esperamos.",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                    "createdAtUtc": "2026-10-05T14:07:00Z"
                   },
                   {
                     "id": "k-5",
@@ -2508,15 +2475,48 @@
                     "createdAtUtc": "2026-10-05T14:06:00Z"
                   },
                   {
-                    "id": "k-6",
+                    "id": "k-4",
                     "kind": "Text",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Te esperamos.",
+                    "text": "Sí, tenemos. ¿Cuántas cajas?",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:07:00Z"
+                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                  },
+                  {
+                    "id": "k-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Lucía Fernández tomó la conversación",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:03:00Z"
+                  },
+                  {
+                    "id": "k-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
+                  },
+                  {
+                    "id": "k-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
                   }
                 ],
                 "page": 1,
@@ -2894,48 +2894,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "k-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hola, ¿tienen tarugos del 8?",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:03:00Z"
-                  },
-                  {
-                    "id": "k-4",
+                    "id": "k-6",
                     "kind": "Text",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Sí, tenemos. ¿Cuántas cajas?",
+                    "text": "Te esperamos.",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                    "createdAtUtc": "2026-10-05T14:07:00Z"
                   },
                   {
                     "id": "k-5",
@@ -2949,15 +2916,48 @@
                     "createdAtUtc": "2026-10-05T14:06:00Z"
                   },
                   {
-                    "id": "k-6",
+                    "id": "k-4",
                     "kind": "Text",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Te esperamos.",
+                    "text": "Sí, tenemos. ¿Cuántas cajas?",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:07:00Z"
+                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                  },
+                  {
+                    "id": "k-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Lucía Fernández tomó la conversación",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:03:00Z"
+                  },
+                  {
+                    "id": "k-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
+                  },
+                  {
+                    "id": "k-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
                   }
                 ],
                 "page": 1,
@@ -3328,48 +3328,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "k-1",
+                    "id": "k-6",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "text": "¿Me lo pueden mandar por moto?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:03:00Z"
-                  },
-                  {
-                    "id": "k-4",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Lucía Fernández",
-                    "text": "Sí, tenemos. ¿Cuántas cajas?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                    "createdAtUtc": "2026-10-05T14:20:00Z"
                   },
                   {
                     "id": "k-5",
@@ -3383,15 +3350,48 @@
                     "createdAtUtc": "2026-10-05T14:06:00Z"
                   },
                   {
-                    "id": "k-6",
+                    "id": "k-4",
                     "kind": "Text",
-                    "direction": "Inbound",
+                    "direction": "Outbound",
+                    "author": "Lucía Fernández",
+                    "text": "Sí, tenemos. ¿Cuántas cajas?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                  },
+                  {
+                    "id": "k-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "¿Me lo pueden mandar por moto?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:20:00Z"
+                    "createdAtUtc": "2026-10-05T14:03:00Z"
+                  },
+                  {
+                    "id": "k-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
+                  },
+                  {
+                    "id": "k-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
                   }
                 ],
                 "page": 1,
@@ -3769,48 +3769,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "k-1",
+                    "id": "k-6",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "text": "¿Me lo pueden mandar por moto?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:03:00Z"
-                  },
-                  {
-                    "id": "k-4",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Lucía Fernández",
-                    "text": "Sí, tenemos. ¿Cuántas cajas?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                    "createdAtUtc": "2026-10-05T14:20:00Z"
                   },
                   {
                     "id": "k-5",
@@ -3824,15 +3791,48 @@
                     "createdAtUtc": "2026-10-05T14:06:00Z"
                   },
                   {
-                    "id": "k-6",
+                    "id": "k-4",
                     "kind": "Text",
-                    "direction": "Inbound",
+                    "direction": "Outbound",
+                    "author": "Lucía Fernández",
+                    "text": "Sí, tenemos. ¿Cuántas cajas?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                  },
+                  {
+                    "id": "k-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "¿Me lo pueden mandar por moto?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:20:00Z"
+                    "createdAtUtc": "2026-10-05T14:03:00Z"
+                  },
+                  {
+                    "id": "k-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
+                  },
+                  {
+                    "id": "k-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
                   }
                 ],
                 "page": 1,
@@ -4203,59 +4203,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
+                    "id": "m-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                    "createdAtUtc": "2026-10-12T13:42:00Z"
                   },
                   {
                     "id": "m-6",
@@ -4269,15 +4225,59 @@
                     "createdAtUtc": "2026-10-12T13:41:00Z"
                   },
                   {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:42:00Z"
+                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -4655,59 +4655,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
+                    "id": "m-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                    "createdAtUtc": "2026-10-12T13:42:00Z"
                   },
                   {
                     "id": "m-6",
@@ -4721,15 +4677,59 @@
                     "createdAtUtc": "2026-10-12T13:41:00Z"
                   },
                   {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:42:00Z"
+                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -5108,70 +5108,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
-                  },
-                  {
-                    "id": "m-6",
-                    "kind": "Text",
+                    "id": "m-8",
+                    "kind": "Note",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Hola, Martina. ¿Qué te gustaría pedir?",
+                    "text": "Es mayorista: confirmar precio con Carolina antes de responder.",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                    "createdAtUtc": "2026-10-13T13:43:00Z"
                   },
                   {
                     "id": "m-7",
@@ -5185,15 +5130,70 @@
                     "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
-                    "id": "m-8",
-                    "kind": "Note",
+                    "id": "m-6",
+                    "kind": "Text",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Es mayorista: confirmar precio con Carolina antes de responder.",
+                    "text": "Hola, Martina. ¿Qué te gustaría pedir?",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:43:00Z"
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Lucía Fernández tomó la conversación",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -5615,59 +5615,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
+                    "id": "m-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "m-6",
@@ -5681,15 +5637,59 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -6271,59 +6271,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
+                    "id": "m-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                    "createdAtUtc": "2026-10-12T13:42:00Z"
                   },
                   {
                     "id": "m-6",
@@ -6337,15 +6293,59 @@
                     "createdAtUtc": "2026-10-12T13:41:00Z"
                   },
                   {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:42:00Z"
+                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -6709,26 +6709,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "n-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "n-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Hola, quiero hacer un pedido.",
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
-                  },
-                  {
-                    "id": "n-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
+                    "createdAtUtc": "2026-10-13T13:15:00Z"
                   },
                   {
                     "id": "n-3",
@@ -6742,15 +6731,26 @@
                     "createdAtUtc": "2026-10-13T13:15:00Z"
                   },
                   {
-                    "id": "n-4",
-                    "kind": "Event",
+                    "id": "n-2",
+                    "kind": "Text",
                     "direction": "Outbound",
                     "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
+                  },
+                  {
+                    "id": "n-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, quiero hacer un pedido.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:15:00Z"
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
                   }
                 ],
                 "page": 1,
@@ -7470,37 +7470,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "t-1",
+                    "id": "t-5",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, Lucía. Ya terminé la visita en Ferretería Rosales.",
+                    "text": "Bien. Me pidieron 20 cajas de tarugos del 8. ¿Hay stock?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:48:00Z"
-                  },
-                  {
-                    "id": "t-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Pasó a Carga de pedidos",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:48:00Z"
-                  },
-                  {
-                    "id": "t-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:49:00Z"
+                    "createdAtUtc": "2026-10-13T13:51:00Z"
                   },
                   {
                     "id": "t-4",
@@ -7514,15 +7492,37 @@
                     "createdAtUtc": "2026-10-13T13:50:00Z"
                   },
                   {
-                    "id": "t-5",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "t-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Bien. Me pidieron 20 cajas de tarugos del 8. ¿Hay stock?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:51:00Z"
+                    "createdAtUtc": "2026-10-13T13:49:00Z"
+                  },
+                  {
+                    "id": "t-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Pasó a Carga de pedidos",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:48:00Z"
+                  },
+                  {
+                    "id": "t-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, Lucía. Ya terminé la visita en Ferretería Rosales.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:48:00Z"
                   }
                 ],
                 "page": 1,
@@ -7796,59 +7796,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
+                    "id": "m-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "m-6",
@@ -7862,15 +7818,59 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -8241,92 +8241,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
-                  },
-                  {
-                    "id": "m-6",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Lucía Fernández",
-                    "text": "Hola, Martina. ¿Qué te gustaría pedir?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
-                  },
-                  {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
-                  },
-                  {
-                    "id": "m-8",
+                    "id": "m-10",
                     "kind": "Media",
                     "direction": "Inbound",
                     "author": null,
                     "text": null,
-                    "mediaKind": "Image",
+                    "mediaKind": "Audio",
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:43:00Z"
+                    "createdAtUtc": "2026-10-13T13:44:00Z"
                   },
                   {
                     "id": "m-9",
@@ -8340,15 +8263,92 @@
                     "createdAtUtc": "2026-10-13T13:43:00Z"
                   },
                   {
-                    "id": "m-10",
+                    "id": "m-8",
                     "kind": "Media",
                     "direction": "Inbound",
                     "author": null,
                     "text": null,
-                    "mediaKind": "Audio",
+                    "mediaKind": "Image",
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:44:00Z"
+                    "createdAtUtc": "2026-10-13T13:43:00Z"
+                  },
+                  {
+                    "id": "m-7",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                  },
+                  {
+                    "id": "m-6",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": "Lucía Fernández",
+                    "text": "Hola, Martina. ¿Qué te gustaría pedir?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Lucía Fernández tomó la conversación",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -8717,37 +8717,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "j-1",
+                    "id": "j-5",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿me confirman cuándo sale el pedido 1038?",
+                    "text": "Perfecto, gracias.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T19:20:00Z"
-                  },
-                  {
-                    "id": "j-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Consultar un pedido» · pasó a Soporte",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T19:20:00Z"
-                  },
-                  {
-                    "id": "j-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Tomás Acosta tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T19:21:00Z"
+                    "createdAtUtc": "2026-10-12T19:25:00Z"
                   },
                   {
                     "id": "j-4",
@@ -8761,15 +8739,37 @@
                     "createdAtUtc": "2026-10-12T19:24:00Z"
                   },
                   {
-                    "id": "j-5",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "j-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Perfecto, gracias.",
+                    "text": "Tomás Acosta tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T19:25:00Z"
+                    "createdAtUtc": "2026-10-12T19:21:00Z"
+                  },
+                  {
+                    "id": "j-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Consultar un pedido» · pasó a Soporte",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T19:20:00Z"
+                  },
+                  {
+                    "id": "j-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿me confirman cuándo sale el pedido 1038?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T19:20:00Z"
                   }
                 ],
                 "page": 1,
@@ -9152,37 +9152,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "n-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hola, quiero hacer un pedido.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
-                  },
-                  {
-                    "id": "n-2",
-                    "kind": "Text",
+                    "id": "n-5",
+                    "kind": "Event",
                     "direction": "Outbound",
                     "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
-                  },
-                  {
-                    "id": "n-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
+                    "text": "Tomás Acosta tomó la conversación · 10:16",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:15:00Z"
+                    "createdAtUtc": "2026-10-13T13:16:00Z"
                   },
                   {
                     "id": "n-4",
@@ -9196,15 +9174,37 @@
                     "createdAtUtc": "2026-10-13T13:15:00Z"
                   },
                   {
-                    "id": "n-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
+                    "id": "n-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
                     "author": null,
-                    "text": "Tomás Acosta tomó la conversación · 10:16",
+                    "text": "Hacer un pedido",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:16:00Z"
+                    "createdAtUtc": "2026-10-13T13:15:00Z"
+                  },
+                  {
+                    "id": "n-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
+                  },
+                  {
+                    "id": "n-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
                   }
                 ],
                 "page": 1,
@@ -9442,26 +9442,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "n-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "n-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Hola, quiero hacer un pedido.",
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
-                  },
-                  {
-                    "id": "n-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
+                    "createdAtUtc": "2026-10-13T13:15:00Z"
                   },
                   {
                     "id": "n-3",
@@ -9475,15 +9464,26 @@
                     "createdAtUtc": "2026-10-13T13:15:00Z"
                   },
                   {
-                    "id": "n-4",
-                    "kind": "Event",
+                    "id": "n-2",
+                    "kind": "Text",
                     "direction": "Outbound",
                     "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
+                  },
+                  {
+                    "id": "n-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, quiero hacer un pedido.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:15:00Z"
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
                   }
                 ],
                 "page": 1,
@@ -9854,48 +9854,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "k-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hola, ¿tienen tarugos del 8?",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:03:00Z"
-                  },
-                  {
-                    "id": "k-4",
+                    "id": "k-6",
                     "kind": "Text",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Sí, tenemos. ¿Cuántas cajas?",
+                    "text": "Te esperamos.",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                    "createdAtUtc": "2026-10-05T14:07:00Z"
                   },
                   {
                     "id": "k-5",
@@ -9909,15 +9876,48 @@
                     "createdAtUtc": "2026-10-05T14:06:00Z"
                   },
                   {
-                    "id": "k-6",
+                    "id": "k-4",
                     "kind": "Text",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Te esperamos.",
+                    "text": "Sí, tenemos. ¿Cuántas cajas?",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:07:00Z"
+                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                  },
+                  {
+                    "id": "k-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Lucía Fernández tomó la conversación",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:03:00Z"
+                  },
+                  {
+                    "id": "k-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
+                  },
+                  {
+                    "id": "k-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
                   }
                 ],
                 "page": 1,
@@ -10295,48 +10295,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "k-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hola, ¿tienen tarugos del 8?",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:03:00Z"
-                  },
-                  {
-                    "id": "k-4",
+                    "id": "k-6",
                     "kind": "Text",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Sí, tenemos. ¿Cuántas cajas?",
+                    "text": "Te esperamos.",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                    "createdAtUtc": "2026-10-05T14:07:00Z"
                   },
                   {
                     "id": "k-5",
@@ -10350,15 +10317,48 @@
                     "createdAtUtc": "2026-10-05T14:06:00Z"
                   },
                   {
-                    "id": "k-6",
+                    "id": "k-4",
                     "kind": "Text",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Te esperamos.",
+                    "text": "Sí, tenemos. ¿Cuántas cajas?",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:07:00Z"
+                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                  },
+                  {
+                    "id": "k-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Lucía Fernández tomó la conversación",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:03:00Z"
+                  },
+                  {
+                    "id": "k-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
+                  },
+                  {
+                    "id": "k-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
                   }
                 ],
                 "page": 1,
@@ -10729,48 +10729,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "k-1",
+                    "id": "k-6",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "text": "¿Me lo pueden mandar por moto?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:03:00Z"
-                  },
-                  {
-                    "id": "k-4",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Lucía Fernández",
-                    "text": "Sí, tenemos. ¿Cuántas cajas?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                    "createdAtUtc": "2026-10-05T14:20:00Z"
                   },
                   {
                     "id": "k-5",
@@ -10784,15 +10751,48 @@
                     "createdAtUtc": "2026-10-05T14:06:00Z"
                   },
                   {
-                    "id": "k-6",
+                    "id": "k-4",
                     "kind": "Text",
-                    "direction": "Inbound",
+                    "direction": "Outbound",
+                    "author": "Lucía Fernández",
+                    "text": "Sí, tenemos. ¿Cuántas cajas?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                  },
+                  {
+                    "id": "k-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "¿Me lo pueden mandar por moto?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:20:00Z"
+                    "createdAtUtc": "2026-10-05T14:03:00Z"
+                  },
+                  {
+                    "id": "k-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
+                  },
+                  {
+                    "id": "k-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
                   }
                 ],
                 "page": 1,
@@ -11170,48 +11170,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "k-1",
+                    "id": "k-6",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "text": "¿Me lo pueden mandar por moto?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-2",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:02:00Z"
-                  },
-                  {
-                    "id": "k-3",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:03:00Z"
-                  },
-                  {
-                    "id": "k-4",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Lucía Fernández",
-                    "text": "Sí, tenemos. ¿Cuántas cajas?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                    "createdAtUtc": "2026-10-05T14:20:00Z"
                   },
                   {
                     "id": "k-5",
@@ -11225,15 +11192,48 @@
                     "createdAtUtc": "2026-10-05T14:06:00Z"
                   },
                   {
-                    "id": "k-6",
+                    "id": "k-4",
                     "kind": "Text",
-                    "direction": "Inbound",
+                    "direction": "Outbound",
+                    "author": "Lucía Fernández",
+                    "text": "Sí, tenemos. ¿Cuántas cajas?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:05:00Z"
+                  },
+                  {
+                    "id": "k-3",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "¿Me lo pueden mandar por moto?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-05T14:20:00Z"
+                    "createdAtUtc": "2026-10-05T14:03:00Z"
+                  },
+                  {
+                    "id": "k-2",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
+                  },
+                  {
+                    "id": "k-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen tarugos del 8?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-05T14:02:00Z"
                   }
                 ],
                 "page": 1,
@@ -11604,59 +11604,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
+                    "id": "m-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                    "createdAtUtc": "2026-10-12T13:42:00Z"
                   },
                   {
                     "id": "m-6",
@@ -11670,15 +11626,59 @@
                     "createdAtUtc": "2026-10-12T13:41:00Z"
                   },
                   {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:42:00Z"
+                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -12056,59 +12056,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
+                    "id": "m-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                    "createdAtUtc": "2026-10-12T13:42:00Z"
                   },
                   {
                     "id": "m-6",
@@ -12122,15 +12078,59 @@
                     "createdAtUtc": "2026-10-12T13:41:00Z"
                   },
                   {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:42:00Z"
+                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -12506,70 +12506,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
-                  },
-                  {
-                    "id": "m-6",
-                    "kind": "Text",
+                    "id": "m-8",
+                    "kind": "Note",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Hola, Martina. ¿Qué te gustaría pedir?",
+                    "text": "Es mayorista: confirmar precio con Carolina antes de responder.",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                    "createdAtUtc": "2026-10-13T13:43:00Z"
                   },
                   {
                     "id": "m-7",
@@ -12583,15 +12528,70 @@
                     "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
-                    "id": "m-8",
-                    "kind": "Note",
+                    "id": "m-6",
+                    "kind": "Text",
                     "direction": "Outbound",
                     "author": "Lucía Fernández",
-                    "text": "Es mayorista: confirmar precio con Carolina antes de responder.",
+                    "text": "Hola, Martina. ¿Qué te gustaría pedir?",
                     "mediaKind": null,
                     "status": "Read",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:43:00Z"
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Lucía Fernández tomó la conversación",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -13024,59 +13024,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
+                    "id": "m-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "m-6",
@@ -13090,15 +13046,59 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -13680,59 +13680,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "m-1",
+                    "id": "m-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:39:00Z"
-                  },
-                  {
-                    "id": "m-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hacer un pedido",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:40:00Z"
-                  },
-                  {
-                    "id": "m-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Lucía Fernández tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                    "createdAtUtc": "2026-10-12T13:42:00Z"
                   },
                   {
                     "id": "m-6",
@@ -13746,15 +13702,59 @@
                     "createdAtUtc": "2026-10-12T13:41:00Z"
                   },
                   {
-                    "id": "m-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "m-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "2 cajas de tornillos. ¿Atienden hasta las 18?",
+                    "text": "Lucía Fernández tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-12T13:42:00Z"
+                    "createdAtUtc": "2026-10-12T13:41:00Z"
+                  },
+                  {
+                    "id": "m-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hacer un pedido",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:40:00Z"
+                  },
+                  {
+                    "id": "m-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
+                  },
+                  {
+                    "id": "m-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, buen día. Quiero hacer un pedido.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-12T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -14124,26 +14124,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "n-1",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "n-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Hola, quiero hacer un pedido.",
+                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
-                  },
-                  {
-                    "id": "n-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:14:00Z"
+                    "createdAtUtc": "2026-10-13T13:15:00Z"
                   },
                   {
                     "id": "n-3",
@@ -14157,15 +14146,26 @@
                     "createdAtUtc": "2026-10-13T13:15:00Z"
                   },
                   {
-                    "id": "n-4",
-                    "kind": "Event",
+                    "id": "n-2",
+                    "kind": "Text",
                     "direction": "Outbound",
                     "author": null,
-                    "text": "Eligió «Hacer un pedido» · pasó a Ventas",
+                    "text": "Hola, gracias por escribir a Grupo Delta. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
+                  },
+                  {
+                    "id": "n-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, quiero hacer un pedido.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:15:00Z"
+                    "createdAtUtc": "2026-10-13T13:14:00Z"
                   }
                 ],
                 "page": 1,
@@ -14532,59 +14532,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "p-1",
+                    "id": "p-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, no me llega el código para entrar.",
+                    "text": "Por correo, a lucia.fer@gmail.com. Ya pedí dos.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "p-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a ArquitecturaBase. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "p-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hablar con alguien",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "p-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hablar con alguien» · pasó a Soporte",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "p-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Martín Sosa tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "p-6",
@@ -14598,15 +14554,59 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "p-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "p-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Por correo, a lucia.fer@gmail.com. Ya pedí dos.",
+                    "text": "Martín Sosa tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "p-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hablar con alguien» · pasó a Soporte",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "p-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hablar con alguien",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "p-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a ArquitecturaBase. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "p-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, no me llega el código para entrar.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -14907,59 +14907,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "p-1",
+                    "id": "p-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, no me llega el código para entrar.",
+                    "text": "Por correo, a lucia.fer@gmail.com. Ya pedí dos.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "p-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a ArquitecturaBase. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "p-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hablar con alguien",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "p-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hablar con alguien» · pasó a Soporte",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "p-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Martín Sosa tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "p-6",
@@ -14973,15 +14929,59 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "p-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "p-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Por correo, a lucia.fer@gmail.com. Ya pedí dos.",
+                    "text": "Martín Sosa tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "p-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hablar con alguien» · pasó a Soporte",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "p-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hablar con alguien",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "p-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a ArquitecturaBase. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "p-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, no me llega el código para entrar.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -15284,59 +15284,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "p-1",
+                    "id": "p-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, no me llega el código para entrar.",
+                    "text": "Por correo, a lucia.fer@gmail.com. Ya pedí dos.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "p-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a ArquitecturaBase. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "p-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hablar con alguien",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "p-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hablar con alguien» · pasó a Soporte",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "p-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Martín Sosa tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "p-6",
@@ -15350,15 +15306,59 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "p-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "p-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Por correo, a lucia.fer@gmail.com. Ya pedí dos.",
+                    "text": "Martín Sosa tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "p-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hablar con alguien» · pasó a Soporte",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "p-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hablar con alguien",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "p-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a ArquitecturaBase. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "p-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, no me llega el código para entrar.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -15669,59 +15669,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "p-1",
+                    "id": "p-7",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, no me llega el código para entrar.",
+                    "text": "Por correo, a lucia.fer@gmail.com. Ya pedí dos.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "p-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Hola, gracias por escribir a ArquitecturaBase. ¿En qué te ayudamos?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:39:00Z"
-                  },
-                  {
-                    "id": "p-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Hablar con alguien",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "p-4",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Eligió «Hablar con alguien» · pasó a Soporte",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
-                  },
-                  {
-                    "id": "p-5",
-                    "kind": "Event",
-                    "direction": "Outbound",
-                    "author": null,
-                    "text": "Martín Sosa tomó la conversación",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "p-6",
@@ -15735,15 +15691,59 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "p-7",
-                    "kind": "Text",
-                    "direction": "Inbound",
+                    "id": "p-5",
+                    "kind": "Event",
+                    "direction": "Outbound",
                     "author": null,
-                    "text": "Por correo, a lucia.fer@gmail.com. Ya pedí dos.",
+                    "text": "Martín Sosa tomó la conversación",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:41:00Z"
+                  },
+                  {
+                    "id": "p-4",
+                    "kind": "Event",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Eligió «Hablar con alguien» · pasó a Soporte",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "p-3",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hablar con alguien",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "p-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": null,
+                    "text": "Hola, gracias por escribir a ArquitecturaBase. ¿En qué te ayudamos?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
+                  },
+                  {
+                    "id": "p-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, no me llega el código para entrar.",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:39:00Z"
                   }
                 ],
                 "page": 1,
@@ -38587,37 +38587,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "c-1",
+                    "id": "c-5",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "text": "Gracias, paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:30:00Z"
-                  },
-                  {
-                    "id": "c-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Carla",
-                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:35:00Z"
-                  },
-                  {
-                    "id": "c-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Una docena. Paso a las 17.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "c-4",
@@ -38631,15 +38609,37 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "c-5",
+                    "id": "c-3",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Gracias, paso a las 17.",
+                    "text": "Una docena. Paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "c-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": "Carla",
+                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:35:00Z"
+                  },
+                  {
+                    "id": "c-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:30:00Z"
                   }
                 ],
                 "page": 1,
@@ -38882,37 +38882,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "c-1",
+                    "id": "c-5",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "text": "Gracias, paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:30:00Z"
-                  },
-                  {
-                    "id": "c-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Carla",
-                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:35:00Z"
-                  },
-                  {
-                    "id": "c-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Una docena. Paso a las 17.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "c-4",
@@ -38926,15 +38904,37 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "c-5",
+                    "id": "c-3",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Gracias, paso a las 17.",
+                    "text": "Una docena. Paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "c-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": "Carla",
+                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:35:00Z"
+                  },
+                  {
+                    "id": "c-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:30:00Z"
                   }
                 ],
                 "page": 1,
@@ -39092,37 +39092,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "c-1",
+                    "id": "c-5",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "text": "Gracias, paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:30:00Z"
-                  },
-                  {
-                    "id": "c-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Carla",
-                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:35:00Z"
-                  },
-                  {
-                    "id": "c-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Una docena. Paso a las 17.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "c-4",
@@ -39136,15 +39114,37 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "c-5",
+                    "id": "c-3",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Gracias, paso a las 17.",
+                    "text": "Una docena. Paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "c-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": "Carla",
+                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:35:00Z"
+                  },
+                  {
+                    "id": "c-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:30:00Z"
                   }
                 ],
                 "page": 1,
@@ -39288,37 +39288,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "c-1",
+                    "id": "c-5",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "text": "Gracias, paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:30:00Z"
-                  },
-                  {
-                    "id": "c-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Carla",
-                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:35:00Z"
-                  },
-                  {
-                    "id": "c-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Una docena. Paso a las 17.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "c-4",
@@ -39332,15 +39310,37 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "c-5",
+                    "id": "c-3",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Gracias, paso a las 17.",
+                    "text": "Una docena. Paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "c-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": "Carla",
+                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:35:00Z"
+                  },
+                  {
+                    "id": "c-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:30:00Z"
                   }
                 ],
                 "page": 1,
@@ -39575,37 +39575,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "c-1",
+                    "id": "c-5",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "text": "Gracias, paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:30:00Z"
-                  },
-                  {
-                    "id": "c-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Carla",
-                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:35:00Z"
-                  },
-                  {
-                    "id": "c-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Una docena. Paso a las 17.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "c-4",
@@ -39619,15 +39597,37 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "c-5",
+                    "id": "c-3",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Gracias, paso a las 17.",
+                    "text": "Una docena. Paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "c-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": "Carla",
+                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:35:00Z"
+                  },
+                  {
+                    "id": "c-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:30:00Z"
                   }
                 ],
                 "page": 1,
@@ -39779,37 +39779,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "c-1",
+                    "id": "c-5",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "text": "Gracias, paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:30:00Z"
-                  },
-                  {
-                    "id": "c-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Carla",
-                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:35:00Z"
-                  },
-                  {
-                    "id": "c-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Una docena. Paso a las 17.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "c-4",
@@ -39823,15 +39801,37 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "c-5",
+                    "id": "c-3",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Gracias, paso a las 17.",
+                    "text": "Una docena. Paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "c-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": "Carla",
+                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:35:00Z"
+                  },
+                  {
+                    "id": "c-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:30:00Z"
                   }
                 ],
                 "page": 1,
@@ -39989,37 +39989,15 @@
               "messages": {
                 "items": [
                   {
-                    "id": "c-1",
+                    "id": "c-5",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "text": "Gracias, paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:30:00Z"
-                  },
-                  {
-                    "id": "c-2",
-                    "kind": "Text",
-                    "direction": "Outbound",
-                    "author": "Carla",
-                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
-                    "mediaKind": null,
-                    "status": "Read",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:35:00Z"
-                  },
-                  {
-                    "id": "c-3",
-                    "kind": "Text",
-                    "direction": "Inbound",
-                    "author": null,
-                    "text": "Una docena. Paso a las 17.",
-                    "mediaKind": null,
-                    "status": "Received",
-                    "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                    "createdAtUtc": "2026-10-13T13:42:00Z"
                   },
                   {
                     "id": "c-4",
@@ -40033,15 +40011,37 @@
                     "createdAtUtc": "2026-10-13T13:41:00Z"
                   },
                   {
-                    "id": "c-5",
+                    "id": "c-3",
                     "kind": "Text",
                     "direction": "Inbound",
                     "author": null,
-                    "text": "Gracias, paso a las 17.",
+                    "text": "Una docena. Paso a las 17.",
                     "mediaKind": null,
                     "status": "Received",
                     "failureReason": null,
-                    "createdAtUtc": "2026-10-13T13:42:00Z"
+                    "createdAtUtc": "2026-10-13T13:40:00Z"
+                  },
+                  {
+                    "id": "c-2",
+                    "kind": "Text",
+                    "direction": "Outbound",
+                    "author": "Carla",
+                    "text": "Hola Lucía, sí. ¿Cuántas querés?",
+                    "mediaKind": null,
+                    "status": "Read",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:35:00Z"
+                  },
+                  {
+                    "id": "c-1",
+                    "kind": "Text",
+                    "direction": "Inbound",
+                    "author": null,
+                    "text": "Hola, ¿tienen empanadas de humita para hoy?",
+                    "mediaKind": null,
+                    "status": "Received",
+                    "failureReason": null,
+                    "createdAtUtc": "2026-10-13T13:30:00Z"
                   }
                 ],
                 "page": 1,
