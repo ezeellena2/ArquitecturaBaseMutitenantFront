@@ -88,7 +88,7 @@ const paste: GalleryAction[] = [click("Empresa", "combobox"), click("Delta S.A."
 const review: GalleryAction[] = [...paste, click("Revisar 6 teléfonos")];
 
 /** Galería de la E11 de esta área: un caso por tablero y estado que se fotografía, y lo pendiente con su motivo. */
-export const phonesGalleryCases: readonly GalleryCase[] = [
+export const phonesGalleryCases: GalleryCase[] = [
   galleryCase("telefonos", "WA-Telefonos", "Pegar o subir", phonesApp({ actions: paste, readyText: "Revisar 6 teléfonos" })),
   galleryCase("telefonos", "WA-Telefonos", "Revisar", phonesApp({ actions: review, readyText: "6 teléfonos · 2 ya son miembros · 3 invitaciones · 1 inválido" })),
   galleryCase("telefonos", "M-WA-Telefonos", "Pegar o subir", phonesApp({ actions: paste, readyText: "Revisar 6 teléfonos" })),
@@ -99,6 +99,18 @@ export const phonesGalleryCases: readonly GalleryCase[] = [
   galleryCase("telefonos", "M-Usuarios", "Menú", usersApp(phoneUsers, { actions: [press("Más acciones")], readySelector: "[role='menu']", readyText: "Cargar teléfonos" })),
 ];
 
-const phoneInvitationPending = "estado por dibujar en el lienzo (CC25/CC26)";
-export const phonesGalleryPending: readonly GalleryPending[] = (["Usuario", "M-Usuario", "Invitacion", "M-Invitacion"] as const)
-  .map((board) => galleryPending("telefonos", board, "Invitación por teléfono", phoneInvitationPending));
+// CC25: la ficha de una invitación por teléfono se nombra por su número, en la banda y en el subtítulo.
+const phoneInvitationApp = galleryApp("business", `/org/usuarios/${users.phone8812.memberId}`, [
+  api("GET", `/api/users/${users.phone8812.memberId}`, users.phone8812),
+  api("GET", "/api/companies/paged", page(companies)),
+  api("GET", "/api/roles/paged", page(deltaRoles)),
+], { readyText: "5555-8812" });
+phonesGalleryCases.push(
+  galleryCase("telefonos", "Usuario", "Invitación por teléfono", phoneInvitationApp, { stateKey: "usuario" }),
+  galleryCase("telefonos", "M-Usuario", "Invitación por teléfono", phoneInvitationApp),
+);
+
+// CC26: la página pública de la invitación no tiene sesión, y la galería de la E11 arma pantallas con sesión.
+const publicInvitation = "La invitación se abre sin sesión y la base de la galería de la E11 solo arma pantallas con sesión.";
+export const phonesGalleryPending: readonly GalleryPending[] = (["Invitacion", "M-Invitacion"] as const)
+  .map((board) => galleryPending("telefonos", board, "Invitación por teléfono", publicInvitation));

@@ -1,5 +1,5 @@
 import type { WhatsAppContactBroadcastResponse, WhatsAppContactConversationResponse, WhatsAppContactResponse } from "../api/types";
-import { api, click, galleryApp, galleryCase, galleryPending, page, press, type GalleryCase, type GalleryPending } from "../test/gallery";
+import { api, click, galleryApp, galleryCase, galleryPending, page, press, type GalleryAction, type GalleryCase, type GalleryPending } from "../test/gallery";
 
 const group = "contactos";
 const contacts = "/api/organization/whatsapp/contacts";
@@ -56,6 +56,18 @@ function detail(read: WhatsAppContactResponse) {
 const martinaPath = `/org/whatsapp/contactos/${martina.id}`;
 const unlinked = { ...martina, linkedToAccount: false };
 
+/// D10: escribir una etiqueta que no existe ofrece crearla. La búsqueda de «VIP» no encuentra ninguna.
+const noVip = api("GET", `${contacts}/tags`, page([]), 200, { search: "VIP" });
+const typeVip = (within: GalleryAction["within"]): GalleryAction[] => [
+  { type: "click", role: "button", name: "Etiquetas", exact: false, within }, { type: "fill", label: "Buscar", exact: true, value: "VIP" }];
+const editVip = (open: GalleryAction[]) => galleryApp("business", martinaPath, [noVip, ...detail(martina)], {
+  actions: [...open, ...typeVip({ role: "dialog", name: "Editar contacto" })], readySelector: "[role=dialog]", readyText: "Crear «VIP»",
+});
+const importVip = (open: GalleryAction) => galleryApp("business", "/org/whatsapp/contactos", [noVip, ...list], {
+  actions: [open, { type: "click", role: "combobox", name: "Etiqueta para todos", exact: false }, { type: "fill", label: "Buscar", exact: true, value: "VIP" }],
+  readySelector: "[role=dialog]", readyText: "Crear «VIP»",
+});
+
 const fileUpload = "Elegir el archivo es subir uno, y la base de la galería no tiene la acción «upload»: sin archivo no hay vista previa ni importación.";
 
 /** Galería de la E11 de esta área: un caso por tablero y estado que se fotografía, y lo pendiente con su motivo. */
@@ -73,12 +85,14 @@ export const contactsGalleryCases: readonly GalleryCase[] = [
     actions: [press("Acciones de Martina López"), click("Editar contacto", "menuitem")], readySelector: "[role=dialog]", readyText: "Promociones",
   })),
   galleryCase(group, "M-WA-Contacto", "Sin vínculo", galleryApp("business", martinaPath, detail(unlinked), { readyText: "Quiero hacer un pedido." })),
+  // D10: el tablero de Importar tiene un archivo elegido; la galería no sube archivos, así que la app se ve sin archivo.
+  galleryCase(group, "WA-Contacto", "Crear «VIP»", editVip([click("Editar contacto")])),
+  galleryCase(group, "M-WA-Contacto", "Crear «VIP»", editVip([press("Acciones de Martina López"), click("Editar contacto", "menuitem")])),
+  galleryCase(group, "WA-Contactos-Importar", "Crear «VIP»", importVip(click("Importar contactos"))),
+  galleryCase(group, "M-WA-Contactos-Importar", "Crear «VIP»", importVip(click("Importar"))),
 ];
 
 export const contactsGalleryPending: readonly GalleryPending[] = [
   ...["WA-Contactos-Importar", "M-WA-Contactos-Importar"].flatMap((board) => ["Archivo elegido", "Con filas que no entran", "Importado"]
     .map((state) => galleryPending(group, board, state, fileUpload))),
-  // D10: crear una etiqueta escribiéndola en el campo. La app lo hace; el tablero todavía no lo dibuja.
-  ...["WA-Contacto", "M-WA-Contacto", "WA-Contactos-Importar", "M-WA-Contactos-Importar"].map((board) =>
-    galleryPending(group, board, "Crear «VIP»", "tablero pendiente: Diseño todavía no dibujó «Crear «VIP»» (D10) en Editar contacto ni en Importar")),
 ];

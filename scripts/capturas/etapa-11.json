@@ -18011,6 +18011,1235 @@
       }
     },
     {
+      "id": "wa-contacto-crear-vip",
+      "group": "contactos",
+      "board": "WA-Contacto",
+      "state": "Crear «VIP»",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Crear «VIP»"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Crear «VIP»",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fwhatsapp%2Fcontactos%2Fcontact-martina",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-owner",
+        "now": "2026-10-13T14:00:00Z",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Editar contacto",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Etiquetas",
+            "exact": false,
+            "within": {
+              "role": "dialog",
+              "name": "Editar contacto"
+            }
+          },
+          {
+            "type": "fill",
+            "label": "Buscar",
+            "exact": true,
+            "value": "VIP"
+          }
+        ],
+        "readySelector": "[role=dialog]",
+        "readyText": "Crear «VIP»",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/tags",
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "query": {
+              "search": "VIP"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/contact-martina",
+            "status": 200,
+            "body": {
+              "id": "contact-martina",
+              "name": "Martina López",
+              "displayNumber": "+5491155556203",
+              "tags": [
+                "Mayorista"
+              ],
+              "consent": "Accepted",
+              "consentSource": "Bot",
+              "consentChangedAtUtc": "2026-08-20T13:00:00Z",
+              "linkedToAccount": true,
+              "lastConversationAtUtc": "2026-10-13T12:00:00Z",
+              "latestConversationId": "conversation-martina-2",
+              "version": 4
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/contact-martina/conversations",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "conversationId": "conversation-martina-2",
+                  "startedAtUtc": "2026-10-13T12:00:00Z",
+                  "team": {
+                    "id": "team-sales",
+                    "name": "Ventas"
+                  },
+                  "assignee": {
+                    "id": "member-lucia",
+                    "name": "Lucía Fernández"
+                  },
+                  "messageCount": 8,
+                  "lastMessagePreview": "Quiero hacer un pedido."
+                },
+                {
+                  "conversationId": "conversation-martina-1",
+                  "startedAtUtc": "2026-09-12T15:00:00Z",
+                  "team": {
+                    "id": "team-support",
+                    "name": "Soporte"
+                  },
+                  "assignee": {
+                    "id": "member-tomas",
+                    "name": "Tomás Acosta"
+                  },
+                  "messageCount": 9,
+                  "lastMessagePreview": "Hola, ¿cómo hago para pedir una factura?"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/contact-martina/broadcasts",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "broadcastId": "broadcast-novedades",
+                  "name": "Nuevos productos",
+                  "sentAtUtc": "2026-09-02T13:00:00Z",
+                  "status": "Read"
+                },
+                {
+                  "broadcastId": "broadcast-agosto",
+                  "name": "Precios de agosto",
+                  "sentAtUtc": "2026-08-04T13:00:00Z",
+                  "status": "Delivered"
+                },
+                {
+                  "broadcastId": "broadcast-mayoristas",
+                  "name": "Bienvenida a mayoristas",
+                  "sentAtUtc": "2026-07-14T13:00:00Z",
+                  "status": "Read"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/tags",
+            "status": 200,
+            "body": {
+              "items": [
+                "Mayorista",
+                "Minorista"
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "firstName": "Lucía",
+              "lastName": "Fernández",
+              "email": "lucia.fernandez@delta.ejemplo.com",
+              "access": "business",
+              "activeTenantId": "grupo-delta",
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "platform": [],
+                "organization": [
+                  "users.read",
+                  "users.invite",
+                  "users.manage",
+                  "roles.read",
+                  "roles.manage",
+                  "companies.read",
+                  "companies.manage",
+                  "company.members.read",
+                  "company.members.manage",
+                  "settings.read",
+                  "settings.manage",
+                  "publicpage.manage",
+                  "audit.read",
+                  "whatsapp.customers",
+                  "whatsapp.internal",
+                  "whatsapp.broadcasts",
+                  "whatsapp.manage"
+                ],
+                "companies": {}
+              },
+              "features": [
+                "whatsapp"
+              ],
+              "permissions": [
+                "users.read",
+                "users.invite",
+                "users.manage",
+                "roles.read",
+                "roles.manage",
+                "companies.read",
+                "companies.manage",
+                "company.members.read",
+                "company.members.manage",
+                "settings.read",
+                "settings.manage",
+                "publicpage.manage",
+                "audit.read",
+                "whatsapp.customers",
+                "whatsapp.internal",
+                "whatsapp.broadcasts",
+                "whatsapp.manage"
+              ],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": "AR",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/untaken",
+            "status": 200,
+            "body": {
+              "customers": 2,
+              "internal": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-wa-contacto-crear-vip",
+      "group": "contactos",
+      "board": "M-WA-Contacto",
+      "state": "Crear «VIP»",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Crear «VIP»"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Crear «VIP»",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fwhatsapp%2Fcontactos%2Fcontact-martina",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-owner",
+        "now": "2026-10-13T14:00:00Z",
+        "actions": [
+          {
+            "type": "press",
+            "role": "button",
+            "name": "Acciones de Martina López",
+            "exact": true,
+            "key": "Enter"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Editar contacto",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Etiquetas",
+            "exact": false,
+            "within": {
+              "role": "dialog",
+              "name": "Editar contacto"
+            }
+          },
+          {
+            "type": "fill",
+            "label": "Buscar",
+            "exact": true,
+            "value": "VIP"
+          }
+        ],
+        "readySelector": "[role=dialog]",
+        "readyText": "Crear «VIP»",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/tags",
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "query": {
+              "search": "VIP"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/contact-martina",
+            "status": 200,
+            "body": {
+              "id": "contact-martina",
+              "name": "Martina López",
+              "displayNumber": "+5491155556203",
+              "tags": [
+                "Mayorista"
+              ],
+              "consent": "Accepted",
+              "consentSource": "Bot",
+              "consentChangedAtUtc": "2026-08-20T13:00:00Z",
+              "linkedToAccount": true,
+              "lastConversationAtUtc": "2026-10-13T12:00:00Z",
+              "latestConversationId": "conversation-martina-2",
+              "version": 4
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/contact-martina/conversations",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "conversationId": "conversation-martina-2",
+                  "startedAtUtc": "2026-10-13T12:00:00Z",
+                  "team": {
+                    "id": "team-sales",
+                    "name": "Ventas"
+                  },
+                  "assignee": {
+                    "id": "member-lucia",
+                    "name": "Lucía Fernández"
+                  },
+                  "messageCount": 8,
+                  "lastMessagePreview": "Quiero hacer un pedido."
+                },
+                {
+                  "conversationId": "conversation-martina-1",
+                  "startedAtUtc": "2026-09-12T15:00:00Z",
+                  "team": {
+                    "id": "team-support",
+                    "name": "Soporte"
+                  },
+                  "assignee": {
+                    "id": "member-tomas",
+                    "name": "Tomás Acosta"
+                  },
+                  "messageCount": 9,
+                  "lastMessagePreview": "Hola, ¿cómo hago para pedir una factura?"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/contact-martina/broadcasts",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "broadcastId": "broadcast-novedades",
+                  "name": "Nuevos productos",
+                  "sentAtUtc": "2026-09-02T13:00:00Z",
+                  "status": "Read"
+                },
+                {
+                  "broadcastId": "broadcast-agosto",
+                  "name": "Precios de agosto",
+                  "sentAtUtc": "2026-08-04T13:00:00Z",
+                  "status": "Delivered"
+                },
+                {
+                  "broadcastId": "broadcast-mayoristas",
+                  "name": "Bienvenida a mayoristas",
+                  "sentAtUtc": "2026-07-14T13:00:00Z",
+                  "status": "Read"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/tags",
+            "status": 200,
+            "body": {
+              "items": [
+                "Mayorista",
+                "Minorista"
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "firstName": "Lucía",
+              "lastName": "Fernández",
+              "email": "lucia.fernandez@delta.ejemplo.com",
+              "access": "business",
+              "activeTenantId": "grupo-delta",
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "platform": [],
+                "organization": [
+                  "users.read",
+                  "users.invite",
+                  "users.manage",
+                  "roles.read",
+                  "roles.manage",
+                  "companies.read",
+                  "companies.manage",
+                  "company.members.read",
+                  "company.members.manage",
+                  "settings.read",
+                  "settings.manage",
+                  "publicpage.manage",
+                  "audit.read",
+                  "whatsapp.customers",
+                  "whatsapp.internal",
+                  "whatsapp.broadcasts",
+                  "whatsapp.manage"
+                ],
+                "companies": {}
+              },
+              "features": [
+                "whatsapp"
+              ],
+              "permissions": [
+                "users.read",
+                "users.invite",
+                "users.manage",
+                "roles.read",
+                "roles.manage",
+                "companies.read",
+                "companies.manage",
+                "company.members.read",
+                "company.members.manage",
+                "settings.read",
+                "settings.manage",
+                "publicpage.manage",
+                "audit.read",
+                "whatsapp.customers",
+                "whatsapp.internal",
+                "whatsapp.broadcasts",
+                "whatsapp.manage"
+              ],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": "AR",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/untaken",
+            "status": 200,
+            "body": {
+              "customers": 2,
+              "internal": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "wa-contactos-importar-crear-vip",
+      "group": "contactos",
+      "board": "WA-Contactos-Importar",
+      "state": "Crear «VIP»",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Crear «VIP»"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Crear «VIP»",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fwhatsapp%2Fcontactos",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-owner",
+        "now": "2026-10-13T14:00:00Z",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Importar contactos",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "combobox",
+            "name": "Etiqueta para todos",
+            "exact": false
+          },
+          {
+            "type": "fill",
+            "label": "Buscar",
+            "exact": true,
+            "value": "VIP"
+          }
+        ],
+        "readySelector": "[role=dialog]",
+        "readyText": "Crear «VIP»",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/tags",
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "query": {
+              "search": "VIP"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts",
+            "status": 200,
+            "body": {
+              "contacts": {
+                "items": [
+                  {
+                    "id": "contact-martina",
+                    "name": "Martina López",
+                    "displayNumber": "+5491155556203",
+                    "tags": [
+                      "Mayorista"
+                    ],
+                    "consent": "Accepted",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-08-20T13:00:00Z",
+                    "linkedToAccount": true,
+                    "lastConversationAtUtc": "2026-10-13T12:00:00Z",
+                    "latestConversationId": "conversation-martina-2",
+                    "version": 4
+                  },
+                  {
+                    "id": "contact-0192",
+                    "name": null,
+                    "displayNumber": "+5493515550192",
+                    "tags": [],
+                    "consent": "NoAnswer",
+                    "consentSource": null,
+                    "consentChangedAtUtc": null,
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-10-13T11:20:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-federico",
+                    "name": "Federico Díaz",
+                    "displayNumber": "+5491155552087",
+                    "tags": [
+                      "Minorista"
+                    ],
+                    "consent": "Declined",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-09-03T14:00:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-10-12T18:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-javier",
+                    "name": "Javier Pereyra",
+                    "displayNumber": "+5491155553388",
+                    "tags": [
+                      "Mayorista"
+                    ],
+                    "consent": "Accepted",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-07-11T15:00:00Z",
+                    "linkedToAccount": true,
+                    "lastConversationAtUtc": "2026-10-12T15:30:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-carla",
+                    "name": "Carla Ruiz",
+                    "displayNumber": "+5491155551146",
+                    "tags": [],
+                    "consent": "Unsubscribed",
+                    "consentSource": "Unsubscribe",
+                    "consentChangedAtUtc": "2026-09-29T12:40:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-29T12:40:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-laura",
+                    "name": "Laura Méndez",
+                    "displayNumber": "+5491155553378",
+                    "tags": [
+                      "Minorista"
+                    ],
+                    "consent": "Accepted",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-06-02T13:00:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-28T16:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-sergio",
+                    "name": "Sergio Gómez",
+                    "displayNumber": "+5491155559021",
+                    "tags": [],
+                    "consent": "Declined",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-09-25T13:00:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-25T13:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-lucas",
+                    "name": "Lucas Benítez",
+                    "displayNumber": "+5491155554410",
+                    "tags": [
+                      "Minorista"
+                    ],
+                    "consent": "Accepted",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-05-19T13:00:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-25T14:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-valeria",
+                    "name": "Valeria Sosa",
+                    "displayNumber": "+5491155556120",
+                    "tags": [
+                      "Minorista"
+                    ],
+                    "consent": "Accepted",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-05-30T13:00:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-25T15:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-diego",
+                    "name": "Diego Romero",
+                    "displayNumber": "+5491155558834",
+                    "tags": [],
+                    "consent": "NoAnswer",
+                    "consentSource": null,
+                    "consentChangedAtUtc": null,
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-24T13:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  }
+                ],
+                "page": 1,
+                "pageSize": 10,
+                "totalCount": 486,
+                "totalPages": 49,
+                "hasPrevious": false,
+                "hasNext": true
+              },
+              "total": 486,
+              "accepting": 312
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/tags",
+            "status": 200,
+            "body": {
+              "items": [
+                "Mayorista",
+                "Minorista"
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "firstName": "Lucía",
+              "lastName": "Fernández",
+              "email": "lucia.fernandez@delta.ejemplo.com",
+              "access": "business",
+              "activeTenantId": "grupo-delta",
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "platform": [],
+                "organization": [
+                  "users.read",
+                  "users.invite",
+                  "users.manage",
+                  "roles.read",
+                  "roles.manage",
+                  "companies.read",
+                  "companies.manage",
+                  "company.members.read",
+                  "company.members.manage",
+                  "settings.read",
+                  "settings.manage",
+                  "publicpage.manage",
+                  "audit.read",
+                  "whatsapp.customers",
+                  "whatsapp.internal",
+                  "whatsapp.broadcasts",
+                  "whatsapp.manage"
+                ],
+                "companies": {}
+              },
+              "features": [
+                "whatsapp"
+              ],
+              "permissions": [
+                "users.read",
+                "users.invite",
+                "users.manage",
+                "roles.read",
+                "roles.manage",
+                "companies.read",
+                "companies.manage",
+                "company.members.read",
+                "company.members.manage",
+                "settings.read",
+                "settings.manage",
+                "publicpage.manage",
+                "audit.read",
+                "whatsapp.customers",
+                "whatsapp.internal",
+                "whatsapp.broadcasts",
+                "whatsapp.manage"
+              ],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": "AR",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/untaken",
+            "status": 200,
+            "body": {
+              "customers": 2,
+              "internal": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-wa-contactos-importar-crear-vip",
+      "group": "contactos",
+      "board": "M-WA-Contactos-Importar",
+      "state": "Crear «VIP»",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Crear «VIP»"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Crear «VIP»",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fwhatsapp%2Fcontactos",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-owner",
+        "now": "2026-10-13T14:00:00Z",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Importar",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "combobox",
+            "name": "Etiqueta para todos",
+            "exact": false
+          },
+          {
+            "type": "fill",
+            "label": "Buscar",
+            "exact": true,
+            "value": "VIP"
+          }
+        ],
+        "readySelector": "[role=dialog]",
+        "readyText": "Crear «VIP»",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/tags",
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "query": {
+              "search": "VIP"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts",
+            "status": 200,
+            "body": {
+              "contacts": {
+                "items": [
+                  {
+                    "id": "contact-martina",
+                    "name": "Martina López",
+                    "displayNumber": "+5491155556203",
+                    "tags": [
+                      "Mayorista"
+                    ],
+                    "consent": "Accepted",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-08-20T13:00:00Z",
+                    "linkedToAccount": true,
+                    "lastConversationAtUtc": "2026-10-13T12:00:00Z",
+                    "latestConversationId": "conversation-martina-2",
+                    "version": 4
+                  },
+                  {
+                    "id": "contact-0192",
+                    "name": null,
+                    "displayNumber": "+5493515550192",
+                    "tags": [],
+                    "consent": "NoAnswer",
+                    "consentSource": null,
+                    "consentChangedAtUtc": null,
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-10-13T11:20:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-federico",
+                    "name": "Federico Díaz",
+                    "displayNumber": "+5491155552087",
+                    "tags": [
+                      "Minorista"
+                    ],
+                    "consent": "Declined",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-09-03T14:00:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-10-12T18:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-javier",
+                    "name": "Javier Pereyra",
+                    "displayNumber": "+5491155553388",
+                    "tags": [
+                      "Mayorista"
+                    ],
+                    "consent": "Accepted",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-07-11T15:00:00Z",
+                    "linkedToAccount": true,
+                    "lastConversationAtUtc": "2026-10-12T15:30:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-carla",
+                    "name": "Carla Ruiz",
+                    "displayNumber": "+5491155551146",
+                    "tags": [],
+                    "consent": "Unsubscribed",
+                    "consentSource": "Unsubscribe",
+                    "consentChangedAtUtc": "2026-09-29T12:40:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-29T12:40:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-laura",
+                    "name": "Laura Méndez",
+                    "displayNumber": "+5491155553378",
+                    "tags": [
+                      "Minorista"
+                    ],
+                    "consent": "Accepted",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-06-02T13:00:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-28T16:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-sergio",
+                    "name": "Sergio Gómez",
+                    "displayNumber": "+5491155559021",
+                    "tags": [],
+                    "consent": "Declined",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-09-25T13:00:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-25T13:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-lucas",
+                    "name": "Lucas Benítez",
+                    "displayNumber": "+5491155554410",
+                    "tags": [
+                      "Minorista"
+                    ],
+                    "consent": "Accepted",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-05-19T13:00:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-25T14:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-valeria",
+                    "name": "Valeria Sosa",
+                    "displayNumber": "+5491155556120",
+                    "tags": [
+                      "Minorista"
+                    ],
+                    "consent": "Accepted",
+                    "consentSource": "Bot",
+                    "consentChangedAtUtc": "2026-05-30T13:00:00Z",
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-25T15:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  },
+                  {
+                    "id": "contact-diego",
+                    "name": "Diego Romero",
+                    "displayNumber": "+5491155558834",
+                    "tags": [],
+                    "consent": "NoAnswer",
+                    "consentSource": null,
+                    "consentChangedAtUtc": null,
+                    "linkedToAccount": false,
+                    "lastConversationAtUtc": "2026-09-24T13:00:00Z",
+                    "latestConversationId": null,
+                    "version": 1
+                  }
+                ],
+                "page": 1,
+                "pageSize": 10,
+                "totalCount": 486,
+                "totalPages": 49,
+                "hasPrevious": false,
+                "hasNext": true
+              },
+              "total": 486,
+              "accepting": 312
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/contacts/tags",
+            "status": 200,
+            "body": {
+              "items": [
+                "Mayorista",
+                "Minorista"
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "firstName": "Lucía",
+              "lastName": "Fernández",
+              "email": "lucia.fernandez@delta.ejemplo.com",
+              "access": "business",
+              "activeTenantId": "grupo-delta",
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "platform": [],
+                "organization": [
+                  "users.read",
+                  "users.invite",
+                  "users.manage",
+                  "roles.read",
+                  "roles.manage",
+                  "companies.read",
+                  "companies.manage",
+                  "company.members.read",
+                  "company.members.manage",
+                  "settings.read",
+                  "settings.manage",
+                  "publicpage.manage",
+                  "audit.read",
+                  "whatsapp.customers",
+                  "whatsapp.internal",
+                  "whatsapp.broadcasts",
+                  "whatsapp.manage"
+                ],
+                "companies": {}
+              },
+              "features": [
+                "whatsapp"
+              ],
+              "permissions": [
+                "users.read",
+                "users.invite",
+                "users.manage",
+                "roles.read",
+                "roles.manage",
+                "companies.read",
+                "companies.manage",
+                "company.members.read",
+                "company.members.manage",
+                "settings.read",
+                "settings.manage",
+                "publicpage.manage",
+                "audit.read",
+                "whatsapp.customers",
+                "whatsapp.internal",
+                "whatsapp.broadcasts",
+                "whatsapp.manage"
+              ],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": "AR",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/untaken",
+            "status": 200,
+            "body": {
+              "customers": 2,
+              "internal": 0
+            }
+          }
+        ]
+      }
+    },
+    {
       "id": "wa-difusiones-lista",
       "group": "difusiones",
       "board": "WA-Difusiones",
@@ -42844,6 +44073,492 @@
       }
     },
     {
+      "id": "usuario-invitacion-por-telefono",
+      "group": "telefonos",
+      "board": "Usuario",
+      "state": "Invitación por teléfono",
+      "stateKey": "usuario",
+      "props": {
+        "usuario": "Invitación por teléfono"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Invitación por teléfono",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fusuarios%2Fmember-8812",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-owner",
+        "now": "2026-10-13T14:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyText": "5555-8812",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/users/member-8812",
+            "status": 200,
+            "body": {
+              "memberId": "member-8812",
+              "userId": null,
+              "displayName": "",
+              "email": null,
+              "state": "Invited",
+              "hasManagedEmail": false,
+              "roles": [],
+              "companies": [
+                {
+                  "companyId": "company-delta",
+                  "companyName": "Delta S.A.",
+                  "status": "Active",
+                  "roles": [
+                    {
+                      "id": "role-lectura-company-delta",
+                      "name": "Solo lectura",
+                      "isSystemRole": false,
+                      "scope": "SpecificCompany",
+                      "companyId": "company-delta"
+                    }
+                  ],
+                  "companyStatus": "Active"
+                }
+              ],
+              "version": 1,
+              "createdAtUtc": "2026-02-03T15:00:00Z",
+              "phone": "+5491155558812",
+              "invitationId": "invitation-member-8812",
+              "invitationIssuedAtUtc": "2026-10-13T13:00:00Z",
+              "invitationExpiresAtUtc": "2026-10-20T15:00:00Z"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "company-delta",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 6,
+                  "version": 1,
+                  "createdAtUtc": "2026-01-12T15:00:00Z"
+                },
+                {
+                  "id": "company-delta-sur",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 4,
+                  "version": 1,
+                  "createdAtUtc": "2026-01-12T15:00:00Z"
+                },
+                {
+                  "id": "company-delta-norte",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 3,
+                  "version": 1,
+                  "createdAtUtc": "2026-01-12T15:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "role-admin",
+                  "name": "Administrador",
+                  "description": "Administra la empresa: sus miembros y sus roles.",
+                  "scope": "AnyCompany",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 1,
+                  "permissions": [],
+                  "version": 1,
+                  "createdAtUtc": "2026-01-12T15:00:00Z"
+                },
+                {
+                  "id": "role-lectura-company-delta",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "company-delta",
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [],
+                  "version": 1,
+                  "createdAtUtc": "2026-01-12T15:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "firstName": "Lucía",
+              "lastName": "Fernández",
+              "email": "lucia.fernandez@delta.ejemplo.com",
+              "access": "business",
+              "activeTenantId": "grupo-delta",
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "platform": [],
+                "organization": [
+                  "users.read",
+                  "users.invite",
+                  "users.manage",
+                  "roles.read",
+                  "roles.manage",
+                  "companies.read",
+                  "companies.manage",
+                  "company.members.read",
+                  "company.members.manage",
+                  "settings.read",
+                  "settings.manage",
+                  "publicpage.manage",
+                  "audit.read",
+                  "whatsapp.customers",
+                  "whatsapp.internal",
+                  "whatsapp.broadcasts",
+                  "whatsapp.manage"
+                ],
+                "companies": {}
+              },
+              "features": [
+                "whatsapp"
+              ],
+              "permissions": [
+                "users.read",
+                "users.invite",
+                "users.manage",
+                "roles.read",
+                "roles.manage",
+                "companies.read",
+                "companies.manage",
+                "company.members.read",
+                "company.members.manage",
+                "settings.read",
+                "settings.manage",
+                "publicpage.manage",
+                "audit.read",
+                "whatsapp.customers",
+                "whatsapp.internal",
+                "whatsapp.broadcasts",
+                "whatsapp.manage"
+              ],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": "AR",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/untaken",
+            "status": 200,
+            "body": {
+              "customers": 2,
+              "internal": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-usuario-invitacion-por-telefono",
+      "group": "telefonos",
+      "board": "M-Usuario",
+      "state": "Invitación por teléfono",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Invitación por teléfono"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Invitación por teléfono",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-owner&route=%2Forg%2Fusuarios%2Fmember-8812",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-owner",
+        "now": "2026-10-13T14:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyText": "5555-8812",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/users/member-8812",
+            "status": 200,
+            "body": {
+              "memberId": "member-8812",
+              "userId": null,
+              "displayName": "",
+              "email": null,
+              "state": "Invited",
+              "hasManagedEmail": false,
+              "roles": [],
+              "companies": [
+                {
+                  "companyId": "company-delta",
+                  "companyName": "Delta S.A.",
+                  "status": "Active",
+                  "roles": [
+                    {
+                      "id": "role-lectura-company-delta",
+                      "name": "Solo lectura",
+                      "isSystemRole": false,
+                      "scope": "SpecificCompany",
+                      "companyId": "company-delta"
+                    }
+                  ],
+                  "companyStatus": "Active"
+                }
+              ],
+              "version": 1,
+              "createdAtUtc": "2026-02-03T15:00:00Z",
+              "phone": "+5491155558812",
+              "invitationId": "invitation-member-8812",
+              "invitationIssuedAtUtc": "2026-10-13T13:00:00Z",
+              "invitationExpiresAtUtc": "2026-10-20T15:00:00Z"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "company-delta",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 6,
+                  "version": 1,
+                  "createdAtUtc": "2026-01-12T15:00:00Z"
+                },
+                {
+                  "id": "company-delta-sur",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 4,
+                  "version": 1,
+                  "createdAtUtc": "2026-01-12T15:00:00Z"
+                },
+                {
+                  "id": "company-delta-norte",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 3,
+                  "version": 1,
+                  "createdAtUtc": "2026-01-12T15:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "role-admin",
+                  "name": "Administrador",
+                  "description": "Administra la empresa: sus miembros y sus roles.",
+                  "scope": "AnyCompany",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 1,
+                  "permissions": [],
+                  "version": 1,
+                  "createdAtUtc": "2026-01-12T15:00:00Z"
+                },
+                {
+                  "id": "role-lectura-company-delta",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "company-delta",
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [],
+                  "version": 1,
+                  "createdAtUtc": "2026-01-12T15:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "firstName": "Lucía",
+              "lastName": "Fernández",
+              "email": "lucia.fernandez@delta.ejemplo.com",
+              "access": "business",
+              "activeTenantId": "grupo-delta",
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "platform": [],
+                "organization": [
+                  "users.read",
+                  "users.invite",
+                  "users.manage",
+                  "roles.read",
+                  "roles.manage",
+                  "companies.read",
+                  "companies.manage",
+                  "company.members.read",
+                  "company.members.manage",
+                  "settings.read",
+                  "settings.manage",
+                  "publicpage.manage",
+                  "audit.read",
+                  "whatsapp.customers",
+                  "whatsapp.internal",
+                  "whatsapp.broadcasts",
+                  "whatsapp.manage"
+                ],
+                "companies": {}
+              },
+              "features": [
+                "whatsapp"
+              ],
+              "permissions": [
+                "users.read",
+                "users.invite",
+                "users.manage",
+                "roles.read",
+                "roles.manage",
+                "companies.read",
+                "companies.manage",
+                "company.members.read",
+                "company.members.manage",
+                "settings.read",
+                "settings.manage",
+                "publicpage.manage",
+                "audit.read",
+                "whatsapp.customers",
+                "whatsapp.internal",
+                "whatsapp.broadcasts",
+                "whatsapp.manage"
+              ],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": "AR",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/whatsapp/untaken",
+            "status": 200,
+            "body": {
+              "customers": 2,
+              "internal": 0
+            }
+          }
+        ]
+      }
+    },
+    {
       "id": "asistente-uso-org-por-dia",
       "group": "asistente",
       "board": "Asistente-Uso-Org",
@@ -44584,50 +46299,6 @@
       "reason": "Elegir el archivo es subir uno, y la base de la galería no tiene la acción «upload»: sin archivo no hay vista previa ni importación."
     },
     {
-      "id": "wa-contacto-crear-vip",
-      "group": "contactos",
-      "board": "WA-Contacto",
-      "viewport": {
-        "width": 1440,
-        "height": 900
-      },
-      "label": "Crear «VIP»",
-      "reason": "tablero pendiente: Diseño todavía no dibujó «Crear «VIP»» (D10) en Editar contacto ni en Importar"
-    },
-    {
-      "id": "m-wa-contacto-crear-vip",
-      "group": "contactos",
-      "board": "M-WA-Contacto",
-      "viewport": {
-        "width": 390,
-        "height": 844
-      },
-      "label": "Crear «VIP»",
-      "reason": "tablero pendiente: Diseño todavía no dibujó «Crear «VIP»» (D10) en Editar contacto ni en Importar"
-    },
-    {
-      "id": "wa-contactos-importar-crear-vip",
-      "group": "contactos",
-      "board": "WA-Contactos-Importar",
-      "viewport": {
-        "width": 1440,
-        "height": 900
-      },
-      "label": "Crear «VIP»",
-      "reason": "tablero pendiente: Diseño todavía no dibujó «Crear «VIP»» (D10) en Editar contacto ni en Importar"
-    },
-    {
-      "id": "m-wa-contactos-importar-crear-vip",
-      "group": "contactos",
-      "board": "M-WA-Contactos-Importar",
-      "viewport": {
-        "width": 390,
-        "height": 844
-      },
-      "label": "Crear «VIP»",
-      "reason": "tablero pendiente: Diseño todavía no dibujó «Crear «VIP»» (D10) en Editar contacto ni en Importar"
-    },
-    {
       "id": "wa-alta-conectado",
       "group": "numeros",
       "board": "WA-Alta",
@@ -44815,28 +46486,6 @@
       "reason": "La ventana de Meta la dibuja Facebook: el tablero es referencia y la app no la programa."
     },
     {
-      "id": "usuario-invitacion-por-telefono",
-      "group": "telefonos",
-      "board": "Usuario",
-      "viewport": {
-        "width": 1440,
-        "height": 900
-      },
-      "label": "Invitación por teléfono",
-      "reason": "estado por dibujar en el lienzo (CC25/CC26)"
-    },
-    {
-      "id": "m-usuario-invitacion-por-telefono",
-      "group": "telefonos",
-      "board": "M-Usuario",
-      "viewport": {
-        "width": 390,
-        "height": 844
-      },
-      "label": "Invitación por teléfono",
-      "reason": "estado por dibujar en el lienzo (CC25/CC26)"
-    },
-    {
       "id": "invitacion-invitacion-por-telefono",
       "group": "telefonos",
       "board": "Invitacion",
@@ -44845,7 +46494,7 @@
         "height": 900
       },
       "label": "Invitación por teléfono",
-      "reason": "estado por dibujar en el lienzo (CC25/CC26)"
+      "reason": "La invitación se abre sin sesión y la base de la galería de la E11 solo arma pantallas con sesión."
     },
     {
       "id": "m-invitacion-invitacion-por-telefono",
@@ -44856,7 +46505,7 @@
         "height": 844
       },
       "label": "Invitación por teléfono",
-      "reason": "estado por dibujar en el lienzo (CC25/CC26)"
+      "reason": "La invitación se abre sin sesión y la base de la galería de la E11 solo arma pantallas con sesión."
     }
   ]
 }
