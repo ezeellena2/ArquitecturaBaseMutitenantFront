@@ -5,12 +5,22 @@ sin argumentos, arma los tableros elegidos."""
 import json
 import pathlib
 import re
+import subprocess
 import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
 PROJ = pathlib.Path(__file__).resolve().parent.parent
-BASE = (PROJ / "WA-Contactos.dc.html").read_text(encoding="utf-8")
-ADMIN = (PROJ / "WA-Admin.dc.html").read_text(encoding="utf-8")
+BASES = "f2f8e5bb"  # Los tableros base como estaban antes de la E11: etapa11_1004.py los cambia después y estos generadores no deben seguirlos.
+
+
+def leer_base(nombre):
+    """Un tablero base tal como quedó en el commit BASES del front; si git no lo tiene, el de la carpeta."""
+    r = subprocess.run(["git", "show", f"{BASES}:docs/design/lienzo/{nombre}.dc.html"], cwd=PROJ, capture_output=True)
+    return r.stdout.decode("utf-8") if r.returncode == 0 else (PROJ / f"{nombre}.dc.html").read_text(encoding="utf-8")
+
+
+BASE = leer_base("WA-Contactos")
+ADMIN = leer_base("WA-Admin")
 
 
 def svg(cuerpo, tam=18, grosor="1.75"):
@@ -233,7 +243,7 @@ def listado():
 
 # ---------------------------------------------------------------- FRM-Nuevo elegido (A, 13/10): solo el nombre; el prefijo se ve en la ficha
 CERRAR = re.search(r'<div class="dc"><span>Importar contactos</span><button type="button" class="ib" aria-label="Cerrar">(<svg.*?</svg>)</button>',
-                   (PROJ / "WA-Contactos-Importar.dc.html").read_text(encoding="utf-8"), re.S).group(1)
+                   leer_base("WA-Contactos-Importar"), re.S).group(1)
 ESTADOS_NUEVO = ["Con el nombre", "Vacío", "Sin nombre", "Nombre de más de 80", "Creando"]
 CSS_DLG = """.w-cmp .ct.ph { color: var(--t3); }
 .w-cmp .ct.mal { border-color: var(--peligro); }
@@ -818,7 +828,7 @@ def publicacion():
 
 
 # ---------------------------------------------------------------- El chat de Internos: WA-Chats con la bandeja Internos y un empleado
-CHATS = (PROJ / "WA-Chats.dc.html").read_text(encoding="utf-8")
+CHATS = leer_base("WA-Chats")
 NOTA = re.search(r'<button type="button" class="o-nt" aria-label="Nota interna" aria-pressed="false" title="Nota interna">(<svg.*?</svg>)</button>', CHATS, re.S).group(1)
 CSS_CHAT = """.w-m .gl .f-bt { display: block; margin-top: 8px; padding-top: 8px; border-top: 1px solid oklch(0.85 0.04 180); text-align: center; font-weight: 600; color: var(--marca-tx); }
 .f-tarj { display: flex; flex-direction: column; gap: 2px; }
@@ -854,10 +864,26 @@ def chat_internos(escritura=None, overlay="", mensajes_extra="", css=""):
 
 
 # ---------------------------------------------------------------- WA-Chats-Formulario elegido (A, 13/10): botón «Formulario» y diálogo con desplegable
+VARIANTE_OFERTA = "A"  # A: filas de problema como en Publicar; B: el formulario apagado con su motivo en el desplegable.
 ESTADOS_CHAT = ["Con el botón", "Elegir el formulario", "Mandando", "En cola", "No se pudo mandar", "Ventana cerrada", "No es empleado",
-                "Sin formularios", "Envío pendiente"]
+                "Sin formularios", "Envío pendiente", "Más de 200 opciones", "Ninguna opción", "Catálogo que no se puede usar"]
 MENSAJE = "Completá los datos de la visita a Ferretería Rosales."
 RELOJ = svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', 14)
+CSS_OFERTA = """.p-prob { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid oklch(0.88 0.05 25); background: var(--peligro-t); border-radius: 8px; font-size: 13px; }
+.p-prob .mal { color: oklch(0.55 0.2 25); display: inline-flex; margin-top: 1px; }
+.p-prob .tx { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.p-prob .tx b { font-weight: 600; }
+.p-prob .tx span { color: oklch(0.45 0.17 25); }
+.p-prob a { color: var(--marca-tx); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.w-dlg { overflow: visible; }
+.w-dlg .dc { border-radius: 12px 12px 0 0; }
+.f-catsel { position: relative; }
+.f-catsel .ct.on { border-color: var(--marca); box-shadow: 0 0 0 1px var(--marca); }
+.f-catmn { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 30; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); padding: 4px; display: flex; flex-direction: column; }
+.f-catmn > span { display: flex; flex-direction: column; justify-content: center; min-height: 40px; padding: 4px 10px; border-radius: 6px; font-size: 13.5px; line-height: 1.3; }
+.f-catmn > span small { font-size: 12px; color: var(--t3); }
+.f-catmn > span.off { color: var(--t3); }
+"""
 CSS_ENVIO = """.w-dlg { width: 600px; }
 .w-dlg .w-cmp.ancho { grid-column: 1 / -1; }
 .w-dlg .w-cmp .ct.area { height: 72px; white-space: normal; line-height: 1.45; padding-top: 9px; }
@@ -894,13 +920,23 @@ def chat_formulario():
                '<sc-if value="{{falla}}" hint-placeholder-val="{{no}}"><span class="lnk2">Reintentar</span></sc-if></span></div></sc-if>')
     prev = (f'<div class="c-prev"><span class="gl">{MENSAJE}<span class="f-bt">Abrir formulario</span></span>'
             '<span class="idi">Le llega en español, el idioma de su cuenta.</span></div>')
-    cuerpo = (f'<div class="w-cmp ancho"><span class="rt">Formulario <span class="req">*</span></span><div class="ct sel">Visita a cliente · VIS{CHEV}</div></div>'
-              f'<div class="w-cmp ancho"><span class="rt">Mensaje <span class="req">*</span></span><div class="ct area">{MENSAJE}</div><span class="c-cont">53 / 1024</span></div>'
+    if VARIANTE_OFERTA == "A":
+        problema = ('<sc-if value="{{conProblema}}" hint-placeholder-val="{{no}}"><div class="w-cmp ancho">'
+                    f'<div class="p-prob"><span class="mal">{ALERTA}</span><span class="tx"><b>{{{{probPregunta}}}}</b><span>{{{{probTexto}}}}</span></span>'
+                    '<a href="FRM-Catalogo-Filtros.dc.html">Ver el catálogo</a></div></div></sc-if>')
+        selector = (f'<div class="w-cmp ancho"><span class="rt">Formulario <span class="req">*</span></span><div class="ct sel">Visita a cliente · VIS{CHEV}</div></div>'
+                    + problema)
+    else:
+        selector = (f'<div class="w-cmp ancho f-catsel"><span class="rt">Formulario <span class="req">*</span></span><div class="ct sel on">Elegí un formulario{CHEV}</div>'
+                    '<div class="f-catmn" role="listbox" aria-label="Formulario"><span>Entrega de pedido<small>ENT</small></span>'
+                    '<span class="off" aria-disabled="true">Visita a cliente<small>{{probPregunta}}: {{probCorto}}</small></span></div></div>')
+    cuerpo = (selector
+              + f'<div class="w-cmp ancho"><span class="rt">Mensaje <span class="req">*</span></span><div class="ct area">{MENSAJE}</div><span class="c-cont">53 / 1024</span></div>'
               + prev)
     pie = ('<button type="button" class="cb cb-sec" disabled="{{mandando}}">Cancelar</button>'
-           '<button type="button" class="cb cb-pri" disabled="{{mandando}}">{{textoMandar}}</button>')
+           '<button type="button" class="cb cb-pri" disabled="{{mandarOff}}">{{textoMandar}}</button>')
     overlay = '<sc-if value="{{dialogo}}" hint-placeholder-val="{{no}}">' + dialogo("Mandar formulario a Tomás Acosta", cuerpo, pie, una=False) + "</sc-if>"
-    t = chat_internos(esc, overlay, mensajes_extra=enviado, css=CSS_ENVIO)
+    t = chat_internos(esc, overlay, mensajes_extra=enviado, css=CSS_ENVIO + CSS_OFERTA)
     props = {"estado": {"editor": "enum", "options": ESTADOS_CHAT, "default": ESTADOS_CHAT[0], "section": "Estado"}, "$preview": {"width": 1440, "height": 900}}
     t = t.replace("""data-props='{"$preview":{"width":1440,"height":900}}'""", "data-props='" + json.dumps(props, ensure_ascii=False, separators=(",", ":")) + "'")
     t = t.replace("    return { si: true, no: false };", """    const e = this.props.estado ?? 'Con el botón';
@@ -912,11 +948,19 @@ def chat_formulario():
       'Envío pendiente': 'Ya tiene un formulario sin responder.',
     };
     const envio = ['En cola', 'No se pudo mandar', 'Envío pendiente'].includes(e);
+    // E13: los problemas de la oferta, por pregunta (offerProblems): el formulario aparece pero no se puede mandar.
+    const PROB = {
+      'Más de 200 opciones': ['Pregunta 7 · Supervisor a cargo', 'Para Tomás Acosta salen 214 opciones, y WhatsApp acepta hasta 200.', 'más de 200 opciones'],
+      'Ninguna opción': ['Pregunta 7 · Supervisor a cargo', 'Para Tomás Acosta no sale ninguna opción, y la pregunta es obligatoria.', 'ninguna opción'],
+      'Catálogo que no se puede usar': ['Pregunta 7 · Supervisor a cargo', 'El catálogo «Supervisores» no se puede usar: un rol de los filtros ya no existe.', 'el catálogo no se puede usar'],
+    };
     return {
       si: true, no: false,
       abierta: e !== 'Ventana cerrada', cerrada: e === 'Ventana cerrada',
       btnOn: !MOTIVO[e], btnOff: !!MOTIVO[e], motivo: MOTIVO[e] || '',
-      dialogo: e === 'Elegir el formulario' || e === 'Mandando', mandando: e === 'Mandando', textoMandar: e === 'Mandando' ? 'Mandando…' : 'Mandar',
+      dialogo: e === 'Elegir el formulario' || e === 'Mandando' || !!PROB[e], mandando: e === 'Mandando', textoMandar: e === 'Mandando' ? 'Mandando…' : 'Mandar',
+      conProblema: !!PROB[e], mandarOff: e === 'Mandando' || !!PROB[e],
+      probPregunta: (PROB[e] || ['', '', ''])[0], probTexto: (PROB[e] || ['', '', ''])[1], probCorto: (PROB[e] || ['', '', ''])[2],
       conEnvio: envio, enCola: e === 'En cola', falla: e === 'No se pudo mandar',
       pie: e === 'En cola' ? 'En cola · 10:51' : e === 'No se pudo mandar' ? 'No se pudo mandar' : 'Lucía Fernández · 10:51',
       pieClase: e === 'No se pudo mandar' ? 'mal' : '',
@@ -927,10 +971,13 @@ def chat_formulario():
 
 
 # ---------------------------------------------------------------- WA-Chats-Respuesta elegida (D, 13/10): renglones con el valor a la derecha, plegada
-ESTADOS_RESPUESTA = ["Esperando respuesta", "Recibida", "Recibida, desplegada", "Solo el número", "Rechazada", "Vencida"]
+ESTADOS_RESPUESTA = ["Esperando respuesta", "Recibida", "Recibida, desplegada", "Solo el número", "Rechazada", "Vencida",
+                     "Con un valor de catálogo", "Rechazada: opción dada de baja"]
+SUPERVISOR = ("Supervisor a cargo", "Martín Paz")  # E13: la pregunta 7, de catálogo; se guarda el texto que vio la persona.
 VALORES_VIS = [("Cliente", "Ferretería Rosales"), ("Fecha de la visita", "13/10/2026"), ("¿Se concretó la venta?", "No"),
                ("Monto estimado", "0"), ("Motivo", "Seguimiento"), ("Observaciones", None)]
-CSS_RESPUESTA = """.w-m.ent:has(.r-gl) { width: 82%; }
+CSS_RESPUESTA = """.w-msjs { justify-content: flex-end; }
+.w-m.ent:has(.r-gl) { width: 82%; }
 .w-m.ent .gl.r-gl { width: 100%; box-sizing: border-box; padding: 0; overflow: hidden; background: #fff; }
 .r-cab { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
 .r-gl .r-cab + * { border-top: 1px solid var(--borde); }
@@ -958,29 +1005,35 @@ def respuesta():
         d = f'<div><span class="k">{k}</span>{v}</div>'
         return f'<sc-if value="{{{{todas}}}}" hint-placeholder-val="{{{{no}}}}">{d}</sc-if>' if oculta else d
     filas = "".join(fila_v(k, x, oculta=i >= 3) for i, (k, x) in enumerate(VALORES_VIS))
+    filas += '<sc-if value="{{conCatalogo}}" hint-placeholder-val="{{no}}">' + fila_v(*SUPERVISOR) + "</sc-if>"
     enviado = (f'<div class="w-m sal"><span class="gl"><span class="f-tt">Formulario · Visita a cliente</span>{MENSAJE}<span class="f-bt">Abrir formulario</span></span>'
                '<span class="pie {{pieClase}}">{{pieEnvio}}</span></div>')
     tarjeta = ('<sc-if value="{{llego}}" hint-placeholder-val="{{si}}"><div class="w-m ent"><span class="gl r-gl">'
                f'<div class="r-cab"><span class="ic {{{{icClase}}}}">{ICONO}</span><span class="t"><b>Visita a cliente</b><small class="{{{{subClase}}}}">{{{{sub}}}}</small></span>'
                '<sc-if value="{{conNumero}}" hint-placeholder-val="{{si}}"><span class="r-num">VIS-000123</span></sc-if>'
-               '<sc-if value="{{rechazada}}" hint-placeholder-val="{{no}}">' + info("Llegó un valor que el formulario no acepta. Mandalo de nuevo.") + "</sc-if>"
+               '<sc-if value="{{rechazada}}" hint-placeholder-val="{{no}}">' + info("{{motivoRech}}") + "</sc-if>"
                '<sc-if value="{{sinPermiso}}" hint-placeholder-val="{{no}}">' + info("Para ver las respuestas hace falta el permiso «Ver respuestas».") + "</sc-if></div>"
                '<sc-if value="{{conValores}}" hint-placeholder-val="{{si}}"><div class="r-tk">' + filas + "</div>"
                '<span class="r-mas" onClick="{{alternar}}">{{textoMas}}</span></sc-if>'
+               '<sc-if value="{{mandarDeNuevo}}" hint-placeholder-val="{{no}}"><span class="r-mas">Mandar de nuevo</span></sc-if>'
                '</span><span class="pie">11:04</span></div></sc-if>')
     t = chat_internos(None, mensajes_extra=enviado + tarjeta, css=CSS_ENVIO + CSS_RESPUESTA)
     props = {"estado": {"editor": "enum", "options": ESTADOS_RESPUESTA, "default": "Recibida", "section": "Estado"}, "$preview": {"width": 1440, "height": 900}}
     t = t.replace("""data-props='{"$preview":{"width":1440,"height":900}}'""", "data-props='" + json.dumps(props, ensure_ascii=False, separators=(",", ":")) + "'")
     t = t.replace("    return { si: true, no: false };", """    const e = this.state.e ?? (this.props.estado ?? 'Recibida');
-    const llego = ['Recibida', 'Recibida, desplegada', 'Solo el número', 'Rechazada'].includes(e);
+    const cat = e === 'Con un valor de catálogo';
+    const baja = e === 'Rechazada: opción dada de baja';
+    const llego = ['Recibida', 'Recibida, desplegada', 'Solo el número', 'Rechazada'].includes(e) || cat || baja;
     const todas = e === 'Recibida, desplegada';
     return {
       si: true, no: false,
-      llego, conValores: e === 'Recibida' || todas, todas,
-      conNumero: e !== 'Rechazada', rechazada: e === 'Rechazada', sinPermiso: e === 'Solo el número',
-      sub: e === 'Rechazada' ? 'La respuesta no se pudo guardar' : 'Respuesta del formulario · versión 3',
-      subClase: e === 'Rechazada' ? 'mal' : '', icClase: e === 'Rechazada' ? 'mal' : '',
-      textoMas: todas ? 'Ver menos' : 'Ver las 6 respuestas',
+      llego, conValores: e === 'Recibida' || todas || cat, todas: todas || cat,
+      conNumero: e !== 'Rechazada' && !baja, rechazada: e === 'Rechazada' || baja, sinPermiso: e === 'Solo el número',
+      sub: e === 'Rechazada' || baja ? 'La respuesta no se pudo guardar' : cat ? 'Respuesta del formulario · versión 4' : 'Respuesta del formulario · versión 3',
+      subClase: e === 'Rechazada' || baja ? 'mal' : '', icClase: e === 'Rechazada' || baja ? 'mal' : '',
+      motivoRech: baja ? 'La opción que eligió en «Motivo» se dio de baja.' : 'Llegó un valor que el formulario no acepta. Mandalo de nuevo.',
+      mandarDeNuevo: baja, conCatalogo: cat,
+      textoMas: todas || cat ? 'Ver menos' : 'Ver las 6 respuestas',
       alternar: () => this.setState({ e: todas ? 'Recibida' : 'Recibida, desplegada' }),
       pieEnvio: e === 'Esperando respuesta' ? 'Lucía Fernández · 10:51 · Esperando respuesta' : e === 'Vencida' ? 'Lucía Fernández · 10:51 · Venció sin respuesta' : 'Lucía Fernández · 10:51',
       pieClase: e === 'Esperando respuesta' ? 'amb' : '',
@@ -994,13 +1047,13 @@ def respuesta():
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from estados_util import campo as tcampo, hoja as thoja  # noqa: E402
 
-TBASE = (PROJ / "M-WA-Plantillas.dc.html").read_text(encoding="utf-8")
+TBASE = leer_base("M-WA-Plantillas")
 TKEBAB = re.search(r'<button type="button" class="ap-ib" aria-label="Acciones de Pedido listo">(<svg.*?</svg>)</button>', TBASE, re.S).group(1)
 TINFO = re.search(r'<button type="button" class="ap-i" aria-label="Por qué la rechazaron">(<svg.*?</svg>)</button>', TBASE, re.S).group(1)
 TVOLVER = re.search(r'<a class="ap-ib" aria-label="Volver" href="M-WA-Menu\.dc\.html">(<svg.*?</svg>)</a>', TBASE, re.S).group(1)
 TFAB = re.search(r'<a class="ap-fab" aria-label="Nueva plantilla" href="M-WA-Plantilla-Nueva\.dc\.html">(<svg.*?</svg>)</a>', TBASE, re.S).group(1)
 TLUPA = svg('<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>', 22)
-TFILTROS = re.search(r'<button type="button" class="ap-ib" aria-label="Filtros">(<svg.*?</svg>)</button>', (PROJ / "M-Usuarios.dc.html").read_text(encoding="utf-8"), re.S).group(1)
+TFILTROS = re.search(r'<button type="button" class="ap-ib" aria-label="Filtros">(<svg.*?</svg>)</button>', leer_base("M-Usuarios"), re.S).group(1)
 CSS_TEL = """.ap-tabs { display: flex; border-bottom: 1px solid var(--borde); flex-shrink: 0; }
 .ap-tabs > span, .ap-tabs > a { flex: 1; text-align: center; padding: 12px 6px; font-size: 15px; font-weight: 600; color: var(--t2); border-bottom: 2px solid transparent; margin-bottom: -1px; text-decoration: none; }
 .ap-tabs > .on { color: var(--marca-tx); border-bottom-color: var(--marca); }
@@ -1249,6 +1302,21 @@ CSS_TPREGUNTA = """.t-chk { display: inline-flex; align-items: center; gap: 12px
 """
 
 
+CHEV_CAMPO_T = ('<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+                'stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>')
+CSS_TPREG_CAT = """.f-catsel { position: relative; }
+.f-catsel .ct.on { border-color: var(--marca) !important; box-shadow: 0 0 0 1px var(--marca); }
+.f-catmn { position: absolute; left: 0; right: 0; bottom: calc(100% + 4px); z-index: 30; background: #fff; border: 1px solid var(--borde); border-radius: 12px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); padding: 4px; display: flex; flex-direction: column; }
+.f-catmn > span { display: flex; flex-direction: column; justify-content: center; min-height: 50px; padding: 4px 12px; border-radius: 8px; font-size: 16px; line-height: 1.3; }
+.f-catmn > span small { font-size: 13px; color: var(--t3); }
+.f-catmn > span.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 500; }
+.f-catmn > span.off { color: var(--t3); }
+.f-vaciocat { display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--t2); }
+.f-vaciocat a { color: var(--marca-tx); font-weight: 600; text-decoration: none; }
+.ap-hoja { overflow: visible; }
+"""
+
+
 def tel_pregunta():
     tilde = svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 14, "3")
     ops = "".join(f'<div class="t-op"><div class="ap-cmp" style="flex: 1;"><div class="ct">{o}</div></div>'
@@ -1264,6 +1332,13 @@ def tel_pregunta():
               '<sc-if value="{{conOpciones}}" hint-placeholder-val="{{si}}">' + ops + '</sc-if>'
               '<sc-if value="{{sinOpciones}}" hint-placeholder-val="{{no}}"><span class="t-err" role="alert">Agregá al menos una opción.</span></sc-if>'
               '<span class="t-mas">+ Agregar opción</span></sc-if>'
+              '<sc-if value="{{esCat}}" hint-placeholder-val="{{no}}"><sc-if value="{{conCats}}" hint-placeholder-val="{{si}}">'
+              '<div class="ap-cmp f-catsel"><span class="rt"><span>Catálogo <span class="rq">*</span></span></span><div class="ct sel {{catClase}}">Supervisores' + CHEV_CAMPO_T + '</div>'
+              '<sc-if value="{{catAbierto}}" hint-placeholder-val="{{no}}"><div class="f-catmn" role="listbox" aria-label="Catálogo">'
+              '<span class="off" aria-disabled="true">Clientes mayoristas<small>No tiene opciones activas.</small></span>'
+              '<span>Motivos de visita<small>A mano</small></span><span class="on">Supervisores<small>Con filtros</small></span></div></sc-if></div></sc-if>'
+              '<sc-if value="{{sinCats}}" hint-placeholder-val="{{no}}"><div class="ap-cmp"><span class="rt"><span>Catálogo <span class="rq">*</span></span></span>'
+              '<span class="f-vaciocat">Todavía no hay catálogos.<a href="M-FRM-Catalogos.dc.html">Ir a Catálogos</a></span></div></sc-if></sc-if>'
               f'<span class="t-chk"><i class="{{{{chkClase}}}}">{tilde}</i>Obligatoria</span>')
     hoja = ('<sc-if value="{{hojaPregunta}}" hint-placeholder-val="{{si}}">'
             + thoja("{{titulo}}", cuerpo, '<button type="button" class="cb cb-pri lleno">{{boton}}</button><button type="button" class="cb cb-sec">Cancelar</button>')
@@ -1274,29 +1349,33 @@ def tel_pregunta():
       pErr: e0 === 'Sin texto' ? 'Escribí la pregunta.' : '', chkClase: P[2] ? 'on' : '',
       conLargo: tipo === 'Texto corto' || tipo === 'Texto largo', largo: P[3], conDecimales: tipo === 'Número',
       esLista: tipo === 'Lista', conOpciones: e0 !== 'Lista sin opciones', sinOpciones: e0 === 'Lista sin opciones', cambiaTipo: e0 === 'Cambiar el tipo',
+      esCat: tipo === 'Elegir de un catálogo', conCats: e0 !== 'Sin catálogos', sinCats: e0 === 'Sin catálogos',
+      catAbierto: e0 === 'Elegir el catálogo', catClase: e0 === 'Elegir el catálogo' ? 'on' : '',
 """
     js = """    const P = {
       'Texto corto': ['Texto corto', 'Cliente', 1, '80'], 'Texto largo': ['Texto largo', 'Observaciones', 0, '600'], 'Número': ['Número', 'Monto estimado', 0, ''],
       'Fecha': ['Fecha', 'Fecha de la visita', 0, ''], 'Sí o no': ['Sí o no', '¿Se concretó la venta?', 0, ''], 'Lista': ['Lista', 'Motivo', 0, ''],
       'Nueva pregunta': ['Texto corto', '', 0, '80'], 'Sin texto': ['Texto corto', '', 0, '80'], 'Lista sin opciones': ['Lista', 'Motivo', 0, ''],
       'Cambiar el tipo': ['Texto largo', 'Cliente', 1, '600'],
+      'Elegir de un catálogo': ['Elegir de un catálogo', 'Supervisor a cargo', 1, ''], 'Elegir el catálogo': ['Elegir de un catálogo', 'Supervisor a cargo', 1, ''],
+      'Sin catálogos': ['Elegir de un catálogo', 'Supervisor a cargo', 1, ''],
     }[e0];
     const tipo = P[0];
     const nueva = e0 === 'Nueva pregunta' || e0 === 'Sin texto';
 """
     t = tel_ficha(estados=ESTADOS_PREGUNTA, prop="tipo", js_extra=js, extra_hojas=hoja, claves_extra=claves)
     t = t.replace("    const e = this.state.e ?? e0;", "    const e = 'Guardado';")
-    t = t.replace("</helmet>", f'<style data-e12="pregunta-tel">\n{CSS_TPREGUNTA}</style>\n</helmet>', 1)
+    t = t.replace("</helmet>", f'<style data-e12="pregunta-tel">\n{CSS_TPREGUNTA}{CSS_TPREG_CAT}</style>\n</helmet>', 1)
     return re.sub(r"<title>[^<]*</title>", "<title>Formularios · pregunta · teléfono</title>", t)
 
 
 # ---------------------------------------------------------------- El chat de Internos en el teléfono: M-WA-Conversacion con un empleado
-TCONV = (PROJ / "M-WA-Conversacion.dc.html").read_text(encoding="utf-8")
+TCONV = leer_base("M-WA-Conversacion")
 TNOTA = re.search(r'<button type="button" class="ap-red nt" aria-label="Nota interna" aria-pressed="false">(<svg.*?</svg>)</button>', TCONV, re.S).group(1)
 TENVIAR = re.search(r'<button type="button" class="ap-red env" aria-label="Enviar">(<svg.*?</svg>)</button>', TCONV, re.S).group(1)
 TCKEBAB = re.search(r'<button type="button" class="ap-ib" aria-label="Acciones de Martina López">(<svg.*?</svg>)</button>', TCONV, re.S).group(1)
 TCVOLVER = re.search(r'<a class="ap-ib" aria-label="Volver" href="M-WA-Chats\.dc\.html">(<svg.*?</svg>)</a>', TCONV, re.S).group(1)
-T24 = (PROJ / "M-WA-24h.dc.html").read_text(encoding="utf-8")
+T24 = leer_base("M-WA-24h")
 TRELOJ = re.search(r'<span class="ap-24">(<svg.*?</svg>)', T24, re.S).group(1)
 TINFO24 = re.search(r'<button type="button" class="ap-i" aria-label="Qué significa">(<svg.*?</svg>)</button>', T24, re.S).group(1)
 CSS_TCHAT = """.ap-m .gl .f-tt { display: block; margin-bottom: 4px; font-size: 12.5px; font-weight: 600; color: var(--marca-tx); }
@@ -1333,7 +1412,11 @@ def tel_chat(escritura, mensajes_extra="", overlay="", estados=None, js="", css=
 
 # ---------------------------------------------------------------- M-WA-Chats-Formulario elegido (C, 13/10): «Mandar formulario» en el menú ⋮ del chat
 # El menú aguanta lo que sumen las etapas 13 a 17 sin llenar de botones el lugar donde se escribe.
-CSS_TFORM = """.ap-menu .sub { display: block; font-size: 13px; color: var(--t3); margin-top: 2px; line-height: 1.35; }
+CSS_TFORM = """.t-prob2 { display: flex; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--peligro-t); font-size: 14px; line-height: 1.4; color: oklch(0.45 0.17 25); }
+.t-prob2 svg { flex-shrink: 0; margin-top: 2px; }
+.t-prob2 b { display: block; color: var(--t1); font-weight: 600; }
+.t-prob2 a { align-self: flex-start; white-space: nowrap; font-weight: 600; color: var(--marca-tx); text-decoration: none; }
+.ap-menu .sub { display: block; font-size: 13px; color: var(--t3); margin-top: 2px; line-height: 1.35; }
 .ap-menu .sub span { display: inline; min-height: 0; padding: 0; border: 0; font-size: inherit; }
 .ap-menu span.off { color: var(--t3); flex-direction: column; align-items: flex-start; justify-content: center; padding: 10px 18px; }
 .ap-cmp .ct.area { display: block; padding: 12px 14px; line-height: 1.5; min-height: 76px; }
@@ -1346,7 +1429,7 @@ CSS_TFORM = """.ap-menu .sub { display: block; font-size: 13px; color: var(--t3)
 .ap-hoja .hp .cb[disabled] { opacity: 0.6; }
 """
 ESTADOS_TCHAT = ["Menú abierto", "Elegir el formulario", "Mandando", "En cola", "No se pudo mandar", "Ventana cerrada", "No es empleado",
-                 "Sin formularios", "Envío pendiente"]
+                 "Sin formularios", "Envío pendiente", "Más de 200 opciones", "Ninguna opción", "Catálogo que no se puede usar"]
 
 
 def tel_chat_formulario():
@@ -1366,12 +1449,14 @@ def tel_chat_formulario():
                f'{MENSAJE}<span class="bt">Abrir formulario</span></span>'
                f'<span class="pie {{{{pieClase}}}}"><sc-if value="{{{{enCola}}}}" hint-placeholder-val="{{{{no}}}}"><span class="rel">{TRELOJ}</span></sc-if>{{{{pie}}}}'
                '<sc-if value="{{falla}}" hint-placeholder-val="{{no}}"><span class="lnk2">Reintentar</span></sc-if></span></div></sc-if>')
-    cuerpo = (tcampo("Formulario", "Visita a cliente · VIS", req=True, select=True)
+    problema = ('<sc-if value="{{conProblema}}" hint-placeholder-val="{{no}}"><div class="t-prob2">' + ALERTA
+                + '<span><b>{{probPregunta}}</b>{{probTexto}}</span><a href="M-FRM-Catalogo-Filtros.dc.html">Ver el catálogo</a></div></sc-if>')
+    cuerpo = (tcampo("Formulario", "Visita a cliente · VIS", req=True, select=True) + problema
               + f'<div class="ap-cmp"><span class="rt"><span>Mensaje <span class="rq">*</span></span></span><div class="ct area">{MENSAJE}</div><span class="cont">53 / 1024</span></div>'
               + f'<div class="ap-burb">{MENSAJE}<span class="bt">Abrir formulario</span></div><span class="ap-idi">Le llega en español, el idioma de su cuenta.</span>')
     hoja = ('<sc-if value="{{dialogo}}" hint-placeholder-val="{{no}}">'
             + thoja("Mandar formulario", cuerpo, '<button type="button" class="cb cb-sec" disabled="{{mandando}}">Cancelar</button>'
-                    '<button type="button" class="cb cb-pri" disabled="{{mandando}}">{{textoMandar}}</button>') + "</sc-if>")
+                    '<button type="button" class="cb cb-pri" disabled="{{mandarOff}}">{{textoMandar}}</button>') + "</sc-if>")
     js = """    const e = this.props.estado ?? 'Menú abierto';
     // El motivo del ítem apagado va debajo, en gris (WhatsApp.Chat.WindowClosed, NotEmployee, FormUnavailable, SendPending).
     const MOTIVO = {
@@ -1381,11 +1466,18 @@ def tel_chat_formulario():
       'Envío pendiente': 'Ya tiene un formulario sin responder.',
     };
     const envio = ['En cola', 'No se pudo mandar', 'Envío pendiente'].includes(e);
+    const PROB = {
+      'Más de 200 opciones': ['Pregunta 7 · Supervisor a cargo', 'Para Tomás Acosta salen 214 opciones, y WhatsApp acepta hasta 200.'],
+      'Ninguna opción': ['Pregunta 7 · Supervisor a cargo', 'Para Tomás Acosta no sale ninguna opción, y la pregunta es obligatoria.'],
+      'Catálogo que no se puede usar': ['Pregunta 7 · Supervisor a cargo', 'El catálogo «Supervisores» no se puede usar: un rol de los filtros ya no existe.'],
+    };
     return {
       si: true, no: false,
       abierta: e !== 'Ventana cerrada', cerrada: e === 'Ventana cerrada',
       conMenu: e === 'Menú abierto' || !!MOTIVO[e], btnOn: !MOTIVO[e], btnOff: !!MOTIVO[e], motivo: MOTIVO[e] || '',
-      dialogo: e === 'Elegir el formulario' || e === 'Mandando', mandando: e === 'Mandando', textoMandar: e === 'Mandando' ? 'Mandando…' : 'Mandar',
+      dialogo: e === 'Elegir el formulario' || e === 'Mandando' || !!PROB[e], mandando: e === 'Mandando', textoMandar: e === 'Mandando' ? 'Mandando…' : 'Mandar',
+      conProblema: !!PROB[e], mandarOff: e === 'Mandando' || !!PROB[e],
+      probPregunta: (PROB[e] || ['', ''])[0], probTexto: (PROB[e] || ['', ''])[1],
       conEnvio: envio, enCola: e === 'En cola', falla: e === 'No se pudo mandar',
       pie: e === 'En cola' ? 'En cola · 10:51' : e === 'No se pudo mandar' ? 'No se pudo mandar' : 'Lucía Fernández · 10:51',
       pieClase: e === 'No se pudo mandar' ? 'mal' : '',
@@ -1433,32 +1525,40 @@ def tel_respuesta(variante="B"):
         d = f'<div><span class="k">{k}</span>{v}</div>'
         return f'<sc-if value="{{{{todas}}}}" hint-placeholder-val="{{{{no}}}}">{d}</sc-if>' if oculta else d
     filas = "".join(fila_v(k, x, oculta=i >= 3) for i, (k, x) in enumerate(VALORES_VIS))
+    filas += '<sc-if value="{{conCatalogo}}" hint-placeholder-val="{{no}}">' + fila_v(*SUPERVISOR) + "</sc-if>"
     enviado = (f'<div class="ap-m sal"><span class="gl"><span class="f-tt">Formulario · Visita a cliente</span>{MENSAJE}<span class="bt">Abrir formulario</span></span>'
                '<span class="pie {{pieClase}}">{{pieEnvio}}</span></div>')
     tarjeta = ('<sc-if value="{{llego}}" hint-placeholder-val="{{si}}"><div class="ap-m ent"><span class="gl r-gl">'
                f'<div class="r-cab"><span class="ic {{{{icClase}}}}">{ICONO}</span><span class="t"><b>Visita a cliente</b><small class="{{{{subClase}}}}">{{{{sub}}}}</small></span>'
                '<sc-if value="{{conNumero}}" hint-placeholder-val="{{si}}"><span class="r-num">VIS-000123</span></sc-if>'
-               f'<sc-if value="{{{{rechazada}}}}" hint-placeholder-val="{{{{no}}}}"><button type="button" class="ap-i neu" aria-label="Por qué" title="Llegó un valor que el formulario no acepta. Mandalo de nuevo.">{TINFO}</button></sc-if>'
+               f'<sc-if value="{{{{rechazada}}}}" hint-placeholder-val="{{{{no}}}}"><button type="button" class="ap-i neu" aria-label="Por qué" title="{{{{motivoRech}}}}">{TINFO}</button></sc-if>'
                f'<sc-if value="{{{{sinPermiso}}}}" hint-placeholder-val="{{{{no}}}}"><button type="button" class="ap-i neu" aria-label="Por qué" title="Para ver las respuestas hace falta el permiso «Ver respuestas».">{TINFO}</button></sc-if></div>'
                '<sc-if value="{{conValores}}" hint-placeholder-val="{{si}}"><div class="r-tk">' + filas + "</div>"
                '<span class="r-mas" onClick="{{alternar}}">{{textoMas}}</span></sc-if>'
+               '<sc-if value="{{mandarDeNuevo}}" hint-placeholder-val="{{no}}"><span class="r-mas">Mandar de nuevo</span></sc-if>'
                '</span><span class="pie">11:04</span></div></sc-if>')
     hoja = ""
     if variante == "B":
         hoja = ('<sc-if value="{{hoja}}" hint-placeholder-val="{{no}}">'
-                + thoja("Visita a cliente", grilla(VALORES_VIS), "", sub="VIS-000123 · Tomás Acosta · hoy, 11:04") + "</sc-if>")
+                + thoja("Visita a cliente", grilla(VALORES_VIS), "", sub="VIS-000123 · Tomás Acosta · hoy, 11:04") + "</sc-if>"
+                '<sc-if value="{{hojaCat}}" hint-placeholder-val="{{no}}">'
+                + thoja("Visita a cliente", grilla(VALORES_VIS + [SUPERVISOR]), "", sub="VIS-000123 · Tomás Acosta · hoy, 11:04") + "</sc-if>")
     escritura = (f'<div class="ap-escr"><button type="button" class="ap-red nt" aria-label="Nota interna" aria-pressed="false">{TNOTA}</button>'
                  f'<span class="campo">Mensaje</span><button type="button" class="ap-red env" aria-label="Enviar">{TENVIAR}</button></div>')
     js = """    const e = this.state.e ?? (this.props.estado ?? 'Recibida');
-    const llego = ['Recibida', 'Recibida, desplegada', 'Solo el número', 'Rechazada'].includes(e);
+    const cat = e === 'Con un valor de catálogo';
+    const baja = e === 'Rechazada: opción dada de baja';
+    const llego = ['Recibida', 'Recibida, desplegada', 'Solo el número', 'Rechazada'].includes(e) || cat || baja;
     const abierta = e === 'Recibida, desplegada';
     const enHoja = VARIANTE === 'B';
     return {
       si: true, no: false,
-      llego, conValores: e === 'Recibida' || abierta, todas: abierta && !enHoja, hoja: abierta && enHoja,
-      conNumero: e !== 'Rechazada', rechazada: e === 'Rechazada', sinPermiso: e === 'Solo el número',
-      sub: e === 'Rechazada' ? 'La respuesta no se pudo guardar' : 'Respuesta del formulario · versión 3',
-      subClase: e === 'Rechazada' ? 'mal' : '', icClase: e === 'Rechazada' ? 'mal' : '',
+      llego, conValores: e === 'Recibida' || abierta || cat, todas: abierta && !enHoja, hoja: abierta && enHoja, hojaCat: cat,
+      conNumero: e !== 'Rechazada' && !baja, rechazada: e === 'Rechazada' || baja, sinPermiso: e === 'Solo el número',
+      sub: e === 'Rechazada' || baja ? 'La respuesta no se pudo guardar' : cat ? 'Respuesta del formulario · versión 4' : 'Respuesta del formulario · versión 3',
+      subClase: e === 'Rechazada' || baja ? 'mal' : '', icClase: e === 'Rechazada' || baja ? 'mal' : '',
+      motivoRech: baja ? 'La opción que eligió en «Motivo» se dio de baja.' : 'Llegó un valor que el formulario no acepta. Mandalo de nuevo.',
+      mandarDeNuevo: baja, conCatalogo: cat,
       textoMas: abierta && !enHoja ? 'Ver menos' : 'Ver las 6 respuestas',
       alternar: () => this.setState({ e: abierta ? 'Recibida' : 'Recibida, desplegada' }),
       pieEnvio: e === 'Esperando respuesta' ? 'Lucía Fernández · 10:51 · Esperando respuesta' : e === 'Vencida' ? 'Lucía Fernández · 10:51 · Venció sin respuesta' : 'Lucía Fernández · 10:51',

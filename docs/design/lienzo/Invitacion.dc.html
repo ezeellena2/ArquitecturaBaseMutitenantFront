@@ -620,6 +620,8 @@ button.b.lg:disabled { cursor: default; }
 <style data-vuelta="1004-alineacion-app">
 .in2.mal { border-color: var(--peligro) !important; }
 </style>
+<style data-e11tb>
+</style>
 </helmet>
 
 <div class="auth">
@@ -652,6 +654,8 @@ button.b.lg:disabled { cursor: default; }
             <a class="b b-pri lg" href="Ingreso.dc.html">Ingresá para aceptar</a>
             <p class="nota">Ya tenés una cuenta con {{correo}}. Entrá con tu código y la invitación te espera.</p>
           </sc-if>
+          <sc-if value="{{porTelefono}}" hint-placeholder-val="{{no}}"><a class="b b-pri lg" href="Ingreso.dc.html">Entrar con código por WhatsApp</a></sc-if>
+          <sc-if value="{{sinCodigo}}" hint-placeholder-val="{{no}}"><div class="msj alerta" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 21 19H3L12 3.5Z"/><path d="M12 10v3.5"/><path d="M12 16.4v.2"/></svg><span>Ahora no podemos mandarte el código por WhatsApp. Probá más tarde.</span></div></sc-if>
         </div>
       </sc-if>
       <sc-if value="{{aceptada}}" hint-placeholder-val="{{no}}">
@@ -699,7 +703,7 @@ button.b.lg:disabled { cursor: default; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Sin cuenta","Sin cuenta: cargando","Sin cuenta: aceptando","Sin cuenta: error al aceptar","Con cuenta y sin sesión","Con la sesión de la misma persona","Con la sesión de otra persona","Vencida","Ya no sirve","Organización suspendida","Aceptada: solo con el correo de la empresa"],"default":"Sin cuenta","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Sin cuenta","Sin cuenta: cargando","Sin cuenta: aceptando","Sin cuenta: error al aceptar","Con cuenta y sin sesión","Por teléfono","Por teléfono: sin código","Con la sesión de la misma persona","Con la sesión de otra persona","Vencida","Ya no sirve","Organización suspendida","Aceptada: solo con el correo de la empresa"],"default":"Sin cuenta","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 // POST /api/invitations/preview no la gasta; POST /api/invitations/accept la acepta. Si la persona no tenía cuenta,
 // la aceptación crea su identidad (sin espacio personal: nace la primera vez que entra como persona) y entra directo a la organización.
 const ESTADOS = {
@@ -709,6 +713,9 @@ const ESTADOS = {
   'Sin cuenta: aceptando': { correo: 'valentina.ruiz@gmail.com', empresa: 'Delta Norte S.A.', roles: 'Solo lectura', modo: 'directo', nota: 'Al aceptar creamos tu cuenta con este correo y aceptás los Términos y la Política de privacidad.', enviando: true },
   'Sin cuenta: error al aceptar': { correo: 'valentina.ruiz@gmail.com', empresa: 'Delta Norte S.A.', roles: 'Solo lectura', modo: 'directo', nota: 'Al aceptar creamos tu cuenta con este correo y aceptás los Términos y la Política de privacidad.', error: 'Algo salió mal. Probá de nuevo en un rato.' },
   'Con cuenta y sin sesión': { correo: 'sofia.herrera@delta.ejemplo.com', empresa: 'Delta S.A.', roles: 'Solo lectura', modo: 'ingresar' },
+  // Invitación por teléfono (CC26): igual sin cuenta o con cuenta y sin sesión.
+  'Por teléfono': { correo: '011 15-5555-8812', empresa: 'Delta S.A.', roles: 'Solo lectura', modo: 'telefono' },
+  'Por teléfono: sin código': { correo: '011 15-5555-8812', empresa: 'Delta S.A.', roles: 'Solo lectura', modo: 'telefonoSinCodigo' },
   'Con la sesión de la misma persona': { correo: 'sofia.herrera@delta.ejemplo.com', empresa: 'Delta S.A.', roles: 'Solo lectura', modo: 'directo', nota: 'Grupo Delta se suma a tus perfiles.' },
   'Con la sesión de otra persona': { correo: 'sofia.herrera@delta.ejemplo.com', empresa: 'Delta S.A.', roles: 'Solo lectura', modo: 'otra' },
   'Vencida': { invalida: ['alerta', 'Esta invitación venció', 'Pedile a Lucía Fernández que te mande otra.'] },
@@ -913,6 +920,8 @@ class Component extends DCLogic {
       otraSesion: e.modo === 'otra',
       aceptaDirecto: e.modo === 'directo',
       debeIngresar: e.modo === 'ingresar',
+      porTelefono: e.modo === 'telefono',
+      sinCodigo: e.modo === 'telefonoSinCodigo',
       notaAceptar: e.nota || '',
       claseCirculo: e.invalida ? e.invalida[0] : '',
       tituloInvalida: e.invalida ? e.invalida[1] : '',

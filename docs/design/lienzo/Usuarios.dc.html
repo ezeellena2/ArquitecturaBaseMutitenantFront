@@ -623,6 +623,8 @@ textarea.in2 { height: auto; min-height: 84px; }
 .tarjeta > .tt-h:first-child { border-radius: 11px 11px 0 0 !important; }
 </style>
 <style data-vuelta="1004-e12-ajustes"></style>
+<style data-e11tb>
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -873,7 +875,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Lista","Teléfonos cargados"],"default":"Lista","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const ORG_ZONA = 'America/Argentina/Buenos_Aires';
 // La zona se guarda con su ID; en pantalla va la ciudad y el desfase.
 const NOMBRES_ZONA = { 'America/Argentina/Buenos_Aires': 'Buenos Aires (GMT−3)', 'America/Argentina/Cordoba': 'Córdoba (GMT−3)', 'America/Argentina/Mendoza': 'Mendoza (GMT−3)', 'America/Argentina/Tucuman': 'Tucumán (GMT−3)', 'America/Montevideo': 'Montevideo (GMT−3)', 'America/Santiago': 'Santiago (GMT−3)', 'America/Asuncion': 'Asunción (GMT−3)' };
@@ -915,9 +917,9 @@ const USUARIOS = [
   { id: 'u5', n: 'Paula Méndez', email: 'paula.mendez@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }, { c: 'c2', roles: ['Solo lectura'] }], desde: '02/03/2026' },
   { id: 'u9', n: 'Martín Paz', email: 'martin.paz@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '10/03/2026' },
   { id: 'u10', n: 'Carolina Vega', email: 'carolina.vega@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c2', roles: ['Administrador'] }, { c: 'c3', roles: ['Administrador'] }], desde: '10/03/2026' },
-  { id: 'u12', n: '', email: '+54 9 11 5555-8812', estado: 'invitado', vence: '20/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
-  { id: 'u13', n: '', email: '+54 9 11 5555-9934', estado: 'invitado', vence: '20/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
-  { id: 'u14', n: '', email: '+54 9 11 5555-1200', estado: 'invitado', vence: '20/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
+  { id: 'u12', n: '', email: '011 15-5555-8812', estado: 'invitado', vence: '20/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
+  { id: 'u13', n: '', email: '011 15-5555-9934', estado: 'invitado', vence: '20/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
+  { id: 'u14', n: '', email: '011 15-5555-1200', estado: 'invitado', vence: '20/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
   { id: 'u8', n: 'Marcos Giménez', email: 'marcos.gimenez@delta.ejemplo.com', estado: 'deshabilitado', rolesOrg: [], empresas: [], desde: '05/02/2026' },
   { id: 'u6', n: 'Sofía Herrera', email: 'sofia.herrera@delta.ejemplo.com', estado: 'invitado', vence: '02/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
   { id: 'u7', n: '', email: 'valentina.ruiz@gmail.com', estado: 'invitado', vence: '03/10/2026', rolesOrg: [], empresas: [{ c: 'c3', roles: ['Solo lectura'] }] },
@@ -936,7 +938,7 @@ class Component extends DCLogic {
   constructor(props) {
     super(props);
     
-    this.state = { wa: false, adm: true, abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', usuarios: USUARIOS, busqueda: '', estado: null, empresa: null, dialogo: null, correo: '', errCorreo: '', rolesOrg: [], emp: null, rolesEmp: [], enviando: false };
+    this.state = { wa: false, adm: true, abierto: null, aviso: props.estado === 'Teléfonos cargados' ? 'Vinculamos 2 teléfonos y mandamos 3 invitaciones.' : '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', usuarios: USUARIOS, busqueda: '', estado: null, empresa: null, dialogo: null, correo: '', errCorreo: '', rolesOrg: [], emp: null, rolesEmp: [], enviando: false };
   }
 
   avisar(texto, tipo = 'ok') {

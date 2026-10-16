@@ -66,6 +66,14 @@ if True:
     (PROJ / "canvas.json").write_text(json.dumps(c, ensure_ascii=False, indent=2), encoding="utf-8")
     print("Criterio-Menus con la regla")
 
+# ---- Opciones apagadas (el usuario, 13/10, FRM-Pregunta A): si no aplica, no va; si se puede resolver, va en gris con el motivo debajo.
+VIEJO = "<li>Opciones grises que no se pueden usar: si no aplica, no va.</li>"
+NUEVO = "<li>Una opción gris sin su motivo. Si no aplica, no va; si no se puede usar por algo que se puede resolver, va en gris con el motivo debajo.</li>"
+t = ARCHIVO.read_text(encoding="utf-8")
+if VIEJO in t:
+    ARCHIVO.write_text(t.replace(VIEJO, NUEVO), encoding="utf-8")
+    print("Criterio-Menus con la regla de las opciones apagadas")
+
 # ---- Uso del asistente: «Por día | Por persona» son dos vistas de la misma lista, así que van con control segmentado (13/10).
 # Corre después de asistente_admin_1004.py, que arma esos tableros con pestañas.
 CSS_VSEG = {

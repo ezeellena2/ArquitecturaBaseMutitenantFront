@@ -278,7 +278,7 @@ BODY = f"""<div class="crit">
     <h2>Prohibido</h2>
     <ul class="prohibido">
       <li>Submenús que se abren al costado de otro menú.</li>
-      <li>Opciones grises que no se pueden usar: si no aplica, no va.</li>
+      <li>Una opción gris sin su motivo. Si no aplica, no va; si no se puede usar por algo que se puede resolver, va en gris con el motivo debajo.</li>
       <li>La acción principal escondida en un ⋮.</li>
       <li>Más de 8 opciones: es una pantalla o un desplegable con buscador.</li>
       <li>Íconos de colores, etiquetas o textos sueltos a la derecha que cuentan un estado.</li>

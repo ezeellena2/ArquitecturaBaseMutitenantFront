@@ -5,10 +5,12 @@ sus filtros, desplegables. Corre después de `formularios_1004.py` y de `formula
 """
 import json
 import pathlib
+import re
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import formularios_1004 as F  # noqa: E402
+from estados_util import CHEV_CAMPO  # noqa: E402
 
 PROJ = F.PROJ
 
@@ -561,9 +563,11 @@ def opcion_opciones():
 
 
 # ---------------------------------------------------------------- canvas.json: los tableros de la E13 van en la página «Organización · Formularios»
-TITULOS = {"FRM-Catalogos": "Formularios · Catálogos", "FRM-Catalogo-Nuevo": "Formularios · nuevo catálogo", "FRM-Catalogo": "Formularios · catálogo a mano",
+TITULOS = {"M-FRM-Catalogos": "Catálogos · teléfono", "M-FRM-Catalogo": "Catálogo a mano · teléfono", "M-FRM-Catalogo-Opcion": "Opción de un catálogo · teléfono", "M-FRM-Catalogo-Filtros": "Catálogo con filtros · teléfono",
+           "FRM-Catalogos": "Formularios · Catálogos", "FRM-Catalogo-Nuevo": "Formularios · nuevo catálogo", "FRM-Catalogo": "Formularios · catálogo a mano",
            "FRM-Catalogo-Opcion": "Formularios · opción de un catálogo", "FRM-Catalogo-Filtros": "Formularios · catálogo con filtros"}
-LUGAR = {"FRM-Catalogos": (0, 3320, 1440, 900), "FRM-Catalogo-Nuevo": (1520, 3320, 1440, 900), "FRM-Catalogo": (3040, 3320, 1440, 900), "FRM-Catalogo-Opcion": (4560, 3320, 1440, 900), "FRM-Catalogo-Filtros": (6080, 3320, 1440, 900)}
+LUGAR = {"M-FRM-Catalogos": (0, 4340, 390, 844), "M-FRM-Catalogo": (470, 4340, 390, 844), "M-FRM-Catalogo-Opcion": (940, 4340, 390, 844), "M-FRM-Catalogo-Filtros": (1410, 4340, 390, 844),
+         "FRM-Catalogos": (0, 3320, 1440, 900), "FRM-Catalogo-Nuevo": (1520, 3320, 1440, 900), "FRM-Catalogo": (3040, 3320, 1440, 900), "FRM-Catalogo-Opcion": (4560, 3320, 1440, 900), "FRM-Catalogo-Filtros": (6080, 3320, 1440, 900)}
 
 
 def registrar(nombres):
@@ -576,6 +580,350 @@ def registrar(nombres):
             c["order"].append(f"{n}.dc.html")
     ruta.write_text(json.dumps(c, ensure_ascii=False, indent=2), encoding="utf-8")
 
+
+# ================================================================ Teléfono: las mismas piezas que los teléfonos de Formularios (E12)
+CSS_TCAT = """.ap-bar .sub.mal { color: oklch(0.5 0.19 25); }
+.ap-i.neu { color: var(--t3); }
+.ap-seg2 { display: grid; grid-template-columns: 1fr 1.7fr; gap: 3px; padding: 3px; border-radius: 12px; background: var(--s3); }
+.ap-seg2 span { min-height: 38px; padding: 4px 6px; box-sizing: border-box; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; font-weight: 600; color: var(--t2); line-height: 1.25; }
+.ap-seg2 span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
+.ap-hoja .hb { display: flex; flex-direction: column; gap: 14px; }
+.ap-hoja .hb.lst { gap: 0; }
+.k-pie { display: flex; align-items: baseline; gap: 8px; }
+.k-pie .cnt { margin-left: auto; font-size: 13px; color: var(--t3); }
+.k-pie .cnt.mal { color: oklch(0.5 0.19 25); font-weight: 600; }
+.t-err { font-size: 14px; color: oklch(0.5 0.19 25); }
+.ap-cmp .ct.mal { border-color: oklch(0.6 0.19 25) !important; }
+.ap-cmp .ct.area { display: block; padding: 12px 14px; line-height: 1.5; min-height: 76px; }
+.q-row.baja .tx b { color: var(--t3); }
+.ap-gtit .off { color: var(--t3); font-weight: 600; font-size: 14.5px; display: inline-flex; align-items: center; gap: 4px; }
+.k-res > div { display: flex; flex-direction: column; padding: 10px 14px; border-top: 1px solid var(--borde); line-height: 1.35; }
+.k-res > div:first-child { border-top: 0; }
+.k-res b { font-weight: 500; font-size: 15.5px; }
+.k-res span { font-size: 13.5px; color: var(--t3); }
+.k-pie2 { padding: 10px 14px; border-top: 1px solid var(--borde); font-size: 13.5px; color: var(--t3); }
+.k-quien { display: flex; gap: 10px; padding: 12px 14px; align-items: center; }
+.k-quien .ct { flex: 1; min-height: 46px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-size: 16px; background: #fff; }
+.k-quien .cb { height: 46px; border-radius: 12px; }
+.t-chk { display: flex; align-items: center; gap: 12px; font-size: 16px; min-height: 50px; padding: 0 14px; }
+.t-chk i { width: 22px; height: 22px; border-radius: 6px; background: var(--marca); display: inline-flex; align-items: center; justify-content: center; color: #fff; }
+"""
+TILDE_T = F.svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 14, "3")
+
+
+def tel_base(cuerpo, fijo="", hojas="", estados=None, js="", css=""):
+    """Una pantalla del teléfono sin barra de abajo (como la ficha de un formulario), con hojas encima."""
+    t = F.pagina_tel(None, None, cuerpo + fijo, css=F.CSS_TFICHA + F.CSS_TFILTRO + CSS_TCAT + css)
+    i = t.index('<nav class="ap-nav"')
+    j = t.index("</nav>", i) + len("</nav>")
+    t = t[:i] + t[j:]
+    k = t.index('<span class="ap-raya"></span>') + len('<span class="ap-raya"></span>')
+    t = t[:k] + hojas + t[k:]
+    if estados:
+        prop, opciones = estados
+        props = {prop: {"editor": "enum", "options": opciones, "default": opciones[0], "section": "Estado"}, "$preview": {"width": 390, "height": 844}}
+        t = t.replace("""data-props='{"$preview":{"width":390,"height":844}}'""", "data-props='" + json.dumps(props, ensure_ascii=False, separators=(",", ":")) + "'")
+        t = t.replace("    return { si: true, no: false };", f"    const e = this.props.{prop} ?? {json.dumps(opciones[0], ensure_ascii=False)};\n{js}")
+    return t
+
+
+def opciones_hoja(titulo, items, prefijo):
+    tilde = F.svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 18, "2.25")
+    opc = "".join(f'<span class="t-opc {{{{{prefijo}On_{k}}}}}">{n}<span class="d">{c}<sc-if value="{{{{{prefijo}Sel_{k}}}}}" hint-placeholder-val="{{{{no}}}}">{tilde}</sc-if></span></span>'
+                  for k, n, c in items)
+    return F.thoja(titulo, opc, "").replace('<div class="hb">', '<div class="hb lst">', 1)
+
+
+# ---------------------------------------------------------------- M-FRM-Catalogos
+ESTADOS_TCATALOGOS = ["Todos", "Filtros", "A mano", "Con filtros", "Sin resultados", "Cargando", "Vacío", "Error", "Nuevo catálogo"]
+
+
+def tel_catalogos():
+    filas = []
+    for n, origen, opciones, usan, clase, estado, motivo in CATALOGOS:
+        grupo = "verMano" if origen == "A mano" else "verFiltros"
+        i = f'<button type="button" class="ap-i" aria-label="Por qué no se puede usar" title="{motivo}">{F.TINFO}</button>' if motivo else ""
+        op = f"{opciones} opciones" if opciones.isdigit() else opciones
+        destino = "M-FRM-Catalogo-Filtros" if origen == "Con filtros" else "M-FRM-Catalogo"
+        filas.append(f'<sc-if value="{{{{{grupo}}}}}" hint-placeholder-val="{{{{si}}}}"><a class="ap-fila" href="{destino}.dc.html"><div class="tx">'
+                     f'<span class="l1">{n}</span><span class="l2">{origen} · {op}</span><span class="l3"><span class="w-est {clase}">{estado}</span>{i}</span></div>'
+                     f'<button type="button" class="ap-ib" aria-label="Acciones de {n}">{F.TKEBAB}</button></a></sc-if>')
+    cuerpo = ('<div class="ap-cuerpo"><sc-if value="{{conFilas}}" hint-placeholder-val="{{si}}">' + "".join(filas) + "</sc-if>"
+              '<sc-if value="{{cargando}}" hint-placeholder-val="{{no}}"><div class="ap-esq"><span style="width: 80%;"></span><span style="width: 60%;"></span><span style="width: 72%;"></span></div></sc-if>'
+              '<sc-if value="{{vacio}}" hint-placeholder-val="{{no}}"><div class="ap-vacio">Todavía no hay catálogos.</div></sc-if>'
+              '<sc-if value="{{sinResultados}}" hint-placeholder-val="{{no}}"><div class="ap-vacio">Ningún catálogo coincide con los filtros.'
+              '<button type="button" class="cb cb-sec">Limpiar filtros</button></div></sc-if>'
+              '<sc-if value="{{error}}" hint-placeholder-val="{{no}}"><div class="ap-vacio">No pudimos cargar los catálogos.<button type="button" class="cb cb-sec">Reintentar</button></div></sc-if></div>')
+    fab = f'<a class="ap-fab" aria-label="Nuevo catálogo" href="#">{F.TFAB}</a>'
+    nuevo = ('<sc-if value="{{nuevo}}" hint-placeholder-val="{{no}}">'
+             + F.thoja("Nuevo catálogo", F.tcampo("Nombre", "Motivos de visita", req=True)
+                       + '<div class="ap-cmp"><span class="rt"><span>De dónde salen las opciones <span class="rq">*</span></span>'
+                       f'<button type="button" class="ap-i neu" aria-label="Qué significa" title="No se puede cambiar después.">{F.TINFO}</button></span>'
+                       '<div class="ap-seg2" role="radiogroup"><span class="on" role="radio">Escribirlas a mano</span><span role="radio">Tomarlas de los miembros, con filtros</span></div></div>',
+                       '<button type="button" class="cb cb-pri lleno">Crear catálogo</button><button type="button" class="cb cb-sec">Cancelar</button>') + "</sc-if>"
+             '<sc-if value="{{hojaFiltros}}" hint-placeholder-val="{{no}}">'
+             + opciones_hoja("Filtrar por origen", [("t", "Todos los orígenes", 3), ("m", "A mano", 2), ("f", "Con filtros", 1)], "ori") + "</sc-if>")
+    js = """    const f = e === 'Nuevo catálogo' || e === 'Filtros' ? 'Todos' : e;
+    const lista = ['Todos', 'A mano', 'Con filtros'].includes(f);
+    const elegido = f === 'A mano' || f === 'Con filtros' ? f : '';
+    return {
+      si: true, no: false,
+      filClase: elegido ? 'con' : '', abrirFiltros: () => {}, hojaFiltros: e === 'Filtros',
+      oriOn_t: elegido ? '' : 'on', oriOn_m: f === 'A mano' ? 'on' : '', oriOn_f: f === 'Con filtros' ? 'on' : '',
+      oriSel_t: !elegido, oriSel_m: f === 'A mano', oriSel_f: f === 'Con filtros',
+      conFilas: lista, verMano: f !== 'Con filtros', verFiltros: f !== 'A mano',
+      cargando: f === 'Cargando', vacio: f === 'Vacío', sinResultados: f === 'Sin resultados', error: f === 'Error', nuevo: e === 'Nuevo catálogo',
+    };"""
+    t = F.pagina_tel("Catálogos", "Grupo Delta", cuerpo, fab=fab, estados=("estado", ESTADOS_TCATALOGOS), js=js, css=F.CSS_TFILTRO + F.CSS_TFICHA + CSS_TCAT, filtros=True)
+    k = t.index("</nav>", t.index('<nav class="ap-nav"')) + len("</nav>")
+    t = t[:k] + nuevo + t[k:]
+    return re.sub(r"<title>[^<]*</title>", "<title>Catálogos · teléfono</title>", t)
+
+
+# ---------------------------------------------------------------- M-FRM-Catalogo: la ficha a mano, con pestañas «Opciones | Datos»
+ESTADOS_TFICHA_CAT = ["Opciones", "Filtros", "Acciones de una opción", "Sin opciones", "500 alcanzadas", "Conflicto", "Datos", "Datos · cambios sin guardar"]
+
+
+def tel_ficha_cat(estados=ESTADOS_TFICHA_CAT, js_extra="", claves_extra="", hojas_extra="", prop="estado"):
+    filas = "".join(f'<div class="q-row{"" if activa else " baja"}"><span class="num">{k + 1}</span><span class="tx"><b>{tx}</b>'
+                    f'<span>{(det + " · " + cod) if activa else ("Dada de baja · " + cod)}</span></span>'
+                    f'<button type="button" class="ap-ib" aria-label="Acciones de {tx}">{F.TKEBAB}</button></div>' for k, (tx, det, cod, activa) in enumerate(OPCIONES))
+    agregar = ('<sc-if value="{{agregarOn}}" hint-placeholder-val="{{si}}"><a href="M-FRM-Catalogo-Opcion.dc.html">Agregar</a></sc-if>'
+               f'<sc-if value="{{{{agregarOff}}}}" hint-placeholder-val="{{{{no}}}}"><span class="off">Agregar<button type="button" class="ap-i neu" aria-label="Por qué" '
+               f'title="Un catálogo tiene hasta 500 opciones, contando las dadas de baja.">{F.TINFO}</button></span></sc-if>')
+    opciones = ('<sc-if value="{{tabOp}}" hint-placeholder-val="{{si}}"><div class="ap-gtit">Opciones' + agregar + '</div><div class="ap-grupo">'
+                '<sc-if value="{{conOpciones}}" hint-placeholder-val="{{si}}">' + filas + "</sc-if>"
+                '<sc-if value="{{sinOpciones}}" hint-placeholder-val="{{no}}"><div class="t-vacia">Todavía no hay opciones.</div></sc-if></div></sc-if>')
+    datos = ('<sc-if value="{{tabDa}}" hint-placeholder-val="{{no}}"><div class="ap-gtit">Datos</div><div class="f-campos">'
+             + F.tcampo("Nombre", "{{nombre}}", req=True)
+             + '<div class="ap-cmp"><span class="rt"><span>Nombre en inglés</span></span><div class="ct {{enClase}}">{{nombreEn}}</div></div>'
+             '<div class="ap-cmp"><span class="rt"><span>Descripción</span></span><div class="ct area">Por qué se visita a un cliente.</div></div>'
+             '<div class="ap-cmp"><span class="rt"><span>Descripción en inglés</span></span><div class="ct area ph">Opcional</div></div></div>'
+             '<div class="ap-gtit">Lo usan</div><div class="ap-grupo"><div class="ap-dato"><span class="k">Visita a cliente</span><span class="v">Pregunta 5 · Motivo</span></div></div></sc-if>')
+    tabs = ('<div class="ap-tabs" role="tablist"><a class="{{cOp}}" role="tab" href="#" onClick="{{verOp}}">Opciones <span class="c">{{cant}}</span></a>'
+            '<a class="{{cDa}}" role="tab" href="#" onClick="{{verDa}}">Datos</a></div>')
+    bandas = (f'<sc-if value="{{{{conflicto}}}}" hint-placeholder-val="{{{{no}}}}"><div class="t-banda" role="alert">{F.ALERTA}<span class="tx">Otra persona cambió esta lista mientras la mirabas.</span>'
+              '<a href="#">Ver lo nuevo</a></div></sc-if>')
+    bar = (f'<div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Catalogos.dc.html">{F.TVOLVER}</a>'
+           '<div class="tit"><h1>{{nombre}}</h1><span class="sub {{subClase}}">{{sub}}</span></div>'
+           f'<sc-if value="{{{{tabOp}}}}" hint-placeholder-val="{{{{si}}}}"><button type="button" class="ap-ib" aria-label="Buscar">{F.TLUPA}</button>'
+           f'<button type="button" class="ap-ib" aria-label="Filtros">{F.TFILTROS}</button></sc-if></div>')
+    cuerpo = bar + tabs + bandas + '<div class="ap-cuerpo">' + opciones + datos + '<div style="height: 20px;"></div></div>'
+    fijo = ('<sc-if value="{{tabDa}}" hint-placeholder-val="{{no}}"><div class="ap-fijo"><sc-if value="{{sucio}}" hint-placeholder-val="{{no}}">'
+            '<button type="button" class="cb cb-sec full">Descartar cambios</button></sc-if>'
+            '<button type="button" class="cb cb-pri full" disabled="{{limpio}}">Guardar cambios</button></div></sc-if>')
+    hojas = ('<sc-if value="{{hojaAcciones}}" hint-placeholder-val="{{no}}">'
+             + F.thoja("Venta nueva", '<div class="ap-acciones2"><span role="menuitem">Editar</span><span role="menuitem">Subir</span><span role="menuitem">Bajar</span>'
+                       '<span class="pel" role="menuitem">Dar de baja</span></div>', '<button type="button" class="cb cb-sec">Cancelar</button>') + "</sc-if>"
+             '<sc-if value="{{hojaFiltros}}" hint-placeholder-val="{{no}}">'
+             + opciones_hoja("Filtrar por estado", [("t", "Todas", 4), ("a", "Activas", 3), ("b", "Dadas de baja", 1)], "est") + "</sc-if>" + hojas_extra)
+    js = js_extra + """    const tab = this.state.t ?? (e.startsWith('Datos') ? 'da' : 'op');
+    const vacio = e === 'Sin opciones';
+    const tope = e === '500 alcanzadas';
+    const sucio = e === 'Datos · cambios sin guardar';
+    return {
+      si: true, no: false,
+      tabOp: tab === 'op', tabDa: tab === 'da', cOp: tab === 'op' ? 'on' : '', cDa: tab === 'da' ? 'on' : '',
+      verOp: () => this.setState({ t: 'op' }), verDa: () => this.setState({ t: 'da' }),
+      nombre: vacio ? 'Clientes mayoristas' : 'Motivos de visita',
+      sub: (vacio ? 'No se puede usar' : 'Se puede usar') + ' · A mano', subClase: vacio ? 'mal' : '',
+      nombreEn: sucio ? 'Visit reasons' : 'Opcional', enClase: sucio ? '' : 'ph',
+      cant: vacio ? '0' : tope ? '500' : '4', conOpciones: !vacio, sinOpciones: vacio,
+      agregarOn: !tope, agregarOff: tope, conflicto: e === 'Conflicto',
+      sucio, limpio: !sucio,
+      hojaAcciones: e === 'Acciones de una opción', hojaFiltros: e === 'Filtros',
+      estOn_t: 'on', estOn_a: '', estOn_b: '', estSel_t: true, estSel_a: false, estSel_b: false,
+""" + claves_extra + "    };"
+    t = tel_base(cuerpo, fijo, hojas, estados=(prop, estados), js=js)
+    return re.sub(r"<title>[^<]*</title>", "<title>Catálogo · teléfono</title>", t)
+
+
+# ---------------------------------------------------------------- M-FRM-Catalogo-Opcion: la opción en una hoja, con los mismos estados que la compu
+def tel_opcion():
+    cuerpo = ('<div class="ap-cmp"><span class="rt"><span>Texto <span class="rq">*</span></span></span><div class="ct {{tClase}}">{{texto}}</div>'
+              '<span class="k-pie"><sc-if value="{{tErr}}" hint-placeholder-val="{{no}}"><span class="t-err" role="alert">{{tErr}}</span></sc-if><span class="cnt {{tCntClase}}">{{tCnt}}</span></span></div>'
+              '<div class="ap-cmp"><span class="rt"><span>Texto en inglés</span></span><div class="ct {{enClase2}}">{{textoEn}}</div><span class="k-pie"><span class="cnt">{{enCnt}}</span></span></div>'
+              '<div class="ap-cmp"><span class="rt"><span>Detalle</span></span><div class="ct area {{dClase}}">{{detalle}}</div></div>'
+              '<div class="ap-cmp"><span class="rt"><span>Detalle en inglés</span></span><div class="ct area ph">Opcional</div></div>'
+              '<div class="ap-cmp"><span class="rt"><span>Código <span class="rq">*</span></span></span><div class="ct {{cClase}}">{{codigo}}</div>'
+              '<sc-if value="{{cErr}}" hint-placeholder-val="{{no}}"><span class="t-err" role="alert">{{cErr}}</span></sc-if></div>')
+    hoja = ('<sc-if value="{{si}}" hint-placeholder-val="{{si}}">'
+            + F.thoja("{{tituloDlg}}", cuerpo, '<button type="button" class="cb cb-pri lleno" disabled="{{guardando}}">{{boton}}</button>'
+                      '<button type="button" class="cb cb-sec" disabled="{{guardando}}">Cancelar</button>') + "</sc-if>")
+    js = """    const d = e;
+    const nueva = d !== 'Editar' && d !== 'Guardando';
+    const vacia = d === 'Nueva' || d === 'Sin completar';
+"""
+    claves = """      tituloDlg: nueva ? 'Agregar opción' : 'Editar opción', boton: d === 'Guardando' ? 'Guardando…' : nueva ? 'Agregar opción' : 'Guardar opción',
+      guardando: d === 'Guardando',
+      texto: vacia ? 'Por ejemplo, Seguimiento' : d === 'Texto de más de 30' ? 'Primera visita a un cliente nuevo' : d === 'Código repetido' ? 'Visita técnica' : 'Venta nueva',
+      tClase: (vacia ? 'ph ' : '') + (d === 'Sin completar' || d === 'Texto de más de 30' ? 'mal' : ''),
+      tErr: d === 'Sin completar' ? 'Escribí el texto.' : d === 'Texto de más de 30' ? 'Usá hasta 30 caracteres.' : '',
+      tCnt: vacia ? '0 / 30' : d === 'Texto de más de 30' ? '33 / 30' : d === 'Código repetido' ? '14 / 30' : '11 / 30', tCntClase: d === 'Texto de más de 30' ? 'mal' : '',
+      textoEn: nueva ? 'Opcional' : 'New sale', enClase2: nueva ? 'ph' : '', enCnt: nueva ? '0 / 30' : '8 / 30',
+      detalle: vacia ? 'Opcional' : d === 'Código repetido' ? 'Revisión de una instalación' : 'Primera visita a un cliente', dClase: vacia ? 'ph' : '',
+      codigo: vacia ? 'Por ejemplo, SEG' : d === 'Código repetido' ? 'VEN' : d === 'Texto de más de 30' ? 'VNU' : 'VEN',
+      cClase: (vacia ? 'ph ' : '') + (d === 'Sin completar' || d === 'Código repetido' ? 'mal' : ''),
+      cErr: d === 'Sin completar' ? 'Escribí un código.' : d === 'Código repetido' ? 'Ya hay una opción con ese código.' : '',
+"""
+    t = tel_ficha_cat(estados=ESTADOS_OPCION, js_extra=js, claves_extra=claves, hojas_extra=hoja)
+    t = t.replace("    const tab = this.state.t ?? (e.startsWith('Datos') ? 'da' : 'op');", "    const tab = 'op';")
+    t = t.replace("    const vacio = e === 'Sin opciones';", "    const vacio = false;")
+    t = t.replace("hojaAcciones: e === 'Acciones de una opción', hojaFiltros: e === 'Filtros',", "hojaAcciones: false, hojaFiltros: false,")
+    return re.sub(r"<title>[^<]*</title>", "<title>Catálogo · opción · teléfono</title>", t)
+
+
+# ---------------------------------------------------------------- M-FRM-Catalogo-Filtros: el editor de filtros en el teléfono (a elegir: completo o solo para ver)
+def tel_filtros(variante="A"):
+    res = "".join(f"<div><b>{n}</b><span>{d}</span></div>" for n, d in MIEMBROS)
+    if variante == "A":
+        cond = ('<div class="ap-gtit">Condiciones<a href="#">Agregar</a></div><div class="ap-grupo">'
+                f'<div class="q-row"><span class="tx"><b>Si el rol tiene alguno de</b><span>Supervisor</span></span><button type="button" class="ap-ib" aria-label="Acciones de la condición">{F.TKEBAB}</button></div></div>'
+                '<div class="ap-gtit">Otras opciones</div><div class="ap-grupo">'
+                f'<div class="t-chk"><i>{TILDE_T}</i>Sin incluir a quien lo recibe</div></div><div class="f-campos" style="margin-top: 12px;">'
+                + F.tcampo("Detalle", "Empresas", select=True) + F.tcampo("Orden", "Nombre, de la A a la Z", select=True) + "</div>")
+        fijo = '<div class="ap-fijo"><button type="button" class="cb cb-pri full" disabled>Guardar cambios</button></div>'
+    else:
+        cond = ('<div class="ap-gtit">Condiciones</div><div class="ap-grupo"><div class="ap-dato"><span class="k">Si el rol tiene alguno de</span><span class="v">Supervisor</span></div></div>'
+                '<div class="ap-gtit">Otras opciones</div><div class="ap-grupo">'
+                '<div class="ap-dato"><span class="k">Sin incluir a quien lo recibe</span><span class="v">Sí</span></div>'
+                '<div class="ap-dato"><span class="k">Detalle</span><span class="v">Empresas</span></div>'
+                '<div class="ap-dato"><span class="k">Orden</span><span class="v">Nombre, de la A a la Z</span></div></div>')
+        fijo = ""
+    previa = ('<div class="ap-gtit">Como si lo recibiera</div><div class="ap-grupo"><div class="k-quien">'
+              f'<span class="ct">Tomás Acosta {CHEV_CAMPO}</span><button type="button" class="cb cb-sec">Probar</button></div>'
+              f'<div class="k-res" style="border-top: 1px solid var(--borde);">{res}</div><div class="k-pie2">3 opciones</div></div>')
+    tabs = '<div class="ap-tabs" role="tablist"><a class="on" role="tab" href="#">Filtros</a><a role="tab" href="#">Datos</a></div>'
+    bar = (f'<div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Catalogos.dc.html">{F.TVOLVER}</a>'
+           '<div class="tit"><h1>Supervisores</h1><span class="sub">Se puede usar · Con filtros</span></div></div>')
+    cuerpo = bar + tabs + '<div class="ap-cuerpo">' + cond + previa + '<div style="height: 20px;"></div></div>'
+    return tel_base(cuerpo, fijo)
+
+
+ESTADOS_TFILTROS = ["Tres opciones", "Dos condiciones", "Acciones de una condición", "Editar una condición", "Elegir a quién", "Probando", "Ninguna opción",
+                    "Más de 200", "Rol que ya no existe", "Datos"]
+CSS_TFILTROS = """.k-aviso { display: flex; gap: 10px; margin: 0 14px 12px; padding: 12px 14px; border-radius: 12px; background: oklch(0.96 0.06 85); color: oklch(0.4 0.1 70); font-size: 14.5px; line-height: 1.4; }
+.k-aviso svg { flex-shrink: 0; margin-top: 2px; }
+.k-esq { display: flex; flex-direction: column; gap: 14px; padding: 16px 14px; }
+.k-esq span { height: 12px; border-radius: 6px; background: oklch(0.93 0.01 78); }
+.k-vacia { padding: 22px 14px; text-align: center; font-size: 15.5px; font-weight: 600; border-top: 1px solid var(--borde); }
+.q-row .tx span.mal, .q-row .tx span.mal span { color: oklch(0.5 0.19 25); }
+.q-row .tx b span { font-size: inherit; color: inherit; }
+.ap-hoja .ap-cmp .ct.ph { justify-content: flex-start; gap: 8px; }
+.q-row .tx .t-err, .q-row .tx .t-err span { font-size: 13.5px; color: oklch(0.5 0.19 25); }
+.ap-hoja .hp { flex-wrap: wrap; }
+.ap-hoja .hp .cb.pel-full { flex-basis: 100%; color: oklch(0.5 0.19 25); }
+.k-chip-t { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 6px 0 10px; border-radius: 8px; background: var(--s3); font-size: 14.5px; font-weight: 500; }
+.k-lista > span { display: flex; align-items: center; min-height: 50px; border-top: 1px solid var(--borde); font-size: 16px; }
+.k-lista > span:first-child { border-top: 0; }
+.k-lista > span.on { color: var(--marca-tx); font-weight: 600; }
+"""
+
+
+def tel_filtros_cat():
+    res = "".join(f'<sc-if value="{{{{ver_{k}}}}}" hint-placeholder-val="{{{{si}}}}"><div><b>{n}</b><span>{d}</span></div></sc-if>' for k, (n, d) in enumerate(MIEMBROS))
+    mas = "".join(f"<div><b>{n}</b><span>{d}</span></div>" for n, d in [("Agustina Ruiz", "Delta S.A."), ("Bruno Castro", "Delta Norte"), ("Camila Díaz", "Delta S.A.")])
+    cond = ('<div class="ap-gtit">Condiciones<a href="#">Agregar</a></div><div class="ap-grupo">'
+            '<div class="q-row"><span class="tx"><b>{{t1}}</b><span class="{{v1Clase}}">{{v1}}</span>'
+            '<sc-if value="{{rolBorrado}}" hint-placeholder-val="{{no}}"><span class="t-err" role="alert">Ese rol ya no existe. Elegí otro.</span></sc-if></span>'
+            f'<button type="button" class="ap-ib" aria-label="Acciones de la condición">{F.TKEBAB}</button></div>'
+            '<sc-if value="{{conFila2}}" hint-placeholder-val="{{no}}"><div class="q-row"><span class="tx"><b>{{t2}}</b><span>{{v2}}</span></span>'
+            f'<button type="button" class="ap-ib" aria-label="Acciones de la condición">{F.TKEBAB}</button></div></sc-if></div>'
+            '<div class="ap-gtit">Otras opciones</div><div class="ap-grupo">'
+            f'<div class="t-chk"><i>{TILDE_T}</i>Sin incluir a quien lo recibe</div></div><div class="f-campos" style="margin-top: 12px;">'
+            + F.tcampo("Detalle", "Empresas", select=True) + F.tcampo("Orden", "Nombre, de la A a la Z", select=True) + "</div>")
+    previa = ('<div class="ap-gtit">Como si lo recibiera</div><div class="ap-grupo"><div class="k-quien">'
+              f'<span class="ct">Tomás Acosta {CHEV_CAMPO}</span><button type="button" class="cb cb-sec" disabled="{{{{probando}}}}">{{{{textoProbar}}}}</button></div>'
+              '<sc-if value="{{masDe200}}" hint-placeholder-val="{{no}}"><div class="k-aviso" role="status">' + F.ALERTA + '<span>Más de 200: no se va a poder mandar.</span></div></sc-if>'
+              '<sc-if value="{{conLista}}" hint-placeholder-val="{{si}}"><div class="k-res" style="border-top: 1px solid var(--borde);">' + res + "</div></sc-if>"
+              '<sc-if value="{{masDe200}}" hint-placeholder-val="{{no}}"><div class="k-res" style="border-top: 1px solid var(--borde);">' + mas + "</div></sc-if>"
+              '<sc-if value="{{probando}}" hint-placeholder-val="{{no}}"><div class="k-esq" style="border-top: 1px solid var(--borde);"><span style="width: 70%;"></span><span style="width: 55%;"></span></div></sc-if>'
+              '<sc-if value="{{ninguna}}" hint-placeholder-val="{{no}}"><div class="k-vacia">Ninguna opción para Tomás Acosta.</div></sc-if>'
+              '<sc-if value="{{sinProbar}}" hint-placeholder-val="{{no}}"><div class="k-vacia">Corregí la condición para probar.</div></sc-if>'
+              '<sc-if value="{{conPie}}" hint-placeholder-val="{{si}}"><div class="k-pie2">{{pie}}</div></sc-if></div>')
+    filtros = '<sc-if value="{{tabFi}}" hint-placeholder-val="{{si}}">' + cond + previa + "</sc-if>"
+    datos = ('<sc-if value="{{tabDa}}" hint-placeholder-val="{{no}}"><div class="ap-gtit">Datos</div><div class="f-campos">'
+             + F.tcampo("Nombre", "Supervisores", req=True) + F.tcampo("Nombre en inglés", "Supervisors")
+             + '<div class="ap-cmp"><span class="rt"><span>Descripción</span></span><div class="ct area">Quién supervisa la visita.</div></div>'
+             '<div class="ap-cmp"><span class="rt"><span>Descripción en inglés</span></span><div class="ct area ph">Opcional</div></div></div>'
+             '<div class="ap-gtit">Lo usan</div><div class="ap-grupo"><div class="ap-dato"><span class="k">Visita a cliente</span><span class="v">Pregunta 7 · Supervisor a cargo</span></div></div></sc-if>')
+    tabs = ('<div class="ap-tabs" role="tablist"><a class="{{cFi}}" role="tab" href="#" onClick="{{verFi}}">Filtros</a>'
+            '<a class="{{cDa}}" role="tab" href="#" onClick="{{verDa}}">Datos</a></div>')
+    bar = (f'<div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Catalogos.dc.html">{F.TVOLVER}</a>'
+           '<div class="tit"><h1>Supervisores</h1><span class="sub {{subClase}}">{{sub}}</span></div></div>')
+    cuerpo = bar + tabs + '<div class="ap-cuerpo">' + filtros + datos + '<div style="height: 20px;"></div></div>'
+    fijo = ('<div class="ap-fijo"><sc-if value="{{sucio}}" hint-placeholder-val="{{no}}"><button type="button" class="cb cb-sec full">Descartar cambios</button></sc-if>'
+            '<button type="button" class="cb cb-pri full" disabled="{{limpio}}">Guardar cambios</button></div>')
+    hojas = ('<sc-if value="{{hojaAcc}}" hint-placeholder-val="{{no}}">'
+             + F.thoja("Si el rol tiene alguno de", '<div class="ap-acciones2"><span role="menuitem">Editar</span><span class="pel" role="menuitem">Quitar</span></div>',
+                       '<button type="button" class="cb cb-sec">Cancelar</button>') + "</sc-if>"
+             '<sc-if value="{{hojaCond}}" hint-placeholder-val="{{no}}">'
+             + F.thoja("Editar condición", F.tcampo("Columna", "Rol", req=True, select=True) + F.tcampo("Operador", "tiene alguno de", req=True, select=True)
+                       + f'<div class="ap-cmp"><span class="rt"><span>Valor <span class="rq">*</span></span></span><div class="ct sel"><span class="k-chip-t">Supervisor{CRUZ}</span>{CHEV_CAMPO}</div></div>',
+                       '<button type="button" class="cb cb-pri lleno">Guardar condición</button><button type="button" class="cb cb-sec">Cancelar</button>') + "</sc-if>"
+             '<sc-if value="{{hojaElegir}}" hint-placeholder-val="{{no}}">'
+             + F.thoja("Como si lo recibiera", f'<span class="ap-cmp"><span class="ct ph">{F.TLUPA} Buscar por nombre</span></span><div class="k-lista">'
+                       '<span>Carolina Vega</span><span>Diego Ríos</span><span>Julieta Sosa</span><span>Marcos Giménez</span><span class="on">Tomás Acosta</span></div>', "") + "</sc-if>")
+    js = """    const tab = this.state.t ?? (e === 'Datos' ? 'da' : 'fi');
+    const sucio = ['Dos condiciones', 'Ninguna opción', 'Más de 200'].includes(e);
+    const borrado = e === 'Rol que ya no existe';
+    const lista = ['Tres opciones', 'Dos condiciones', 'Acciones de una condición', 'Editar una condición', 'Elegir a quién', 'Datos'].includes(e);
+    return {
+      si: true, no: false,
+      tabFi: tab === 'fi', tabDa: tab === 'da', cFi: tab === 'fi' ? 'on' : '', cDa: tab === 'da' ? 'on' : '',
+      verFi: () => this.setState({ t: 'fi' }), verDa: () => this.setState({ t: 'da' }),
+      sub: (borrado ? 'No se puede usar' : 'Se puede usar') + ' · Con filtros', subClase: borrado ? 'mal' : '',
+      sucio, limpio: !sucio, rolBorrado: borrado,
+      t1: e === 'Más de 200' ? 'Si el rol no tiene ninguno de' : 'Si el rol tiene alguno de', v1: borrado ? 'Rol que ya no existe' : 'Supervisor', v1Clase: borrado ? 'mal' : '',
+      conFila2: e === 'Dos condiciones' || e === 'Ninguna opción',
+      t2: e === 'Ninguna opción' ? 'y activo es' : 'y la empresa está en alguna de', v2: e === 'Ninguna opción' ? 'No' : 'Delta S.A.',
+      probando: e === 'Probando', textoProbar: e === 'Probando' ? 'Probando…' : 'Probar',
+      masDe200: e === 'Más de 200', conLista: lista, ver_0: e !== 'Dos condiciones', ver_1: true, ver_2: true,
+      ninguna: e === 'Ninguna opción', sinProbar: borrado,
+      conPie: lista || e === 'Más de 200', pie: e === 'Más de 200' ? '214 opciones' : e === 'Dos condiciones' ? '2 opciones' : '3 opciones',
+      hojaAcc: e === 'Acciones de una condición', hojaCond: e === 'Editar una condición', hojaElegir: e === 'Elegir a quién',
+    };"""
+    t = tel_base(cuerpo, fijo, hojas, estados=("estado", ESTADOS_TFILTROS), js=js, css=CSS_TFILTROS)
+    return re.sub(r"<title>[^<]*</title>", "<title>Catálogo con filtros · teléfono</title>", t)
+
+
+def ajustar_rol():
+    """Rol y M-Rol: el área Formularios suma «Ver catálogos» y «Administrar catálogos» (formcatalogs.read y .manage). Se puede volver a correr."""
+    ruta = PROJ / "Rol.dc.html"
+    t = ruta.read_text(encoding="utf-8")
+    if "formcatalogs.read" not in t:
+        a = "['formrecords.read', 'Ver respuestas', 'Los valores de cada respuesta.']"
+        assert t.count(a) == 1
+        t = t.replace(a, a + ", ['formcatalogs.read', 'Ver catálogos', 'La lista de catálogos y su ficha.'], "
+                             "['formcatalogs.manage', 'Administrar catálogos', 'Crear catálogos y editar sus opciones y filtros.']")
+        ruta.write_text(t, encoding="utf-8")
+        print("Rol con los permisos de catálogos")
+    ruta = PROJ / "M-Rol.dc.html"
+    t = ruta.read_text(encoding="utf-8")
+    if ">Ver catálogos<" not in t:
+        k = t.index('<span class="n">Formularios</span><span class="c">5 de 5</span>')
+        t = t[:k] + t[k:].replace('<span class="n">Formularios</span><span class="c">5 de 5</span>', '<span class="n">Formularios</span><span class="c">7 de 7</span>', 1)
+        fin = t.index("Ver respuestas</div>", k) + len("Ver respuestas</div>")
+        ini = t.rindex('<div class="ap-perm">', 0, fin)
+        perm = t[ini:fin]
+        t = t[:fin] + perm.replace("Ver respuestas", "Ver catálogos") + perm.replace("Ver respuestas", "Administrar catálogos") + t[fin:]
+        ruta.write_text(t, encoding="utf-8")
+        print("M-Rol con los permisos de catálogos")
+
+
+if __name__ == "__main__" and not sys.argv[1:]:
+    ajustar_rol()
+    tableros = {"FRM-Catalogos": catalogos(), "FRM-Catalogo-Nuevo": nuevo_cat(), "FRM-Catalogo": ficha_cat(), "FRM-Catalogo-Opcion": opcion(), "FRM-Catalogo-Filtros": filtros_cat(),
+                "M-FRM-Catalogos": tel_catalogos(), "M-FRM-Catalogo": tel_ficha_cat(), "M-FRM-Catalogo-Opcion": tel_opcion(), "M-FRM-Catalogo-Filtros": tel_filtros_cat()}
+    for nombre, t in tableros.items():
+        (PROJ / f"{nombre}.dc.html").write_text(t, encoding="utf-8")
+    registrar(tableros)
+    print("tableros", list(tableros))
+
+if __name__ == "__main__" and sys.argv[1:] == ["tel-filtros-opciones"]:
+    for v in "AB":
+        (PROJ / f"M-FRM-CatFiltros-{v}.dc.html").write_text(tel_filtros(v), encoding="utf-8")
+    print("opciones M-FRM-CatFiltros-A y B")
 
 if __name__ == "__main__" and sys.argv[1:] == ["filtros-opciones"]:
     for nombre, t in filtros_opciones().items():
@@ -596,10 +944,3 @@ if __name__ == "__main__" and sys.argv[1:] == ["nuevo-opciones"]:
     for nombre, t in nuevo_cat_opciones().items():
         (PROJ / f"{nombre}.dc.html").write_text(t, encoding="utf-8")
     print("opciones", list(nuevo_cat_opciones()))
-
-if __name__ == "__main__" and not sys.argv[1:]:
-    tableros = {"FRM-Catalogos": catalogos(), "FRM-Catalogo-Nuevo": nuevo_cat(), "FRM-Catalogo": ficha_cat(), "FRM-Catalogo-Opcion": opcion(), "FRM-Catalogo-Filtros": filtros_cat()}
-    for nombre, t in tableros.items():
-        (PROJ / f"{nombre}.dc.html").write_text(t, encoding="utf-8")
-    registrar(tableros)
-    print("tableros", list(tableros))

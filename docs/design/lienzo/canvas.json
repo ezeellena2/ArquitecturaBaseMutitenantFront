@@ -38,14 +38,6 @@
       "x": 3040,
       "y": 2300
     },
-    "Botones.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Botones de la página",
-      "w": 1440,
-      "x": 4560,
-      "y": 260
-    },
     "Config-Plat.dc.html": {
       "h": 900,
       "is_interactive": true,
@@ -118,33 +110,6 @@
       "title": "Criterio · Tablas y listas",
       "w": 1440,
       "x": 1520,
-      "y": 260
-    },
-    "Cuenta-A.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "page": "archivo",
-      "title": "Mi cuenta · A · Filas y «Editar»",
-      "w": 1440,
-      "x": 0,
-      "y": 260
-    },
-    "Cuenta-B.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "page": "archivo",
-      "title": "Mi cuenta · B · Cabecera y lista",
-      "w": 1440,
-      "x": 1520,
-      "y": 260
-    },
-    "Cuenta-C.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "page": "archivo",
-      "title": "Mi cuenta · C · Formulario a medida",
-      "w": 1440,
-      "x": 3040,
       "y": 260
     },
     "Cuenta-Plat.dc.html": {
@@ -844,24 +809,6 @@
       "page": "personal",
       "is_interactive": true
     },
-    "Cuenta-Anterior.dc.html": {
-      "x": 7120,
-      "y": 260,
-      "w": 1440,
-      "h": 900,
-      "title": "Mi cuenta (antes del criterio)",
-      "page": "archivo",
-      "is_interactive": true
-    },
-    "M-Cuenta-Anterior.dc.html": {
-      "x": 8640,
-      "y": 260,
-      "w": 390,
-      "h": 844,
-      "title": "Mi cuenta · teléfono (antes del criterio)",
-      "page": "archivo",
-      "is_interactive": true
-    },
     "Configuracion-Dominio.dc.html": {
       "x": 0,
       "y": 4284,
@@ -898,83 +845,11 @@
       "page": "org",
       "is_interactive": true
     },
-    "Configuracion-Anterior.dc.html": {
-      "x": 9110,
-      "y": 260,
-      "w": 1440,
-      "h": 900,
-      "title": "Configuración (antes del criterio)",
-      "page": "archivo",
-      "is_interactive": true
-    },
-    "Pagina-Org-Anterior.dc.html": {
-      "x": 10630,
-      "y": 260,
-      "w": 1440,
-      "h": 900,
-      "title": "Página pública (antes del criterio)",
-      "page": "archivo",
-      "is_interactive": true
-    },
-    "M-Configuracion-Anterior.dc.html": {
-      "x": 12150,
-      "y": 260,
-      "w": 390,
-      "h": 844,
-      "title": "Configuración · teléfono (antes del criterio)",
-      "page": "archivo",
-      "is_interactive": true
-    },
-    "Usuario-Anterior.dc.html": {
-      "x": 12620,
-      "y": 260,
-      "w": 1440,
-      "h": 900,
-      "title": "Editar usuario · /org/usuarios/:id (antes del criterio)",
-      "page": "archivo",
-      "is_interactive": true
-    },
-    "Rol-Anterior.dc.html": {
-      "x": 14140,
-      "y": 260,
-      "w": 1440,
-      "h": 900,
-      "title": "Editar un rol · /org/roles/:id (antes del criterio)",
-      "page": "archivo",
-      "is_interactive": true
-    },
-    "Avisos-Anterior.dc.html": {
-      "x": 15660,
-      "y": 260,
-      "w": 1440,
-      "h": 900,
-      "title": "Avisos del sistema (antes del criterio)",
-      "page": "archivo",
-      "is_interactive": true
-    },
-    "M-Usuario-Anterior.dc.html": {
-      "x": 17180,
-      "y": 260,
-      "w": 390,
-      "h": 844,
-      "title": "Editar usuario · teléfono (antes del criterio)",
-      "page": "archivo",
-      "is_interactive": true
-    },
-    "M-Rol-Anterior.dc.html": {
-      "x": 17650,
-      "y": 260,
-      "w": 390,
-      "h": 844,
-      "title": "Editar un rol · teléfono (antes del criterio)",
-      "page": "archivo",
-      "is_interactive": true
-    },
     "Criterio-Decisiones.dc.html": {
       "x": 10640,
       "y": 260,
       "w": 4440,
-      "h": 6600,
+      "h": 7200,
       "title": "Criterio · Decisiones por pantalla",
       "page": "criterio"
     },
@@ -1940,6 +1815,54 @@
       "h": 900,
       "title": "Formularios · catálogo con filtros",
       "page": "formularios"
+    },
+    "M-FRM-Catalogos.dc.html": {
+      "x": 0,
+      "y": 4340,
+      "w": 390,
+      "h": 844,
+      "title": "Catálogos · teléfono",
+      "page": "formularios"
+    },
+    "M-FRM-Catalogo.dc.html": {
+      "x": 470,
+      "y": 4340,
+      "w": 390,
+      "h": 844,
+      "title": "Catálogo a mano · teléfono",
+      "page": "formularios"
+    },
+    "M-FRM-Catalogo-Opcion.dc.html": {
+      "x": 940,
+      "y": 4340,
+      "w": 390,
+      "h": 844,
+      "title": "Opción de un catálogo · teléfono",
+      "page": "formularios"
+    },
+    "M-FRM-Catalogo-Filtros.dc.html": {
+      "x": 1410,
+      "y": 4340,
+      "w": 390,
+      "h": 844,
+      "title": "Catálogo con filtros · teléfono",
+      "page": "formularios"
+    },
+    "Plat-FRM-Biblioteca.dc.html": {
+      "x": 0,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Plataforma · Biblioteca de formularios",
+      "page": "plat-formularios"
+    },
+    "Plat-FRM-Plantilla-Nueva.dc.html": {
+      "x": 1520,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Plataforma · nueva plantilla",
+      "page": "plat-formularios"
     }
   },
   "createdOnFiles": {
@@ -1960,28 +1883,12 @@
     "page": "criterio"
   },
   "notes": {
-    "estilo": {
-      "color": "blue",
-      "page": "archivo",
-      "text": "Estilo de todas las pantallas\n\n• Colores: fondo cálido, verde petróleo como marca, y el menú lateral y la barra de arriba en arena, para que se despeguen del centro.\n• Compacto: letra de 13, filas de 42, campos de 36 y botones de 34.\n• Encabezado: banda blanca con el ícono de la sección (o «‹» para volver), el título de 18, el resumen y las acciones a la derecha.\n• Tablas: un dato por columna, filas alternadas, estado en pastilla y menú ⋮ por fila.\n• Menú lateral: arriba, Inicio y los módulos del producto; abajo de todo, «Administración», que abre un segundo panel al lado con todas sus opciones (en el teléfono se despliega dentro del menú).\n• Filtros en pastilla con su conteo y «Limpiar»; la barra de filtros no lleva botones.\n• Lo corto en un diálogo de 560; lo largo en una pantalla con «Cambios sin guardar».\n• Listados con «1–10 de 11», 10/20/50/100 por página y «Página 1 de 2»; la auditoría, con «Cargar más».",
-      "w": 440,
-      "x": 6080,
-      "y": 260
-    },
     "guia": {
       "color": "blue",
       "page": "mapa",
       "text": "Propuesta para aprobar; todavía no hay nada programado.\n\nQuién es quién\n• Operador de la plataforma: el backoffice.\n• Dueño: registra su empresa o su grupo y tiene todos los permisos de la organización.\n• Usuarios de la organización: administradores o empleados; se diferencian por el rol.\n• Personas (B2C): usan la plataforma por su cuenta y piden o contratan lo que ofrece cada empresa en su página pública. Su lado, Personal, no muestra organizaciones.\n\nUna misma persona puede estar en los dos lados con la misma cuenta. Hay dos puertas: «Ingresá» (como persona) e «Ingresá como empresa». Después pasa de un lado al otro desde el menú de arriba a la derecha. Una persona nunca crea una empresa: eso es «Registrá tu empresa».\n\nCada organización puede publicar su página en su subdominio (delta.plataforma.com). Las empresas de una organización están al mismo nivel: no hay empresa matriz.\n\nFilas\n• Entrada: la landing, quién es quién, el mapa de todos los casos del ingreso y la página pública de una empresa.\n• Ingreso: cada pantalla pública, con cada estado en Tweaks, y Recuperar mi cuenta.\n• Perfil personal (B2C): inicio y mi cuenta.\n• Organización (B2B): lo que administra el Dueño (con su página pública), y el inicio de alguien que solo tiene roles en una empresa.\n• Plataforma: lo que ve un operador.\n• Teléfono: las mismas pantallas en 390 px.",
       "w": 620,
       "x": 3360,
-      "y": 260
-    },
-    "movil-nota": {
-      "color": "blue",
-      "page": "archivo",
-      "text": "En el teléfono\n\n• Arriba, ☰ abre el mismo menú lateral por encima y el avatar abre el menú de la cuenta desde abajo.\n• La banda del título queda igual; la acción principal, corta, a su derecha.\n• Las tablas muestran las columnas que entran (el dato principal, el estado y el ⋮); el resto se ve al entrar.\n• Los diálogos se abren como hojas desde abajo.\n• Al editar, «Cancelar» y «Guardar» van en una barra fija abajo.\n• En Inicio, Tweaks › vista abre el menú lateral o el menú de la cuenta.",
-      "w": 440,
-      "x": 6600,
       "y": 260
     },
     "pendientes": {
@@ -2079,15 +1986,6 @@
       "x": 0,
       "y": 0
     },
-    "t-propuesta-cuenta": {
-      "kind": "title1",
-      "maxW": 6000,
-      "page": "archivo",
-      "text": "Archivo · lo que reemplazó el criterio",
-      "w": 600,
-      "x": 0,
-      "y": 0
-    },
     "titulo": {
       "kind": "title1",
       "maxW": 3280,
@@ -2114,6 +2012,15 @@
       "maxW": 8000,
       "text": "Organización · Formularios",
       "page": "formularios"
+    },
+    "t-plat-formularios": {
+      "kind": "title1",
+      "x": 0,
+      "y": 0,
+      "w": 600,
+      "maxW": 8000,
+      "text": "Plataforma · Formularios",
+      "page": "plat-formularios"
     }
   },
   "order": [
@@ -2158,7 +2065,6 @@
     "Recuperaciones.dc.html",
     "Legales.dc.html",
     "Palabras.dc.html",
-    "Botones.dc.html",
     "Mensajes.dc.html",
     "M-Ingreso.dc.html",
     "M-Registro.dc.html",
@@ -2184,9 +2090,6 @@
     "M-Cuentas.dc.html",
     "M-Auditoria-Plat.dc.html",
     "M-Config-Plat.dc.html",
-    "Cuenta-A.dc.html",
-    "Cuenta-B.dc.html",
-    "Cuenta-C.dc.html",
     "Criterio-Botones.dc.html",
     "Criterio-Tablas.dc.html",
     "Criterio-Dialogos.dc.html",
@@ -2215,20 +2118,10 @@
     "Cuenta-Agregar.dc.html",
     "Cuenta-Verificar.dc.html",
     "Cuenta-Baja.dc.html",
-    "Cuenta-Anterior.dc.html",
-    "M-Cuenta-Anterior.dc.html",
     "Configuracion-Dominio.dc.html",
     "Configuracion-Verificar.dc.html",
     "Configuracion-Quitar.dc.html",
     "Pagina-Org-Despublicar.dc.html",
-    "Configuracion-Anterior.dc.html",
-    "Pagina-Org-Anterior.dc.html",
-    "M-Configuracion-Anterior.dc.html",
-    "Usuario-Anterior.dc.html",
-    "Rol-Anterior.dc.html",
-    "Avisos-Anterior.dc.html",
-    "M-Usuario-Anterior.dc.html",
-    "M-Rol-Anterior.dc.html",
     "Criterio-Decisiones.dc.html",
     "WA-Chats-SinTomar.dc.html",
     "WA-Chats-Pasar.dc.html",
@@ -2337,7 +2230,13 @@
     "FRM-Catalogo-Nuevo.dc.html",
     "FRM-Catalogo.dc.html",
     "FRM-Catalogo-Opcion.dc.html",
-    "FRM-Catalogo-Filtros.dc.html"
+    "FRM-Catalogo-Filtros.dc.html",
+    "M-FRM-Catalogos.dc.html",
+    "M-FRM-Catalogo.dc.html",
+    "M-FRM-Catalogo-Opcion.dc.html",
+    "M-FRM-Catalogo-Filtros.dc.html",
+    "Plat-FRM-Biblioteca.dc.html",
+    "Plat-FRM-Plantilla-Nueva.dc.html"
   ],
   "pages": [
     {
@@ -2377,12 +2276,12 @@
       "name": "Plataforma"
     },
     {
-      "id": "reglas",
-      "name": "Textos y mensajes"
+      "id": "plat-formularios",
+      "name": "Plataforma · Formularios"
     },
     {
-      "id": "archivo",
-      "name": "Archivo"
+      "id": "reglas",
+      "name": "Textos y mensajes"
     }
   ],
   "title": "Sistema visual · Multitenant"
