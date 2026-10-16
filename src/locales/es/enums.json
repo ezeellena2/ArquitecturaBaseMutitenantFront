@@ -13,7 +13,9 @@
     "Code": "Código por correo",
     "Google": "Google",
     "WhatsAppCode": "WhatsApp",
-    "WhatsAppLink": "WhatsApp"
+    "WhatsAppLink": "WhatsApp",
+    "Authenticator": "Autenticador",
+    "RecoveryCode": "Código de recuperación"
   },
   "TenantStatus": {
     "PendingApproval": "Espera aprobación",

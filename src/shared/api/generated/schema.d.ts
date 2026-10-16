@@ -68,6 +68,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -164,6 +175,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -243,6 +265,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -330,6 +363,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -426,6 +470,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -516,6 +571,17 @@ export interface paths {
                 /** @description WhatsApp.Template.NotApproved */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -624,6 +690,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -711,6 +788,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -781,6 +869,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Contact.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -872,6 +971,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -954,6 +1064,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Contact.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -1049,6 +1170,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -1136,6 +1268,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -1202,6 +1345,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -1303,6 +1457,17 @@ export interface paths {
                 /** @description Payload Too Large */
                 413: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -1429,6 +1594,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -1516,6 +1692,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -1597,6 +1784,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -1691,6 +1889,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -1772,6 +1981,17 @@ export interface paths {
                 /** @description Conflict; WhatsApp.Conversation.TakenByOther; WhatsApp.Conversation.ReadOnly */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -1890,6 +2110,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -2002,6 +2233,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -2102,6 +2344,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -2183,6 +2436,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Conversation.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -2303,6 +2567,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -2384,6 +2659,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Team.NotFound; WhatsApp.Conversation.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -2479,6 +2765,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -2568,6 +2865,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -2649,6 +2957,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -2743,6 +3062,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -2824,6 +3154,17 @@ export interface paths {
                 /** @description Conflict; WhatsApp.Conversation.TakenByOther; WhatsApp.Conversation.ReadOnly */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -2942,6 +3283,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -3054,6 +3406,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -3154,6 +3517,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -3235,6 +3609,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Conversation.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -3355,6 +3740,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -3436,6 +3832,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Team.NotFound; WhatsApp.Conversation.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -3531,6 +3938,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -3620,6 +4038,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -3701,6 +4130,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -3795,6 +4235,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -3876,6 +4327,17 @@ export interface paths {
                 /** @description Conflict; WhatsApp.Conversation.TakenByOther; WhatsApp.Conversation.ReadOnly */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -3994,6 +4456,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -4106,6 +4579,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -4206,6 +4690,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -4287,6 +4782,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Conversation.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -4407,6 +4913,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -4488,6 +5005,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Team.NotFound; WhatsApp.Conversation.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -4583,6 +5111,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -4664,6 +5203,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -4766,6 +5316,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -4860,6 +5421,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -4930,6 +5502,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Number.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -5021,6 +5604,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -5093,6 +5687,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -5198,6 +5803,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -5275,6 +5891,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Number.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -5366,6 +5993,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -5450,6 +6088,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -5566,6 +6215,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -5661,6 +6321,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -5757,6 +6428,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -5840,6 +6522,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -5913,6 +6606,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6005,6 +6709,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -6065,7 +6780,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -6095,6 +6810,17 @@ export interface paths {
                 /** @description Unprocessable Entity */
                 422: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6184,6 +6910,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -6236,7 +6973,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -6257,6 +6994,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6328,6 +7076,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6415,6 +7174,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6509,6 +7279,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -6578,6 +7359,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Link.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6655,6 +7447,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -6711,7 +7514,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -6732,6 +7535,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6797,7 +7611,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -6827,6 +7641,17 @@ export interface paths {
                 /** @description Unprocessable Entity */
                 422: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6913,7 +7738,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -6934,6 +7759,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -7021,6 +7857,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -7077,7 +7924,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -7098,6 +7945,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -7190,6 +8048,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -7280,6 +8149,17 @@ export interface paths {
                 /** @description Unprocessable Entity */
                 422: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -7371,6 +8251,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -7441,6 +8332,17 @@ export interface paths {
                 /** @description Not Found; WhatsApp.Team.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -7532,6 +8434,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -7604,6 +8517,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -7694,6 +8618,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -7754,7 +8689,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -7784,6 +8719,17 @@ export interface paths {
                 /** @description Unprocessable Entity */
                 422: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -7875,6 +8821,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -7951,6 +8908,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -8009,7 +8977,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -8030,6 +8998,17 @@ export interface paths {
                 /** @description Conflict; WhatsApp.Team.NameTaken */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -8087,7 +9066,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -8108,6 +9087,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -8350,6 +9340,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -8458,6 +9459,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -8535,6 +9547,17 @@ export interface paths {
                 /** @description Not Found; Http.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -8637,6 +9660,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -8715,6 +9749,17 @@ export interface paths {
                 /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -8804,6 +9849,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -8876,6 +9932,17 @@ export interface paths {
                 /** @description Conflict; General.ConcurrencyConflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -9002,7 +10069,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached */
+                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -9133,6 +10200,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -9243,6 +10321,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -9335,6 +10424,17 @@ export interface paths {
                 /** @description Conflict; General.ConcurrencyConflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -9469,6 +10569,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -9575,6 +10686,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -9658,6 +10780,17 @@ export interface paths {
                 /** @description Payload Too Large; Assistant.Attachment.TooLarge */
                 413: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -9750,6 +10883,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected; Assistant.Export.Failed */
                 500: {
                     headers: {
@@ -9825,6 +10969,17 @@ export interface paths {
                 /** @description Not Found; Http.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -9939,6 +11094,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -10016,6 +11182,17 @@ export interface paths {
                 /** @description Not Found; Http.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -10118,6 +11295,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -10196,6 +11384,17 @@ export interface paths {
                 /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -10285,6 +11484,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -10357,6 +11567,17 @@ export interface paths {
                 /** @description Conflict; General.ConcurrencyConflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -10483,7 +11704,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached */
+                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -10614,6 +11835,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -10724,6 +11956,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -10816,6 +12059,17 @@ export interface paths {
                 /** @description Conflict; General.ConcurrencyConflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -10950,6 +12204,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -11056,6 +12321,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -11139,6 +12415,17 @@ export interface paths {
                 /** @description Payload Too Large; Assistant.Attachment.TooLarge */
                 413: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -11231,6 +12518,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected; Assistant.Export.Failed */
                 500: {
                     headers: {
@@ -11312,6 +12610,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -11387,6 +12696,17 @@ export interface paths {
                 /** @description Conflict; General.ConcurrencyConflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -11479,6 +12799,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -11554,6 +12885,17 @@ export interface paths {
                 /** @description Not Found; Http.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -11668,6 +13010,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -11745,6 +13098,17 @@ export interface paths {
                 /** @description Not Found; Http.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -11847,6 +13211,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -11925,6 +13300,17 @@ export interface paths {
                 /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -12014,6 +13400,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -12086,6 +13483,17 @@ export interface paths {
                 /** @description Conflict; General.ConcurrencyConflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -12212,7 +13620,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached */
+                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -12343,6 +13751,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -12453,6 +13872,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -12545,6 +13975,17 @@ export interface paths {
                 /** @description Conflict; General.ConcurrencyConflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -12679,6 +14120,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -12785,6 +14237,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -12868,6 +14331,17 @@ export interface paths {
                 /** @description Payload Too Large; Assistant.Attachment.TooLarge */
                 413: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -12960,6 +14434,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected; Assistant.Export.Failed */
                 500: {
                     headers: {
@@ -13046,6 +14531,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -13104,7 +14600,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -13134,6 +14630,17 @@ export interface paths {
                 /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
                 422: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -13210,7 +14717,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -13231,6 +14738,17 @@ export interface paths {
                 /** @description Conflict; General.ConcurrencyConflict; Assistant.Model.AlreadyExists */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -13319,6 +14837,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -13375,7 +14904,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -13396,6 +14925,17 @@ export interface paths {
                 /** @description Conflict; General.ConcurrencyConflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -13482,6 +15022,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -13536,7 +15087,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired; Assistant.Settings.OwnKeyNotAllowed */
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired; Assistant.Settings.OwnKeyNotAllowed; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -13557,6 +15108,17 @@ export interface paths {
                 /** @description Conflict; General.ConcurrencyConflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -13648,6 +15210,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
@@ -13700,6 +15273,17 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
                 };
                 /** @description Internal Server Error */
                 500: {
@@ -13759,6 +15343,17 @@ export interface paths {
                 /** @description Bad Request */
                 400: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -13829,6 +15424,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -13887,6 +15493,17 @@ export interface paths {
                 /** @description Bad Request */
                 400: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -13957,6 +15574,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -14021,6 +15649,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -14075,6 +15714,17 @@ export interface paths {
                 /** @description Bad Request */
                 400: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -14145,6 +15795,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -14194,6 +15855,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -14256,6 +15928,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -14342,6 +16025,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -14416,6 +16110,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -14497,6 +16202,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -14567,7 +16283,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -14588,6 +16304,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -14662,7 +16389,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -14683,6 +16410,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -14757,7 +16495,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -14778,6 +16516,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -14852,7 +16601,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -14873,6 +16622,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -14952,6 +16712,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -15043,6 +16814,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -15125,6 +16907,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -15194,6 +16987,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -15273,6 +17077,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -15369,6 +17184,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -15444,7 +17270,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -15465,6 +17291,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -15550,7 +17387,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -15571,6 +17408,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -15643,6 +17491,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -15723,7 +17582,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -15744,6 +17603,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -15813,6 +17683,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -15869,9 +17750,20 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -15951,6 +17843,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -16023,7 +17926,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16035,6 +17938,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -16099,7 +18013,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16120,6 +18034,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -16181,7 +18106,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16202,6 +18127,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -16278,7 +18214,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16299,6 +18235,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -16359,7 +18306,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16386,6 +18333,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -16397,6 +18355,133 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/accounts/{id}/authenticator/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * «Restablecer autenticador» (E9): con la versión de operador de la ficha y un motivo, revoca las sesiones, el
+         *     desafío, la clave y los códigos de otro operador; conserva sus permisos y su próximo ingreso exige el alta.
+         * @description Access platform, permiso platform.operators.manage y prueba reciente; la falta de permiso se resuelve antes de pedir el código. version es el operatorVersion de la ficha de la cuenta y reason usa los límites del motivo de las acciones actuales. Bajo lock verifica la versión, que el destinatario sea un operador aceptado y distinto del autor y las restricciones de PlatformOperatorGuard. Revoca sesiones y autorizaciones, desafío, clave y códigos del destinatario, conserva sus permisos y su próximo ingreso exige el alta; audita autor, destino y motivo en la misma UoW y responde la nueva versión de operador.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Tenancy.Access.Wrong; Users.User.CannotModifySelf; Http.Forbidden; Auth.Platform.ReauthenticationRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Users.User.NotFound; Platform.Operator.NotOperator */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Platform.Operator.InvitationPending; Platform.Operator.LastManager; General.ConcurrencyConflict; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -16452,6 +18537,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -16532,7 +18628,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16553,6 +18649,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -16631,7 +18738,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16658,7 +18765,132 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/reauthentication": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Access platform y operador activo, sin otro permiso. Código: seis dígitos del autenticador (TOTP de 30 segundos con un intervalo de tolerancia por lado; un intervalo ya usado no vuelve a servir) o un código de recuperación XXXX-XXXX de un solo uso. No se registra. La prueba dura 10 minutos y queda ligada a esta sesión de Plataforma y a su sello de seguridad: otra pestaña de la misma sesión la comparte, otra sesión no; cerrar o revocar sesiones, quitar el operador o restablecer su factor la invalidan. verifiedAtUtc y recentUntilUtc son del servidor; ninguna fecha del cliente prueba antigüedad. Un replay conserva el vencimiento original. Comparte el contador de fallos del ingreso: diez fallos bloquean la cuenta 15 minutos, también con códigos de recuperación y en el alta; el bloqueo informa retryAfter y Retry-After y no acepta más códigos. Probar el primer factor no borra los fallos del segundo. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PlatformReauthenticationHttpRequest"];
+                    "text/json": components["schemas"]["PlatformReauthenticationHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformReauthenticationHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description no-store: el navegador no guarda la respuesta. */
+                        "Cache-Control"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformReauthenticationResponse"];
+                        "application/json": components["schemas"]["PlatformReauthenticationResponse"];
+                        "text/json": components["schemas"]["PlatformReauthenticationResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Auth.TwoFactor.Invalid; Auth.TwoFactor.RecoveryInvalid; Request.IdempotencyKeyRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Tenancy.Access.Wrong; Http.Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Identity.Account.LockedOut; Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -16729,6 +18961,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -16814,6 +19057,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -16892,7 +19146,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Http.Forbidden */
+                /** @description Forbidden; Http.Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16928,7 +19182,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Http.TooManyRequests */
+                /** @description Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -17015,7 +19269,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Http.Forbidden */
+                /** @description Forbidden; Http.Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -17051,7 +19305,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Http.TooManyRequests */
+                /** @description Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -17086,6 +19340,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description rateLimits (E9): los doce perfiles cerrados de cuotas compartidas, con ventanas fijas UTC y sin cola. */
         get: {
             parameters: {
                 query?: never;
@@ -17133,6 +19388,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -17144,6 +19410,7 @@ export interface paths {
                 };
             };
         };
+        /** @description rateLimits (E9) es opcional: omitirlo conserva las cuotas guardadas y enviarlo exige los doce perfiles completos, permitLimit entre 1 y 1.000.000 y windowSeconds entre 1 y 86.400, sin cero para apagar una cuota. Conserva version, reason, la respuesta {version} y el permiso; además pide prueba reciente. */
         put: {
             parameters: {
                 query?: never;
@@ -17170,7 +19437,7 @@ export interface paths {
                         "text/json": components["schemas"]["VersionResponse"];
                     };
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Validation.Failed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -17188,7 +19455,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -17209,6 +19476,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -17286,7 +19564,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -17298,6 +19576,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -17376,7 +19665,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -17397,6 +19686,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -17475,7 +19775,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -17496,6 +19796,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -17574,6 +19885,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -17660,6 +19982,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -17729,6 +20062,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -17822,6 +20166,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -17896,7 +20251,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -17917,6 +20272,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -17995,7 +20361,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -18016,6 +20382,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -18094,7 +20471,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -18115,6 +20492,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -18193,7 +20581,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -18214,6 +20602,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -18291,6 +20690,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -18376,6 +20786,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -18445,6 +20866,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -18535,6 +20967,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -18618,6 +21061,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -18722,6 +21176,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -18804,6 +21269,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -18906,6 +21382,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -18991,6 +21478,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -19086,6 +21584,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -19172,6 +21681,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -19275,6 +21795,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -19368,6 +21899,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -19474,6 +22016,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -19563,6 +22116,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -19621,6 +22185,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -19702,6 +22277,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -19793,6 +22379,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -19874,6 +22471,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -19936,6 +22544,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -20010,6 +22629,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -20093,6 +22723,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -20169,6 +22810,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -20276,6 +22928,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -20340,6 +23003,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -20428,6 +23102,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -20502,6 +23187,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -20589,6 +23285,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -20658,6 +23365,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -20748,6 +23466,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -20819,6 +23548,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -20912,6 +23652,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -20996,6 +23747,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -21071,6 +23833,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -21174,6 +23947,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -21231,6 +24015,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -21304,6 +24099,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -21386,6 +24192,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -21490,6 +24307,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -21587,6 +24415,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -21654,6 +24493,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -21741,6 +24591,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -21810,6 +24671,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -21900,6 +24772,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -21975,6 +24858,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -22068,6 +24962,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -22138,6 +25043,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
             };
         };
         delete?: never;
@@ -22178,6 +25094,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -22233,7 +25160,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Http.TooManyRequests */
+                /** @description Too Many Requests; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -22327,7 +25254,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -22417,7 +25344,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Http.TooManyRequests */
+                /** @description Too Many Requests; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -22507,7 +25434,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -22610,7 +25537,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -22711,7 +25638,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Identity.Account.LockedOut; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests */
+                /** @description Too Many Requests; Identity.Account.LockedOut; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -22822,7 +25749,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Http.TooManyRequests */
+                /** @description Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -22875,6 +25802,17 @@ export interface paths {
                         "text/plain": components["schemas"]["PlatformContactResponse"];
                         "application/json": components["schemas"]["PlatformContactResponse"];
                         "text/json": components["schemas"]["PlatformContactResponse"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -22945,6 +25883,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
             };
         };
         put?: never;
@@ -22994,6 +25943,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
             };
         };
         delete?: never;
@@ -23029,6 +25989,17 @@ export interface paths {
                         "text/json": components["schemas"]["GoogleSignupAntiforgeryHttpResponse"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
             };
         };
         put?: never;
@@ -23046,6 +26017,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description Operador (E9): después de probar Google redirige al ingreso con factor=pending, sin identidad ni prueba en la URL; el indicador sólo hace que el SPA consulte el desafío pendiente. Sin cookie de Plataforma ni tokens hasta completar el segundo factor. */
         get: {
             parameters: {
                 query?: never;
@@ -23061,6 +26033,17 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
                 };
             };
         };
@@ -23115,9 +26098,11 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
+                /** @description Too Many Requests; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -23220,9 +26205,11 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
+                /** @description Too Many Requests; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -23312,7 +26299,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -23349,7 +26336,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs. returnUrl OIDC o /invitacion conserva el flujo anterior y exige access ausente/null en el cuerpo. Continuación fija exclusivamente / con access=consumer o /org con access=business, valores literales sin query/fragmento; cualquier discrepancia falla antes de consumir el código. Respuesta returnUrl y cookie de identidad después del commit, sin tokens OIDC en body; el SPA inicia una autorización nueva tras el retorno fijo. Business fijo: después de probar el código se revalida la membresía y la organización. Sin membresía: Tenancy.Access.NotMember; membresía inactiva: Tenancy.Member.Inactive; organización pendiente, en preparación, suspendida o cerrada: Tenancy.Tenant.PendingApproval, Provisioning, Suspended o Closed. Son 403 sin cookie, errores por campo, Retry-After ni ticket de cancelación. Los errores de membresía inactiva y estado de organización incluyen organizationName y tenantId; NotMember no incluye esos datos. Baja pendiente: sólo después de probar posesión y dentro de la gracia se emiten cancelTicket, returnUrl validado y fechas de cancelación; con gracia vencida se devuelve Legal.AccountDeletion.GraceExpired, sin ticket. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs. returnUrl OIDC o /invitacion conserva el flujo anterior y exige access ausente/null en el cuerpo. Continuación fija exclusivamente / con access=consumer o /org con access=business, valores literales sin query/fragmento; cualquier discrepancia falla antes de consumir el código. Respuesta returnUrl y cookie de identidad después del commit, sin tokens OIDC en body; el SPA inicia una autorización nueva tras el retorno fijo. Business fijo: después de probar el código se revalida la membresía y la organización. Sin membresía: Tenancy.Access.NotMember; membresía inactiva: Tenancy.Member.Inactive; organización pendiente, en preparación, suspendida o cerrada: Tenancy.Tenant.PendingApproval, Provisioning, Suspended o Closed. Son 403 sin cookie, errores por campo, Retry-After ni ticket de cancelación. Los errores de membresía inactiva y estado de organización incluyen organizationName y tenantId; NotMember no incluye esos datos. Baja pendiente: sólo después de probar posesión y dentro de la gracia se emiten cancelTicket, returnUrl validado y fechas de cancelación; con gracia vencida se devuelve Legal.AccountDeletion.GraceExpired, sin ticket. next=authorize conserva la conducta anterior. next=platformFactor (access=platform, E9): el código quedó probado pero no hay cookie de Plataforma ni tokens; nace la cookie del desafío pendiente y el SPA lo consulta en /api/auth/platform-factor. Una invitación de operador queda aceptada recién al completar ese ingreso. */
         post: {
             parameters: {
                 query?: never;
@@ -23417,7 +26404,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Identity.Account.LockedOut; Http.TooManyRequests */
+                /** @description Too Many Requests; Identity.Account.LockedOut; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -23499,7 +26486,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Identity.Account.LockedOut; Http.TooManyRequests */
+                /** @description Too Many Requests; Identity.Account.LockedOut; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -23536,7 +26523,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Invalid reúne enlace inexistente, usado, vencido, invalidado, método retirado y cuenta operadora. Revalida dueño, método, canal, estado y operador bajo lock dentro de la UoW. Solo access=consumer. 200 {access:consumer} y cookie pública, sin tokens OIDC. Replay misma key no crea otra sesión; otra key devuelve Invalid si ya fue usado. Baja pendiente: prueba válida y gracia vigente emiten cancelTicket con retorno fijo /login/enlace; gracia vencida devuelve Legal.AccountDeletion.GraceExpired sin ticket. Front ejecuta después signinRedirect con su state y PKCE. */
+        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Invalid reúne enlace inexistente, usado, vencido, invalidado, método retirado y cuenta operadora. Revalida dueño, método, canal, estado y operador bajo lock dentro de la UoW. Solo access=consumer. 200 {access:consumer} y cookie pública, sin tokens OIDC. Replay misma key no crea otra sesión; otra key devuelve Invalid si ya fue usado. Baja pendiente: prueba válida y gracia vigente emiten cancelTicket con retorno fijo /login/enlace; gracia vencida devuelve Legal.AccountDeletion.GraceExpired sin ticket. Front ejecuta después signinRedirect con su state y PKCE. Un operador nunca recibe sesión por enlace: sigue devolviendo Invalid (E9). */
         post: {
             parameters: {
                 query?: never;
@@ -23604,7 +26591,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Identity.Account.LockedOut; Http.TooManyRequests */
+                /** @description Too Many Requests; Identity.Account.LockedOut; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -23660,7 +26647,7 @@ export interface paths {
                         "text/json": components["schemas"]["LoginMethodsResponse"];
                     };
                 };
-                /** @description Http.TooManyRequests */
+                /** @description Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -23684,6 +26671,289 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/platform-factor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Exige la cookie protegida del desafío pendiente (HttpOnly, host-only y ligada al navegador), que nace al probar correo o Google con access=platform y no autentica ninguna otra ruta; host principal y, en escrituras, origen válido. El desafío dura 10 minutos sin renovarse y no hay cookie de Plataforma ni tokens OIDC hasta completar el segundo factor. Respuestas con Cache-Control: no-store; ningún secreto va a la URL, a los logs ni al almacenamiento del navegador. Devuelve el paso actual sin escribir: verify trae el vencimiento; setup, la clave y el otpauth preparados al probar el primer factor, para que el navegador arme el QR sin servicios externos; recoveryCodes, los ocho códigos del alta hasta completarla. Recargar la página consulta este estado. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description no-store: el navegador no guarda la respuesta. */
+                        "Cache-Control"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformFactorChallengeResponse"];
+                        "application/json": components["schemas"]["PlatformFactorChallengeResponse"];
+                        "text/json": components["schemas"]["PlatformFactorChallengeResponse"];
+                    };
+                };
+                /** @description Unauthorized; Auth.TwoFactor.ChallengeExpired */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/platform-factor/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Exige la cookie protegida del desafío pendiente (HttpOnly, host-only y ligada al navegador), que nace al probar correo o Google con access=platform y no autentica ninguna otra ruta; host principal y, en escrituras, origen válido. El desafío dura 10 minutos sin renovarse y no hay cookie de Plataforma ni tokens OIDC hasta completar el segundo factor. Respuestas con Cache-Control: no-store; ningún secreto va a la URL, a los logs ni al almacenamiento del navegador. Código: seis dígitos del autenticador (TOTP de 30 segundos con un intervalo de tolerancia por lado; un intervalo ya usado no vuelve a servir) o un código de recuperación XXXX-XXXX de un solo uso. No se registra. Con el factor configurado acepta authenticator o recoveryCode y responde next=authorize con el retorno validado y la sesión de Plataforma creada después del commit. En el alta acepta sólo authenticator: verifica la clave y responde next=recoveryCodes, sin sesión; los códigos se leen con GET. Consumo del intervalo o del código, binding y auditoría van juntos; un replay revalida cuenta, sello, acceso y prueba antes de reconstruir la respuesta. Comparte el contador de fallos del ingreso: diez fallos bloquean la cuenta 15 minutos, también con códigos de recuperación y en el alta; el bloqueo informa retryAfter y Retry-After y no acepta más códigos. Probar el primer factor no borra los fallos del segundo. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VerifyPlatformFactorHttpRequest"];
+                    "text/json": components["schemas"]["VerifyPlatformFactorHttpRequest"];
+                    "application/*+json": components["schemas"]["VerifyPlatformFactorHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description no-store: el navegador no guarda la respuesta. */
+                        "Cache-Control"?: string;
+                        /** @description Cookie de Plataforma HttpOnly, host-only e independiente de la pública (ADR 0044), sólo cuando el segundo factor queda completo; también retira la cookie del desafío. */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["VerifyPlatformFactorResponse"];
+                        "application/json": components["schemas"]["VerifyPlatformFactorResponse"];
+                        "text/json": components["schemas"]["VerifyPlatformFactorResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Auth.TwoFactor.Invalid; Auth.TwoFactor.RecoveryInvalid; Request.IdempotencyKeyRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Auth.TwoFactor.ChallengeExpired */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Auth.TwoFactor.InvalidState; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Identity.Account.LockedOut; Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/platform-factor/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Exige la cookie protegida del desafío pendiente (HttpOnly, host-only y ligada al navegador), que nace al probar correo o Google con access=platform y no autentica ninguna otra ruta; host principal y, en escrituras, origen válido. El desafío dura 10 minutos sin renovarse y no hay cookie de Plataforma ni tokens OIDC hasta completar el segundo factor. Respuestas con Cache-Control: no-store; ningún secreto va a la URL, a los logs ni al almacenamiento del navegador. Sólo después de verificar el alta y con savedRecoveryCodes=true: guarda los hashes de los códigos, crea la sesión de Plataforma, acepta la invitación de operador si estaba pendiente y destruye la clave temporal y los códigos en claro del desafío. Responde el retorno validado del ingreso. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CompletePlatformFactorHttpRequest"];
+                    "text/json": components["schemas"]["CompletePlatformFactorHttpRequest"];
+                    "application/*+json": components["schemas"]["CompletePlatformFactorHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description no-store: el navegador no guarda la respuesta. */
+                        "Cache-Control"?: string;
+                        /** @description Cookie de Plataforma HttpOnly, host-only e independiente de la pública (ADR 0044), sólo cuando el segundo factor queda completo; también retira la cookie del desafío. */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CompletePlatformFactorResponse"];
+                        "application/json": components["schemas"]["CompletePlatformFactorResponse"];
+                        "text/json": components["schemas"]["CompletePlatformFactorResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Auth.TwoFactor.ChallengeExpired */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Auth.TwoFactor.InvalidState; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -23765,7 +27035,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -23864,7 +27134,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Identity.Account.LockedOut; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests */
+                /** @description Too Many Requests; Identity.Account.LockedOut; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -23924,6 +27194,17 @@ export interface paths {
                 /** @description Bad Request */
                 400: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -24011,6 +27292,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -24084,6 +27376,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
             };
         };
         delete?: never;
@@ -24138,7 +27441,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Http.TooManyRequests */
+                /** @description Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -24236,7 +27539,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -24353,7 +27656,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -24472,7 +27775,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Http.TooManyRequests */
+                /** @description Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -24563,7 +27866,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Http.TooManyRequests */
+                /** @description Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -24657,7 +27960,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Http.TooManyRequests */
+                /** @description Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -24733,6 +28036,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Internal Server Error */
                 500: {
                     headers: {
@@ -24780,6 +28094,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -24835,6 +28160,17 @@ export interface paths {
                 /** @description Not Found */
                 404: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -24899,6 +28235,17 @@ export interface paths {
                 /** @description Forbidden */
                 403: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -24972,6 +28319,17 @@ export interface paths {
                 /** @description Conflict */
                 409: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
                         [name: string]: unknown;
                     };
                     content: {
@@ -25755,6 +29113,18 @@ export interface components {
             type: string;
             number: string;
         };
+        /** @description Confirma que el operador guardó sus ocho códigos de recuperación; completa el alta y el ingreso. */
+        CompletePlatformFactorHttpRequest: {
+            /**
+             * @description La casilla «Guardé los códigos»; sólo vale true.
+             * @enum {boolean}
+             */
+            savedRecoveryCodes: true;
+        };
+        /** @description El retorno validado del ingreso: la sesión de Plataforma ya existe y el SPA abre el authorize. */
+        CompletePlatformFactorResponse: {
+            returnUrl: string;
+        };
         ConnectPlatformWhatsAppNumberHttpRequest: {
             code?: null | string;
             phoneNumberId?: null | string;
@@ -26098,13 +29468,18 @@ export interface components {
             text: string;
         };
         /** @enum {null|string} */
-        LoginAuditMethod: "Code" | "Google" | "WhatsAppCode" | "WhatsAppLink" | null;
+        LoginAuditMethod: "Code" | "Google" | "WhatsAppCode" | "WhatsAppLink" | "Authenticator" | "RecoveryCode" | null;
         LoginChannelAvailability: {
             key: string;
             countries: string[];
             /** @description Número público E.164 aportado por el canal. Opcional; no es identificador del proveedor. */
             contactPhone?: null | string;
         };
+        /**
+         * @description authorize: abrir returnUrl como antes. platformFactor: operador con el primer factor probado; consultar /api/auth/platform-factor.
+         * @enum {string}
+         */
+        LoginCodeNextStep: "authorize" | "platformFactor";
         LoginLinkPreviewResponse: {
             displayName?: null | string;
             maskedPhone?: null | string;
@@ -27063,6 +30438,60 @@ export interface components {
             salesEmail?: null | components["schemas"]["Email"];
             supportEmail?: null | components["schemas"]["Email"];
         };
+        /** @description El paso del desafío pendiente de Plataforma (E9). */
+        PlatformFactorChallengeResponse: components["schemas"]["PlatformFactorVerifyChallenge"] | components["schemas"]["PlatformFactorSetupChallenge"] | components["schemas"]["PlatformFactorRecoveryCodesChallenge"];
+        /**
+         * @description Qué sigue después de probar el factor: el authorize original o mostrar los códigos del alta.
+         * @enum {string}
+         */
+        PlatformFactorNextStep: "authorize" | "recoveryCodes";
+        PlatformFactorRecoveryCodesChallenge: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            state: "recoveryCodes";
+            /**
+             * Format: date-time
+             * @description Vencimiento del desafío, sin renovación.
+             */
+            expiresAtUtc: string;
+            /** @description Los ocho códigos de un solo uso; copiar y descargar son acciones locales del navegador. */
+            recoveryCodes: string[];
+        };
+        PlatformFactorSetupChallenge: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            state: "setup";
+            /**
+             * Format: date-time
+             * @description Vencimiento del desafío, sin renovación.
+             */
+            expiresAtUtc: string;
+            /** @description Clave base32 para copiar a mano. */
+            secret: string;
+            /** @description Contenido del QR que arma el navegador. */
+            otpauthUri: string;
+        };
+        /**
+         * @description El paso del desafío pendiente de Plataforma: probar el factor, darlo de alta o guardar los códigos.
+         * @enum {string}
+         */
+        PlatformFactorState: "verify" | "setup" | "recoveryCodes";
+        PlatformFactorVerifyChallenge: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            state: "verify";
+            /**
+             * Format: date-time
+             * @description Vencimiento del desafío, sin renovación.
+             */
+            expiresAtUtc: string;
+        };
         /** @description Habilitación administrable; cero identifica la configuración inicial sin fila persistida. */
         PlatformFeatureResponse: {
             key: string;
@@ -27130,6 +30559,52 @@ export interface components {
             /** Format: date-time */
             publishedAtUtc?: null | string;
         };
+        /** @description Los doce perfiles cerrados (E9): ip, publicIp, identity, tenant, loginCode, loginVerify, invitationPreview, invitationAccept, assistantQuickQuery, assistantConversation, assistantNewKey y whatsAppWebhook. */
+        PlatformRateLimitsInput: {
+            ip: components["schemas"]["RateLimitQuotaInput"];
+            publicIp: components["schemas"]["RateLimitQuotaInput"];
+            identity: components["schemas"]["RateLimitQuotaInput"];
+            tenant: components["schemas"]["RateLimitQuotaInput"];
+            loginCode: components["schemas"]["RateLimitQuotaInput"];
+            loginVerify: components["schemas"]["RateLimitQuotaInput"];
+            invitationPreview: components["schemas"]["RateLimitQuotaInput"];
+            invitationAccept: components["schemas"]["RateLimitQuotaInput"];
+            assistantQuickQuery: components["schemas"]["RateLimitQuotaInput"];
+            assistantConversation: components["schemas"]["RateLimitQuotaInput"];
+            assistantNewKey: components["schemas"]["RateLimitQuotaInput"];
+            whatsAppWebhook: components["schemas"]["RateLimitQuotaInput"];
+        };
+        /** @description Los doce perfiles cerrados (E9): ip, publicIp, identity, tenant, loginCode, loginVerify, invitationPreview, invitationAccept, assistantQuickQuery, assistantConversation, assistantNewKey y whatsAppWebhook. */
+        PlatformRateLimitsResponse: {
+            ip: components["schemas"]["RateLimitQuotaResponse"];
+            publicIp: components["schemas"]["RateLimitQuotaResponse"];
+            identity: components["schemas"]["RateLimitQuotaResponse"];
+            tenant: components["schemas"]["RateLimitQuotaResponse"];
+            loginCode: components["schemas"]["RateLimitQuotaResponse"];
+            loginVerify: components["schemas"]["RateLimitQuotaResponse"];
+            invitationPreview: components["schemas"]["RateLimitQuotaResponse"];
+            invitationAccept: components["schemas"]["RateLimitQuotaResponse"];
+            assistantQuickQuery: components["schemas"]["RateLimitQuotaResponse"];
+            assistantConversation: components["schemas"]["RateLimitQuotaResponse"];
+            assistantNewKey: components["schemas"]["RateLimitQuotaResponse"];
+            whatsAppWebhook: components["schemas"]["RateLimitQuotaResponse"];
+        };
+        /** @description «Confirmá que sos vos» (E9): con qué prueba y el código; nunca se registra. */
+        PlatformReauthenticationHttpRequest: {
+            method: components["schemas"]["TwoFactorMethod"];
+            /** @description Código: seis dígitos del autenticador (TOTP de 30 segundos con un intervalo de tolerancia por lado; un intervalo ya usado no vuelve a servir) o un código de recuperación XXXX-XXXX de un solo uso. No se registra. */
+            code: string;
+        };
+        /**
+         * @description La prueba reciente quedó ligada a esta sesión de Plataforma hasta DateTime PlatformReauthenticationResponse.RecentUntilUtc (10 minutos, P1). Un
+         *     replay de la misma operación conserva el vencimiento original.
+         */
+        PlatformReauthenticationResponse: {
+            /** Format: date-time */
+            verifiedAtUtc: string;
+            /** Format: date-time */
+            recentUntilUtc: string;
+        };
         PlatformRecoveryFilterCounts: {
             /** Format: int32 */
             total: number;
@@ -27170,6 +30645,7 @@ export interface components {
             supportEmail?: null | components["schemas"]["Email"];
             /** Format: uint32 */
             version: number;
+            rateLimits: components["schemas"]["PlatformRateLimitsResponse"];
         };
         /** @description Ficha global; su versión pertenece únicamente a Tenants. */
         PlatformTenantDetailResponse: {
@@ -27356,6 +30832,32 @@ export interface components {
             /** Format: date */
             effectiveOn?: null | string;
             contents?: null | components["schemas"]["LegalDocumentContentHttpRequest"][];
+        };
+        /** @description Una cuota editada: los dos valores son obligatorios, entre 1 y 1.000.000 pedidos y entre 1 y 86.400 segundos. */
+        RateLimitQuotaInput: {
+            /**
+             * Format: int32
+             * @description Pedidos admitidos por ventana.
+             */
+            permitLimit: number;
+            /**
+             * Format: int32
+             * @description Duración de la ventana fija UTC, en segundos.
+             */
+            windowSeconds: number;
+        };
+        /** @description Una cuota (E9): pedidos admitidos por cada ventana fija UTC de int RateLimitQuotaResponse.WindowSeconds segundos. */
+        RateLimitQuotaResponse: {
+            /**
+             * Format: int32
+             * @description Pedidos admitidos por ventana.
+             */
+            permitLimit: number;
+            /**
+             * Format: int32
+             * @description Duración de la ventana fija UTC, en segundos.
+             */
+            windowSeconds: number;
         };
         RedeemLoginLinkHttpRequest: {
             /** @description Secreto de 32 bytes, base64url sin padding. Solo cuerpo/memoria; sin logs. */
@@ -27557,6 +31059,8 @@ export interface components {
             /** Format: uint32 */
             version?: null | number;
         };
+        /** @enum {string} */
+        TwoFactorMethod: "authenticator" | "recoveryCode";
         UpdateAssistantConversationHttpRequest: {
             title?: null | string;
             isSaved?: null | boolean;
@@ -27655,6 +31159,7 @@ export interface components {
             version?: null | number;
             reason?: null | string;
         };
+        /** @description Sin `rateLimits` se conservan las cuotas guardadas; con ellas, van los doce perfiles completos (E9). */
         UpdatePlatformSettingsHttpRequest: {
             consumerSignup?: null | components["schemas"]["ConsumerSignupMode"];
             businessSignup?: null | components["schemas"]["BusinessSignupMode"];
@@ -27665,6 +31170,7 @@ export interface components {
             /** Format: uint32 */
             version?: null | number;
             reason?: null | string;
+            rateLimits?: null | components["schemas"]["PlatformRateLimitsInput"];
         };
         UpdatePlatformWhatsAppBotHttpRequest: {
             welcome?: null | string;
@@ -27758,9 +31264,13 @@ export interface components {
         } | {
             phone: components["schemas"]["PhoneInputHttpRequest"];
         });
-        /** @description Authorize original que el SPA vuelve a abrir después de crear la sesión. */
+        /**
+         * @description Authorize original que el SPA vuelve a abrir después de crear la sesión. Con LoginCodeNextStep.PlatformFactor
+         *     el SPA consulta el desafío pendiente en lugar de abrirlo.
+         */
         VerifyLoginCodeResponse: {
             returnUrl: string;
+            next: components["schemas"]["LoginCodeNextStep"];
         };
         /**
          * @description Recibe el código usado para verificar un método de ingreso pendiente. Conserva el texto original para
@@ -27770,6 +31280,30 @@ export interface components {
             /** @description Dígitos ASCII; longitud configurada en Authentication:LoginCode (6 por defecto). No normalizar ni registrar. */
             code?: null | string;
         };
+        VerifyPlatformFactorAuthorizeResponse: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            next: "authorize";
+            /** @description Retorno validado del ingreso; el SPA abre el authorize. */
+            returnUrl: string;
+        };
+        /** @description Segundo factor de un operador (E9): con qué prueba y el código; nunca se registra. */
+        VerifyPlatformFactorHttpRequest: {
+            method: components["schemas"]["TwoFactorMethod"];
+            /** @description Código: seis dígitos del autenticador (TOTP de 30 segundos con un intervalo de tolerancia por lado; un intervalo ya usado no vuelve a servir) o un código de recuperación XXXX-XXXX de un solo uso. No se registra. */
+            code: string;
+        };
+        VerifyPlatformFactorRecoveryCodesResponse: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            next: "recoveryCodes";
+        };
+        /** @description authorize con la sesión creada o recoveryCodes al verificar el alta (E9). */
+        VerifyPlatformFactorResponse: components["schemas"]["VerifyPlatformFactorAuthorizeResponse"] | components["schemas"]["VerifyPlatformFactorRecoveryCodesResponse"];
         /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. */
         VerifyRecoveryCodeHttpRequest: {
             email?: null | string;

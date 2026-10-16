@@ -160,7 +160,7 @@ describe("contratos de Plataforma entre back y front", () => {
     ["ChangePlatformOperatorHttpRequest", ["version", "reason", "permissions"]],
     ["PublishLegalDocumentHttpRequest", ["kind", "effectiveOn", "contents"]],
     ["LegalDocumentContentHttpRequest", ["culture", "text"]],
-    ["UpdatePlatformSettingsHttpRequest", ["consumerSignup", "businessSignup", "maxOwnedOrganizations", "salesEmail", "supportEmail", "version", "reason"]],
+    ["UpdatePlatformSettingsHttpRequest", ["consumerSignup", "businessSignup", "maxOwnedOrganizations", "salesEmail", "supportEmail", "version", "reason", "rateLimits"]],
     ["RequestRecoveryCodeHttpRequest", ["email", "phone", "channel", "nonce"]],
     ["VerifyRecoveryCodeHttpRequest", ["email", "phone", "channel", "nonce", "code"]],
     ["SubmitAccountRecoveryHttpRequest", ["email", "phone", "channel", "nonce", "previousEmail", "previousPhone"]],

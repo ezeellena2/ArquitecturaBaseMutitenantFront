@@ -1199,6 +1199,11 @@ export const validationConstraints = {
       "maximum": 4294967295
     }
   },
+  "PlatformFactorRecoveryCodesChallenge": {
+    "recoveryCodes": {
+      "maxItems": 8
+    }
+  },
   "PlatformLegalDocumentGroupResponse": {
     "currentVersion": {
       "minimum": -2147483648,
@@ -1215,6 +1220,12 @@ export const validationConstraints = {
     "version": {
       "minimum": -2147483648,
       "maximum": 2147483647
+    }
+  },
+  "PlatformReauthenticationHttpRequest": {
+    "code": {
+      "minLength": 6,
+      "maxLength": 9
     }
   },
   "PlatformRecoveryFilterCounts": {
@@ -1312,6 +1323,26 @@ export const validationConstraints = {
     "version": {
       "minimum": -2147483648,
       "maximum": 2147483647
+    }
+  },
+  "RateLimitQuotaInput": {
+    "permitLimit": {
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "windowSeconds": {
+      "minimum": 1,
+      "maximum": 86400
+    }
+  },
+  "RateLimitQuotaResponse": {
+    "permitLimit": {
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "windowSeconds": {
+      "minimum": 1,
+      "maximum": 86400
     }
   },
   "RequestAccountDeletionHttpRequest": {
@@ -1581,6 +1612,12 @@ export const validationConstraints = {
   "VerifyLoginCodeHttpRequest": {
     "email": {
       "maxLength": 254
+    }
+  },
+  "VerifyPlatformFactorHttpRequest": {
+    "code": {
+      "minLength": 6,
+      "maxLength": 9
     }
   },
   "VerifyRecoveryCodeHttpRequest": {
@@ -1931,6 +1968,11 @@ export const schemaEnumValues = {
       "tool"
     ]
   },
+  "CompletePlatformFactorHttpRequest": {
+    "savedRecoveryCodes": [
+      true
+    ]
+  },
   "LoginLinkRedeemResponse": {
     "access": [
       "consumer"
@@ -1944,9 +1986,34 @@ export const schemaEnumValues = {
       100
     ]
   },
+  "PlatformFactorRecoveryCodesChallenge": {
+    "state": [
+      "recoveryCodes"
+    ]
+  },
+  "PlatformFactorSetupChallenge": {
+    "state": [
+      "setup"
+    ]
+  },
+  "PlatformFactorVerifyChallenge": {
+    "state": [
+      "verify"
+    ]
+  },
   "RedeemLoginLinkHttpRequest": {
     "access": [
       "consumer"
+    ]
+  },
+  "VerifyPlatformFactorAuthorizeResponse": {
+    "next": [
+      "authorize"
+    ]
+  },
+  "VerifyPlatformFactorRecoveryCodesResponse": {
+    "next": [
+      "recoveryCodes"
     ]
   }
 } as const;

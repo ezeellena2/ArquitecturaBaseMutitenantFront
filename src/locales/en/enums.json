@@ -13,7 +13,9 @@
     "Code": "Email code",
     "Google": "Google",
     "WhatsAppCode": "WhatsApp",
-    "WhatsAppLink": "WhatsApp"
+    "WhatsAppLink": "WhatsApp",
+    "Authenticator": "Authenticator",
+    "RecoveryCode": "Recovery code"
   },
   "TenantStatus": {
     "PendingApproval": "Awaiting approval",

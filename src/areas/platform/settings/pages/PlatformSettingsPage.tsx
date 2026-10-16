@@ -108,7 +108,7 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
       if (!valid()) throw new DOMException("", "AbortError");
       // La escritura propia cambia la base antes de cualquier invalidación/GET; una lectura vieja nunca la reemplaza.
       wrote(sent.version, response.version, undefined); form.reset(sent.values);
-      ownRead.current = { previous: sent.read, saved: { ...sent.values, maxOwnedOrganizations: sent.values.maxOwnedOrganizations, version: response.version } };
+      ownRead.current = { previous: sent.read, saved: { ...sent.read, ...sent.values, maxOwnedOrganizations: sent.values.maxOwnedOrganizations, version: response.version } };
       setFailure(undefined); toast.success(t("platformSettings:saved")); abandon();
       void client.invalidateQueries({ queryKey: platformSettingsKey });
       return response;
