@@ -76,7 +76,7 @@ export const factorKeeper = createFactorKeeper();
  * clave de la pantalla, guarda los ocho códigos en memoria y marca «Los guardé»), o escribe el código del intervalo. Si el
  * back todavía no pide el segundo factor, el ingreso sigue solo y no hace nada.
  */
-export async function completeOperatorFactor(page, email, { keeper = factorKeeper, timeout = 30_000 } = {}) {
+export async function completeOperatorFactor(page, email, { keeper = factorKeeper, timeout = 30_000, recoveryCode } = {}) {
   const setup = page.getByRole("heading", { name: "Protegé tu cuenta de operador", exact: true });
   const verify = page.getByRole("heading", { name: "Verificación en dos pasos", exact: true });
   const reached = await Promise.race([
@@ -100,6 +100,15 @@ export async function completeOperatorFactor(page, email, { keeper = factorKeepe
     await page.getByRole("checkbox", { name: "Los guardé en un lugar seguro", exact: true }).check();
     await page.getByRole("button", { name: "Entrar a la plataforma", exact: true }).click();
     return "setup";
+  }
+  // `recoveryCode: true` entra con uno de los códigos guardados (deja de estar disponible); un texto, con ese código, para
+  // probar que uno ya usado no vuelve a servir.
+  if (recoveryCode) {
+    await page.getByRole("button", { name: "Usar un código de recuperación", exact: true }).click();
+    const code = recoveryCode === true ? keeper.takeRecoveryCode(email) : recoveryCode;
+    await page.getByRole("textbox", { name: "Código de recuperación", exact: true }).fill(code);
+    await page.getByRole("button", { name: "Verificar", exact: true }).click();
+    return "recoveryCode";
   }
   await fillOtp(page, await keeper.code(email));
   await page.getByRole("button", { name: "Verificar", exact: true }).click();
