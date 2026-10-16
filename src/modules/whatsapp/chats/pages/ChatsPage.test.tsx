@@ -288,7 +288,7 @@ describe("Chats de la organización", () => {
   it("plantilla: respuesta perdida, reintento idéntico con la misma clave y corrección con otra", async () => {
     inbox(row({ windowOpenUntilUtc: closed }));
     const option: WhatsAppTemplateOptionResponse = { templateId: "t-pedido", name: "Pedido listo", category: "Utility",
-      body: "Hola {{1}}.", variables: ["Nombre"], estimatedCost: null };
+      body: "Hola {{1}}.", variables: ["Nombre"], estimatedCost: { amount: 10, currency: "ARS" } };
     const sent: { key: string | null; variables: unknown }[] = [];
     server.use(
       http.get(`${org}/customers/conversations/c-martina/template-options`, () => HttpResponse.json(paged([option]))),
