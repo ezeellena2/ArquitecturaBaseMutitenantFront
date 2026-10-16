@@ -1,0 +1,98 @@
+{
+  "id": "armar-un-catalogo",
+  "titulo": "Armar un catálogo y usarlo en un formulario",
+  "etapa": "Etapa 13 · Catálogos",
+  "orden": 10,
+  "resumen": "Lucía arma la lista «Motivos de visita», la usa en una pregunta del formulario, lo manda por WhatsApp y vuelve la respuesta con lo que eligió la persona.",
+  "pasos": [
+    {
+      "tablero": "FRM-Catalogos",
+      "tweaks": {
+        "estado": "Todos"
+      },
+      "resaltar": "a.cb-pri:has-text(\"Nuevo catálogo\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Abre los catálogos",
+      "texto": "Los catálogos son listas de opciones que comparten varios formularios. Viven en el panel de Formularios, al lado de los formularios.",
+      "avanzar": "Tocá «Nuevo catálogo».",
+      "ruta": "/org/formularios/catalogos",
+      "accion": "Toca «Nuevo catálogo»."
+    },
+    {
+      "tablero": "FRM-Catalogo-Nuevo",
+      "tweaks": {
+        "estado": "A mano"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Crear catálogo\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Le pone nombre y elige el origen",
+      "texto": "«Motivos de visita», con las opciones escritas a mano. El origen no se cambia después.",
+      "avanzar": "Tocá «Crear catálogo».",
+      "ruta": "/org/formularios/catalogos",
+      "accion": "Crea el catálogo."
+    },
+    {
+      "tablero": "FRM-Catalogo",
+      "tweaks": {
+        "estado": "Opciones"
+      },
+      "resaltar": "a.cb-pri:has-text(\"Agregar opción\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Carga las opciones",
+      "texto": "Cada opción va en una fila, en el orden en que la ve la persona. Una opción que ya no sirve se da de baja sin borrarse.",
+      "avanzar": "Tocá «Agregar opción».",
+      "ruta": "/org/formularios/catalogos",
+      "accion": "Toca «Agregar opción»."
+    },
+    {
+      "tablero": "FRM-Catalogo-Opcion",
+      "tweaks": {
+        "estado": "Nueva"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Agregar opción\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Escribe una opción",
+      "texto": "El texto, de hasta 30 caracteres, es lo que se ve en WhatsApp. Al lado va el inglés, abajo un detalle y un código que no se ve.",
+      "avanzar": "Tocá «Agregar opción».",
+      "ruta": "/org/formularios/catalogos",
+      "accion": "Agrega la opción."
+    },
+    {
+      "tablero": "FRM-Pregunta",
+      "tweaks": {
+        "tipo": "Elegir el catálogo"
+      },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "La usa en una pregunta",
+      "texto": "En el formulario, una pregunta del tipo «Elegir de un catálogo» apunta a la lista. Los catálogos que no se pueden usar aparecen apagados, con su motivo.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id",
+      "accion": "Elige el catálogo de la pregunta."
+    },
+    {
+      "tablero": "WA-Chats-Formulario",
+      "tweaks": {
+        "estado": "Elegir el formulario"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Mandar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Manda el formulario",
+      "texto": "Desde un chat de Internos lo manda por WhatsApp. Las opciones se arman para la persona que lo recibe.",
+      "avanzar": "Tocá «Mandar».",
+      "ruta": "/org/whatsapp/chats",
+      "accion": "Manda el formulario."
+    },
+    {
+      "tablero": "WA-Chats-Respuesta",
+      "tweaks": {
+        "estado": "Con un valor de catálogo"
+      },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Vuelve la respuesta",
+      "texto": "La respuesta trae lo que eligió la persona, con el texto que vio en WhatsApp.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/whatsapp/chats",
+      "accion": "Ve la respuesta."
+    }
+  ]
+}

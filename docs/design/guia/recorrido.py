@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 123 · 13 de octubre de 2026"
+VERSION = "versión 124 · 16 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -115,7 +115,7 @@ CAPITULOS = [
          ["M-Asistente-Uso-Org", "M-Plat-Asistente-Uso"], [],
          "El tope del mes y el uso por día y por persona; en Plataforma, el costo por organización. Nunca el texto de las conversaciones."),
     ]),
-    ("formularios", "Diseña formularios", "Formularios que se completan dentro de WhatsApp: la organización los diseña, los publica y se los manda a sus empleados desde un chat.", [
+    ("formularios", "Diseña formularios", "Formularios que se completan dentro de WhatsApp: la organización los diseña, los publica y se los manda a sus empleados desde un chat. Los catálogos son las listas de opciones que comparten.", [
         ("frm-listado", "Formularios", "/org/formularios", "no", "12", ["FRM-Listado"], ["M-FRM-Listado"], ["FRM-Nuevo"],
          "Cada formulario con su prefijo, su estado y su última publicación. «Nuevo formulario» pide solo el nombre."),
         ("frm-ficha", "Ficha de un formulario", "/org/formularios/:id", "no", "12", ["FRM-Ficha"], ["M-FRM-Ficha"], ["FRM-Pregunta", "FRM-Prefijo", "FRM-Ingles", "M-FRM-Pregunta"],
@@ -124,8 +124,16 @@ CAPITULOS = [
          "La comprobación antes de publicar, y la pestaña Publicación con la versión en curso y la activa."),
         ("frm-chat", "Mandar un formulario", "WhatsApp › Chats › Internos", "no", "12", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta"],
          "En un chat con un empleado: elegir el formulario y el mensaje, y la respuesta que vuelve al chat con su número. En el teléfono, desde el ⋮."),
+        ("frm-catalogos", "Catálogos", "Formularios › Catálogos", "no", "13", ["FRM-Catalogos"], ["M-FRM-Catalogos"], ["FRM-Catalogo-Nuevo"],
+         "Las listas de opciones que comparten los formularios: escritas a mano o tomadas de los miembros con filtros, y si se pueden usar."),
+        ("frm-catalogo", "Un catálogo a mano", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo"], ["M-FRM-Catalogo"], ["FRM-Catalogo-Opcion", "M-FRM-Catalogo-Opcion"],
+         "Sus opciones con texto, detalle y código, en español e inglés. Se ordenan y se dan de baja sin borrarse."),
+        ("frm-catalogo-filtros", "Un catálogo con filtros", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo-Filtros"], ["M-FRM-Catalogo-Filtros"], [],
+         "Las condiciones sobre los miembros y «Como si lo recibiera», para probar qué opciones le llegan a una persona."),
     ]),
-    ("plataforma", "La plataforma", "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales y el WhatsApp propio.", [
+    ("plataforma", "La plataforma", "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales, el WhatsApp propio y la biblioteca de formularios.", [
+        ("plat-frm-biblioteca", "Biblioteca de formularios", "Administración › Formularios › Biblioteca", "no", "17", ["Plat-FRM-Biblioteca"], [], ["Plat-FRM-Plantilla-Nueva"],
+         "Las plantillas que la plataforma ofrece a las organizaciones: borrador, publicada o retirada, y cuántas organizaciones la usaron."),
         ("organizaciones", "Organizaciones", "/plataforma/organizaciones", "no", "5", ["Organizaciones"], ["M-Organizaciones"], [],
          "Todas las organizaciones, con su Dueño, su origen y su estado. Aprobar, rechazar y crear."),
         ("organizacion", "Ficha de una organización", "/plataforma/organizaciones/:id", "no", "5", ["Organizacion"], ["M-Organizacion"], [],

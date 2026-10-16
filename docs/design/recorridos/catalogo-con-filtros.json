@@ -1,0 +1,60 @@
+{
+  "id": "catalogo-con-filtros",
+  "titulo": "Un catálogo que se arma solo, con filtros",
+  "etapa": "Etapa 13 · Catálogos",
+  "orden": 20,
+  "resumen": "Lucía arma «Supervisores» con los miembros que tienen ese rol y prueba qué opciones le llegarían a una persona.",
+  "pasos": [
+    {
+      "tablero": "FRM-Catalogo-Nuevo",
+      "tweaks": {
+        "estado": "Con filtros"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Crear catálogo\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Elige tomarlas de los miembros",
+      "texto": "«Supervisores» no se escribe a mano: sale de los miembros de la organización, con condiciones.",
+      "avanzar": "Tocá «Crear catálogo».",
+      "ruta": "/org/formularios/catalogos",
+      "accion": "Crea el catálogo."
+    },
+    {
+      "tablero": "FRM-Catalogo-Filtros",
+      "tweaks": {
+        "estado": "Tres opciones"
+      },
+      "resaltar": "button.k-mas",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Arma la condición",
+      "texto": "«Si el rol tiene alguno de: Supervisor». Al costado, «Como si lo recibiera» muestra lo que le llegaría a Tomás: 3 opciones.",
+      "avanzar": "Tocá «Agregar condición».",
+      "ruta": "/org/formularios/catalogos",
+      "accion": "Agrega una condición."
+    },
+    {
+      "tablero": "FRM-Catalogo-Filtros",
+      "tweaks": {
+        "estado": "Dos condiciones"
+      },
+      "resaltar": ".ac button.cb-pri:has-text(\"Guardar cambios\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Suma otra condición",
+      "texto": "«y la empresa está en alguna de: Delta S.A.». Ahora le llegan 2 opciones.",
+      "avanzar": "Tocá «Guardar cambios».",
+      "ruta": "/org/formularios/catalogos",
+      "accion": "Guarda los cambios."
+    },
+    {
+      "tablero": "FRM-Catalogo-Filtros",
+      "tweaks": {
+        "estado": "Más de 200"
+      },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Si salen demasiadas",
+      "texto": "Con más de 200 opciones avisa: se puede guardar, pero ese formulario no se va a poder mandar a esa persona.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/catalogos",
+      "accion": "Ve el aviso de más de 200."
+    }
+  ]
+}
