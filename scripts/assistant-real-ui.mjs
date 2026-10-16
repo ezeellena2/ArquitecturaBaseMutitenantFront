@@ -4,6 +4,7 @@ import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
+import { completeOperatorFactor } from "./platform-factor-real.mjs";
 import { createAssistantControl } from "./assistant-real-control.mjs";
 
 export const assistantHomeRoute = (access, width) => ({ business: width === 390 ? "/org/asistente" : "/org",
@@ -54,6 +55,7 @@ export async function assistantLogin(page, env, base, email, access) {
   await page.getByRole("heading", { name: "Revisá tu correo", exact: true }).waitFor();
   await fillOtp(page, await env.code(email, before));
   await page.getByRole("button", { name: "Verificar", exact: true }).click();
+  if (access === "platform") await completeOperatorFactor(page, email);
   await page.waitForURL((url) => !url.pathname.includes("login") && !url.pathname.includes("ingresar"));
   // Los legales pueden estar en la ruta de retorno o en una consulta privada posterior.
   const shell = page.getByRole("navigation", { name: "Secciones", exact: true })

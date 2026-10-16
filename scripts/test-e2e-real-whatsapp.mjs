@@ -10,6 +10,7 @@ import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { decideAfterRecoveryNotice, newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
 import { openPlatformSettings, reloadPlatformSettings, restorableSettings, savePlatformSettings, withRestoredSettings } from "./test-e2e-real-whatsapp-settings.mjs";
+import { completeOperatorFactor } from "./platform-factor-real.mjs";
 
 // Sólo RealE2ESetup en Testing inicia este runner. Front/API/OIDC/PostgreSQL son reales.
 // FIXTURE es IPC privado: el host no publica líneas, respuestas, números ni pruebas.
@@ -95,6 +96,8 @@ async function platformLogin(page, scenario) {
   await page.getByRole("heading", { name: "Revisá tu correo", exact: true }).waitFor();
   await fillOtp(page, (await fixture("operatorCode")).proof);
   await clickHttp(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 200);
+  detail("completar el segundo factor del operador");
+  await completeOperatorFactor(page, "e8-operator@example.test");
   detail("esperar sesión privada de Plataforma");
   await waitForPlatformSession(page, async () => {
     detail("aceptar términos del operador por UI");

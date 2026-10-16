@@ -16,6 +16,7 @@ import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedLegal
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { runAssistantRealE2E } from "./test-e2e-real-assistant.mjs";
 import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
+import { completeOperatorFactor } from "./platform-factor-real.mjs";
 import { chromium } from "playwright";
 
 // Esta prueba arranca su propio AppHost y un PostgreSQL efímero, fuera del volumen Development.
@@ -539,6 +540,8 @@ async function loginThroughUi(page, email, access = "platform", onStage = () => 
   await page.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
   await enterCode(page, await codeFromPickup(email, before));
   await page.getByRole("button", { name: "Verificar", exact: true }).click();
+  // E9: el operador completa el segundo factor (alta la primera vez) antes de entrar a Plataforma.
+  if (access === "platform") await completeOperatorFactor(page, email);
   await expectPath(page, access === "platform" ? "/plataforma" : access === "business" ? "/org" : "/", "ingreso real desde pantalla");
   await acceptCurrentTerms(page);
 }
@@ -1121,6 +1124,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await enterCode(platformPage, await codeFromPickup(operatorEmails["5a"], loginBefore));
           setStage("verifica el código real del operador");
           await platformPage.getByRole("button", { name: "Verificar", exact: true }).click();
+          setStage("completa el segundo factor del operador");
+          await completeOperatorFactor(platformPage, operatorEmails["5a"]);
           // El preparador acepta las versiones reales vigentes para este operador aislado.
           await expectPath(platformPage, "/plataforma", "ingreso del operador");
           setStage("muestra el listado real de Organizaciones");

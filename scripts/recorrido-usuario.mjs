@@ -14,6 +14,7 @@ import { e8Definitions, e8ManualChecks, e8SourceRevision, runE8Journey } from ".
 import { loadAssistantJourneyDefinitions } from "./recorrido-usuario-asistente.mjs";
 import { e11Definitions, e11ManualChecks, runE11Journey } from "./recorrido-usuario-e11.mjs";
 import { runAssistantJourney } from "./assistant-real-ui.mjs";
+import { completeOperatorFactor } from "./platform-factor-real.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const widths = [1440, 390];
@@ -253,6 +254,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
     await target.goto(new URL(access === "business" ? "/login/empresa" : access === "platform" ? "/plataforma" : "/login", baseUrl).href);
     const response = await verify(target, await requestCode(target, destination));
     assert.equal(response.status(), 200);
+    if (access === "platform") await completeOperatorFactor(target, destination);
     await awaitApp(target, access === "business" ? organization : access === "platform" ? "Plataforma" : "Personal", access === "business" ? "/org" : access === "platform" ? "/plataforma" : "/");
   };
   const openAccount = async () => {
