@@ -244,7 +244,7 @@ export function SearchSelect({
             event.preventDefault();
             listRef.current?.focus();
           }}
-          className="z-50 w-(--radix-popover-trigger-width) min-w-0 overflow-hidden rounded-[10px] border border-[var(--borde)] bg-[var(--lado-activo)] text-[13px] shadow-[0_8px_24px_-12px_oklch(0.24_0.012_60/0.25)]"
+          className="z-50 w-(--radix-popover-trigger-width) min-w-0 overflow-hidden rounded-[10px] border border-[var(--borde)] bg-[var(--lado-activo)] text-[13px] shadow-[var(--sombra-menu)]"
         >
           {search}
           {list}

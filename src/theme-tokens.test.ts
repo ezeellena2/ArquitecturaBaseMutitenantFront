@@ -72,7 +72,9 @@ describe("tema aprobado", () => {
     const sourceFiles = filesIn(srcDir).filter(
       (file) => /\.(?:ts|tsx|css)$/.test(file) && !/\.test\.(?:ts|tsx)$/.test(file) && !file.endsWith("index.css"),
     );
-    const literalColor = /#[\da-f]{3,8}\b|\b(?:oklch|rgba?|hsla?)\s*\(/i;
+    // En una clase de Tailwind, `_` separa los valores (`shadow-[0_8px_oklch(...)]`) y es carácter de palabra: `\b` no lo ve.
+    const literalColor = /#[\da-f]{3,8}\b|(?<![a-z\d-])(?:oklch|rgba?|hsla?)\s*\(/i;
+    expect("shadow-[0_8px_24px_-12px_oklch(0.24_0.012_60/0.25)]").toMatch(literalColor);
     const paletteClass = /(?:^|[^\w-])(?:bg|text|border|ring|fill|stroke)-(?:white|black|(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3})(?=[^\w-]|$)/;
 
     for (const file of sourceFiles) {
