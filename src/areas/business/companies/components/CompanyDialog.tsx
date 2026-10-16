@@ -10,6 +10,7 @@ import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { CompanyResponse, CreateCompanyRequest, UpdateCompanyRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import type { TaxIdTypeReference } from "@/shared/referenceData/referenceData";
@@ -58,6 +59,10 @@ function valuesFromCompany(company: CompanyResponse | undefined): CompanyForm {
 
 /// Solo el número: el tipo de identificación sale del país de la organización (el back lo resuelve). Sin zona, la de la
 /// organización.
+/** Repetir el alta con lo mismo conserva la clave; cambiar cualquier dato es otra operación (R05). */
+const sameCompanyRequest = (previous: CreateCompanyRequest, next: CreateCompanyRequest) =>
+  previous.name === next.name && previous.taxIdNumber === next.taxIdNumber && previous.timeZoneId === next.timeZoneId;
+
 function companyRequest(values: CompanyFormValues): CreateCompanyRequest {
   return { name: values.name, taxIdNumber: values.taxNumber || null, timeZoneId: values.timeZoneId || null };
 }
@@ -88,8 +93,6 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
   });
   const effectiveTaxIdType = companyTaxIdType(types, defaultType, storedTaxId, form.watch("taxNumber"));
   const { failure, clear, fail, close } = useDialogFailure(onClose, companiesQueryRoot);
-  const create = useIdempotentMutation((request: CreateCompanyRequest, key) => createCompany(request, key));
-  const update = useMutation({ mutationFn: ({ id, request }: { id: string; request: UpdateCompanyRequest }) => updateCompany(id, request) });
 
   // Lo que el back rechaza de un dato va debajo de ese dato (`errors.ts`), también el CUIT repetido; lo demás, como el
   // 409, en la franja arriba de los botones.
@@ -106,6 +109,14 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
     await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
   }
 
+  // Si la respuesta del alta se pierde, corregir la empresa es otra operación con otra clave y repetir lo mismo conserva la
+  // suya (R05). El aviso y el cierre salen del intento original, también desde «Reintentar».
+  const createAction = useResourceAction<CreateCompanyRequest>({ onError: rejected });
+  const create = useIdempotentMutation(createAction.guarded((request, key: string) => createCompany(request, key),
+    (_response, request) => { void saved(sentence(t("companies:messages.created", { name: request.name }))); }),
+    { meta: createAction.meta, sameOperation: sameCompanyRequest });
+  const update = useMutation({ mutationFn: ({ id, request }: { id: string; request: UpdateCompanyRequest }) => updateCompany(id, request) });
+
   // «Criterio · Botones»: el botón no se apaga con el nombre o el CUIT mal; el campo dice qué corregir y no se manda nada.
   // Al editar, «Guardar cambios» se apaga sin cambios; «Crear empresa» nunca.
   // Lo que sigue al guardado va en sus callbacks: «Reintentar» (sin conexión) los vuelve a correr.
@@ -118,7 +129,7 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
         onError: rejected,
       });
     } else {
-      create.mutate(request, { onSuccess: () => { void saved(sentence(t("companies:messages.created", { name: request.name }))); }, onError: rejected });
+      create.mutate(request);
     }
   });
 

@@ -83,6 +83,41 @@ describe("CompaniesPage", () => {
     expect(container.querySelector("table")).toBeVisible();
   });
 
+  // R05 (datos-y-api): si la respuesta se pierde, repetir lo mismo conserva la clave y corregir un dato es otra operación
+  // con otra clave; el aviso es el del intento que salió bien.
+  it("crear empresa: respuesta perdida, reintento idéntico con la misma clave y corrección con otra", async () => {
+    const sent: Array<{ key: string | null; name: unknown }> = [];
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/filter-counts", () => HttpResponse.json({ all: 0, active: 0, inactive: 0 })),
+      http.post("/api/companies", async ({ request }) => {
+        const body = await request.json() as { name?: unknown };
+        sent.push({ key: request.headers.get("Idempotency-Key"), name: body.name });
+        return sent.length < 3 ? HttpResponse.error() : HttpResponse.json("company-created", { status: 201 });
+      }),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Crear empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Crear empresa" });
+    const name = within(dialog).getByRole("textbox", { name: "Nombre" });
+    await user.type(name, "Delta");
+    const create = () => user.click(within(dialog).getByRole("button", { name: "Crear empresa" }));
+    await create();
+    await waitFor(() => expect(sent).toHaveLength(1));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Crear empresa" })).toBeEnabled());
+    await create();
+    await waitFor(() => expect(sent).toHaveLength(2));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Crear empresa" })).toBeEnabled());
+    await user.type(name, " Sur");
+    await create();
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Crear empresa" })).not.toBeInTheDocument());
+    expect(sent.map((call) => call.name)).toEqual(["Delta", "Delta", "Delta Sur"]);
+    expect(sent[1].key).toBe(sent[0].key);
+    expect(sent[2].key).not.toBe(sent[0].key);
+  }, 10_000);
+
   it("crea una empresa como el tablero: Nombre y CUIT, y «Zona de negocio» con «La de la organización»", async () => {
     const bodies: unknown[] = [];
     const keys: (string | null)[] = [];

@@ -12,6 +12,8 @@ import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { InviteOrganizationUserRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
+import { sameList } from "@/shared/lib/sameList";
 import { useFormat } from "@/shared/format/useFormat";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Button } from "@/shared/ui/button";
@@ -44,6 +46,13 @@ type InviteValues = z.output<ReturnType<typeof inviteFormSchema>>;
 // Los errores de validación del back, en camelCase, a su campo.
 const serverFields: Record<string, keyof InviteForm> = { email: "email", roleIds: "roleIds" };
 
+/** Repetir la invitación con lo mismo conserva la clave; cambiar cualquier dato es otra operación (R05). */
+function sameInvitation(previous: InviteOrganizationUserRequest, next: InviteOrganizationUserRequest) {
+  const earlier = previous.companies ?? []; const later = next.companies ?? [];
+  return previous.email === next.email && sameList(previous.roleIds, next.roleIds) && earlier.length === later.length
+    && earlier.every((company, index) => company.companyId === later[index]?.companyId && sameList(company.roleIds, later[index]?.roleIds));
+}
+
 /// «Invitar usuario» (tableros Usuarios-Invitar y M-Usuarios-Invitar): todo es opcional salvo el correo, y se invita a
 /// una sola empresa con sus roles (decisión 4 del usuario; desde la ficha se suman más). Se monta solo mientras está
 /// abierto: lo escrito, el error y la clave del alta se van al cerrarlo. «Invitar» no se apaga («Criterio · Botones»).
@@ -65,7 +74,6 @@ export function InviteUserDialog({ onClose, onInvited }: {
   const companyOptionsQuery = useResourceOptions(roleOptions("Company", company.field.value || undefined), Boolean(company.field.value));
   const organizationRoles = orgOptions.items;
   const companyRoles = companyOptionsQuery.items.filter((role) => role.scope === "AnyCompany" || role.companyId === company.field.value);
-  const invite = useIdempotentMutation((request: InviteOrganizationUserRequest, key) => inviteUser(request, key));
   const [failure, setFailure] = useState<unknown>();
 
   function rejected(error: unknown) {
@@ -73,7 +81,15 @@ export function InviteUserDialog({ onClose, onInvited }: {
     setFailure(error);
   }
 
-  // Los pasos que siguen al envío van en sus callbacks: «Reintentar» (sin conexión) los vuelve a correr.
+  // Si la respuesta se pierde, corregir la invitación es otra operación con otra clave y repetir lo mismo conserva la suya
+  // (R05). El aviso y el cierre salen del intento original, también desde «Reintentar».
+  const action = useResourceAction<InviteOrganizationUserRequest>({ onError: rejected });
+  const invite = useIdempotentMutation(action.guarded((request, key: string) => inviteUser(request, key), (issued, request) => {
+    toast.success(t("users:messages.invited", { email: request.email, date: format.formatDate(issued.expiresAtUtc) }));
+    onClose();
+    void onInvited();
+  }), { meta: action.meta, sameOperation: sameInvitation });
+
   const submit = form.handleSubmit((values) => {
     setFailure(undefined);
     const request: InviteOrganizationUserRequest = {
@@ -81,14 +97,7 @@ export function InviteUserDialog({ onClose, onInvited }: {
       roleIds: values.roleIds,
       companies: values.companyId ? [{ companyId: values.companyId, roleIds: values.companyRoleIds }] : [],
     };
-    invite.mutate(request, {
-      onSuccess: async (issued) => {
-        toast.success(t("users:messages.invited", { email: request.email, date: format.formatDate(issued.expiresAtUtc) }));
-        onClose();
-        await onInvited();
-      },
-      onError: rejected,
-    });
+    invite.mutate(request);
   });
 
   return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>

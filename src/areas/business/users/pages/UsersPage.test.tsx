@@ -254,6 +254,43 @@ describe("UsersPage", () => {
   });
 
   // Límite de 20 s: invita dos veces, escribe los correos con user-event y elige roles y empresa en tres desplegables; con toda la suite tarda unos 6,5 s.
+  // R05 (datos-y-api): si la respuesta se pierde, repetir lo mismo conserva la clave y corregir un dato es otra operación
+  // con otra clave; el aviso es el del intento que salió bien.
+  it("invitar: respuesta perdida, reintento idéntico con la misma clave y corrección con otra", async () => {
+    const sent: Array<{ key: string | null; email: unknown }> = [];
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0 })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.post("/api/users/invitations", async ({ request }) => {
+        const body = await request.json() as { email?: unknown };
+        sent.push({ key: request.headers.get("Idempotency-Key"), email: body.email });
+        return sent.length < 3 ? HttpResponse.error() : HttpResponse.json({ invitationId: "invitation-1", expiresAtUtc: "2026-10-10T15:00:00Z" }, { status: 201 });
+      }),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Invitar usuario" }));
+    const dialog = await screen.findByRole("dialog", { name: "Invitar usuario" });
+    const email = within(dialog).getByRole("textbox", { name: "Correo" });
+    await user.type(email, "nueva@example.com");
+    const invite = () => user.click(within(dialog).getByRole("button", { name: "Invitar" }));
+    await invite();
+    await waitFor(() => expect(sent).toHaveLength(1));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Invitar" })).toBeEnabled());
+    await invite();
+    await waitFor(() => expect(sent).toHaveLength(2));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Invitar" })).toBeEnabled());
+    await user.clear(email);
+    await user.type(email, "otra@example.com");
+    await invite();
+
+    expect(await screen.findByText("Invitamos a otra@example.com. La invitación vence el 10/10/2026.")).toBeVisible();
+    expect(sent.map((call) => call.email)).toEqual(["nueva@example.com", "nueva@example.com", "otra@example.com"]);
+    expect(sent[1].key).toBe(sent[0].key);
+    expect(sent[2].key).not.toBe(sent[0].key);
+  }, 10_000);
+
   it("tablero Usuarios, Invitar: una empresa con sus roles, todo opcional salvo el correo, e idempotente", async () => {
     const bodies: unknown[] = [];
     const keys: (string | null)[] = [];

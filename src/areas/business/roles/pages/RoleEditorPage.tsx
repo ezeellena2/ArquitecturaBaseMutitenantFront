@@ -18,6 +18,8 @@ import { apiErrorMessage, isNotFoundError } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { CreateRoleRequest, RoleResponse, RoleScope, UpdateRoleRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
+import { sameList } from "@/shared/lib/sameList";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
@@ -108,6 +110,12 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   return <RoleEditor key={role.data.id} role={role.data} reload={async () => (await role.refetch()).data} />;
 }
 
+/** Repetir el alta con lo mismo conserva la clave; cambiar cualquier dato es otra operación (R05). */
+function sameRoleRequest(previous: CreateRoleRequest, next: CreateRoleRequest) {
+  return previous.name === next.name && previous.description === next.description && previous.scope === next.scope
+    && previous.companyId === next.companyId && sameList(previous.permissions, next.permissions);
+}
+
 /// El editor de un rol (tableros Rol y M-Rol): datos sueltos (nombre, «Vale en», descripción) y «Permisos» en grupos
 /// que se abren. Al editar, «Descartar cambios» vuelve a lo guardado sin salir; al crear, «Cancelar» vuelve a la lista
 /// (lienzo v87). La versión que manda el guardado la lleva `useEditForm`; el 409, «Cambios sin guardar», la franja y
@@ -149,11 +157,6 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   const scopeGroups = useMemo(() => groupsForScope(permissionGroups.data ?? [], scope), [permissionGroups.data, scope]);
   const count = selectionCount(scopeGroups.flatMap((group) => group.permissions), permissions);
 
-  // El alta usa una clave por formulario que se renueva después de un 4xx: corregido el nombre, el segundo envío no
-  // choca con la respuesta guardada del primero (B2).
-  const create = useIdempotentMutation((request: CreateRoleRequest, key) => createRole(request, key));
-  const update = useMutation({ mutationFn: ({ id, request }: { id: string; request: UpdateRoleRequest }) => updateRole(id, request) });
-
   function rejected(error: unknown) {
     if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return;
     const field = roleErrorField(error);
@@ -161,17 +164,29 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
     else setFailure(error);
   }
 
-  // Al editar, la ficha queda limpia con lo guardado y la base es la versión que respondió el guardado (`useEditForm`).
-  async function saved(id: string, values: RoleFormValues, write?: { sent: number; saved: number }) {
+  // El alta usa una clave por formulario que se renueva después de un 4xx (B2). Si la respuesta se pierde, corregir el rol
+  // es otra operación con otra clave y repetir lo mismo conserva la suya (R05). El aviso y la navegación salen del
+  // intento original, también desde «Reintentar».
+  const createAction = useResourceAction<CreateRoleRequest>({ onError: rejected });
+  const create = useIdempotentMutation(createAction.guarded((request, key: string) => createRole(request, key),
+    (id, request) => { void created(id, request); }), { meta: createAction.meta, sameOperation: sameRoleRequest });
+  const update = useMutation({ mutationFn: ({ id, request }: { id: string; request: UpdateRoleRequest }) => updateRole(id, request) });
+
+  async function created(id: string, request: CreateRoleRequest) {
     setFailure(undefined);
-    toast.success(t(role ? "roles:updated" : "roles:created", { name: values.name }));
-    if (role) form.reset(values);
-    else {
-      edit.allowNextNavigation();
-      void navigate(`/org/roles/${encodeURIComponent(id)}`, { replace: true });
-    }
+    toast.success(t("roles:created", { name: request.name }));
+    edit.allowNextNavigation();
+    void navigate(`/org/roles/${encodeURIComponent(id)}`, { replace: true });
     await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
-    if (write) wrote(write.sent, write.saved, queryClient.getQueryData<RoleResponse>(roleQueryKey(id)));
+  }
+
+  // Al editar, la ficha queda limpia con lo guardado y la base es la versión que respondió el guardado (`useEditForm`).
+  async function saved(id: string, values: RoleFormValues, write: { sent: number; saved: number }) {
+    setFailure(undefined);
+    toast.success(t("roles:updated", { name: values.name }));
+    form.reset(values);
+    await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
+    wrote(write.sent, write.saved, queryClient.getQueryData<RoleResponse>(roleQueryKey(id)));
   }
 
   const submit = form.handleSubmit((values) => {
@@ -191,7 +206,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
         onError: rejected,
       });
     }
-    else create.mutate(request, { onSuccess: (id) => { void saved(id, values); }, onError: rejected });
+    else create.mutate(request);
   });
 
   // Entre empresas los permisos son los mismos; al pasar a o desde la organización se eligen de nuevo.

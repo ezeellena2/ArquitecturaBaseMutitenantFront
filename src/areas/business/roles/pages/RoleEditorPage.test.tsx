@@ -77,6 +77,45 @@ describe("RoleEditorPage", () => {
     expect(await screen.findByRole("heading", { name: "Operaciones" })).toBeVisible();
   }, 10_000);
 
+  // R05 (datos-y-api): si la respuesta se pierde, repetir lo mismo conserva la clave y corregir un dato es otra operación
+  // con otra clave; el aviso es el del intento que salió bien.
+  it("crear rol: respuesta perdida, reintento idéntico con la misma clave y corrección con otra", async () => {
+    const user = userEvent.setup();
+    const sent: Array<{ key: string | null; name: unknown }> = [];
+    const created = { ...role, id: "role-created", name: "Operaciones Sur" };
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.post("/api/roles", async ({ request }) => {
+        const body = await request.json() as { name?: unknown };
+        sent.push({ key: request.headers.get("Idempotency-Key"), name: body.name });
+        return sent.length < 3 ? HttpResponse.error() : HttpResponse.json(created.id, { status: 201 });
+      }),
+      http.get("/api/roles/role-created", () => HttpResponse.json(created)),
+    );
+    renderRouteWithProviders("/org/roles/nuevo", { as: "business-role-manager" });
+
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
+    await user.type(name, "Operaciones");
+    await user.click(screen.getByRole("combobox", { name: "Vale en" }));
+    await user.click(await screen.findByRole("option", { name: "Toda la organización" }));
+    await user.click(await screen.findByRole("button", { name: "Abrir o cerrar Roles" }));
+    await user.click(await screen.findByRole("checkbox", { name: "Ver roles" }));
+    const create = () => user.click(screen.getAllByRole("button", { name: "Crear rol" })[0]);
+    await create();
+    await waitFor(() => expect(sent).toHaveLength(1));
+    await waitFor(() => expect(screen.getAllByRole("button", { name: "Crear rol" })[0]).toBeEnabled());
+    await create();
+    await waitFor(() => expect(sent).toHaveLength(2));
+    await waitFor(() => expect(screen.getAllByRole("button", { name: "Crear rol" })[0]).toBeEnabled());
+    await user.type(name, " Sur");
+    await create();
+
+    expect(await screen.findByText("Creamos el rol Operaciones Sur.")).toBeVisible();
+    expect(sent.map((call) => call.name)).toEqual(["Operaciones", "Operaciones", "Operaciones Sur"]);
+    expect(sent[1].key).toBe(sent[0].key);
+    expect(sent[2].key).not.toBe(sent[0].key);
+  }, 10_000);
+
   // B2: el back guarda la respuesta de cada clave; con la misma clave y otro cuerpo daría 422 hasta recargar.
   // Límite de 10 s: escribe con user-event y guarda dos veces; con toda la suite tarda unos 2,6 s.
   it("después de un nombre repetido, corregirlo y crear de nuevo manda otra clave y crea el rol", async () => {

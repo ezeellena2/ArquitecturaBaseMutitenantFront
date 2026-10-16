@@ -9,8 +9,10 @@ import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
-import type { AddCompanyMemberRequest, RoleResponse } from "@/shared/api/types";
+import type { RoleResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
+import { sameList } from "@/shared/lib/sameList";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
@@ -33,6 +35,9 @@ type AddMemberForm = z.infer<ReturnType<typeof addMemberFormSchema>>;
 
 // Los errores de validación del back, en camelCase, a su campo.
 const serverFields: Record<string, keyof AddMemberForm> = { memberId: "memberId", roleIds: "roleIds" };
+
+/** El alta que se manda y el nombre de la persona, para el aviso del intento original. */
+type AddMemberOperation = { memberId: string; roleIds: string[]; name: string };
 
 /**
  * «Agregar miembro» (tablero Empresa, v100): el diálogo chico, sin bajada debajo del título («Criterio · Diálogos»); la
@@ -59,7 +64,6 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
   const candidateQuery = useResourceOptions(companyCandidateOptions(companyId));
   const roleQuery = useResourceOptions(companyRoleOptions(companyId, true));
   const candidates = candidateQuery.data?.items ?? [];
-  const addMember = useIdempotentMutation((request: AddCompanyMemberRequest, key) => addCompanyMember(companyId, request, key));
 
   // Lo que el back rechaza de la persona o de los roles va debajo de ese campo (`errors.ts`); lo demás, en la franja.
   function rejected(error: unknown) {
@@ -69,18 +73,20 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
     else fail(error);
   }
 
+  // Si la respuesta se pierde, elegir otra persona u otros roles es otra operación con otra clave y repetir lo mismo
+  // conserva la suya (R05). El aviso y el cierre salen del intento original, también desde «Reintentar».
+  const action = useResourceAction<AddMemberOperation>({ onError: rejected });
+  const addMember = useIdempotentMutation(action.guarded(({ memberId, roleIds }, key: string) => addCompanyMember(companyId, { memberId, roleIds }, key), (_response, operation) => {
+    toast.success(t("companies:messages.memberAdded", { name: operation.name }));
+    onClose();
+    void Promise.all([queryClient.invalidateQueries({ queryKey: companiesQueryRoot }), queryClient.invalidateQueries({ queryKey: companyCandidateOptions(companyId).queryKeyRoot })]);
+  }), { meta: action.meta, sameOperation: (previous, next) => previous.memberId === next.memberId && sameList(previous.roleIds, next.roleIds) });
+
   // «Criterio · Botones»: «Agregar miembro» no se apaga; sin usuario, el campo dice qué falta (tablero Empresa) hasta que
-  // elige uno. Lo que sigue al alta va en sus callbacks: «Reintentar» (sin conexión) los vuelve a correr.
+  // elige uno.
   const submit = form.handleSubmit((values) => {
     const name = candidateQuery.knownItems.find((candidate) => candidate.memberId === values.memberId)?.displayName ?? "";
-    addMember.mutate({ memberId: values.memberId, roleIds: values.roleIds }, {
-      onSuccess: async () => {
-        toast.success(t("companies:messages.memberAdded", { name }));
-        onClose();
-        await Promise.all([queryClient.invalidateQueries({ queryKey: companiesQueryRoot }), queryClient.invalidateQueries({ queryKey: companyCandidateOptions(companyId).queryKeyRoot })]);
-      },
-      onError: rejected,
-    });
+    addMember.mutate({ memberId: values.memberId, roleIds: values.roleIds, name });
   });
 
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}>

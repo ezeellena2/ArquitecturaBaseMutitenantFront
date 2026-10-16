@@ -606,6 +606,47 @@ describe("CompanyDetailPage", () => {
     expect(member).not.toHaveAttribute("aria-invalid");
   });
 
+  // R05 (datos-y-api): si la respuesta se pierde, repetir lo mismo conserva la clave y corregir un dato es otra operación
+  // con otra clave; el aviso es el del intento que salió bien.
+  it("agregar miembro: respuesta perdida, reintento idéntico con la misma clave y corrección con otra", async () => {
+    const sent: Array<{ key: string | null; memberId: unknown }> = [];
+    server.use(
+      http.get("/api/companies/company-1", () => HttpResponse.json(company)),
+      http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 0, active: 0, pendingDeletion: 0, inactive: 0, invited: 0 })),
+      http.get("/api/companies/company-1/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/candidates/paged", () => HttpResponse.json({ items: [
+        { memberId: "member-2", displayName: "Tomás Acosta", maskedEmailAddress: "to•••@example.com" },
+        { memberId: "member-3", displayName: "Sofía Herrera", maskedEmailAddress: "so•••@example.com" },
+      ], page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.post("/api/companies/company-1/members", async ({ request }) => {
+        const body = await request.json() as { memberId?: unknown };
+        sent.push({ key: request.headers.get("Idempotency-Key"), memberId: body.memberId });
+        return sent.length < 3 ? HttpResponse.error() : new HttpResponse(null, { status: 204 });
+      }),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Agregar miembro" }));
+    const dialog = await screen.findByRole("dialog", { name: "Agregar miembro" });
+    const choose = async (name: RegExp) => { await user.click(within(dialog).getByRole("combobox", { name: "Usuario" })); await user.click(await screen.findByRole("option", { name })); };
+    const add = () => user.click(within(dialog).getByRole("button", { name: "Agregar miembro" }));
+    await choose(/Tomás Acosta/);
+    await add();
+    await waitFor(() => expect(sent).toHaveLength(1));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Agregar miembro" })).toBeEnabled());
+    await add();
+    await waitFor(() => expect(sent).toHaveLength(2));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Agregar miembro" })).toBeEnabled());
+    await choose(/Sofía Herrera/);
+    await add();
+
+    expect(await screen.findByText("Agregamos a Sofía Herrera a la empresa.")).toBeVisible();
+    expect(sent.map((call) => call.memberId)).toEqual(["member-2", "member-2", "member-3"]);
+    expect(sent[1].key).toBe(sent[0].key);
+    expect(sent[2].key).not.toBe(sent[0].key);
+  }, 10_000);
+
   it("agrega una persona existente con encabezado idempotente", async () => {
     let requestBody: unknown;
     let idempotencyKey: string | null = null;
