@@ -1,0 +1,1495 @@
+{
+  "version": 1,
+  "stage": "9",
+  "issuer": "http://localtest.me:5192",
+  "evidence": "API y sesión ficticias para comparación visual; no acredita E2E ni el back.",
+  "cases": [
+    {
+      "id": "ingreso-operador-segundo-factor",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "state": "Operador: segundo factor",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: segundo factor"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: segundo factor",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyText": "Escribí el código de 6 números de tu app de autenticación.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "verify",
+              "expiresAtUtc": "2026-09-27T21:10:00Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ingreso-operador-codigo-del-autenticador-incorrecto",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "state": "Operador: código del autenticador incorrecto",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: código del autenticador incorrecto"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: código del autenticador incorrecto",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "otp",
+            "value": "120934"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar",
+            "exact": true
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Revisá que la hora de tu celular esté bien.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "verify",
+              "expiresAtUtc": "2026-09-27T21:10:00Z"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/platform-factor/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.TwoFactor.Invalid"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ingreso-operador-demasiados-codigos-incorrectos",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "state": "Operador: demasiados códigos incorrectos",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: demasiados códigos incorrectos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: demasiados códigos incorrectos",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "otp",
+            "value": "774201"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar",
+            "exact": true
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Probá de nuevo en 15 minutos.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "verify",
+              "expiresAtUtc": "2026-09-27T21:10:00Z"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/platform-factor/verify",
+            "status": 429,
+            "body": {
+              "code": "Identity.Account.LockedOut",
+              "retryAfter": 900
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ingreso-operador-codigo-de-recuperacion",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "state": "Operador: código de recuperación",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: código de recuperación"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: código de recuperación",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Usar un código de recuperación",
+            "exact": true
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Escribí uno de los códigos de recuperación que guardaste.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "verify",
+              "expiresAtUtc": "2026-09-27T21:10:00Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ingreso-operador-codigo-de-recuperacion-incorrecto",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "state": "Operador: código de recuperación incorrecto",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: código de recuperación incorrecto"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: código de recuperación incorrecto",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Usar un código de recuperación",
+            "exact": true
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Código de recuperación",
+            "value": "P4TZ-8WNE",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar",
+            "exact": true
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Ese código no es válido o ya lo usaste.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "verify",
+              "expiresAtUtc": "2026-09-27T21:10:00Z"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/platform-factor/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.TwoFactor.RecoveryInvalid"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ingreso-operador-configurar-el-autenticador",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "state": "Operador: configurar el autenticador",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: configurar el autenticador"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: configurar el autenticador",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyText": "JBSW Y3DP EHPK 3PXP",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "setup",
+              "expiresAtUtc": "2026-09-27T21:10:00Z",
+              "secret": "JBSWY3DPEHPK3PXP",
+              "otpauthUri": "otpauth://totp/ArquitecturaBase:martin.sosa%40arquitecturabase.ejemplo.com?secret=JBSWY3DPEHPK3PXP&issuer=ArquitecturaBase"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ingreso-operador-configurar-codigo-incorrecto",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "state": "Operador: configurar · código incorrecto",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: configurar · código incorrecto"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: configurar · código incorrecto",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "otp",
+            "value": "551203"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Activar",
+            "exact": true
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Revisá que la hora de tu celular esté bien.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "setup",
+              "expiresAtUtc": "2026-09-27T21:10:00Z",
+              "secret": "JBSWY3DPEHPK3PXP",
+              "otpauthUri": "otpauth://totp/ArquitecturaBase:martin.sosa%40arquitecturabase.ejemplo.com?secret=JBSWY3DPEHPK3PXP&issuer=ArquitecturaBase"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/platform-factor/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.TwoFactor.Invalid"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ingreso-operador-guardar-los-codigos",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "state": "Operador: guardar los códigos",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: guardar los códigos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: guardar los códigos",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyText": "N9AF-K4PB",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "recoveryCodes",
+              "expiresAtUtc": "2026-09-27T21:10:00Z",
+              "recoveryCodes": [
+                "7KQ2-M9XD",
+                "P4TZ-8WNE",
+                "H2RC-QA6V",
+                "ZL9B-3YFK",
+                "E5MU-T7JP",
+                "W8GD-2NHS",
+                "C3XV-R6LQ",
+                "N9AF-K4PB"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-ingreso-operador-segundo-factor",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "state": "Operador: segundo factor",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: segundo factor"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: segundo factor",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyText": "Escribí el código de 6 números de tu app de autenticación.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "verify",
+              "expiresAtUtc": "2026-09-27T21:10:00Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-ingreso-operador-codigo-del-autenticador-incorrecto",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "state": "Operador: código del autenticador incorrecto",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: código del autenticador incorrecto"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: código del autenticador incorrecto",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "otp",
+            "value": "120934"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar",
+            "exact": true
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Revisá que la hora de tu celular esté bien.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "verify",
+              "expiresAtUtc": "2026-09-27T21:10:00Z"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/platform-factor/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.TwoFactor.Invalid"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-ingreso-operador-demasiados-codigos-incorrectos",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "state": "Operador: demasiados códigos incorrectos",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: demasiados códigos incorrectos"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: demasiados códigos incorrectos",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "otp",
+            "value": "774201"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar",
+            "exact": true
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Probá de nuevo en 15 minutos.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "verify",
+              "expiresAtUtc": "2026-09-27T21:10:00Z"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/platform-factor/verify",
+            "status": 429,
+            "body": {
+              "code": "Identity.Account.LockedOut",
+              "retryAfter": 900
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-ingreso-operador-codigo-de-recuperacion",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "state": "Operador: código de recuperación",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: código de recuperación"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: código de recuperación",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Usar un código de recuperación",
+            "exact": true
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Escribí uno de los códigos de recuperación que guardaste.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "verify",
+              "expiresAtUtc": "2026-09-27T21:10:00Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-ingreso-operador-codigo-de-recuperacion-incorrecto",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "state": "Operador: código de recuperación incorrecto",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: código de recuperación incorrecto"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: código de recuperación incorrecto",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Usar un código de recuperación",
+            "exact": true
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Código de recuperación",
+            "value": "P4TZ-8WNE",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar",
+            "exact": true
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Ese código no es válido o ya lo usaste.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "verify",
+              "expiresAtUtc": "2026-09-27T21:10:00Z"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/platform-factor/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.TwoFactor.RecoveryInvalid"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-ingreso-operador-configurar-el-autenticador",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "state": "Operador: configurar el autenticador",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: configurar el autenticador"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: configurar el autenticador",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyText": "JBSW Y3DP EHPK 3PXP",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "setup",
+              "expiresAtUtc": "2026-09-27T21:10:00Z",
+              "secret": "JBSWY3DPEHPK3PXP",
+              "otpauthUri": "otpauth://totp/ArquitecturaBase:martin.sosa%40arquitecturabase.ejemplo.com?secret=JBSWY3DPEHPK3PXP&issuer=ArquitecturaBase"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-ingreso-operador-configurar-codigo-incorrecto",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "state": "Operador: configurar · código incorrecto",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: configurar · código incorrecto"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: configurar · código incorrecto",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "otp",
+            "value": "551203"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Activar",
+            "exact": true
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Revisá que la hora de tu celular esté bien.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "setup",
+              "expiresAtUtc": "2026-09-27T21:10:00Z",
+              "secret": "JBSWY3DPEHPK3PXP",
+              "otpauthUri": "otpauth://totp/ArquitecturaBase:martin.sosa%40arquitecturabase.ejemplo.com?secret=JBSWY3DPEHPK3PXP&issuer=ArquitecturaBase"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/platform-factor/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.TwoFactor.Invalid"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-ingreso-operador-guardar-los-codigos",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "state": "Operador: guardar los códigos",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: guardar los códigos"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: guardar los códigos",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dplatform%26factor%3Dpending",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyText": "N9AF-K4PB",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/platform-factor",
+            "status": 200,
+            "body": {
+              "state": "recoveryCodes",
+              "expiresAtUtc": "2026-09-27T21:10:00Z",
+              "recoveryCodes": [
+                "7KQ2-M9XD",
+                "P4TZ-8WNE",
+                "H2RC-QA6V",
+                "ZL9B-3YFK",
+                "E5MU-T7JP",
+                "W8GD-2NHS",
+                "C3XV-R6LQ",
+                "N9AF-K4PB"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuenta-plat-operador-acciones",
+      "group": "cuenta-plat",
+      "board": "Cuenta-Plat",
+      "state": "Operador: acciones",
+      "stateKey": "cuenta",
+      "props": {
+        "estado": "Activa",
+        "cuenta": "Operador: acciones"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: acciones",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "press",
+            "role": "button",
+            "name": "Acciones de Laura Díaz",
+            "exact": true,
+            "key": "ArrowDown"
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Restablecer el autenticador",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "martin-sosa",
+              "displayName": "Martín Sosa",
+              "firstName": "Ana",
+              "lastName": null,
+              "email": "martin.sosa@arquitecturabase.ejemplo.com",
+              "access": "platform",
+              "activeTenantId": null,
+              "hasPersonalSpace": false,
+              "organizations": [],
+              "effectivePermissions": {
+                "platform": [
+                  "platform.tenants.read",
+                  "platform.tenants.manage",
+                  "platform.accounts.read",
+                  "platform.accounts.manage",
+                  "platform.recoveries.manage",
+                  "platform.legal.manage",
+                  "platform.operators.manage",
+                  "platform.audit.read",
+                  "platform.settings.manage"
+                ],
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": null,
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuenta-plat-operador-restablecer-el-autenticador",
+      "group": "cuenta-plat",
+      "board": "Cuenta-Plat",
+      "state": "Operador: restablecer el autenticador",
+      "stateKey": "cuenta",
+      "props": {
+        "estado": "Activa",
+        "cuenta": "Operador: restablecer el autenticador"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: restablecer el autenticador",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "press",
+            "role": "button",
+            "name": "Acciones de Laura Díaz",
+            "exact": true,
+            "key": "ArrowDown"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Restablecer el autenticador",
+            "exact": true
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Cambió de celular y perdió los códigos.",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "¿Restablecer el autenticador de Laura Díaz?"
+            }
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Se cierran sus sesiones y sus códigos de recuperación dejan de servir.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "martin-sosa",
+              "displayName": "Martín Sosa",
+              "firstName": "Ana",
+              "lastName": null,
+              "email": "martin.sosa@arquitecturabase.ejemplo.com",
+              "access": "platform",
+              "activeTenantId": null,
+              "hasPersonalSpace": false,
+              "organizations": [],
+              "effectivePermissions": {
+                "platform": [
+                  "platform.tenants.read",
+                  "platform.tenants.manage",
+                  "platform.accounts.read",
+                  "platform.accounts.manage",
+                  "platform.recoveries.manage",
+                  "platform.legal.manage",
+                  "platform.operators.manage",
+                  "platform.audit.read",
+                  "platform.settings.manage"
+                ],
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": null,
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-cuenta-plat-operador-acciones",
+      "group": "cuenta-plat",
+      "board": "M-Cuenta-Plat",
+      "state": "Operador: acciones",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: acciones"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: acciones",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "press",
+            "role": "button",
+            "name": "Acciones de Laura Díaz",
+            "exact": true,
+            "key": "ArrowDown"
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Restablecer el autenticador",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "martin-sosa",
+              "displayName": "Martín Sosa",
+              "firstName": "Ana",
+              "lastName": null,
+              "email": "martin.sosa@arquitecturabase.ejemplo.com",
+              "access": "platform",
+              "activeTenantId": null,
+              "hasPersonalSpace": false,
+              "organizations": [],
+              "effectivePermissions": {
+                "platform": [
+                  "platform.tenants.read",
+                  "platform.tenants.manage",
+                  "platform.accounts.read",
+                  "platform.accounts.manage",
+                  "platform.recoveries.manage",
+                  "platform.legal.manage",
+                  "platform.operators.manage",
+                  "platform.audit.read",
+                  "platform.settings.manage"
+                ],
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": null,
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-cuenta-plat-operador-restablecer-el-autenticador",
+      "group": "cuenta-plat",
+      "board": "M-Cuenta-Plat",
+      "state": "Operador: restablecer el autenticador",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Operador: restablecer el autenticador"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: restablecer el autenticador",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T21:00:00Z",
+        "actions": [
+          {
+            "type": "press",
+            "role": "button",
+            "name": "Acciones de Laura Díaz",
+            "exact": true,
+            "key": "ArrowDown"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Restablecer el autenticador",
+            "exact": true
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Cambió de celular y perdió los códigos.",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "¿Restablecer el autenticador de Laura Díaz?"
+            }
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Se cierran sus sesiones y sus códigos de recuperación dejan de servir.",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "martin-sosa",
+              "displayName": "Martín Sosa",
+              "firstName": "Ana",
+              "lastName": null,
+              "email": "martin.sosa@arquitecturabase.ejemplo.com",
+              "access": "platform",
+              "activeTenantId": null,
+              "hasPersonalSpace": false,
+              "organizations": [],
+              "effectivePermissions": {
+                "platform": [
+                  "platform.tenants.read",
+                  "platform.tenants.manage",
+                  "platform.accounts.read",
+                  "platform.accounts.manage",
+                  "platform.recoveries.manage",
+                  "platform.legal.manage",
+                  "platform.operators.manage",
+                  "platform.audit.read",
+                  "platform.settings.manage"
+                ],
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": null,
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "pending": [
+    {
+      "id": "cuenta-plat-operador-confirmar-que-sos-vos",
+      "group": "cuenta-plat",
+      "board": "Cuenta-Plat",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: confirmar que sos vos",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "m-cuenta-plat-operador-confirmar-que-sos-vos",
+      "group": "cuenta-plat",
+      "board": "M-Cuenta-Plat",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: confirmar que sos vos",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "cuenta-plat-operador-confirmar-que-sos-vos-codigo-incorrecto",
+      "group": "cuenta-plat",
+      "board": "Cuenta-Plat",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: confirmar que sos vos · código incorrecto",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "m-cuenta-plat-operador-confirmar-que-sos-vos-codigo-incorrecto",
+      "group": "cuenta-plat",
+      "board": "M-Cuenta-Plat",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: confirmar que sos vos · código incorrecto",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "cuenta-plat-operador-confirmar-con-un-codigo-de-recuperacion",
+      "group": "cuenta-plat",
+      "board": "Cuenta-Plat",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: confirmar con un código de recuperación",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "m-cuenta-plat-operador-confirmar-con-un-codigo-de-recuperacion",
+      "group": "cuenta-plat",
+      "board": "M-Cuenta-Plat",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: confirmar con un código de recuperación",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "cuenta-plat-operador-confirmar-codigo-de-recuperacion-incorrecto",
+      "group": "cuenta-plat",
+      "board": "Cuenta-Plat",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: confirmar · código de recuperación incorrecto",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "m-cuenta-plat-operador-confirmar-codigo-de-recuperacion-incorrecto",
+      "group": "cuenta-plat",
+      "board": "M-Cuenta-Plat",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: confirmar · código de recuperación incorrecto",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "cuenta-plat-operador-confirmar-demasiados-intentos",
+      "group": "cuenta-plat",
+      "board": "Cuenta-Plat",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: confirmar · demasiados intentos",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "m-cuenta-plat-operador-confirmar-demasiados-intentos",
+      "group": "cuenta-plat",
+      "board": "M-Cuenta-Plat",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: confirmar · demasiados intentos",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "cuenta-plat-operador-cancelar-la-confirmacion",
+      "group": "cuenta-plat",
+      "board": "Cuenta-Plat",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Operador: cancelar la confirmación",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "m-cuenta-plat-operador-cancelar-la-confirmacion",
+      "group": "cuenta-plat",
+      "board": "M-Cuenta-Plat",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Operador: cancelar la confirmación",
+      "reason": "F2 (reautenticación) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "config-plat-cuotas",
+      "group": "config-plat",
+      "board": "Config-Plat",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Cuotas",
+      "reason": "F4 (editor de cuotas y aviso del límite) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "m-config-plat-cuotas",
+      "group": "config-plat",
+      "board": "M-Config-Plat",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Cuotas",
+      "reason": "F4 (editor de cuotas y aviso del límite) todavía no está programada. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "roles-menu-de-un-rol-con-usuarios",
+      "group": "roles",
+      "board": "Roles",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Menú de un rol con usuarios",
+      "reason": "R10 ya está programado. Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "auditoria-plat-eventos-del-segundo-factor",
+      "group": "auditoria",
+      "board": "Auditoria-Plat",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Eventos del segundo factor",
+      "reason": "Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    },
+    {
+      "id": "m-auditoria-plat-eventos-del-segundo-factor",
+      "group": "auditoria",
+      "board": "M-Auditoria-Plat",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Eventos del segundo factor",
+      "reason": "Su tablero sale con la v125 del lienzo, pendiente de aprobación del usuario."
+    }
+  ]
+}
