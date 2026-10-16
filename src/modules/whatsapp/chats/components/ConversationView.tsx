@@ -6,6 +6,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
 import { pageSizes, type PageSize } from "@/shared/api/pageSizes";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { useFormat } from "@/shared/format/useFormat";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
@@ -20,7 +21,7 @@ import { ImportantNotice } from "@/shared/ui/ImportantNotice";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Page } from "@/shared/ui/Page";
 import { toastError } from "@/shared/ui/sonner";
-import type { AddWhatsAppNoteRequest, SendWhatsAppMessageRequest, WhatsAppChatMessageResponse } from "../../api/types";
+import type { WhatsAppChatMessageResponse } from "../../api/types";
 import { conversationRefetchInterval, platformUntakenQueryKey, untakenQueryKey } from "../../api/untaken";
 import { addNote, chatsScopeQueryRoot, conversationQueryKey, fetchConversation, sendMessage, takeConversation, transferConversation, type ChatsScope } from "../api/chats";
 import { chronological, composerState, isUntaken, lastInbound, phoneLabel, rowDescriptors } from "../lib/conversation";
@@ -38,6 +39,11 @@ export interface ConversationLinks {
   contact?: (contactId: string) => string;
   account?: (accountId: string) => string;
 }
+
+/** Lo que se manda desde la barra de abajo y cómo vaciarla cuando salió. */
+interface ComposerOperation { text: string; done: () => void }
+/** Repetir el mismo texto conserva la clave; cambiarlo es otro mensaje (R05). */
+const sameText = (previous: ComposerOperation, next: ComposerOperation) => previous.text === next.text;
 
 /// La conversación abierta (WA-Chats, .w-hilo; M-WA-Conversacion en el teléfono): el encabezado con quién es y sus
 /// acciones (Tomar, Pasar, Ver ficha o Ver la cuenta), el hilo y la barra para escribir. Se relee cada 5 s (decisión
@@ -99,8 +105,14 @@ export function ConversationView({ scope, id, links, back, phone }: {
   }
 
   const take = useMutation({ mutationFn: () => takeConversation(scope, id), onSuccess: refresh, onError: (error) => rejected(error, "take") });
-  const send = useIdempotentMutation((request: SendWhatsAppMessageRequest, key) => sendMessage(scope, id, request, key));
-  const note = useIdempotentMutation((request: AddWhatsAppNoteRequest, key) => addNote(scope, id, request, key));
+  // Si la respuesta se pierde, corregir el texto es otro mensaje con otra clave y repetirlo conserva la suya (R05). Vaciar
+  // la barra y releer salen del intento original, también desde «Reintentar».
+  const sendAction = useResourceAction<ComposerOperation>({ onError: (error) => rejected(error, "send") });
+  const send = useIdempotentMutation(sendAction.guarded(({ text }, key: string) => sendMessage(scope, id, { text }, key), (_message, operation) => { operation.done(); void refresh(); }),
+    { meta: sendAction.meta, sameOperation: sameText });
+  const noteAction = useResourceAction<ComposerOperation>({ onError: (error) => toastActionError(error, t) });
+  const note = useIdempotentMutation(noteAction.guarded(({ text }, key: string) => addNote(scope, id, { text }, key), (_response, operation) => { operation.done(); void refresh(); }),
+    { meta: noteAction.meta, sameOperation: sameText });
   const transfer = useMutation({
     mutationFn: ({ target, version }: { target: TransferTarget; version: number }) => transferConversation(scope, id, { ...target, version }),
     onSuccess: refresh,
@@ -134,9 +146,10 @@ export function ConversationView({ scope, id, links, back, phone }: {
   const larger = pageSizes.find((size) => size > pageSize);
   const earlier = data.messages.hasNext === true && larger !== undefined;
 
-  const onSend = (text: string, done: () => void) => send.mutate({ text }, { onSuccess: () => { done(); void refresh(); }, onError: (error) => rejected(error, "send") });
-  const onNote = (text: string, done: () => void) => note.mutate({ text }, { onSuccess: () => { done(); void refresh(); }, onError: (error) => toastActionError(error, t) });
-  const onTransfer = (target: TransferTarget) => transfer.mutate({ target, version: row.version });
+  const onSend = (text: string, done: () => void) => send.mutate({ text, done });
+  const onNote = (text: string, done: () => void) => note.mutate({ text, done });
+  // La versión es la de cuando se abrió «Pasar» (R01): si una relectura la cambió, el back responde 409.
+  const onTransfer = (target: TransferTarget, version: number) => transfer.mutate({ target, version });
 
   const thread = <MessageThread messages={messages} perspective={{ kind: "team" }} phone={phone} label={t("chats.thread.label", { name })}
     hasEarlier={earlier} loadingEarlier={query.isFetching && query.isPlaceholderData} onLoadEarlier={() => { if (larger) setPageSize(larger); }} />;

@@ -8,6 +8,8 @@ import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useResourceAction } from "@/shared/hooks/useResourceAction";
+import { sameList } from "@/shared/lib/sameList";
 import { useFormat } from "@/shared/format/useFormat";
 import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
@@ -57,8 +59,6 @@ export function TemplateDialog({ scope, row, name, onClose, onSent, onConflict }
   const options = useResourceOptions(templateOptions(scope, row.id));
   const selected = options.knownItems.find((option) => option.templateId === template.field.value);
   const { failure, clear, fail, close } = useDialogFailure(onClose, chatsScopeQueryRoot(scope));
-  const send = useIdempotentMutation((request: SendWhatsAppTemplateRequest, key) => sendTemplate(scope, row.id, request, key));
-
   function rejected(error: unknown) {
     if (error instanceof ApiError && takenOrClosed.includes(error.code ?? "")) { onConflict(error); onClose(); return; }
     if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return;
@@ -66,11 +66,14 @@ export function TemplateDialog({ scope, row, name, onClose, onSent, onConflict }
     else fail(error);
   }
 
+  // Si la respuesta se pierde, elegir otra plantilla o cambiar una variable es otro envío con otra clave y repetir lo mismo
+  // conserva la suya (R05). El aviso al chat y el cierre salen del intento original, también desde «Reintentar».
+  const action = useResourceAction<SendWhatsAppTemplateRequest>({ onError: rejected });
+  const send = useIdempotentMutation(action.guarded((request, key: string) => sendTemplate(scope, row.id, request, key), (message) => { onSent(message); onClose(); }),
+    { meta: action.meta, sameOperation: (previous, next) => previous.templateId === next.templateId && sameList(previous.variables, next.variables) });
+
   const submit = form.handleSubmit((value) => {
-    send.mutate({ templateId: value.templateId, variables: value.variables.map((variable) => variable.trim()) }, {
-      onSuccess: (message) => { onSent(message); onClose(); },
-      onError: rejected,
-    });
+    send.mutate({ templateId: value.templateId, variables: value.variables.map((variable) => variable.trim()) });
   });
 
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}>

@@ -14,6 +14,9 @@ import { transferPeopleOptions, transferTeamOptions, type ChatsScope } from "../
 /** A quién se pasa: un equipo o una persona del equipo del chat. */
 export type TransferTarget = { teamId: string } | { memberId: string };
 
+/** Elegido el destino: con la versión del chat de cuando se abrió el menú o la hoja, nunca la de una relectura (R01). */
+export type OnTransfer = (target: TransferTarget, version: number) => void;
+
 function useTransferOptions(scope: ChatsScope, row: WhatsAppConversationRowResponse, open: boolean) {
   const { t } = useTranslation("whatsapp");
   const teams = useResourceOptions(transferTeamOptions(scope, row.id), open);
@@ -26,23 +29,25 @@ function useTransferOptions(scope: ChatsScope, row: WhatsAppConversationRowRespo
 }
 
 /// «Pasar» en la compu (WA-Chats-Pasar, .o-menu): el menú «Pasar a» con los equipos y su cantidad de personas y, debajo,
-/// las personas del equipo con los chats que ya tienen tomados (CC01).
+/// las personas del equipo con los chats que ya tienen tomados (CC01). La versión del chat se toma al abrir el menú: el
+/// sondeo puede releer la fila mientras está abierto.
 export function TransferDropdown({ scope, row, pending, onTransfer }: {
   scope: ChatsScope;
   row: WhatsAppConversationRowResponse;
   pending: boolean;
-  onTransfer: (target: TransferTarget) => void;
+  onTransfer: OnTransfer;
 }) {
   const { t } = useTranslation("whatsapp");
   const format = useFormat();
   const [open, setOpen] = useState(false);
+  const [version, setVersion] = useState(row.version);
   const { teams, people, peopleTitle, empty } = useTransferOptions(scope, row, open);
-  return <DropdownMenu open={open} onOpenChange={setOpen}>
+  return <DropdownMenu open={open} onOpenChange={(next) => { if (next) setVersion(row.version); setOpen(next); }}>
     <DropdownMenuTrigger asChild><Button type="button" variant="outline" size="sm" pending={pending}>{t("chats.header.transfer")}</Button></DropdownMenuTrigger>
     <DropdownMenuContent align="end" aria-label={t("chats.transfer.title")} className="w-[260px]">
       {teams.items.length > 0 ? <DropdownMenuGroup>
         <DropdownMenuLabel className="pt-2 pb-1 text-[12px] font-semibold text-[var(--t3)] lg:text-[12px]">{t("chats.transfer.teams")}</DropdownMenuLabel>
-        {teams.items.map((team) => <DropdownMenuItem key={team.id} onSelect={() => onTransfer({ teamId: team.id })} className="flex-col items-start gap-0 py-[7px] text-[13.5px] leading-[1.35]">
+        {teams.items.map((team) => <DropdownMenuItem key={team.id} onSelect={() => onTransfer({ teamId: team.id }, version)} className="flex-col items-start gap-0 py-[7px] text-[13.5px] leading-[1.35]">
           {team.name}<span className="text-[12px] text-[var(--t3)]">{t("chats.transfer.memberCount", countOf(format, team.memberCount))}</span>
         </DropdownMenuItem>)}
         <RemoteOptionFooter remote={teams.remote} />
@@ -50,7 +55,7 @@ export function TransferDropdown({ scope, row, pending, onTransfer }: {
       {teams.items.length > 0 && people.items.length > 0 ? <DropdownMenuSeparator className="my-1 h-px border-0 bg-[var(--borde)]" /> : null}
       {people.items.length > 0 ? <DropdownMenuGroup>
         <DropdownMenuLabel className="pt-2 pb-1 text-[12px] font-semibold text-[var(--t3)] lg:text-[12px]">{peopleTitle}</DropdownMenuLabel>
-        {people.items.map((person) => <DropdownMenuItem key={person.id} onSelect={() => onTransfer({ memberId: person.id })} className="flex-col items-start gap-0 py-[7px] text-[13.5px] leading-[1.35]">
+        {people.items.map((person) => <DropdownMenuItem key={person.id} onSelect={() => onTransfer({ memberId: person.id }, version)} className="flex-col items-start gap-0 py-[7px] text-[13.5px] leading-[1.35]">
           {person.name}<span className="text-[12px] text-[var(--t3)]">{t("chats.transfer.takenCount", countOf(format, person.takenCount))}</span>
         </DropdownMenuItem>)}
         <RemoteOptionFooter remote={people.remote} />
@@ -62,19 +67,20 @@ export function TransferDropdown({ scope, row, pending, onTransfer }: {
 }
 
 /// «Pasar» en el teléfono (M-WA-Chats-Pasar, .ap-hoja): la hoja «Pasar a» con las mismas dos listas. La abre el ⋮ de la
-/// barra, que se va con su menú: el foco vuelve a ese botón.
+/// barra, que se va con su menú: el foco vuelve a ese botón. Se monta al abrirse: la versión del chat es la de ese momento.
 export function TransferSheet({ scope, row, onTransfer, onClose, returnFocusTo }: {
   scope: ChatsScope;
   row: WhatsAppConversationRowResponse;
-  onTransfer: (target: TransferTarget) => void;
+  onTransfer: OnTransfer;
   onClose: () => void;
   returnFocusTo?: HTMLElement | null;
 }) {
   const { t } = useTranslation("whatsapp");
   const format = useFormat();
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
+  const [version] = useState(row.version);
   const { teams, people, peopleTitle, empty } = useTransferOptions(scope, row, true);
-  const choose = (target: TransferTarget) => { onTransfer(target); onClose(); };
+  const choose = (target: TransferTarget) => { onTransfer(target, version); onClose(); };
   const item = "flex min-h-[54px] w-full flex-col items-start justify-center border-t border-[var(--borde)] px-5 py-2 text-left text-[15.5px] first-of-type:border-t-0 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]";
   const title = "px-5 pt-2.5 pb-1 text-[13px] font-semibold text-[var(--t3)]";
   return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>

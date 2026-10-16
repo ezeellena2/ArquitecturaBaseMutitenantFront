@@ -258,6 +258,107 @@ describe("Chats de la organización", () => {
     await waitFor(() => expect(body).toEqual({ teamId: "team-soporte", version: 3 }));
   });
 
+  // R05 (datos-y-api): si la respuesta se pierde, repetir el mismo texto conserva la clave y corregirlo es otro mensaje.
+  it("mandar: respuesta perdida, reintento idéntico con la misma clave y corrección con otra", async () => {
+    inbox(row());
+    const sent: { key: string | null; text: unknown }[] = [];
+    server.use(http.post(`${org}/customers/conversations/c-martina/messages`, async ({ request }) => {
+      const body = await request.json() as { text?: unknown };
+      sent.push({ key: request.headers.get("Idempotency-Key"), text: body.text });
+      return sent.length < 3 ? HttpResponse.error() : HttpResponse.json(message({ id: "m-s", direction: "Outbound", text: String(body.text), status: "Pending" }), { status: 201 });
+    }));
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    const box = await screen.findByRole("textbox", { name: "Mensaje" });
+    await user.type(box, "Hola");
+    await user.click(screen.getByRole("button", { name: "Enviar" }));
+    await waitFor(() => expect(sent).toHaveLength(1));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Enviar" }));
+    await waitFor(() => expect(sent).toHaveLength(2));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled());
+    await user.type(box, ", Martina");
+    await user.click(screen.getByRole("button", { name: "Enviar" }));
+    await waitFor(() => expect(box).toHaveValue(""));
+    expect(sent.map((call) => call.text)).toEqual(["Hola", "Hola", "Hola, Martina"]);
+    expect(sent[1].key).toBe(sent[0].key);
+    expect(sent[2].key).not.toBe(sent[0].key);
+  });
+
+  // R05: lo mismo con una plantilla: otra variable es otro envío con otra clave.
+  it("plantilla: respuesta perdida, reintento idéntico con la misma clave y corrección con otra", async () => {
+    inbox(row({ windowOpenUntilUtc: closed }));
+    const option: WhatsAppTemplateOptionResponse = { templateId: "t-pedido", name: "Pedido listo", category: "Utility",
+      body: "Hola {{1}}.", variables: ["Nombre"], estimatedCost: null };
+    const sent: { key: string | null; variables: unknown }[] = [];
+    server.use(
+      http.get(`${org}/customers/conversations/c-martina/template-options`, () => HttpResponse.json(paged([option]))),
+      http.post(`${org}/customers/conversations/c-martina/templates`, async ({ request }) => {
+        const body = await request.json() as { variables?: unknown };
+        sent.push({ key: request.headers.get("Idempotency-Key"), variables: body.variables });
+        return sent.length < 3 ? HttpResponse.error() : HttpResponse.json(message({ id: "m-t", kind: "Template", direction: "Outbound", text: "Hola", status: "Pending" }), { status: 201 });
+      }),
+    );
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    await user.click(await screen.findByRole("button", { name: "Elegir plantilla" }));
+    const dialog = await screen.findByRole("dialog", { name: "Mandar plantilla a Martina López" });
+    await user.click(within(dialog).getByRole("combobox", { name: "Plantilla" }));
+    await user.click(await screen.findByRole("option", { name: /Pedido listo/ }));
+    const name = within(dialog).getByRole("textbox", { name: "Nombre" });
+    await user.type(name, "Martina");
+    const send = () => user.click(within(dialog).getByRole("button", { name: "Mandar" }));
+    await send();
+    await waitFor(() => expect(sent).toHaveLength(1));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Mandar" })).toBeEnabled());
+    await send();
+    await waitFor(() => expect(sent).toHaveLength(2));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Mandar" })).toBeEnabled());
+    await user.type(name, " López");
+    await send();
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Mandar plantilla a Martina López" })).not.toBeInTheDocument());
+    expect(sent.map((call) => call.variables)).toEqual([["Martina"], ["Martina"], ["Martina López"]]);
+    expect(sent[1].key).toBe(sent[0].key);
+    expect(sent[2].key).not.toBe(sent[0].key);
+  });
+
+  // R01 (formularios, concurrencia): «Pasar» manda la versión de cuando se abrió, aunque el sondeo relea la fila con el menú
+  // o la hoja abiertos; si otra persona la cambió, el back responde 409 y no se pisa ese cambio.
+  it.each([["la compu", false], ["el teléfono", true]] as const)("en %s, pasar manda la versión de apertura aunque llegue una relectura", async (_, phone) => {
+    if (phone) asPhone();
+    let current = row();
+    const bodies: unknown[] = [];
+    server.use(
+      http.get(`${org}/untaken`, () => HttpResponse.json({ customers: 2, internal: 0 })),
+      http.get(`${org}/:inbox/inbox-teams`, () => HttpResponse.json(paged([{ id: "team-ventas", name: "Ventas" }]))),
+      http.get(`${org}/:inbox/conversations`, () => HttpResponse.json(list([current]))),
+      http.get(`${org}/:inbox/conversations/:id`, () => HttpResponse.json(detail(current))),
+      http.get(`${org}/customers/conversations/c-martina/transfer-options/teams`, () => HttpResponse.json(paged([{ id: "team-soporte", name: "Soporte", memberCount: 2 }]))),
+      http.get(`${org}/customers/conversations/c-martina/transfer-options/people`, () => HttpResponse.json(paged([]))),
+      http.post(`${org}/customers/conversations/c-martina/transfer`, async ({ request }) => {
+        bodies.push(await request.json());
+        return HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Otra persona cambió este chat." }, { status: 409 });
+      }),
+    );
+    const { user, client } = mountWhatsApp(whatsappOwner, phone ? "/org/whatsapp/chats/c-martina" : "/org/whatsapp/chats");
+    if (phone) {
+      (await screen.findByRole("button", { name: "Acciones de Martina López" })).focus();
+      await user.keyboard("{Enter}");
+      await user.click(await screen.findByRole("menuitem", { name: "Pasar" }));
+      await screen.findByRole("dialog", { name: "Pasar a" });
+    } else {
+      (await screen.findByRole("button", { name: "Pasar" })).focus();
+      await user.keyboard("{Enter}");
+      await screen.findByRole("menu");
+    }
+    // Llega la relectura: otra persona lo tomó y la fila pasa a la versión 4.
+    current = row({ version: 4, assignee: { id: "otra", name: "Tomás Acosta" }, assignedToMe: false });
+    await client.invalidateQueries();
+    await waitFor(() => expect(client.getQueriesData<{ conversation: { version: number } }>({ predicate: (query) => query.queryKey.includes("c-martina") })
+      .some(([, data]) => data?.conversation?.version === 4)).toBe(true));
+    await user.click(await screen.findByRole(phone ? "button" : "menuitem", { name: /Soporte/ }));
+    await waitFor(() => expect(bodies).toEqual([{ teamId: "team-soporte", version: 3 }]));
+    expect(await screen.findByText("Otra persona cambió este chat.")).toBeVisible();
+  });
+
   it("en el teléfono la bandeja es una lista y la conversación, otra pantalla", async () => {
     asPhone();
     inbox(row());
