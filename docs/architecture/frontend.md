@@ -109,7 +109,10 @@ y logout-return corresponden al origen propio. Cambiar de acceso u organización
 QueryClient y retira operaciones del contexto anterior.
 Las dos puertas comparten LoginPage: `/login` elige Persona y `/login/empresa`, Empresa.
 Plataforma solicita su access mediante accessOfPath. Un código es un paso de la pantalla,
-sin ruta propia. Ingreso, registro, invitaciones, enlace y recuperación están en
+sin ruta propia. Un operador, después del código o de Google, completa el segundo factor en
+la misma pantalla (`PlatformFactorStep`, E9): con `factor=pending` consulta el desafío y muestra
+el código de la app o uno de recuperación, el alta con el QR armado en el navegador o los ocho
+códigos; el secreto y los códigos viven solo en memoria. Ingreso, registro, invitaciones, enlace y recuperación están en
 [Identidad](../../../ArquitecturaBaseMutitenant/docs/features/identidad.md).
 Los métodos habilitados y países WhatsApp vienen de capacidades de la API.
 

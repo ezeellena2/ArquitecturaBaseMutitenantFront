@@ -60,6 +60,7 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │   │   ├── accounts/  /plataforma/cuentas: cuentas y operadores
     │   │   │   ├── api/
     │   │   │   ├── components/
+    │   │   │   ├── lib/  el catálogo compuesto de permisos de un operador
     │   │   │   ├── pages/
     │   │   │   └── tabs/
     │   │   ├── audit/  /plataforma/auditoria
