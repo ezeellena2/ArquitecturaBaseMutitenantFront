@@ -158,7 +158,7 @@ describe("Segundo factor del operador", () => {
     expect(await screen.findByText("Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos.")).toBeVisible();
     expect(screen.getByText("Probá de nuevo en 15 minutos.")).toBeVisible();
     expect(screen.getByRole("textbox", { name: "Código 1" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: /Reintentá en/u })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Verificar" })).toBeDisabled();
   });
 
   it("si el desafío venció pide volver a ingresar y vuelve al primer paso", async () => {

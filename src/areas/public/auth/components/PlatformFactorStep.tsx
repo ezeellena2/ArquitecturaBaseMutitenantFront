@@ -91,7 +91,8 @@ function useFactorVerification(onFailure: (error: ApiError) => boolean, onVerifi
   }
   const locked = error?.code === "Identity.Account.LockedOut" && (retry.isRunning || error.retryAfterSeconds === undefined);
   return { submit, error, clear: () => setError(null), message: error ? factorFailure(error, t) : null, invalid: marksCode(error),
-    pending: verify.isPending, locked, waiting: retry.isRunning, label: retry.label };
+    // El bloqueo de la cuenta deja «Verificar» apagado, sin cuenta regresiva: la franja ya dice cuánto esperar (tablero Ingreso).
+    pending: verify.isPending, locked, waiting: retry.isRunning, label: error?.code === "Identity.Account.LockedOut" ? null : retry.label };
 }
 
 /// «Verificación en dos pasos»: el código de la app o, con el enlace de abajo, un código de recuperación.
