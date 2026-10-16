@@ -29,5 +29,15 @@
         "action": "Cargar"
       }
     }
+  },
+  "platformPermissions": {
+    "platform.whatsapp.manage": {
+      "name": "Administrar el WhatsApp de Plataforma",
+      "description": "Conectar el número y configurar el bot, los equipos y las plantillas de consultas."
+    },
+    "platform.whatsapp.attend": {
+      "name": "Atender consultas",
+      "description": "Ver y responder las consultas que llegan al número de Plataforma."
+    }
   }
 }

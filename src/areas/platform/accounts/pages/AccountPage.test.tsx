@@ -186,6 +186,19 @@ describe("Ficha de Cuenta de Plataforma", () => {
     expect(received.map((r) => r.body)).toEqual([{ version: 1, reason: "Revisión", permissions: data.operatorPermissions }, { version: 2, reason: "Revisión" }]);
     expect(received.every((r) => r.key)).toBe(true);
   });
+  // R03 (ADR 0048): «Cambiar permisos» ofrece el catálogo compuesto, núcleo y módulos instalados, y guarda los de un módulo.
+  it("cambiar permisos ofrece los catorce y guarda uno de un módulo", async () => {
+    data = platformAccountDetailFixture({ kind: "Operador" }); const bodies: unknown[] = [];
+    server.use(http.put("/api/platform/accounts/:id/operator", async ({ request }) => { bodies.push(await request.json()); return HttpResponse.json({ version: 2 }); }));
+    const user = userEvent.setup(); open(); await user.click(await screen.findByRole("button", { name: "Cambiar permisos" }));
+    const permissions = screen.getByRole("button", { name: "Permisos de plataforma" }); permissions.focus(); await user.keyboard("{ArrowDown}");
+    const options = await screen.findAllByRole("menuitemcheckbox");
+    expect(options).toHaveLength(14); expect(options.at(-1)).toHaveAccessibleName("Cambiar la configuración");
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Usar el asistente de Plataforma" })); await user.keyboard("{Escape}");
+    await reason(user, "Guardar cambios");
+    await waitFor(() => expect(bodies).toHaveLength(1));
+    expect(bodies[0]).toEqual({ version: 1, reason: "Revisión", permissions: [...(data.operatorPermissions ?? []), "platform.assistant.use"] });
+  });
   it("invitar: principal completo y permisos solos, reenvío sin cuerpo y revocación sin clave", async () => {
     data = platformAccountDetailFixture({ kind: "Invitación de operador pendiente" }); const user = userEvent.setup(); const revoked = vi.fn();
     server.use(http.delete("/api/platform/operators/:id/invitation", async ({ request }) => { revoked(request.headers.get("Idempotency-Key"), await request.text()); return new HttpResponse(null, { status: 204 }); }));
@@ -283,10 +296,11 @@ describe("Ficha de Cuenta de Plataforma", () => {
     await user.click(screen.getByRole("button", { name: "Guardar cambios" })); expect(await screen.findByText("Otra persona cambió esto.")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(reads).toBe(2));
   });
-  it("operador sin audit.read conserva nueve permisos con una sola caja y sin barra", async () => {
+  it("operador sin audit.read conserva los catorce permisos (núcleo y módulos) con una sola caja y sin barra", async () => {
     data = platformAccountDetailFixture({ kind: "Operador" }); const { queryClient } = open(); await screen.findByRole("heading", { name: "Laura Díaz", level: 1 });
     await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, effectivePermissions: { ...platformOperator.effectivePermissions, platform: ["platform.accounts.read"] } }); });
-    await waitFor(() => expect(screen.queryByRole("tablist")).not.toBeInTheDocument()); expect(screen.getByRole("list", { name: "Permisos" }).children).toHaveLength(9);
+    await waitFor(() => expect(screen.queryByRole("tablist")).not.toBeInTheDocument()); expect(screen.getByRole("list", { name: "Permisos" }).children).toHaveLength(14);
+    expect(screen.getByText("Ver y responder las consultas que llegan al número de Plataforma.")).toBeVisible(); expect(screen.getByText("Ver el uso del asistente")).toBeVisible();
     expect(screen.queryByRole("button", { name: "Cambiar permisos" })).not.toBeInTheDocument();
   });
   it("en-US localiza métodos, fecha, Dueño y grupos de la ficha", async () => {

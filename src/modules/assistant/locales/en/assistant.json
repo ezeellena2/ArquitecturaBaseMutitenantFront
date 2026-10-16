@@ -368,5 +368,19 @@
       }
     },
     "companiesAndUsers": "Looked up Companies and Users"
+  },
+  "platformPermissions": {
+    "platform.assistant.use": {
+      "name": "Use the platform assistant",
+      "description": "Query the assistant with your platform permissions."
+    },
+    "platform.assistant.configure": {
+      "name": "Configure the platform assistant",
+      "description": "Configure assistant keys, models and limits."
+    },
+    "platform.assistant.read": {
+      "name": "View assistant usage",
+      "description": "View aggregated costs and queries without reading conversations."
+    }
   }
 }

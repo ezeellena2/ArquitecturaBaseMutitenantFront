@@ -29,5 +29,15 @@
         "action": "Add"
       }
     }
+  },
+  "platformPermissions": {
+    "platform.whatsapp.manage": {
+      "name": "Manage Platform WhatsApp",
+      "description": "Connect the number and configure the bot, teams and inquiry templates."
+    },
+    "platform.whatsapp.attend": {
+      "name": "Answer inquiries",
+      "description": "View and reply to the inquiries that reach the Platform number."
+    }
   }
 }

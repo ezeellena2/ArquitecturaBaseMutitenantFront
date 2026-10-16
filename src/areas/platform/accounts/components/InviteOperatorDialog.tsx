@@ -4,9 +4,9 @@ import type { TFunction } from "i18next";
 import { useMemo, useState } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { usePlatformPermissionCatalog } from "../lib/permissionCatalog";
 import { toast } from "sonner";
 import { z } from "zod";
-import { platformPermissions } from "@/auth/usePermissions";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { InvitePlatformOperatorRequest } from "@/shared/api/types";
@@ -34,6 +34,7 @@ function sameInvitation(previous: InvitePlatformOperatorRequest, next: InvitePla
 }
 export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => void; onInvited: () => Promise<unknown> }) {
   const { t } = useTranslation(["platformAccounts", "common"]);
+  const catalog = usePlatformPermissionCatalog();
   const restoreFocus = useRestoreFocusOnClose();
   const schema = useMemo(() => inviteSchema(t), [t]);
   const form = useForm<InviteForm>({ resolver: zodResolver(schema), defaultValues: { email: "", permissions: [] } });
@@ -67,7 +68,7 @@ export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => vo
           <EmailField name={emailName} ref={emailRef} value={emailValue} onBlur={emailBlur} onChange={(value) => { emailChange(value ?? ""); clear("email"); }} maxLength={validationConstraints.InvitePlatformOperatorHttpRequest.email.maxLength} disabled={busy} />
         </FormField>
         <FormField label={t("platformAccounts:invite.permissions")} error={form.formState.errors.permissions?.message}>
-          <MultiSelect options={platformPermissions.map((value) => ({ value, label: t(`platformAccounts:permissions.${value}.name`), description: t(`platformAccounts:permissions.${value}.description`) }))}
+          <MultiSelect options={catalog.map((permission) => ({ value: permission.code, label: t(permission.nameKey), description: t(permission.descriptionKey) }))}
             value={permissions.field.value} onChange={(value) => { permissions.field.onChange(value); clear("permissions"); }} placeholder={t("platformAccounts:invite.none")} />
         </FormField>
         <FormError message={actionErrorMessage(failure, t)} />

@@ -368,5 +368,19 @@
       }
     },
     "companiesAndUsers": "Consultó Empresas y Usuarios"
+  },
+  "platformPermissions": {
+    "platform.assistant.use": {
+      "name": "Usar el asistente de Plataforma",
+      "description": "Consultar el asistente con tus permisos de Plataforma."
+    },
+    "platform.assistant.configure": {
+      "name": "Configurar el asistente de Plataforma",
+      "description": "Configurar claves, modelos y topes del asistente."
+    },
+    "platform.assistant.read": {
+      "name": "Ver el uso del asistente",
+      "description": "Ver costos y consultas agregados sin leer conversaciones."
+    }
   }
 }
