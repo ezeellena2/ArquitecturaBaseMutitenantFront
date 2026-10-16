@@ -7,6 +7,7 @@ import { Link, useParams } from "react-router";
 import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
+import type { CompanyStatus } from "@/shared/api/types";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
@@ -33,7 +34,10 @@ const sentence = (text: string) => text.replace("..", ".");
 type CompanyTab = "members" | "roles";
 
 /// El diálogo abierto de la banda. Uno que abre una opción del ⋮ le devuelve el foco a ese botón al cerrar.
-type BandDialog = { kind: "addMember" } | { kind: "edit" | "deactivate"; returnFocusTo?: HTMLElement | null };
+/** Activar o inactivar: el estado al que va, la versión y el nombre de cuando se eligió, nunca los de una relectura (R01). */
+type StatusChange = { status: CompanyStatus; version: number; name: string };
+type BandDialog = { kind: "addMember" } | { kind: "edit"; returnFocusTo?: HTMLElement | null }
+  | { kind: "deactivate"; change: StatusChange; returnFocusTo?: HTMLElement | null };
 
 /**
  * Ficha de Empresa (tableros Empresa y M-Empresa): la banda con el estado, el CUIT y la zona; las acciones de la
@@ -60,10 +64,10 @@ export function CompanyDetailPage() {
   const [tab, setTab] = useState<CompanyTab>("members");
   const [dialog, setDialog] = useState<BandDialog | null>(null);
   const changeCompanyState = useMutation({
-    mutationFn: () => changeCompanyStatus(id, { status: company.data?.status === "Active" ? "Inactive" : "Active", version: company.data?.version }),
-    onSuccess: async () => {
+    mutationFn: ({ status, version }: StatusChange) => changeCompanyStatus(id, { status, version }),
+    onSuccess: async (_result, change) => {
       setDialog(null);
-      toast.success(sentence(t(company.data?.status === "Active" ? "companies:messages.deactivated" : "companies:messages.activated", { name: company.data?.name ?? "" })));
+      toast.success(sentence(t(change.status === "Inactive" ? "companies:messages.deactivated" : "companies:messages.activated", { name: change.name })));
       await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
     },
     onError: (error) => toastActionError(error, t),
@@ -102,7 +106,10 @@ export function CompanyDetailPage() {
       moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [
         { label: t("companies:actions.editCompany"), onSelect: (trigger) => setDialog({ kind: "edit", returnFocusTo: trigger }), hidden: !phone },
         { label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), destructive: data.status === "Active",
-          onSelect: (trigger) => { if (data.status === "Active") setDialog({ kind: "deactivate", returnFocusTo: trigger }); else changeCompanyState.mutate(); } },
+          onSelect: (trigger) => {
+            const change: StatusChange = { status: data.status === "Active" ? "Inactive" : "Active", version: data.version, name: data.name };
+            if (change.status === "Inactive") setDialog({ kind: "deactivate", change, returnFocusTo: trigger }); else changeCompanyState.mutate(change);
+          } },
       ] } : undefined}
       // Tablero Empresa: las pestañas abren el contenido, debajo de la banda, con la cantidad en gris. Quien no lee los roles
       // de la organización (el Administrador de empresa) ve un solo grupo, Miembros, y la ficha va sin la barra (Page).
@@ -116,9 +123,9 @@ export function CompanyDetailPage() {
     {dialog?.kind === "addMember" ? <AddMemberDialog companyId={id} roles={roles.assignable} onClose={closeDialog} /> : null}
     {dialog?.kind === "edit" ? <CompanyDialog company={data} inDetail returnFocusTo={dialog.returnFocusTo} onClose={closeDialog} /> : null}
     {dialog?.kind === "deactivate" ? <ConfirmDialog open onOpenChange={(open) => { if (!open) closeDialog(); }}
-      title={t("companies:confirm.deactivate", { name: data.name })}
+      title={t("companies:confirm.deactivate", { name: dialog.change.name })}
       description={t("companies:confirm.deactivateDescription")}
       confirmLabel={t("companies:confirm.deactivateConfirm")} destructive returnFocusTo={dialog.returnFocusTo}
-      onConfirm={() => changeCompanyState.mutate()} /> : null}
+      onConfirm={() => changeCompanyState.mutate(dialog.change)} /> : null}
   </>;
 }

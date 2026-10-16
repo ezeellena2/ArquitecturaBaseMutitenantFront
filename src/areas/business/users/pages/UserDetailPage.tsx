@@ -120,6 +120,9 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   // Va aparte del error del diálogo, que se borra al cambiar algo en él.
   const staleAfterDialog = useRef(false);
   const [confirmAction, setConfirmAction] = useState<"disable" | "remove" | "revoke" | null>(null);
+  // «Quitar» manda la versión de cuando se abrió la confirmación, no la de una relectura con la confirmación abierta (R01).
+  const [removeVersion, setRemoveVersion] = useState(member.version);
+  const openRemove = () => { setRemoveVersion(member.version); setConfirmAction("remove"); };
   const isInvitation = member.state === "Invited" || member.state === "Expired";
   const isMember = member.state === "Active" || member.state === "Inactive";
   const pendingDeletion = member.state === "PendingDeletion";
@@ -168,9 +171,9 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     },
   });
   const remove = useMutation({
-    mutationFn: (_message: string) => removeUser(memberId, member.version),
+    mutationFn: ({ version }: { message: string; version: number }) => removeUser(memberId, version),
     // Ya no hay nada que perder: la salida al listado no pregunta.
-    onSuccess: async (_result, message) => { toast.success(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); edit.allowNextNavigation(); void navigate("/org/usuarios"); },
+    onSuccess: async (_result, { message }) => { toast.success(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); edit.allowNextNavigation(); void navigate("/org/usuarios"); },
     onError: (error) => setFailure({ error, action: "remove" }),
   });
   const revoke = useMutation({
@@ -271,7 +274,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
       : t("users:detail.confirm.removeDescription", { organization: organizationName });
   const confirmations = {
     disable: { title: t("users:detail.confirm.disableTitle", { name: displayName }), description: t("users:detail.confirm.disableDescription", { organization: organizationName }), label: t("users:detail.confirm.disableConfirm"), run: () => saveAccess(form.getValues()) },
-    remove: { title: t("users:detail.confirm.removeTitle", { name: displayName, organization: organizationName }), description: removeDescription, label: t("users:detail.confirm.removeConfirm"), run: () => { setFailure(undefined); remove.mutate(t("users:detail.messages.removed", { name: displayName, organization: organizationName })); } },
+    remove: { title: t("users:detail.confirm.removeTitle", { name: displayName, organization: organizationName }), description: removeDescription, label: t("users:detail.confirm.removeConfirm"), run: () => { setFailure(undefined); remove.mutate({ message: t("users:detail.messages.removed", { name: displayName, organization: organizationName }), version: removeVersion }); } },
     revoke: { title: t("users:detail.confirm.revokeTitle", { email: userContactText(member, format) }), description: t("users:detail.confirm.revokeDescription"), label: t("users:detail.confirm.revokeConfirm"), run: () => { if (member.invitationId) revoke.mutate(member.invitationId); } },
   };
   const confirmation = confirmAction ? confirmations[confirmAction] : null;
@@ -299,10 +302,10 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
       moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
         { label: t("users:actions.resend"), onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },
         { label: t("users:actions.revoke"), onSelect: () => setConfirmAction("revoke"), destructive: true, hidden: !isInvitation || !member.invitationId },
-        { label: t("users:actions.remove"), onSelect: () => setConfirmAction("remove"), destructive: true, hidden: !isMember },
+        { label: t("users:actions.remove"), onSelect: openRemove, destructive: true, hidden: !isMember },
       ] } : undefined}
       actions={canManage ? pendingDeletion
-        ? <Button type="button" variant="danger" onClick={() => setConfirmAction("remove")}>{t("users:actions.remove")}</Button>
+        ? <Button type="button" variant="danger" onClick={openRemove}>{t("users:actions.remove")}</Button>
         : <>
           <Button type="button" variant="outline" onClick={discard}>{t("users:detail.discard")}</Button>
           {/* «Criterio · Botones»: se apaga solo sin cambios; no espera a los roles ni a las empresas. */}

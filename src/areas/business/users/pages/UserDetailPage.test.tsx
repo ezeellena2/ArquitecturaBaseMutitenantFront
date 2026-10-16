@@ -585,6 +585,35 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(screen.queryByText("Tiene que quedar al menos un Dueño activo.")).not.toBeInTheDocument();
   });
 
+  // R01 (formularios, concurrencia): «Quitar» manda la versión de cuando se abrió la confirmación, aunque llegue una
+  // relectura con la confirmación abierta; si otra persona cambió algo, el back responde 409.
+  it("una relectura con «¿Quitar …?» abierta manda la versión de apertura y recibe el 409", async () => {
+    const user = userEvent.setup();
+    let current = member;
+    const deleted: string[] = [];
+    api(member);
+    server.use(
+      http.get("/api/users/member-1", () => HttpResponse.json(current)),
+      http.delete("/api/users/member-1", ({ request }) => {
+        deleted.push(new URL(request.url).search);
+        return HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Otra persona cambió este usuario." }, { status: 409 });
+      }),
+    );
+    const { queryClient } = renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+    await open(user, screen.getByRole("button", { name: "Más acciones" }));
+    await user.click(await screen.findByRole("menuitem", { name: "Quitar de la organización" }));
+    const dialog = await screen.findByRole("dialog", { name: /¿Quitar a Lucía Fernández/ });
+
+    current = { ...member, version: member.version + 3 };
+    await act(async () => { await queryClient.invalidateQueries({ queryKey: userQueryKey("member-1") }); });
+    await waitFor(() => expect(queryClient.getQueryData<typeof member>(userQueryKey("member-1"))?.version).toBe(member.version + 3));
+    await user.click(within(dialog).getByRole("button", { name: "Quitar" }));
+
+    await waitFor(() => expect(deleted).toEqual([`?version=${member.version}`]));
+    expect(await screen.findByText(/Otra persona cambió este usuario|cambió/)).toBeVisible();
+  });
+
   // Tableros Usuario y Avisos: con cambios, un enlace del menú pregunta «¿Salir sin guardar?».
   it("con cambios, salir por el menú pregunta «¿Salir sin guardar?»", async () => {
     const user = userEvent.setup();

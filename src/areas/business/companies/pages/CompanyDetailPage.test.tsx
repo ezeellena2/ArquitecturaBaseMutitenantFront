@@ -7,6 +7,7 @@ import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { companyQueryKey } from "../api/companies";
 
 const company = {
   id: "company-1", name: "Delta S.A.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires",
@@ -646,6 +647,38 @@ describe("CompanyDetailPage", () => {
     expect(sent[1].key).toBe(sent[0].key);
     expect(sent[2].key).not.toBe(sent[0].key);
   }, 10_000);
+
+  // R01 (formularios, concurrencia): «Inactivar» manda el estado y la versión de cuando se abrió la confirmación. Si con la
+  // confirmación abierta llega una relectura (otra persona la inactivó), no manda la acción inversa con la versión nueva:
+  // manda la de apertura y el back responde 409.
+  it("una relectura con «¿Inactivar …?» abierta manda la versión de apertura y recibe el 409", async () => {
+    let current: Omit<typeof company, "status"> & { status: "Active" | "Inactive" } = company;
+    const bodies: unknown[] = [];
+    server.use(
+      http.get("/api/companies/company-1", () => HttpResponse.json(current)),
+      http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 0, active: 0, pendingDeletion: 0, inactive: 0, invited: 0 })),
+      http.get("/api/companies/company-1/roles/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.put("/api/companies/company-1/status", async ({ request }) => {
+        bodies.push(await request.json());
+        return HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Otra persona cambió esta empresa." }, { status: 409 });
+      }),
+    );
+    const user = userEvent.setup();
+    const { queryClient } = renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    (await screen.findByRole("button", { name: "Más acciones" })).focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Inactivar" }));
+    const confirm = await screen.findByRole("dialog", { name: `¿Inactivar ${company.name}?` });
+
+    current = { ...company, status: "Inactive", version: company.version + 1 };
+    await act(async () => { await queryClient.invalidateQueries(); });
+    await waitFor(() => expect(queryClient.getQueryData<typeof company>(companyQueryKey("company-1"))?.version).toBe(company.version + 1));
+    await user.click(within(confirm).getByRole("button", { name: "Inactivar" }));
+
+    await waitFor(() => expect(bodies).toEqual([{ status: "Inactive", version: company.version }]));
+    expect(await screen.findByText("Otra persona cambió esta empresa.")).toBeVisible();
+  });
 
   it("agrega una persona existente con encabezado idempotente", async () => {
     let requestBody: unknown;
