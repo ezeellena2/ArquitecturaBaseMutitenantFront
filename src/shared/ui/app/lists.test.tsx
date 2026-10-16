@@ -92,7 +92,8 @@ describe("listas en el teléfono", () => {
   it("los filtros son íconos en la barra y se eligen en una hoja", async () => {
     const onChange = vi.fn();
     const onSearchChange = vi.fn();
-    render(<MemoryRouter><AppChromeProvider value={phone}><Page title="Usuarios">
+    // Las cantidades de las opciones pasan por NumberText: necesitan el formato de los providers.
+    renderWithProviders(<MemoryRouter><AppChromeProvider value={phone}><Page title="Usuarios">
       <FilterBar label="Filtrar usuarios" searchLabel="Buscar por nombre o correo" searchValue="" onSearchChange={onSearchChange} clearLabel="Limpiar" onClear={vi.fn()}
         filters={[{ key: "state", label: "Estado: todos", menuLabel: "Filtrar por estado", value: "", active: false, onChange,
           options: [{ value: "all", label: "Todos", count: 11 }, { value: "Active", label: "Activos", count: 6 }] }]} />
