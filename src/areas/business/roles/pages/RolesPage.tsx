@@ -18,7 +18,6 @@ import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
-import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import type { RoleResponse } from "@/shared/api/types";
 import {
@@ -78,13 +77,10 @@ export function RolesPage() {
         actions={[
           { label: t("roles:viewPermissions"), accessibleName: t("roles:viewPermissions"), icon: Eye, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); }, hidden: !role.isSystemRole && canManage },
           { label: t("roles:edit"), accessibleName: t("roles:edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); }, hidden: role.isSystemRole || !canManage },
-          { label: t("roles:deactivate"), accessibleName: t("roles:deactivate"), icon: Trash2, onSelect: () => {
-            if (role.userCount > 0) {
-              toastError(t("roles:errors.hasUsers", { ...countOf(format, role.userCount), name: role.name }));
-            } else {
-              setRoleToDelete(role);
-            }
-          }, destructive: true, hidden: role.isSystemRole || !canManage },
+          // Con usuarios no se puede inactivar: la opción va apagada y con el motivo debajo (pantallas-y-ui, 13/10).
+          { label: t("roles:deactivate"), accessibleName: t("roles:deactivate"), icon: Trash2, onSelect: () => setRoleToDelete(role),
+            disabledReason: role.userCount > 0 ? t("roles:inUse", countOf(format, role.userCount)) : undefined,
+            destructive: true, hidden: role.isSystemRole || !canManage },
         ]}
       />;
   const columns: Column<RoleResponse>[] = [

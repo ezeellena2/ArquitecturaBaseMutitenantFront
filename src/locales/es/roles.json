@@ -77,15 +77,13 @@
     "companyRequired": "Elegí una empresa.",
     "permissionsRequired": "Elegí al menos un permiso."
   },
-  "errors": {
-    "hasUsers_one": "No se puede inactivar: {{n}} usuario tiene el rol {{name}}. Quitáselo primero.",
-    "hasUsers_other": "No se puede inactivar: {{n}} usuarios tienen el rol {{name}}. Quitáselo primero."
-  },
   "emptyFiltered": "Ningún rol coincide con los filtros",
   "phone": {
     "users_one": "{{n}} usuario",
     "users_other": "{{n}} usuarios",
     "permissions_one": "{{n}} permiso",
     "permissions_other": "{{n}} permisos"
-  }
+  },
+  "inUse_one": "Lo tiene {{n}} usuario. Quitáselo primero.",
+  "inUse_other": "Lo tienen {{n}} usuarios. Quitáselo primero."
 }

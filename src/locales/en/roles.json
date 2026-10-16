@@ -77,15 +77,13 @@
     "companyRequired": "Choose a company.",
     "permissionsRequired": "Choose at least one permission."
   },
-  "errors": {
-    "hasUsers_one": "Cannot deactivate: {{n}} user has the role {{name}}. Remove it first.",
-    "hasUsers_other": "Cannot deactivate: {{n}} users have the role {{name}}. Remove it from them first."
-  },
   "emptyFiltered": "No role matches the filters",
   "phone": {
     "users_one": "{{n}} user",
     "users_other": "{{n}} users",
     "permissions_one": "{{n}} permission",
     "permissions_other": "{{n}} permissions"
-  }
+  },
+  "inUse_one": "{{n}} user has it. Remove it first.",
+  "inUse_other": "{{n}} users have it. Remove it from them first."
 }

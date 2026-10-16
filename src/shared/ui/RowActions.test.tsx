@@ -122,4 +122,27 @@ describe("RowActions", () => {
     expect(onSelect).toHaveBeenCalledWith(trigger);
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
+
+  // R10 («Criterio · Menús», 13/10; tablero M-WA-Chats-Formulario, .ap-menu span.off): una opción que no se puede usar por
+  // algo que se puede resolver va apagada, en gris y con el motivo debajo; se lee con el teclado, pero no hace nada.
+  it.each([["la compu", false], ["el teléfono", true]] as const)("en %s, una opción apagada muestra su motivo y no corre", async (_, phone) => {
+    const onSelect = vi.fn();
+    renderWithProviders(<AppChromeProvider value={{ phone, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+      <RowActions label="Acciones de Auditor" actions={[action(),
+        action({ label: "Inactivar", accessibleName: "Inactivar", destructive: true, onSelect, disabledReason: "Lo tiene 1 usuario. Quitáselo primero." })]} />
+    </AppChromeProvider>);
+
+    const trigger = screen.getByRole("button", { name: "Acciones de Auditor" });
+    trigger.focus();
+    await userEvent.keyboard("{Enter}");
+    const off = await screen.findByRole("menuitem", { name: "Inactivar" });
+    expect(off).toHaveAttribute("aria-disabled", "true");
+    expect(off).toHaveAccessibleDescription("Lo tiene 1 usuario. Quitáselo primero.");
+    expect(off).toHaveClass("text-[var(--t3)]");
+    // Apagada no va en rojo, aunque sea de peligro.
+    if (phone) expect(off).not.toHaveClass("text-[var(--peligro)]"); else expect(off).toHaveAttribute("data-variant", "default");
+    await userEvent.click(off);
+    expect(onSelect).not.toHaveBeenCalled();
+    expect(screen.getByRole("menuitem", { name: "Inactivar" })).toBeVisible();
+  });
 });
