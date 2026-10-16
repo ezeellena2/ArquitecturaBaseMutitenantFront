@@ -11,6 +11,10 @@ export function revokeOperatorInvitation(id: string): Promise<void> { return api
 export function changeOperatorPermissions(id: string, request: ChangePlatformOperatorRequest, key: string): Promise<VersionResponse> {
   return api.put(`/api/platform/accounts/${encodeURIComponent(id)}/operator`, request, { headers: { "Idempotency-Key": key } });
 }
+/** Restablece el autenticador de otro operador (E9): con la versión del operador y el motivo; devuelve la versión nueva. */
+export function resetOperatorAuthenticator(id: string, request: PlatformAccountActionRequest, key: string): Promise<VersionResponse> {
+  return api.post(`/api/platform/accounts/${encodeURIComponent(id)}/authenticator/reset`, request, { headers: { "Idempotency-Key": key } });
+}
 export function removeOperator(id: string, request: PlatformAccountActionRequest, key: string): Promise<void> {
   return api.delete(`/api/platform/accounts/${encodeURIComponent(id)}/operator`, { body: JSON.stringify(request), headers: { "Idempotency-Key": key } });
 }

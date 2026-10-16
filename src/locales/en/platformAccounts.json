@@ -220,6 +220,12 @@
     "removeDescription": "They can no longer access the platform.",
     "removeButton": "Remove",
     "removing": "Removing…",
-    "removed": "Removed {{name}} as an operator."
+    "removed": "Removed {{name}} as an operator.",
+    "reset": "Reset authenticator",
+    "resetTitle": "Reset {{name}}'s authenticator?",
+    "resetDescription": "Their sessions are closed and their recovery codes stop working. When they sign in again, they set up the authenticator again.",
+    "resetButton": "Reset",
+    "resetting": "Resetting…",
+    "resetDone": "Reset {{name}}'s authenticator."
   }
 }

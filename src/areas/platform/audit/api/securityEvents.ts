@@ -13,7 +13,8 @@ export interface SecurityEventsQuery {
   search?: string;
 }
 
-export const securityEventsQueryRoot = ["platform-audit"] as const;
+export { platformAuditQueryRoot as securityEventsQueryRoot } from "@/shared/api/resourceOptions";
+import { platformAuditQueryRoot as securityEventsQueryRoot } from "@/shared/api/resourceOptions";
 
 function queryString(query: SecurityEventsQuery): string {
   const params = new URLSearchParams();

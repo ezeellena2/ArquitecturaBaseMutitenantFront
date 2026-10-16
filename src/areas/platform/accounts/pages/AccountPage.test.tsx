@@ -42,6 +42,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
     ["Persona suspendida", "Reactivar", "¿Reactivar la cuenta de Sin dato?"],
     ["Operador", "Cambiar permisos", "Cambiar permisos de Sin dato"],
     ["Operador", "Quitar operador", "¿Quitar a Sin dato como operador?"],
+    ["Operador", "Restablecer el autenticador", "¿Restablecer el autenticador de Sin dato?"],
     ["Invitación de operador pendiente", "Revocar invitación", "¿Revocar la invitación a Sin dato?"],
   ])("%s sin identidad conserva el título de %s", async (kind, action, title) => {
     data = { ...platformAccountDetailFixture({ kind, state: kind === "Persona suspendida" ? "Suspendida" : "Activa" }), displayName: null, primaryEmail: null, soleOwnerOrganizations: [] };
@@ -199,6 +200,62 @@ describe("Ficha de Cuenta de Plataforma", () => {
     await waitFor(() => expect(bodies).toHaveLength(1));
     expect(bodies[0]).toEqual({ version: 1, reason: "Revisión", permissions: [...(data.operatorPermissions ?? []), "platform.assistant.use"] });
   });
+  // F3 (Etapa 9, tablero Cuenta-Plat): «Restablecer el autenticador» de otro operador, con motivo y la versión de cuando se
+  // abrió el diálogo; después se vuelven a leer la cuenta, la lista y la auditoría.
+  it("restablecer el autenticador manda versión y motivo, avisa y vuelve a leer la cuenta", async () => {
+    data = platformAccountDetailFixture({ kind: "Operador" }); const sent: { body: unknown; key: string | null }[] = [];
+    server.use(http.post("/api/platform/accounts/:id/authenticator/reset", async ({ request }) => { sent.push({ body: await request.json(), key: request.headers.get("Idempotency-Key") }); return HttpResponse.json({ version: 2 }); }));
+    const user = userEvent.setup(); const { container } = open(); await screen.findByRole("heading", { name: "Laura Díaz", level: 1 });
+    const trigger = screen.getByRole("button", { name: "Acciones de Laura Díaz" }); trigger.focus(); await user.keyboard("{ArrowDown}");
+    expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Restablecer el autenticador", "Quitar operador"]);
+    await user.click(screen.getByRole("menuitem", { name: "Restablecer el autenticador" }));
+    const dialog = await screen.findByRole("dialog", { name: "¿Restablecer el autenticador de Laura Díaz?" });
+    expect(dialog).toHaveTextContent("Se cierran sus sesiones y sus códigos de recuperación dejan de servir. Al volver a entrar, configura el autenticador de nuevo.");
+    await user.click(within(dialog).getByRole("button", { name: "Restablecer" }));
+    expect(sent).toHaveLength(0);
+    expect(await axe(container)).toHaveNoViolations();
+    const before = reads;
+    await reason(user, "Restablecer");
+    expect(await screen.findByText("Restablecimos el autenticador de Laura Díaz.")).toBeVisible();
+    expect(sent).toEqual([{ body: { version: 1, reason: "Revisión" }, key: expect.stringMatching(/^[0-9a-f-]{36}$/iu) }]);
+    await waitFor(() => expect(reads).toBeGreaterThan(before));
+  });
+
+  it("restablecer manda la versión de apertura aunque llegue una relectura y el 409 lo dice", async () => {
+    data = platformAccountDetailFixture({ kind: "Operador" }); const bodies: unknown[] = [];
+    server.use(http.post("/api/platform/accounts/:id/authenticator/reset", async ({ request }) => { bodies.push(await request.json());
+      return HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Otra persona cambió este operador." }, { status: 409 }); }));
+    const user = userEvent.setup(); const { queryClient } = open(); await screen.findByRole("heading", { name: "Laura Díaz", level: 1 });
+    await menu(user, "Restablecer el autenticador");
+    await screen.findByRole("dialog", { name: "¿Restablecer el autenticador de Laura Díaz?" });
+    data = { ...data, operatorVersion: 7 };
+    await act(async () => { await queryClient.invalidateQueries({ queryKey: accountQueryKey(data.id) }); });
+    await waitFor(() => expect(queryClient.getQueryData<Detail>(accountQueryKey(data.id))?.operatorVersion).toBe(7));
+    await reason(user, "Restablecer");
+    await waitFor(() => expect(bodies).toEqual([{ version: 1, reason: "Revisión" }]));
+    expect(await screen.findByText("Otra persona cambió este operador.")).toBeVisible();
+  });
+
+  it.each([
+    ["la propia cuenta", "self"], ["sin administrar operadores", "permission"], ["una invitación pendiente", "invitation"],
+  ] as const)("no ofrece restablecer en %s", async (_, kind) => {
+    data = platformAccountDetailFixture({ kind: kind === "invitation" ? "Invitación de operador pendiente" : "Operador" });
+    const { queryClient } = open(); await screen.findByRole("heading", { level: 1 });
+    if (kind !== "invitation") act(() => queryClient.setQueryData(currentUserQueryKey, kind === "self" ? { ...platformOperator, id: data.id }
+      : { ...platformOperator, effectivePermissions: { ...platformOperator.effectivePermissions, platform: ["platform.accounts.read", "platform.accounts.manage"] } }));
+    const user = userEvent.setup();
+    const trigger = screen.queryByRole("button", { name: /^Acciones de / });
+    if (trigger) { trigger.focus(); await user.keyboard("{ArrowDown}"); }
+    await waitFor(() => expect(screen.queryByRole("menuitem", { name: "Restablecer el autenticador" })).not.toBeInTheDocument());
+  });
+
+  it("390: restablecer está en la hoja de acciones del operador", async () => {
+    asPhone(); data = platformAccountDetailFixture({ kind: "Operador" });
+    const user = userEvent.setup(); open(); await screen.findByRole("heading", { name: "Laura Díaz", level: 1 });
+    const trigger = screen.getByRole("button", { name: "Acciones de Laura Díaz" }); trigger.focus(); await user.keyboard("{Enter}");
+    expect(await screen.findByRole("menuitem", { name: "Restablecer el autenticador" })).toBeVisible();
+  });
+
   it("invitar: principal completo y permisos solos, reenvío sin cuerpo y revocación sin clave", async () => {
     data = platformAccountDetailFixture({ kind: "Invitación de operador pendiente" }); const user = userEvent.setup(); const revoked = vi.fn();
     server.use(http.delete("/api/platform/operators/:id/invitation", async ({ request }) => { revoked(request.headers.get("Idempotency-Key"), await request.text()); return new HttpResponse(null, { status: 204 }); }));

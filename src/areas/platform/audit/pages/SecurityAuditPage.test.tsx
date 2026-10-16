@@ -48,6 +48,27 @@ async function openMenu(user: ReturnType<typeof userEvent.setup>, name: string) 
 }
 
 describe("SecurityAuditPage", () => {
+  // F3 (Etapa 9): el alta y el restablecimiento del autenticador, el uso de un código de recuperación y la reautenticación
+  // son eventos de Operadores, con el texto del back y el filtro de siempre; nunca muestran códigos ni secretos.
+  it("los eventos del segundo factor van en Operadores con su texto y su fecha", async () => {
+    const queries: URL[] = [];
+    const events: PlatformAuditEventResponse[] = [
+      { ...event, id: "e-reset", type: "operators", action: "PlatformAuthenticatorReset", summary: "Restableció el autenticador", target: "Laura Díaz", actor: "Martín Sosa", reason: "Cambió de celular y perdió los códigos." },
+      { ...event, id: "e-setup", type: "operators", action: "PlatformAuthenticatorConfigured", summary: "Configuró el autenticador", target: "Laura Díaz", actor: "Laura Díaz", reason: null },
+      { ...event, id: "e-recovery", type: "operators", action: "PlatformRecoveryCodeUsed", summary: "Entró con un código de recuperación", target: "Laura Díaz", actor: "Laura Díaz", reason: null },
+      { ...event, id: "e-reauth", type: "operators", action: "PlatformReauthenticated", summary: "Confirmó que es él", target: "Martín Sosa", actor: "Martín Sosa", reason: null },
+    ];
+    server.use(http.get("/api/platform/audit", ({ request }) => { queries.push(new URL(request.url)); return HttpResponse.json(page(events)); }));
+    const user = userEvent.setup();
+    mount("/plataforma/auditoria?type=operators");
+    expect(await screen.findByRole("button", { name: /Restableció el autenticador/u })).toBeVisible();
+    for (const summary of ["Configuró el autenticador", "Entró con un código de recuperación", "Confirmó que es él"]) expect(screen.getByRole("button", { name: new RegExp(summary, "u") })).toBeVisible();
+    expect(queries.at(-1)?.searchParams.get("type")).toBe("operators");
+    expect(screen.getAllByText("26/09/2026 17:30").length).toBeGreaterThan(0);
+    await user.click(screen.getByRole("button", { name: /Restableció el autenticador/u }));
+    expect(await screen.findByRole("dialog")).toHaveTextContent("Cambió de celular y perdió los códigos.");
+  });
+
   it("busca la organización 101 dentro del filtro y conserva la búsqueda del historial", async () => {
     const requests: URL[] = [];
     const organization = { id: "org-101", name: "Organización 101" };

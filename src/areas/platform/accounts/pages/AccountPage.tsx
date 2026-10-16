@@ -29,6 +29,8 @@ import { accountLabel, accountStateTones, isOperatorInvitation } from "../column
 import { AccountDeletionDialog, AccountReasonDialog, RevokeInvitationDialog, type AccountConfirmation } from "../components/AccountDialogs";
 import { OperatorPermissionsDialog } from "../components/OperatorPermissionsDialog";
 import { RemoveOperatorDialog } from "../components/RemoveOperatorDialog";
+import { ResetAuthenticatorDialog } from "../components/ResetAuthenticatorDialog";
+import { platformAuditQueryRoot } from "@/shared/api/resourceOptions";
 import { accountStateConflictCodes } from "../errors";
 import { AccountHistoryTab } from "../tabs/AccountHistoryTab";
 import { AccountMethodsTab } from "../tabs/AccountMethodsTab";
@@ -37,7 +39,8 @@ import { AccountPermissionsTab } from "../tabs/AccountPermissionsTab";
 
 interface OwnOperatorWrite { version: number; permissions: string[] }
 type Confirmation = AccountConfirmation | { account: PlatformAccountDetailResponse; action: "permissions"; trigger: HTMLElement | null }
-  | { account: PlatformAccountDetailResponse; action: "removeOperator"; trigger: HTMLElement | null };
+  | { account: PlatformAccountDetailResponse; action: "removeOperator"; trigger: HTMLElement | null }
+  | { account: PlatformAccountDetailResponse; action: "resetAuthenticator"; trigger: HTMLElement | null };
 
 export function AccountPage() {
   const { id = "" } = useParams();
@@ -91,7 +94,8 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
   const accountActions: AccountAction[] = mutable && canManage && !operator && !invitation
     ? ["revoke-sessions", ...(data.state === "Suspended" ? ["reactivate"] as const : []), ...(["Active", "NeedsRecovery"].includes(data.state) ? ["suspend"] as const : [])] : [];
   function open(action: Confirmation["action"], trigger: HTMLElement | null) {
-    setConfirmation(action === "permissions" ? { account: data, action, trigger } : action === "removeOperator" ? { account: data, action, trigger } : { account: data, action, trigger, route: data.id });
+    setConfirmation(action === "permissions" ? { account: data, action, trigger } : action === "removeOperator" ? { account: data, action, trigger }
+      : action === "resetAuthenticator" ? { account: data, action, trigger } : { account: data, action, trigger, route: data.id });
   }
   const close = () => setConfirmation((previous) => previous === confirmation ? null : previous);
   const invalidate = () => { void client.invalidateQueries({ queryKey: accountsQueryRoot }); };
@@ -129,6 +133,9 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
         ...accountActions.map((action) => ({ label: t(action === "revoke-sessions" ? "platformAccounts:detail.closeSessions" : `platformAccounts:actions.${action}`), hidden: !phone, destructive: action === "suspend", onSelect: (trigger: HTMLElement | null) => open(action, trigger) })),
         { label: t("platformAccounts:operator.change"), hidden: !phone || !mutable || !canOperators || !operator || invitation, onSelect: (trigger) => open("permissions", trigger) },
         { label: t("platformAccounts:actions.resend"), hidden: !phone || !canResend || busy, onSelect: () => resend.mutate({ id: data.id, name }) },
+        // Tablero Cuenta-Plat («Operador: acciones»): «Restablecer el autenticador» y, de peligro, «Quitar operador». Nunca
+        // sobre la propia cuenta ni sobre una invitación sin aceptar.
+        { label: t("platformAccounts:operator.reset"), hidden: !mutable || !canOperators || !operator || invitation, onSelect: (trigger) => open("resetAuthenticator", trigger) },
         { label: t("platformAccounts:operator.remove"), hidden: !mutable || !canOperators || !operator || invitation, destructive: true, onSelect: (trigger) => open("removeOperator", trigger) },
         { label: t("platformAccounts:actions.revoke"), hidden: !canResend || busy, destructive: true, onSelect: (trigger) => open("revoke", trigger) },
         { label: t("platformAccounts:actions.deletion"), hidden: !mutable || !canManage || operator || invitation || Boolean(data.deletion), destructive: true, onSelect: (trigger) => open("deletion", trigger) },
@@ -143,6 +150,10 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
       if (!active.current) return; onOperatorWrite(response, permissions); toast.success(t("platformAccounts:operator.saved", { name })); invalidate();
     }} /> : confirmation.action === "removeOperator" ? <RemoveOperatorDialog account={confirmation.account} returnFocusTo={confirmation.trigger} onClose={(conflicted) => { if (conflicted) onConflict(); close(); }} onRemoved={() => {
       if (!active.current) return; toast.success(t("platformAccounts:operator.removed", { name })); invalidate(); void navigate("/plataforma/cuentas");
+    }} /> : confirmation.action === "resetAuthenticator" ? <ResetAuthenticatorDialog account={confirmation.account} returnFocusTo={confirmation.trigger} onClose={(conflicted) => { if (conflicted) { onConflict(); invalidate(); } close(); }} onReset={(response) => {
+      if (!active.current) return;
+      onOperatorWrite(response, data.operatorPermissions ?? []); toast.success(t("platformAccounts:operator.resetDone", { name })); invalidate();
+      void client.invalidateQueries({ queryKey: platformAuditQueryRoot });
     }} /> : confirmation.action === "revoke" ? <RevokeInvitationDialog confirmation={confirmation} onClose={close} onSuccess={() => success(undefined)} />
       : confirmation.action === "deletion" ? <AccountDeletionDialog confirmation={confirmation} onClose={close} onSuccess={success} /> : <AccountReasonDialog confirmation={confirmation} onClose={close} onSuccess={success} /> : null}
   </>;

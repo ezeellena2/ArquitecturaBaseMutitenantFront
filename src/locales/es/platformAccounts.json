@@ -220,6 +220,12 @@
     "removeDescription": "Deja de entrar a la plataforma.",
     "removeButton": "Quitar",
     "removing": "Quitando…",
-    "removed": "Quitamos a {{name}} como operador."
+    "removed": "Quitamos a {{name}} como operador.",
+    "reset": "Restablecer el autenticador",
+    "resetTitle": "¿Restablecer el autenticador de {{name}}?",
+    "resetDescription": "Se cierran sus sesiones y sus códigos de recuperación dejan de servir. Al volver a entrar, configura el autenticador de nuevo.",
+    "resetButton": "Restablecer",
+    "resetting": "Restableciendo…",
+    "resetDone": "Restablecimos el autenticador de {{name}}."
   }
 }
