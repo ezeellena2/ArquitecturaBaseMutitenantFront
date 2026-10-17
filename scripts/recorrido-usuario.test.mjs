@@ -8,6 +8,7 @@ import { execFileSync } from "node:child_process";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
 import { botOption, e11Definitions, e11ManualChecks, nationalPhone, outboundCount, runE11Journey } from "./recorrido-usuario-e11.mjs";
+import { e9Definitions, e9ManualChecks, factorSecretMasks, newcomerOf, operatorNameOf, runE9Journey } from "./recorrido-usuario-e9.mjs";
 
 test("la selección de ancho conserva el recorrido completo por defecto y permite sólo un ancho vigente", () => {
   assert.deepEqual(parseJourneyArguments([]), { build: true, widths: [1440, 390] });
@@ -361,5 +362,47 @@ test("sin el control publicado, E11 no abre pantallas ni se declara aprobada", a
   const record = async () => { touched.push("record"); };
   await assert.rejects(runE11Journey({ page, platformPage: page, width: 1440, env: {}, base: baseUrl, record, signOut: async () => {}, awaitApp: async () => {},
     loginBusiness: async () => { touched.push("login"); }, organization: "Recorrido" }), /soporte privado.*mismo entorno/);
+  assert.deepEqual(touched, []);
+});
+
+test("el recorrido E9 tiene sus siete pasos en orden y deja el QR con un celular real para probar a mano", () => {
+  assert.deepEqual(e9Definitions.map((step) => step.id), Array.from({ length: 7 }, (_, index) => `E9-${String(index + 1).padStart(2, "0")}`));
+  for (const step of e9Definitions) assert.ok(step.title.startsWith("E9 · ") && step.expected);
+  assert.ok(e9ManualChecks.some((item) => item.startsWith("Celular real")));
+});
+
+test("E9 usa un operador nuevo por ancho, propio del recorrido y nunca uno de los e9 del E2E", () => {
+  const operators = [1440, 390].map(newcomerOf);
+  assert.equal(new Set(operators).size, 2);
+  for (const email of operators) {
+    assert.doesNotMatch(email, /^e2e-(e9|a1-|a3-)/u, "Ni los e9 del E2E ni los operadores del resto del recorrido.");
+    assert.match(operatorNameOf(email), /^Operador E2E [a-z0-9]+$/u);
+  }
+  assert.equal(operatorNameOf("e2e-5b-operator@example.test"), "Operador E2E 5b");
+  assert.throws(() => operatorNameOf("laura@example.com"), /preparador/);
+});
+
+test("la captura tapa el QR, la clave y los códigos de recuperación, y nada más", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(`<h1>Protegé tu cuenta de operador</h1><svg role="img" aria-label="Código QR para la app de autenticación" width="40" height="40"></svg>
+      <span>JBSW Y3DP EHPK 3PXP</span><span>CONFIGURACIÓN</span><ul aria-label="Códigos de recuperación"><li>7KQ2-M9XD</li><li>P4TZ-8WNE</li></ul>
+      <ul aria-label="Permisos"><li>Ver organizaciones</li></ul>`);
+    const [qr, key, codes] = factorSecretMasks(page);
+    assert.equal(await qr.count(), 1);
+    assert.equal(await key.count(), 1);
+    assert.equal(await key.innerText(), "JBSW Y3DP EHPK 3PXP");
+    assert.equal(await codes.getByRole("listitem").count(), 2);
+    await page.screenshot({ mask: factorSecretMasks(page) });
+  } finally { await browser.close(); }
+});
+
+test("sin las órdenes privadas del preparador, E9 no abre pantallas ni se declara aprobada", async () => {
+  const touched = [];
+  const page = new Proxy({}, { get: (_, name) => { touched.push(String(name)); return () => {}; } });
+  const record = async () => { touched.push("record"); };
+  await assert.rejects(runE9Journey({ platformPage: page, width: 1440, env: {}, base: baseUrl, record, signOut: async () => {}, login: async () => {},
+    requestCode: async () => "", verify: async () => ({}), awaitPlatformHome: async () => {}, operator: "e2e-a3-operator@example.test" }), /órdenes privadas/);
   assert.deepEqual(touched, []);
 });

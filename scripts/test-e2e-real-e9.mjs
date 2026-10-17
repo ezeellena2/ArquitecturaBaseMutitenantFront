@@ -14,6 +14,20 @@ export const e9Operators = Object.fromEntries(["a", "b", "r", "l"].map((key) => 
 /** El nombre con que el preparador crea cada operador (RealE2ESetup, PlatformCommand). */
 const operatorName = (key) => `Operador E2E e9${key}`;
 const lockedText = "Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos.";
+
+/**
+ * Los eventos del segundo factor en Auditoría, con el texto y el tipo que escribe el back (Audit.resx y
+ * PlatformAuditCategories). Los usan E9-8 y el recorrido de usuario: cuando el back se alinee con Auditoria-Plat, se
+ * cambian acá.
+ */
+export const authenticatorAuditEvents = {
+  configured: { type: "operators", summary: "Configuró su autenticador" },
+  reset: { type: "operators", summary: "Restableció el autenticador de un operador" },
+  recoveryCodeUsed: { type: "operators", summary: "Usó un código de recuperación" },
+  reauthenticated: { type: "operators", summary: "Confirmó su identidad" },
+  signedInWithAuthenticator: { type: "signins", summary: "Ingresó con el autenticador" },
+  signedInWithRecoveryCode: { type: "signins", summary: "Ingresó con un código de recuperación" },
+};
 const rateLimitText = "Hiciste muchos pedidos seguidos. Esperá un momento.";
 
 /** Vence la prueba reciente de las sesiones vigentes de un operador (comando .recent-proof.json del preparador). */
@@ -35,7 +49,7 @@ export async function expireRecentProof(readyFile, email) {
 }
 
 /** Las respuestas de la Api que le interesan al caso: método, ruta, estado e Idempotency-Key, sin cuerpos. */
-function watchResponses(page, matches) {
+export function watchResponses(page, matches) {
   const seen = [];
   const listener = (response) => {
     const { pathname } = new URL(response.url());
@@ -46,12 +60,27 @@ function watchResponses(page, matches) {
   return { seen, statuses: () => seen.map((entry) => entry.status), stop: () => page.off("response", listener) };
 }
 
-const isOperatorWrite = (method, pathname) => method === "PUT" && /^\/api\/platform\/accounts\/[^/]+\/operator$/u.test(pathname);
+export const isOperatorWrite = (method, pathname) => method === "PUT" && /^\/api\/platform\/accounts\/[^/]+\/operator$/u.test(pathname);
 const isReauthentication = (method, pathname) => method === "POST" && pathname === "/api/platform/reauthentication";
 
-/** «Cambiar permisos»: cambia una casilla del catálogo, escribe el motivo y deja el formulario listo para guardar. */
-async function preparePermissions(page, name, toggle, reason) {
-  await page.getByRole("button", { name: "Cambiar permisos", exact: true }).click();
+/** El menú «Acciones de …» de la ficha de una cuenta, abierto con el teclado. */
+export async function openAccountActions(page, name) {
+  const actions = page.getByRole("button", { name: `Acciones de ${name}`, exact: true });
+  await actions.focus();
+  await actions.press("ArrowDown");
+}
+
+/**
+ * «Cambiar permisos»: cambia una casilla del catálogo, escribe el motivo y deja el formulario listo para guardar. En la
+ * compu es un botón de la ficha; en el teléfono, una opción de «Acciones de …».
+ */
+export async function preparePermissions(page, name, toggle, reason) {
+  const change = page.getByRole("button", { name: "Cambiar permisos", exact: true });
+  if (await change.isVisible()) await change.click();
+  else {
+    await openAccountActions(page, name);
+    await page.getByRole("menuitem", { name: "Cambiar permisos", exact: true }).click();
+  }
   const form = page.getByRole("dialog", { name: `Cambiar permisos de ${name}`, exact: true });
   await form.waitFor();
   const picker = form.getByRole("button", { name: "Permisos de plataforma", exact: true });
@@ -257,9 +286,7 @@ export function etapa9Cases(env) {
         setStage("e9a restablece el autenticador de e9b");
         await env.loginThroughUi(page, e9.a, "platform", setStage);
         await env.openPlatformAccount(page, target);
-        const actions = page.getByRole("button", { name: `Acciones de ${target}`, exact: true });
-        await actions.focus();
-        await actions.press("ArrowDown");
+        await openAccountActions(page, target);
         await page.getByRole("menuitem", { name: "Restablecer el autenticador", exact: true }).click();
         const dialog = page.getByRole("dialog", { name: `¿Restablecer el autenticador de ${target}?`, exact: true });
         await dialog.getByRole("textbox", { name: /^Motivo/u }).fill("E2E E9: cambió de celular.");
@@ -315,11 +342,11 @@ export function etapa9Cases(env) {
       setStage("e9a abre Auditoría");
       await env.loginThroughUi(page, e9.a, "platform", setStage);
       await env.platformNavigate(page, "Administración", "Auditoría");
-      setStage("Operadores: configuró, restableció, usó un código y confirmó");
-      await expectAuditEvents(page, baseUrl, "operators", ["Configuró su autenticador", "Restableció el autenticador de un operador",
-        "Usó un código de recuperación", "Confirmó su identidad"]);
-      setStage("Ingresos: con el autenticador y con un código de recuperación");
-      await expectAuditEvents(page, baseUrl, "signins", ["Ingresó con el autenticador", "Ingresó con un código de recuperación"]);
+      const events = Object.values(authenticatorAuditEvents);
+      for (const type of new Set(events.map((event) => event.type))) {
+        setStage(`busca los eventos del segundo factor del tipo ${type}`);
+        await expectAuditEvents(page, baseUrl, type, events.filter((event) => event.type === type).map((event) => event.summary));
+      }
     }],
     ["E9-9: una cuota baja frena «Guardar» de un rol con su cuenta y el reintento es a mano", async (page, setStage) => {
       const operatorContext = await newCaseContext(env.browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
