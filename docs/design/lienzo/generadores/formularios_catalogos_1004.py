@@ -284,7 +284,7 @@ def ficha_cat():
              '<div class="w-cmp"><span class="rt">Descripción</span><div class="ct area">Por qué se visita a un cliente.</div></div>'
              '<div class="w-cmp"><span class="rt">Descripción en inglés</span><div class="ct area ph">Opcional</div></div></div></div>'
              '<div class="w-caja"><div class="k-caja-cab"><span>Lo usan</span></div><div class="g-det">'
-             '<span class="k">Visita a cliente</span><span><a href="FRM-Ficha.dc.html">Pregunta 5 · Motivo</a></span></div></div></div></sc-if>')
+             '<span class="k">Visita a cliente</span><span><a href="FRM-Editor.dc.html">Pregunta 5 · Motivo</a></span></div></div></div></sc-if>')
     tabs = ('<div class="o-tabs ficha" role="tablist">'
             '<a class="{{tabOp}}" role="tab" aria-selected="{{selOp}}" onClick="{{verOpciones}}">Opciones <span class="c">{{cant}}</span></a>'
             '<a class="{{tabDa}}" role="tab" aria-selected="{{selDa}}" onClick="{{verDatos}}">Datos</a></div>')
@@ -494,7 +494,7 @@ def filtros_cat():
              '<div class="w-cmp"><span class="rt">Descripción</span><div class="ct area">Quién supervisa la visita.</div></div>'
              '<div class="w-cmp"><span class="rt">Descripción en inglés</span><div class="ct area ph">Opcional</div></div></div></div>'
              '<div class="w-caja"><div class="k-caja-cab"><span>Lo usan</span></div><div class="g-det">'
-             '<span class="k">Visita a cliente</span><span><a href="FRM-Ficha.dc.html">Pregunta 7 · Supervisor a cargo</a></span></div></div></div></sc-if>')
+             '<span class="k">Visita a cliente</span><span><a href="FRM-Editor.dc.html">Pregunta 7 · Supervisor a cargo</a></span></div></div></div></sc-if>')
     tabs = ('<div class="o-tabs ficha" role="tablist">'
             '<a class="{{tabFi}}" role="tab" aria-selected="{{selFi}}" onClick="{{verFiltros}}">Filtros</a>'
             '<a class="{{tabDa}}" role="tab" aria-selected="{{selDa}}" onClick="{{verDatos}}">Datos</a></div>')

@@ -6,7 +6,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 7600
+ALTO = 7800
 ANCHO = 4440
 COLUMNAS = 3
 ARCHIVO = "Criterio-Decisiones.dc.html"
@@ -386,6 +386,19 @@ DECISIONES = {
         ("Biblioteca de la organización", "", "Tarjetas por categoría con buscador: nombre, descripción y cuántas preguntas y catálogos trae; sin plantillas, sin resultados, cargando y error.", "Dibujada"),
         ("Una plantilla", "", "Descripción, preguntas, catálogos que trae y vista previa. Sin permiso de catálogos, «Usar esta plantilla» apagado con ⓘ (en el teléfono, el motivo debajo).", "Dibujada"),
         ("Usar una plantilla", "", "Nombre y prefijo propuesto (si VIS está tomado, VIS2, con ⓘ); al crear abre la ficha del formulario nuevo, en borrador. Si se retiró en el medio, avisa y vuelve a la biblioteca.", "Dibujada"),
+    ],
+    "E12 · Formularios con la disposición de ArquitecturaBase · La Guía y el usuario · 17/10": [
+        ("Disposición", "", "Copia la del lienzo «Formularios por WhatsApp» de ArquitecturaBase: qué hay en cada zona, qué va en un diálogo y los estados. Reemplaza las pantallas del 13/10, que pasan al Archivo. Donde choca con una regla del lienzo, manda la del lienzo.", "Dibujada"),
+        ("Diseñar formularios", "", "El panel dice «Diseñar formularios». Tabla Formulario, Preguntas, En WhatsApp y Último cambio; el nombre abre el editor, sin columna de acciones. Regla del lienzo: el estado se filtra con «Estado ▾», no con el segmentado de allá.", "Dibujada"),
+        ("Editor", "", "Una sola pantalla en lugar de la ficha con pestañas, Inglés y el diálogo de la pregunta: «Textos en» (Español · original | English con lo que falta), el formulario, las preguntas que se abren en el lugar y «Así lo ve el empleado» al costado. Regla del lienzo: Editar, Subir, Bajar y Quitar van en el ⋮.", "Dibujada"),
+        ("Idioma", "", "Solo el idioma original es obligatorio; la traducción es opcional y nunca frena. Si no está completa, el formulario sale entero en español.", "Dibujada"),
+        ("Guardar", "", "Guardado, no se guardó (lo escrito se conserva), guardado sin confirmar con «Consultar guardado» y, si otra persona guardó, la revisión: «Qué cambió | Guardado actualmente | Mis cambios».", "Dibujada"),
+        ("Publicar", "", "«Publicar la versión N en WhatsApp»: qué cambia, en qué idioma sale, qué queda fijo y qué va a pasar, con la hora del borrador que se publica. Comprobando, primero guardá, una pregunta que no se puede mostrar (con el botón apagado), venció, cambió después de comprobar y ya se está publicando.", "Dibujada"),
+        ("Cómo termina", "", "Arriba del editor, los pasos Aceptada, Enviada a WhatsApp, WhatsApp la revisa y Lista para mandar. Rechazada con «Ir a la pregunta»; sin confirmar con «Consultar ahora», nunca «Reintentar»; necesita revisión. La vista oficial va al costado, con «Borrador | Versión N en WhatsApp».", "Dibujada"),
+        ("Enviar desde el chat", "", "«Enviar formulario» al lado de «Enviar» en Internos. El diálogo: tarjetas con «Versión N · K preguntas» (buscador y paginado si son muchos), el idioma de su cuenta, el mensaje prellenado (hasta 1024) y hasta cuándo se puede mandar. Reglas del lienzo: el motivo de un botón apagado va en su ⓘ y el diálogo va sin descripción arriba.", "Dibujada"),
+        ("Después de enviar", "", "La burbuja lleva la tarjeta del formulario; abajo, En cola, Leído, No se pudo mandar (con ⓘ, sin reintento) o Envío sin confirmar con «Ya lo revisé», que pide confirmación. Pedido incierto: «Consultar envío». Con el diálogo abierto: ventana cerrada y formulario que ya no está.", "Dibujada"),
+        ("La respuesta", "", "Tarjeta con las primeras 3 en grilla, «Ver las N respuestas» y «Guardada como VIS-000123»; guardando, no se pudo guardar, no reconocida, sin permiso, en inglés y el mensaje que ya no está. El encabezado del chat sigue el de la E11 (teléfono · Empleado · empresa).", "Dibujada"),
+        ("Teléfono", "", "«Diseñar formularios» con las mismas columnas; el editor en una sola pantalla, la pregunta en una hoja y los botones fijos abajo. «Enviar formulario» sigue en el ⋮ del chat (C, 13/10) y «Ver las N respuestas» abre la hoja en grilla (B, 13/10).", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

@@ -602,7 +602,7 @@ def boton_nuevo(abierto=False):
     b = f'<a class="cb cb-pri" href="#" aria-haspopup="menu" aria-expanded="{"true" if abierto else "false"}">{F.MAS} Nuevo formulario {F.CHEV}</a>'
     if not abierto:
         return b
-    return (b + f'<div class="f-menu" role="menu" aria-label="Nuevo formulario"><a class="f-mi" role="menuitem" href="FRM-Nuevo.dc.html">{F.ICONO} Desde cero</a>'
+    return (b + f'<div class="f-menu" role="menu" aria-label="Nuevo formulario"><a class="f-mi" role="menuitem" href="FRM-Editor.dc.html">{F.ICONO} Desde cero</a>'
             f'<a class="f-mi" role="menuitem" href="FRM-Biblioteca.dc.html">{F.LISTA} Desde una plantilla</a></div>')
 
 

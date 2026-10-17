@@ -849,7 +849,7 @@
       "x": 10640,
       "y": 260,
       "w": 4440,
-      "h": 7600,
+      "h": 7800,
       "title": "Criterio · Decisiones por pantalla",
       "page": "criterio"
     },
@@ -1661,124 +1661,131 @@
       "y": 260,
       "w": 1440,
       "h": 900,
-      "title": "Formularios · /org/formularios",
-      "page": "formularios"
+      "title": "Formularios · diseñar formularios",
+      "page": "formularios",
+      "is_interactive": true
     },
     "FRM-Nuevo.dc.html": {
+      "x": 0,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · nuevo formulario · reemplazado (E12, 17/10)",
+      "page": "archivo"
+    },
+    "FRM-Ficha.dc.html": {
       "x": 1520,
       "y": 260,
       "w": 1440,
       "h": 900,
-      "title": "Formularios · nuevo formulario",
-      "page": "formularios"
+      "title": "Formularios · ficha · /org/formularios/:id · reemplazado (E12, 17/10)",
+      "page": "archivo"
     },
-    "FRM-Ficha.dc.html": {
+    "FRM-Pregunta.dc.html": {
       "x": 3040,
       "y": 260,
       "w": 1440,
       "h": 900,
-      "title": "Formularios · ficha · /org/formularios/:id",
-      "page": "formularios"
+      "title": "Formularios · agregar o editar una pregunta · reemplazado (E12, 17/10)",
+      "page": "archivo"
     },
-    "FRM-Pregunta.dc.html": {
+    "FRM-Ingles.dc.html": {
       "x": 4560,
       "y": 260,
       "w": 1440,
       "h": 900,
-      "title": "Formularios · agregar o editar una pregunta",
-      "page": "formularios"
+      "title": "Formularios · ficha · Inglés · reemplazado (E12, 17/10)",
+      "page": "archivo"
     },
-    "FRM-Ingles.dc.html": {
+    "FRM-Prefijo.dc.html": {
       "x": 6080,
       "y": 260,
       "w": 1440,
       "h": 900,
-      "title": "Formularios · ficha · Inglés",
-      "page": "formularios"
-    },
-    "FRM-Prefijo.dc.html": {
-      "x": 7600,
-      "y": 260,
-      "w": 1440,
-      "h": 900,
-      "title": "Formularios · prefijo de numeración",
-      "page": "formularios"
+      "title": "Formularios · prefijo de numeración · reemplazado (E12, 17/10)",
+      "page": "archivo"
     },
     "FRM-Publicar.dc.html": {
-      "x": 9120,
+      "x": 3040,
       "y": 260,
       "w": 1440,
-      "h": 900,
-      "title": "Formularios · publicar (comprobación)",
-      "page": "formularios"
+      "h": 1400,
+      "title": "Formularios · publicar en WhatsApp",
+      "page": "formularios",
+      "is_interactive": true
     },
     "FRM-Publicacion.dc.html": {
-      "x": 10640,
-      "y": 260,
-      "w": 1440,
-      "h": 900,
-      "title": "Formularios · ficha · Publicación",
-      "page": "formularios"
-    },
-    "WA-Chats-Formulario.dc.html": {
       "x": 0,
       "y": 1280,
       "w": 1440,
       "h": 900,
-      "title": "WhatsApp · Internos · mandar formulario",
-      "page": "formularios"
+      "title": "Formularios · ficha · Publicación · reemplazado (E12, 17/10)",
+      "page": "archivo"
+    },
+    "WA-Chats-Formulario.dc.html": {
+      "x": 0,
+      "y": 1780,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · enviar un formulario",
+      "page": "formularios",
+      "is_interactive": true
     },
     "WA-Chats-Respuesta.dc.html": {
       "x": 1520,
-      "y": 1280,
+      "y": 1780,
       "w": 1440,
       "h": 900,
       "title": "WhatsApp · Internos · respuesta del formulario",
-      "page": "formularios"
+      "page": "formularios",
+      "is_interactive": true
     },
     "M-FRM-Listado.dc.html": {
+      "x": 0,
+      "y": 2800,
+      "w": 390,
+      "h": 844,
+      "title": "Diseñar formularios · teléfono",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "M-FRM-Ficha.dc.html": {
       "x": 0,
       "y": 2300,
       "w": 390,
       "h": 844,
-      "title": "Formularios · teléfono",
-      "page": "formularios"
+      "title": "Formularios · ficha · teléfono · reemplazado (E12, 17/10)",
+      "page": "archivo"
     },
-    "M-FRM-Ficha.dc.html": {
+    "M-FRM-Pregunta.dc.html": {
       "x": 470,
       "y": 2300,
       "w": 390,
       "h": 844,
-      "title": "Formularios · ficha · teléfono",
-      "page": "formularios"
-    },
-    "M-FRM-Pregunta.dc.html": {
-      "x": 940,
-      "y": 2300,
-      "w": 390,
-      "h": 844,
-      "title": "Formularios · pregunta · teléfono",
-      "page": "formularios"
+      "title": "Formularios · pregunta · teléfono · reemplazado (E12, 17/10)",
+      "page": "archivo"
     },
     "M-WA-Chats-Formulario.dc.html": {
-      "x": 1410,
-      "y": 2300,
+      "x": 940,
+      "y": 2800,
       "w": 390,
       "h": 844,
-      "title": "WhatsApp · Internos · mandar formulario · teléfono",
-      "page": "formularios"
+      "title": "WhatsApp · Internos · enviar un formulario · teléfono",
+      "page": "formularios",
+      "is_interactive": true
     },
     "M-WA-Conversacion-Respuesta.dc.html": {
-      "x": 1880,
-      "y": 2300,
+      "x": 1410,
+      "y": 2800,
       "w": 390,
       "h": 844,
       "title": "WhatsApp · Internos · respuesta del formulario · teléfono",
-      "page": "formularios"
+      "page": "formularios",
+      "is_interactive": true
     },
     "FRM-Catalogos.dc.html": {
       "x": 0,
-      "y": 3320,
+      "y": 3820,
       "w": 1440,
       "h": 900,
       "title": "Formularios · Catálogos",
@@ -1786,7 +1793,7 @@
     },
     "FRM-Catalogo-Nuevo.dc.html": {
       "x": 1520,
-      "y": 3320,
+      "y": 3820,
       "w": 1440,
       "h": 900,
       "title": "Formularios · nuevo catálogo",
@@ -1794,7 +1801,7 @@
     },
     "FRM-Catalogo.dc.html": {
       "x": 3040,
-      "y": 3320,
+      "y": 3820,
       "w": 1440,
       "h": 900,
       "title": "Formularios · catálogo a mano",
@@ -1802,7 +1809,7 @@
     },
     "FRM-Catalogo-Opcion.dc.html": {
       "x": 4560,
-      "y": 3320,
+      "y": 3820,
       "w": 1440,
       "h": 900,
       "title": "Formularios · opción de un catálogo",
@@ -1810,7 +1817,7 @@
     },
     "FRM-Catalogo-Filtros.dc.html": {
       "x": 6080,
-      "y": 3320,
+      "y": 3820,
       "w": 1440,
       "h": 900,
       "title": "Formularios · catálogo con filtros",
@@ -1818,7 +1825,7 @@
     },
     "M-FRM-Catalogos.dc.html": {
       "x": 0,
-      "y": 4340,
+      "y": 4840,
       "w": 390,
       "h": 844,
       "title": "Catálogos · teléfono",
@@ -1826,7 +1833,7 @@
     },
     "M-FRM-Catalogo.dc.html": {
       "x": 470,
-      "y": 4340,
+      "y": 4840,
       "w": 390,
       "h": 844,
       "title": "Catálogo a mano · teléfono",
@@ -1834,7 +1841,7 @@
     },
     "M-FRM-Catalogo-Opcion.dc.html": {
       "x": 940,
-      "y": 4340,
+      "y": 4840,
       "w": 390,
       "h": 844,
       "title": "Opción de un catálogo · teléfono",
@@ -1842,7 +1849,7 @@
     },
     "M-FRM-Catalogo-Filtros.dc.html": {
       "x": 1410,
-      "y": 4340,
+      "y": 4840,
       "w": 390,
       "h": 844,
       "title": "Catálogo con filtros · teléfono",
@@ -1898,7 +1905,7 @@
     },
     "FRM-Biblioteca.dc.html": {
       "x": 0,
-      "y": 5360,
+      "y": 5860,
       "w": 1440,
       "h": 900,
       "title": "Formularios · biblioteca",
@@ -1906,7 +1913,7 @@
     },
     "FRM-Plantilla.dc.html": {
       "x": 1520,
-      "y": 5360,
+      "y": 5860,
       "w": 1440,
       "h": 900,
       "title": "Formularios · una plantilla",
@@ -1914,7 +1921,7 @@
     },
     "FRM-Plantilla-Usar.dc.html": {
       "x": 3040,
-      "y": 5360,
+      "y": 5860,
       "w": 1440,
       "h": 900,
       "title": "Formularios · usar una plantilla",
@@ -1922,7 +1929,7 @@
     },
     "M-FRM-Biblioteca.dc.html": {
       "x": 0,
-      "y": 6380,
+      "y": 6880,
       "w": 390,
       "h": 844,
       "title": "Formularios · biblioteca · teléfono",
@@ -1930,7 +1937,7 @@
     },
     "M-FRM-Plantilla.dc.html": {
       "x": 470,
-      "y": 6380,
+      "y": 6880,
       "w": 390,
       "h": 844,
       "title": "Formularios · una plantilla · teléfono",
@@ -1943,6 +1950,89 @@
       "h": 844,
       "title": "Plataforma · biblioteca de formularios · teléfono",
       "page": "plat-formularios"
+    },
+    "FRM-Listado-v127.dc.html": {
+      "x": 1520,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · /org/formularios · versión 127",
+      "page": "archivo"
+    },
+    "FRM-Publicar-v127.dc.html": {
+      "x": 3040,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · publicar (comprobación) · versión 127",
+      "page": "archivo"
+    },
+    "WA-Chats-Formulario-v127.dc.html": {
+      "x": 4560,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · mandar formulario · versión 127",
+      "page": "archivo"
+    },
+    "WA-Chats-Respuesta-v127.dc.html": {
+      "x": 6080,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · respuesta del formulario · versión 127",
+      "page": "archivo"
+    },
+    "M-FRM-Listado-v127.dc.html": {
+      "x": 940,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Formularios · teléfono · versión 127",
+      "page": "archivo"
+    },
+    "M-WA-Chats-Formulario-v127.dc.html": {
+      "x": 1410,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "WhatsApp · Internos · mandar formulario · teléfono · versión 127",
+      "page": "archivo"
+    },
+    "M-WA-Conversacion-Respuesta-v127.dc.html": {
+      "x": 1880,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "WhatsApp · Internos · respuesta del formulario · teléfono · versión 127",
+      "page": "archivo"
+    },
+    "FRM-Editor.dc.html": {
+      "x": 1520,
+      "y": 260,
+      "w": 1440,
+      "h": 1400,
+      "title": "Formularios · editor",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "FRM-Publicando.dc.html": {
+      "x": 4560,
+      "y": 260,
+      "w": 1440,
+      "h": 1400,
+      "title": "Formularios · cómo termina una publicación",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "M-FRM-Editor.dc.html": {
+      "x": 470,
+      "y": 2800,
+      "w": 390,
+      "h": 844,
+      "title": "Editor del formulario · teléfono",
+      "page": "formularios",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -2101,6 +2191,15 @@
       "maxW": 8000,
       "text": "Plataforma · Formularios",
       "page": "plat-formularios"
+    },
+    "t-archivo": {
+      "kind": "title1",
+      "x": 0,
+      "y": 0,
+      "w": 1200,
+      "maxW": 8000,
+      "text": "Archivo · versiones anteriores, solo de referencia",
+      "page": "archivo"
     }
   },
   "order": [
@@ -2326,7 +2425,17 @@
     "FRM-Plantilla-Usar.dc.html",
     "M-FRM-Biblioteca.dc.html",
     "M-FRM-Plantilla.dc.html",
-    "M-Plat-FRM-Biblioteca.dc.html"
+    "M-Plat-FRM-Biblioteca.dc.html",
+    "FRM-Listado-v127.dc.html",
+    "FRM-Publicar-v127.dc.html",
+    "WA-Chats-Formulario-v127.dc.html",
+    "WA-Chats-Respuesta-v127.dc.html",
+    "M-FRM-Listado-v127.dc.html",
+    "M-WA-Chats-Formulario-v127.dc.html",
+    "M-WA-Conversacion-Respuesta-v127.dc.html",
+    "FRM-Editor.dc.html",
+    "FRM-Publicando.dc.html",
+    "M-FRM-Editor.dc.html"
   ],
   "pages": [
     {
@@ -2372,6 +2481,10 @@
     {
       "id": "reglas",
       "name": "Textos y mensajes"
+    },
+    {
+      "id": "archivo",
+      "name": "Archivo"
     }
   ],
   "title": "Sistema visual · Multitenant"

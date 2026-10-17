@@ -1597,6 +1597,9 @@ def registrar(nombres):
 
 
 if __name__ == "__main__" and not sys.argv[1:]:
+    # Desde el 17/10 los tableros de la Etapa 12 los arma formularios_ab_1004.py (disposición de ArquitecturaBase);
+    # este archivo queda como biblioteca de piezas y no vuelve a escribirlos ni a moverlos del Archivo.
+    raise SystemExit("Los tableros de la E12 los arma generadores/formularios_ab_1004.py.")
     tableros = {"FRM-Listado": listado(), "FRM-Nuevo": nuevo(), "FRM-Ficha": ficha_final(), "FRM-Pregunta": pregunta(), "FRM-Ingles": ingles(), "FRM-Prefijo": prefijo(), "FRM-Publicar": publicar(), "FRM-Publicacion": publicacion(), "WA-Chats-Formulario": chat_formulario(), "WA-Chats-Respuesta": respuesta(), "M-FRM-Listado": tel_listado(), "M-FRM-Ficha": tel_ficha(), "M-FRM-Pregunta": tel_pregunta(), "M-WA-Chats-Formulario": tel_chat_formulario(), "M-WA-Conversacion-Respuesta": tel_respuesta()}
     for nombre, t in tableros.items():
         (PROJ / f"{nombre}.dc.html").write_text(t, encoding="utf-8")
