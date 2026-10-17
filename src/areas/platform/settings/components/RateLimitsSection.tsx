@@ -3,7 +3,7 @@ import { useController, useWatch, type Control, type FieldErrors } from "react-h
 import { useTranslation } from "react-i18next";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { NumberField } from "@/shared/ui/fields/NumberField";
-import { Section } from "@/shared/ui/Section";
+import { Section, SectionFields } from "@/shared/ui/Section";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { rateLimitProfiles, type RateLimitProfile, type RateLimitUnit } from "../lib/rateLimits";
 import type { SettingsForm } from "../pages/PlatformSettingsPage";
@@ -18,8 +18,10 @@ export function RateLimitsSection({ control, errors, onChange }: {
 }) {
   const { t } = useTranslation("platformSettings");
   const { phone } = useAppChrome();
-  return <Section title={t("rateLimits.title")} phone="inset">
-    <div role="group" aria-label={t("rateLimits.title")} className="md:overflow-hidden md:rounded-[10px] md:border md:border-[var(--borde)]">
+  // Tablero Config-Plat (.lim): la tabla en su recuadro, adentro del margen de la sección; en M-Config-Plat, las filas con
+  // el margen de la tarjeta.
+  return <Section title={t("rateLimits.title")} phone="inset"><SectionFields>
+    <div role="group" aria-label={t("rateLimits.title")} className={phone ? "flex flex-col gap-3" : "overflow-hidden rounded-[10px] border border-[var(--borde)]"}>
       {phone ? null : <div aria-hidden="true" className="grid grid-cols-[minmax(0,1fr)_140px_220px] gap-4 border-b border-[var(--borde-cab)] bg-[var(--cab)] px-4 py-2.5 text-[12px] font-semibold text-[var(--t2)]">
         <span>{t("rateLimits.columns.limit")}</span><span>{t("rateLimits.columns.requests")}</span><span>{t("rateLimits.columns.every")}</span>
       </div>}
@@ -29,7 +31,7 @@ export function RateLimitsSection({ control, errors, onChange }: {
         <RateLimitRow control={control} profile={profile.key} errors={errors?.[profile.key]} phone={phone} onChange={() => onChange(profile.key)} />
       </Fragment>)}
     </div>
-  </Section>;
+  </SectionFields></Section>;
 }
 
 function RateLimitRow({ control, profile, errors, phone, onChange }: {
