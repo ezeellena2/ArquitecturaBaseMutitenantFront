@@ -24,6 +24,16 @@ test("no repite un intervalo ya usado: espera al siguiente", async () => {
   assert.equal(second, totp(rfcSecret, stepAt(clock)));
 });
 
+test("el código inválido no sirve en el intervalo actual ni en los vecinos", () => {
+  const clock = 1_111_111_109_000; const keeper = createFactorKeeper({ now: () => clock });
+  keeper.remember("operador@example.test", rfcSecret);
+  const code = keeper.invalidCode("operador@example.test");
+  assert.match(code, /^\d{6}$/u);
+  for (const offset of [-2, -1, 0, 1, 2]) assert.notEqual(code, totp(rfcSecret, stepAt(clock) + offset));
+  assert.notEqual(keeper.invalidCode("operador@example.test", 1), code, "Cada intento escribe otro código.");
+  assert.throws(() => createFactorKeeper().invalidCode("otro@example.test"));
+});
+
 test("guardar los códigos conserva el intervalo y cada código de recuperación sale una vez", async () => {
   let clock = 1_000_000_000_000; const keeper = createFactorKeeper({ now: () => clock, sleep: async (ms) => { clock += ms; } });
   keeper.remember("operador@example.test", rfcSecret);

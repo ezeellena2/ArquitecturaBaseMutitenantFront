@@ -16,7 +16,8 @@ import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedLegal
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { runAssistantRealE2E } from "./test-e2e-real-assistant.mjs";
 import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
-import { completeOperatorFactor } from "./platform-factor-real.mjs";
+import { completeOperatorFactor, confirmRecentAuthenticationWhenAsked } from "./platform-factor-real.mjs";
+import { etapa9Cases } from "./test-e2e-real-e9.mjs";
 import { chromium } from "playwright";
 
 // Esta prueba arranca su propio AppHost y un PostgreSQL efímero, fuera del volumen Development.
@@ -531,7 +532,8 @@ async function acceptCurrentTerms(page) {
   }
 }
 
-async function loginThroughUi(page, email, access = "platform", onStage = () => {}) {
+/** El primer factor por pantalla: el correo, el código del pickup y «Verificar». */
+async function signInFirstFactor(page, email, access = "platform", onStage = () => {}) {
   page.setDefaultTimeout(30_000);
   await page.goto(new URL(access === "platform" ? "/plataforma" : access === "business" ? "/login/empresa" : "/login", baseUrl).href);
   await page.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
@@ -540,10 +542,19 @@ async function loginThroughUi(page, email, access = "platform", onStage = () => 
   await page.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
   await enterCode(page, await codeFromPickup(email, before));
   await page.getByRole("button", { name: "Verificar", exact: true }).click();
-  // E9: el operador completa el segundo factor (alta la primera vez) antes de entrar a Plataforma.
-  if (access === "platform") await completeOperatorFactor(page, email);
+}
+
+/**
+ * El ingreso completo. E9: el operador completa el segundo factor (alta la primera vez) antes de entrar a Plataforma;
+ * devuelve qué pidió («setup», «verify» o «recoveryCode»). `reauth: "manual"` deja «Confirmá que sos vos» al caso que lo prueba.
+ */
+async function loginThroughUi(page, email, access = "platform", onStage = () => {}, { factor = {}, reauth = "auto" } = {}) {
+  await signInFirstFactor(page, email, access, onStage);
+  const step = access === "platform" ? await completeOperatorFactor(page, email, factor) : undefined;
+  if (access === "platform" && reauth === "auto") await confirmRecentAuthenticationWhenAsked(page, email);
   await expectPath(page, access === "platform" ? "/plataforma" : access === "business" ? "/org" : "/", "ingreso real desde pantalla");
   await acceptCurrentTerms(page);
+  return step;
 }
 
 async function platformNavigate(page, panel, link) {
@@ -2382,6 +2393,9 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           }
         }]),
 
+        // E9 (I1): segundo factor, «Confirmá que sos vos», restablecer, cookies, permisos, Auditoría y, al final, la cuota.
+        ...etapa9Cases({ browser, baseUrl, readyFile, loginThroughUi, signInFirstFactor, signOut, platformNavigate, openPlatformAccount,
+          registerPerson, registerBusinessByEmail, expectPath, expectProfile }),
       ];
       const selectedAccountCases = onlyCase
         ? accountCases.filter(([name]) => onlyCase.split(",").some((term) => name.includes(term.trim())))
@@ -2390,7 +2404,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       for (const [name, journey] of selectedAccountCases) {
         let caseFinished;
         // A8 hace cuatro ingresos del mismo destino y respeta sus cuatro cooldowns de 60 s; comparte el presupuesto de los recorridos largos.
-        await t.test(name, { timeout: name.startsWith("5") || name.startsWith("A8:") ? 600_000 : 240_000 }, async (caseTest) => {
+        // E9 espera intervalos del autenticador, cooldowns del código y la ventana de una cuota.
+        await t.test(name, { timeout: name.startsWith("5") || name.startsWith("A8:") || name.startsWith("E9-") ? 600_000 : 240_000 }, async (caseTest) => {
           caseFinished = runCase(caseTest.signal, async () => {
             const accountContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
             let lastFailure = "";

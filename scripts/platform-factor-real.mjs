@@ -59,6 +59,20 @@ export function createFactorKeeper({ now = () => Date.now(), sleep = delay } = {
       operator.lastStep = step;
       return totp(operator.secret, step);
     },
+    /**
+     * Seis números que no sirven ni en el intervalo actual ni en los vecinos (el back tolera uno por lado): los intentos
+     * fallidos del bloqueo nunca aciertan por casualidad. Cada `attempt` da otro código.
+     */
+    invalidCode(email, attempt = 0) {
+      const operator = operators.get(email);
+      assert.ok(operator, "El operador no configuró su autenticador en esta corrida del entorno aislado.");
+      const step = stepAt(now());
+      const valid = new Set([-2, -1, 0, 1, 2].map((offset) => totp(operator.secret, step + offset)));
+      for (let candidate = attempt; ; candidate++) {
+        const code = String((123_456 + candidate * 7_919) % 1_000_000).padStart(6, "0");
+        if (!valid.has(code)) return code;
+      }
+    },
     /** Un código de recuperación sin usar; deja de estar disponible al tomarlo. */
     takeRecoveryCode(email) {
       const operator = operators.get(email);
@@ -70,6 +84,24 @@ export function createFactorKeeper({ now = () => Date.now(), sleep = delay } = {
 }
 
 export const factorKeeper = createFactorKeeper();
+
+/** «Confirmá que sos vos» (F2): el código del intervalo y «Confirmar»; espera a que el diálogo se cierre. */
+export async function confirmRecentAuthentication(page, email, { keeper = factorKeeper, timeout = 30_000 } = {}) {
+  const dialog = page.getByRole("dialog", { name: "Confirmá que sos vos", exact: true });
+  await dialog.waitFor({ timeout });
+  await fillOtp(page, await keeper.code(email));
+  await dialog.getByRole("button", { name: "Confirmar", exact: true }).click();
+  await dialog.waitFor({ state: "hidden", timeout });
+}
+
+/**
+ * Para los recorridos que no prueban F2: si una escritura sensible pide «Confirmá que sos vos» (la prueba del ingreso dura
+ * 10 minutos), Playwright la confirma antes de la acción siguiente y el recorrido sigue igual.
+ */
+export async function confirmRecentAuthenticationWhenAsked(page, email, { keeper = factorKeeper } = {}) {
+  await page.addLocatorHandler(page.getByRole("dialog", { name: "Confirmá que sos vos", exact: true }),
+    () => confirmRecentAuthentication(page, email, { keeper }));
+}
 
 /**
  * Después de verificar el código del correo en la puerta de Plataforma: configura el autenticador la primera vez (lee la
