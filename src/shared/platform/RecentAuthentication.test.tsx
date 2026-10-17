@@ -65,6 +65,8 @@ describe("Confirmá que sos vos", () => {
     // Nunca un diálogo encima de otro: el de la acción queda oculto detrás, con lo cargado.
     expect(screen.getAllByRole("dialog")).toEqual([confirm]);
     expect(form).not.toBeVisible();
+    // En la compu, sin ✕ (Cuenta-Plat); en el teléfono la lleva (M-Cuenta-Plat).
+    expect(within(confirm).getByRole("button", { name: "Cerrar" })).toHaveClass("md:hidden");
     expect(await axe(container)).toHaveNoViolations();
 
     typeCode("123456");
@@ -128,6 +130,8 @@ describe("Confirmá que sos vos", () => {
     expect(within(confirm).getByRole("button", { name: "Confirmar" })).toBeDisabled();
     expect(within(confirm).getByRole("button", { name: "Usar un código de recuperación" })).toBeDisabled();
     expect(screen.getByRole("textbox", { name: "Código 1" })).toBeDisabled();
+    // Cuenta-Plat («demasiados intentos»): el bloqueo dice su error sin marcar las casillas, que van apagadas en gris.
+    expect(screen.getByRole("textbox", { name: "Código 1" })).not.toHaveAttribute("aria-invalid");
   });
 
   it("después de confirmar, el 409 de otra persona llega al formulario como siempre", async () => {
@@ -202,6 +206,9 @@ describe("Confirmá que sos vos", () => {
     const confirm = await screen.findByRole("dialog", { name: "Confirmá que sos vos" });
     expect(confirm).toHaveTextContent("Para guardar la configuración, escribí el código de tu app de autenticación.");
     expect(confirm).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(within(confirm).getByRole("button", { name: "Cerrar" })).toBeInTheDocument();
+    // Mientras espera la confirmación, «Guardar cambios» de atrás no se ve «Guardando…» (Config-Plat).
+    expect(screen.getByRole("button", { name: "Guardar cambios", hidden: true }).closest("[data-slot=fixed-actions]")).not.toBeNull();
     typeCode("123456");
     await user.click(within(confirm).getByRole("button", { name: "Confirmar" }));
     await waitFor(() => expect(bodies).toHaveLength(2));

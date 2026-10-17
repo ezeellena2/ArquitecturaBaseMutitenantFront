@@ -125,7 +125,8 @@ function FactorVerify({ onFailure, onVerified }: { onFailure: (error: ApiError) 
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("platformFactor.verifyTitle")}</h1>
       <p id={hintId} className="mt-1.5 text-sm leading-normal text-[var(--t2)]">{t(app ? "platformFactor.verifyApp" : "platformFactor.verifyRecovery")}</p>
     </div>
-    {app ? <OtpInput length={codeLength} value={code} variant="auth" label={t("common:code.label")} invalid={verification.invalid} disabled={blocked || verification.pending}
+    {/* Tablero Ingreso («Operador: demasiados códigos incorrectos»): con la cuenta bloqueada, las casillas van marcadas. */}
+    {app ? <OtpInput length={codeLength} value={code} variant="auth" label={t("common:code.label")} invalid={verification.invalid || blocked} disabled={blocked || verification.pending}
       aria-describedby={hintId} onChange={(next) => { setCode(next); setIncomplete(false); if (verification.invalid) verification.clear(); }} />
       : <div className="flex flex-col gap-1.5">
         <label htmlFor={recoveryId} className="text-[13px] font-medium text-[var(--t1)]">{t("platformFactor.recoveryLabel")}</label>

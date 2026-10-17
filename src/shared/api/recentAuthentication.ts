@@ -82,6 +82,16 @@ export function useRecentAuthentication(): PendingRecentAuthentication | null {
   return useSyncExternalStore(subscribe, snapshot, snapshot);
 }
 
+/**
+ * Lo que una pantalla muestra «en curso»: mientras su escritura espera «Confirmá que sos vos», nada. La escritura sigue
+ * pendiente, pero «Publicar» o «Guardar cambios» y el formulario de atrás se ven como antes de tocarlos (tableros Legales
+ * y Config-Plat).
+ */
+export function useVisiblePending(pending: boolean): boolean {
+  const confirming = useRecentAuthentication() !== null;
+  return pending && !confirming;
+}
+
 /** El formulario de una acción sensible dice para qué es la confirmación mientras está montado («Para guardar …»). */
 export function useRecentAuthenticationPurpose(text: string): void {
   useEffect(() => {

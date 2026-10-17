@@ -81,18 +81,20 @@ function RecentAuthenticationDialog({ purpose }: { purpose: string | null }) {
   const failure = error && !fieldError ? apiErrorMessage(error, t) : null;
 
   return <Dialog open recentAuthentication onOpenChange={(open) => { if (!open) settleRecentAuthentication(false); }}>
-    <DialogContent size="sm" showCloseButton={false}>
+    {/* M-Cuenta-Plat: en el teléfono la hoja lleva ✕, que cancela como «Cancelar»; en la compu, sin ✕ (Cuenta-Plat). */}
+    <DialogContent size="sm" showCloseButton="phone">
       <DialogHeader><DialogTitle>{t("recentAuthentication.title")}</DialogTitle></DialogHeader>
       <form noValidate onSubmit={(event) => { event.preventDefault(); void submit(); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <DialogDescription id={hintId}>{t(app ? "recentAuthentication.app" : "recentAuthentication.recovery", { purpose: reason })}</DialogDescription>
+          {/* Bloqueada la cuenta, las casillas y el enlace van apagados, en gris, sin marcar en rojo (Cuenta-Plat). */}
           {app ? <OtpInput length={codeLength} value={code} variant="auth" label={t("code.label")} autoFocus disabled={locked || verify.isPending}
-            error={fieldError} aria-describedby={hintId} onChange={(next) => { setCode(next); setIncomplete(false); if (!locked) setError(null); }} />
+            error={fieldError} marked={locked ? false : undefined} aria-describedby={hintId} onChange={(next) => { setCode(next); setIncomplete(false); if (!locked) setError(null); }} />
             : <FormField label={t("recentAuthentication.recoveryLabel")} error={fieldError ?? undefined}>
               <Input autoComplete="off" spellCheck={false} placeholder="XXXX-XXXX" value={recovery} disabled={verify.isPending} autoFocus
                 className="h-11 font-mono tracking-[0.08em]" onChange={(event) => { setRecovery(event.target.value); setIncomplete(false); setError(null); }} />
             </FormField>}
-          <Button type="button" variant="link" className="self-start text-[13.5px] leading-[normal]" disabled={locked} onClick={toggle}>
+          <Button type="button" variant="link" className="self-start text-[13.5px] leading-[normal] disabled:text-[var(--t3)] disabled:no-underline disabled:opacity-100" disabled={locked} onClick={toggle}>
             {t(app ? "recentAuthentication.useRecovery" : "recentAuthentication.useApp")}
           </Button>
           <FormError message={failure} />

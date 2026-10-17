@@ -33,7 +33,7 @@ import { fetchPlatformSettings, platformSettingsKey, updatePlatformSettings } fr
 import { RateLimitsSection } from "../components/RateLimitsSection";
 import { draftsOf, rateLimitBounds, rateLimitProfiles, rateLimitsInput, sameRateLimits, validPermitLimit, validWindow } from "../lib/rateLimits";
 import { useFormat, type FormatState } from "@/shared/format/useFormat";
-import { useRecentAuthenticationPurpose } from "@/shared/api/recentAuthentication";
+import { useRecentAuthenticationPurpose, useVisiblePending } from "@/shared/api/recentAuthentication";
 
 function settingsFormSchema(t: TFunction, format: FormatState) {
   // Validación exacta del tablero Config-Plat; NumberField y EmailField normalizan la entrada.
@@ -83,6 +83,8 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
   const consumer = useController({ control: form.control, name: "consumerSignup" }); const business = useController({ control: form.control, name: "businessSignup" });
   const count = useController({ control: form.control, name: "maxOwnedOrganizations" }); const sales = useController({ control: form.control, name: "salesEmail" }); const support = useController({ control: form.control, name: "supportEmail" });
   const [failure, setFailure] = useState<unknown>(); const [confirmation, setConfirmation] = useState<SettingsConfirmation | null>(null); const [busy, setBusy] = useState(false);
+  // Mientras espera «Confirmá que sos vos», «Guardar cambios» se ve como antes (tablero Config-Plat).
+  const visiblyBusy = useVisiblePending(busy);
   const active = useMountedRef(); const draft = useRef(0); const choice = useRef<SettingsConfirmation | null>(null);
   const ownRead = useRef<{ previous: PlatformSettingsResponse; saved: PlatformSettingsResponse } | null>(null);
   function eligible(): boolean { return active.current && edit.canAct()
@@ -142,7 +144,7 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
   return <>
     <Page icon={SlidersHorizontalIcon} title={t("platformSettings:title")} summary={edit.unsaved} phoneSubtitle={t("platformSettings:administration")}
       backTo={phone ? { to: "/plataforma/mas", label: t("platformSettings:back") } : undefined} banner={edit.banner}
-      actions={<><Button type="button" variant="outline" onClick={discard}>{t("platformSettings:discard")}</Button><Button type="submit" form="platform-settings-editor" disabled={!isDirty} pending={busy} pendingLabel={t("platformSettings:saving")}>{t("platformSettings:save")}</Button></>}>
+      actions={<><Button type="button" variant="outline" onClick={discard}>{t("platformSettings:discard")}</Button><Button type="submit" form="platform-settings-editor" disabled={!isDirty} pending={visiblyBusy} pendingLabel={t("platformSettings:saving")}>{t("platformSettings:save")}</Button></>}>
       {loadError ? <FormError message={apiErrorMessage(loadError, t)} /> : null}{edit.formError}
       <form id="platform-settings-editor" noValidate aria-label={t("platformSettings:title")} onSubmit={(event) => { void submit(event); }} className="flex flex-col gap-3.5">
         <Section title={t("platformSettings:signupTitle")} phone="inset"><SectionFields className="grid gap-3.5 lg:grid-cols-2 lg:gap-x-5">

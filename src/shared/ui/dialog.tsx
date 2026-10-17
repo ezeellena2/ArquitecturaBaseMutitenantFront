@@ -66,8 +66,9 @@ function DialogContent({
   onInteractOutside,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  /** `"desktop"`: la ✕ solo en la compu, para un diálogo que en el teléfono es la hoja de una confirmación (Cuenta-Baja). */
-  showCloseButton?: boolean | "desktop"
+  /** `"desktop"`: la ✕ solo en la compu, para un diálogo que en el teléfono es la hoja de una confirmación (Cuenta-Baja).
+   *  `"phone"`: la ✕ solo en la hoja del teléfono, para un diálogo que en la compu va sin ella (M-Cuenta-Plat). */
+  showCloseButton?: boolean | "desktop" | "phone"
   /** «Criterio · Diálogos», Los dos anchos: el chico de 420 (uno o dos campos, y confirmaciones) o el normal de 560.
    *  La única excepción es `preview`, de 640: la vista previa de la Página pública, con la tarjeta de la página pública
    *  tal cual sobre su fondo (tablero Pagina-Org, «Borrador: vista previa», v107). */
@@ -100,7 +101,7 @@ function DialogContent({
       >
         {/* Tablero M-Usuarios-Invitar (.ap-hoja): en el teléfono la hoja sube desde abajo con su manija. */}
         <span data-slot="dialog-handle" aria-hidden="true" className="mx-auto mt-2 mb-1 h-[5px] w-9 rounded-full bg-[var(--borde2)] md:hidden" />
-        <PhoneCloseContext.Provider value={showCloseButton === true}>{children}</PhoneCloseContext.Provider>
+        <PhoneCloseContext.Provider value={showCloseButton === true || showCloseButton === "phone"}>{children}</PhoneCloseContext.Provider>
         {/* Hojas del teléfono (.ap-hoja .hc .ap-ib): el ✕ de 44, con su cruz de 22, va centrado con el título: debajo de
             la manija (17) y de los 4 de arriba del encabezado, a 6 del borde. En la compu («Criterio · Diálogos», .ib), de
             32 y gris, a 8 del borde. Es la ✕ de los tableros, con trazo 2. */}
@@ -109,7 +110,8 @@ function DialogContent({
             data-slot="dialog-close"
             className={cn(
               "absolute top-[21px] right-1.5 flex size-11 items-center justify-center rounded-full text-[var(--t1)] md:top-2 md:right-2 md:size-8 md:rounded-[8px] md:text-[var(--t2)] transition-colors hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
-              showCloseButton === "desktop" && "max-md:hidden md:flex"
+              showCloseButton === "desktop" && "max-md:hidden md:flex",
+              showCloseButton === "phone" && "md:hidden"
             )}
           >
             <CloseIcon strokeWidth={2} className="size-[22px] md:size-4" />

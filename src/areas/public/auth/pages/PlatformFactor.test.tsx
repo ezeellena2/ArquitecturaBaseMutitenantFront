@@ -158,6 +158,8 @@ describe("Segundo factor del operador", () => {
     expect(await screen.findByText("Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos.")).toBeVisible();
     expect(screen.getByText("Probá de nuevo en 15 minutos.")).toBeVisible();
     expect(screen.getByRole("textbox", { name: "Código 1" })).toBeDisabled();
+    // Tablero Ingreso: con la cuenta bloqueada, las casillas van marcadas en rojo.
+    expect(screen.getByRole("textbox", { name: "Código 1" })).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByRole("button", { name: "Verificar" })).toBeDisabled();
   });
 

@@ -30,7 +30,7 @@ export function ResetAuthenticatorDialog({ account, returnFocusTo, onClose, onRe
     }
   }, { meta: { handlesError: true }, sameOperation: (previous, next) => previous.version === next.version && previous.reason === next.reason });
   return <ReasonDialog title={t("operator.resetTitle", { name: accountLabel(account, t) })} description={t("operator.resetDescription")}
-    confirmLabel={t("operator.resetButton")} pendingLabel={t("operator.resetting")} destructive returnFocusTo={returnFocusTo}
+    confirmLabel={t("operator.resetButton")} pendingLabel={t("operator.resetting")} destructive returnFocusTo={returnFocusTo} phoneCloseButton
     queryRoot={accountsQueryRoot} stateConflictCodes={accountStateConflictCodes} onClose={() => onClose(conflict.current)}
     mutationFn={(values) => reset.mutateAsync({ version, reason: values.reason })} onSuccess={(response) => { if (active.current) onReset(response); }} />;
 }

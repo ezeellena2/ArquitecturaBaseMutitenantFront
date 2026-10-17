@@ -33,7 +33,7 @@ import { LegalPublicationOwner } from "../components/LegalPublicationOwner";
 import { legalErrorField } from "../errors";
 import { samePublication, type LegalPublicationOperation } from "../lib/legalPublication";
 import { nextVersion } from "../lib/legalVersions";
-import { useRecentAuthenticationPurpose } from "@/shared/api/recentAuthentication";
+import { useRecentAuthenticationPurpose, useVisiblePending } from "@/shared/api/recentAuthentication";
 
 const legalDocumentMaxLength = validationConstraints.LegalDocumentContentHttpRequest.text.maxLength;
 function contentLabel(culture: CultureReference, t: TFunction) {
@@ -89,7 +89,8 @@ function LegalVersionEditor({ initialKind, cultures, documents }: { initialKind:
     if (field) setError(field, { type: "server", message: error.detail ?? "" }); else setFailure(error);
     },
   });
-  const busy = action.isPending;
+  // Mientras espera «Confirmá que sos vos», el formulario y «Publicar» se ven como antes (tablero Legales).
+  const busy = useVisiblePending(action.isPending);
   const number = nextVersion(documents.find((document) => document.kind === kind.field.value));
   const name = t(`enums:LegalDocumentKind.${kind.field.value}`);
   // «Confirmá que sos vos» (Legales): «Para publicar la versión 3 de Términos y condiciones, …».
@@ -110,7 +111,7 @@ function LegalVersionEditor({ initialKind, cultures, documents }: { initialKind:
   }
   const confirm = () => {
     const values = form.getValues();
-    if (!confirmation || busy || !active.current || !edit.canAct() || !samePublication(confirmation, { kind: values.kind, effectiveOn: values.effectiveOn ?? "", contents: values.contents, draft: draft.current })) return;
+    if (!confirmation || action.isPending || !active.current || !edit.canAct() || !samePublication(confirmation, { kind: values.kind, effectiveOn: values.effectiveOn ?? "", contents: values.contents, draft: draft.current })) return;
     choice.current = true;
     setOperation(confirmation);
   };

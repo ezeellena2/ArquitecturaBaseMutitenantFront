@@ -21,6 +21,9 @@ interface OtpInputProps {
   "aria-describedby"?: string;
   /// `auth`: el ingreso y el registro, con las casillas a todo el ancho. Por defecto, el código de un diálogo.
   variant?: "default" | "auth";
+  /// Si las casillas van marcadas (aria-invalid y borde rojo). Por defecto, con `invalid` o con `error`. El bloqueo de
+  /// «Confirmá que sos vos» dice su error debajo sin marcarlas: las casillas van apagadas, en gris (tablero Cuenta-Plat).
+  marked?: boolean;
 }
 
 // Tableros Ingreso y Registro (y sus M-*): seis casillas a todo el ancho, de 44, radio 8 y número de 22, también en el
@@ -32,7 +35,7 @@ interface OtpInputProps {
 const layout = {
   auth: {
     group: "grid grid-cols-6 gap-2",
-    box: "h-11 w-full rounded-[8px] text-[22px] max-md:h-11 max-md:rounded-[8px] max-md:text-[22px] aria-invalid:bg-[var(--peligro-t)]",
+    box: "h-11 w-full rounded-[8px] text-[22px] max-md:h-11 max-md:rounded-[8px] max-md:text-[22px] aria-invalid:bg-[var(--peligro-t)] disabled:aria-invalid:bg-[var(--s2)]",
   },
   default: {
     group: "flex gap-2 max-md:grid max-md:grid-cols-6",
@@ -50,13 +53,14 @@ export function OtpInput({
   disabled,
   invalid,
   error,
+  marked: markedProp,
   autoFocus,
   "aria-describedby": hintId,
   variant = "default",
 }: OtpInputProps) {
   const boxes = useRef<(HTMLInputElement | null)[]>([]);
   const errorId = useId();
-  const marked = invalid || Boolean(error);
+  const marked = markedProp ?? (invalid || Boolean(error));
   const describedBy = [hintId, error ? errorId : null].filter(Boolean).join(" ") || undefined;
   const normalizedValue = value.replace(/\D/gu, "").slice(0, length);
   const digits = normalizedValue.padEnd(length, " ").split("");
@@ -129,7 +133,8 @@ export function OtpInput({
           onChange={(event) => handleChange(index, event)}
           onKeyDown={(event) => handleKeyDown(index, event)}
           onPaste={handlePaste}
-          className={cn(layout[variant].box, "border-[var(--borde2)] p-0 text-center font-semibold max-md:px-0 aria-invalid:border-[var(--peligro)] disabled:border-[var(--borde2)] disabled:bg-[var(--s2)] disabled:text-[var(--t3)] disabled:opacity-100")}
+          // Apagadas y marcadas (el bloqueo del ingreso, tablero Ingreso): el borde rojo sobre el gris de apagadas.
+          className={cn(layout[variant].box, "border-[var(--borde2)] p-0 text-center font-semibold max-md:px-0 aria-invalid:border-[var(--peligro)] disabled:border-[var(--borde2)] disabled:bg-[var(--s2)] disabled:text-[var(--t3)] disabled:opacity-100 disabled:aria-invalid:border-[var(--peligro)]")}
         />
       ))}
     </div>

@@ -32,6 +32,8 @@ export interface ReasonDialogProps<TData> {
   blockedReason?: ReactNode;
   meta?: MutationMeta;
   date?: { initialValue?: string | null };
+  /** La ✕ en la hoja del teléfono, como las de operador de M-Cuenta-Plat; en la compu ninguna lleva ✕. */
+  phoneCloseButton?: boolean;
   mutationFn: (values: ReasonDialogValues) => Promise<TData>;
   onSuccess: (data: TData, values: ReasonDialogValues) => void | Promise<void>;
 }
@@ -49,7 +51,7 @@ const serverFields: Record<string, keyof ReasonForm> = { reason: "reason", expir
 /** Confirmación con motivo de Plataforma (§11). Se monta sólo abierta. El caller recibe la respuesta original antes
  * del cierre: la versión de esa respuesta es la base siguiente, aunque la relectura de fondo tenga otra. */
 export function ReasonDialog<TData>({ title, description, confirmLabel, pendingLabel, destructive, onClose, returnFocusTo,
-  queryRoot, stateConflictCodes, blockedReason, meta, date, mutationFn, onSuccess }: ReasonDialogProps<TData>) {
+  queryRoot, stateConflictCodes, blockedReason, meta, date, phoneCloseButton = false, mutationFn, onSuccess }: ReasonDialogProps<TData>) {
   const { t } = useTranslation("common");
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const { failure, clear, fail, close } = useDialogFailure(onClose, queryRoot, stateConflictCodes);
@@ -79,7 +81,7 @@ export function ReasonDialog<TData>({ title, description, confirmLabel, pendingL
   });
 
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}>
-    <DialogContent size="sm" showCloseButton={false} onCloseAutoFocus={restoreFocus}>
+    <DialogContent size="sm" showCloseButton={phoneCloseButton ? "phone" : false} onCloseAutoFocus={restoreFocus}>
       <DialogHeader><DialogTitle>{title}</DialogTitle></DialogHeader>
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
