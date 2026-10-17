@@ -8,41 +8,41 @@
     {
       "tablero": "FRM-Catalogo-Nuevo",
       "tweaks": {
-        "estado": "Con filtros"
+        "estado": "Tomarlas de los miembros"
       },
-      "resaltar": ".w-dlg button.cb-pri:has-text(\"Crear catálogo\")",
+      "resaltar": ".w-dlg a.cb-pri:has-text(\"Continuar\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Elige tomarlas de los miembros",
-      "texto": "«Supervisores» no se escribe a mano: sale de los miembros de la organización, con condiciones.",
-      "avanzar": "Tocá «Crear catálogo».",
+      "texto": "«Supervisores» no se escribe a mano: sale de los miembros de la organización que cumplen los filtros.",
+      "avanzar": "Tocá «Continuar».",
       "ruta": "/org/formularios/catalogos",
-      "accion": "Crea el catálogo."
+      "accion": "Elige los miembros."
     },
     {
       "tablero": "FRM-Catalogo-Filtros",
       "tweaks": {
-        "estado": "Tres opciones"
+        "estado": "Sin cambios"
       },
-      "resaltar": "button.k-mas",
+      "resaltar": ".k-conds",
       "actor": "Lucía · Dueña · web",
-      "titulo": "Arma la condición",
-      "texto": "«Si el rol tiene alguno de: Supervisor». Al costado, «Como si lo recibiera» muestra lo que le llegaría a Tomás: 3 opciones.",
-      "avanzar": "Tocá «Agregar condición».",
+      "titulo": "Arma las condiciones",
+      "texto": "«Si el rol tiene alguno de: Supervisor» y «activo es Sí». Al costado, «Como si lo recibiera» muestra lo que le llegaría a una persona.",
+      "avanzar": "Siguiente.",
       "ruta": "/org/formularios/catalogos",
-      "accion": "Agrega una condición."
+      "accion": "Arma las condiciones."
     },
     {
       "tablero": "FRM-Catalogo-Filtros",
       "tweaks": {
-        "estado": "Dos condiciones"
+        "estado": "Elegir a quién"
       },
-      "resaltar": ".ac button.cb-pri:has-text(\"Guardar cambios\")",
+      "resaltar": ".k-prev",
       "actor": "Lucía · Dueña · web",
-      "titulo": "Suma otra condición",
-      "texto": "«y la empresa está en alguna de: Delta S.A.». Ahora le llegan 2 opciones.",
-      "avanzar": "Tocá «Guardar cambios».",
+      "titulo": "Prueba con una persona",
+      "texto": "Elige a quién probar y toca «Probar»: ve las opciones que le llegarían, sin cambiar sus permisos.",
+      "avanzar": "Siguiente.",
       "ruta": "/org/formularios/catalogos",
-      "accion": "Guarda los cambios."
+      "accion": "Prueba con Tomás."
     },
     {
       "tablero": "FRM-Catalogo-Filtros",
@@ -51,10 +51,10 @@
       },
       "actor": "Lucía · Dueña · web",
       "titulo": "Si salen demasiadas",
-      "texto": "Con más de 200 opciones avisa: se puede guardar, pero ese formulario no se va a poder mandar a esa persona.",
+      "texto": "Con más de 200 opciones no se guarda: WhatsApp no acepta más. Hay que ajustar los filtros.",
       "avanzar": "Fin del recorrido.",
       "ruta": "/org/formularios/catalogos",
-      "accion": "Ve el aviso de más de 200."
+      "accion": "Ajusta los filtros."
     }
   ]
 }

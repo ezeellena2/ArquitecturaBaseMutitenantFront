@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 128 · 17 de octubre de 2026"
+VERSION = "versión 129 · 17 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -39,11 +39,11 @@ CAPITULOS = [
          "El enlace de un solo uso que manda el bot para entrar."),
     ]),
     ("persona", "Su perfil personal", "Lo que ve una persona como persona, separado de lo que ve como empresa.", [
-        ("inicio-personal", "Inicio personal", "/", "si", "3", ["Inicio-Personal"], ["M-Inicio-Personal"], [],
+        ("inicio-personal", "Inicio personal", "/", "si", "3", ["Inicio-Personal"], ["M-Inicio-Personal"], ["M-Mas-Personal"],
          "Con el aviso para sumar un correo propio si solo entra con el de la empresa. El contenido llega con los módulos."),
-        ("cuenta", "Mi cuenta", "/cuenta", "parte", "3, 8 y 10", ["Cuenta"], ["M-Cuenta"], ["Cuenta-Agregar", "Cuenta-Verificar", "Cuenta-Metodo", "Cuenta-Baja"],
+        ("cuenta", "Mi cuenta", "/cuenta", "parte", "3, 8 y 10", ["Cuenta"], ["M-Cuenta"], ["Cuenta-Agregar", "Cuenta-Verificar", "Cuenta-Metodo", "Cuenta-Baja", "M-Cuenta-Agregar", "M-Cuenta-Verificar", "M-Cuenta-Metodo", "M-Cuenta-Baja"],
          "Tus datos, cómo entrás y privacidad. Agregar, verificar, quitar y dar de baja van en diálogos. WhatsApp es de la Etapa 8 y exportar, de la 10."),
-        ("mensajes-persona", "Mensajes", "/mensajes", "no", "11", ["WA-Mensajes"], ["M-WA-Mensajes"], [],
+        ("mensajes-persona", "Mensajes", "/mensajes", "no", "11", ["WA-Mensajes"], ["M-WA-Mensajes"], ["M-WA-Mensaje"],
          "Las charlas de la persona con las organizaciones por WhatsApp, solo para leer, con «Seguir en WhatsApp»."),
     ]),
     ("empresa", "Registra su empresa", "La persona da de alta su organización y queda como Dueña.", [
@@ -87,19 +87,19 @@ CAPITULOS = [
     ]),
     ("whatsapp", "Atiende por WhatsApp", "El módulo de WhatsApp de cada organización: chats con clientes y empleados, contactos, difusiones, bot y números.", [
         ("wa-chats", "Chats", "WhatsApp › Chats", "no", "11", ["WA-Chats"], ["M-WA-Chats"],
-         ["WA-Chats-SinTomar", "WA-Chats-Nota", "WA-Chats-Pasar", "WA-Chats-24h", "WA-Chats-Plantilla", "M-WA-Conversacion", "M-WA-Chats-SinTomar", "M-WA-Chats-Nota", "M-WA-24h"],
+         ["WA-Chats-SinTomar", "WA-Chats-Nota", "WA-Chats-Pasar", "WA-Chats-24h", "WA-Chats-Plantilla", "M-WA-Conversacion", "M-WA-Chats-SinTomar", "M-WA-Chats-Nota", "M-WA-24h", "M-WA-Chats-Pasar", "M-WA-Chats-Plantilla", "M-WA-Menu"],
          "Las bandejas Clientes | Internos, tomar un chat (y si lo tomó otra persona), pasarlo, la nota interna, la ventana de 24 horas, las fotos, audios y documentos como «Mandó…», el número desconectado y sin medio de pago."),
-        ("wa-contactos", "Contactos", "WhatsApp › Contactos", "no", "11", ["WA-Contactos"], ["M-WA-Contactos"], ["WA-Contacto", "WA-Contactos-Importar", "M-WA-Contacto"],
+        ("wa-contactos", "Contactos", "WhatsApp › Contactos", "no", "11", ["WA-Contactos"], ["M-WA-Contactos"], ["WA-Contacto", "WA-Contactos-Importar", "M-WA-Contacto", "M-WA-Contactos-Importar"],
          "Quién escribió, con sus etiquetas y si acepta promociones; la ficha de cada contacto e importar."),
         ("wa-difusiones", "Difusiones", "WhatsApp › Difusiones", "no", "11", ["WA-Difusiones"], ["M-WA-Difusiones"], ["WA-Difusion-Nueva", "WA-Difusion-Resultados", "M-WA-Difusion-Nueva", "M-WA-Difusion-Resultados"],
          "Mensajes a muchos contactos que aceptaron, con la vista previa, el costo y los resultados."),
-        ("wa-numeros", "Números y alta con Meta", "Administración › WhatsApp", "no", "11", ["WA-Admin"], ["M-WA-Admin"], ["WA-Alta", "WA-Alta-Meta", "WA-Alta-Coexistencia", "WA-Admin-Pago", "WA-Admin-Vacio"],
+        ("wa-numeros", "Números y alta con Meta", "Administración › WhatsApp", "no", "11", ["WA-Admin"], ["M-WA-Admin"], ["WA-Alta", "WA-Alta-Meta", "WA-Alta-Coexistencia", "WA-Admin-Pago", "WA-Admin-Vacio", "M-WA-Alta", "M-WA-Admin-Pago", "M-WA-Admin-Vacio"],
          "Conectar un número con la ventana de Meta, a quién atiende, el medio de pago, los 1.000 gratis del mes y desconectarlo."),
-        ("wa-bot", "Bot", "Administración › WhatsApp", "no", "11", ["WA-Respuestas"], ["M-WA-Respuestas"], ["WA-Bot-Recorrido", "M-WA-Bot-Recorrido"],
+        ("wa-bot", "Bot", "Administración › WhatsApp", "no", "11", ["WA-Respuestas"], ["M-WA-Respuestas"], ["WA-Bot-Recorrido", "M-WA-Bot-Recorrido", "WA-Admin-Editar", "M-WA-Editar"],
          "Configuración | Recorrido: la bienvenida, el fuera de horario con sus días y la zona, y el menú de hasta 10 opciones que contesta o pasa a un equipo. No se apaga."),
-        ("wa-equipos", "Equipos", "Administración › WhatsApp", "no", "11", ["WA-Equipos"], ["M-WA-Equipos"], ["WA-Equipos-Crear"],
+        ("wa-equipos", "Equipos", "Administración › WhatsApp", "no", "11", ["WA-Equipos"], ["M-WA-Equipos"], ["WA-Equipos-Crear", "M-WA-Equipos-Crear"],
          "Quién atiende cada bandeja y cuándo avisar por correo si nadie toma un chat."),
-        ("wa-plantillas", "Plantillas", "Administración › WhatsApp", "no", "11", ["WA-Plantillas"], ["M-WA-Plantillas"], ["WA-Plantilla-Nueva"],
+        ("wa-plantillas", "Plantillas", "Administración › WhatsApp", "no", "11", ["WA-Plantillas"], ["M-WA-Plantillas"], ["WA-Plantilla-Nueva", "M-WA-Plantilla-Nueva"],
          "Los mensajes que aprueba Meta para escribir fuera de las 24 horas."),
         ("wa-telefonos", "Cargar teléfonos de empleados", "Usuarios › Cargar teléfonos", "no", "11", ["WA-Telefonos"], ["M-WA-Telefonos"], [],
          "En dos pasos: pegar o subir los números y ver qué pasa con cada uno, sin revelar quién tiene cuenta. Las invitaciones quedan en Usuarios."),
@@ -126,10 +126,10 @@ CAPITULOS = [
          "En un chat con un empleado: elegir el formulario y el mensaje, y la respuesta que vuelve al chat guardada con su número. En el teléfono, desde el ⋮."),
         ("frm-catalogos", "Catálogos", "Formularios › Catálogos", "no", "13", ["FRM-Catalogos"], ["M-FRM-Catalogos"], ["FRM-Catalogo-Nuevo"],
          "Las listas de opciones que comparten los formularios: escritas a mano o tomadas de los miembros con filtros, y si se pueden usar."),
-        ("frm-catalogo", "Un catálogo a mano", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo"], ["M-FRM-Catalogo"], ["FRM-Catalogo-Opcion", "M-FRM-Catalogo-Opcion"],
-         "Sus opciones con texto, detalle y código, en español e inglés. Se ordenan y se dan de baja sin borrarse."),
+        ("frm-catalogo", "Un catálogo escrito a mano", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo"], ["M-FRM-Catalogo"], [],
+         "Una sola pantalla: el catálogo, sus opciones que se abren en el lugar (texto, código y detalle), quién lo usa y cómo lo ve el empleado. Se ordenan y se dan de baja sin borrarse."),
         ("frm-catalogo-filtros", "Un catálogo con filtros", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo-Filtros"], ["M-FRM-Catalogo-Filtros"], [],
-         "Las condiciones sobre los miembros y «Como si lo recibiera», para probar qué opciones le llegan a una persona."),
+         "Las condiciones sobre los miembros y «Como si lo recibiera», para probar qué opciones le llegan a una persona. Con más de 200 no se guarda."),
         ("frm-biblioteca", "Biblioteca de plantillas", "Formularios › Nuevo formulario › Desde una plantilla", "no", "17", ["FRM-Biblioteca"], ["M-FRM-Biblioteca"],
          ["FRM-Plantilla", "M-FRM-Plantilla", "FRM-Plantilla-Usar"],
          "Las plantillas que publica la plataforma, por categoría. Usar una crea una copia propia en borrador, con sus catálogos."),
@@ -141,7 +141,7 @@ CAPITULOS = [
          "El mismo editor de los formularios, con sus catálogos y la publicación: versiones con motivo, publicar, retirar y volver a publicar."),
         ("plat-frm-categorias", "Categorías de formularios", "Administración › Formularios › Categorías", "no", "17", ["Plat-FRM-Categorias"], [], [],
          "La lista corta de categorías, con su orden. Todo pide motivo, y una categoría en uso no se borra."),
-        ("organizaciones", "Organizaciones", "/plataforma/organizaciones", "no", "5", ["Organizaciones"], ["M-Organizaciones"], [],
+        ("organizaciones", "Organizaciones", "/plataforma/organizaciones", "no", "5", ["Organizaciones"], ["M-Organizaciones"], ["M-Mas-Plat"],
          "Todas las organizaciones, con su Dueño, su origen y su estado. Aprobar, rechazar y crear."),
         ("organizacion", "Ficha de una organización", "/plataforma/organizaciones/:id", "no", "5", ["Organizacion"], ["M-Organizacion"], [],
          "Historial, Dueños, módulos (el Asistente dice qué clave usa), dominio verificado y página pública."),
@@ -158,7 +158,7 @@ CAPITULOS = [
         ("config-plat", "Configuración de la plataforma", "/plataforma/configuracion", "no", "5", ["Config-Plat"], ["M-Config-Plat"], [],
          "Registro de personas, alta de organizaciones, límites y los correos de contacto."),
         ("plat-wa", "WhatsApp de la plataforma", "WhatsApp › Consultas", "no", "11", ["Plat-WA-Chats"], ["M-Plat-WA-Chats"],
-         ["Plat-WA-Numero", "Plat-WA-Bot", "Plat-WA-Equipos", "Plat-WA-Plantillas", "Plat-WA-Alta", "M-Plat-WA-Conversacion", "M-Plat-WA-Numero"],
+         ["Plat-WA-Numero", "Plat-WA-Bot", "Plat-WA-Equipos", "Plat-WA-Plantillas", "Plat-WA-Alta", "M-Plat-WA-Conversacion", "M-Plat-WA-Numero", "Plat-WA-Bot-Recorrido", "M-Plat-WA-Alta", "M-Plat-WA-Bot", "M-Plat-WA-Equipos", "M-Plat-WA-Plantillas"],
          "Solo consultas, además de los códigos y avisos que manda el sistema: el número, el bot, los equipos y las plantillas."),
     ]),
     ("manda", "Lo que manda el sistema", "Los correos y los WhatsApp que recibe cada persona, y las palabras que se usan en pantalla.", [
