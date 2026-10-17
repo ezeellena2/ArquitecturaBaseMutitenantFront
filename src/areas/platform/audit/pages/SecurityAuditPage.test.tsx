@@ -48,25 +48,37 @@ async function openMenu(user: ReturnType<typeof userEvent.setup>, name: string) 
 }
 
 describe("SecurityAuditPage", () => {
-  // F3 (Etapa 9): el alta y el restablecimiento del autenticador, el uso de un código de recuperación y la reautenticación
-  // son eventos de Operadores, con el texto del back y el filtro de siempre; nunca muestran códigos ni secretos.
-  it("los eventos del segundo factor van en Operadores con su texto y su fecha", async () => {
+  // F3 (Etapa 9, Auditoria-Plat de la v125 y back 82493d8c): una fila por acción. El alta, las confirmaciones y los ingresos
+  // del segundo factor van en Ingresos, sin motivo; el restablecimiento va en Cuentas, con la cuenta restablecida y el motivo
+  // del operador. El texto es el del back, con el filtro de siempre; nunca muestran códigos ni secretos.
+  it("los eventos del segundo factor van en Ingresos con su texto y su fecha", async () => {
     const queries: URL[] = [];
     const events: PlatformAuditEventResponse[] = [
-      { ...event, id: "e-reset", type: "operators", action: "PlatformAuthenticatorReset", summary: "Restableció el autenticador", target: "Laura Díaz", actor: "Martín Sosa", reason: "Cambió de celular y perdió los códigos." },
-      { ...event, id: "e-setup", type: "operators", action: "PlatformAuthenticatorConfigured", summary: "Configuró el autenticador", target: "Laura Díaz", actor: "Laura Díaz", reason: null },
-      { ...event, id: "e-recovery", type: "operators", action: "PlatformRecoveryCodeUsed", summary: "Entró con un código de recuperación", target: "Laura Díaz", actor: "Laura Díaz", reason: null },
-      { ...event, id: "e-reauth", type: "operators", action: "PlatformReauthenticated", summary: "Confirmó que es él", target: "Martín Sosa", actor: "Martín Sosa", reason: null },
+      { ...event, id: "e-setup", type: "signins", action: "PlatformAuthenticatorConfigured", summary: "Configuró el autenticador", target: "Plataforma", actor: "Laura Díaz", reason: null },
+      { ...event, id: "e-reauth", type: "signins", action: "PlatformReauthenticated", summary: "Confirmó con el autenticador", target: "Plataforma", actor: "Martín Sosa", reason: null },
+      { ...event, id: "e-reauth-code", type: "signins", action: "PlatformRecoveryCodeUsed", summary: "Confirmó con un código de recuperación", target: "Plataforma", actor: "Martín Sosa", reason: null },
+      { ...event, id: "e-recovery", type: "signins", action: "SignIn", summary: "Ingresó con un código de recuperación", target: "Plataforma", actor: "Laura Díaz", reason: null },
     ];
     server.use(http.get("/api/platform/audit", ({ request }) => { queries.push(new URL(request.url)); return HttpResponse.json(page(events)); }));
-    const user = userEvent.setup();
-    mount("/plataforma/auditoria?type=operators");
-    expect(await screen.findByRole("button", { name: /Restableció el autenticador/u })).toBeVisible();
-    for (const summary of ["Configuró el autenticador", "Entró con un código de recuperación", "Confirmó que es él"]) expect(screen.getByRole("button", { name: new RegExp(summary, "u") })).toBeVisible();
-    expect(queries.at(-1)?.searchParams.get("type")).toBe("operators");
+    mount("/plataforma/auditoria?type=signins");
+    expect(await screen.findByRole("button", { name: /Configuró el autenticador/u })).toBeVisible();
+    for (const summary of ["Confirmó con el autenticador", "Confirmó con un código de recuperación", "Ingresó con un código de recuperación"]) expect(screen.getByRole("button", { name: new RegExp(summary, "u") })).toBeVisible();
+    expect(queries.at(-1)?.searchParams.get("type")).toBe("signins");
     expect(screen.getAllByText("26/09/2026 17:30").length).toBeGreaterThan(0);
-    await user.click(screen.getByRole("button", { name: /Restableció el autenticador/u }));
-    expect(await screen.findByRole("dialog")).toHaveTextContent("Cambió de celular y perdió los códigos.");
+  });
+
+  it("restablecer el autenticador va en Cuentas, sobre la cuenta restablecida y con el motivo del operador", async () => {
+    const queries: URL[] = [];
+    const reset: PlatformAuditEventResponse = { ...event, id: "e-reset", type: "accounts", action: "PlatformAuthenticatorReset", summary: "Restableció el autenticador",
+      target: "Laura Díaz", actor: "Martín Sosa", reason: "Cambió de celular y perdió los códigos." };
+    server.use(http.get("/api/platform/audit", ({ request }) => { queries.push(new URL(request.url)); return HttpResponse.json(page([reset])); }));
+    const user = userEvent.setup();
+    mount("/plataforma/auditoria?type=accounts");
+    await user.click(await screen.findByRole("button", { name: /Restableció el autenticador/u }));
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toHaveTextContent("Laura Díaz");
+    expect(dialog).toHaveTextContent("Cambió de celular y perdió los códigos.");
+    expect(queries.at(-1)?.searchParams.get("type")).toBe("accounts");
   });
 
   it("busca la organización 101 dentro del filtro y conserva la búsqueda del historial", async () => {
