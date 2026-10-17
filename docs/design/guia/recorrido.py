@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 127 · 17 de octubre de 2026"
+VERSION = "versión 128 · 17 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -116,14 +116,14 @@ CAPITULOS = [
          "El tope del mes y el uso por día y por persona; en Plataforma, el costo por organización. Nunca el texto de las conversaciones."),
     ]),
     ("formularios", "Diseña formularios", "Formularios que se completan dentro de WhatsApp: la organización los diseña, los publica y se los manda a sus empleados desde un chat. Los catálogos son las listas de opciones que comparten.", [
-        ("frm-listado", "Formularios", "/org/formularios", "no", "12", ["FRM-Listado"], ["M-FRM-Listado"], ["FRM-Nuevo"],
-         "Cada formulario con su prefijo, su estado y su última publicación. «Nuevo formulario» pide solo el nombre."),
-        ("frm-ficha", "Ficha de un formulario", "/org/formularios/:id", "no", "12", ["FRM-Ficha"], ["M-FRM-Ficha"], ["FRM-Pregunta", "FRM-Prefijo", "FRM-Ingles", "M-FRM-Pregunta"],
-         "Las preguntas con la vista previa del teléfono, el prefijo de las respuestas y los textos en inglés. Se guarda a mano."),
-        ("frm-publicar", "Publicar", "/org/formularios/:id", "no", "12", ["FRM-Publicar"], [], ["FRM-Publicacion"],
-         "La comprobación antes de publicar, y la pestaña Publicación con la versión en curso y la activa."),
-        ("frm-chat", "Mandar un formulario", "WhatsApp › Chats › Internos", "no", "12", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta"],
-         "En un chat con un empleado: elegir el formulario y el mensaje, y la respuesta que vuelve al chat con su número. En el teléfono, desde el ⋮."),
+        ("frm-listado", "Diseñar formularios", "/org/formularios", "no", "12", ["FRM-Listado"], ["M-FRM-Listado"], [],
+         "Cada formulario con sus preguntas, cómo está en WhatsApp y su último cambio. «Nuevo formulario» empieza desde cero o desde una plantilla."),
+        ("frm-editor", "Editor de un formulario", "/org/formularios/:id", "no", "12", ["FRM-Editor"], ["M-FRM-Editor"], [],
+         "Una sola pantalla: los textos en español (el inglés es opcional), el formulario, las preguntas que se abren en el lugar y cómo lo ve el empleado. Se guarda como borrador."),
+        ("frm-publicar", "Publicar en WhatsApp", "/org/formularios/:id", "no", "12", ["FRM-Publicar"], [], ["FRM-Publicando"],
+         "La comprobación antes de publicar y cómo termina: los pasos mientras WhatsApp la revisa, el rechazo con la pregunta marcada y la vista oficial."),
+        ("frm-chat", "Enviar un formulario", "WhatsApp › Chats › Internos", "no", "12", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta"],
+         "En un chat con un empleado: elegir el formulario y el mensaje, y la respuesta que vuelve al chat guardada con su número. En el teléfono, desde el ⋮."),
         ("frm-catalogos", "Catálogos", "Formularios › Catálogos", "no", "13", ["FRM-Catalogos"], ["M-FRM-Catalogos"], ["FRM-Catalogo-Nuevo"],
          "Las listas de opciones que comparten los formularios: escritas a mano o tomadas de los miembros con filtros, y si se pueden usar."),
         ("frm-catalogo", "Un catálogo a mano", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo"], ["M-FRM-Catalogo"], ["FRM-Catalogo-Opcion", "M-FRM-Catalogo-Opcion"],

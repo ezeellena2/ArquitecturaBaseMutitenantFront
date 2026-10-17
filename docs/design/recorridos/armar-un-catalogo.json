@@ -74,11 +74,11 @@
       "tweaks": {
         "estado": "Elegir el formulario"
       },
-      "resaltar": ".w-dlg button.cb-pri:has-text(\"Mandar\")",
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Enviar formulario\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Manda el formulario",
       "texto": "Desde un chat de Internos lo manda por WhatsApp. Las opciones se arman para la persona que lo recibe.",
-      "avanzar": "Tocá «Mandar».",
+      "avanzar": "Tocá «Enviar formulario».",
       "ruta": "/org/whatsapp/chats",
       "accion": "Manda el formulario."
     },
