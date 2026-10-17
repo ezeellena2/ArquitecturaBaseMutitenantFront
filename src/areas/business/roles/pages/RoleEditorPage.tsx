@@ -236,6 +236,8 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   const summary = role ? t("roles:scopeAndUsers", { scope: scopeInSentence(role), ...countOf(format, role.userCount) }) : undefined;
   const title = role ? role.name : t("roles:createTitle");
   const saving = create.isPending || update.isPending;
+  // P2: en la compu, arriba del formulario (Rol); en el teléfono, abajo, sobre los botones fijos (M-Rol).
+  const limitNotice = limit.isRunning && isRateLimitError(failure) ? <Banner tone="warning" role="alert">{apiErrorMessage(failure, t)}</Banner> : null;
 
   return <>
     <Page banner={edit.banner}
@@ -246,6 +248,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
       // Tablero Rol: «De sistema» o «Cambios sin guardar» antes de dónde vale; en el teléfono, con cambios, la barra lo dice.
       status={role?.isSystemRole ? t("roles:system") : edit.unsaved ?? undefined}
       phoneSubtitle={edit.unsaved ?? summary}
+      actionsNotice={phone ? limitNotice : undefined}
       actions={editable ? <>
         {role
           ? <Button type="button" variant="outline" onClick={discard}>{t("roles:discard")}</Button>
@@ -256,7 +259,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
     >
       <form id="role-editor" noValidate aria-label={title} onSubmit={(event) => { void submit(event); }} className="flex flex-col gap-3.5">
         {edit.formError}
-        {limit.isRunning && isRateLimitError(failure) ? <Banner tone="warning" role="alert">{apiErrorMessage(failure, t)}</Banner> : null}
+        {phone ? null : limitNotice}
         {permissionGroups.isError ? <FormError message={apiErrorMessage(permissionGroups.error, t)} /> : null}
         {/* Tablero Rol: nombre y «Vale en» en dos columnas a todo el ancho; la descripción ocupa las dos. En el teléfono
             (M-Rol), los datos van sueltos sobre blanco, sin título a la vista. */}

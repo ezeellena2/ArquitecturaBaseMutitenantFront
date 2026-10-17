@@ -56,6 +56,8 @@ interface PageProps {
   backTo?: { to: string; label: string };
   status?: ReactNode;
   actions?: ReactNode;
+  /** En el teléfono, un aviso pegado a la acción fija de abajo (M-Rol, el límite de uso). En la compu lo pone la pantalla. */
+  actionsNotice?: ReactNode;
   /** Ir a algo que vive afuera («Ver página»): en la compu, la primera de las acciones; en el teléfono, texto en la barra. */
   barAction?: { label: string; href?: string; onClick?: () => void };
   moreActions?: { label: string; items: readonly PageOverflowAction[] };
@@ -104,6 +106,7 @@ export function Page({
   backTo,
   status,
   actions,
+  actionsNotice,
   barAction,
   moreActions,
   banner,
@@ -183,7 +186,7 @@ export function Page({
           ve: el de useEditPage es siempre un fragmento, vacío si no hay nada que avisar. */}
       <div data-slot="page-banner" className="contents">{banner}</div>
       <AppBarLeadingToolsProvider value={leadingTools}><AppBarToolsProvider value={tools}><div className={cn(phoneBodyClasses[phoneBody], phoneBody === "padded" ? "[[data-slot=page-banner]:not(:empty)+&]:pt-3.5" : null)}>{content}</div></AppBarToolsProvider></AppBarLeadingToolsProvider>
-      {fab ? <Fab label={fab.label} onClick={fab.onClick} to={fab.to} /> : actions ? <FixedActions>{actions}</FixedActions> : null}
+      {fab ? <Fab label={fab.label} onClick={fab.onClick} to={fab.to} /> : actions ? <FixedActions notice={actionsNotice}>{actions}</FixedActions> : null}
     </div>);
   }
 

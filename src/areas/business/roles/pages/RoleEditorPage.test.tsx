@@ -331,6 +331,26 @@ describe("RoleEditorPage", () => {
     expect(sent).toHaveLength(2);
   }, 10_000);
 
+  // P2 en el teléfono (M-Rol «Guardar: demasiados pedidos»): la banda va abajo, sobre los botones fijos.
+  it("390: el aviso del límite va pegado a «Descartar cambios / Reintentá en …»", async () => {
+    const restore = asPhone();
+    try {
+      const user = userEvent.setup();
+      server.use(
+        http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+        http.get("/api/roles/role-custom", () => HttpResponse.json(role)),
+        http.put("/api/roles/role-custom", () => HttpResponse.json({ code: "Security.RateLimit.Exceeded", retryAfter: 41 }, { status: 429, headers: { "Retry-After": "41" } })),
+      );
+      renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+      const name = await screen.findByRole("textbox", { name: "Nombre" });
+      await user.clear(name); await user.type(name, "Nombre nuevo");
+      await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+      const notice = await screen.findByText("Hiciste muchos pedidos seguidos. Esperá un momento.");
+      expect(notice.closest("[data-slot=fixed-actions-notice]")).not.toBeNull();
+      expect(screen.getByRole("button", { name: /^Reintentá en 0:4\d$/u })).toBeDisabled();
+    } finally { restore(); }
+  });
+
   // concurrencia.md (E7): después de guardar, la base es la versión que respondió el guardado. Si otra persona guardó
   // justo después, la relectura trae su cambio con otra versión: no pasa a ser la base, el próximo guardado da 409 y la
   // persona elige con «Ver lo nuevo».
