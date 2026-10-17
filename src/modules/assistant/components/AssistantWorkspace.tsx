@@ -1,7 +1,10 @@
 import { Trans, useTranslation } from "react-i18next";
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { ApiError } from "@/shared/api/ApiError";
-import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
+import { actionErrorMessage, apiErrorMessage, isRateLimitError } from "@/shared/api/errorMessage";
+import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
+import { formatCountdown } from "@/shared/format/countdown";
+import { FormError } from "@/shared/ui/FormError";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { AppBarTools } from "@/shared/ui/app/AppBarTools";
@@ -33,14 +36,19 @@ export function AssistantWorkspace({ props, session, state }: { props: Assistant
   const notice = configured && (!state.noticeAccepted || code === "Assistant.Notice.AcceptanceRequired");
   const busy = operations.pending || runtime.isPending;
   const actionError = actionErrorMessage(operations.error, t);
-  const runtimeError = runtime.error && "code" in runtime.error && !runtime.blockedCode
+  // P2 (E9, Asistente-Org «Demasiadas consultas seguidas»): el aviso va arriba de la caja con la cuenta, porque mandar es un
+  // ícono; lo escrito queda y mandar vuelve a mano cuando termina.
+  const rateLimit = [operations.error, runtime.error].find(isRateLimitError) ?? null;
+  const limit = useRetryAfterOf(rateLimit);
+  const limitNotice = limit.isRunning ? <FormError tone="warning" message={t("rateLimited", { time: formatCountdown(limit.seconds) })} /> : null;
+  const runtimeError = runtime.error && "code" in runtime.error && !runtime.blockedCode && !isRateLimitError(runtime.error)
     ? runtime.error instanceof ApiError ? apiErrorMessage(runtime.error, t)
       : runtime.turn?.start ? null : assistantStreamErrorMessage(runtime.error, t) : null;
   const canViewUsage = scope.access === "business" ? props.hasPermission("assistant.configure") : scope.access === "platform" && props.hasPermission("platform.assistant.read");
   const history = <ConversationList scope={scope} lifetime={operations.lifetime} enabled={operations.active && state.noticeAccepted && code !== "Assistant.Notice.AcceptanceRequired"} selectedId={selectedId} retentionDays={state.retentionDays} onNew={() => select(null)} onSelect={select} actions={actions}
     onRetentionInfo={() => { setHistoryOpen(false); setRetentionOpen(true); }}
     onActions={phone ? (conversation) => { setHistoryOpen(false); setPhoneActions({ title: conversation.title ?? null, items: actions(conversation) }); } : undefined} />;
-  const composer = <><AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} pending={busy} canStop={runtime.canStop}
+  const composer = <><AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} sendBlocked={limit.isRunning} pending={busy} canStop={runtime.canStop}
     onFiles={(chosen) => {
       const issue = validateAssistantFiles(chosen, files.length, state);
       // El exceso permitido queda local para corregirlo; no admite un MIME
@@ -65,8 +73,8 @@ export function AssistantWorkspace({ props, session, state }: { props: Assistant
       {phone ? <><AppBarTools placement="leading"><AppIconButton ref={historyTrigger} label={t("history.title")} onClick={() => setHistoryOpen(true)}><Menu className="size-[22px]" /></AppIconButton></AppBarTools><AppBarTools><AppIconButton label={t("history.new")} onClick={() => select(null)}><SquarePen className="size-[22px]" /></AppIconButton></AppBarTools></> : null}
       {!configured ? <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5 max-md:h-full max-md:justify-center"><NotConfigured canConfigure={state.canConfigure} onConfigure={props.onConfigure} />{props.children}</div></div> : <>
         {selectedId ? <AssistantThread turn={runtime.turn} turnPending={runtime.isPending} messages={runtime.messages} links={{ scope, hasPermission: props.hasPermission, organizationIds: props.organizationIds, organizationNames: props.organizationNames, onOpenOrganization: props.onOpenOrganization }} canOpenLink={props.canOpenLink} pending={busy}
-          onDownload={download} retry={runtime.messages.at(-1)?.status === "Failed" && runtime.canSend && canRetryAssistantFailure(runtime.turn?.error) ? { messageId: runtime.messages.at(-1)!.id, retryAfter: runtime.turn?.error?.retryAfter, onRetry: retryFailed } : undefined} /> : <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5 max-md:min-h-full max-md:justify-center"><div className="mb-1 flex items-center justify-center gap-3 max-md:flex-col"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-5" aria-hidden="true" /></span><h2 className="text-center text-[26px] font-semibold">{t("welcome")}</h2></div>{props.welcome}{!phone ? limited ? <LimitReached organizationName={props.organizationName} monthly={monthly} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer : null}{queries}{props.children}</div></div>}
-        {selectedId || phone ? <div className="mx-auto flex w-full max-w-[824px] shrink-0 flex-col gap-3 px-5 pb-4 md:px-8">{limited ? <LimitReached organizationName={props.organizationName} monthly={monthly} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer}</div> : null}
+          onDownload={download} retry={runtime.messages.at(-1)?.status === "Failed" && runtime.canSend && canRetryAssistantFailure(runtime.turn?.error) ? { messageId: runtime.messages.at(-1)!.id, retryAfter: runtime.turn?.error?.retryAfter, onRetry: retryFailed } : undefined} /> : <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5 max-md:min-h-full max-md:justify-center"><div className="mb-1 flex items-center justify-center gap-3 max-md:flex-col"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-5" aria-hidden="true" /></span><h2 className="text-center text-[26px] font-semibold">{t("welcome")}</h2></div>{props.welcome}{!phone ? limited ? <LimitReached organizationName={props.organizationName} monthly={monthly} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : <>{limitNotice}{composer}</> : null}{queries}{props.children}</div></div>}
+        {selectedId || phone ? <div className="mx-auto flex w-full max-w-[824px] shrink-0 flex-col gap-3 px-5 pb-4 md:px-8">{limited ? <LimitReached organizationName={props.organizationName} monthly={monthly} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : <>{limitNotice}{composer}</>}</div> : null}
       </>}
       {actionError && !dialog && !notice ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{actionError}</p> : null}
       {runtimeError ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{runtimeError}</p> : null}

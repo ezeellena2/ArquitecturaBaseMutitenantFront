@@ -39,11 +39,13 @@ function ComposerFile() {
   </li></AttachmentPrimitive.Root>;
 }
 
-export function AttachmentComposer({ files, limits, errorId, placeholder, unavailable, pending, canStop, onFiles, onStop }: {
+export function AttachmentComposer({ files, limits, errorId, placeholder, unavailable, sendBlocked = false, pending, canStop, onFiles, onStop }: {
   limits: AssistantAttachmentLimits;
   placeholder: string;
   errorId?: string;
   files: readonly PendingAssistantFile[]; unavailable: boolean; pending: boolean; canStop: boolean;
+  /** Un límite de uso (E9, P2): mandar espera la cuenta del aviso; lo escrito queda y se puede seguir escribiendo. */
+  sendBlocked?: boolean;
   onFiles: (files: File[]) => void; onStop: () => void;
 }) {
   const { t } = useTranslation(["assistant", "common"]);
@@ -70,7 +72,7 @@ export function AttachmentComposer({ files, limits, errorId, placeholder, unavai
         // Antes de start todavía no hay un turno SDK. El servidor conserva la
         // detención diferida sin inventar un mensaje/turno para habilitar Cancel.
         : <Button type="button" variant="outline" size="icon" aria-label={t("composer.stop")} className="rounded-full" onClick={onStop}><Square className="size-3.5" aria-hidden="true" /></Button>
-        : <ComposerPrimitive.Send asChild><Button type="button" size="icon" className="rounded-full" disabled={unavailable} pending={pending} aria-label={pending ? t("common:states.saving") : t("composer.send")}
+        : <ComposerPrimitive.Send asChild><Button type="button" size="icon" className="rounded-full" disabled={unavailable || sendBlocked} pending={pending} aria-label={pending ? t("common:states.saving") : t("composer.send")}
           onClick={(event) => { if (!text.trim() || invalid) { event.preventDefault(); if (!text.trim()) setRequired(true); } }}><ArrowUp className="size-4" /></Button></ComposerPrimitive.Send>}
     </div>
   </ComposerPrimitive.Root>;

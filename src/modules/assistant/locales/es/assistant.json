@@ -382,5 +382,6 @@
       "name": "Ver el uso del asistente",
       "description": "Ver costos y consultas agregados sin leer conversaciones."
     }
-  }
+  },
+  "rateLimited": "Hiciste muchas consultas seguidas. Probá de nuevo en {{time}}."
 }

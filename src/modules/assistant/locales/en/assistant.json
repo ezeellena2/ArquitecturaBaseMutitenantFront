@@ -382,5 +382,6 @@
       "name": "View assistant usage",
       "description": "View aggregated costs and queries without reading conversations."
     }
-  }
+  },
+  "rateLimited": "You made many queries in a row. Try again in {{time}}."
 }

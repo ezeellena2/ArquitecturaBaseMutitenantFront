@@ -383,6 +383,20 @@ describe("interfaz del asistente", () => {
     expect(app.requests).toEqual([]);
   });
 
+  // P2 (E9, Asistente-Org «Demasiadas consultas seguidas»): mandar es un ícono, así que la cuenta va en el aviso, arriba de
+  // la caja; lo escrito queda y mandar espera. Nada se repite solo.
+  it("una consulta que choca con un límite avisa con la cuenta y deja mandar a mano cuando termina", async () => {
+    const app = setup();
+    let calls = 0;
+    server.use(http.post("/api/organization/assistant/quick/active_users", () => { calls++; return HttpResponse.json({ code: "Security.RateLimit.Exceeded", detail: "texto del back", retryAfter: 41 }, { status: 429, headers: { "Retry-After": "41" } }); }));
+    await app.user.click(await screen.findByRole("button", { name: "Usuarios activos" }));
+    expect(await screen.findByText("Hiciste muchas consultas seguidas. Probá de nuevo en 0:41.")).toBeVisible();
+    await app.user.type(screen.getByRole("textbox", { name: "Tu consulta" }), "¿Quiénes entraron esta semana?");
+    expect(screen.getByRole("textbox", { name: "Tu consulta" })).toHaveValue("¿Quiénes entraron esta semana?");
+    expect(screen.getByRole("button", { name: "Enviar" })).toBeDisabled();
+    expect(calls).toBe(1);
+  });
+
   it("sube cada archivo por separado y usa versiones de conversación releídas", async () => {
     const nativeForm = await new Request("http://localhost/form", { method: "POST", headers: { "content-type": "multipart/form-data; boundary=test" }, body: "--test--\r\n" }).formData();
     vi.stubGlobal("FormData", nativeForm.constructor);
