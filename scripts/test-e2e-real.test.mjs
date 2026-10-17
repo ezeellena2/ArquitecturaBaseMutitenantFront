@@ -16,7 +16,7 @@ import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedLegal
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { runAssistantRealE2E } from "./test-e2e-real-assistant.mjs";
 import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
-import { completeOperatorFactor, confirmRecentAuthenticationWhenAsked } from "./platform-factor-real.mjs";
+import { completeOperatorFactor } from "./platform-factor-real.mjs";
 import { etapa9Cases } from "./test-e2e-real-e9.mjs";
 import { chromium } from "playwright";
 
@@ -550,8 +550,7 @@ async function signInFirstFactor(page, email, access = "platform", onStage = () 
  */
 async function loginThroughUi(page, email, access = "platform", onStage = () => {}, { factor = {}, reauth = "auto" } = {}) {
   await signInFirstFactor(page, email, access, onStage);
-  const step = access === "platform" ? await completeOperatorFactor(page, email, factor) : undefined;
-  if (access === "platform" && reauth === "auto") await confirmRecentAuthenticationWhenAsked(page, email);
+  const step = access === "platform" ? await completeOperatorFactor(page, email, { ...factor, confirmWhenAsked: reauth === "auto" }) : undefined;
   await expectPath(page, access === "platform" ? "/plataforma" : access === "business" ? "/org" : "/", "ingreso real desde pantalla");
   await acceptCurrentTerms(page);
   return step;

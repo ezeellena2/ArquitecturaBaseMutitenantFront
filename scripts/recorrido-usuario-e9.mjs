@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
-import { checkByLabel, confirmRecentAuthentication, factorKeeper } from "./platform-factor-real.mjs";
+import { checkByLabel, confirmRecentAuthentication, confirmRecentAuthenticationWhenAsked, factorKeeper, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
 import { authenticatorAuditEvents, isOperatorWrite, openAccountActions, preparePermissions, watchResponses } from "./test-e2e-real-e9.mjs";
 
 // E9 en el recorrido de usuario (pedido del Coordinador de la 9 para el informe de la Guía): el primer ingreso de un
@@ -106,6 +106,8 @@ export async function runE9Journey({ platformPage: page, width, env, base, recor
       await awaitPlatformHome(page);
       await leavePlatform();
       await login(operator, "platform", page);
+      // E9-03 y E9-04 prueban «Confirmá que sos vos» a mano; después la pestaña vuelve a confirmarla sola.
+      await stopConfirmingRecentAuthentication(page);
       await awaitPlatformHome(page);
       const expired = await env.command("recent-proof", { kind: "expire", email: operator });
       assert.ok(expired?.expired >= 1, "El preparador vence la prueba reciente de la sesión del operador.");
@@ -122,6 +124,7 @@ export async function runE9Journey({ platformPage: page, width, env, base, recor
     });
     await step("04", async () => {
       await confirmRecentAuthentication(page, operator);
+      await confirmRecentAuthenticationWhenAsked(page, operator);
       await page.getByText(`Cambiamos los permisos de ${name}.`, { exact: true }).waitFor();
       assert.deepEqual(writes.statuses(), [403, 200], "Confirmado, el mismo guardado sale una sola vez más.");
       assert.ok(writes.seen.every((entry) => entry.key && entry.key === writes.seen[0].key), "Con la misma Idempotency-Key.");

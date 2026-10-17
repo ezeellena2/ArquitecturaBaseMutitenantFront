@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { chromium } from "playwright";
-import { base32Decode, checkByLabel, createFactorKeeper, stepAt, totp } from "./platform-factor-real.mjs";
+import { base32Decode, checkByLabel, confirmRecentAuthenticationWhenAsked, createFactorKeeper, stepAt, stopConfirmingRecentAuthentication, totp } from "./platform-factor-real.mjs";
 
 // RFC 6238, apéndice B: el secreto ASCII «12345678901234567890» con SHA-1; los seis dígitos de abajo de cada código.
 const rfcSecret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ";
@@ -66,5 +66,30 @@ test("marca una casilla de CheckboxField con un clic en su etiqueta", async () =
     // Ya marcada, no la desmarca.
     await checkByLabel(page, "Los guardé en un lugar seguro", { timeout: 2_000 });
     assert.equal(await checkbox.getAttribute("aria-checked"), "true");
+  } finally { await browser.close(); }
+});
+
+// «Confirmá que sos vos» en los recorridos que no prueban F2: la pestaña la confirma sola antes de la acción siguiente,
+// una sola vez aunque se instale dos veces, y deja de hacerlo cuando el caso la prueba a mano.
+test("la pestaña confirma sola «Confirmá que sos vos» y deja de hacerlo cuando se lo piden", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(`<button id="guardar" onclick="document.getElementById('confirmar').hidden = false">Guardar</button>
+      <div id="confirmar" role="dialog" aria-label="Confirmá que sos vos" hidden><div role="group" aria-label="Código">
+      ${"<input>".repeat(6)}</div><button onclick="window.confirmed = (window.confirmed ?? 0) + 1; this.parentElement.hidden = true">Confirmar</button></div>
+      <button id="otro">Otra acción</button>`);
+    const keeper = createFactorKeeper({ now: () => 1_111_111_109_000 });
+    keeper.remember("operador@example.test", rfcSecret);
+    await confirmRecentAuthenticationWhenAsked(page, "operador@example.test", { keeper });
+    await confirmRecentAuthenticationWhenAsked(page, "operador@example.test", { keeper });
+    await page.getByRole("button", { name: "Guardar" }).click();
+    await page.getByRole("button", { name: "Otra acción" }).click();
+    assert.equal(await page.evaluate(() => window.confirmed), 1);
+    await stopConfirmingRecentAuthentication(page);
+    await page.getByRole("button", { name: "Guardar" }).click();
+    await page.getByRole("button", { name: "Otra acción" }).click();
+    assert.equal(await page.getByRole("dialog", { name: "Confirmá que sos vos" }).isVisible(), true, "Apagada, la confirmación queda para el caso.");
+    assert.equal(await page.evaluate(() => window.confirmed), 1);
   } finally { await browser.close(); }
 });

@@ -108,21 +108,42 @@ export async function confirmRecentAuthentication(page, email, { keeper = factor
   await dialog.waitFor({ state: "hidden", timeout });
 }
 
+const confirmers = new WeakMap();
+
 /**
  * Para los recorridos que no prueban F2: si una escritura sensible pide «Confirmá que sos vos» (la prueba del ingreso dura
- * 10 minutos), Playwright la confirma antes de la acción siguiente y el recorrido sigue igual.
+ * 10 minutos), Playwright la confirma antes de la acción siguiente y el recorrido sigue igual. Una por pestaña: un ingreso
+ * nuevo en la misma pestaña reemplaza la anterior con el operador que entró.
  */
 export async function confirmRecentAuthenticationWhenAsked(page, email, { keeper = factorKeeper } = {}) {
-  await page.addLocatorHandler(page.getByRole("dialog", { name: "Confirmá que sos vos", exact: true }),
-    () => confirmRecentAuthentication(page, email, { keeper }));
+  await stopConfirmingRecentAuthentication(page);
+  const dialog = page.getByRole("dialog", { name: "Confirmá que sos vos", exact: true });
+  await page.addLocatorHandler(dialog, () => confirmRecentAuthentication(page, email, { keeper }));
+  confirmers.set(page, dialog);
+}
+
+/** Para el paso que prueba «Confirmá que sos vos» a mano: esa pestaña deja de confirmarla sola. */
+export async function stopConfirmingRecentAuthentication(page) {
+  const dialog = confirmers.get(page);
+  if (!dialog) return;
+  confirmers.delete(page);
+  await page.removeLocatorHandler(dialog);
 }
 
 /**
  * Después de verificar el código del correo en la puerta de Plataforma: configura el autenticador la primera vez (lee la
  * clave de la pantalla, guarda los ocho códigos en memoria y marca «Los guardé»), o escribe el código del intervalo. Si el
- * back todavía no pide el segundo factor, el ingreso sigue solo y no hace nada.
+ * back todavía no pide el segundo factor, el ingreso sigue solo y no hace nada. Lo comparten el E2E, el recorrido, el
+ * Asistente real y WhatsApp real: desde ahí, esa pestaña confirma sola «Confirmá que sos vos» cuando vence la prueba del
+ * ingreso. `confirmWhenAsked: false` la deja al caso que la prueba a mano.
  */
-export async function completeOperatorFactor(page, email, { keeper = factorKeeper, timeout = 30_000, recoveryCode } = {}) {
+export async function completeOperatorFactor(page, email, { confirmWhenAsked = true, ...options } = {}) {
+  const step = await passOperatorFactor(page, email, options);
+  if (confirmWhenAsked) await confirmRecentAuthenticationWhenAsked(page, email, { keeper: options.keeper ?? factorKeeper });
+  return step;
+}
+
+async function passOperatorFactor(page, email, { keeper = factorKeeper, timeout = 30_000, recoveryCode } = {}) {
   const setup = page.getByRole("heading", { name: "Protegé tu cuenta de operador", exact: true });
   const verify = page.getByRole("heading", { name: "Verificación en dos pasos", exact: true });
   const reached = await Promise.race([
