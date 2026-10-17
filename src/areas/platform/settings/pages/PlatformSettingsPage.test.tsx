@@ -28,7 +28,9 @@ async function send(user: ReturnType<typeof userEvent.setup>) {
   await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
 }
 
-describe("Configuración de Plataforma", () => {
+// Límite de 15 s: desde F4 la pantalla tiene los doce límites de uso con sus campos; sola tarda unos 2 s por test y con
+// toda la suite se acerca a los 5 s por defecto.
+describe("Configuración de Plataforma", { timeout: 15_000 }, () => {
   it("guarda desde una dirección con barra final, sin comparar la ruta a mano", async () => {
     const user = userEvent.setup(); renderRouteWithProviders("/plataforma/configuracion/", { as: "platform-operator" });
     await screen.findByRole("textbox", { name: "Correo de ventas" });

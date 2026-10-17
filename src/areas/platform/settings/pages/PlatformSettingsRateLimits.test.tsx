@@ -22,7 +22,9 @@ beforeEach(async () => {
 const field = (name: string) => screen.getByRole("textbox", { name });
 const type = (name: string, value: string) => fireEvent.change(field(name), { target: { value } });
 
-describe("Límites de uso", () => {
+// Límite de 15 s: desde F4 la pantalla tiene los doce límites de uso con sus campos; sola tarda unos 2 s por test y con
+// toda la suite se acerca a los 5 s por defecto.
+describe("Límites de uso", { timeout: 15_000 }, () => {
   it("muestra los doce perfiles agrupados con sus valores de arranque", async () => {
     const { container } = renderRouteWithProviders("/plataforma/configuracion", { as: "platform-operator" });
     const group = await screen.findByRole("group", { name: "Límites de uso" });

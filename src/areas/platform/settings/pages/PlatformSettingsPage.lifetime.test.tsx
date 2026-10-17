@@ -51,7 +51,9 @@ function retainedNativeRetry() {
   return () => { Reflect.apply(action.onClick, undefined, []); };
 }
 
-describe("Vida del guardado de Configuración", () => {
+// Límite de 15 s: desde F4 la pantalla tiene los doce límites de uso con sus campos; sola tarda unos 2 s por test y con
+// toda la suite se acerca a los 5 s por defecto.
+describe("Vida del guardado de Configuración", { timeout: 15_000 }, () => {
   it("cambiar motivo A→B→A antes de resolver validación abandona el envío original sin franja", async () => {
     let calls = 0; server.use(http.put("/api/platform/settings", () => { calls++; return HttpResponse.json({ version: 6 }); }));
     const user = userEvent.setup(); const page = await editor(); await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
