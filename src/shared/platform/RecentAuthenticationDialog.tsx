@@ -7,6 +7,7 @@ import { api, recentAuthenticationPath } from "@/shared/api/httpClient";
 import { registerRecentAuthenticationHost, settleRecentAuthentication, useRecentAuthentication } from "@/shared/api/recentAuthentication";
 import type { ApiSchemas } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
@@ -53,7 +54,9 @@ function RecentAuthenticationDialog({ purpose }: { purpose: string | null }) {
   const verify = useIdempotentMutation(confirm, { meta: { handlesError: true },
     sameOperation: (previous, next) => previous.method === next.method && previous.code === next.code });
   const app = method === "authenticator";
-  const locked = error?.code === "Identity.Account.LockedOut";
+  // El bloqueo de la cuenta (Identity.Account.LockedOut) dura lo que dice su Retry-After: mientras corre, todo va apagado.
+  const lock = useRetryAfterCountdown();
+  const locked = error?.code === "Identity.Account.LockedOut" && lock.isRunning;
   const reason = purpose ?? t("recentAuthentication.purposeDefault");
 
   async function submit() {
@@ -64,7 +67,9 @@ function RecentAuthenticationDialog({ purpose }: { purpose: string | null }) {
       await verify.mutateAsync({ method, code: value });
       settleRecentAuthentication(true);
     } catch (caught) {
-      if (caught instanceof ApiError) setError(caught);
+      if (!(caught instanceof ApiError)) return;
+      if (caught.code === "Identity.Account.LockedOut") lock.startFromError(caught);
+      setError(caught);
     }
   }
   function toggle() {
@@ -101,7 +106,7 @@ function RecentAuthenticationDialog({ purpose }: { purpose: string | null }) {
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => settleRecentAuthentication(false)}>{t("actions.cancel")}</Button>
-          <Button type="submit" disabled={locked} pending={verify.isPending} pendingLabel={t("recentAuthentication.confirming")}>{t("recentAuthentication.confirm")}</Button>
+          <Button type="submit" disabled={lock.isRunning} pending={verify.isPending} pendingLabel={t("recentAuthentication.confirming")}>{t("recentAuthentication.confirm")}</Button>
         </DialogFooter>
       </form>
     </DialogContent>

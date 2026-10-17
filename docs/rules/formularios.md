@@ -12,6 +12,7 @@
 - Listas se leen: editar/agregar abre diálogo; permisos de rol son la única lista de grupos plegables.
 - Editar: Descartar cambios + Guardar cambios; crear: Cancelar + acción. Guardar se apaga sin cambios, incluso si se revierte el orden con orderLike.
 - Crear no se apaga por vacío/invalidez; se valida al enviar. pending bloquea la espera real; sólo condiciones externas bloquean fuera de ella.
+- Dos motivos válidos se suman con `||`: «Guardar cambios» del Rol se apaga sin cambios y mientras corre la cuenta de un límite de uso (P2). El bloqueo de la cuenta en «Confirmá que sos vos» es la cuenta de su Retry-After (`useRetryAfterCountdown`): al terminar se puede volver a confirmar.
 - [Compositor del Asistente](../../../ArquitecturaBaseMutitenant/docs/features/asistente.md): unavailable representa bloqueo externo; pending va separado y no dice Guardando por bloqueo.
 - mutate usa variables originales y onSuccess; reset(lo guardado) y wrote(versión enviada/respondida, relectura). Descartar/Ver lo nuevo hacen resetTo.
 - La base es la lectura inicial/reiniciada y después la escritura propia; un GET de fondo no pisa borrador ni versión. version es opaca: igualdad, nunca mayor/menor.

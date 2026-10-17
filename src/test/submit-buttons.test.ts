@@ -8,7 +8,8 @@ const srcRoot = path.resolve(import.meta.dirname, "..");
 // «Criterio · Botones» (formularios.md): un botón de envío no se apaga porque falte un dato o porque un dato esté mal; al
 // tocarlo, el campo dice qué corregir. Al editar, «Guardar cambios» se apaga sin cambios; al crear («Crear …»,
 // «Agregar …», «Invitar …», «Sumar …»), nunca. Lo que está guardando lo apaga `pending`, no `disabled`. Fuera de eso, se
-// apaga solo mientras espera algo que no depende de lo escrito. Cada forma permitida, con su motivo:
+// apaga solo mientras espera algo que no depende de lo escrito. Cada forma permitida, con su motivo, y también dos o más
+// unidas con «||» (al editar sin cambios, o esperando un límite de uso: Rol, P2):
 const allowed: ReadonlyArray<readonly [RegExp, string, string?]> = [
   [/^!(?:form\.formState\.)?isDirty$/, "«Guardar cambios» sin cambios"],
   [/^(?:Boolean\(\w+\)|mode === "roles") && !(?:form\.formState\.)?isDirty$/, "al editar, sin cambios; al crear, nunca"],
@@ -65,6 +66,16 @@ function violations(source: string, file?: string): string[] {
       getSourceFile: (name) => name === fileName ? parsed : undefined,
     }).getTypeChecker();
   }
+  const normalize = (node: ts.Node) => node.getText(parsed).replace(/\s+/g, " ").trim();
+  const allowedText = (text: string) => allowed.some(([pattern, , onlyFor]) => pattern.test(text) && (!onlyFor || file === onlyFor));
+  // Una forma permitida, la espera de Retry-After o varias de ellas unidas con «||»; nunca un motivo de validación.
+  function isAllowed(expression: ts.Expression): boolean {
+    let inner = expression;
+    while (ts.isParenthesizedExpression(inner)) inner = inner.expression;
+    if (allowedText(normalize(inner))) return true;
+    if (ts.isBinaryExpression(inner) && inner.operatorToken.kind === ts.SyntaxKind.BarBarToken) return isAllowed(inner.left) && isAllowed(inner.right);
+    return isRetryCountdown(inner, typeChecker());
+  }
   const problems: string[] = [];
   function visit(node: ts.Node): void {
     if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && /^(Button|button)$/.test(node.tagName.getText(parsed))) {
@@ -74,8 +85,7 @@ function violations(source: string, file?: string): string[] {
       if (type && ts.isStringLiteral(type) && type.text === "submit" && disabled) {
         const expression = disabled.initializer && ts.isJsxExpression(disabled.initializer) ? disabled.initializer.expression : undefined;
         const text = (expression?.getText(parsed) ?? disabled.initializer?.getText(parsed) ?? "true").replace(/\s+/g, " ").trim();
-        if (!allowed.some(([pattern, , onlyFor]) => pattern.test(text) && (!onlyFor || file === onlyFor))
-          && !(expression && isRetryCountdown(expression, typeChecker()))) problems.push(text);
+        if (!allowedText(text) && !(expression && isAllowed(expression))) problems.push(text);
       }
     }
     ts.forEachChild(node, visit);
@@ -107,6 +117,15 @@ describe("botones de envío («Criterio · Botones»)", () => {
     expect(violations(retryForm("retry.isRunning"))).toEqual([]);
     expect(violations('<Button type="submit" pending={add.isPending}>Siguiente</Button>')).toEqual([]);
     expect(violations('<Button type="button" disabled={!ready}>Cancelar</Button>')).toEqual([]);
+  });
+
+  // Rol (P2): «Guardar cambios» se apaga sin cambios al editar y mientras corre la cuenta de un límite de uso.
+  it("admite dos motivos válidos unidos con «||», y ninguno de validación entre ellos", () => {
+    expect(violations(retryForm("Boolean(role) && !isDirty || limit.isRunning", "const limit = useRetryAfterCountdown();"))).toEqual([]);
+    expect(violations(retryForm("!isDirty || (limit.isRunning)", "const limit = useRetryAfterCountdown();"))).toEqual([]);
+    expect(violations(retryForm("Boolean(role) && !isDirty || limit.isRunning || !name", "const limit = useRetryAfterCountdown();")))
+      .toEqual(["Boolean(role) && !isDirty || limit.isRunning || !name"]);
+    expect(violations(retryForm("!isDirty || limit.isRunning", "const limit = { isRunning: !name };"))).toEqual(["!isDirty || limit.isRunning"]);
   });
 
   it.each(["sendRetry", "verifyRetry", "waitBeforeSending"])("admite la espera del 429 aunque el resultado del hook se llame %s", (name) => {
