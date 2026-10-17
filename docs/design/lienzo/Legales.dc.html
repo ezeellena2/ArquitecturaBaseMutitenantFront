@@ -397,6 +397,19 @@
     .tt-grupo .cnt-area { font-weight: 400; color: var(--t2); }
     .fila-perm { min-height: 36px !important; }
     .tt-grupo { box-sizing: border-box; min-height: 40px; }
+
+    /* Etapa 9: «Confirmá que sos vos», copiado de Cuenta-Plat */
+    .otp { gap: 8px; }
+    .otp input { height: 52px; font-size: 22px; border-radius: 10px; }
+    .ra input.in2.rec { height: 44px; min-height: 0; padding: 0 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 15px; letter-spacing: 0.08em; cursor: text; }
+    .ra .otp.bloq input { background: var(--s2); color: var(--t3); border-color: var(--borde); }
+    .ra .ra-rec:disabled { color: var(--t3); cursor: default; text-decoration: none; }
+    .otp input { height: 44px !important; border-radius: 8px !important; }
+    .ra .otp { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .ra .otp input { height: 48px; width: 100%; box-sizing: border-box; padding: 0; border: 1px solid var(--borde2); border-radius: 10px; text-align: center; font-size: 20px; font-weight: 600; color: var(--t1); font-variant-numeric: tabular-nums; background: #fff; font-family: inherit; }
+    .ra .otp.mal input { border-color: var(--peligro); background: var(--peligro-t); }
+    .ra { gap: 10px !important; }
+    .ra .ra-rec { justify-self: start; font-size: 13.5px; margin-top: 4px; }
   </style>
                                 <style data-tema="c2">
 /* Común a las tres direcciones: marca con nombre, rótulos sin mayúsculas, sombras suaves. */
@@ -728,7 +741,7 @@ textarea.in2 { height: auto; min-height: 84px; }
       </sc-if>
     </main>
   </div>
-  <sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if>  <sc-if value="{{confirmacion}}" hint-placeholder-val="{{no}}">
+  <sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if>  <sc-if value="{{reauthPublicar}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg chico" role="dialog" aria-modal="true" aria-label="Confirmá que sos vos"><div class="dlg-h"><h2>Confirmá que sos vos</h2></div><div class="dlg-t">Para publicar la versión 3 de Términos y condiciones, escribí el código de tu app de autenticación.</div><div class="dlg-b una ra" style="padding-top: 0;"><div class="otp " role="group" aria-label="Código"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 1"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 2"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 3"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 4"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 5"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 6"></div><button type="button" class="lnk ra-rec">Usar un código de recuperación</button></div><div class="dlg-f"><button type="button" class="b b-sec">Cancelar</button><button type="button" class="b b-pri">Confirmar</button></div></div></div></sc-if><sc-if value="{{confirmacion}}" hint-placeholder-val="{{no}}">
     <div class="velo">
       <div class="dlg chico" role="alertdialog" aria-modal="true" aria-labelledby="conf-t">
         <div class="dlg-h"><h2 id="conf-t">{{tituloConfirmacion}}</h2></div>
@@ -757,20 +770,26 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"pantalla":{"editor":"enum","options":["Documentos","Publicar versión nueva"],"default":"Documentos","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"pantalla":{"editor":"enum","options":["Documentos","Publicar versión nueva","Publicar: confirmá que sos vos"],"default":"Documentos","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 // GET /api/platform/legal-documents: platform.LegalDocuments. Cada versión tiene su fecha de vigencia y su contenido en es y en; nunca se edita.
 const DOCS = [
   { id: 'Terms', n: 'Términos y condiciones', version: 2, desde: '01/06/2026', versiones: 2 },
   { id: 'Privacy', n: 'Política de privacidad', version: 1, desde: '12/01/2026', versiones: 2, proxima: { version: 2, desde: '01/11/2026' } },
 ];
 const TIPOS = DOCS.map((d) => ({ v: d.id, n: d.n }));
-const PANTALLAS = { 'Documentos': 'lista', 'Publicar versión nueva': 'nueva' };
+const PANTALLAS = { 'Documentos': 'lista', 'Publicar versión nueva': 'nueva', 'Publicar: confirmá que sos vos': 'nueva' };
 
 class Component extends DCLogic {
   constructor(props) {
     super(props);
 
-    this.state = { plNav: 'administracion', abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', fecha: '', errFecha: '', docs: DOCS, ...this.formVacio('Terms'), clavePantalla: props.pantalla, pantalla: PANTALLAS[props.pantalla ?? 'Documentos'] };
+    this.state = { plNav: 'administracion', abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', fecha: '', errFecha: '', docs: DOCS, ...this.formInicial(props.pantalla), clavePantalla: props.pantalla, pantalla: PANTALLAS[props.pantalla ?? 'Documentos'] };
+  }
+
+  // Etapa 9: al publicar sin una confirmación reciente, el formulario queda cargado detrás del diálogo.
+  formInicial(pantalla) {
+    const f = this.formVacio('Terms');
+    return pantalla === 'Publicar: confirmá que sos vos' ? { ...f, vigencia: '01/11/2026', es: 'Estos términos regulan el uso del servicio por parte de las personas y las organizaciones.', en: 'These terms govern the use of the service by people and organizations.' } : f;
   }
 
   formVacio(tipo) {
@@ -778,7 +797,7 @@ class Component extends DCLogic {
   }
 
   componentDidUpdate() {
-    if (this.props.pantalla !== this.state.clavePantalla) this.setState({ clavePantalla: this.props.pantalla, pantalla: PANTALLAS[this.props.pantalla ?? 'Documentos'], ...this.formVacio('Terms') });
+    if (this.props.pantalla !== this.state.clavePantalla) this.setState({ clavePantalla: this.props.pantalla, pantalla: PANTALLAS[this.props.pantalla ?? 'Documentos'], ...this.formInicial(this.props.pantalla) });
   }
 
   avisar(texto, tipo = 'ok') {
@@ -994,6 +1013,8 @@ class Component extends DCLogic {
     const d = s.docs.find((x) => x.id === s.tipo);
 
     return {
+      // Etapa 9: este diálogo reemplaza al de publicar, nunca va encima.
+      reauthPublicar: this.props.pantalla === 'Publicar: confirmá que sos vos',
       ...this.comunes(),
       plMenuClase: s.plNav ? 'adm-abierto' : '',
       plTitulo: s.plNav === 'gestion' ? 'Gestión' : s.plNav === 'whatsapp' ? 'WhatsApp' : 'Administración',

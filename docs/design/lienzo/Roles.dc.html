@@ -396,6 +396,12 @@
     .tt-grupo .cnt-area { font-weight: 400; color: var(--t2); }
     .fila-perm { min-height: 36px !important; }
     .tt-grupo { box-sizing: border-box; min-height: 40px; }
+
+    /* Etapa 9 (R10): opción apagada con su motivo debajo */
+    .menu-it.inact-off { align-items: flex-start; }
+    .menu-it.inact-off svg { color: var(--t3); margin-top: 2px; }
+    .menu-it .mot { display: flex; flex-direction: column; gap: 2px; }
+    .menu-it .mot small { font-size: 12.5px; color: var(--t3); }
   </style>
                                 <style data-tema="c2">
 /* Común a las tres direcciones: marca con nombre, rótulos sin mayúsculas, sombras suaves. */
@@ -737,7 +743,7 @@ textarea.in2 { height: auto; min-height: 84px; }
                 <sc-if value="{{r.menu}}" hint-placeholder-val="{{no}}">
                   <div class="menu der {{r.claseMenu}}" role="menu">
                     <a class="menu-it" role="menuitem" href="Rol.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 5.5 18.5 8.5 9 18H6v-3z"/></svg> {{r.textoEditar}}</a>
-                    <sc-if value="{{r.editable}}" hint-placeholder-val="{{si}}"><div class="menu-sep" role="separator"></div><button type="button" class="menu-it pel" role="menuitem" onClick="{{r.inactivar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4L17.2 7"/></svg> Inactivar</button></sc-if>
+                    <sc-if value="{{r.puedeInactivar}}" hint-placeholder-val="{{si}}"><div class="menu-sep" role="separator"></div><button type="button" class="menu-it pel" role="menuitem" onClick="{{r.inactivar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4L17.2 7"/></svg> Inactivar</button></sc-if><sc-if value="{{r.inactivarOff}}" hint-placeholder-val="{{no}}"><div class="menu-sep" role="separator"></div><button type="button" class="menu-it apagado inact-off" role="menuitem" aria-disabled="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4L17.2 7"/></svg><span class="mot">Inactivar<small>{{r.motivoInactivar}}</small></span></button></sc-if>
                   </div>
                 </sc-if>
               </span>
@@ -794,7 +800,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Lista","Menú de un rol con usuarios"],"default":"Lista","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 // GET /api/roles: los de sistema y los que crea cada organización. Solo usan los permisos que existen en la
 // plantilla; cada producto suma los suyos.
 const ROLES = [
@@ -814,7 +820,7 @@ class Component extends DCLogic {
   constructor(props) {
     super(props);
     
-    this.state = { wa: false, adm: true, abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', roles: ROLES, busqueda: '', vale: null };
+    this.state = { wa: false, adm: true, abierto: props.estado === 'Menú de un rol con usuarios' ? 'fila:r5' : null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', roles: ROLES, busqueda: '', vale: null };
   }
 
   avisar(texto, tipo = 'ok') {
@@ -1017,6 +1023,10 @@ class Component extends DCLogic {
         ...this.fila(r.id, r.n, i, pg.items.length),
         n: r.n, d: r.d, vale: LUGARES[r.vale], tipo: r.sistema ? 'De sistema' : 'Propio', u: String(r.u), p: String(r.p), sistema: !!r.sistema, editable: !r.sistema,
         textoEditar: r.sistema ? 'Ver permisos' : 'Editar',
+        // Etapa 9 (R10): con usuarios no se puede inactivar; la opción va apagada con el motivo debajo.
+        puedeInactivar: !r.sistema && r.u === 0,
+        inactivarOff: !r.sistema && r.u > 0,
+        motivoInactivar: r.u === 1 ? 'Lo tiene 1 usuario. Quitáselo primero.' : 'Lo tienen ' + r.u + ' usuarios. Quitáselo primero.',
         // DELETE /api/roles/{id}: 409 Roles.Role.HasUsers si alguien lo tiene.
         inactivar: () => {
           if (r.u > 0) {

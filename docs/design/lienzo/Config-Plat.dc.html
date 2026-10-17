@@ -397,6 +397,34 @@
     .tt-grupo .cnt-area { font-weight: 400; color: var(--t2); }
     .fila-perm { min-height: 36px !important; }
     .tt-grupo { box-sizing: border-box; min-height: 40px; }
+
+    /* Etapa 9: límites de uso */
+    .lim { grid-column: 1 / -1; border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; }
+    .lim-cab, .lim-f { display: grid; grid-template-columns: minmax(0, 1fr) 140px 220px; gap: 16px; align-items: start; padding: 8px 16px; }
+    .lim-cab { padding: 10px 16px; background: var(--s2); font-size: 12px; font-weight: 600; color: var(--t2); border-bottom: 1px solid var(--borde); }
+    .lim-g { padding: 12px 16px 4px; font-size: 13px; font-weight: 600; color: var(--t2); border-top: 1px solid var(--borde); margin-top: 6px; }
+    .lim-g.primero { border-top: 0; margin-top: 0; }
+    .lim-n { font-size: 14px; color: var(--t1); padding-top: 8px; }
+    .lim-c { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .lim-cada { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 8px; }
+    .lim .in2 { height: 36px; min-height: 0; }
+    .lim .err2 { font-size: 12.5px; }
+    .w-cartel { display: flex; align-items: center; gap: 10px; min-height: 44px; box-sizing: border-box; padding: 6px 8px 6px 14px; border-radius: 10px; font-size: 13px; background: oklch(0.96 0.06 85); color: oklch(0.4 0.1 70); }
+    .w-cartel .tx { flex: 1; }
+    .w-cartel .lnk { color: oklch(0.4 0.1 70); }
+
+    /* Etapa 9: «Confirmá que sos vos», copiado de Cuenta-Plat */
+    .otp { gap: 8px; }
+    .otp input { height: 52px; font-size: 22px; border-radius: 10px; }
+    .ra input.in2.rec { height: 44px; min-height: 0; padding: 0 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 15px; letter-spacing: 0.08em; cursor: text; }
+    .ra .otp.bloq input { background: var(--s2); color: var(--t3); border-color: var(--borde); }
+    .ra .ra-rec:disabled { color: var(--t3); cursor: default; text-decoration: none; }
+    .otp input { height: 44px !important; border-radius: 8px !important; }
+    .ra .otp { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .ra .otp input { height: 48px; width: 100%; box-sizing: border-box; padding: 0; border: 1px solid var(--borde2); border-radius: 10px; text-align: center; font-size: 20px; font-weight: 600; color: var(--t1); font-variant-numeric: tabular-nums; background: #fff; font-family: inherit; }
+    .ra .otp.mal input { border-color: var(--peligro); background: var(--peligro-t); }
+    .ra { gap: 10px !important; }
+    .ra .ra-rec { justify-self: start; font-size: 13.5px; margin-top: 4px; }
   </style>
                                 <style data-tema="c2">
 /* Común a las tres direcciones: marca con nombre, rótulos sin mayúsculas, sombras suaves. */
@@ -661,6 +689,7 @@ textarea.in2 { height: auto; min-height: 84px; }
         <div class="acciones"><button type="button" class="b b-sec" onClick="{{descartar}}">Descartar cambios</button><button type="button" class="b b-pri" onClick="{{guardar}}" disabled="{{limpio}}">Guardar cambios</button></div>
       </div>
       <div class="pagina">
+        <sc-if value="{{conflicto}}" hint-placeholder-val="{{no}}"><div class="w-cartel" role="alert"><span class="tx">Otra persona cambió esto mientras lo editabas.</span><button type="button" class="lnk">Seguir editando</button><button type="button" class="b b-sec">Ver lo nuevo</button></div></sc-if>
         <div class="hoja" role="form" aria-label="Configuración de la plataforma">
             <h2>Registro y altas</h2>
             <div class="campo2 envoltura">
@@ -704,11 +733,14 @@ textarea.in2 { height: auto; min-height: 84px; }
               <sc-if value="{{errSoporte}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errSoporte}}</span></sc-if>
             </div>
 
+
+            <h2>Límites de uso</h2>
+            <div class="lim" role="group" aria-label="Límites de uso"><div class="lim-cab"><span>Límite</span><span>Pedidos</span><span>Cada</span></div><sc-for list="{{limites}}" as="l" hint-placeholder-count="12"><sc-if value="{{l.grupo}}" hint-placeholder-val="{{no}}"><div class="lim-g {{l.claseGrupo}}">{{l.grupo}}</div></sc-if><div class="lim-f"><span class="lim-n">{{l.n}}</span><div class="lim-c"><input class="in2 {{l.malP}}" type="number" inputmode="numeric" value="{{l.p}}" onChange="{{l.onP}}" aria-label="{{l.ariaP}}"><sc-if value="{{l.errP}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{l.errP}}</span></sc-if></div><div class="lim-c"><div class="lim-cada"><input class="in2 {{l.malC}}" type="number" inputmode="numeric" value="{{l.c}}" onChange="{{l.onC}}" aria-label="{{l.ariaC}}"><button type="button" class="in2 {{l.malC}}" aria-haspopup="listbox" aria-label="{{l.ariaU}}"><span class="val">{{l.u}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button></div><sc-if value="{{l.errC}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{l.errC}}</span></sc-if></div></div></sc-for></div>
         </div>
       </div>
     </main>
   </div>
-  <sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if>  <sc-if value="{{confirmacion}}" hint-placeholder-val="{{no}}">
+  <sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if>  <sc-if value="{{reauthGuardar}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg chico" role="dialog" aria-modal="true" aria-label="Confirmá que sos vos"><div class="dlg-h"><h2>Confirmá que sos vos</h2></div><div class="dlg-t">Para guardar la configuración, escribí el código de tu app de autenticación.</div><div class="dlg-b una ra" style="padding-top: 0;"><div class="otp " role="group" aria-label="Código"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 1"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 2"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 3"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 4"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 5"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 6"></div><button type="button" class="lnk ra-rec">Usar un código de recuperación</button></div><div class="dlg-f"><button type="button" class="b b-sec">Cancelar</button><button type="button" class="b b-pri">Confirmar</button></div></div></div></sc-if><sc-if value="{{confirmacion}}" hint-placeholder-val="{{no}}">
     <div class="velo">
       <div class="dlg chico" role="alertdialog" aria-modal="true" aria-labelledby="conf-t">
         <div class="dlg-h"><h2 id="conf-t">{{tituloConfirmacion}}</h2></div>
@@ -736,15 +768,45 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Sin cambios","Con cambios","Límite fuera de rango","Guardar: motivo","Guardar: confirmá que sos vos","Otra persona cambió la configuración"],"default":"Sin cambios","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const REGISTRO = [{ v: 'open', n: 'Abierto', d: 'Cualquiera crea su cuenta con su correo o su WhatsApp.' }, { v: 'closed', n: 'Cerrado', d: 'Solo entran las personas invitadas a una organización.' }];
 const ALTA = [{ v: 'open', n: 'Abierta', d: 'La organización queda activa al crearla.' }, { v: 'approval', n: 'Requiere aprobación', d: 'Queda esperando hasta que un operador la aprueba.' }, { v: 'closed', n: 'Cerrada', d: 'Solo la plataforma crea organizaciones.' }];
+
+// Etapa 9: los doce perfiles rateLimits de PlatformSettings, con los valores iniciales moderados (P3).
+const LIM = { ip: { p: '300', c: '1', u: 'm' }, publicIp: { p: '60', c: '1', u: 'm' }, identity: { p: '120', c: '1', u: 'm' }, tenant: { p: '600', c: '1', u: 'm' }, loginCode: { p: '20', c: '15', u: 'm' }, loginVerify: { p: '30', c: '15', u: 'm' }, invitationPreview: { p: '60', c: '15', u: 'm' }, invitationAccept: { p: '10', c: '15', u: 'm' }, assistantQuickQuery: { p: '20', c: '1', u: 'm' }, assistantConversation: { p: '10', c: '1', u: 'm' }, assistantNewKey: { p: '3', c: '15', u: 'm' }, whatsAppWebhook: { p: '120', c: '1', u: 'm' } };
+const PERFILES = [["ip", "Para todo el servicio", "Por dirección IP"], ["publicIp", "", "Páginas públicas, por dirección IP"], ["identity", "", "Por cuenta"], ["tenant", "", "Por organización"], ["loginCode", "Ingreso", "Pedir un código"], ["loginVerify", "", "Escribir un código"], ["invitationPreview", "", "Abrir una invitación"], ["invitationAccept", "", "Aceptar una invitación"], ["assistantQuickQuery", "Asistente", "Consultas fijas"], ["assistantConversation", "", "Conversaciones"], ["assistantNewKey", "", "Probar una clave nueva"], ["whatsAppWebhook", "WhatsApp", "Avisos de Meta"]];
+const SEG = { s: 1, m: 60, h: 3600 };
+const UNIDAD = (c, u) => ({ s: ['segundo', 'segundos'], m: ['minuto', 'minutos'], h: ['hora', 'horas'] })[u][String(c).trim() === '1' ? 0 : 1];
 
 class Component extends DCLogic {
   constructor(props) {
     super(props);
     
-    this.state = { plNav: 'administracion', abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', guardado: { registro: 'open', alta: 'approval', limite: '3', ventas: 'ventas@ejemplo.com', soporte: 'soporte@ejemplo.com' }, registro: 'open', alta: 'approval', limite: '3', ventas: 'ventas@ejemplo.com', soporte: 'soporte@ejemplo.com', errLimite: '', errVentas: '', errSoporte: '' };
+    this.state = { plNav: 'administracion', abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', guardado: { registro: 'open', alta: 'approval', limite: '3', ventas: 'ventas@ejemplo.com', soporte: 'soporte@ejemplo.com', lim: LIM }, lim: LIM, errLim: {}, conflicto: false, reauth: false, claveEstado: props.estado, registro: 'open', alta: 'approval', limite: '3', ventas: 'ventas@ejemplo.com', soporte: 'soporte@ejemplo.com', errLimite: '', errVentas: '', errSoporte: '' };
+    Object.assign(this.state, this.desdeEstado(props.estado));
+  }
+
+  // Etapa 9: estados del tablero (tweak «Estado»).
+  desdeEstado(e) {
+    const lim = JSON.parse(JSON.stringify(LIM));
+    const base = { lim, errLim: {}, conflicto: false, reauth: false, confirmar: null, motivo: '', errMotivo: '' };
+    if (!e || e === 'Sin cambios') return base;
+    lim.assistantQuickQuery.p = '30';
+    if (e === 'Límite fuera de rango') { lim.assistantQuickQuery.p = '0'; lim.assistantNewKey.c = '48'; lim.assistantNewKey.u = 'h'; return { ...base, errLim: { assistantQuickQuery: { p: 'Usá un número de 1 a 1.000.000.' }, assistantNewKey: { c: 'Usá un tiempo de 1 segundo a 24 horas.' } } }; }
+    if (e === 'Guardar: motivo') return { ...base, confirmar: this.confirmacionGuardar(), motivo: 'Más consultas fijas para la campaña de octubre.' };
+    // Sin una confirmación reciente, este diálogo reemplaza al del motivo; Cancelar vuelve a él con el motivo escrito.
+    if (e === 'Guardar: confirmá que sos vos') return { ...base, reauth: true };
+    // 409 General.ConcurrencyConflict: no pisa los cambios de la otra persona.
+    if (e === 'Otra persona cambió la configuración') return { ...base, conflicto: true };
+    return base;
+  }
+
+  componentDidUpdate() {
+    if (this.props.estado !== this.state.claveEstado) this.setState({ claveEstado: this.props.estado, ...this.desdeEstado(this.props.estado) });
+  }
+
+  confirmacionGuardar() {
+    return { titulo: '¿Guardar la configuración?', texto: 'Cambia cómo entran las personas y las organizaciones nuevas, y los límites de uso. Lo que ya existe no cambia.', boton: 'Guardar', peligro: false, motivo: true, accion: () => { const s = this.state; this.setState({ guardado: { registro: s.registro, alta: s.alta, limite: s.limite, ventas: s.ventas.trim(), soporte: s.soporte.trim(), lim: JSON.parse(JSON.stringify(s.lim)) } }); this.avisar('Guardamos la configuración.'); } };
   }
 
   avisar(texto, tipo = 'ok') {
@@ -936,9 +998,9 @@ class Component extends DCLogic {
       plAbrirAdministracion: () => this.setState({ plNav: s.plNav === 'administracion' ? null : 'administracion' }),
       plCerrar: () => this.setState({ plNav: null }),
 
-      sucio: s.registro !== s.guardado.registro || s.alta !== s.guardado.alta || s.limite !== s.guardado.limite || s.ventas !== s.guardado.ventas || s.soporte !== s.guardado.soporte,
-      limpio: !(s.registro !== s.guardado.registro || s.alta !== s.guardado.alta || s.limite !== s.guardado.limite || s.ventas !== s.guardado.ventas || s.soporte !== s.guardado.soporte),
-      descartar: () => this.setState({ ...s.guardado, errLimite: '', errVentas: '', errSoporte: '', abierto: null }),
+      sucio: s.registro !== s.guardado.registro || s.alta !== s.guardado.alta || s.limite !== s.guardado.limite || s.ventas !== s.guardado.ventas || s.soporte !== s.guardado.soporte || JSON.stringify(s.lim) !== JSON.stringify(s.guardado.lim),
+      limpio: !(s.registro !== s.guardado.registro || s.alta !== s.guardado.alta || s.limite !== s.guardado.limite || s.ventas !== s.guardado.ventas || s.soporte !== s.guardado.soporte || JSON.stringify(s.lim) !== JSON.stringify(s.guardado.lim)),
+      descartar: () => this.setState({ ...s.guardado, lim: JSON.parse(JSON.stringify(s.guardado.lim)), errLim: {}, conflicto: false, errLimite: '', errVentas: '', errSoporte: '', abierto: null }),
       // PUT /api/platform/settings: cambia PlatformSettings y queda en la auditoría de seguridad con el motivo.
       guardar: () => {
         const n = Number(s.limite);
@@ -950,13 +1012,23 @@ class Component extends DCLogic {
           errSoporte: correo(s.soporte) ? '' : 'Ingresá un correo válido.',
         };
 
-        if (errores.errLimite || errores.errVentas || errores.errSoporte) {
-          this.setState({ ...errores, abierto: null });
+        // Límites: pedidos de 1 a 1.000.000 y ventana de 1 segundo a 24 horas; sin cero para desactivar.
+        const errLim = {};
+        for (const [k] of PERFILES) {
+          const l = s.lim[k];
+          const p = Number(l.p);
+          const seg = Number(l.c) * SEG[l.u];
+          if (!Number.isInteger(p) || p < 1 || p > 1000000) errLim[k] = { ...errLim[k], p: 'Usá un número de 1 a 1.000.000.' };
+          if (!Number.isInteger(Number(l.c)) || seg < 1 || seg > 86400) errLim[k] = { ...errLim[k], c: 'Usá un tiempo de 1 segundo a 24 horas.' };
+        }
+
+        if (errores.errLimite || errores.errVentas || errores.errSoporte || Object.keys(errLim).length) {
+          this.setState({ ...errores, errLim, abierto: null });
 
           return;
         }
 
-        this.pedirConfirmacion({ titulo: '¿Guardar la configuración?', texto: 'Cambia cómo entran las personas y las organizaciones nuevas. Lo que ya existe no cambia.', boton: 'Guardar', peligro: false, motivo: true, accion: () => { this.setState({ guardado: { registro: s.registro, alta: s.alta, limite: s.limite, ventas: s.ventas.trim(), soporte: s.soporte.trim() } }); this.avisar('Guardamos la configuración.'); } });
+        this.pedirConfirmacion(this.confirmacionGuardar());
       },
       ...this.uno('Registro', 'registro', REGISTRO, ''),
       ...this.uno('Alta', 'alta', ALTA, ''),
@@ -972,6 +1044,15 @@ class Component extends DCLogic {
       malSoporte: s.errSoporte ? 'mal' : '',
       errSoporte: s.errSoporte,
       errLimite: s.errLimite,
+      conflicto: s.conflicto,
+      reauthGuardar: s.reauth,
+      limites: PERFILES.map(([k, g, n], i) => {
+        const l = s.lim[k];
+        const e = s.errLim[k] || {};
+        const poner = (campo, v) => this.setState({ lim: { ...this.state.lim, [k]: { ...this.state.lim[k], [campo]: v } }, errLim: { ...this.state.errLim, [k]: { ...(this.state.errLim[k] || {}), [campo]: '' } } });
+        return { grupo: g, claseGrupo: i === 0 ? 'primero' : '', n, p: l.p, c: l.c, u: UNIDAD(l.c, l.u), malP: e.p ? 'mal' : '', malC: e.c ? 'mal' : '', errP: e.p || '', errC: e.c || '',
+          onP: (ev) => poner('p', ev.target.value), onC: (ev) => poner('c', ev.target.value), ariaP: 'Pedidos · ' + n, ariaC: 'Cada · ' + n, ariaU: 'Unidad · ' + n };
+      }),
     };
   }
 }

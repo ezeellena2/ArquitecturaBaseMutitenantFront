@@ -396,6 +396,8 @@
     .tt-grupo .cnt-area { font-weight: 400; color: var(--t2); }
     .fila-perm { min-height: 36px !important; }
     .tt-grupo { box-sizing: border-box; min-height: 40px; }
+    /* Etapa 9: la lista no carga por un límite de uso */
+    .vacio .b:disabled { opacity: 0.5; cursor: default; }
   </style>
                                 <style data-tema="c2">
 /* Común a las tres direcciones: marca con nombre, rótulos sin mayúsculas, sombras suaves. */
@@ -766,10 +768,13 @@ textarea.in2 { height: auto; min-height: 84px; }
               </span>
             </div>
           </sc-for>
+          <sc-if value="{{limite}}" hint-placeholder-val="{{no}}">
+            <div class="vacio" role="alert"><strong>No pudimos cargar los usuarios.</strong><span>Hiciste muchos pedidos seguidos. Esperá un momento.</span><button type="button" class="b b-sec" disabled>Reintentá en 0:41</button></div>
+          </sc-if>
           <sc-if value="{{sinResultados}}" hint-placeholder-val="{{no}}">
             <div class="vacio"><strong>Ningún usuario coincide con los filtros</strong><button type="button" class="b b-sec" onClick="{{limpiar}}">Limpiar filtros</button></div>
           </sc-if>
-          <div class="pie">
+<sc-if value="{{noLimite}}" hint-placeholder-val="{{si}}">          <div class="pie">
             <span>{{pagRango}}</span>
             <span class="pag">
               <span class="envoltura">
@@ -784,7 +789,7 @@ textarea.in2 { height: auto; min-height: 84px; }
               <button type="button" class="ico-btn" aria-label="Página anterior" disabled="{{pagSinAnterior}}" onClick="{{pagAnterior}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button>
               <button type="button" class="ico-btn" aria-label="Página siguiente" disabled="{{pagSinSiguiente}}" onClick="{{pagSiguiente}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg></button>
             </span>
-          </div>
+          </div></sc-if>
         </div>
       </div>
     </main>
@@ -875,7 +880,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Lista","Teléfonos cargados"],"default":"Lista","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Lista","Teléfonos cargados","Demasiados pedidos"],"default":"Lista","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const ORG_ZONA = 'America/Argentina/Buenos_Aires';
 // La zona se guarda con su ID; en pantalla va la ciudad y el desfase.
 const NOMBRES_ZONA = { 'America/Argentina/Buenos_Aires': 'Buenos Aires (GMT−3)', 'America/Argentina/Cordoba': 'Córdoba (GMT−3)', 'America/Argentina/Mendoza': 'Mendoza (GMT−3)', 'America/Argentina/Tucuman': 'Tucumán (GMT−3)', 'America/Montevideo': 'Montevideo (GMT−3)', 'America/Santiago': 'Santiago (GMT−3)', 'America/Asuncion': 'Asunción (GMT−3)' };
@@ -1181,9 +1186,11 @@ class Component extends DCLogic {
         .map(([v, n, c]) => ({ n, c: String(c), sel: s.estado === v ? 'true' : 'false', elegir: () => this.setState({ estado: v, pag: 1 }) })),
       limpiar: () => this.setState({ busqueda: '', estado: null, empresa: null, abierto: null }),
       ...pg.vals,
-      sinResultados: filas.length === 0,
+      sinResultados: this.props.estado !== 'Demasiados pedidos' && filas.length === 0,
 
-      filas: pg.items.map((u, i) => {
+      limite: this.props.estado === 'Demasiados pedidos',
+      noLimite: this.props.estado !== 'Demasiados pedidos',
+      filas: this.props.estado === 'Demasiados pedidos' ? [] : pg.items.map((u, i) => {
         const est = ESTADOS_USUARIO[u.estado];
         const invitacion = u.estado === 'invitado' || u.estado === 'vencida';
         const primera = u.empresas[0];

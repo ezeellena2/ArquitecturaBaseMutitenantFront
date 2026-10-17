@@ -782,6 +782,11 @@ textarea.in2 { height: auto; min-height: 84px; }
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
 // GET /api/platform/audit: platform.SecurityEvents e identity.LoginAudits. Nunca muestra códigos, enlaces ni datos completos.
 const EVENTOS = [
+  // Etapa 9: alta y restablecimiento del autenticador, código de recuperación y confirmación de una acción delicada.
+  { id: 'n1', fecha: '27/09/2026 11:40', periodo: 0, tipo: 'cuentas', que: 'Restableció el autenticador', donde: 'Laura Díaz', org: null, quien: 'Martín Sosa', rol: 'Operador', motivo: 'Cambió de celular.', ip: '181.45.•••.12' },
+  { id: 'n2', fecha: '27/09/2026 11:38', periodo: 0, tipo: 'ingresos', que: 'Confirmó con el autenticador', donde: 'Plataforma', org: null, quien: 'Martín Sosa', rol: 'Operador', motivo: '—', ip: '181.45.•••.12' },
+  { id: 'n3', fecha: '27/09/2026 11:05', periodo: 0, tipo: 'ingresos', que: 'Ingresó con un código de recuperación', donde: 'Plataforma', org: null, quien: 'Laura Díaz', rol: 'Operador', motivo: '—', ip: '181.45.•••.30' },
+  { id: 'n4', fecha: '27/09/2026 10:58', periodo: 0, tipo: 'ingresos', que: 'Configuró el autenticador', donde: 'Plataforma', org: null, quien: 'Julieta Molina', rol: 'Operador', motivo: '—', ip: '190.12.•••.4' },
   { id: 'e1', fecha: '27/09/2026 10:55', periodo: 0, tipo: 'ingresos', que: 'Ingresó con el autenticador', donde: 'Plataforma', org: null, quien: 'Martín Sosa', rol: 'Operador', motivo: '—', ip: '181.45.•••.12' },
   { id: 'e2', fecha: '27/09/2026 10:20', periodo: 0, tipo: 'ingresos', que: 'Cuenta bloqueada 15 minutos por 10 códigos incorrectos', donde: 'mariana.lopez@gmail.com', org: null, quien: 'Sistema', rol: 'Automático', motivo: '—', ip: '200.3.•••.77' },
   { id: 'e3', fecha: '27/09/2026 09:55', periodo: 0, tipo: 'organizaciones', que: 'Falló el alta de la organización', donde: 'Sigma S.A.', org: 'Sigma S.A.', quien: 'Sistema', rol: 'Automático', motivo: '—', ip: '—' },

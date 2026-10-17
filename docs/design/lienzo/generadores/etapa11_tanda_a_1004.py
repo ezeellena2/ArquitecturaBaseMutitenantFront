@@ -327,7 +327,7 @@ VACIO_CHATS = '<div class="ta-vacio">Todavía no hay conversaciones</div>'
 NINGUNA_CHATS = '<div class="ta-vacio">Ninguna conversación coincide con los filtros</div>'
 NO_CONECTA = "No pudimos conectarnos. Revisá tu conexión."
 RESPUESTA = "Sí, hasta las 18. ¿Te las preparo?"
-MOTIVO = "Meta no lo pudo entregar"
+MOTIVO = "WhatsApp no pudo entregarlo a ese número."
 
 
 def filtro_lleno(filtro, busca, limpiar="Limpiar filtros"):

@@ -397,6 +397,19 @@
     .tt-grupo .cnt-area { font-weight: 400; color: var(--t2); }
     .fila-perm { min-height: 36px !important; }
     .tt-grupo { box-sizing: border-box; min-height: 40px; }
+
+    /* Etapa 9: «Confirmá que sos vos», copiado de Cuenta-Plat */
+    .otp { gap: 8px; }
+    .otp input { height: 52px; font-size: 22px; border-radius: 10px; }
+    .ra input.in2.rec { height: 44px; min-height: 0; padding: 0 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 15px; letter-spacing: 0.08em; cursor: text; }
+    .ra .otp.bloq input { background: var(--s2); color: var(--t3); border-color: var(--borde); }
+    .ra .ra-rec:disabled { color: var(--t3); cursor: default; text-decoration: none; }
+    .otp input { height: 44px !important; border-radius: 8px !important; }
+    .ra .otp { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .ra .otp input { height: 48px; width: 100%; box-sizing: border-box; padding: 0; border: 1px solid var(--borde2); border-radius: 10px; text-align: center; font-size: 20px; font-weight: 600; color: var(--t1); font-variant-numeric: tabular-nums; background: #fff; font-family: inherit; }
+    .ra .otp.mal input { border-color: var(--peligro); background: var(--peligro-t); }
+    .ra { gap: 10px !important; }
+    .ra .ra-rec { justify-self: start; font-size: 13.5px; margin-top: 4px; }
   </style>
                                 <style data-tema="c2">
 /* Común a las tres direcciones: marca con nombre, rótulos sin mayúsculas, sombras suaves. */
@@ -729,7 +742,7 @@ textarea.in2 { height: auto; min-height: 84px; }
       </div>
     </main>
   </div>
-  <sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if>  <sc-if value="{{dlgRevisar}}" hint-placeholder-val="{{no}}">
+  <sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if>  <sc-if value="{{reauthAprobar}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg chico" role="dialog" aria-modal="true" aria-label="Confirmá que sos vos"><div class="dlg-h"><h2>Confirmá que sos vos</h2></div><div class="dlg-t">Para aprobar el pedido de Pablo Ortiz, escribí el código de tu app de autenticación.</div><div class="dlg-b una ra" style="padding-top: 0;"><div class="otp " role="group" aria-label="Código"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 1"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 2"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 3"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 4"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 5"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 6"></div><button type="button" class="lnk ra-rec">Usar un código de recuperación</button></div><div class="dlg-f"><button type="button" class="b b-sec">Cancelar</button><button type="button" class="b b-pri">Confirmar</button></div></div></div></sc-if><sc-if value="{{dlgRevisar}}" hint-placeholder-val="{{no}}">
     <div class="velo">
       <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-rev">
         <div class="dlg-h">
@@ -789,7 +802,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"caso":{"editor":"enum","options":["Pedidos","Revisar un pedido","Sin pedidos"],"default":"Pedidos","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"caso":{"editor":"enum","options":["Pedidos","Revisar un pedido","Sin pedidos","Aprobar: confirmá que sos vos"],"default":"Pedidos","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 // GET /api/platform/recoveries: pedidos de "Recuperar mi cuenta". La persona dio el método de antes y verificó uno nuevo; un operador los revisa.
 // Los métodos se muestran enmascarados.
 const PEDIDOS = [
@@ -803,7 +816,7 @@ const ESTADOS_REC = {
   aprobado: { n: 'Aprobado', f: 'Aprobados', pill: 'ok' },
   rechazado: { n: 'Rechazado', f: 'Rechazados', pill: 'mal' },
 };
-const CASOS = { 'Pedidos': 'pedidos', 'Revisar un pedido': 'revisar', 'Sin pedidos': 'vacio' };
+const CASOS = { 'Pedidos': 'pedidos', 'Revisar un pedido': 'revisar', 'Sin pedidos': 'vacio', 'Aprobar: confirmá que sos vos': 'pedidos' };
 
 class Component extends DCLogic {
   constructor(props) {
@@ -1033,6 +1046,8 @@ class Component extends DCLogic {
     const r = s.pedidos.find((x) => x.id === s.revisando);
 
     return {
+      // Etapa 9: al aprobar sin una confirmación reciente, este diálogo reemplaza a «Revisar el pedido».
+      reauthAprobar: this.props.caso === 'Aprobar: confirmá que sos vos',
       ...this.comunes(),
       plMenuClase: s.plNav ? 'adm-abierto' : '',
       plTitulo: s.plNav === 'gestion' ? 'Gestión' : s.plNav === 'whatsapp' ? 'WhatsApp' : 'Administración',
