@@ -16,18 +16,20 @@ const operatorName = (key) => `Operador E2E e9${key}`;
 const lockedText = "Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos.";
 
 /**
- * Los eventos del segundo factor en Auditoría, con el texto y el tipo que escribe el back (Audit.resx y
- * PlatformAuditCategories). Los usan E9-8 y el recorrido de usuario: cuando el back se alinee con Auditoria-Plat, se
- * cambian acá.
+ * Los eventos del segundo factor en Auditoría, como en Auditoria-Plat de la v125 (back 82493d8c): una fila por acción.
+ * El alta, las confirmaciones y los ingresos son «signins», sin motivo; el restablecimiento es de la cuenta restablecida
+ * («accounts») y conserva el motivo del operador. Los usan E9-8 y el recorrido de usuario.
  */
 export const authenticatorAuditEvents = {
-  configured: { type: "operators", summary: "Configuró su autenticador" },
-  reset: { type: "operators", summary: "Restableció el autenticador de un operador" },
-  recoveryCodeUsed: { type: "operators", summary: "Usó un código de recuperación" },
-  reauthenticated: { type: "operators", summary: "Confirmó su identidad" },
+  configured: { type: "signins", summary: "Configuró el autenticador" },
+  reset: { type: "accounts", summary: "Restableció el autenticador" },
+  reauthenticated: { type: "signins", summary: "Confirmó con el autenticador" },
+  reauthenticatedWithRecoveryCode: { type: "signins", summary: "Confirmó con un código de recuperación" },
   signedInWithAuthenticator: { type: "signins", summary: "Ingresó con el autenticador" },
   signedInWithRecoveryCode: { type: "signins", summary: "Ingresó con un código de recuperación" },
 };
+/** El motivo de sistema que el back guarda en una confirmación y nunca muestra: es automática, va «—». */
+const reauthenticationSystemReason = "Confirmación del segundo factor para una acción sensible.";
 const rateLimitText = "Hiciste muchos pedidos seguidos. Esperá un momento.";
 
 /** Vence la prueba reciente de las sesiones vigentes de un operador (comando .recent-proof.json del preparador). */
@@ -342,11 +344,34 @@ export function etapa9Cases(env) {
       setStage("e9a abre Auditoría");
       await env.loginThroughUi(page, e9.a, "platform", setStage);
       await env.platformNavigate(page, "Administración", "Auditoría");
-      const events = Object.values(authenticatorAuditEvents);
+      // Lo que dejan E9-1, 2, 4 y 5; ningún caso confirma con un código de recuperación.
+      const events = ["configured", "reset", "reauthenticated", "signedInWithAuthenticator", "signedInWithRecoveryCode"]
+        .map((key) => authenticatorAuditEvents[key]);
       for (const type of new Set(events.map((event) => event.type))) {
         setStage(`busca los eventos del segundo factor del tipo ${type}`);
         await expectAuditEvents(page, baseUrl, type, events.filter((event) => event.type === type).map((event) => event.summary));
       }
+      const detail = async (summary) => {
+        await page.getByRole("button", { name: `Ver el detalle: ${summary}`, exact: true }).first().click();
+        const dialog = page.getByRole("dialog");
+        await dialog.getByText("Fecha y hora", { exact: true }).waitFor();
+        return dialog;
+      };
+      const close = async (dialog) => {
+        await dialog.getByRole("button", { name: "Cerrar", exact: true }).last().click();
+        await dialog.waitFor({ state: "hidden" });
+      };
+      setStage("la confirmación es automática: no muestra el motivo de sistema");
+      await expectAuditEvents(page, baseUrl, authenticatorAuditEvents.reauthenticated.type, [authenticatorAuditEvents.reauthenticated.summary]);
+      const confirmation = await detail(authenticatorAuditEvents.reauthenticated.summary);
+      assert.equal(await confirmation.getByText(reauthenticationSystemReason, { exact: true }).count(), 0, "Una confirmación va con «—» de motivo.");
+      await close(confirmation);
+      setStage("el restablecimiento es de la cuenta de e9b y conserva el motivo");
+      await expectAuditEvents(page, baseUrl, authenticatorAuditEvents.reset.type, [authenticatorAuditEvents.reset.summary]);
+      const reset = await detail(authenticatorAuditEvents.reset.summary);
+      await reset.getByText(operatorName("b"), { exact: true }).first().waitFor();
+      await reset.getByText("E2E E9: cambió de celular.", { exact: true }).waitFor();
+      await close(reset);
     }],
     ["E9-9: una cuota baja frena «Guardar» de un rol con su cuenta y el reintento es a mano", async (page, setStage) => {
       const operatorContext = await newCaseContext(env.browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
