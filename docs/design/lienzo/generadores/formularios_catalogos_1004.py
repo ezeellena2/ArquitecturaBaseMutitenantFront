@@ -912,6 +912,9 @@ def ajustar_rol():
 
 
 if __name__ == "__main__" and not sys.argv[1:]:
+    # Desde el 17/10 los tableros de la Etapa 13 los arma formularios_ab_catalogos_1004.py (disposición de ArquitecturaBase);
+    # este archivo queda como biblioteca de piezas y para los permisos de Rol (ajustar_rol, ya aplicado).
+    raise SystemExit("Los tableros de la E13 los arma generadores/formularios_ab_catalogos_1004.py.")
     ajustar_rol()
     tableros = {"FRM-Catalogos": catalogos(), "FRM-Catalogo-Nuevo": nuevo_cat(), "FRM-Catalogo": ficha_cat(), "FRM-Catalogo-Opcion": opcion(), "FRM-Catalogo-Filtros": filtros_cat(),
                 "M-FRM-Catalogos": tel_catalogos(), "M-FRM-Catalogo": tel_ficha_cat(), "M-FRM-Catalogo-Opcion": tel_opcion(), "M-FRM-Catalogo-Filtros": tel_filtros_cat()}

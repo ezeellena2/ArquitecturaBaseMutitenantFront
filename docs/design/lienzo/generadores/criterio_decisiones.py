@@ -400,6 +400,16 @@ DECISIONES = {
         ("La respuesta", "", "Tarjeta con las primeras 3 en grilla, «Ver las N respuestas» y «Guardada como VIS-000123»; guardando, no se pudo guardar, no reconocida, sin permiso, en inglés y el mensaje que ya no está. El encabezado del chat sigue el de la E11 (teléfono · Empleado · empresa).", "Dibujada"),
         ("Teléfono", "", "«Diseñar formularios» con las mismas columnas; el editor en una sola pantalla, la pregunta en una hoja y los botones fijos abajo. «Enviar formulario» sigue en el ⋮ del chat (C, 13/10) y «Ver las N respuestas» abre la hoja en grilla (B, 13/10).", "Dibujada"),
     ],
+    "E13 · Catálogos con la disposición de ArquitecturaBase · La Guía y el usuario · 17/10": [
+        ("Disposición", "", "Copia K1 a K7 del lienzo de ArquitecturaBase y reemplaza las pantallas del 13 y 14/10, que pasan al Archivo. La consulta con SQL (K5) no entra: allá también quedó para después.", "Dibujada"),
+        ("Catálogos", "", "Tabla Catálogo (con su descripción), De dónde salen, Opciones, Lo usan y Estado (No se puede usar lleva el motivo debajo); el nombre abre el editor. Reglas del lienzo: «Origen ▾» y «Estado ▾» en lugar del segmentado, y sin columna de acciones.", "Dibujada"),
+        ("Nuevo catálogo", "", "El diálogo pregunta solo de dónde salen las opciones, en dos tarjetas, y «Continuar» abre el editor, donde se escribe el nombre.", "Dibujada"),
+        ("Catálogo escrito a mano", "", "Una sola pantalla, como el editor de formularios: «Textos en», el catálogo, las opciones con buscador y «Estado ▾» que se abren en el lugar, y al costado «Lo usan» y «Así lo ve el empleado». Todo se guarda junto. Reglas del lienzo: ⋮ por opción, «Guardar cambios» y «Dar de baja» en el ⋮ de la banda.", "Dibujada"),
+        ("Catálogo con filtros", "", "Una sola pantalla: el catálogo, los miembros que entran (vista Miembros con Nombre, Rol, Empresa y Activo) y, al costado, «Como si lo recibiera» con «Probar». Con más de 200 opciones no se guarda (antes se podía); sin persona de ejemplo no se crea.", "Dibujada"),
+        ("La pregunta", "", "«Elegir de un catálogo» se abre en el lugar, con el desplegable de catálogos (los que no se pueden usar, apagados con su motivo), «Ver el catálogo» y el vacío.", "Dibujada"),
+        ("Al mandar y al responder", "", "En el envío, las opciones por pregunta, «Preparando las opciones…» y, en rojo, más de 200, ninguna o catálogo que no se puede usar, con el envío apagado y sin enlace. La respuesta muestra el catálogo y el código; una opción dada de baja no se guarda y ofrece «Mandar de nuevo».", "Dibujada"),
+        ("Teléfono", "", "El listado con «Filtros» y «+»; los dos editores en una sola pantalla, con opciones y condiciones en hojas y la vista previa abajo.", "Dibujada"),
+    ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
     ],
@@ -434,9 +444,11 @@ def peso_filas(filas, i_texto):
     return 3 + sum(1 + len(f[i_texto]) // 120 for f in filas)
 
 
-total = peso_filas(REGLAS, 0) + sum(peso_filas(f, 2) for f in DECISIONES.values())
+# Las reglas van en una columna más angosta y ocupan más renglones de lo que dice su largo (medido en la versión 129).
+PESO_REGLAS = round(peso_filas(REGLAS, 0) * 1.25)
+total = PESO_REGLAS + sum(peso_filas(f, 2) for f in DECISIONES.values())
 # Las secciones van en orden, repartidas por peso entre las columnas; la primera empieza con las reglas.
-columnas, acumulado, k = [[] for _ in range(COLUMNAS)], peso_filas(REGLAS, 0), 0
+columnas, acumulado, k = [[] for _ in range(COLUMNAS)], PESO_REGLAS, 0
 for pagina, filas in DECISIONES.items():
     p = peso_filas(filas, 2)
     if k < COLUMNAS - 1 and acumulado + p / 2 > total * (k + 1) / COLUMNAS:

@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 128** (2026-10-17) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 233 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 129** (2026-10-17) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 252 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 El 2026-10-10 el usuario aprobó corregir localmente, sobre v115, la confirmación y el aviso de revocación de clave propia en `Organizacion.dc.html`: revocar no cambia automáticamente la financiación ni los topes. El tablero móvil sólo contiene la fila y su hoja de acciones, sin esas promesas. Este ajuste de fuente no declara una publicación remota ni una versión nueva del lienzo. La versión 116 lo publica, junto con «Avanzado: datos técnicos» en el diálogo de agregar o editar un modelo del catálogo (`Plat-Asistente-Config` y `M-Plat-Asistente-Config`, D26). La versión 117 suma el segundo factor de los operadores (Etapa 9: bloqueo, recuperación, «Confirmá que sos vos» y «Restablecer el autenticador») y pone al día los tableros de WhatsApp de atención (Etapa 11) con las ADR 0043 a 0049, con `generadores/alineamiento_v117_1004.py`. La versión 118 completa «Avanzado: datos técnicos» del catálogo de modelos con los campos del contrato del back (`853b5aed`): capacidades, esfuerzos permitidos, caché de 5 minutos y de 1 hora, y contexto largo con su caché. La versión 119 saca del resumen de `Asistente-Uso-Org` la clave en uso y las consultas por persona por día, que pueden cambiar a mitad de mes y se ven en Configuración. La versión 120 pone un tope a «Para resolver»: cada tipo de pendiente en su grupo, con su total, hasta 10 filas y «Ver todos» hacia el listado filtrado (`generadores/para_resolver_v120_1004.py`). La versión 121 pasa «Decisiones por pantalla» a tres columnas, para que quede debajo de los 8000 de alto que el lienzo admite. La versión 122 dibuja la Etapa 12, Formularios por WhatsApp: la página «Organización · Formularios» con 10 tableros de compu y 5 de teléfono (listado, nuevo, ficha con Preguntas, Inglés y Publicación, pregunta, prefijo, publicar, y mandar y recibir un formulario en un chat de Internos), y suma «Formularios» al menú de la organización, sus 5 permisos en Rol y el módulo en la ficha de una organización (`generadores/formularios_1004.py` y `generadores/formularios_ajustes_1004.py`). La versión 123 publica la regla única de secciones, pestañas y filtros en todo el lienzo y la Etapa 13 en curso, tal como las dejó Diseño (`f2f8e5bb`), y deja los tableros de la Etapa 11 sin contradicciones con las decisiones D1 a D9 del plan y con los estados que faltaban (`generadores/etapa11_1004.py`):
 - números con el contador siempre, sin medio de pago, el tope pasado, desconectar y «A quién atiende»;
@@ -38,6 +38,17 @@ La versión 128 rehace la Etapa 12 con la disposición del lienzo «Formularios 
 - enviar un formulario desde un chat de Internos y la respuesta, y los cuatro teléfonos (`M-FRM-Editor` nuevo);
 - lo reemplazado pasa al Archivo: los tableros del 13/10 con su nombre y, de los rehechos con el mismo nombre, una copia «-v127»; `formularios_1004.py` queda como biblioteca de piezas y ya no los escribe. Donde la disposición chocaba con una regla del lienzo, mandó la del lienzo (Criterio · Decisiones por pantalla).
 
+La versión 129, aprobada por el usuario el 17/10, trae dos cosas:
+- la Etapa 13 rehecha con la disposición de ArquitecturaBase (`generadores/formularios_ab_catalogos_1004.py`, que corre después de `formularios_ab_1004.py`):
+  - Catálogos con «Origen ▾» y «Estado ▾»;
+  - «Nuevo catálogo», que pregunta solo de dónde salen las opciones;
+  - el editor escrito a mano en una sola pantalla, con las opciones que se abren en el lugar;
+  - el editor con filtros, con «Como si lo recibiera»: con más de 200 opciones no se guarda;
+  - la pregunta «Elegir de un catálogo» en el editor de formularios, y las opciones por pregunta al mandar y al responder;
+  - los teléfonos;
+  - lo del 13 y 14/10 pasa al Archivo, con copias «-v128»;
+- los índices: la página «Mapa general» pasa a «Índice y mapas», con un índice general y uno por área, que siguen los capítulos de la guía (`generadores/indices_1004.py`).
+
 Los generadores de Formularios leen sus tableros base de commits fijos (`f2f8e5bb` y `d5d5edc5`) para no seguir cambios posteriores de otros generadores.
 
 **La guía del lienzo** recorre estas pantallas en el orden en que una persona usa el sistema: <https://claude.ai/artifact/3afhCQaqwMx6kLxY4B6gpZ>. Se regenera y se publica con cada versión del lienzo; cómo, en [`../guia/README.md`](../guia/README.md).
@@ -55,7 +66,7 @@ El título de cada tablero dice en qué estado está:
 | Página | Tableros | Estado |
 |---|---|---|
 | Criterio de diseño | 8 | Validado. Es la regla de botones, tablas, diálogos, formularios, avisos, menús y marco. «Decisiones por pantalla» anota lo que el usuario eligió en cada pantalla y las reglas que salieron de eso. El lienzo abre acá. |
-| Mapa general | 2 | Validado |
+| Índice y mapas | 14 | El índice general, un índice por área (los capítulos de la guía, con una tarjeta por pantalla que lleva a su compu, su teléfono y lo que se abre desde ahí) y los dos mapas: quién es quién y todos los casos del ingreso. |
 | Sitio público | 6 | Aprobado el 2026-10-03 (Etapa 7), pantalla por pantalla: la portada (con la sección «Empresas en ArquitecturaBase»), el directorio en tarjetas (`/empresas`) y la página pública en una tarjeta centrada, con sus tres estados. Los teléfonos son web, no app: una columna y ☰ arriba. |
 | Ingreso y registro | 20 | Validado. Desde el 2026-10-03 suma los teléfonos de Sesión y de Organización no disponible, en formato app. |
 | Perfil personal | 15 | Validado. Los 7 teléfonos están en formato app desde el 2026-10-03. Mi cuenta suma los estados de WhatsApp (Etapa 8): agregar y verificar un número, quitarlo o hacerlo principal, y sin el módulo. |
@@ -63,9 +74,9 @@ El título de cada tablero dice en qué estado está:
 | Organización · WhatsApp | 55 | Escritorio y teléfonos aprobados el 2026-10-03, pantalla por pantalla (Etapa 11 ampliada). Los 27 teléfonos son los primeros en formato app. El alta de Meta no se dibuja hasta que el usuario lo pida. |
 | Plataforma | 38 | Aprobada el 2026-10-03, compu y teléfonos. En la compu, Gestión, WhatsApp y Administración abren un segundo panel; en el teléfono, barra de abajo (Organizaciones, Cuentas, Recuperaciones, Chats y Más). Plataforma › WhatsApp (Etapa 11), aprobado el 2026-10-03: solo consultas, con Consultas, Número, Bot, Equipos y Plantillas, en la compu y en el teléfono; la barra de abajo lleva «Consultas». |
 | Textos y mensajes | 2 | Validado |
-| Organización · Formularios | 24 | Etapa 12 rehecha el 2026-10-17 con la disposición de ArquitecturaBase (listado, editor, publicar, cómo termina, enviar y la respuesta en el chat, y sus teléfonos), aprobada; Catálogos (Etapa 13) y la biblioteca de la organización (Etapa 17). |
+| Organización · Formularios | 22 | Rehecha el 2026-10-17 con la disposición de ArquitecturaBase, aprobada: Etapa 12 (listado, editor, publicar, cómo termina, enviar y la respuesta en el chat), Etapa 13 (catálogos, editor a mano y con filtros) y la biblioteca de la organización (Etapa 17), con sus teléfonos. |
 | Plataforma · Formularios | 7 | Etapa 17, aprobada el 2026-10-17: biblioteca, plantilla, publicar, retirar y categorías. |
-| Archivo | 15 | Descartado. Son versiones anteriores; están como referencia y no se programan. Desde la versión 128, los tableros de la Etapa 12 del 13/10. |
+| Archivo | 24 | Descartado. Son versiones anteriores; están como referencia y no se programan. Desde la versión 128, los tableros de la Etapa 12 del 13/10; desde la 129, los de la Etapa 13 del 13 y 14/10. |
 
 La aplicación se migra al criterio visual por etapas: Mi cuenta y las piezas compartidas se abordaron en la Etapa 4; las pantallas de Organización aprobadas se implementan en la Etapa 6. Los dos inicios de Organización siguen pendientes de diseño.
 
@@ -207,6 +218,6 @@ Se publica desde Claude Code, con la herramienta Artifact y la `url` de arriba:
    - todo tablero y toda nota llevan `page`;
    - el `maxW` de una nota no pasa de 8000;
    - un tablero sin `"is_interactive": true` no muestra Play.
-4. **Enlaces entre tableros:** `<a href="X.dc.html">` mueve Play a ese tablero aunque esté en otra página. Toda pantalla nueva nace con sus enlaces.
+4. **Enlaces entre tableros e índices:** `<a href="X.dc.html">` mueve Play a ese tablero aunque esté en otra página. Toda pantalla nueva nace con sus enlaces **y en su índice**: se suma a su pantalla en `../guia/recorrido.py` (el mismo orden de la guía) y se corre `generadores/indices_1004.py`, que rehace el índice general y el de cada área en la página «Índice y mapas».
 5. **Las propuestas nuevas** van en su propia página («Propuesta · …»). Cuando se aprueban, pasan a la página de su área. Las versiones reemplazadas van al Archivo.
 6. **Después de publicar,** traé la versión nueva a esta carpeta y commiteala.
