@@ -93,6 +93,13 @@ export async function runAppActions(page, actions = []) {
     } else if (action.type === "press") {
       await target().focus();
       await target().press(action.key);
+    } else if (action.type === "scroll") {
+      // Como lo muestra el tablero: con nombre, ese control a la vista; sin nombre, la pantalla arriba.
+      if (action.name) await target().evaluate((element, block) => element.scrollIntoView({ block }), action.block ?? "center");
+      else await page.evaluate(() => {
+        window.scrollTo(0, 0);
+        for (const element of document.querySelectorAll("*")) if (element.scrollTop > 0) element.scrollTop = 0;
+      });
     } else if (action.type === "otp") {
       await page.getByRole("textbox", { name: "Código 1" }).click();
       await page.keyboard.type(action.value);

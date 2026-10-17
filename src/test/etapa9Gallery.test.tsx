@@ -62,11 +62,13 @@ function mount(app: GalleryApp) {
 
 async function run(app: GalleryApp, user: ReturnType<typeof userEvent.setup>) {
   for (const action of app.actions) {
-    if (action.type === "otp") { fireEvent.change(await screen.findByRole("textbox", { name: "Código 1" }), { target: { value: action.value } }); continue; }
+    if (action.type === "otp") { fireEvent.change(await screen.findByRole("textbox", { name: "Código 1" }, { timeout: 4000 }), { target: { value: action.value } }); continue; }
+    // Desplazar solo cambia la foto: acá alcanza con que el control exista.
+    if (action.type === "scroll") { if (action.name) await screen.findByRole(action.role!, { name: action.name }, { timeout: 4000 }); continue; }
     const surface = action.within ? within(await screen.findByRole(action.within.role, { name: action.within.name })) : screen;
-    const target = action.label ? await surface.findByLabelText(action.label, { exact: action.exact ?? false })
-      : action.nth === undefined ? await surface.findByRole(action.role!, { name: action.name })
-        : (await surface.findAllByRole(action.role!, { name: action.name }))[action.nth];
+    const target = action.label ? await surface.findByLabelText(action.label, { exact: action.exact ?? false }, { timeout: 4000 })
+      : action.nth === undefined ? await surface.findByRole(action.role!, { name: action.name }, { timeout: 4000 })
+        : (await surface.findAllByRole(action.role!, { name: action.name }, { timeout: 4000 }))[action.nth];
     if (action.type === "click") await user.click(target);
     else if (action.type === "press") { target.focus(); await user.keyboard(`{${action.key}}`); }
     else fireEvent.change(target, { target: { value: action.value } });

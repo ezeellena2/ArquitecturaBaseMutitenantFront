@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import type { PlatformAuditEventResponse, RoleResponse } from "@/shared/api/types";
-import { api, click, fill, galleryApp, galleryCase, otp, press, type GalleryAction, type GalleryApiResponse, type GalleryCase, type GalleryPending } from "./gallery";
+import { api, click, fill, galleryApp, galleryCase, otp, press, scroll, type GalleryAction, type GalleryApiResponse, type GalleryCase, type GalleryPending } from "./gallery";
 import { currentUsers } from "./mocks/currentUsers";
 import { platformAccountDetailFixture } from "./mocks/platformAccountDetail";
-import { platformAuditCaptureResponses, platformAuditEvents } from "./mocks/platformAudit";
+import { platformAuditCaptureResponses } from "./mocks/platformAudit";
 import { platformLegalCaptureResponses } from "./mocks/platformLegal";
 import { platformRecoveriesCaptureResponses } from "./mocks/platformRecoveries";
 import { platformSettingsCaptureResponses } from "./mocks/platformSettings";
@@ -64,7 +64,8 @@ function cuentaPlat(board: "Cuenta-Plat" | "M-Cuenta-Plat"): GalleryCase[] {
   // «Cambiar permisos» con «Administrar cuentas» de más y su motivo; guardar pide «Confirmá que sos vos» (tablero, v125).
   const form = { role: "dialog", name: "Cambiar permisos de Laura Díaz" } as const;
   const permissions: GalleryAction[] = [...board === "Cuenta-Plat" ? [click("Cambiar permisos")] : [open, click("Cambiar permisos", "menuitem")],
-    press("Permisos de plataforma", "button", "ArrowDown"), click("Administrar cuentas", "menuitemcheckbox"), press("Administrar cuentas", "menuitemcheckbox", "Escape"),
+    press("Permisos de plataforma", "button", "ArrowDown"), click("Administrar cuentas", "menuitemcheckbox"), click("Ver la auditoría", "menuitemcheckbox"),
+    press("Ver la auditoría", "menuitemcheckbox", "Escape"),
     fill("Motivo", "Va a atender las bajas de cuentas.", form), click("Guardar cambios", "button", form)];
   const confirm = (state: string, readyText: string, actions: GalleryAction[] = [], proof: GalleryApiResponse[] = []) => galleryCase("cuenta-plat", board, state,
     galleryApp("visual-operator", route, [...responses, api("PUT", `/api/platform/accounts/${laura.id}/operator`, reauthenticationRequired, 403), ...proof],
@@ -90,7 +91,10 @@ function cuentaPlat(board: "Cuenta-Plat" | "M-Cuenta-Plat"): GalleryCase[] {
 
 /** Recuperaciones y Documentos legales: «Confirmá que sos vos» reemplaza al diálogo de la acción (v125). */
 function otrasConfirmaciones(): GalleryCase[] {
-  const recoveries = platformRecoveriesCaptureResponses() as GalleryApiResponse[];
+  // Fila 2 del tablero: el método nuevo es un teléfono («•••• 3310»).
+  const withPhone = (body: unknown) => body && typeof body === "object" && "items" in body && Array.isArray(body.items)
+    ? { ...body, items: body.items.map((item: { id?: string }) => item.id === "r2" ? { ...item, newMethodType: "Phone", newMethod: "•••• 3310" } : item) } : body;
+  const recoveries = (platformRecoveriesCaptureResponses() as GalleryApiResponse[]).map((response) => ({ ...response, body: withPhone(response.body) }));
   const legal = platformLegalCaptureResponses() as GalleryApiResponse[];
   return [
     galleryCase("recuperaciones", "Recuperaciones", "Aprobar: confirmá que sos vos", galleryApp("visual-operator", "/plataforma/recuperaciones",
@@ -113,6 +117,7 @@ function configPlat(board: "Config-Plat" | "M-Config-Plat"): GalleryCase[] {
   const quick = "Pedidos · Consultas fijas";
   const reason = { role: "dialog", name: "¿Guardar la configuración?" } as const;
   const changed = [fill(quick, "30")];
+  const phone = board === "M-Config-Plat";
   const toReason = [...changed, click("Guardar cambios"), fill("Motivo", "Más consultas fijas para la campaña de octubre.", reason)];
   const settings = (state: string, options: { readyText?: string; readyTexts?: string[]; actions?: GalleryAction[]; responses?: GalleryApiResponse[]; conflict?: boolean }) =>
     galleryCase("config-plat", board, state, galleryApp("visual-operator", "/plataforma/configuracion",
@@ -120,13 +125,15 @@ function configPlat(board: "Config-Plat" | "M-Config-Plat"): GalleryCase[] {
       { now, readyText: options.readyText, readyTexts: options.readyTexts, actions: options.actions }));
   return [
     settings("Sin cambios", { readyText: "Límites de uso" }),
-    settings("Con cambios", { readyText: "Límites de uso", actions: changed }),
+    settings("Con cambios", { readyText: "Límites de uso", actions: [...changed, scroll()] }),
     settings("Límite fuera de rango", { readyTexts: ["Usá un número de 1 a 1.000.000.", "Usá un tiempo de 1 segundo a 24 horas."], actions: [fill(quick, "0"),
-      fill("Cada · Probar una clave nueva", "48"), press("Unidad · Probar una clave nueva", "combobox", "Enter"), click("horas", "option"), click("Guardar cambios")] }),
+      fill("Cada · Probar una clave nueva", "48"), press("Unidad · Probar una clave nueva", "combobox", "Enter"), click("horas", "option"), click("Guardar cambios"),
+      ...phone ? [scroll("Pedidos · Conversaciones")] : []] }),
     settings("Guardar: motivo", { readyText: "¿Guardar la configuración?", actions: toReason }),
     settings("Guardar: confirmá que sos vos", { readyText: "Para guardar la configuración, escribí el código de tu app de autenticación.",
       actions: [...toReason, click("Guardar", "button", reason)], responses: [api("PUT", "/api/platform/settings", reauthenticationRequired, 403)] }),
-    settings("Otra persona cambió la configuración", { readyText: "Otra persona cambió esto mientras lo editabas.", actions: [...toReason, click("Guardar", "button", reason)], conflict: true }),
+    settings("Otra persona cambió la configuración", { readyText: "Otra persona cambió esto mientras lo editabas.",
+      actions: [...toReason, click("Guardar", "button", reason), ...phone ? [scroll()] : []], conflict: true }),
   ];
 }
 
@@ -138,7 +145,7 @@ const caseOf = (cases: GalleryCase[], id: string) => {
   return found;
 };
 
-/** P2 en el Asistente: la conversación de la 8b, con la consulta escrita que choca con un límite (v125). */
+/** P2 en el Asistente: la conversación nueva de la 8b; una consulta fija choca con un límite y lo escrito queda (v125). */
 function asistente(board: "Asistente-Org" | "M-Asistente-Org"): GalleryCase {
   const base = caseOf(previousCases("8b"), board === "Asistente-Org" ? "asistente-org-quedan-10-consultas" : "m-asistente-org-quedan-10-consultas");
   // Lejos del tope del día: el aviso es el del límite de uso, no el de «Quedan 10 consultas».
@@ -146,8 +153,8 @@ function asistente(board: "Asistente-Org" | "M-Asistente-Org"): GalleryCase {
     ? { ...response, body: { ...response.body as object, remainingMessages: 40 } } : response);
   const { readyTexts: _readyTexts, ...app } = base.app;
   return galleryCase("asistente", board, "Demasiadas consultas seguidas", { ...app, readySelector: "main", readyText: "Hiciste muchas consultas seguidas.",
-    responses: [api("POST", "/api/organization/assistant/conversations/gallery-chat/messages", rateLimited, 429), ...responses],
-    actions: [...base.app.actions, fill("Tu consulta", "¿Quiénes entraron esta semana?"), click("Enviar")] }, { stateKey: "asistente" });
+    responses: [api("POST", "/api/organization/assistant/quick/active_users", rateLimited, 429), ...responses],
+    actions: [click("Usuarios activos"), fill("Tu consulta", "¿Quiénes entraron esta semana?")] }, { stateKey: "asistente" });
 }
 
 /** P2 en Usuarios: la lista de la 11 que no carga por un límite (v125). */
@@ -182,7 +189,8 @@ function roles(): GalleryCase {
   return galleryCase("roles", "Roles", "Menú de un rol con usuarios", galleryApp("visual-owner", "/org/roles", [
     api("GET", "/api/roles/paged", { items: boardRoles, page: 1, pageSize: 10, totalCount: boardRoles.length, totalPages: 1, hasPrevious: false, hasNext: false }),
     api("GET", "/api/roles/filter-counts", counts), api("GET", "/api/companies/paged", companiesPage), owner,
-  ], { now, readyText: "Lo tienen 4 usuarios. Quitáselo primero.", actions: [press("Acciones para Solo lectura", "button", "Enter", 0)] }));
+  ], { now, readyText: "Lo tienen 4 usuarios. Quitáselo primero.", actions: [press("Acciones para Solo lectura", "button", "Enter", 0)] }),
+  { boardActions: [{ type: "click", selector: '[aria-label="Acciones de Solo lectura"]' }] });
 }
 
 /** P2 en Rol: guardar el «Solo lectura» de Delta S.A. con la descripción nueva choca con un límite (v125). */
@@ -203,19 +211,30 @@ function rol(board: "Rol" | "M-Rol"): GalleryCase {
   board === "Rol" ? { stateKey: "modo" } : {});
 }
 
-/** F3 en Auditoría: los eventos nuevos del autenticador, arriba de los de siempre (v125). Nunca muestran códigos. */
+/** F3 en Auditoría (v125): las filas del tablero, con los eventos del autenticador arriba; 6 en la compu y 10 en el
+ * teléfono, y «Cargar más». Las fechas del tablero son de Buenos Aires. */
 function auditoria(board: "Auditoria-Plat" | "M-Auditoria-Plat"): GalleryCase {
-  const event = (id: string, occurredAtUtc: string, summary: string, target: string, actor: string, reason: string | null, ipAddress: string): PlatformAuditEventResponse =>
-    ({ id, occurredAtUtc, type: "operators", action: "PlatformAuthenticator", summary, target, targetTenantId: null, targetAccountId: null, actor, actorRole: "Operador", reason, ipAddress });
-  const added = [
-    event("a0000000-0000-4000-8000-000000000901", "2026-09-27T14:40:00Z", "Restableció el autenticador", "Laura Díaz", "Martín Sosa", "Cambió de celular.", "181.45.178.•••"),
-    event("a0000000-0000-4000-8000-000000000902", "2026-09-27T14:38:00Z", "Confirmó con el autenticador", "Plataforma", "Martín Sosa", null, "181.45.178.•••"),
-    event("a0000000-0000-4000-8000-000000000903", "2026-09-27T14:05:00Z", "Ingresó con un código de recuperación", "Plataforma", "Laura Díaz", null, "181.45.30.•••"),
-    event("a0000000-0000-4000-8000-000000000904", "2026-09-27T13:58:00Z", "Configuró el autenticador", "Plataforma", "Julieta Molina", null, "190.12.4.•••"),
+  const event = (id: number, occurredAtUtc: string, type: string, summary: string, target: string, actor: string, actorRole: string, reason: string | null): PlatformAuditEventResponse =>
+    ({ id: `a0000000-0000-4000-8000-${String(900 + id).padStart(12, "0")}`, occurredAtUtc, type, action: "Gallery", summary, target, targetTenantId: null,
+      targetAccountId: null, actor, actorRole, reason, ipAddress: "181.45.178.•••" });
+  const events = [
+    event(1, "2026-09-27T14:40:00Z", "accounts", "Restableció el autenticador", "Laura Díaz", "Martín Sosa", "Operador", "Cambió de celular."),
+    event(2, "2026-09-27T14:38:00Z", "signins", "Confirmó con el autenticador", "Plataforma", "Martín Sosa", "Operador", null),
+    event(3, "2026-09-27T14:05:00Z", "signins", "Ingresó con un código de recuperación", "Plataforma", "Laura Díaz", "Operador", null),
+    event(4, "2026-09-27T13:58:00Z", "signins", "Configuró el autenticador", "Plataforma", "Julieta Molina", "Operador", null),
+    event(5, "2026-09-27T13:55:00Z", "signins", "Ingresó con el autenticador", "Plataforma", "Martín Sosa", "Operador", null),
+    event(6, "2026-09-27T13:20:00Z", "signins", "Cuenta bloqueada 15 minutos por 10 códigos incorrectos", "mariana.lopez@gmail.com", "Sistema", "Automático", null),
+    event(7, "2026-09-27T12:55:00Z", "organizations", "Falló el alta de la organización", "Sigma S.A.", "Sistema", "Automático", null),
+    event(8, "2026-09-26T20:30:00Z", "accounts", "Suspendió la cuenta", "Ana Gómez", "Laura Díaz", "Operador", "Denuncia de uso indebido."),
+    event(9, "2026-09-22T15:00:00Z", "settings", "Cambió el alta de organizaciones a Requiere aprobación", "Plataforma", "Martín Sosa", "Operador", "Muchas altas de prueba."),
+    event(10, "2026-09-20T14:02:00Z", "organizations", "Reactivó la organización", "Grupo Delta", "Martín Sosa", "Operador", "Regularizó el pago."),
+    event(11, "2026-09-18T19:45:00Z", "organizations", "Suspendió la organización", "Beta S.R.L.", "Martín Sosa", "Operador", "Dos meses sin pago."),
+    event(12, "2026-09-15T13:10:00Z", "operators", "Invitó a laura.diaz@arquitecturabase.ejemplo.com como operador", "Plataforma", "Martín Sosa", "Operador", "Suma al equipo de soporte."),
   ];
-  const responses = (platformAuditCaptureResponses() as GalleryApiResponse[]).map((response) => response.path === "/api/platform/audit" && !response.query
-    ? { ...response, body: { ...response.body as object, items: [...added, ...platformAuditEvents] } } : response);
-  return galleryCase("auditoria", board, "Eventos del segundo factor", galleryApp("visual-operator", "/plataforma/auditoria", [...responses, operator],
+  const shown = board === "Auditoria-Plat" ? 6 : 10;
+  const responses = [api("GET", "/api/platform/audit", { items: events.slice(0, shown), nextCursor: "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ", hasMore: true }),
+    ...(platformAuditCaptureResponses() as GalleryApiResponse[]).filter((response) => response.path !== "/api/platform/audit"), operator];
+  return galleryCase("auditoria", board, "Eventos del segundo factor", galleryApp("visual-operator", "/plataforma/auditoria", responses,
     { now, readyText: "Restableció el autenticador" }), { props: {} });
 }
 
