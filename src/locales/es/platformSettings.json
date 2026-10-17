@@ -20,7 +20,51 @@
   },
   "validation": { "range": "Usá un número de 1 a 50.", "email": "Ingresá un correo válido." },
   "confirmTitle": "¿Guardar la configuración?",
-  "confirmDescription": "Cambia cómo entran las personas y las organizaciones nuevas. Lo que ya existe no cambia.",
+  "confirmDescription": "Cambia cómo entran las personas y las organizaciones nuevas, y los límites de uso. Lo que ya existe no cambia.",
   "confirm": "Guardar",
-  "reauthPurpose": "Para guardar la configuración"
+  "reauthPurpose": "Para guardar la configuración",
+  "rateLimits": {
+    "title": "Límites de uso",
+    "columns": {
+      "limit": "Límite",
+      "requests": "Pedidos",
+      "every": "Cada"
+    },
+    "groups": {
+      "service": "Para todo el servicio",
+      "login": "Ingreso",
+      "assistant": "Asistente",
+      "whatsapp": "WhatsApp"
+    },
+    "profiles": {
+      "ip": "Por dirección IP",
+      "publicIp": "Páginas públicas, por dirección IP",
+      "identity": "Por cuenta",
+      "tenant": "Por organización",
+      "loginCode": "Pedir un código",
+      "loginVerify": "Escribir un código",
+      "invitationPreview": "Abrir una invitación",
+      "invitationAccept": "Aceptar una invitación",
+      "assistantQuickQuery": "Consultas fijas",
+      "assistantConversation": "Conversaciones",
+      "assistantNewKey": "Probar una clave nueva",
+      "whatsAppWebhook": "Avisos de Meta"
+    },
+    "every": "cada",
+    "requestsOf": "Pedidos · {{name}}",
+    "everyOf": "Cada · {{name}}",
+    "unitOf": "Unidad · {{name}}",
+    "units": {
+      "s_one": "segundo",
+      "s_other": "segundos",
+      "m_one": "minuto",
+      "m_other": "minutos",
+      "h_one": "hora",
+      "h_other": "horas"
+    },
+    "validation": {
+      "requests": "Usá un número de {{min}} a {{max}}.",
+      "every": "Usá un tiempo de 1 segundo a 24 horas."
+    }
+  }
 }

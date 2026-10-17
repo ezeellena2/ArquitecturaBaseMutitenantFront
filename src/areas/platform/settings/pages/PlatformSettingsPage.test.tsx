@@ -69,17 +69,17 @@ describe("Configuración de Plataforma", () => {
     change("Organizaciones propias por persona", "4"); change("Correo de ventas", "nuevo@ejemplo.com"); change("Correo de soporte", "ayuda@ejemplo.com");
     await waitFor(() => expect(screen.queryByText("Usá un número de 1 a 50.")).not.toBeInTheDocument()); expect(screen.queryByText("Ingresá un correo válido.")).not.toBeInTheDocument();
   });
-  it.each(["1", "50"])("límite %s pide motivo, manda cinco campos/version/reason y conserva respuesta antes GET viejo", async (value) => {
+  it.each(["1", "50"])("límite %s pide motivo, manda los campos, los doce límites, version y reason, y conserva respuesta antes GET viejo", async (value) => {
     const requests: Record<string, unknown>[] = []; let getRelease: (() => void) | undefined; let reads = 0;
     server.use(http.get("/api/platform/settings", async () => { reads++; if (reads === 2) await new Promise<void>((resolve) => { getRelease = resolve; }); return HttpResponse.json(platformSettingsFixture); }),
       http.put("/api/platform/settings", async ({ request }) => { requests.push(await request.json() as Record<string, unknown>); expect(request.headers.get("Idempotency-Key")).toBeNull(); return HttpResponse.json({ version: requests.length + 16 }); }));
     const user = userEvent.setup(); const page = renderRouteWithProviders("/plataforma/configuracion", { as: "platform-operator" }); await screen.findByRole("textbox", { name: "Correo de ventas" });
     change("Organizaciones propias por persona", value); change("Correo de ventas", " NUEVO@EJEMPLO.COM ");
-    const dialog = await confirmation(user); expect(dialog).toHaveTextContent("Cambia cómo entran las personas y las organizaciones nuevas. Lo que ya existe no cambia.");
+    const dialog = await confirmation(user); expect(dialog).toHaveTextContent("Cambia cómo entran las personas y las organizaciones nuevas, y los límites de uso. Lo que ya existe no cambia.");
     await user.click(within(dialog).getByRole("button", { name: "Guardar" })); expect(await screen.findByText("Escribí el motivo.")).toBeVisible(); expect(requests).toHaveLength(0);
     fireEvent.change(within(dialog).getByRole("textbox", { name: "Motivo" }), { target: { value: " Revisamos el registro. " } }); await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
     expect(await screen.findByText("Guardamos la configuración.")).toBeVisible(); expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(requests[0]).toEqual({ consumerSignup: "Open", businessSignup: "RequiresApproval", maxOwnedOrganizations: Number(value), salesEmail: "nuevo@ejemplo.com", supportEmail: "soporte@ejemplo.com", version: 1, reason: "Revisamos el registro." });
+    expect(requests[0]).toEqual({ consumerSignup: "Open", businessSignup: "RequiresApproval", maxOwnedOrganizations: Number(value), salesEmail: "nuevo@ejemplo.com", supportEmail: "soporte@ejemplo.com", rateLimits: platformSettingsFixture.rateLimits, version: 1, reason: "Revisamos el registro." });
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled(); await waitFor(() => expect(getRelease).toBeDefined());
     change("Correo de soporte", "ayuda@ejemplo.com"); await send(user); await waitFor(() => expect(requests).toHaveLength(2)); expect(requests[1].version).toBe(17);
     await act(async () => { getRelease?.(); }); await waitFor(() => expect(page.queryClient.isFetching({ queryKey: key })).toBe(0));

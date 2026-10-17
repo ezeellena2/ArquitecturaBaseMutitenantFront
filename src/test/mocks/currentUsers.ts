@@ -170,6 +170,7 @@ export const currentUsers = {
   "business-no-permissions": businessWithoutPermissions,
   "business-company-admin": businessCompanyAdmin,
   "platform-operator": platformOperator,
+  "platform-operator-english": { ...platformOperator, culture: "en-US" },
   "platform-operator-reader": platformOperatorReader,
   "visual-operator": visualOperator,
   "visual-personal": visualPersonal,

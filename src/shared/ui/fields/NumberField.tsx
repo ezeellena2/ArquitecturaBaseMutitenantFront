@@ -15,11 +15,13 @@ interface NumberFieldProps {
   placeholder?: string;
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
+  /** Sin rótulo propio, como una celda de una tabla editable (los límites de uso de Configuración). */
+  "aria-label"?: string;
 }
 
 /** Cantidad cultural; digits fija la escala si el contrato lo requiere. */
 export function NumberField({ value, onChange, onValidityChange, digits, id, name, disabled, required, placeholder,
-  "aria-invalid": externalInvalid, "aria-describedby": externalDescription }: NumberFieldProps) {
+  "aria-invalid": externalInvalid, "aria-describedby": externalDescription, "aria-label": label }: NumberFieldProps) {
   const format = useFormat();
   const { t } = useTranslation();
   const messageId = useId();
@@ -54,7 +56,7 @@ export function NumberField({ value, onChange, onValidityChange, digits, id, nam
       onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
       onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
-      aria-invalid={externalInvalid || showError} aria-describedby={description} />
+      aria-invalid={externalInvalid || showError} aria-describedby={description} aria-label={label} />
     {showError && <p id={messageId} role="alert" className="text-[13px] text-[var(--peligro)]">{t("fields.invalidNumber")}</p>}
   </>;
 }

@@ -30,23 +30,35 @@ import { Page } from "@/shared/ui/Page";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { fetchPlatformSettings, platformSettingsKey, updatePlatformSettings } from "../api/platformSettings";
+import { RateLimitsSection } from "../components/RateLimitsSection";
+import { draftsOf, rateLimitBounds, rateLimitProfiles, rateLimitsInput, sameRateLimits, validPermitLimit, validWindow } from "../lib/rateLimits";
+import { useFormat, type FormatState } from "@/shared/format/useFormat";
 import { useRecentAuthenticationPurpose } from "@/shared/api/recentAuthentication";
 
-function settingsFormSchema(t: TFunction) {
+function settingsFormSchema(t: TFunction, format: FormatState) {
   // Validación exacta del tablero Config-Plat; NumberField y EmailField normalizan la entrada.
   const email = z.string().nullable().refine((value) => value !== null && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value), t("platformSettings:validation.email"));
+  // Límites de uso (E9): pedidos de 1 a 1.000.000 y «cada» de 1 segundo a 24 horas; sin cero para apagar uno.
+  const permits = t("platformSettings:rateLimits.validation.requests", { min: format.formatInteger(rateLimitBounds.permitLimit.minimum), max: format.formatInteger(rateLimitBounds.permitLimit.maximum) });
+  const quota = z.object({ permitLimit: z.number().nullable().refine(validPermitLimit, permits), amount: z.number().nullable(), unit: z.enum(["s", "m", "h"]) })
+    .superRefine((value, context) => { if (!validWindow(value)) context.addIssue({ code: "custom", path: ["amount"], message: t("platformSettings:rateLimits.validation.every") }); });
   return z.object({ consumerSignup: z.enum(["Open", "Closed"]), businessSignup: z.enum(["Open", "RequiresApproval", "Closed"]),
-    maxOwnedOrganizations: z.number().nullable().refine((value) => value !== null && Number.isInteger(value) && value >= validationConstraints.UpdatePlatformSettingsHttpRequest.maxOwnedOrganizations.minimum && value <= validationConstraints.UpdatePlatformSettingsHttpRequest.maxOwnedOrganizations.maximum, t("platformSettings:validation.range")), salesEmail: email, supportEmail: email });
+    maxOwnedOrganizations: z.number().nullable().refine((value) => value !== null && Number.isInteger(value) && value >= validationConstraints.UpdatePlatformSettingsHttpRequest.maxOwnedOrganizations.minimum && value <= validationConstraints.UpdatePlatformSettingsHttpRequest.maxOwnedOrganizations.maximum, t("platformSettings:validation.range")), salesEmail: email, supportEmail: email,
+    rateLimits: z.object({ ip: quota, publicIp: quota, identity: quota, tenant: quota, loginCode: quota, loginVerify: quota, invitationPreview: quota, invitationAccept: quota,
+      assistantQuickQuery: quota, assistantConversation: quota, assistantNewKey: quota, whatsAppWebhook: quota }) });
 }
-type SettingsForm = z.infer<ReturnType<typeof settingsFormSchema>>;
+export type SettingsForm = z.infer<ReturnType<typeof settingsFormSchema>>;
 type SettingsConfirmation = { values: SettingsForm; version: number; draft: number; read: PlatformSettingsResponse };
-const serverFields: Record<string, keyof SettingsForm> = { consumerSignup: "consumerSignup", businessSignup: "businessSignup", maxOwnedOrganizations: "maxOwnedOrganizations", salesEmail: "salesEmail", supportEmail: "supportEmail" };
+type SettingsField = keyof SettingsForm | `rateLimits.${(typeof rateLimitProfiles)[number]["key"]}.${"permitLimit" | "amount"}`;
+const serverFields: Record<string, SettingsField> = { consumerSignup: "consumerSignup", businessSignup: "businessSignup", maxOwnedOrganizations: "maxOwnedOrganizations", salesEmail: "salesEmail", supportEmail: "supportEmail",
+  ...Object.fromEntries(rateLimitProfiles.flatMap(({ key }) => [[`rateLimits.${key}.permitLimit`, `rateLimits.${key}.permitLimit`], [`rateLimits.${key}.windowSeconds`, `rateLimits.${key}.amount`]])) };
 function valuesFromSettings(settings: PlatformSettingsResponse): SettingsForm {
   return { consumerSignup: settings.consumerSignup, businessSignup: settings.businessSignup, maxOwnedOrganizations: settings.maxOwnedOrganizations,
-    salesEmail: settings.salesEmail ?? null, supportEmail: settings.supportEmail ?? null };
+    salesEmail: settings.salesEmail ?? null, supportEmail: settings.supportEmail ?? null, rateLimits: draftsOf(settings.rateLimits) };
 }
 function sameValues(left: SettingsForm, right: SettingsForm) {
-  return left.consumerSignup === right.consumerSignup && left.businessSignup === right.businessSignup && left.maxOwnedOrganizations === right.maxOwnedOrganizations && left.salesEmail === right.salesEmail && left.supportEmail === right.supportEmail;
+  return left.consumerSignup === right.consumerSignup && left.businessSignup === right.businessSignup && left.maxOwnedOrganizations === right.maxOwnedOrganizations && left.salesEmail === right.salesEmail && left.supportEmail === right.supportEmail
+    && sameRateLimits(left.rateLimits, right.rateLimits);
 }
 function sameRead(left: PlatformSettingsResponse, right: PlatformSettingsResponse) {
   return left.version === right.version && sameValues(valuesFromSettings(left), valuesFromSettings(right));
@@ -65,7 +77,8 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
   // «Confirmá que sos vos» (Config-Plat): «Para guardar la configuración, …».
   useRecentAuthenticationPurpose(t("platformSettings:reauthPurpose"));
   const canManage = canPlatform("platform.settings.manage");
-  const schema = useMemo(() => settingsFormSchema(t), [t]);
+  const format = useFormat();
+  const schema = useMemo(() => settingsFormSchema(t, format), [t, format]);
   const { form, version, resetTo, wrote } = useEditForm({ read: settings, toValues: valuesFromSettings, resolver: zodResolver(schema) });
   const consumer = useController({ control: form.control, name: "consumerSignup" }); const business = useController({ control: form.control, name: "businessSignup" });
   const count = useController({ control: form.control, name: "maxOwnedOrganizations" }); const sales = useController({ control: form.control, name: "salesEmail" }); const support = useController({ control: form.control, name: "supportEmail" });
@@ -107,11 +120,13 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
     if (!valid() || sent.values.maxOwnedOrganizations === null) throw new DOMException("", "AbortError");
     setBusy(true);
     try {
-      const response = await updatePlatformSettings({ ...sent.values, version: sent.version, reason: reason.reason });
+      const { rateLimits, ...rest } = sent.values;
+      // Van los doce límites completos: el contrato no admite unos sí y otros no.
+      const response = await updatePlatformSettings({ ...rest, rateLimits: rateLimitsInput(rateLimits), version: sent.version, reason: reason.reason });
       if (!valid()) throw new DOMException("", "AbortError");
       // La escritura propia cambia la base antes de cualquier invalidación/GET; una lectura vieja nunca la reemplaza.
       wrote(sent.version, response.version, undefined); form.reset(sent.values);
-      ownRead.current = { previous: sent.read, saved: { ...sent.read, ...sent.values, maxOwnedOrganizations: sent.values.maxOwnedOrganizations, version: response.version } };
+      ownRead.current = { previous: sent.read, saved: { ...sent.read, ...rest, maxOwnedOrganizations: sent.values.maxOwnedOrganizations, rateLimits: rateLimitsInput(rateLimits), version: response.version } };
       setFailure(undefined); toast.success(t("platformSettings:saved")); abandon();
       void client.invalidateQueries({ queryKey: platformSettingsKey });
       return response;
@@ -156,6 +171,7 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
             <EmailField name={support.field.name} value={support.field.value} onChange={(value) => { changed("supportEmail"); support.field.onChange(value); }} />
           </FormField>
         </SectionFields></Section>
+        <RateLimitsSection control={form.control} errors={errors.rateLimits} onChange={(profile) => { abandon(); form.clearErrors(`rateLimits.${profile}`); setFailure(undefined); }} />
       </form>
     </Page>
     {confirmation && !edit.isBlocked ? <SettingsReasonConfirmation confirmation={confirmation} current={() => current(confirmation)}
