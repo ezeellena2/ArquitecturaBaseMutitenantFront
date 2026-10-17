@@ -60,7 +60,8 @@ export function useAssistantOperations(scope: AssistantScope, generation: number
       setFailure({ lifetime: operation.lifetime, error });
       throw error;
     } finally { operation.lifetime.release(controller); }
-  }), { meta: action.meta, sameOperation: (a, b) => a.id === b.id });
+    // P2 (E9, Asistente-Org): el límite de uso lo dice la banda arriba de la caja, con su cuenta; no se repite abajo.
+  }), { meta: { ...action.meta, handlesRateLimit: true }, sameOperation: (a, b) => a.id === b.id });
   const pending = action.isPending;
   const run = (execute: Operation["execute"], conversationId?: string | null) => mutation.mutateAsync({ id: crypto.randomUUID(), lifetime, execute, resource: conversationId ? resourceFor(conversationId) : undefined });
   // Conserva la señal abortada: ni un Retry ni un callback viejo puede revivir el recurso.

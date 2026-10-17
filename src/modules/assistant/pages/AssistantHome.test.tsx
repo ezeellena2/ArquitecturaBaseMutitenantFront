@@ -395,6 +395,9 @@ describe("interfaz del asistente", () => {
     expect(screen.getByRole("textbox", { name: "Tu consulta" })).toHaveValue("¿Quiénes entraron esta semana?");
     expect(screen.getByRole("button", { name: "Enviar" })).toBeDisabled();
     expect(calls).toBe(1);
+    // Solo la banda: sin el aviso flotante global, que en el teléfono tapa la caja (P2, Asistente-Org).
+    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 50)); });
+    expect(screen.queryByText("Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos.")).not.toBeInTheDocument();
   });
 
   it("sube cada archivo por separado y usa versiones de conversación releídas", async () => {
