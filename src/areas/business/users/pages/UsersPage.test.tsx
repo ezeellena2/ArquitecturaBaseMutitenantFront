@@ -447,6 +447,28 @@ describe("UsersPage", () => {
     expect(sent[1].key).not.toBe(sent[0].key);
   });
 
+  // P2 (E9, tableros Usuarios y M-Usuarios «Demasiados pedidos»): una lectura que choca con un límite muestra el estado de
+  // error de la lista y «Reintentar» cuenta; no se vuelve a pedir sola.
+  it("la lista que no carga por un límite dice por qué y «Reintentar» espera la cuenta", async () => {
+    const user = userEvent.setup();
+    let reads = 0;
+    server.use(
+      http.get("/api/users/paged", () => { reads++; return reads === 1 ? HttpResponse.json({ code: "Security.RateLimit.Exceeded", detail: "texto del back", retryAfter: 1 }, { status: 429, headers: { "Retry-After": "1" } }) : HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false }); }),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0 })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+    );
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    expect(await screen.findByText("No pudimos cargar los usuarios.")).toBeVisible();
+    expect(screen.getByText("Hiciste muchos pedidos seguidos. Esperá un momento.")).toBeVisible();
+    expect(await screen.findByRole("button", { name: "Reintentá en 0:01" })).toBeDisabled();
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    expect(reads).toBe(1);
+    const retry = await screen.findByRole("button", { name: "Reintentar" }, { timeout: 3000 });
+    await user.click(retry);
+    expect(await screen.findByText("Lucía Fernández")).toBeVisible();
+    expect(reads).toBe(2);
+  }, 10_000);
+
   it("pagina una organización con 50 usuarios sin cargar más de una página", async () => {
     const items = Array.from({ length: 10 }, (_item, index) => ({
       ...member,

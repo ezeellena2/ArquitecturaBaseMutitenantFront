@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useCountdown } from "@/shared/hooks/useCountdown";
 import { ApiError } from "./ApiError";
@@ -22,4 +23,18 @@ export function useRetryAfterCountdown() {
     label: isRunning ? t("retryIn", { time }) : null,
     startFromError,
   };
+}
+
+/// La cuenta de un 429 que ya está en pantalla (una lista que no cargó, el aviso de una acción): arranca con cada error
+/// nuevo. Solo cuenta: «Reintentar» se toca a mano cuando termina.
+export function useRetryAfterOf(error: unknown) {
+  const countdown = useRetryAfterCountdown();
+  const { startFromError } = countdown;
+  const seen = useRef<unknown>(null);
+  useEffect(() => {
+    if (!error || error === seen.current) return;
+    seen.current = error;
+    startFromError(error);
+  }, [error, startFromError]);
+  return countdown;
 }

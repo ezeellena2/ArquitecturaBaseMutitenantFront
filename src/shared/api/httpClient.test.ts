@@ -17,6 +17,15 @@ beforeAll(async () => {
   ]);
 });
 
+// P2 (E9): un 429 llega una vez, con la espera que pidió el servidor; el cliente nunca lo repite solo.
+it("un límite de uso llega con su espera, sin repetir el pedido", async () => {
+  let calls = 0;
+  server.use(http.post("/api/limited", () => { calls++; return HttpResponse.json({ code: "Security.RateLimit.Exceeded", retryAfter: 41 }, { status: 429, headers: { "Retry-After": "41" } }); }));
+  const error = await api.post("/api/limited", {}).catch((caught: unknown) => caught);
+  expect(error).toMatchObject({ status: 429, code: "Security.RateLimit.Exceeded", retryAfterSeconds: 41 });
+  expect(calls).toBe(1);
+});
+
 describe("httpClient", () => {
   beforeEach(() => resetHttpClient());
   afterEach(async () => {

@@ -30,6 +30,7 @@
     }
   },
   "rateLimited": "You made too many requests. Try again in a few seconds.",
+  "rateLimitExceeded": "You made many requests in a row. Wait a moment.",
   "retryIn": "Try again in {{time}}",
   "concurrency": {
     "title": "Someone changed this",

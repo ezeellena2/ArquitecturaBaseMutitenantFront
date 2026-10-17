@@ -14,7 +14,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
-import { apiErrorMessage, isNotFoundError } from "@/shared/api/errorMessage";
+import { apiErrorMessage, isNotFoundError, isRateLimitError } from "@/shared/api/errorMessage";
+import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { CreateRoleRequest, RoleResponse, RoleScope, UpdateRoleRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -157,7 +158,11 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   const scopeGroups = useMemo(() => groupsForScope(permissionGroups.data ?? [], scope), [permissionGroups.data, scope]);
   const count = selectionCount(scopeGroups.flatMap((group) => group.permissions), permissions);
 
+  // P2 (E9): al llegar a un límite, el aviso va arriba del formulario, lo escrito queda y «Guardar» cuenta hasta poder
+  // tocarse de nuevo, a mano.
+  const limit = useRetryAfterCountdown();
   function rejected(error: unknown) {
+    if (isRateLimitError(error)) { limit.startFromError(error); setFailure(error); return; }
     if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return;
     const field = roleErrorField(error);
     if (field && error instanceof ApiError) form.setError(field, { type: "server", message: error.detail ?? "" });
@@ -169,8 +174,8 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   // intento original, también desde «Reintentar».
   const createAction = useResourceAction<CreateRoleRequest>({ onError: rejected });
   const create = useIdempotentMutation(createAction.guarded((request, key: string) => createRole(request, key),
-    (id, request) => { void created(id, request); }), { meta: createAction.meta, sameOperation: sameRoleRequest });
-  const update = useMutation({ mutationFn: ({ id, request }: { id: string; request: UpdateRoleRequest }) => updateRole(id, request) });
+    (id, request) => { void created(id, request); }), { meta: { ...createAction.meta, handlesRateLimit: true }, sameOperation: sameRoleRequest });
+  const update = useMutation({ meta: { handlesRateLimit: true }, mutationFn: ({ id, request }: { id: string; request: UpdateRoleRequest }) => updateRole(id, request) });
 
   async function created(id: string, request: CreateRoleRequest) {
     setFailure(undefined);
@@ -246,11 +251,12 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
           ? <Button type="button" variant="outline" onClick={discard}>{t("roles:discard")}</Button>
           : <Button type="button" variant="outline" onClick={() => { void navigate("/org/roles"); }}>{t("roles:cancel")}</Button>}
         {/* «Criterio · Botones»: «Crear rol» no se apaga; solo «Guardar cambios» sin cambios. */}
-        <Button type="submit" form="role-editor" disabled={Boolean(role) && !isDirty} pending={saving}>{role ? t("roles:save") : t("roles:create")}</Button>
+        <Button type="submit" form="role-editor" disabled={Boolean(role) && !isDirty || limit.isRunning} pending={saving}>{limit.label ?? (role ? t("roles:save") : t("roles:create"))}</Button>
       </> : undefined}
     >
       <form id="role-editor" noValidate aria-label={title} onSubmit={(event) => { void submit(event); }} className="flex flex-col gap-3.5">
         {edit.formError}
+        {limit.isRunning && isRateLimitError(failure) ? <Banner tone="warning" role="alert">{apiErrorMessage(failure, t)}</Banner> : null}
         {permissionGroups.isError ? <FormError message={apiErrorMessage(permissionGroups.error, t)} /> : null}
         {/* Tablero Rol: nombre y «Vale en» en dos columnas a todo el ancho; la descripción ocupa las dos. En el teléfono
             (M-Rol), los datos van sueltos sobre blanco, sin título a la vista. */}

@@ -11,6 +11,7 @@ const errorKeys: Record<string, string> = {
   "Auth.LoginCode.ResendTooSoon": "login.resendTooSoon",
   "Auth.LoginCode.TooManyRequests": "login.tooManyRequests",
   "Http.TooManyRequests": "login.networkRateLimited",
+  "Security.RateLimit.Exceeded": "errors:rateLimitExceeded",
   "Identity.Account.LockedOut": "login.accountLocked",
   "Identity.Account.Suspended": "login.accountSuspended",
 };

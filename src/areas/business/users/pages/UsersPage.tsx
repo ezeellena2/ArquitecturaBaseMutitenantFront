@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
-import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
+import { apiErrorMessage, isRateLimitError, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import type { OrganizationUserFilterCountsResponse, OrganizationUserResponse, OrganizationUserState } from "@/shared/api/types";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
@@ -176,7 +176,9 @@ export function UsersPage() {
             rowKey={(member) => member.memberId}
             isLoading={users.isPending}
             isFetching={users.isFetching}
-            error={users.error ? apiErrorMessage(users.error, t) : undefined}
+            error={users.error ? isRateLimitError(users.error) ? t("users:loadFailed") : apiErrorMessage(users.error, t) : undefined}
+            errorDescription={isRateLimitError(users.error) ? apiErrorMessage(users.error, t) : undefined}
+            failure={users.error}
             onRetry={() => { void users.refetch(); void counts.refetch(); }}
             emptyTitle={state || companyFilter || pagination.search ? t("users:empty.filtered") : t("users:empty.all")}
             emptyAction={state || companyFilter || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("users:empty.clear")}</Button> : undefined}

@@ -23,6 +23,7 @@ import { PhoneText } from "./format/PhoneText";
 import { StatusBadge } from "./format/StatusBadge";
 import { TaxIdText } from "./format/TaxIdText";
 import { TimeZoneText } from "./format/TimeZoneText";
+import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
 
 type OptionalValue<T> = T | null | undefined;
 type MobileRole = "primary" | "status";
@@ -78,6 +79,8 @@ interface DataTableProps<TRow> {
   error?: string;
   errorDescription?: string;
   onRetry?: () => void;
+  /** El error de la consulta: si es un límite de uso (429), «Reintentar» dice «Reintentá en 0:41» y espera (P2). */
+  failure?: unknown;
   emptyTitle?: string;
   emptyDescription?: string;
   emptyAction?: ReactNode;
@@ -185,6 +188,7 @@ export function DataTable<TRow>({
   error,
   errorDescription,
   onRetry,
+  failure,
   emptyTitle,
   emptyDescription,
   emptyAction,
@@ -195,13 +199,14 @@ export function DataTable<TRow>({
 }: DataTableProps<TRow>) {
   const { t } = useTranslation();
   const { phone } = useAppChrome();
+  const limit = useRetryAfterOf(failure);
   assertOneMobilePrimary(columns);
 
   const list = phone && mobileRow;
   // El aviso de una lista vacía o que no cargó. En la compu va en la tabla, debajo de sus encabezados y sin recuadro
   // propio («Criterio · Tablas», «Ninguno coincide»; tablero Roles); en una lista del teléfono, solo.
   const notice = error
-    ? <EmptyState title={error} description={errorDescription} action={onRetry ? <Button type="button" variant="outline" onClick={onRetry}>{t("actions.retry")}</Button> : undefined} framed={Boolean(list)} />
+    ? <EmptyState title={error} description={errorDescription} action={onRetry ? <Button type="button" variant="outline" disabled={limit.isRunning} onClick={onRetry}>{limit.label ?? t("actions.retry")}</Button> : undefined} framed={Boolean(list)} />
     : rows.length === 0 && !isLoading ? <EmptyState title={emptyTitle ?? t("states.empty")} description={emptyDescription} action={emptyAction} framed={Boolean(list)} />
       : null;
   if (!error && isLoading) return <div className="flex justify-center p-10"><Spinner /></div>;

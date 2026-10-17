@@ -18,6 +18,8 @@ interface AppQueryMeta extends Record<string, unknown> {
 interface AppMutationMeta extends Record<string, unknown> {
   /** La pantalla muestra también red, 5xx y 429 en su lugar (el ingreso, con la cuenta regresiva en el botón): sin aviso abajo. */
   handlesError?: boolean;
+  /** La pantalla dice el límite de uso (429) en el lugar de la acción, con su cuenta (P2); red y 5xx siguen avisándose abajo. */
+  handlesRateLimit?: boolean;
 }
 
 declare module "@tanstack/react-query" {
@@ -91,6 +93,8 @@ export function createQueryClient(defaultOptions: DefaultOptions = appDefaults):
         if (publishesAccessError(error, false)) publishAccessError(error);
         // Los errores de negocio los muestra la pantalla, en el formulario o en su aviso (actionErrorMessage).
         if (mutation.meta?.handlesError === true || !isGenericApiError(error)) return;
+        // P2 (E9): la pantalla que dice el límite en el lugar de la acción, con su cuenta, no repite el aviso abajo.
+        if (error.status === 429 && mutation.meta?.handlesRateLimit === true) return;
         // «Reintentar» repite la misma mutación con lo mismo: la clave idempotente se conserva ante red y 5xx, y
         // corren otra vez sus callbacks, así que la pantalla termina igual que si hubiera salido bien la primera vez.
         toastGenericError(error, () => { void mutation.execute(variables).catch(() => undefined); });

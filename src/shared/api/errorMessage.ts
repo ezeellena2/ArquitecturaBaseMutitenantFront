@@ -9,6 +9,12 @@ export function isGenericApiError(error: unknown): error is ApiError {
   return error instanceof ApiError && (error.isNetworkError || error.status >= 500 || error.status === 429);
 }
 
+/// Un límite de uso (E9, P2): el 429 `Security.RateLimit.Exceeded`, u otro 429, con `retryAfter`. La pantalla lo dice en el
+/// lugar de la acción con la cuenta regresiva; nunca se repite solo.
+export function isRateLimitError(error: unknown): error is ApiError {
+  return error instanceof ApiError && error.status === 429;
+}
+
 /// Lo que pidió la pantalla no existe para quien mira (404, también un id de otra organización o de otro acceso): la
 /// ficha muestra `NotFoundPage` en lugar de la pantalla de error con «Reintentar».
 export function isNotFoundError(error: unknown): error is ApiError {
@@ -23,6 +29,7 @@ export function apiErrorMessage(error: unknown, t: TFunction): string {
   if (isReauthenticationCancelled(error)) return "";
   if (error instanceof ApiError) {
     if (error.isNetworkError) return t("errors:network");
+    if (error.code === "Security.RateLimit.Exceeded") return t("errors:rateLimitExceeded");
     if (error.status >= 500) return t("errors:server");
     if (error.detail) return error.detail;
     if (error.status === 429) return t("errors:rateLimited");

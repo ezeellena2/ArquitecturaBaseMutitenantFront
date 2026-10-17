@@ -300,6 +300,37 @@ describe("RoleEditorPage", () => {
     expect(sent).toEqual([expect.objectContaining({ name: "Nombre del borrador", version: 4 })]);
   });
 
+  // P2 (E9, tableros Rol y M-Rol «Guardar: demasiados pedidos»): el aviso arriba del formulario, lo escrito queda y «Guardar»
+  // cuenta hasta poder tocarse a mano; no se manda solo ni se avisa dos veces.
+  it("al llegar a un límite, el aviso va arriba, el botón cuenta y después se guarda a mano", async () => {
+    const user = userEvent.setup();
+    const sent: unknown[] = [];
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.get("/api/roles/role-custom", () => HttpResponse.json(role)),
+      http.put("/api/roles/role-custom", async ({ request }) => { sent.push(await request.json()); return sent.length === 1 ? HttpResponse.json({ code: "Security.RateLimit.Exceeded", detail: "texto del back", retryAfter: 1 }, { status: 429, headers: { "Retry-After": "1" } }) : HttpResponse.json({ version: role.version + 1 }); }),
+    );
+    renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
+    await user.clear(name); await user.type(name, "Nombre nuevo");
+    await user.click(screen.getAllByRole("button", { name: "Guardar cambios" })[0]);
+
+    expect(await screen.findByText("Hiciste muchos pedidos seguidos. Esperá un momento.")).toBeVisible();
+    expect(screen.queryByText("texto del back")).not.toBeInTheDocument();
+    const waiting = screen.getAllByRole("button", { name: "Reintentá en 0:01" })[0];
+    expect(waiting).toBeDisabled();
+    expect(name).toHaveValue("Nombre nuevo");
+    // Un solo aviso: el del lugar de la acción, sin el de abajo.
+    expect(screen.queryByText("Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos.")).not.toBeInTheDocument();
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    expect(sent).toHaveLength(1);
+    const save = await screen.findAllByRole("button", { name: "Guardar cambios" }, { timeout: 3000 });
+    expect(save[0]).toBeEnabled();
+    await user.click(save[0]);
+    expect(await screen.findByText("Guardamos el rol Nombre nuevo.")).toBeVisible();
+    expect(sent).toHaveLength(2);
+  }, 10_000);
+
   // concurrencia.md (E7): después de guardar, la base es la versión que respondió el guardado. Si otra persona guardó
   // justo después, la relectura trae su cambio con otra versión: no pasa a ser la base, el próximo guardado da 409 y la
   // persona elige con «Ver lo nuevo».

@@ -30,6 +30,7 @@
     }
   },
   "rateLimited": "Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos.",
+  "rateLimitExceeded": "Hiciste muchos pedidos seguidos. Esperá un momento.",
   "retryIn": "Reintentá en {{time}}",
   "concurrency": {
     "title": "Alguien cambió esto",
