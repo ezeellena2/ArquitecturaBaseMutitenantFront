@@ -36,6 +36,15 @@ describe("MultiSelect", () => {
     expect(screen.getByRole("button", { name: "Roles" })).toHaveTextContent("Admin, User");
   });
 
+  // Tablero M-Cuenta-Plat («Permisos de plataforma»): la enumeración se parte en renglones y une el último con «y».
+  it("como enumeración, une el último con «y» y no recorta el texto", () => {
+    const three = [...options, { value: "Auditor", label: "Auditor" }];
+    renderWithProviders(<FormField label="Roles"><MultiSelect summary="list" options={three} value={["Admin", "User", "Auditor"]} onChange={() => {}} placeholder="Sin roles" /></FormField>);
+    const trigger = screen.getByRole("button", { name: "Roles" });
+    expect(trigger).toHaveTextContent("Admin, User y Auditor");
+    expect(within(trigger).getByText("Admin, User y Auditor")).not.toHaveClass("truncate");
+  });
+
   it("stays open while several options are toggled", async () => {
     renderWithProviders(<Harness />);
     const user = userEvent.setup();

@@ -50,7 +50,8 @@
     "invalidNumber": "Enter a valid number.",
     "invalidMoney": "Enter a valid amount for the selected currency.",
     "invalidPercent": "Enter a valid percentage.",
-    "createOption": "Create “{{value}}”"
+    "createOption": "Create “{{value}}”",
+    "selectedList": "{{rest}} and {{last}}"
   },
   "errors": {
     "network": "We couldn't connect. Check your connection.",

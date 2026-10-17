@@ -58,7 +58,7 @@ export function OperatorPermissionsDialog({ account, returnFocusTo, onClose, onS
     <DialogHeader><DialogTitle>{t("platformAccounts:operator.changeTitle", { name: accountLabel(account, t) })}</DialogTitle></DialogHeader>
     <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col"><DialogBody>
       <FormField label={t("platformAccounts:invite.permissions")} error={form.formState.errors.permissions?.message}>
-        <MultiSelect options={catalog.map((permission) => ({ value: permission.code, label: t(permission.nameKey), description: t(permission.descriptionKey) }))}
+        <MultiSelect summary="list" options={catalog.map((permission) => ({ value: permission.code, label: t(permission.nameKey), description: t(permission.descriptionKey) }))}
           value={permissions.field.value} onChange={(value) => { permissions.field.onChange(orderLike(initial, value)); form.clearErrors("permissions"); setFailure(undefined); }} placeholder={t("platformAccounts:invite.none")} />
       </FormField>
       <FormField label={t("common:reasonDialog.reason")} required error={form.formState.errors.reason?.message}>

@@ -26,6 +26,9 @@ interface MultiSelectProps {
   /// al elegirla queda marcado ese texto como valor nuevo. Sirve para lo que se crea al guardar, como una etiqueta.
   creatable?: boolean;
   disabled?: boolean;
+  /// `list`: lo elegido como una enumeración que se parte en renglones y une el último con «y» («Ver organizaciones,
+  /// Administrar cuentas, Recuperaciones y Ver la auditoría», tablero M-Cuenta-Plat). Por defecto, un renglón con comas.
+  summary?: "line" | "list";
   "aria-invalid"?: ComponentProps<"button">["aria-invalid"];
   "aria-describedby"?: string;
 }
@@ -46,6 +49,7 @@ export function MultiSelect({
   selectedOptions = options,
   creatable = false,
   disabled,
+  summary = "line",
   "aria-invalid": ariaInvalid,
   "aria-describedby": ariaDescribedBy,
 }: MultiSelectProps): ReactNode {
@@ -57,6 +61,10 @@ export function MultiSelect({
   for (const option of created) known.set(option.value, option);
   // En el orden de las opciones y no en el de los clics: así el texto no cambia según cómo se llegó.
   const picked = [...known.values()].filter((option) => value.includes(option.value));
+  const labels = picked.map((option) => option.label);
+  const text = summary === "list" && labels.length > 1
+    ? t("fields.selectedList", { rest: labels.slice(0, -1).join(", "), last: labels.at(-1) }) : labels.join(", ");
+  const list = summary === "list";
   const optionId = useId();
   const typed = remote?.search.trim() ?? "";
   const same = (text: string) => text.localeCompare(typed, undefined, { sensitivity: "accent" }) === 0;
@@ -78,14 +86,16 @@ export function MultiSelect({
         aria-describedby={ariaDescribedBy}
         className={cn(
           "flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3 text-left text-[13px] outline-none max-md:h-12 max-md:rounded-[12px] max-md:px-3.5 max-md:text-[16px]",
+          // Con la enumeración, el campo crece con sus renglones (M-Cuenta-Plat, .ct.sel).
+          list && "h-auto min-h-9 py-1.5 max-md:h-auto max-md:min-h-12 max-md:py-2 max-md:leading-[1.3]",
           // Tablero Usuario (.o-dd > button.ct[aria-expanded=true]): abierto, con el borde petróleo y el halo, como con foco.
           "focus-visible:border-[var(--marca)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] aria-expanded:border-[var(--marca)] aria-expanded:ring-[3px] aria-expanded:ring-[var(--foco-halo)]",
           // Tablero Usuario: lo vacío, como «Ninguno», en el gris de campo vacío.
           picked.length > 0 ? "text-[var(--t1)]" : "text-[var(--t3)]",
         )}
       >
-        <span className="truncate">
-          {picked.length > 0 ? picked.map((option) => option.label).join(", ") : placeholder}
+        <span className={list ? "min-w-0 break-words" : "truncate"}>
+          {picked.length > 0 ? text : placeholder}
         </span>
         <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)] max-md:size-[18px] max-md:text-[var(--t1)]" />
       </DropdownMenuTrigger>
