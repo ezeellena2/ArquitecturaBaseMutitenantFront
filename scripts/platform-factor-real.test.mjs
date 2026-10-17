@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { base32Decode, createFactorKeeper, stepAt, totp } from "./platform-factor-real.mjs";
+import { chromium } from "playwright";
+import { base32Decode, checkByLabel, createFactorKeeper, stepAt, totp } from "./platform-factor-real.mjs";
 
 // RFC 6238, apéndice B: el secreto ASCII «12345678901234567890» con SHA-1; los seis dígitos de abajo de cada código.
 const rfcSecret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ";
@@ -46,4 +47,24 @@ test("guardar los códigos conserva el intervalo y cada código de recuperación
   assert.deepEqual(keeper.recoveryCodes("operador@example.test"), ["CCCC-DDDD"]);
   assert.throws(() => createFactorKeeper().takeRecoveryCode("otro@example.test"));
   await assert.rejects(createFactorKeeper().code("otro@example.test"));
+});
+
+// CheckboxField: la etiqueta tapa la casilla para que toda la fila se pueda tocar. check() sobre la casilla choca con ella;
+// el ayudante la marca como una persona, con un clic en la etiqueta, y comprueba que quedó marcada.
+test("marca una casilla de CheckboxField con un clic en su etiqueta", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(`<style>.fila{position:relative;padding:9px}label::after{content:"";position:absolute;inset:0}</style>
+      <div class="fila"><button type="button" role="checkbox" aria-checked="false" id="guardados"
+        onclick="this.setAttribute('aria-checked', String(this.getAttribute('aria-checked') !== 'true'))"></button>
+      <label for="guardados">Los guardé en un lugar seguro</label></div>`);
+    const checkbox = page.getByRole("checkbox", { name: "Los guardé en un lugar seguro", exact: true });
+    await assert.rejects(checkbox.check({ timeout: 500 }), { name: "TimeoutError" });
+    await checkByLabel(page, "Los guardé en un lugar seguro", { timeout: 2_000 });
+    assert.equal(await checkbox.getAttribute("aria-checked"), "true");
+    // Ya marcada, no la desmarca.
+    await checkByLabel(page, "Los guardé en un lugar seguro", { timeout: 2_000 });
+    assert.equal(await checkbox.getAttribute("aria-checked"), "true");
+  } finally { await browser.close(); }
 });

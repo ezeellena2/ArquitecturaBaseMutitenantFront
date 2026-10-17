@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
-import { confirmRecentAuthentication, factorKeeper } from "./platform-factor-real.mjs";
+import { checkByLabel, confirmRecentAuthentication, factorKeeper } from "./platform-factor-real.mjs";
 import { authenticatorAuditEvents, isOperatorWrite, openAccountActions, preparePermissions, watchResponses } from "./test-e2e-real-e9.mjs";
 
 // E9 en el recorrido de usuario (pedido del Coordinador de la 9 para el informe de la Guía): el primer ingreso de un
@@ -97,7 +97,7 @@ export async function runE9Journey({ platformPage: page, width, env, base, recor
       factorKeeper.rememberCodes(newcomer, codes);
       const enter = page.getByRole("button", { name: "Entrar a la plataforma", exact: true });
       assert.equal(await enter.isDisabled(), true, "«Entrar a la plataforma» espera «Los guardé».");
-      await page.getByRole("checkbox", { name: "Los guardé en un lugar seguro", exact: true }).check();
+      await checkByLabel(page, "Los guardé en un lugar seguro");
       assert.equal(await enter.isDisabled(), false);
       return "El código de la app activó el autenticador; se ven los 8 códigos con Descargar y Copiar, y «Los guardé» habilitó «Entrar a la plataforma» (códigos tapados).";
     });

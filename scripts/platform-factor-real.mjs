@@ -85,6 +85,20 @@ export function createFactorKeeper({ now = () => Date.now(), sleep = delay } = {
 
 export const factorKeeper = createFactorKeeper();
 
+/**
+ * Marca una casilla de CheckboxField como una persona: con un clic en su etiqueta, que cubre toda la fila (por eso
+ * `check()` sobre la casilla choca con la etiqueta). Después comprueba que quedó marcada.
+ */
+export async function checkByLabel(page, name, { timeout = 30_000 } = {}) {
+  const checkbox = page.getByRole("checkbox", { name, exact: true });
+  await checkbox.waitFor({ timeout });
+  if (await checkbox.isChecked()) return;
+  const id = await checkbox.getAttribute("id");
+  assert.ok(id, `La casilla «${name}» no tiene id para su etiqueta.`);
+  await page.locator(`label[for="${id}"]`).click({ timeout });
+  await page.waitForFunction((target) => document.getElementById(target)?.getAttribute("aria-checked") === "true", id, { timeout });
+}
+
 /** «Confirmá que sos vos» (F2): el código del intervalo y «Confirmar»; espera a que el diálogo se cierre. */
 export async function confirmRecentAuthentication(page, email, { keeper = factorKeeper, timeout = 30_000 } = {}) {
   const dialog = page.getByRole("dialog", { name: "Confirmá que sos vos", exact: true });
@@ -129,7 +143,7 @@ export async function completeOperatorFactor(page, email, { keeper = factorKeepe
     assert.equal(codes.length, 8);
     assert.ok(codes.every((code) => /^[A-Z0-9]{4}-[A-Z0-9]{4}$/u.test(code)));
     keeper.rememberCodes(email, codes);
-    await page.getByRole("checkbox", { name: "Los guardé en un lugar seguro", exact: true }).check();
+    await checkByLabel(page, "Los guardé en un lugar seguro", { timeout });
     await page.getByRole("button", { name: "Entrar a la plataforma", exact: true }).click();
     return "setup";
   }
