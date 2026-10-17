@@ -1,0 +1,61 @@
+{
+  "id": "usar-una-plantilla",
+  "titulo": "Usar una plantilla",
+  "etapa": "Etapa 17 · Biblioteca",
+  "orden": 20,
+  "resumen": "Lucía arranca un formulario desde la biblioteca: elige «Visita a cliente» y obtiene una copia propia en borrador.",
+  "pasos": [
+    {
+      "tablero": "FRM-Listado",
+      "tweaks": {
+        "estado": "Nuevo formulario: menú"
+      },
+      "resaltar": "a.f-mi:has-text(\"Desde una plantilla\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Empieza un formulario nuevo",
+      "texto": "«Nuevo formulario» ofrece dos caminos: desde cero o desde una plantilla.",
+      "avanzar": "Tocá «Desde una plantilla».",
+      "ruta": "/org/formularios",
+      "accion": "Toca «Desde una plantilla»."
+    },
+    {
+      "tablero": "FRM-Biblioteca",
+      "tweaks": {
+        "estado": "Con plantillas"
+      },
+      "resaltar": "a.bt-card",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Mira la biblioteca",
+      "texto": "Las plantillas publicadas, por categoría, con cuántas preguntas y catálogos traen.",
+      "avanzar": "Tocá «Visita a cliente».",
+      "ruta": "/org/formularios/biblioteca",
+      "accion": "Abre la plantilla."
+    },
+    {
+      "tablero": "FRM-Plantilla",
+      "tweaks": {
+        "estado": "Con permiso"
+      },
+      "resaltar": "a.cb-pri:has-text(\"Usar esta plantilla\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Revisa qué trae",
+      "texto": "La descripción, las preguntas, los catálogos y cómo se ve en el teléfono.",
+      "avanzar": "Tocá «Usar esta plantilla».",
+      "ruta": "/org/formularios/biblioteca/:id",
+      "accion": "Toca «Usar esta plantilla»."
+    },
+    {
+      "tablero": "FRM-Plantilla-Usar",
+      "tweaks": {
+        "estado": "Prefijo tomado"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Crear el formulario\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Crea su copia",
+      "texto": "VIS ya lo usa otro formulario, así que propone VIS2. Se abre la ficha del formulario nuevo, en borrador, para revisarlo y publicarlo.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/biblioteca/:id",
+      "accion": "Crea el formulario."
+    }
+  ]
+}

@@ -849,7 +849,7 @@
       "x": 10640,
       "y": 260,
       "w": 4440,
-      "h": 7200,
+      "h": 7600,
       "title": "Criterio · Decisiones por pantalla",
       "page": "criterio"
     },
@@ -1863,6 +1863,86 @@
       "h": 900,
       "title": "Plataforma · nueva plantilla",
       "page": "plat-formularios"
+    },
+    "Plat-FRM-Plantilla.dc.html": {
+      "x": 3040,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Plataforma · plantilla de formulario",
+      "page": "plat-formularios"
+    },
+    "Plat-FRM-Publicar.dc.html": {
+      "x": 4560,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Plataforma · publicar una plantilla",
+      "page": "plat-formularios"
+    },
+    "Plat-FRM-Retirar.dc.html": {
+      "x": 6080,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Plataforma · retirar una plantilla",
+      "page": "plat-formularios"
+    },
+    "Plat-FRM-Categorias.dc.html": {
+      "x": 0,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "Plataforma · categorías de formularios",
+      "page": "plat-formularios"
+    },
+    "FRM-Biblioteca.dc.html": {
+      "x": 0,
+      "y": 5360,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · biblioteca",
+      "page": "formularios"
+    },
+    "FRM-Plantilla.dc.html": {
+      "x": 1520,
+      "y": 5360,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · una plantilla",
+      "page": "formularios"
+    },
+    "FRM-Plantilla-Usar.dc.html": {
+      "x": 3040,
+      "y": 5360,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · usar una plantilla",
+      "page": "formularios"
+    },
+    "M-FRM-Biblioteca.dc.html": {
+      "x": 0,
+      "y": 6380,
+      "w": 390,
+      "h": 844,
+      "title": "Formularios · biblioteca · teléfono",
+      "page": "formularios"
+    },
+    "M-FRM-Plantilla.dc.html": {
+      "x": 470,
+      "y": 6380,
+      "w": 390,
+      "h": 844,
+      "title": "Formularios · una plantilla · teléfono",
+      "page": "formularios"
+    },
+    "M-Plat-FRM-Biblioteca.dc.html": {
+      "x": 0,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Plataforma · biblioteca de formularios · teléfono",
+      "page": "plat-formularios"
     }
   },
   "createdOnFiles": {
@@ -2236,7 +2316,17 @@
     "M-FRM-Catalogo-Opcion.dc.html",
     "M-FRM-Catalogo-Filtros.dc.html",
     "Plat-FRM-Biblioteca.dc.html",
-    "Plat-FRM-Plantilla-Nueva.dc.html"
+    "Plat-FRM-Plantilla-Nueva.dc.html",
+    "Plat-FRM-Plantilla.dc.html",
+    "Plat-FRM-Publicar.dc.html",
+    "Plat-FRM-Retirar.dc.html",
+    "Plat-FRM-Categorias.dc.html",
+    "FRM-Biblioteca.dc.html",
+    "FRM-Plantilla.dc.html",
+    "FRM-Plantilla-Usar.dc.html",
+    "M-FRM-Biblioteca.dc.html",
+    "M-FRM-Plantilla.dc.html",
+    "M-Plat-FRM-Biblioteca.dc.html"
   ],
   "pages": [
     {

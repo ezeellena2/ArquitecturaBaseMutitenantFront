@@ -6,7 +6,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 7200
+ALTO = 7600
 ANCHO = 4440
 COLUMNAS = 3
 ARCHIVO = "Criterio-Decisiones.dc.html"
@@ -371,6 +371,21 @@ DECISIONES = {
         ("Auditoría · eventos nuevos", "", "Configuró el autenticador, Restableció el autenticador (con su motivo), Ingresó con un código de recuperación y Confirmó con el autenticador; sin códigos ni secretos.", "Dibujada"),
         ("Etapa 9 · teléfono", "", "Las mismas piezas en la hoja de abajo; los límites, en filas con «cada», y el aviso arriba de la barra de abajo.", "Dibujada"),
         ("Roles · Inactivar", "", "Con usuarios, «Inactivar» va apagado en el ⋮ con el motivo debajo: «Lo tiene 1 usuario. Quitáselo primero.» o «Lo tienen N usuarios. Quitáselo primero.» (correctivo R10, como la app).", "Dibujada"),
+    ],
+    "E17 · Biblioteca de formularios · El usuario · 14/10 a 17/10": [
+        ("Plataforma · dónde", "A", "«Formularios» es un grupo de Administración, con Biblioteca y Categorías.", "Dibujada"),
+        ("Biblioteca de Plataforma", "", "Nombre, categoría, estado con «Cambios sin publicar» y «La usaron N»; filtros Estado y Categoría; vacía, sin resultados, cargando y error. En el teléfono, solo para ver.", "Dibujada"),
+        ("Plantilla · ficha", "", "Pestañas Preguntas, Inglés, Catálogos y Publicación con las piezas de la E12 (más categoría y descripción); cambios sin guardar y conflicto.", "Dibujada"),
+        ("Plantilla · catálogos", "B", "Una fila por catálogo con sus opciones y la pregunta que lo usa; se abre aparte, con sus opciones.", "Dibujada"),
+        ("Plantilla · publicación", "", "Estado en grilla y versiones con número, fecha, operador y motivo; en borrador, «Todavía no se publicó.»; retirada, con quién, el motivo y «Volver a publicar».", "Dibujada"),
+        ("Publicar una plantilla", "", "Motivo y comprobación: qué cambia, o los problemas por pregunta o por catálogo con «Publicar» apagado. La primera es la versión 1; volver a publicar sin cambios repite la misma.", "Dibujada"),
+        ("Retirar", "A", "En el ⋮ de la banda, en rojo; el diálogo pide motivo y dice que las copias ya hechas no cambian.", "Dibujada"),
+        ("Categorías", "A", "Lista con orden y ⋮ (Editar, Subir, Bajar, Borrar); crear, editar, mover y borrar piden motivo. Una en uso deja «Borrar» apagado con su motivo.", "Dibujada"),
+        ("Permiso de operador", "", "«Administrar la biblioteca de formularios», en Cuenta-Plat y en «Cambiar permisos».", "Dibujada"),
+        ("Organización · dónde", "A", "«Nuevo formulario ▾» abre «Desde cero» y «Desde una plantilla»; en el teléfono, el «+» pregunta lo mismo.", "Dibujada"),
+        ("Biblioteca de la organización", "", "Tarjetas por categoría con buscador: nombre, descripción y cuántas preguntas y catálogos trae; sin plantillas, sin resultados, cargando y error.", "Dibujada"),
+        ("Una plantilla", "", "Descripción, preguntas, catálogos que trae y vista previa. Sin permiso de catálogos, «Usar esta plantilla» apagado con ⓘ (en el teléfono, el motivo debajo).", "Dibujada"),
+        ("Usar una plantilla", "", "Nombre y prefijo propuesto (si VIS está tomado, VIS2, con ⓘ); al crear abre la ficha del formulario nuevo, en borrador. Si se retiró en el medio, avisa y vuelve a la biblioteca.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

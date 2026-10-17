@@ -1,0 +1,85 @@
+{
+  "id": "armar-una-plantilla",
+  "titulo": "Armar y publicar una plantilla",
+  "etapa": "Etapa 17 · Biblioteca",
+  "orden": 10,
+  "resumen": "Martín arma una plantilla de formulario en Plataforma, revisa sus catálogos y la publica con un motivo.",
+  "pasos": [
+    {
+      "tablero": "Plat-FRM-Biblioteca",
+      "tweaks": {
+        "estado": "Todas"
+      },
+      "resaltar": "a.cb-pri:has-text(\"Nueva plantilla\")",
+      "actor": "Martín · Operador · web",
+      "titulo": "Abre la biblioteca",
+      "texto": "Las plantillas que la plataforma ofrece a las organizaciones, con su estado y cuántas la usaron.",
+      "avanzar": "Tocá «Nueva plantilla».",
+      "ruta": "/plataforma/formularios",
+      "accion": "Toca «Nueva plantilla»."
+    },
+    {
+      "tablero": "Plat-FRM-Plantilla-Nueva",
+      "tweaks": {
+        "estado": "Con los datos"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Crear plantilla\")",
+      "actor": "Martín · Operador · web",
+      "titulo": "Le pone nombre y categoría",
+      "texto": "Nace en borrador: todavía no la ve ninguna organización.",
+      "avanzar": "Tocá «Crear plantilla».",
+      "ruta": "/plataforma/formularios",
+      "accion": "Crea la plantilla."
+    },
+    {
+      "tablero": "Plat-FRM-Plantilla",
+      "tweaks": {
+        "estado": "Preguntas"
+      },
+      "actor": "Martín · Operador · web",
+      "titulo": "Arma las preguntas",
+      "texto": "Es el mismo editor que usan las organizaciones para sus formularios, con la categoría y una descripción.",
+      "avanzar": "Siguiente.",
+      "ruta": "/plataforma/formularios/:id",
+      "accion": "Ve las preguntas."
+    },
+    {
+      "tablero": "Plat-FRM-Plantilla",
+      "tweaks": {
+        "estado": "Catálogos"
+      },
+      "resaltar": "a.cb-pri:has-text(\"Publicar\")",
+      "actor": "Martín · Operador · web",
+      "titulo": "Revisa sus catálogos",
+      "texto": "Los catálogos que trae la plantilla, escritos a mano. Cada uno se abre aparte, con sus opciones.",
+      "avanzar": "Tocá «Publicar».",
+      "ruta": "/plataforma/formularios/:id",
+      "accion": "Toca «Publicar»."
+    },
+    {
+      "tablero": "Plat-FRM-Publicar",
+      "tweaks": {
+        "estado": "Sin problemas"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Publicar versión 3\")",
+      "actor": "Martín · Operador · web",
+      "titulo": "Publica con un motivo",
+      "texto": "La comprobación dice qué cambia. Si faltara algo, lo marca por pregunta o por catálogo y no deja publicar.",
+      "avanzar": "Tocá «Publicar versión 3».",
+      "ruta": "/plataforma/formularios/:id",
+      "accion": "Publica la versión 3."
+    },
+    {
+      "tablero": "Plat-FRM-Plantilla",
+      "tweaks": {
+        "estado": "Publicación"
+      },
+      "actor": "Martín · Operador · web",
+      "titulo": "Queda la versión nueva",
+      "texto": "Las versiones, con fecha, operador y motivo. Retirar va en el ⋮: las copias que ya hicieron no cambian.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/plataforma/formularios/:id",
+      "accion": "Ve la publicación."
+    }
+  ]
+}
