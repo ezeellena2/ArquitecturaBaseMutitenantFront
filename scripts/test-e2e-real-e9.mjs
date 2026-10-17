@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
-import { readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { caseDelay as delay, newCaseContext } from "./test-e2e-real-case.mjs";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { completeOperatorFactor, confirmRecentAuthentication, factorKeeper } from "./platform-factor-real.mjs";
@@ -13,6 +15,8 @@ import { completeOperatorFactor, confirmRecentAuthentication, factorKeeper } fro
 export const e9Operators = Object.fromEntries(["a", "b", "r", "l"].map((key) => [key, `e2e-e9${key}-operator@example.test`]));
 /** El nombre con que el preparador crea cada operador (RealE2ESetup, PlatformCommand). */
 const operatorName = (key) => `Operador E2E e9${key}`;
+// La franja del ingreso (AuthMessage) lleva el texto y debajo su detalle en el mismo elemento: se busca el texto adentro,
+// no como todo el texto del elemento.
 const lockedText = "Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos.";
 
 /**
@@ -136,6 +140,28 @@ async function expectAuditEvents(page, baseUrl, type, summaries) {
   assert.deepEqual([...missing], [], `Auditoría (${type}) debe mostrar cada evento del segundo factor.`);
 }
 
+/** Lo que nunca sale en una captura de un fallo: las casillas del código, el QR, la clave, los códigos y los correos. */
+function failureMasks(page) {
+  return [page.locator('[role="group"][aria-label="Código"] input, input[type="email"], input[autocomplete="one-time-code"]'),
+    page.getByRole("img", { name: "Código QR para la app de autenticación", exact: true }), page.getByText(/^[A-Z2-7]{4}( [A-Z2-7]{1,4})+$/u),
+    page.getByRole("list", { name: "Códigos de recuperación", exact: true }), page.getByRole("textbox", { name: "Código de recuperación", exact: true })];
+}
+
+const evidenceDirectory = fileURLToPath(new URL("../../ArquitecturaBaseMutitenant/.local/e9/", import.meta.url));
+
+/** La captura de un fallo, como las de A9: una por pestaña abierta, con los datos sensibles tapados. */
+async function saveFailureEvidence(pages, name) {
+  const open = pages.filter((page) => page && !page.isClosed());
+  if (!open.length) return;
+  await mkdir(evidenceDirectory, { recursive: true });
+  const files = [];
+  for (const [index, page] of open.entries()) {
+    const file = path.join(evidenceDirectory, `${name}${index ? `-${index + 1}` : ""}.png`);
+    await page.screenshot({ path: file, fullPage: true, mask: failureMasks(page) }).then(() => files.push(file), () => {});
+  }
+  console.info(`${name}: captura del fallo en ${files.join(", ")} (rutas ${open.map((page) => new URL(page.url()).pathname).join(", ")}).`);
+}
+
 /**
  * Los nueve casos, como recorridos de cuenta del E2E real: `[nombre, (page, setStage) => …]`. Van al final de la lista y el
  * de la cuota (E9-9), último, para no frenar a los demás. E9-8 lee lo que dejan E9-1, 2, 4 y 5.
@@ -143,6 +169,11 @@ async function expectAuditEvents(page, baseUrl, type, summaries) {
 export function etapa9Cases(env) {
   const { baseUrl, readyFile } = env;
   const e9 = e9Operators;
+  // Si un caso falla, deja la captura de sus pestañas en ../ArquitecturaBaseMutitenant/.local/e9/<caso>.png.
+  const withEvidence = ([name, journey]) => [name, async (page, setStage) => {
+    try { await journey(page, setStage); }
+    catch (error) { await saveFailureEvidence(page.context().pages(), name.split(":")[0]).catch(() => {}); throw error; }
+  }];
   return [
     ["E9-1: el operador configura el autenticador, sale y vuelve con el código de la app", async (page, setStage) => {
       setStage("e9a entra por primera vez y configura el autenticador");
@@ -205,7 +236,7 @@ export function etapa9Cases(env) {
         }
       }
       assert.ok(locked && attempts >= 10, `El bloqueo llega después de diez códigos incorrectos (intentos: ${attempts}).`);
-      await page.getByText(lockedText, { exact: true }).waitFor();
+      await page.getByText(lockedText).first().waitFor();
       await page.getByText("Probá de nuevo en 15 minutos.", { exact: true }).waitFor();
       assert.equal(await verify.isDisabled(), true, "Con la cuenta bloqueada, «Verificar» va apagado.");
       setStage("recarga: aun con el código correcto, sigue bloqueado");
@@ -217,7 +248,7 @@ export function etapa9Cases(env) {
       const response = await again;
       assert.equal(response.status(), 429, "El bloqueo es de la cuenta: sobrevive a la recarga.");
       assert.equal((await response.json().catch(() => ({}))).code, "Identity.Account.LockedOut");
-      await page.getByText(lockedText, { exact: true }).waitFor();
+      await page.getByText(lockedText).first().waitFor();
       assert.equal(await verify.isDisabled(), true);
       assert.equal(new URL(page.url()).pathname, "/login");
     }],
@@ -280,11 +311,15 @@ export function etapa9Cases(env) {
     ["E9-5: restablecer el autenticador cierra la sesión del otro operador y su próximo ingreso pide el alta", async (page, setStage) => {
       const target = operatorName("b");
       const otherContext = await newCaseContext(env.browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
+      let other;
       try {
-        const other = await otherContext.newPage();
+        other = await otherContext.newPage();
         other.setDefaultTimeout(30_000);
         setStage("e9b entra a Plataforma en otro navegador");
         await env.loginThroughUi(other, e9.b, "platform", setStage);
+        const panel = other.getByRole("button", { name: "Gestión", exact: true });
+        const signIn = other.getByRole("textbox", { name: "Correo electrónico" });
+        await panel.waitFor();
         setStage("e9a restablece el autenticador de e9b");
         await env.loginThroughUi(page, e9.a, "platform", setStage);
         await env.openPlatformAccount(page, target);
@@ -294,14 +329,29 @@ export function etapa9Cases(env) {
         await dialog.getByRole("textbox", { name: /^Motivo/u }).fill("E2E E9: cambió de celular.");
         await dialog.getByRole("button", { name: "Restablecer", exact: true }).click();
         await page.getByText(`Restablecimos el autenticador de ${target}.`, { exact: true }).waitFor();
-        setStage("e9b pierde la sesión al navegar");
-        const panel = other.getByRole("button", { name: "Gestión", exact: true });
-        if (await panel.getAttribute("aria-expanded") !== "true") await panel.click();
-        await other.getByRole("navigation", { name: "Gestión", exact: true }).getByRole("link", { name: "Cuentas", exact: true }).click();
-        try { await other.getByRole("textbox", { name: "Correo electrónico" }).waitFor({ timeout: 30_000 }); }
+        // Antes del restablecimiento e9b seguía adentro (se comprobó arriba). Ahora la pierde: a veces ya la perdió por un
+        // pedido de fondo que recibió 401; si no, al navegar.
+        setStage("e9b pierde la sesión, por un pedido de fondo o al navegar");
+        const reached = await Promise.race([signIn.waitFor({ timeout: 30_000 }).then(() => "login", () => null),
+          panel.waitFor({ timeout: 30_000 }).then(() => "platform", () => null)]);
+        if (reached === "platform") {
+          // Navegar puede cruzarse con la salida que ya viene: el clic solo navega y lo que se comprueba es lo de abajo.
+          try {
+            if (await panel.getAttribute("aria-expanded", { timeout: 5_000 }) !== "true") await panel.click({ timeout: 5_000 });
+            await other.getByRole("navigation", { name: "Gestión", exact: true }).getByRole("link", { name: "Cuentas", exact: true }).click({ timeout: 5_000 });
+          } catch { /* Ya salió antes del clic. */ }
+        }
+        try { await signIn.waitFor({ timeout: 30_000 }); }
         catch { throw new Error(`e9b siguió en Plataforma después del restablecimiento (ruta ${new URL(other.url()).pathname}).`); }
+        setStage("volver a Plataforma no le devuelve la sesión a e9b");
+        await other.goto(new URL("/plataforma", baseUrl).href);
+        await signIn.waitFor();
+        assert.equal(await panel.count(), 0, "Sin sesión, e9b no ve el menú de Plataforma.");
         setStage("el próximo ingreso de e9b pide configurar el autenticador");
         assert.equal(await env.loginThroughUi(other, e9.b, "platform", setStage), "setup", "Restablecido, e9b vuelve a pasar por el alta.");
+      } catch (error) {
+        await saveFailureEvidence([other], "E9-5-e9b").catch(() => {});
+        throw error;
       } finally { await otherContext.close(); }
     }],
     ["E9-6: la sesión de una persona y la de un operador conviven en el mismo navegador", async (page, setStage) => {
@@ -455,6 +505,9 @@ export function etapa9Cases(env) {
         assert.equal((await retried).status(), 200, "El reintento manual guarda el rol.");
         await page.getByText(`Guardamos el rol ${roleName}.`, { exact: true }).waitFor();
         assert.equal(roleWrites.seen.length, atLimit + 1);
+      } catch (error) {
+        await saveFailureEvidence([operator], "E9-9-operador").catch(() => {});
+        throw error;
       } finally {
         roleWrites.stop();
         // Un fallo en el medio no deja la cuota baja para el recorrido de 390 que sigue.
@@ -467,7 +520,7 @@ export function etapa9Cases(env) {
         await operatorContext.close();
       }
     }],
-  ];
+  ].map(withEvidence);
 }
 
 function isRoleWrite(response) {
