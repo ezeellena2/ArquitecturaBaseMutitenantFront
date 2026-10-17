@@ -106,6 +106,8 @@ async function saveSettings(page, email, values, reason) {
     const field = page.getByRole("textbox", { name, exact: true });
     if (!(await field.inputValue())) await field.fill(value);
   }
+  // El aviso de un guardado anterior puede seguir a la vista: se marcan los que ya están y se espera uno nuevo.
+  await page.evaluate(() => { for (const toast of document.querySelectorAll("[data-sonner-toast]")) toast.setAttribute("data-e2e-seen", ""); });
   await page.getByRole("button", { name: "Guardar cambios", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "¿Guardar la configuración?", exact: true });
   await dialog.getByRole("textbox", { name: /^Motivo/u }).fill(reason);
@@ -116,7 +118,7 @@ async function saveSettings(page, email, values, reason) {
   const asked = await Promise.race([confirm.waitFor({ timeout: 10_000 }).then(() => true, () => false), saved.then(() => false)]);
   if (asked) await confirmRecentAuthentication(page, email);
   assert.equal((await saved).status(), 200, "La configuración debe guardarse.");
-  await page.getByText("Guardamos la configuración.", { exact: true }).waitFor();
+  await page.locator("[data-sonner-toast]:not([data-e2e-seen])").filter({ hasText: "Guardamos la configuración." }).first().waitFor();
   return asked;
 }
 
