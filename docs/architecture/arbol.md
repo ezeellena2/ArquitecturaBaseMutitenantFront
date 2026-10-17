@@ -81,6 +81,8 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │   │   │   └── pages/
     │   │   ├── settings/  /plataforma/configuracion
     │   │   │   ├── api/
+    │   │   │   ├── components/  la sección «Límites de uso» (E9, F4)
+    │   │   │   ├── lib/  los doce perfiles de límites de uso, su ventana en segundos y sus rangos
     │   │   │   └── pages/
     │   │   └── tenants/
     │   │       ├── api/
@@ -234,7 +236,7 @@ Decisión del usuario (2026-10-11): cada raíz de capa, área, módulo, proyecto
 | `src/areas/platform/home/` | Feature home: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas. | [docs/features/inicio.md](../../../ArquitecturaBaseMutitenant/docs/features/inicio.md) | `src/areas/platform/home/api/pending.ts` | [AGENTS.md](../../src/areas/platform/home/AGENTS.md) |
 | `src/areas/platform/legal/` | Feature legal: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas. | [docs/rules/formatos.md](../rules/formatos.md) | `src/areas/platform/legal/api/legalDocuments.ts` | [AGENTS.md](../../src/areas/platform/legal/AGENTS.md) |
 | `src/areas/platform/recoveries/` | Feature recoveries: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas. | [docs/features/plataforma.md](../../../ArquitecturaBaseMutitenant/docs/features/plataforma.md) | `src/areas/platform/recoveries/api/recoveries.ts` | [AGENTS.md](../../src/areas/platform/recoveries/AGENTS.md) |
-| `src/areas/platform/settings/` | Feature settings: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas. | [docs/rules/formatos.md](../rules/formatos.md) | `src/areas/platform/settings/api/platformSettings.ts` | [AGENTS.md](../../src/areas/platform/settings/AGENTS.md) |
+| `src/areas/platform/settings/` | Feature settings: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; lib/ los perfiles de los límites de uso. | [docs/rules/formatos.md](../rules/formatos.md) | `src/areas/platform/settings/api/platformSettings.ts` | [AGENTS.md](../../src/areas/platform/settings/AGENTS.md) |
 | `src/areas/platform/tenants/` | Feature tenants: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas. | [docs/features/plataforma.md](../../../ArquitecturaBaseMutitenant/docs/features/plataforma.md) | `src/areas/platform/tenants/api/tenants.ts` | [AGENTS.md](../../src/areas/platform/tenants/AGENTS.md) |
 | `src/areas/public/` | Features del acceso público. | [docs/rules/estructura-y-features.md](../rules/estructura-y-features.md) | `src/areas/public/auth/api/businessSignup.ts` | [AGENTS.md](../../src/areas/public/AGENTS.md) |
 | `src/areas/public/auth/` | Feature auth: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas. | [docs/features/identidad.md](../../../ArquitecturaBaseMutitenant/docs/features/identidad.md) | `src/areas/public/auth/api/businessSignup.ts` | [AGENTS.md](../../src/areas/public/auth/AGENTS.md) |
