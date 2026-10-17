@@ -65,7 +65,8 @@ async function run(app: GalleryApp, user: ReturnType<typeof userEvent.setup>) {
     if (action.type === "otp") { fireEvent.change(await screen.findByRole("textbox", { name: "Código 1" }), { target: { value: action.value } }); continue; }
     const surface = action.within ? within(await screen.findByRole(action.within.role, { name: action.within.name })) : screen;
     const target = action.label ? await surface.findByLabelText(action.label, { exact: action.exact ?? false })
-      : await surface.findByRole(action.role!, { name: action.name });
+      : action.nth === undefined ? await surface.findByRole(action.role!, { name: action.name })
+        : (await surface.findAllByRole(action.role!, { name: action.name }))[action.nth];
     if (action.type === "click") await user.click(target);
     else if (action.type === "press") { target.focus(); await user.keyboard(`{${action.key}}`); }
     else fireEvent.change(target, { target: { value: action.value } });

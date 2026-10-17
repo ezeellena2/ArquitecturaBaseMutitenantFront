@@ -8,8 +8,11 @@ export interface GalleryApiResponse {
   method: "GET" | "POST" | "PUT" | "DELETE"; path: string; status: number; body?: unknown; query?: Record<string, string>;
   afterResponse?: { method: "POST" | "PUT" | "DELETE"; path: string };
 }
-export type GalleryAction = { type: "click" | "press" | "fill" | "otp"; role?: "button" | "checkbox" | "textbox" | "menuitem" | "link" | "tab";
-  name?: string; label?: string; exact?: boolean; key?: string; value?: string; within?: { role: "dialog"; name: string } };
+export type GalleryAction = { type: "click" | "press" | "fill" | "otp";
+  role?: "button" | "checkbox" | "textbox" | "menuitem" | "menuitemcheckbox" | "combobox" | "option" | "link" | "tab";
+  name?: string; label?: string; exact?: boolean; key?: string; value?: string; within?: { role: "dialog" | "alertdialog"; name: string };
+  /** Cuál de los que se llaman igual, desde 0: Roles tiene tres «Solo lectura», uno por empresa. */
+  nth?: number };
 export interface GalleryApp {
   path: string; captureMode: "harness"; site: "main"; userFixture: CurrentUserFixture | "anonymous";
   responses: GalleryApiResponse[]; actions: GalleryAction[]; readySelector: string; readyText?: string; readyTexts?: string[]; now: string;
@@ -27,7 +30,8 @@ export const api = (method: GalleryApiResponse["method"], path: string, body?: u
 export const click = (name: string, role: NonNullable<GalleryAction["role"]> = "button", within?: GalleryAction["within"]): GalleryAction =>
   ({ type: "click", role, name, exact: true, ...(within ? { within } : {}) });
 /** Abre un desplegable de Radix con el teclado (tests.md): el clic de jsdom no siempre lo abre. */
-export const press = (name: string, role: NonNullable<GalleryAction["role"]> = "button", key = "Enter"): GalleryAction => ({ type: "press", role, name, exact: true, key });
+export const press = (name: string, role: NonNullable<GalleryAction["role"]> = "button", key = "Enter", nth?: number): GalleryAction =>
+  ({ type: "press", role, name, exact: true, key, ...(nth === undefined ? {} : { nth }) });
 export const fill = (name: string, value: string, within?: GalleryAction["within"]): GalleryAction =>
   ({ type: "fill", role: "textbox", name, value, exact: true, ...(within ? { within } : {}) });
 /** El código de seis números desde la primera casilla, como lo escribe una persona. */

@@ -75,8 +75,10 @@ export async function runAppActions(page, actions = []) {
   for (const action of actions) {
     const surface = action.within ? page.getByRole(action.within.role, { name: action.within.name, exact: true }) : page;
     // Como el test de la galería: una acción ubica su elemento por la etiqueta o, si no la trae, por rol y nombre.
-    const target = () => action.label ? surface.getByLabel(action.label, { exact: action.exact ?? false })
+    const located = () => action.label ? surface.getByLabel(action.label, { exact: action.exact ?? false })
       : surface.getByRole(action.role, { name: action.name, exact: action.exact ?? false });
+    // `nth`: cuál de los que se llaman igual (Roles tiene tres «Solo lectura»), como en el test de la galería.
+    const target = () => action.nth === undefined ? located() : located().nth(action.nth);
     if (action.type === "upload") {
       await page.getByLabel(action.label, { exact: action.exact ?? false }).and(page.locator('input[type="file"]')).setInputFiles(action.files.map((file) => {
         if (!Number.isSafeInteger(file.byteLength) || file.byteLength <= 0 || file.byteLength > 15 * 1024 * 1024) throw new Error("Archivo ficticio fuera del límite de memoria de 15 MiB");
