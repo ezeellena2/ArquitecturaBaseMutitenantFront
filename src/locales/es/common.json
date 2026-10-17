@@ -193,5 +193,20 @@
     "accountAndProfiles": "Tu cuenta y tus perfiles",
     "menuFor": "Menú de {{name}}",
     "myAccount": "Mi cuenta"
+  },
+  "recentAuthentication": {
+    "title": "Confirmá que sos vos",
+    "purposeDefault": "Para continuar",
+    "app": "{{purpose}}, escribí el código de tu app de autenticación.",
+    "recovery": "{{purpose}}, escribí uno de los códigos de recuperación que guardaste.",
+    "useRecovery": "Usar un código de recuperación",
+    "useApp": "Usar la app de autenticación",
+    "recoveryLabel": "Código de recuperación",
+    "recoveryIncomplete": "Escribí el código de recuperación completo.",
+    "codeInvalid": "El código no es válido. Revisá que la hora de tu celular esté bien.",
+    "recoveryInvalid": "Ese código no es válido o ya lo usaste.",
+    "locked": "Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos. Probá de nuevo en 15 minutos.",
+    "confirm": "Confirmar",
+    "confirming": "Confirmando…"
   }
 }

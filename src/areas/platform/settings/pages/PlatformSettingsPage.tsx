@@ -30,6 +30,7 @@ import { Page } from "@/shared/ui/Page";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { fetchPlatformSettings, platformSettingsKey, updatePlatformSettings } from "../api/platformSettings";
+import { useRecentAuthenticationPurpose } from "@/shared/api/recentAuthentication";
 
 function settingsFormSchema(t: TFunction) {
   // Validación exacta del tablero Config-Plat; NumberField y EmailField normalizan la entrada.
@@ -61,6 +62,8 @@ export function PlatformSettingsPage() {
 
 function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSettingsResponse; loadError: unknown; reload: () => Promise<PlatformSettingsResponse | undefined> }) {
   const { t } = useTranslation(["platformSettings", "common"]); const client = useQueryClient(); const { phone } = useAppChrome(); const { canPlatform } = usePermissions();
+  // «Confirmá que sos vos» (Config-Plat): «Para guardar la configuración, …».
+  useRecentAuthenticationPurpose(t("platformSettings:reauthPurpose"));
   const canManage = canPlatform("platform.settings.manage");
   const schema = useMemo(() => settingsFormSchema(t), [t]);
   const { form, version, resetTo, wrote } = useEditForm({ read: settings, toValues: valuesFromSettings, resolver: zodResolver(schema) });

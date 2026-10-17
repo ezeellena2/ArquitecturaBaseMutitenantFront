@@ -1,6 +1,7 @@
 import type { TFunction } from "i18next";
 import { toastError } from "@/shared/ui/sonner";
 import { ApiError } from "./ApiError";
+import { isReauthenticationCancelled } from "./recentAuthentication";
 
 /// Red, 5xx y 429: se avisan igual en cualquier pantalla. En una mutación los avisa el MutationCache (salvo
 /// `meta.handlesError`); en una consulta, el QueryCache o la pantalla de error de la consulta.
@@ -18,6 +19,8 @@ export function isNotFoundError(error: unknown): error is ApiError {
 /// el texto común; lo demás, también un 429, con el `detail` que ya tradujo el back («Esperá un minuto antes de volver a
 /// invitar…»). Nunca el `message` crudo ni un código técnico.
 export function apiErrorMessage(error: unknown, t: TFunction): string {
+  // Cancelar «Confirmá que sos vos» no es un error: el formulario vuelve como estaba, sin franja.
+  if (isReauthenticationCancelled(error)) return "";
   if (error instanceof ApiError) {
     if (error.isNetworkError) return t("errors:network");
     if (error.status >= 500) return t("errors:server");
@@ -30,7 +33,7 @@ export function apiErrorMessage(error: unknown, t: TFunction): string {
 /// Lo que la pantalla muestra de una acción que falló (un formulario, un ⋮): `null` si no hay error o si ya lo avisó
 /// el MutationCache, con «Reintentar» o «Copiar código». El mismo error nunca va en dos lugares.
 export function actionErrorMessage(error: unknown, t: TFunction): string | null {
-  return error == null || isGenericApiError(error) ? null : apiErrorMessage(error, t);
+  return error == null || isGenericApiError(error) || isReauthenticationCancelled(error) ? null : apiErrorMessage(error, t);
 }
 
 /// Una acción directa que falló (un ⋮, un botón, una confirmación) se avisa abajo, en rojo y sin irse sola; los

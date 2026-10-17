@@ -1,5 +1,6 @@
 import { ApiError } from "./ApiError";
 import { isProblemDetails, type ProblemDetails } from "./problemDetails";
+import { reauthenticationRequiredCode, requestRecentAuthentication } from "./recentAuthentication";
 import { effectiveCulture } from "@/shared/i18n";
 import { resetServerClock, synchronizeServerClock } from "@/shared/time/serverClock";
 
@@ -172,8 +173,21 @@ async function readBody<T>(response: Response): Promise<T> {
   return (text === "" ? undefined : JSON.parse(text)) as T;
 }
 
+/** El pedido que confirma no espera a una confirmación: si fallara así, esperaría a sí mismo. */
+export const recentAuthenticationPath = "/api/platform/reauthentication";
+
 async function request<T>(path: string, init: RequestInit = {}, cookieOnly = false): Promise<T> {
-  return readBody<T>(await receive(path, init, false, cookieOnly));
+  try {
+    return readBody<T>(await receive(path, init, false, cookieOnly));
+  } catch (error) {
+    // E9: sin una confirmación reciente, el back responde antes de registrar la clave. Confirmado, se repite una sola vez
+    // el mismo pedido (cuerpo, versión y clave); un segundo 403 llega al formulario.
+    if (!(error instanceof ApiError) || error.code !== reauthenticationRequiredCode || path === recentAuthenticationPath) throw error;
+    const confirmation = requestRecentAuthentication(init.signal);
+    if (!confirmation) throw error;
+    await confirmation;
+    return readBody<T>(await receive(path, init, false, cookieOnly));
+  }
 }
 
 async function getWithMetadata<T>(path: string, init: RequestInit = {}) {

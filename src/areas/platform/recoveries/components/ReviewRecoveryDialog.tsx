@@ -9,6 +9,7 @@ import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { PlatformRecoveryResponse, VersionResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useRecentAuthenticationPurpose } from "@/shared/api/recentAuthentication";
 import { useFormat } from "@/shared/format/useFormat";
 import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
@@ -51,6 +52,8 @@ export function ReviewRecoveryDialog({ recovery, returnFocusTo, onClose, onResol
   const { t } = useTranslation(["platformRecoveries", "common"]); const format = useFormat(); const { phone } = useAppChrome();
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const [submittedAction, setSubmittedAction] = useState<RecoveryAction | null>(null);
+  // «Confirmá que sos vos» (Recuperaciones): «Para aprobar el pedido de Pablo Ortiz, …», o rechazarlo.
+  useRecentAuthenticationPurpose(t(`platformRecoveries:reauth.${submittedAction === "reject" ? "reject" : "approve"}${recovery.accountName ? "" : "Unnamed"}`, { name: recovery.accountName ?? "" }));
   const [operation, setOperation] = useState<RecoveryOperation | null>(null);
   const pending = recovery.status === "Pending"; const hasAccount = Boolean(recovery.accountId); const base = useRef(recovery.version); const draft = useRef(0); const choice = useRef<RecoveryAction | null>(null);
   const schema = useMemo(() => z.object({ reason: z.string().trim().min(1, t("common:reasonDialog.reasonRequired")) }), [t]);

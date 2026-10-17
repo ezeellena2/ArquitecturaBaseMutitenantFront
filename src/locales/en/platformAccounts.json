@@ -226,6 +226,7 @@
     "resetDescription": "Their sessions are closed and their recovery codes stop working. When they sign in again, they set up the authenticator again.",
     "resetButton": "Reset",
     "resetting": "Resetting…",
-    "resetDone": "Reset {{name}}'s authenticator."
+    "resetDone": "Reset {{name}}'s authenticator.",
+    "reauthPurpose": "To save {{name}}'s permissions"
   }
 }

@@ -193,5 +193,20 @@
     "accountAndProfiles": "Your account and profiles",
     "menuFor": "{{name}}'s menu",
     "myAccount": "My account"
+  },
+  "recentAuthentication": {
+    "title": "Confirm it's you",
+    "purposeDefault": "To continue",
+    "app": "{{purpose}}, enter the code from your authenticator app.",
+    "recovery": "{{purpose}}, enter one of the recovery codes you saved.",
+    "useRecovery": "Use a recovery code",
+    "useApp": "Use the authenticator app",
+    "recoveryLabel": "Recovery code",
+    "recoveryIncomplete": "Enter the full recovery code.",
+    "codeInvalid": "The code isn't valid. Check that your phone's time is correct.",
+    "recoveryInvalid": "That code isn't valid or you already used it.",
+    "locked": "Your account is locked for a few minutes after too many failed attempts. Try again in 15 minutes.",
+    "confirm": "Confirm",
+    "confirming": "Confirming…"
   }
 }

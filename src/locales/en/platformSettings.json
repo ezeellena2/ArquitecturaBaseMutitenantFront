@@ -21,5 +21,6 @@
   "validation": { "range": "Use a number from 1 to 50.", "email": "Enter a valid email." },
   "confirmTitle": "Save the settings?",
   "confirmDescription": "Changes how new people and organizations join. Existing accounts and organizations remain unchanged.",
-  "confirm": "Save"
+  "confirm": "Save",
+  "reauthPurpose": "To save the settings"
 }

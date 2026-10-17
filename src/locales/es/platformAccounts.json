@@ -226,6 +226,7 @@
     "resetDescription": "Se cierran sus sesiones y sus códigos de recuperación dejan de servir. Al volver a entrar, configura el autenticador de nuevo.",
     "resetButton": "Restablecer",
     "resetting": "Restableciendo…",
-    "resetDone": "Restablecimos el autenticador de {{name}}."
+    "resetDone": "Restablecimos el autenticador de {{name}}.",
+    "reauthPurpose": "Para guardar los permisos de {{name}}"
   }
 }

@@ -21,5 +21,6 @@
   "validation": { "range": "Usá un número de 1 a 50.", "email": "Ingresá un correo válido." },
   "confirmTitle": "¿Guardar la configuración?",
   "confirmDescription": "Cambia cómo entran las personas y las organizaciones nuevas. Lo que ya existe no cambia.",
-  "confirm": "Guardar"
+  "confirm": "Guardar",
+  "reauthPurpose": "Para guardar la configuración"
 }

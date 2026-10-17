@@ -7,6 +7,7 @@ import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { ChangePlatformOperatorRequest, PlatformAccountDetailResponse, VersionResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useRecentAuthenticationPurpose } from "@/shared/api/recentAuthentication";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { orderLike } from "@/shared/lib/orderLike";
@@ -31,6 +32,8 @@ export function OperatorPermissionsDialog({ account, returnFocusTo, onClose, onS
 }) {
   const { t } = useTranslation(["platformAccounts", "common"]);
   const catalog = usePlatformPermissionCatalog();
+  // «Confirmá que sos vos» (Cuenta-Plat): «Para guardar los permisos de Laura Díaz, …».
+  useRecentAuthenticationPurpose(t("platformAccounts:operator.reauthPurpose", { name: accountLabel(account, t) }));
   const conflict = useRef(false); const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const schema = useMemo(() => z.object({ permissions: z.array(z.string()), reason: z.string().trim().min(1, t("common:reasonDialog.reasonRequired")) }), [t]);
   const initial = account.operatorPermissions ?? [];

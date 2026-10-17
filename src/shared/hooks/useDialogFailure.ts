@@ -1,6 +1,7 @@
 import { useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { ApiError } from "@/shared/api/ApiError";
+import { isReauthenticationCancelled } from "@/shared/api/recentAuthentication";
 
 /** El error pertenece al diálogo. Al cerrarlo, una concurrencia o un 409 de estado declarado por el caller relee
  * su raíz de consultas; corregir un campo borra la franja, pero conserva esa necesidad de relectura. */
@@ -13,6 +14,8 @@ export function useDialogFailure(onClose: () => void, queryRoot: QueryKey, state
     failure,
     clear: () => setFailure(undefined),
     fail: (error: unknown) => {
+      // Cancelar «Confirmá que sos vos» deja el diálogo como estaba.
+      if (isReauthenticationCancelled(error)) return;
       if (error instanceof ApiError && (error.code === "General.ConcurrencyConflict"
         || (error.status === 409 && stateConflictCodes.includes(error.code ?? "")))) stale.current = true;
       setFailure(error);

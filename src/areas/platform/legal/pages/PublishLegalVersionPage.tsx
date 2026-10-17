@@ -33,6 +33,7 @@ import { LegalPublicationOwner } from "../components/LegalPublicationOwner";
 import { legalErrorField } from "../errors";
 import { samePublication, type LegalPublicationOperation } from "../lib/legalPublication";
 import { nextVersion } from "../lib/legalVersions";
+import { useRecentAuthenticationPurpose } from "@/shared/api/recentAuthentication";
 
 const legalDocumentMaxLength = validationConstraints.LegalDocumentContentHttpRequest.text.maxLength;
 function contentLabel(culture: CultureReference, t: TFunction) {
@@ -91,6 +92,8 @@ function LegalVersionEditor({ initialKind, cultures, documents }: { initialKind:
   const busy = action.isPending;
   const number = nextVersion(documents.find((document) => document.kind === kind.field.value));
   const name = t(`enums:LegalDocumentKind.${kind.field.value}`);
+  // «Confirmá que sos vos» (Legales): «Para publicar la versión 3 de Términos y condiciones, …».
+  useRecentAuthenticationPurpose(t("platformLegal:reauthPurpose", { version: format.formatInteger(number), name }));
   const execute = (sent: LegalPublicationOperation, key: string) => action.guarded(
     (sent: LegalPublicationOperation, key: string) => publishLegalDocument({ kind: sent.kind, effectiveOn: sent.effectiveOn, contents: sent.contents }, key),
     (response, sent) => {

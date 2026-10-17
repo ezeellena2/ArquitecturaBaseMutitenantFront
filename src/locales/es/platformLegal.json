@@ -22,5 +22,6 @@
   "publishing": "Publicando…",
   "confirmTitle": "¿Publicar la versión {{version}} de {{name}}?",
   "confirmDescription": "Desde el {{date}}, todas las cuentas tienen que aceptarla para seguir usando el servicio. Después no se puede editar.",
-  "published": "Publicamos la versión {{version}} de {{name}}."
+  "published": "Publicamos la versión {{version}} de {{name}}.",
+  "reauthPurpose": "Para publicar la versión {{version}} de {{name}}"
 }

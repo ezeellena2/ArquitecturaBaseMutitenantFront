@@ -1,16 +1,24 @@
 import * as React from "react"
 import { cn } from "cn"
 import { Dialog as DialogPrimitive } from "radix-ui"
+import { useRecentAuthentication } from "@/shared/api/recentAuthentication"
 // El rótulo de cierre sale de la traducción, también para los lectores de pantalla.
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@/shared/ui/button"
 import { CloseIcon } from "@/shared/ui/icons"
 
+// Mientras se pide «Confirmá que sos vos» (E9), el diálogo de la acción queda oculto detrás, montado, con todo lo cargado
+// y su pedido en curso; al cancelar vuelve tal cual. Nunca hay un diálogo encima de otro.
+const ConcealedContext = React.createContext(false)
+
+/// El de la confirmación lleva `recentAuthentication`: es el único que se ve mientras se confirma.
 function Dialog({
+  recentAuthentication = false,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />
+}: React.ComponentProps<typeof DialogPrimitive.Root> & { recentAuthentication?: boolean }) {
+  const concealed = useRecentAuthentication() !== null && !recentAuthentication
+  return <ConcealedContext.Provider value={concealed}><DialogPrimitive.Root data-slot="dialog" {...props} /></ConcealedContext.Provider>
 }
 
 function DialogTrigger({
@@ -66,18 +74,22 @@ function DialogContent({
   size?: "sm" | "default" | "preview"
 }) {
   const { t } = useTranslation()
+  const concealed = React.useContext(ConcealedContext)
 
   return (
     <DialogPortal data-slot="dialog-portal">
-      <DialogOverlay />
+      <DialogOverlay hidden={concealed || undefined} className={concealed ? "hidden" : undefined} />
       <DialogPrimitive.Content
         data-slot="dialog-content"
+        data-concealed={concealed || undefined}
+        hidden={concealed || undefined}
         className={cn(
           "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full gap-0 overflow-y-auto rounded-t-[20px] border-0 bg-[var(--lado-activo)] p-0 text-[15px] shadow-[var(--sombra-hoja)] outline-none md:text-[13px] md:shadow-[var(--sombra-dialogo)] data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[12px] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
           size === "sm" ? "md:max-w-[420px]" : size === "preview" ? "md:max-w-[640px]" : "md:max-w-[560px]",
           // Lienzo v106 («Criterio · Decisiones»): en el teléfono toda hoja sube desde abajo con el alto de lo que lleva;
           // ninguna ocupa la pantalla completa.
-          className
+          className,
+          concealed && "hidden"
         )}
         {...props}
         // Criterio-Dialogos: se cierra con ✕, Cancelar o Escape; un clic afuera no lo cierra.
