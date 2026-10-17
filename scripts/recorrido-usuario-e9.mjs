@@ -68,7 +68,10 @@ export async function runE9Journey({ platformPage: page, width, env, base, recor
   };
   const openAccount = async () => {
     await page.goto(url("/plataforma/cuentas"));
-    await page.getByRole("searchbox", { name: "Buscar por nombre, correo o teléfono", exact: true }).fill(name);
+    const search = "Buscar por nombre, correo o teléfono";
+    // En el teléfono la búsqueda está detrás del 🔍 de la barra, que lleva el mismo nombre: se abre como una persona.
+    if (width === 390) await page.getByRole("button", { name: search, exact: true }).click();
+    await page.getByRole("searchbox", { name: search, exact: true }).fill(name);
     await page.getByRole("link", { name: new RegExp(`^${name}`, "u") }).filter({ visible: true }).first().click();
     await page.getByRole("heading", { name, exact: true }).waitFor();
   };
