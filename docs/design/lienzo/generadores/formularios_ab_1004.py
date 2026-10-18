@@ -326,6 +326,132 @@ def pregunta_catalogo(modo="elegido"):
             "</div></div>")
 
 
+# ---------------------------------------------------------------- E14 · F1 · Fotos y documentos en el editor (copiado de ArquitecturaBase)
+PREGUNTAS_ARCHIVOS = PREGUNTAS[:5] + [
+    ("Fotos de la visita", "Foto · solo cámara · de 1 a 4", True, "Visit photos"),
+    ("Remito firmado", "Documento · PDF, Excel, Word o imagen · hasta 1", False, "Signed delivery note"),
+] + PREGUNTAS[5:]
+CAMARA = svg('<path d="M4 8.5h3l1.5-2h7l1.5 2h3v10.5H4z"/><circle cx="12" cy="13.5" r="3.2"/>', 16)
+CLIP = svg('<path d="M15.5 7.5 9 14a2 2 0 0 0 2.8 2.8l7-7a4 4 0 0 0-5.6-5.6l-7 7a6 6 0 0 0 8.4 8.4l5.4-5.4"/>', 16)
+CSS_E14 = """.q-src { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.q-src .op { display: flex; gap: 10px; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 10px; background: #fff; }
+.q-src .op.on { border-color: var(--marca); box-shadow: 0 0 0 1px var(--marca); background: oklch(0.975 0.01 180); }
+.q-src .rd { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--borde2); box-sizing: border-box; flex-shrink: 0; margin-top: 2px; background: #fff; }
+.q-src .op.on .rd { border: 5px solid var(--marca); }
+.q-src .tx { display: flex; flex-direction: column; gap: 2px; font-size: 13.5px; font-weight: 600; }
+.q-src .tx span { font-size: 12.5px; font-weight: 400; color: var(--t3); }
+.q-cnt { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--t2); }
+.q-cnt .ct { width: 64px; text-align: center; }
+.q-tipos { display: flex; flex-wrap: wrap; gap: 6px; }
+.q-tipos span { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: 6px; background: var(--s3); font-size: 12.5px; font-weight: 600; color: var(--t2); }
+.f-cab .arch { display: inline-flex; align-items: center; gap: 6px; }
+.f-cab .arch.mal { color: oklch(0.5 0.19 25); font-weight: 600; }
+.q-tipomn { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 30; background: #fff; border: 1px solid var(--borde); border-radius: 10px;
+  box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); padding: 4px; display: flex; flex-direction: column; }
+.q-tipomn > span { display: flex; flex-direction: column; padding: 7px 10px; border-radius: 6px; font-size: 13.5px; }
+.q-tipomn > span.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 500; }
+.q-tipomn > span.off { color: var(--t3); }
+.q-tipomn > span.off small { color: oklch(0.55 0.15 25); font-size: 12px; }
+.w-body .w-caja:has(.q-tipomn) { overflow: visible; }
+.tel .pv-arch { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: oklch(0.3 0.01 150); }
+.tel .pv-arch b { font-size: 13px; }
+.tel .pv-arch .ay2 { font-size: 11px; color: oklch(0.5 0.01 150); }
+.tel .pv-arch .bt2 { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 10px; border: 1px solid oklch(0.8 0.01 150); border-radius: 8px; color: oklch(0.45 0.1 160); font-weight: 600; }
+.tel .pv-arch .cnt2 { align-self: flex-end; font-size: 11px; color: oklch(0.5 0.01 150); }
+.pv-pant { font-size: 12px; color: var(--t3); }
+"""
+
+
+def pregunta_foto(tipo_abierto=False):
+    """F1: «Fotos de la visita» desplegada: de dónde sale la foto y cuántas."""
+    if tipo_abierto:
+        items = ('<span>Texto corto</span><span>Elegir de una lista</span><span>Elegir de un catálogo</span>'
+                 '<span class="off" aria-disabled="true">Foto<small>Falta configurar dónde se guardan los archivos</small></span>'
+                 '<span class="off" aria-disabled="true">Documento<small>Falta configurar dónde se guardan los archivos</small></span>')
+        tipo = f'<div class="w-cmp q-cat"><span class="rt">Tipo de respuesta</span><div class="ct sel abierto">Texto corto{CHEV}</div><div class="q-tipomn" role="listbox">{items}</div></div>'
+        cab = fila_pregunta(6, "Fotos de la visita", "Texto corto", True, "Visit photos")
+        resto = ""
+    else:
+        tipo = f'<div class="w-cmp"><span class="rt">Tipo de respuesta</span><div class="ct sel">Foto{CHEV}</div></div>'
+        cab = fila_pregunta(6, "Fotos de la visita", "Foto · solo cámara · de 1 a 4", True, "Visit photos")
+        resto = ('<div class="w-cmp ancho"><span class="rt">De dónde sale la foto</span><div class="q-src" role="radiogroup">'
+                 '<div class="op" role="radio" aria-checked="false"><span class="rd"></span><span class="tx">Cámara o galería<span>La saca en el momento o elige una que ya tiene.</span></span></div>'
+                 '<div class="op on" role="radio" aria-checked="true"><span class="rd"></span><span class="tx">Solo cámara<span>La saca en el momento: sirve como evidencia.</span></span></div></div></div>'
+                 '<div class="w-cmp ancho"><span class="rt">Cuántas fotos</span><div class="q-cnt">Mínimo <div class="ct">1</div> Máximo <div class="ct">4</div>'
+                 + F.info("Con mínimo 1 es obligatoria; con 0, opcional. Cada archivo, hasta 25 MB.") + "</div></div>")
+    return ('<div class="q-ab">' + cab + '<div class="q-ed">'
+            '<div class="w-cmp"><span class="rt">Pregunta <span class="req">*</span></span><div class="ct">Fotos de la visita</div></div>' + tipo
+            + '<div class="w-cmp ancho"><span class="rt">Ayuda para el empleado</span><div class="ct">Sacá una foto del frente del local y otra de la góndola.</div></div>'
+            + resto
+            + f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{svg("<path d=" + chr(34) + "m6 15 6-6 6 6" + chr(34) + "/>", 14, "2")} Listo</button></div>'
+            "</div></div>")
+
+
+def pregunta_documento():
+    """F1: «Remito firmado» desplegada: los tipos que se aceptan y cuántos."""
+    return ('<div class="q-ab">' + fila_pregunta(7, "Remito firmado", "Documento · PDF, Excel, Word o imagen · hasta 1", False, "Signed delivery note")
+            + '<div class="q-ed">'
+            '<div class="w-cmp"><span class="rt">Pregunta <span class="req">*</span></span><div class="ct">Remito firmado</div></div>'
+            f'<div class="w-cmp"><span class="rt">Tipo de respuesta</span><div class="ct sel">Documento{CHEV}</div></div>'
+            '<div class="w-cmp ancho"><span class="rt">Ayuda para el empleado</span><div class="ct">Si el cliente firmó el remito, adjuntalo.</div></div>'
+            '<div class="w-cmp ancho"><span class="rt">Se aceptan</span><div class="q-tipos"><span>PDF</span><span>Excel</span><span>Word</span><span>JPEG</span><span>PNG</span></div></div>'
+            '<div class="w-cmp ancho"><span class="rt">Cuántos</span><div class="q-cnt">Mínimo <div class="ct">0</div> Máximo <div class="ct">1</div>'
+            + F.info("Con mínimo 0 es opcional. Cada archivo, hasta 25 MB.") + "</div></div>"
+            f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{svg("<path d=" + chr(34) + "m6 15 6-6 6 6" + chr(34) + "/>", 14, "2")} Listo</button></div>'
+            "</div></div>")
+
+
+def pregunta_nueva_tipos():
+    """Una pregunta nueva con el tipo abierto: sin almacenamiento, Foto y Documento se ven apagados con su motivo."""
+    items = ('<span class="on">Texto corto</span><span>Texto largo</span><span>Número con decimales</span><span>Fecha</span><span>Sí o no</span>'
+             '<span>Elegir de una lista</span><span>Elegir de un catálogo</span>'
+             '<span class="off" aria-disabled="true">Foto<small>Falta configurar dónde se guardan los archivos</small></span>'
+             '<span class="off" aria-disabled="true">Documento<small>Falta configurar dónde se guardan los archivos</small></span>')
+    return ('<div class="q-ab">' + fila_pregunta(7, "Nueva pregunta", "Texto corto", False, None) + '<div class="q-ed">'
+            '<div class="w-cmp"><span class="rt">Pregunta <span class="req">*</span></span><div class="ct ph">Escribí la pregunta</div></div>'
+            f'<div class="w-cmp q-cat"><span class="rt">Tipo de respuesta</span><div class="ct sel abierto">Texto corto{CHEV}</div><div class="q-tipomn" role="listbox">{items}</div></div>'
+            '<div class="w-cmp ancho" style="min-height: 330px;"></div>'
+            "</div></div>")
+
+
+def caja_archivos(modo="foto", total="5"):
+    if modo == "sin":
+        filas = "".join(fila_pregunta(k, n, tipo, ob, en) for k, (n, tipo, ob, en) in enumerate(PREGUNTAS, 1)) + pregunta_nueva_tipos()
+        return (f'<div class="w-caja"><div class="f-cab"><span>Preguntas</span><span class="der">7 preguntas'
+                f'<button type="button" class="cb cb-sec">{MAS} Agregar pregunta</button></span></div>{filas}</div>')
+    filas = ""
+    for k, (n, tipo, ob, en) in enumerate(PREGUNTAS_ARCHIVOS, 1):
+        if k == 6 and modo in ("foto", "sin"):
+            filas += pregunta_foto(tipo_abierto=(modo == "sin"))
+        elif k == 7 and modo == "documento":
+            filas += pregunta_documento()
+        else:
+            filas += fila_pregunta(k, n, tipo, ob, en)
+    mal = int(total) > 10
+    arch = f'<span class="arch{" mal" if mal else ""}">{CLIP} Archivos: hasta {total} de 10</span>'
+    return (f'<div class="w-caja"><div class="f-cab"><span>Preguntas</span><span class="der">{arch} · 8 preguntas'
+            f'<button type="button" class="cb cb-sec">{MAS} Agregar pregunta</button></span></div>{filas}</div>')
+
+
+def vista_archivos(modo="foto"):
+    pv = vista()
+    if modo == "documento":
+        cuerpo = ('<div class="pv-arch"><b>Remito firmado</b><span class="ay2">Si el cliente firmó el remito, adjuntalo.</span>'
+                  f'<span class="bt2">{CLIP} Elegir documento</span><span class="cnt2">Hasta 1</span></div>')
+        pant = "pantalla 3 de 3"
+    else:
+        cuerpo = ('<div class="pv-arch"><b>Fotos de la visita</b><span class="ay2">Sacá una foto del frente del local y otra de la góndola.</span>'
+                  f'<span class="bt2">{CAMARA} Sacar foto</span><span class="cnt2">Mínimo 1 · hasta 4</span></div>')
+        pant = "pantalla 2 de 3"
+    pv = re.sub(r'<div class="pv-hb">.*?</div><div class="pv-pie">', f'<div class="pv-hb">{cuerpo}</div><div class="pv-pie">', pv, count=1, flags=re.S)
+    pv = pv.replace(">Enviar<", ">Continuar<", 1) if modo != "documento" else pv
+    return pv.replace('<span class="pv-tit2">Así lo ve el empleado</span>', f'<span class="pv-tit2">Así lo ve el empleado</span><span class="pv-pant">· {pant}</span>', 1)
+
+
+def cuerpo_archivos(modo="foto", total="5"):
+    return ('<div class="w-body">' + caja_textos() + '<div class="f-cols"><div class="f-pila">' + caja_formulario(modo="fijo")
+            + caja_archivos(modo, total) + "</div>" + (vista() if modo == "sin" else vista_archivos("documento" if modo == "documento" else "foto")) + "</div></div>")
+
 def caja_preguntas(abierta=True, ingles=False, vacia=False, menu=False, solo_ver=False, catalogo=None):
     if vacia:
         filas = '<div class="e-vacio">Todavía no agregaste preguntas.</div>'
@@ -387,7 +513,8 @@ EST_PUB = '<span class="w-est">Publicado · versión 3</span>'
 EST_PUB_SUCIO = EST_PUB + '<span class="f-sucio">Cambios sin guardar</span>'
 ESTADOS_EDITOR = ["Sin cambios", "Nuevo formulario", "Cambios sin guardar", "Guardando", "Guardado", "No se guardó", "Guardado sin confirmar",
                   "Otra persona guardó", "Revisión del borrador", "Textos en inglés", "Prefijo ocupado", "Acciones de una pregunta",
-                  "Quitar una pregunta", "Cambiar el tipo", "Elegir de un catálogo", "Elegir el catálogo", "Sin catálogos", "Descartar cambios",
+                  "Quitar una pregunta", "Cambiar el tipo", "Elegir de un catálogo", "Elegir el catálogo", "Sin catálogos",
+                  "Pregunta de foto", "Pregunta de documento", "Sin almacenamiento", "Descartar cambios",
                   "Solo lectura", "Cargando", "No existe"]
 
 
@@ -423,6 +550,9 @@ def editor():
         "Elegir de un catálogo": (banda("Visita a cliente", EST_PUB_SUCIO, acc_editor(sucio=True, publicado=True), vol), cuerpo_editor(modo="fijo", catalogo="elegido")),
         "Elegir el catálogo": (banda("Visita a cliente", EST_PUB_SUCIO, acc_editor(sucio=True, publicado=True), vol), cuerpo_editor(modo="fijo", catalogo="abierto")),
         "Sin catálogos": (banda("Visita a cliente", EST_PUB_SUCIO, acc_editor(sucio=True, publicado=True), vol), cuerpo_editor(modo="fijo", catalogo="sin")),
+        "Pregunta de foto": (banda("Visita a cliente", EST_PUB_SUCIO, acc_editor(sucio=True, publicado=True), vol), cuerpo_archivos("foto")),
+        "Pregunta de documento": (banda("Visita a cliente", EST_PUB_SUCIO, acc_editor(sucio=True, publicado=True), vol), cuerpo_archivos("documento")),
+        "Sin almacenamiento": (banda("Visita a cliente", EST_PUB_SUCIO, acc_editor(sucio=True, publicado=True), vol), cuerpo_archivos("sin", "1")),
         "Descartar cambios": (banda("Visita a cliente", EST_PUB_SUCIO, acc_editor(sucio=True, publicado=True), vol), cuerpo_editor(modo="fijo")),
         "Solo lectura": (banda("Visita a cliente", EST_PUB, acc_editor(publicado=True, solo_ver=True), vol), cuerpo_editor(abierta=False, modo="fijo", solo_ver=True)),
         "Cargando": (banda("Visita a cliente", "", "", vol), cargando),
@@ -456,7 +586,7 @@ def pagina_editor(V, capas, estados, nombre, css_extra=""):
     cuerpos = con_estados([(k, v[1]) for k, v in V.items()])
     over = "".join(f'<sc-if value="{{{{s{estados.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
     t = pagina_ab(nombre, "Inicio / Formularios / Diseñar formularios / Visita a cliente", bandas, cuerpos,
-                  css=F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + CSS_AB + CSS_EDITOR + CSS_K6 + css_extra, estados=("estado", estados), js=js_estados(estados))
+                  css=F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + CSS_AB + CSS_EDITOR + CSS_K6 + CSS_E14 + css_extra, estados=("estado", estados), js=js_estados(estados))
     return F.con_dialogo(t, over, F.CSS_PUBLICAR + F.CSS_GRILLA + CSS_PUB)
 
 
@@ -518,7 +648,7 @@ def aviso(texto, tipo="alerta", icono=None):
     return f'<div class="p-aviso {"mal" if tipo == "mal" else ""}" role="status">{icono or ALERTA}<span>{texto}</span></div>'
 
 
-ESTADOS_PUBLICAR = ["Versión nueva", "Primera publicación", "Los dos idiomas", "Comprobando", "Primero guardá los cambios", "Una pregunta no se puede mostrar",
+ESTADOS_PUBLICAR = ["Versión nueva", "Primera publicación", "Los dos idiomas", "Comprobando", "Primero guardá los cambios", "Una pregunta no se puede mostrar", "Más de 10 archivos",
                     "La comprobación venció", "Cambió después de comprobar", "Ya se está publicando"]
 
 
@@ -540,6 +670,10 @@ def publicar():
         "Primero guardá los cambios": dlg_publicar("Primero guardá los cambios", '<p class="d-tx">Tenés cambios sin guardar en <b>Visita a cliente</b>. Se publica solo lo guardado: guardá el borrador y después lo comprobamos.</p>',
                                                    '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Guardar borrador</button>'),
         "Una pregunta no se puede mostrar": dlg_publicar("Publicar la versión 4 en WhatsApp", '<span class="p-cap">Antes hay que resolver</span>' + prob, pie_pub(activo=False)),
+        "Más de 10 archivos": dlg_publicar("Publicar la versión 4 en WhatsApp", '<span class="p-cap">Antes hay que resolver</span>'
+                                           '<div class="p-prob"><span class="mal">' + ALERTA + '</span><span class="tx"><b>Archivos: hasta 12 de 10</b>'
+                                           '<span>WhatsApp acepta 10 archivos por respuesta. Bajá el máximo de alguna pregunta.</span></span><a href="FRM-Editor.dc.html">Ir a las preguntas</a></div>',
+                                           pie_pub(activo=False)),
         "La comprobación venció": dlg_publicar("Publicar la versión 4 en WhatsApp", aviso("La comprobación venció. Volvé a comprobar el formulario antes de publicar.", icono=RELOJ),
                                                '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Comprobar de nuevo</button>'),
         "Cambió después de comprobar": dlg_publicar("Publicar la versión 4 en WhatsApp", aviso("Laura Ríos guardó cambios en este formulario hace un momento. Revisalos antes de publicar."),
@@ -735,7 +869,7 @@ def pagina_chat(estados, esc, msgs, capas, vista_previa, hora, titulo):
     over = "".join(f'<sc-if value="{{{{s{estados.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
     escritura = '<div class="w-escr">' + con_estados([(e, esc[e]) for e in estados]) + "</div>"
     extra = con_estados([(e, msgs.get(e, "")) for e in estados])
-    t = F.chat_internos(escritura, over, mensajes_extra=extra, css=F.CSS_ESTADOS + F.CSS_ENVIO + F.CSS_OFERTA + CSS_AB + CSS_CHAT_AB + CSS_RESP_AB)
+    t = F.chat_internos(escritura, over, mensajes_extra=extra, css=F.CSS_ESTADOS + F.CSS_ENVIO + F.CSS_OFERTA + CSS_AB + CSS_CHAT_AB + CSS_RESP_AB + CSS_ARCH + CSS_VISOR)
     props = {"estado": {"editor": "enum", "options": estados, "default": estados[0], "section": "Estado"}, "$preview": {"width": 1440, "height": 900}}
     t = t.replace("""data-props='{"$preview":{"width":1440,"height":900}}'""", "data-props='" + json.dumps(props, ensure_ascii=False, separators=(",", ":")) + "'")
     extra_js = (f"      vistaPrevia: {json.dumps(vista_previa, ensure_ascii=False)}[e] ?? '',\n"
@@ -850,8 +984,41 @@ def r_st(texto, icono=None, clase="", boton=""):
     return f'<div class="r-st {clase}">{icono or INFO}<span>{texto}</span>{boton}</div>'
 
 
+# ---------------------------------------------------------------- E14 · F3 · La respuesta llega con fotos y documentos
+CSS_ARCH = """.r-ths { display: flex; flex-wrap: wrap; gap: 6px; }
+.r-th { width: 56px; height: 56px; border-radius: 7px; box-shadow: inset 0 0 0 1px oklch(0 0 0 / 0.08); flex-shrink: 0;
+  background: linear-gradient(180deg, transparent 72%, oklch(0.7 0.01 150) 72%), repeating-linear-gradient(90deg, oklch(0.82 0.04 75) 0 7px, oklch(0.6 0.05 60) 7px 14px); }
+.r-th.b { background: linear-gradient(180deg, transparent 72%, oklch(0.7 0.01 150) 72%), repeating-linear-gradient(90deg, oklch(0.85 0.03 150) 0 7px, oklch(0.55 0.06 150) 7px 14px); }
+.r-th.c { background: linear-gradient(180deg, transparent 72%, oklch(0.7 0.01 150) 72%), repeating-linear-gradient(90deg, oklch(0.8 0.05 50) 0 7px, oklch(0.5 0.08 40) 7px 14px); }
+.r-th.mas { display: inline-flex; align-items: center; justify-content: center; background: var(--s3); font-size: 14px; font-weight: 700; color: var(--t2); }
+.r-doc { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 8px; background: #fff; }
+.r-doc .pdf { width: 28px; height: 32px; border-radius: 4px; background: oklch(0.55 0.18 25); color: #fff; font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.r-doc .t { flex: 1; display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
+.r-doc .t small { font-size: 12px; color: var(--t3); }
+.r-doc .ib { width: 30px; height: 30px; border: 1px solid var(--borde); border-radius: 7px; }
+"""
+DESCARGAR = svg('<path d="M12 4.5v11M7.5 11l4.5 4.5 4.5-4.5"/><path d="M5 19.5h14"/>', 15)
+
+
+def thumbs(n=2, mas=0):
+    clases = ["", "b", "c", ""]
+    h = "".join(f'<span class="r-th {clases[k % 4]}" role="img" aria-label="Foto {k + 1}"></span>' for k in range(n))
+    if mas:
+        h += f'<span class="r-th mas">+{mas}</span>'
+    return f'<span class="r-ths">{h}</span>'
+
+
+def doc_chip(nombre="remito-0810.pdf", peso="1,2 MB"):
+    return (f'<span class="r-doc"><span class="pdf">PDF</span><span class="t">{nombre}<small>{peso}</small></span>'
+            f'<button type="button" class="ib" aria-label="Descargar {nombre}">{DESCARGAR}</button></span>')
+
+
+VALORES_ARCH = [("Cliente", "Ferretería Rosales"), ("Fecha de la visita", "13/10/2026"), ("Fotos de la visita", thumbs(2)), ("Remito firmado", doc_chip())]
+VALORES_MUCHAS = [("Cliente", "Ferretería Rosales"), ("Fecha de la visita", "13/10/2026"), ("Fotos de la visita", thumbs(4, 4))]
+
 ESTADOS_RESP_AB = ["Guardada", "Guardada, todas", "Guardando", "No se pudo guardar", "No reconocida", "Sin permiso para ver", "Respondió en inglés",
-                   "El mensaje ya no está", "Con un valor de catálogo", "Opción dada de baja", "Venció sin respuesta"]
+                   "El mensaje ya no está", "Con un valor de catálogo", "Opción dada de baja", "Venció sin respuesta",
+                   "Bajando los archivos", "Con fotos y un documento", "Muchas fotos", "Reintentando", "No se pudo bajar un archivo", "Un archivo no es lo que dice"]
 
 
 def chat_respuesta():
@@ -874,13 +1041,77 @@ def chat_respuesta():
         "Opción dada de baja": env + tarjeta(r_st("Motivo: una opción se dio de baja. No se guardó la respuesta.", ALERTA, "mal",
                                                   '<button type="button" class="cb cb-sec">Mandar de nuevo</button>')),
         "Venció sin respuesta": burbuja("Lucía Fernández · 10:51 · Venció sin respuesta", "amb"),
+        # E14 · F3: con archivos, nada a medias; F5: los reintentos y lo que no es lo que dice
+        "Bajando los archivos": env + tarjeta(r_st("Tomás envió el formulario con 3 archivos. Los estamos bajando de WhatsApp y guardando…", RELOJ14)),
+        "Con fotos y un documento": env + tarjeta(grilla_r(VALORES_ARCH) + r_ok("VIS-000126")),
+        "Muchas fotos": env + tarjeta(grilla_r(VALORES_MUCHAS) + r_ok("VIS-000127")),
+        "Reintentando": env + tarjeta(r_st("Seguimos intentando bajar los archivos de WhatsApp. No hace falta hacer nada.", RELOJ14)),
+        "No se pudo bajar un archivo": env + tarjeta(r_st("No pudimos bajar «Fotos de la visita» de WhatsApp. No se guardó la respuesta.", ALERTA, "mal",
+                                                          '<button type="button" class="cb cb-sec">Mandar de nuevo</button>')),
+        "Un archivo no es lo que dice": env + tarjeta(r_st("El archivo de «Remito firmado» no es un PDF, Excel, Word ni imagen válido. No se guardó la respuesta.", ALERTA, "mal",
+                                                           '<button type="button" class="cb cb-sec">Mandar de nuevo</button>')),
     }
     esc = {e: escr() for e in E}
     vp = {e: "Respondió Visita a cliente" for e in E}
+    vp.update({"Bajando los archivos": "Envió un formulario · guardando", "Reintentando": "Envió un formulario · guardando",
+               "No se pudo bajar un archivo": "No pudimos guardar un formulario", "Un archivo no es lo que dice": "No pudimos guardar un formulario"})
     vp.update({"Guardando": "Envió un formulario · guardando", "No se pudo guardar": "No pudimos guardar un formulario", "Opción dada de baja": "No pudimos guardar un formulario",
                "No reconocida": "Llegó un formulario que no se guardó", "Venció sin respuesta": "Vos: Formulario · Visita a cliente"})
     hora = {e: ("10:51" if e == "Venció sin respuesta" else "11:04") for e in E}
     return pagina_chat(E, esc, msgs, {}, vp, hora, "WhatsApp · Internos · respuesta del formulario")
+
+
+# ---------------------------------------------------------------- E14 · F4 · Ver y descargar: el visor sobre el chat
+CSS_VISOR = """.w-dlg.visor { width: 1000px; overflow: hidden; }
+.w-dlg.visor .db { padding: 0; display: block; }
+.vz-img { position: relative; height: 470px; background: oklch(0.24 0.02 150); display: flex; align-items: center; justify-content: center; }
+.vz-foto { width: 640px; height: 400px; border-radius: 4px;
+  background: linear-gradient(180deg, oklch(0.85 0.04 240) 0 18%, transparent 18%), linear-gradient(180deg, transparent 82%, oklch(0.65 0.01 150) 82%),
+  repeating-linear-gradient(90deg, oklch(0.82 0.04 75) 0 46px, oklch(0.6 0.05 60) 46px 92px); }
+.vz-foto.b { background: linear-gradient(180deg, oklch(0.85 0.04 240) 0 18%, transparent 18%), linear-gradient(180deg, transparent 82%, oklch(0.65 0.01 150) 82%),
+  repeating-linear-gradient(90deg, oklch(0.85 0.03 150) 0 46px, oklch(0.55 0.06 150) 46px 92px); }
+.vz-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 0; background: #fff; display: inline-flex; align-items: center; justify-content: center; }
+.vz-nav.izq { left: 16px; } .vz-nav.der { right: 16px; }
+.vz-nav[disabled] { opacity: 0.4; }
+.vz-tira { display: flex; justify-content: center; gap: 8px; padding: 12px; border-bottom: 1px solid var(--borde); }
+.vz-tira .r-th.on { box-shadow: 0 0 0 2px var(--marca); }
+.vz-pie { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px; }
+.vz-pie .t { display: flex; flex-direction: column; font-size: 14px; line-height: 1.35; }
+.vz-pie .t small { font-size: 12.5px; color: var(--t3); }
+.vz-esq { width: 640px; height: 400px; border-radius: 4px; background: oklch(0.32 0.02 150); }
+"""
+IZQ = svg('<path d="m14.5 5.5-6.5 6.5 6.5 6.5"/>', 18, "2")
+DER = svg('<path d="m9.5 5.5 6.5 6.5-6.5 6.5"/>', 18, "2")
+
+
+def dlg_visor(k=0, cargando=False):
+    foto = '<div class="vz-esq"></div>' if cargando else f'<div class="vz-foto{" b" if k == 1 else ""}" role="img" aria-label="Foto {k + 1} de 2"></div>'
+    nombre, peso = (("frente-local.jpg", "3,4 MB") if k == 0 else ("gondola.jpg", "2,9 MB"))
+    tira = "".join(f'<span class="r-th {c}{" on" if i == k else ""}" role="img" aria-label="Foto {i + 1}"></span>' for i, c in enumerate(["", "b"]))
+    cuerpo = (f'<div class="vz-img"><button type="button" class="vz-nav izq" aria-label="Foto anterior"{" disabled" if k == 0 else ""}>{IZQ}</button>{foto}'
+              f'<button type="button" class="vz-nav der" aria-label="Foto siguiente"{" disabled" if k == 1 else ""}>{DER}</button></div>'
+              f'<div class="vz-tira">{tira}</div>'
+              f'<div class="vz-pie"><span class="t">{nombre}<small>{peso} · sacada con la cámara · Tomás Acosta, 13/10/2026 11:03</small></span>'
+              f'<button type="button" class="cb cb-sec">{DESCARGAR} Descargar</button></div>')
+    t = F.dialogo(f"Fotos de la visita · Foto {k + 1} de 2 · VIS-000126", cuerpo, "")
+    return t.replace('class="w-dlg"', 'class="w-dlg visor"', 1).replace('<div class="df"></div>', "", 1)
+
+
+ESTADOS_VISOR = ["Foto 1 de 2", "Foto 2 de 2", "Cargando la foto", "Sin permiso"]
+
+
+def chat_visor():
+    E = ESTADOS_VISOR
+    env = burbuja("Lucía Fernández · 10:51 · Leído")
+    con = env + tarjeta(grilla_r(VALORES_ARCH) + r_ok("VIS-000126"))
+    sin = env + tarjeta(r_st("Ya no tenés permiso para ver estas respuestas.", CANDADO) + r_ok("VIS-000126"))
+    msgs = {e: (sin if e == "Sin permiso" else con) for e in E}
+    capas = {"Foto 1 de 2": dlg_visor(0), "Foto 2 de 2": dlg_visor(1), "Cargando la foto": dlg_visor(0, cargando=True),
+             "Sin permiso": toast("Ya no tenés permiso para ver estas respuestas.", "mal")}
+    esc = {e: escr() for e in E}
+    vp = {e: "Respondió Visita a cliente" for e in E}
+    hora = {e: "11:04" for e in E}
+    return pagina_chat(E, esc, msgs, capas, vp, hora, "WhatsApp · Internos · ver las fotos de una respuesta")
 
 
 # ================================================================ Teléfono (es una app: barra con título, hojas desde abajo, botones fijos abajo)
@@ -977,7 +1208,7 @@ def t_fijo(modo):
     return '<div class="ap-fijo"><a class="cb cb-pri full" href="#">Publicar en WhatsApp</a></div>'
 
 
-ESTADOS_TED = ["Sin cambios", "Cambios sin guardar", "Guardando", "Textos en inglés", "Acciones de una pregunta", "Editar una pregunta", "Pregunta con catálogo", "Así lo ve el empleado",
+ESTADOS_TED = ["Sin cambios", "Cambios sin guardar", "Guardando", "Textos en inglés", "Acciones de una pregunta", "Editar una pregunta", "Pregunta con catálogo", "Pregunta de foto", "Así lo ve el empleado",
                "Publicar", "Publicando", "Publicado", "WhatsApp rechazó una pregunta", "Nuevo formulario"]
 
 
@@ -1000,6 +1231,7 @@ def tel_editor():
         "Acciones de una pregunta": (bar("Visita a cliente", pub), t_cuerpo_editor(), t_fijo("limpio")),
         "Editar una pregunta": (bar("Visita a cliente", sucio), t_cuerpo_editor(), t_fijo("sucio")),
         "Pregunta con catálogo": (bar("Visita a cliente", sucio), t_cuerpo_editor(), t_fijo("sucio")),
+        "Pregunta de foto": (bar("Visita a cliente", sucio), t_cuerpo_editor(), t_fijo("sucio")),
         "Así lo ve el empleado": (bar("Visita a cliente", pub), t_cuerpo_editor(), t_fijo("limpio")),
         "Publicar": (bar("Visita a cliente", pub), t_cuerpo_editor(), t_fijo("limpio")),
         "Publicando": (bar("Visita a cliente", "Publicando versión 4…"), t_cuerpo_editor(banda_html=publicando), t_fijo("off")),
@@ -1038,8 +1270,16 @@ def tel_editor():
         "Publicar": F.thoja("Publicar la versión 4", publicar_h, '<button type="button" class="cb cb-pri">Publicar versión 4</button><button type="button" class="cb cb-sec">Cancelar</button>',
                             sub="Se publica el borrador guardado hoy a las 15:20."),
     }
+    origen = ('<div class="ap-cmp"><span class="rt"><span>De dónde sale la foto</span></span></div>'
+              '<span class="t-opc">Cámara o galería<span class="d"></span></span>'
+              f'<span class="t-opc on">Solo cámara<span class="d">{svg("<path d=" + chr(34) + "m5 12.5 4.5 4.5L19 7.5" + chr(34) + "/>", 18, "2.25")}</span></span>')
+    cuantas = ('<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' + F.tcampo("Mínimo", "1") + F.tcampo("Máximo", "4") + "</div>"
+               '<span class="t-lin">' + CLIP + ' Archivos: hasta 5 de 10 en el formulario.</span>')
+    capas["Pregunta de foto"] = F.thoja("Editar pregunta", F.tcampo("Pregunta", "Fotos de la visita", req=True) + F.tcampo("Tipo de respuesta", "Foto", select=True)
+                                        + F.tcampo("Ayuda para el empleado", "Sacá una foto del frente del local y otra de la góndola.") + origen + cuantas,
+                                        '<button type="button" class="cb cb-pri">Listo</button><button type="button" class="cb cb-sec">Cancelar</button>')
     hojas = "".join(f'<sc-if value="{{{{s{E.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
-    t = F.pagina_tel(None, None, cuerpo, css=F.CSS_TFICHA + F.CSS_TPREGUNTA + F.CSS_TFORM + CSS_TED)
+    t = F.pagina_tel(None, None, cuerpo, css=F.CSS_TFICHA + F.CSS_TPREGUNTA + F.CSS_TFORM + CSS_TED + F.CSS_TFILTRO)
     i = t.index('<nav class="ap-nav"')
     j = t.index("</nav>", i) + len("</nav>")
     t = t[:i] + t[j:]
@@ -1242,13 +1482,57 @@ def tel_respuesta_ab():
         "Opción dada de baja": env + t_tarjeta(r_st("Motivo: una opción se dio de baja. No se guardó la respuesta.", ALERTA, "mal")
                                                + '<span class="r-bt">Mandar de nuevo</span>'),
         "Venció sin respuesta": t_burbuja("Lucía Fernández · 10:51 · Venció sin respuesta", "amb"),
+        "Bajando los archivos": env + t_tarjeta(r_st("Tomás envió el formulario con 3 archivos. Los estamos bajando de WhatsApp y guardando…", RELOJ14)),
+        "Con fotos y un documento": env + t_tarjeta(grilla_r(VALORES_ARCH) + r_ok("VIS-000126")),
+        "Muchas fotos": env + t_tarjeta(grilla_r(VALORES_MUCHAS) + r_ok("VIS-000127")),
+        "Reintentando": env + t_tarjeta(r_st("Seguimos intentando bajar los archivos de WhatsApp. No hace falta hacer nada.", RELOJ14)),
+        "No se pudo bajar un archivo": env + t_tarjeta(r_st("No pudimos bajar «Fotos de la visita» de WhatsApp. No se guardó la respuesta.", ALERTA, "mal")
+                                                        + '<span class="r-bt">Mandar de nuevo</span>'),
+        "Un archivo no es lo que dice": env + t_tarjeta(r_st("El archivo de «Remito firmado» no es un PDF, Excel, Word ni imagen válido. No se guardó la respuesta.", ALERTA, "mal")
+                                                         + '<span class="r-bt">Mandar de nuevo</span>'),
     }
     esc = {e: t_escr() for e in E}
     hoja = lambda filas, num: F.thoja("Visita a cliente", F.grilla(filas), "", sub=f"{num} · Tomás Acosta · hoy, 11:04")
     capas = {"Guardada, todas": hoja(VALORES_AB, "VIS-000123"),
              "Con un valor de catálogo": hoja([(k, "Seguimiento · Motivos de visita · SEG" if k == "Motivo" else v) for k, v in VALORES_AB]
                                              + [("Supervisor a cargo", "Martín Paz · Supervisores · Delta S.A.")], "VIS-000125")}
-    return pagina_tchat(E, esc, msgs, capas, "WhatsApp · Internos · respuesta del formulario · teléfono", CSS_AB + CSS_TRESP_AB)
+    return pagina_tchat(E, esc, msgs, capas, "WhatsApp · Internos · respuesta del formulario · teléfono", CSS_AB + CSS_TRESP_AB + CSS_ARCH + CSS_TVISOR)
+
+
+# ---------------------------------------------------------------- E14 · F4 en el teléfono: el visor ocupa toda la pantalla
+CSS_TVISOR = """.tv { position: absolute; inset: 0; z-index: 50; background: oklch(0.18 0.015 150); display: flex; flex-direction: column; color: #fff; }
+.tv-bar { display: flex; align-items: center; gap: 10px; padding: 52px 12px 10px; }
+.tv-bar .tit { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
+.tv-bar .tit b { font-size: 16px; } .tv-bar .tit span { font-size: 13px; opacity: 0.75; }
+.tv-bar .ap-ib { color: #fff; }
+.tv-img { flex: 1; display: flex; align-items: center; justify-content: center; }
+.tv-foto { width: 350px; height: 260px;
+  background: linear-gradient(180deg, oklch(0.85 0.04 240) 0 18%, transparent 18%), linear-gradient(180deg, transparent 82%, oklch(0.65 0.01 150) 82%),
+  repeating-linear-gradient(90deg, oklch(0.82 0.04 75) 0 26px, oklch(0.6 0.05 60) 26px 52px); }
+.tv-tira { display: flex; justify-content: center; gap: 8px; padding: 12px; }
+.tv-tira .r-th { width: 48px; height: 48px; }
+.tv-tira .r-th.on { box-shadow: 0 0 0 2px #fff; }
+.tv-pie { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px 34px; border-top: 1px solid oklch(1 0 0 / 0.12); }
+.tv-pie .t { display: flex; flex-direction: column; font-size: 14px; line-height: 1.35; } .tv-pie .t small { font-size: 12.5px; opacity: 0.75; }
+.tv-pie .cb { height: 40px; background: #fff; color: var(--t1); border-color: transparent; }
+"""
+
+
+def tel_visor():
+    E = ["Foto 1 de 2", "Sin permiso"]
+    env = t_burbuja("Lucía Fernández · 10:51 · Leído")
+    con = env + t_tarjeta(grilla_r(VALORES_ARCH) + r_ok("VIS-000126"))
+    sin = env + t_tarjeta(r_st("Ya no tenés permiso para ver estas respuestas.", CANDADO) + r_ok("VIS-000126"))
+    msgs = {"Foto 1 de 2": con, "Sin permiso": sin}
+    visor = ('<div class="tv" role="dialog" aria-label="Fotos de la visita"><div class="tv-bar">'
+             f'<button type="button" class="ap-ib" aria-label="Cerrar">{X}</button><span class="tit"><b>Fotos de la visita</b><span>Foto 1 de 2 · VIS-000126</span></span></div>'
+             '<div class="tv-img"><div class="tv-foto" role="img" aria-label="Foto 1 de 2"></div></div>'
+             '<div class="tv-tira"><span class="r-th on"></span><span class="r-th b"></span></div>'
+             f'<div class="tv-pie"><span class="t">frente-local.jpg<small>3,4 MB · sacada con la cámara</small></span><button type="button" class="cb cb-sec">{DESCARGAR} Descargar</button></div></div>')
+    capas = {"Foto 1 de 2": visor,
+             "Sin permiso": '<div class="t-toast" role="alert"><span class="mal">' + ALERTA + '</span><span>Ya no tenés permiso para ver estas respuestas.</span></div>'}
+    esc = {e: t_escr() for e in E}
+    return pagina_tchat(E, esc, msgs, capas, "WhatsApp · Internos · ver las fotos de una respuesta · teléfono", CSS_AB + CSS_TRESP_AB + CSS_ARCH + CSS_TVISOR)
 
 
 # ---------------------------------------------------------------- canvas.json: los nuevos, «· para aprobar»; los reemplazados, al Archivo

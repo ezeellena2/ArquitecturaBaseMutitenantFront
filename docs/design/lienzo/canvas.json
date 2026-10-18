@@ -848,8 +848,8 @@
     "Criterio-Decisiones.dc.html": {
       "x": 10640,
       "y": 260,
-      "w": 4440,
-      "h": 7800,
+      "w": 5920,
+      "h": 6900,
       "title": "Criterio · Decisiones por pantalla",
       "page": "criterio"
     },
@@ -1882,25 +1882,28 @@
       "x": 3040,
       "y": 260,
       "w": 1440,
-      "h": 900,
+      "h": 1100,
       "title": "Plataforma · plantilla de formulario",
-      "page": "plat-formularios"
+      "page": "plat-formularios",
+      "is_interactive": true
     },
     "Plat-FRM-Publicar.dc.html": {
       "x": 4560,
       "y": 260,
       "w": 1440,
-      "h": 900,
+      "h": 1100,
       "title": "Plataforma · publicar una plantilla",
-      "page": "plat-formularios"
+      "page": "plat-formularios",
+      "is_interactive": true
     },
     "Plat-FRM-Retirar.dc.html": {
       "x": 6080,
       "y": 260,
       "w": 1440,
-      "h": 900,
+      "h": 1100,
       "title": "Plataforma · retirar una plantilla",
-      "page": "plat-formularios"
+      "page": "plat-formularios",
+      "is_interactive": true
     },
     "Plat-FRM-Categorias.dc.html": {
       "x": 0,
@@ -2203,6 +2206,24 @@
       "h": 437,
       "title": "Índice · Lo que manda el sistema · tocá Play y elegí una pantalla",
       "page": "mapa",
+      "is_interactive": true
+    },
+    "WA-Chats-Visor.dc.html": {
+      "x": 3040,
+      "y": 1780,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · ver las fotos de una respuesta",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "M-WA-Chats-Visor.dc.html": {
+      "x": 1880,
+      "y": 2800,
+      "w": 390,
+      "h": 844,
+      "title": "WhatsApp · Internos · ver las fotos · teléfono",
+      "page": "formularios",
       "is_interactive": true
     }
   },
@@ -2625,7 +2646,9 @@
     "Indice-formularios.dc.html",
     "Indice-plataforma.dc.html",
     "Indice-manda.dc.html",
-    "Indice.dc.html"
+    "Indice.dc.html",
+    "WA-Chats-Visor.dc.html",
+    "M-WA-Chats-Visor.dc.html"
   ],
   "pages": [
     {

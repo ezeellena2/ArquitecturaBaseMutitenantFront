@@ -425,7 +425,10 @@
     .ra .otp.mal input { border-color: var(--peligro); background: var(--peligro-t); }
     .ra { gap: 10px !important; }
     .ra .ra-rec { justify-self: start; font-size: 13.5px; margin-top: 4px; }
-  </style>
+  /* E9 · Seguir editando en verde */
+.w-cartel svg { flex-shrink: 0; }
+.w-cartel .lnk { color: var(--marca); font-weight: 600; }
+</style>
                                 <style data-tema="c2">
 /* Común a las tres direcciones: marca con nombre, rótulos sin mayúsculas, sombras suaves. */
 .ab-sidebar__head { gap: 10px; border-bottom-color: transparent; }
@@ -689,8 +692,8 @@ textarea.in2 { height: auto; min-height: 84px; }
         <div class="acciones"><button type="button" class="b b-sec" onClick="{{descartar}}">Descartar cambios</button><button type="button" class="b b-pri" onClick="{{guardar}}" disabled="{{limpio}}">Guardar cambios</button></div>
       </div>
       <div class="pagina">
-        <sc-if value="{{conflicto}}" hint-placeholder-val="{{no}}"><div class="w-cartel" role="alert"><span class="tx">Otra persona cambió esto mientras lo editabas.</span><button type="button" class="lnk">Seguir editando</button><button type="button" class="b b-sec">Ver lo nuevo</button></div></sc-if>
-        <div class="hoja" role="form" aria-label="Configuración de la plataforma">
+        <sc-if value="{{conflicto}}" hint-placeholder-val="{{no}}"><div class="w-cartel" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span class="tx">Otra persona cambió esto mientras lo editabas.</span><button type="button" class="lnk">Seguir editando</button><button type="button" class="b b-sec">Ver lo nuevo</button></div></sc-if>
+        <div class="hoja" role="group" aria-label="Registro y altas">
             <h2>Registro y altas</h2>
             <div class="campo2 envoltura">
               <span class="et" id="et-Registro">Registro de personas</span>
@@ -721,6 +724,8 @@ textarea.in2 { height: auto; min-height: 84px; }
               <input class="in2 {{malLimite}}" id="f-Limite" type="number" autocomplete="off" placeholder="" value="{{Limite}}" onChange="{{onLimite}}">
               <sc-if value="{{errLimite}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errLimite}}</span></sc-if>
             </div>
+          </div>
+          <div class="hoja" role="group" aria-label="Contacto">
             <h2>Contacto</h2>
             <div class="campo2">
               <label class="et" for="f-Ventas">Correo de ventas</label>
@@ -734,6 +739,8 @@ textarea.in2 { height: auto; min-height: 84px; }
             </div>
 
 
+          </div>
+          <div class="hoja" role="group" aria-label="Límites de uso">
             <h2>Límites de uso</h2>
             <div class="lim" role="group" aria-label="Límites de uso"><div class="lim-cab"><span>Límite</span><span>Pedidos</span><span>Cada</span></div><sc-for list="{{limites}}" as="l" hint-placeholder-count="12"><sc-if value="{{l.grupo}}" hint-placeholder-val="{{no}}"><div class="lim-g {{l.claseGrupo}}">{{l.grupo}}</div></sc-if><div class="lim-f"><span class="lim-n">{{l.n}}</span><div class="lim-c"><input class="in2 {{l.malP}}" type="number" inputmode="numeric" value="{{l.p}}" onChange="{{l.onP}}" aria-label="{{l.ariaP}}"><sc-if value="{{l.errP}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{l.errP}}</span></sc-if></div><div class="lim-c"><div class="lim-cada"><input class="in2 {{l.malC}}" type="number" inputmode="numeric" value="{{l.c}}" onChange="{{l.onC}}" aria-label="{{l.ariaC}}"><button type="button" class="in2 {{l.malC}}" aria-haspopup="listbox" aria-label="{{l.ariaU}}"><span class="val">{{l.u}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button></div><sc-if value="{{l.errC}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{l.errC}}</span></sc-if></div></div></sc-for></div>
         </div>
@@ -921,12 +928,12 @@ class Component extends DCLogic {
     };
   }
 
-  // Menú ⋮ de una fila; en las últimas filas de una lista larga se abre hacia arriba.
+  // Menú ⋮ de una fila: abre hacia abajo; solo sube en las dos últimas filas de una página llena.
   fila(id, nombre, i = 0, n = 0) {
     const clave = 'fila:' + id;
     const abierto = this.state.abierto === clave;
 
-    return { menu: abierto, exp: abierto ? 'true' : 'false', ariaMenu: 'Acciones de ' + nombre, alternar: () => this.alternarMenu(clave), claseMenu: n > 5 && i >= n - 3 ? 'arriba' : '' };
+    return { menu: abierto, exp: abierto ? 'true' : 'false', ariaMenu: 'Acciones de ' + nombre, alternar: () => this.alternarMenu(clave), claseMenu: n >= 10 && i >= n - 2 ? 'arriba' : '' };
   }
 
   // Confirmación: { titulo, texto, boton, peligro, motivo (bool), accion(motivo) }.

@@ -1,14 +1,14 @@
 """Tablero «Criterio · Decisiones por pantalla»: lo que el usuario eligió en cada pantalla y las reglas que dejó.
 Cada decisión nueva suma una fila en DECISIONES; si deja una regla, va también a REGLAS y al tablero de esa pieza.
-Va en tres columnas (4440 de ancho): el lienzo recorta un tablero a 8000 de alto, y en dos columnas ya no entraba (v120)."""
+Va en cuatro columnas (5920 de ancho): el lienzo recorta un tablero a 8000 de alto; en dos columnas ya no entraba (v120) y en tres tampoco (v130)."""
 import json
 import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 7800
-ANCHO = 4440
-COLUMNAS = 3
+ALTO = 6900
+ANCHO = 5920
+COLUMNAS = 4
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -35,7 +35,7 @@ CSS = """  <style data-criterio="decisiones">
 .est.alerta::before { background: oklch(0.72 0.15 70); }
 .est.off { color: var(--t2); }
 .est.off::before { background: oklch(0.75 0.01 78); }
-.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; align-items: start; }
+.cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 48px; align-items: start; }
 .cols > div { display: flex; flex-direction: column; gap: 36px; }
   </style>"""
 
@@ -405,10 +405,25 @@ DECISIONES = {
         ("Catálogos", "", "Tabla Catálogo (con su descripción), De dónde salen, Opciones, Lo usan y Estado (No se puede usar lleva el motivo debajo); el nombre abre el editor. Reglas del lienzo: «Origen ▾» y «Estado ▾» en lugar del segmentado, y sin columna de acciones.", "Dibujada"),
         ("Nuevo catálogo", "", "El diálogo pregunta solo de dónde salen las opciones, en dos tarjetas, y «Continuar» abre el editor, donde se escribe el nombre.", "Dibujada"),
         ("Catálogo escrito a mano", "", "Una sola pantalla, como el editor de formularios: «Textos en», el catálogo, las opciones con buscador y «Estado ▾» que se abren en el lugar, y al costado «Lo usan» y «Así lo ve el empleado». Todo se guarda junto. Reglas del lienzo: ⋮ por opción, «Guardar cambios» y «Dar de baja» en el ⋮ de la banda.", "Dibujada"),
-        ("Catálogo con filtros", "", "Una sola pantalla: el catálogo, los miembros que entran (vista Miembros con Nombre, Rol, Empresa y Activo) y, al costado, «Como si lo recibiera» con «Probar». Con más de 200 opciones no se guarda (antes se podía); sin persona de ejemplo no se crea.", "Dibujada"),
+        ("Catálogo con filtros", "", "Una sola pantalla: el catálogo, los miembros que entran (vista Miembros con Nombre, Rol, Empresa y Activo) y, al costado, «Como si lo recibiera» con «Probar». Con más de 200 se guarda con el aviso «Más de 200: no se va a poder mandar»: lo que frena es el envío (decisión 22). Un nombre de más de 30 se corta con «…» y va completo en el detalle (decisión 21). Sin persona de ejemplo no se crea.", "Dibujada"),
         ("La pregunta", "", "«Elegir de un catálogo» se abre en el lugar, con el desplegable de catálogos (los que no se pueden usar, apagados con su motivo), «Ver el catálogo» y el vacío.", "Dibujada"),
         ("Al mandar y al responder", "", "En el envío, las opciones por pregunta, «Preparando las opciones…» y, en rojo, más de 200, ninguna o catálogo que no se puede usar, con el envío apagado y sin enlace. La respuesta muestra el catálogo y el código; una opción dada de baja no se guarda y ofrece «Mandar de nuevo».", "Dibujada"),
         ("Teléfono", "", "El listado con «Filtros» y «+»; los dos editores en una sola pantalla, con opciones y condiciones en hojas y la vista previa abajo.", "Dibujada"),
+    ],
+    "E17 y E14 · El editor nuevo y los archivos · La Guía · 17/10": [
+        ("Plantilla de Plataforma", "", "La pestaña «Plantilla» es el editor de formularios de la E12: «Textos en», la plantilla con categoría, prefijo sugerido y descripción, las preguntas que se abren en el lugar y «Así lo ve el empleado». Se van «Preguntas» e «Inglés»; Catálogos y Publicación siguen. Con cambios: Descartar, Guardar borrador y Publicar.", "Dibujada"),
+        ("Foto y Documento", "", "Dos tipos más en el editor. Foto: «Cámara o galería» o «Solo cámara», y cuántas (mínimo y máximo; con mínimo 1 es obligatoria). Documento: PDF, Excel, Word, JPEG y PNG. Arriba, «Archivos: hasta N de 10»; la vista previa dice en qué pantalla queda. Sin almacenamiento, los dos tipos se ven apagados con su motivo.", "Dibujada"),
+        ("Más de 10 archivos", "", "Se revisa al publicar, como el resto de la comprobación: «Publicar versión N» apagado e «Ir a las preguntas».", "Dibujada"),
+        ("La respuesta con archivos", "", "Miniaturas y «+N» para las fotos; el documento con su nombre, su peso y «Descargar». Mientras baja, «Lo estamos bajando de WhatsApp y guardando…»; si reintenta, que no hace falta hacer nada. Si un archivo no baja o no es lo que dice, nada se guarda y ofrece «Mandar de nuevo».", "Dibujada"),
+        ("El visor", "", "Sobre el chat: la foto grande, anterior y siguiente, la tira de miniaturas y abajo el nombre, el peso, si se sacó con la cámara y «Descargar». En el teléfono ocupa toda la pantalla. Si se pierde el permiso, se cierra y las miniaturas se van.", "Dibujada"),
+    ],
+    "E9 · Lo que no coincidía con la app · Coordinador de la E9 · 17/10": [
+        ("Permisos de un operador", "", "Suman «Usar el asistente de Plataforma», «Configurar el asistente de Plataforma» y «Ver el uso del asistente»; «Cambiar la configuración» queda última, como en la app.", "Dibujada"),
+        ("Configuración de Plataforma", "", "Una tarjeta por sección. En el teléfono, un título chico gris arriba de cada tarjeta; con un conflicto, la banda va de lado a lado y el formulario se ve desde arriba.", "Dibujada"),
+        ("Bandas del límite y de conflicto", "", "Llevan ⚠, como Banner y ConcurrencyBanner. En la compu, «Seguir editando» va en verde.", "Dibujada"),
+        ("Publicar un documento legal", "", "La miga suma «/ Publicar versión nueva»; el aviso va fuera de la tarjeta; una tarjeta «Versión» y otra «Contenido»; cuadros de unos cuatro renglones.", "Dibujada"),
+        ("Teléfono", "", "El rol con cambios dice «Cambios sin guardar»; Auditoría dice «Administración»; el error de carga de Usuarios va en un recuadro punteado; el asistente lleva el título a la izquierda y los atajos sin ⚡; «Confirmá que sos vos» siempre con ✕.", "Dibujada"),
+        ("El ⋮ de una fila", "", "Abre hacia abajo; sube solo si no hay lugar, en las dos últimas filas de una página llena.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

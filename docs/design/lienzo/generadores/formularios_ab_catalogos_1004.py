@@ -428,8 +428,10 @@ CSS_K4 = """.k-cond { display: grid; grid-template-columns: 32px repeat(3, minma
 .k-prev .menu2 span:first-child { border-top: 0; background: var(--marca-t); }
 .k-prev .menu2 small { font-size: 12px; color: var(--t3); }
 .k-prev .p-esq { padding: 14px; }
+.k-mas200 { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--borde); background: oklch(0.96 0.06 85); color: oklch(0.4 0.1 70); font-size: 13.5px; font-weight: 500; }
 """
-MIEMBROS = [("Florencia Fernández de la Fuente", "Delta Norte"), ("Martín Paz", "Delta S.A."), ("Paula Méndez", "Delta S.A.")]
+# Decisión 21: más de 30 caracteres se cortan con «…» y el nombre completo va en el detalle.
+MIEMBROS = [("Florencia Fernández de la Fu…", "Florencia Fernández de la Fuente · Delta Norte"), ("Martín Paz", "Delta S.A."), ("Paula Méndez", "Delta S.A.")]
 
 
 def f_cond(si, col, op, val, mal=False):
@@ -469,8 +471,10 @@ def f_prev(modo="lista"):
     elif modo == "ninguna":
         cuerpo = '<div class="vacio2">No hay opciones con estos filtros.</div><div class="pie">0 opciones · probado hoy a las 10:44</div>'
     elif modo == "mas200":
-        cuerpo = ("".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in MIEMBROS[:2]) + '<div class="li" style="color: var(--t3);">…</div>'
-                  + '<div class="pie" style="color: oklch(0.5 0.19 25);">214 opciones: WhatsApp acepta hasta 200</div>')
+        cuerpo = (f'<div class="k-mas200" role="status">{ALERTA}<span>Más de 200: no se va a poder mandar.</span>'
+                  + F.info("Se guarda igual: la cantidad cambia sola cuando la organización suma o quita miembros. Lo que frena es el envío.") + "</div>"
+                  + "".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in MIEMBROS[:2]) + '<div class="li" style="color: var(--t3);">…</div>'
+                  + '<div class="pie">214 opciones · probado hoy a las 10:42</div>')
     elif modo == "sucio":
         cuerpo = '<div class="vacio2">Cambiaste los filtros. Tocá «Probar» para ver las opciones.</div>'
     else:
@@ -500,8 +504,7 @@ def filtros():
         "Guardado": (banda_k(tit, ACTIVO, k_acc()), cuerpo("lista")),
     }
     assert list(V) == ESTADOS_K4
-    capas = {"Más de 200": A.toast("Hay más de 200 opciones. Ajustá los filtros antes de guardar.", "mal"),
-             "Guardado": A.toast("Catálogo guardado.")}
+    capas = {"Guardado": A.toast("Catálogo guardado.")}
     t = pagina_k("Catálogo con filtros · /org/formularios/catalogos/:id", "Inicio / Formularios / Catálogos / Supervisores",
                  A.con_estados([(k, v[0]) for k, v in V.items()]), A.con_estados([(k, v[1]) for k, v in V.items()]),
                  F.CSS_FICHA + F.CSS_ESTADOS + A.CSS_AB + CSS_K3 + CSS_K4 + ".f-cols.k4 { grid-template-columns: minmax(0, 1fr) 360px; }\n", ESTADOS_K4, A.js_estados(ESTADOS_K4), alto=1000)
@@ -672,7 +675,7 @@ def tel_filtros():
         elif prev == "ninguna":
             res = '<div class="vacio2">No hay opciones con estos filtros.</div>'
         else:
-            res = "".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in MIEMBROS[:2]) + '<div class="pie mal">214 opciones: WhatsApp acepta hasta 200</div>'
+            res = "".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in MIEMBROS[:2]) + '<div class="pie">214 opciones · probado hoy a las 10:42</div>'
         nombre = titulo
         desc = "Quienes pueden aprobar una visita." if titulo == "Supervisores" else "Supervisores y jefes de obra."
         return (t_bar(titulo, sub) + banda + '<div class="ap-cuerpo"><div class="ap-gtit">El catálogo</div><div class="f-campos">'
@@ -683,7 +686,7 @@ def tel_filtros():
                 + '<div class="ap-gtit">Vista previa</div><div class="k-prueba">' + F.tcampo("Como si lo recibiera", "Tomás Acosta", select=True)
                 + '<button type="button" class="cb cb-sec">Probar</button></div>'
                 + f'<div class="ap-grupo k-prev" style="margin-top: 10px;">{res}</div><div style="height: 20px;"></div></div>')
-    mas200 = f'<div class="t-banda mal" role="alert">{ALERTA}<span class="tx">Hay más de 200 opciones. Ajustá los filtros antes de guardar.</span></div>'
+    mas200 = f'<div class="t-banda" role="status">{ALERTA}<span class="tx">Más de 200: no se va a poder mandar.<small>Se guarda igual; lo que frena es el envío.</small></span></div>'
     rol = f'<div class="t-banda mal" role="alert">{ALERTA}<span class="tx">Un rol de los filtros ya no existe: el catálogo no se puede usar hasta que elijas otro.</span></div>'
     fijo = '<div class="ap-fijo"><button type="button" class="cb cb-sec full">Descartar cambios</button><button type="button" class="cb cb-pri full">Guardar cambios</button></div>'
     S = "Activo · Cambios sin guardar"

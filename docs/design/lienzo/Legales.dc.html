@@ -657,7 +657,7 @@ textarea.in2 { height: auto; min-height: 84px; }
         <nav class="ab-breadcrumbs" aria-label="Ruta de navegación"><ol class="ab-breadcrumbs__list">
           <li class="ab-breadcrumbs__item"><a class="ab-breadcrumbs__link" href="Organizaciones.dc.html">Plataforma</a></li>
           <li class="ab-breadcrumbs__separator" aria-hidden="true">/</li>
-          <li class="ab-breadcrumbs__item ab-breadcrumbs__item--current" aria-current="page">Documentos legales</li>
+          <sc-if value="{{enLista}}" hint-placeholder-val="{{si}}"><li class="ab-breadcrumbs__item ab-breadcrumbs__item--current" aria-current="page">Documentos legales</li></sc-if><sc-if value="{{enNueva}}" hint-placeholder-val="{{no}}"><li class="ab-breadcrumbs__item"><a class="ab-breadcrumbs__link" href="#" onClick="{{cancelar}}">Documentos legales</a></li><li class="ab-breadcrumbs__separator" aria-hidden="true">/</li><li class="ab-breadcrumbs__item ab-breadcrumbs__item--current" aria-current="page">Publicar versión nueva</li></sc-if>
         </ol></nav>
       </div>
       <span class="envoltura">
@@ -707,8 +707,9 @@ textarea.in2 { height: auto; min-height: 84px; }
         <div class="acciones"><button type="button" class="b b-sec" onClick="{{cancelar}}">Cancelar</button><button type="button" class="b b-pri" onClick="{{publicar}}">Publicar</button></div>
       </div>
       <div class="pagina">
+        <div class="aviso-linea alerta"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span>Al publicarla, todas las cuentas tienen que aceptarla de nuevo para seguir usando el servicio. Una versión publicada no se edita.</span></div>
         <div class="hoja">
-          <div class="aviso-linea alerta"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span>Al publicarla, todas las cuentas tienen que aceptarla de nuevo para seguir usando el servicio. Una versión publicada no se edita.</span></div>
+          <h2>Versión</h2>
           <div class="campo2 envoltura">
             <span class="et" id="et-Tipo">Documento<span class="req" aria-hidden="true">*</span></span>
             <button type="button" class="in2" aria-haspopup="listbox" aria-expanded="{{expTipo}}" aria-labelledby="et-Tipo" onClick="{{alternarTipo}}"><span class="val {{claseValTipo}}">{{textoTipo}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
@@ -725,15 +726,17 @@ textarea.in2 { height: auto; min-height: 84px; }
             <input class="in2 {{malVigencia}}" id="f-vigencia" type="text" inputmode="numeric" placeholder="dd/mm/aaaa" value="{{vigencia}}" onChange="{{onVigencia}}">
             <sc-if value="{{errVigencia}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errVigencia}}</span></sc-if>
           </div>
+        </div>
+        <div class="hoja">
           <h2>Contenido</h2>
           <div class="campo2">
             <label class="et" for="f-es">En español<span class="req" aria-hidden="true">*</span></label>
-            <textarea class="in2 {{malEs}}" id="f-es" style="min-height: 440px;" value="{{es}}" onChange="{{onEs}}"></textarea>
+            <textarea class="in2 {{malEs}}" id="f-es" rows="4" style="min-height: 96px;" value="{{es}}" onChange="{{onEs}}"></textarea>
             <sc-if value="{{errEs}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errEs}}</span></sc-if>
           </div>
           <div class="campo2">
             <label class="et" for="f-en">En inglés<span class="req" aria-hidden="true">*</span></label>
-            <textarea class="in2 {{malEn}}" id="f-en" style="min-height: 440px;" value="{{en}}" onChange="{{onEn}}"></textarea>
+            <textarea class="in2 {{malEn}}" id="f-en" rows="4" style="min-height: 96px;" value="{{en}}" onChange="{{onEn}}"></textarea>
             <sc-if value="{{errEn}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errEn}}</span></sc-if>
           </div>
         </div>
@@ -912,12 +915,12 @@ class Component extends DCLogic {
     };
   }
 
-  // Menú ⋮ de una fila; en las últimas filas de una lista larga se abre hacia arriba.
+  // Menú ⋮ de una fila: abre hacia abajo; solo sube en las dos últimas filas de una página llena.
   fila(id, nombre, i = 0, n = 0) {
     const clave = 'fila:' + id;
     const abierto = this.state.abierto === clave;
 
-    return { menu: abierto, exp: abierto ? 'true' : 'false', ariaMenu: 'Acciones de ' + nombre, alternar: () => this.alternarMenu(clave), claseMenu: n > 5 && i >= n - 3 ? 'arriba' : '' };
+    return { menu: abierto, exp: abierto ? 'true' : 'false', ariaMenu: 'Acciones de ' + nombre, alternar: () => this.alternarMenu(clave), claseMenu: n >= 10 && i >= n - 2 ? 'arriba' : '' };
   }
 
   // Confirmación: { titulo, texto, boton, peligro, motivo (bool), accion(motivo) }.

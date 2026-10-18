@@ -935,12 +935,12 @@ class Component extends DCLogic {
     };
   }
 
-  // Menú ⋮ de una fila; en las últimas filas de una lista larga se abre hacia arriba.
+  // Menú ⋮ de una fila: abre hacia abajo; solo sube en las dos últimas filas de una página llena.
   fila(id, nombre, i = 0, n = 0) {
     const clave = 'fila:' + id;
     const abierto = this.state.abierto === clave;
 
-    return { menu: abierto, exp: abierto ? 'true' : 'false', ariaMenu: 'Acciones de ' + nombre, alternar: () => this.alternarMenu(clave), claseMenu: n > 5 && i >= n - 3 ? 'arriba' : '' };
+    return { menu: abierto, exp: abierto ? 'true' : 'false', ariaMenu: 'Acciones de ' + nombre, alternar: () => this.alternarMenu(clave), claseMenu: n >= 10 && i >= n - 2 ? 'arriba' : '' };
   }
 
   // Confirmación: { titulo, texto, boton, peligro, motivo (bool), accion(motivo) }.

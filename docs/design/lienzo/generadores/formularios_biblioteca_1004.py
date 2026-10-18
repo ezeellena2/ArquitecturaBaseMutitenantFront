@@ -305,8 +305,15 @@ def multi_opciones():
 
 
 # ---------------------------------------------------------------- Plat-FRM-Plantilla elegida (Catálogos B, 16/10): la ficha con sus cuatro pestañas
-ESTADOS_PFICHA = ["Preguntas", "Cambios sin guardar", "Otra persona cambió", "Inglés", "Catálogos", "Un catálogo abierto",
+ESTADOS_PFICHA = ["Plantilla", "Cambios sin guardar", "Otra persona cambió", "Textos en inglés", "Catálogos", "Un catálogo abierto",
                   "Publicación", "Publicación: menú", "Publicación: borrador", "Publicación: retirada"]
+# El editor de la E12 en la pestaña «Plantilla» (17/10): sus piezas y una ficha de 1100 de alto.
+def _css_editor_plat():
+    import formularios_ab_1004 as A
+    return A.CSS_AB + A.CSS_EDITOR.replace(".w-app { height: 1400px !important; }", ".w-app { height: 1100px !important; }") + ".w-cmp .ct.area { height: auto; min-height: 56px; }\n"
+
+
+CSS_EDITOR_PLAT = _css_editor_plat()
 RETIRAR = F.svg('<circle cx="12" cy="12" r="8.5"/><path d="m6 6 12 12"/>', 16)
 CSS_PFICHA2 = """.w-bnd .ac { position: relative; }
 .w-bnd .ac .f-menu { top: calc(100% + 6px); right: 0; left: auto; }
@@ -319,17 +326,30 @@ def plat_partes(pestana, cuerpo_pestana, acciones, estado_banda, nombre="Visita 
     """La banda y el cuerpo de la ficha de una plantilla (para armar los estados con sc-if)."""
     cp, cc = cuentas
     tabs = "".join(f'<a class="{"on" if n == pestana else ""}" role="tab" aria-selected="{"true" if n == pestana else "false"}" href="Plat-FRM-Plantilla.dc.html">{n}{c}</a>'
-                   for n, c in [("Preguntas", f' <span class="c">{cp}</span>'), ("Inglés", ""),
-                                ("Catálogos", f' <span class="c">{cc}</span>' if cc != "0" else ""), ("Publicación", "")])
+                   for n, c in [("Plantilla", ""), ("Catálogos", f' <span class="c">{cc}</span>' if cc != "0" else ""), ("Publicación", "")])
     banda = (f'<div class="w-bnd"><div class="iz"><span class="ic">{F.ICONO}</span><div><h1>{nombre}</h1>'
              f'<p class="res f-bnd-est">{estado_banda}</p></div></div><div class="ac">{acciones}</div></div>')
     return banda, f'<div class="w-body"><div class="o-tabs ficha" role="tablist">{tabs}</div>{cuerpo_pestana}</div>'
 
 
-def preguntas_plantilla():
-    return ('<div class="f-cols" style="margin-top: 16px;"><div class="f-pila">' + datos_plantilla()
-            + F.lista_preguntas().split('<div class="w-caja"><div class="f-cab"><span>Preguntas</span>', 1)[1].join(['<div class="w-caja"><div class="f-cab"><span>Preguntas</span>', ''])
-            + "</div>" + F.vista_previa() + "</div>")
+def preguntas_plantilla(ingles=False):
+    """La pestaña «Plantilla»: el editor de formularios de la E12 (17/10), con la categoría y la descripción de la plantilla."""
+    import formularios_ab_1004 as A
+    if ingles:
+        n = '<div class="ct">Customer visit</div><span class="ay">En español: Visita a cliente</span>'
+        d = '<div class="ct area">What happened in a customer visit.</div><span class="ay">En español: Lo que pasó en la visita a un cliente.</span>'
+    else:
+        n = '<div class="ct">Visita a cliente</div>'
+        d = '<div class="ct area">Lo que pasó en la visita a un cliente: si se concretó la venta, el monto y el motivo.</div>'
+    caja = ('<div class="w-caja"><div class="f-cab"><span>La plantilla</span></div><div class="e-g2">'
+            f'<div class="w-cmp"><span class="rt">Nombre <span class="req">*</span></span>{n}</div>'
+            f'<div class="w-cmp"><span class="rt">Categoría <span class="req">*</span></span><div class="ct sel" style="display: flex; justify-content: space-between;">Ventas{F.CHEV}</div></div>'
+            '<div class="w-cmp"><span class="rt">Prefijo sugerido <span class="req">*</span></span><div class="ct">VIS</div><span class="ay">Cada organización lo puede cambiar al usarla.</span></div>'
+            f'<div class="w-cmp"><span class="rt">Texto del botón final <span class="req">*</span></span><div class="ct">{"Send" if ingles else "Enviar"}</div></div>'
+            f'<div class="w-cmp" style="grid-column: 1 / -1;"><span class="rt">Descripción</span>{d}</div>'
+            "</div></div>")
+    return ('<div style="margin-top: 16px;">' + A.caja_textos(ingles) + '</div><div class="f-cols" style="margin-top: 16px;"><div class="f-pila">' + caja
+            + A.caja_preguntas(abierta=False, ingles=ingles) + "</div>" + A.vista(ingles=ingles) + "</div>")
 
 
 def ingles_plantilla():
@@ -385,7 +405,7 @@ def plantilla_ficha():
     pub = '<a class="cb cb-pri" href="Plat-FRM-Publicar.dc.html">Publicar</a>'
     kebab = f'<button type="button" class="ib o-borde" aria-label="Acciones de la plantilla" aria-haspopup="menu">{F.KEBAB}</button>'
     menu = (f'<div class="f-menu" role="menu" aria-label="Acciones de la plantilla"><a class="f-mi pel" role="menuitem" href="Plat-FRM-Retirar.dc.html">{RETIRAR} Retirar</a></div>')
-    sucio_acc = ('<button type="button" class="cb cb-sec">Descartar cambios</button><button type="button" class="cb cb-pri">Guardar cambios</button>'
+    sucio_acc = ('<button type="button" class="cb cb-sec">Descartar</button><button type="button" class="cb cb-pri">Guardar borrador</button>'
                  '<button type="button" class="cb cb-sec">Publicar</button>')
     est = ESTADO_PLANTILLA
     est_sucio = est.replace('<span class="f-sucio">Cambios sin publicar</span>', '<span class="f-sucio">Cambios sin guardar</span>')
@@ -393,10 +413,10 @@ def plantilla_ficha():
               + '<span class="tx">Otra persona cambió esto mientras lo editabas.</span><button type="button" class="cb cb-enl">Seguir editando</button>'
               '<button type="button" class="cb cb-sec">Ver lo nuevo</button></div>')
     partes = {
-        "Preguntas": plat_partes("Preguntas", preguntas_plantilla(), pub + kebab, est),
-        "Cambios sin guardar": plat_partes("Preguntas", preguntas_plantilla(), sucio_acc, est_sucio),
-        "Otra persona cambió": plat_partes("Preguntas", cartel + preguntas_plantilla(), sucio_acc, est_sucio),
-        "Inglés": plat_partes("Inglés", ingles_plantilla(), pub + kebab, est),
+        "Plantilla": plat_partes("Plantilla", preguntas_plantilla(), pub + kebab, est),
+        "Cambios sin guardar": plat_partes("Plantilla", preguntas_plantilla(), sucio_acc, est_sucio),
+        "Otra persona cambió": plat_partes("Plantilla", cartel + preguntas_plantilla(), sucio_acc, est_sucio),
+        "Textos en inglés": plat_partes("Plantilla", preguntas_plantilla(ingles=True), pub + kebab, est),
         "Catálogos": plat_partes("Catálogos", catalogos_plantilla(), pub + kebab, est),
         "Un catálogo abierto": plat_partes("Catálogos", catalogos_plantilla(), pub + kebab, est),
         "Publicación": plat_partes("Publicación", publicacion_plantilla("publicada"), pub + kebab, est),
@@ -415,8 +435,9 @@ def plantilla_ficha():
           + "      nombre: e === 'Publicación: borrador' ? 'Control de vehículo' : e === 'Publicación: retirada' ? 'Orden de trabajo' : 'Visita a cliente',\n"
           "    };")
     t = pagina_plat("Plantilla de formulario · /plataforma/formularios/:id", miga, banda, cuerpo,
-                    css=F.CSS_FICHA + F.CSS_DATOS + F.CSS_ESTADOS + F.CSS_INGLES + F.CSS_PUBLICACION + F.CSS_GRILLA + K.CSS_FICHA_CAT + K.CSS_FICHA_CAT2 + CSS_PFICHA + CSS_PFICHA2,
+                    css=F.CSS_FICHA + F.CSS_DATOS + F.CSS_ESTADOS + F.CSS_INGLES + F.CSS_PUBLICACION + F.CSS_GRILLA + K.CSS_FICHA_CAT + K.CSS_FICHA_CAT2 + CSS_PFICHA + CSS_PFICHA2 + CSS_EDITOR_PLAT,
                     estados=("estado", ESTADOS_PFICHA), js=js)
+    t = t.replace('"$preview":{"width":1440,"height":900}', '"$preview":{"width":1440,"height":1100}', 1)
     return F.con_dialogo(t, '<sc-if value="{{s5}}" hint-placeholder-val="{{no}}">' + dialogo_catalogo() + "</sc-if>")
 
 
@@ -448,7 +469,7 @@ def plantilla_publicar():
            '<sc-if value="{{dConflicto}}" hint-placeholder-val="{{no}}"><button type="button" class="cb cb-pri">Ver lo nuevo</button></sc-if>')
     t = F.con_dialogo(t, '<sc-if value="{{conPublicar}}" hint-placeholder-val="{{si}}">' + F.dialogo("{{dTitulo}}", cuerpo, pie) + "</sc-if>",
                       F.CSS_PUBLICAR + ".w-dlg .w-cmp .ct.area { height: 72px; }\n.w-dlg .w-cmp .ct.area.ph { color: var(--t3); }\n.w-dlg .w-cmp .ct.area.mal { border-color: var(--peligro); }\n")
-    t = t.replace('"estado":{"editor":"enum","options":' + json.dumps(ESTADOS_PFICHA, ensure_ascii=False, separators=(",", ":")) + ',"default":"Preguntas"',
+    t = t.replace('"estado":{"editor":"enum","options":' + json.dumps(ESTADOS_PFICHA, ensure_ascii=False, separators=(",", ":")) + ',"default":"Plantilla"',
                   '"estado":{"editor":"enum","options":' + json.dumps(ESTADOS_PPUBLICAR, ensure_ascii=False, separators=(",", ":")) + ',"default":"Sin problemas"')
     viejo = "    const k = " + json.dumps(ESTADOS_PFICHA, ensure_ascii=False) + ".indexOf(e);\n"
     assert viejo in t
@@ -487,7 +508,7 @@ def plantilla_retirar():
     t = F.con_dialogo(t, dlg, F.CSS_PUBLICAR + ".w-dlg .w-cmp .ct.area { height: 72px; }\n.w-dlg .w-cmp .ct.area.ph { color: var(--t3); }\n"
                       ".w-dlg .w-cmp .ct.area.mal { border-color: var(--peligro); }\n.w-dlg .d-tx { grid-column: 1 / -1; margin: 0; font-size: 14px; line-height: 1.5; color: var(--t2); }\n"
                       ".w-dlg .df .cb-pel[disabled] { opacity: 0.55; }\n")
-    t = t.replace('"estado":{"editor":"enum","options":' + json.dumps(ESTADOS_PFICHA, ensure_ascii=False, separators=(",", ":")) + ',"default":"Preguntas"',
+    t = t.replace('"estado":{"editor":"enum","options":' + json.dumps(ESTADOS_PFICHA, ensure_ascii=False, separators=(",", ":")) + ',"default":"Plantilla"',
                   '"estado":{"editor":"enum","options":' + json.dumps(ESTADOS_PRETIRAR, ensure_ascii=False, separators=(",", ":")) + ',"default":"Con el motivo"')
     viejo = "    const k = " + json.dumps(ESTADOS_PFICHA, ensure_ascii=False) + ".indexOf(e);\n"
     assert viejo in t
@@ -838,9 +859,9 @@ TITULOS = {"Plat-FRM-Biblioteca": "Plataforma · Biblioteca de formularios", "Pl
            "FRM-Biblioteca": "Formularios · biblioteca", "FRM-Plantilla": "Formularios · una plantilla", "FRM-Plantilla-Usar": "Formularios · usar una plantilla",
            "M-FRM-Biblioteca": "Formularios · biblioteca · teléfono", "M-FRM-Plantilla": "Formularios · una plantilla · teléfono", "M-Plat-FRM-Biblioteca": "Plataforma · biblioteca de formularios · teléfono"}
 LUGAR = {"Plat-FRM-Biblioteca": (0, 260, 1440, 900, "plat-formularios"), "Plat-FRM-Plantilla-Nueva": (1520, 260, 1440, 900, "plat-formularios"),
-         "Plat-FRM-Plantilla": (3040, 260, 1440, 900, "plat-formularios"), "Plat-FRM-Publicar": (4560, 260, 1440, 900, "plat-formularios"), "Plat-FRM-Retirar": (6080, 260, 1440, 900, "plat-formularios"), "Plat-FRM-Categorias": (0, 1280, 1440, 900, "plat-formularios"),
-         "FRM-Biblioteca": (0, 5360, 1440, 900, "formularios"), "FRM-Plantilla": (1520, 5360, 1440, 900, "formularios"), "FRM-Plantilla-Usar": (3040, 5360, 1440, 900, "formularios"),
-         "M-FRM-Biblioteca": (0, 6380, 390, 844, "formularios"), "M-FRM-Plantilla": (470, 6380, 390, 844, "formularios"), "M-Plat-FRM-Biblioteca": (0, 2300, 390, 844, "plat-formularios")}
+         "Plat-FRM-Plantilla": (3040, 260, 1440, 1100, "plat-formularios"), "Plat-FRM-Publicar": (4560, 260, 1440, 1100, "plat-formularios"), "Plat-FRM-Retirar": (6080, 260, 1440, 1100, "plat-formularios"), "Plat-FRM-Categorias": (0, 1280, 1440, 900, "plat-formularios"),
+         "FRM-Biblioteca": (0, 6160, 1440, 900, "formularios"), "FRM-Plantilla": (1520, 6160, 1440, 900, "formularios"), "FRM-Plantilla-Usar": (3040, 6160, 1440, 900, "formularios"),
+         "M-FRM-Biblioteca": (0, 7180, 390, 844, "formularios"), "M-FRM-Plantilla": (470, 7180, 390, 844, "formularios"), "M-Plat-FRM-Biblioteca": (0, 2300, 390, 844, "plat-formularios")}
 
 
 def registrar(nombres):
