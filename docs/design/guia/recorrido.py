@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 132 · 18 de octubre de 2026"
+VERSION = "versión 133 · 18 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -132,11 +132,17 @@ CAPITULOS = [
          "Las reglas del formulario, en palabras: cuándo, si y qué hacer en orden. Se guardan aparte, con su historial. «Ver el diseño» abre el PDF que se arma al aprobar."),
         ("frm-por-aprobar", "Por aprobar", "/org/formularios/por-aprobar", "no", "16", ["FRM-Por-Aprobar"], ["M-FRM-Por-Aprobar"], ["FRM-Respuesta-Aprobacion", "M-FRM-Respuesta-Aprobacion"],
          "Las respuestas que esperan una decisión, de la más vieja a la más nueva. Se aprueban o rechazan al costado de la planilla, con lo que pasó después y el PDF."),
+        ("frm-asistente-chat", "El asistente en el chat", "WhatsApp › Chats › Internos", "no", "—", ["WA-Chats-Asistente"], ["M-WA-Conversacion-Asistente"], ["WA-Chats-Sugerencia", "WA-Chats-Audio"],
+         "En modo Asistente reconoce el pedido y manda el formulario prellenado, con por qué lo mandó; «Tomar atención manual» lo corta. En atención manual, sugiere. Los audios se pasan a texto."),
+        ("frm-asistente-editor", "Lo que ofrece el asistente", "/org/formularios/:id", "no", "—", ["FRM-Editor-Asistente"], [], ["FRM-Editor-Sugerencias", "FRM-Respuesta-Cadena"],
+         "«Cuándo lo ofrece el asistente» en el editor y qué otro formulario sugerir después de una respuesta, con los datos que pasan. Cada respuesta recuerda de dónde vino."),
+        ("frm-faltan", "Formularios que faltan", "/org/formularios/faltan", "no", "—", ["FRM-Faltan"], ["M-FRM-Faltan"], [],
+         "Lo que alguien quiso registrar y no tenía formulario, agrupado por tema. Se crea el formulario o se descarta el pedido."),
         ("frm-catalogos", "Catálogos", "Formularios › Catálogos", "no", "13", ["FRM-Catalogos"], ["M-FRM-Catalogos"], ["FRM-Catalogo-Nuevo"],
          "Las listas de opciones que comparten los formularios: escritas a mano o tomadas de los miembros con filtros, y si se pueden usar."),
         ("frm-catalogo", "Un catálogo escrito a mano", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo"], ["M-FRM-Catalogo"], [],
          "Una sola pantalla: el catálogo, sus opciones que se abren en el lugar (texto, código y detalle), quién lo usa y cómo lo ve el empleado. Se ordenan y se dan de baja sin borrarse."),
-        ("frm-catalogo-filtros", "Un catálogo con filtros", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo-Filtros"], ["M-FRM-Catalogo-Filtros"], [],
+        ("frm-catalogo-filtros", "Un catálogo con filtros", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo-Filtros"], ["M-FRM-Catalogo-Filtros"], ["FRM-Catalogo-Propuesta"],
          "Las condiciones sobre los miembros y «Como si lo recibiera», para probar qué opciones le llegan a una persona. Con más de 200 avisa que no se va a poder mandar."),
         ("frm-biblioteca", "Biblioteca de plantillas", "Formularios › Nuevo formulario › Desde una plantilla", "no", "17", ["FRM-Biblioteca"], ["M-FRM-Biblioteca"],
          ["FRM-Plantilla", "M-FRM-Plantilla", "FRM-Plantilla-Usar"],

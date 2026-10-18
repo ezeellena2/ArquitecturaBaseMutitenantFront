@@ -1,0 +1,73 @@
+{
+  "id": "el-asistente-en-el-chat",
+  "titulo": "El asistente atiende un chat",
+  "etapa": "Asistente de formularios",
+  "orden": 10,
+  "resumen": "Lucía pasa la conversación con Tomás al asistente, que le manda la visita prellenada; después toma la atención y usa una sugerencia.",
+  "pasos": [
+    {
+      "tablero": "WA-Chats-Asistente",
+      "tweaks": {
+        "estado": "Menú del chat"
+      },
+      "resaltar": ".f-menu .f-mi:has-text(\"Pasar a modo Asistente\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Pasa la conversación al asistente",
+      "texto": "Desde el ⋮ de la conversación, con el permiso de administrar WhatsApp. Solo en Internos, con empleados.",
+      "avanzar": "Tocá «Pasar a modo Asistente».",
+      "ruta": "WhatsApp › Chats › Internos",
+      "accion": "Elige el modo Asistente."
+    },
+    {
+      "tablero": "WA-Chats-Asistente",
+      "tweaks": {
+        "estado": "Pasar a modo Asistente"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Pasar a Asistente\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Confirma",
+      "texto": "El asistente reconoce pedidos y manda formularios prellenados. Nunca guarda una respuesta solo.",
+      "avanzar": "Tocá «Pasar a Asistente».",
+      "ruta": "WhatsApp › Chats › Internos",
+      "accion": "Confirma el modo."
+    },
+    {
+      "tablero": "WA-Chats-Asistente",
+      "tweaks": {
+        "estado": "Modo Asistente"
+      },
+      "resaltar": ".w-escr button.cb-pri:has-text(\"Tomar atención manual\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "El asistente manda la visita",
+      "texto": "Reconoce la visita en el mensaje de Tomás y le manda el formulario prellenado, con por qué lo mandó. Tomás revisa y confirma.",
+      "avanzar": "Tocá «Tomar atención manual».",
+      "ruta": "WhatsApp › Chats › Internos",
+      "accion": "Toma la atención manual."
+    },
+    {
+      "tablero": "WA-Chats-Sugerencia",
+      "tweaks": {
+        "estado": "Sugerencia"
+      },
+      "resaltar": ".as-sug button.cb-pri:has-text(\"Revisar y enviar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "En atención manual, sugiere",
+      "texto": "El asistente no manda nada: sugiere qué formulario mandar y con qué datos.",
+      "avanzar": "Tocá «Revisar y enviar».",
+      "ruta": "WhatsApp › Chats › Internos",
+      "accion": "Revisa la sugerencia."
+    },
+    {
+      "tablero": "WA-Chats-Sugerencia",
+      "tweaks": {
+        "estado": "Revisar y enviar"
+      },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Decide qué datos van",
+      "texto": "El diálogo de siempre, con los datos prellenados para destildar. Lo manda Lucía.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "WhatsApp › Chats › Internos",
+      "accion": "Manda el formulario."
+    }
+  ]
+}
