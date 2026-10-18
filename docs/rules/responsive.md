@@ -8,7 +8,7 @@ Las pestañas copian la distribución móvil del tablero: `PageTabs.phoneColumns
 | Pieza | ≥ 1024 (computadora) | 768–1023 (tablet) | < 768 (teléfono) |
 |---|---|---|---|
 | Menú lateral y barra de arriba | menú fijo y colapsable; migas y tu menú | menú colapsado a íconos | no hay: arriba va la barra de la app con el título (`AppBar`) y abajo, la barra con «Inicio» y «Más» (`BottomNav`); «Más» (`/mas`) reúne perfiles, Administración, Mi cuenta y Salir |
-| `Page` | ícono, título, segunda línea y hasta 3 botones | igual | título en la barra, con «‹» si es interna y el camino o el estado debajo (`phoneSubtitle`); el ⋮ en la barra; crear es un «+» flotante (`fab`); guardar va fijo abajo; el cuerpo, con margen, de borde a borde o gris (`phoneBody`) |
+| `Page` | ícono, título, segunda línea y hasta 3 botones | igual | título en la barra, con «‹» si es interna y el camino o el estado debajo (`phoneSubtitle`); el ⋮ en la barra; crear es un «+» flotante (`fab`); guardar va fijo abajo; el cuerpo, con margen, de borde a borde o gris (`phoneBody`); un chat, del alto de la pantalla, con el hilo que se desplaza adentro y la caja de escribir abajo (`phoneBody="chat"`, M-Asistente-*) |
 | `FilterBar` | buscador y filtros en su tarjeta | igual | la lupa y el filtro son íconos de la barra; el filtro abre una hoja con las opciones y su conteo |
 | `DataTable` | todas las columnas | sin las `priority: "low"` | la fila de lista de la pantalla (`mobileRow`, con `ListRow`): de borde a borde, hasta tres líneas, el ⋮ solo si hay acciones; el paginado es «Cargar más» |
 | `RowActions` | el ⋮ abre su menú | igual | el ⋮ abre una hoja desde abajo con el dato de la fila de título (`title`) y sin ✕; las de peligro, al final, en rojo y después de una franja |

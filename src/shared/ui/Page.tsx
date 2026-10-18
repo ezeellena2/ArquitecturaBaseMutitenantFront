@@ -73,8 +73,9 @@ interface PageProps {
   phoneSubtitle?: ReactNode;
   /** En el teléfono, crear algo nuevo es un «+» flotante en lugar de la acción principal de la banda. */
   fab?: { label: string; onClick?: () => void; to?: string };
-  /** En el teléfono: `padded` con margen de 20, `flush` para listas de borde a borde, `gray` para grupos de ajustes. */
-  phoneBody?: "padded" | "flush" | "gray";
+  /** En el teléfono: `padded` con margen de 20, `flush` para listas de borde a borde, `gray` para grupos de ajustes y
+   * `chat` para un chat de borde a borde, del alto de la pantalla: lo que lleva se desplaza adentro (el hilo). */
+  phoneBody?: "padded" | "flush" | "gray" | "chat";
 }
 
 const phoneBodyClasses = {
@@ -82,6 +83,9 @@ const phoneBodyClasses = {
   padded: "flex flex-1 flex-col gap-3.5 px-5 pt-1 pb-6 text-[15px]",
   flush: "flex flex-1 flex-col text-[15px]",
   gray: "flex flex-1 flex-col pb-6 text-[15px]",
+  // M-Asistente-* (.ap-cuerpo): el alto que deja la barra, sin que lo estire lo que lleva; el hilo se desplaza adentro
+  // (.as-tcuerpo) y la caja de escribir queda abajo (.as-tpie).
+  chat: "flex min-h-0 flex-1 flex-col overflow-hidden text-[15px]",
 } as const;
 
 // Tableros M-* (.ap-txt): una acción en texto petróleo a la derecha de la barra.
@@ -169,8 +173,10 @@ export function Page({
   if (chrome.phone) {
     const back = backTo ?? chrome.parent ?? undefined;
     // La caja mide al menos el alto del marco y crece con lo que lleva: es hija flex del `main` que se desplaza y, si se
-    // encogiera a su alto, la barra (`sticky`, que no sale de su caja) se iría con el scroll en una pantalla larga.
-    return withTabs(<div className={cn("flex min-h-full shrink-0 flex-col", phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--lado-activo)]")}>
+    // encogiera a su alto, la barra (`sticky`, que no sale de su caja) se iría con el scroll en una pantalla larga. Un
+    // chat mide justo el alto del marco: el `main` no se desplaza, la barra queda arriba y la caja de escribir, abajo.
+    return withTabs(<div className={cn("flex flex-col", phoneBody === "chat" ? "min-h-0 flex-1" : "min-h-full shrink-0",
+      phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--lado-activo)]")}>
       <AppBar title={title} back={back} subtitle={phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
         leading={<div ref={setLeadingTools} className="flex items-center empty:hidden" />}
         actions={<>

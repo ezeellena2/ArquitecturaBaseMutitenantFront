@@ -350,6 +350,26 @@ describe("interfaz del asistente", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Conversaciones" })).toHaveFocus());
   });
 
+  // M-Asistente-Org, -Personal y -Plat (.as-tcuerpo y .as-tpie): en el teléfono, el hilo se desplaza solo y la caja de
+  // escribir queda abajo, afuera del hilo. Cada caja entre la pantalla y el hilo se deja achicar (min-h-0): si una creciera
+  // con los mensajes, se desplazaría el `main` del marco, la caja quedaría fuera de la vista y el SDK no bajaría al último.
+  it("en el teléfono, el hilo se desplaza adentro y la caja de escribir queda abajo", async () => {
+    const app = setup(state, true);
+    app.changeDetail({ ...detail(), messages: { items: [message("u", "user", "Cuántos usuarios hay"), message("a", "assistant", "Hay 12")], hasMore: false } });
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    await app.user.click(screen.getByRole("button", { name: "Conversaciones" }));
+    await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
+    const viewport = (await screen.findByRole("group", { name: "Asistente" })).firstElementChild!;
+    expect(await within(viewport as HTMLElement).findByText("Hay 12")).toBeVisible();
+
+    const page = screen.getByRole("heading", { level: 1, name: "Asistente" }).closest("header")!.parentElement!;
+    expect(viewport).toHaveClass("overflow-auto");
+    expect(viewport).not.toContainElement(screen.getByRole("textbox", { name: "Tu consulta" }));
+    for (let box = viewport; box !== page; box = box.parentElement!) expect(box).toHaveClass("min-h-0");
+    expect(page).toHaveClass("min-h-0", "flex-1");
+    expect(page).not.toHaveClass("min-h-full");
+  });
+
   it("crear tarde después de Nueva conversación no envía ni vuelve a seleccionar", async () => {
     const app = setup();
     let release!: () => void;

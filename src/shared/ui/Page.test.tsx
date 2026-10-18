@@ -295,6 +295,21 @@ describe("Page", () => {
       expect(bar?.parentElement).toHaveClass("min-h-full", "shrink-0");
     });
 
+    // Tableros M-Asistente-* (.ap-cuerpo, .as-tcuerpo y .as-tpie): en un chat, la caja mide justo el alto del marco y el
+    // cuerpo no deja que lo que lleva la estire. Así el hilo se desplaza adentro y la caja de escribir queda abajo, sobre
+    // la barra de abajo. Si la caja creciera con el hilo, se desplazaría el `main` y la caja de escribir saldría de la vista.
+    it("en el teléfono, un chat mide el alto del marco y lo que lleva se desplaza adentro", () => {
+      renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+        <MemoryRouter><Page title="Asistente" phoneBody="chat"><p>{"el hilo"}</p></Page></MemoryRouter>
+      </AppChromeProvider>);
+
+      const page = screen.getByRole("heading", { level: 1, name: "Asistente" }).closest("header")?.parentElement;
+      expect(page).toHaveClass("flex", "min-h-0", "flex-1", "flex-col");
+      expect(page).not.toHaveClass("min-h-full");
+      expect(page).not.toHaveClass("shrink-0");
+      expect(screen.getByText("el hilo").parentElement).toHaveClass("flex", "min-h-0", "flex-1", "flex-col", "overflow-hidden");
+    });
+
     // M-Avisos (.ap-cuerpo, «Alguien cambió esto»): debajo del cartel, el cuerpo arranca a 14.
     it("en el teléfono, con un cartel arriba, el cuerpo con margen arranca a 14", () => {
       renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
