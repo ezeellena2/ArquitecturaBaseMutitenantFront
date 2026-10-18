@@ -570,6 +570,7 @@ CSS_TPL = """.ap-fila .l1 .hr { float: right; font-size: 13px; font-weight: 400;
 .tr-fotos .r-th { width: 100%; height: 150px; border-radius: 10px; }
 .tr-fotos span.f { display: flex; flex-direction: column; gap: 6px; font-size: 14px; } .tr-fotos small { color: var(--t3); font-size: 12.5px; }
 .tr-scroll { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; }
+.tr-scroll > * { flex-shrink: 0; }
 .t-toast { position: absolute; left: 12px; right: 12px; bottom: 34px; z-index: 40; display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #fff; border: 1px solid var(--borde); border-radius: 12px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); font-size: 15px; }
 .t-toast .ok { color: oklch(0.55 0.13 155); display: inline-flex; }
 .ap-hoja .ex-arch { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--t2); }

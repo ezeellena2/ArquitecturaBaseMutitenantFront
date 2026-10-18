@@ -433,6 +433,14 @@ DECISIONES = {
         ("Una respuesta (D2)", "", "Al costado de la planilla: el número, ↑ ↓ y ✕, con los atajos en el tooltip y sin línea de ayuda; «Abrir conversación»; Recibida con quién la respondió; pestañas Respuesta y Fotos. En el teléfono, a pantalla completa con «5 de 24».", "Dibujada"),
         ("Exportar", "", "Botón en la banda, solo con el permiso. El diálogo dice cuántas y con qué filtros; Todas las preguntas o Solo las columnas visibles; lo de los archivos en ⓘ. Con más de 10.000, Exportar se apaga y pide acotar.", "Dibujada"),
     ],
+    "E16 · Reglas, aprobación, PDF y avisos · La Guía · 18/10": [
+        ("Cuando llega una respuesta", "", "Sección del editor, debajo de las preguntas, con su propio «Guardar reglas» y el historial a la derecha. Cada regla en palabras (Cuando, Si, Hacer) con ⋮; se edita en el lugar. Que se guardan aparte va en ⓘ.", "Dibujada"),
+        ("Diseño del PDF", "", "Página en dos columnas, con «Descartar» y «Guardar diseño» en la banda y la vista previa en Español o English. Si falta el inglés, la vista previa sale en español y lo avisa.", "Dibujada"),
+        ("Por aprobar", "", "En el panel de Formularios, con su cantidad, y en «Para resolver» del inicio. «Ver: para mí ▾» en lugar del segmentado y «Formulario ▾»; de la más vieja a la más nueva. Sin permiso de ver respuestas, se decide en un diálogo sin los datos.", "Dibujada"),
+        ("Decidir", "", "En el detalle, Aprobar y Rechazar van en el momento «Por aprobar»; rechazar pide un motivo de hasta 500. La respuesta propia queda apagada con ⓘ; si otra persona decidió antes, avisa y se actualiza. En el teléfono, los botones van fijos abajo.", "Dibujada"),
+        ("Actividad y PDF", "", "Pestañas del detalle: qué hizo cada regla, con su estado (Hecho, Leído, Entregado, No se pudo, Sin confirmar), Reintentar y Consultar, y «Resolver el envío». El PDF es una copia fija, con Ver y Descargar.", "Dibujada"),
+        ("Avisos en el chat", "", "Burbuja «Automático» con la tarjeta «Acción del formulario» (aviso o documento). Fuera de las 24 horas queda «No se pudo» (decisión 26).", "Dibujada"),
+    ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
     ],

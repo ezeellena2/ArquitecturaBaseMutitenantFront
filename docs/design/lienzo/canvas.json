@@ -2185,7 +2185,7 @@
       "x": 3040,
       "y": 3326,
       "w": 1440,
-      "h": 975,
+      "h": 1101,
       "title": "Índice · Diseña formularios · tocá Play y elegí una pantalla",
       "page": "mapa",
       "is_interactive": true
@@ -2277,6 +2277,87 @@
       "w": 390,
       "h": 844,
       "title": "Formularios · una respuesta · teléfono",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "FRM-Editor-Reglas.dc.html": {
+      "x": 0,
+      "y": 10240,
+      "w": 1440,
+      "h": 1400,
+      "title": "Formularios · editor · cuando llega una respuesta",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "FRM-Pdf.dc.html": {
+      "x": 1520,
+      "y": 10240,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · diseño del PDF",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "FRM-Por-Aprobar.dc.html": {
+      "x": 3040,
+      "y": 10240,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · por aprobar",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "FRM-Respuesta-Aprobacion.dc.html": {
+      "x": 4560,
+      "y": 10240,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · una respuesta con aprobación, actividad y PDF",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "WA-Chats-Avisos.dc.html": {
+      "x": 1520,
+      "y": 11220,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · avisos automáticos de un formulario",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "M-FRM-Reglas.dc.html": {
+      "x": 0,
+      "y": 11760,
+      "w": 390,
+      "h": 844,
+      "title": "Formularios · reglas · teléfono",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "M-FRM-Por-Aprobar.dc.html": {
+      "x": 3040,
+      "y": 11220,
+      "w": 390,
+      "h": 844,
+      "title": "Formularios · por aprobar · teléfono",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "M-FRM-Respuesta-Aprobacion.dc.html": {
+      "x": 3510,
+      "y": 11220,
+      "w": 390,
+      "h": 844,
+      "title": "Formularios · una respuesta con aprobación · teléfono",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "M-WA-Conversacion-Avisos.dc.html": {
+      "x": 470,
+      "y": 11760,
+      "w": 390,
+      "h": 844,
+      "title": "WhatsApp · avisos automáticos · teléfono",
       "page": "formularios",
       "is_interactive": true
     }
@@ -2708,7 +2789,16 @@
     "FRM-Respuesta.dc.html",
     "FRM-Respuestas-Exportar.dc.html",
     "M-FRM-Respuestas.dc.html",
-    "M-FRM-Respuesta.dc.html"
+    "M-FRM-Respuesta.dc.html",
+    "FRM-Editor-Reglas.dc.html",
+    "FRM-Pdf.dc.html",
+    "FRM-Por-Aprobar.dc.html",
+    "FRM-Respuesta-Aprobacion.dc.html",
+    "WA-Chats-Avisos.dc.html",
+    "M-FRM-Reglas.dc.html",
+    "M-FRM-Por-Aprobar.dc.html",
+    "M-FRM-Respuesta-Aprobacion.dc.html",
+    "M-WA-Conversacion-Avisos.dc.html"
   ],
   "pages": [
     {
