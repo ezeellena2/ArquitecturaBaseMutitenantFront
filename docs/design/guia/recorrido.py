@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 130 · 18 de octubre de 2026"
+VERSION = "versión 131 · 18 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -124,6 +124,10 @@ CAPITULOS = [
          "La comprobación antes de publicar (también los más de 10 archivos) y cómo termina: los pasos mientras WhatsApp la revisa, el rechazo con la pregunta marcada y la vista oficial."),
         ("frm-chat", "Enviar un formulario", "WhatsApp › Chats › Internos", "no", "12 y 14", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta", "WA-Chats-Visor", "M-WA-Chats-Visor"],
          "En un chat con un empleado: elegir el formulario y el mensaje, y la respuesta que vuelve al chat guardada con su número, con sus fotos y documentos, que se abren en el visor. En el teléfono, desde el ⋮."),
+        ("frm-respuestas", "Respuestas", "/org/formularios/:id/respuestas", "no", "15", ["FRM-Respuestas"], ["M-FRM-Respuestas"], ["FRM-Respuestas-Filtros", "FRM-Respuestas-Exportar"],
+         "La planilla de un formulario publicado: una fila por respuesta y una columna por pregunta, con «Empresa ▾», «Más filtros», «Columnas» y exportar a Excel."),
+        ("frm-respuesta", "Una respuesta", "/org/formularios/:id/respuestas?respuesta=VIS-000126", "no", "15", ["FRM-Respuesta"], ["M-FRM-Respuesta"], [],
+         "Se abre al costado de la planilla, con ↑ ↓ para pasar a la siguiente: cuándo llegó, quién la respondió, sus respuestas y sus fotos. En el teléfono, a pantalla completa."),
         ("frm-catalogos", "Catálogos", "Formularios › Catálogos", "no", "13", ["FRM-Catalogos"], ["M-FRM-Catalogos"], ["FRM-Catalogo-Nuevo"],
          "Las listas de opciones que comparten los formularios: escritas a mano o tomadas de los miembros con filtros, y si se pueden usar."),
         ("frm-catalogo", "Un catálogo escrito a mano", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo"], ["M-FRM-Catalogo"], [],

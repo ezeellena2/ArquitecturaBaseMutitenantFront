@@ -1,0 +1,86 @@
+{
+  "id": "revisar-las-respuestas",
+  "titulo": "Revisar las respuestas y exportarlas",
+  "etapa": "Etapa 15 · Planilla",
+  "orden": 10,
+  "resumen": "Lucía abre la planilla de Visita a cliente, filtra las ventas nuevas de Delta S.A., revisa una respuesta al costado y exporta lo filtrado a Excel.",
+  "pasos": [
+    {
+      "tablero": "FRM-Respuestas",
+      "tweaks": {
+        "estado": "Planilla"
+      },
+      "resaltar": "a.w-pil:has-text(\"Más filtros\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Abre las respuestas",
+      "texto": "Cada formulario publicado tiene su planilla: una fila por respuesta y una columna por pregunta, con quién la cargó y sus empresas.",
+      "avanzar": "Tocá «Más filtros».",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Toca «Más filtros»."
+    },
+    {
+      "tablero": "FRM-Respuestas-Filtros",
+      "tweaks": {
+        "estado": "Con filtros elegidos"
+      },
+      "resaltar": "a.cb-pri:has-text(\"Ver 4 respuestas\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Filtra por pregunta",
+      "texto": "Cada opción dice cuántas respuestas tiene. Elige «Venta nueva» y un monto mínimo, y se aplica todo junto.",
+      "avanzar": "Tocá «Ver 4 respuestas».",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Aplica los filtros."
+    },
+    {
+      "tablero": "FRM-Respuestas",
+      "tweaks": {
+        "estado": "Con filtros"
+      },
+      "resaltar": "a.pl-num:has-text(\"VIS-000126\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Quedan las que busca",
+      "texto": "Lo elegido queda escrito en cada filtro, con «Limpiar filtros» al lado.",
+      "avanzar": "Tocá VIS-000126.",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Abre VIS-000126."
+    },
+    {
+      "tablero": "FRM-Respuesta",
+      "tweaks": {
+        "estado": "Respuesta"
+      },
+      "resaltar": ".d2-h .nv[aria-label=\"Respuesta siguiente\"]",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "La ve al costado",
+      "texto": "La respuesta se abre sin salir de la planilla, con las preguntas de su versión, las fotos y el remito. Con ↑ y ↓ pasa a la anterior o la siguiente.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000126",
+      "accion": "Revisa la respuesta."
+    },
+    {
+      "tablero": "FRM-Respuestas-Exportar",
+      "tweaks": {
+        "estado": "Exportar"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Exportar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Exporta lo filtrado",
+      "texto": "Un Excel con las 4 respuestas que coinciden con los filtros, con todas las preguntas o solo las columnas visibles.",
+      "avanzar": "Tocá «Exportar».",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Toca «Exportar»."
+    },
+    {
+      "tablero": "FRM-Respuestas-Exportar",
+      "tweaks": {
+        "estado": "Exportado"
+      },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Se descarga el archivo",
+      "texto": "El archivo lleva el nombre del formulario y la fecha. Las fotos no van adentro: cada celda dice cuántas hay y sus nombres.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Descarga el Excel."
+    }
+  ]
+}
