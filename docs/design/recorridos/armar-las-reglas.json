@@ -1,0 +1,86 @@
+{
+  "id": "armar-las-reglas",
+  "titulo": "Armar las reglas y el PDF",
+  "etapa": "Etapa 16 · Reglas",
+  "orden": 20,
+  "resumen": "Lucía cambia una regla de Visita a cliente, la guarda y revisa el diseño del PDF que se arma al aprobar.",
+  "pasos": [
+    {
+      "tablero": "FRM-Editor-Reglas",
+      "tweaks": {
+        "estado": "Reglas"
+      },
+      "resaltar": "button.ib[aria-label=\"Acciones de la regla 3\"]",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Ve las reglas en palabras",
+      "texto": "Debajo de las preguntas del editor: cuándo, si y qué hacer en orden. Se guardan aparte del formulario.",
+      "avanzar": "Tocá ⋮ de la regla 3 y «Editar».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Edita la regla 3."
+    },
+    {
+      "tablero": "FRM-Editor-Reglas",
+      "tweaks": {
+        "estado": "Editar una regla"
+      },
+      "resaltar": ".rg-listo button",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Cambia la regla",
+      "texto": "Se abre en el lugar: cuándo, la condición sobre el monto y el aviso a las personas con el rol Dueño.",
+      "avanzar": "Tocá «Listo».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Termina la regla."
+    },
+    {
+      "tablero": "FRM-Editor-Reglas",
+      "tweaks": {
+        "estado": "Cambios sin guardar"
+      },
+      "resaltar": ".rg .f-cab button.cb-pri",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Guarda las reglas",
+      "texto": "«Guardar reglas» crea una revisión nueva. Lo que ya pasó con cada respuesta no cambia.",
+      "avanzar": "Tocá «Guardar reglas».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Guarda las reglas."
+    },
+    {
+      "tablero": "FRM-Editor-Reglas",
+      "tweaks": {
+        "estado": "Reglas guardadas"
+      },
+      "resaltar": "a.lnk:has-text(\"Ver el diseño\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Queda la revisión 4",
+      "texto": "El historial suma la revisión nueva. La regla que arma el PDF lleva a su diseño.",
+      "avanzar": "Tocá «Ver el diseño».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Abre el diseño del PDF."
+    },
+    {
+      "tablero": "FRM-Pdf",
+      "tweaks": {
+        "estado": "Diseño"
+      },
+      "resaltar": ".ab-seg span:has-text(\"English\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Revisa el comprobante",
+      "texto": "Qué preguntas incluye, las fotos chicas, quién la aprobó y el pie. La vista previa usa una respuesta de ejemplo.",
+      "avanzar": "Tocá «English».",
+      "ruta": "/org/formularios/:id/pdf",
+      "accion": "Mira la vista previa en inglés."
+    },
+    {
+      "tablero": "FRM-Pdf",
+      "tweaks": {
+        "estado": "Vista previa en inglés"
+      },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Sale en el idioma de cada uno",
+      "texto": "El PDF real sale en el idioma de quien lo recibe; si falta una traducción, sale entero en español.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/:id/pdf",
+      "accion": "Ve la vista previa."
+    }
+  ]
+}

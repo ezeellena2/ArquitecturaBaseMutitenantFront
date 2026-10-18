@@ -1,0 +1,60 @@
+{
+  "id": "aprobar-o-rechazar",
+  "titulo": "Aprobar o rechazar una respuesta",
+  "etapa": "Etapa 16 · Reglas",
+  "orden": 10,
+  "resumen": "Lucía entra a «Por aprobar», revisa una visita al costado de la planilla y la rechaza con un motivo.",
+  "pasos": [
+    {
+      "tablero": "FRM-Por-Aprobar",
+      "tweaks": {
+        "estado": "Para mí"
+      },
+      "resaltar": "a.pl-num:has-text(\"VIS-000130\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Abre «Por aprobar»",
+      "texto": "Las respuestas que esperan su decisión, de la más vieja a la más nueva. También aparecen en «Para resolver» del inicio.",
+      "avanzar": "Tocá VIS-000130.",
+      "ruta": "/org/formularios/por-aprobar",
+      "accion": "Abre VIS-000130."
+    },
+    {
+      "tablero": "FRM-Respuesta-Aprobacion",
+      "tweaks": {
+        "estado": "Por aprobar"
+      },
+      "resaltar": ".d2-mom.esp a.cb-sec:has-text(\"Rechazar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Revisa la respuesta",
+      "texto": "Se abre al costado de la planilla, con sus respuestas y sus fotos. Aprobar y Rechazar van en el momento «Por aprobar».",
+      "avanzar": "Tocá «Rechazar».",
+      "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000130",
+      "accion": "Toca «Rechazar»."
+    },
+    {
+      "tablero": "FRM-Respuesta-Aprobacion",
+      "tweaks": {
+        "estado": "Rechazar"
+      },
+      "resaltar": ".w-dlg button.cb-pel:has-text(\"Rechazar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Rechaza con un motivo",
+      "texto": "El motivo es obligatorio y queda en el historial; la regla de rechazo se lo manda a quien la cargó.",
+      "avanzar": "Tocá «Rechazar».",
+      "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000130",
+      "accion": "Rechaza la respuesta."
+    },
+    {
+      "tablero": "FRM-Respuesta-Aprobacion",
+      "tweaks": {
+        "estado": "Actividad"
+      },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo que pasó después",
+      "texto": "En una respuesta aprobada, «Actividad» cuenta qué hizo cada regla: el aviso, el PDF y el mensaje, cada uno con su estado.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000126",
+      "accion": "Ve la actividad."
+    }
+  ]
+}
