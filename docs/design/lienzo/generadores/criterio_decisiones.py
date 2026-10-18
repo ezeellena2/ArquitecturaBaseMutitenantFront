@@ -441,6 +441,16 @@ DECISIONES = {
         ("Actividad y PDF", "", "Pestañas del detalle: qué hizo cada regla, con su estado (Hecho, Leído, Entregado, No se pudo, Sin confirmar), Reintentar y Consultar, y «Resolver el envío». El PDF es una copia fija, con Ver y Descargar.", "Dibujada"),
         ("Avisos en el chat", "", "Burbuja «Automático» con la tarjeta «Acción del formulario» (aviso o documento). Fuera de las 24 horas queda «No se pudo» (decisión 26).", "Dibujada"),
     ],
+    "El asistente de formularios · La Guía · 18/10": [
+        ("El modo de la conversación", "", "En la cabecera, «Asistente» o «Atención manual», y la marca en la lista. Se pasa a Asistente desde el ⋮ con una confirmación, solo con «Administrar WhatsApp» y solo en Internos (decisiones 28 y 29). Mientras atiende, en lugar del compositor va «Tomar atención manual».", "Dibujada"),
+        ("Lo que manda el asistente", "", "Burbuja «Asistente» con el formulario prellenado y una caja punteada «Por qué lo mandó». Las reglas siguen como «Automático». Nunca guarda: confirma la persona.", "Dibujada"),
+        ("En atención manual", "", "Arriba del compositor, «El asistente sugiere mandarle…» con «No, gracias» y «Revisar y enviar», que abre el diálogo de envío con los prellenados para destildar.", "Dibujada"),
+        ("Audios", "", "Burbuja de audio con la transcripción debajo; pasando a texto, sin poder pasarlo (queda para un operador) y borrado a los 90 días (decisión 27).", "Dibujada"),
+        ("Catálogo propuesto", "", "La misma pantalla del catálogo con filtros, marcada «Propuesta del asistente», con «Descartar propuesta» y «Aprobar y activar». No se usa hasta que alguien la apruebe.", "Dibujada"),
+        ("Formularios que faltan", "", "Entrada propia en el panel de Formularios, con su cantidad: temas con pedidos, personas y último pedido, sin nombres ni mensajes; ⋮ con «Crear formulario» y «Descartar»; «Estado ▾» en lugar del segmentado.", "Dibujada"),
+        ("En el editor", "", "«Cuándo lo ofrece el asistente» en «El formulario», a todo el ancho. «Qué sugerir después» debajo de las reglas, con su guardado: el formulario, La IA decide o Preguntar siempre, el «cuándo» y los datos que pasan, del mismo tipo.", "Dibujada"),
+        ("De dónde vino", "", "En el detalle, «La mandó el asistente» con lo que propuso y lo que cambió la persona, y «La cadena» con la respuesta que sugirió la siguiente.", "Dibujada"),
+    ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
     ],

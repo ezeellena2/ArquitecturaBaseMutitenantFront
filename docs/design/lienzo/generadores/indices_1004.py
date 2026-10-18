@@ -137,7 +137,7 @@ def alto_area(pantallas):
 
 
 # Altos medidos con Playwright (fondo del contenido + 56); si falta uno, se usa la estimación.
-ALTOS = {'Indice': 1195, 'Indice-administra': 786, 'Indice-asistente': 488, 'Indice-empresa': 416, 'Indice-entra': 547, 'Indice-equipo': 547, 'Indice-formularios': 1101, 'Indice-llega': 547, 'Indice-manda': 437, 'Indice-persona': 560, 'Indice-plataforma': 971, 'Indice-whatsapp': 1002}
+ALTOS = {'Indice': 1195, 'Indice-administra': 786, 'Indice-asistente': 488, 'Indice-empresa': 416, 'Indice-entra': 547, 'Indice-equipo': 547, 'Indice-formularios': 1288, 'Indice-llega': 547, 'Indice-manda': 437, 'Indice-persona': 560, 'Indice-plataforma': 971, 'Indice-whatsapp': 1002}
 
 
 def pagina(titulo, cuerpo, alto):

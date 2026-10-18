@@ -2185,7 +2185,7 @@
       "x": 3040,
       "y": 3326,
       "w": 1440,
-      "h": 1101,
+      "h": 1288,
       "title": "Índice · Diseña formularios · tocá Play y elegí una pantalla",
       "page": "mapa",
       "is_interactive": true
@@ -2358,6 +2358,96 @@
       "w": 390,
       "h": 844,
       "title": "WhatsApp · avisos automáticos · teléfono",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "WA-Chats-Asistente.dc.html": {
+      "x": 0,
+      "y": 12800,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · el asistente atiende",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "WA-Chats-Sugerencia.dc.html": {
+      "x": 1520,
+      "y": 12800,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · el asistente sugiere",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "WA-Chats-Audio.dc.html": {
+      "x": 3040,
+      "y": 12800,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · audios",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "FRM-Catalogo-Propuesta.dc.html": {
+      "x": 4560,
+      "y": 12800,
+      "w": 1440,
+      "h": 1000,
+      "title": "Formularios · catálogo propuesto por el asistente",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "FRM-Faltan.dc.html": {
+      "x": 0,
+      "y": 13880,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · formularios que faltan",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "FRM-Editor-Asistente.dc.html": {
+      "x": 1520,
+      "y": 13880,
+      "w": 1440,
+      "h": 1400,
+      "title": "Formularios · editor · cuándo lo ofrece el asistente",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "FRM-Editor-Sugerencias.dc.html": {
+      "x": 3040,
+      "y": 13880,
+      "w": 1440,
+      "h": 1400,
+      "title": "Formularios · editor · qué sugerir después",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "FRM-Respuesta-Cadena.dc.html": {
+      "x": 4560,
+      "y": 13880,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · una respuesta · de dónde vino",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "M-WA-Conversacion-Asistente.dc.html": {
+      "x": 0,
+      "y": 14880,
+      "w": 390,
+      "h": 844,
+      "title": "WhatsApp · el asistente · teléfono",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "M-FRM-Faltan.dc.html": {
+      "x": 470,
+      "y": 14880,
+      "w": 390,
+      "h": 844,
+      "title": "Formularios · formularios que faltan · teléfono",
       "page": "formularios",
       "is_interactive": true
     }
@@ -2798,7 +2888,17 @@
     "M-FRM-Reglas.dc.html",
     "M-FRM-Por-Aprobar.dc.html",
     "M-FRM-Respuesta-Aprobacion.dc.html",
-    "M-WA-Conversacion-Avisos.dc.html"
+    "M-WA-Conversacion-Avisos.dc.html",
+    "WA-Chats-Asistente.dc.html",
+    "WA-Chats-Sugerencia.dc.html",
+    "WA-Chats-Audio.dc.html",
+    "FRM-Catalogo-Propuesta.dc.html",
+    "FRM-Faltan.dc.html",
+    "FRM-Editor-Asistente.dc.html",
+    "FRM-Editor-Sugerencias.dc.html",
+    "FRM-Respuesta-Cadena.dc.html",
+    "M-WA-Conversacion-Asistente.dc.html",
+    "M-FRM-Faltan.dc.html"
   ],
   "pages": [
     {
