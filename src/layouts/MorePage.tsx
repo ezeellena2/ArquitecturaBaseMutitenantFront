@@ -50,7 +50,8 @@ export function MorePage() {
   const subtitle = access === "platform" ? t("navigation.platform")
     : access === "business" ? activeOrganization(user)?.name : t("accessMenu.personal");
 
-  return <div className="flex min-h-full flex-col bg-[var(--s2)]">
+  // Como en Page: la caja no se encoge al alto del marco, así la barra de arriba queda fija hasta el final de «Más».
+  return <div className="flex min-h-full shrink-0 flex-col bg-[var(--s2)]">
     <AppBar title={t("navigation.more")} subtitle={subtitle} />
     <div className="flex items-center gap-3.5 px-5 pt-2 pb-1">
       <Avatar size="profile" initials={avatarInitials} muted={avatarMuted} />

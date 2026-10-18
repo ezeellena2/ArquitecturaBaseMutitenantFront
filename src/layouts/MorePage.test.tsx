@@ -80,6 +80,16 @@ describe("Más en el teléfono", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  // «Criterio · Marco», como Page: con perfiles, Administración y los grupos de los módulos, «Más» pasa el alto del
+  // teléfono. Su caja no se encoge al alto del marco, así la barra de arriba queda fija hasta el final.
+  it("la barra de arriba queda fija aunque «Más» sea más alta que el teléfono", async () => {
+    renderRouteWithProviders("/mas", { as: "business-e6-admin" });
+
+    const bar = (await screen.findByRole("heading", { level: 1, name: "Más" })).closest("header");
+    expect(bar).toHaveClass("sticky", "top-0");
+    expect(bar?.parentElement).toHaveClass("min-h-full", "shrink-0");
+  });
+
   it("en el perfil personal no hay Administración", async () => {
     renderRouteWithProviders("/mas", { as: "consumer-with-organizations" });
 

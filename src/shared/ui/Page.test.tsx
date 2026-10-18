@@ -282,6 +282,19 @@ describe("Page", () => {
       expect(screen.getByText("los datos").parentElement).toHaveClass("gap-3.5", "px-5", "pt-1");
     });
 
+    // Tableros M-* («Criterio · Marco»): la barra de arriba queda fija aunque la pantalla sea más alta que el teléfono, y
+    // debajo de la barra de estado. Es `sticky` y no sale de su caja: si la caja se encoge al alto del marco (un hijo flex
+    // con `min-h-full`), la barra se va con el scroll después de la primera pantalla (Usuarios, Chats, Organización).
+    it("en el teléfono, la barra queda fija arriba en una pantalla larga", () => {
+      renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+        <MemoryRouter><Page title="Usuarios" phoneBody="flush"><p>{"la lista"}</p></Page></MemoryRouter>
+      </AppChromeProvider>);
+
+      const bar = screen.getByRole("heading", { level: 1, name: "Usuarios" }).closest("header");
+      expect(bar).toHaveClass("sticky", "top-0", "box-content", "pt-[env(safe-area-inset-top)]");
+      expect(bar?.parentElement).toHaveClass("min-h-full", "shrink-0");
+    });
+
     // M-Avisos (.ap-cuerpo, «Alguien cambió esto»): debajo del cartel, el cuerpo arranca a 14.
     it("en el teléfono, con un cartel arriba, el cuerpo con margen arranca a 14", () => {
       renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>

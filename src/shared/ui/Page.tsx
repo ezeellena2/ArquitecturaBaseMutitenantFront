@@ -168,7 +168,9 @@ export function Page({
   // llega desde «Más») con el título y el camino; el ⋮ en la barra; crear es un «+» flotante y guardar va fijo abajo.
   if (chrome.phone) {
     const back = backTo ?? chrome.parent ?? undefined;
-    return withTabs(<div className={cn("flex min-h-full flex-col", phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--lado-activo)]")}>
+    // La caja mide al menos el alto del marco y crece con lo que lleva: es hija flex del `main` que se desplaza y, si se
+    // encogiera a su alto, la barra (`sticky`, que no sale de su caja) se iría con el scroll en una pantalla larga.
+    return withTabs(<div className={cn("flex min-h-full shrink-0 flex-col", phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--lado-activo)]")}>
       <AppBar title={title} back={back} subtitle={phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
         leading={<div ref={setLeadingTools} className="flex items-center empty:hidden" />}
         actions={<>
