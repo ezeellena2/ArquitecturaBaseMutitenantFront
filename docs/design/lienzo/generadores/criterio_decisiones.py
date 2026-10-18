@@ -425,6 +425,14 @@ DECISIONES = {
         ("Teléfono", "", "El rol con cambios dice «Cambios sin guardar»; Auditoría dice «Administración»; el error de carga de Usuarios va en un recuadro punteado; el asistente lleva el título a la izquierda y los atajos sin ⚡; «Confirmá que sos vos» siempre con ✕.", "Dibujada"),
         ("El ⋮ de una fila", "", "Abre hacia abajo; sube solo si no hay lugar, en las dos últimas filas de una página llena.", "Dibujada"),
     ],
+    "E15 · La planilla, el detalle y el Excel · La Guía · 18/10": [
+        ("Respuestas en el panel", "", "Un grupo del panel de Formularios, como «Gestión de usuarios»: un enlace por formulario publicado y, con muchos, «Ver todos». Sin el permiso de ver respuestas, el grupo no aparece. En el teléfono, Más › Formularios › Respuestas.", "Dibujada"),
+        ("La planilla", "", "Columnas fijas N°, Recibida, Cargó (con el canal) y Empresas; después una por pregunta, con las retiradas al final. «Sin respuesta» y «—» (no existía en esa versión) en gris. Se desplaza a lo ancho con el N° fijo.", "Dibujada"),
+        ("Filtros", "", "«Buscar en Observaciones» (solo los textos largos), «Empresa ▾» (decisión 24), «Recibida ▾» y «Más filtros» en un panel al costado, con cuántas respuestas hay en cada opción. Lo elegido va en el filtro, sin fila de chips (Criterio · Menús).", "Dibujada"),
+        ("Columnas", "", "«Columnas · 1 oculta ▾» con casillas: lo de la respuesta, las preguntas y las retiradas. Vive en la dirección.", "Dibujada"),
+        ("Una respuesta (D2)", "", "Al costado de la planilla: el número, ↑ ↓ y ✕, con los atajos en el tooltip y sin línea de ayuda; «Abrir conversación»; Recibida con quién la respondió; pestañas Respuesta y Fotos. En el teléfono, a pantalla completa con «5 de 24».", "Dibujada"),
+        ("Exportar", "", "Botón en la banda, solo con el permiso. El diálogo dice cuántas y con qué filtros; Todas las preguntas o Solo las columnas visibles; lo de los archivos en ⓘ. Con más de 10.000, Exportar se apaga y pide acotar.", "Dibujada"),
+    ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
     ],
