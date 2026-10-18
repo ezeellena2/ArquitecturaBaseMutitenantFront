@@ -51,10 +51,10 @@
       },
       "actor": "Lucía · Dueña · web",
       "titulo": "Si salen demasiadas",
-      "texto": "Con más de 200 opciones no se guarda: WhatsApp no acepta más. Hay que ajustar los filtros.",
+      "texto": "Con más de 200 opciones se guarda igual, con el aviso «Más de 200: no se va a poder mandar»: lo que frena es el envío, y la cantidad cambia sola cuando la organización suma gente.",
       "avanzar": "Fin del recorrido.",
       "ruta": "/org/formularios/catalogos",
-      "accion": "Ajusta los filtros."
+      "accion": "Ve el aviso."
     }
   ]
 }

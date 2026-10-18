@@ -52,7 +52,7 @@
       "resaltar": ".w-dlg button.cb-pri:has-text(\"Crear el formulario\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Crea su copia",
-      "texto": "VIS ya lo usa otro formulario, así que propone VIS2. Se abre la ficha del formulario nuevo, en borrador, para revisarlo y publicarlo.",
+      "texto": "VIS ya lo usa otro formulario, así que propone VIS2. Se abre el editor del formulario nuevo, en borrador, para revisarlo y publicarlo.",
       "avanzar": "Fin del recorrido.",
       "ruta": "/org/formularios/biblioteca/:id",
       "accion": "Crea el formulario."

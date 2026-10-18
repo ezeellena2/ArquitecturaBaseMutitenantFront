@@ -34,14 +34,14 @@
     {
       "tablero": "Plat-FRM-Plantilla",
       "tweaks": {
-        "estado": "Preguntas"
+        "estado": "Plantilla"
       },
       "actor": "Martín · Operador · web",
-      "titulo": "Arma las preguntas",
-      "texto": "Es el mismo editor que usan las organizaciones para sus formularios, con la categoría y una descripción.",
+      "titulo": "Arma la plantilla",
+      "texto": "Es el mismo editor que usan las organizaciones: la categoría, el prefijo sugerido, la descripción y las preguntas, con cómo lo ve el empleado.",
       "avanzar": "Siguiente.",
       "ruta": "/plataforma/formularios/:id",
-      "accion": "Ve las preguntas."
+      "accion": "Ve la plantilla."
     },
     {
       "tablero": "Plat-FRM-Plantilla",
