@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { syntheticEmail } from "./e2e-completo-soporte.mjs";
-import { clickForResponse, forceBusinessLogin, requireProblem, runBusinessDependencyCase } from "./e2e-completo-negocio.mjs";
+import { clickForResponse, forceBusinessLogin, requireProblem, runBusinessDependencyCase, assertCompanyStateVisible } from "./e2e-completo-negocio.mjs";
 import { cleanupContinuationSessions } from "./e2e-completo-continuacion.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
 
@@ -54,6 +54,16 @@ export function assertCompanyCyclePreserved(before, after) {
   assert.deepEqual(data(after.company), data(before.company), "El ciclo no pierde datos de la empresa.");
   assert.deepEqual(after.members, before.members, "Reactivar conserva la lista completa de miembros y sus roles.");
   assert.deepEqual(after.member, before.member, "La membresía de organización y sus asignaciones siguen intactas.");
+}
+
+export async function assertCompanyHomeCard(page, company, roleName) {
+  await heading(page, "Tus empresas");
+  const name = new RegExp(company.name.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"), "u");
+  const card = page.getByRole("link", { name });
+  await card.waitFor();
+  assert.equal(await card.getAttribute("href"), `/org/empresas/${company.id}`, "La tarjeta debe abrir la empresa propia.");
+  const text = await card.innerText();
+  assert.ok(text.includes(company.name)); assert.ok(text.includes(roleName), "La tarjeta debe mostrar el rol asignado al miembro.");
 }
 
 const read = async (h, page, route, options) => { const response = await h.api(page, route, options); assert.equal(response.status(), 200, `La lectura ${route} debe responder200.`); return response.json(); };
@@ -124,12 +134,13 @@ async function disableMember(h, page, memberId) {
   assert.equal((await read(h, page, `/api/users/${memberId}`)).state, "Inactive");
 }
 
-async function companyStatus(h, page, company, active) {
+export async function companyStatus(h, page, company, active) {
   await page.getByRole("button", { name: "Más acciones", exact: true }).click();
   const action = page.getByRole("menuitem", { name: active ? "Activar" : "Inactivar", exact: true });
   if (active) await clickForResponse(page, action, `/api/companies/${company.id}/status`, "PUT");
   else { await action.click(); await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/companies/${company.id}/status`, "PUT"); }
-  await page.getByText(active ? "Activa" : "Inactiva", { exact: true }).first().waitFor();
+  await assertCompanyStateVisible(h, page, active ? "Active" : "Inactive");
+  if (h.width === 390) await page.keyboard.press("Escape");
   const result = await read(h, page, `/api/companies/${company.id}`); assert.equal(result.status, active ? "Active" : "Inactive"); return result;
 }
 
@@ -214,21 +225,21 @@ export async function runRoleSupplementCases(h) {
     await run("05", ["01", "03"], async () => {
       const active = assignments.find((item) => item.state === "Active");
       await leave(); live = await h.newPage();
+      capturePage = live;
       live.on("request", (request) => { const url = new URL(request.url()); const token = request.headers().authorization; if (url.origin === h.base.origin && url.pathname.startsWith("/api/") && token?.startsWith("Bearer ")) liveToken = token; });
       const me = await h.login(live, active.email, "business"); activePages.add(live);
       const fixture = { userId: active.userId, tenantId: owner.me.activeTenantId, companyId: company.id };
       assertCompanyOnlyPermissions(me, fixture, true); assert.ok(liveToken); activeToken = liveToken;
       const home = await read(h, live, "/api/home"); assert.equal(home.organization, null); assert.equal(home.companies.length, 1);
       assert.equal(home.companies[0].companyId, company.id); assert.deepEqual(home.companies[0].roles, [active.roleName]);
-      await heading(live, "Tus empresas"); const companies = live.getByRole("region", { name: "Tus empresas", exact: true });
-      const card = companies.getByRole("link").and(companies.locator(`a[href='/org/empresas/${company.id}']`)); await card.waitFor();
-      assert.ok((await card.innerText()).includes(company.name)); assert.ok((await card.innerText()).includes(home.companies[0].roles[0]));
+      await assertCompanyHomeCard(live, company, home.companies[0].roles[0]);
+      capturePage = page;
       const restored = await forceBusinessLogin(h, page, owner.email); currentEmail = owner.email; activePages.add(page); assert.equal(restored.id, owner.me.id);
       await visit(h, page, `/org/usuarios/${active.memberId}`); const accepted = await read(h, page, `/api/users/${active.memberId}`); assert.equal(accepted.state, "Active"); assert.equal(accepted.userId, me.id);
       if (h.width === 390) await page.getByRole("region", { name: "Acceso a la organización", exact: true }).getByRole("button", { name: /^Estado/ }).getByText("Activo", { exact: true }).waitFor();
       else assert.ok((await page.getByRole("combobox", { name: "Estado", exact: true }).innerText()).includes("Activo"));
-      assertCompanyOnlyPermissions(await read(h, live, "/api/me"), fixture, true); assert.equal(liveToken, activeToken);
-      capturePage = live; await assertViewport(live);
+      capturePage = live; assertCompanyOnlyPermissions(await read(h, live, "/api/me"), fixture, true); assert.equal(liveToken, activeToken);
+      await assertViewport(live);
       return "Miembro company-only con token propio: Inicio muestra su empresa/rol y Me sólo company.members.read. La Dueña lo ve Activo en Usuarios; las identidades permanecen separadas.";
     });
     await run("06", ["01", "03", "05"], async () => {
@@ -236,24 +247,29 @@ export async function runRoleSupplementCases(h) {
       const membersRoute = `/api/companies/${company.id}/members/paged?pageSize=100`; const fixture = { userId: active.userId, tenantId: owner.me.activeTenantId, companyId: company.id };
       await visit(h, page, `/org/empresas/${company.id}`); await heading(page, company.name);
       const snapshot = async () => ({ company: await read(h, page, `/api/companies/${company.id}`), members: await read(h, page, membersRoute), member: await read(h, page, memberRoute) });
-      const before = await snapshot(); assertCompanyOnlyPermissions(await read(h, live, "/api/me"), fixture, true);
+      const before = await snapshot(); capturePage = live; assertCompanyOnlyPermissions(await read(h, live, "/api/me"), fixture, true);
       assert.equal((await h.api(live, membersRoute)).status(), 200); assert.equal(liveToken, activeToken);
       let actionFailure;
       try {
+        capturePage = page;
         await companyStatus(h, page, company, false);
+        capturePage = live;
         assertCompanyOnlyPermissions(await read(h, live, "/api/me"), fixture, false);
         const inactiveHome = await read(h, live, "/api/home"); assert.equal(inactiveHome.organization, null); assert.deepEqual(inactiveHome.companies, []);
         await requireProblem(await h.api(live, membersRoute), 403, "Http.Forbidden");
         await requireProblem(await h.api(live, `/api/companies/${company.id}`), 403, "Http.Forbidden"); assert.equal(liveToken, activeToken);
-        await companyStatus(h, page, company, true);
+        capturePage = page; await companyStatus(h, page, company, true);
+        capturePage = live;
         assertCompanyOnlyPermissions(await read(h, live, "/api/me"), fixture, true);
         assert.equal((await h.api(live, membersRoute)).status(), 200); assert.equal((await h.api(live, `/api/companies/${company.id}`)).status(), 200);
         const restoredHome = await read(h, live, "/api/home"); assert.equal(restoredHome.organization, null); assert.deepEqual(restoredHome.companies.map((item) => item.companyId), [company.id]); assert.equal(liveToken, activeToken);
-        assertCompanyCyclePreserved(before, await snapshot()); await assertViewport(page);
+        capturePage = page; assertCompanyCyclePreserved(before, await snapshot()); await assertViewport(page);
       } catch (error) { actionFailure = error; }
       finally {
-        try { if ((await read(h, page, `/api/companies/${company.id}`)).status === "Inactive") { await visit(h, page, `/org/empresas/${company.id}`); await companyStatus(h, page, company, true); } }
+        const actionPage = capturePage; const originalFailure = actionFailure;
+        try { capturePage = page; if ((await read(h, page, `/api/companies/${company.id}`)).status === "Inactive") { await visit(h, page, `/org/empresas/${company.id}`); await companyStatus(h, page, company, true); } }
         catch (error) { actionFailure = actionFailure ? new AggregateError([actionFailure, error], "Fallaron la comprobación y la restauración UI de la empresa.") : error; }
+        finally { if (originalFailure || !actionFailure) capturePage = actionPage; }
       }
       if (actionFailure) throw actionFailure;
       return "Misma identidad/token del miembro: permisos de empresa y GET miembros200→403→200; Inicio API incluye→retira→restaura la empresa. El ciclo UI conserva datos, miembros y asignaciones.";
