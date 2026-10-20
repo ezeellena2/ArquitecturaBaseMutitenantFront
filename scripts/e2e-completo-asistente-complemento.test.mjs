@@ -3,6 +3,40 @@ import test from "node:test";
 import { assistantSupplementDefinitions, assistantSupplementProofGroups, requireProjectedAssistant, requirePrivateAttachmentMetadata, requireGlobalUsage, platformSettingsValues, requirePrivateProblem, assertGlobalSettingsRestored } from "./e2e-completo-asistente-complemento.mjs";
 import * as assistant from "./e2e-completo-asistente-complemento.mjs";
 
+test("Inicio de Administrador acepta el aviso real antes de exigir Tus empresas, sin confundir ese heading temprano con readiness", async () => {
+  for (const width of [1440, 390]) for (const missingHome of [false, true]) {
+    const calls = []; let accepted = false; let ready = false; const failure = new Error("Tus empresas ausente");
+    const assistantReady = { or() { return this; }, first() { return this; }, waitFor: async () => { ready = true; calls.push("Asistente listo con aviso"); } };
+    const notice = { or: () => assistantReady, isVisible: async () => { assert.equal(ready, true); return !accepted; },
+      getByRole: (role, options) => { assert.equal(role, "button"); assert.deepEqual(options, { name: "Entendido", exact: true }); return { click: async () => { accepted = true; calls.push("aceptar aviso UI"); } }; },
+      waitFor: async (options) => { assert.deepEqual(options, { state: "hidden" }); assert.equal(accepted, true); calls.push("aviso cerrado"); },
+    };
+    const page = { goto: async (url) => { assert.equal(url, "https://localtest.me/org"); calls.push("abrir Inicio"); }, getByRole: (role, options) => {
+      if (role === "dialog") { assert.equal(width, 1440); assert.deepEqual(options, { name: "Antes de tu primera consulta", exact: true }); return notice; }
+      assert.equal(role, "heading");
+      if (options.name === "Tus empresas") return { waitFor: async () => {
+        if (width === 1440) assert.equal(accepted, true, "El aviso modal debe estar aceptado antes de buscar su contenido oculto.");
+        calls.push("Tus empresas"); if (missingHome) throw failure;
+      } };
+      assert.ok(["¿Qué querés consultar?", "El asistente todavía no está configurado"].includes(options.name)); return assistantReady;
+    } };
+    const open = () => assistant.openProjectedAssistantCompanyHome({ width, base: new URL("https://localtest.me") }, page);
+    if (missingHome) await assert.rejects(open, (error) => error === failure); else await open();
+    assert.deepEqual(calls, ["abrir Inicio", ...(width === 1440 ? ["Asistente listo con aviso", "aceptar aviso UI", "aviso cerrado"] : []), "Tus empresas"]);
+  }
+});
+
+test("el focal de adjunto sólo registra06 y su fixture proyectada01 no recibe evidencia propia", async () => {
+  assert.deepEqual(assistant.assistantAttachmentRepairDefinitions.map(({ id }) => id), ["AS-SUP-06"]);
+  const records = []; let logins = 0; let closed = 0;
+  const h = { width: 1440, base: new URL("https://localtest.me"), env: { command: async () => assert.fail("No llegó al control") },
+    newPage: async () => ({ close: async () => closed++ }), login: async () => { logins++; throw new Error("Preparación privada de06"); },
+    record: async (id, _getPage, action) => { records.push(id); try { return { ok: true, value: await action() }; } catch (error) { assert.equal(error.message, "Preparación privada de06"); return { ok: false, error }; } },
+  };
+  await assistant.runAssistantAttachmentRepairCases(h);
+  assert.deepEqual(records, ["AS-SUP-06"]); assert.equal(logins, 1); assert.equal(closed, 2);
+});
+
 test("el adjunto local se selecciona antes de Enviar y su POST real se espera después de esa acción", async () => {
   const pending = []; const calls = []; const id = "conversacion-propia";
   const response = (suffix, status) => ({ url: () => `https://localtest.me/api/organization/assistant/conversations/${id}/${suffix}`, request: () => ({ method: () => "POST" }), status: () => status, headers: () => ({ "content-type": "text/event-stream" }) });

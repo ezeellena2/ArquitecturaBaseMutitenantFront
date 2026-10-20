@@ -82,6 +82,7 @@ const suiteSpecs = {
   organizacionesestadoarreglo: ["./e2e-completo-organizaciones-complemento.mjs", "organizationStateRepairDefinitions", "runOrganizationStateRepairCases"],
   asistentepreparacionarreglos: ["./e2e-completo-asistente-complemento.mjs", "assistantPreparationRepairDefinitions", "runAssistantPreparationRepairCases"],
   asistenteoperadorarreglo: ["./e2e-completo-asistente-complemento.mjs", "assistantOperatorRepairDefinitions", "runAssistantOperatorRepairCases"],
+  asistenteborradoarreglo: ["./e2e-completo-asistente-complemento.mjs", "assistantAttachmentRepairDefinitions", "runAssistantAttachmentRepairCases"],
   whatsappatencionarreglos: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppRepairDefinitions", "runSupplementWhatsAppRepairCases"],
   whatsappmensajesarreglo: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppTakeRepairDefinitions", "runSupplementWhatsAppTakeRepairCases"],
   ...Object.fromEntries(mobileBarPlans.map((plan) => [plan.name, [plan.module, plan.definitionsExport, plan.runExport, plan.definitions]])),

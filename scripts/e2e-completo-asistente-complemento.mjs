@@ -23,6 +23,7 @@ export const assistantSupplementDefinitions = [
 ];
 export const assistantPreparationRepairDefinitions = assistantSupplementDefinitions.filter((entry) => ["AS-SUP-02", "AS-SUP-03", "AS-SUP-04", "AS-SUP-06"].includes(entry.id));
 export const assistantOperatorRepairDefinitions = assistantSupplementDefinitions.filter((entry) => entry.id === "AS-SUP-05");
+export const assistantAttachmentRepairDefinitions = assistantSupplementDefinitions.filter((entry) => entry.id === "AS-SUP-06");
 export const assistantSupplementProofGroups = {
   "BACK-AS-011": [["BASE-E8B-30-4", "AS-SUP-06"]],
   "BACK-AS-012": [["BASE-E8B-30-1", "AS-TEC-01", "AS-TEC-02", "MOD-28"]],
@@ -145,6 +146,13 @@ async function chatHome(h, page, access = "business", direct = false, diagnostic
   };
   return diagnostic ? withAssistantHomeDiagnostics(h, page, { access, ...diagnostic }, open) : open();
 }
+
+export async function openProjectedAssistantCompanyHome(h, page) {
+  await page.goto(new URL("/org", h.base).href);
+  // En desktop ModuleHome conserva Tus empresas detrás del aviso modal; PhoneHome no monta el Asistente.
+  if (h.width === 1440) await acceptAssistantNoticeFromHome(page);
+  await page.getByRole("heading", { name: "Tus empresas", exact: true }).waitFor();
+}
 async function sendUi(h, page, text, chatRoot = root, terminal = true) {
   await page.getByRole("textbox", { name: "Tu consulta", exact: true }).fill(text);
   const sent = page.waitForResponse((response) => response.request().method() === "POST" && new URL(response.url()).pathname.startsWith(`${chatRoot}/conversations/`) && new URL(response.url()).pathname.endsWith("/messages"));
@@ -265,11 +273,11 @@ async function runAssistantCases(h, selected) {
       await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click(); await page.keyboard.press("Escape");
       await clickForResponse(page, dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/users/invitations", "POST", 201); await dialog.waitFor({ state: "hidden" });
       const me = await business(companyAdmin.email); requireProjectedAssistant(me, owner.me.activeTenantId, company.id);
-      await page.goto(url("/org")); await page.getByRole("heading", { name: "Tus empresas", exact: true }).waitFor();
+      await openProjectedAssistantCompanyHome(h, page);
       await chatHome(h, page, "business", true, { expectedTenantId: owner.me.activeTenantId }); const state = await read(h, page, root); assert.equal(state.configured, true); assert.equal(state.canConfigure, false);
       adminChat = await sendUi(h, page, "[E2E:answer] Pregunta privada del administrador de empresa.");
       for (const suffix of ["settings", "usage"]) await requirePrivateProblem(await h.api(page, `${root}/${suffix}`), 403, "Http.Forbidden");
-      await page.goto(url("/org")); await page.getByRole("heading", { name: "Tus empresas", exact: true }).waitFor(); requireProjectedAssistant(await read(h, page, "/api/me"), owner.me.activeTenantId, company.id);
+      await openProjectedAssistantCompanyHome(h, page); requireProjectedAssistant(await read(h, page, "/api/me"), owner.me.activeTenantId, company.id);
       return "Administrador de empresa activa usó un turno real por assistant.use proyectado, sin configure/Uso ni users.manage; Inicio conservó Tus empresas.";
     };
     await run(1, prepareProjectedAdminChat);
@@ -377,3 +385,4 @@ export async function runAssistantSupplementCases(h) { return runAssistantCases(
 /** Sólo02/03/04/06: callbacks completos;06 prepara01 internamente sin acreditarlo. Restaura configuración en finally. */
 export async function runAssistantPreparationRepairCases(h) { return runAssistantCases(h, new Set([2, 3, 4, 6])); }
 export async function runAssistantOperatorRepairCases(h) { return runAssistantCases(h, new Set([5])); }
+export async function runAssistantAttachmentRepairCases(h) { return runAssistantCases(h, new Set([6])); }
