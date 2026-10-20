@@ -4,6 +4,7 @@ import { supplementPlatformDefinitions, supplementPlatformProofGroups, supplemen
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
 import * as platform from "./e2e-completo-plataforma-complemento.mjs";
+import { createPlatformRecorder } from "./e2e-completo-plataforma.mjs";
 
 test("la fila móvil de Email usa los dos métodos combinados y no exige textos separados inexistentes", () => {
   for (const sameMask of [false, true]) {
@@ -57,6 +58,20 @@ test("Inicio móvil exige Para resolver en su propia ruta y no lo reemplaza por 
     if (width === 390) await assert.rejects(open, (error) => error === missing);
     else assert.equal(await open(), region);
     assert.deepEqual(calls, width === 390 ? ["/plataforma", "Para resolver"] : ["/plataforma", "Aviso Asistente escritorio", "Para resolver"]);
+  }
+});
+
+test("aprobar desde el listado depende de la fixture12 y se ejecuta después del Inicio13 aunque éste falle", async () => {
+  for (const prepared of [false, true]) for (const homeWorks of [false, true]) {
+    const events = []; const blocked = []; const page = {};
+    const run = createPlatformRecorder({ record: async (id, getPage, action) => {
+      assert.equal(getPage(), page); events.push(id); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; }
+    }, block: async (id) => blocked.push(id) });
+    const step = (number, target, action, dependencies = []) => run(`PLAT-C-${String(number).padStart(2, "0")}`, target, action, dependencies.map((value) => `PLAT-C-${String(value).padStart(2, "0")}`));
+    await step(12, page, async () => { if (!prepared) throw new Error("Fixture12 ausente"); });
+    await platform.runPendingOrganizationApprovalSteps({ step, page, visitHome: async () => { events.push("Inicio sin aprobar"); if (!homeWorks) throw new Error("Para resolver ausente"); }, approveFromList: async () => { events.push("Aprobar desde listado"); } });
+    assert.deepEqual(blocked, prepared ? [] : ["PLAT-C-13", "PLAT-C-20"]);
+    assert.deepEqual(events, prepared ? ["PLAT-C-12", "PLAT-C-13", "Inicio sin aprobar", "PLAT-C-20", "Aprobar desde listado"] : ["PLAT-C-12"]);
   }
 });
 
@@ -121,9 +136,9 @@ test("el aviso de rechazo real no publica el motivo interno", () => {
   assert.throws(() => requireRejectedNotice("Content-Type: text/plain\r\n\r\nCódigo enviado", "Motivo interno privado"));
 });
 
-test("hay diecinueve acciones y sólo se enlazan las ramas completas con sus actores", () => {
-  assert.equal(supplementPlatformDefinitions.length, 19);
-  assert.equal(new Set(supplementPlatformDefinitions.map((entry) => entry.id)).size, 19);
+test("hay veinte acciones y sólo se enlazan las ramas completas con sus actores", () => {
+  assert.equal(supplementPlatformDefinitions.length, 20);
+  assert.equal(new Set(supplementPlatformDefinitions.map((entry) => entry.id)).size, 20);
   const known = new Set([...backendUseCases, ...guidedCases, ...screens.map((entry) => ({ id: "SCREEN-" + entry.id }))].map((entry) => entry.id));
   const covers = supplementPlatformDefinitions.flatMap((entry) => entry.covers);
   for (const id of covers) assert.ok(known.has(id));
@@ -132,7 +147,9 @@ test("hay diecinueve acciones y sólo se enlazan las ramas completas con sus act
   assert.equal(covers.includes("BACK-RE-007"), false, "Operadora no prueba la rama Sin cuenta.");
   for (const id of ["GUIA-crear-una-organizacion-01", "GUIA-aprobar-una-organizacion-05", "GUIA-publicar-una-version-legal-03"]) assert.ok(covers.includes(id));
   assert.deepEqual(supplementPlatformDefinitions.find((row) => row.id === "PLAT-C-16").covers, ["BACK-PL-007"]);
-  assert.deepEqual(supplementPlatformProofGroups, { "BACK-PL-008": [["PLAT-C-13", "PLAT-C-17"]], "BACK-PL-018": [["PLAT-25", "PLAT-26", "PLAT-C-18"]] });
+  assert.deepEqual(supplementPlatformProofGroups, { "BACK-PL-008": [["PLAT-C-20", "PLAT-C-17"]], "BACK-PL-018": [["PLAT-25", "PLAT-26", "PLAT-C-18"]] });
+  assert.deepEqual(supplementPlatformDefinitions.find((row) => row.id === "PLAT-C-13").covers, ["GUIA-aprobar-una-organizacion-01"]);
+  assert.deepEqual(supplementPlatformDefinitions.find((row) => row.id === "PLAT-C-20").covers, ["GUIA-aprobar-una-organizacion-02", "GUIA-aprobar-una-organizacion-03", "GUIA-aprobar-una-organizacion-04", "GUIA-aprobar-una-organizacion-05"]);
   assert.deepEqual(supplementPlatformDefinitions.find((row) => row.id === "PLAT-C-17").covers, []);
   assert.deepEqual(supplementPlatformDefinitions.find((row) => row.id === "PLAT-C-18").covers, ["GUIA-suspender-y-reactivar-03", "GUIA-suspender-y-reactivar-05"]);
   assert.deepEqual(supplementPlatformDefinitions.at(-1).covers, ["BACK-PL-006"]);

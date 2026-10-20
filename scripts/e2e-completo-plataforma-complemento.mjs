@@ -31,17 +31,18 @@ export const supplementPlatformDefinitions = [
   definition(10, "Persona Phone y operador de recuperaciones", "Ocupar por UI el destino probado antes de aprobar", "/recuperar · /registro · /plataforma/recuperaciones", "Aprobar409 MethodInUse; pedido Pending, misma versión y métodos originales intactos.", ["BACK-RE-008"]),
   definition(11, "Operador con tenants.manage", "Crear organización desde el listado e invitar Dueño", "/plataforma/organizaciones", "Crear abre el formulario, guarda organización/primera empresa, abre su ficha y Dueños; invitación real en pickup.", ["GUIA-crear-una-organizacion-01", "GUIA-crear-una-organizacion-02", "GUIA-crear-una-organizacion-03"]),
   definition(12, "Dueño nuevo y operador de configuración", "Preparar alta pendiente con RequiresApproval temporal", "/registro/empresa", "Alta propia requiresApproval y Recibimos el pedido; la política se restaura por UI en finally antes de continuar."),
-  definition(13, "Operador y Dueño destinatario por correo", "Revisar desde Para resolver, aprobar con motivo y recibir aviso", "/plataforma · /plataforma/organizaciones/:id", "Revisar lleva a la ficha propia; Historial, Dueños y Página cargan; aprobar activa con motivo y emite correo real.", ["GUIA-aprobar-una-organizacion-01", "GUIA-aprobar-una-organizacion-02", "GUIA-aprobar-una-organizacion-03", "GUIA-aprobar-una-organizacion-04", "GUIA-aprobar-una-organizacion-05"]),
+  definition(13, "Operador con organización pendiente propia", "Abrir la ficha desde Para resolver del inicio", "/plataforma · /plataforma/organizaciones/:id", "Inicio muestra la solicitud pendiente en Para resolver; Revisar con su href propio abre la ficha y su título, sin aprobarla.", ["GUIA-aprobar-una-organizacion-01"]),
+  definition(20, "Operador y Dueño destinatario por correo", "Revisar desde el listado y aprobar con motivo y aviso real", "/plataforma/organizaciones · /plataforma/organizaciones/:id", "El listado filtrado abre la solicitud propia por href y nombre; Historial, Dueños y Página cargan; aprobar responde200, persiste Active y motivo y emite el correo real al Dueño.", ["GUIA-aprobar-una-organizacion-02", "GUIA-aprobar-una-organizacion-03", "GUIA-aprobar-una-organizacion-04", "GUIA-aprobar-una-organizacion-05"]),
   definition(14, "Operador con legal.manage", "Publicar términos nuevos vigentes por UI", "/plataforma/legales/nueva", "Abre Publicar versión nueva, elige documento/fecha/ambos idiomas, confirma201 y conserva recibo/versionado.", ["GUIA-publicar-una-version-legal-01", "GUIA-publicar-una-version-legal-02"]),
   definition(15, "Dueño de organización propia", "Aceptar la nueva versión al volver a ingresar", "/aceptar-terminos", "La versión del recibo figura pendiente; casilla explícita, POST204, retorno empresarial200 y Me sin pendientes.", ["GUIA-publicar-una-version-legal-03", "SCREEN-aceptar-terminos"]),
   definition(16, "Operador completo y Dueño nuevo sin cuenta", "Crear por UI, repetir la operación y aceptar la invitación sin Personal", "/plataforma/organizaciones · /invitacion", "Replay201 conserva todos los IDs sin otro aviso/evento; misma clave con otro cuerpo422. El Dueño pendiente no tiene cuenta; al aceptar sólo Business. El operador conserva cero perfiles públicos.", ["BACK-PL-007"]),
-  definition(17, "Operador completo y organización pendiente propia", "Rechazar con motivo, versión y confirmación reciente y repetir sin duplicar aviso", "/plataforma/organizaciones/:id", "Versión incorrecta409 sin cambio; prueba vencida403 sin consumir la clave; confirmar guarda Closed200, motivo/fecha reales, replay conserva versión y un único aviso/evento. Se combina con la aprobación de PLAT-C-13."),
+  definition(17, "Operador completo y organización pendiente propia", "Rechazar con motivo, versión y confirmación reciente y repetir sin duplicar aviso", "/plataforma/organizaciones/:id", "Versión incorrecta409 sin cambio; prueba vencida403 sin consumir la clave; confirmar guarda Closed200, motivo/fecha reales, replay conserva versión y un único aviso/evento. Se combina con la aprobación de PLAT-C-20."),
   definition(18, "Operador completo, Dueño único y persona propios", "Bloquear baja del último Dueño; suspender/reactivar y dar de baja a la persona", "/plataforma/cuentas/:id · /login", "LastAdmin409 conserva Dueño y versión; Suspender revoca Bearer previo y guarda motivo/historial. Reactivar permite nuevo ingreso200; baja204 programa30d y revoca ese segundo Bearer.", ["GUIA-suspender-y-reactivar-03", "GUIA-suspender-y-reactivar-05"]),
   definition(19, "Operador completo con organización y espacio Personal propios de la fixture", "Buscar y filtrar organizaciones, comprobar metadatos, Dueños e historial y rechazar Personal", "/plataforma/organizaciones", "Listado/facets reales conservan búsqueda, estado y origen; sólo metadatos globales de la organización propia, contadores1/1, Dueño actual e historial UTC. El ID Personal no se lista y su ficha devuelve404.", ["BACK-PL-006"]),
 ];
 export const platformRecoveryRepairDefinitions = [8, 9].map((number) => supplementPlatformDefinitions.find((entry) => entry.id === `PLAT-C-${String(number).padStart(2, "0")}`));
 
-export const supplementPlatformProofGroups = { "BACK-PL-008": [["PLAT-C-13", "PLAT-C-17"]], "BACK-PL-018": [["PLAT-25", "PLAT-26", "PLAT-C-18"]] };
+export const supplementPlatformProofGroups = { "BACK-PL-008": [["PLAT-C-20", "PLAT-C-17"]], "BACK-PL-018": [["PLAT-25", "PLAT-26", "PLAT-C-18"]] };
 export const supplementPlatformLimitations = {
   "BACK-PL-024": {
     partialExecutionIds: ["PLAT-C-05"], missing: "Intentar quitar o retirar operators.manage al último gestor activo y exigir LastManager.",
@@ -73,6 +74,12 @@ export async function openPlatformPendingHome(h, page, { acceptNotice = acceptAs
   if (h.width === 1440) await acceptNotice(page);
   const pending = page.getByRole("region", { name: "Para resolver", exact: true }); await pending.waitFor();
   return pending;
+}
+
+/** La aprobación usa la fixture12 aunque el recorrido separado de Inicio13 falle. */
+export async function runPendingOrganizationApprovalSteps({ step, page, visitHome, approveFromList }) {
+  await step(13, page, visitHome, [12]);
+  await step(20, page, approveFromList, [12]);
 }
 
 export async function waitForOrganizationHistoryReason(h, page, reason) {
@@ -451,20 +458,29 @@ export async function runSupplementPlatformCases(h) {
       });
       return "Alta propia PendingApproval/Recibimos el pedido; RequiresApproval temporal restaurado por UI en finally.";
     }, [1]);
-    await step(13, page, async () => {
-      await ensureFull(); await createAssistantControl(h.env.command)("prepare", { email: operatorEmail, access: "platform" });
-      const pending = await openPlatformPendingHome(h, page); await pending.getByText(pendingBusiness.name, { exact: true }).waitFor();
-      await pending.getByRole("link", { name: "Revisar", exact: true }).and(page.locator(`a[href='/plataforma/organizaciones/${pendingBusiness.id}']`)).click(); await page.getByRole("heading", { name: pendingBusiness.name, exact: true }).waitFor();
-      for (const title of ["Historial", "Dueños", "Página pública"]) {
-        await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click(); const panel = page.getByRole("tabpanel"); await panel.waitFor(); await panel.getByRole("status").waitFor({ state: "hidden" });
-        assert.ok((await panel.innerText()).trim().length > 0); assert.equal(await panel.getByRole("alert").count(), 0);
-      }
-      const before = new Set(await h.env.files()); const reason = "Datos propios verificados para aprobar la organización.";
-      await changeOrganization(h, page, pendingBusiness.id, "Aprobar", reason); await page.getByText("Activa", { exact: true }).first().waitFor();
-      const persisted = await read(h, page, `/api/platform/tenants/${pendingBusiness.id}`); assert.equal(persisted.status, "Active"); assert.equal(persisted.lastStateChange.reason, reason);
-      await notice(h.env, pendingOwner, before, (text) => /aprobad/iu.test(text));
-      return "Para resolver→Revisar abrió la solicitud; se revisaron Historial/Dueños/Página, se aprobó con motivo y la cuenta Dueña recibió el correo de aprobación real, sin certificar WhatsApp.";
-    }, [12]);
+    await runPendingOrganizationApprovalSteps({ step, page,
+      visitHome: async () => {
+        await ensureFull(); await createAssistantControl(h.env.command)("prepare", { email: operatorEmail, access: "platform" });
+        const pending = await openPlatformPendingHome(h, page); await pending.getByText(pendingBusiness.name, { exact: true }).waitFor();
+        await pending.getByRole("link", { name: "Revisar", exact: true }).and(page.locator(`a[href='/plataforma/organizaciones/${pendingBusiness.id}']`)).click(); await page.getByRole("heading", { name: pendingBusiness.name, exact: true }).waitFor();
+        return "Inicio→Para resolver→Revisar abrió la ficha propia y su título; la organización conserva su aprobación pendiente para el record independiente.";
+      },
+      approveFromList: async () => {
+        await ensureFull(); const query = `search=${encodeURIComponent(pendingBusiness.name)}&status=PendingApproval`;
+        const [listed] = await responsesForAction(page, [(response) => endpoint("/api/platform/tenants/paged", "GET")(response) && new URL(response.url()).searchParams.get("search") === pendingBusiness.name && new URL(response.url()).searchParams.get("status") === "PendingApproval"], () => page.goto(url(`/plataforma/organizaciones?${query}`)));
+        assert.equal(listed.status(), 200); const rows = await listed.json(); assert.equal(rows.totalCount, 1); assert.equal(rows.items[0].id, pendingBusiness.id); assert.equal(rows.items[0].status, "PendingApproval");
+        await openPlatformListItem(page, `/plataforma/organizaciones/${pendingBusiness.id}`, pendingBusiness.name); await page.getByRole("heading", { name: pendingBusiness.name, exact: true }).waitFor();
+        for (const title of ["Historial", "Dueños", "Página pública"]) {
+          await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click(); const panel = page.getByRole("tabpanel"); await panel.waitFor(); await panel.getByRole("status").waitFor({ state: "hidden" });
+          assert.ok((await panel.innerText()).trim().length > 0); assert.equal(await panel.getByRole("alert").count(), 0);
+        }
+        const before = new Set(await h.env.files()); const reason = "Datos propios verificados para aprobar la organización.";
+        await changeOrganization(h, page, pendingBusiness.id, "Aprobar", reason); await page.getByText("Activa", { exact: true }).first().waitFor();
+        const persisted = await read(h, page, `/api/platform/tenants/${pendingBusiness.id}`); assert.equal(persisted.status, "Active"); assert.equal(persisted.lastStateChange.reason, reason);
+        await notice(h.env, pendingOwner, before, (text) => /aprobad/iu.test(text));
+        return "El listado filtrado abrió la solicitud propia por href y nombre; Historial/Dueños/Página cargaron, Aprobar con motivo respondió200 y persistió Active/motivo; la cuenta Dueña recibió el correo real, sin certificar WhatsApp.";
+      },
+    });
     await step(14, page, async () => {
       // Cierra explícitamente la identidad pública creada por el alta pendiente antes del nuevo ingreso del Dueño.
       if (publicSignedIn) { await publicPage.goto(url("/login")); await publicPage.waitForURL((target) => target.pathname === "/"); await publicPage.getByRole("navigation", { name: "Secciones", exact: true }).or(publicPage.getByRole("button", { name: /, Personal$/ })).filter({ visible: true }).first().waitFor(); await read(h, publicPage, "/api/me"); await h.signOut(publicPage); publicSignedIn = false; }
