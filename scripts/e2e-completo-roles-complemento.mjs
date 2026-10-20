@@ -121,11 +121,13 @@ async function invite(h, page, email, company, role) {
   return { email, roleId: role.id, memberId: member.memberId, state: "Invited" };
 }
 
-async function disableMember(h, page, memberId) {
+export async function disableMember(h, page, memberId) {
   await visit(h, page, `/org/usuarios/${memberId}`);
   if (h.width === 390) {
     await page.getByRole("region", { name: "Acceso a la organización", exact: true }).getByRole("button", { name: /^Estado/ }).click();
-    await page.getByRole("dialog", { name: "Estado", exact: true }).getByRole("radio", { name: "Deshabilitado", exact: true }).check();
+    const sheet = page.getByRole("dialog", { name: "Estado", exact: true });
+    await sheet.getByText("Deshabilitado", { exact: true }).click();
+    await sheet.waitFor({ state: "hidden" });
   } else {
     await page.getByRole("combobox", { name: "Estado", exact: true }).click(); await page.getByRole("option", { name: "Deshabilitado", exact: true }).click();
   }

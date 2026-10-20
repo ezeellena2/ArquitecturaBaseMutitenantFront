@@ -97,3 +97,33 @@ test("el ciclo exige PUT y estado real, usando acción inversa móvil y badge de
     assert.equal(writes, 1); assert.equal(checked, true); assert.equal(open, false);
   }
 });
+
+test("deshabilitar espera la elección móvil y confirma un único PUT antes de verificar el estado persistido", async () => {
+  for (const width of [1440, 390]) {
+    let sheetOpen = false; let sheetClosed = false; let chosen = false; let confirmed = false; let writes = 0; let persisted = "Inactive";
+    const response = { url: () => "https://localtest.me/api/users/propio", request: () => ({ method: () => "PUT" }), status: () => 200 };
+    const option = { click: async () => { chosen = true; sheetOpen = false; } };
+    const sheet = {
+      getByText: () => option,
+      waitFor: async ({ state }) => { assert.equal(state, "hidden"); assert.equal(chosen, true); assert.equal(sheetOpen, false); sheetClosed = true; },
+      getByRole: () => ({ check: async () => { assert.fail("El radio sr-only no es el destino visible de la elección móvil."); } }),
+    };
+    const page = {
+      goto: async (url) => { assert.equal(new URL(url).pathname, "/org/usuarios/propio"); },
+      waitForResponse: async (predicate) => { assert.equal(predicate(response), true); return response; },
+      getByRole: (role, { name } = {}) => {
+        if (role === "region") return { getByRole: () => ({ click: async () => { sheetOpen = true; } }) };
+        if (role === "combobox") return { click: async () => {} };
+        if (role === "option") return option;
+        if (role === "dialog") return name === "Estado" ? sheet : { getByRole: () => ({ click: async () => { assert.equal(confirmed, true); writes++; } }) };
+        assert.equal(role, "button"); assert.equal(name, "Guardar cambios");
+        return { click: async () => { assert.equal(chosen, true); if (width === 390) assert.equal(sheetClosed, true); confirmed = true; } };
+      },
+    };
+    const h = { width, base: "https://localtest.me", api: async (target, route) => { assert.equal(target, page); assert.equal(route, "/api/users/propio"); assert.equal(writes, 1); return { status: () => 200, json: async () => ({ state: persisted }) }; } };
+    assert.equal(typeof roles.disableMember, "function");
+    await roles.disableMember(h, page, "propio"); assert.equal(writes, 1);
+    writes = 0; confirmed = false; persisted = "Active";
+    await assert.rejects(() => roles.disableMember(h, page, "propio"), /Inactive/u, "Un PUT exitoso no reemplaza la lectura del estado persistido.");
+  }
+});
