@@ -18,7 +18,7 @@ const def = (id, actor, action, route, expected, covers = [], extra = {}) => ({
 export const supplementWhatsAppDefinitions = [
   def("01", "Dueño y operador", "Preparar organización, agente y número controlado", "/registro/empresa", "Cuentas creadas por UI, módulo prendido por operador y número Connected del control Testing.", [], { setup: true }),
   def("02", "Cliente con Phone verificado", "Preparar vínculo real con su cuenta", "/registro · /mensajes", "OTP real de Testing y webhook/worker vinculan el cliente; sólo se copiará desde ese momento.", [], { setup: true }),
-  def("03", "Dueño y agente", "Preparar roles separados e invitación real", "/org/roles/nuevo · /org/usuarios", "La cuenta B2C del agente no lee las copias del cliente; invitación aceptada por UI y acceso Business con exactamente whatsapp.customers.", [], { setup: true }),
+  def("03", "Dueño y agente", "Preparar roles separados e invitación real", "/org/roles/nuevo · /org/usuarios", "La cuenta B2C del agente no lee las copias del cliente; su código de ingreso acepta la invitación (ADR0047), el enlace confirma Accepted y entra a Business con exactamente whatsapp.customers.", [], { setup: true }),
   def("04", "Dos agentes de Clientes", "Tomar simultáneamente el mismo chat y rechazar el mensaje perdedor", "/org/whatsapp/chats/:id", "Uno toma, otro recibe 409 TakenByOther con su nombre; el mensaje perdedor no se guarda ni sale. Respuesta y nota propias quedan verificadas.", ["BACK-WA-008"]),
   def("05", "Miembro con atención Internos", "Atender un mensaje de miembro activo sin permiso Clientes", "/org/whatsapp/chats?inbox=internal", "Phone verificado de miembro activo llega a Internos; agente con sólo whatsapp.internal toma y responde y Clientes devuelve 403.", ["BACK-WA-010"]),
   def("06", "Cliente por transporte controlado", "Dar de baja promociones con el botón real del bot", "/org/whatsapp/contactos/:id", "Accepted pasa a Unsubscribed con origen/fecha y confirmación real del bot; no certifica una difusión pendiente.", [], { partialOf: ["BACK-WA-018"] }),
@@ -193,6 +193,20 @@ async function invitationFromMail(h, email, before) {
   throw new Error("No llegó la invitación real al pickup aislado.");
 }
 
+/** ADR0047: verificar el código ya aceptó las invitaciones; el enlace Accepted entra sin otro botón. */
+export async function enterAcceptedInvitation(h, page, token, organizationId) {
+  const preview = page.waitForResponse(responseAt("/api/invitations/preview", "POST")).then(async (response) => {
+    assert.equal(response.status(), 200, "La vista previa real debe responder200.");
+    const body = await response.json();
+    assert.equal(body.state, "Accepted", "El código de ingreso debe haber aceptado la invitación.");
+    assert.equal(body.organizationId, organizationId, "La invitación aceptada pertenece a la organización propia.");
+  });
+  void preview.catch(() => {});
+  await page.goto(new URL("/invitacion#" + token, h.base).href);
+  await preview;
+  await page.waitForURL((url) => url.pathname === "/org");
+}
+
 export async function runSupplementWhatsAppCases(h) {
   const ownerPage = await h.newPage(); const agentPage = await h.newPage();
   const personPage = await h.newPage(); const platformPage = await h.newPage();
@@ -267,15 +281,14 @@ export async function runSupplementWhatsAppCases(h) {
       const invitationId = (await issued.json()).invitationId;
       const row = (await read(h, ownerPage, "/api/users/paged?search=" + encodeURIComponent(agent.email) + "&page=1&pageSize=100")).items.find((item) => item.invitationId === invitationId);
       assert.ok(row?.memberId); memberId = row.memberId;
+      assert.equal((await read(h, ownerPage, "/api/users/" + memberId)).state, "Invited");
       const token = await invitationFromMail(h, agent.email, before);
       await dialog.waitFor({ state: "hidden" });
       await h.signOut(ownerPage); signedIn.delete(ownerPage);
       await h.login(agentPage, agent.email, "consumer"); signedIn.add(agentPage); capturePage = agentPage;
       assert.ok((await read(h, agentPage, "/api/me/whatsapp/conversations")).items.every((item) => item.id !== linkedId));
       await requireModuleProblem(await h.api(agentPage, "/api/me/whatsapp/conversations/" + linkedId), 404, ["WhatsApp.Link.NotFound"]);
-      await agentPage.goto(new URL("/invitacion#" + token, h.base).href);
-      await clickForResponse(agentPage, agentPage.getByRole("button", { name: "Aceptar invitación", exact: true }), "/api/invitations/accept", "POST");
-      await agentPage.waitForURL((url) => url.pathname === "/org");
+      await enterAcceptedInvitation(h, agentPage, token, owner.me.activeTenantId);
       const me = await read(h, agentPage, "/api/me");
       assert.equal(me.id, agent.me.id); assert.equal(me.activeTenantId, owner.me.activeTenantId);
       requireOrganizationPermissions(me, ["whatsapp.customers"]);
@@ -288,7 +301,7 @@ export async function runSupplementWhatsAppCases(h) {
       const member = await read(h, ownerPage, "/api/users/" + memberId); assert.equal(member.state, "Active");
       await ownerPage.goto(new URL("/org/whatsapp/chats/" + customerChat.id, h.base).href);
       await ownerPage.getByRole("log", { name: /^Mensajes con / }).waitFor();
-      return "Invitación aceptada por UI; dos pestañas con identidades distintas y chat sin tomar, agente sólo Clientes.";
+      return "Invitación Invited aceptada al verificar el código por UI; enlace con preview Accepted entra a Business. Dos pestañas con identidades distintas y chat sin tomar, agente sólo Clientes.";
     });
     await run("04", ["03"], async () => {
       const endpoint = root + "/customers/conversations/" + customerChat.id;

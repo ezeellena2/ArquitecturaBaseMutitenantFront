@@ -1,10 +1,27 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { closeSupplementSessions, contactImportCsv, requirePersonalClient, requirePersonalCopies, requireTakeRace, supplementWhatsAppDefinitions, supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemento.mjs";
+import { closeSupplementSessions, contactImportCsv, enterAcceptedInvitation, requirePersonalClient, requirePersonalCopies, requireTakeRace, supplementWhatsAppDefinitions, supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemento.mjs";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 
 const winner = { status: 200, body: { assignee: { id: "miembro", name: "Agente sintético" } } };
 const loser = { status: 409, body: { code: "WhatsApp.Conversation.TakenByOther", traceId: "traza", takenBy: "Agente sintético" } };
+
+test("el código de ingreso acepta la invitación y el enlace sólo entra después de confirmar Accepted de la organización propia", async () => {
+  const run = async (status, body) => {
+    const calls = [];
+    const page = {
+      waitForResponse: async (predicate) => { calls.push("observe"); assert.equal(predicate({ url: () => "https://localtest.me/api/invitations/preview", request: () => ({ method: () => "POST" }) }), true); return { status: () => status, json: async () => body }; },
+      goto: async (url) => { calls.push("open"); assert.equal(new URL(url).pathname, "/invitacion"); },
+      waitForURL: async (predicate) => { calls.push("enter"); assert.equal(predicate(new URL("https://localtest.me/org")), true); assert.equal(predicate(new URL("https://localtest.me/auth/callback")), false); },
+    };
+    await enterAcceptedInvitation({ base: new URL("https://localtest.me/") }, page, "sintetico", "organizacion-propia");
+    return calls;
+  };
+  assert.deepEqual(await run(200, { state: "Accepted", organizationId: "organizacion-propia" }), ["observe", "open", "enter"]);
+  await assert.rejects(run(403, { state: "Accepted", organizationId: "organizacion-propia" }));
+  await assert.rejects(run(200, { state: "SignInRequired", organizationId: "organizacion-propia" }));
+  await assert.rejects(run(200, { state: "Accepted", organizationId: "ajena" }));
+});
 
 test("el alta Phone Consumer tiene su espacio Personal real, distinto de la organización que lo atiende", () => {
   const businessTenantId = "a2acb0c1-f43c-47b3-8857-79cd525e747f";
