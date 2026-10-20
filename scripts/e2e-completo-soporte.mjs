@@ -33,6 +33,17 @@ export async function withFirstConsultationNotice(page, action) {
   finally { await page.removeLocatorHandler(notice); }
 }
 
+/** Sólo espera el cierre normal de los éxitos; no pulsa, borra ni oculta notificaciones. */
+export async function withSuccessToastClearance(page, action) {
+  const toast = page.locator('[data-sonner-toast][data-type="success"]').first();
+  await page.addLocatorHandler(toast, async () => {
+    await page.mouse.move(0, 0);
+    await toast.waitFor({ state: "hidden", timeout: 15_000 });
+  });
+  try { return await action(); }
+  finally { await page.removeLocatorHandler(toast); }
+}
+
 // Se observa el token que obtuvo la SPA por OIDC real. Nunca sale de esta memoria.
 export function createBrowserSupport({ context, env, base, width }) {
   const tokens = new WeakMap();

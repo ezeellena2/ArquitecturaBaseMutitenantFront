@@ -3,7 +3,7 @@ import { registerHooks } from "node:module";
 import { existingScriptCases } from "./e2e-completo-inventario-front.mjs";
 import { cleanupContinuationSessions } from "./e2e-completo-continuacion.mjs";
 import { forceBusinessLogin, clickForResponse } from "./e2e-completo-negocio.mjs";
-import { requireSyntheticEmail } from "./e2e-completo-soporte.mjs";
+import { requireSyntheticEmail, withSuccessToastClearance } from "./e2e-completo-soporte.mjs";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { assistantLogin } from "./assistant-real-ui.mjs";
 import { runE8Journey, sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
@@ -150,7 +150,8 @@ export async function runOriginalBaselinePhase(h, definitions, run, { page } = {
     assert.ok(ids.has(targetId), "La fase no puede registrar un ID de otra fase.");
     assert.ok(!visited.has(targetId), "Un paso original se ejecuta una sola vez en la fase.");
     visited.add(targetId);
-    const result = await h.record(targetId, getPage, action, diagnostic);
+    const perform = targetId === "BASE-E11-03" && h.width === 390 ? () => withSuccessToastClearance(getPage(), action) : action;
+    const result = await h.record(targetId, getPage, perform, diagnostic);
     if (result?.ok !== true) throw asError(result?.error);
     return result;
   };

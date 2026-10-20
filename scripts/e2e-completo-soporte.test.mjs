@@ -1,6 +1,16 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { localApiUrl, requireSyntheticEmail, viewportOf, syntheticEmail, withFirstConsultationNotice } from "./e2e-completo-soporte.mjs";
+import { localApiUrl, requireSyntheticEmail, viewportOf, syntheticEmail, withFirstConsultationNotice, withSuccessToastClearance } from "./e2e-completo-soporte.mjs";
+
+test("la espera de una notificación de éxito quita el hover, no la borra y retira el handler", async () => {
+  const calls = []; let handler;
+  const toast = { first: () => toast, waitFor: async ({ state }) => calls.push(state) };
+  const page = { locator: () => toast, mouse: { move: async (x, y) => calls.push([x, y]) },
+    addLocatorHandler: async (_target, callback) => { handler = callback; },
+    removeLocatorHandler: async () => calls.push("retirar") };
+  const result = await withSuccessToastClearance(page, async () => { await handler(); return "segunda acción"; });
+  assert.equal(result, "segunda acción"); assert.deepEqual(calls, [[0, 0], "hidden", "retirar"]);
+});
 
 test("el aviso que llega durante Salir se acepta por UI y su handler se retira aun si falla el clic", async () => {
   const calls = []; let handle;
