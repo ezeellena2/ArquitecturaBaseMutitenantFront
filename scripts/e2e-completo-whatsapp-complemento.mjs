@@ -52,6 +52,12 @@ export function requireTakeRace(replies) {
   return { winnerIndex, winner, problem };
 }
 
+/** Send y AddNote crean un recurso201; Take conserva su contrato200 independiente. */
+export async function createSupplementChatEntry(page, button, conversationRoute, kind) {
+  assert.ok(["messages", "notes"].includes(kind), "Sólo mensajes y notas usan el contrato de creación201.");
+  return clickForResponse(page, button, conversationRoute + "/" + kind, "POST", 201);
+}
+
 export function requirePersonalCopies(detail, { answer, note, beforeLink }) {
   const messages = detail.messages.items;
   assert.ok(messages.some((message) => message.text === answer), "La copia debe contener la respuesta posterior al vínculo.");
@@ -409,12 +415,12 @@ async function runWhatsAppSupplementPlan(h, repair) {
       await loserPage.getByText("Lo atiende " + race.winner.assignee.name, { exact: true }).waitFor();
       assert.equal(await loserPage.getByRole("textbox", { name: "Mensaje", exact: true }).count(), 0);
       await winnerPage.getByRole("textbox", { name: "Mensaje", exact: true }).fill(answer);
-      await clickForResponse(winnerPage, winnerPage.getByRole("button", { name: "Enviar", exact: true }), endpoint + "/messages", "POST");
+      await createSupplementChatEntry(winnerPage, winnerPage.getByRole("button", { name: "Enviar", exact: true }), endpoint, "messages");
       await winnerPage.getByRole("log", { name: /^Mensajes con / }).getByText(answer, { exact: true }).waitFor();
       assert.equal(outboundCount(await cursor("orgOutbound")), before + 1);
       await winnerPage.getByRole("button", { name: "Nota interna", exact: true }).click();
       await winnerPage.getByRole("textbox", { name: "Nota interna", exact: true }).fill(note);
-      const saved = await clickForResponse(winnerPage, winnerPage.getByRole("button", { name: "Guardar nota", exact: true }), endpoint + "/notes", "POST");
+      const saved = await createSupplementChatEntry(winnerPage, winnerPage.getByRole("button", { name: "Guardar nota", exact: true }), endpoint, "notes");
       assert.equal((await saved.json()).kind, "Note");
       await winnerPage.getByRole("log", { name: /^Mensajes con / }).getByText(note, { exact: true }).waitFor();
       assert.equal(outboundCount(await cursor("orgOutbound")), before + 1);
@@ -446,7 +452,7 @@ async function runWhatsAppSupplementPlan(h, repair) {
       await clickForResponse(agentPage, await takeButton(agentPage, h.width), endpoint + "/take", "POST");
       const reply = "Respuesta interna " + tag;
       await agentPage.getByRole("textbox", { name: "Mensaje", exact: true }).fill(reply);
-      await clickForResponse(agentPage, agentPage.getByRole("button", { name: "Enviar", exact: true }), endpoint + "/messages", "POST");
+      await createSupplementChatEntry(agentPage, agentPage.getByRole("button", { name: "Enviar", exact: true }), endpoint, "messages");
       await agentPage.getByRole("log", { name: /^Mensajes con / }).getByText(reply, { exact: true }).waitFor();
       assert.equal(outboundCount(await internalCursor("orgOutbound")), before + 1);
       assert.ok((await read(h, agentPage, endpoint)).messages.items.some((message) => message.text === reply));

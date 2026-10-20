@@ -8,6 +8,24 @@ import * as whatsapp from "./e2e-completo-whatsapp-complemento.mjs";
 const winner = { status: 200, body: { assignee: { id: "miembro", name: "Agente sintético" } } };
 const loser = { status: 409, body: { code: "WhatsApp.Conversation.TakenByOther", traceId: "traza", takenBy: "Agente sintético" } };
 
+test("las creaciones de mensajes y notas exigen201 del recurso y POST exactos, sin cambiar Tomar200", async () => {
+  for (const inbox of ["customers", "internal"]) for (const kind of ["messages", "notes"]) {
+    const route = `/api/organization/whatsapp/${inbox}/conversations/propia`; const calls = [];
+    const response = { url: () => `https://localtest.me${route}/${kind}`, request: () => ({ method: () => "POST" }), status: () => 201 };
+    const page = { waitForResponse: async (predicate) => {
+      calls.push("observar creación"); assert.equal(predicate(response), true);
+      assert.equal(predicate({ ...response, url: () => `https://localtest.me${route}/take` }), false);
+      assert.equal(predicate({ ...response, request: () => ({ method: () => "GET" }) }), false); return response;
+    } };
+    assert.equal(await whatsapp.createSupplementChatEntry(page, { click: async () => calls.push("clic UI") }, route, kind), response);
+    assert.deepEqual(calls, ["observar creación", "clic UI"]);
+    for (const status of [200, 204, 409]) await assert.rejects(() => whatsapp.createSupplementChatEntry({ waitForResponse: async () => ({ ...response, status: () => status }) }, { click: async () => {} }, route, kind), /201/u);
+  }
+  await assert.rejects(() => whatsapp.createSupplementChatEntry({ waitForResponse: async () => assert.fail("Tomar usa su contrato200") }, {}, "/api/organization/whatsapp/customers/conversations/propia", "take"));
+  assert.equal(requireTakeRace([winner, loser]).winnerIndex, 0);
+  assert.throws(() => requireTakeRace([{ ...winner, status: 201 }, loser]));
+});
+
 test("el código de ingreso acepta la invitación y el enlace sólo entra después de confirmar Accepted de la organización propia", async () => {
   const run = async (status, body) => {
     const calls = [];
