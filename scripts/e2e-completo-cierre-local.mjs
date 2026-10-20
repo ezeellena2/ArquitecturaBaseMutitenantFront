@@ -21,10 +21,10 @@ export const localClosureProofGroups = {
   "SCREEN-auditoria-org": [["PUB-C-08"]],
 };
 
-export function requireGoogleChallenge(body, observedHost) {
-  const url = new URL(body.redirectUrl);
+export function requireGoogleChallenge(requestUrl) {
+  const url = new URL(requestUrl);
   assert.equal(url.protocol, "https:"); assert.equal(url.hostname, "accounts.google.com");
-  assert.equal(observedHost, "accounts.google.com"); return true;
+  return true;
 }
 
 async function observeAccountGoogleChallenge(page, button, base) {
@@ -47,12 +47,12 @@ async function observeAccountGoogleChallenge(page, button, base) {
   const failurePending = page.waitForEvent("requestfailed", { predicate: (request) => matches(new URL(request.url())) });
   for (const pending of [responsePending, requestPending, failurePending]) void pending.catch(() => {});
   try {
-    // El clic puede esperar la navegación retenida: leer el POST en paralelo evita ese ciclo.
+    // El clic puede esperar la navegación retenida; sólo se necesita el status del POST y la petición externa real.
     clicking = button.click(); void clicking.catch(() => {});
     const response = await Promise.race([responsePending, clicking.then(() => responsePending)]);
     assert.equal(response.status(), 200, "Vincular Google debe responder200 con su desafío real.");
-    const challenge = await response.json(); const requested = await requestPending;
-    requireGoogleChallenge(challenge, new URL(requested.url()).hostname);
+    const requested = await requestPending;
+    requireGoogleChallenge(requested.url());
   } catch (error) { errors.push(error); }
   finally {
     release();

@@ -3,12 +3,12 @@ import test from "node:test";
 import { requireGoogleChallenge, requireOwnerPreserved, localClosureDefinitions } from "./e2e-completo-cierre-local.mjs";
 import * as closure from "./e2e-completo-cierre-local.mjs";
 
-function googlePage({ bodyError, invalidHost = false } = {}) {
+function googlePage({ status = 200, insecure = false } = {}) {
   const calls = []; let routeHandler; let requested; let failed;
   const observedRequest = new Promise((resolve) => { requested = resolve; });
   const abortedRequest = new Promise((resolve) => { failed = resolve; });
-  const request = { url: () => "https://accounts.google.com/o/oauth2/v2/auth?state=privado" };
-  const response = { status: () => 200, json: async () => { calls.push("leer POST"); assert.equal(calls.includes("abortar Google"), false); if (bodyError) throw bodyError; return { redirectUrl: invalidHost ? "https://otro.test/" : request.url() }; } };
+  const request = { url: () => `${insecure ? "http" : "https"}://accounts.google.com/o/oauth2/v2/auth?state=privado` };
+  const response = { status: () => status, json: () => { throw new Error("El observador no debe leer el cuerpo del POST durante la navegación retenida."); } };
   const page = {
     route: async (matches, handler) => {
       assert.equal(matches(new URL("https://accounts.google.com/auth")), true);
@@ -32,26 +32,24 @@ function googlePage({ bodyError, invalidHost = false } = {}) {
   return { page, calls };
 }
 
-test("Google conserva el POST real hasta leerlo y observar su destino, y espera el aborto antes de Cuenta", async () => {
+test("Google valida POST200 y destino real sin leer JSON y espera el aborto antes de volver a Cuenta", async () => {
   const { page, calls } = googlePage();
   await closure.linkGoogleAndRestoreAccount(page, new URL("https://localtest.me"));
-  assert.deepEqual(calls, ["interceptar Google", "clic UI", "leer POST", "abortar Google", "aborto confirmado", "retirar interceptor", "volver Cuenta", "Cuenta lista"]);
+  assert.deepEqual(calls, ["interceptar Google", "clic UI", "abortar Google", "aborto confirmado", "retirar interceptor", "volver Cuenta", "Cuenta lista"]);
 });
 
-test("un fallo de lectura o validación aborta la petición retenida, retira el handler y restaura Cuenta sin aprobar", async () => {
-  const failure = new Error("No se pudo leer la respuesta real");
-  for (const options of [{ bodyError: failure }, { invalidHost: true }]) {
+test("un POST no200 o destino sin HTTPS aborta la petición retenida y restaura Cuenta sin aprobar", async () => {
+  for (const options of [{ status: 400 }, { insecure: true }]) {
     const { page, calls } = googlePage(options);
-    await assert.rejects(() => closure.linkGoogleAndRestoreAccount(page, new URL("https://localtest.me")), (error) => options.bodyError ? error === failure : error.code === "ERR_ASSERTION");
-    assert.equal(calls.indexOf("abortar Google") > calls.indexOf("leer POST"), true);
+    await assert.rejects(() => closure.linkGoogleAndRestoreAccount(page, new URL("https://localtest.me")), (error) => error.code === "ERR_ASSERTION");
+    assert.ok(calls.includes("aborto confirmado"));
     assert.deepEqual(calls.slice(-3), ["retirar interceptor", "volver Cuenta", "Cuenta lista"]);
   }
 });
 
 test("el desafío Google exige HTTPS y host exacto, sin acreditar posesión ni vinculación", () => {
-  assert.equal(requireGoogleChallenge({ redirectUrl: "https://accounts.google.com/o/oauth2/v2/auth?state=privado" }, "accounts.google.com"), true);
-  for (const redirectUrl of ["http://accounts.google.com/auth", "https://accounts.google.com.evil.test/auth", "/auth", "https://otro.test/"]) assert.throws(() => requireGoogleChallenge({ redirectUrl }, "accounts.google.com"));
-  assert.throws(() => requireGoogleChallenge({ redirectUrl: "https://accounts.google.com/auth" }, "otro.test"));
+  assert.equal(requireGoogleChallenge("https://accounts.google.com/o/oauth2/v2/auth?state=privado"), true);
+  for (const requestUrl of ["http://accounts.google.com/auth", "https://accounts.google.com.evil.test/auth", "/auth", "https://otro.test/"]) assert.throws(() => requireGoogleChallenge(requestUrl));
 });
 
 test("LastTenantAdmin conserva exactamente membresía, roles y versión del único Dueño", () => {
