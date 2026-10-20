@@ -47,6 +47,51 @@ export async function withRestoredWhatsAppSettings({ read, action, restore }) {
   return result;
 }
 
+async function closePlatformSession(h, page) {
+  await stopConfirmingRecentAuthentication(page);
+  await page.goto(new URL("/plataforma", h.base).href);
+  const original = page.viewportSize(); await page.setViewportSize({ width: 1440, height: 900 });
+  try {
+    const profile = page.getByRole("button", { name: /, Plataforma$/u }).filter({ visible: true }).first();
+    const email = page.getByRole("textbox", { name: "Correo electrónico", exact: true });
+    const factor = page.getByRole("heading", { name: /^(Verificación en dos pasos|Protegé tu cuenta de operador)$/u });
+    await profile.or(email).or(factor).filter({ visible: true }).first().waitFor();
+    assert.equal(await factor.isVisible(), false, "El ingreso de Plataforma debe completar su factor antes de cambiar de operador.");
+    // Sólo una sesión Plataforma confirmada se cierra; no se toca la sesión pública independiente.
+    if (await profile.isVisible()) await h.signOut(page);
+  } finally { if (original) await page.setViewportSize(original); }
+}
+
+/** Las pestañas comparten una cookie Plataforma: todo cambio de operador pasa por Salir e ingreso UI/MFA. */
+export function createPlatformWhatsAppSessions(h, { setCapturePage, closePlatform = (page) => closePlatformSession(h, page) }) {
+  const identities = new Map(); let active; let normalized = false;
+  const validate = (me, email, expected) => {
+    const known = identities.get(email);
+    assert.ok(me?.id, "El ingreso debe devolver una cuenta real.");
+    if (known) assert.equal(me.id, known.id, "Volver al operador debe conservar exactamente su identidad.");
+    if (expected.id !== undefined) assert.equal(me.id, expected.id, "El ingreso debe corresponder al operador propio invitado.");
+    requireExclusivePlatformActor(me, expected.permissions ?? known?.permissions ?? me.effectivePermissions.platform);
+    if (!known) identities.set(email, { id: me.id, permissions: [...me.effectivePermissions.platform] });
+  };
+  const leave = async () => {
+    if (!active) return;
+    setCapturePage(active.page); await closePlatform(active.page); active = undefined;
+  };
+  return {
+    leave,
+    async enter(page, email, expected = {}) {
+      if (active?.page === page && active.email === email && active.me) {
+        setCapturePage(page); validate(active.me, email, expected); return active.me;
+      }
+      await leave(); setCapturePage(page);
+      if (!normalized) { await closePlatform(page); normalized = true; }
+      active = { page, email };
+      const me = await h.login(page, email, "platform"); validate(me, email, expected); active.me = me;
+      return me;
+    },
+  };
+}
+
 const responseAt = (route, method) => (response) => new URL(response.url()).pathname === route && response.request().method() === method;
 async function read(h, page, route) {
   const response = await h.api(page, route); assert.equal(response.status(), 200); return response.json();
@@ -150,26 +195,40 @@ async function deleteTeam(h, page, email, name) {
 /** Dos comprobaciones con cuentas propias, dentro del contexto real que aporta main. */
 export async function runPlatformWhatsAppCases(h) {
   const fullPage = await h.newPage(); const managerPage = await h.newPage(); const agentPage = await h.newPage(); const publicPage = await h.newPage();
-  const pages = [fullPage, managerPage, agentPage, publicPage]; const signedIn = new Set(); const failures = [];
+  const pages = [fullPage, managerPage, agentPage, publicPage]; const failures = []; let publicSignedIn = false;
   const fullEmail = h.width === 1440 ? "e2e-5d-operator@example.test" : "e2e-a9-operator@example.test";
   const phone = h.width === 1440 ? "+5491134567864" : "+5491134567865"; const tag = randomUUID().slice(0, 8);
   let capturePage = fullPage; let owner; let cursor; let agent; let manager; let ready = false; let team; let originalBot;
   const teamName = "Equipo de prueba " + h.width + " " + tag;
-  const login = async (page, email) => { signedIn.add(page); return h.login(page, email, "platform"); };
-  const logout = async (page) => { if (signedIn.has(page)) { await h.signOut(page); signedIn.delete(page); } };
+  const sessions = createPlatformWhatsAppSessions(h, { setCapturePage: (page) => { capturePage = page; } });
+  const full = async () => {
+    const me = await sessions.enter(fullPage, fullEmail);
+    for (const permission of ["platform.operators.manage", "platform.accounts.read", "platform.accounts.manage", "platform.whatsapp.manage"]) assert.ok(me.effectivePermissions.platform.includes(permission));
+    return me;
+  };
+  const manage = () => sessions.enter(managerPage, manager.email, { id: manager.id, permissions: ["platform.whatsapp.manage"] });
+  const attend = (withAccounts = false) => sessions.enter(agentPage, agent.email, {
+    id: agent.id, permissions: ["platform.whatsapp.attend", ...(withAccounts ? ["platform.accounts.read"] : [])],
+  });
+  const leavePublic = async () => {
+    if (!publicSignedIn) return;
+    capturePage = publicPage; await publicPage.goto(new URL("/cuenta", h.base).href);
+    await publicPage.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();
+    await h.signOut(publicPage); publicSignedIn = false;
+  };
   const result01 = await h.record("WAP-01", () => capturePage, async () => {
-    capturePage = publicPage; owner = await h.registerBusiness(publicPage); signedIn.add(publicPage);
+    capturePage = publicPage; owner = await h.registerBusiness(publicPage); publicSignedIn = true;
     cursor = await h.env.whatsapp.begin("wap-" + h.width + "-" + tag, phone);
-    await addPhone(h, publicPage, phone, cursor); await logout(publicPage);
+    await addPhone(h, publicPage, phone, cursor); await leavePublic();
     // orgProcess usa el worker real global; esta organización propia no recibe ningún mensaje ficticio.
     assert.ok((await cursor("orgNumber", { tenantId: owner.me.activeTenantId })).numberId);
-    capturePage = fullPage; await login(fullPage, fullEmail);
+    await full();
     agent = await inviteOperator(h, fullPage, fullEmail, "wap-atencion", "Atender consultas", "platform.whatsapp.attend");
     manager = await inviteOperator(h, fullPage, fullEmail, "wap-gestion", "Administrar el WhatsApp de Plataforma", "platform.whatsapp.manage");
-    ready = true;
         const number = await read(h, fullPage, root + "/number"); originalBot = await read(h, fullPage, root + "/bot");
         assert.equal(number.number?.status, "Connected", "El canal global del control debe estar conectado.");
-        capturePage = managerPage; const me = await login(managerPage, manager.email); requireExclusivePlatformActor(me, ["platform.whatsapp.manage"]);
+        ready = true;
+        await manage();
         await stopConfirmingRecentAuthentication(managerPage);
         const expired = await h.env.command("recent-proof", { kind: "expire", email: manager.email }); assert.ok(expired.expired >= 1);
         await saveWelcome(h, managerPage, "Bienvenida de prueba " + tag, manager.email, true);
@@ -185,11 +244,11 @@ export async function runPlatformWhatsAppCases(h) {
   try {
     if (!ready) await h.block("WAP-02", "No se prepararon por UI la cuenta Phone y los operadores propios de WAP-01.", capturePage);
     else await h.record("WAP-02", () => capturePage, async () => withRestoredWhatsAppSettings({
-      read: async () => await read(h, fullPage, root + "/number"),
+      read: async () => { await full(); return read(h, fullPage, root + "/number"); },
       action: async (before) => {
         assert.equal(before.number?.status, "Connected"); capturePage = fullPage; await setConsultations(h, fullPage, true, fullEmail);
         assert.equal((await cursor("inbound")).status, 200); await cursor("orgProcess");
-        capturePage = agentPage; let me = await login(agentPage, agent.email); requireExclusivePlatformActor(me, ["platform.whatsapp.attend"]);
+        let me = await attend();
         await stopConfirmingRecentAuthentication(agentPage);
         const expired = await h.env.command("recent-proof", { kind: "expire", email: agent.email }); assert.ok(expired.expired >= 1);
         const list = await read(h, agentPage, root + "/conversations?page=1&pageSize=100&search=" + encodeURIComponent(phone));
@@ -218,14 +277,14 @@ export async function runPlatformWhatsAppCases(h) {
         assert.equal(await agentPage.getByRole("dialog", { name: "Confirmá que sos vos", exact: true }).isVisible(), false);
         detail = await read(h, agentPage, route); requirePlatformChatAccount(detail, null);
         requirePlatformAnswer(detail, { agentId: me.id, messageId: sent.id, text, challenges, confirmations });
-        await logout(agentPage); capturePage = fullPage;
+        await full();
         const account = await read(h, fullPage, "/api/platform/accounts/" + agent.id);
         await fullPage.goto(new URL("/plataforma/cuentas/" + agent.id, h.base).href); await openAction(fullPage, "Cambiar permisos");
         const permissions = fullPage.getByRole("dialog", { name: "Cambiar permisos de " + account.displayName, exact: true });
         await choosePermissions(fullPage, permissions, ["Ver cuentas"]); await permissions.getByRole("textbox", { name: /^Motivo/u }).fill("Verificar cuenta asociada de una consulta propia.");
         await uiWrite(fullPage, permissions.getByRole("button", { name: "Guardar cambios", exact: true }), "/api/platform/accounts/" + agent.id + "/operator", "PUT", 200, fullEmail);
-        await permissions.waitFor({ state: "hidden" }); capturePage = agentPage;
-        me = await login(agentPage, agent.email); requireExclusivePlatformActor(me, ["platform.whatsapp.attend", "platform.accounts.read"]);
+        await permissions.waitFor({ state: "hidden" });
+        me = await attend(true); assert.equal(me.id, agent.id);
         detail = await read(h, agentPage, route); requirePlatformChatAccount(detail, owner.me.id);
         await agentPage.goto(new URL("/plataforma/whatsapp/consultas/" + conversation.id, h.base).href); await input.waitFor();
         if (h.width === 390) {
@@ -236,17 +295,19 @@ export async function runPlatformWhatsAppCases(h) {
         assert.equal((await read(h, agentPage, "/api/platform/accounts/" + owner.me.id)).id, owner.me.id);
         return "attend respondió201 con F2 vencido sin desafío ni confirmación y tomó su chat; accountId/enlace ausentes. Con accounts.read concedido por UI, misma consulta y cuenta propia coinciden.";
       },
-      restore: async (before) => { await setConsultations(h, fullPage, before.consultationsEnabled, fullEmail); },
+      restore: async (before) => { await full(); await setConsultations(h, fullPage, before.consultationsEnabled, fullEmail); },
     }));
   } finally {
-    if (team) { try { await deleteTeam(h, managerPage, manager.email, teamName); team = undefined; } catch (error) { failures.push(error); } }
+    if (team) { try { await manage(); await deleteTeam(h, managerPage, manager.email, teamName); team = undefined; } catch (error) { failures.push(error); } }
     if (originalBot) {
       try {
+        await full();
         const current = await read(h, fullPage, root + "/bot");
         if (current.welcome !== originalBot.welcome) await saveWelcome(h, fullPage, originalBot.welcome, fullEmail);
       } catch (error) { failures.push(error); }
     }
-    for (const page of [...signedIn].reverse()) { try { await logout(page); } catch (error) { failures.push(error); } }
+    try { await sessions.leave(); } catch (error) { failures.push(error); }
+    try { await leavePublic(); } catch (error) { failures.push(error); }
     for (const page of pages) { try { await stopConfirmingRecentAuthentication(page); await page.close(); } catch (error) { failures.push(error); } }
   }
   if (failures.length) throw new AggregateError(failures, "No se completó la salida por UI de WhatsApp de Plataforma.");
