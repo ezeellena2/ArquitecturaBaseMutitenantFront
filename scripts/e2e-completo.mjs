@@ -12,6 +12,7 @@ import { journeyDate, safeDiagnostic } from "./recorrido-usuario.mjs";
 import { factorSecretMasks } from "./recorrido-usuario-e9.mjs";
 import { renderCompleteReport, summarizeCases } from "./e2e-completo-informe.mjs";
 import { annotateCaptureDimensions } from "./e2e-completo-capturas.mjs";
+import { createScriptScanFence } from "./e2e-completo-filtro-tailwind.mjs";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { screens, guidedCases, existingScriptCases, inventoryMetadata } from "./e2e-completo-inventario-front.mjs";
 import { buildMatrix, importedJourneySteps, parseTapSummary, safeEvidenceText } from "./e2e-completo-matriz.mjs";
@@ -214,11 +215,13 @@ export async function main(options = parseArguments([])) {
   }
   let env;
   let context;
+  let scanFence;
   let interrupted = false;
   const cancellation = new AbortController();
   const interrupt = () => { interrupted = true; cancellation.abort(); };
   process.once("SIGINT", interrupt); process.once("SIGTERM", interrupt);
   try {
+    scanFence = await createScriptScanFence({ directory: path.join(root, "scripts") });
     env = await createEnvironment({ build: options.build });
     await env.command("platform", { kind: "prepare" });
     context = await chromium.launchPersistentContext(path.join(env.directory, "perfil-integral"), {
@@ -317,6 +320,10 @@ export async function main(options = parseArguments([])) {
     const cleanupErrors = [];
     try { await context?.close(); } catch (error) { cleanupErrors.push(error.name); }
     try { await env?.stop(); } catch (error) { cleanupErrors.push(error.name); }
+    // Si el arranque no devolvió entorno, se conserva el filtro hasta comprobar su apagado.
+    if (env && cleanupErrors.length === 0) {
+      try { await scanFence?.release(); } catch (error) { cleanupErrors.push(error.name); }
+    }
     report.environment.cleanup = cleanupErrors.length ? `Falló apagado: ${cleanupErrors.join(", ")}` : "apagado";
     process.removeListener("SIGINT", interrupt); process.removeListener("SIGTERM", interrupt);
     report.finishedAtUtc = new Date().toISOString();
