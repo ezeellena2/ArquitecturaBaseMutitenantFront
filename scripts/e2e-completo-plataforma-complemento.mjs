@@ -60,7 +60,7 @@ export const supplementPlatformProofGroups = { "BACK-PL-008": [["PLAT-C-20", "PL
 export const supplementPlatformLimitations = {
   "BACK-PL-024": {
     partialExecutionIds: ["PLAT-C-05"], missing: "Intentar quitar o retirar operators.manage al último gestor activo y exigir LastManager.",
-    reason: "PlatformCommand.prepare crea doce gestores de las cuentas base, además de los operadores propios por UI. PlatformOperatorGuard cuenta globalmente todos los gestores activos. Llegar al último exige quitar o suspender gestores de las cuentas base que este complemento no creó; el alcance prohíbe alterar esas cuentas y no se agrega otra semilla ni control.",
+    reason: "PlatformCommand.prepare crea doce gestores de las cuentas base, además de los operadores propios por UI. PlatformOperatorGuard cuenta globalmente todos los gestores activos. Este complemento conserva esos doce gestores y sólo modifica sus operadores propios, por lo que no prepara la condición global de último gestor. Las altas y los cambios comprobados no acreditan LastManager.",
     source: ["tools/ArquitecturaBaseMultitenant.RealE2ESetup/PlatformCommand.cs", "src/ArquitecturaBaseMultitenant.Application/Services/Platform/PlatformOperatorGuard.cs"],
   },
 };
