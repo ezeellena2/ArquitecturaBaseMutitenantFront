@@ -43,6 +43,7 @@ const suiteSpecs = {
   identidadextra: ["./e2e-completo-identidad-complemento.mjs", "identitySupplementDefinitions", "runIdentitySupplementCases"],
   negocioarreglos: ["./e2e-completo-negocio.mjs", "businessRepairDefinitions", "runBusinessRepairCases"],
   plataformaarreglos: ["./e2e-completo-plataforma.mjs", "platformRepairDefinitions", "runPlatformRepairCases"],
+  negocioinicioarreglo: ["./e2e-completo-negocio-complemento.mjs", "businessHomeRepairDefinitions", "runBusinessHomeRepairCases"],
 };
 
 export function collectSuiteDefinitions(suites) {

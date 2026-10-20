@@ -3,7 +3,7 @@ import test from "node:test";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { businessDefinitions } from "./e2e-completo-negocio.mjs";
 import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
-import { supplementBusinessDefinitions, assertUserFacetCounts, assertMemberChangesStayInCompany, requireHomeGroupPreview } from "./e2e-completo-negocio-complemento.mjs";
+import { supplementBusinessDefinitions, businessHomeRepairDefinitions, runBusinessHomeRepairCases, assertUserFacetCounts, assertMemberChangesStayInCompany, requireHomeGroupPreview } from "./e2e-completo-negocio-complemento.mjs";
 
 test("el complemento enlaza sólo acciones completas todavía sin covers nativos de Negocio", () => {
   assert.equal(supplementBusinessDefinitions.length, 13);
@@ -42,4 +42,17 @@ test("Inicio exige total real mayor a diez y exactamente diez pendientes únicos
   assert.throws(() => requireHomeGroupPreview({ pendingGroups: [{ ...group, items: [...group.items, { targetId: "once" }] }] }, "domainUnverified", 11));
   assert.throws(() => requireHomeGroupPreview({ pendingGroups: [{ ...group, items: group.items.map(() => ({ targetId: "repetido" })) }] }, "domainUnverified", 11));
   assert.throws(() => requireHomeGroupPreview({ pendingGroups: [] }, "domainUnverified", 11));
+});
+
+test("la reparación de Inicio registra sólo SUP13 con una organización propia y sale por UI aun al fallar", async () => {
+  const events = []; const page = { close: async () => { events.push("cerrar"); } };
+  const h = { newPage: async () => page, registerBusiness: async (target) => { assert.equal(target, page); events.push("registrar organización por UI"); return { email: "propia@example.test" }; },
+    record: async (id, getPage, action) => { assert.equal(getPage(), page); events.push(id); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; } },
+    signOut: async (target) => { assert.equal(target, page); events.push("salir por UI"); } };
+  const failure = new Error("falló comprobación");
+  const result = await runBusinessHomeRepairCases(h, { check: async () => { throw failure; } });
+  assert.equal(result.ok, false); assert.equal(result.error, failure);
+  assert.deepEqual(events, ["registrar organización por UI", "SUP-BIZ-13", "salir por UI", "cerrar"]);
+  assert.deepEqual(businessHomeRepairDefinitions.map((entry) => entry.id), ["SUP-BIZ-13"]);
+  assert.equal(businessHomeRepairDefinitions[0], supplementBusinessDefinitions.find((entry) => entry.id === "SUP-BIZ-13"));
 });

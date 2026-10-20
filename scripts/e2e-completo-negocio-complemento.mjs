@@ -21,6 +21,7 @@ export const supplementBusinessDefinitions = [
   definition("12", "Visitante", "Abrir Registrá tu empresa desde la portada", "/", "El enlace visible abre el alta empresarial con título, correo y términos disponibles.", ["GUIA-registrar-empresa-01"]),
   definition("13", "Dueña", "Leer el Inicio de la organización nueva", "/org", "Atajos o tarjetas de Usuarios, Roles y Empresas coinciden con la respuesta real; Para resolver contiene la página en borrador.", ["SCREEN-inicio-org"]),
 ];
+export const businessHomeRepairDefinitions = supplementBusinessDefinitions.filter((entry) => entry.id === "SUP-BIZ-13");
 
 export function assertUserFacetCounts(counts, expected) {
   assert.equal(counts.all, counts.active + counts.invited + counts.expired + counts.pendingDeletion + counts.inactive, "Cada persona tiene un único estado contado.");
@@ -52,6 +53,57 @@ const waitRead = (page, route, match = () => true) => {
   const response = page.waitForResponse((reply) => pathOf(reply) === route && reply.request().method() === "GET" && reply.status() === 200 && match(new URL(reply.url())));
   void response.catch(() => {}); return response;
 };
+
+async function checkBusinessHome(h, page) {
+  await page.goto(new URL("/org", h.base).href);
+  const home = await read(h, page, "/api/home"); assert.ok(home.organization, "La Dueña debe recibir el contenido organizacional.");
+  const companies = await read(h, page, "/api/companies/filter-counts");
+  const users = await read(h, page, "/api/users/filter-counts"); const roles = await read(h, page, "/api/roles/paged?pageSize=100");
+  assert.equal(home.organization.companies.total, companies.all); assert.equal(home.organization.users.total, users.all); assert.equal(home.organization.roles.total, roles.totalCount);
+  assert.equal(home.organization.publicPage?.state, "Draft", "La página propia debe estar en borrador según la API.");
+  const draft = home.pendingGroups?.find((group) => group.kind === "publicPageDraft");
+  assert.equal(draft?.totalCount, 1); assert.equal(draft.items.length, 1); assert.equal(draft.items[0].kind, "publicPageDraft");
+  const section = page.getByRole("region", { name: "Para resolver", exact: true });
+  const editor = section.getByRole("link", { name: "Ver", exact: true }).and(section.locator('a[href="/org/pagina"]'));
+  await editor.waitFor(); assert.equal(await editor.count(), 1, "El pendiente debe ofrecer un único enlace real al editor.");
+  assert.equal(await editor.getAttribute("href"), "/org/pagina");
+  const row = editor.locator("xpath=ancestor::*[self::li or self::tr][1]");
+  // HomePublicPageState.Draft y publicPageDraft.state se traducen como «Borrador» en los resources vigentes.
+  await row.getByText("Página pública", { exact: true }).waitFor(); await row.getByText("Borrador", { exact: true }).waitFor();
+  const areas = page.getByRole("navigation", { name: "Áreas de la organización", exact: true }).last();
+  for (const [label, total] of [["Usuarios", users.all], [h.width === 390 ? "Roles" : "Roles y permisos", roles.totalCount], ["Empresas", companies.all]]) {
+    const card = areas.getByRole("link", { name: new RegExp(escapeRegex(label)) }).filter({ visible: true }).first(); await card.waitFor();
+    if (h.width !== 390) assert.match(await card.innerText(), new RegExp(`\\b${total}\\b`));
+  }
+  return "Inicio mostró los atajos/tarjetas de las tres áreas reales y el enlace único a la página en borrador dentro de Para resolver; en escritorio cada tarjeta muestra su total verificado.";
+}
+
+/** Repite únicamente la acción de SUP13 con una organización nueva creada por UI. */
+export async function runBusinessHomeRepairCases(h, { check = checkBusinessHome } = {}) {
+  const page = await h.newPage(); let registered = false; let result; const failures = [];
+  try {
+    try { await h.registerBusiness(page); registered = true; }
+    catch (error) { await h.block("SUP-BIZ-13", "No se pudo preparar la organización propia por UI (" + error.name + ").", page); throw error; }
+    result = await h.record("SUP-BIZ-13", () => page, () => check(h, page));
+  } catch (error) { failures.push(error); }
+  finally {
+    try {
+      if (registered) await h.signOut(page);
+      else if ((await h.context.cookies(h.base.href)).some((cookie) => cookie.name === ".AspNetCore.Identity.Application")) {
+        await page.goto(new URL("/org", h.base).href);
+        const frame = page.getByRole("navigation", { name: h.width === 390 ? "Secciones" : "Áreas de la organización", exact: true });
+        const login = page.getByRole("textbox", { name: "Correo electrónico", exact: true }); const exit = page.getByRole("button", { name: "Salir", exact: true });
+        await frame.or(login).or(exit).filter({ visible: true }).first().waitFor();
+        if (await frame.isVisible()) await h.signOut(page);
+        else if (await exit.isVisible()) { await exit.click(); await page.getByRole("link", { name: "Ingresá", exact: true }).filter({ visible: true }).first().waitFor(); }
+      }
+    } catch (error) { failures.push(error); }
+    try { await page.close(); } catch (error) { failures.push(error); }
+  }
+  if (failures.length === 1) throw failures[0];
+  if (failures.length > 1) throw new AggregateError(failures, "Fallaron la reparación dirigida de Inicio o su salida UI.");
+  return result;
+}
 
 async function createCompany(h, page, name, taxId) {
   await page.goto(new URL("/org/empresas", h.base).href);
@@ -195,18 +247,7 @@ export async function runSupplementBusinessCases(h) {
     });
 
     await run("13", ["01"], async () => {
-      await as(owner.email); await page.goto(new URL("/org", h.base).href);
-      const home = await read(h, page, "/api/home"); assert.ok(home.organization, "La Dueña debe recibir el contenido organizacional.");
-      const companies = await read(h, page, "/api/companies/filter-counts");
-      const users = await read(h, page, "/api/users/filter-counts"); const roles = await read(h, page, "/api/roles/paged?pageSize=100");
-      assert.equal(home.organization.companies.total, companies.all); assert.equal(home.organization.users.total, users.all); assert.equal(home.organization.roles.total, roles.totalCount);
-      const section = page.getByRole("region", { name: "Para resolver", exact: true }); await section.getByText("Página pública", { exact: true }).waitFor(); await section.getByText("Borrador", { exact: true }).waitFor();
-      const areas = page.getByRole("navigation", { name: "Áreas de la organización", exact: true }).last();
-      for (const [label, total] of [["Usuarios", users.all], [h.width === 390 ? "Roles" : "Roles y permisos", roles.totalCount], ["Empresas", companies.all]]) {
-        const card = areas.getByRole("link", { name: new RegExp(escapeRegex(label)) }).filter({ visible: true }).first(); await card.waitFor();
-        if (h.width !== 390) assert.match(await card.innerText(), new RegExp(`\\b${total}\\b`));
-      }
-      return "Inicio mostró los atajos/tarjetas de las tres áreas reales y la página en borrador dentro de Para resolver; en escritorio cada tarjeta muestra también su total verificado.";
+      await as(owner.email); return checkBusinessHome(h, page);
     });
 
     await run("02", ["01"], async () => {
