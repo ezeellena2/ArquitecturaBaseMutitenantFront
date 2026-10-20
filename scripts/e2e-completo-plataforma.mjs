@@ -54,11 +54,15 @@ const deniedPages = [
   [5, "Recuperaciones", "/plataforma/recuperaciones", "/api/platform/recoveries/paged?page=1&pageSize=10"],
   [6, "Documentos legales", "/plataforma/legales", "/api/platform/legal-documents"],
 ];
+const organizationTabs = [[13, "Historial"], [14, "Dueños"], [15, "Módulos"], [16, "Dominio verificado"], [17, "Página pública"]];
+const accountTabs = [[19, "Métodos de ingreso"], [20, "Organizaciones"], [21, "Historial"]];
 
 const platformRepairPlan = [
-  [8, "personPage", []], [9, "businessPage", []], [10, "page", []], [12, "page", [9, 10]], [18, "page", [8, 10]],
+  [8, "personPage", []], [9, "businessPage", []], [10, "page", []], [12, "page", [9, 10]],
+  ...organizationTabs.map(([number]) => [number, "page", [12]]), [18, "page", [8, 10]],
+  ...accountTabs.map(([number]) => [number, "page", [18]]),
   [22, "page", [18]], [23, "personPage", [22]], [24, "page", [22]], [25, "page", [24]], [26, "personPage", [25]],
-  [27, "page", [12]], [28, "businessPage", [27]], [29, "page", [27]], [35, "personPage", [26]],
+  [27, "page", [12]], [28, "businessPage", [27]], [29, "page", [27]], [35, "personPage", [26]], [39, "page", [8, 9, 10]],
 ];
 
 export const platformDefinitions = [
@@ -70,9 +74,9 @@ export const platformDefinitions = [
   definition(10, operator, "Ingresar con correo y autenticador", "/plataforma", "Entra con acceso platform y permisos de administración.", true),
   definition(11, operator, "Abrir Inicio de Plataforma", "/plataforma", "El marco de Plataforma y su página inicial se muestran sin acceso empresarial."),
   definition(12, operator, "Buscar y abrir la organización creada", "/plataforma/organizaciones", "La lista encuentra la organización y abre su ficha con el nombre correcto."),
-  ...[[13, "Historial"], [14, "Dueños"], [15, "Módulos"], [16, "Dominio verificado"], [17, "Página pública"]].map(([number, title]) => definition(number, operator, `Abrir organización › ${title}`, "/plataforma/organizaciones/:id", `La pestaña ${title} muestra datos o el vacío correspondiente de esa organización.`)),
+  ...organizationTabs.map(([number, title]) => definition(number, operator, `Abrir organización › ${title}`, "/plataforma/organizaciones/:id", `La pestaña ${title} muestra datos o el vacío correspondiente de esa organización.`)),
   definition(18, operator, "Buscar y abrir la cuenta creada", "/plataforma/cuentas", "La lista encuentra el correo sintético y abre su ficha."),
-  ...[[19, "Métodos de ingreso"], [20, "Organizaciones"], [21, "Historial"]].map(([number, title]) => definition(number, operator, `Abrir cuenta › ${title}`, "/plataforma/cuentas/:id", `La pestaña ${title} corresponde a la persona creada.`)),
+  ...accountTabs.map(([number, title]) => definition(number, operator, `Abrir cuenta › ${title}`, "/plataforma/cuentas/:id", `La pestaña ${title} corresponde a la persona creada.`)),
   definition(22, operator, "Suspender la cuenta con motivo", "/plataforma/cuentas/:id", "Suspender responde 2xx, cierra el diálogo y la ficha indica Suspendida.", true),
   definition(23, "Cuenta suspendida", "Intentar ingresar con su código real", "/login", "La verificación devuelve 403 Identity.Account.Suspended, con aviso visible y sin acceso Personal.", true),
   definition(24, operator, "Reactivar la cuenta con motivo", "/plataforma/cuentas/:id", "La ficha vuelve a indicar Activa.", true),
@@ -176,6 +180,11 @@ async function searchPlatformList(h, page, value, name) {
 
 export const searchPlatformOrganizations = (h, page, value) => searchPlatformList(h, page, value, "Buscar por nombre o correo");
 export const searchPlatformAccounts = (h, page, value) => searchPlatformList(h, page, value, "Buscar por nombre, correo o teléfono");
+
+/** ListRow incluye fecha y estado en el nombre accesible; el recurso y su texto siguen siendo los mismos. */
+export async function openPlatformListItem(page, route, label) {
+  await page.getByRole("link").filter({ hasText: label }).and(page.locator(`a[href="${route}"]`)).click();
+}
 
 export async function assertPlatformSettingsConflict(page, expectedDraft) {
   await page.getByRole("alert").filter({ hasText: "Otra persona cambió esto mientras lo editabas." }).waitFor();
@@ -287,6 +296,21 @@ async function addAccountReadByUi(h, page, target, base) {
   return detail;
 }
 
+/** La reparación prepara37 por UI sin acreditarlo y conserva una fixture reducida ya preparada. */
+export async function prepareReadOnlyPlatformOperator(h, page, email, fullOperatorId, { addReadByUi = addAccountReadByUi } = {}) {
+  requireSyntheticEmail(email);
+  const found = await h.api(page, `/api/platform/accounts/paged?page=1&pageSize=10&search=${encodeURIComponent(email)}`);
+  assert.equal(found.status(), 200);
+  const accounts = (await found.json()).items; assert.equal(accounts.length, 1);
+  assert.notEqual(accounts[0].id, fullOperatorId, "El operador completo prepara a otra cuenta.");
+  const response = await h.api(page, `/api/platform/accounts/${accounts[0].id}`); assert.equal(response.status(), 200);
+  const current = await response.json(); assert.equal(current.kind, "Operator");
+  const expected = ["platform.accounts.read", "platform.tenants.read"];
+  if (JSON.stringify([...current.operatorPermissions].sort()) === JSON.stringify(expected)) return current;
+  assert.deepEqual(current.operatorPermissions, ["platform.tenants.read"], "Sólo se prepara el operador reducido del recorrido.");
+  return addReadByUi(h, page, current, h.base);
+}
+
 function createPlatformLifecycleActions(h, state) {
   const { page, personPage, businessPage, fullEmail } = state;
   const url = (route) => new URL(route, h.base).href;
@@ -315,19 +339,39 @@ function createPlatformLifecycleActions(h, state) {
     [12, async () => {
       await page.goto(url("/plataforma/organizaciones"));
       await searchPlatformOrganizations(h, page, state.business.organization);
-      await page.getByRole("link", { name: state.business.organization, exact: true }).first().click();
+      await openPlatformListItem(page, organizationRoute(), state.business.organization);
       await page.getByRole("heading", { name: state.business.organization, exact: true }).waitFor();
       assert.equal(new URL(page.url()).pathname, organizationRoute());
       return "La lista filtró la organización creada y abrió su ficha real.";
     }],
+    ...organizationTabs.map(([number, title]) => [number, async () => {
+      await page.goto(url(organizationRoute()));
+      await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click();
+      const panel = page.getByRole("tabpanel");
+      await panel.waitFor();
+      await panel.getByRole("status").waitFor({ state: "hidden" });
+      if (title === "Dominio verificado") await panel.getByText("Sin dominio de correo", { exact: true }).waitFor();
+      else if (title === "Dueños") await panel.getByText(state.business.email, { exact: false }).first().waitFor();
+      else if (title === "Página pública") await panel.getByText("Borrador", { exact: true }).first().waitFor();
+      else assert.ok((await panel.innerText()).trim().length > 0, "La pestaña debe mostrar datos o un vacío explícito.");
+      assert.equal(await panel.getByRole("alert").count(), 0, "La pestaña no debe mostrar un fallo de carga.");
+      return `${title} de la organización creada cargó desde el sistema real.`;
+    }]),
     [18, async () => {
       await page.goto(url("/plataforma/cuentas"));
       await searchPlatformAccounts(h, page, state.person.email);
-      await page.getByRole("link", { name: state.person.email, exact: true }).first().click();
+      await openPlatformListItem(page, accountRoute(), state.person.email);
       await page.getByRole("heading", { name: state.person.email, exact: true }).waitFor();
       assert.equal(new URL(page.url()).pathname, accountRoute());
       return "Cuentas encontró a la persona nueva y abrió su ficha.";
     }],
+    ...accountTabs.map(([number, title]) => [number, async () => {
+      await page.goto(url(accountRoute()));
+      await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click();
+      const panel = page.getByRole("tabpanel"); await panel.waitFor();
+      assert.ok((await panel.innerText()).trim().length > 0);
+      return `${title} de la persona muestra datos o vacío explícito.`;
+    }]),
     [22, async () => {
       await page.goto(url(accountRoute()));
       await changeWithReason(page, "Suspender", `/api/platform/accounts/${state.person.me.id}/suspend`, "Prueba integral: suspensión de cuenta sintética.");
@@ -389,6 +433,20 @@ function createPlatformLifecycleActions(h, state) {
       state.personSignedIn = false;
       return "Cerrar sesiones por Plataforma revocó el acceso Personal; F5 ofreció volver a ingresar.";
     }],
+    [39, async () => {
+      await state.enterReadOnly();
+      await page.goto(url(accountRoute()));
+      await page.getByRole("heading", { name: state.person.email, exact: true }).waitFor();
+      const actual = await h.api(page, `/api/platform/accounts/${state.person.me.id}`); assert.equal(actual.status(), 200);
+      assert.equal((await actual.json()).id, state.person.me.id);
+      assert.equal(await page.getByRole("button", { name: /^Acciones de / }).count(), 0);
+      for (const label of ["Suspender", "Reactivar", "Cerrar sus sesiones", "Dar de baja"]) {
+        assert.equal(await page.getByRole("button", { name: label, exact: true }).count(), 0);
+        assert.equal(await page.getByRole("menuitem", { name: label, exact: true }).count(), 0);
+      }
+      await assertDeniedPlatformWrites(h, page, (await state.negativeFixtures()).accounts);
+      return "Con accounts.read la ficha real se consulta sin acciones de gestión; suspender, reactivar, cerrar sesiones y baja devolvieron 403 Http.Forbidden con traceId.";
+    }],
   ]);
 }
 
@@ -396,6 +454,21 @@ export async function runPlatformRepairCases(h) {
   const page = await h.newPage(); const personPage = await h.newPage(); const businessPage = await h.newPage();
   const pages = [page, personPage, businessPage];
   const state = { page, personPage, businessPage, fullEmail: h.width === 1440 ? "e2e-e9a-operator@example.test" : "e2e-e9b-operator@example.test" };
+  const reducedEmail = h.width === 1440 ? "e2e-reduced@example.test" : "e2e-a2-operator@example.test";
+  state.enterReadOnly = async () => {
+    const reduced = await prepareReadOnlyPlatformOperator(h, page, reducedEmail, state.fullOperator.id);
+    const own = await h.api(page, `/api/platform/accounts/${state.fullOperator.id}`); assert.equal(own.status(), 200);
+    state.fullOperator = { ...state.fullOperator, ...await own.json() };
+    await stopConfirmingRecentAuthentication(page);
+    await h.signOut(page); state.fullSignedIn = false;
+    const me = await h.login(page, reducedEmail, "platform"); state.reducedSignedIn = true;
+    assertReadOnlyPlatformPermissions(me); assert.equal(me.id, reduced.id);
+  };
+  state.negativeFixtures = async () => {
+    const response = await h.api(page, `/api/platform/tenants/${state.business.me.activeTenantId}`); assert.equal(response.status(), 200);
+    const tenant = await response.json(); assert.equal(tenant.id, state.business.me.activeTenantId);
+    return platformWriteAttempts({ tenant, account: { id: state.person.me.id }, operator: state.fullOperator, ownerEmail: `e2e-denied-${randomUUID()}@example.test` });
+  };
   const actions = createPlatformLifecycleActions(h, state);
   const record = createPlatformRecorder(h);
   try {
@@ -406,7 +479,7 @@ export async function runPlatformRepairCases(h) {
     try {
       if (state.personSignedIn) await h.signOut(personPage);
       if (state.businessSignedIn) await h.signOut(businessPage);
-      if (state.fullSignedIn) await h.signOut(page);
+      if (state.fullSignedIn || state.reducedSignedIn) await h.signOut(page);
     } finally {
       for (const target of pages) {
         await stopConfirmingRecentAuthentication(target);
@@ -461,7 +534,6 @@ export async function runPlatformCases(h) {
   const reducedEmail = h.width === 1440 ? "e2e-reduced@example.test" : "e2e-a2-operator@example.test";
   let person; let business; let fullOperator; let readOnlyOperator; let fullSignedIn = false; let reducedSignedIn = false;
   const url = (route) => new URL(route, h.base).href;
-  const accountRoute = () => `/plataforma/cuentas/${person.me.id}`;
   const organizationRoute = () => `/plataforma/organizaciones/${business.me.activeTenantId}`;
   const record = (number, target, action, dependencies = []) => step(idOf(number), target, action, dependencies.map(idOf));
   const lifecycleState = {
@@ -472,9 +544,9 @@ export async function runPlatformCases(h) {
     get fullSignedIn() { return fullSignedIn; }, set fullSignedIn(value) { fullSignedIn = value; },
   };
   const lifecycleActions = createPlatformLifecycleActions(h, lifecycleState);
-  const recordLifecycle = (number) => {
+  const recordLifecycle = (number, dependenciesOverride) => {
     const [, target, dependencies] = platformRepairPlan.find(([id]) => id === number);
-    return record(number, lifecycleState[target], lifecycleActions.get(number), dependencies);
+    return record(number, lifecycleState[target], lifecycleActions.get(number), dependenciesOverride ?? dependencies);
   };
   const enterReadOnly = async () => {
     if (reducedSignedIn) return;
@@ -483,6 +555,7 @@ export async function runPlatformCases(h) {
     const me = await h.login(page, reducedEmail, "platform"); reducedSignedIn = true;
     assertReadOnlyPlatformPermissions(me); assert.equal(me.id, readOnlyOperator.id);
   };
+  lifecycleState.enterReadOnly = enterReadOnly;
   try {
     await record(1, page, async () => {
       const me = await h.login(page, reducedEmail, "platform"); reducedSignedIn = true;
@@ -515,27 +588,9 @@ export async function runPlatformCases(h) {
       return "Inicio real de Plataforma y su marco cargaron con la sesión operadora.";
     }, [10]);
     await recordLifecycle(12);
-    for (const [number, title] of [[13, "Historial"], [14, "Dueños"], [15, "Módulos"], [16, "Dominio verificado"], [17, "Página pública"]]) await record(number, page, async () => {
-      await page.goto(url(organizationRoute()));
-      await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click();
-      const panel = page.getByRole("tabpanel");
-      await panel.waitFor();
-      await panel.getByRole("status").waitFor({ state: "hidden" });
-      if (title === "Dominio verificado") await panel.getByText("Sin dominio de correo", { exact: true }).waitFor();
-      else if (title === "Dueños") await panel.getByText(business.email, { exact: false }).first().waitFor();
-      else if (title === "Página pública") await panel.getByText("Borrador", { exact: true }).first().waitFor();
-      else assert.ok((await panel.innerText()).trim().length > 0, "La pestaña debe mostrar datos o un vacío explícito.");
-      assert.equal(await panel.getByRole("alert").count(), 0, "La pestaña no debe mostrar un fallo de carga.");
-      return `${title} de la organización creada cargó desde el sistema real.`;
-    }, [12]);
+    for (const [number] of organizationTabs) await recordLifecycle(number);
     await recordLifecycle(18);
-    for (const [number, title] of [[19, "Métodos de ingreso"], [20, "Organizaciones"], [21, "Historial"]]) await record(number, page, async () => {
-      await page.goto(url(accountRoute()));
-      await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click();
-      const panel = page.getByRole("tabpanel"); await panel.waitFor();
-      assert.ok((await panel.innerText()).trim().length > 0);
-      return `${title} de la persona muestra datos o vacío explícito.`;
-    }, [18]);
+    for (const [number] of accountTabs) await recordLifecycle(number);
     for (const number of [22, 23, 24, 25, 26, 27, 28, 29]) await recordLifecycle(number);
     for (const [number, route, title, endpoint] of [[30, "/plataforma/recuperaciones", "Recuperaciones", "/api/platform/recoveries/paged"], [31, "/plataforma/auditoria", "Auditoría", "/api/platform/audit"], [32, "/plataforma/legales", "Documentos legales", "/api/platform/legal-documents"]]) await record(number, page, async () => {
       const loaded = responseAt(page, endpoint, "GET");
@@ -599,6 +654,7 @@ export async function runPlatformCases(h) {
       const tenant = await response.json(); assert.equal(tenant.id, business.me.activeTenantId);
       return platformWriteAttempts({ tenant, account: { id: person.me.id }, operator: fullOperator, ownerEmail: `e2e-denied-${randomUUID()}@example.test` });
     };
+    lifecycleState.negativeFixtures = negativeFixtures;
     await record(38, page, async () => {
       await enterReadOnly();
       await page.goto(url("/plataforma/organizaciones"));
@@ -614,20 +670,7 @@ export async function runPlatformCases(h) {
       await assertDeniedPlatformWrites(h, page, (await negativeFixtures()).organizations);
       return "El operador con tenants.read consultó la organización real sin controles de gestión; sus siete POST de alta/transición devolvieron 403 Http.Forbidden con traceId antes del step-up.";
     }, [8, 9, 37]);
-    await record(39, page, async () => {
-      await enterReadOnly();
-      await page.goto(url(accountRoute()));
-      await page.getByRole("heading", { name: person.email, exact: true }).waitFor();
-      const actual = await h.api(page, `/api/platform/accounts/${person.me.id}`); assert.equal(actual.status(), 200);
-      assert.equal((await actual.json()).id, person.me.id);
-      assert.equal(await page.getByRole("button", { name: /^Acciones de / }).count(), 0);
-      for (const label of ["Suspender", "Reactivar", "Cerrar sus sesiones", "Dar de baja"]) {
-        assert.equal(await page.getByRole("button", { name: label, exact: true }).count(), 0);
-        assert.equal(await page.getByRole("menuitem", { name: label, exact: true }).count(), 0);
-      }
-      await assertDeniedPlatformWrites(h, page, (await negativeFixtures()).accounts);
-      return "Con accounts.read la ficha real se consulta sin acciones de gestión; suspender, reactivar, cerrar sesiones y baja devolvieron 403 Http.Forbidden con traceId.";
-    }, [8, 9, 37]);
+    await recordLifecycle(39, [8, 9, 37]);
     await record(40, page, async () => {
       await enterReadOnly();
       await assertDeniedPlatformWrites(h, page, (await negativeFixtures()).operators);

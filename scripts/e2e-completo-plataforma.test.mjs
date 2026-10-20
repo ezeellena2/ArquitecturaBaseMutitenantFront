@@ -58,6 +58,50 @@ test("las búsquedas de organizaciones y cuentas montan el campo móvil desde su
   }
 });
 
+test("abrir la fila exige href propio y texto aunque el nombre móvil incluya sus metadatos", async () => {
+  for (const resource of ["organizaciones", "cuentas"]) for (const mobile of [false, true]) {
+    const route = `/plataforma/${resource}/11111111-1111-4111-8111-111111111111`;
+    const label = resource === "cuentas" ? "e2e-propia@example.test" : "Organización propia";
+    const target = { href: route, text: label, name: mobile ? `${label} hace un momento Activa Personal` : label };
+    const rows = [target, { href: route + "-ajena", text: label, name: label }, { href: route, text: "Otra persona", name: "Otra persona" }];
+    let clicked;
+    const locator = (items) => ({
+      filter: ({ hasText }) => locator(items.filter((item) => item.text.includes(hasText))),
+      and: (other) => locator(items.filter((item) => other.items.includes(item))), items,
+      click: async () => { assert.equal(items.length, 1); clicked = items[0]; },
+    });
+    const page = {
+      getByRole: (role, options) => { assert.equal(role, "link"); assert.equal(options, undefined, "El título no es todo el nombre accesible móvil."); return locator(rows); },
+      locator: (selector) => { assert.equal(selector, `a[href="${route}"]`); return locator(rows.filter((item) => item.href === route)); },
+    };
+    await platform.openPlatformListItem(page, route, label); assert.equal(clicked, target);
+    await assert.rejects(() => platform.openPlatformListItem(page, route, "Texto ausente"));
+  }
+});
+
+test("la preparación de lectura de cuentas sólo escribe por UI si falta ese permiso", async () => {
+  for (const configured of [false, true]) {
+    const calls = [];
+    const current = { id: "otro-operador", kind: "Operator", operatorPermissions: configured ? ["platform.accounts.read", "platform.tenants.read"] : ["platform.tenants.read"] };
+    const page = {};
+    const h = { base: new URL("https://localtest.me"), api: async (target, route) => {
+      assert.equal(target, page); calls.push(route);
+      return { status: () => 200, json: async () => route.includes("/paged?") ? { items: [{ id: current.id }] } : current };
+    } };
+    const changed = { ...current, operatorPermissions: ["platform.accounts.read", "platform.tenants.read"] };
+    const result = await platform.prepareReadOnlyPlatformOperator(h, page, "e2e-reduced@example.test", "operador-actual", {
+      addReadByUi: async (_h, target, detail, base) => { assert.equal(target, page); assert.equal(detail, current); assert.equal(base, h.base); calls.push("guardar por UI"); return changed; },
+    });
+    assert.equal(result, configured ? current : changed);
+    assert.equal(calls.includes("guardar por UI"), !configured);
+  }
+  const h = { base: new URL("https://localtest.me"), api: async (_page, route) => ({ status: () => 200,
+    json: async () => route.includes("/paged?") ? { items: [{ id: "otro" }] } : { id: "otro", kind: "Operator", operatorPermissions: ["platform.operators.manage"] } }) };
+  await assert.rejects(() => platform.prepareReadOnlyPlatformOperator(h, {}, "e2e-reduced@example.test", "actual", {
+    addReadByUi: async () => assert.fail("No cambiar permisos ajenos a la fixture reducida."),
+  }));
+});
+
 test("el conflicto de configuración verifica la alerta móvil, sus salidas y el borrador intacto", async () => {
   let draft = "3"; const visible = [];
   const page = { getByRole: (role, options) => {
@@ -98,8 +142,8 @@ test("abrir una acción espera la ficha y elige botón directo, hoja móvil o me
   }
 });
 
-test("la reparación de Plataforma sólo prepara sus fixtures y ejecuta los estados afectados", async () => {
-  const numbers = [8, 9, 10, 12, 18, 22, 23, 24, 25, 26, 27, 28, 29, 35];
+test("la reparación de Plataforma sólo prepara sus fixtures y ejecuta las fichas y estados afectados", async () => {
+  const numbers = [8, 9, 10, ...Array.from({ length: 18 }, (_, index) => index + 12), 35, 39];
   assert.deepEqual(platform.platformRepairDefinitions.map((entry) => entry.id), numbers.map((number) => `PLAT-${String(number).padStart(2, "0")}`));
   const records = []; const blocked = []; let closed = 0;
   const h = {
