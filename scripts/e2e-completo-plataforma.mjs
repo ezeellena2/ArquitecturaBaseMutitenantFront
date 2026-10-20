@@ -95,6 +95,7 @@ export const platformDefinitions = [
 ];
 
 export const platformRepairDefinitions = platformRepairPlan.map(([number]) => platformDefinitions.find((entry) => entry.id === `PLAT-${String(number).padStart(2, "0")}`));
+export const platformSessionRepairDefinitions = [26, 35, 28].map((number) => platformDefinitions.find((entry) => entry.id === `PLAT-${String(number).padStart(2, "0")}`));
 
 export async function assertPlatformProblem(response, status, code) {
   assert.equal(response.status(), status, `Se esperaba HTTP ${status}.`);
@@ -194,9 +195,25 @@ async function changeWithReason(page, label, route, reason) {
   assert.ok((await answer).ok(), "La acción de Plataforma debe responder 2xx.");
 }
 
-async function proveLogin(h, page, email, access = "consumer") {
+export function platformLoginProofUrl(base, access = "consumer", { forceLogin = false } = {}) {
+  assert.ok(["consumer", "business"].includes(access), "La prueba pública conserva su acceso Personal o Empresa.");
+  const target = new URL(access === "business" ? "/login/empresa" : "/login", base);
+  if (forceLogin) target.searchParams.set("prompt", "login");
+  return target;
+}
+
+export async function requireCancelledPersonalAccount(h, page, expectedId) {
+  await page.waitForURL((target) => target.pathname === "/");
+  await page.getByRole("navigation", { name: "Secciones", exact: true }).or(page.getByRole("button", { name: /, Personal$/u }))
+    .filter({ visible: true }).first().waitFor();
+  const response = await h.api(page, "/api/me"); assert.equal(response.status(), 200);
+  const me = await response.json(); assert.equal(me.access, "consumer"); assert.equal(me.id, expectedId);
+  return me;
+}
+
+async function proveLogin(h, page, email, access = "consumer", options) {
   requireSyntheticEmail(email);
-  await page.goto(new URL(access === "business" ? "/login/empresa" : "/login", h.base).href);
+  await page.goto(platformLoginProofUrl(h.base, access, options).href);
   await page.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(email);
   const before = new Set(await h.env.files());
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -341,8 +358,8 @@ function createPlatformLifecycleActions(h, state) {
       const cancelled = responseAt(personPage, "/api/auth/deletion/cancel", "POST");
       await personPage.getByRole("button", { name: "Cancelar la baja y entrar", exact: true }).click();
       assert.equal((await cancelled).status(), 200);
-      await personPage.waitForURL((target) => target.pathname === "/"); state.personSignedIn = true;
-      const me = await h.api(personPage, "/api/me"); assert.equal(me.status(), 200); assert.equal((await me.json()).access, "consumer");
+      state.personSignedIn = true;
+      await requireCancelledPersonalAccount(h, personPage, state.person.me.id);
       return "La persona vio la baja pendiente y la canceló por UI; recuperó su acceso Personal.";
     }],
     [27, async () => {
@@ -352,7 +369,7 @@ function createPlatformLifecycleActions(h, state) {
       return "La organización sintética quedó Suspendida por UI con motivo.";
     }],
     [28, async () => {
-      await assertPlatformProblem(await proveLogin(h, businessPage, state.business.email, "business"), 403, "Tenancy.Tenant.Suspended");
+      await assertPlatformProblem(await proveLogin(h, businessPage, state.business.email, "business", { forceLogin: true }), 403, "Tenancy.Tenant.Suspended");
       await businessPage.getByRole("heading", { name: `${state.business.organization} está suspendida`, exact: true }).waitFor();
       assert.notEqual(new URL(businessPage.url()).pathname, "/org");
       return "El Dueño no pudo entrar a la organización suspendida; recibió 403 Tenancy.Tenant.Suspended y aviso visible.";
@@ -397,6 +414,41 @@ export async function runPlatformRepairCases(h) {
       }
     }
   }
+}
+
+/** Sólo26/35/28 certifican acciones: sus altas, baja y suspensión son preparaciones propias sin resultados verdes. */
+export async function runPlatformSessionRepairCases(h) {
+  const page = await h.newPage(); const personPage = await h.newPage(); const businessPage = await h.newPage();
+  const pages = [page, personPage, businessPage]; const failures = [];
+  const state = { page, personPage, businessPage, fullEmail: h.width === 1440 ? "e2e-e9a-operator@example.test" : "e2e-e9b-operator@example.test" };
+  const actions = createPlatformLifecycleActions(h, state); const record = createPlatformRecorder(h);
+  let capturePage = personPage; let suspended = false;
+  const ensureFull = async () => { if (!state.fullSignedIn) { capturePage = page; await actions.get(10)(); } };
+  try {
+    await record("PLAT-26", () => capturePage, async () => {
+      capturePage = personPage; await actions.get(8)(); await ensureFull();
+      capturePage = page; await actions.get(18)(); await actions.get(25)();
+      capturePage = personPage; return actions.get(26)();
+    });
+    await record("PLAT-35", personPage, actions.get(35), ["PLAT-26"]);
+    await record("PLAT-28", () => capturePage, async () => {
+      //35 ya usó la sesión de26; si falló, se cierra por UI antes de preparar otra identidad pública.
+      if (state.personSignedIn) { capturePage = personPage; await h.signOut(personPage); state.personSignedIn = false; }
+      capturePage = businessPage; await actions.get(9)(); await ensureFull();
+      capturePage = page; await actions.get(12)(); await actions.get(27)(); suspended = true;
+      capturePage = businessPage; return actions.get(28)();
+    });
+  } finally {
+    // Restaurar la organización propia no acredita29 ni vuelve a ejecutar su verificación oficial.
+    if (suspended) { try { await actions.get(29)(); } catch (error) { failures.push(error); } }
+    for (const [target, signedIn] of [[personPage, state.personSignedIn], [businessPage, state.businessSignedIn], [page, state.fullSignedIn]]) {
+      if (signedIn) { try { await h.signOut(target); } catch (error) { failures.push(error); } }
+    }
+    for (const target of pages) {
+      try { await stopConfirmingRecentAuthentication(target); if (!target.isClosed()) await target.close(); } catch (error) { failures.push(error); }
+    }
+  }
+  if (failures.length) throw new AggregateError(failures, "Falló la restauración o salida por UI de la reparación de sesión.");
 }
 
 export async function runPlatformCases(h) {

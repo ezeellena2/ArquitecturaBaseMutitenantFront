@@ -5,6 +5,45 @@ import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
 import * as platform from "./e2e-completo-plataforma.mjs";
 
+test("cancelar la baja espera marco Personal antes de la primera lectura Bearer", async () => {
+  const ready = Promise.withResolvers(); const entered = Promise.withResolvers(); let reads = 0; let visible = false;
+  const locator = { or: () => locator, filter: () => locator, first: () => locator, waitFor: async () => { entered.resolve(); await ready.promise; } };
+  const page = { waitForURL: async (predicate) => assert.equal(predicate(new URL("https://localtest.me/")), true), getByRole: () => locator };
+  const h = { api: async (target, route) => {
+    assert.equal(target, page); assert.equal(route, "/api/me"); assert.equal(visible, true); reads++;
+    return { status: () => 200, json: async () => ({ id: "propia", access: "consumer" }) };
+  } };
+  const pending = platform.requireCancelledPersonalAccount(h, page, "propia");
+  await entered.promise; assert.equal(reads, 0, "La URL/ todavía puede mostrar Cargando sin token.");
+  visible = true; ready.resolve(); await pending; assert.equal(reads, 1);
+  await assert.rejects(() => platform.requireCancelledPersonalAccount(h, page, "ajena"));
+});
+
+test("la prueba empresarial puede exigir un formulario nuevo sin reutilizar la cookie pública", () => {
+  const base = new URL("https://localtest.me:7433/");
+  const forced = platform.platformLoginProofUrl(base, "business", { forceLogin: true });
+  assert.equal(forced.origin, base.origin); assert.equal(forced.pathname, "/login/empresa");
+  assert.deepEqual([...forced.searchParams], [["prompt", "login"]]); assert.equal(forced.hash, "");
+  assert.equal(platform.platformLoginProofUrl(base, "consumer").pathname, "/login");
+  assert.equal(platform.platformLoginProofUrl(base, "consumer").search, "");
+  assert.throws(() => platform.platformLoginProofUrl(base, "platform"));
+});
+
+test("la reparación de sesión sólo declara26/35/28 y sus preparaciones no acreditan casos verdes", async () => {
+  assert.deepEqual(platform.platformSessionRepairDefinitions.map((entry) => entry.id), ["PLAT-26", "PLAT-35", "PLAT-28"]);
+  const recorded = []; const blocked = []; let closed = 0;
+  const h = {
+    width: 1440, base: new URL("https://localtest.me:7433/"),
+    newPage: async () => ({ isClosed: () => false, close: async () => { closed++; } }),
+    registerPerson: async () => { throw new Error("persona no creada"); },
+    registerBusiness: async () => { throw new Error("organización no creada"); },
+    record: async (id, _page, action) => { recorded.push(id); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; } },
+    block: async (id) => blocked.push(id),
+  };
+  await platform.runPlatformSessionRepairCases(h);
+  assert.deepEqual(recorded, ["PLAT-26", "PLAT-28"]); assert.deepEqual(blocked, ["PLAT-35"]); assert.equal(closed, 3);
+});
+
 test("las búsquedas de organizaciones y cuentas montan el campo móvil desde su lupa antes de llenarlo", async () => {
   for (const [helper, label] of [["searchPlatformOrganizations", "Buscar por nombre o correo"], ["searchPlatformAccounts", "Buscar por nombre, correo o teléfono"]]) for (const width of [390, 1440]) {
     let visible = width === 1440; let typed;

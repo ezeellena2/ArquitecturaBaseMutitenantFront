@@ -6,7 +6,7 @@ import { plainTextBody } from "./test-e2e-real-mail.mjs";
 import { responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
 import { recoveryRow, selectRecovery } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { requireE8Control, sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
-import { assertPlatformProblem, createPlatformRecorder } from "./e2e-completo-plataforma.mjs";
+import { assertPlatformProblem, createPlatformRecorder, openAction } from "./e2e-completo-plataforma.mjs";
 import { openAccountActions } from "./test-e2e-real-e9.mjs";
 import { syntheticEmail, requireSyntheticEmail } from "./e2e-completo-soporte.mjs";
 import { confirmRecentAuthentication, confirmRecentAuthenticationWhenAsked, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
@@ -151,9 +151,7 @@ async function openRecovery(h, page, next, previous) {
   return { pending, dialog };
 }
 async function changeOrganization(h, page, id, action, reason) {
-  const button = page.getByRole("button", { name: action, exact: true });
-  if (await button.isVisible()) await button.click();
-  else { const menu = page.getByRole("button", { name: /^Acciones de/ }); await menu.click(); await page.getByRole("menuitem", { name: action, exact: true }).click(); }
+  await openAction(page, action);
   const dialog = page.getByRole("dialog").filter({ has: page.getByRole("textbox", { name: /^Motivo/ }) });
   await dialog.getByRole("textbox", { name: /^Motivo/ }).fill(reason);
   const suffix = { Suspender: "suspend", Reactivar: "reactivate", Aprobar: "approve" }[action];

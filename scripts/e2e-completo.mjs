@@ -58,6 +58,7 @@ const suiteSpecs = {
   legalesextra: ["./e2e-completo-legales-complemento.mjs", "legalSupplementDefinitions", "runLegalSupplementCases"],
   configuracionplataformaextra: ["./e2e-completo-configuracion-plataforma.mjs", "platformConfigurationDefinitions", "runPlatformConfigurationCases"],
   organizacionesextra: ["./e2e-completo-organizaciones-complemento.mjs", "organizationSupplementDefinitions", "runOrganizationSupplementCases"],
+  plataformasesionarreglos: ["./e2e-completo-plataforma.mjs", "platformSessionRepairDefinitions", "runPlatformSessionRepairCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
