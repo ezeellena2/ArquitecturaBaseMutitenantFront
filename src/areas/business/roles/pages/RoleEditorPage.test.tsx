@@ -454,6 +454,10 @@ describe("RoleEditorPage", () => {
     expect(await screen.findByText("Ver roles")).toBeVisible();
     expect(screen.queryByRole("textbox", { name: "Nombre" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
+    // A11 (Rol, «Ver el rol Dueño»): nombre y descripción en el mismo campo que al editar, apagado.
+    expect(screen.getByRole("group", { name: "Nombre" })).toHaveTextContent("Dueño");
+    expect(screen.getByRole("group", { name: "Nombre" }).querySelector("[data-slot=read-only-field]")).toHaveClass("bg-[var(--s2)]");
+    expect(screen.getByRole("group", { name: "Descripción" }).querySelector("[data-slot=read-only-field]")).toHaveClass("min-h-[84px]");
     expect(screen.getByText("Ver roles")).toBeVisible();
     expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
     expect(screen.getByText("2 de 2 elegidos")).toBeVisible();

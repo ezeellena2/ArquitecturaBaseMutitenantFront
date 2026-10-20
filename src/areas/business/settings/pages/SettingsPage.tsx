@@ -200,7 +200,7 @@ function SettingsEditor({ settings, loadError, reload }: {
         <Section title={t("settings:dataTitle")} phone="untitled">
           <form id="settings-editor" noValidate aria-label={t("settings:title")} onSubmit={(event) => { void submit(event); }}>
             <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
-              {/* Tablero «Criterio · Formularios»: sin permiso para cambiar, los datos se leen como texto, sin campos grises. */}
+              {/* «Criterio · Formularios», A11: sin permiso para cambiar, el mismo campo, apagado. */}
               {canManage ? <>
                 <FormField label={t("settings:fields.name")} required error={errors.name?.message}><Input {...form.register("name")} maxLength={validationConstraints.UpdateOrganizationSettingsHttpRequest.name.maxLength} /></FormField>
                 <FormField label={t("settings:fields.culture")} error={errors.defaultCulture?.message}><CultureSelect value={culture.field.value} onChange={culture.field.onChange} placeholder={t("settings:chooseCulture")} /></FormField>
@@ -208,9 +208,9 @@ function SettingsEditor({ settings, loadError, reload }: {
                 <FormField label={t("settings:fields.currency")} error={errors.defaultCurrency?.message}><CurrencySelect value={currency.field.value} onChange={currency.field.onChange} placeholder={t("settings:chooseCurrency")} /></FormField>
               </> : <>
                 <ReadOnlyField label={t("settings:fields.name")}>{settings.name}</ReadOnlyField>
-                <ReadOnlyField label={t("settings:fields.culture")}><CultureText value={settings.defaultCulture} /></ReadOnlyField>
-                <ReadOnlyField label={t("settings:fields.timeZone")}><TimeZoneText value={settings.defaultTimeZoneId} /></ReadOnlyField>
-                <ReadOnlyField label={t("settings:fields.currency")}><CurrencyText value={settings.defaultCurrency} /></ReadOnlyField>
+                <ReadOnlyField control="select" label={t("settings:fields.culture")}><CultureText value={settings.defaultCulture} /></ReadOnlyField>
+                <ReadOnlyField control="select" label={t("settings:fields.timeZone")}><TimeZoneText value={settings.defaultTimeZoneId} /></ReadOnlyField>
+                <ReadOnlyField control="select" label={t("settings:fields.currency")}><CurrencyText value={settings.defaultCurrency} /></ReadOnlyField>
               </>}
             </SectionFields>
           </form>

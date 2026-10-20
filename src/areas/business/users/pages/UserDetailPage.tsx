@@ -334,12 +334,12 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
                     <SelectItem value="Inactive" description={t("users:detail.statusInactiveDescription")}>{t("users:states.Inactive")}</SelectItem>
                   </SelectContent>
                 </Select>
-              </FormField> : <ReadOnlyField label={t("users:detail.status")}>{t(`users:states.${member.state}`)}</ReadOnlyField>}
+              </FormField> : <ReadOnlyField control="select" label={t("users:detail.status")}>{t(`users:states.${member.state}`)}</ReadOnlyField>}
               {editable ? <RolesField label={t("users:detail.organizationRoles")} allLabel={t("users:detail.allRoles")}
                 remote={orgOptions.remote} allCount={orgOptions.allCount} allOptions={async () => (await orgOptions.allItems()).map((role) => ({ value: role.id, label: role.name }))}
                 selectedOptions={[...member.roles, ...orgOptions.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={current.roleIds}
                 onChange={(roleIds) => changeAccess({ roleIds })} placeholder={t("users:detail.noRoles")} />
-                : <ReadOnlyField label={t("users:detail.organizationRoles")}>{member.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || t("users:detail.noRoles")}</ReadOnlyField>}
+                : <ReadOnlyField control="select" label={t("users:detail.organizationRoles")} muted={!member.roles.some((role) => role.scope === "Organization")}>{member.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || t("users:detail.noRoles")}</ReadOnlyField>}
             </SectionFields>}
           </form>
         </Section>

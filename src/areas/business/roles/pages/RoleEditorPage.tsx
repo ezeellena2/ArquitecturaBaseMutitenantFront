@@ -280,7 +280,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
                 ? <FormField label={t("roles:fields.description")} error={errors.description?.message}>
                   <Textarea {...form.register("description")} maxLength={descriptionMaxLength} />
                 </FormField>
-                : <ReadOnlyField long label={t("roles:fields.description")}>{(role ? role.description : null) ?? t("roles:noDescription")}</ReadOnlyField>}
+                : <ReadOnlyField long label={t("roles:fields.description")} muted={!role?.description}>{(role ? role.description : null) || t("roles:noDescription")}</ReadOnlyField>}
             </div>
           </SectionFields>
         </Section>

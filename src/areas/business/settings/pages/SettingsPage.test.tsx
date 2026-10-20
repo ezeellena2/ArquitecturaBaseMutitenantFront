@@ -166,13 +166,14 @@ describe("SettingsPage", () => {
   });
 
   // Tablero «Criterio · Formularios»: lo que no se edita se muestra como texto, nunca como un campo gris.
-  it("sin permiso para cambiar, muestra los datos como texto y sin botones", async () => {
+  // A11 («Criterio · Formularios», v113): sin permiso para cambiar, el mismo campo, apagado; los desplegables con su flechita.
+  it("sin permiso para cambiar, muestra cada dato en su campo apagado y sin botones", async () => {
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
       http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
     );
 
-    renderRouteWithProviders("/org/configuracion", { as: "business-settings-reader" });
+    const { container } = renderRouteWithProviders("/org/configuracion", { as: "business-settings-reader" });
     const data = await screen.findByRole("region", { name: "Datos de la organización" });
 
     await waitFor(() => expect(within(data).getByText("Peso argentino (ARS)")).toBeVisible());
@@ -183,6 +184,11 @@ describe("SettingsPage", () => {
     expect(within(data).queryByRole("combobox")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Agregar dominio" })).not.toBeInTheDocument();
+    expect(within(data).getByRole("group", { name: "Nombre de la organización" }).querySelector("[data-slot=read-only-field]")).toHaveClass("bg-[var(--s2)]", "text-[var(--t2)]");
+    for (const name of ["Idioma y región predeterminados", "Zona horaria predeterminada", "Moneda predeterminada"]) {
+      expect(within(data).getByRole("group", { name }).querySelector("[data-slot=read-only-field] svg")).not.toBeNull();
+    }
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   // «Criterio · Avisos» (Pantalla de error): si la configuración no carga, no se puede mostrar nada; «Reintentar» la
