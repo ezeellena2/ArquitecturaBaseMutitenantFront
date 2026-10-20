@@ -84,6 +84,19 @@ test("moderar espera las acciones de la página pública y no abre el menú de l
     assert.deepEqual(calls, ["pestaña", "acciones página pública", action]);
   }
 });
+
+test("salir del editor usa la flecha móvil a Más o Inicio de escritorio sin navegación directa", async () => {
+  for (const width of [390, 1440]) {
+    const route = width === 390 ? "/mas" : "/org"; const name = width === 390 ? "Volver a Más" : "Inicio"; let clicks = 0;
+    const href = {};
+    const link = { filter: ({ visible }) => { assert.equal(visible, true); return link; },
+      and: (target) => { assert.equal(target, href); return link; }, first: () => link, click: async () => { clicks++; } };
+    const page = { goto: async () => assert.fail("La navegación directa no prueba la guarda del router."),
+      locator: (selector) => { assert.equal(selector, `a[href="${route}"]`); return href; },
+      getByRole: (role, options) => { assert.equal(role, "link"); assert.deepEqual(options, { name, exact: true }); return link; } };
+    assert.equal(await publicCases.leaveOrganizationSettings({ width }, page), route); assert.equal(clicks, 1);
+  }
+});
 test("hosts se limitan al subdominio propio y las lecturas API locales", () => {
   const base = new URL("https://localtest.me:5174");
   assert.equal(publicHostUrl(base, "propia", "/api/public-site").href, "https://propia.localtest.me:5174/api/public-site");

@@ -116,6 +116,14 @@ export async function openPublicModerationAction(page, action) {
   await actions.waitFor(); await actions.click();
   await page.getByRole("menuitem", { name: action, exact: true }).click();
 }
+export async function leaveOrganizationSettings(h, page) {
+  assert.ok([390, 1440].includes(h.width));
+  // FixedActions oculta la navegación inferior del editor móvil; la salida real es la flecha de su barra.
+  const route = h.width === 390 ? "/mas" : "/org";
+  const name = h.width === 390 ? "Volver a Más" : "Inicio";
+  await page.getByRole("link", { name, exact: true }).filter({ visible: true }).and(page.locator(`a[href="${route}"]`)).first().click();
+  return route;
+}
 async function operatorAction(h, page, tenantId, action, reason, moderation = false) {
   await page.goto(new URL("/plataforma/organizaciones/" + tenantId, h.base).href);
   let route;
@@ -298,13 +306,13 @@ export async function runPublicSupplementCases(h) {
       let writes = 0; const watch = (request) => { if (new URL(request.url()).pathname === "/api/organization/settings" && request.method() === "PUT") writes++; }; aPage.on("request", watch);
       try {
         await aPage.getByRole("textbox", { name: "Nombre de la organización", exact: true }).fill(draft);
-        const leave = () => aPage.getByRole("link", { name: "Inicio", exact: true }).filter({ visible: true }).first().click();
+        const leave = () => leaveOrganizationSettings(h, aPage);
         await leave(); let dialog = aPage.getByRole("dialog", { name: "¿Salir sin guardar?", exact: true });
         await dialog.getByRole("button", { name: "Seguir editando", exact: true }).click();
         assert.equal(new URL(aPage.url()).pathname, "/org/configuracion"); assert.equal(await aPage.getByRole("textbox", { name: "Nombre de la organización", exact: true }).inputValue(), draft);
         assert.deepEqual(await read(h, aPage, "/api/organization/settings"), before);
-        await leave(); dialog = aPage.getByRole("dialog", { name: "¿Salir sin guardar?", exact: true });
-        await dialog.getByRole("button", { name: "Salir sin guardar", exact: true }).click(); await aPage.waitForURL((url) => url.pathname === "/org");
+        const destination = await leave(); dialog = aPage.getByRole("dialog", { name: "¿Salir sin guardar?", exact: true });
+        await dialog.getByRole("button", { name: "Salir sin guardar", exact: true }).click(); await aPage.waitForURL((url) => url.pathname === destination);
         await aPage.goto(new URL("/org/configuracion", h.base).href);
         assert.equal(await aPage.getByRole("textbox", { name: "Nombre de la organización", exact: true }).inputValue(), before.name);
         assert.deepEqual(await read(h, aPage, "/api/organization/settings"), before); assert.equal(writes, 0); await assertViewport(aPage);
