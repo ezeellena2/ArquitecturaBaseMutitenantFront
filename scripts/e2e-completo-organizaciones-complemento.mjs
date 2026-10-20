@@ -18,12 +18,13 @@ export const organizationSupplementDefinitions = [
 export const organizationSupplementProofGroups = { "BACK-OR-012": [["BIZ-20", "ORX-01"]], "BACK-IN-003": [["AS-SUP-01", "ORX-02"]], "BACK-PL-009": [["PLAT-27", "PLAT-28", "PLAT-29", "ORX-04"]] };
 export const proofGroups = organizationSupplementProofGroups;
 export const organizationRepairDefinitions = organizationSupplementDefinitions.slice(0, 3);
+export const organizationStateRepairDefinitions = organizationSupplementDefinitions.filter((entry) => entry.id === "ORX-04");
 
-export function createOrganizationRecorder(h, { repair = false, outcomes, getPage, setCapturePage, defaultPage }) {
-  const repairIds = new Set(organizationRepairDefinitions.map((row) => row.id));
+export function createOrganizationRecorder(h, { repair = false, definitions, outcomes, getPage, setCapturePage, defaultPage }) {
+  const selectedIds = new Set((definitions ?? (repair ? organizationRepairDefinitions : organizationSupplementDefinitions)).map((row) => row.id));
   return async (number, action, target = defaultPage) => {
     const id = `ORX-${String(number).padStart(2, "0")}`;
-    if (repair && !repairIds.has(id)) return;
+    if (!selectedIds.has(id)) return;
     if (target !== undefined) setCapturePage(target);
     const outcome = await h.record(id, getPage, action); outcomes.set(number, outcome); return outcome;
   };
@@ -58,6 +59,13 @@ export async function leaveOrganizationSession(h, page) {
   await page.goto(new URL("/cuenta", h.base).href);
   await page.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();
   await h.signOut(page);
+}
+
+export async function readInvitedCompanyHomeSession(h, page) {
+  await page.waitForURL((current) => current.pathname === "/org");
+  // Tus empresas sólo se renderiza tras el GET Home real; la URL puede adelantarse al primer Bearer de la SPA.
+  await page.getByRole("heading", { name: "Tus empresas", exact: true }).waitFor();
+  return read(h, page, "/api/me");
 }
 
 export function requireExpiredMemberOnce(counts, listed, memberId, now = Date.now()) {
@@ -134,13 +142,16 @@ export async function runOrganizationSupplementCases(h) {
 export async function runOrganizationRepairCases(h) {
   return runOrganizationPlan(h, true);
 }
-async function runOrganizationPlan(h, repair) {
+export async function runOrganizationStateRepairCases(h) {
+  return runOrganizationPlan(h, true, organizationStateRepairDefinitions);
+}
+async function runOrganizationPlan(h, repair, definitions) {
   const page = await h.newPage(); const platformPage = await h.newPage(); const invitationPage = await h.newPage(); const personalPage = await h.newPage();
   const businessObserver = observeBearer(page); const personalObserver = observeBearer(personalPage); const url = (route) => new URL(route, h.base).href;
   const operatorEmail = h.width === 1440 ? "e2e-e9a-operator@example.test" : "e2e-e9b-operator@example.test";
   const tag = randomUUID().slice(0, 8); let currentEmail; let publicPage; let operatorActive = false; let original; let company; let expired; let suspendedInvitation; let companyAdmin; let own; let domain;
   let capturePage = page; const suspended = new Set(); const failures = []; const outcomes = new Map();
-  const run = createOrganizationRecorder(h, { repair, outcomes, getPage: () => capturePage, setCapturePage: (target) => { capturePage = target; }, defaultPage: page });
+  const run = createOrganizationRecorder(h, { repair, definitions, outcomes, getPage: () => capturePage, setCapturePage: (target) => { capturePage = target; }, defaultPage: page });
   const inviteCurrent = (targetCompany, email, roleName) => invite(h, page, targetCompany, email, roleName, { onPhase: () => { capturePage = page; } });
   const invitationPreview = (target, token, state) => { capturePage = target; return preview(h, target, token, state); };
   const leave = async () => {
@@ -228,9 +239,9 @@ async function runOrganizationPlan(h, repair) {
       const reserved = await read(h, page, `/api/users/${companyAdmin.memberId}`); assert.deepEqual(reserved.roles, []); assert.equal(reserved.userId, null); assert.ok(reserved.companies.find((item) => item.companyId === company.id)?.roles.some((role) => role.id === roleId));
       await leave(); await invitationPreview(page, companyAdmin.token, "NoAccount");
       await clickForResponse(page, page.getByRole("button", { name: "Aceptar invitación", exact: true }), "/api/invitations/accept", "POST", 200); publicPage = page; currentEmail = companyAdmin.email;
-      await page.getByRole("button", { name: "Más tarde", exact: true }).click(); await page.waitForURL((current) => current.pathname === "/org");
-      const me = await read(h, page, "/api/me"); assert.equal(me.activeTenantId, original.activeTenantId); assert.equal(me.effectivePermissions.organization.includes("users.read"), false); assert.ok(me.effectivePermissions.companies[company.id].includes("company.members.read"));
-      await page.getByRole("heading", { name: "Tus empresas", exact: true }).waitFor(); const home = await read(h, page, "/api/home"); assert.equal(home.organization, null); assert.ok(home.companies.some((item) => item.companyId === company.id));
+      await page.getByRole("button", { name: "Más tarde", exact: true }).click();
+      const me = await readInvitedCompanyHomeSession(h, page); assert.equal(me.activeTenantId, original.activeTenantId); assert.equal(me.effectivePermissions.organization.includes("users.read"), false); assert.ok(me.effectivePermissions.companies[company.id].includes("company.members.read"));
+      const home = await read(h, page, "/api/home"); assert.equal(home.organization, null); assert.ok(home.companies.some((item) => item.companyId === company.id));
       const group = home.pendingGroups.find((item) => item.kind === "invitationExpired" && item.companyId === company.id); assert.ok(group); assert.equal(group.totalCount, 11); assert.equal(group.items.length, 10);
       const section = page.getByRole("region", { name: "Para resolver", exact: true }); const resend = section.getByRole("link", { name: "Reenviar", exact: true }).first(); assert.equal(await resend.getAttribute("href"), `/org/empresas/${company.id}`); await resend.click(); await page.getByRole("heading", { name: company.name, exact: true }).waitFor();
       await page.goto(url("/org")); const all = page.getByRole("region", { name: "Para resolver", exact: true }).locator(`a[href="/org/empresas/${company.id}?state=Expired"]`); await all.click(); await page.getByRole("heading", { name: company.name, exact: true }).waitFor(); assert.equal(new URL(page.url()).searchParams.get("state"), "Expired");
@@ -271,7 +282,7 @@ async function runOrganizationPlan(h, repair) {
       await ownFixture(); await page.goto(url("/org")); await page.getByRole("region", { name: "Para resolver", exact: true }).waitFor(); const businessToken = businessObserver.take();
       const privateRoutes = ["/api/home", "/api/users/paged?pageSize=10", "/api/companies/paged?pageSize=10"];
       for (const route of privateRoutes) assert.equal((await usingBearer(page, businessToken, route)).status(), 200);
-      await personalPage.goto(url("/login?prompt=login")); await personalPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(own.email); const before = new Set(await h.env.files());
+      capturePage = personalPage; await personalPage.goto(url("/login?prompt=login")); await personalPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(own.email); const before = new Set(await h.env.files());
       const sent = await sendWithCooldown(() => clickForResponse(personalPage, personalPage.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", "POST", null)); assert.equal(sent.status(), 202); await personalPage.getByRole("heading", { name: "Revisá tu correo", exact: true }).waitFor(); await fillOtp(personalPage, await h.env.code(own.email, before)); await clickForResponse(personalPage, personalPage.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", "POST", 200); publicPage = personalPage; currentEmail = own.email;
       await personalPage.waitForURL((current) => !["/login", "/auth/callback"].includes(current.pathname)); await personalPage.goto(url("/cuenta")); await personalPage.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();
       const personalToken = personalObserver.take(); const personalResponse = await usingBearer(personalPage, personalToken, "/api/me"); assert.equal(personalResponse.status(), 200); const personalBefore = await personalResponse.json(); requirePreservedPersonal(personalBefore, personalBefore, own.me.id);
@@ -279,11 +290,11 @@ async function runOrganizationPlan(h, repair) {
       for (const route of privateRoutes) assert.equal((await usingBearer(page, businessToken, route)).status(), 200);
       const changes = [await state(own.me.activeTenantId, "Suspender", `Suspensión con sesiones previas ${tag}.`)];
       const revokedStatuses = []; for (const route of privateRoutes) { const response = await usingBearer(page, businessToken, route); await requireRevokedBusiness(response); revokedStatuses.push(response.status()); }
-      const personalCheck = async () => { const response = await usingBearer(personalPage, personalToken, "/api/me"); assert.equal(response.status(), 200); requirePreservedPersonal(personalBefore, await response.json(), own.me.id); assert.equal((await usingBearer(personalPage, personalToken, "/api/me/login-methods")).status(), 200); };
+      const personalCheck = async () => { capturePage = personalPage; const response = await usingBearer(personalPage, personalToken, "/api/me"); assert.equal(response.status(), 200); requirePreservedPersonal(personalBefore, await response.json(), own.me.id); assert.equal((await usingBearer(personalPage, personalToken, "/api/me/login-methods")).status(), 200); };
       await personalCheck(); changes.push(await state(own.me.activeTenantId, "Reactivar", `Reactivación propia con fecha ${tag}.`)); await personalCheck();
       changes.push(await state(own.me.activeTenantId, "Suspender", `Suspensión anterior al cierre propio ${tag}.`)); changes.push(await state(own.me.activeTenantId, "Cerrar", `Cierre de la organización propia ${tag}.`)); await personalCheck();
-      const history = await read(h, platformPage, `/api/platform/tenants/${own.me.activeTenantId}/history?limit=100`); requireStateHistory(changes, history); await platformPage.reload(); await platformPage.getByRole("tab", { name: "Historial", exact: true }).click(); await platformPage.getByText(`Cierre de la organización propia ${tag}.`, { exact: true }).filter({ visible: true }).first().waitFor();
-      await personalPage.reload(); await personalPage.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor(); await personalCheck(); capturePage = personalPage;
+      await verifyOrganizationClosureHistory(h, platformPage, own.me.activeTenantId, changes, (target) => { capturePage = target; });
+      capturePage = personalPage; await personalPage.reload(); await personalPage.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor(); await personalCheck();
       return `Los tres recursos Business con Bearer previo pasaron200→${revokedStatuses.join("/")}. El mismo Personal previo conservó identidad/espacio y200 antes/después de Suspender, Reactivar y Cerrar por UI; ficha e historial conservaron cada motivo y fecha UTC exacta.`;
     }, personalPage);
   } catch (error) { failures.push(error); } finally {
@@ -294,4 +305,16 @@ async function runOrganizationPlan(h, repair) {
     for (const target of [page, platformPage, invitationPage, personalPage]) { try { await target.close(); } catch (error) { failures.push(error); } }
   }
   if (failures.length) throw new AggregateError(failures, "Falló una preparación o la restauración UI de las organizaciones propias.");
+}
+
+/** La línea móvil une actor y motivo; el GET conserva la comprobación completa de motivos y UTC. */
+export async function verifyOrganizationClosureHistory(h, page, tenantId, changes, setCapturePage) {
+  setCapturePage(page);
+  const history = await read(h, page, `/api/platform/tenants/${tenantId}/history?limit=100`);
+  requireStateHistory(changes, history);
+  await page.reload(); await page.getByRole("tab", { name: "Historial", exact: true }).click();
+  const reason = changes.at(-1)?.reason; assert.ok(reason);
+  const panel = page.getByRole("tabpanel");
+  if (h.width === 390) await panel.getByRole("listitem").filter({ hasText: reason }).waitFor();
+  else await panel.getByText(reason, { exact: true }).filter({ visible: true }).first().waitFor();
 }

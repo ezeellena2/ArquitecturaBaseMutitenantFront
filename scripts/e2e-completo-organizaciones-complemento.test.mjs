@@ -4,6 +4,34 @@ import { EventEmitter } from "node:events";
 import * as organization from "./e2e-completo-organizaciones-complemento.mjs";
 import { organizationSupplementDefinitions, organizationSupplementProofGroups, requireExpiredMemberOnce, requireUrgentPageFirst, requirePreservedPersonal, requireUnavailableInvitation, requireStateHistory, requireRevokedBusiness } from "./e2e-completo-organizaciones-complemento.mjs";
 
+test("la reparación de estados ejecuta sólo ORX04 sin reconstruir invitaciones ni moderación verdes", async () => {
+  assert.deepEqual(organization.organizationStateRepairDefinitions.map((entry) => entry.id), ["ORX-04"]);
+  const seen = []; const outcomes = new Map(); let captured;
+  const record = organization.createOrganizationRecorder({ record: async (id, getPage, action) => { assert.equal(getPage(), "Plataforma"); seen.push(id); return action(); } }, {
+    repair: true, definitions: organization.organizationStateRepairDefinitions, outcomes, getPage: () => captured, setCapturePage: (page) => { captured = page; }, defaultPage: "Plataforma",
+  });
+  for (const number of [1, 2, 3, 4]) await record(number, async () => { assert.equal(number, 4); return { ok: true }; });
+  assert.deepEqual(seen, ["ORX-04"]); assert.deepEqual([...outcomes.keys()], [4]);
+});
+
+test("llegar a org no permite leer Me antes de que Inicio-Miembro termine su lectura autenticada", async () => {
+  const ready = Promise.withResolvers(); const waiting = Promise.withResolvers(); const calls = []; const me = { access: "business", activeTenantId: "propia" };
+  const page = { waitForURL: async (predicate) => { assert.equal(predicate(new URL("https://localtest.me/org")), true); calls.push("URL org"); }, getByRole: (role, options) => {
+    assert.equal(role, "heading"); assert.deepEqual(options, { name: "Tus empresas", exact: true });
+    return { waitFor: async (options) => { assert.equal(options, undefined); calls.push("esperar Inicio-Miembro"); waiting.resolve(); await ready.promise; calls.push("Home real listo"); } };
+  } };
+  const h = { api: async (target, route) => { assert.equal(target, page); assert.equal(route, "/api/me"); calls.push("Me con Bearer observado"); return { status: () => 200, json: async () => me }; } };
+  const pending = organization.readInvitedCompanyHomeSession(h, page); await waiting.promise;
+  assert.deepEqual(calls, ["URL org", "esperar Inicio-Miembro"]); ready.resolve(); assert.equal(await pending, me);
+  assert.deepEqual(calls, ["URL org", "esperar Inicio-Miembro", "Home real listo", "Me con Bearer observado"]);
+});
+
+test("si Inicio-Miembro no carga conserva el fallo sin llamar API ni saltar a otra ruta", async () => {
+  const failure = new Error("Inicio-Miembro siguió cargando");
+  const page = { waitForURL: async () => {}, getByRole: () => ({ waitFor: async () => { throw failure; } }), goto: async () => assert.fail("No hay navegación alternativa") };
+  await assert.rejects(() => organization.readInvitedCompanyHomeSession({ api: async () => assert.fail("La SPA aún no emitió Bearer") }, page), (error) => error === failure);
+});
+
 test("el observador anterior al diálogo detecta una emisión prematura sin publicar destino ni clave", async () => {
   const page = new EventEmitter(); const base = new URL("https://localtest.me"); const phases = [];
   const request = { url: () => base.origin + "/api/users/invitations?private=oculto", method: () => "POST", headers: () => ({ "idempotency-key": "clave-privada" }) };
@@ -111,4 +139,34 @@ test("un Bearer empresarial anterior queda rechazado por revocación OIDC o esta
   const response = (status, code, extra = {}) => ({ status: () => status, json: async () => ({ code, traceId: "traza", ...extra }) });
   await requireRevokedBusiness(response(401, "Http.Unauthorized")); await requireRevokedBusiness(response(403, "Tenancy.Tenant.Suspended"));
   for (const wrong of [response(200, "Http.Unauthorized"), response(401, "Tenancy.Tenant.Suspended"), response(403, "Http.Forbidden"), response(403, "Tenancy.Tenant.Suspended", { items: [] }), response(401, "Http.Unauthorized", { traceId: "" })]) await assert.rejects(requireRevokedBusiness(wrong));
+});
+
+test("ORX04 muestra el motivo unido al actor móvil en su tabpanel y captura Plataforma aun si la fila no aparece", async () => {
+  for (const width of [390, 1440]) for (const present of [true, false]) {
+    const reason = "Cierre propio del helper."; const calls = []; let capturePage = "Personal";
+    const change = { reason, atUtc: "2026-10-20T03:40:50Z", action: "Organización cerrada" };
+    const row = { reason, occurredAtUtc: change.atUtc, action: change.action, actor: "Operador", actorRole: "Plataforma" };
+    const expected = { waitFor: async () => { calls.push("fila propia"); if (!present) throw new Error("La fila propia falta"); } };
+    const panel = {
+      getByRole: (role) => { assert.equal(width, 390); assert.equal(role, "listitem"); return { filter: ({ hasText }) => { assert.equal(hasText, reason); return expected; } }; },
+      getByText: (text, options) => { assert.equal(width, 1440); assert.equal(text, reason); assert.deepEqual(options, { exact: true }); return { filter: () => ({ first: () => expected }) }; },
+    };
+    const page = {
+      reload: async () => calls.push("recargar ficha"),
+      getByRole: (role, options) => {
+        if (role === "tabpanel") return panel;
+        assert.equal(role, "tab"); assert.deepEqual(options, { name: "Historial", exact: true });
+        return { click: async () => calls.push("Historial") };
+      },
+    };
+    const h = { width, api: async (target, route) => {
+      assert.equal(target, page); assert.equal(capturePage, page);
+      assert.equal(route, "/api/platform/tenants/propia/history?limit=100");
+      calls.push("GET200 UTC exacto"); return { status: () => 200, json: async () => ({ items: [row] }) };
+    } };
+    const verify = () => organization.verifyOrganizationClosureHistory(h, page, "propia", [change], (target) => { capturePage = target; });
+    if (present) await verify(); else await assert.rejects(verify, /La fila propia falta/u);
+    assert.equal(capturePage, page);
+    assert.deepEqual(calls, ["GET200 UTC exacto", "recargar ficha", "Historial", "fila propia"]);
+  }
 });
