@@ -3,6 +3,44 @@ import test from "node:test";
 import { assistantSupplementDefinitions, assistantSupplementProofGroups, requireProjectedAssistant, requirePrivateAttachmentMetadata, requireGlobalUsage, platformSettingsValues, requirePrivateProblem, assertGlobalSettingsRestored } from "./e2e-completo-asistente-complemento.mjs";
 import * as assistant from "./e2e-completo-asistente-complemento.mjs";
 
+test("la preparación lista por UI el chat propio antes del turno activo y sus acciones usan la fila seleccionada aun con títulos repetidos", async () => {
+  for (const width of [1440, 390]) {
+    const calls = []; const page = {}; const detail = { conversation: { id: "propia", title: "Consulta de prueba" } };
+    let historyOpen = width === 1440;
+    const row = { getByRole: (role, options) => {
+      assert.equal(role, "button"); assert.deepEqual(options, { name: "Acciones de Consulta de prueba", exact: true });
+      return { waitFor: async () => { assert.equal(historyOpen, true); calls.push("fila propia listada"); }, click: async () => calls.push("abrir acciones de la fila propia") };
+    } };
+    const selected = { locator: (selector) => { assert.equal(selector, ".."); return row; } };
+    const titleButton = { and: (current) => { assert.equal(current, "aria-current=true"); calls.push("limitar a selección propia"); return selected; } };
+    page.locator = (selector) => { assert.equal(selector, '[aria-current="true"]'); return "aria-current=true"; };
+    page.keyboard = { press: async (key) => { assert.equal(key, "Escape"); historyOpen = false; calls.push("cerrar historial"); } };
+    page.getByRole = (role, options) => {
+      assert.equal(options.exact, true);
+      if (role === "menuitem") { assert.equal(options.name, "Borrar: Consulta de prueba"); return { click: async () => calls.push("elegir Borrar") }; }
+      assert.equal(role, "button");
+      if (options.name === "Conversaciones") return { click: async () => { historyOpen = true; calls.push("abrir historial"); } };
+      assert.equal(options.name, "Consulta de prueba", "No busca acciones globales ni conserva el título nulo del primer turno."); return titleButton;
+    };
+    const h = { width }; const primed = await assistant.prepareListedAssistantConversation(h, page, { send: async (actualH, target, text) => {
+      assert.equal(actualH, h); assert.equal(target, page); assert.match(text, /^\[E2E:answer\]/u); calls.push("turno rápido propio completado"); return { id: "propia", detail };
+    } });
+    assert.deepEqual(primed, { id: "propia", detail, title: "Consulta de prueba" });
+    assert.equal(calls[0], "turno rápido propio completado"); assert.ok(calls.includes("fila propia listada"));
+    if (width === 390) assert.equal(historyOpen, false, "El compositor queda disponible para el turno lento.");
+    calls.push("turno lento en el mismo ID");
+    await assistant.openListedAssistantConversationAction(page, width, primed.title, "Borrar");
+    assert.deepEqual(calls.slice(-2), ["abrir acciones de la fila propia", "elegir Borrar"]);
+  }
+});
+
+test("la preparación no acredita una fila de otro ID ni inventa un título si el DTO propio aún no lo tiene", async () => {
+  for (const conversation of [{ id: "otra", title: "Consulta de prueba" }, { id: "propia", title: null }]) {
+    const page = { getByRole: () => assert.fail("No usa una fila sin identidad y título reales.") };
+    await assert.rejects(() => assistant.prepareListedAssistantConversation({ width: 1440 }, page, { send: async () => ({ id: "propia", detail: { conversation } }) }));
+  }
+});
+
 test("el feedback ajeno espera la aceptación real del aviso propio y conserva payload, 404 y privacidad", async () => {
   const calls = []; const response = { status: () => 404, json: async () => ({ code: "Assistant.Conversation.NotFound", traceId: "traza-propia" }) };
   const page = {}; const chat = { id: "chat-ajeno", detail: { messages: { items: [{ id: "pregunta", role: "user", version: 1 }, { id: "respuesta-ajena", role: "assistant", version: 7 }] } } };

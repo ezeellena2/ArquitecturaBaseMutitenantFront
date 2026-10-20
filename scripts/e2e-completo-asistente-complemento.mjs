@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
-import { assistantHomeRoute, acceptAssistantNoticeFromHome, waitAssistantTerminal, conversationAction } from "./assistant-real-ui.mjs";
+import { assistantHomeRoute, acceptAssistantNoticeFromHome, waitAssistantTerminal } from "./assistant-real-ui.mjs";
 import { createAssistantControl } from "./assistant-real-control.mjs";
 import { syntheticEmail } from "./e2e-completo-soporte.mjs";
 import { clickForResponse } from "./e2e-completo-negocio.mjs";
@@ -19,7 +19,7 @@ export const assistantSupplementDefinitions = [
   def(3, "Operador con assistant.configure", "Editar configuración global y catálogo con validaciones y versión anterior", "/plataforma/asistente/configuracion", "Prueba reciente403→confirmación200; versión anterior409; modelo creado/editado por UI y duplicados, moneda, tarifa y modelo inválidos rechazados. La clave permanece write-only.", ["BACK-AS-019"]),
   def(4, "Operador con assistant.read", "Consultar uso global con consumos Business, Personal y Plataforma", "/plataforma/asistente/uso", "Filas reales de organización/Personas/Operadores; OwnKey y PlatformKey separados, sumas Money coincidentes y ninguna conversación ni texto privado.", ["BACK-AS-020"]),
   def(5, "Operador sólo con assistant.use", "Usar su chat sin gestión ni lectura global", "/plataforma/asistente", "Turno real propio; configure y read403; otro operador completo recibe404 Conversation.NotFound para ese historial.", ["BACK-AS-021"]),
-  def(6, "Dueña de conversación propia", "Rechazar feedback ajeno y borrar un turno activo con PNG", "/org/asistente", "Generating antes de Borrar204; conversación y archivo404 sin URL/bytes y sin resurrección ni título después del plazo del Fake. Metadatos del upload privados."),
+  def(6, "Dueña de conversación propia", "Rechazar feedback ajeno y borrar un turno activo con PNG", "/org/asistente", "Conversación propia ya listada tras un turno inicial por UI; otro turno con PNG en ese mismo ID permanece Generating antes de Borrar204. Conversación y archivo404 sin URL/bytes ni resurrección ni nuevos títulos después del plazo del Fake; metadatos del upload privados."),
 ];
 export const assistantPreparationRepairDefinitions = assistantSupplementDefinitions.filter((entry) => ["AS-SUP-02", "AS-SUP-03", "AS-SUP-04", "AS-SUP-06"].includes(entry.id));
 export const assistantOperatorRepairDefinitions = assistantSupplementDefinitions.filter((entry) => entry.id === "AS-SUP-05");
@@ -174,6 +174,26 @@ async function sendUi(h, page, text, chatRoot = root, terminal = true) {
   assert.equal(response.status(), 200); assert.match(response.headers()["content-type"], /^text\/event-stream/u);
   const id = new URL(response.url()).pathname.split("/").at(-2);
   return { id, ...(terminal ? { detail: await waitAssistantTerminal(page, chatRoot, id) } : {}) };
+}
+
+function selectedAssistantConversationRow(page, title) {
+  return page.getByRole("button", { name: title, exact: true }).and(page.locator('[aria-current="true"]')).locator("..");
+}
+export async function prepareListedAssistantConversation(h, page, { send = sendUi } = {}) {
+  const chat = await send(h, page, "[E2E:answer] Preparar la conversación propia que después tendrá un turno activo con PNG.");
+  assert.equal(chat.detail.conversation.id, chat.id, "La preparación debe conservar el ID de su turno propio.");
+  const title = chat.detail.conversation.title;
+  assert.ok(typeof title === "string" && title.length > 0, "El turno inicial debe tener su título real antes de usar el historial.");
+  if (h.width === 390) await page.getByRole("button", { name: "Conversaciones", exact: true }).click();
+  const row = selectedAssistantConversationRow(page, title);
+  await row.getByRole("button", { name: `Acciones de ${title}`, exact: true }).waitFor();
+  if (h.width === 390) await page.keyboard.press("Escape");
+  return { ...chat, title };
+}
+export async function openListedAssistantConversationAction(page, width, title, action) {
+  if (width === 390) await page.getByRole("button", { name: "Conversaciones", exact: true }).click();
+  await selectedAssistantConversationRow(page, title).getByRole("button", { name: `Acciones de ${title}`, exact: true }).click();
+  await page.getByRole("menuitem", { name: `${action}: ${title}`, exact: true }).click();
 }
 
 export async function sendAssistantAttachmentTurn(h, page, { fileName, buffer, text }) {
@@ -382,10 +402,12 @@ async function runAssistantCases(h, selected) {
       await prepareOwner(); await business(); assert.ok(adminChat?.detail, "La prueba requiere la respuesta real del Administrador de empresa.");
       await requireForeignAssistantFeedbackAfterNotice(h, page, adminChat, () => chatHome(h, page, "business", false, { expectedTenantId: owner.me.activeTenantId }));
       await page.getByRole("button", { name: "Nueva conversación", exact: true }).first().click();
+      // El historial se refresca al terminar un envío. La fila debe existir antes del turno que se borrará activo.
+      const listed = await prepareListedAssistantConversation(h, page);
       const fileName = `activo-${tag}.png`; const { upload, sent } = await sendAssistantAttachmentTurn(h, page, { fileName, buffer: png, text: "[E2E:slow] Borrar este turno activo con su imagen." });
       assert.equal(upload.status(), 201); const attachment = await upload.json(); requirePrivateAttachmentMetadata(attachment, fileName, png.length);
       const id = new URL(upload.url()).pathname.split("/").at(-2); const fileRoute = `${root}/conversations/${id}/attachments/${attachment.id}`;
-      assert.equal(sent.id, id);
+      assert.equal(sent.id, id); assert.equal(id, listed.id, "El PNG y el turno lento deben pertenecer a la conversación ya listada.");
       const { counters: before } = await deleteActiveAssistantConversation({
         inspectAttachment: async () => {
           const downloaded = await h.api(page, fileRoute); assert.equal(downloaded.status(), 200); assert.deepEqual(await downloaded.body(), png);
@@ -395,7 +417,8 @@ async function runAssistantCases(h, selected) {
         openDialog: async () => {
           await page.getByRole("button", { name: "Detener", exact: true }).waitFor();
           const current = await read(h, page, `${root}/conversations/${id}`); assert.equal(current.messages.items.at(-1).status, "Generating");
-          await conversationAction(page, h.width, current.conversation.title ?? "Nueva conversación", "Borrar");
+          assert.equal(current.conversation.id, listed.id); assert.equal(current.conversation.title, listed.title);
+          await openListedAssistantConversationAction(page, h.width, current.conversation.title, "Borrar");
           const dialog = page.getByRole("dialog"); await dialog.waitFor(); return dialog;
         },
         requireGenerating: async () => {
@@ -409,7 +432,7 @@ async function runAssistantCases(h, selected) {
       });
       await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); await requirePrivateProblem(await h.api(page, fileRoute), 404, "Assistant.Attachment.NotFound");
       await delay(3500); await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); assert.equal((await control("providerCounters")).titleCalls, before.titleCalls);
-      return "Feedback a la respuesta de otro Dueño404; PNG propio descargó bytes exactos con attachment/no-store y sin URL. Borrar204 ocurrió mientras Generating; conversación/archivo404 y, pasado el Fake, no reaparecieron ni generaron título.";
+      return "Feedback a la respuesta de otro Dueño404; conversación propia quedó listada tras un turno inicial por UI. Otro turno lento con PNG usó ese mismo ID; descargó bytes exactos con attachment/no-store y sin URL. Borrar204 ocurrió mientras Generating; conversación/archivo404 y, pasado el Fake, no reaparecieron ni generaron nuevos títulos.";
     });
   } catch (error) { failures.push(error); } finally {
     if (stalePage) { try { await discard(stalePage); await stalePage.close(); } catch (error) { failures.push(error); } }
