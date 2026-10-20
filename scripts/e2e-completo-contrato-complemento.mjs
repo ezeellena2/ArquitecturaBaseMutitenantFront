@@ -16,6 +16,10 @@ export const contractSupplementDefinitions = [
   { id: "CON-03", area: "Contrato HTTP", actor: "Dueña de una organización creada por UI", action: "Perder el201 de un rol confirmado y reintentar con la misma clave y cuerpo", route: "/org/roles/nuevo · /api/roles", expected: "Reintentar por UI conserva bytes y clave, reproduce201 con Idempotent-Replayed:true y mismo ID; replay API idéntico y cuerpo cambiado422 Request.IdempotencyKeyReused dejan un solo recurso y evento de creación.", covers: ["BACK-HT-002"], critical: true, source: "back:docs/rules/idempotencia.md; src/areas/business/roles/pages/RoleEditorPage.tsx; back:src/ArquitecturaBaseMultitenant.Api/Idempotency/IdempotencyFilter.cs" },
   { id: "CON-04", area: "Contrato HTTP", actor: "Dueña con borrador de Configuración", action: "Reintentar consulta/guardado sin transporte y abandonar una respuesta tardía real", route: "/org/configuracion", expected: "GET fallido muestra error común y Reintentar carga200; PUT fallido conserva borrador y sólo Reintentar guarda200. Otro PUT200 retenido llega después de salir y reabrir por UI: no muestra éxito, no navega ni reemplaza el nuevo borrador. El grupo suma el offline real de PER15/16.", covers: [], critical: true, source: "src/areas/business/settings/pages/SettingsPage.tsx; src/shared/api/queryClient.ts; scripts/e2e-completo-personal.mjs#NUEVO-PER-15/16" },
 ];
+// La cuota global se prueba sola, con un único ancho y entorno propio: nunca en el lote compartido.
+export const contractQuotaRepairDefinitions = contractSupplementDefinitions.filter((entry) => entry.id === "CON-02");
+export const contractTransportRepairDefinitions = contractSupplementDefinitions.filter((entry) => ["CON-03", "CON-04"].includes(entry.id));
+export const contractSharedDefinitions = contractSupplementDefinitions.filter((entry) => entry.id !== "CON-02");
 
 export const contractSupplementProofGroups = { "BACK-HT-004": [["NUEVO-PER-15", "NUEVO-PER-16", "CON-04"]] };
 
@@ -67,13 +71,23 @@ export async function requireSharedQuotaResponse(response) {
 export function assertNoAutomaticRoleRetry(atLimit, writes) {
   assert.equal(writes.length, atLimit, "La cuenta regresiva y su vencimiento no reenvían escrituras.");
 }
+function quotaFailureDescription(error) {
+  const message = String(error?.message ?? error)
+    .replace(/\bhttps?:\/\/[^\s"'<>]+/giu, (value) => { try { return new URL(value).pathname; } catch { return "[URL]"; } })
+    .replace(/\bBearer\s+[A-Za-z0-9._~+/=-]+/giu, "Bearer [oculto]");
+  const compact = (value, limit) => value.length <= limit ? value : value.slice(0, limit - 1) + "…";
+  const lines = message.split(/\r?\n/u).map((line) => line.replace(/\s+/gu, " ").trim()).filter(Boolean);
+  const first = lines[0] ?? "Sin detalle"; const waiting = lines.find((line) => /\bwaiting\b/iu.test(line));
+  const detail = waiting && waiting !== first ? `${compact(first, 200)} · ${waiting}` : first;
+  return compact(`${compact(String(error?.name ?? "Error").replace(/\s+/gu, " ").trim(), 50)}: ${detail}`, 450);
+}
 export async function withRestoredTenantQuota({ read, prepare, body, restore }) {
-  const original = await read(); const failures = []; let result;
-  try { await prepare(original); result = await body(original); }
-  catch (error) { failures.push(error); }
-  finally { try { await restore(original); } catch (error) { failures.push(error); } }
+  const original = await read(); const failures = []; const phases = []; let result; let phase = "prepare";
+  try { await prepare(original); phase = "body"; result = await body(original); }
+  catch (error) { failures.push(error); phases.push(phase); }
+  finally { try { await restore(original); } catch (error) { failures.push(error); phases.push("restore"); } }
   if (failures.length === 1) throw failures[0];
-  if (failures.length > 1) throw new AggregateError(failures, "Fallaron la cuota compartida y su restauración por UI.");
+  if (failures.length > 1) throw new AggregateError(failures, "Fallaron la cuota compartida y su restauración por UI. " + failures.map((error, index) => `${phases[index]}: ${quotaFailureDescription(error)}`).join(" | "));
   return result;
 }
 
@@ -353,12 +367,24 @@ async function closeCase(h, pages, state) {
   if (failures.length > 1) throw new AggregateError(failures, "Fallaron salidas UI del complemento de contrato.");
 }
 
-export async function runContractSupplementCases(h) {
+const contractChecks = new Map([["CON-01", checkLegacyDoors], ["CON-02", checkSharedQuota], ["CON-03", checkLostRoleReplay], ["CON-04", checkAbandonedSettings]]);
+
+async function runContractCases(h, definitions, { checks = contractChecks, close = closeCase } = {}) {
   const outcomes = new Map();
-  for (const [id, check] of [["CON-01", checkLegacyDoors], ["CON-02", checkSharedQuota], ["CON-03", checkLostRoleReplay], ["CON-04", checkAbandonedSettings]]) {
+  for (const { id } of definitions) {
+    const check = checks.get(id); assert.equal(typeof check, "function");
     const pages = [await h.newPage(), await h.newPage()]; const state = { publicSignedIn: false, platformSignedIn: false };
-    try { outcomes.set(id, await h.record(id, () => pages[0], () => check(h, ...pages, state))); }
-    finally { await closeCase(h, pages, state); }
+    try {
+      outcomes.set(id, await h.record(id, () => state.capturePage ?? pages[0], async () => {
+        try { return await check(h, ...pages, state); }
+        catch (error) { if (id === "CON-02") state.capturePage = pages[1]; throw error; }
+      }));
+    } finally { await close(h, pages, state); }
   }
   return outcomes;
 }
+
+/** El lote compartido conserva las conductas1/3/4; CON-02 sólo se ejecuta en un entorno aislado exclusivo. */
+export async function runContractSupplementCases(h, options) { return runContractCases(h, contractSharedDefinitions, options); }
+export async function runContractQuotaRepairCases(h, options) { return runContractCases(h, contractQuotaRepairDefinitions, options); }
+export async function runContractTransportRepairCases(h, options) { return runContractCases(h, contractTransportRepairDefinitions, options); }

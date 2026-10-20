@@ -56,7 +56,9 @@ const suiteSpecs = {
   dominioextra: ["./e2e-completo-dominio-complemento.mjs", "domainSupplementDefinitions", "runDomainSupplementCases"],
   rolesextra: ["./e2e-completo-roles-complemento.mjs", "roleSupplementDefinitions", "runRoleSupplementCases"],
   seguridadextra: ["./e2e-completo-seguridad-complemento.mjs", "securitySupplementDefinitions", "runSecuritySupplementCases"],
-  contratoextra: ["./e2e-completo-contrato-complemento.mjs", "contractSupplementDefinitions", "runContractSupplementCases"],
+  contratoextra: ["./e2e-completo-contrato-complemento.mjs", "contractSharedDefinitions", "runContractSupplementCases"],
+  cuotacontrato: ["./e2e-completo-contrato-complemento.mjs", "contractQuotaRepairDefinitions", "runContractQuotaRepairCases"],
+  contratotransportearreglos: ["./e2e-completo-contrato-complemento.mjs", "contractTransportRepairDefinitions", "runContractTransportRepairCases"],
   asistenteextra: ["./e2e-completo-asistente-complemento.mjs", "assistantSupplementDefinitions", "runAssistantSupplementCases"],
   whatsappplataformaextra: ["./e2e-completo-whatsapp-plataforma.mjs", "platformWhatsAppDefinitions", "runPlatformWhatsAppCases"],
   legalesextra: ["./e2e-completo-legales-complemento.mjs", "legalSupplementDefinitions", "runLegalSupplementCases"],
@@ -96,12 +98,12 @@ export function buildCaseDiagnostic(error, diagnostic) {
 
 export function parseArguments(args) {
   assert.ok(args.every((value) => ["--inventory-only", "--no-build", "--refresh-only", "--resume"].includes(value) || /^--suite=[a-z,]+$/.test(value) || /^--width=(1440|390)$/.test(value)), "Argumentos no admitidos.");
-  const suites = args.find((value) => value.startsWith("--suite="))?.slice(8).split(",") ?? Object.keys(suiteSpecs).filter((name) => !name.includes("arreglo") && !name.startsWith("baseline") && name !== "cuotawhatsapp");
+  const suites = args.find((value) => value.startsWith("--suite="))?.slice(8).split(",") ?? Object.keys(suiteSpecs).filter((name) => !name.includes("arreglo") && !name.startsWith("baseline") && !["cuotawhatsapp", "cuotacontrato"].includes(name));
   assert.ok(suites.length > 0 && suites.every((name) => Object.hasOwn(suiteSpecs, name)), "Suite desconocida.");
   const width = args.find((value) => value.startsWith("--width="));
-  if (suites.includes("cuotawhatsapp")) {
-    assert.equal(suites.length, 1, "La cuota diaria necesita una suite aislada en un entorno fresco.");
-    assert.ok(width, "La cuota diaria requiere un único ancho por entorno fresco.");
+  if (suites.some((name) => ["cuotawhatsapp", "cuotacontrato"].includes(name))) {
+    assert.equal(suites.length, 1, "La cuota necesita una suite aislada en un entorno fresco.");
+    assert.ok(width, "La cuota requiere un único ancho por entorno fresco.");
   }
   return { inventoryOnly: args.includes("--inventory-only"), refreshOnly: args.includes("--refresh-only"), resume: args.includes("--resume"), build: !args.includes("--no-build"), suites: [...new Set(suites)], ...(width ? { widths: [Number(width.slice(8))] } : {}) };
 }

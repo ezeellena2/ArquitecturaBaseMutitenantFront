@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { buildMatrix } from "./e2e-completo-matriz.mjs";
 import { contractSupplementDefinitions, contractSupplementProofGroups, assertLegacyDoorCookies, requireSharedQuotaResponse, assertNoAutomaticRoleRetry, withRestoredTenantQuota, assertSameIdempotentAttempt, requireSuccessfulRoleReplay, assertSingleRoleEffects, assertAbandonedSettings } from "./e2e-completo-contrato-complemento.mjs";
+import * as contract from "./e2e-completo-contrato-complemento.mjs";
 
 test("cada record enlaza sólo su conducta completa y HTTP offline requiere todos los pasos por ancho", () => {
   assert.deepEqual(contractSupplementDefinitions.map((entry) => entry.id), ["CON-01", "CON-02", "CON-03", "CON-04"]);
@@ -80,4 +81,48 @@ test("la cuota se restaura aunque la preparación haya escrito y falle o falle l
   }
   const first = new Error("comprobación"); const second = new Error("restauración");
   await assert.rejects(withRestoredTenantQuota({ read: async () => ({}), prepare: async () => {}, body: async () => { throw first; }, restore: async () => { throw second; } }), (error) => error instanceof AggregateError && error.errors[0] === first && error.errors[1] === second);
+});
+
+test("la cuota conserva ambas causas con su fase en el mensaje que captura el informe, sin consultas o Bearer", async () => {
+  for (const phase of ["prepare", "body"]) {
+    const first = new Error("locator.waitFor: Timeout esperando Confirmá que sos vos");
+    const restoration = new Error("PUT https://localtest.me:5174/api/platform/settings?token=privado falló Bearer token-secreto");
+    await assert.rejects(withRestoredTenantQuota({
+      read: async () => ({}), prepare: async () => { if (phase === "prepare") throw first; },
+      body: async () => { throw first; }, restore: async () => { throw restoration; },
+    }), (error) => {
+      assert.ok(error instanceof AggregateError); assert.equal(error.errors[0], first); assert.equal(error.errors[1], restoration);
+      assert.ok(error.message.includes(`${phase}: Error: locator.waitFor: Timeout esperando Confirmá que sos vos`));
+      assert.match(error.message, /restore: Error: PUT \/api\/platform\/settings/u);
+      assert.doesNotMatch(error.message, /privado|token-secreto|https:|localtest/u); return true;
+    });
+  }
+});
+
+test("dos errores largos de cuota conservan ambas fases y esperas con un tamaño acotado", async () => {
+  const first = new Error(`locator.click: Timeout preparando cuota. ${"detalle ".repeat(900)}\nCall log:\n  - waiting for Confirmá que sos vos ${"selector ".repeat(900)}\n${"traza ".repeat(900)}`);
+  const restoration = new Error(`locator.waitFor: Timeout restaurando cuota. ${"detalle ".repeat(900)}\nCall log:\n  - waiting for Guardamos la configuración ${"selector ".repeat(900)}\n${"traza ".repeat(900)}`);
+  await assert.rejects(withRestoredTenantQuota({ read: async () => ({}), prepare: async () => { throw first; }, body: async () => assert.fail("Preparación fallida"), restore: async () => { throw restoration; } }), (error) => {
+    assert.ok(error instanceof AggregateError); assert.equal(error.errors[0], first); assert.equal(error.errors[1], restoration);
+    assert.match(error.message, /prepare: Error: locator\.click: Timeout preparando cuota.*waiting for Confirmá que sos vos/u);
+    assert.match(error.message, /restore: Error: locator\.waitFor: Timeout restaurando cuota.*waiting for Guardamos la configuración/u);
+    assert.ok(error.message.length <= 1000, "Las dos causas deben entrar antes del recorte global del informe.");
+    assert.doesNotMatch(error.message, /\s{2,}|\n/u); return true;
+  });
+});
+
+test("los repairs de contrato aíslan02 de03/04 y omiten01, capturando Plataforma si falla02", async () => {
+  assert.deepEqual(contract.contractQuotaRepairDefinitions.map((entry) => entry.id), ["CON-02"]);
+  assert.deepEqual(contract.contractTransportRepairDefinitions.map((entry) => entry.id), ["CON-03", "CON-04"]);
+  assert.deepEqual(contract.contractSharedDefinitions.map((entry) => entry.id), ["CON-01", "CON-03", "CON-04"]);
+  for (const [runner, ids] of [[contract.runContractQuotaRepairCases, ["CON-02"]], [contract.runContractTransportRepairCases, ["CON-03", "CON-04"]], [contract.runContractSupplementCases, ["CON-01", "CON-03", "CON-04"]]]) {
+    const seen = []; const captures = []; const closed = []; const pages = [];
+    const checks = new Map(ids.map((id) => [id, async () => { seen.push(id); throw new Error(`Fallo propio ${id}`); }]));
+    const h = { newPage: async () => { const page = { ownPage: pages.length }; pages.push(page); return page; },
+      record: async (id, getPage, action) => { try { return { ok: true, value: await action() }; } catch (error) { captures.push(getPage()); return { ok: false, error }; } },
+    };
+    const outcomes = await runner(h, { checks, close: async (_h, ownedPages) => { assert.equal(_h, h); closed.push(ownedPages); } });
+    assert.deepEqual(seen, ids); assert.deepEqual([...outcomes.keys()], ids); assert.equal(closed.length, ids.length);
+    for (const [index, id] of ids.entries()) { assert.equal(captures[index], pages[index * 2 + (id === "CON-02" ? 1 : 0)]); assert.deepEqual(closed[index], pages.slice(index * 2, index * 2 + 2)); assert.equal(outcomes.get(id).ok, false); }
+  }
 });

@@ -12,6 +12,13 @@ test("agotar la cuota diaria requiere selección explícita y un único ancho", 
   assert.throws(() => parseArguments(["--suite=personal,cuotawhatsapp", "--width=1440"]), /aislada/);
 });
 
+test("la cuota compartida de una petición no se mezcla con otros casos ni anchos", () => {
+  assert.equal(parseArguments([]).suites.includes("cuotacontrato"), false);
+  assert.deepEqual(parseArguments(["--suite=cuotacontrato", "--width=1440", "--resume"]).suites, ["cuotacontrato"]);
+  assert.throws(() => parseArguments(["--suite=cuotacontrato"]), /único ancho/);
+  assert.throws(() => parseArguments(["--suite=contratoextra,cuotacontrato", "--width=390"]), /aislada/);
+});
+
 test("el bloqueo del clic se resume antes de truncar sin copiar el contenido del elemento superpuesto", () => {
   const error = new Error('locator.click: Timeout\n - waiting for button Perfil\n <div role="dialog" data-state="open">contenido-privado</div> intercepts pointer events');
   const actual = buildCaseDiagnostic(error);
