@@ -1,6 +1,65 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { EventEmitter } from "node:events";
+import * as organization from "./e2e-completo-organizaciones-complemento.mjs";
 import { organizationSupplementDefinitions, organizationSupplementProofGroups, requireExpiredMemberOnce, requireUrgentPageFirst, requirePreservedPersonal, requireUnavailableInvitation, requireStateHistory, requireRevokedBusiness } from "./e2e-completo-organizaciones-complemento.mjs";
+
+test("el observador anterior al diálogo detecta una emisión prematura sin publicar destino ni clave", async () => {
+  const page = new EventEmitter(); const base = new URL("https://localtest.me"); const phases = [];
+  const request = { url: () => base.origin + "/api/users/invitations?private=oculto", method: () => "POST", headers: () => ({ "idempotency-key": "clave-privada" }) };
+  await assert.rejects(() => organization.observeOrganizationInvitationAction({ base }, page, async ({ phase, assertNoPosts }) => {
+    assert.equal(page.listenerCount("request"), 1); phase("empresa"); page.emit("request", request); page.emit("response", { request: () => request, status: () => 201 });
+    phase("antesInvitar"); assertNoPosts(); assert.fail("No se pulsa Invitar tras un envío prematuro.");
+  }, { onPhase: (phase) => phases.push(phase) }), (error) => {
+    assert.ok(error.message.includes('"count":1')); assert.ok(error.message.includes('"phase":"empresa","status":201,"sameKey":true'));
+    assert.ok(error.message.includes("antesInvitar")); for (const secret of ["clave-privada", "oculto", "https://"]) assert.equal(error.message.includes(secret), false);
+    return true;
+  });
+  assert.deepEqual(phases, ["abrir", "empresa", "antesInvitar"]); assert.equal(page.listenerCount("request"), 0); assert.equal(page.listenerCount("response"), 0);
+});
+
+test("el intento explícito registra HTTP, cantidad y comparación de clave sin absorber su timeout", async () => {
+  const page = new EventEmitter(); const base = new URL("https://localtest.me"); let snapshot;
+  const original = new Error("locator.click: Timeout 15000ms exceeded. URL https://private.example/?secret=valor +5491134567810");
+  await assert.rejects(() => organization.observeOrganizationInvitationAction({ base }, page, async ({ phase, assertNoPosts, summary }) => {
+    for (const [address, method] of [["https://otro.example/api/users/invitations", "POST"], [base.origin + "/api/users/paged", "POST"], [base.origin + "/api/users/invitations", "GET"]]) {
+      const request = { url: () => address, method: () => method, headers: () => ({ "idempotency-key": "ignorada" }) };
+      page.emit("request", request); page.emit("response", { request: () => request, status: () => 200 });
+    }
+    assertNoPosts(); phase("clickInvitar");
+    for (const [key, status] of [["primera-clave", 201], ["primera-clave", 201], ["otra-clave", 409]]) {
+      const request = { url: () => base.origin + "/api/users/invitations", method: () => "POST", headers: () => ({ "idempotency-key": key }) };
+      page.emit("request", request); page.emit("response", { request: () => request, status: () => status });
+    }
+    snapshot = summary(); throw original;
+  }), (error) => { assert.equal(error.cause, original); assert.ok(error.message.includes("Timeout 15000ms exceeded")); for (const secret of ["primera-clave", "otra-clave", "https://", "+5491134567810"]) assert.equal(error.message.includes(secret), false); return true; });
+  assert.equal(snapshot.count, 3); assert.deepEqual(snapshot.posts.map((post) => post.sameKey), [true, true, false]); assert.deepEqual(snapshot.posts.map((post) => post.status), [201, 201, 409]);
+  assert.equal(page.listenerCount("request"), 0); assert.equal(page.listenerCount("response"), 0);
+});
+
+test("la salida espera Mi cuenta antes de pedir el logout real y conserva el fallo de carga", async () => {
+  for (const ready of [true, false]) {
+    const calls = []; const page = { goto: async () => calls.push("cuenta"), getByRole: (role, options) => { assert.equal(role, "heading"); assert.deepEqual(options, { name: "Mi cuenta", exact: true }); return { waitFor: async () => { calls.push("lista"); if (!ready) throw new Error("Cuenta cargando"); } }; } };
+    const h = { base: new URL("https://localtest.me"), signOut: async (target) => { assert.equal(target, page); calls.push("salir UI"); } };
+    if (ready) await organization.leaveOrganizationSession(h, page); else await assert.rejects(() => organization.leaveOrganizationSession(h, page), /Cuenta cargando/u);
+    assert.deepEqual(calls, ready ? ["cuenta", "lista", "salir UI"] : ["cuenta", "lista"]);
+  }
+});
+
+test("la reparación usa los mismos callbacks1–3 y omite por completo4 verde", async () => {
+  assert.deepEqual(organization.organizationRepairDefinitions.map((row) => row.id), ["ORX-01", "ORX-02", "ORX-03"]);
+  let active; const calls = []; const outcomes = new Map();
+  const h = { record: async (id, getPage, action) => { calls.push(id); await action(); assert.equal(getPage(), active); return { ok: true }; } };
+  const run = organization.createOrganizationRecorder(h, { repair: true, outcomes, getPage: () => active, setCapturePage: (page) => { active = page; } });
+  for (const number of [1, 2, 3, 4]) await run(number, async () => { if (number === 4) assert.fail("No vuelve a probar4"); active = "página de acción " + number; }, "preparación");
+  assert.deepEqual(calls, ["ORX-01", "ORX-02", "ORX-03"]); assert.deepEqual([...outcomes.keys()], [1, 2, 3]);
+});
+
+test("el recorder conserva un record fallido para que su preparación no habilite dependientes", async () => {
+  const outcomes = new Map(); const failed = { ok: false, error: new Error("Invitar falló") };
+  const run = organization.createOrganizationRecorder({ record: async () => failed }, { repair: true, outcomes, getPage: () => "actual", setCapturePage: () => {} });
+  assert.equal(await run(1, async () => {}), failed); assert.equal(outcomes.get(1).ok, false);
+});
 
 test("cuatro registros y las ramas agrupadas exigen todas sus pruebas exactas", () => {
   assert.equal(organizationSupplementDefinitions.length, 4); assert.equal(new Set(organizationSupplementDefinitions.map((row) => row.id)).size, 4);

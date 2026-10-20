@@ -74,6 +74,7 @@ const suiteSpecs = {
   plataformabajaarreglos: ["./e2e-completo-plataforma-complemento.mjs", "platformAccountLifecycleRepairDefinitions", "runPlatformAccountLifecycleRepairCases"],
   plataformarecuperacionarreglo: ["./e2e-completo-plataforma-complemento.mjs", "platformOccupiedRecoveryRepairDefinitions", "runPlatformOccupiedRecoveryRepairCases"],
   seguridadpermisosarreglo: ["./e2e-completo-seguridad-complemento.mjs", "securityStepUpRepairDefinitions", "runSecurityStepUpRepairCases"],
+  organizacionesarreglos: ["./e2e-completo-organizaciones-complemento.mjs", "organizationRepairDefinitions", "runOrganizationRepairCases"],
   whatsappatencionarreglos: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppRepairDefinitions", "runSupplementWhatsAppRepairCases"],
 };
 

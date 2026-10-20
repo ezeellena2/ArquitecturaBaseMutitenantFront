@@ -6,6 +6,7 @@ import { syntheticEmail, localApiUrl } from "./e2e-completo-soporte.mjs";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 import { confirmRecentAuthentication, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
+import { openPublicModerationAction } from "./e2e-completo-publico-complemento.mjs";
 
 const def = (number, actor, action, route, expected, covers = [], extra = {}) => ({ id: `ORX-${String(number).padStart(2, "0")}`, area: "Organizaciones · complemento", actor, action, route, expected, covers, critical: true, source: "scripts/e2e-completo-organizaciones-complemento.mjs", ...extra });
 export const organizationSupplementDefinitions = [
@@ -16,6 +17,48 @@ export const organizationSupplementDefinitions = [
 ];
 export const organizationSupplementProofGroups = { "BACK-OR-012": [["BIZ-20", "ORX-01"]], "BACK-IN-003": [["AS-SUP-01", "ORX-02"]], "BACK-PL-009": [["PLAT-27", "PLAT-28", "PLAT-29", "ORX-04"]] };
 export const proofGroups = organizationSupplementProofGroups;
+export const organizationRepairDefinitions = organizationSupplementDefinitions.slice(0, 3);
+
+export function createOrganizationRecorder(h, { repair = false, outcomes, getPage, setCapturePage, defaultPage }) {
+  const repairIds = new Set(organizationRepairDefinitions.map((row) => row.id));
+  return async (number, action, target = defaultPage) => {
+    const id = `ORX-${String(number).padStart(2, "0")}`;
+    if (repair && !repairIds.has(id)) return;
+    if (target !== undefined) setCapturePage(target);
+    const outcome = await h.record(id, getPage, action); outcomes.set(number, outcome); return outcome;
+  };
+}
+
+/** Sólo conserva fase, cantidad, status y comparación booleana: nunca destinos ni claves. */
+export async function observeOrganizationInvitationAction(h, page, operation, { onPhase = () => {} } = {}) {
+  const allowedPhases = new Set(["abrir", "empresa", "roles", "antesInvitar", "clickInvitar"]);
+  const posts = []; const requests = new WeakMap(); const origin = new URL(h.base).origin;
+  let currentPhase = "abrir"; let firstKey;
+  const phase = (name) => { assert.ok(allowedPhases.has(name)); currentPhase = name; onPhase(name); };
+  const requested = (request) => {
+    const address = new URL(request.url());
+    if (request.method() !== "POST" || address.origin !== origin || address.pathname !== "/api/users/invitations") return;
+    const key = request.headers()["idempotency-key"];
+    if (firstKey === undefined && key) firstKey = key;
+    const post = { phase: currentPhase, status: null, sameKey: Boolean(key && key === firstKey) };
+    posts.push(post); requests.set(request, post);
+  };
+  const responded = (response) => { const post = requests.get(response.request()); if (post) post.status = response.status(); };
+  const summary = () => ({ phase: currentPhase, count: posts.length, posts: posts.slice(-6).map((post) => ({ ...post })) });
+  const assertNoPosts = () => assert.equal(posts.length, 0, "La invitación no debe enviarse antes del intento explícito de Invitar.");
+  page.on("request", requested); page.on("response", responded);
+  try { phase("abrir"); return await operation({ phase, assertNoPosts, summary }); }
+  catch (cause) {
+    const timeout = /Timeout \d+ms exceeded/u.exec(cause?.message ?? "")?.[0];
+    throw new Error(`Invitación propia: ${timeout ?? "falló la acción UI"}; ${JSON.stringify(summary())}`, { cause });
+  } finally { page.off("request", requested); page.off("response", responded); }
+}
+
+export async function leaveOrganizationSession(h, page) {
+  await page.goto(new URL("/cuenta", h.base).href);
+  await page.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();
+  await h.signOut(page);
+}
 
 export function requireExpiredMemberOnce(counts, listed, memberId, now = Date.now()) {
   assert.equal(counts.all, 1); assert.equal(counts.active, 0); assert.equal(counts.invited, 1);
@@ -65,13 +108,18 @@ async function preview(h, page, token, state) {
   await page.goto(new URL(`/invitacion#${token}`, h.base).href); const response = await received; assert.equal(response.status(), 200);
   const body = await response.json(); assert.equal(body.state, state); await page.waitForURL((current) => current.hash === ""); return body;
 }
-async function invite(h, page, company, email = syntheticEmail("orx-invitado"), companyRoleName) {
-  await page.goto(new URL("/org/usuarios", h.base).href); await page.getByRole("button", { name: "Invitar usuario", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "Invitar usuario", exact: true });
-  await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email); await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click(); await page.getByRole("option", { name: company.name, exact: true }).click();
-  if (companyRoleName) { await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: companyRoleName, exact: true }).click(); await page.keyboard.press("Escape"); }
-  const before = new Set(await h.env.files()); const response = await clickForResponse(page, dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/users/invitations", "POST", 201); const issued = await response.json(); await dialog.waitFor({ state: "hidden" });
-  const list = await read(h, page, `/api/users/paged?search=${encodeURIComponent(email)}&pageSize=100`); const member = list.items.find((item) => item.invitationId === issued.invitationId); assert.ok(member?.memberId);
-  return { ...issued, email, memberId: member.memberId, token: await mailToken(h, email, before) };
+async function invite(h, page, company, email = syntheticEmail("orx-invitado"), companyRoleName, options) {
+  return observeOrganizationInvitationAction(h, page, async ({ phase, assertNoPosts }) => {
+    await page.goto(new URL("/org/usuarios", h.base).href); await page.getByRole("button", { name: "Invitar usuario", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "Invitar usuario", exact: true });
+    await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email); phase("empresa");
+    await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click(); await page.getByRole("option", { name: company.name, exact: true }).click();
+    phase("roles");
+    if (companyRoleName) { await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: companyRoleName, exact: true }).click(); await page.keyboard.press("Escape"); }
+    const before = new Set(await h.env.files()); phase("antesInvitar"); assertNoPosts(); phase("clickInvitar");
+    const response = await clickForResponse(page, dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/users/invitations", "POST", 201); const issued = await response.json(); await dialog.waitFor({ state: "hidden" });
+    const list = await read(h, page, `/api/users/paged?search=${encodeURIComponent(email)}&pageSize=100`); const member = list.items.find((item) => item.invitationId === issued.invitationId); assert.ok(member?.memberId);
+    return { ...issued, email, memberId: member.memberId, token: await mailToken(h, email, before) };
+  }, options);
 }
 function observeBearer(page) {
   let current; const listener = (request) => { const header = request.headers().authorization; if (new URL(request.url()).pathname.startsWith("/api/") && header?.startsWith("Bearer ")) current = header; };
@@ -81,20 +129,29 @@ function observeBearer(page) {
 
 /** InvitationCommand está ligado a la organización original: ORX01/02 sólo agregan fixtures UI propias allí. */
 export async function runOrganizationSupplementCases(h) {
+  return runOrganizationPlan(h, false);
+}
+export async function runOrganizationRepairCases(h) {
+  return runOrganizationPlan(h, true);
+}
+async function runOrganizationPlan(h, repair) {
   const page = await h.newPage(); const platformPage = await h.newPage(); const invitationPage = await h.newPage(); const personalPage = await h.newPage();
   const businessObserver = observeBearer(page); const personalObserver = observeBearer(personalPage); const url = (route) => new URL(route, h.base).href;
   const operatorEmail = h.width === 1440 ? "e2e-e9a-operator@example.test" : "e2e-e9b-operator@example.test";
   const tag = randomUUID().slice(0, 8); let currentEmail; let publicPage; let operatorActive = false; let original; let company; let expired; let suspendedInvitation; let companyAdmin; let own; let domain;
-  let capturePage = page; const suspended = new Set(); const failures = [];
-  const run = (number, action, target = page) => { capturePage = target; return h.record(`ORX-${String(number).padStart(2, "0")}`, () => capturePage, action); };
+  let capturePage = page; const suspended = new Set(); const failures = []; const outcomes = new Map();
+  const run = createOrganizationRecorder(h, { repair, outcomes, getPage: () => capturePage, setCapturePage: (target) => { capturePage = target; }, defaultPage: page });
+  const inviteCurrent = (targetCompany, email, roleName) => invite(h, page, targetCompany, email, roleName, { onPhase: () => { capturePage = page; } });
+  const invitationPreview = (target, token, state) => { capturePage = target; return preview(h, target, token, state); };
   const leave = async () => {
-    if (!publicPage) return; await publicPage.goto(url("/cuenta")); await h.signOut(publicPage); publicPage = undefined; currentEmail = undefined;
+    if (!publicPage) return; capturePage = publicPage; await leaveOrganizationSession(h, publicPage); publicPage = undefined; currentEmail = undefined;
   };
   const business = async (email) => {
-    if (publicPage === page && currentEmail === email) return read(h, page, "/api/me");
-    await leave(); const me = await h.login(page, email, "business"); publicPage = page; currentEmail = email; return me;
+    if (publicPage === page && currentEmail === email) { capturePage = page; return read(h, page, "/api/me"); }
+    await leave(); capturePage = page; const me = await h.login(page, email, "business"); publicPage = page; currentEmail = email; return me;
   };
   const admin = async () => {
+    capturePage = platformPage;
     if (!operatorActive) { const me = await h.login(platformPage, operatorEmail, "platform"); operatorActive = true; for (const permission of ["platform.tenants.read", "platform.tenants.manage"]) assert.ok(me.effectivePermissions.platform.includes(permission)); }
   };
   const operatorClick = async (button, route, method = "POST") => {
@@ -117,8 +174,7 @@ export async function runOrganizationSupplementCases(h) {
     await dialog.waitFor({ state: "hidden" }); const detail = await read(h, platformPage, `/api/platform/tenants/${tenantId}`); assert.equal(detail.status, transition[1]); assert.equal(detail.lastStateChange.reason, reason); assert.match(detail.lastStateChange.atUtc, /Z$/u); assert.ok(Number.isFinite(Date.parse(detail.lastStateChange.atUtc))); return detail.lastStateChange;
   };
   const moderation = async (tenantId, action) => {
-    await admin(); await platformPage.goto(url(`/plataforma/organizaciones/${tenantId}`)); await platformPage.getByRole("tab", { name: "Página pública", exact: true }).click();
-    await platformPage.getByRole("button", { name: /^Acciones de /u }).filter({ visible: true }).last().click(); await platformPage.getByRole("menuitem", { name: action, exact: true }).click();
+    await admin(); await platformPage.goto(url(`/plataforma/organizaciones/${tenantId}`)); await openPublicModerationAction(platformPage, action);
     const dialog = platformPage.getByRole("dialog").filter({ has: platformPage.getByRole("textbox", { name: /^Motivo/u }) }); await dialog.getByRole("textbox", { name: /^Motivo/u }).fill(`Moderación propia de la organización ${tag}.`);
     await operatorClick(dialog.getByRole("button", { name: action, exact: true }), `/api/platform/tenants/${tenantId}/public-site/${action === "Despublicar" ? "unpublish" : "allow-publish"}`); await dialog.waitFor({ state: "hidden" });
   };
@@ -131,25 +187,25 @@ export async function runOrganizationSupplementCases(h) {
     }
   };
   const ownFixture = async () => {
-    if (!own) { await leave(); own = await h.registerBusiness(page); publicPage = page; currentEmail = own.email; }
+    if (!own) { await leave(); capturePage = page; own = await h.registerBusiness(page); publicPage = page; currentEmail = own.email; }
     await business(own.email); assert.equal((await read(h, page, "/api/me")).activeTenantId, own.me.activeTenantId);
   };
   const publish = async () => {
-    await page.goto(url("/org/pagina")); const before = await read(h, page, "/api/organization/public-page"); assert.equal(before.isPublished, false);
+    capturePage = page; await page.goto(url("/org/pagina")); const before = await read(h, page, "/api/organization/public-page"); assert.equal(before.isPublished, false);
     await clickForResponse(page, page.getByRole("switch", { name: /^Visible en /u }), "/api/organization/public-page/publish", "POST", 200); assert.equal((await read(h, page, "/api/organization/public-page")).isPublished, true);
   };
   const usingBearer = (target, token, route) => target.request.get(localApiUrl(route, h.base), { headers: { Authorization: token } });
   try {
     await run(1, async () => {
       await originalFixture(); await admin();
-      expired = await invite(h, page, company); await expire(expired);
-      suspendedInvitation = await invite(h, page, company); await leave();
-      const expiredPreview = await preview(h, invitationPage, expired.token, "Expired");
+      expired = await inviteCurrent(company); await expire(expired);
+      suspendedInvitation = await inviteCurrent(company); await leave();
+      const expiredPreview = await invitationPreview(invitationPage, expired.token, "Expired");
       await invitationPage.getByRole("heading", { name: "Esta invitación venció", exact: true }).waitFor(); assert.equal(await invitationPage.getByRole("button", { name: "Aceptar invitación", exact: true }).count(), 0);
       let suspendedPreview;
       try {
         await state(original.activeTenantId, "Suspender", `Suspensión propia para invitación ${tag}.`);
-        suspendedPreview = await preview(h, invitationPage, suspendedInvitation.token, "OrganizationSuspended");
+        suspendedPreview = await invitationPreview(invitationPage, suspendedInvitation.token, "OrganizationSuspended");
         await invitationPage.getByRole("heading", { name: /no está disponible/u }).waitFor(); assert.equal(await invitationPage.getByRole("button", { name: "Aceptar invitación", exact: true }).count(), 0);
       } finally {
         if (suspended.has(original.activeTenantId)) await state(original.activeTenantId, "Reactivar", `Restauración de la organización original ${tag}.`);
@@ -158,19 +214,19 @@ export async function runOrganizationSupplementCases(h) {
       requireUnavailableInvitation(expiredPreview, await read(h, page, `/api/users/${expired.memberId}`));
       requireUnavailableInvitation(suspendedPreview, await read(h, page, `/api/users/${suspendedInvitation.memberId}`));
       return "Dos enlaces reales propios: vencido y organización suspendida mostraron su estado, sin Aceptar ni identidad activa. La organización original quedó Activa por UI.";
-    }, invitationPage);
+    });
 
-    if (!expired || !company) await h.block("ORX-02", "ORX-01 no preparó la invitación vencida y la empresa propias.", page);
+    if (!outcomes.get(1)?.ok || !expired || !company) await h.block("ORX-02", "ORX-01 no completó la preparación de invitaciones vencida/suspendida y la empresa propias.", page);
     else await run(2, async () => {
       await originalFixture();
-      for (let index = 0; index < 10; index++) { const issued = await invite(h, page, company); await expire(issued); }
+      for (let index = 0; index < 10; index++) { const issued = await inviteCurrent(company); await expire(issued); }
       const roleName = `Administrador propio ORX ${tag}`; await page.goto(url("/org/roles/nuevo")); await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(roleName);
       await page.getByRole("combobox", { name: "Vale en", exact: true }).click(); await page.getByRole("option", { name: company.name, exact: true }).click(); await page.getByRole("button", { name: "Abrir o cerrar Miembros", exact: true }).click();
       for (const permission of ["Ver miembros", "Administrar miembros"]) await page.getByRole("checkbox", { name: permission, exact: true }).check();
       const createdRole = await clickForResponse(page, page.getByRole("button", { name: "Crear rol", exact: true }), "/api/roles", "POST", 201); const roleId = await createdRole.json(); await page.getByRole("heading", { name: roleName, exact: true }).waitFor();
-      companyAdmin = await invite(h, page, company, syntheticEmail("orx-admin"), roleName);
+      companyAdmin = await inviteCurrent(company, syntheticEmail("orx-admin"), roleName);
       const reserved = await read(h, page, `/api/users/${companyAdmin.memberId}`); assert.deepEqual(reserved.roles, []); assert.equal(reserved.userId, null); assert.ok(reserved.companies.find((item) => item.companyId === company.id)?.roles.some((role) => role.id === roleId));
-      await leave(); await preview(h, page, companyAdmin.token, "NoAccount");
+      await leave(); await invitationPreview(page, companyAdmin.token, "NoAccount");
       await clickForResponse(page, page.getByRole("button", { name: "Aceptar invitación", exact: true }), "/api/invitations/accept", "POST", 200); publicPage = page; currentEmail = companyAdmin.email;
       await page.getByRole("button", { name: "Más tarde", exact: true }).click(); await page.waitForURL((current) => current.pathname === "/org");
       const me = await read(h, page, "/api/me"); assert.equal(me.activeTenantId, original.activeTenantId); assert.equal(me.effectivePermissions.organization.includes("users.read"), false); assert.ok(me.effectivePermissions.companies[company.id].includes("company.members.read"));
@@ -199,11 +255,11 @@ export async function runOrganizationSupplementCases(h) {
       await page.goto(url("/org/configuracion")); await page.getByRole("button", { name: "Agregar dominio", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "Agregar dominio", exact: true }); domain = `orx-${tag}.example.test`;
       await dialog.getByRole("textbox", { name: "Dominio", exact: true }).fill(domain); const added = await clickForResponse(page, dialog.getByRole("button", { name: "Siguiente", exact: true }), "/api/organization/settings/domains", "POST", 201); assert.equal((await added.json()).status, "Pending"); await page.getByRole("dialog", { name: `Verificar ${domain}`, exact: true }).getByRole("button", { name: "Cancelar", exact: true }).click();
       await page.goto(url("/org")); assert.ok((await read(h, page, "/api/home")).pendingGroups.some((item) => item.kind === "publicPageDraft")); await page.getByRole("region", { name: "Para resolver", exact: true }).locator('a[href="/org/pagina"]').first().click(); await page.getByRole("heading", { name: "Página pública", exact: true }).waitFor(); await publish();
-      await moderation(own.me.activeTenantId, "Despublicar"); await page.goto(url("/org")); const urgent = await read(h, page, "/api/home"); requireUrgentPageFirst(urgent);
+      await moderation(own.me.activeTenantId, "Despublicar"); capturePage = page; await page.goto(url("/org")); const urgent = await read(h, page, "/api/home"); requireUrgentPageFirst(urgent);
       const section = page.getByRole("region", { name: "Para resolver", exact: true }); assert.equal(await section.getByRole("link").first().getAttribute("href"), "/org/pagina"); await section.getByRole("link").first().click(); await page.getByRole("heading", { name: "Página pública", exact: true }).waitFor();
       const blocked = await read(h, page, "/api/organization/public-page"); assert.ok(blocked.publishBlockedAtUtc); assert.equal(blocked.isPublished, false); assert.equal(await page.getByRole("switch", { name: /^Visible en /u }).getAttribute("aria-disabled"), "true");
       await problem(await h.api(page, "/api/organization/public-page/publish", { method: "POST", data: { version: blocked.version }, headers: { "Idempotency-Key": randomUUID() } }), 409, "PublicSite.PublicPage.PublishBlocked");
-      await moderation(own.me.activeTenantId, "Permitir publicar"); await page.reload(); const allowed = await read(h, page, "/api/organization/public-page"); assert.equal(allowed.publishBlockedAtUtc, null); assert.equal(allowed.isPublished, false); assert.equal(await page.getByRole("switch", { name: /^Visible en /u }).isChecked(), false);
+      await moderation(own.me.activeTenantId, "Permitir publicar"); capturePage = page; await page.reload(); const allowed = await read(h, page, "/api/organization/public-page"); assert.equal(allowed.publishBlockedAtUtc, null); assert.equal(allowed.isPublished, false); assert.equal(await page.getByRole("switch", { name: /^Visible en /u }).isChecked(), false);
       const draft = await read(h, page, "/api/home"); assert.ok(draft.pendingGroups.some((item) => item.kind === "publicPageDraft")); assert.equal(draft.pendingGroups.some((item) => item.kind === "publicPageBlocked"), false);
       await publish(); await page.goto(url("/org")); const resolved = await read(h, page, "/api/home"); assert.equal(resolved.pendingGroups.some((item) => ["publicPageDraft", "publicPageBlocked"].includes(item.kind)), false); assert.ok(resolved.pendingGroups.some((item) => item.kind === "domainUnverified"));
       const remaining = page.getByRole("region", { name: "Para resolver", exact: true });
