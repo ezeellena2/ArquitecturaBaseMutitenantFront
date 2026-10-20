@@ -29,7 +29,7 @@ test("la acción de barra conserva el clic diferido para la carrera y espera el 
     return { click: async () => calls.push("tomar") };
   } };
   const dialog = { getByRole: (role) => { assert.equal(role, "menu"); return menu; }, waitFor: async (options) => calls.push(options?.state === "hidden" ? "hoja cerrada" : "hoja visible") };
-  const trigger = { first: () => trigger, getAttribute: async () => "dialog", click: async () => calls.push("abrir hoja") };
+  const trigger = { first: () => trigger, waitFor: async () => {}, getAttribute: async () => "dialog", click: async () => calls.push("abrir hoja") };
   const heading = { filter: () => heading, first: () => heading, innerText: async () => "Cliente sintético" };
   const page = { viewportSize: () => ({ width: 390 }), getByRole: (role, options) => {
     if (role === "button") return trigger;

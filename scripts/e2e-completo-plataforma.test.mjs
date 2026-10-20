@@ -126,6 +126,7 @@ test("abrir una acción espera la ficha y acota la hoja móvil antes de esperar 
       isVisible: async () => { assert.equal(ready, true, "isVisible no debe decidir mientras carga la ficha."); return mode === "directo"; },
       or: () => ({ first: () => ({ waitFor: async () => { waiting.resolve(); await loaded.promise; } }) }) };
     const menu = { ...action("Acciones"), filter: () => menu, first: () => menu,
+      waitFor: async (options) => assert.deepEqual(options, { state: "visible" }),
       getAttribute: async () => mode === "hoja" ? "dialog" : "menu",
       focus: async () => calls.push(["focus"]), press: async (key) => calls.push(["press", key]) };
     const scopedMenu = { waitFor: async (options) => { if (options?.state === "hidden") calls.push(["menú cerrado"]); }, getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.deepEqual(options, { name: "Cerrar sesiones", exact: true }); return action("opción Cerrar sesiones"); } };

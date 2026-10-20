@@ -118,7 +118,7 @@ test("el estado de empresa se comprueba por badge en escritorio y por la acción
         if (role === "heading") return title;
         if (role === "dialog") { assert.deepEqual(options, { name: "Empresa propia", exact: true }); return sheet; }
         assert.equal(role, "button"); assert.deepEqual(options, { name: "Más acciones", exact: true });
-        return { getAttribute: async () => "dialog", focus: async () => calls.push(["focus", "Más acciones"]), press: async (key) => calls.push(["press", key]) };
+        return { waitFor: async (options) => assert.deepEqual(options, { state: "visible" }), getAttribute: async () => "dialog", focus: async () => calls.push(["focus", "Más acciones"]), press: async (key) => calls.push(["press", key]) };
       },
       getByText: (name) => { assert.equal(width, 1440, "El tablero móvil no tiene badge de estado."); return control(name); },
     };

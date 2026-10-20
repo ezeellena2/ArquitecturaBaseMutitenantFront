@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 export async function openBarMenu(page, trigger, { title, activation = "click" } = {}) {
   assert.ok(["click", "Enter"].includes(activation));
   const phone = page.viewportSize().width === 390;
+  await trigger.waitFor({ state: "visible" });
   const name = title ?? (phone ? (await page.getByRole("heading", { level: 1 }).filter({ visible: true }).first().innerText()).trim() : undefined);
   if (phone) {
     assert.ok(name, "La hoja móvil necesita el nombre de la ficha o lista.");

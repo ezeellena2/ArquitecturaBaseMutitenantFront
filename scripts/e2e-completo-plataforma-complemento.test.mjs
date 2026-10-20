@@ -19,7 +19,7 @@ test("el reenvío de la ficha usa el botón en escritorio y el menú real sólo 
       if (role === "dialog") { assert.equal(options.name, email); return sheet; }
       if (options.name === `Acciones de ${email}`) {
         assert.equal(width, 390); assert.equal(role, "button");
-        return { getAttribute: async (name) => { assert.equal(name, "aria-haspopup"); return "dialog"; }, click: async () => calls.push("abrir hoja") };
+        return { waitFor: async (options) => assert.deepEqual(options, { state: "visible" }), getAttribute: async (name) => { assert.equal(name, "aria-haspopup"); return "dialog"; }, click: async () => calls.push("abrir hoja") };
       }
       assert.equal(options.name, "Reenviar invitación"); assert.equal(role, "button");
       return control;

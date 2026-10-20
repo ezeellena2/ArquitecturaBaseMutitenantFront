@@ -16,9 +16,16 @@ function fixture(width) {
     if (role === "dialog") { assert.deepEqual(options, { name: "Ficha propia", exact: true }); return dialog; }
     assert.equal(role, "menu"); return desktopMenu;
   } };
-  const trigger = { getAttribute: async (name) => { assert.equal(name, "aria-haspopup"); return "dialog"; }, click: async () => calls.push("clic"), focus: async () => calls.push("foco"), press: async (key) => { assert.equal(key, "Enter"); calls.push("Enter"); } };
-  return { page, trigger, calls };
+  const trigger = { waitFor: async () => {}, getAttribute: async (name) => { assert.equal(name, "aria-haspopup"); return "dialog"; }, click: async () => calls.push("clic"), focus: async () => calls.push("foco"), press: async (key) => { assert.equal(key, "Enter"); calls.push("Enter"); } };
+  return { page, trigger, calls, heading };
 }
+
+test("la barra debe estar visible antes de leer el título para no conservar Iniciando sesión", async () => {
+  const { page, trigger, heading } = fixture(390); let ready = false;
+  trigger.waitFor = async (options) => { assert.deepEqual(options, { state: "visible" }); ready = true; };
+  heading.innerText = async () => { assert.equal(ready, true, "El título de autenticación todavía es transitorio"); return "Ficha propia"; };
+  await chooseBarAction(page, trigger, "Suspender");
+});
 
 test("móvil abre por clic o Enter, acota al dialog nombrado y espera su cierre antes de continuar", async () => {
   for (const activation of ["click", "Enter"]) {

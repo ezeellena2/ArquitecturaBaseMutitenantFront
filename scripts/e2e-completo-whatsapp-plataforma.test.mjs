@@ -32,7 +32,7 @@ test("Ver la cuenta se inspecciona dentro de la hoja del chat y se cierra aun si
       assert.equal(role, "menuitem"); assert.deepEqual(options, { name: "Ver la cuenta", exact: true }); return item;
     } };
     const dialog = { getByRole: (role) => { assert.equal(role, "menu"); return menu; }, waitFor: async (options) => { if (options?.state === "hidden") calls.push("hoja cerrada"); } };
-    const trigger = { getAttribute: async () => "dialog", click: async () => calls.push("abrir hoja") };
+    const trigger = { waitFor: async () => {}, getAttribute: async () => "dialog", click: async () => calls.push("abrir hoja") };
     const heading = { filter: () => heading, first: () => heading, innerText: async () => "Consulta propia" };
     const page = { viewportSize: () => ({ width: 390 }), keyboard: { press: async (key) => { assert.equal(key, "Escape"); calls.push("Escape"); } },
       getByRole: (role, options) => {

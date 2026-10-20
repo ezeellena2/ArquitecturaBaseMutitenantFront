@@ -110,7 +110,7 @@ test("el ciclo exige PUT y estado real, usando acción inversa móvil y badge de
       getByRole: (role, { name } = {}) => {
         if (role === "heading") return title;
         if (role === "menu") { assert.equal(width, 1440); return desktopMenu; }
-        if (role === "button") { assert.equal(name, "Más acciones"); return { getAttribute: async () => "dialog", click: async () => { open = !open; }, focus: async () => {}, press: async (key) => { assert.equal(key, "Enter"); open = true; } }; }
+        if (role === "button") { assert.equal(name, "Más acciones"); return { waitFor: async (options) => assert.deepEqual(options, { state: "visible" }), getAttribute: async () => "dialog", click: async () => { open = !open; }, focus: async () => {}, press: async (key) => { assert.equal(key, "Enter"); open = true; } }; }
         assert.equal(role, "dialog");
         if (name) { assert.equal(width, 390); assert.equal(name, "Empresa propia"); return sheet; }
         assert.equal(open, false, "La confirmación se usa después del cierre de la hoja."); return { getByRole: () => ({ click: write }) };

@@ -22,7 +22,7 @@ test("el estado móvil de Organización elige la acción dentro del menú de la 
   const calls = [];
   const ready = { filter: () => ready, first: () => ready, waitFor: async () => calls.push("ficha lista") };
   const direct = { or: () => ready, isVisible: async () => false };
-  const trigger = { filter: () => trigger, first: () => trigger, getAttribute: async () => "dialog", click: async () => calls.push("abrir barra") };
+  const trigger = { filter: () => trigger, first: () => trigger, waitFor: async (options) => assert.deepEqual(options, { state: "visible" }), getAttribute: async () => "dialog", click: async () => calls.push("abrir barra") };
   const menu = { waitFor: async () => calls.push("menú visible"), getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.deepEqual(options, { name: "Suspender", exact: true }); return { click: async () => calls.push("Suspender") }; } };
   const dialog = { waitFor: async (options) => calls.push(options?.state === "hidden" ? "hoja cerrada" : "hoja visible"), getByRole: (role) => { assert.equal(role, "menu"); return menu; } };
   const heading = { filter: () => heading, first: () => heading, innerText: async () => "Organización propia" };
