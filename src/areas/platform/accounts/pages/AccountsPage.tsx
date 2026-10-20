@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Power, RotateCw, Trash2 } from "lucide-react";
+import { Plus, Power, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -15,7 +15,7 @@ import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { Button } from "@/shared/ui/button";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { FilterBar } from "@/shared/ui/FilterBar";
-import { CloseIcon, LogOutIcon, UsersIcon } from "@/shared/ui/icons";
+import { CloseIcon, LogOutIcon, RotateIcon, UsersIcon } from "@/shared/ui/icons";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -49,7 +49,7 @@ function AccountActions({ account, self, canManage, canInvite, route, onConfirm 
   if (self || account.state === "PendingDeletion" || account.state === "Deleted") return null;
   const confirm = (action: Confirmation["action"], trigger: HTMLElement | null) => onConfirm({ account, action, trigger, route });
   return <RowActions label={t("rowActions", { name: accountLabel(account, t) })} title={accountLabel(account, t)} actions={[
-    { label: t("actions.resend"), accessibleName: t("actions.resend"), icon: RotateCw, hidden: !canInvite || !invitation || busy, onSelect: () => resend.mutate({ id: account.id, name: accountLabel(account, t) }) },
+    { label: t("actions.resend"), accessibleName: t("actions.resend"), icon: RotateIcon, hidden: !canInvite || !invitation || busy, onSelect: () => resend.mutate({ id: account.id, name: accountLabel(account, t) }) },
     { label: t("actions.revoke-sessions"), accessibleName: t("actions.revoke-sessions"), icon: LogOutIcon, hidden: !canManage || invitation, onSelect: (trigger) => confirm("revoke-sessions", trigger) },
     { label: t("actions.reactivate"), accessibleName: t("actions.reactivate"), icon: Power, hidden: !canManage || account.state !== "Suspended", onSelect: (trigger) => confirm("reactivate", trigger) },
     { label: t("actions.revoke"), accessibleName: t("actions.revoke"), icon: CloseIcon, destructive: true, hidden: !canInvite || !invitation || busy, onSelect: (trigger) => confirm("revoke", trigger) },

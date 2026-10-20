@@ -2,7 +2,7 @@ import { companyRoleOptions, companyCandidateOptions } from "@/shared/api/resour
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Power, RotateCw, ShieldCheck, UserRound } from "lucide-react";
+import { Power, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -17,7 +17,7 @@ import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { Pagination } from "@/shared/ui/Pagination";
-import { CloseIcon } from "@/shared/ui/icons";
+import { CloseIcon, RotateIcon } from "@/shared/ui/icons";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import {
@@ -44,7 +44,7 @@ function InvitationRowActions({ company, member, hidden, onRevoke }: { company: 
     (_response, operation) => { toast.success(t("companies:messages.invitationResent", { email: operation.email })); void queryClient.invalidateQueries({ queryKey: companiesQueryRoot }); }),
     { meta: action.meta, sameOperation: (previous, next) => previous.invitationId === next.invitationId });
   return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} actions={[
-    { label: t("companies:actions.resendInvitation"), accessibleName: t("companies:actions.resendInvitation"), icon: RotateCw, hidden,
+    { label: t("companies:actions.resendInvitation"), accessibleName: t("companies:actions.resendInvitation"), icon: RotateIcon, hidden,
       onSelect: () => { if (member.invitationId) resend.mutate({ invitationId: member.invitationId, email: member.email ?? member.displayName }); } },
     // «Criterio · Menús» y tablero Empresa (v109): abajo, después de la franja, en rojo y con la ✕.
     { label: t("companies:actions.revokeInvitation"), accessibleName: t("companies:actions.revokeInvitation"), icon: CloseIcon, destructive: true, hidden, onSelect: onRevoke },

@@ -3,8 +3,8 @@ import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { RemoteOptionFooter, RemoteOptionSearch } from "@/shared/ui/RemoteOptionControls";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
-import { Building2, Settings2, Trash2 } from "lucide-react";
-import { UserIcon } from "@/shared/ui/icons";
+import { Building2 } from "lucide-react";
+import { CloseIcon, RotateIcon, ShieldIcon, UserIcon, UserMinusIcon } from "@/shared/ui/icons";
 import { useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
@@ -300,9 +300,9 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
       // En el teléfono, con cambios, la barra dice «Cambios sin guardar» en lugar del correo, como Configuración (M-Avisos).
       phoneSubtitle={edit.unsaved ?? userContact(member) ?? undefined} phoneBody="gray"
       moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
-        { label: t("users:actions.resend"), onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },
-        { label: t("users:actions.revoke"), onSelect: () => setConfirmAction("revoke"), destructive: true, hidden: !isInvitation || !member.invitationId },
-        { label: t("users:actions.remove"), onSelect: openRemove, destructive: true, hidden: !isMember },
+        { label: t("users:actions.resend"), icon: RotateIcon, onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },
+        { label: t("users:actions.revoke"), icon: CloseIcon, onSelect: () => setConfirmAction("revoke"), destructive: true, hidden: !isInvitation || !member.invitationId },
+        { label: t("users:actions.remove"), icon: UserMinusIcon, onSelect: openRemove, destructive: true, hidden: !isMember },
       ] } : undefined}
       actions={canManage ? pendingDeletion
         ? <Button type="button" variant="danger" onClick={openRemove}>{t("users:actions.remove")}</Button>
@@ -355,9 +355,9 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
                 return <ListItem key={company.companyId} icon={<Building2 aria-hidden="true" />} title={company.companyName}
                   detail={preserved ? <>{roleNames}<Separator />{t("users:detail.companyInactive")}</> : roleNames}>
                   {editable && !preserved ? <RowActions label={t("users:detail.companyActions", { name: company.companyName })} title={company.companyName} actions={[
-                    { label: t("users:detail.changeCompanyRoles"), accessibleName: t("users:detail.changeCompanyRoles"), icon: Settings2,
+                    { label: t("users:detail.changeCompanyRoles"), accessibleName: t("users:detail.changeCompanyRoles"), icon: ShieldIcon,
                       onSelect: (trigger) => openCompanyDialog({ mode: "roles", assignment, version: member.version, returnFocusTo: trigger }) },
-                    { label: t("users:detail.removeCompanyAction"), accessibleName: t("users:detail.removeCompanyAction"), icon: Trash2, destructive: true,
+                    { label: t("users:detail.removeCompanyAction"), accessibleName: t("users:detail.removeCompanyAction"), icon: UserMinusIcon, destructive: true,
                       onSelect: () => saveCompanies(changeableAssignments.filter((item) => item.companyId !== company.companyId), t("users:detail.messages.companyRemoved", { name: displayName, company: company.companyName }), "page") },
                   ]} /> : null}
                 </ListItem>;

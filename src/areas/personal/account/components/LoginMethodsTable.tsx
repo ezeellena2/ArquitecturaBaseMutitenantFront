@@ -1,4 +1,3 @@
-import { Star, Trash2 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import googleMark from "@/assets/google-mark.svg";
@@ -7,7 +6,7 @@ import { Button } from "@/shared/ui/button";
 import { RowActions } from "@/shared/ui/RowActions";
 import { PhoneText } from "@/shared/ui/format/PhoneText";
 import { useFormat } from "@/shared/format/useFormat";
-import { MailIcon, WhatsAppIcon } from "@/shared/ui/icons";
+import { DeleteIcon, MailIcon, StarIcon, WhatsAppIcon } from "@/shared/ui/icons";
 import { List, ListItem } from "@/shared/ui/List";
 import { StatusDotMark } from "@/shared/ui/StatusDot";
 import { AccountGoogleButton } from "./AccountGoogleButton";
@@ -43,8 +42,8 @@ function MethodMenu({ method, onAction }: { method: AccountLoginMethod; onAction
   const format = useFormat();
   const value = method.type === "Phone" ? format.formatPhone(method.value ?? "") : method.value;
   return <RowActions label={t("actionsFor", { value })} title={method.type === "Google" ? t("google") : value ?? undefined} actions={[
-    { label: t("makePrimary"), accessibleName: t("makePrimary"), icon: Star, hidden: !method.canMakePrimary, onSelect: (trigger) => onAction("primary", method, trigger) },
-    { label: t(method.type === "Google" ? "unlink" : "remove"), accessibleName: t(method.type === "Google" ? "unlink" : "remove"), icon: Trash2, destructive: true, hidden: !method.canRemove, onSelect: (trigger) => onAction("remove", method, trigger) },
+    { label: t("makePrimary"), accessibleName: t("makePrimary"), icon: StarIcon, hidden: !method.canMakePrimary, onSelect: (trigger) => onAction("primary", method, trigger) },
+    { label: t(method.type === "Google" ? "unlink" : "remove"), accessibleName: t(method.type === "Google" ? "unlink" : "remove"), icon: DeleteIcon, destructive: true, hidden: !method.canRemove, onSelect: (trigger) => onAction("remove", method, trigger) },
   ]} />;
 }
 
