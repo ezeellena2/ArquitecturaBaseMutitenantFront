@@ -6,6 +6,14 @@ const result = (width, status, extra = {}) => ({ width, status, actual: `Resulta
 const caseOf = (id, results, extra = {}) => ({ id, area: "Identidad", actor: "Visitante", action: "Ingresar", route: "/login", expected: "Acceso correcto", results, ...extra });
 const reportOf = (cases, extra = {}) => ({ date: "2026-10-20", commits: { back: "abc", front: "def" }, environment: "Local aislado", baseline: [], cases, ...extra });
 
+test("la nota factual de una captura ampliada aparece escapada sin cambiar el resultado", () => {
+  const html = renderCompleteReport(reportOf([caseOf("captura", [result(1440, "passed"), result(390, "passed", { image: "movil.png", captureSize: { width: 621, height: 3439 }, captureNote: "Imagen <621>; viewport nominal390, causa sin determinar." })])]));
+  assert.match(html, /data-case-id="captura"[^>]*data-status="passed"/);
+  assert.ok(html.includes("Sobre la captura:"));
+  assert.ok(html.includes("Imagen &lt;621&gt;; viewport nominal390, causa sin determinar."));
+  assert.equal(html.includes("Imagen <621>"), false);
+});
+
 test("el análisis posterior aparece separado y escapado en el caso y en la falla final", () => {
   const html = renderCompleteReport(reportOf([caseOf("callback", [result(1440, "failed", { analysis: "Hipótesis <callback>", actual: "Hecho observado", severity: "medium" }), result(390, "passed")])]));
   const cases = html.slice(0, html.indexOf('<section id="fallas"'));

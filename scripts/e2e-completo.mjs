@@ -11,6 +11,7 @@ import { createEnvironment, baseUrl } from "./recorrido-usuario-entorno.mjs";
 import { journeyDate, safeDiagnostic } from "./recorrido-usuario.mjs";
 import { factorSecretMasks } from "./recorrido-usuario-e9.mjs";
 import { renderCompleteReport, summarizeCases } from "./e2e-completo-informe.mjs";
+import { annotateCaptureDimensions } from "./e2e-completo-capturas.mjs";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { screens, guidedCases, existingScriptCases, inventoryMetadata } from "./e2e-completo-inventario-front.mjs";
 import { buildMatrix, importedJourneySteps, parseTapSummary, safeEvidenceText } from "./e2e-completo-matriz.mjs";
@@ -192,7 +193,7 @@ export async function main(options = parseArguments([])) {
     report.baselineFunctionalIncidents = enrichBaselineIncidents(parseFunctionalBaselineIncidents(log));
   } catch (error) { if (error.code !== "ENOENT") throw error; }
   const persist = async (publish = false) => {
-    const annotatedExecutions = enrichExecutionFailures(executions);
+    const annotatedExecutions = enrichExecutionFailures(publish ? await annotateCaptureDimensions(executions, { output }) : executions);
     report.executions = annotatedExecutions;
     const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(annotatedExecutions), verificationLimitations, additionalProofGroups: { ...securitySupplementProofGroups, ...assistantSupplementProofGroups, ...legalSupplementProofGroups, ...organizationSupplementProofGroups, ...identitySupplementProofGroups, ...contractSupplementProofGroups, ...supplementPlatformProofGroups, ...localClosureProofGroups } });
     report.matrix = matrix;
