@@ -1,6 +1,17 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { localApiUrl, requireSyntheticEmail, viewportOf, syntheticEmail } from "./e2e-completo-soporte.mjs";
+import { localApiUrl, requireSyntheticEmail, viewportOf, syntheticEmail, withFirstConsultationNotice } from "./e2e-completo-soporte.mjs";
+
+test("el aviso que llega durante Salir se acepta por UI y su handler se retira aun si falla el clic", async () => {
+  const calls = []; let handle;
+  const notice = { getByRole: () => ({ click: async () => calls.push("aceptar") }), waitFor: async () => calls.push("oculto") };
+  const page = { getByRole: () => notice,
+    addLocatorHandler: async (target, callback) => { assert.equal(target, notice); handle = callback; calls.push("registrar"); },
+    removeLocatorHandler: async (target) => { assert.equal(target, notice); calls.push("retirar"); } };
+  const failure = new Error("Otro obstáculo del menú");
+  await assert.rejects(withFirstConsultationNotice(page, async () => { calls.push("clic"); await handle(); throw failure; }), (error) => error === failure);
+  assert.deepEqual(calls, ["registrar", "clic", "aceptar", "oculto", "retirar"]);
+});
 
 test("los buzones generados conservan un local-part válido aun con una etiqueta larga", () => {
   const first = syntheticEmail("cerrado-consumer");

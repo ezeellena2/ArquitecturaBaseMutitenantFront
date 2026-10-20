@@ -22,6 +22,17 @@ export function requireSyntheticEmail(email) {
   assert.match(email, /^[a-z0-9._+-]+@(?:[a-z0-9-]+\.)*example\.test$/i, "Sólo se permiten correos sintéticos.");
 }
 
+/** El estado del asistente puede llegar después del marco: se atiende su aviso sólo si aparece durante la acción. */
+export async function withFirstConsultationNotice(page, action) {
+  const notice = page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true });
+  await page.addLocatorHandler(notice, async () => {
+    await notice.getByRole("button", { name: "Entendido", exact: true }).click();
+    await notice.waitFor({ state: "hidden" });
+  });
+  try { return await action(); }
+  finally { await page.removeLocatorHandler(notice); }
+}
+
 // Se observa el token que obtuvo la SPA por OIDC real. Nunca sale de esta memoria.
 export function createBrowserSupport({ context, env, base, width }) {
   const tokens = new WeakMap();
@@ -92,16 +103,13 @@ export function createBrowserSupport({ context, env, base, width }) {
     const original = page.viewportSize();
     await page.setViewportSize(viewportOf(1440));
     try {
-      const notice = page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true });
-      if (await notice.isVisible()) {
-        await notice.getByRole("button", { name: "Entendido", exact: true }).click();
-        await notice.waitFor({ state: "hidden" });
-      }
-      const menu = page.getByRole("button", { name: /, (Personal|Plataforma|.+)$/ }).filter({ visible: true }).last();
-      await menu.click();
-      await page.getByRole("menuitem", { name: "Salir", exact: true }).click();
-      await page.getByRole("link", { name: "Ingresá", exact: true }).filter({ visible: true }).first().waitFor();
-      tokens.delete(page);
+      await withFirstConsultationNotice(page, async () => {
+        const menu = page.getByRole("button", { name: /, (Personal|Plataforma|.+)$/ }).filter({ visible: true }).last();
+        await menu.click();
+        await page.getByRole("menuitem", { name: "Salir", exact: true }).click();
+        await page.getByRole("link", { name: "Ingresá", exact: true }).filter({ visible: true }).first().waitFor();
+        tokens.delete(page);
+      });
     } finally { await page.setViewportSize(original); }
   };
   const registerPerson = async (page) => {
