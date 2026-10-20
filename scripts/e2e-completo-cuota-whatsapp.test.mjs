@@ -1,7 +1,30 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { buildMatrix } from "./e2e-completo-matriz.mjs";
-import { quotaWhatsAppDefinitions, quotaWhatsAppLimitations, quotaPhonePlan, createQuotaBudget, nextQuotaDestination, rememberQuotaKey, requireWhatsAppDailyLimit } from "./e2e-completo-cuota-whatsapp.mjs";
+import { quotaWhatsAppDefinitions, quotaWhatsAppLimitations, quotaPhonePlan, createQuotaBudget, nextQuotaDestination, rememberQuotaKey, requireWhatsAppDailyLimit, phoneForm } from "./e2e-completo-cuota-whatsapp.mjs";
+
+test("el formulario Phone espera DOMContentLoaded y cada control visible, sin esperar load ni reintentar navegación", async () => {
+  for (const route of ["/registro", "/login"]) for (const missingPhone of [false, true]) {
+    const calls = []; const failure = new Error("El número no apareció");
+    const control = (name) => ({
+      waitFor: async (options) => { assert.deepEqual(options, { state: "visible" }); calls.push("visible " + name); if (name === "número" && missingPhone) throw failure; },
+      click: async () => calls.push("elegir WhatsApp"), fill: async (value) => { assert.equal(value, "11 3456-7897"); calls.push("llenar número"); },
+      check: async () => calls.push("aceptar términos"),
+    });
+    const page = {
+      goto: async (url, options) => { assert.equal(url, "https://localtest.me" + route); assert.deepEqual(options, { waitUntil: "domcontentloaded" }); calls.push("DOMContentLoaded"); },
+      getByRole: (role, options) => {
+        if (role === "button") { assert.deepEqual(options, { name: "WhatsApp", exact: true }); return control("WhatsApp"); }
+        if (role === "textbox") { assert.equal(options.name.test("Tu número de WhatsApp"), true); return control("número"); }
+        assert.equal(role, "checkbox"); assert.equal(options.name.test("Acepto los Términos"), true); return control("términos");
+      },
+    };
+    const prepare = () => phoneForm({ base: new URL("https://localtest.me/") }, page, "+5491134567897", route);
+    if (missingPhone) await assert.rejects(prepare, (error) => error === failure); else await prepare();
+    assert.deepEqual(calls, ["DOMContentLoaded", "visible WhatsApp", "elegir WhatsApp", "visible número",
+      ...(missingPhone ? [] : ["llenar número", ...(route === "/registro" ? ["visible términos", "aceptar términos"] : [])])]);
+  }
+});
 
 test("una ejecución parcial verde nunca aprueba la ausencia persistida no observable", () => {
   assert.deepEqual(quotaWhatsAppDefinitions.map((entry) => entry.id), ["CUOTA-WA-01"]);

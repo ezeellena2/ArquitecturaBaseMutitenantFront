@@ -64,11 +64,16 @@ async function waitRealCooldown(milliseconds, budget) {
   budget.check();
 }
 
-async function phoneForm(h, page, phone, route) {
-  await page.goto(new URL(route, h.base).href);
-  await page.getByRole("button", { name: "WhatsApp", exact: true }).click();
-  await page.getByRole("textbox", { name: /^(Tu )?número de WhatsApp$/iu }).fill(nationalPhone(phone));
-  if (route === "/registro") await page.getByRole("checkbox", { name: /Acepto los Términos/u }).check();
+export async function phoneForm(h, page, phone, route) {
+  await page.goto(new URL(route, h.base).href, { waitUntil: "domcontentloaded" });
+  const channel = page.getByRole("button", { name: "WhatsApp", exact: true });
+  await channel.waitFor({ state: "visible" }); await channel.click();
+  const number = page.getByRole("textbox", { name: /^(Tu )?número de WhatsApp$/iu });
+  await number.waitFor({ state: "visible" }); await number.fill(nationalPhone(phone));
+  if (route === "/registro") {
+    const terms = page.getByRole("checkbox", { name: /Acepto los Términos/u });
+    await terms.waitFor({ state: "visible" }); await terms.check();
+  }
 }
 
 async function privatePerson(h, page) {
