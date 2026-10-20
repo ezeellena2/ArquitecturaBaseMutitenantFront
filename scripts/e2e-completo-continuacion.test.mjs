@@ -83,6 +83,43 @@ test("delega runWidth sin cambiar acciones y ante aborto sólo bloquea IDs pendi
   assert.deepEqual(calls.filter(([kind]) => kind === "block").map(([, id]) => id), [pendingId]);
 });
 
+test("un record fallido corta la secuencia, bloquea sólo pendientes y conserva verdes anteriores", async () => {
+  const failure = new Error("Falló la primera acción real"); const calls = []; let nextRan = false;
+  const previous = new Map(continuationDefinitions.map((entry) => [entry.id, { status: "passed", actual: "Verificado antes" }]));
+  previous.set("BASE-01", { status: "blocked" }); previous.set("BASE-03", { status: "pending" }); previous.set("BASE-04", { status: "blocked" });
+  previous.set("BASE-05", { status: "failed", actual: "Fallo anterior conservado" });
+  const originalGreen = previous.get("BASE-02"); const originalFailure = previous.get("BASE-05");
+  const h = {
+    width: 1440, context: { cookies: async () => [] }, base: new URL("https://localtest.me:7433"),
+    record: async (id, _page, action) => {
+      calls.push(["record", id]);
+      try { return { ok: true, value: await action() }; }
+      catch (error) { previous.set(id, { status: "failed", actual: "Fallo observado" }); return { ok: false, error }; }
+    },
+    resultFor: (id, width) => { assert.equal(width, 1440); return previous.get(id); },
+    block: async (id) => { calls.push(["block", id]); previous.set(id, { status: "blocked" }); },
+  };
+  await assert.rejects(runContinuationCases(h, { load: async () => ({ runWidth: async ({ record }) => {
+    await record("01", 1440, () => null, async () => { throw failure; });
+    nextRan = true;
+    await record("02", 1440, () => null, async () => "No debe ejecutarse");
+  } }) }), (error) => error === failure);
+  assert.equal(nextRan, false);
+  assert.deepEqual(calls, [["record", "BASE-01"], ["block", "BASE-03"], ["block", "BASE-04"]]);
+  assert.equal(previous.get("BASE-02"), originalGreen);
+  assert.equal(previous.get("BASE-05"), originalFailure);
+});
+
+test("un record fallido sin error ofrece un diagnóstico corto y no ejecuta la siguiente acción", async () => {
+  let nextRan = false;
+  const h = { width: 390, base: new URL("https://localtest.me:7433"), context: { cookies: async () => [] },
+    record: async () => ({ ok: false }), isPending: () => false, block: async () => assert.fail("No hay pendientes") };
+  await assert.rejects(runContinuationCases(h, { load: async () => ({ runWidth: async ({ record }) => {
+    await record("01", 390, () => null, async () => "acción"); nextRan = true;
+  } }) }), /No se completó BASE-01\./u);
+  assert.equal(nextRan, false);
+});
+
 function cleanupHarness({ publicCookie = true, platformCookie = true, platformFactorPending = false } = {}) {
   const calls = [];
   const h = {

@@ -111,7 +111,7 @@ export function createBrowserSupport({ context, env, base, width }) {
     await page.waitForURL((url) => url.pathname === "/");
     return { email, me: await me(page) };
   };
-  const registerBusiness = async (page) => {
+  const registerBusiness = async (page, { taxId } = {}) => {
     const email = syntheticEmail("empresa");
     const organization = `Prueba integral ${width} ${randomUUID().slice(0, 8)}`;
     const companyName = `${organization} Centro`;
@@ -125,6 +125,7 @@ export function createBrowserSupport({ context, env, base, width }) {
     await page.getByRole("textbox", { name: "Nombre de la organización", exact: true }).fill(organization);
     await page.getByRole("textbox", { name: /Dirección de tu página/ }).fill(slug);
     await page.getByRole("textbox", { name: "Primera empresa", exact: true }).fill(companyName);
+    if (taxId) await page.getByRole("textbox", { name: "CUIT de la empresa", exact: true }).fill(taxId);
     await page.getByText("Disponible", { exact: true }).waitFor();
     const created = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/business-signup" && response.request().method() === "POST");
     await page.getByRole("button", { name: "Crear organización", exact: true }).click();

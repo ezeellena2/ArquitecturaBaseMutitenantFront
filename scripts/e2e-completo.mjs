@@ -27,6 +27,9 @@ const suiteSpecs = {
   plataforma: ["./e2e-completo-plataforma.mjs", "platformDefinitions", "runPlatformCases"],
   politicas: ["./e2e-completo-politicas.mjs", "policyDefinitions", "runPolicyCases"],
   modulos: ["./e2e-completo-modulos.mjs", "moduleDefinitions", "runModuleCases"],
+  negocioextra: ["./e2e-completo-negocio-complemento.mjs", "supplementBusinessDefinitions", "runSupplementBusinessCases"],
+  plataformaextra: ["./e2e-completo-plataforma-complemento.mjs", "supplementPlatformDefinitions", "runSupplementPlatformCases"],
+  whatsappextra: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppDefinitions", "runSupplementWhatsAppCases"],
 };
 
 export function parseArguments(args) {
@@ -181,7 +184,7 @@ export async function main(options = parseArguments([])) {
           if (!blockedReason) { value = await action(); result.actual = typeof value === "string" ? value : "La comprobación terminó correctamente."; }
         }
         catch (error) {
-          failure = error; result.status = "failed"; result.actual = safeEvidenceText(safeDiagnostic(diagnostic ? diagnostic(error) : error.message));
+          failure = error; result.status = "failed"; result.actual = safeEvidenceText(safeDiagnostic(diagnostic ? `${diagnostic(error)} ${error.message.split("\n")[0]}` : error.message));
           result.severity = entry.severity ?? (entry.critical ? "high" : "medium");
           result.probableArea = entry.probableArea ?? "Front o contrato Back; revisar respuesta HTTP y captura";
           result.reproduce = entry.reproduce ?? ["Ejecutar node scripts/e2e-completo.mjs --no-build en un entorno aislado.", `Ingresar como ${entry.actor}.`, `Abrir ${entry.route}.`, entry.action];
