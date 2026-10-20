@@ -21,6 +21,7 @@ import { enrichBaselineIncidents } from "./e2e-completo-triage.mjs";
 import { verificationLimitations } from "./e2e-completo-limitaciones.mjs";
 import { enrichOriginalExecutions } from "./e2e-completo-metadatos-base.mjs";
 import { securitySupplementProofGroups } from "./e2e-completo-seguridad-complemento.mjs";
+import { assistantSupplementProofGroups } from "./e2e-completo-asistente-complemento.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const execute = promisify(execFile);
@@ -50,6 +51,7 @@ const suiteSpecs = {
   rolesextra: ["./e2e-completo-roles-complemento.mjs", "roleSupplementDefinitions", "runRoleSupplementCases"],
   seguridadextra: ["./e2e-completo-seguridad-complemento.mjs", "securitySupplementDefinitions", "runSecuritySupplementCases"],
   contratoextra: ["./e2e-completo-contrato-complemento.mjs", "contractSupplementDefinitions", "runContractSupplementCases"],
+  asistenteextra: ["./e2e-completo-asistente-complemento.mjs", "assistantSupplementDefinitions", "runAssistantSupplementCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
@@ -166,7 +168,7 @@ export async function main(options = parseArguments([])) {
     report.baselineFunctionalIncidents = enrichBaselineIncidents(parseFunctionalBaselineIncidents(log));
   } catch (error) { if (error.code !== "ENOENT") throw error; }
   const persist = async (publish = false) => {
-    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations, additionalProofGroups: securitySupplementProofGroups });
+    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations, additionalProofGroups: { ...securitySupplementProofGroups, ...assistantSupplementProofGroups } });
     report.matrix = matrix;
     report.cases = matrix;
     report.summary = summarizeCases(report.cases);
@@ -241,7 +243,7 @@ export async function main(options = parseArguments([])) {
           const image = `${id}-${width}.png`;
           try {
             await page.screenshot({ path: path.join(output, image), fullPage: true, animations: "disabled",
-              mask: [page.locator('input[autocomplete="one-time-code"], [role="group"][aria-label="Código"] input, input[type="password"]'), page.getByRole("textbox", { name: "Código de recuperación", exact: true }), ...factorSecretMasks(page)], maskColor: "#d9d4ca" });
+              mask: [page.locator('input[autocomplete="one-time-code"], [role="group"][aria-label="Código"] input, input[type="password"]'), page.getByRole("textbox", { name: "Código de recuperación", exact: true }), page.getByRole("textbox", { name: /^(Clave de Anthropic|Clave de la plataforma)$/ }), ...factorSecretMasks(page)], maskColor: "#d9d4ca" });
             result.image = image;
           } catch (error) {
             result.actual += ` Captura no disponible (${error.name}).`;
