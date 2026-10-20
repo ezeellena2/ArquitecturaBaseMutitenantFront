@@ -6,6 +6,29 @@ const result = (width, status, extra = {}) => ({ width, status, actual: `Resulta
 const caseOf = (id, results, extra = {}) => ({ id, area: "Identidad", actor: "Visitante", action: "Ingresar", route: "/login", expected: "Acceso correcto", results, ...extra });
 const reportOf = (cases, extra = {}) => ({ date: "2026-10-20", commits: { back: "abc", front: "def" }, environment: "Local aislado", baseline: [], cases, ...extra });
 
+test("las tablas del informe conservan sus totales dentro de scroll local accesible y permiten cortar texto largo", () => {
+  const entry = caseOf("unidentificadorlargo".repeat(20), [result(1440, "passed"), result(390, "passed")], { expected: "untextolargosinsep".repeat(25) });
+  const report = reportOf([entry], { executions: [entry], baseline: [{ source: "Base", status: "passed", summary: "Resultado original" }] });
+  const before = structuredClone(report); const html = renderCompleteReport(report);
+  const tables = [...html.matchAll(/<div class="table-scroll" role="region" aria-label="([^"]+)" tabindex="0">(<table(?: class="summary-table")?>[\s\S]*?<\/table>)<\/div>/gu)];
+  assert.equal(tables.length, 3, "Los dos resúmenes y la línea de base necesitan un scroll propio accesible por teclado.");
+  assert.equal((html.match(/<table(?:\s[^>]*)?>/gu) ?? []).length, tables.length, "Ninguna tabla puede desbordar directamente la página.");
+  assert.ok(tables.every((match) => match[1].trim()));
+  const summaries = tables.filter((match) => match[2].includes("<caption>Casos y comprobaciones por ancho</caption>"));
+  assert.equal(summaries.length, 2);
+  for (const [, , table] of summaries) {
+    assert.ok(table.startsWith('<table class="summary-table">'));
+    assert.equal((table.match(/scope="col"/gu) ?? []).length, 6);
+    assert.match(table, /<th scope="row">Casos<\/th><td>1<\/td><td>1<\/td><td>0<\/td><td>0<\/td><td>0<\/td>/u);
+    assert.match(table, /<th scope="row">Comprobaciones<\/th><td>2<\/td><td>2<\/td><td>0<\/td><td>0<\/td><td>0<\/td>/u);
+  }
+  assert.match(html, /\.table-scroll\{[^}]*overflow-x:auto[^}]*max-width:100%[^}]*min-width:0/u);
+  assert.match(html, /\.summary-table\{[^}]*min-width:28rem[^}]*overflow-wrap:normal/u);
+  assert.match(html, /body\{[^}]*overflow-wrap:anywhere/u);
+  assert.doesNotMatch(html, /overflow-x:hidden/u);
+  assert.deepEqual(report, before);
+});
+
 test("matriz y comprobaciones se agrupan por área canónica conservando anclas de sus índices originales", () => {
   const cases = [caseOf("M-0", [], { area: "platform", title: "Cuenta de Plataforma", chapter: "plataforma", chapterTitle: "Opera desde Plataforma" }),
     caseOf("M-1", [], { area: "identity" }), caseOf("M-2", [], { area: "PLATAFORMA" })];
@@ -41,6 +64,32 @@ test("la nota factual de una captura ampliada aparece escapada sin cambiar el re
   assert.ok(html.includes("Sobre la captura:"));
   assert.ok(html.includes("Imagen &lt;621&gt;; viewport nominal390, causa sin determinar."));
   assert.equal(html.includes("Imagen <621>"), false);
+});
+
+test("las capturas reservan sólo las dimensiones registradas válidas sin alterar resultados o intentos", () => {
+  const report = reportOf([caseOf("proporción", [result(1440, "passed"), result(390, "failed", {
+    image: "actual.png", captureSize: { width: 390, height: 1560 }, severity: "high",
+    previousAttempts: [{ status: "failed", actual: "Intento original", image: "anterior.png", captureSize: { width: 621, height: 2484 } }],
+  })])], { screens: [{ title: "Complementaria", image: "extra.png", captureSize: { width: 1440, height: 900 } }] });
+  const before = structuredClone(report); const html = renderCompleteReport(report);
+  const images = [...html.matchAll(/<img\b[^>]+>/gu)].map(([tag]) => tag);
+  for (const [file, width, height, count] of [["actual.png", 390, 1560, 2], ["anterior.png", 621, 2484, 1], ["extra.png", 1440, 900, 1]]) {
+    const matches = images.filter((tag) => tag.includes(`src="${file}"`)); assert.equal(matches.length, count);
+    for (const tag of matches) { assert.ok(tag.includes(`width="${width}"`)); assert.ok(tag.includes(`height="${height}"`)); assert.ok(tag.includes('loading="lazy"')); }
+  }
+  assert.deepEqual(report, before);
+});
+
+test("las dimensiones ausentes o inválidas no se inventan ni se copian de otro ancho", () => {
+  for (const captureSize of [undefined, null, {}, { width: 390 }, { height: 900 }, { width: "390", height: 900 }, { width: 390, height: "900" }, { width: 0, height: 900 }, { width: 390, height: -1 }, { width: 390.5, height: 900 }, { width: 390, height: 900.5 }, { width: Infinity, height: 900 }, { width: 390, height: NaN }, { width: 0x80000000, height: 900 }, { width: 390, height: 0x80000000 }]) {
+    const html = renderCompleteReport(reportOf([caseOf("sin-medición", [result(1440, "passed"), result(390, "passed", { image: "real.png", captureSize })])]));
+    const images = [...html.matchAll(/<img\b[^>]+>/gu)].map(([tag]) => tag); assert.equal(images.length, 1);
+    assert.doesNotMatch(images[0], /\b(?:width|height)=/u);
+  }
+  for (const captureSize of [{ width: 1, height: 1 }, { width: 0x7fffffff, height: 0x7fffffff }]) {
+    const html = renderCompleteReport(reportOf([caseOf("límites", [result(390, "passed", { image: "real.png", captureSize })])]));
+    assert.ok(html.includes(`width="${captureSize.width}" height="${captureSize.height}"`));
+  }
 });
 
 test("el análisis posterior aparece separado y escapado en el caso y en la falla final", () => {
