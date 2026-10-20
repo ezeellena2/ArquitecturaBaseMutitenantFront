@@ -5,6 +5,7 @@ import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
 import * as platform from "./e2e-completo-plataforma-complemento.mjs";
 import { createPlatformRecorder } from "./e2e-completo-plataforma.mjs";
+import { EventEmitter } from "node:events";
 
 test("el reenvío de la ficha usa el botón en escritorio y el menú real sólo en móvil", async () => {
   for (const width of [1440, 390]) {
@@ -120,6 +121,44 @@ test("la reparación de recuperaciones sólo declara08/09 y bloquea09 si no pudo
   };
   await platform.runPlatformRecoveryRepairCases(h);
   assert.deepEqual(calls, ["PLAT-C-08"]); assert.deepEqual(blocked, ["PLAT-C-09"]); assert.equal(closed, 2);
+});
+
+test("las dos salidas de10 capturan la página pública, conservan el timeout y sólo diagnostican metadatos de logout", async () => {
+  for (const stage of ["primera-salida", "segunda-salida"]) {
+    const page = new EventEmitter(); const base = new URL("https://localtest.me"); let capture;
+    page.setDefaultTimeout = () => assert.fail("No amplía el timeout para hacer pasar la salida.");
+    const request = { url: () => base.origin + "/connect/logout?id_token_hint=token-privado&post_logout_redirect_uri=https://localtest.me/" };
+    const original = new Error("locator.waitFor: Timeout 15000ms exceeded.\nURL privada https://localtest.me/?token=privado +5491134567815"); original.name = "TimeoutError";
+    await assert.rejects(() => platform.runOccupiedRecoveryStage({ base, setCapturePage: (target) => { capture = target; } }, stage, page, async () => {
+      page.emit("request", request); page.emit("response", { request: () => request, status: () => 302 });
+      page.emit("request", { url: () => "https://otra.example/connect/logout?id_token_hint=ajeno" });
+      throw original;
+    }, true), (error) => {
+      assert.equal(error.cause, original); assert.ok(error.message.includes(stage)); assert.ok(error.message.includes("Timeout 15000ms exceeded"));
+      assert.ok(error.message.includes('"path":"/connect/logout","status":302,"hasHint":true'));
+      for (const hidden of ["token-privado", "https://", "+5491134567815", "ajeno"]) assert.equal(error.message.includes(hidden), false);
+      return true;
+    });
+    assert.equal(capture, page);
+    assert.equal(page.listenerCount("request"), 0); assert.equal(page.listenerCount("response"), 0);
+  }
+});
+
+test("la reparación10 sólo registra el callback completo propio, sin preparar1–9 u organizaciones", async () => {
+  assert.deepEqual(platform.platformOccupiedRecoveryRepairDefinitions.map((entry) => entry.id), ["PLAT-C-10"]);
+  for (const failed of [false, true]) {
+    const calls = []; const pages = ["plataforma", "pública"].map((name) => ({ name, isClosed: () => false, close: async () => calls.push("cerrar " + name) })); let next = 0;
+    const h = { width: 390, base: new URL("https://localtest.me"), newPage: async () => pages[next++],
+      login: async (page, email, access) => { assert.equal(page, pages[0]); assert.equal(email, "e2e-e9l-operator@example.test"); assert.equal(access, "platform"); calls.push("operador UI"); return { access: "platform", effectivePermissions: { platform: ["platform.recoveries.manage"] } }; },
+      signOut: async (page) => calls.push("salir " + page.name), registerPerson: async () => assert.fail("El callback completo crea sus dos cuentas Phone"), registerBusiness: async () => assert.fail("No crea organizaciones"),
+      record: async (id, getPage, action) => { assert.equal(id, "PLAT-C-10"); assert.equal(getPage(), pages[1]); calls.push(id); try { const value = await action(); return { ok: true, value }; } catch (error) { assert.equal(getPage(), pages[1]); return { ok: false, error }; } }, block: async () => assert.fail("No depende de1–9"),
+    };
+    await platform.runPlatformOccupiedRecoveryRepairCases(h, { occupied: async (actualH, state) => {
+      assert.equal(actualH, h); await state.ensureFull(); assert.equal(state.phone.owner, "+5491134567815"); assert.equal(state.phone.occupiedNext, "+5491134567817");
+      state.setCapturePage(state.publicPage); state.publicSignedIn = true; calls.push("callback completo"); if (failed) throw new Error("Salida pública fallida"); return "MethodInUse comprobado";
+    } });
+    assert.deepEqual(calls, ["PLAT-C-10", "operador UI", "callback completo", "salir pública", "salir plataforma", "cerrar plataforma", "cerrar pública"]);
+  }
 });
 
 test("Inicio móvil exige Para resolver en su propia ruta y no lo reemplaza por ficha o Asistente", async () => {

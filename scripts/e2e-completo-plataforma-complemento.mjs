@@ -44,6 +44,7 @@ export const platformRecoveryRepairDefinitions = [8, 9].map((number) => suppleme
 export const platformOperatorInvitationRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-04");
 export const platformApprovalRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-20");
 export const platformAccountLifecycleRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-18");
+export const platformOccupiedRecoveryRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-10");
 
 export const supplementPlatformProofGroups = { "BACK-PL-008": [["PLAT-C-20", "PLAT-C-17"]], "BACK-PL-018": [["PLAT-25", "PLAT-26", "PLAT-C-18"]] };
 export const supplementPlatformLimitations = {
@@ -289,6 +290,75 @@ async function openRecovery(h, page, next, previous) {
   return { pending, dialog };
 }
 
+function observeOccupiedRecoveryLogout(page, base) {
+  const entries = []; const requests = new WeakMap();
+  const observe = (request) => {
+    const url = new URL(request.url());
+    if (url.origin !== base.origin || url.pathname !== "/connect/logout") return;
+    let entry = requests.get(request);
+    if (!entry) { entry = { path: url.pathname, status: null, hasHint: url.searchParams.has("id_token_hint") }; requests.set(request, entry); entries.push(entry); }
+    return entry;
+  };
+  const response = (reply) => { const entry = observe(reply.request()); if (entry) entry.status = reply.status(); };
+  page.on("request", observe); page.on("response", response);
+  return { summary: () => entries.slice(-6).map((entry) => ({ ...entry })), stop: () => { page.off("request", observe); page.off("response", response); } };
+}
+
+const occupiedRecoveryStages = new Set(["ingreso-operador", "registro-original", "primera-salida", "pedido-recuperacion", "revision-pendiente", "registro-ocupante", "segunda-salida", "aprobacion-ocupada"]);
+/** No cambia esperas ni publica URLs, teléfonos, cuerpos o valores del hint. Conserva el error original como causa. */
+export async function runOccupiedRecoveryStage(state, stage, page, action, logout = false) {
+  assert.ok(occupiedRecoveryStages.has(stage)); state.setCapturePage(page);
+  const observe = logout ? observeOccupiedRecoveryLogout(page, state.base) : null;
+  try { return await action(); }
+  catch (error) {
+    const kind = /^[A-Za-z]+$/u.test(error.name ?? "") ? error.name : "Error";
+    const timeout = String(error.message).match(/\bTimeout \d+ms exceeded\b/u)?.[0];
+    throw new Error(`C10 etapa ${stage}: ${kind}${timeout ? ` (${timeout})` : ""}.${observe ? ` Logout observado: ${JSON.stringify(observe.summary())}.` : ""}`, { cause: error });
+  } finally { observe?.stop(); }
+}
+
+async function runOccupiedRecoveryCase(h, state) {
+  const { page, publicPage, phone, tag } = state;
+  const stage = (name, target, action, logout = false) => runOccupiedRecoveryStage({ base: h.base, setCapturePage: state.setCapturePage }, name, target, action, logout);
+  await stage("ingreso-operador", page, state.ensureFull);
+  const owner = await stage("registro-original", publicPage, () => registerPhone(h, publicPage, phone.owner, `pc-owner-${h.width}-${tag}`)); state.publicSignedIn = true;
+  await stage("primera-salida", publicPage, () => h.signOut(publicPage), true); state.publicSignedIn = false;
+  await stage("pedido-recuperacion", publicPage, () => requestRecovery(h, publicPage, phone.owner, phone.occupiedNext, `pc-recovery-${h.width}-${tag}`));
+  const review = await stage("revision-pendiente", page, () => openRecovery(h, page, phone.occupiedNext, phone.owner));
+  const original = (await read(h, page, `/api/platform/accounts/${owner.id}`)).loginMethods;
+  const second = await stage("registro-ocupante", publicPage, () => registerPhone(h, publicPage, phone.occupiedNext, `pc-occupied-${h.width}-${tag}`)); state.publicSignedIn = true; assert.notEqual(second.id, owner.id);
+  await stage("segunda-salida", publicPage, () => h.signOut(publicPage), true); state.publicSignedIn = false;
+  return stage("aprobacion-ocupada", page, async () => {
+    await review.dialog.getByRole("textbox", { name: /Motivo/ }).fill("El destino cambió de propietario después de verificarse.");
+    await assertPlatformProblem(await clickHttp(page, review.dialog.getByRole("button", { name: "Aprobar", exact: true }), `/api/platform/recoveries/${review.pending.id}/approve`, 409), 409, "Platform.AccountRecovery.MethodInUse");
+    await review.dialog.getByText("Ese método de ingreso ya es de otra cuenta.", { exact: true }).waitFor();
+    const after = selectRecovery((await recoveryList(h, page, phone.occupiedNext)).items, phone.owner, phone.occupiedNext);
+    requireRecoveryUnchanged(review.pending, after, original, (await read(h, page, `/api/platform/accounts/${owner.id}`)).loginMethods);
+    await review.dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
+    return "Otra cuenta probó el Phone después del pedido; aprobar409 MethodInUse mantuvo Pending, versión y métodos originales sin cambios.";
+  });
+}
+
+/** Sólo10, para su reintento aislado: sus cuentas Phone propias y operador real, sin ejecutar1–9. */
+export async function runPlatformOccupiedRecoveryRepairCases(h, { occupied = runOccupiedRecoveryCase } = {}) {
+  const run = createPlatformRecorder(h); const page = await h.newPage(); const publicPage = await h.newPage(); let fullSignedIn = false; let capturePage = publicPage;
+  const operatorEmail = h.width === 1440 ? "e2e-e9r-operator@example.test" : "e2e-e9l-operator@example.test";
+  const state = { page, publicPage, phone: supplementPhoneFixtures(h.width), tag: randomUUID().slice(0, 8), publicSignedIn: false, setCapturePage: (target) => { capturePage = target; } };
+  state.ensureFull = async () => {
+    if (fullSignedIn) return;
+    const me = await h.login(page, operatorEmail, "platform"); fullSignedIn = true;
+    assert.equal(me.access, "platform"); assert.ok(me.effectivePermissions.platform.includes("platform.recoveries.manage")); operatorByPage.set(page, operatorEmail);
+  };
+  const failures = [];
+  try { await run("PLAT-C-10", () => capturePage, () => occupied(h, state)); }
+  finally {
+    if (state.publicSignedIn) { try { await h.signOut(publicPage); state.publicSignedIn = false; } catch (error) { failures.push(error); } }
+    if (fullSignedIn) { try { await h.signOut(page); } catch (error) { failures.push(error); } }
+    for (const target of [page, publicPage]) if (!target.isClosed()) { await stopConfirmingRecentAuthentication(target); await target.close(); }
+  }
+  if (failures.length) throw new AggregateError(failures, "No se completó la salida por UI de la reparación10.");
+}
+
 function recoveryRejectionActions(h, state) {
   const { page, publicPage, ensureFull, operatorEmail, tag, newPage } = state;
   return {
@@ -526,6 +596,8 @@ export async function runSupplementPlatformCases(h) {
     operatorByPage.set(page, operatorEmail);
   };
   const recoveryState = { page, publicPage, newPage, operatorEmail, tag, ensureFull, get person() { return person; } };
+  let occupiedCapturePage = publicPage;
+  const occupiedState = { page, publicPage, phone, tag, ensureFull, setCapturePage: (target) => { occupiedCapturePage = target; }, get publicSignedIn() { return publicSignedIn; }, set publicSignedIn(value) { publicSignedIn = value; } };
   const rejectionActions = recoveryRejectionActions(h, recoveryState);
   try {
     let preparationPage = publicPage;
@@ -591,22 +663,7 @@ export async function runSupplementPlatformCases(h) {
     }, [1]);
     await step(8, page, rejectionActions.reject, [1]);
     await step(9, () => recoveryState.stalePage ?? page, rejectionActions.conflict, [8]);
-    await step(10, page, async () => {
-      await ensureFull(); const owner = await registerPhone(h, publicPage, phone.owner, `pc-owner-${h.width}-${tag}`); publicSignedIn = true;
-      await h.signOut(publicPage); publicSignedIn = false;
-      await requestRecovery(h, publicPage, phone.owner, phone.occupiedNext, `pc-recovery-${h.width}-${tag}`);
-      const review = await openRecovery(h, page, phone.occupiedNext, phone.owner);
-      const original = (await read(h, page, `/api/platform/accounts/${owner.id}`)).loginMethods;
-      const second = await registerPhone(h, publicPage, phone.occupiedNext, `pc-occupied-${h.width}-${tag}`); publicSignedIn = true; assert.notEqual(second.id, owner.id);
-      await h.signOut(publicPage); publicSignedIn = false;
-      await review.dialog.getByRole("textbox", { name: /Motivo/ }).fill("El destino cambió de propietario después de verificarse.");
-      await assertPlatformProblem(await clickHttp(page, review.dialog.getByRole("button", { name: "Aprobar", exact: true }), `/api/platform/recoveries/${review.pending.id}/approve`, 409), 409, "Platform.AccountRecovery.MethodInUse");
-      await review.dialog.getByText("Ese método de ingreso ya es de otra cuenta.", { exact: true }).waitFor();
-      const after = selectRecovery((await recoveryList(h, page, phone.occupiedNext)).items, phone.owner, phone.occupiedNext);
-      requireRecoveryUnchanged(review.pending, after, original, (await read(h, page, `/api/platform/accounts/${owner.id}`)).loginMethods);
-      await review.dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
-      return "Otra cuenta probó el Phone después del pedido; aprobar409 MethodInUse mantuvo Pending, versión y métodos originales sin cambios.";
-    }, [1]);
+    await step(10, () => occupiedCapturePage, () => runOccupiedRecoveryCase(h, occupiedState), [1]);
     await runVisibleJourneys();
   } finally {
     if (publicSignedIn) {
