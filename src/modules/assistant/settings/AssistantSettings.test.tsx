@@ -29,6 +29,25 @@ async function savedMutation(app: ReturnType<typeof mountSettings>) {
 }
 
 describe("configuración real de gestión", () => {
+  // A11 (Asistente-Config-Org): con la clave de la plataforma, lo que no se puede cambiar va en su campo apagado; los topes,
+  // con su ⓘ en el rótulo, y el tope del mes con la moneda adelante.
+  it("con la clave de la plataforma, el modo, el proveedor y los topes van en campos apagados", async () => {
+    server.use(http.get("/api/organization/assistant/settings", () => HttpResponse.json({ ...organizationSettings(), allowOwnKey: false })));
+    const app = mountSettings();
+    const mode = await screen.findByRole("group", { name: "Qué clave usa" });
+    expect(mode).toHaveTextContent("La de la plataforma");
+    expect(within(mode).getByRole("button", { name: /no habilitó una clave propia/u })).toBeVisible();
+    expect(screen.getByRole("group", { name: "Proveedor" })).toHaveTextContent("Anthropic");
+    const daily = screen.getByRole("group", { name: "Consultas por persona por día" });
+    expect(daily).toHaveTextContent("50");
+    expect(within(daily).getByRole("button", { name: "Los fija la plataforma." })).toBeVisible();
+    const budget = screen.getByRole("group", { name: "Tope del mes" });
+    expect(budget.querySelector("[data-slot=read-only-field]")).toHaveTextContent(/^USD100,00$/u);
+    expect(within(budget).getByRole("button", { name: "Lo fija la plataforma." })).toBeVisible();
+    expect(screen.queryByRole("textbox", { name: "Tope del mes" })).not.toBeInTheDocument();
+    expect(await axe(app.container)).toHaveNoViolations();
+  });
+
   it.each([false, true])("cambiar PlatformKey a OwnKey no presta la máscara y conserva keyAction hasta escribir=%s", async (writing) => {
     let current = { ...organizationSettings(), hasKey: true, maskedKeySuffix: "plat" };
     const sent: UpdateOrganizationAssistantSettingsRequest[] = [];
@@ -69,7 +88,9 @@ describe("configuración real de gestión", () => {
     await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled());
     expect(screen.getByRole("form", { name: "Configuración" })).toBe(form);
-    expect(screen.queryByLabelText(/Clave de Anthropic/)).not.toBeInTheDocument();
+    // Guardada, la clave ya no es un campo editable: queda apagada (A11), con la máscara y «Cambiar» adentro.
+    expect(screen.queryByRole("textbox", { name: /Clave de Anthropic/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Clave de Anthropic" })).toHaveTextContent("•••• ");
     expect(publicCaches(app)).not.toContain(secret);
   });
   it("gestiona sin chat.use; modelos por modo desde CC01, sin State ni catálogo de chat", async () => {

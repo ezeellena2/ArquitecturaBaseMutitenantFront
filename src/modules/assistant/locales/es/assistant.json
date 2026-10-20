@@ -179,6 +179,7 @@
   "ownKeyUnavailable": "La plataforma no habilitó una clave propia para {{organization}}.",
   "addEmail": "Agregar un correo",
   "platformLimits": "Los fija la plataforma.",
+  "platformBudget": "Lo fija la plataforma.",
   "catalogId": "ID",
   "catalogInputPrice": "Entrada por millón",
   "catalogOutputPrice": "Salida por millón",

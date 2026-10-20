@@ -179,6 +179,7 @@
   "ownKeyUnavailable": "The platform has not enabled an own key for {{organization}}.",
   "addEmail": "Add an email address",
   "platformLimits": "The platform sets them.",
+  "platformBudget": "Set by the platform.",
   "catalogId": "ID",
   "catalogInputPrice": "Input per million",
   "catalogOutputPrice": "Output per million",
