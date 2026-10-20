@@ -15,8 +15,9 @@ import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { screens, guidedCases, existingScriptCases, inventoryMetadata } from "./e2e-completo-inventario-front.mjs";
 import { buildMatrix, importedJourneySteps, parseTapSummary, safeEvidenceText } from "./e2e-completo-matriz.mjs";
 import { createBrowserSupport, viewportOf } from "./e2e-completo-soporte.mjs";
-import { applyAdditionalCoverage } from "./e2e-completo-cobertura.mjs";
+import { applyAdditionalCoverage, coverageLimitations } from "./e2e-completo-cobertura.mjs";
 import { parseFunctionalBaselineIncidents } from "./e2e-completo-incidentes.mjs";
+import { supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemento.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const execute = promisify(execFile);
@@ -30,13 +31,18 @@ const suiteSpecs = {
   negocioextra: ["./e2e-completo-negocio-complemento.mjs", "supplementBusinessDefinitions", "runSupplementBusinessCases"],
   plataformaextra: ["./e2e-completo-plataforma-complemento.mjs", "supplementPlatformDefinitions", "runSupplementPlatformCases"],
   whatsappextra: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppDefinitions", "runSupplementWhatsAppCases"],
+  baselinewhatsapp: ["./e2e-completo-fases-baseline.mjs", "baselineWhatsAppDefinitions", "runBaselineWhatsAppCases"],
+  baselineasistente: ["./e2e-completo-fases-baseline.mjs", "baselineAssistantDefinitions", "runBaselineAssistantCases"],
+  baselineorgwa: ["./e2e-completo-fases-baseline.mjs", "baselineOrganizationWhatsAppDefinitions", "runBaselineOrganizationWhatsAppCases"],
+  baselineseguridad: ["./e2e-completo-fases-baseline.mjs", "baselineSecurityDefinitions", "runBaselineSecurityCases"],
 };
 
 export function parseArguments(args) {
-  assert.ok(args.every((value) => ["--inventory-only", "--no-build", "--refresh-only", "--resume"].includes(value) || /^--suite=[a-z,]+$/.test(value)), "Argumentos no admitidos.");
+  assert.ok(args.every((value) => ["--inventory-only", "--no-build", "--refresh-only", "--resume"].includes(value) || /^--suite=[a-z,]+$/.test(value) || /^--width=(1440|390)$/.test(value)), "Argumentos no admitidos.");
   const suites = args.find((value) => value.startsWith("--suite="))?.slice(8).split(",") ?? Object.keys(suiteSpecs);
   assert.ok(suites.length > 0 && suites.every((name) => Object.hasOwn(suiteSpecs, name)), "Suite desconocida.");
-  return { inventoryOnly: args.includes("--inventory-only"), refreshOnly: args.includes("--refresh-only"), resume: args.includes("--resume"), build: !args.includes("--no-build"), suites: [...new Set(suites)] };
+  const width = args.find((value) => value.startsWith("--width="));
+  return { inventoryOnly: args.includes("--inventory-only"), refreshOnly: args.includes("--refresh-only"), resume: args.includes("--resume"), build: !args.includes("--no-build"), suites: [...new Set(suites)], ...(width ? { widths: [Number(width.slice(8))] } : {}) };
 }
 
 /** Los avances no entran al scanner de Tailwind; el HTML se publica con el entorno apagado. */
@@ -122,7 +128,7 @@ export async function main(options = parseArguments([])) {
     report.baselineFunctionalIncidents = parseFunctionalBaselineIncidents(log);
   } catch (error) { if (error.code !== "ENOENT") throw error; }
   const persist = async (publish = false) => {
-    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions) });
+    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations: { ...coverageLimitations, ...supplementWhatsAppLimitations } });
     report.matrix = matrix;
     report.cases = matrix;
     report.summary = summarizeCases(report.cases);
@@ -154,7 +160,7 @@ export async function main(options = parseArguments([])) {
       await warmup.goto(baseUrl.href, { waitUntil: "commit", timeout: 180_000 });
       await warmup.getByRole("link", { name: "Ingresá", exact: true }).filter({ visible: true }).first().waitFor({ timeout: 300_000 });
     } finally { await warmup.close(); }
-    for (const width of [1440, 390]) {
+    for (const width of options.widths ?? [1440, 390]) {
       const support = createBrowserSupport({ context, env, base: baseUrl, width });
       const recordResult = async (id, getPage, action, blockedReason, diagnostic) => {
         if (interrupted) throw new Error("Prueba integral interrumpida.");

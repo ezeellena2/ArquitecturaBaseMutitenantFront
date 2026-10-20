@@ -25,7 +25,7 @@ function resultsFromProofGroups(groups, executions, widths = [1440, 390]) {
   });
 }
 
-export function buildMatrix({ backend = [], guided = [], screens = [], executions = [] }) {
+export function buildMatrix({ backend = [], guided = [], screens = [], executions = [], verificationLimitations = {} }) {
   return [...backend, ...guided, ...screens.filter((screen) => !screen.reference).map((screen) => ({ ...screen, id: `SCREEN-${screen.id}`, area: screen.chapter ?? "Pantallas", actor: screen.actors?.join("; "), action: `Abrir ${screen.title}`, expected: "La pantalla está disponible para su actor en su ruta a 1440 y 390 px; las capturas permiten revisar su presentación.", kind: "screen" }))].map((item) => {
     const linked = executions.filter((execution) => execution.covers?.includes(item.id)).map((execution) => execution.id);
     const priorProofs = [...new Set([...(item.proofIds ?? []), ...(item.existingCaseIds ?? [])].map((id) => id.startsWith("BASE-") || executions.some((entry) => entry.id === id) ? id : `BASE-${id}`))];
@@ -34,8 +34,13 @@ export function buildMatrix({ backend = [], guided = [], screens = [], execution
     const proofGroups = [...(priorProofs.length ? [priorProofs] : []), ...linked.map((id) => [id])];
     const proofIds = [...new Set(proofGroups.flat())];
     const manualReason = item.manualReason ?? (typeof item.manual === "string" ? item.manual : item.manual ? "Necesita una integración externa real; no se usaron credenciales ni datos reales." : null);
-    const results = resultsFromProofGroups(proofGroups, executions).map((result) => manualReason && result.status !== "failed" ? { width: result.width, status: "manual", actual: manualReason } : result);
-    return { ...item, proofIds, proofGroups, manualReason, results };
+    const verificationLimitation = verificationLimitations[item.id];
+    const results = resultsFromProofGroups(proofGroups, executions).map((result) => {
+      if (manualReason && result.status !== "failed") return { width: result.width, status: "manual", actual: manualReason };
+      if (verificationLimitation && result.status === "blocked") return { ...result, actual: `Falta comprobar: ${verificationLimitation.missing} ${verificationLimitation.reason} Comprobaciones parciales: ${verificationLimitation.partialExecutionIds?.join(", ") || "ninguna"}.` };
+      return result;
+    });
+    return { ...item, proofIds, proofGroups, manualReason, ...(verificationLimitation ? { verificationLimitation } : {}), results };
   });
 }
 

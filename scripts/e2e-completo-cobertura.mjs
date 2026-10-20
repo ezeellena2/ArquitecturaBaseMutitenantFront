@@ -100,11 +100,54 @@ export const additionalCoverageRows = [
 // Tampoco se completan automáticamente covers por ruta, área o similitud textual.
 export const additionalCovers = Object.fromEntries(additionalCoverageRows.map(({ executionId, matrixIds }) => [executionId, matrixIds]));
 
+// Estos registros conservan su resultado y su captura, pero sólo ejercen una
+// parte de la fila agrupada. El filtro se limita al par exacto, sin afectar
+// pruebas originales ni otras alternativas que acrediten la acción completa.
+export const coverageLimitations = {
+  "BACK-PL-003": {
+    partialExecutionIds: ["PLAT-01", "PLAT-02", "PLAT-03", "PLAT-04", "PLAT-05", "PLAT-06", "PLAT-07"],
+    missing: ["Abrir /plataforma y comprobar la primera sección disponible.", "Ingresar con un operador sin ninguna sección accesible y exigir permiso denegado."],
+    reason: "PLAT-01 consulta Organizaciones y oculta dos controles; PLAT-02 a PLAT-07 deniegan otras rutas. Ni cada registro ni su conjunto preparan las dos ramas restantes del menú y del inicio.",
+    source: "scripts/e2e-completo-plataforma.mjs#PLAT-01..07",
+  },
+  "BACK-PL-026": {
+    partialExecutionIds: ["POL-02", "POL-05", "POL-09"],
+    missing: ["Validar los extremos permitidos 1–50 y los valores fuera de rango.", "Rechazar correos inválidos y comprobar los doce perfiles de límites completos."],
+    reason: "Estos registros guardan políticas de registro y el máximo de una organización con motivo; no ejercen todas las validaciones y los límites incluidos en la fila de Configuración.",
+    source: "scripts/e2e-completo-politicas.mjs#POL-02,05,09",
+  },
+  "BACK-EM-005": {
+    partialExecutionIds: ["BIZ-22"],
+    missing: ["Mientras la empresa está inactiva, comprobar que sus roles dejan de aportar permisos efectivos."],
+    reason: "BIZ-22 depende de la inactivación BIZ-21 y confirma la reactivación con los mismos IDs de miembros; no consulta permisos de un actor que dependiera exclusivamente de esa empresa mientras estuvo inactiva.",
+    source: "scripts/e2e-completo-negocio.mjs#BIZ-21..22",
+  },
+  "BACK-RO-007": {
+    partialExecutionIds: ["BIZ-27"],
+    missing: ["Intentar cambiar el alcance y comprobar ScopeChangeHasUsers.", "Ejercitar asignaciones de personas invitadas y desactivadas, además de la persona activa."],
+    reason: "BIZ-27 asigna el rol a una persona activa, muestra controles bloqueados y comprueba DELETE HasUsers; no envía el cambio de alcance ni prepara los otros estados de asignación de la fila.",
+    source: "scripts/e2e-completo-negocio.mjs#BIZ-27",
+  },
+  "BACK-ID-018": {
+    partialExecutionIds: ["BIZ-16"],
+    missing: ["Salir y volver a ingresar por la puerta empresarial para comprobar la última organización elegida.", "Comprobar la separación de Personal en ese reingreso de la misma identidad."],
+    reason: "BIZ-16 comprueba las dos membresías y cambia de A a B con sus permisos propios; no vuelve a autenticar para comprobar la selección recordada ni Personal en ese reingreso.",
+    source: "scripts/e2e-completo-negocio.mjs#BIZ-16",
+  },
+  "BACK-AS-014": {
+    partialExecutionIds: ["MOD-03", "MOD-27"],
+    missing: ["Comprobar el recurso privado de otro acceso de la misma identidad.", "Comprobar el rechazo del operador de Plataforma ante la conversación privada ajena."],
+    reason: "MOD-03 comprueba otra persona consumer y MOD-27 otra organización Business. Son fronteras reales, pero ninguna alternativa individual ni ambas juntas acreditan los otros accesos y Plataforma descritos en la fila.",
+    source: "scripts/e2e-completo-modulos.mjs#MOD-03,27",
+  },
+};
+
 export function applyAdditionalCoverage(executions) {
   return executions.map((execution) => {
     const additional = additionalCovers[execution.id];
-    return additional
-      ? { ...execution, covers: [...new Set([...(execution.covers ?? []), ...additional])] }
-      : { ...execution };
+    if (!additional && !execution.covers) return { ...execution };
+    const covers = [...new Set([...(execution.covers ?? []), ...(additional ?? [])])]
+      .filter((id) => !coverageLimitations[id]?.partialExecutionIds.includes(execution.id));
+    return { ...execution, covers };
   });
 }

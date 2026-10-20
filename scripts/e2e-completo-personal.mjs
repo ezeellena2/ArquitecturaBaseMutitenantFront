@@ -19,7 +19,7 @@ export const personalDefinitions = [
   definition("10", "Guardar el mismo perfil en dos pestañas", "/cuenta", "Persona B2C en dos pestañas", "La primera guarda; la segunda recibe 409 General.ConcurrencyConflict, conserva su borrador y muestra las dos opciones del conflicto.", ["avisos", "CU-002"], { critical: true }),
   definition("11", "Seguir editando conserva la versión vencida", "/cuenta", "Persona B2C con un borrador desactualizado", "Seguir editando conserva los datos; otro Guardar devuelve 409 con la misma versión y no sobrescribe lo guardado por la primera pestaña.", ["CU-002"], { critical: true }),
   definition("12", "Ver lo nuevo pide descartar el borrador", "/cuenta", "Persona B2C con conflicto", "Ver lo nuevo pide confirmación; al descartar carga la versión guardada por la otra pestaña y deja Guardar desactivado.", ["cuenta"]),
-  definition("13", "Cancelar y confirmar la salida con cambios", "/cuenta", "Persona B2C que edita su perfil", "Inicio pregunta «¿Salir sin guardar?»; Seguir editando conserva el borrador; Salir sin guardar vuelve al inicio sin persistirlo.", ["avisos"]),
+  definition("13", "Cancelar y confirmar la salida con cambios", "/cuenta", "Persona B2C que edita su perfil", "Salir por la navegación visible pregunta «¿Salir sin guardar?»; Seguir editando conserva el borrador; confirmar vuelve a Más (/mas) en móvil o a Inicio (/) en escritorio sin persistirlo.", ["avisos"]),
   definition("14", "Rechazar un nombre que supera los 100 caracteres", "/cuenta", "Persona B2C que edita su perfil", "La API real devuelve 400 Validation.Failed con traceId, el campo queda marcado y conserva lo escrito; el perfil guardado no cambia.", []),
   definition("15", "Editar y guardar con el navegador sin red", "/cuenta", "Persona B2C sin conexión", "Chromium está offline de verdad, muestra Sin conexión, conserva el borrador y no muestra éxito antes de reconectar.", ["avisos"]),
   definition("16", "Recuperar la conexión y persistir el mismo borrador", "/cuenta", "Persona B2C que vuelve a tener red", "La acción termina una sola vez, usando Reintentar si se ofrece; F5 conserva el valor y desaparece Sin conexión.", []),
@@ -81,6 +81,26 @@ export async function openExistingPersonalAccount(h, page, expectedPersonId) {
   assert.equal(account.id, expectedPersonId, "La pestaña debe conservar la persona de este recorrido.");
   assert.equal(account.access, "consumer", "El conflicto debe comparar dos pestañas del acceso Personal.");
   return account;
+}
+
+/** Cada puerta termina su propio recorrido OIDC; una URL de ingreso transitoria todavía no es evidencia. */
+export async function openPersonalProtectedRoute(h, route, onPage) {
+  const page = await h.newPage();
+  onPage(page);
+  await page.goto(new URL(route, h.base).href);
+  await page.getByRole("heading", { name: /^(Ingresá a tu cuenta|Ingresá como empresa|Tu cuenta no está en ninguna empresa todavía|Inicio)$/u })
+    .filter({ visible: true }).first().waitFor();
+  assert.equal(await page.getByRole("heading", { name: /^(Usuarios|Cuentas y operadores)$/u }).count(), 0);
+  await assertViewport(page);
+  return page;
+}
+
+export function personalLeaveNavigation(page, width) {
+  const mobile = width === 390;
+  return {
+    control: page.getByRole("link", { name: mobile ? "Volver a Más" : "Inicio", exact: true }).filter({ visible: true }).first(),
+    pathname: mobile ? "/mas" : "/",
+  };
 }
 
 /** Nuevos casos reales; el harness es dueño de la base aislada, el navegador y el informe. */
@@ -205,12 +225,10 @@ export async function runPersonalCases(h) {
       assert.equal((await apiMe(h, page)).access, "consumer");
       return "Los listados y el alta empresarial devolvieron 403 Http.Forbidden con traceId usando el token Personal real.";
     });
-    await record("09", page, async () => {
-      const deep = await h.newPage(); pages.push(deep);
+    let protectedTarget = page;
+    await h.record("NUEVO-PER-09", () => protectedTarget, async () => {
       for (const route of ["/org/usuarios", "/plataforma/cuentas"]) {
-        await deep.goto(new URL(route, h.base).href);
-        await deep.waitForURL((url) => url.pathname === "/login" || url.pathname === "/login/empresa" || url.pathname === "/");
-        assert.equal(await deep.getByRole("heading", { name: /^(Usuarios|Cuentas y operadores)$/ }).count(), 0);
+        await openPersonalProtectedRoute(h, route, (target) => { protectedTarget = target; pages.push(target); });
       }
       if (h.width === 390) await page.getByRole("link", { name: "Más", exact: true }).filter({ visible: true }).click();
       else await page.getByRole("button", { name: /, Personal$/ }).filter({ visible: true }).click();
@@ -221,7 +239,6 @@ export async function runPersonalCases(h) {
       }
       assert.equal((await apiMe(h, page)).access, "consumer");
       await assertViewport(page);
-      await deep.close();
       return "Los enlaces protegidos terminaron fuera de las áreas privadas; Personal conservó su acceso y no ofreció Crear empresa.";
     });
 
@@ -278,16 +295,16 @@ export async function runPersonalCases(h) {
       const original = (await apiMe(h, page)).firstName;
       const draft = `Sin guardar ${h.width}`;
       await nameField(page).fill(draft);
-      const home = page.getByRole("link", { name: "Inicio", exact: true }).filter({ visible: true }).first();
-      await home.click();
+      const navigation = personalLeaveNavigation(page, h.width);
+      await navigation.control.click();
       let dialog = page.getByRole("dialog", { name: "¿Salir sin guardar?", exact: true });
       await dialog.waitFor(); await dialog.getByRole("button", { name: "Seguir editando", exact: true }).click();
       assert.equal(await nameField(page).inputValue(), draft);
-      await home.click(); dialog = page.getByRole("dialog", { name: "¿Salir sin guardar?", exact: true });
+      await navigation.control.click(); dialog = page.getByRole("dialog", { name: "¿Salir sin guardar?", exact: true });
       await dialog.getByRole("button", { name: "Salir sin guardar", exact: true }).click();
-      await page.waitForURL((url) => url.pathname === "/");
+      await page.waitForURL((url) => url.pathname === navigation.pathname);
       assert.equal((await apiMe(h, page)).firstName, original);
-      return "Cancelar la salida conservó el borrador; confirmarla volvió al inicio sin guardar el nombre.";
+      return `Cancelar la salida conservó el borrador; confirmarla volvió a ${h.width === 390 ? "Más (/mas)" : "Inicio (/)"} sin guardar el nombre.`;
     });
     await record("14", page, async () => {
       const stay = page.getByRole("dialog").getByRole("button", { name: "Seguir editando", exact: true });

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { additionalCovers, additionalCoverageRows, applyAdditionalCoverage } from "./e2e-completo-cobertura.mjs";
+import { additionalCovers, additionalCoverageRows, applyAdditionalCoverage, coverageLimitations } from "./e2e-completo-cobertura.mjs";
 import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { businessDefinitions } from "./e2e-completo-negocio.mjs";
@@ -86,4 +86,51 @@ test("cada ancho conserva su resultado: uno aprobado no sustituye al ausente o f
   execution.results[1] = { width: 390, status: "passed", actual: "acción verificada en teléfono" };
   row = buildMatrix({ guided: [target], executions: [linked(execution)] })[0];
   assert.equal(row.results.every((item) => item.status === "passed"), true);
+});
+
+test("cada limitación identifica sólo pares reales de ejecución y cobertura parcial", () => {
+  assert.deepEqual(Object.keys(coverageLimitations).sort(), [
+    "BACK-AS-014", "BACK-EM-005", "BACK-ID-018", "BACK-PL-003", "BACK-PL-026", "BACK-RO-007",
+  ]);
+  for (const [backendId, limitation] of Object.entries(coverageLimitations)) {
+    assert.ok(knownMatrix.has(backendId));
+    assert.ok(limitation.partialExecutionIds.length > 0);
+    assert.equal(new Set(limitation.partialExecutionIds).size, limitation.partialExecutionIds.length);
+    assert.ok(limitation.missing.length > 0 && limitation.missing.every((value) => value.trim().length > 15));
+    assert.ok(limitation.reason.trim().length > 30);
+    assert.match(limitation.source, /^scripts\/e2e-completo-.+\.mjs#.+/u);
+    for (const executionId of limitation.partialExecutionIds) {
+      assert.ok(knownExecutions.get(executionId)?.covers.includes(backendId), executionId + " debe contener el enlace parcial demostrado.");
+    }
+  }
+});
+
+test("filtra cada par parcial sin mutar resultados, otras coberturas ni pruebas originales", () => {
+  for (const [backendId, { partialExecutionIds }] of Object.entries(coverageLimitations)) {
+    for (const executionId of partialExecutionIds) {
+      const results = Object.freeze([Object.freeze({ width: 1440, status: "passed", actual: "La parte ejercida pasó", image: "captura.png" })]);
+      const covers = Object.freeze([backendId, "BACK-OTRA-COBERTURA"]);
+      const input = Object.freeze({ id: executionId, covers, results });
+      const actual = linked(input);
+      assert.equal(actual.covers.includes(backendId), false);
+      assert.ok(actual.covers.includes("BACK-OTRA-COBERTURA"));
+      assert.equal(actual.results, results);
+      assert.deepEqual(input.covers, [backendId, "BACK-OTRA-COBERTURA"]);
+      assert.deepEqual(linked(actual), actual, "El filtro debe ser idempotente.");
+    }
+    const original = { id: "BASE-prueba-completa", covers: [backendId], results: [{ width: 1440, status: "passed" }] };
+    assert.deepEqual(linked(original).covers, [backendId], "El filtro usa el ID exacto y no retira pruebas originales ni futuras alternativas completas.");
+  }
+});
+
+test("aprobar todas las partes conocidas no aprueba una fila agrupada incompleta", () => {
+  const ids = new Set(Object.values(coverageLimitations).flatMap((item) => item.partialExecutionIds));
+  const executions = [...ids].map((id) => ({ ...knownExecutions.get(id), results: [1440, 390].map((width) => ({ width, status: "passed", actual: "Parte ejercida" })) }));
+  const backend = backendUseCases.filter((item) => Object.hasOwn(coverageLimitations, item.id));
+  const matrix = buildMatrix({ backend, executions: applyAdditionalCoverage(executions) });
+  assert.equal(matrix.length, 6);
+  for (const row of matrix) {
+    assert.deepEqual(row.proofGroups, [], "No hay una alternativa completa para " + row.id);
+    assert.deepEqual(row.results.map((result) => result.status), ["blocked", "blocked"]);
+  }
 });

@@ -19,6 +19,8 @@ test("una preparación verde que ahora falla pierde la reutilización y conserva
 test("el runner permite aislar suites y rechaza argumentos que ampliarían el alcance", () => {
   assert.deepEqual(parseArguments(["--suite=personal,plataforma", "--no-build", "--resume"]), { inventoryOnly: false, refreshOnly: false, resume: true, build: false, suites: ["personal", "plataforma"] });
   assert.deepEqual(parseArguments(["--suite=negocioextra,plataformaextra,whatsappextra"]).suites, ["negocioextra", "plataformaextra", "whatsappextra"]);
+  assert.deepEqual(parseArguments(["--suite=continuacion", "--width=390"]).widths, [390]);
+  assert.deepEqual(parseArguments(["--suite=baselinewhatsapp,baselineasistente,baselineorgwa,baselineseguridad"]).suites, ["baselinewhatsapp", "baselineasistente", "baselineorgwa", "baselineseguridad"]);
   for (const args of [["--suite=azure"], ["--suite=formularios"], ["--url=https://example.com"], ["--width=800"]]) assert.throws(() => parseArguments(args));
 });
 

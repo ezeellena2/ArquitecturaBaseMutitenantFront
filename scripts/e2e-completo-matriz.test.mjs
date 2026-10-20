@@ -2,6 +2,18 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { buildMatrix, importedJourneySteps, parseTapSummary, resultsFromProofs, safeEvidenceText } from "./e2e-completo-matriz.mjs";
 
+test("una limitación explica sólo lo bloqueado y conserva evidencia completa o fallida", () => {
+  const verificationLimitations = { A: { missing: "Variante sin pago", reason: "El control no prepara ese estado.", partialExecutionIds: ["PARCIAL"] } };
+  const input = { backend: [{ id: "A" }], verificationLimitations };
+  let row = buildMatrix(input)[0];
+  assert.match(row.results[0].actual, /Variante sin pago/);
+  assert.deepEqual(row.verificationLimitation, verificationLimitations.A);
+  row = buildMatrix({ ...input, executions: [{ id: "COMPLETA", covers: ["A"], results: [{ width: 1440, status: "passed", actual: "Completa" }, { width: 390, status: "failed", actual: "Fallo real" }] }] })[0];
+  assert.equal(row.results[0].status, "passed");
+  assert.equal(row.results[1].status, "failed");
+  assert.equal(row.results[1].actual, "Fallo real");
+});
+
 test("las láminas de referencia sin pantalla no se cuentan como flujos bloqueados de producto", () => {
   const matrix = buildMatrix({ screens: [{ id: "mapa", reference: true, route: "—" }, { id: "cuenta", route: "/cuenta" }] });
   assert.deepEqual(matrix.map((item) => item.id), ["SCREEN-cuenta"]);
