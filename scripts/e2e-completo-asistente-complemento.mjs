@@ -107,6 +107,12 @@ export async function openAssistantOwnKeyPolicyAction(page) {
   await allow.or(revoke).filter({ visible: true }).first().waitFor();
   return await allow.isVisible() ? allow : null;
 }
+export async function fillAssistantModelTechnicalValues(dialog) {
+  for (const [label, value] of [["Contexto (tokens)", "100000"], ["Salida máxima (tokens)", "1024"]]) await dialog.getByRole("textbox", { name: label, exact: true }).fill(value);
+  // Los campos homónimos de Contexto largo son opcionales; estas tarifas pertenecen al grupo normal del modelo.
+  const cache = dialog.getByRole("group", { name: "Caché · por millón de tokens", exact: true });
+  for (const label of ["Lectura de caché", "Escritura de 5 minutos", "Escritura de 1 hora"]) await cache.getByRole("textbox", { name: label, exact: true }).fill("1");
+}
 export async function withAssistantHomeDiagnostics(h, page, { access, expectedTenantId }, action) {
   try { return await action(); } catch (error) {
     const inspect = async (route) => {
@@ -287,7 +293,7 @@ async function runAssistantCases(h, selected) {
       await dialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(`Modelo propio ${tag}`); await dialog.getByRole("textbox", { name: "ID", exact: true }).fill(`e2e-${tag}`);
       for (const label of ["Precio de entrada por millón", "Precio de salida por millón"]) await dialog.getByRole("textbox", { name: label, exact: true }).fill("1"); await mark(dialog, "Activo", false);
       await dialog.getByRole("button", { name: "Avanzado: datos técnicos", exact: true }).click(); for (const label of ["Texto", "Herramientas", "Imágenes en los adjuntos", "PDF en los adjuntos", "Bajo"]) await mark(dialog, label, true);
-      for (const [label, value] of [["Contexto (tokens)", "100000"], ["Salida máxima (tokens)", "1024"], ["Lectura de caché", "1"], ["Escritura de 5 minutos", "1"], ["Escritura de 1 hora", "1"]]) await dialog.getByRole("textbox", { name: label, exact: true }).fill(value);
+      await fillAssistantModelTechnicalValues(dialog);
       const created = await operatorClick(dialog.getByRole("button", { name: "Agregar modelo", exact: true }), `${platformRoot}/models`, "POST", 201); const payload = created.request().postDataJSON(); const issued = await created.json(); assert.ok(issued.id); await dialog.waitFor({ state: "hidden" });
       await requirePrivateProblem(await h.api(platformPage, `${platformRoot}/models`, { method: "POST", data: payload, headers: { "Idempotency-Key": randomUUID() } }), 409, "Assistant.Model.AlreadyExists");
       const reference = await read(h, platformPage, "/api/reference-data"); const currency = reference.currencies.find((item) => item.isEnabled && item.code !== payload.inputPricePerMillion.currency)?.code; assert.ok(currency);

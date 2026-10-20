@@ -3,6 +3,33 @@ import test from "node:test";
 import { assistantSupplementDefinitions, assistantSupplementProofGroups, requireProjectedAssistant, requirePrivateAttachmentMetadata, requireGlobalUsage, platformSettingsValues, requirePrivateProblem, assertGlobalSettingsRestored } from "./e2e-completo-asistente-complemento.mjs";
 import * as assistant from "./e2e-completo-asistente-complemento.mjs";
 
+test("las tarifas normales se completan sólo dentro del grupo Caché, sin tocar Contexto largo", async () => {
+  const filled = [];
+  const cache = { getByRole: (role, options) => {
+    assert.equal(role, "textbox"); assert.equal(options.exact, true);
+    assert.ok(["Lectura de caché", "Escritura de 5 minutos", "Escritura de 1 hora"].includes(options.name));
+    return { fill: async (value) => filled.push(["Caché", options.name, value]) };
+  } };
+  const dialog = { getByRole: (role, options) => {
+    assert.equal(options.exact, true);
+    if (role === "group") { assert.equal(options.name, "Caché · por millón de tokens"); return cache; }
+    assert.equal(role, "textbox"); assert.ok(["Contexto (tokens)", "Salida máxima (tokens)"].includes(options.name), "Las etiquetas de tarifa se repiten en Contexto largo y no se buscan globalmente.");
+    return { fill: async (value) => filled.push(["Límites", options.name, value]) };
+  } };
+  await assistant.fillAssistantModelTechnicalValues(dialog);
+  assert.deepEqual(filled, [["Límites", "Contexto (tokens)", "100000"], ["Límites", "Salida máxima (tokens)", "1024"], ["Caché", "Lectura de caché", "1"], ["Caché", "Escritura de 5 minutos", "1"], ["Caché", "Escritura de 1 hora", "1"]]);
+});
+
+test("una tarifa no disponible mantiene el fallo y no recurre al input homónimo de Contexto largo", async () => {
+  const failure = new Error("No apareció la tarifa normal"); let limits = 0;
+  const dialog = { getByRole: (role, options) => {
+    if (role === "textbox") { assert.ok(options.name.endsWith("(tokens)")); return { fill: async () => limits++ }; }
+    assert.equal(role, "group"); assert.equal(options.name, "Caché · por millón de tokens");
+    return { getByRole: () => ({ fill: async () => { throw failure; } }) };
+  } };
+  await assert.rejects(() => assistant.fillAssistantModelTechnicalValues(dialog), (error) => error === failure); assert.equal(limits, 2);
+});
+
 test("salir del acceso público espera Mi cuenta y Me200 antes de usar Salir, con captura de esa pestaña", async () => {
   const ready = Promise.withResolvers(); const waiting = Promise.withResolvers(); const calls = [];
   const page = { goto: async (url) => { assert.equal(new URL(url).pathname, "/cuenta"); calls.push("abrir cuenta"); }, getByRole: (role, options) => {
