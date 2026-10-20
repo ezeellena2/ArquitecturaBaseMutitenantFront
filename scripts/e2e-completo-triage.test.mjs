@@ -12,6 +12,37 @@ const original = (key) => parseFunctionalBaselineIncidents(`${names[key]}: fall�
 
 const quotaNavigationFailure = (mode = "domcontentloaded", route = "/registro") => `page.goto: Timeout 45000ms exceeded.\nCall log:\n  - navigating to "https://localtest.me:5174${route}?token=reservado", waiting until "${mode}"\n Captura no disponible (TimeoutError).`;
 
+const emptyOperatorLabelFailure = "La opción del gestor propio debe tener un nombre accesible no vacío en el selector de Operadores.";
+test("WAP01 analiza sólo la etiqueta vacía observada y conserva el fallo, las capturas y sus antecedentes", () => {
+  const history = Object.freeze([Object.freeze({ status: "failed", actual: "locator.click: Timeout 30000ms exceeded.", image: "anterior.png" })]);
+  const trace = Object.freeze([{ route: "/connect/token", status: 200 }]);
+  const failed = Object.freeze({ width: 1440, status: "failed", actual: emptyOperatorLabelFailure + " Tránsito de autenticación: []", image: "WAP-01-1440.png", currentRoute: "/plataforma/whatsapp/equipos", previousAttempts: history, authenticationTrace: trace, severity: "high" });
+  const passed = Object.freeze({ width: 390, status: "passed", actual: "Pasó", image: "movil.png" });
+  const input = Object.freeze([Object.freeze({ id: "WAP-01", actor: "Gestor propio", route: "/plataforma/whatsapp/bot", expected: "Nombre accesible", results: Object.freeze([failed, passed]) })]);
+  const before = structuredClone(input); const [entry] = enrichExecutionFailures(input); const result = entry.results[0];
+  assert.deepEqual(input, before); assert.notEqual(entry, input[0]); assert.equal(entry.actor, input[0].actor); assert.equal(entry.route, input[0].route); assert.equal(entry.expected, input[0].expected);
+  for (const key of Object.keys(failed).filter((key) => key !== "severity")) assert.equal(result[key], failed[key], key);
+  assert.equal(entry.results[1], passed); assert.equal(result.previousAttempts, history); assert.equal(result.severity, "medium");
+  assert.match(result.analysis, /etiqueta.*vacía/iu); assert.match(result.analysis, /correo.*ID real/iu);
+  assert.match(result.analysis, /403.*200/u); assert.match(result.analysis, /equipo.*201.*GET200/iu);
+  assert.match(result.analysis, /Http\.Forbidden/u); assert.match(result.analysis, /plantillas.*200/iu);
+  assert.match(result.analysis, /DisplayName.*string\.Empty/u); assert.match(result.probableArea, /inferencia/iu);
+  assert.match(result.reproduce.join(" "), /Crear equipo.*Operadores.*Buscar/iu);
+  assert.doesNotMatch([result.analysis, ...result.reproduce].join(" "), /WAP-02|https:|@[a-z]|\b[0-9a-f]{8}-[0-9a-f]{4}/iu);
+  assert.deepEqual(enrichExecutionFailures([entry]), [entry]); assert.equal(history[0].analysis, undefined);
+});
+
+test("WAP01 no hereda firmas ni enriquece passed, WAP02, otros IDs o errores genéricos", () => {
+  const failure = { status: "failed", actual: emptyOperatorLabelFailure, currentRoute: "/plataforma/whatsapp/equipos" };
+  const rows = [
+    { id: "WAP-02", results: [failure] }, { id: "OTRO", results: [failure] },
+    { id: "WAP-01", results: [{ ...failure, status: "passed" }, { ...failure, status: "blocked" },
+      { ...failure, actual: "locator.click: Timeout 30000ms exceeded.", previousAttempts: [failure] },
+      { ...failure, actual: emptyOperatorLabelFailure + " Otro error" }, { ...failure, currentRoute: "/plataforma/whatsapp/bot" }] },
+  ];
+  const actual = enrichExecutionFailures(rows); assert.deepEqual(actual, rows); actual.forEach((row, i) => assert.equal(row, rows[i]));
+});
+
 test("cuota analiza sólo el timeout real de navegación y conserva actual, estado, imágenes e historial sin acreditar progreso", () => {
   const previousAttempts = Object.freeze([Object.freeze({ status: "failed", actual: quotaNavigationFailure("load"), image: "", reason: "Primer intento conservado" })]);
   const results = [1440, 390].map((width) => Object.freeze({ width, status: "failed", actual: quotaNavigationFailure(), currentRoute: "/registro", image: undefined,

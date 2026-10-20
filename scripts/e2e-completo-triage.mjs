@@ -164,10 +164,30 @@ function quotaSignupNavigationTriage(result) {
   };
 }
 
+function isEmptyWhatsAppOperatorLabelFailure(result) {
+  if (result.status !== "failed" || result.currentRoute !== "/plataforma/whatsapp/equipos") return false;
+  const firstLine = String(result.actual ?? "").split(/\r?\n/u, 1)[0].split(" Tránsito de autenticación:", 1)[0];
+  return firstLine === "La opción del gestor propio debe tener un nombre accesible no vacío en el selector de Operadores.";
+}
+
+function emptyWhatsAppOperatorLabelTriage() {
+  return {
+    analysis: "La captura muestra la etiqueta vacía de la única opción del selector Operadores en el segundo diálogo Crear equipo. La búsqueda por correo único recibió200 y el callback comprobó que devolvía únicamente el ID real del gestor propio; después falló la exigencia de nombre accesible no vacío. Según el orden del callback actual, antes se comprobaron el vencimiento de la prueba reciente, el rechazo403 Auth.Platform.ReauthenticationRequired y el replay200 tras confirmar la identidad, la bienvenida guardada y leída, el equipo creado201 y su GET200 con la membresía exacta, el rechazo403 Http.Forbidden de consultas y la lectura de plantillas200. También se reabrió la bienvenida y coincidió su texto. Esas comprobaciones preceden al fallo; el segundo equipo no se guardó ni se acreditó ninguna escritura en Meta. El gestor de esta fixture tiene DisplayName nulo. En las fuentes, PlatformWhatsAppOperatorResolver convierte DisplayName nulo en string.Empty y TeamDialog entrega member.name como etiqueta de MultiSelect sin alternativa. Ese recorrido es una causa probable por inferencia de las fuentes y la fixture; este intento sólo validó el ID del DTO, no registró su campo name como evidencia HTTP.",
+    severity: "medium",
+    probableArea: "Back · PlatformWhatsAppOperatorResolver/DTO de operadores; Front · alternativa de nombre en TeamDialog/MultiSelect (inferencia).",
+    reproduce: [
+      "Preparar por UI un gestor propio con sólo platform.whatsapp.manage y DisplayName vacío, conservando su correo sintético único y su ID real sólo en memoria; ingresar con su autenticación real.",
+      "Seguir el callback de WAP-01: vencer la prueba reciente, comprobar403 y confirmar la identidad para guardar la bienvenida200; crear el primer equipo201 y comprobar su lectura200 y la membresía exacta; comprobar consultas403 y leer plantillas200.",
+      "En /plataforma/whatsapp/equipos abrir Crear equipo, desplegar Operadores y usar Buscar con el correo único de ese gestor. Comprobar que la respuesta200 contiene sólo su ID real y que aparece una única opción.",
+      "Comprobar el texto y el nombre accesible de esa opción: registrar la opción vacía y el fallo de la aserción, conservando la captura y sin guardar el segundo equipo.",
+    ],
+  };
+}
+
 /** Enriquece sólo firmas observadas; conserva la evidencia y nunca cambia estados. */
 export function enrichExecutionFailures(executions = []) {
   return executions.map((entry) => {
-    if (!["NUEVO-PER-09", "POL-11", "PLAT-C-13", "PLAT-C-16", "CUOTA-WA-01"].includes(entry.id) || !Array.isArray(entry.results)) return entry;
+    if (!["NUEVO-PER-09", "POL-11", "PLAT-C-13", "PLAT-C-16", "CUOTA-WA-01", "WAP-01"].includes(entry.id) || !Array.isArray(entry.results)) return entry;
     let changed = false;
     const results = entry.results.map((result) => {
       let triage;
@@ -175,6 +195,7 @@ export function enrichExecutionFailures(executions = []) {
       else if (entry.id === "PLAT-C-13" && isMobilePendingHomeFailure(result)) triage = mobilePendingHomeTriage(result);
       else if (entry.id === "PLAT-C-16" && isCreatedReplayLocationFailure(result)) triage = createdReplayLocationTriage(result);
       else if (entry.id === "CUOTA-WA-01" && isQuotaSignupNavigationFailure(result)) triage = quotaSignupNavigationTriage(result);
+      else if (entry.id === "WAP-01" && isEmptyWhatsAppOperatorLabelFailure(result)) triage = emptyWhatsAppOperatorLabelTriage();
       if (!triage) return result;
       changed = true;
       return { ...result, ...triage };
