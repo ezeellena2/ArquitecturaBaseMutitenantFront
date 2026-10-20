@@ -6,6 +6,53 @@ import { screens } from "./e2e-completo-inventario-front.mjs";
 import * as whatsapp from "./e2e-completo-whatsapp-complemento.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
+test("la barrera de Tomar espera ambos POST reales y libera pedidos/rutas también ante error", async () => {
+  const endpoint = "/api/organization/whatsapp/customers/conversations/propia/take";
+  for (const fail of [false, true]) {
+    const continued = []; const removed = []; const handlers = []; const matchers = [];
+    const pages = [0, 1].map((index) => ({
+      url: () => "https://localtest.me/org/whatsapp/chats/propia",
+      route: async (matcher, handler) => { matchers[index] = matcher; handlers[index] = handler; },
+      unroute: async (matcher, handler) => { assert.equal(matcher, matchers[index]); assert.equal(handler, handlers[index]); removed.push(index); },
+    }));
+    const failure = new Error("El segundo clic no llegó"); let first;
+    const request = (index, method = "POST") => ({ request: () => ({ method: () => method }), continue: async () => continued.push(`${index} ${method}`), fulfill: () => assert.fail("La respuesta debe venir del servidor real") });
+    const run = () => whatsapp.withSupplementTakeBarrier(pages, endpoint, async () => {
+      for (const matcher of matchers) assert.equal(matcher, "https://localtest.me" + endpoint);
+      first = handlers[0](request(0));
+      await Promise.resolve(); await Promise.resolve(); assert.deepEqual(continued, [], "El primer POST debe permanecer retenido antes del segundo.");
+      if (fail) throw failure;
+      await handlers[1](request(1, "GET")); assert.deepEqual(continued, ["1 GET"], "La barrera sólo sincroniza POST.");
+      const second = handlers[1](request(1)); await Promise.all([first, second]);
+      return "respuestas reales";
+    });
+    if (fail) await assert.rejects(run, (error) => error === failure); else assert.equal(await run(), "respuestas reales");
+    await first;
+    assert.deepEqual(continued.filter((value) => value.endsWith("POST")).sort(), fail ? ["0 POST"] : ["0 POST", "1 POST"]);
+    assert.deepEqual(removed, [0, 1]);
+  }
+});
+
+test("el focal de la carrera captura sólo04/11 y prepara01..03 sin ejecutar otros callbacks", async () => {
+  assert.deepEqual(whatsapp.supplementWhatsAppTakeRepairDefinitions.map(({ id }) => id), ["WAS-04", "WAS-11"]);
+  for (const failure of [null, "WAS-04"]) {
+    const actions = []; const records = []; const blocks = []; const outcomes = new Map();
+    const h = { width: 390, record: async (id, _getPage, action) => {
+      records.push(id); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; }
+    }, block: async (id) => { blocks.push(id); return { ok: false }; } };
+    await whatsapp.runSupplementWhatsAppTakeRepairCases(h, { run: async (selected, repair, mobile) => {
+      assert.equal(repair, false); assert.equal(mobile, true);
+      const run = whatsapp.createSupplementWhatsAppRunner(selected, { repair, mobile, outcomes, getPage: () => ({}), beforeAction: () => {} });
+      for (const [id, dependencies] of [["01", []], ["02", ["01"]], ["03", ["02"]], ["04", ["03"]], ["05", ["03"]], ["06", ["03"]], ["07", ["06"]], ["08", ["01"]], ["11", ["02", "04"]], ["09", ["11"]], ["10", []]]) {
+        await run(id, dependencies, async () => { actions.push("WAS-" + id); if (failure === "WAS-" + id) throw new Error("La carrera falló"); });
+      }
+    } });
+    assert.deepEqual(records, failure ? ["WAS-04"] : ["WAS-04", "WAS-11"]);
+    assert.deepEqual(actions, ["WAS-01", "WAS-02", "WAS-03", "WAS-04", ...(failure ? [] : ["WAS-11"])]);
+    assert.deepEqual(blocks, failure ? ["WAS-11"] : []);
+  }
+});
+
 test("la selección móvil sólo registra04/05/06/09 y prepara01..03 sin recapturarlos ni ejecutar lectura11 duplicada", async () => {
   for (const failure of [null, "WAS-04"]) {
     const records = []; const calls = []; const blocked = []; const outcomes = new Map();

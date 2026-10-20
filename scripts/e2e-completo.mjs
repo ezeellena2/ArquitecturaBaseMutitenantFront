@@ -83,6 +83,7 @@ const suiteSpecs = {
   asistentepreparacionarreglos: ["./e2e-completo-asistente-complemento.mjs", "assistantPreparationRepairDefinitions", "runAssistantPreparationRepairCases"],
   asistenteoperadorarreglo: ["./e2e-completo-asistente-complemento.mjs", "assistantOperatorRepairDefinitions", "runAssistantOperatorRepairCases"],
   whatsappatencionarreglos: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppRepairDefinitions", "runSupplementWhatsAppRepairCases"],
+  whatsappmensajesarreglo: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppTakeRepairDefinitions", "runSupplementWhatsAppTakeRepairCases"],
   ...Object.fromEntries(mobileBarPlans.map((plan) => [plan.name, [plan.module, plan.definitionsExport, plan.runExport, plan.definitions]])),
 };
 

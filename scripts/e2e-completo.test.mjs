@@ -6,6 +6,11 @@ import path from "node:path";
 import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions, buildCaseDiagnostic, archivePreviousAttempt, needsRealExecution } from "./e2e-completo.mjs";
 import { mobileBarPlans } from "./e2e-completo-acciones-moviles.mjs";
 
+test("el reintento de Mensajes WhatsApp es explícito y queda fuera de la corrida general", () => {
+  assert.equal(parseArguments([]).suites.includes("whatsappmensajesarreglo"), false);
+  assert.deepEqual(parseArguments(["--suite=whatsappmensajesarreglo", "--width=390", "--resume", "--no-build"]).suites, ["whatsappmensajesarreglo"]);
+});
+
 test("reanudar una selección ya verde evita iniciar otro entorno, salvo revalidación móvil expresa", () => {
   const suites = [{ definitions: [{ id: "A" }] }];
   const executions = [{ id: "A", results: [{ width: 390, status: "passed" }] }];

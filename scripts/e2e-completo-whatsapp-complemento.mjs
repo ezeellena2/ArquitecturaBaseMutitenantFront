@@ -32,6 +32,7 @@ export const supplementWhatsAppDefinitions = [
 ];
 const repairIds = new Set(["WAS-03", "WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-11", "WAS-09"]);
 export const supplementWhatsAppRepairDefinitions = supplementWhatsAppDefinitions.filter((item) => repairIds.has(item.id));
+export const supplementWhatsAppTakeRepairDefinitions = supplementWhatsAppDefinitions.filter((item) => ["WAS-04", "WAS-11"].includes(item.id));
 
 // Son límites de preparación/observación del protocolo existente, no resultados aprobados.
 export const supplementWhatsAppLimitations = {
@@ -52,6 +53,43 @@ export function requireTakeRace(replies) {
   assert.ok(typeof winner.assignee?.name === "string" && winner.assignee.name.length > 0);
   assert.equal(problem.takenBy, winner.assignee.name);
   return { winnerIndex, winner, problem };
+}
+
+/** Retiene ambos POST de Tomar antes de enviarlos al servidor; nunca reemplaza sus respuestas. */
+export async function withSupplementTakeBarrier(pages, endpoint, action) {
+  assert.equal(pages.length, 2); assert.equal(new Set(pages).size, 2, "La carrera necesita dos pestañas de actores distintos.");
+  assert.match(endpoint, /^\/api\/organization\/whatsapp\/customers\/conversations\/[^/]+\/take$/u);
+  const arrived = new Set(); const pending = []; const installed = []; const failures = [];
+  let release; const gate = new Promise((resolve) => { release = resolve; }); let value;
+  try {
+    for (const [index, page] of pages.entries()) {
+      const url = new URL(endpoint, page.url()).href;
+      const handler = (route) => {
+        const operation = (async () => {
+          if (route.request().method() === "POST") {
+            arrived.add(index); if (arrived.size === pages.length) release();
+            await gate;
+          }
+          await route.continue();
+        })();
+        pending.push(operation); void operation.catch(() => {}); return operation;
+      };
+      await page.route(url, handler); installed.push({ page, url, handler });
+    }
+    value = await action();
+    assert.equal(arrived.size, 2, "Ambos actores deben emitir su POST real antes de resolver la carrera.");
+  } catch (error) { failures.push(error); }
+  finally {
+    release();
+    for (const { page, url, handler } of installed) {
+      try { await page.unroute(url, handler); } catch (error) { failures.push(error); }
+    }
+    const settled = await Promise.allSettled(pending);
+    for (const result of settled) if (result.status === "rejected") failures.push(result.reason);
+  }
+  if (failures.length === 1) throw failures[0];
+  if (failures.length > 1) throw new AggregateError(failures, "Fallaron la carrera de Tomar y la limpieza de su barrera.");
+  return value;
 }
 
 /** Send y AddNote crean un recurso201; Take conserva su contrato200 independiente. */
@@ -290,6 +328,11 @@ export async function runSupplementWhatsAppMobileBarCases(h) {
     targets: ["WAS-04", "WAS-05", "WAS-06", "WAS-09"], prepare: ["WAS-01", "WAS-02", "WAS-03"],
   }), false, true);
 }
+export async function runSupplementWhatsAppTakeRepairCases(h, { run = runWhatsAppSupplementPlan } = {}) {
+  return run(selectMobileBarCases(h, {
+    targets: ["WAS-04", "WAS-11"], prepare: ["WAS-01", "WAS-02", "WAS-03"],
+  }), false, true);
+}
 
 async function runWhatsAppSupplementPlan(h, repair, mobile = false) {
   const ownerPage = await h.newPage(); const agentPage = await h.newPage();
@@ -411,10 +454,10 @@ async function runWhatsAppSupplementPlan(h, repair, mobile = false) {
       const before = outboundCount(await cursor("orgOutbound"));
       const actors = [ownerPage, agentPage];
       const buttons = await Promise.all(actors.map((page) => takeButton(page, h.width)));
-      const replies = await Promise.all(actors.map(async (page, index) => {
+      const replies = await withSupplementTakeBarrier(actors, endpoint + "/take", () => Promise.all(actors.map(async (page, index) => {
         const [response] = await responsesForAction(page, [responseAt(endpoint + "/take", "POST")], () => buttons[index].click());
         return { status: response.status(), body: await response.json() };
-      }));
+      })));
       const race = requireTakeRace(replies); winnerPage = actors[race.winnerIndex]; const loserPage = actors[1 - race.winnerIndex];
       capturePage = loserPage;
       const rejected = "No debe salir " + tag;
