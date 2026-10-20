@@ -1,6 +1,96 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { assistantSupplementDefinitions, assistantSupplementProofGroups, requireProjectedAssistant, requirePrivateAttachmentMetadata, requireGlobalUsage, platformSettingsValues, requirePrivateProblem, assertGlobalSettingsRestored } from "./e2e-completo-asistente-complemento.mjs";
+import * as assistant from "./e2e-completo-asistente-complemento.mjs";
+
+test("salir del acceso público espera Mi cuenta y Me200 antes de usar Salir, con captura de esa pestaña", async () => {
+  const ready = Promise.withResolvers(); const waiting = Promise.withResolvers(); const calls = [];
+  const page = { goto: async (url) => { assert.equal(new URL(url).pathname, "/cuenta"); calls.push("abrir cuenta"); }, getByRole: (role, options) => {
+    assert.equal(role, "heading"); assert.deepEqual(options, { name: "Mi cuenta", exact: true });
+    return { waitFor: async (options) => { assert.equal(options, undefined, "No aumenta el timeout."); waiting.resolve(); await ready.promise; calls.push("cuenta lista"); } };
+  } };
+  const h = { base: new URL("https://localtest.me"), api: async (target, route) => { assert.equal(target, page); assert.equal(route, "/api/me"); calls.push("Me200"); return { status: () => 200, json: async () => ({ access: "business" }) }; }, signOut: async (target) => { assert.equal(target, page); calls.push("salir UI"); } };
+  const pending = assistant.closeAssistantPublicSession(h, page, { setCapture: (target) => { assert.equal(target, page); calls.push("captura pública"); }, discardDraft: async () => calls.push("descartar propio") });
+  await waiting.promise; assert.deepEqual(calls, ["captura pública", "descartar propio", "abrir cuenta"]); ready.resolve(); await pending;
+  assert.deepEqual(calls, ["captura pública", "descartar propio", "abrir cuenta", "cuenta lista", "Me200", "salir UI"]);
+});
+
+test("una cuenta que no termina de cargar sigue fallando y no llama Salir ni consulta API", async () => {
+  const failure = new Error("Mi cuenta siguió cargando"); let capture;
+  const page = { goto: async () => {}, getByRole: () => ({ waitFor: async () => { throw failure; } }) };
+  await assert.rejects(() => assistant.closeAssistantPublicSession({ base: new URL("https://localtest.me"), api: async () => assert.fail("No hay marco listo"), signOut: async () => assert.fail("No hay marco listo") }, page, { setCapture: (target) => { capture = target; }, discardDraft: async () => {} }), (error) => error === failure);
+  assert.equal(capture, page);
+});
+
+test("salir de Plataforma espera su marco y Me platform200 en la pestaña que se capturará", async () => {
+  const calls = []; const frame = { or: () => frame, filter: () => frame, first: () => frame, waitFor: async () => calls.push("marco propio") };
+  const page = { goto: async (url) => { assert.equal(new URL(url).pathname, "/plataforma"); calls.push("abrir plataforma"); }, getByRole: (role, options) => { assert.ok(role === "button" || role === "navigation"); if (role === "navigation") assert.deepEqual(options, { name: "Secciones", exact: true }); return frame; } };
+  const h = { base: new URL("https://localtest.me"), api: async () => { calls.push("Me platform200"); return { status: () => 200, json: async () => ({ access: "platform" }) }; }, signOut: async (target) => { assert.equal(target, page); calls.push("salir UI"); } };
+  await assistant.closeAssistantPlatformSession(h, page, { setCapture: (target) => { assert.equal(target, page); calls.push("captura plataforma"); }, discardDraft: async () => calls.push("descartar propio") });
+  assert.deepEqual(calls, ["captura plataforma", "descartar propio", "abrir plataforma", "marco propio", "Me platform200", "salir UI"]);
+});
+
+test("la política OwnKey espera una acción real antes de decidir si debe permitirla", async () => {
+  for (const alreadyAllowed of [false, true]) {
+    const ready = Promise.withResolvers(); const waiting = Promise.withResolvers(); const calls = []; let loaded = false;
+    const allow = { or: () => ({ filter: () => ({ first: () => ({ waitFor: async () => { waiting.resolve(); await ready.promise; loaded = true; } }) }) }), isVisible: async () => { assert.equal(loaded, true, "No se decide por ausencia durante la carga."); calls.push("decidir política"); return !alreadyAllowed; } };
+    const revoke = {};
+    const page = { getByRole: (role, options) => {
+      if (role === "button") { assert.deepEqual(options, { name: "Acciones de Asistente", exact: true }); return { click: async () => calls.push("abrir acciones") }; }
+      assert.equal(role, "menuitem"); assert.equal(options.exact, true);
+      if (options.name === "Permitir su propia clave") return allow;
+      assert.equal(options.name, "Solo con la clave de la plataforma"); return revoke;
+    } };
+    const pending = assistant.openAssistantOwnKeyPolicyAction(page); await waiting.promise; assert.deepEqual(calls, ["abrir acciones"]); ready.resolve();
+    assert.equal(await pending, alreadyAllowed ? null : allow); assert.deepEqual(calls, ["abrir acciones", "decidir política"]);
+  }
+});
+
+test("la reparación sólo registra02/03/04/06; la fixture01 de06 nunca recibe resultado propio", async () => {
+  assert.deepEqual(assistant.assistantPreparationRepairDefinitions.map((entry) => entry.id), ["AS-SUP-02", "AS-SUP-03", "AS-SUP-04", "AS-SUP-06"]);
+  const records = []; let closed = 0; let logins = 0;
+  const h = { width: 1440, base: new URL("https://localtest.me"), env: { command: async () => assert.fail("No llegó al control") },
+    newPage: async () => ({ close: async () => { closed++; } }), login: async (_page, email, access) => { assert.equal(email, "e2e-e9a-operator@example.test"); assert.equal(access, "platform"); logins++; throw new Error("Preparación sin ingreso"); },
+    record: async (id, _getPage, action) => { records.push(id); try { return { ok: true, value: await action() }; } catch (error) { assert.equal(error.message, "Preparación sin ingreso"); return { ok: false, error }; } },
+  };
+  await assistant.runAssistantPreparationRepairCases(h);
+  assert.deepEqual(records, ["AS-SUP-02", "AS-SUP-03", "AS-SUP-04", "AS-SUP-06"]); assert.equal(logins, 4); assert.equal(closed, 2);
+});
+
+test("Home fallido conserva la causa y sólo informa campos seguros reales sin alterar ni reintentar la UI", async () => {
+  const cause = new Error("El marco no mostró Asistente"); const calls = []; const page = {};
+  const privateId = "identificador-privado"; const privateText = "Texto de una conversación privada";
+  const h = { api: async (target, route) => {
+    assert.equal(target, page); calls.push(route);
+    return { status: () => 200, json: async () => route === "/api/me" ? { access: "business", activeTenantId: privateId, features: [], effectivePermissions: { organization: ["assistant.use", "assistant.configure"] }, displayName: privateText }
+      : { configured: true, canConfigure: true, quickQueries: [{ text: privateText }], conversationId: privateId } };
+  } };
+  await assert.rejects(() => assistant.withAssistantHomeDiagnostics(h, page, { access: "business", expectedTenantId: privateId }, async () => { calls.push("UI original"); throw cause; }), (error) => {
+    assert.equal(error.cause, cause); assert.match(error.message, /El marco no mostró Asistente/u);
+    assert.match(error.message, /"meAccess":"business"/u); assert.match(error.message, /"activeTenantMatch":true/u);
+    assert.match(error.message, /"hasAssistantFeature":false/u); assert.match(error.message, /"assistantUse":true/u); assert.match(error.message, /"assistantConfigure":true/u);
+    assert.match(error.message, /"canUseFromMe":false/u); assert.match(error.message, /"stateConfigured":true/u); assert.match(error.message, /"stateCanConfigure":true/u);
+    assert.equal(error.message.includes(privateId), false); assert.equal(error.message.includes(privateText), false);
+    assert.equal(error.message.includes("quickQueries"), false); return true;
+  });
+  assert.deepEqual(calls, ["UI original", "/api/me", "/api/organization/assistant"]);
+  assert.equal(cause.message, "El marco no mostró Asistente", "No cambia el error original.");
+});
+
+test("el diagnóstico no fabrica permisos ni State cuando las lecturas no están disponibles", async () => {
+  const cause = new Error("Home no disponible"); let calls = 0;
+  await assert.rejects(() => assistant.withAssistantHomeDiagnostics({ api: async () => { calls++; if (calls === 1) throw new Error("Bearer privado jamás debe publicarse"); return { status: () => 403, json: async () => assert.fail("No leer ProblemDetails como State") }; } }, {}, { access: "business", expectedTenantId: "privada" }, async () => { throw cause; }), (error) => {
+    assert.equal(error.cause, cause); assert.match(error.message, /"meStatus":null/u); assert.match(error.message, /"stateStatus":403/u);
+    assert.match(error.message, /"activeTenantMatch":null/u); assert.match(error.message, /"canUseFromMe":null/u); assert.match(error.message, /"stateConfigured":null/u);
+    assert.equal(error.message.includes("Bearer privado"), false); return true;
+  });
+  assert.equal(calls, 2);
+});
+
+test("Home correcto no agrega lecturas diagnósticas ni cambia su resultado", async () => {
+  const result = {};
+  assert.equal(await assistant.withAssistantHomeDiagnostics({ api: async () => assert.fail("Sólo diagnosticar fallos") }, {}, { access: "business", expectedTenantId: "propia" }, async () => result), result);
+});
 
 test("seis registros y los grupos de archivos/aislamiento nunca aprueban parcialmente", () => {
   assert.equal(assistantSupplementDefinitions.length, 6); assert.equal(new Set(assistantSupplementDefinitions.map((row) => row.id)).size, 6);

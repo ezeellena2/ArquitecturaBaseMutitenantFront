@@ -21,6 +21,7 @@ export const assistantSupplementDefinitions = [
   def(5, "Operador sólo con assistant.use", "Usar su chat sin gestión ni lectura global", "/plataforma/asistente", "Turno real propio; configure y read403; otro operador completo recibe404 Conversation.NotFound para ese historial.", ["BACK-AS-021"]),
   def(6, "Dueña de conversación propia", "Rechazar feedback ajeno y borrar un turno activo con PNG", "/org/asistente", "Generating antes de Borrar204; conversación y archivo404 sin URL/bytes y sin resurrección ni título después del plazo del Fake. Metadatos del upload privados."),
 ];
+export const assistantPreparationRepairDefinitions = assistantSupplementDefinitions.filter((entry) => ["AS-SUP-02", "AS-SUP-03", "AS-SUP-04", "AS-SUP-06"].includes(entry.id));
 export const assistantSupplementProofGroups = {
   "BACK-AS-011": [["BASE-E8B-30-4", "AS-SUP-06"]],
   "BACK-AS-012": [["BASE-E8B-30-1", "AS-TEC-01", "AS-TEC-02", "MOD-28"]],
@@ -88,10 +89,54 @@ async function discard(page) {
   const cancel = page.getByRole("dialog").getByRole("button", { name: "Cancelar", exact: true }).filter({ visible: true }).last(); if (await cancel.isVisible()) await cancel.click();
   const button = page.getByRole("button", { name: "Descartar cambios", exact: true }).filter({ visible: true }).first(); if (await button.isVisible() && await button.isEnabled()) await button.click();
 }
-async function chatHome(h, page, access = "business", direct = false) {
+export async function closeAssistantPublicSession(h, page, { setCapture = () => {}, discardDraft = discard } = {}) {
+  setCapture(page); await discardDraft(page); await page.goto(new URL("/cuenta", h.base).href);
+  await page.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();
+  const me = await read(h, page, "/api/me"); assert.ok(["consumer", "business"].includes(me.access));
+  await h.signOut(page);
+}
+export async function closeAssistantPlatformSession(h, page, { setCapture = () => {}, discardDraft = discard } = {}) {
+  setCapture(page); await stopConfirmingRecentAuthentication(page); await discardDraft(page); await page.goto(new URL("/plataforma", h.base).href);
+  await page.getByRole("button", { name: /, Plataforma$/u }).or(page.getByRole("navigation", { name: "Secciones", exact: true })).filter({ visible: true }).first().waitFor();
+  assert.equal((await read(h, page, "/api/me")).access, "platform"); await h.signOut(page);
+}
+export async function openAssistantOwnKeyPolicyAction(page) {
+  await page.getByRole("button", { name: "Acciones de Asistente", exact: true }).click();
+  const allow = page.getByRole("menuitem", { name: "Permitir su propia clave", exact: true });
+  const revoke = page.getByRole("menuitem", { name: "Solo con la clave de la plataforma", exact: true });
+  await allow.or(revoke).filter({ visible: true }).first().waitFor();
+  return await allow.isVisible() ? allow : null;
+}
+export async function withAssistantHomeDiagnostics(h, page, { access, expectedTenantId }, action) {
+  try { return await action(); } catch (error) {
+    const inspect = async (route) => {
+      try { const response = await h.api(page, route); const status = response.status(); return { status, value: status === 200 ? await response.json() : null }; }
+      catch { return { status: null, value: null }; }
+    };
+    const me = await inspect("/api/me"); const state = await inspect(`/api/${{ business: "organization", consumer: "me", platform: "platform" }[access]}/assistant`);
+    const profile = me.value; const knownAccess = ["business", "consumer", "platform"].includes(profile?.access) ? profile.access : null;
+    const permissions = knownAccess === "platform" ? profile?.effectivePermissions?.platform : profile?.effectivePermissions?.organization;
+    const hasAssistantFeature = Array.isArray(profile?.features) ? profile.features.includes("assistant") : null;
+    const assistantUse = Array.isArray(permissions) ? permissions.includes(knownAccess === "platform" ? "platform.assistant.use" : "assistant.use") : null;
+    const assistantConfigure = Array.isArray(permissions) ? permissions.includes(knownAccess === "platform" ? "platform.assistant.configure" : "assistant.configure") : null;
+    const capability = profile?.moduleCapabilities?.find((item) => item.key === "assistant");
+    // State no expone canUse. Esta elegibilidad se deriva únicamente del guard publicado de Me.
+    const canUseFromMe = knownAccess === "platform" ? !!capability?.available && assistantUse === true
+      : knownAccess === "consumer" ? hasAssistantFeature : knownAccess === "business" && hasAssistantFeature !== null && assistantUse !== null ? hasAssistantFeature && assistantUse : null;
+    const diagnostic = { meStatus: me.status, meAccess: knownAccess, activeTenantMatch: profile && expectedTenantId ? profile.activeTenantId === expectedTenantId : null,
+      hasAssistantFeature, assistantUse, assistantConfigure, canUseFromMe, stateStatus: state.status,
+      stateConfigured: typeof state.value?.configured === "boolean" ? state.value.configured : null,
+      stateCanConfigure: typeof state.value?.canConfigure === "boolean" ? state.value.canConfigure : null };
+    throw new Error(`Inicio de Asistente no quedó listo. Diagnóstico seguro: ${JSON.stringify(diagnostic)}. ${error.message}`, { cause: error });
+  }
+}
+async function chatHome(h, page, access = "business", direct = false, diagnostic) {
   const route = direct ? "/org/asistente" : assistantHomeRoute(access, h.width);
-  await page.goto(new URL(route, h.base).href); await acceptAssistantNoticeFromHome(page);
-  await page.getByRole("textbox", { name: "Tu consulta", exact: true }).waitFor();
+  const open = async () => {
+    await page.goto(new URL(route, h.base).href); await acceptAssistantNoticeFromHome(page);
+    await page.getByRole("textbox", { name: "Tu consulta", exact: true }).waitFor();
+  };
+  return diagnostic ? withAssistantHomeDiagnostics(h, page, { access, ...diagnostic }, open) : open();
 }
 async function sendUi(h, page, text, chatRoot = root, terminal = true) {
   await page.getByRole("textbox", { name: "Tu consulta", exact: true }).fill(text);
@@ -102,35 +147,39 @@ async function sendUi(h, page, text, chatRoot = root, terminal = true) {
   return { id, ...(terminal ? { detail: await waitAssistantTerminal(page, chatRoot, id) } : {}) };
 }
 
-export async function runAssistantSupplementCases(h) {
+async function runAssistantCases(h, selected) {
   const page = await h.newPage(); const platformPage = await h.newPage(); let stalePage;
   const control = createAssistantControl(h.env.command); const url = (route) => new URL(route, h.base).href;
   const operatorEmail = h.width === 1440 ? "e2e-e9a-operator@example.test" : "e2e-e9b-operator@example.test";
   let publicSession = false; let publicEmail; let publicAccess; let platformSession = false; let platformEmail;
   let originalGlobal; let owner; let ownerReady = false; let company; let companyAdmin; let adminChat; let businessChat; let useOperator; let onlyUseChat;
   let capturePage = page; const tag = randomUUID().slice(0, 8); const failures = [];
+  const setCapture = (target) => { capturePage = target; };
   const run = async (number, action, target = page) => {
+    if (!selected.has(number)) return;
     capturePage = target; const id = `AS-SUP-${String(number).padStart(2, "0")}`;
     return h.record(id, () => capturePage, action);
   };
   const leavePublic = async () => {
-    if (!publicSession) return; await discard(page); await page.goto(url("/cuenta")); await h.signOut(page);
+    if (!publicSession) return; await closeAssistantPublicSession(h, page, { setCapture });
     publicSession = false; publicEmail = undefined; publicAccess = undefined;
   };
   const business = async (email = owner.email) => {
+    setCapture(page);
     if (publicSession && publicEmail === email && publicAccess === "business") return read(h, page, "/api/me");
     await leavePublic(); const me = await h.login(page, email, "business"); publicSession = true; publicEmail = email; publicAccess = "business"; return me;
   };
   const leavePlatform = async () => {
-    if (!platformSession) return; await stopConfirmingRecentAuthentication(platformPage); await discard(platformPage);
-    await platformPage.goto(url("/plataforma")); await h.signOut(platformPage); platformSession = false; platformEmail = undefined;
+    if (!platformSession) return; await closeAssistantPlatformSession(h, platformPage, { setCapture }); platformSession = false; platformEmail = undefined;
   };
   const admin = async () => {
+    setCapture(platformPage);
     if (platformSession && platformEmail === operatorEmail) return read(h, platformPage, "/api/me");
     await leavePlatform(); const me = await h.login(platformPage, operatorEmail, "platform"); platformSession = true; platformEmail = operatorEmail;
     assert.ok(me.effectivePermissions.platform.includes("platform.assistant.configure")); return me;
   };
   const operatorClick = async (button, route, method = "PUT", status = 200, target = platformPage) => {
+    setCapture(target);
     await stopConfirmingRecentAuthentication(target);
     let response = await clickForResponse(target, button, route, method, null);
     if (response.status() === 403 && status !== 403) {
@@ -142,7 +191,7 @@ export async function runAssistantSupplementCases(h) {
   };
   const prepareOwner = async () => {
     await admin(); if (!originalGlobal) originalGlobal = await read(h, platformPage, `${platformRoot}/settings`);
-    if (!owner) { await leavePublic(); owner = await h.registerBusiness(page); publicSession = true; publicEmail = owner.email; publicAccess = "business"; }
+    if (!owner) { await leavePublic(); setCapture(page); owner = await h.registerBusiness(page); publicSession = true; publicEmail = owner.email; publicAccess = "business"; }
     await business();
     if (!ownerReady) {
       await control("prepare", { email: owner.email, access: "business", tenantId: owner.me.activeTenantId }); ownerReady = true;
@@ -151,9 +200,8 @@ export async function runAssistantSupplementCases(h) {
   };
   const allowOwnKey = async (tenantId) => {
     await admin(); await platformPage.goto(url(`/plataforma/organizaciones/${tenantId}?tab=modules`)); await platformPage.getByRole("tab", { name: /^Módulos/u }).click();
-    await platformPage.getByRole("button", { name: "Acciones de Asistente", exact: true }).click();
-    const allow = platformPage.getByRole("menuitem", { name: "Permitir su propia clave", exact: true });
-    if (await allow.isVisible()) {
+    const allow = await openAssistantOwnKeyPolicyAction(platformPage);
+    if (allow) {
       await allow.click(); const dialog = platformPage.getByRole("dialog"); await dialog.getByRole("textbox", { name: /Motivo/u }).fill("Preparación propia de clave del Asistente con proveedor Fake aislado.");
       await operatorClick(dialog.getByRole("button", { name: "Permitir", exact: true }), `/api/platform/tenants/${tenantId}/assistant/policy`); await dialog.waitFor({ state: "hidden" });
     } else await platformPage.keyboard.press("Escape");
@@ -190,7 +238,7 @@ export async function runAssistantSupplementCases(h) {
   };
 
   try {
-    await run(1, async () => {
+    const prepareProjectedAdminChat = async () => {
       await prepareOwner(); companyAdmin = { email: syntheticEmail("as-admin") };
       await page.goto(url("/org/usuarios")); await page.getByRole("button", { name: "Invitar usuario", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "Invitar usuario", exact: true });
       await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(companyAdmin.email); await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click(); await page.getByRole("option", { name: company.name, exact: true }).click();
@@ -198,17 +246,18 @@ export async function runAssistantSupplementCases(h) {
       await clickForResponse(page, dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/users/invitations", "POST", 201); await dialog.waitFor({ state: "hidden" });
       const me = await business(companyAdmin.email); requireProjectedAssistant(me, owner.me.activeTenantId, company.id);
       await page.goto(url("/org")); await page.getByRole("heading", { name: "Tus empresas", exact: true }).waitFor();
-      await chatHome(h, page, "business", true); const state = await read(h, page, root); assert.equal(state.configured, true); assert.equal(state.canConfigure, false);
+      await chatHome(h, page, "business", true, { expectedTenantId: owner.me.activeTenantId }); const state = await read(h, page, root); assert.equal(state.configured, true); assert.equal(state.canConfigure, false);
       adminChat = await sendUi(h, page, "[E2E:answer] Pregunta privada del administrador de empresa.");
       for (const suffix of ["settings", "usage"]) await requirePrivateProblem(await h.api(page, `${root}/${suffix}`), 403, "Http.Forbidden");
       await page.goto(url("/org")); await page.getByRole("heading", { name: "Tus empresas", exact: true }).waitFor(); requireProjectedAssistant(await read(h, page, "/api/me"), owner.me.activeTenantId, company.id);
       return "Administrador de empresa activa usó un turno real por assistant.use proyectado, sin configure/Uso ni users.manage; Inicio conservó Tus empresas.";
-    });
+    };
+    await run(1, prepareProjectedAdminChat);
     await run(2, async () => {
-      await prepareOwner(); await leavePublic(); const phoneOwner = await h.registerBusiness(page); publicSession = true; publicEmail = phoneOwner.email; publicAccess = "business";
+      await prepareOwner(); await leavePublic(); setCapture(page); const phoneOwner = await h.registerBusiness(page); publicSession = true; publicEmail = phoneOwner.email; publicAccess = "business";
       await control("prepare", { email: phoneOwner.email, access: "business", tenantId: phoneOwner.me.activeTenantId }); await allowOwnKey(phoneOwner.me.activeTenantId);
       const phone = h.width === 1440 ? "+5491134567868" : "+5491134567869"; const cursor = await requireE8Control(h.env)(`as-sin-email-${tag}`, phone);
-      await page.goto(url("/cuenta")); await page.getByRole("button", { name: accountAddMethodName }).click(); let dialog = page.getByRole("dialog"); await dialog.getByRole("button", { name: "WhatsApp", exact: true }).click(); await dialog.getByRole("textbox", { name: "Número", exact: true }).fill(nationalPhone(phone));
+      setCapture(page); await page.goto(url("/cuenta")); await page.getByRole("button", { name: accountAddMethodName }).click(); let dialog = page.getByRole("dialog"); await dialog.getByRole("button", { name: "WhatsApp", exact: true }).click(); await dialog.getByRole("textbox", { name: "Número", exact: true }).fill(nationalPhone(phone));
       const sent = await sendWithCooldown(() => clickForResponse(page, dialog.getByRole("button", { name: "Enviar código", exact: true }), "/api/me/login-methods", "POST", null)); assert.equal(sent.status(), 202); const methodId = (await sent.json()).methodId;
       await fillOtp(dialog, (await cursor("code")).proof); await clickForResponse(page, dialog.getByRole("button", { name: "Verificar", exact: true }), `/api/me/login-methods/${methodId}/verify`, "POST", 204); await dialog.waitFor({ state: "hidden" });
       const methods = (await read(h, page, "/api/me/login-methods")).methods; const email = methods.find((item) => item.type === "Email" && item.isVerified); assert.ok(email);
@@ -273,10 +322,12 @@ export async function runAssistantSupplementCases(h) {
       return "Un operador con sólo assistant.use completó su turno y releyó su chat; configuración/modelos/Uso403. Otro operador con todos los permisos recibió404 exacto para ese historial propio ajeno.";
     }, platformPage);
     await run(6, async () => {
+      // La reparación prepara por UI el mismo chat ajeno de01 dentro de06, sin registrar ni acreditar01.
+      if (!selected.has(1)) await prepareProjectedAdminChat();
       await prepareOwner(); await business(); assert.ok(adminChat?.detail, "La prueba requiere la respuesta real del Administrador de empresa.");
       const foreignAnswer = adminChat.detail.messages.items.findLast((message) => message.role === "assistant");
       await requirePrivateProblem(await h.api(page, `${root}/conversations/${adminChat.id}/messages/${foreignAnswer.id}/feedback`, { method: "PUT", data: { rating: "up", version: foreignAnswer.version } }), 404, "Assistant.Conversation.NotFound");
-      await chatHome(h, page); await page.getByRole("button", { name: "Nueva conversación", exact: true }).first().click();
+      await chatHome(h, page, "business", false, { expectedTenantId: owner.me.activeTenantId }); await page.getByRole("button", { name: "Nueva conversación", exact: true }).first().click();
       const fileName = `activo-${tag}.png`; const uploaded = page.waitForResponse((response) => response.request().method() === "POST" && /^\/api\/organization\/assistant\/conversations\/[^/]+\/attachments$/u.test(new URL(response.url()).pathname)); void uploaded.catch(() => {});
       await page.locator('input[type="file"]').setInputFiles({ name: fileName, mimeType: "image/png", buffer: png }); const upload = await uploaded; assert.equal(upload.status(), 201); const attachment = await upload.json(); requirePrivateAttachmentMetadata(attachment, fileName, png.length);
       const id = new URL(upload.url()).pathname.split("/").at(-2); const fileRoute = `${root}/conversations/${id}/attachments/${attachment.id}`;
@@ -300,3 +351,7 @@ export async function runAssistantSupplementCases(h) {
   }
   if (failures.length) throw new AggregateError(failures, "No se pudo completar, restaurar configuración o cerrar las sesiones propias del complemento Asistente.");
 }
+
+export async function runAssistantSupplementCases(h) { return runAssistantCases(h, new Set([1, 2, 3, 4, 5, 6])); }
+/** Sólo02/03/04/06: callbacks completos;06 prepara01 internamente sin acreditarlo. Restaura configuración en finally. */
+export async function runAssistantPreparationRepairCases(h) { return runAssistantCases(h, new Set([2, 3, 4, 6])); }
