@@ -3,6 +3,49 @@ import test from "node:test";
 import { platformWhatsAppDefinitions, platformWhatsAppLimitations, requirePlatformChatAccount,
   requirePlatformAnswer, requireRecentWhatsAppProof, withRestoredWhatsAppSettings } from "./e2e-completo-whatsapp-plataforma.mjs";
 import * as platformWhatsApp from "./e2e-completo-whatsapp-plataforma.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
+
+test("la repetición móvil prepara el canal y agente sin recapturar01 ni ejecutar gestión de bot/equipo", async () => {
+  for (const mobile of [false, true]) {
+    const calls = []; const records = [];
+    const real = { width: 390, record: async (id, _page, action) => { records.push(id); return { ok: true, value: await action() }; } };
+    const h = mobile ? selectMobileBarCases(real, { targets: ["WAP-02"], prepare: ["WAP-01"] }) : real;
+    await platformWhatsApp.recordPlatformWhatsAppPreparation(h, {
+      mobile, getPage: () => ({}), prepare: async () => calls.push("canal, organización y agente"),
+      management: async () => calls.push("gestión completa"),
+    });
+    assert.deepEqual(records, mobile ? [] : ["WAP-01"]);
+    assert.deepEqual(calls, ["canal, organización y agente", ...(mobile ? [] : ["gestión completa"])]);
+  }
+  let managed = false;
+  await assert.rejects(() => platformWhatsApp.recordPlatformWhatsAppPreparation({ record: async (_id, _page, action) => action() }, {
+    mobile: false, getPage: () => ({}), prepare: async () => { throw new Error("Fixture fallida"); }, management: async () => { managed = true; },
+  }), /Fixture fallida/u);
+  assert.equal(managed, false);
+});
+
+test("Ver la cuenta se inspecciona dentro de la hoja del chat y se cierra aun si su visibilidad contradice el permiso", async () => {
+  for (const allowed of [false, true]) for (const count of [0, 1]) {
+    const calls = [];
+    const item = { count: async () => count, waitFor: async () => calls.push("enlace visible") };
+    const menu = { waitFor: async () => {}, getByRole: (role, options) => {
+      assert.equal(role, "menuitem"); assert.deepEqual(options, { name: "Ver la cuenta", exact: true }); return item;
+    } };
+    const dialog = { getByRole: (role) => { assert.equal(role, "menu"); return menu; }, waitFor: async (options) => { if (options?.state === "hidden") calls.push("hoja cerrada"); } };
+    const trigger = { getAttribute: async () => "dialog", click: async () => calls.push("abrir hoja") };
+    const heading = { filter: () => heading, first: () => heading, innerText: async () => "Consulta propia" };
+    const page = { viewportSize: () => ({ width: 390 }), keyboard: { press: async (key) => { assert.equal(key, "Escape"); calls.push("Escape"); } },
+      getByRole: (role, options) => {
+        if (role === "button") return trigger;
+        if (role === "heading") return heading;
+        assert.equal(role, "dialog"); assert.deepEqual(options, { name: "Consulta propia", exact: true }); return dialog;
+      },
+    };
+    const action = () => platformWhatsApp.inspectPlatformChatAccountAction(page, allowed);
+    if (count === Number(allowed)) await action(); else await assert.rejects(action);
+    assert.deepEqual(calls.slice(-2), ["Escape", "hoja cerrada"]);
+  }
+});
 
 const operatorMe = (id, permissions) => ({ id, access: "platform", activeTenantId: null, hasPersonalSpace: false,
   organizations: [], effectivePermissions: { platform: permissions, organization: [], companies: {} } });

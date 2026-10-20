@@ -23,6 +23,46 @@ test("el aviso que llega durante Salir se acepta por UI y su handler se retira a
   assert.deepEqual(calls, ["registrar", "clic", "aceptar", "oculto", "retirar"]);
 });
 
+for (const [name, actionFails, removalFails] of [
+  ["termina", false, false],
+  ["falla", true, false],
+  ["falla y también falla retirar el handler", true, true],
+]) {
+  test(`el aviso que falla después de que la acción ${name} se espera y conserva sus causas`, async () => {
+    const clicked = Promise.withResolvers(); const removed = Promise.withResolvers();
+    const calls = []; let handler; let callback;
+    const actionError = new Error("Falló la navegación original");
+    const noticeError = new Error("Entendido dejó de ser estable");
+    const removalError = new Error("No se pudo retirar el handler");
+    const notice = { getByRole: () => ({ click: () => { calls.push("aceptar"); return clicked.promise; } }),
+      waitFor: async () => calls.push("oculto") };
+    const page = { getByRole: () => notice,
+      addLocatorHandler: async (_target, value) => { handler = value; },
+      removeLocatorHandler: async () => { calls.push("retirar"); removed.resolve(); if (removalFails) throw removalError; } };
+    const operation = withFirstConsultationNotice(page, async () => {
+      callback = handler(); void callback.catch(() => {});
+      calls.push("acción finalizada");
+      if (actionFails) throw actionError;
+      return "navegación completa";
+    });
+    const rejected = assert.rejects(operation, (error) => {
+      if (!actionFails) return error === noticeError;
+      assert.ok(error instanceof AggregateError);
+      assert.equal(error.cause, actionError);
+      assert.deepEqual(error.errors, [actionError, noticeError, ...(removalFails ? [removalError] : [])]);
+      assert.match(error.message, /Falló la navegación original/u);
+      assert.match(error.message, /Entendido dejó de ser estable/u);
+      return true;
+    });
+    void rejected.catch(() => {});
+    await removed.promise;
+    clicked.reject(noticeError);
+    await rejected;
+    await assert.doesNotReject(callback, "El evento de Playwright no debe recibir una promesa rechazada.");
+    assert.deepEqual(calls, ["aceptar", "acción finalizada", "retirar"]);
+  });
+}
+
 test("los buzones generados conservan un local-part válido aun con una etiqueta larga", () => {
   const first = syntheticEmail("cerrado-consumer");
   const second = syntheticEmail("cerrado-consumer");

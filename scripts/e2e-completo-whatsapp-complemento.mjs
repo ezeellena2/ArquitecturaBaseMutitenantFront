@@ -9,6 +9,8 @@ import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 import { responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
 import { requireModuleProblem, runModuleDependency } from "./e2e-completo-modulos.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
+import { openBarMenu } from "./e2e-completo-menu-barra.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
 const root = "/api/organization/whatsapp";
 const def = (id, actor, action, route, expected, covers = [], extra = {}) => ({
@@ -106,12 +108,14 @@ export function requireInvitedAgent(me, { userId, organizationId }) {
 }
 
 /** En la reparación,01/02 son preparación dentro03; no generan otros records ni vuelven a ejecutar08/10. */
-export function createSupplementWhatsAppRunner(h, { repair, outcomes, getPage, beforeAction }) {
+export function createSupplementWhatsAppRunner(h, { repair, mobile = false, outcomes, getPage, beforeAction }) {
   const preparations = new Map();
   return async (id, dependencies, action) => {
     if (repair && ["01", "02"].includes(id)) { preparations.set(id, action); return; }
     if (repair && !repairIds.has("WAS-" + id)) return;
-    return runModuleDependency(h, outcomes, "WAS-" + id, (repair && id === "03" ? [] : dependencies).map((key) => "WAS-" + key), getPage, async () => {
+    //09 ya repite íntegra la lectura de11; la selección móvil sólo necesita el vínculo y la respuesta real de04.
+    const required = mobile && id === "09" ? ["02", "04"] : repair && id === "03" ? [] : dependencies;
+    return runModuleDependency(h, outcomes, "WAS-" + id, required.map((key) => "WAS-" + key), getPage, async () => {
       beforeAction();
       if (repair && id === "03") {
         assert.deepEqual([...preparations.keys()], ["01", "02"], "La reparación requiere ambas preparaciones propias.");
@@ -190,12 +194,13 @@ async function setName(h, page, name) {
   await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(name);
   await clickForResponse(page, page.getByRole("button", { name: "Guardar cambios", exact: true }), "/api/me", "PUT");
 }
-async function moreAction(page, label) {
-  await page.getByRole("button", { name: /^Acciones de / }).first().click();
-  return page.getByRole("menuitem", { name: label, exact: true });
+export async function supplementWhatsAppBarAction(page, label) {
+  const opened = await openBarMenu(page, page.getByRole("button", { name: /^Acciones de / }).first());
+  const item = opened.menu.getByRole("menuitem", { name: label, exact: true });
+  return { click: async () => { await item.click(); await opened.waitForClosed(); } };
 }
 async function takeButton(page, width) {
-  return width === 390 ? moreAction(page, "Tomar") : page.getByRole("button", { name: "Tomar", exact: true });
+  return width === 390 ? supplementWhatsAppBarAction(page, "Tomar") : page.getByRole("button", { name: "Tomar", exact: true });
 }
 async function openImport(page, width) {
   await page.getByRole("button", { name: width === 390 ? "Importar" : "Importar contactos", exact: true }).click();
@@ -280,8 +285,13 @@ export async function enterAcceptedInvitation(h, page, token, organizationId, us
 
 export async function runSupplementWhatsAppCases(h) { return runWhatsAppSupplementPlan(h, false); }
 export async function runSupplementWhatsAppRepairCases(h) { return runWhatsAppSupplementPlan(h, true); }
+export async function runSupplementWhatsAppMobileBarCases(h) {
+  return runWhatsAppSupplementPlan(selectMobileBarCases(h, {
+    targets: ["WAS-04", "WAS-05", "WAS-06", "WAS-09"], prepare: ["WAS-01", "WAS-02", "WAS-03"],
+  }), false, true);
+}
 
-async function runWhatsAppSupplementPlan(h, repair) {
+async function runWhatsAppSupplementPlan(h, repair, mobile = false) {
   const ownerPage = await h.newPage(); const agentPage = await h.newPage();
   const personPage = await h.newPage(); const platformPage = await h.newPage();
   const outcomes = new Map(); const pages = [ownerPage, agentPage, personPage, platformPage];
@@ -293,7 +303,7 @@ async function runWhatsAppSupplementPlan(h, repair) {
   const note = "Nota reservada del complemento " + tag + ".";
   let owner; let agent; let person; let cursor; let internalCursor; let numberId; let customerChat; let linkedId;
   let customerRole; let internalRole; let memberId; let company; let winnerPage;
-  const run = createSupplementWhatsAppRunner(h, { repair, outcomes, getPage: () => capturePage, beforeAction: () => { capturePage = ownerPage; } });
+  const run = createSupplementWhatsAppRunner(h, { repair, mobile, outcomes, getPage: () => capturePage, beforeAction: () => { capturePage = ownerPage; } });
   const ownerLogin = async () => { const me = await forceBusinessLogin(h, ownerPage, owner.email); signedIn.add(ownerPage); assert.equal(me.id, owner.me.id); return me; };
   const closeSessions = async () => {
     await closeSupplementSessions(signedIn, async (page) => {
@@ -462,7 +472,7 @@ async function runWhatsAppSupplementPlan(h, repair) {
     await run("06", ["03"], async () => {
       await ownerLogin();
       await ownerPage.goto(new URL("/org/whatsapp/contactos/" + customerChat.contactId, h.base).href);
-      const edit = h.width === 390 ? await moreAction(ownerPage, "Editar contacto") : ownerPage.getByRole("button", { name: "Editar contacto", exact: true });
+      const edit = h.width === 390 ? await supplementWhatsAppBarAction(ownerPage, "Editar contacto") : ownerPage.getByRole("button", { name: "Editar contacto", exact: true });
       await edit.click(); const dialog = ownerPage.getByRole("dialog", { name: "Editar contacto", exact: true });
       await dialog.getByRole("radio", { name: "Acepta", exact: true }).click();
       await clickForResponse(ownerPage, dialog.getByRole("button", { name: h.width === 390 ? "Guardar" : "Guardar cambios", exact: true }), root + "/contacts/" + customerChat.contactId, "PUT");
@@ -552,7 +562,7 @@ async function runWhatsAppSupplementPlan(h, repair) {
     });
     await run("09", ["11"], async () => {
       const endpoint = await verifyPersonalMessages();
-      await (await moreAction(personPage, "Desvincular")).click();
+      await (await supplementWhatsAppBarAction(personPage, "Desvincular")).click();
       const dialog = personPage.getByRole("dialog", { name: "¿Desvincular la conversación con " + owner.organization + "?", exact: true });
       await clickForResponse(personPage, dialog.getByRole("button", { name: "Desvincular", exact: true }), endpoint + "/link", "DELETE", 204);
       assert.ok((await read(h, personPage, "/api/me/whatsapp/conversations")).items.every((item) => item.id !== linkedId));
@@ -565,7 +575,7 @@ async function runWhatsAppSupplementPlan(h, repair) {
     });
     await run("10", [], closeSessions);
   } finally {
-    try { if (repair) await closeSessions(); }
+    try { if (repair || mobile) await closeSessions(); }
     finally { for (const page of pages) await page.close(); }
   }
   return outcomes;

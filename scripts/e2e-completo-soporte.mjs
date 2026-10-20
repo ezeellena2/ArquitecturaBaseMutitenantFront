@@ -26,12 +26,33 @@ export function requireSyntheticEmail(email) {
 /** El estado del asistente puede llegar después del marco: se atiende su aviso sólo si aparece durante la acción. */
 export async function withFirstConsultationNotice(page, action) {
   const notice = page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true });
-  await page.addLocatorHandler(notice, async () => {
-    await notice.getByRole("button", { name: "Entendido", exact: true }).click();
-    await notice.waitFor({ state: "hidden" });
+  const pending = []; const noticeErrors = [];
+  await page.addLocatorHandler(notice, () => {
+    // Playwright dispara el callback desde un evento; su rechazo no llega a la acción que lo activó.
+    const work = (async () => {
+      await notice.getByRole("button", { name: "Entendido", exact: true }).click();
+      await notice.waitFor({ state: "hidden" });
+    })().catch((error) => { noticeErrors.push(error); });
+    pending.push(work);
+    return work;
   });
-  try { return await action(); }
-  finally { await page.removeLocatorHandler(notice); }
+  let result; const actionErrors = []; const removalErrors = [];
+  try { result = await action(); } catch (error) { actionErrors.push(error); }
+  try { await page.removeLocatorHandler(notice); } catch (error) { removalErrors.push(error); }
+  // Retirar el handler no espera los callbacks ya iniciados.
+  await Promise.all(pending);
+  const errors = [...actionErrors, ...noticeErrors, ...removalErrors];
+  if (errors.length === 1) throw errors[0];
+  if (errors.length > 1) {
+    const describe = (error) => String(error instanceof Error ? error.message : error).split("\n")[0];
+    const details = [
+      ...actionErrors.map((error) => `Acción: ${describe(error)}`),
+      ...noticeErrors.map((error) => `Aviso: ${describe(error)}`),
+      ...removalErrors.map((error) => `Retiro del handler: ${describe(error)}`),
+    ];
+    throw new AggregateError(errors, details.join(". "), { cause: errors[0] });
+  }
+  return result;
 }
 
 /** Sólo espera el cierre normal de los éxitos; no pulsa, borra ni oculta notificaciones. */

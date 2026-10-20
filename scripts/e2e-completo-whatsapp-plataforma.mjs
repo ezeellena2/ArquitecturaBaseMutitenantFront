@@ -4,9 +4,11 @@ import { syntheticEmail } from "./e2e-completo-soporte.mjs";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 import { nationalPhone } from "./recorrido-usuario-e11.mjs";
-import { openAction, assertPlatformProblem } from "./e2e-completo-plataforma.mjs";
+import { assertPlatformProblem } from "./e2e-completo-plataforma.mjs";
 import { requireExclusivePlatformActor } from "./e2e-completo-seguridad-complemento.mjs";
 import { confirmRecentAuthentication, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
+import { openBarMenu, chooseBarAction } from "./e2e-completo-menu-barra.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
 const root = "/api/platform/whatsapp";
 const def = (id, actor, action, expected, covers = [], extra = {}) => ({
@@ -45,6 +47,24 @@ export async function withRestoredWhatsAppSettings({ read, action, restore }) {
   if (failures.length === 1) throw failures[0];
   if (failures.length > 1) throw new AggregateError(failures, "Fallaron la acción WhatsApp y su restauración por UI.");
   return result;
+}
+
+/** La selección móvil prepara sólo el canal, la organización y el agente; no vuelve a probar gestión. */
+export async function recordPlatformWhatsAppPreparation(h, { getPage, prepare, management, mobile }) {
+  return h.record("WAP-01", getPage, async () => {
+    await prepare();
+    if (mobile) return "Canal Testing, organización y agente propios preparados para repetir la barra móvil de WAP-02.";
+    return management();
+  });
+}
+
+export async function inspectPlatformChatAccountAction(page, allowed) {
+  const opened = await openBarMenu(page, page.getByRole("button", { name: /^Acciones de /u }));
+  try {
+    const item = opened.menu.getByRole("menuitem", { name: "Ver la cuenta", exact: true });
+    assert.equal(await item.count(), Number(allowed), "Ver la cuenta sólo se ofrece con accounts.read.");
+    if (allowed) await item.waitFor();
+  } finally { await page.keyboard.press("Escape"); await opened.waitForClosed(); }
 }
 
 async function closePlatformSession(h, page) {
@@ -193,7 +213,12 @@ async function deleteTeam(h, page, email, name) {
 }
 
 /** Dos comprobaciones con cuentas propias, dentro del contexto real que aporta main. */
-export async function runPlatformWhatsAppCases(h) {
+export async function runPlatformWhatsAppCases(h) { return runPlatformWhatsAppPlan(h, false); }
+export async function runPlatformWhatsAppMobileBarCases(h) {
+  return runPlatformWhatsAppPlan(selectMobileBarCases(h, { targets: ["WAP-02"], prepare: ["WAP-01"] }), true);
+}
+
+async function runPlatformWhatsAppPlan(h, mobile) {
   const fullPage = await h.newPage(); const managerPage = await h.newPage(); const agentPage = await h.newPage(); const publicPage = await h.newPage();
   const pages = [fullPage, managerPage, agentPage, publicPage]; const failures = []; let publicSignedIn = false;
   const fullEmail = h.width === 1440 ? "e2e-5d-operator@example.test" : "e2e-a9-operator@example.test";
@@ -216,7 +241,9 @@ export async function runPlatformWhatsAppCases(h) {
     await publicPage.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();
     await h.signOut(publicPage); publicSignedIn = false;
   };
-  const result01 = await h.record("WAP-01", () => capturePage, async () => {
+  let result01;
+  try {
+    result01 = await recordPlatformWhatsAppPreparation(h, { getPage: () => capturePage, mobile, prepare: async () => {
     capturePage = publicPage; owner = await h.registerBusiness(publicPage); publicSignedIn = true;
     cursor = await h.env.whatsapp.begin("wap-" + h.width + "-" + tag, phone);
     await addPhone(h, publicPage, phone, cursor); await leavePublic();
@@ -224,10 +251,12 @@ export async function runPlatformWhatsAppCases(h) {
     assert.ok((await cursor("orgNumber", { tenantId: owner.me.activeTenantId })).numberId);
     await full();
     agent = await inviteOperator(h, fullPage, fullEmail, "wap-atencion", "Atender consultas", "platform.whatsapp.attend");
-    manager = await inviteOperator(h, fullPage, fullEmail, "wap-gestion", "Administrar el WhatsApp de Plataforma", "platform.whatsapp.manage");
-        const number = await read(h, fullPage, root + "/number"); originalBot = await read(h, fullPage, root + "/bot");
+        const number = await read(h, fullPage, root + "/number");
         assert.equal(number.number?.status, "Connected", "El canal global del control debe estar conectado.");
         ready = true;
+    }, management: async () => {
+        manager = await inviteOperator(h, fullPage, fullEmail, "wap-gestion", "Administrar el WhatsApp de Plataforma", "platform.whatsapp.manage");
+        originalBot = await read(h, fullPage, root + "/bot");
         await manage();
         await stopConfirmingRecentAuthentication(managerPage);
         const expired = await h.env.command("recent-proof", { kind: "expire", email: manager.email }); assert.ok(expired.expired >= 1);
@@ -240,8 +269,7 @@ export async function runPlatformWhatsAppCases(h) {
         const savedWelcome = await welcomeDialog(h, managerPage);
         assert.equal(await savedWelcome.getByRole("textbox", { name: "Texto", exact: true }).inputValue(), "Bienvenida de prueba " + tag);
         return "Gestor sólo manage confirmó F2 tras403 real, guardó Bienvenida y equipo; consultas403. Plantillas sólo se leyeron; sus escrituras en Meta siguen pendientes.";
-  });
-  try {
+    } });
     if (!ready) await h.block("WAP-02", "No se prepararon por UI la cuenta Phone y los operadores propios de WAP-01.", capturePage);
     else await h.record("WAP-02", () => capturePage, async () => withRestoredWhatsAppSettings({
       read: async () => { await full(); return read(h, fullPage, root + "/number"); },
@@ -260,8 +288,7 @@ export async function runPlatformWhatsAppCases(h) {
         const input = agentPage.getByRole("textbox", { name: "Mensaje", exact: true }); await input.waitFor();
         assert.equal(await agentPage.getByRole("link", { name: "Ver la cuenta", exact: true }).count(), 0);
         if (h.width === 390) {
-          await agentPage.getByRole("button", { name: /^Acciones de /u }).click();
-          assert.equal(await agentPage.getByRole("menuitem", { name: "Ver la cuenta", exact: true }).count(), 0); await agentPage.keyboard.press("Escape");
+          await inspectPlatformChatAccountAction(agentPage, false);
         }
         let challenges = 0; let confirmations = 0;
         const watch = (response) => { if (responseAt(route + "/messages", "POST")(response) && response.status() === 403) challenges++; };
@@ -279,7 +306,8 @@ export async function runPlatformWhatsAppCases(h) {
         requirePlatformAnswer(detail, { agentId: me.id, messageId: sent.id, text, challenges, confirmations });
         await full();
         const account = await read(h, fullPage, "/api/platform/accounts/" + agent.id);
-        await fullPage.goto(new URL("/plataforma/cuentas/" + agent.id, h.base).href); await openAction(fullPage, "Cambiar permisos");
+        await fullPage.goto(new URL("/plataforma/cuentas/" + agent.id, h.base).href);
+        await chooseBarAction(fullPage, fullPage.getByRole("button", { name: /^Acciones de /u }), "Cambiar permisos");
         const permissions = fullPage.getByRole("dialog", { name: "Cambiar permisos de " + account.displayName, exact: true });
         await choosePermissions(fullPage, permissions, ["Ver cuentas"]); await permissions.getByRole("textbox", { name: /^Motivo/u }).fill("Verificar cuenta asociada de una consulta propia.");
         await uiWrite(fullPage, permissions.getByRole("button", { name: "Guardar cambios", exact: true }), "/api/platform/accounts/" + agent.id + "/operator", "PUT", 200, fullEmail);
@@ -288,7 +316,7 @@ export async function runPlatformWhatsAppCases(h) {
         detail = await read(h, agentPage, route); requirePlatformChatAccount(detail, owner.me.id);
         await agentPage.goto(new URL("/plataforma/whatsapp/consultas/" + conversation.id, h.base).href); await input.waitFor();
         if (h.width === 390) {
-          await agentPage.getByRole("button", { name: /^Acciones de /u }).click(); await agentPage.getByRole("menuitem", { name: "Ver la cuenta", exact: true }).waitFor();
+          await inspectPlatformChatAccountAction(agentPage, true);
         } else {
           const link = agentPage.getByRole("link", { name: "Ver la cuenta", exact: true }); await link.waitFor(); assert.equal(await link.getAttribute("href"), "/plataforma/cuentas/" + owner.me.id);
         }

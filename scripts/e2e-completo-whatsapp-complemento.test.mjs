@@ -4,6 +4,42 @@ import { closeSupplementSessions, contactImportCsv, enterAcceptedInvitation, req
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { screens } from "./e2e-completo-inventario-front.mjs";
 import * as whatsapp from "./e2e-completo-whatsapp-complemento.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
+
+test("la selección móvil sólo registra04/05/06/09 y prepara01..03 sin recapturarlos ni ejecutar lectura11 duplicada", async () => {
+  for (const failure of [null, "WAS-04"]) {
+    const records = []; const calls = []; const blocked = []; const outcomes = new Map();
+    const h = selectMobileBarCases({ width: 390, record: async (id, _page, action) => {
+      records.push(id); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; }
+    }, block: async (id) => { blocked.push(id); return { ok: false }; } }, { targets: ["WAS-04", "WAS-05", "WAS-06", "WAS-09"], prepare: ["WAS-01", "WAS-02", "WAS-03"] });
+    const run = whatsapp.createSupplementWhatsAppRunner(h, { repair: false, mobile: true, outcomes, getPage: () => ({}), beforeAction: () => {} });
+    for (const [id, dependencies] of [["01", []], ["02", ["01"]], ["03", ["02"]], ["04", ["03"]], ["05", ["03"]], ["06", ["03"]], ["07", ["06"]], ["08", ["01"]], ["11", ["02", "04"]], ["09", ["11"]], ["10", []]]) {
+      await run(id, dependencies, async () => { calls.push("WAS-" + id); if ("WAS-" + id === failure) throw new Error("Falló la toma"); });
+    }
+    assert.deepEqual(records, failure ? ["WAS-04", "WAS-05", "WAS-06"] : ["WAS-04", "WAS-05", "WAS-06", "WAS-09"]);
+    assert.deepEqual(calls, ["WAS-01", "WAS-02", "WAS-03", "WAS-04", "WAS-05", "WAS-06", ...(failure ? [] : ["WAS-09"])]);
+    assert.deepEqual(blocked, failure ? ["WAS-09"] : []);
+  }
+});
+
+test("la acción de barra conserva el clic diferido para la carrera y espera el cierre de su hoja exacta", async () => {
+  const calls = [];
+  const menu = { waitFor: async () => calls.push("menú visible"), getByRole: (role, options) => {
+    assert.equal(role, "menuitem"); assert.deepEqual(options, { name: "Tomar", exact: true });
+    return { click: async () => calls.push("tomar") };
+  } };
+  const dialog = { getByRole: (role) => { assert.equal(role, "menu"); return menu; }, waitFor: async (options) => calls.push(options?.state === "hidden" ? "hoja cerrada" : "hoja visible") };
+  const trigger = { first: () => trigger, getAttribute: async () => "dialog", click: async () => calls.push("abrir hoja") };
+  const heading = { filter: () => heading, first: () => heading, innerText: async () => "Cliente sintético" };
+  const page = { viewportSize: () => ({ width: 390 }), getByRole: (role, options) => {
+    if (role === "button") return trigger;
+    if (role === "heading") return heading;
+    assert.equal(role, "dialog"); assert.deepEqual(options, { name: "Cliente sintético", exact: true }); return dialog;
+  } };
+  const action = await whatsapp.supplementWhatsAppBarAction(page, "Tomar");
+  assert.deepEqual(calls, ["abrir hoja", "hoja visible", "menú visible"]);
+  await action.click(); assert.deepEqual(calls.slice(-2), ["tomar", "hoja cerrada"]);
+});
 
 const winner = { status: 200, body: { assignee: { id: "miembro", name: "Agente sintético" } } };
 const loser = { status: 409, body: { code: "WhatsApp.Conversation.TakenByOther", traceId: "traza", takenBy: "Agente sintético" } };

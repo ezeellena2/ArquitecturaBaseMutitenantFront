@@ -4,6 +4,16 @@ import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions, buildCaseDiagnostic, archivePreviousAttempt } from "./e2e-completo.mjs";
+import { mobileBarPlans } from "./e2e-completo-acciones-moviles.mjs";
+
+test("repetir evidencia verde requiere selección expresa de barras móviles y conserva el avance", () => {
+  const options = parseArguments(["--repeat-mobile-actions", "--width=390", "--resume", "--no-build"]);
+  assert.equal(options.repeatMobileActions, true); assert.deepEqual(options.widths, [390]);
+  assert.deepEqual(options.suites, mobileBarPlans.map((plan) => plan.name));
+  assert.deepEqual(parseArguments(["--repeat-mobile-actions", "--suite=accionesmovileswhatsapparreglo", "--width=390", "--resume"]).suites, ["accionesmovileswhatsapparreglo"]);
+  for (const args of [["--repeat-mobile-actions"], ["--repeat-mobile-actions", "--width=1440", "--resume"], ["--repeat-mobile-actions", "--width=390"], ["--repeat-mobile-actions", "--width=390", "--resume", "--suite=negocio"], ["--repeat-mobile-actions", "--width=390", "--resume", "--refresh-only"]]) assert.throws(() => parseArguments(args));
+  assert.equal(parseArguments([]).repeatMobileActions, undefined);
+});
 
 test("el historial omite la página de error del navegador y retira sólo su captura propia antes de archivarla", async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), "historial-e2e-"));

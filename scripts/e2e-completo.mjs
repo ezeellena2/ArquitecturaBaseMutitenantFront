@@ -12,6 +12,7 @@ import { journeyDate, safeDiagnostic } from "./recorrido-usuario.mjs";
 import { factorSecretMasks } from "./recorrido-usuario-e9.mjs";
 import { renderCompleteReport, summarizeCases } from "./e2e-completo-informe.mjs";
 import { normalizeCaseAreas } from "./e2e-completo-areas.mjs";
+import { mobileBarPlans } from "./e2e-completo-acciones-moviles.mjs";
 import { annotateCaptureDimensions } from "./e2e-completo-capturas.mjs";
 import { createScriptScanFence } from "./e2e-completo-filtro-tailwind.mjs";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
@@ -82,6 +83,7 @@ const suiteSpecs = {
   asistentepreparacionarreglos: ["./e2e-completo-asistente-complemento.mjs", "assistantPreparationRepairDefinitions", "runAssistantPreparationRepairCases"],
   asistenteoperadorarreglo: ["./e2e-completo-asistente-complemento.mjs", "assistantOperatorRepairDefinitions", "runAssistantOperatorRepairCases"],
   whatsappatencionarreglos: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppRepairDefinitions", "runSupplementWhatsAppRepairCases"],
+  ...Object.fromEntries(mobileBarPlans.map((plan) => [plan.name, [plan.module, plan.definitionsExport, plan.runExport, plan.definitions]])),
 };
 
 export function collectSuiteDefinitions(suites) {
@@ -107,9 +109,8 @@ export function buildCaseDiagnostic(error, diagnostic) {
 }
 
 /** Las páginas de error de Chrome pueden imprimir el desafío OAuth completo, aun con credenciales sintéticas. */
-export async function archivePreviousAttempt({ id, width, prior, output }) {
+export async function archivePreviousAttempt({ id, width, prior, output, reason = "Reejecutado tras ajustar aislamiento de informes y preparaciones del arnés; esta prueba no modificó producto." }) {
   let image = prior.image;
-  let reason = "Reejecutado tras ajustar aislamiento de informes y preparaciones del arnés; esta prueba no modificó producto.";
   const own = typeof image === "string" && path.dirname(path.resolve(output, image)) === path.resolve(output);
   if (prior.currentHost === "chromewebdata") {
     reason += " Se omitió la captura de error del navegador porque podía mostrar parámetros OAuth del entorno de prueba.";
@@ -125,15 +126,23 @@ export async function archivePreviousAttempt({ id, width, prior, output }) {
 }
 
 export function parseArguments(args) {
-  assert.ok(args.every((value) => ["--inventory-only", "--no-build", "--refresh-only", "--resume"].includes(value) || /^--suite=[a-z,]+$/.test(value) || /^--width=(1440|390)$/.test(value)), "Argumentos no admitidos.");
-  const suites = args.find((value) => value.startsWith("--suite="))?.slice(8).split(",") ?? Object.keys(suiteSpecs).filter((name) => !name.includes("arreglo") && !name.startsWith("baseline") && !["cuotawhatsapp", "cuotacontrato"].includes(name));
+  assert.ok(args.every((value) => ["--inventory-only", "--no-build", "--refresh-only", "--resume", "--repeat-mobile-actions"].includes(value) || /^--suite=[a-z,]+$/.test(value) || /^--width=(1440|390)$/.test(value)), "Argumentos no admitidos.");
+  const repeatMobileActions = args.includes("--repeat-mobile-actions");
+  const mobileNames = mobileBarPlans.map((plan) => plan.name);
+  const suites = args.find((value) => value.startsWith("--suite="))?.slice(8).split(",") ?? (repeatMobileActions ? mobileNames : Object.keys(suiteSpecs).filter((name) => !name.includes("arreglo") && !name.startsWith("baseline") && !["cuotawhatsapp", "cuotacontrato"].includes(name)));
   assert.ok(suites.length > 0 && suites.every((name) => Object.hasOwn(suiteSpecs, name)), "Suite desconocida.");
   const width = args.find((value) => value.startsWith("--width="));
+  if (repeatMobileActions) {
+    assert.equal(width, "--width=390", "La revalidación de barras sólo admite390 px.");
+    assert.ok(args.includes("--resume"), "La revalidación conserva el avance y requiere --resume.");
+    assert.ok(suites.every((name) => mobileNames.includes(name)), "La revalidación sólo admite casos del ⋮ de barra.");
+    assert.ok(!args.includes("--inventory-only") && !args.includes("--refresh-only"), "La revalidación necesita ejecución real.");
+  }
   if (suites.some((name) => ["cuotawhatsapp", "cuotacontrato"].includes(name))) {
     assert.equal(suites.length, 1, "La cuota necesita una suite aislada en un entorno fresco.");
     assert.ok(width, "La cuota requiere un único ancho por entorno fresco.");
   }
-  return { inventoryOnly: args.includes("--inventory-only"), refreshOnly: args.includes("--refresh-only"), resume: args.includes("--resume"), build: !args.includes("--no-build"), suites: [...new Set(suites)], ...(width ? { widths: [Number(width.slice(8))] } : {}) };
+  return { inventoryOnly: args.includes("--inventory-only"), refreshOnly: args.includes("--refresh-only"), resume: args.includes("--resume"), build: !args.includes("--no-build"), suites: [...new Set(suites)], ...(repeatMobileActions ? { repeatMobileActions: true } : {}), ...(width ? { widths: [Number(width.slice(8))] } : {}) };
 }
 
 /** Los avances no entran al scanner de Tailwind; el HTML se publica con el entorno apagado. */
@@ -184,9 +193,10 @@ export async function main(options = parseArguments([])) {
   const suites = [];
   if (!options.inventoryOnly) {
     for (const name of options.suites) {
-      const [modulePath, definitionsName, runName] = suiteSpecs[name];
+      const [modulePath, definitionsName, runName, selectedDefinitions] = suiteSpecs[name];
       const module = await import(modulePath);
-      suites.push({ name, definitions: module[definitionsName], run: module[runName] });
+      assert.equal(typeof module[runName], "function", `Runner no disponible: ${runName}.`);
+      suites.push({ name, definitions: selectedDefinitions ?? module[definitionsName], run: module[runName] });
     }
   }
   const imported = importedJourneySteps(journey, journeyDirectory, output);
@@ -263,14 +273,17 @@ export async function main(options = parseArguments([])) {
         const entry = executions.find((item) => item.id === id);
         assert.ok(entry, `Caso sin definición previa: ${id}`);
         const prior = entry.results.find((item) => item.width === width);
-        const prepared = await reusePassedPreparation({ previous: prior, preserve: id.startsWith("BASE-") || options.resume, blockedReason, action });
+        const repeatForMobileBar = options.repeatMobileActions && selectedIds.has(id);
+        const prepared = await reusePassedPreparation({ previous: prior, preserve: !repeatForMobileBar && (id.startsWith("BASE-") || options.resume), blockedReason, action });
         if (prepared.reused) {
           if (!blockedReason) console.info(`${id} ${width}: preparación completada; evidencia verde conservada.`);
           return { ok: true, value: prepared.value, preparationOnly: true };
         }
-        const result = { width, status: blockedReason ? "blocked" : "passed", actual: blockedReason ?? "" };
+        const result = { width, status: blockedReason ? "blocked" : "passed", actual: blockedReason ?? "", executedAtUtc: new Date().toISOString(),
+          ...(repeatForMobileBar ? { revalidation: "Menú móvil de barra tras ff1fe6c0, 6960c3f1, c614e89b y 0ac4b148; build Front completado." } : {}) };
         if (prior) {
-          result.previousAttempts = [...(prior.previousAttempts ?? []), await archivePreviousAttempt({ id, width, prior, output })];
+          result.previousAttempts = [...(prior.previousAttempts ?? []), await archivePreviousAttempt({ id, width, prior, output,
+            ...(repeatForMobileBar ? { reason: "Revalidado a390 px por pedido del usuario tras cambiar el ⋮ de barra a hoja y reconstruir Front; la evidencia anterior se conserva." } : {}) })];
         }
         if (id.startsWith("BASE-")) result.continued = true;
         let value;
@@ -321,7 +334,7 @@ export async function main(options = parseArguments([])) {
         record: (id, getPage, action, diagnostic) => recordResult(id, getPage, action, undefined, diagnostic),
         block: (id, reason, page) => recordResult(id, () => page, null, reason) };
       for (const suite of suites) {
-        if (options.resume && suite.definitions.every((entry) => executions.find((item) => item.id === entry.id)?.results.some((result) => result.width === width && result.status === "passed"))) continue;
+        if (options.resume && !options.repeatMobileActions && suite.definitions.every((entry) => executions.find((item) => item.id === entry.id)?.results.some((result) => result.width === width && result.status === "passed"))) continue;
         try { await suite.run(h); }
         catch (error) {
           report.failure = `${suite.name} ${width}: ${safeDiagnostic(error.message)}`;
