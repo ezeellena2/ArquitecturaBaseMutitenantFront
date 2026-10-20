@@ -27,6 +27,8 @@ export const supplementWhatsAppDefinitions = [
   def("09", "Persona B2C vinculada", "Leer Mensajes y desvincular por UI", "/mensajes/:id", "Sólo copias propias posteriores al vínculo, sin nota ni autor interno; Desvincular borra copias/vínculo y conserva el chat de la organización.", ["BACK-WA-019"]),
   def("10", "Actores del complemento", "Salir de todas las sesiones por UI", "/ · /org · /plataforma", "Las pestañas de Persona, Dueño, agente y operador salen por UI antes de cerrar."),
 ];
+const repairIds = new Set(["WAS-03", "WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-09"]);
+export const supplementWhatsAppRepairDefinitions = supplementWhatsAppDefinitions.filter((item) => repairIds.has(item.id));
 
 // Son límites de preparación/observación del protocolo existente, no resultados aprobados.
 export const supplementWhatsAppLimitations = {
@@ -62,6 +64,36 @@ export function requirePersonalClient(me, businessTenantId) {
   assert.match(me.activeTenantId, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu, "El alta Consumer debe tener su espacio Personal real.");
   assert.notEqual(me.activeTenantId, "00000000-0000-0000-0000-000000000000");
   assert.notEqual(me.activeTenantId, businessTenantId, "El espacio Personal no es la organización que lo atiende.");
+}
+
+export function requireInvitedAgent(me, { userId, organizationId }) {
+  assert.equal(me.id, userId, "La identidad empresarial debe seguir siendo la del agente invitado.");
+  assert.equal(me.access, "business", "GET Me debe usar el acceso empresarial después del retorno OIDC.");
+  assert.equal(me.activeTenantId, organizationId, "GET Me debe identificar la organización invitante, no el espacio Personal anterior.");
+  requireOrganizationPermissions(me, ["whatsapp.customers"]);
+}
+
+/** En la reparación,01/02 son preparación dentro03; no generan otros records ni vuelven a ejecutar08/10. */
+export function createSupplementWhatsAppRunner(h, { repair, outcomes, getPage, beforeAction }) {
+  const preparations = new Map();
+  return async (id, dependencies, action) => {
+    if (repair && ["01", "02"].includes(id)) { preparations.set(id, action); return; }
+    if (repair && !repairIds.has("WAS-" + id)) return;
+    return runModuleDependency(h, outcomes, "WAS-" + id, (repair && id === "03" ? [] : dependencies).map((key) => "WAS-" + key), getPage, async () => {
+      beforeAction();
+      if (repair && id === "03") {
+        assert.deepEqual([...preparations.keys()], ["01", "02"], "La reparación requiere ambas preparaciones propias.");
+        for (const [key, prepare] of preparations) { const value = await prepare(); outcomes.set("WAS-" + key, { ok: true, value }); }
+        beforeAction();
+      }
+      return action();
+    });
+  };
+}
+
+export function supplementWhatsAppPhones(width, repair = false) {
+  assert.ok([1440, 390].includes(width)); const first = (repair ? 54 : 70) + (width === 1440 ? 0 : 1);
+  return Object.fromEntries(["phone", "memberPhone", "invitePhone", "firstImport", "secondImport"].map((key, index) => [key, "+54911345678" + String(first + index * 2)]));
 }
 
 export function contactImportCsv({ first, second, unsubscribed }) {
@@ -194,7 +226,7 @@ async function invitationFromMail(h, email, before) {
 }
 
 /** ADR0047: verificar el código ya aceptó las invitaciones; el enlace Accepted entra sin otro botón. */
-export async function enterAcceptedInvitation(h, page, token, organizationId) {
+export async function enterAcceptedInvitation(h, page, token, organizationId, userId) {
   const preview = page.waitForResponse(responseAt("/api/invitations/preview", "POST")).then(async (response) => {
     assert.equal(response.status(), 200, "La vista previa real debe responder200.");
     const body = await response.json();
@@ -202,31 +234,45 @@ export async function enterAcceptedInvitation(h, page, token, organizationId) {
     assert.equal(body.organizationId, organizationId, "La invitación aceptada pertenece a la organización propia.");
   });
   void preview.catch(() => {});
+  // /org puede llegar antes de que el soporte observe el primer Bearer empresarial.
+  // El GET real de la SPA actualiza ese Bearer antes de la lectura privada del guion.
+  const business = page.waitForResponse(async (response) => responseAt("/api/me")(response) && response.status() === 200 && (await response.json()).access === "business").then(async (response) => {
+    const me = await response.json(); requireInvitedAgent(me, { userId, organizationId }); return me;
+  });
+  void business.catch(() => {});
   await page.goto(new URL("/invitacion#" + token, h.base).href);
   await preview;
   await page.waitForURL((url) => url.pathname === "/org");
+  return business;
 }
 
-export async function runSupplementWhatsAppCases(h) {
+export async function runSupplementWhatsAppCases(h) { return runWhatsAppSupplementPlan(h, false); }
+export async function runSupplementWhatsAppRepairCases(h) { return runWhatsAppSupplementPlan(h, true); }
+
+async function runWhatsAppSupplementPlan(h, repair) {
   const ownerPage = await h.newPage(); const agentPage = await h.newPage();
   const personPage = await h.newPage(); const platformPage = await h.newPage();
   const outcomes = new Map(); const pages = [ownerPage, agentPage, personPage, platformPage];
   const signedIn = new Set(); let capturePage = ownerPage;
   const tag = randomUUID().slice(0, 8);
-  const phone = h.width === 1440 ? "+5491134567870" : "+5491134567871";
-  const memberPhone = h.width === 1440 ? "+5491134567872" : "+5491134567873";
-  const invitePhone = h.width === 1440 ? "+5491134567874" : "+5491134567875";
-  const firstImport = h.width === 1440 ? "+5491134567876" : "+5491134567877";
-  const secondImport = h.width === 1440 ? "+5491134567878" : "+5491134567879";
+  const { phone, memberPhone, invitePhone, firstImport, secondImport } = supplementWhatsAppPhones(h.width, repair);
   const beforeLink = "Quiero consultar antes de vincular mi cuenta.";
   const answer = "Respuesta del agente del complemento " + tag + ".";
   const note = "Nota reservada del complemento " + tag + ".";
   let owner; let agent; let person; let cursor; let internalCursor; let numberId; let customerChat; let linkedId;
   let customerRole; let internalRole; let memberId; let company; let winnerPage;
-  const run = (id, deps, action) => runModuleDependency(h, outcomes, "WAS-" + id, deps.map((key) => "WAS-" + key), () => capturePage, async () => {
-    capturePage = ownerPage; return action();
-  });
+  const run = createSupplementWhatsAppRunner(h, { repair, outcomes, getPage: () => capturePage, beforeAction: () => { capturePage = ownerPage; } });
   const ownerLogin = async () => { const me = await forceBusinessLogin(h, ownerPage, owner.email); signedIn.add(ownerPage); assert.equal(me.id, owner.me.id); return me; };
+  const closeSessions = async () => {
+    await closeSupplementSessions(signedIn, async (page) => {
+      capturePage = page;
+      const cancel = page.getByRole("dialog").getByRole("button", { name: "Cancelar", exact: true }).first();
+      if (await cancel.isVisible()) await cancel.click();
+      await h.signOut(page);
+    });
+    assert.equal(signedIn.size, 0);
+    return "Persona, agente, Dueño y operador salieron por UI; no se borraron cookies ni se reemplazó el contexto.";
+  };
   try {
     await run("01", [], async () => {
       owner = await h.registerBusiness(ownerPage); signedIn.add(ownerPage);
@@ -288,10 +334,9 @@ export async function runSupplementWhatsAppCases(h) {
       await h.login(agentPage, agent.email, "consumer"); signedIn.add(agentPage); capturePage = agentPage;
       assert.ok((await read(h, agentPage, "/api/me/whatsapp/conversations")).items.every((item) => item.id !== linkedId));
       await requireModuleProblem(await h.api(agentPage, "/api/me/whatsapp/conversations/" + linkedId), 404, ["WhatsApp.Link.NotFound"]);
-      await enterAcceptedInvitation(h, agentPage, token, owner.me.activeTenantId);
+      await enterAcceptedInvitation(h, agentPage, token, owner.me.activeTenantId, agent.me.id);
       const me = await read(h, agentPage, "/api/me");
-      assert.equal(me.id, agent.me.id); assert.equal(me.activeTenantId, owner.me.activeTenantId);
-      requireOrganizationPermissions(me, ["whatsapp.customers"]);
+      requireInvitedAgent(me, { userId: agent.me.id, organizationId: owner.me.activeTenantId });
       const list = await read(h, agentPage, root + "/customers/conversations");
       customerChat = list.conversations.items.find((item) => item.displayNumber === phone);
       assert.ok(customerChat?.id); assert.equal(customerChat.linkedToAccount, true); assert.equal(customerChat.assignee, null);
@@ -473,16 +518,10 @@ export async function runSupplementWhatsAppCases(h) {
       await assertViewport(personPage);
       return "Mensajes sólo mostró sus copias posteriores al vínculo, sin autor/nota; Desvincular por UI dejó copia404 y chat empresarial íntegro.";
     });
-    await run("10", [], async () => {
-      await closeSupplementSessions(signedIn, async (page) => {
-        capturePage = page;
-        const cancel = page.getByRole("dialog").getByRole("button", { name: "Cancelar", exact: true }).first();
-        if (await cancel.isVisible()) await cancel.click();
-        await h.signOut(page);
-      });
-      assert.equal(signedIn.size, 0);
-      return "Persona, agente, Dueño y operador salieron por UI; no se borraron cookies ni se reemplazó el contexto.";
-    });
-  } finally { for (const page of pages) await page.close(); }
+    await run("10", [], closeSessions);
+  } finally {
+    try { if (repair) await closeSessions(); }
+    finally { for (const page of pages) await page.close(); }
+  }
   return outcomes;
 }

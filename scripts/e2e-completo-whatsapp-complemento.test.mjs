@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { closeSupplementSessions, contactImportCsv, enterAcceptedInvitation, requirePersonalClient, requirePersonalCopies, requireTakeRace, supplementWhatsAppDefinitions, supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemento.mjs";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
+import * as whatsapp from "./e2e-completo-whatsapp-complemento.mjs";
 
 const winner = { status: 200, body: { assignee: { id: "miembro", name: "Agente sintético" } } };
 const loser = { status: 409, body: { code: "WhatsApp.Conversation.TakenByOther", traceId: "traza", takenBy: "Agente sintético" } };
@@ -9,18 +10,66 @@ const loser = { status: 409, body: { code: "WhatsApp.Conversation.TakenByOther",
 test("el código de ingreso acepta la invitación y el enlace sólo entra después de confirmar Accepted de la organización propia", async () => {
   const run = async (status, body) => {
     const calls = [];
+    const business = { id: "agente", access: "business", activeTenantId: "organizacion-propia", effectivePermissions: { organization: ["whatsapp.customers"], platform: [] } };
+    const meResponse = { url: () => "https://localtest.me/api/me", request: () => ({ method: () => "GET" }), status: () => 200, json: async () => business };
     const page = {
-      waitForResponse: async (predicate) => { calls.push("observe"); assert.equal(predicate({ url: () => "https://localtest.me/api/invitations/preview", request: () => ({ method: () => "POST" }) }), true); return { status: () => status, json: async () => body }; },
+      waitForResponse: async (predicate) => {
+        const preview = { url: () => "https://localtest.me/api/invitations/preview", request: () => ({ method: () => "POST" }) };
+        if (predicate(preview) === true) { calls.push("observe-preview"); return { status: () => status, json: async () => body }; }
+        calls.push("observe-business"); assert.equal(await predicate({ ...meResponse, json: async () => ({ ...business, access: "consumer", activeTenantId: "personal" }) }), false); assert.equal(await predicate(meResponse), true); return meResponse;
+      },
       goto: async (url) => { calls.push("open"); assert.equal(new URL(url).pathname, "/invitacion"); },
       waitForURL: async (predicate) => { calls.push("enter"); assert.equal(predicate(new URL("https://localtest.me/org")), true); assert.equal(predicate(new URL("https://localtest.me/auth/callback")), false); },
     };
-    await enterAcceptedInvitation({ base: new URL("https://localtest.me/") }, page, "sintetico", "organizacion-propia");
+    await enterAcceptedInvitation({ base: new URL("https://localtest.me/") }, page, "sintetico", "organizacion-propia", "agente");
     return calls;
   };
-  assert.deepEqual(await run(200, { state: "Accepted", organizationId: "organizacion-propia" }), ["observe", "open", "enter"]);
+  assert.deepEqual(await run(200, { state: "Accepted", organizationId: "organizacion-propia" }), ["observe-preview", "observe-business", "open", "enter"]);
   await assert.rejects(run(403, { state: "Accepted", organizationId: "organizacion-propia" }));
   await assert.rejects(run(200, { state: "SignInRequired", organizationId: "organizacion-propia" }));
   await assert.rejects(run(200, { state: "Accepted", organizationId: "ajena" }));
+});
+
+test("la llegada temprana a org no permite leer con el Bearer Consumer anterior", async () => {
+  let releaseBusiness; const businessReady = new Promise((resolve) => { releaseBusiness = resolve; });
+  let arrive; const arrived = new Promise((resolve) => { arrive = resolve; }); let done = false;
+  const business = { id: "agente", access: "business", activeTenantId: "propia", effectivePermissions: { organization: ["whatsapp.customers"], platform: [] } };
+  const page = {
+    waitForResponse: async (predicate) => {
+      const preview = { url: () => "https://localtest.me/api/invitations/preview", request: () => ({ method: () => "POST" }) };
+      if (predicate(preview) === true) return { status: () => 200, json: async () => ({ state: "Accepted", organizationId: "propia" }) };
+      await businessReady;
+      const response = { url: () => "https://localtest.me/api/me", request: () => ({ method: () => "GET" }), status: () => 200, json: async () => business };
+      assert.equal(await predicate(response), true); return response;
+    }, goto: async () => {}, waitForURL: async () => arrive(),
+  };
+  const pending = enterAcceptedInvitation({ base: new URL("https://localtest.me/") }, page, "sintetico", "propia", "agente").then(() => { done = true; });
+  await arrived; assert.equal(done, false, "URL org no acredita que la SPA haya emitido GET Me empresarial.");
+  releaseBusiness(); await pending; assert.equal(done, true);
+  whatsapp.requireInvitedAgent(business, { userId: "agente", organizationId: "propia" });
+  for (const [patch, message] of [[{ id: "otra-persona" }, /identidad/u], [{ access: "consumer" }, /empresarial/u], [{ activeTenantId: "personal" }, /organización invitante/u]]) assert.throws(() => whatsapp.requireInvitedAgent({ ...business, ...patch }, { userId: "agente", organizationId: "propia" }), message);
+});
+
+test("la reparación prepara01/02 dentro03, bloquea dependientes si falla y no ejecuta08/10", async () => {
+  assert.deepEqual(whatsapp.supplementWhatsAppRepairDefinitions.map((item) => item.id), ["WAS-03", "WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-09"]);
+  for (const failure of [null, "01", "02", "03"]) {
+    const calls = []; const records = []; const blocked = []; const outcomes = new Map();
+    const h = { record: async (id, _page, action) => { records.push(id); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; } }, block: async (id) => blocked.push(id) };
+    const run = whatsapp.createSupplementWhatsAppRunner(h, { repair: true, outcomes, getPage: () => ({}), beforeAction: () => {} });
+    const action = (id) => async () => { if (["08", "10"].includes(id)) assert.fail("No se repiten los independientes"); calls.push(id); if (id === failure) throw new Error("Fallo propio"); };
+    for (const [id, dependencies] of [["01", []], ["02", ["01"]], ["03", ["02"]], ["04", ["03"]], ["05", ["03"]], ["06", ["03"]], ["07", ["06"]], ["08", ["01"]], ["09", ["02", "04"]], ["10", []]]) await run(id, dependencies, action(id));
+    assert.deepEqual(records, failure ? ["WAS-03"] : ["WAS-03", "WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-09"]);
+    assert.deepEqual(blocked, failure ? ["WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-09"] : []);
+    assert.deepEqual(calls, failure === "01" ? ["01"] : failure === "02" ? ["01", "02"] : failure === "03" ? ["01", "02", "03"] : ["01", "02", "03", "04", "05", "06", "07", "09"]);
+  }
+});
+
+test("los teléfonos de reparación no reutilizan altas ni importaciones de la corrida completa", () => {
+  const phones = [false, true].flatMap((repair) => [1440, 390].flatMap((width) => Object.values(whatsapp.supplementWhatsAppPhones(width, repair))));
+  assert.equal(new Set(phones).size, phones.length);
+  for (const phone of phones) assert.match(phone, /^\+54911345678\d{2}$/u);
+  for (const reserved of ["+5491134567890", "+5491134567899", "+5491134567864", "+5491134567865", "+5491134567868", "+5491134567869"]) assert.equal(phones.includes(reserved), false);
+  assert.throws(() => whatsapp.supplementWhatsAppPhones(800, true));
 });
 
 test("el alta Phone Consumer tiene su espacio Personal real, distinto de la organización que lo atiende", () => {

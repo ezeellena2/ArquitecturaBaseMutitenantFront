@@ -69,6 +69,7 @@ const suiteSpecs = {
   plataformainvitacionarreglos: ["./e2e-completo-plataforma-complemento.mjs", "platformOperatorInvitationRepairDefinitions", "runPlatformOperatorInvitationRepairCases"],
   plataformaaprobacionarreglos: ["./e2e-completo-plataforma-complemento.mjs", "platformApprovalRepairDefinitions", "runPlatformApprovalRepairCases"],
   plataformabajaarreglos: ["./e2e-completo-plataforma-complemento.mjs", "platformAccountLifecycleRepairDefinitions", "runPlatformAccountLifecycleRepairCases"],
+  whatsappatencionarreglos: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppRepairDefinitions", "runSupplementWhatsAppRepairCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
