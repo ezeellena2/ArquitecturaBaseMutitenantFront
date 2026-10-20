@@ -148,8 +148,8 @@ export async function main(options = parseArguments([])) {
     // La API viva no implica que el optimizador de Vite haya preparado la primera página.
     const warmup = await context.newPage();
     try {
-      await warmup.goto(baseUrl.href, { waitUntil: "domcontentloaded", timeout: 180_000 });
-      await warmup.getByRole("link", { name: "Ingresá", exact: true }).first().waitFor({ timeout: 180_000 });
+      await warmup.goto(baseUrl.href, { waitUntil: "commit", timeout: 180_000 });
+      await warmup.getByRole("link", { name: "Ingresá", exact: true }).filter({ visible: true }).first().waitFor({ timeout: 300_000 });
     } finally { await warmup.close(); }
     for (const width of [1440, 390]) {
       const support = createBrowserSupport({ context, env, base: baseUrl, width });
@@ -159,7 +159,10 @@ export async function main(options = parseArguments([])) {
         assert.ok(entry, `Caso sin definición previa: ${id}`);
         const prior = entry.results.find((item) => item.width === width);
         const prepared = await reusePassedPreparation({ previous: prior, preserve: id.startsWith("BASE-") || options.resume, blockedReason, action });
-        if (prepared.reused) return { ok: true, value: prepared.value, preparationOnly: true };
+        if (prepared.reused) {
+          if (!blockedReason) console.info(`${id} ${width}: preparación completada; evidencia verde conservada.`);
+          return { ok: true, value: prepared.value, preparationOnly: true };
+        }
         const result = { width, status: blockedReason ? "blocked" : "passed", actual: blockedReason ?? "" };
         if (prior) {
           let image = prior.image;
