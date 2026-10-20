@@ -7,7 +7,7 @@ import { plainTextBody } from "./test-e2e-real-mail.mjs";
 import { responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
 import { recoveryRow, selectRecovery } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { requireE8Control, sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
-import { assertPlatformProblem, createPlatformRecorder, openAction } from "./e2e-completo-plataforma.mjs";
+import { assertPlatformProblem, createPlatformRecorder, openAction, openPlatformListItem } from "./e2e-completo-plataforma.mjs";
 import { openAccountActions } from "./test-e2e-real-e9.mjs";
 import { syntheticEmail, requireSyntheticEmail, localApiUrl } from "./e2e-completo-soporte.mjs";
 import { confirmRecentAuthentication, confirmRecentAuthenticationWhenAsked, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
@@ -39,6 +39,7 @@ export const supplementPlatformDefinitions = [
   definition(18, "Operador completo, Dueño único y persona propios", "Bloquear baja del último Dueño; suspender/reactivar y dar de baja a la persona", "/plataforma/cuentas/:id · /login", "LastAdmin409 conserva Dueño y versión; Suspender revoca Bearer previo y guarda motivo/historial. Reactivar permite nuevo ingreso200; baja204 programa30d y revoca ese segundo Bearer.", ["GUIA-suspender-y-reactivar-03", "GUIA-suspender-y-reactivar-05"]),
   definition(19, "Operador completo con organización y espacio Personal propios de la fixture", "Buscar y filtrar organizaciones, comprobar metadatos, Dueños e historial y rechazar Personal", "/plataforma/organizaciones", "Listado/facets reales conservan búsqueda, estado y origen; sólo metadatos globales de la organización propia, contadores1/1, Dueño actual e historial UTC. El ID Personal no se lista y su ficha devuelve404.", ["BACK-PL-006"]),
 ];
+export const platformRecoveryRepairDefinitions = [8, 9].map((number) => supplementPlatformDefinitions.find((entry) => entry.id === `PLAT-C-${String(number).padStart(2, "0")}`));
 
 export const supplementPlatformProofGroups = { "BACK-PL-008": [["PLAT-C-13", "PLAT-C-17"]], "BACK-PL-018": [["PLAT-25", "PLAT-26", "PLAT-C-18"]] };
 export const supplementPlatformLimitations = {
@@ -59,6 +60,27 @@ export function requireInvitedOwnerBusinessOnly(me, organizationId, operatorId) 
   assert.notEqual(me.id, operatorId); assert.equal(me.access, "business"); assert.equal(me.hasPersonalSpace, false); assert.equal(me.activeTenantId, organizationId); assert.deepEqual(me.organizations.map((organization) => organization.id), [organizationId]);
 }
 export function requireIdenticalReplay(original, replay) { assert.deepEqual(replay, original, "El replay debe conservar la respuesta original completa."); }
+export function requireCreatedReplayLocation(initial, replay) {
+  const location = initial.headers().location;
+  assert.equal(typeof location, "string", "El alta201 debe incluir Location del recurso creado.");
+  assert.equal(replay.headers().location, location, "El replay201 debe conservar Location del alta201.");
+}
+
+export async function openPlatformPendingHome(h, page, { acceptNotice = acceptAssistantNoticeFromHome } = {}) {
+  await page.goto(new URL("/plataforma", h.base).href);
+  // PlatformHomePage sólo compone Asistente en escritorio. En móvil no se elude
+  // la ausencia de Para resolver entrando a otra ruta o directamente a la ficha.
+  if (h.width === 1440) await acceptNotice(page);
+  const pending = page.getByRole("region", { name: "Para resolver", exact: true }); await pending.waitFor();
+  return pending;
+}
+
+export async function waitForOrganizationHistoryReason(h, page, reason) {
+  const panel = page.getByRole("tabpanel");
+  // OrganizationHistoryTab une actor y motivo en una línea del teléfono.
+  if (h.width === 390) await panel.getByRole("listitem").filter({ hasText: reason }).waitFor();
+  else await panel.getByText(reason, { exact: true }).filter({ visible: true }).first().waitFor();
+}
 export function requireUniqueOrganizationNotice(messages, { name, kind, reason }) {
   assert.equal(messages.length, 1, "La operación y sus replays deben producir un único aviso al destinatario propio.");
   const body = plainTextBody(messages[0].body); assert.ok(body?.includes(name));
@@ -89,6 +111,19 @@ export function requireRecoveryUnchanged(before, after, methodsBefore, methodsAf
 export function requireRejectedNotice(eml, reason) {
   const text = plainTextBody(eml); assert.ok(text?.includes("No pudimos recuperar tu cuenta"));
   assert.ok(text.includes("no pudimos confirmar que la cuenta sea tuya")); assert.equal(text.includes(reason), false);
+}
+
+export function rejectionRecoveryDestination(tag) {
+  assert.match(tag, /^[a-f0-9]{8}$/iu);
+  const email = `rechazo-${tag}@${tag}.example.test`; requireSyntheticEmail(email); return email;
+}
+
+/** En móvil Email→Email es un único texto; los otros métodos y el escritorio conservan sus spans. */
+export function supplementRecoveryRow(page, item) {
+  if (page.viewportSize().width === 390 && item.previousMethodType === "Email" && item.newMethodType === "Email") {
+    return page.getByRole("listitem").filter({ hasText: `${item.previousMethod} → ${item.newMethod}` });
+  }
+  return recoveryRow(page, item);
 }
 
 const endpoint = (route, method = "POST") => (response) => new URL(response.url()).pathname === route && response.request().method() === method;
@@ -181,10 +216,68 @@ async function openRecovery(h, page, next, previous) {
   assert.equal(response.status(), 200); const items = (await response.json()).items;
   const pending = previous?.startsWith("+") ? selectRecovery(items, previous, next) : (() => { assert.equal(items.length, 1); return items[0]; })();
   assert.equal(pending.status, "Pending");
-  await recoveryRow(page, pending).getByRole("button", { name: /^Acciones de/ }).click();
+  await supplementRecoveryRow(page, pending).getByRole("button", { name: /^Acciones de/ }).click();
   await page.getByRole("menuitem", { name: "Revisar", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Revisar el pedido", exact: true }); await dialog.waitFor();
   return { pending, dialog };
+}
+
+function recoveryRejectionActions(h, state) {
+  const { page, publicPage, ensureFull, operatorEmail, tag, newPage } = state;
+  return {
+    reject: async () => {
+      await ensureFull(); const next = rejectionRecoveryDestination(tag); await requestRecovery(h, publicPage, state.person.email, next);
+      const review = await openRecovery(h, page, next);
+      assert.equal(review.pending.accountId, state.person.me.id, "El pedido corresponde a la persona propia.");
+      assert.notEqual(review.pending.previousMethod, review.pending.newMethod, "El destino propio debe conservar una máscara distinguible.");
+      state.stalePage = await newPage(); operatorByPage.set(state.stalePage, operatorEmail); await confirmRecentAuthenticationWhenAsked(state.stalePage, operatorEmail);
+      state.staleReview = await openRecovery(h, state.stalePage, next); assert.equal(state.staleReview.pending.version, review.pending.version);
+      const reason = `Motivo interno ${tag}`; await review.dialog.getByRole("textbox", { name: /Motivo/ }).fill(reason);
+      await state.staleReview.dialog.getByRole("textbox", { name: /Motivo/ }).fill("Segundo revisor conserva su borrador.");
+      const before = new Set(await h.env.files());
+      const response = await clickHttp(page, review.dialog.getByRole("button", { name: "Rechazar", exact: true }), `/api/platform/recoveries/${review.pending.id}/reject`, 200);
+      assert.equal(response.request().postDataJSON().version, review.pending.version); await review.dialog.waitFor({ state: "hidden" });
+      state.rejected = (await recoveryList(h, page, next)).items.find((item) => item.id === review.pending.id);
+      assert.equal(state.rejected.status, "Rejected"); assert.notEqual(state.rejected.version, review.pending.version); assert.equal(state.rejected.reason, reason);
+      requireRejectedNotice(await notice(h.env, next, before, (text) => text.includes("No pudimos recuperar tu cuenta")), reason);
+      return "Rechazo por UI200 cambió versión a Rejected y el aviso real al destino no incluyó el motivo interno; segundo formulario sigue con su versión original.";
+    },
+    conflict: async () => {
+      const { stalePage, staleReview, rejected } = state;
+      await assertPlatformProblem(await clickHttp(stalePage, staleReview.dialog.getByRole("button", { name: "Rechazar", exact: true }), `/api/platform/recoveries/${staleReview.pending.id}/reject`, 409), 409, "General.ConcurrencyConflict");
+      await staleReview.dialog.getByRole("alert").waitFor();
+      assert.equal(await staleReview.dialog.getByRole("textbox", { name: /Motivo/ }).inputValue(), "Segundo revisor conserva su borrador.");
+      const after = (await read(h, page, "/api/platform/recoveries/paged?page=1&pageSize=100")).items.find((item) => item.id === rejected.id);
+      assert.equal(after.status, "Rejected"); assert.equal(after.version, rejected.version); assert.equal(after.reason, rejected.reason);
+      return "Segundo revisor obtuvo409 General.ConcurrencyConflict con borrador intacto; no cambió la decisión ni el motivo ganador.";
+    },
+  };
+}
+
+/** Sólo08/09: la cuenta propia y el ingreso se preparan dentro de08, sin repetir2–7. */
+export async function runPlatformRecoveryRepairCases(h) {
+  const run = createPlatformRecorder(h); const pages = [];
+  const newPage = async () => { const target = await h.newPage(); pages.push(target); return target; };
+  const page = await newPage(); const publicPage = await newPage(); let publicSignedIn = false; let fullSignedIn = false; let capturePage = publicPage;
+  const operatorEmail = h.width === 1440 ? "e2e-e9r-operator@example.test" : "e2e-e9l-operator@example.test";
+  const ensureFull = async () => {
+    if (fullSignedIn) return;
+    capturePage = page; const operator = await h.login(page, operatorEmail, "platform"); fullSignedIn = true;
+    assert.equal(operator.access, "platform"); assert.ok(operator.effectivePermissions.platform.includes("platform.recoveries.manage")); operatorByPage.set(page, operatorEmail);
+  };
+  const state = { page, publicPage, operatorEmail, newPage, tag: randomUUID().slice(0, 8), ensureFull };
+  const actions = recoveryRejectionActions(h, state);
+  try {
+    await run("PLAT-C-08", () => capturePage, async () => {
+      state.person = await h.registerPerson(publicPage); publicSignedIn = true; await h.signOut(publicPage); publicSignedIn = false;
+      return actions.reject();
+    });
+    await run("PLAT-C-09", () => state.stalePage ?? page, actions.conflict, ["PLAT-C-08"]);
+  } finally {
+    if (publicSignedIn) await h.signOut(publicPage).catch(() => {});
+    if (fullSignedIn) await h.signOut(page).catch(() => {});
+    for (const target of pages) if (!target.isClosed()) { await stopConfirmingRecentAuthentication(target); await target.close(); }
+  }
 }
 async function changeOrganization(h, page, id, action, reason) {
   await openAction(page, action);
@@ -203,7 +296,7 @@ export async function runSupplementPlatformCases(h) {
   const phone = supplementPhoneFixtures(h.width); const tag = randomUUID().slice(0, 8);
   const step = (number, target, action, dependencies = []) => run(`PLAT-C-${String(number).padStart(2, "0")}`, target, action, dependencies.map((value) => `PLAT-C-${String(value).padStart(2, "0")}`));
   let person; let business; let operator; let audit; let disposable; let fullSignedIn = false; let auditSignedIn = false;
-  let stalePage; let staleReview; let rejected; let publicSignedIn = false; let pendingOwner; let pendingBusiness; let publication;
+  let publicSignedIn = false; let pendingOwner; let pendingBusiness; let publication;
   const url = (route) => new URL(route, h.base).href;
   const ensureFull = async () => {
     if (fullSignedIn) return;
@@ -211,6 +304,8 @@ export async function runSupplementPlatformCases(h) {
     operator = await h.login(page, operatorEmail, "platform"); fullSignedIn = true;
     operatorByPage.set(page, operatorEmail);
   };
+  const recoveryState = { page, publicPage, newPage, operatorEmail, tag, ensureFull, get person() { return person; } };
+  const rejectionActions = recoveryRejectionActions(h, recoveryState);
   try {
     let preparationPage = publicPage;
     await step(1, () => preparationPage, async () => {
@@ -286,28 +381,8 @@ export async function runSupplementPlatformCases(h) {
       await review.dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
       return "Phone inexistente400 sin código; recuperar operadora409 con aviso UI y pedido Pending. No se creó artificialmente un pedido Sin cuenta.";
     }, [1]);
-    await step(8, page, async () => {
-      await ensureFull(); const next = syntheticEmail("rechazo"); await requestRecovery(h, publicPage, person.email, next);
-      const review = await openRecovery(h, page, next); stalePage = await newPage(); operatorByPage.set(stalePage, operatorEmail); await confirmRecentAuthenticationWhenAsked(stalePage, operatorEmail);
-      staleReview = await openRecovery(h, stalePage, next); assert.equal(staleReview.pending.version, review.pending.version);
-      const reason = `Motivo interno ${tag}`; await review.dialog.getByRole("textbox", { name: /Motivo/ }).fill(reason);
-      await staleReview.dialog.getByRole("textbox", { name: /Motivo/ }).fill("Segundo revisor conserva su borrador.");
-      const before = new Set(await h.env.files());
-      const response = await clickHttp(page, review.dialog.getByRole("button", { name: "Rechazar", exact: true }), `/api/platform/recoveries/${review.pending.id}/reject`, 200);
-      assert.equal(response.request().postDataJSON().version, review.pending.version); await review.dialog.waitFor({ state: "hidden" });
-      rejected = (await recoveryList(h, page, next)).items.find((item) => item.id === review.pending.id);
-      assert.equal(rejected.status, "Rejected"); assert.notEqual(rejected.version, review.pending.version); assert.equal(rejected.reason, reason);
-      requireRejectedNotice(await notice(h.env, next, before, (text) => text.includes("No pudimos recuperar tu cuenta")), reason);
-      return "Rechazo por UI200 cambió versión a Rejected y el aviso real al destino no incluyó el motivo interno; segundo formulario sigue con su versión original.";
-    }, [1]);
-    await step(9, () => stalePage ?? page, async () => {
-      await assertPlatformProblem(await clickHttp(stalePage, staleReview.dialog.getByRole("button", { name: "Rechazar", exact: true }), `/api/platform/recoveries/${staleReview.pending.id}/reject`, 409), 409, "General.ConcurrencyConflict");
-      await staleReview.dialog.getByRole("alert").waitFor();
-      assert.equal(await staleReview.dialog.getByRole("textbox", { name: /Motivo/ }).inputValue(), "Segundo revisor conserva su borrador.");
-      const after = (await read(h, page, "/api/platform/recoveries/paged?page=1&pageSize=100")).items.find((item) => item.id === rejected.id);
-      assert.equal(after.status, "Rejected"); assert.equal(after.version, rejected.version); assert.equal(after.reason, rejected.reason);
-      return "Segundo revisor obtuvo409 General.ConcurrencyConflict con borrador intacto; no cambió la decisión ni el motivo ganador.";
-    }, [8]);
+    await step(8, page, rejectionActions.reject, [1]);
+    await step(9, () => recoveryState.stalePage ?? page, rejectionActions.conflict, [8]);
     await step(10, page, async () => {
       await ensureFull(); const owner = await registerPhone(h, publicPage, phone.owner, `pc-owner-${h.width}-${tag}`); publicSignedIn = true;
       await h.signOut(publicPage); publicSignedIn = false;
@@ -378,8 +453,7 @@ export async function runSupplementPlatformCases(h) {
     }, [1]);
     await step(13, page, async () => {
       await ensureFull(); await createAssistantControl(h.env.command)("prepare", { email: operatorEmail, access: "platform" });
-      await page.goto(url("/plataforma")); await acceptAssistantNoticeFromHome(page);
-      const pending = page.getByRole("region", { name: "Para resolver", exact: true }); await pending.getByText(pendingBusiness.name, { exact: true }).waitFor();
+      const pending = await openPlatformPendingHome(h, page); await pending.getByText(pendingBusiness.name, { exact: true }).waitFor();
       await pending.getByRole("link", { name: "Revisar", exact: true }).and(page.locator(`a[href='/plataforma/organizaciones/${pendingBusiness.id}']`)).click(); await page.getByRole("heading", { name: pendingBusiness.name, exact: true }).waitFor();
       for (const title of ["Historial", "Dueños", "Página pública"]) {
         await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click(); const panel = page.getByRole("tabpanel"); await panel.waitFor(); await panel.getByRole("status").waitFor({ state: "hidden" });
@@ -425,7 +499,7 @@ export async function runSupplementPlatformCases(h) {
       const request = response.request().postDataJSON(); const key = response.request().headers()["idempotency-key"]; assert.match(key, /^[0-9a-f-]{36}$/iu); assert.equal(created.id, key);
       for (const id of [created.firstCompanyId, created.invitationId]) assert.match(id, /^[0-9a-f-]{36}$/iu);
       const initialHistory = await read(h, page, `/api/platform/tenants/${created.id}/history?limit=100`); assert.ok(initialHistory.items.length);
-      const replay = await h.api(page, "/api/platform/tenants", { method: "POST", data: request, headers: { "Idempotency-Key": key } }); assert.equal(replay.status(), 201); assert.equal(replay.headers()["idempotent-replayed"], "true"); requireIdenticalReplay(created, await replay.json()); assert.equal(replay.headers().location, response.headers().location);
+      const replay = await h.api(page, "/api/platform/tenants", { method: "POST", data: request, headers: { "Idempotency-Key": key } }); assert.equal(replay.status(), 201); assert.equal(replay.headers()["idempotent-replayed"], "true"); requireIdenticalReplay(created, await replay.json());
       await assertPlatformProblem(await h.api(page, "/api/platform/tenants", { method: "POST", data: { ...request, name: `${name} otro cuerpo` }, headers: { "Idempotency-Key": key } }), 422, "Request.IdempotencyKeyReused");
       const list = await read(h, page, `/api/platform/tenants/paged?search=${encodeURIComponent(name)}&pageSize=100`); assert.equal(list.totalCount, 1); assert.equal(list.items[0].id, created.id);
       const organization = await read(h, page, `/api/platform/tenants/${created.id}`); const pendingAccounts = await read(h, page, `/api/platform/accounts/paged?search=${encodeURIComponent(ownerEmail)}&pageSize=100`);
@@ -440,6 +514,8 @@ export async function runSupplementPlatformCases(h) {
       const afterOperator = await read(h, page, "/api/me"); assert.equal(afterOperator.id, beforeOperator.id); assert.equal(afterOperator.hasPersonalSpace, false); assert.deepEqual(afterOperator.organizations, []);
       const ownerDetail = await read(h, page, `/api/platform/accounts/${(await read(h, publicPage, "/api/me")).id}`); assert.equal(ownerDetail.hasPersonalSpace, false); assert.equal(ownerDetail.organizations.length, 1); assert.equal(ownerDetail.organizations[0].tenantId, created.id);
       requireUniqueOrganizationNotice(await h.env.messages(ownerEmail, before), { name, kind: "invitation" });
+      // Una cabecera faltante mantiene el fallo, después de ejercitar también la invitación y los perfiles.
+      requireCreatedReplayLocation(response, replay);
       return "Alta UI201 y replay201 idénticos en todos los IDs/Location; otro cuerpo422, una organización/empresa/membresía, evento y correo únicos. El Dueño pendiente no tenía identidad; aceptar creó sólo Business, sin crear perfiles del operador.";
     }, [1]);
 
@@ -472,7 +548,7 @@ export async function runSupplementPlatformCases(h) {
       const closed = await read(h, page, `/api/platform/tenants/${ownPending.id}`); assert.equal(closed.status, "Closed"); assert.equal(closed.version, receipt.version); assert.equal(closed.lastStateChange.reason, reason); assert.match(closed.lastStateChange.atUtc, /Z$/u);
       const history = await read(h, page, `/api/platform/tenants/${ownPending.id}/history?limit=100`); const changes = history.items.filter((item) => item.reason === reason); assert.equal(changes.length, 1); assert.equal(changes[0].occurredAtUtc, closed.lastStateChange.atUtc); assert.equal(changes[0].action, closed.lastStateChange.action);
       await notice(h.env, ownerEmail, before, (text) => /No aprobamos la solicitud de alta/u.test(text)); requireUniqueOrganizationNotice(await h.env.messages(ownerEmail, before), { name, kind: "rejected", reason });
-      await page.reload(); await page.getByRole("heading", { name, exact: true }).waitFor(); await page.getByText("Cerrada", { exact: true }).first().waitFor(); await page.getByRole("tab", { name: "Historial", exact: true }).click(); await page.getByText(reason, { exact: true }).filter({ visible: true }).first().waitFor();
+      await page.reload(); await page.getByRole("heading", { name, exact: true }).waitFor(); await page.getByText("Cerrada", { exact: true }).first().waitFor(); await page.getByRole("tab", { name: "Historial", exact: true }).click(); await waitForOrganizationHistoryReason(h, page, reason);
       return "Rechazo propio: versión incorrecta409 sin efecto; prueba vencida403 sin aviso, confirmación real200 con el mismo cuerpo/clave. Replay200 idéntico y cuerpo distinto422; Closed conserva motivo/UTC y sólo un evento y un correo sin motivo interno.";
     }, [1]);
     await step(18, page, async () => {
@@ -524,12 +600,12 @@ export async function runSupplementPlatformCases(h) {
       const facets = await read(h, page, `/api/platform/tenants/filter-counts?${query}`); assert.equal(facets.total, 1); assert.equal(facets.statuses.find((item) => item.status === "Active")?.count, 1); assert.equal(facets.sources.find((item) => item.source === "SelfService")?.count, 1);
       for (const filter of ["status=Suspended&source=SelfService", "status=Active&source=Platform"]) { const empty = await read(h, page, `/api/platform/tenants/paged?search=${search}&${filter}&pageSize=100`); assert.equal(empty.totalCount, 0); assert.deepEqual(empty.items, []); }
       await assertPlatformProblem(await h.api(page, `/api/platform/tenants/${person.me.activeTenantId}`), 404, "Tenancy.Tenant.NotFound");
-      await page.goto(url(`/plataforma/organizaciones?${query}`)); const link = page.getByRole("link", { name: business.organization, exact: true }).filter({ visible: true }).first(); await link.waitFor(); assert.equal(new URL(page.url()).searchParams.get("status"), "Active"); assert.equal(new URL(page.url()).searchParams.get("source"), "SelfService"); await link.click(); await page.getByRole("heading", { name: business.organization, exact: true }).waitFor();
+      await page.goto(url(`/plataforma/organizaciones?${query}`)); assert.equal(new URL(page.url()).searchParams.get("status"), "Active"); assert.equal(new URL(page.url()).searchParams.get("source"), "SelfService"); await openPlatformListItem(page, `/plataforma/organizaciones/${business.me.activeTenantId}`, business.organization); await page.getByRole("heading", { name: business.organization, exact: true }).waitFor();
       const detail = await read(h, page, `/api/platform/tenants/${business.me.activeTenantId}`); assert.equal(detail.id, row.id); assert.equal(detail.companyCount, row.companyCount); assert.equal(detail.memberCount, row.memberCount); assert.equal(detail.owners.length, 1); assert.equal(detail.owners[0].id, business.me.id); assert.equal(detail.owners[0].identityStatus, "Active"); assert.equal(detail.owners[0].membershipStatus, "Active"); assert.equal(detail.owners[0].email, business.email);
       assert.deepEqual(Object.keys(detail).sort(), [...Object.keys(row), "owners", "lastStateChange"].sort()); await page.getByRole("tab", { name: /^Dueños/ }).click(); await page.getByRole("tabpanel").getByText(business.email, { exact: true }).first().waitFor(); await page.getByRole("tabpanel").getByText("Activo", { exact: true }).first().waitFor();
       const history = await read(h, page, `/api/platform/tenants/${business.me.activeTenantId}/history?limit=100`); assert.equal(new Set(history.items.map((item) => item.id)).size, history.items.length);
       await page.getByRole("tab", { name: "Historial", exact: true }).click();
-      for (const reason of ["Preparación del filtro de auditoría propio.", "Restaurar organización propia tras preparar auditoría."]) { const events = history.items.filter((item) => item.reason === reason); assert.equal(events.length, 1); assert.match(events[0].occurredAtUtc, /Z$/u); assert.ok(events[0].actor && events[0].actorRole); await page.getByText(reason, { exact: true }).filter({ visible: true }).first().waitFor(); }
+      for (const reason of ["Preparación del filtro de auditoría propio.", "Restaurar organización propia tras preparar auditoría."]) { const events = history.items.filter((item) => item.reason === reason); assert.equal(events.length, 1); assert.match(events[0].occurredAtUtc, /Z$/u); assert.ok(events[0].actor && events[0].actorRole); await waitForOrganizationHistoryReason(h, page, reason); }
       return "Lista/facets y filtros buscaron sólo la organización propia Active/SelfService, con contadores1/1 y proyección global cerrada; búsquedas contradictorias vacías y Personal404. Dueños mostró la identidad activa actual y Historial sus dos cambios UTC reales.";
     }, [1]);
   }
