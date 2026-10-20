@@ -65,10 +65,10 @@ async function preview(h, page, token, state) {
   await page.goto(new URL(`/invitacion#${token}`, h.base).href); const response = await received; assert.equal(response.status(), 200);
   const body = await response.json(); assert.equal(body.state, state); await page.waitForURL((current) => current.hash === ""); return body;
 }
-async function invite(h, page, company, email = syntheticEmail("orx-invitado"), admin = false) {
+async function invite(h, page, company, email = syntheticEmail("orx-invitado"), companyRoleName) {
   await page.goto(new URL("/org/usuarios", h.base).href); await page.getByRole("button", { name: "Invitar usuario", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "Invitar usuario", exact: true });
   await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email); await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click(); await page.getByRole("option", { name: company.name, exact: true }).click();
-  if (admin) { await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click(); await page.keyboard.press("Escape"); }
+  if (companyRoleName) { await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: companyRoleName, exact: true }).click(); await page.keyboard.press("Escape"); }
   const before = new Set(await h.env.files()); const response = await clickForResponse(page, dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/users/invitations", "POST", 201); const issued = await response.json(); await dialog.waitFor({ state: "hidden" });
   const list = await read(h, page, `/api/users/paged?search=${encodeURIComponent(email)}&pageSize=100`); const member = list.items.find((item) => item.invitationId === issued.invitationId); assert.ok(member?.memberId);
   return { ...issued, email, memberId: member.memberId, token: await mailToken(h, email, before) };
@@ -164,8 +164,12 @@ export async function runOrganizationSupplementCases(h) {
     else await run(2, async () => {
       await originalFixture();
       for (let index = 0; index < 10; index++) { const issued = await invite(h, page, company); await expire(issued); }
-      companyAdmin = await invite(h, page, company, syntheticEmail("orx-admin"), true);
-      const reserved = await read(h, page, `/api/users/${companyAdmin.memberId}`); assert.deepEqual(reserved.roles, []); assert.equal(reserved.userId, null);
+      const roleName = `Administrador propio ORX ${tag}`; await page.goto(url("/org/roles/nuevo")); await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(roleName);
+      await page.getByRole("combobox", { name: "Vale en", exact: true }).click(); await page.getByRole("option", { name: company.name, exact: true }).click(); await page.getByRole("button", { name: "Abrir o cerrar Miembros", exact: true }).click();
+      for (const permission of ["Ver miembros", "Administrar miembros"]) await page.getByRole("checkbox", { name: permission, exact: true }).check();
+      const createdRole = await clickForResponse(page, page.getByRole("button", { name: "Crear rol", exact: true }), "/api/roles", "POST", 201); const roleId = await createdRole.json(); await page.getByRole("heading", { name: roleName, exact: true }).waitFor();
+      companyAdmin = await invite(h, page, company, syntheticEmail("orx-admin"), roleName);
+      const reserved = await read(h, page, `/api/users/${companyAdmin.memberId}`); assert.deepEqual(reserved.roles, []); assert.equal(reserved.userId, null); assert.ok(reserved.companies.find((item) => item.companyId === company.id)?.roles.some((role) => role.id === roleId));
       await leave(); await preview(h, page, companyAdmin.token, "NoAccount");
       await clickForResponse(page, page.getByRole("button", { name: "Aceptar invitación", exact: true }), "/api/invitations/accept", "POST", 200); publicPage = page; currentEmail = companyAdmin.email;
       await page.getByRole("button", { name: "Más tarde", exact: true }).click(); await page.waitForURL((current) => current.pathname === "/org");
