@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Plus, Power } from "lucide-react";
 import { BuildingIcon } from "@/shared/ui/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -105,7 +105,8 @@ export function CompanyDetailPage() {
       </>}
       moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [
         { label: t("companies:actions.editCompany"), onSelect: (trigger) => setDialog({ kind: "edit", returnFocusTo: trigger }), hidden: !phone },
-        { label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), destructive: data.status === "Active",
+        // Tablero Empresa («Criterio · Menús»): «Inactivar» y «Activar» con el ícono de encender, gris.
+        { label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), icon: Power, destructive: data.status === "Active",
           onSelect: (trigger) => {
             const change: StatusChange = { status: data.status === "Active" ? "Inactive" : "Active", version: data.version, name: data.name };
             if (change.status === "Inactive") setDialog({ kind: "deactivate", change, returnFocusTo: trigger }); else changeCompanyState.mutate(change);

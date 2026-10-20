@@ -668,6 +668,8 @@ describe("CompanyDetailPage", () => {
     const { queryClient } = renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     (await screen.findByRole("button", { name: "Más acciones" })).focus();
     await user.keyboard("{Enter}");
+    // Tablero Empresa: «Inactivar» con su ícono gris, como pide «Criterio · Menús».
+    expect((await screen.findByRole("menuitem", { name: "Inactivar" })).querySelector("svg")).not.toBeNull();
     await user.click(await screen.findByRole("menuitem", { name: "Inactivar" }));
     const confirm = await screen.findByRole("dialog", { name: `¿Inactivar ${company.name}?` });
 
