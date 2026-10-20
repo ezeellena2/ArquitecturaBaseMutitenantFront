@@ -49,6 +49,7 @@ const suiteSpecs = {
   dominioextra: ["./e2e-completo-dominio-complemento.mjs", "domainSupplementDefinitions", "runDomainSupplementCases"],
   rolesextra: ["./e2e-completo-roles-complemento.mjs", "roleSupplementDefinitions", "runRoleSupplementCases"],
   seguridadextra: ["./e2e-completo-seguridad-complemento.mjs", "securitySupplementDefinitions", "runSecuritySupplementCases"],
+  contratoextra: ["./e2e-completo-contrato-complemento.mjs", "contractSupplementDefinitions", "runContractSupplementCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
