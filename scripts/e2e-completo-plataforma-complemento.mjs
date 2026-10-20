@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import { clickForResponse, invitationTokenFromMessage } from "./e2e-completo-negocio.mjs";
 import { setTimeout as delay } from "node:timers/promises";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { plainTextBody } from "./test-e2e-real-mail.mjs";
@@ -8,7 +9,7 @@ import { recoveryRow, selectRecovery } from "./test-e2e-real-whatsapp-recovery.m
 import { requireE8Control, sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 import { assertPlatformProblem, createPlatformRecorder, openAction } from "./e2e-completo-plataforma.mjs";
 import { openAccountActions } from "./test-e2e-real-e9.mjs";
-import { syntheticEmail, requireSyntheticEmail } from "./e2e-completo-soporte.mjs";
+import { syntheticEmail, requireSyntheticEmail, localApiUrl } from "./e2e-completo-soporte.mjs";
 import { confirmRecentAuthentication, confirmRecentAuthenticationWhenAsked, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
 import { openPlatformSettings, savePlatformSettings, restorableSettings, withRestoredSettings } from "./test-e2e-real-whatsapp-settings.mjs";
 import { parseLegalPublicationReceipt, acceptPublishedLegalAndReturn, assertPendingTerms } from "./test-e2e-real-legal.mjs";
@@ -33,7 +34,42 @@ export const supplementPlatformDefinitions = [
   definition(13, "Operador y Dueño destinatario por correo", "Revisar desde Para resolver, aprobar con motivo y recibir aviso", "/plataforma · /plataforma/organizaciones/:id", "Revisar lleva a la ficha propia; Historial, Dueños y Página cargan; aprobar activa con motivo y emite correo real.", ["GUIA-aprobar-una-organizacion-01", "GUIA-aprobar-una-organizacion-02", "GUIA-aprobar-una-organizacion-03", "GUIA-aprobar-una-organizacion-04", "GUIA-aprobar-una-organizacion-05"]),
   definition(14, "Operador con legal.manage", "Publicar términos nuevos vigentes por UI", "/plataforma/legales/nueva", "Abre Publicar versión nueva, elige documento/fecha/ambos idiomas, confirma201 y conserva recibo/versionado.", ["GUIA-publicar-una-version-legal-01", "GUIA-publicar-una-version-legal-02"]),
   definition(15, "Dueño de organización propia", "Aceptar la nueva versión al volver a ingresar", "/aceptar-terminos", "La versión del recibo figura pendiente; casilla explícita, POST204, retorno empresarial200 y Me sin pendientes.", ["GUIA-publicar-una-version-legal-03", "SCREEN-aceptar-terminos"]),
+  definition(16, "Operador completo y Dueño nuevo sin cuenta", "Crear por UI, repetir la operación y aceptar la invitación sin Personal", "/plataforma/organizaciones · /invitacion", "Replay201 conserva todos los IDs sin otro aviso/evento; misma clave con otro cuerpo422. El Dueño pendiente no tiene cuenta; al aceptar sólo Business. El operador conserva cero perfiles públicos.", ["BACK-PL-007"]),
+  definition(17, "Operador completo y organización pendiente propia", "Rechazar con motivo, versión y confirmación reciente y repetir sin duplicar aviso", "/plataforma/organizaciones/:id", "Versión incorrecta409 sin cambio; prueba vencida403 sin consumir la clave; confirmar guarda Closed200, motivo/fecha reales, replay conserva versión y un único aviso/evento. Se combina con la aprobación de PLAT-C-13."),
+  definition(18, "Operador completo, Dueño único y persona propios", "Bloquear baja del último Dueño; suspender/reactivar y dar de baja a la persona", "/plataforma/cuentas/:id · /login", "LastAdmin409 conserva Dueño y versión; Suspender revoca Bearer previo y guarda motivo/historial. Reactivar permite nuevo ingreso200; baja204 programa30d y revoca ese segundo Bearer.", ["GUIA-suspender-y-reactivar-03", "GUIA-suspender-y-reactivar-05"]),
+  definition(19, "Operador completo con organización y espacio Personal propios de la fixture", "Buscar y filtrar organizaciones, comprobar metadatos, Dueños e historial y rechazar Personal", "/plataforma/organizaciones", "Listado/facets reales conservan búsqueda, estado y origen; sólo metadatos globales de la organización propia, contadores1/1, Dueño actual e historial UTC. El ID Personal no se lista y su ficha devuelve404.", ["BACK-PL-006"]),
 ];
+
+export const supplementPlatformProofGroups = { "BACK-PL-008": [["PLAT-C-13", "PLAT-C-17"]], "BACK-PL-018": [["PLAT-25", "PLAT-26", "PLAT-C-18"]] };
+export const supplementPlatformLimitations = {
+  "BACK-PL-024": {
+    partialExecutionIds: ["PLAT-C-05"], missing: "Intentar quitar o retirar operators.manage al último gestor activo y exigir LastManager.",
+    reason: "PlatformCommand.prepare crea doce gestores de las cuentas base, además de los operadores propios por UI. PlatformOperatorGuard cuenta globalmente todos los gestores activos. Llegar al último exige quitar o suspender gestores de las cuentas base que este complemento no creó; el alcance prohíbe alterar esas cuentas y no se agrega otra semilla ni control.",
+    source: ["tools/ArquitecturaBaseMultitenant.RealE2ESetup/PlatformCommand.cs", "src/ArquitecturaBaseMultitenant.Application/Services/Platform/PlatformOperatorGuard.cs"],
+  },
+};
+
+export function requireCreationProfileIsolation({ beforeOperator, afterOperator, organization, ownerEmail, pendingAccounts, createdId }) {
+  assert.equal(afterOperator.id, beforeOperator.id);
+  for (const account of [beforeOperator, afterOperator]) { assert.equal(account.access, "platform"); assert.equal(account.hasPersonalSpace, false); assert.deepEqual(account.organizations, []); }
+  assert.equal(organization.id, createdId); assert.equal(organization.status, "Active"); assert.equal(organization.ownerEmail, ownerEmail); assert.deepEqual(organization.owners, []); assert.equal(organization.companyCount, 1); assert.equal(organization.memberCount, 1);
+  assert.equal(pendingAccounts.totalCount, 0); assert.deepEqual(pendingAccounts.items, []);
+}
+export function requireInvitedOwnerBusinessOnly(me, organizationId, operatorId) {
+  assert.notEqual(me.id, operatorId); assert.equal(me.access, "business"); assert.equal(me.hasPersonalSpace, false); assert.equal(me.activeTenantId, organizationId); assert.deepEqual(me.organizations.map((organization) => organization.id), [organizationId]);
+}
+export function requireIdenticalReplay(original, replay) { assert.deepEqual(replay, original, "El replay debe conservar la respuesta original completa."); }
+export function requireUniqueOrganizationNotice(messages, { name, kind, reason }) {
+  assert.equal(messages.length, 1, "La operación y sus replays deben producir un único aviso al destinatario propio.");
+  const body = plainTextBody(messages[0].body); assert.ok(body?.includes(name));
+  assert.match(body, kind === "rejected" ? /No aprobamos la solicitud de alta/u : /invit/iu);
+  if (reason) assert.equal(body.includes(reason), false, "El aviso público no publica el motivo interno.");
+}
+export function requireOperatorDeletion(detail, { before, after, reason }) {
+  assert.equal(detail.state, "PendingDeletion"); assert.equal(detail.deletion.requestedByPlatform, true);
+  const { requestedAtUtc, scheduledForUtc } = detail.deletion; for (const value of [requestedAtUtc, scheduledForUtc, detail.lastStateChange.atUtc]) assert.match(value, /Z$/u);
+  const requested = Date.parse(requestedAtUtc); assert.ok(requested >= before && requested <= after); assert.equal(Date.parse(scheduledForUtc) - requested, 30 * 24 * 60 * 60 * 1000); assert.equal(detail.lastStateChange.reason, reason);
+}
 
 export function supplementPhoneFixtures(width) {
   assert.ok([1440, 390].includes(width)); const offset = width === 1440 ? 0 : 1;
@@ -378,5 +414,140 @@ export async function runSupplementPlatformCases(h) {
       const me = await read(h, publicPage, "/api/me"); assert.equal(me.access, "business"); assert.equal(me.activeTenantId, business.me.activeTenantId); assert.equal(me.pendingLegalDocuments.length, 0);
       return "Dueño ingresó por OTP, vio pendiente el recibo Terms recién publicado, marcó la casilla y aceptó204; volvió a su organización con Me200 sin pendientes.";
     }, [1, 14]);
+    let creationCapture = page;
+    await step(16, () => creationCapture, async () => {
+      await ensureFull(); await leavePublicForNextFixture(); const beforeOperator = await read(h, page, "/api/me");
+      const name = `Alta idempotente propia ${h.width} ${tag}`; const ownerEmail = syntheticEmail("owner-replay");
+      await page.goto(url("/plataforma/organizaciones")); await page.getByRole("button", { name: "Crear organización", exact: true }).filter({ visible: true }).first().click();
+      const dialog = page.getByRole("dialog", { name: "Crear organización", exact: true }); await dialog.getByRole("textbox", { name: "Nombre de la organización", exact: true }).fill(name);
+      await dialog.getByRole("textbox", { name: "Primera empresa", exact: true }).fill(`${name} Centro`); await dialog.getByRole("textbox", { name: "Correo del Dueño", exact: true }).fill(ownerEmail);
+      const before = new Set(await h.env.files()); const response = await clickHttp(page, dialog.getByRole("button", { name: "Crear organización", exact: true }), "/api/platform/tenants", 201); const created = await response.json(); await dialog.waitFor({ state: "hidden" });
+      const request = response.request().postDataJSON(); const key = response.request().headers()["idempotency-key"]; assert.match(key, /^[0-9a-f-]{36}$/iu); assert.equal(created.id, key);
+      for (const id of [created.firstCompanyId, created.invitationId]) assert.match(id, /^[0-9a-f-]{36}$/iu);
+      const initialHistory = await read(h, page, `/api/platform/tenants/${created.id}/history?limit=100`); assert.ok(initialHistory.items.length);
+      const replay = await h.api(page, "/api/platform/tenants", { method: "POST", data: request, headers: { "Idempotency-Key": key } }); assert.equal(replay.status(), 201); assert.equal(replay.headers()["idempotent-replayed"], "true"); requireIdenticalReplay(created, await replay.json()); assert.equal(replay.headers().location, response.headers().location);
+      await assertPlatformProblem(await h.api(page, "/api/platform/tenants", { method: "POST", data: { ...request, name: `${name} otro cuerpo` }, headers: { "Idempotency-Key": key } }), 422, "Request.IdempotencyKeyReused");
+      const list = await read(h, page, `/api/platform/tenants/paged?search=${encodeURIComponent(name)}&pageSize=100`); assert.equal(list.totalCount, 1); assert.equal(list.items[0].id, created.id);
+      const organization = await read(h, page, `/api/platform/tenants/${created.id}`); const pendingAccounts = await read(h, page, `/api/platform/accounts/paged?search=${encodeURIComponent(ownerEmail)}&pageSize=100`);
+      requireCreationProfileIsolation({ beforeOperator, afterOperator: await read(h, page, "/api/me"), organization, ownerEmail, pendingAccounts, createdId: created.id });
+      const afterHistory = await read(h, page, `/api/platform/tenants/${created.id}/history?limit=100`); assert.deepEqual(afterHistory.items, initialHistory.items, "El replay y el rechazo422 no agregan otro evento de creación.");
+      const mail = await notice(h.env, ownerEmail, before, (text) => /invit/iu.test(text)); const token = invitationTokenFromMessage(mail, h.base); assert.ok(token);
+      creationCapture = publicPage; const opened = publicPage.waitForResponse(endpoint("/api/invitations/preview")); void opened.catch(() => {}); await publicPage.goto(url(`/invitacion#${token}`)); const preview = await opened; assert.equal(preview.status(), 200); assert.equal((await preview.json()).state, "NoAccount");
+      await clickForResponse(publicPage, publicPage.getByRole("button", { name: "Aceptar invitación", exact: true }), "/api/invitations/accept", "POST", 200); publicSignedIn = true;
+      await publicPage.getByRole("button", { name: "Más tarde", exact: true }).click(); await publicPage.waitForURL((target) => target.pathname === "/org");
+      await publicPage.getByRole("navigation", { name: h.width === 390 ? "Secciones" : "Áreas de la organización", exact: true }).waitFor();
+      requireInvitedOwnerBusinessOnly(await read(h, publicPage, "/api/me"), created.id, beforeOperator.id);
+      const afterOperator = await read(h, page, "/api/me"); assert.equal(afterOperator.id, beforeOperator.id); assert.equal(afterOperator.hasPersonalSpace, false); assert.deepEqual(afterOperator.organizations, []);
+      const ownerDetail = await read(h, page, `/api/platform/accounts/${(await read(h, publicPage, "/api/me")).id}`); assert.equal(ownerDetail.hasPersonalSpace, false); assert.equal(ownerDetail.organizations.length, 1); assert.equal(ownerDetail.organizations[0].tenantId, created.id);
+      requireUniqueOrganizationNotice(await h.env.messages(ownerEmail, before), { name, kind: "invitation" });
+      return "Alta UI201 y replay201 idénticos en todos los IDs/Location; otro cuerpo422, una organización/empresa/membresía, evento y correo únicos. El Dueño pendiente no tenía identidad; aceptar creó sólo Business, sin crear perfiles del operador.";
+    }, [1]);
+
+    await step(17, page, async () => {
+      await ensureFull(); await leavePublicForNextFixture(); let current; const ownerEmail = syntheticEmail("owner-rechazo"); const name = `Rechazo propio ${h.width} ${tag}`; let ownPending;
+      await withRestoredSettings({
+        read: async () => current = await openPlatformSettings(page, h.base.origin),
+        prepare: async (baseline) => { current = await savePlatformSettings(page, current, { ...restorableSettings(baseline), consumerSignup: "Open", businessSignup: "RequiresApproval" }, "Preparar sólo la solicitud que rechazará este caso."); },
+        body: async () => {
+          await publicPage.goto(url("/registro/empresa")); await publicPage.getByRole("checkbox", { name: /Acepto los Términos/ }).check(); await publicPage.getByRole("textbox", { name: "Tu correo electrónico", exact: true }).fill(ownerEmail);
+          const before = new Set(await h.env.files()); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Continuar", exact: true }), "/api/auth/business-signup/code", 202); await fillOtp(publicPage, await h.env.code(ownerEmail, before)); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/business-signup/verify", 204); publicSignedIn = true;
+          await publicPage.getByRole("heading", { name: "Tu organización", exact: true }).waitFor(); await publicPage.getByRole("textbox", { name: "Nombre de la organización", exact: true }).fill(name); await publicPage.getByRole("textbox", { name: /Dirección de tu página/ }).fill(`reject-${h.width}-${tag}`); await publicPage.getByRole("textbox", { name: "Primera empresa", exact: true }).fill(`${name} Centro`); await publicPage.getByText("Disponible", { exact: true }).waitFor();
+          const created = await clickHttp(publicPage, publicPage.getByRole("button", { name: "Crear organización", exact: true }), "/api/auth/business-signup", 200); assert.equal((await created.json()).requiresApproval, true); await publicPage.getByRole("heading", { name: "Recibimos el pedido", exact: true }).waitFor();
+          const listed = await read(h, page, `/api/platform/tenants/paged?search=${encodeURIComponent(name)}&pageSize=100`); assert.equal(listed.totalCount, 1); ownPending = await read(h, page, `/api/platform/tenants/${listed.items[0].id}`); assert.equal(ownPending.status, "PendingApproval");
+        },
+        restore: async (baseline) => { current = await openPlatformSettings(page, h.base.origin); await savePlatformSettings(page, current, restorableSettings(baseline), "Restaurar política antes del rechazo propio."); },
+      });
+      const route = `/api/platform/tenants/${ownPending.id}/reject`; const reason = `Motivo interno del rechazo propio ${tag}.`; const before = new Set(await h.env.files()); assert.ok(ownPending.version > 1);
+      await assertPlatformProblem(await h.api(page, route, { method: "POST", data: { version: ownPending.version - 1, reason }, headers: { "Idempotency-Key": randomUUID() } }), 409, "General.ConcurrencyConflict");
+      let unchanged = await read(h, page, `/api/platform/tenants/${ownPending.id}`); assert.equal(unchanged.status, "PendingApproval"); assert.equal(unchanged.version, ownPending.version);
+      const expired = await h.env.command("recent-proof", { kind: "expire", email: operatorEmail }); assert.ok(expired.expired >= 1); await stopConfirmingRecentAuthentication(page);
+      await page.goto(url(`/plataforma/organizaciones/${ownPending.id}`)); await openAction(page, "Rechazar"); const dialog = page.getByRole("dialog").filter({ has: page.getByRole("textbox", { name: /^Motivo/ }) }); await dialog.getByRole("textbox", { name: /^Motivo/ }).fill(reason);
+      const denied = await clickForResponse(page, dialog.getByRole("button", { name: "Rechazar", exact: true }), route, "POST", 403); await assertPlatformProblem(denied, 403, "Auth.Platform.ReauthenticationRequired");
+      const request = denied.request().postDataJSON(); const key = denied.request().headers()["idempotency-key"]; assert.equal(request.version, ownPending.version); assert.equal(request.reason, reason); assert.match(key, /^[0-9a-f-]{36}$/iu);
+      unchanged = await read(h, page, `/api/platform/tenants/${ownPending.id}`); assert.equal(unchanged.status, "PendingApproval"); assert.equal(unchanged.version, ownPending.version); assert.equal((await h.env.messages(ownerEmail, before)).length, 0);
+      const confirmed = page.waitForResponse((response) => endpoint(route)(response) && response.status() === 200); void confirmed.catch(() => {}); await confirmRecentAuthentication(page, operatorEmail); const accepted = await confirmed; const receipt = await accepted.json(); assert.equal(accepted.request().headers()["idempotency-key"], key); assert.deepEqual(accepted.request().postDataJSON(), request); await dialog.waitFor({ state: "hidden" });
+      await confirmRecentAuthenticationWhenAsked(page, operatorEmail);
+      const replay = await h.api(page, route, { method: "POST", data: request, headers: { "Idempotency-Key": key } }); assert.equal(replay.status(), 200); assert.equal(replay.headers()["idempotent-replayed"], "true"); requireIdenticalReplay(receipt, await replay.json());
+      await assertPlatformProblem(await h.api(page, route, { method: "POST", data: { ...request, reason: `${reason} otro cuerpo` }, headers: { "Idempotency-Key": key } }), 422, "Request.IdempotencyKeyReused");
+      const closed = await read(h, page, `/api/platform/tenants/${ownPending.id}`); assert.equal(closed.status, "Closed"); assert.equal(closed.version, receipt.version); assert.equal(closed.lastStateChange.reason, reason); assert.match(closed.lastStateChange.atUtc, /Z$/u);
+      const history = await read(h, page, `/api/platform/tenants/${ownPending.id}/history?limit=100`); const changes = history.items.filter((item) => item.reason === reason); assert.equal(changes.length, 1); assert.equal(changes[0].occurredAtUtc, closed.lastStateChange.atUtc); assert.equal(changes[0].action, closed.lastStateChange.action);
+      await notice(h.env, ownerEmail, before, (text) => /No aprobamos la solicitud de alta/u.test(text)); requireUniqueOrganizationNotice(await h.env.messages(ownerEmail, before), { name, kind: "rejected", reason });
+      await page.reload(); await page.getByRole("heading", { name, exact: true }).waitFor(); await page.getByText("Cerrada", { exact: true }).first().waitFor(); await page.getByRole("tab", { name: "Historial", exact: true }).click(); await page.getByText(reason, { exact: true }).filter({ visible: true }).first().waitFor();
+      return "Rechazo propio: versión incorrecta409 sin efecto; prueba vencida403 sin aviso, confirmación real200 con el mismo cuerpo/clave. Replay200 idéntico y cuerpo distinto422; Closed conserva motivo/UTC y sólo un evento y un correo sin motivo interno.";
+    }, [1]);
+    await step(18, page, async () => {
+      await ensureFull(); await leavePublicForNextFixture(); const ownerMe = await h.login(publicPage, business.email, "business"); publicSignedIn = true;
+      const ownerMembers = await read(h, publicPage, `/api/users/paged?search=${encodeURIComponent(business.email)}&pageSize=100`); const ownerMember = ownerMembers.items.find((item) => item.userId === business.me.id); assert.ok(ownerMember); const memberBefore = await read(h, publicPage, `/api/users/${ownerMember.memberId}`);
+      const ownerBefore = await read(h, page, `/api/platform/accounts/${business.me.id}`); assert.equal(ownerBefore.state, "Active"); assert.deepEqual(ownerBefore.soleOwnerOrganizations, [business.organization]);
+      await page.goto(url(`/plataforma/cuentas/${business.me.id}`)); await openAction(page, "Dar de baja"); let dialog = page.getByRole("dialog"); await dialog.getByText(new RegExp(business.organization.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"))).waitFor(); assert.equal(await dialog.getByRole("button", { name: "Dar de baja", exact: true }).isDisabled(), true);
+      await assertPlatformProblem(await h.api(page, `/api/platform/accounts/${business.me.id}/deletion`, { method: "POST", data: { reason: "No se debe dar de baja al Dueño único propio." }, headers: { "Idempotency-Key": randomUUID() } }), 409, "Legal.AccountDeletion.LastAdmin");
+      await dialog.getByRole("button", { name: "Cancelar", exact: true }).click(); assert.deepEqual(await read(h, page, `/api/platform/accounts/${business.me.id}`), ownerBefore); assert.deepEqual(await read(h, publicPage, `/api/users/${ownerMember.memberId}`), memberBefore); assert.equal((await read(h, publicPage, "/api/me")).version, ownerMe.version);
+      await leavePublicForNextFixture(); let observe = bearerFromUi(publicPage); let me;
+      try { me = await h.login(publicPage, person.email, "consumer"); publicSignedIn = true; } catch (error) { observe.stop(); throw error; }
+      const previousBearer = observe.take(); observe.stop(); assert.equal(me.id, person.me.id); assert.equal(me.activeTenantId, person.me.activeTenantId);
+      const frozen = (token, route) => publicPage.request.get(localApiUrl(route, h.base), { headers: { Authorization: token } });
+      assert.equal((await frozen(previousBearer, "/api/me")).status(), 200);
+      const suspensionReason = `Suspensión de la persona propia ${tag}.`; const reactivationReason = `Reactivación de la persona propia ${tag}.`; let personSuspended = false;
+      const accountAction = async (label, suffix, reason) => {
+        await page.goto(url(`/plataforma/cuentas/${person.me.id}`)); await openAction(page, label); const form = page.getByRole("dialog").filter({ has: page.getByRole("textbox", { name: /^Motivo/ }) }); await form.getByRole("textbox", { name: /^Motivo/ }).fill(reason);
+        const before = Date.now(); const response = await clickHttp(page, form.getByRole("button", { name: label, exact: true }), `/api/platform/accounts/${person.me.id}/${suffix}`, 204); const after = Date.now();
+        if (suffix === "suspend") personSuspended = true; else if (suffix === "reactivate") personSuspended = false; else if (suffix === "deletion") publicSignedIn = false;
+        assert.equal(response.request().postDataJSON().reason, reason); await form.waitFor({ state: "hidden" }); return { before, after };
+      };
+      try {
+        await accountAction("Suspender", "suspend", suspensionReason); personSuspended = true;
+        for (const route of ["/api/me", "/api/me/login-methods"]) { const rejectedToken = await frozen(previousBearer, route); assert.ok([401, 403].includes(rejectedToken.status())); await assertPlatformProblem(rejectedToken, rejectedToken.status(), rejectedToken.status() === 401 ? "Http.Unauthorized" : "Identity.Account.Suspended"); } publicSignedIn = false;
+        let state = await read(h, page, `/api/platform/accounts/${person.me.id}`); assert.equal(state.state, "Suspended"); assert.equal(state.lastStateChange.reason, suspensionReason); assert.match(state.lastStateChange.atUtc, /Z$/u);
+        await accountAction("Reactivar", "reactivate", reactivationReason); personSuspended = false;
+        state = await read(h, page, `/api/platform/accounts/${person.me.id}`); assert.equal(state.state, "Active"); assert.equal(state.lastStateChange.reason, reactivationReason);
+        observe = bearerFromUi(publicPage);
+        try {
+          await publicPage.goto(url("/login?prompt=login")); await publicPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(person.email); const beforeMail = new Set(await h.env.files()); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 202); await fillOtp(publicPage, await h.env.code(person.email, beforeMail)); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 200); publicSignedIn = true;
+          await publicPage.waitForURL((target) => target.pathname === "/"); await publicPage.getByRole("navigation", { name: "Secciones", exact: true }).or(publicPage.getByRole("button", { name: /, Personal$/ })).filter({ visible: true }).first().waitFor();
+        } catch (error) { observe.stop(); throw error; }
+        const reactivatedBearer = observe.take(); observe.stop(); const reentered = await frozen(reactivatedBearer, "/api/me"); assert.equal(reentered.status(), 200); const reenteredMe = await reentered.json(); assert.equal(reenteredMe.id, me.id); assert.equal(reenteredMe.activeTenantId, me.activeTenantId); assert.equal(reenteredMe.access, "consumer");
+        const deletionReason = `Baja por Plataforma de la persona propia ${tag}.`; const interval = await accountAction("Dar de baja", "deletion", deletionReason); const deleted = await read(h, page, `/api/platform/accounts/${person.me.id}`); requireOperatorDeletion(deleted, { ...interval, reason: deletionReason });
+        for (const route of ["/api/me", "/api/me/login-methods"]) await assertPlatformProblem(await frozen(reactivatedBearer, route), 401, "Http.Unauthorized"); publicSignedIn = false;
+        const history = await read(h, page, `/api/platform/audit?accountId=${person.me.id}&period=all&limit=100`);
+        for (const reason of [suspensionReason, reactivationReason, deletionReason]) { const rows = history.items.filter((item) => item.reason === reason); assert.equal(rows.length, 1); assert.equal(rows[0].targetAccountId, person.me.id); assert.match(rows[0].occurredAtUtc, /Z$/u); }
+        assert.equal(history.items.find((item) => item.reason === deletionReason).occurredAtUtc, deleted.lastStateChange.atUtc);
+        await publicPage.goto(url("/login")); await publicPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).waitFor();
+        await page.reload(); await page.getByText("Baja pedida", { exact: true }).first().waitFor(); await page.getByRole("tab", { name: "Historial", exact: true }).click(); await page.getByText(deletionReason, { exact: true }).filter({ visible: true }).first().waitFor();
+        return "LastAdmin409 dejó a la Dueña activa, asignación y versiones intactas. Persona propia: Suspender revocó el Bearer previo; Reactivar permitió otro OTP/Me200; la baja204 guardó motivo/gracia30d/fechas UTC e historial y revocó el segundo Bearer401. Ninguna cuenta base se modificó.";
+      } finally { if (personSuspended) await accountAction("Reactivar", "reactivate", "Restaurar la persona que suspendió este caso propio."); }
+    }, [1]);
+
+    await step(19, page, async () => {
+      await ensureFull(); const search = encodeURIComponent(business.organization); const query = `search=${search}&status=Active&source=SelfService`;
+      const list = await read(h, page, `/api/platform/tenants/paged?${query}&pageSize=100`); assert.equal(list.totalCount, 1); const row = list.items[0]; assert.equal(row.id, business.me.activeTenantId); assert.equal(row.status, "Active"); assert.equal(row.source, "SelfService"); assert.equal(row.companyCount, 1); assert.equal(row.memberCount, 1); assert.equal(row.ownerEmail, business.email);
+      assert.deepEqual(Object.keys(row).sort(), ["id", "name", "slug", "status", "source", "createdAtUtc", "companyCount", "memberCount", "version", "ownerName", "ownerEmail"].sort(), "El listado sólo publica metadatos globales, sin filas privadas.");
+      const facets = await read(h, page, `/api/platform/tenants/filter-counts?${query}`); assert.equal(facets.total, 1); assert.equal(facets.statuses.find((item) => item.status === "Active")?.count, 1); assert.equal(facets.sources.find((item) => item.source === "SelfService")?.count, 1);
+      for (const filter of ["status=Suspended&source=SelfService", "status=Active&source=Platform"]) { const empty = await read(h, page, `/api/platform/tenants/paged?search=${search}&${filter}&pageSize=100`); assert.equal(empty.totalCount, 0); assert.deepEqual(empty.items, []); }
+      await assertPlatformProblem(await h.api(page, `/api/platform/tenants/${person.me.activeTenantId}`), 404, "Tenancy.Tenant.NotFound");
+      await page.goto(url(`/plataforma/organizaciones?${query}`)); const link = page.getByRole("link", { name: business.organization, exact: true }).filter({ visible: true }).first(); await link.waitFor(); assert.equal(new URL(page.url()).searchParams.get("status"), "Active"); assert.equal(new URL(page.url()).searchParams.get("source"), "SelfService"); await link.click(); await page.getByRole("heading", { name: business.organization, exact: true }).waitFor();
+      const detail = await read(h, page, `/api/platform/tenants/${business.me.activeTenantId}`); assert.equal(detail.id, row.id); assert.equal(detail.companyCount, row.companyCount); assert.equal(detail.memberCount, row.memberCount); assert.equal(detail.owners.length, 1); assert.equal(detail.owners[0].id, business.me.id); assert.equal(detail.owners[0].identityStatus, "Active"); assert.equal(detail.owners[0].membershipStatus, "Active"); assert.equal(detail.owners[0].email, business.email);
+      assert.deepEqual(Object.keys(detail).sort(), [...Object.keys(row), "owners", "lastStateChange"].sort()); await page.getByRole("tab", { name: /^Dueños/ }).click(); await page.getByRole("tabpanel").getByText(business.email, { exact: true }).first().waitFor(); await page.getByRole("tabpanel").getByText("Activo", { exact: true }).first().waitFor();
+      const history = await read(h, page, `/api/platform/tenants/${business.me.activeTenantId}/history?limit=100`); assert.equal(new Set(history.items.map((item) => item.id)).size, history.items.length);
+      await page.getByRole("tab", { name: "Historial", exact: true }).click();
+      for (const reason of ["Preparación del filtro de auditoría propio.", "Restaurar organización propia tras preparar auditoría."]) { const events = history.items.filter((item) => item.reason === reason); assert.equal(events.length, 1); assert.match(events[0].occurredAtUtc, /Z$/u); assert.ok(events[0].actor && events[0].actorRole); await page.getByText(reason, { exact: true }).filter({ visible: true }).first().waitFor(); }
+      return "Lista/facets y filtros buscaron sólo la organización propia Active/SelfService, con contadores1/1 y proyección global cerrada; búsquedas contradictorias vacías y Personal404. Dueños mostró la identidad activa actual y Historial sus dos cambios UTC reales.";
+    }, [1]);
+  }
+
+  function bearerFromUi(target) {
+    let value; const listener = (request) => { const requestUrl = new URL(request.url()); const header = request.headers().authorization; if (requestUrl.origin === h.base.origin && requestUrl.pathname.startsWith("/api/") && header?.startsWith("Bearer ")) value = header; };
+    target.on("request", listener); return { take: () => { assert.ok(value, "La SPA debe emitir su Bearer real antes de probar revocación."); return value; }, stop: () => target.off("request", listener) };
+  }
+
+  async function leavePublicForNextFixture() {
+    if (!publicSignedIn) return;
+    try { await h.signOut(publicPage); }
+    catch {
+      await publicPage.goto(url("/login")); const terms = publicPage.getByRole("heading", { name: "Actualizamos los términos", exact: true });
+      await terms.or(publicPage.getByRole("navigation", { name: "Secciones", exact: true })).or(publicPage.getByRole("button", { name: /, Personal$/ })).filter({ visible: true }).first().waitFor();
+      if (await terms.isVisible()) { await publicPage.getByRole("checkbox", { name: /Leí y acepto/ }).check(); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Aceptar y seguir", exact: true }), "/api/legal/accept", 204); }
+      await h.signOut(publicPage);
+    }
+    publicSignedIn = false;
   }
 }

@@ -24,6 +24,7 @@ export const verificationLimitations = {
     source: ["scripts/test-e2e-real.test.mjs#5b"],
   },
   "BACK-CF-005": { ...domainSupplementLimitations["BACK-CF-005"], manualReason: "Necesita una prueba TXT en DNS real. El dominio Verified del preparador no acredita la verificación DNS." },
+  "BACK-PL-014": { ...domainSupplementLimitations["BACK-CF-005"], partialExecutionIds: ["PLAT-16"], manualReason: "Verificar un dominio desde Plataforma usa la misma consulta TXT real. La ficha y el retiro del dominio preparado no certifican esa verificación ni su registro previo de seguridad." },
   "BACK-WA-023": { ...platformWhatsAppLimitations["BACK-WA-023"], manualReason: "Crear y borrar plantillas necesita Meta real. Bot y equipos de Plataforma se comprueban localmente en WAP-01." },
   "BACK-WA-017": {
     partialExecutionIds: [], missing: "Estimar, programar y cancelar con una plantilla Marketing realmente Approved para la WABA.",
