@@ -4,9 +4,9 @@ import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { businessDefinitions, clickForResponse, invitationTokenFromMessage, requireOrganizationPermissions, requireProblem, requireSoleCompanyAdministrator, roleScopeNegativeAssignment, runBusinessDependencyCase } from "./e2e-completo-negocio.mjs";
 import * as business from "./e2e-completo-negocio.mjs";
 
-function selfDisableFixture({ status = 403, code = "Tenancy.Member.CannotDisableSelf", changed = false, width = 1440 } = {}) {
+function selfDisableFixture({ status = 403, code = "Tenancy.Member.CannotDisableSelf", changed = false, width = 1440, initialState = "Active", cycle } = {}) {
   const calls = [];
-  const before = { memberId: "own-member", userId: "own-person", state: "Active", version: 7,
+  const before = { memberId: "own-member", userId: "own-person", state: initialState, version: 7,
     roles: [{ id: "owner-role", name: "Dueño", isSystemRole: true, scope: "Organization" }], companies: [] };
   let detailReads = 0;
   const response = { status: () => status, json: async () => ({ code, traceId: "synthetic-trace" }),
@@ -14,7 +14,8 @@ function selfDisableFixture({ status = 403, code = "Tenancy.Member.CannotDisable
   const control = (name) => ({
     name,
     click: async () => calls.push(["click", name]), check: async () => calls.push(["check", name]),
-    locator: (selector, { has }) => { assert.equal(selector, "label"); assert.equal(has.name, "Deshabilitado"); return control("label Deshabilitado"); },
+    locator: () => assert.fail("Un has con el dialog como ancestro no es relativo a la opción."),
+    getByText: (text) => control("opción visible " + text),
     getByRole: (_role, options = {}) => control(String(options.name)), filter: () => control(name), first: () => control(name),
     isVisible: async () => name === "Descartar cambios", waitFor: async () => calls.push(["visible", name]),
   });
@@ -30,7 +31,7 @@ function selfDisableFixture({ status = 403, code = "Tenancy.Member.CannotDisable
     api: async (target, route, options) => {
       assert.equal(target, page); assert.equal(options, undefined, "Las escrituras se hacen por UI.");
       calls.push(["read", route]);
-      const data = route.includes("paged") ? { items: [before] } : { ...before, version: changed && detailReads++ > 0 ? 8 : 7 };
+      const data = route.includes("paged") ? { items: [before] } : cycle ? { ...before, ...(detailReads++ > 0 ? cycle : {}) } : { ...before, version: changed && detailReads++ > 0 ? 8 : 7 };
       return { status: () => 200, json: async () => data };
     },
     registerBusiness: async (target) => { assert.equal(target, page); calls.push(["register"]); return { me: { id: "own-person", access: "business", hasPersonalSpace: false } }; },
@@ -53,7 +54,7 @@ test("deshabilitarse exige 403 CannotDisableSelf y conserva el acceso, roles y v
     assert.ok(calls.some((entry) => entry[1] === "Deshabilitar y guardar"));
     assert.ok(calls.some((entry) => entry[1] === "No podés deshabilitarte a vos misma."));
     if (width === 390) {
-      assert.ok(calls.some((entry) => entry[0] === "click" && entry[1] === "label Deshabilitado"));
+      assert.ok(calls.some((entry) => entry[0] === "click" && entry[1] === "opción visible Deshabilitado"));
       assert.equal(calls.some(([action]) => action === "check"), false, "El input sr-only no recibe clicks forzados.");
     }
   }
@@ -61,6 +62,45 @@ test("deshabilitarse exige 403 CannotDisableSelf y conserva el acceso, roles y v
     const { h, page } = selfDisableFixture(options);
     await assert.rejects(business.checkSelfDisable(h, page, "own-person"));
   }
+});
+
+test("deshabilitar y rehabilitar exigen PUT200, versión nueva y conservación de roles y empresas", async () => {
+  for (const active of [false, true]) {
+    const initialState = active ? "Inactive" : "Active"; const state = active ? "Active" : "Inactive";
+    const { h, page } = selfDisableFixture({ status: 200, initialState, cycle: { state, version: 8 } });
+    assert.equal((await business.checkMemberStateChange(h, page, "own-member", active)).after.state, state);
+    for (const change of [{ state, version: 7 }, { state: initialState, version: 8 }, { state, version: 8, roles: [] }, { state, version: 8, companies: [{ companyId: "ajena" }] }, { state, version: 8, userId: "ajena" }]) {
+      const fixture = selfDisableFixture({ status: 200, initialState, cycle: change });
+      await assert.rejects(() => business.checkMemberStateChange(fixture.h, fixture.page, "own-member", active));
+    }
+    const rejected = selfDisableFixture({ status: 403, initialState, cycle: { state, version: 8 } });
+    await assert.rejects(() => business.checkMemberStateChange(rejected.h, rejected.page, "own-member", active));
+  }
+});
+
+test("el filtro móvil aplica la opción por su texto y verifica la URL y la lectura HTTP200 después de desmontar", async () => {
+  let current = "https://localtest.me/org/roles"; let clicked = false; let closed = false;
+  const response = { url: () => "https://localtest.me/api/roles/paged?companyId=propia", status: () => 200 };
+  const sheet = { getByText: (name, options) => { assert.equal(name, "Empresa propia"); assert.equal(options.exact, true); return { click: async (options) => { assert.equal(options, undefined); clicked = true; closed = true; current += "?vale=propia"; } }; },
+    getByRole: () => assert.fail("check requiere una comprobación posterior sobre el radio ya desmontado."),
+    waitFor: async ({ state }) => { assert.equal(state, "hidden"); assert.equal(closed, true); } };
+  const page = { goto: async () => {}, url: () => current, waitForResponse: async (predicate) => { assert.equal(predicate(response), true); return response; },
+    getByRole: (role) => role === "dialog" ? sheet : { click: async () => {} } };
+  await business.filterRolesByCompany({ width: 390, base: new URL("https://localtest.me") }, page, { id: "propia", name: "Empresa propia" });
+  assert.equal(clicked, true);
+});
+
+test("la reparación de acceso sólo declara los trece afectados y bloquea dependientes si no existe fixture", async () => {
+  const ids = ["23", "24", "25", "26", "27", "28", "31", "34", "38", "42", "43", "44", "45"].map((id) => `BIZ-${id}`);
+  assert.deepEqual(business.businessAccessRepairDefinitions.map((item) => item.id), ids);
+  const recorded = []; const blocked = []; let closed = false;
+  const page = { close: async () => { closed = true; } };
+  const h = { width: 390, newPage: async () => page, registerBusiness: async () => { throw new Error("alta no preparada"); },
+    record: async (id, getPage, action) => { recorded.push(id); assert.equal(getPage(), page); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; } },
+    block: async (id) => blocked.push(id), signOut: async () => assert.fail("No hay sesión para salir.") };
+  const outcomes = await business.runBusinessAccessRepairCases(h);
+  assert.deepEqual(recorded, ["BIZ-23"]); assert.deepEqual(blocked.sort(), ids.filter((id) => id !== "BIZ-23").sort());
+  assert.equal(outcomes.get("BIZ-23").ok, false); assert.equal(closed, true);
 });
 
 test("el estado de empresa se comprueba por badge en escritorio y por la acción disponible en móvil", async () => {

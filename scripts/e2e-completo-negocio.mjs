@@ -58,6 +58,7 @@ export const businessDefinitions = [
 ];
 
 export const businessRepairDefinitions = businessDefinitions.filter((entry) => ["BIZ-25", "BIZ-41"].includes(entry.id));
+export const businessAccessRepairDefinitions = businessDefinitions.filter((entry) => ["23", "24", "25", "26", "27", "28", "31", "34", "38", "42", "43", "44", "45"].includes(entry.id.slice(4)));
 
 /** Un recurso que existe en otra organización debe producir ProblemDetails, nunca datos ni un 403 ambiguo. */
 export async function requireProblem(response, status, code) {
@@ -248,14 +249,14 @@ async function openInvalidInvitation(h, page, token) {
   assert.ok(new URL(page.url()).hash === "", "La prueba secreta no debe quedar en la URL de la captura.");
 }
 
-async function changeMemberState(h, page, memberId, active, status = 200) {
+export async function changeMemberState(h, page, memberId, active, status = 200) {
   await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href);
   const label = active ? "Activo" : "Deshabilitado";
   if (h.width === 390) {
     await page.getByRole("region", { name: "Acceso a la organización", exact: true }).getByRole("button", { name: /^Estado/ }).click();
     const sheet = page.getByRole("dialog", { name: "Estado", exact: true });
-    const radio = sheet.getByRole("radio", { name: label, exact: true });
-    await sheet.locator("label", { has: radio }).click();
+    await sheet.getByText(label, { exact: true }).click();
+    await sheet.waitFor({ state: "hidden" });
   } else {
     await page.getByRole("combobox", { name: "Estado", exact: true }).click();
     await page.getByRole("option", { name: label, exact: true }).click();
@@ -264,6 +265,20 @@ async function changeMemberState(h, page, memberId, active, status = 200) {
   if (active) return clickForResponse(page, save, `/api/users/${memberId}`, "PUT", status);
   await save.click();
   return clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Deshabilitar y guardar", exact: true }), `/api/users/${memberId}`, "PUT", status);
+}
+
+export async function checkMemberStateChange(h, page, memberId, active) {
+  const before = await read(h, page, `/api/users/${memberId}`);
+  assert.equal(before.state, active ? "Inactive" : "Active", "El cambio necesita la membresía en el estado inicial real.");
+  await changeMemberState(h, page, memberId, active);
+  const after = await read(h, page, `/api/users/${memberId}`);
+  assert.equal(after.state, active ? "Active" : "Inactive");
+  assert.ok(Number.isInteger(after.version) && after.version > before.version, "El guardado debe avanzar la versión real.");
+  assert.equal(after.userId, before.userId); assert.equal(after.memberId, before.memberId);
+  assert.deepEqual(after.roles, before.roles, "Cambiar el estado no cambia los roles.");
+  assert.deepEqual(after.companies, before.companies, "Cambiar el estado no cambia las asignaciones de empresa.");
+  await page.getByText(active ? "Activo" : "Deshabilitado", { exact: true }).first().waitFor();
+  return { before, after };
 }
 
 /** M-Empresa muestra CUIT/zona en el subtítulo; la acción inversa comunica el estado en su menú. */
@@ -328,6 +343,123 @@ export async function runBusinessRepairCases(h) {
         await h.signOut(page);
       }
     } finally { await page.close(); }
+  }
+}
+
+/** Sólo los trece afectados; las altas propias son preparación y no acreditan otros registros. */
+export async function runBusinessAccessRepairCases(h) {
+  const page = await h.newPage(); let capturePage = page; let live;
+  const outcomes = new Map(); const tag = randomUUID().slice(0, 8);
+  const partialEmail = `e2e-repara-parcial-${tag}@example.test`; const adminEmail = `e2e-repara-admin-${tag}@example.test`;
+  let owner; let company; let partial; let partialName; let empty; let role; let companyRole; let sibling; let currentEmail; let prepared = false; let rolesBefore;
+  const run = (id, dependencies, action) => runBusinessDependencyCase(h, outcomes, `BIZ-${id}`, dependencies.map((value) => `BIZ-${value}`), () => capturePage, async () => { capturePage = page; return action(); });
+  const discard = async () => {
+    const cancel = page.getByRole("dialog").getByRole("button", { name: "Cancelar", exact: true }).first(); if (await cancel.isVisible()) await cancel.click();
+    const reset = page.getByRole("button", { name: "Descartar cambios", exact: true }).filter({ visible: true }).first(); if (await reset.isVisible()) await reset.click();
+  };
+  const leave = async () => { await discard(); await h.signOut(page); currentEmail = null; };
+  const as = async (email) => {
+    capturePage = page;
+    if (currentEmail === email) { await discard(); return read(h, page, "/api/me"); }
+    if (currentEmail) await leave();
+    const me = await h.login(page, email, "business"); currentEmail = email; return me;
+  };
+  const prepare = async () => {
+    owner = await h.registerBusiness(page); currentEmail = owner.email;
+    assert.equal(owner.me.access, "business"); assert.equal(owner.me.hasPersonalSpace, false);
+    company = (await read(h, page, "/api/companies/paged?page=1&pageSize=100")).items.find((item) => item.name === owner.companyName); assert.ok(company?.id);
+    role = await createReadRole(h, page, `Lectura Usuarios reparación ${tag}`, "Ver usuarios");
+    assert.deepEqual((await read(h, page, `/api/roles/${role.id}`)).permissions, ["users.read"]);
+    partial = await invite(h, page, partialEmail, { roleName: role.name });
+    empty = await invite(h, page, `e2e-repara-vacio-${tag}@example.test`);
+    await invite(h, page, adminEmail, { companyName: company.name });
+    const member = await as(partialEmail); requireOrganizationPermissions(member, ["users.read"]); partialName = member.displayName || partialEmail;
+    const admin = await as(adminEmail); requireOrganizationPermissions(admin, []); assert.equal((await h.api(page, `/api/companies/${company.id}`)).status(), 200);
+    await as(owner.email); await page.goto(new URL(`/org/empresas/${company.id}`, h.base).href);
+    await page.getByRole("button", { name: "Agregar miembro", exact: true }).first().click();
+    const dialog = page.getByRole("dialog", { name: "Agregar miembro", exact: true }); await dialog.getByRole("combobox", { name: "Usuario", exact: true }).click();
+    await page.getByRole("option", { name: partialName, exact: true }).click();
+    await clickForResponse(page, dialog.getByRole("button", { name: "Agregar miembro", exact: true }), `/api/companies/${company.id}/members`, "POST", 204); await dialog.waitFor({ state: "hidden" });
+    await as(adminEmail);
+    const route = `/api/companies/${company.id}/members/paged?page=1&pageSize=100`; const before = await read(h, page, route);
+    assert.equal(before.items.filter((item) => item.memberId === partial.memberId).length, 1);
+    await requireProblem(await h.api(page, `/api/companies/${company.id}/members`, { method: "POST", headers: { "Idempotency-Key": randomUUID() }, data: { memberId: partial.memberId, roleIds: [] } }), 409, "Companies.Membership.AlreadyExists");
+    assert.deepEqual(await read(h, page, route), before); await as(owner.email); prepared = true;
+  };
+  try {
+    await run("23", [], async () => {
+      try { await prepare(); } catch (error) { error.message = `Preparación propia de la reparación de membresía: ${error.message}`; throw error; }
+      const changed = await checkMemberStateChange(h, page, partial.memberId, false); rolesBefore = changed.before.roles;
+      return "La membresía propia pasó a Deshabilitado por PUT200 versionado, sin cambiar sus roles ni sus asignaciones de empresa.";
+    });
+    if (!owner) {
+      for (const entry of businessAccessRepairDefinitions.filter((item) => item.id !== "BIZ-23")) { await h.block(entry.id, "No se completó el alta propia de la reparación.", page); outcomes.set(entry.id, { ok: false, blocked: true }); }
+      return outcomes;
+    }
+    if (!prepared) {
+      await run("25", [], async () => { await as(owner.email); return checkSelfDisable(h, page, owner.me.id); });
+      for (const entry of businessAccessRepairDefinitions.filter((item) => !outcomes.has(item.id))) { await h.block(entry.id, "No se completaron las membresías y roles propios de la reparación.", page); outcomes.set(entry.id, { ok: false, blocked: true }); }
+      return outcomes;
+    }
+    await run("43", ["23"], async () => {
+      await as(adminEmail); const route = `/api/companies/${company.id}/members/paged?page=1&pageSize=100`; const before = await read(h, page, route);
+      assert.equal(before.items.find((item) => item.memberId === partial.memberId)?.state, "Inactive");
+      await requireProblem(await h.api(page, `/api/companies/${company.id}/members`, { method: "POST", headers: { "Idempotency-Key": randomUUID() }, data: { memberId: partial.memberId, roleIds: [] } }), 409, "Companies.Membership.MemberInactive");
+      assert.deepEqual(await read(h, page, route), before); await page.goto(new URL(`/org/empresas/${company.id}`, h.base).href); await page.getByText(partialName, { exact: true }).first().waitFor();
+      return "Administrador propio recibió409 MemberInactive sin cambiar miembros; el duplicado activo también fue rechazado durante la preparación.";
+    });
+    await run("24", ["23"], async () => { await as(owner.email); const changed = await checkMemberStateChange(h, page, partial.memberId, true); assert.deepEqual(changed.after.roles, rolesBefore); return "Membresía rehabilitada por PUT200, versión nueva y mismas asignaciones guardadas."; });
+    await run("25", [], async () => { await as(owner.email); return checkSelfDisable(h, page, owner.me.id); });
+    await run("26", [], async () => {
+      await as(owner.email); companyRole = await createReadRole(h, page, `Lectura empresa reparación ${tag}`, "Ver miembros", { companyName: company.name, area: "Miembros" });
+      const detail = await read(h, page, `/api/roles/${companyRole.id}`); assert.equal(detail.scope, "SpecificCompany"); assert.equal(detail.companyId, company.id); assert.deepEqual(detail.permissions, ["company.members.read"]);
+      await filterRolesByCompany(h, page, company); await page.getByRole("link", { name: companyRole.name, exact: true }).waitFor(); return "Rol específico propio creado y listado con filtro UI, companyId API200 y vale en URL.";
+    });
+    await run("27", ["24", "26"], async () => {
+      await as(owner.email); await page.goto(new URL(`/org/empresas/${company.id}`, h.base).href);
+      await page.getByRole("button", { name: `Acciones para ${partialName}`, exact: true }).click(); await page.getByRole("menuitem", { name: "Cambiar roles", exact: true }).click();
+      const dialog = page.getByRole("dialog", { name: `Roles de ${partialName}`, exact: true }); await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click();
+      await page.getByRole("menuitemcheckbox", { name: companyRole.name, exact: true }).click(); await page.keyboard.press("Escape");
+      await clickForResponse(page, dialog.getByRole("button", { name: "Guardar cambios", exact: true }), `/api/companies/${company.id}/members/${partial.memberId}/roles`, "PUT");
+      const assigned = await read(h, page, `/api/roles/${companyRole.id}`); assert.equal(assigned.userCount, 1); await page.goto(new URL(`/org/roles/${companyRole.id}`, h.base).href);
+      assert.equal(await page.getByRole("combobox", { name: "Vale en", exact: true }).isDisabled(), true); await filterRolesByCompany(h, page, company);
+      await page.getByRole("button", { name: `Acciones para ${companyRole.name}`, exact: true }).click(); assert.equal(await page.getByRole("menuitem", { name: "Inactivar", exact: true }).getAttribute("aria-disabled"), "true");
+      await page.getByText("Lo tiene 1 usuario. Quitáselo primero.", { exact: true }).waitFor(); await requireProblem(await h.api(page, `/api/roles/${companyRole.id}`, { method: "DELETE", data: { version: assigned.version } }), 409, "Roles.Role.HasUsers");
+      return "Rol propio asignado por UI; alcance bloqueado, Inactivar apagado con motivo y DELETE409 HasUsers.";
+    });
+    await run("28", [], async () => {
+      await as(owner.email); const disposable = await createReadRole(h, page, `Sin asignar reparación ${tag}`, "Ver miembros", { companyName: company.name, area: "Miembros" }); await filterRolesByCompany(h, page, company);
+      await page.getByRole("button", { name: `Acciones para ${disposable.name}`, exact: true }).click(); await page.getByRole("menuitem", { name: "Inactivar", exact: true }).click();
+      await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/roles/${disposable.id}`, "DELETE", 204);
+      await requireProblem(await h.api(page, `/api/roles/${disposable.id}`), 404, "Roles.Role.NotFound"); return "Rol propio sin personas inactivado por UI204 y lectura404.";
+    });
+    await run("31", ["24"], async () => { await as(partialEmail); await requireProblem(await h.api(page, "/api/organization/audit"), 403); await requireProblem(await h.api(page, "/api/organization/audit/actors/paged"), 403); await page.goto(new URL("/org/auditoria", h.base).href); await page.getByRole("heading", { name: "No tenés permiso para ver esta página", exact: true }).waitFor(); return "Miembro propio sin audit.read no obtuvo eventos, actores ni pantalla privada."; });
+    await run("38", ["31"], async () => {
+      await as(owner.email); const cachedRole = await createReadRole(h, page, `Lectura Roles reparación ${tag}`, "Ver roles"); const email = `e2e-repara-cache-${tag}@example.test`; const cachedMember = await invite(h, page, email, { roleName: cachedRole.name });
+      await leave(); live = await h.newPage(); capturePage = live; const logged = await h.login(live, email, "business"); currentEmail = email; requireOrganizationPermissions(logged, ["roles.read"]);
+      await live.goto(new URL("/org/roles", h.base).href); await live.getByRole("heading", { name: "Roles y permisos", exact: true }).waitFor(); const original = await read(h, live, "/api/me"); assert.equal(original.activeTenantId, owner.me.activeTenantId); assert.equal((await h.api(live, "/api/roles/paged")).status(), 200);
+      capturePage = page; const restored = await forceBusinessLogin(h, page, owner.email); currentEmail = owner.email; assert.equal(restored.id, owner.me.id);
+      capturePage = live; assert.equal((await read(h, live, "/api/me")).id, original.id); assert.equal((await h.api(live, "/api/roles/paged")).status(), 200);
+      capturePage = page; await page.goto(new URL(`/org/usuarios/${cachedMember.memberId}`, h.base).href); await chooseOrganizationRole(page, h.width, cachedRole.name, false); await clickForResponse(page, page.getByRole("button", { name: "Guardar cambios", exact: true }), `/api/users/${cachedMember.memberId}`, "PUT"); assert.deepEqual((await read(h, page, `/api/users/${cachedMember.memberId}`)).roles, []);
+      capturePage = live; await requireProblem(await h.api(live, "/api/roles/paged"), 403, "Http.Forbidden"); const changed = await read(h, live, "/api/me"); assert.equal(changed.id, original.id); assert.equal(changed.activeTenantId, original.activeTenantId); requireOrganizationPermissions(changed, []);
+      return "Pestaña viva propia conservó identidad/token y pasó Roles200→403 sin recarga ni reingreso después de retirar roles.read por UI; Me quedó sin permisos.";
+    });
+    await run("34", ["24", "31"], async () => {
+      await as(owner.email); await page.goto(new URL(`/org/usuarios/${partial.memberId}`, h.base).href); await page.getByRole("button", { name: "Más acciones", exact: true }).click(); await page.getByRole("menuitem", { name: "Quitar de la organización", exact: true }).click();
+      await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Quitar", exact: true }), `/api/users/${partial.memberId}`, "DELETE", 204); await page.waitForURL((url) => url.pathname === "/org/usuarios"); await requireProblem(await h.api(page, `/api/users/${partial.memberId}`), 404); assert.equal((await read(h, page, `/api/users/paged?search=${encodeURIComponent(partialEmail)}&page=1&pageSize=100`)).items.some((item) => item.memberId === partial.memberId), false); return "Membresía propia retirada por UI, ausente de Usuarios y ficha404.";
+    });
+    for (const [id, kind, dependencies] of [["42", "CompanyNotAllowed", ["26"]], ["44", "CompanyRequired", ["26"]], ["45", "CompanyMismatch", ["42", "44"]]]) await run(id, dependencies, async () => {
+      await as(owner.email);
+      if (!sibling) {
+        const name = `Hermana reparación ${tag}`; await page.goto(new URL("/org/empresas", h.base).href); await page.getByRole("button", { name: "Crear empresa", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "Crear empresa", exact: true }); await dialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(name); await clickForResponse(page, dialog.getByRole("button", { name: "Crear empresa", exact: true }), "/api/companies", "POST", 201); await dialog.waitFor({ state: "hidden" }); sibling = (await read(h, page, "/api/companies/paged?page=1&pageSize=100")).items.find((item) => item.name === name); assert.ok(sibling?.id);
+      }
+      assert.equal((await read(h, page, `/api/companies/${sibling.id}`)).id, sibling.id); const before = await read(h, page, `/api/users/${empty.memberId}`); const data = roleScopeNegativeAssignment(kind, before, { organizationRoleId: role.id, companyRoleId: companyRole.id, companyId: company.id, otherCompanyId: sibling.id });
+      await requireProblem(await h.api(page, `/api/users/${empty.memberId}`, { method: "PUT", data }), 400, `Roles.RoleAssignment.${kind}`); assert.deepEqual(await read(h, page, `/api/users/${empty.memberId}`), before); await page.goto(new URL(`/org/usuarios/${empty.memberId}`, h.base).href); await page.getByRole("region", { name: "Acceso a la organización", exact: true }).waitFor(); return `${kind}:400 con dos empresas y roles reales del mismo tenant, sin cambiar membresía, asignaciones ni versión.`;
+    });
+    return outcomes;
+  } finally {
+    try { if (currentEmail) { await discard(); await page.goto(new URL("/org", h.base).href); await h.signOut(page); } }
+    finally { await Promise.allSettled([page.close(), ...(live ? [live.close()] : [])]); }
   }
 }
 
@@ -418,14 +550,16 @@ async function finishInvitationFlow(h, page, flow, a, ownerRestored) {
   } finally { await flow.close(); }
 }
 
-async function filterRolesByCompany(h, page, company) {
+export async function filterRolesByCompany(h, page, company) {
   await page.goto(new URL("/org/roles", h.base).href);
   const filtered = page.waitForResponse((response) => pathOf(response) === "/api/roles/paged"
     && new URL(response.url()).searchParams.get("companyId") === company.id && response.status() === 200);
   void filtered.catch(() => {});
   if (h.width === 390) {
     await page.getByRole("button", { name: "Filtrar roles", exact: true }).click();
-    await page.getByRole("dialog", { name: "Filtrar roles", exact: true }).getByRole("radio", { name: new RegExp(`^${escapeRegex(company.name)}`) }).check();
+    const sheet = page.getByRole("dialog", { name: "Filtrar roles", exact: true });
+    await sheet.getByText(company.name, { exact: true }).click();
+    await sheet.waitFor({ state: "hidden" });
   } else {
     await page.getByRole("button", { name: /^Vale en: todos/ }).click();
     await page.getByRole("menuitemradio", { name: new RegExp(`^${escapeRegex(company.name)}`) }).click();
@@ -772,12 +906,8 @@ export async function runBusinessCases(h) {
   });
   await run("23", ["06"], async () => {
     await as(a.email);
-    rolesBeforeSuspension = (await read(h, page, `/api/users/${partial.memberId}`)).roles.map((role) => role.id).sort();
-    await changeMemberState(h, page, partial.memberId, false);
-    const detail = await read(h, page, `/api/users/${partial.memberId}`);
-    assert.equal(detail.state, "Inactive");
-    assert.deepEqual(detail.roles.map((role) => role.id).sort(), rolesBeforeSuspension);
-    await page.getByText("Deshabilitado", { exact: true }).first().waitFor();
+    const { before } = await checkMemberStateChange(h, page, partial.memberId, false);
+    rolesBeforeSuspension = before.roles.map((role) => role.id).sort();
     return "La membresía pasó a Deshabilitado y conservó el rol users.read guardado.";
   });
   await run("43", ["23", "40"], async () => {
@@ -793,9 +923,7 @@ export async function runBusinessCases(h) {
   await run("24", ["23"], async () => {
     // El negativo43 se hace como Administrador; la rehabilitación siempre vuelve a la Dueña, aun si43 falló.
     await as(a.email);
-    await changeMemberState(h, page, partial.memberId, true);
-    const detail = await read(h, page, `/api/users/${partial.memberId}`);
-    assert.equal(detail.state, "Active");
+    const { after: detail } = await checkMemberStateChange(h, page, partial.memberId, true);
     assert.deepEqual(detail.roles.map((role) => role.id).sort(), rolesBeforeSuspension);
     await page.getByText("Activo", { exact: true }).first().waitFor();
     return "Rehabilitó la membresía por UI con las mismas asignaciones de roles.";

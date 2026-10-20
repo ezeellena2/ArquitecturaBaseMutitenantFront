@@ -65,6 +65,7 @@ const suiteSpecs = {
   plataformasesionarreglos: ["./e2e-completo-plataforma.mjs", "platformSessionRepairDefinitions", "runPlatformSessionRepairCases"],
   cierrelocal: ["./e2e-completo-cierre-local.mjs", "localClosureDefinitions", "runLocalClosureCases"],
   cuotawhatsapp: ["./e2e-completo-cuota-whatsapp.mjs", "quotaWhatsAppDefinitions", "runQuotaWhatsAppCases"],
+  negocioaccesosarreglos: ["./e2e-completo-negocio.mjs", "businessAccessRepairDefinitions", "runBusinessAccessRepairCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
@@ -168,7 +169,7 @@ export async function main(options = parseArguments([])) {
     ...(!options.refreshOnly ? definitions.filter((item) => !item.id.startsWith("BASE-") && (!options.resume || !saved.executions?.some((entry) => entry.id === item.id))).map((item) => ({ ...item, results: [] })) : []),
   ]);
   const report = { date, commits, startedAtUtc: previous.startedAtUtc ?? new Date().toISOString(),
-    environment: { ...previous.environment, cleanup: previous.environment?.cleanup ?? "sin iniciar", browser: "Chrome del sistema, contexto persistente", database: "PostgreSQL efímero; pickup .eml y control WhatsApp de Testing", scope: inventoryMetadata.scope },
+    environment: { ...previous.environment, cleanup: previous.environment?.cleanup ?? "sin iniciar", browser: "Chrome del sistema, contexto persistente", executionModel: "Lotes secuenciales con un contexto persistente por lote. La cuota diaria usa un entorno nuevo por ancho.", database: "PostgreSQL efímero; pickup .eml y control WhatsApp de Testing", scope: inventoryMetadata.scope },
     baseline: [
       { source: "npm run test:e2e:real", ...parseTapSummary(e2eLog), note: "Salida local en .local/e2e-completo/baseline-e2e.log del back; sin datos sensibles en este informe." },
       { source: "node scripts/recorrido-usuario.mjs --no-build", finished: journey.finished ?? false, cleanup: journey.cleanup ?? "pendiente", report: path.relative(output, path.join(journeyDirectory, "index.html")).replaceAll("\\", "/"), passed: journey.steps.reduce((count, entry) => count + (entry.results ?? []).filter((result) => result.status === "passed").length, 0), total: imported.length * 2, failure: journey.failure },
