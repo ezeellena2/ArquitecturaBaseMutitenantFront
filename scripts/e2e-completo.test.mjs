@@ -18,6 +18,8 @@ test("el arreglo de borrado con PNG del Asistente se selecciona sin repetir su s
   assert.deepEqual(parseArguments(["--suite=negociopendientesarreglo", "--width=390", "--resume", "--no-build"]).suites, ["negociopendientesarreglo"]);
   assert.equal(parseArguments([]).suites.includes("publicoauditoriaarreglo"), false);
   assert.deepEqual(parseArguments(["--suite=publicoauditoriaarreglo", "--width=390", "--resume", "--no-build"]).suites, ["publicoauditoriaarreglo"]);
+  assert.equal(parseArguments([]).suites.includes("dominiopendientesarreglo"), false);
+  assert.deepEqual(parseArguments(["--suite=dominiopendientesarreglo", "--width=390", "--resume", "--no-build"]).suites, ["dominiopendientesarreglo"]);
 });
 
 test("reanudar una selección ya verde evita iniciar otro entorno, salvo revalidación móvil expresa", () => {

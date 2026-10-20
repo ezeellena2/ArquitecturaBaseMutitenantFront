@@ -15,6 +15,11 @@ export const domainSupplementDefinitions = [
   definition(2, "Propietario original env.businessEmail", "Retirar por UI el dominio con su versión y verificar un correo posterior", "/org/configuracion · /cuenta", "DELETE lleva la versión actual; el método previo conserva su ManagedByTenantId. Un correo nuevo del mismo dominio verificado por OTP queda propio y sin asociación automática.", ["BACK-CF-006"]),
   definition(3, "Propietario con membresía deshabilitada y otra Dueña", "Comprobar el correo administrado después de retirar el dominio", "/login · /cuenta", "Sin membresía activa el correo administrado sigue rechazado y no crea Personal; su vínculo persiste. El correo propio original permite Personal y la membresía se restaura por UI.", ["BACK-CU-016"]),
 ];
+export const domainPendingRepairDefinitions = [...domainSupplementDefinitions];
+export async function runDomainPendingRepairCases(h, { run = runDomainSupplementCases } = {}) {
+  assert.equal(h.width, 390, "La reparación pendiente de dominio corresponde a 390 px.");
+  return run(h);
+}
 export const domainSupplementLimitations = {
   "BACK-CF-005": {
     partialExecutionIds: [], missing: "Verificación TXT y asociación de métodos existentes y futuros a partir de una prueba DNS auténtica.",
@@ -42,6 +47,61 @@ export async function requireManagedLoginRejection(response) {
 }
 const pathOf = (response) => new URL(response.url()).pathname;
 async function read(h, page, route) { const response = await h.api(page, route); assert.equal(response.status(), 200); return response.json(); }
+export async function clickDomainForResponse(page, button, route, method, status = 200) {
+  const path = new URL(route, "https://local.invalid").pathname;
+  const response = await clickForResponse(page, button, path, method, null);
+  if (response.status() !== status) {
+    let code = "no registrado";
+    try { const body = await response.json(); if (/^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*)+$/u.test(body.code)) code = body.code; } catch { /* No copiar bodies ni mensajes de servidor al diagnóstico. */ }
+    const operation = path.replace(/\/[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}(?=\/|$)/giu, "/:id");
+    assert.equal(response.status(), status, `${method} ${operation}: respondió ${response.status()}, esperado ${status}; código ${code}.`);
+  }
+  return response;
+}
+
+async function addDomainBackupCompany(h, page, memberId, company, role) {
+  await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href);
+  await page.getByRole("button", { name: "Sumar empresa", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Sumar empresa", exact: true });
+  await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click();
+  await page.getByRole("option", { name: company.name, exact: true }).click();
+  await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click();
+  await page.getByRole("menuitemcheckbox", { name: role.name, exact: true }).click(); await page.keyboard.press("Escape");
+  await clickDomainForResponse(page, dialog.getByRole("button", { name: "Sumar", exact: true }), `/api/users/${memberId}`, "PUT");
+  await dialog.waitFor({ state: "hidden" });
+}
+
+/** Dueño organizacional no reemplaza CompanyAdmin: preparar sólo la suplente propia antes de deshabilitar al original. */
+export async function prepareDomainBackupAdministration(h, page, { ownerMemberId, ownerId, backupMe, backupEmail, organizationId }, { addCompany = addDomainBackupCompany } = {}) {
+  requireSyntheticEmail(backupEmail);
+  assert.equal(backupMe.access, "business"); assert.equal(backupMe.activeTenantId, organizationId); assert.notEqual(backupMe.id, ownerId);
+  const original = await read(h, page, `/api/users/${ownerMemberId}`);
+  assert.equal(original.memberId, ownerMemberId); assert.equal(original.userId, ownerId); assert.equal(original.state, "Active");
+  const listed = await read(h, page, `/api/users/paged?search=${encodeURIComponent(backupEmail)}&pageSize=100`);
+  const matches = listed.items.filter((item) => item.userId === backupMe.id); assert.equal(matches.length, 1);
+  const memberId = matches[0].memberId; assert.ok(memberId && memberId !== ownerMemberId);
+  const before = await read(h, page, `/api/users/${memberId}`);
+  assert.equal(before.memberId, memberId); assert.equal(before.userId, backupMe.id); assert.equal(before.state, "Active");
+  assert.ok(before.roles.some((role) => role.isSystemRole && role.name === "Dueño"));
+  assert.deepEqual(before.companies, [], "La suplente propia se invitó sólo como Dueña, sin empresas previas.");
+  const prepared = [];
+  for (const assignment of original.companies) {
+    const role = assignment.roles.find((item) => item.isSystemRole && item.name === "Administrador");
+    if (assignment.status !== "Active" || !role) continue;
+    const company = await read(h, page, `/api/companies/${assignment.companyId}`);
+    assert.equal(company.id, assignment.companyId);
+    if (company.status !== "Active") continue;
+    await addCompany(h, page, memberId, company, role); prepared.push({ companyId: company.id, roleId: role.id });
+    const after = await read(h, page, `/api/users/${memberId}`);
+    assert.equal(after.userId, before.userId); assert.equal(after.state, "Active"); assert.deepEqual(after.roles, before.roles);
+    assert.ok(after.version > before.version); assert.equal(after.companies.length, prepared.length);
+    for (const expected of prepared) {
+      const access = after.companies.find((item) => item.companyId === expected.companyId);
+      assert.equal(access?.status, "Active"); assert.deepEqual(access.roles.map((item) => item.id), [expected.roleId]);
+    }
+  }
+  assert.deepEqual(await read(h, page, `/api/users/${ownerMemberId}`), original, "Preparar a la suplente no modifica al propietario original.");
+}
 async function sendCode(page, button, route) {
   const response = await sendWithCooldown(async () => {
     const waiting = page.waitForResponse((reply) => pathOf(reply) === route && reply.request().method() === "POST"); void waiting.catch(() => {}); await button.click({ timeout: 90_000 }); return waiting;
@@ -62,8 +122,8 @@ export async function chooseDomainMemberState(h, page, active) {
 async function memberState(h, page, memberId, active, onSaved = () => {}) {
   await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href); await chooseDomainMemberState(h, page, active);
   const save = page.getByRole("button", { name: "Guardar cambios", exact: true });
-  if (active) await clickForResponse(page, save, `/api/users/${memberId}`, "PUT");
-  else { await save.click(); await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Deshabilitar y guardar", exact: true }), `/api/users/${memberId}`, "PUT"); }
+  if (active) await clickDomainForResponse(page, save, `/api/users/${memberId}`, "PUT");
+  else { await save.click(); await clickDomainForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Deshabilitar y guardar", exact: true }), `/api/users/${memberId}`, "PUT"); }
   onSaved();
   assert.equal((await read(h, page, `/api/users/${memberId}`)).state, active ? "Active" : "Inactive");
 }
@@ -103,8 +163,10 @@ export async function runDomainSupplementCases(h) {
       await page.goto(new URL("/org/usuarios", h.base).href); await page.getByRole("button", { name: "Invitar usuario", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "Invitar usuario", exact: true });
       await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(backup.email); await dialog.getByRole("button", { name: "Roles de la organización", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: "Dueño", exact: true }).click(); await page.keyboard.press("Escape");
       await clickForResponse(page, dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/users/invitations", "POST", 201); await dialog.waitFor({ state: "hidden" });
-      await leave(); await prepareManagedProof(h, proofPage);
       const otherOwner = await enter(backup.email); assert.equal(otherOwner.activeTenantId, owner.activeTenantId); assert.ok(otherOwner.effectivePermissions.organization.includes("users.manage"));
+      await prepareDomainBackupAdministration(h, page, { ownerMemberId: memberId, ownerId: owner.id, backupMe: otherOwner, backupEmail: backup.email, organizationId: owner.activeTenantId });
+      // El código se emite después de preparar los administradores, con el propietario todavía activo.
+      await leave(); await prepareManagedProof(h, proofPage); await enter(backup.email);
       await memberState(h, page, memberId, false, () => { inactive = true; }); await leave(); capturePage = proofPage; await rejectManagedPersonal(h, proofPage);
       return "El dominio Verified y el vínculo original existen; el OTP real anterior fue rechazado400 tras deshabilitar la membresía. Otro pedido202 no llegó al pickup ni autenticó Personal.";
     });

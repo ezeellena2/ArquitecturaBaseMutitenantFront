@@ -59,6 +59,7 @@ const suiteSpecs = {
   negocioinicioarreglo: ["./e2e-completo-negocio-complemento.mjs", "businessHomeRepairDefinitions", "runBusinessHomeRepairCases"],
   negociofiltrosarreglos: ["./e2e-completo-negocio-complemento.mjs", "businessFilterRepairDefinitions", "runBusinessFilterRepairCases"],
   dominioextra: ["./e2e-completo-dominio-complemento.mjs", "domainSupplementDefinitions", "runDomainSupplementCases"],
+  dominiopendientesarreglo: ["./e2e-completo-dominio-complemento.mjs", "domainPendingRepairDefinitions", "runDomainPendingRepairCases"],
   rolesextra: ["./e2e-completo-roles-complemento.mjs", "roleSupplementDefinitions", "runRoleSupplementCases"],
   seguridadextra: ["./e2e-completo-seguridad-complemento.mjs", "securitySupplementDefinitions", "runSecuritySupplementCases"],
   contratoextra: ["./e2e-completo-contrato-complemento.mjs", "contractSharedDefinitions", "runContractSupplementCases"],
