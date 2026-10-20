@@ -13,6 +13,7 @@ export const securitySupplementDefinitions = [
   definition(3, "Operador nuevo con MFA", "Agotar diez intentos, recargar e intentar el código correcto", "/login", "Nueve400 Invalid y el décimo429 LockedOut; Retry-After coincide con retryAfter; tras F5 el código correcto recibe el mismo bloqueo y Verificar queda apagado.", ["BACK-ID-025"]),
   definition(4, "Operador sólo de Auditoría y operador sin pantalla permitida", "Abrir Inicio con cada permiso individual", "/plataforma · /plataforma/auditoria", "audit.read llega a la primera sección Auditoría; accounts.manage sin lectura permanece en Inicio con Sin permiso; ambos son operadores sin Personal ni organizaciones."),
 ];
+export const securityStepUpRepairDefinitions = securitySupplementDefinitions.filter((entry) => entry.id === "SEC-02");
 
 // Estas dos ramas completan PL003 sólo junto a las siete pruebas ya existentes, nunca por sí solas.
 export const securitySupplementProofGroups = {
@@ -55,10 +56,11 @@ export function requireExclusivePlatformActor(me, permissions) {
 
 export async function prepareSecurityPermissions(page, name, toggle, reason) {
   // La lectura HTTP del arnés no espera que la ficha renderice sus acciones.
-  // El helper original decide botón/menú después de esta barrera de UI real.
+  // Acciones puede aparecer antes del botón de escritorio: no se usa como barrera alternativa.
   const change = page.getByRole("button", { name: "Cambiar permisos", exact: true });
   const actions = page.getByRole("button", { name: `Acciones de ${name}`, exact: true });
-  await change.or(actions).filter({ visible: true }).first().waitFor();
+  const width = page.viewportSize()?.width; assert.ok([1440, 390].includes(width));
+  await (width === 1440 ? change : actions).waitFor();
   return preparePermissions(page, name, toggle, reason);
 }
 
@@ -88,11 +90,11 @@ async function firstFactor(h, page, email) {
 }
 
 /** Toda persistencia de preparación sale de la UI; el único IPC corre el vencimiento de una prueba reciente propia. */
-export async function runSecuritySupplementCases(h) {
+async function runSecurityCases(h, selected) {
   const page = await h.newPage(); const url = (route) => new URL(route, h.base).href;
   const seedEmail = h.width === 1440 ? "e2e-e9a-operator@example.test" : "e2e-e9b-operator@example.test";
   let possibleSession = false; let currentEmail; let recovery; let lockout; let audit; let screenless;
-  const run = (number, action) => h.record(`SEC-${String(number).padStart(2, "0")}`, () => page, action);
+  const run = (number, action) => selected.has(number) ? h.record(`SEC-${String(number).padStart(2, "0")}`, () => page, action) : undefined;
 
   const leave = async () => {
     await stopConfirmingRecentAuthentication(page);
@@ -244,3 +246,7 @@ export async function runSecuritySupplementCases(h) {
     try { await leave(); } finally { await page.close(); }
   }
 }
+
+export async function runSecuritySupplementCases(h) { return runSecurityCases(h, new Set([1, 2, 3, 4])); }
+/** Sólo02: activa un destino propio por UI y usa el callback completo, sin ejecutar1/3/4. */
+export async function runSecurityStepUpRepairCases(h) { return runSecurityCases(h, new Set([2])); }

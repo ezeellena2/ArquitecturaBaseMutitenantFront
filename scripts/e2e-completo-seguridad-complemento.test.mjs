@@ -63,8 +63,10 @@ test("ambas ramas exigen un operador exclusivo con exactamente el permiso espera
 test("preparar permisos espera ficha antes del botón desktop o la hoja móvil y conserva motivo y selección", async () => {
   for (const mobile of [false, true]) {
     const waiting = Promise.withResolvers(); const loaded = Promise.withResolvers(); const calls = []; let ready = false; let opened = false; let text;
+    const waitForAction = async () => { waiting.resolve(); await loaded.promise; };
     const direct = {
-      or: () => ({ filter: () => ({ first: () => ({ waitFor: async () => { waiting.resolve(); await loaded.promise; } }) }) }),
+      or: () => { throw new Error("Acciones visible no acredita que Cambiar permisos ya esté disponible en escritorio."); },
+      waitFor: async () => { assert.equal(mobile, false); await waitForAction(); },
       isVisible: async () => { assert.equal(ready, true, "No se puede decidir el tipo de acción durante la carga."); return !mobile; },
       click: async () => { assert.equal(mobile, false); calls.push("directo"); opened = true; },
     };
@@ -74,20 +76,37 @@ test("preparar permisos espera ficha antes del botón desktop o la hoja móvil y
       assert.equal(role, "textbox"); return { fill: async (value) => { text = value; } };
     } };
     const page = {
+      viewportSize: () => ({ width: mobile ? 390 : 1440 }),
       keyboard: { press: async (key) => assert.equal(key, "Escape") },
       getByRole: (role, { name } = {}) => {
         if (role === "button" && name === "Cambiar permisos") return direct;
-        if (role === "button") { assert.equal(name, "Acciones de Cuenta propia"); return { getAttribute: async () => "dialog", click: async () => { assert.equal(mobile, true); calls.push("hoja"); } }; }
+        if (role === "button") { assert.equal(name, "Acciones de Cuenta propia"); return { waitFor: async () => { assert.equal(mobile, true); await waitForAction(); }, getAttribute: async () => "dialog", click: async () => { assert.equal(mobile, true); calls.push("hoja"); } }; }
         if (role === "menuitem") { assert.equal(name, "Cambiar permisos"); return { click: async () => { assert.equal(mobile, true); opened = true; } }; }
         if (role === "dialog") { assert.equal(name, "Cambiar permisos de Cuenta propia"); return form; }
         if (role === "menu") return { isVisible: async () => true };
         assert.equal(role, "menuitemcheckbox"); return { nth: (index) => { assert.equal(index, 0); return { click: async () => calls.push("selección") }; } };
       },
     };
-    const pending = security.prepareSecurityPermissions(page, "Cuenta propia", 0, "Motivo conservado.");
-    await waiting.promise; assert.deepEqual(calls, []);
+    const pending = security.prepareSecurityPermissions(page, "Cuenta propia", 0, "Motivo conservado."); void pending.catch(() => {});
+    await Promise.race([waiting.promise, pending]); assert.deepEqual(calls, []);
     ready = true; loaded.resolve(); const prepared = await pending;
     assert.deepEqual(calls, [mobile ? "hoja" : "directo", "picker", "selección"]);
     assert.equal(text, "Motivo conservado."); assert.equal(prepared.form, form); assert.equal(prepared.picker, picker); assert.equal(prepared.selection, "Ver organizaciones, Ver la auditoría");
+  }
+});
+
+test("la reparación de step-up sólo ejecuta02 y no repite recuperación, bloqueo o ramas de Inicio", async () => {
+  assert.deepEqual(security.securityStepUpRepairDefinitions.map((entry) => entry.id), ["SEC-02"]);
+  for (const width of [1440, 390]) {
+    const records = []; const calls = []; const setupFailure = new Error("Ingreso de preparación fallido");
+    const locator = { or() { return this; }, filter() { return this; }, first() { return this; }, waitFor: async () => {}, isVisible: async () => false };
+    const page = { close: async () => calls.push("cerrar"), goto: async () => calls.push("abandonar puerta incompleta"), viewportSize: () => ({ width, height: 900 }), setViewportSize: async () => {}, getByRole: () => locator };
+    const h = { width, base: new URL("https://localtest.me"), newPage: async () => page,
+      login: async (_page, email, access) => { assert.equal(_page, page); assert.equal(email, width === 1440 ? "e2e-e9a-operator@example.test" : "e2e-e9b-operator@example.test"); assert.equal(access, "platform"); calls.push("ingreso UI de preparación02"); throw setupFailure; },
+      record: async (id, getPage, action) => { records.push(id); assert.equal(getPage(), page); try { return { ok: true, value: await action() }; } catch (error) { assert.equal(error, setupFailure); return { ok: false, error }; } },
+      signOut: async () => assert.fail("No se completó una sesión"),
+    };
+    await security.runSecurityStepUpRepairCases(h);
+    assert.deepEqual(records, ["SEC-02"]); assert.deepEqual(calls, ["ingreso UI de preparación02", "abandonar puerta incompleta", "cerrar"]);
   }
 });
