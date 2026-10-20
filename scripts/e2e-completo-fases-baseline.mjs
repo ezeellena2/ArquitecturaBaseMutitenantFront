@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
+import { expect } from "playwright/test";
 import { existingScriptCases } from "./e2e-completo-inventario-front.mjs";
 import { cleanupContinuationSessions } from "./e2e-completo-continuacion.mjs";
 import { forceBusinessLogin, clickForResponse } from "./e2e-completo-negocio.mjs";
@@ -176,7 +177,7 @@ async function publishBaselinePage(h, fixture) {
   await clickForResponse(page, page.getByRole("button", { name: "Guardar cambios", exact: true }), "/api/organization/public-page", "PUT");
   const visible = page.getByRole("switch", { name: "Visible en " + fixture.site.host, exact: true });
   await clickForResponse(page, visible, "/api/organization/public-page/publish", "POST");
-  assert.equal(await visible.isChecked(), true);
+  await expect(visible).toBeChecked();
   await page.getByRole("link", { name: "Ver página", exact: true }).waitFor();
 }
 

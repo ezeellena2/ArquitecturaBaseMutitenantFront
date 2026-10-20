@@ -22,6 +22,7 @@ import { verificationLimitations } from "./e2e-completo-limitaciones.mjs";
 import { enrichOriginalExecutions } from "./e2e-completo-metadatos-base.mjs";
 import { securitySupplementProofGroups } from "./e2e-completo-seguridad-complemento.mjs";
 import { assistantSupplementProofGroups } from "./e2e-completo-asistente-complemento.mjs";
+import { legalSupplementProofGroups } from "./e2e-completo-legales-complemento.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const execute = promisify(execFile);
@@ -53,6 +54,7 @@ const suiteSpecs = {
   contratoextra: ["./e2e-completo-contrato-complemento.mjs", "contractSupplementDefinitions", "runContractSupplementCases"],
   asistenteextra: ["./e2e-completo-asistente-complemento.mjs", "assistantSupplementDefinitions", "runAssistantSupplementCases"],
   whatsappplataformaextra: ["./e2e-completo-whatsapp-plataforma.mjs", "platformWhatsAppDefinitions", "runPlatformWhatsAppCases"],
+  legalesextra: ["./e2e-completo-legales-complemento.mjs", "legalSupplementDefinitions", "runLegalSupplementCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
@@ -169,7 +171,7 @@ export async function main(options = parseArguments([])) {
     report.baselineFunctionalIncidents = enrichBaselineIncidents(parseFunctionalBaselineIncidents(log));
   } catch (error) { if (error.code !== "ENOENT") throw error; }
   const persist = async (publish = false) => {
-    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations, additionalProofGroups: { ...securitySupplementProofGroups, ...assistantSupplementProofGroups } });
+    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations, additionalProofGroups: { ...securitySupplementProofGroups, ...assistantSupplementProofGroups, ...legalSupplementProofGroups } });
     report.matrix = matrix;
     report.cases = matrix;
     report.summary = summarizeCases(report.cases);
