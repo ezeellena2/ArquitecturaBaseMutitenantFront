@@ -115,9 +115,14 @@ function isCreatedReplayLocationFailure(result) {
     && /\/api\/platform\/tenants\/[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}/iu.test(actual);
 }
 
-function createdReplayLocationTriage() {
+function createdReplayLocationTriage(result) {
+  const finalAssertion = result.currentRoute === "/org"
+    && /^El replay201 debe conservar Location del alta201\.(?:\r?\n|$)/u.test(String(result.actual ?? ""));
+  const scope = finalAssertion
+    ? "La firma explícita corresponde a la aserción final del callback actual, con la pestaña del Dueño en /org. Según el orden de ese callback, antes de fallar también se comprobaron: otro cuerpo con la misma clave respondió422 Request.IdempotencyKeyReused; el listado conservó una sola organización propia, con una empresa y una membresía; el historial quedó sin nuevos eventos tras el replay y el422; el Dueño pendiente no tenía cuenta; la vista previa indicó NoAccount y la aceptación200 lo llevó a Business sin Personal; el operador conservó su identidad sin perfiles públicos; y hubo un único correo de invitación. Son comprobaciones anteriores al fallo de este intento, no resultados independientes ni datos heredados de intentos históricos. El resultado sigue failed por la ausencia de Location en el replay."
+    : "Este fallo no acredita duplicación de recursos, cambios de perfiles ni aceptación de la invitación: esas ramas requieren su propia evidencia del intento, incluida la posición de la aserción que se ejecutó.";
   return {
-    analysis: "La comparación registrada del replay201 recibió Location ausente frente al Location del alta201. Antes de esa comparación ya coincidían el status201, el encabezado Idempotent-Replayed y el cuerpo con todos los IDs. PlatformTenantsController.Create usa ToCreatedResult para el alta, mientras IdempotencyFilter reconstruye el replay BufferedJson como ContentResult con status/cuerpo y sin restaurar Location; CompleteAsync conserva sólo status y cuerpo en ese camino. docs/rules/api-http.md exige201 con Location para un POST que crea, y docs/rules/idempotencia.md pide reproducir la respuesta guardada. La pérdida observada del encabezado es coherente con ese camino del Back. Este fallo no acredita duplicación de recursos, cambios de perfiles ni aceptación de la invitación: esas ramas requieren su propia evidencia del intento, incluida la posición de la aserción que se ejecutó.",
+    analysis: `La comparación registrada del replay201 recibió Location ausente frente al Location del alta201. Antes de esa comparación ya coincidían el status201, el encabezado Idempotent-Replayed y el cuerpo con todos los IDs. PlatformTenantsController.Create usa ToCreatedResult para el alta, mientras IdempotencyFilter reconstruye el replay BufferedJson como ContentResult con status/cuerpo y sin restaurar Location; CompleteAsync conserva sólo status y cuerpo en ese camino. docs/rules/api-http.md exige201 con Location para un POST que crea, y docs/rules/idempotencia.md pide reproducir la respuesta guardada. La pérdida observada del encabezado es coherente con ese camino del Back. ${scope}`,
     severity: "medium",
     probableArea: "Back · IdempotencyFilter, conservación de Location en replay BufferedJson de POST201.",
     reproduce: [
@@ -138,7 +143,7 @@ export function enrichExecutionFailures(executions = []) {
       let triage;
       if (["NUEVO-PER-09", "POL-11"].includes(entry.id) && isGenericCallbackFailure(result)) triage = entry.id === "NUEVO-PER-09" ? personalCallbackTriage(result) : pendingApprovalTriage();
       else if (entry.id === "PLAT-C-13" && isMobilePendingHomeFailure(result)) triage = mobilePendingHomeTriage(result);
-      else if (entry.id === "PLAT-C-16" && isCreatedReplayLocationFailure(result)) triage = createdReplayLocationTriage();
+      else if (entry.id === "PLAT-C-16" && isCreatedReplayLocationFailure(result)) triage = createdReplayLocationTriage(result);
       if (!triage) return result;
       changed = true;
       return { ...result, ...triage };

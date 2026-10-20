@@ -205,6 +205,7 @@ test("Personal no hereda códigos de otro intento ni une trazas parciales o ruta
 
 const pendingHomeFailure = "locator.waitFor: Timeout 15000ms exceeded. waiting for getByRole('dialog', { name: 'Antes de tu primera consulta', exact: true }).or(getByRole('heading', { name: '¿Qué querés consultar?', exact: true })).or(getByRole('heading', { name: 'El asistente todavía no está configurado', exact: true })).first() to be visible";
 const replayLocationFailure = "Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'https://localtest.me:5174/api/platform/tenants/a87b6b2a-49b8-4afe-ab64-f9efe9249c1e'";
+const finalReplayLocationFailure = replayLocationFailure.replace("Expected values to be strictly equal:", "El replay201 debe conservar Location del alta201.");
 
 test("C13 móvil identifica la composición del inicio sin atribuir una falla a la aprobación todavía no visitada", () => {
   const previousAttempts = Object.freeze([Object.freeze({ status: "blocked", actual: "Dependencia anterior" })]);
@@ -233,6 +234,41 @@ test("C16 atribuye sólo Location ausente al replay BufferedJson y conserva su e
   assert.match(actual.probableArea, /^Back.*IdempotencyFilter.*BufferedJson/iu);
   assert.doesNotMatch([actual.analysis, actual.probableArea, ...actual.reproduce].join(" "), /https:|localtest|a87b6b2a/u);
   assert.deepEqual(enrichExecutionFailures([entry]), [entry]);
+});
+
+test("C16 con la firma final en org informa sólo las comprobaciones previas alcanzadas por ese callback", () => {
+  for (const width of [1440, 390]) {
+    const previousAttempts = Object.freeze([Object.freeze({ width, status: "failed", actual: replayLocationFailure, currentRoute: "/plataforma/organizaciones", image: "historica.png" })]);
+    const attempts = Object.freeze([Object.freeze({ status: "failed", actual: "Intento anterior conservado" })]);
+    const authenticationTrace = Object.freeze([Object.freeze({ route: "/connect/token", status: 200 })]);
+    const result = Object.freeze({ width, status: "failed", actual: finalReplayLocationFailure, currentRoute: "/org", image: `PLAT-C-16-${width}.png`, previousAttempts, attempts, authenticationTrace });
+    const input = Object.freeze([Object.freeze({ id: "PLAT-C-16", results: Object.freeze([result]) })]); const snapshot = structuredClone(input);
+    const [entry] = enrichExecutionFailures(input); const enriched = entry.results[0];
+    assert.deepEqual(input, snapshot); for (const key of Object.keys(result)) assert.equal(enriched[key], result[key], key);
+    assert.match(enriched.analysis, /aserción final/iu);
+    assert.match(enriched.analysis, /422.*Request\.IdempotencyKeyReused/u);
+    assert.match(enriched.analysis, /historial.*sin nuevos eventos/iu);
+    assert.match(enriched.analysis, /NoAccount.*aceptación200.*Business.*sin Personal/u);
+    assert.match(enriched.analysis, /operador.*sin perfiles públicos/iu);
+    assert.match(enriched.analysis, /un único correo de invitación/iu);
+    assert.match(enriched.analysis, /sigue failed/u); assert.match(enriched.analysis, /BufferedJson.*ContentResult/u);
+    assert.equal(previousAttempts[0].analysis, undefined);
+    assert.deepEqual(enrichExecutionFailures([entry]), [entry]);
+  }
+});
+
+test("C16 no hereda el alcance final desde la ruta, una firma parecida ni intentos históricos", () => {
+  const variants = [
+    { actual: replayLocationFailure, currentRoute: "/org", previousAttempts: [{ actual: finalReplayLocationFailure, currentRoute: "/org" }] },
+    { actual: finalReplayLocationFailure, currentRoute: "/plataforma/organizaciones" },
+    { actual: finalReplayLocationFailure.replace("alta201.", "alta201 (otra aserción)."), currentRoute: "/org" },
+    { actual: replayLocationFailure, currentRoute: "/plataforma/organizaciones" },
+  ];
+  for (const variant of variants) {
+    const [entry] = enrichExecutionFailures([{ id: "PLAT-C-16", results: [{ width: 1440, status: "failed", ...variant }] }]);
+    assert.doesNotMatch(entry.results[0].analysis, /aserción final|aceptación200|un único correo de invitación/u);
+    assert.match(entry.results[0].analysis, /no acredita.*perfiles.*aceptación/iu);
+  }
 });
 
 test("el triage de Plataforma exige ID, fallo y señal actuales, sin heredar causas de otros anchos o intentos", () => {
