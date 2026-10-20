@@ -8,6 +8,7 @@ import { confirmRecentAuthentication, stopConfirmingRecentAuthentication } from 
 import { parseLegalPublicationReceipt, assertPendingTerms, acceptPublishedLegalAndReturn } from "./test-e2e-real-legal.mjs";
 import { journeyDate } from "./recorrido-usuario.mjs";
 import { nationalPhone } from "./recorrido-usuario-e11.mjs";
+import { openAction } from "./e2e-completo-plataforma.mjs";
 
 const definition = (number, actor, action, route, expected, covers) => ({ id: `IDS-${String(number).padStart(2, "0")}`, area: "Complemento de identidad", actor, action, route, expected, covers, critical: true, source: "scripts/e2e-completo-identidad-complemento.mjs" });
 export const identitySupplementDefinitions = [
@@ -18,12 +19,12 @@ export const identitySupplementDefinitions = [
   definition(5, "Cuenta Phone en baja", "Rechazar cancelación vencida y reutilizada", "/login · /api/auth/deletion/cancel", "Un ticket emitido por OTP y vencido por el control existente da403; otro permite cancelar por UI una vez y su replay da403 sin sesión ni nueva autorización.", ["BACK-ID-024"]),
   definition(6, "Última Dueña y operador con tenants.manage", "Bloquear la baja con organización activa y suspendida", "/cuenta · /plataforma/organizaciones/:id", "En ambos estados se informa la organización, Dar de baja queda apagado y POST409 LastAdmin; la organización se reactiva por UI al terminar.", ["BACK-CU-015"]),
   definition(7, "Persona con dos membresías", "Elegir y recordar la organización al volver a ingresar", "/login/empresa · /org", "Dos invitaciones aceptadas en el mismo OTP prueban el desempate por nombre; Perfiles cambia a la otra organización, otro ingreso la recuerda y Personal conserva su acceso separado. No certifica antigüedad diferenciada sin selección anterior.", ["BACK-ID-018"]),
-  definition(8, "Operador de legales y persona existente", "Publicar y aceptar términos con retorno protegido", "/plataforma/legales/nueva · /aceptar-terminos", "Versión nueva publicada por UI; casilla inicialmente desmarcada y botón apagado, POST204 explícito y vuelta a Mi cuenta con la misma identidad y sin pendientes.", ["BACK-CU-017"]),
+  definition(8, "Operador de legales y persona existente", "Publicar y aceptar términos con retorno protegido", "/plataforma/legales/nueva · /aceptar-terminos", "Versión nueva publicada por UI; casilla inicialmente desmarcada, continuar sin aceptar muestra validación sin POST; aceptación explícita204 y vuelta a Mi cuenta con la misma identidad y sin pendientes.", ["BACK-CU-017"]),
+  definition(9, "Miembro de tres organizaciones y operador de las fixtures", "Elegir la membresía más antigua cuando la última Business deja de estar disponible", "/login/empresa · /org · /plataforma/organizaciones/:id", "Tres invitaciones aceptadas por UI en ingresos separados tienen JoinedAtUtc distintos; al suspender la última Business recordada, otro ingreso elige la más antigua entre dos candidatas activas, aunque su nombre ordene después. La suspensión se revierte por UI.", []),
 ];
 
-export const identitySupplementLimitations = {
-  "BACK-ID-019": { partialExecutionIds: ["IDS-07"], missing: "Se prueba el empate por nombre: LoginInvitationAcceptanceWriter acepta ambas invitaciones con el mismo nowUtc. Falta la rama con JoinedAtUtc distintos y sin una última organización seleccionada accesible.", source: "back:src/ArquitecturaBaseMultitenant.Application/Services/Auth/AccessSwitchPolicy.cs; ConnectService.cs; Services/Invitations/LoginInvitationAcceptanceWriter.cs" },
-};
+export const identitySupplementLimitations = {};
+export const identitySupplementProofGroups = { "BACK-ID-019": [["IDS-07", "IDS-09"]] };
 export function identityPhoneFixtures(width) {
   assert.ok([1440, 390].includes(width)); const offset = width === 1440 ? 0 : 1;
   return { foreign: `+54911345678${40 + offset}`, unknown: `+54911345678${44 + offset}` };
@@ -38,6 +39,16 @@ export function requireEmailOwnership(response, email, state) {
   assert.equal(matches.length, state === "absent" ? 0 : 1);
   if (matches.length) assert.equal(matches[0].isVerified, state === "verified");
 }
+export function requireChronologicalFallback(account, organizationIds, selectedId) {
+  assert.equal(organizationIds.length, 3, "La preparación necesita dos candidatas y una organización recordada.");
+  assert.equal(new Set(organizationIds).size, 3);
+  const memberships = organizationIds.map((id) => account.organizations.find((item) => item.tenantId === id));
+  assert.ok(memberships.every(Boolean), "Deben existir las tres membresías reales de la cuenta.");
+  const joined = memberships.map((item) => { assert.equal(item.status, "Active"); assert.match(item.joinedAtUtc ?? "", /Z$/u); return Date.parse(item.joinedAtUtc); });
+  assert.ok(joined.every(Number.isFinite) && joined[0] < joined[1] && joined[1] < joined[2], "Los JoinedAtUtc reales deben ser distintos y aumentar en cada aceptación separada.");
+  assert.equal(memberships[0].tenantStatus, "Active"); assert.equal(memberships[1].tenantStatus, "Active"); assert.equal(memberships[2].tenantStatus, "Suspended");
+  assert.equal(selectedId, organizationIds[0], "El fallback debe elegir la membresía activa más antigua.");
+}
 export async function runIdentityDependency(h, outcomes, id, dependencies, page, action) {
   const missing = dependencies.filter((dependency) => outcomes.get(dependency)?.ok !== true);
   if (missing.length) {
@@ -45,6 +56,30 @@ export async function runIdentityDependency(h, outcomes, id, dependencies, page,
     const result = { ok: false, blocked: true }; outcomes.set(id, result); return result;
   }
   const result = await h.record(id, () => page, action); outcomes.set(id, result); return result;
+}
+
+export async function requireSoleOwnerDeletionUi(page, organization) {
+  const information = page.getByRole("button", { name: "Por qué no podés darte de baja", exact: true });
+  // El GET del arnés no espera la query de React. Este control aparece en la
+  // misma renderización que calcula aria-disabled a partir de soleOwnerOrganizations.
+  await information.waitFor();
+  assert.equal(await page.getByRole("button", { name: "Dar de baja", exact: true }).getAttribute("aria-disabled"), "true");
+  await information.click();
+  await page.getByRole("dialog").getByText(new RegExp(escapeRegex(organization), "u")).first().waitFor();
+}
+
+export async function requireExplicitLegalConsent(page) {
+  const checkbox = page.getByRole("checkbox", { name: /Leí y acepto/u });
+  assert.equal(await checkbox.isChecked(), false);
+  let acceptances = 0;
+  const requested = (request) => { if (request.method() === "POST" && new URL(request.url()).pathname === "/api/legal/accept") acceptances++; };
+  page.on("request", requested);
+  try {
+    await page.getByRole("button", { name: "Aceptar y seguir", exact: true }).click();
+    await page.getByRole("alert").filter({ hasText: "Aceptá los Términos y la Política de privacidad." }).waitFor();
+    assert.equal(acceptances, 0, "Sin marcar la casilla no debe enviarse la aceptación legal.");
+    assert.equal(await checkbox.isChecked(), false);
+  } finally { page.off("request", requested); }
 }
 
 const endpoint = (route, method = "POST") => (response) => new URL(response.url()).pathname === route && response.request().method() === method;
@@ -123,11 +158,9 @@ async function operatorClick(page, button, route, operator, status = 200) {
   }
   assert.equal(response.status(), status); return response;
 }
-async function changeOrganization(h, page, business, action, operator) {
+export async function changeOrganization(h, page, business, action, operator) {
   await page.goto(new URL(`/plataforma/organizaciones/${business.me.activeTenantId}`, h.base).href);
-  const button = page.getByRole("button", { name: action, exact: true });
-  if (await button.isVisible()) await button.click();
-  else { await page.getByRole("button", { name: /^Acciones de/ }).click(); await page.getByRole("menuitem", { name: action, exact: true }).click(); }
+  await openAction(page, action);
   const dialog = page.getByRole("dialog").filter({ has: page.getByRole("textbox", { name: /^Motivo/ }) });
   await dialog.getByRole("textbox", { name: /^Motivo/ }).fill("Identidad: preservar a la última Dueña en la organización propia.");
   await operatorClick(page, dialog.getByRole("button", { name: action, exact: true }), `/api/platform/tenants/${business.me.activeTenantId}/${action === "Suspender" ? "suspend" : "reactivate"}`, operator);
@@ -207,8 +240,7 @@ export async function runIdentitySupplementCases(h) {
       await ensureOperator();
       const blocked = async () => {
         await page.goto(new URL("/cuenta", h.base).href); const methods = await read(h, page, "/api/me/login-methods"); assert.ok(methods.soleOwnerOrganizations.includes(business.organization));
-        assert.equal(await page.getByRole("button", { name: "Dar de baja", exact: true }).getAttribute("aria-disabled"), "true");
-        await page.getByRole("button", { name: "Por qué no podés darte de baja", exact: true }).click(); await page.getByRole("dialog").getByText(new RegExp(escapeRegex(business.organization), "u")).first().waitFor();
+        await requireSoleOwnerDeletionUi(page, business.organization);
         await requireProblem(await h.api(page, "/api/me/deletion", { method: "POST", headers: { "Idempotency-Key": randomUUID() }, data: { reason: "No debe borrar a la última Dueña." } }), 409, "Legal.AccountDeletion.LastAdmin");
         await page.getByRole("dialog").getByRole("button", { name: "Entendido", exact: true }).click();
       };
@@ -239,9 +271,45 @@ export async function runIdentitySupplementCases(h) {
       await acceptPublishedLegalAndReturn(operatorPage, receipt, "/api/platform/legal-documents");
       await page.goto(new URL("/cuenta", h.base).href); await page.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(target.email); const before = new Set(await h.env.files());
       await click(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 202); await fillOtp(page, await h.env.code(target.email, before)); await click(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify");
-      await page.getByRole("heading", { name: "Actualizamos los términos", exact: true }).waitFor(); assertPendingTerms(await read(h, page, "/api/me"), receipt); assert.equal(await page.getByRole("checkbox", { name: /Leí y acepto/u }).isChecked(), false); assert.equal(await page.getByRole("button", { name: "Aceptar y seguir", exact: true }).isDisabled(), true);
+      await page.getByRole("heading", { name: "Actualizamos los términos", exact: true }).waitFor(); assertPendingTerms(await read(h, page, "/api/me"), receipt); await requireExplicitLegalConsent(page);
       await acceptPublishedLegalAndReturn(page, receipt, "/api/me"); await page.waitForURL((url) => url.pathname === "/cuenta"); await page.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor(); const accepted = await read(h, page, "/api/me"); assert.equal(accepted.id, target.me.id); assert.deepEqual(accepted.pendingLegalDocuments, []);
-      return "Términos nuevos vigentes: gate empezó sin marcar y sin aceptar habilitado; aceptación explícita204 incluyó versión/ID y volvió a Mi cuenta de la misma persona sin pendientes.";
+      return "Términos nuevos vigentes: gate empezó sin marcar; continuar sin aceptar mostró validación sin POST. La aceptación explícita204 incluyó versión/ID y volvió a Mi cuenta de la misma persona sin pendientes.";
+    });
+    await run(9, [], async () => {
+      await closePublic(h, page); const fallbackMember = await h.registerPerson(page); await h.signOut(page);
+      const organizations = [];
+      for (const prefix of ["Zeta antigua", "Alfa reciente", "Media recordada"]) {
+        const organization = await h.registerBusiness(page);
+        const name = `${prefix} ${tag}`;
+        await page.goto(new URL("/org/configuracion", h.base).href);
+        await page.getByRole("textbox", { name: "Nombre de la organización", exact: true }).fill(name);
+        await click(page, page.getByRole("button", { name: "Guardar cambios", exact: true }), "/api/organization/settings", 200, "PUT");
+        assert.equal((await read(h, page, "/api/organization/settings")).name, name);
+        organization.organization = name;
+        organizations.push(organization);
+        await inviteWithoutRoles(h, page, fallbackMember.email); await h.signOut(page);
+        const accepted = await h.login(page, fallbackMember.email, "business");
+        assert.equal(accepted.id, fallbackMember.me.id);
+        assert.ok(accepted.organizations.some((item) => item.id === organization.me.activeTenantId), "Cada ingreso separado debe aceptar su invitación pendiente real.");
+        await h.signOut(page);
+      }
+      const [oldest, newer, remembered] = organizations;
+      await h.login(page, fallbackMember.email, "business");
+      const chosen = await switchProfile(h, page, remembered.organization, "business", remembered.me.activeTenantId);
+      assert.equal(chosen.id, fallbackMember.me.id); assert.equal(chosen.activeTenantId, remembered.me.activeTenantId); await h.signOut(page);
+      await ensureOperator();
+      let changed = false;
+      try {
+        await changeOrganization(h, operatorPage, remembered, "Suspender", operator); changed = true;
+        const returned = await h.login(page, fallbackMember.email, "business");
+        assert.equal(returned.id, fallbackMember.me.id);
+        const account = await read(h, operatorPage, `/api/platform/accounts/${fallbackMember.me.id}`);
+        requireChronologicalFallback(account, organizations.map((item) => item.me.activeTenantId), returned.activeTenantId);
+        const oldestMembership = account.organizations.find((item) => item.tenantId === oldest.me.activeTenantId);
+        const newerMembership = account.organizations.find((item) => item.tenantId === newer.me.activeTenantId);
+        assert.ok(oldestMembership.name.toLowerCase() > newerMembership.name.toLowerCase(), "Los nombres deben oponerse a la elección por antigüedad.");
+        return "Tres aceptaciones UI separadas dejaron JoinedAtUtc reales distintos. Tras recordar y suspender la tercera, el nuevo ingreso eligió la más antigua de dos candidatas activas, con nombre posterior alfabéticamente; la organización se reactivó por UI al terminar.";
+      } finally { if (changed) await changeOrganization(h, operatorPage, remembered, "Reactivar", operator); }
     });
   } finally {
     try { if (suspended) { await changeOrganization(h, operatorPage, business, "Reactivar", operator); suspended = false; } }
