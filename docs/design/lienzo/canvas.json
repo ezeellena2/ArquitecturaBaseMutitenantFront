@@ -1925,7 +1925,7 @@
       "x": 1520,
       "y": 6160,
       "w": 1440,
-      "h": 900,
+      "h": 1480,
       "title": "Formularios · una plantilla",
       "page": "formularios"
     },
@@ -1933,7 +1933,7 @@
       "x": 3040,
       "y": 6160,
       "w": 1440,
-      "h": 900,
+      "h": 1480,
       "title": "Formularios · usar una plantilla",
       "page": "formularios"
     },
@@ -2185,7 +2185,7 @@
       "x": 3040,
       "y": 3326,
       "w": 1440,
-      "h": 1288,
+      "h": 1419,
       "title": "Índice · Diseña formularios · tocá Play y elegí una pantalla",
       "page": "mapa",
       "is_interactive": true
@@ -2194,7 +2194,7 @@
       "x": 4560,
       "y": 3326,
       "w": 1440,
-      "h": 971,
+      "h": 1140,
       "title": "Índice · La plataforma · tocá Play y elegí una pantalla",
       "page": "mapa",
       "is_interactive": true
@@ -2448,6 +2448,42 @@
       "w": 390,
       "h": 844,
       "title": "Formularios · formularios que faltan · teléfono",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "Plat-FRM-Plantilla-Reglas.dc.html": {
+      "x": 1520,
+      "y": 1480,
+      "w": 1440,
+      "h": 1400,
+      "title": "Plataforma · plantilla · reglas de ejemplo",
+      "page": "plat-formularios",
+      "is_interactive": true
+    },
+    "Plat-FRM-Pdf.dc.html": {
+      "x": 3040,
+      "y": 1480,
+      "w": 1440,
+      "h": 900,
+      "title": "Plataforma · plantilla · diseño del PDF",
+      "page": "plat-formularios",
+      "is_interactive": true
+    },
+    "FRM-Editor-Reglas-Plantilla.dc.html": {
+      "x": 4560,
+      "y": 6160,
+      "w": 1440,
+      "h": 1400,
+      "title": "Formularios · editor · las reglas que trae una plantilla",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "M-FRM-Reglas-Plantilla.dc.html": {
+      "x": 940,
+      "y": 7180,
+      "w": 390,
+      "h": 844,
+      "title": "Formularios · las reglas que trae una plantilla · teléfono",
       "page": "formularios",
       "is_interactive": true
     }
@@ -2898,7 +2934,11 @@
     "FRM-Editor-Sugerencias.dc.html",
     "FRM-Respuesta-Cadena.dc.html",
     "M-WA-Conversacion-Asistente.dc.html",
-    "M-FRM-Faltan.dc.html"
+    "M-FRM-Faltan.dc.html",
+    "Plat-FRM-Plantilla-Reglas.dc.html",
+    "Plat-FRM-Pdf.dc.html",
+    "FRM-Editor-Reglas-Plantilla.dc.html",
+    "M-FRM-Reglas-Plantilla.dc.html"
   ],
   "pages": [
     {

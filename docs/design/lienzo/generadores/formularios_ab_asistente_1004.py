@@ -66,10 +66,8 @@ CSS_AS = """.as-modo { display: inline-flex; align-items: center; gap: 5px; heig
 .au { display: flex; flex-direction: column; min-width: 340px; padding: 0 !important; overflow: hidden; background: #fff !important; border: 1px solid var(--borde); }
 .au .pl { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
 .au .pl .bt { width: 30px; height: 30px; border-radius: 50%; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.au .pl .bt.off { background: var(--s3); color: var(--t3); }
 .au .onda { display: inline-flex; align-items: center; gap: 2px; height: 22px; }
 .au .onda i { width: 2.5px; border-radius: 2px; background: var(--marca); display: inline-block; }
-.au .onda.off i { background: var(--borde2); }
 .au .dur { font-size: 12.5px; color: var(--t3); font-variant-numeric: tabular-nums; }
 .au .tag { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--t3); }
 .au .tr { padding: 8px 12px 10px; border-top: 1px solid var(--borde); font-size: 13px; line-height: 1.45; }
@@ -84,16 +82,13 @@ ONDA = [8, 14, 10, 18, 12, 20, 9, 16, 11, 19, 13, 7, 15, 10, 17, 12, 8, 14, 18, 
 
 
 def audio(estado="transcripto"):
-    off = estado == "borrado"
     onda = "".join(f'<i style="height: {h}px;"></i>' for h in ONDA)
-    pl = (f'<span class="pl"><span class="bt{" off" if off else ""}">{PLAY}</span><span class="onda{" off" if off else ""}">{onda}</span>'
+    pl = (f'<span class="pl"><span class="bt">{PLAY}</span><span class="onda">{onda}</span>'
           f'<span class="dur">0:24</span><span class="tag">{MICRO} Audio</span></span>')
     if estado == "pasando":
         tr = f'<span class="tr est">{A.RELOJ} Pasando el audio a texto…</span>'
     elif estado == "error":
         tr = f'<span class="tr est">{INFO} No pudimos pasar este audio a texto. Escuchalo: el asistente no lo va a responder.</span>'
-    elif estado == "borrado":
-        tr = f'<span class="tr est">{INFO} El audio y su transcripción ya no están: se borran a los 90 días, como el texto de los mensajes.</span>'
     else:
         tr = '<span class="tr"><small>Transcripción</small>«Recién salgo de Ferretería Rosales, cerramos la venta. Son unos 125.500.»</span>'
     return f'<div class="w-m ent"><span class="gl au">{pl}{tr}</span><span class="pie">11:20</span></div>'
@@ -239,7 +234,7 @@ def chat_sugerencia():
 
 
 # ================================================================ H6 · audios en el chat
-ESTADOS_H6 = ["Pasando a texto", "Transcripto", "En modo Asistente", "En atención manual, sugiere", "No se pudo pasar a texto", "Ya no está"]
+ESTADOS_H6 = ["Pasando a texto", "Transcripto", "En modo Asistente", "En atención manual, sugiere", "No se pudo pasar a texto"]
 
 
 def chat_audio():
@@ -251,7 +246,6 @@ def chat_audio():
         + por_que("Del audio de Tomás: Cliente, ¿Se concretó la venta? y Monto estimado."),
         "En atención manual, sugiere": audio() + sugerencia(True),
         "No se pudo pasar a texto": PASO + audio("error") + sis("Sin leer · queda para un operador"),
-        "Ya no está": audio("borrado"),
     }
     flags = {e: ("as" if e in ("En modo Asistente", "No se pudo pasar a texto") else "man") for e in E}
     esc = {e: (esc_asistente() if flags[e] == "as" else A.escr()) for e in E}
