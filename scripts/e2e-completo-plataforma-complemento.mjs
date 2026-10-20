@@ -41,6 +41,7 @@ export const supplementPlatformDefinitions = [
   definition(19, "Operador completo con organización y espacio Personal propios de la fixture", "Buscar y filtrar organizaciones, comprobar metadatos, Dueños e historial y rechazar Personal", "/plataforma/organizaciones", "Listado/facets reales conservan búsqueda, estado y origen; sólo metadatos globales de la organización propia, contadores1/1, Dueño actual e historial UTC. El ID Personal no se lista y su ficha devuelve404.", ["BACK-PL-006"]),
 ];
 export const platformRecoveryRepairDefinitions = [8, 9].map((number) => supplementPlatformDefinitions.find((entry) => entry.id === `PLAT-C-${String(number).padStart(2, "0")}`));
+export const platformOperatorInvitationRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-04");
 
 export const supplementPlatformProofGroups = { "BACK-PL-008": [["PLAT-C-20", "PLAT-C-17"]], "BACK-PL-018": [["PLAT-25", "PLAT-26", "PLAT-C-18"]] };
 export const supplementPlatformLimitations = {
@@ -148,7 +149,21 @@ async function clickHttp(page, button, route, status, method = "POST") {
       await confirmRecentAuthentication(page, principal); response = await replay;
     }
     assert.equal(response.status(), status); return response;
+  } catch (error) {
+    const path = new URL(route, "https://local.invalid").pathname;
+    throw new Error(`${method} ${path}: ${error.message}`, { cause: error });
   } finally { if (principal) await confirmRecentAuthenticationWhenAsked(page, principal); }
+}
+export { clickHttp as clickSupplementHttp };
+
+/** En la ficha, escritorio presenta Reenviar como botón; el teléfono lo incluye en la hoja de acciones. */
+export async function operatorInvitationResendControl(h, page, email) {
+  if (h.width === 390) {
+    await openAccountActions(page, email);
+    return page.getByRole("menuitem", { name: "Reenviar invitación", exact: true });
+  }
+  assert.equal(h.width, 1440);
+  return page.getByRole("button", { name: "Reenviar invitación", exact: true });
 }
 async function read(h, page, route) {
   const response = await h.api(page, route); assert.equal(response.status(), 200); return response.json();
@@ -186,6 +201,40 @@ async function inviteOperator(h, page, email, status = 201) {
   requirePendingOperator(detail, ["platform.audit.read"]);
   await notice(h.env, email, before, (text) => /operador/iu.test(text));
   return { ...issued, email, detail };
+}
+
+async function operatorInvitationLifecycle(h, page, disposable) {
+  await page.goto(new URL(`/plataforma/cuentas/${disposable.id}`, h.base).href);
+  const resend = await operatorInvitationResendControl(h, page, disposable.email);
+  const before = new Set(await h.env.files());
+  const resent = await clickHttp(page, resend, `/api/platform/operators/${disposable.id}/invitation/resend`, 200);
+  const renewed = await resent.json(); assert.ok(Date.parse(renewed.expiresAtUtc) > Date.parse(disposable.expiresAtUtc));
+  await notice(h.env, disposable.email, before, (text) => /operador/iu.test(text));
+  await openAccountActions(page, disposable.email); await page.getByRole("menuitem", { name: "Revocar invitación", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: `¿Revocar la invitación a ${disposable.email}?`, exact: true });
+  await clickHttp(page, dialog.getByRole("button", { name: "Revocar", exact: true }), `/api/platform/operators/${disposable.id}/invitation`, 204, "DELETE");
+  await dialog.waitFor({ state: "hidden" });
+  await assertPlatformProblem(await h.api(page, `/api/platform/accounts/${disposable.id}`), 404, "Users.User.NotFound");
+  const reinvited = await inviteOperator(h, page, disposable.email); assert.notEqual(reinvited.id, disposable.id);
+  return "Reenvío renovó plazo y correo real; revocar204 dejó ficha404 y el mismo correo pudo recibir otra invitación con ID nuevo.";
+}
+
+/** Sólo04: prepara un operador invitado propio por UI, sin ejecutar1–3 ni crear perfiles públicos. */
+export async function runPlatformOperatorInvitationRepairCases(h) {
+  const run = createPlatformRecorder(h); const page = await h.newPage(); let signedIn = false;
+  const operatorEmail = h.width === 1440 ? "e2e-e9r-operator@example.test" : "e2e-e9l-operator@example.test";
+  try {
+    await run("PLAT-C-04", page, async () => {
+      const operator = await h.login(page, operatorEmail, "platform"); signedIn = true;
+      assert.equal(operator.access, "platform"); assert.ok(operator.effectivePermissions.platform.includes("platform.operators.manage"));
+      operatorByPage.set(page, operatorEmail);
+      const disposable = await inviteOperator(h, page, syntheticEmail("revocar-operador-repair"));
+      return operatorInvitationLifecycle(h, page, disposable);
+    });
+  } finally {
+    if (signedIn) await h.signOut(page).catch(() => {});
+    if (!page.isClosed()) { await stopConfirmingRecentAuthentication(page); await page.close(); }
+  }
 }
 async function registerPhone(h, page, phone, scenario) {
   const fixture = await requireE8Control(h.env)(scenario, phone);
@@ -340,20 +389,7 @@ export async function runSupplementPlatformCases(h) {
       }
       return "Persona existente y operador pendiente fueron rechazados409 en Correo, sin emitir nuevas invitaciones.";
     }, [1, 2]);
-    await step(4, page, async () => {
-      await page.goto(url(`/plataforma/cuentas/${disposable.id}`)); await openAccountActions(page, disposable.email);
-      const before = new Set(await h.env.files());
-      const resent = await clickHttp(page, page.getByRole("menuitem", { name: "Reenviar invitación", exact: true }), `/api/platform/operators/${disposable.id}/invitation/resend`, 200);
-      const renewed = await resent.json(); assert.ok(Date.parse(renewed.expiresAtUtc) > Date.parse(disposable.expiresAtUtc));
-      await notice(h.env, disposable.email, before, (text) => /operador/iu.test(text));
-      await openAccountActions(page, disposable.email); await page.getByRole("menuitem", { name: "Revocar invitación", exact: true }).click();
-      const dialog = page.getByRole("dialog", { name: `¿Revocar la invitación a ${disposable.email}?`, exact: true });
-      await clickHttp(page, dialog.getByRole("button", { name: "Revocar", exact: true }), `/api/platform/operators/${disposable.id}/invitation`, 204, "DELETE");
-      await dialog.waitFor({ state: "hidden" });
-      await assertPlatformProblem(await h.api(page, `/api/platform/accounts/${disposable.id}`), 404, "Users.User.NotFound");
-      const reinvited = await inviteOperator(h, page, disposable.email); assert.notEqual(reinvited.id, disposable.id);
-      return "Reenvío renovó plazo y correo real; revocar204 dejó ficha404 y el mismo correo pudo recibir otra invitación con ID nuevo.";
-    }, [2]);
+    await step(4, page, () => operatorInvitationLifecycle(h, page, disposable), [2]);
     await step(5, page, async () => {
       const own = await read(h, page, `/api/platform/accounts/${operator.id}`);
       await page.goto(url(`/plataforma/cuentas/${operator.id}`)); await page.getByRole("heading", { name: own.displayName, exact: true }).waitFor();

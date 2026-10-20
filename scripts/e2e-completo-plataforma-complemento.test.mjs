@@ -6,6 +6,48 @@ import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
 import * as platform from "./e2e-completo-plataforma-complemento.mjs";
 import { createPlatformRecorder } from "./e2e-completo-plataforma.mjs";
 
+test("el reenvío de la ficha usa el botón en escritorio y el menú real sólo en móvil", async () => {
+  for (const width of [1440, 390]) {
+    const calls = []; const email = "operador-propio@example.test";
+    const control = { own: true };
+    const page = { getByRole: (role, options) => {
+      calls.push([role, options.name]); assert.equal(options.exact, true);
+      if (options.name === `Acciones de ${email}`) {
+        assert.equal(width, 390); assert.equal(role, "button");
+        return { getAttribute: async (name) => { assert.equal(name, "aria-haspopup"); return "dialog"; }, click: async () => calls.push("abrir hoja") };
+      }
+      assert.equal(options.name, "Reenviar invitación"); assert.equal(role, width === 1440 ? "button" : "menuitem");
+      return control;
+    } };
+    assert.equal(await platform.operatorInvitationResendControl({ width }, page, email), control);
+    assert.deepEqual(calls, width === 1440 ? [["button", "Reenviar invitación"]] : [["button", `Acciones de ${email}`], "abrir hoja", ["menuitem", "Reenviar invitación"]]);
+  }
+});
+
+test("el diagnóstico HTTP distingue reenvío, revocación y alta sin publicar la query", async () => {
+  for (const [method, path, status] of [["POST", "/api/platform/operators/propio/invitation/resend", 200], ["DELETE", "/api/platform/operators/propio/invitation", 204], ["POST", "/api/platform/operators/invitations", 201]]) {
+    const timeout = new Error("Espera de respuesta agotada");
+    const page = { waitForResponse: async () => { throw timeout; } }; const button = { click: async () => {} };
+    await assert.rejects(() => platform.clickSupplementHttp(page, button, path + "?proof=privado", status, method), (error) => {
+      assert.ok(error.message.startsWith(`${method} ${path}: `)); assert.equal(error.message.includes("privado"), false); assert.equal(error.cause, timeout); return true;
+    });
+  }
+});
+
+test("la reparación de invitaciones sólo registra04 y no prepara persona, organización ni2–3", async () => {
+  assert.deepEqual(platform.platformOperatorInvitationRepairDefinitions.map((entry) => entry.id), ["PLAT-C-04"]);
+  const calls = []; let closed = 0;
+  const page = { isClosed: () => false, close: async () => { closed++; } };
+  const h = { width: 1440, newPage: async () => page,
+    login: async (target, email, access) => { assert.equal(target, page); assert.equal(email, "e2e-e9r-operator@example.test"); assert.equal(access, "platform"); throw new Error("No ingresó el operador"); },
+    registerPerson: async () => assert.fail("No precisa persona"), registerBusiness: async () => assert.fail("No precisa organización"),
+    record: async (id, getPage, action) => { calls.push(id); assert.equal(getPage(), page); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; } },
+    block: async () => assert.fail("No hay casos dependientes"),
+  };
+  await platform.runPlatformOperatorInvitationRepairCases(h);
+  assert.deepEqual(calls, ["PLAT-C-04"]); assert.equal(closed, 1);
+});
+
 test("la fila móvil de Email usa los dos métodos combinados y no exige textos separados inexistentes", () => {
   for (const sameMask of [false, true]) {
     const item = { previousMethodType: "Email", newMethodType: "Email", previousMethod: "e2•••@example.test", newMethod: sameMask ? "e2•••@example.test" : "re•••@propia.example.test" };

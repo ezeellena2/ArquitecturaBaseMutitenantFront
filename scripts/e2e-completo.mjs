@@ -66,6 +66,7 @@ const suiteSpecs = {
   cierrelocal: ["./e2e-completo-cierre-local.mjs", "localClosureDefinitions", "runLocalClosureCases"],
   cuotawhatsapp: ["./e2e-completo-cuota-whatsapp.mjs", "quotaWhatsAppDefinitions", "runQuotaWhatsAppCases"],
   negocioaccesosarreglos: ["./e2e-completo-negocio.mjs", "businessAccessRepairDefinitions", "runBusinessAccessRepairCases"],
+  plataformainvitacionarreglos: ["./e2e-completo-plataforma-complemento.mjs", "platformOperatorInvitationRepairDefinitions", "runPlatformOperatorInvitationRepairCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
