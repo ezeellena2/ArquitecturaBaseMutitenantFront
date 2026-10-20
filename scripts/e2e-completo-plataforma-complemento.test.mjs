@@ -48,6 +48,41 @@ test("la reparación de invitaciones sólo registra04 y no prepara persona, orga
   assert.deepEqual(calls, ["PLAT-C-04"]); assert.equal(closed, 1);
 });
 
+test("el historial de una cuenta abre Historial de seguridad y exige el motivo dentro de su panel", async () => {
+  for (const present of [true, false]) {
+    const calls = []; const reason = "Baja propia por Plataforma";
+    const page = { getByRole: (role, options) => {
+      if (role === "tab") { assert.deepEqual(options, { name: "Historial de seguridad", exact: true }); return { click: async () => calls.push("abrir historial") }; }
+      assert.equal(role, "tabpanel");
+      return { getByText: (text, match) => { assert.equal(text, reason); assert.deepEqual(match, { exact: true }); return { filter: ({ visible }) => { assert.equal(visible, true); return { first: () => ({ waitFor: async () => { calls.push("motivo del panel"); assert.ok(present, "El motivo no está en el historial de la cuenta."); } }) }; } }; } };
+    } };
+    const verify = () => platform.waitForAccountHistoryReason(page, reason);
+    if (present) await verify(); else await assert.rejects(verify, /motivo no está/u);
+    assert.deepEqual(calls, ["abrir historial", "motivo del panel"]);
+  }
+});
+
+test("la reparación18 prepara sólo persona y organización propias por UI y comparte el ciclo completo", async () => {
+  assert.deepEqual(platform.platformAccountLifecycleRepairDefinitions.map((entry) => entry.id), ["PLAT-C-18"]);
+  for (const width of [1440, 390]) {
+    const calls = []; const pages = ["plataforma", "pública"].map((name) => ({ name, isClosed: () => false, close: async () => calls.push(`cerrar ${name}`) })); let next = 0;
+    const person = { email: "persona@example.test", me: { id: "persona" } }; const business = { email: "dueña@example.test", me: { id: "dueña" } };
+    const h = { width, newPage: async () => pages[next++],
+      registerPerson: async (page) => { assert.equal(page, pages[1]); calls.push("persona UI"); return person; },
+      registerBusiness: async (page) => { assert.equal(page, pages[1]); calls.push("organización UI"); return business; },
+      signOut: async (page) => calls.push(`salir ${page.name}`),
+      login: async (page, email, access) => { assert.equal(page, pages[0]); assert.equal(email, width === 1440 ? "e2e-e9r-operator@example.test" : "e2e-e9l-operator@example.test"); assert.equal(access, "platform"); calls.push("ingreso operador UI"); return { access: "platform", effectivePermissions: { platform: ["platform.accounts.manage", "platform.audit.read"] } }; },
+      record: async (id, getPage, action) => { assert.equal(id, "PLAT-C-18"); calls.push(id); assert.equal(getPage(), pages[1]); const value = await action(); assert.equal(getPage(), pages[0]); return { ok: true, value }; },
+      block: async () => assert.fail("No hay otros records"),
+    };
+    await platform.runPlatformAccountLifecycleRepairCases(h, { lifecycle: async (actualH, state) => {
+      assert.equal(actualH, h); assert.equal(state.person, person); assert.equal(state.business, business); assert.equal(state.publicSignedIn, false);
+      await state.ensureFull(); calls.push("ciclo completo compartido"); return "Comprobaciones completas";
+    } });
+    assert.deepEqual(calls, ["PLAT-C-18", "persona UI", "salir pública", "organización UI", "salir pública", "ingreso operador UI", "ciclo completo compartido", "salir plataforma", "cerrar plataforma", "cerrar pública"]);
+  }
+});
+
 test("la fila móvil de Email usa los dos métodos combinados y no exige textos separados inexistentes", () => {
   for (const sameMask of [false, true]) {
     const item = { previousMethodType: "Email", newMethodType: "Email", previousMethod: "e2•••@example.test", newMethod: sameMask ? "e2•••@example.test" : "re•••@propia.example.test" };

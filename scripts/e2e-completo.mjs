@@ -68,6 +68,7 @@ const suiteSpecs = {
   negocioaccesosarreglos: ["./e2e-completo-negocio.mjs", "businessAccessRepairDefinitions", "runBusinessAccessRepairCases"],
   plataformainvitacionarreglos: ["./e2e-completo-plataforma-complemento.mjs", "platformOperatorInvitationRepairDefinitions", "runPlatformOperatorInvitationRepairCases"],
   plataformaaprobacionarreglos: ["./e2e-completo-plataforma-complemento.mjs", "platformApprovalRepairDefinitions", "runPlatformApprovalRepairCases"],
+  plataformabajaarreglos: ["./e2e-completo-plataforma-complemento.mjs", "platformAccountLifecycleRepairDefinitions", "runPlatformAccountLifecycleRepairCases"],
 };
 
 export function collectSuiteDefinitions(suites) {

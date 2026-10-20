@@ -43,6 +43,7 @@ export const supplementPlatformDefinitions = [
 export const platformRecoveryRepairDefinitions = [8, 9].map((number) => supplementPlatformDefinitions.find((entry) => entry.id === `PLAT-C-${String(number).padStart(2, "0")}`));
 export const platformOperatorInvitationRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-04");
 export const platformApprovalRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-20");
+export const platformAccountLifecycleRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-18");
 
 export const supplementPlatformProofGroups = { "BACK-PL-008": [["PLAT-C-20", "PLAT-C-17"]], "BACK-PL-018": [["PLAT-25", "PLAT-26", "PLAT-C-18"]] };
 export const supplementPlatformLimitations = {
@@ -89,6 +90,11 @@ export async function waitForOrganizationHistoryReason(h, page, reason) {
   // OrganizationHistoryTab une actor y motivo en una línea del teléfono.
   if (h.width === 390) await panel.getByRole("listitem").filter({ hasText: reason }).waitFor();
   else await panel.getByText(reason, { exact: true }).filter({ visible: true }).first().waitFor();
+}
+
+export async function waitForAccountHistoryReason(page, reason) {
+  await page.getByRole("tab", { name: "Historial de seguridad", exact: true }).click();
+  await page.getByRole("tabpanel").getByText(reason, { exact: true }).filter({ visible: true }).first().waitFor();
 }
 export function requireUniqueOrganizationNotice(messages, { name, kind, reason }) {
   assert.equal(messages.length, 1, "La operación y sus replays deben producir un único aviso al destinatario propio.");
@@ -425,6 +431,84 @@ export async function runPlatformApprovalRepairCases(h, { prepare = preparePendi
   if (failures.length) throw new AggregateError(failures, "No se completó la salida por UI del complemento de aprobación.");
 }
 
+/** Sólo18: persona y Dueña de una organización propias, seguidas por el mismo ciclo del complemento completo. */
+export async function runPlatformAccountLifecycleRepairCases(h, { lifecycle = runOwnAccountLifecycle } = {}) {
+  const run = createPlatformRecorder(h); const page = await h.newPage(); const publicPage = await h.newPage(); let fullSignedIn = false; let capturePage = publicPage;
+  const operatorEmail = h.width === 1440 ? "e2e-e9r-operator@example.test" : "e2e-e9l-operator@example.test";
+  const fixture = { page, publicPage, tag: randomUUID().slice(0, 8), publicSignedIn: false };
+  fixture.ensureFull = async () => {
+    if (fullSignedIn) return;
+    const operator = await h.login(page, operatorEmail, "platform"); fullSignedIn = true;
+    assert.equal(operator.access, "platform"); for (const permission of ["platform.accounts.manage", "platform.audit.read"]) assert.ok(operator.effectivePermissions.platform.includes(permission));
+    operatorByPage.set(page, operatorEmail);
+  };
+  fixture.leavePublicForNextFixture = async () => {
+    if (!fixture.publicSignedIn) return;
+    await closePendingOwnerSession(h, publicPage); fixture.publicSignedIn = false;
+  };
+  try {
+    await run("PLAT-C-18", () => capturePage, async () => {
+      fixture.person = await h.registerPerson(publicPage); fixture.publicSignedIn = true; await fixture.leavePublicForNextFixture();
+      fixture.business = await h.registerBusiness(publicPage); fixture.publicSignedIn = true; await fixture.leavePublicForNextFixture();
+      capturePage = page; await fixture.ensureFull();
+      return lifecycle(h, fixture);
+    });
+  } finally {
+    if (fixture.publicSignedIn) await fixture.leavePublicForNextFixture().catch(() => {});
+    if (fullSignedIn) await h.signOut(page).catch(() => {});
+    for (const target of [page, publicPage]) if (!target.isClosed()) { await stopConfirmingRecentAuthentication(target); await target.close(); }
+  }
+}
+
+async function runOwnAccountLifecycle(h, fixture) {
+  const { page, publicPage, business, person, tag, ensureFull, leavePublicForNextFixture } = fixture;
+  const url = (route) => new URL(route, h.base).href;
+  await ensureFull(); await leavePublicForNextFixture(); const ownerMe = await h.login(publicPage, business.email, "business"); fixture.publicSignedIn = true;
+  const ownerMembers = await read(h, publicPage, `/api/users/paged?search=${encodeURIComponent(business.email)}&pageSize=100`); const ownerMember = ownerMembers.items.find((item) => item.userId === business.me.id); assert.ok(ownerMember); const memberBefore = await read(h, publicPage, `/api/users/${ownerMember.memberId}`);
+  const ownerBefore = await read(h, page, `/api/platform/accounts/${business.me.id}`); assert.equal(ownerBefore.state, "Active"); assert.deepEqual(ownerBefore.soleOwnerOrganizations, [business.organization]);
+  await page.goto(url(`/plataforma/cuentas/${business.me.id}`)); await openAction(page, "Dar de baja"); let dialog = page.getByRole("dialog"); await dialog.getByText(new RegExp(business.organization.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"))).waitFor(); assert.equal(await dialog.getByRole("button", { name: "Dar de baja", exact: true }).isDisabled(), true);
+  await assertPlatformProblem(await h.api(page, `/api/platform/accounts/${business.me.id}/deletion`, { method: "POST", data: { reason: "No se debe dar de baja al Dueño único propio." }, headers: { "Idempotency-Key": randomUUID() } }), 409, "Legal.AccountDeletion.LastAdmin");
+  await dialog.getByRole("button", { name: "Cancelar", exact: true }).click(); assert.deepEqual(await read(h, page, `/api/platform/accounts/${business.me.id}`), ownerBefore); assert.deepEqual(await read(h, publicPage, `/api/users/${ownerMember.memberId}`), memberBefore); assert.equal((await read(h, publicPage, "/api/me")).version, ownerMe.version);
+  await leavePublicForNextFixture(); let observe = bearerFromUi(h, publicPage); let me;
+  try { me = await h.login(publicPage, person.email, "consumer"); fixture.publicSignedIn = true; } catch (error) { observe.stop(); throw error; }
+  const previousBearer = observe.take(); observe.stop(); assert.equal(me.id, person.me.id); assert.equal(me.activeTenantId, person.me.activeTenantId);
+  const frozen = (token, route) => publicPage.request.get(localApiUrl(route, h.base), { headers: { Authorization: token } });
+  assert.equal((await frozen(previousBearer, "/api/me")).status(), 200);
+  const suspensionReason = `Suspensión de la persona propia ${tag}.`; const reactivationReason = `Reactivación de la persona propia ${tag}.`; let personSuspended = false;
+  const accountAction = async (label, suffix, reason) => {
+    await page.goto(url(`/plataforma/cuentas/${person.me.id}`)); await openAction(page, label); const form = page.getByRole("dialog").filter({ has: page.getByRole("textbox", { name: /^Motivo/ }) }); await form.getByRole("textbox", { name: /^Motivo/ }).fill(reason);
+    const before = Date.now(); const response = await clickHttp(page, form.getByRole("button", { name: label, exact: true }), `/api/platform/accounts/${person.me.id}/${suffix}`, 204); const after = Date.now();
+    if (suffix === "suspend") personSuspended = true; else if (suffix === "reactivate") personSuspended = false; else if (suffix === "deletion") fixture.publicSignedIn = false;
+    assert.equal(response.request().postDataJSON().reason, reason); await form.waitFor({ state: "hidden" }); return { before, after };
+  };
+  try {
+    await accountAction("Suspender", "suspend", suspensionReason); personSuspended = true;
+    for (const route of ["/api/me", "/api/me/login-methods"]) { const rejectedToken = await frozen(previousBearer, route); assert.ok([401, 403].includes(rejectedToken.status())); await assertPlatformProblem(rejectedToken, rejectedToken.status(), rejectedToken.status() === 401 ? "Http.Unauthorized" : "Identity.Account.Suspended"); } fixture.publicSignedIn = false;
+    let state = await read(h, page, `/api/platform/accounts/${person.me.id}`); assert.equal(state.state, "Suspended"); assert.equal(state.lastStateChange.reason, suspensionReason); assert.match(state.lastStateChange.atUtc, /Z$/u);
+    await accountAction("Reactivar", "reactivate", reactivationReason); personSuspended = false;
+    state = await read(h, page, `/api/platform/accounts/${person.me.id}`); assert.equal(state.state, "Active"); assert.equal(state.lastStateChange.reason, reactivationReason);
+    observe = bearerFromUi(h, publicPage);
+    try {
+      await publicPage.goto(url("/login?prompt=login")); await publicPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(person.email); const beforeMail = new Set(await h.env.files()); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 202); await fillOtp(publicPage, await h.env.code(person.email, beforeMail)); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 200); fixture.publicSignedIn = true;
+      await publicPage.waitForURL((target) => target.pathname === "/"); await publicPage.getByRole("navigation", { name: "Secciones", exact: true }).or(publicPage.getByRole("button", { name: /, Personal$/ })).filter({ visible: true }).first().waitFor();
+    } catch (error) { observe.stop(); throw error; }
+    const reactivatedBearer = observe.take(); observe.stop(); const reentered = await frozen(reactivatedBearer, "/api/me"); assert.equal(reentered.status(), 200); const reenteredMe = await reentered.json(); assert.equal(reenteredMe.id, me.id); assert.equal(reenteredMe.activeTenantId, me.activeTenantId); assert.equal(reenteredMe.access, "consumer");
+    const deletionReason = `Baja por Plataforma de la persona propia ${tag}.`; const interval = await accountAction("Dar de baja", "deletion", deletionReason); const deleted = await read(h, page, `/api/platform/accounts/${person.me.id}`); requireOperatorDeletion(deleted, { ...interval, reason: deletionReason });
+    for (const route of ["/api/me", "/api/me/login-methods"]) await assertPlatformProblem(await frozen(reactivatedBearer, route), 401, "Http.Unauthorized"); fixture.publicSignedIn = false;
+    const history = await read(h, page, `/api/platform/audit?accountId=${person.me.id}&period=all&limit=100`);
+    for (const reason of [suspensionReason, reactivationReason, deletionReason]) { const rows = history.items.filter((item) => item.reason === reason); assert.equal(rows.length, 1); assert.equal(rows[0].targetAccountId, person.me.id); assert.match(rows[0].occurredAtUtc, /Z$/u); }
+    assert.equal(history.items.find((item) => item.reason === deletionReason).occurredAtUtc, deleted.lastStateChange.atUtc);
+    await publicPage.goto(url("/login")); await publicPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).waitFor();
+    await page.reload(); await page.getByText("Baja pedida", { exact: true }).first().waitFor(); await waitForAccountHistoryReason(page, deletionReason);
+    return "LastAdmin409 dejó a la Dueña activa, asignación y versiones intactas. Persona propia: Suspender revocó el Bearer previo; Reactivar permitió otro OTP/Me200; la baja204 guardó motivo/gracia30d/fechas UTC e historial y revocó el segundo Bearer401. Ninguna cuenta base se modificó.";
+  } finally { if (personSuspended) await accountAction("Reactivar", "reactivate", "Restaurar la persona que suspendió este caso propio."); }
+}
+
+function bearerFromUi(h, target) {
+  let value; const listener = (request) => { const requestUrl = new URL(request.url()); const header = request.headers().authorization; if (requestUrl.origin === h.base.origin && requestUrl.pathname.startsWith("/api/") && header?.startsWith("Bearer ")) value = header; };
+  target.on("request", listener); return { take: () => { assert.ok(value, "La SPA debe emitir su Bearer real antes de probar revocación."); return value; }, stop: () => target.off("request", listener) };
+}
+
 export async function runSupplementPlatformCases(h) {
   const run = createPlatformRecorder(h); const pages = [];
   const newPage = async () => { const page = await h.newPage(); pages.push(page); return page; };
@@ -657,47 +741,10 @@ export async function runSupplementPlatformCases(h) {
       await page.reload(); await page.getByRole("heading", { name, exact: true }).waitFor(); await page.getByText("Cerrada", { exact: true }).first().waitFor(); await page.getByRole("tab", { name: "Historial", exact: true }).click(); await waitForOrganizationHistoryReason(h, page, reason);
       return "Rechazo propio: versión incorrecta409 sin efecto; prueba vencida403 sin aviso, confirmación real200 con el mismo cuerpo/clave. Replay200 idéntico y cuerpo distinto422; Closed conserva motivo/UTC y sólo un evento y un correo sin motivo interno.";
     }, [1]);
-    await step(18, page, async () => {
-      await ensureFull(); await leavePublicForNextFixture(); const ownerMe = await h.login(publicPage, business.email, "business"); publicSignedIn = true;
-      const ownerMembers = await read(h, publicPage, `/api/users/paged?search=${encodeURIComponent(business.email)}&pageSize=100`); const ownerMember = ownerMembers.items.find((item) => item.userId === business.me.id); assert.ok(ownerMember); const memberBefore = await read(h, publicPage, `/api/users/${ownerMember.memberId}`);
-      const ownerBefore = await read(h, page, `/api/platform/accounts/${business.me.id}`); assert.equal(ownerBefore.state, "Active"); assert.deepEqual(ownerBefore.soleOwnerOrganizations, [business.organization]);
-      await page.goto(url(`/plataforma/cuentas/${business.me.id}`)); await openAction(page, "Dar de baja"); let dialog = page.getByRole("dialog"); await dialog.getByText(new RegExp(business.organization.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"))).waitFor(); assert.equal(await dialog.getByRole("button", { name: "Dar de baja", exact: true }).isDisabled(), true);
-      await assertPlatformProblem(await h.api(page, `/api/platform/accounts/${business.me.id}/deletion`, { method: "POST", data: { reason: "No se debe dar de baja al Dueño único propio." }, headers: { "Idempotency-Key": randomUUID() } }), 409, "Legal.AccountDeletion.LastAdmin");
-      await dialog.getByRole("button", { name: "Cancelar", exact: true }).click(); assert.deepEqual(await read(h, page, `/api/platform/accounts/${business.me.id}`), ownerBefore); assert.deepEqual(await read(h, publicPage, `/api/users/${ownerMember.memberId}`), memberBefore); assert.equal((await read(h, publicPage, "/api/me")).version, ownerMe.version);
-      await leavePublicForNextFixture(); let observe = bearerFromUi(publicPage); let me;
-      try { me = await h.login(publicPage, person.email, "consumer"); publicSignedIn = true; } catch (error) { observe.stop(); throw error; }
-      const previousBearer = observe.take(); observe.stop(); assert.equal(me.id, person.me.id); assert.equal(me.activeTenantId, person.me.activeTenantId);
-      const frozen = (token, route) => publicPage.request.get(localApiUrl(route, h.base), { headers: { Authorization: token } });
-      assert.equal((await frozen(previousBearer, "/api/me")).status(), 200);
-      const suspensionReason = `Suspensión de la persona propia ${tag}.`; const reactivationReason = `Reactivación de la persona propia ${tag}.`; let personSuspended = false;
-      const accountAction = async (label, suffix, reason) => {
-        await page.goto(url(`/plataforma/cuentas/${person.me.id}`)); await openAction(page, label); const form = page.getByRole("dialog").filter({ has: page.getByRole("textbox", { name: /^Motivo/ }) }); await form.getByRole("textbox", { name: /^Motivo/ }).fill(reason);
-        const before = Date.now(); const response = await clickHttp(page, form.getByRole("button", { name: label, exact: true }), `/api/platform/accounts/${person.me.id}/${suffix}`, 204); const after = Date.now();
-        if (suffix === "suspend") personSuspended = true; else if (suffix === "reactivate") personSuspended = false; else if (suffix === "deletion") publicSignedIn = false;
-        assert.equal(response.request().postDataJSON().reason, reason); await form.waitFor({ state: "hidden" }); return { before, after };
-      };
-      try {
-        await accountAction("Suspender", "suspend", suspensionReason); personSuspended = true;
-        for (const route of ["/api/me", "/api/me/login-methods"]) { const rejectedToken = await frozen(previousBearer, route); assert.ok([401, 403].includes(rejectedToken.status())); await assertPlatformProblem(rejectedToken, rejectedToken.status(), rejectedToken.status() === 401 ? "Http.Unauthorized" : "Identity.Account.Suspended"); } publicSignedIn = false;
-        let state = await read(h, page, `/api/platform/accounts/${person.me.id}`); assert.equal(state.state, "Suspended"); assert.equal(state.lastStateChange.reason, suspensionReason); assert.match(state.lastStateChange.atUtc, /Z$/u);
-        await accountAction("Reactivar", "reactivate", reactivationReason); personSuspended = false;
-        state = await read(h, page, `/api/platform/accounts/${person.me.id}`); assert.equal(state.state, "Active"); assert.equal(state.lastStateChange.reason, reactivationReason);
-        observe = bearerFromUi(publicPage);
-        try {
-          await publicPage.goto(url("/login?prompt=login")); await publicPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(person.email); const beforeMail = new Set(await h.env.files()); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 202); await fillOtp(publicPage, await h.env.code(person.email, beforeMail)); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 200); publicSignedIn = true;
-          await publicPage.waitForURL((target) => target.pathname === "/"); await publicPage.getByRole("navigation", { name: "Secciones", exact: true }).or(publicPage.getByRole("button", { name: /, Personal$/ })).filter({ visible: true }).first().waitFor();
-        } catch (error) { observe.stop(); throw error; }
-        const reactivatedBearer = observe.take(); observe.stop(); const reentered = await frozen(reactivatedBearer, "/api/me"); assert.equal(reentered.status(), 200); const reenteredMe = await reentered.json(); assert.equal(reenteredMe.id, me.id); assert.equal(reenteredMe.activeTenantId, me.activeTenantId); assert.equal(reenteredMe.access, "consumer");
-        const deletionReason = `Baja por Plataforma de la persona propia ${tag}.`; const interval = await accountAction("Dar de baja", "deletion", deletionReason); const deleted = await read(h, page, `/api/platform/accounts/${person.me.id}`); requireOperatorDeletion(deleted, { ...interval, reason: deletionReason });
-        for (const route of ["/api/me", "/api/me/login-methods"]) await assertPlatformProblem(await frozen(reactivatedBearer, route), 401, "Http.Unauthorized"); publicSignedIn = false;
-        const history = await read(h, page, `/api/platform/audit?accountId=${person.me.id}&period=all&limit=100`);
-        for (const reason of [suspensionReason, reactivationReason, deletionReason]) { const rows = history.items.filter((item) => item.reason === reason); assert.equal(rows.length, 1); assert.equal(rows[0].targetAccountId, person.me.id); assert.match(rows[0].occurredAtUtc, /Z$/u); }
-        assert.equal(history.items.find((item) => item.reason === deletionReason).occurredAtUtc, deleted.lastStateChange.atUtc);
-        await publicPage.goto(url("/login")); await publicPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).waitFor();
-        await page.reload(); await page.getByText("Baja pedida", { exact: true }).first().waitFor(); await page.getByRole("tab", { name: "Historial", exact: true }).click(); await page.getByText(deletionReason, { exact: true }).filter({ visible: true }).first().waitFor();
-        return "LastAdmin409 dejó a la Dueña activa, asignación y versiones intactas. Persona propia: Suspender revocó el Bearer previo; Reactivar permitió otro OTP/Me200; la baja204 guardó motivo/gracia30d/fechas UTC e historial y revocó el segundo Bearer401. Ninguna cuenta base se modificó.";
-      } finally { if (personSuspended) await accountAction("Reactivar", "reactivate", "Restaurar la persona que suspendió este caso propio."); }
-    }, [1]);
+    await step(18, page, () => runOwnAccountLifecycle(h, {
+      page, publicPage, business, person, tag, ensureFull, leavePublicForNextFixture,
+      get publicSignedIn() { return publicSignedIn; }, set publicSignedIn(value) { publicSignedIn = value; },
+    }), [1]);
 
     await step(19, page, async () => {
       await ensureFull(); const search = encodeURIComponent(business.organization); const query = `search=${search}&status=Active&source=SelfService`;
@@ -716,10 +763,6 @@ export async function runSupplementPlatformCases(h) {
     }, [1]);
   }
 
-  function bearerFromUi(target) {
-    let value; const listener = (request) => { const requestUrl = new URL(request.url()); const header = request.headers().authorization; if (requestUrl.origin === h.base.origin && requestUrl.pathname.startsWith("/api/") && header?.startsWith("Bearer ")) value = header; };
-    target.on("request", listener); return { take: () => { assert.ok(value, "La SPA debe emitir su Bearer real antes de probar revocación."); return value; }, stop: () => target.off("request", listener) };
-  }
 
   async function leavePublicForNextFixture() {
     if (!publicSignedIn) return;
