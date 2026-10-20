@@ -3,6 +3,45 @@ import test from "node:test";
 import { assistantSupplementDefinitions, assistantSupplementProofGroups, requireProjectedAssistant, requirePrivateAttachmentMetadata, requireGlobalUsage, platformSettingsValues, requirePrivateProblem, assertGlobalSettingsRestored } from "./e2e-completo-asistente-complemento.mjs";
 import * as assistant from "./e2e-completo-asistente-complemento.mjs";
 
+test("el adjunto local se selecciona antes de Enviar y su POST real se espera después de esa acción", async () => {
+  const pending = []; const calls = []; const id = "conversacion-propia";
+  const response = (suffix, status) => ({ url: () => `https://localtest.me/api/organization/assistant/conversations/${id}/${suffix}`, request: () => ({ method: () => "POST" }), status: () => status, headers: () => ({ "content-type": "text/event-stream" }) });
+  const upload = response("attachments", 201); const sent = response("messages", 200);
+  const page = { waitForResponse: (predicate) => { const entry = { predicate, ...Promise.withResolvers() }; pending.push(entry); return entry.promise; },
+    locator: (selector) => { assert.equal(selector, 'input[type="file"]'); return { setInputFiles: async (file) => { assert.equal(file.name, "propio.png"); assert.equal(file.mimeType, "image/png"); calls.push("seleccionar local"); assert.equal(pending.length, 1); } }; },
+    getByRole: (role, options) => {
+      assert.equal(options.exact, true);
+      if (role === "textbox") { assert.equal(options.name, "Tu consulta"); return { fill: async (text) => { assert.equal(text, "[E2E:slow] Turno con imagen"); calls.push("escribir consulta"); } }; }
+      assert.equal(role, "button"); assert.equal(options.name, "Enviar");
+      return { click: async () => { calls.push("Enviar UI"); assert.equal(pending.length, 2); for (const reply of [upload, sent]) { const matched = pending.filter((entry) => entry.predicate(reply)); assert.equal(matched.length, 1); matched[0].resolve(reply); } } };
+    },
+  };
+  const result = await assistant.sendAssistantAttachmentTurn({}, page, { fileName: "propio.png", buffer: Buffer.from([1]), text: "[E2E:slow] Turno con imagen" });
+  assert.equal(result.upload, upload); assert.equal(result.sent.id, id);
+  assert.deepEqual(calls, ["seleccionar local", "escribir consulta", "Enviar UI"]);
+});
+
+test("el timeout del adjunto conserva su causa e identifica la etapa y ambos POST por paths seguros", async () => {
+  const failure = new Error("page.waitForResponse: Timeout esperando adjunto"); let observed = 0;
+  const page = { waitForResponse: () => ++observed === 1 ? Promise.reject(failure) : Promise.resolve({ status: () => 200, headers: () => ({ "content-type": "text/event-stream" }), url: () => "https://localtest.me/api/organization/assistant/conversations/privada/messages?token=oculto" }),
+    locator: () => ({ setInputFiles: async () => {} }), getByRole: (role) => role === "textbox" ? { fill: async () => {} } : { click: async () => {} },
+  };
+  await assert.rejects(() => assistant.sendAssistantAttachmentTurn({}, page, { fileName: "privado.png", buffer: Buffer.from([1]), text: "consulta privada" }), (error) => {
+    assert.equal(error.cause, failure); assert.match(error.message, /etapa esperar adjunto/u);
+    for (const resource of ["attachments", "messages"]) assert.ok(error.message.includes(`POST /api/organization/assistant/conversations/:id/${resource}`));
+    for (const secret of ["localtest", "oculto", "privada", "privado.png"]) assert.equal(error.message.includes(secret), false); return true;
+  });
+});
+
+test("la reparación del operador sólo registra05 con su callback, sin ejecutar01–04 ni06", async () => {
+  assert.deepEqual(assistant.assistantOperatorRepairDefinitions.map((entry) => entry.id), ["AS-SUP-05"]);
+  const records = []; let closed = 0; let logins = 0;
+  const h = { width: 390, base: new URL("https://localtest.me"), env: { command: async () => assert.fail("No llegó al control") }, newPage: async () => ({ close: async () => closed++ }),
+    login: async () => { logins++; throw new Error("Preparación de operador"); }, record: async (id, _getPage, action) => { records.push(id); try { return { ok: true, value: await action() }; } catch (error) { assert.equal(error.message, "Preparación de operador"); return { ok: false, error }; } },
+  };
+  await assistant.runAssistantOperatorRepairCases(h); assert.deepEqual(records, ["AS-SUP-05"]); assert.equal(logins, 1); assert.equal(closed, 2);
+});
+
 test("las tarifas normales se completan sólo dentro del grupo Caché, sin tocar Contexto largo", async () => {
   const filled = [];
   const cache = { getByRole: (role, options) => {

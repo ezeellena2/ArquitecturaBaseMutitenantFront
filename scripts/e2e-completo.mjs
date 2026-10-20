@@ -79,6 +79,7 @@ const suiteSpecs = {
   organizacionesarreglos: ["./e2e-completo-organizaciones-complemento.mjs", "organizationRepairDefinitions", "runOrganizationRepairCases"],
   organizacionesestadoarreglo: ["./e2e-completo-organizaciones-complemento.mjs", "organizationStateRepairDefinitions", "runOrganizationStateRepairCases"],
   asistentepreparacionarreglos: ["./e2e-completo-asistente-complemento.mjs", "assistantPreparationRepairDefinitions", "runAssistantPreparationRepairCases"],
+  asistenteoperadorarreglo: ["./e2e-completo-asistente-complemento.mjs", "assistantOperatorRepairDefinitions", "runAssistantOperatorRepairCases"],
   whatsappatencionarreglos: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppRepairDefinitions", "runSupplementWhatsAppRepairCases"],
 };
 

@@ -22,6 +22,7 @@ export const assistantSupplementDefinitions = [
   def(6, "Dueña de conversación propia", "Rechazar feedback ajeno y borrar un turno activo con PNG", "/org/asistente", "Generating antes de Borrar204; conversación y archivo404 sin URL/bytes y sin resurrección ni título después del plazo del Fake. Metadatos del upload privados."),
 ];
 export const assistantPreparationRepairDefinitions = assistantSupplementDefinitions.filter((entry) => ["AS-SUP-02", "AS-SUP-03", "AS-SUP-04", "AS-SUP-06"].includes(entry.id));
+export const assistantOperatorRepairDefinitions = assistantSupplementDefinitions.filter((entry) => entry.id === "AS-SUP-05");
 export const assistantSupplementProofGroups = {
   "BACK-AS-011": [["BASE-E8B-30-4", "AS-SUP-06"]],
   "BACK-AS-012": [["BASE-E8B-30-1", "AS-TEC-01", "AS-TEC-02", "MOD-28"]],
@@ -151,6 +152,19 @@ async function sendUi(h, page, text, chatRoot = root, terminal = true) {
   assert.equal(response.status(), 200); assert.match(response.headers()["content-type"], /^text\/event-stream/u);
   const id = new URL(response.url()).pathname.split("/").at(-2);
   return { id, ...(terminal ? { detail: await waitAssistantTerminal(page, chatRoot, id) } : {}) };
+}
+
+export async function sendAssistantAttachmentTurn(h, page, { fileName, buffer, text }) {
+  const uploaded = page.waitForResponse((response) => response.request().method() === "POST" && /^\/api\/organization\/assistant\/conversations\/[^/]+\/attachments$/u.test(new URL(response.url()).pathname));
+  void uploaded.catch(() => {}); let phase = "seleccionar archivo";
+  try {
+    await page.locator('input[type="file"]').setInputFiles({ name: fileName, mimeType: "image/png", buffer });
+    // El composer conserva el archivo local hasta Enviar; la UI sube el adjunto antes del POST de mensajes.
+    phase = "enviar turno"; const sent = await sendUi(h, page, text, root, false);
+    phase = "esperar adjunto"; return { upload: await uploaded, sent };
+  } catch (cause) {
+    throw new Error(`Adjunto de Asistente: etapa ${phase}; POST ${root}/conversations/:id/attachments; POST ${root}/conversations/:id/messages. ${cause.message}`, { cause });
+  }
 }
 
 async function runAssistantCases(h, selected) {
@@ -320,7 +334,8 @@ async function runAssistantCases(h, selected) {
       await prepareOwner(); await admin(); useOperator = { email: syntheticEmail("as-solo-uso") };
       await platformPage.goto(url("/plataforma/cuentas")); await platformPage.getByRole("button", { name: "Invitar operador", exact: true }).filter({ visible: true }).first().click(); const dialog = platformPage.getByRole("dialog", { name: "Invitar operador", exact: true }); await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(useOperator.email);
       const picker = dialog.getByRole("button", { name: "Permisos de plataforma", exact: true }); await picker.focus(); await picker.press("ArrowDown"); await platformPage.getByRole("menuitemcheckbox", { name: "Usar el asistente de Plataforma", exact: true }).click(); await platformPage.keyboard.press("Escape"); const invitation = await operatorClick(dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/platform/operators/invitations", "POST", 201); useOperator.id = (await invitation.json()).id; await dialog.waitFor({ state: "hidden" });
-      await leavePlatform(); const me = await h.login(platformPage, useOperator.email, "platform"); platformSession = true; platformEmail = useOperator.email; assert.deepEqual(me.effectivePermissions.platform, ["platform.assistant.use"]); assert.equal(me.hasPersonalSpace, false); assert.deepEqual(me.organizations, []);
+      // Salir de Plataforma conserva la cookie pública. Se cierra primero la sesión pública propia para volver a la portada anónima.
+      await leavePublic(); await leavePlatform(); const me = await h.login(platformPage, useOperator.email, "platform"); platformSession = true; platformEmail = useOperator.email; assert.deepEqual(me.effectivePermissions.platform, ["platform.assistant.use"]); assert.equal(me.hasPersonalSpace, false); assert.deepEqual(me.organizations, []);
       await control("prepare", { email: useOperator.email, access: "platform" }); await chatHome(h, platformPage, "platform"); onlyUseChat = await sendUi(h, platformPage, "[E2E:answer] Conversación del operador con sólo uso.", platformRoot);
       for (const suffix of ["settings", "models", "usage"]) await requirePrivateProblem(await h.api(platformPage, `${platformRoot}/${suffix}`), 403, "Http.Forbidden");
       assert.equal((await read(h, platformPage, `${platformRoot}/conversations/${onlyUseChat.id}`)).conversation.id, onlyUseChat.id); await leavePlatform(); await admin(); await chatHome(h, platformPage, "platform");
@@ -334,11 +349,11 @@ async function runAssistantCases(h, selected) {
       const foreignAnswer = adminChat.detail.messages.items.findLast((message) => message.role === "assistant");
       await requirePrivateProblem(await h.api(page, `${root}/conversations/${adminChat.id}/messages/${foreignAnswer.id}/feedback`, { method: "PUT", data: { rating: "up", version: foreignAnswer.version } }), 404, "Assistant.Conversation.NotFound");
       await chatHome(h, page, "business", false, { expectedTenantId: owner.me.activeTenantId }); await page.getByRole("button", { name: "Nueva conversación", exact: true }).first().click();
-      const fileName = `activo-${tag}.png`; const uploaded = page.waitForResponse((response) => response.request().method() === "POST" && /^\/api\/organization\/assistant\/conversations\/[^/]+\/attachments$/u.test(new URL(response.url()).pathname)); void uploaded.catch(() => {});
-      await page.locator('input[type="file"]').setInputFiles({ name: fileName, mimeType: "image/png", buffer: png }); const upload = await uploaded; assert.equal(upload.status(), 201); const attachment = await upload.json(); requirePrivateAttachmentMetadata(attachment, fileName, png.length);
+      const fileName = `activo-${tag}.png`; const { upload, sent } = await sendAssistantAttachmentTurn(h, page, { fileName, buffer: png, text: "[E2E:slow] Borrar este turno activo con su imagen." });
+      assert.equal(upload.status(), 201); const attachment = await upload.json(); requirePrivateAttachmentMetadata(attachment, fileName, png.length);
       const id = new URL(upload.url()).pathname.split("/").at(-2); const fileRoute = `${root}/conversations/${id}/attachments/${attachment.id}`;
       const downloaded = await h.api(page, fileRoute); assert.equal(downloaded.status(), 200); assert.deepEqual(await downloaded.body(), png); assert.match(downloaded.headers()["cache-control"], /no-store/u); assert.match(downloaded.headers()["content-disposition"], /^attachment/iu);
-      const sent = await sendUi(h, page, "[E2E:slow] Borrar este turno activo con su imagen.", root, false); assert.equal(sent.id, id); await page.getByRole("button", { name: "Detener", exact: true }).waitFor();
+      assert.equal(sent.id, id); await page.getByRole("button", { name: "Detener", exact: true }).waitFor();
       let current = await read(h, page, `${root}/conversations/${id}`); assert.equal(current.messages.items.at(-1).status, "Generating"); const before = await control("providerCounters");
       await conversationAction(page, h.width, current.conversation.title ?? "Nueva conversación", "Borrar"); const dialog = page.getByRole("dialog");
       current = await read(h, page, `${root}/conversations/${id}`); assert.equal(current.messages.items.at(-1).status, "Generating", "La preparación debe llegar a Borrar antes del final del Fake.");
@@ -361,3 +376,4 @@ async function runAssistantCases(h, selected) {
 export async function runAssistantSupplementCases(h) { return runAssistantCases(h, new Set([1, 2, 3, 4, 5, 6])); }
 /** Sólo02/03/04/06: callbacks completos;06 prepara01 internamente sin acreditarlo. Restaura configuración en finally. */
 export async function runAssistantPreparationRepairCases(h) { return runAssistantCases(h, new Set([2, 3, 4, 6])); }
+export async function runAssistantOperatorRepairCases(h) { return runAssistantCases(h, new Set([5])); }
