@@ -1,10 +1,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { closeSupplementSessions, contactImportCsv, requirePersonalCopies, requireTakeRace, supplementWhatsAppDefinitions, supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemento.mjs";
+import { closeSupplementSessions, contactImportCsv, requirePersonalClient, requirePersonalCopies, requireTakeRace, supplementWhatsAppDefinitions, supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemento.mjs";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 
 const winner = { status: 200, body: { assignee: { id: "miembro", name: "Agente sintético" } } };
 const loser = { status: 409, body: { code: "WhatsApp.Conversation.TakenByOther", traceId: "traza", takenBy: "Agente sintético" } };
+
+test("el alta Phone Consumer tiene su espacio Personal real, distinto de la organización que lo atiende", () => {
+  const businessTenantId = "a2acb0c1-f43c-47b3-8857-79cd525e747f";
+  const me = { access: "consumer", hasPersonalSpace: true, activeTenantId: "01a159ed-c9b8-7d86-afb3-7e87065a516e" };
+  requirePersonalClient(me, businessTenantId);
+  for (const changed of [{ access: "business" }, { hasPersonalSpace: false }, { activeTenantId: null }, { activeTenantId: "" }, { activeTenantId: "Personal" }, { activeTenantId: "00000000-0000-0000-0000-000000000000" }, { activeTenantId: businessTenantId }]) assert.throws(() => requirePersonalClient({ ...me, ...changed }, businessTenantId));
+});
 
 test("la carrera exige un ganador y un rechazo con el nombre real de quien tomó el chat", () => {
   assert.equal(requireTakeRace([winner, loser]).winnerIndex, 0);

@@ -56,6 +56,14 @@ export function requirePersonalCopies(detail, { answer, note, beforeLink }) {
   for (const text of [note, beforeLink].filter(Boolean)) assert.ok(messages.every((message) => message.text !== text), "Mensajes no copia contenido privado ni previo al vínculo.");
 }
 
+/** Consumer firma tenant_id del espacio Personal creado en el alta; no usa la organización atendiente. */
+export function requirePersonalClient(me, businessTenantId) {
+  assert.equal(me.access, "consumer"); assert.equal(me.hasPersonalSpace, true);
+  assert.match(me.activeTenantId, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu, "El alta Consumer debe tener su espacio Personal real.");
+  assert.notEqual(me.activeTenantId, "00000000-0000-0000-0000-000000000000");
+  assert.notEqual(me.activeTenantId, businessTenantId, "El espacio Personal no es la organización que lo atiende.");
+}
+
 export function contactImportCsv({ first, second, unsubscribed }) {
   for (const value of [first, second, unsubscribed]) assert.match(value, /^\+54911345678\d{2}$/u, "Sólo teléfonos sintéticos del escenario.");
   return ["Nombre;Teléfono;Etiqueta;Acepta promociones",
@@ -230,7 +238,7 @@ export async function runSupplementWhatsAppCases(h) {
     await run("02", ["01"], async () => {
       capturePage = personPage;
       person = await registerPhone(h, personPage, phone, cursor); signedIn.add(personPage);
-      assert.equal(person.access, "consumer"); assert.equal(person.activeTenantId, null);
+      requirePersonalClient(person, owner.me.activeTenantId);
       assert.equal((await cursor("orgInbound", { text: beforeLink })).status, 200);
       const offered = await cursor("orgProcess");
       assert.ok(offered.buttons.some((button) => button.id === "bot.link"));
