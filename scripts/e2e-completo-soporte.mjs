@@ -50,7 +50,8 @@ export function createBrowserSupport({ context, env, base, width }) {
   const tokens = new WeakMap();
   const authenticationEvents = new WeakMap();
   const observe = (page) => {
-    page.setDefaultTimeout(15_000);
+    // El recorrido original usa 30 s. Se conserva ese presupuesto también con carga local alta.
+    page.setDefaultTimeout(30_000);
     page.setDefaultNavigationTimeout(45_000);
     page.on("request", (request) => {
       const url = new URL(request.url());
