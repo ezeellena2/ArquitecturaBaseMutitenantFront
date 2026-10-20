@@ -3,12 +3,14 @@ import { randomUUID } from "node:crypto";
 import { expect } from "playwright/test";
 import { clickForResponse, requireProblem } from "./e2e-completo-negocio.mjs";
 import { syntheticEmail } from "./e2e-completo-soporte.mjs";
+import { assertViewport } from "./e2e-completo-personal.mjs";
 
 const definition = (number, actor, action, route, expected, covers) => ({ id: `CIERRE-${number}`, area: "Cierre de cobertura local", actor, action, route, expected, covers, critical: true, source: "scripts/e2e-completo-cierre-local.mjs" });
 export const localClosureDefinitions = [
   definition("01", "Persona con correo propio", "Iniciar vínculo Google desde Mi cuenta", "/cuenta", "El botón emite POST200 y una navegación HTTPS al host exacto de Google, sin pedir OTP local. Se detiene antes de contactar al proveedor; completar Google queda a mano.", ["BACK-CU-011"]),
   definition("02", "Única Dueña activa", "Intentar quitarse el rol Dueño", "/org/usuarios/:id", "Guardar sin Dueño responde409 Tenancy.Member.LastTenantAdmin, muestra explicación y conserva miembro, roles y versión.", ["BACK-OR-017"]),
   definition("03", "Dueña de organización propia", "Crear desde Roles, abrir un usuario desde el listado y sumarlo a una empresa con su rol", "/org/roles · /org/usuarios · /org/empresas/:id", "Crear rol abre el formulario; el listado abre la ficha correcta y la empresa agrega el miembro activo con el rol elegido, confirmado por GET real.", ["GUIA-crear-un-rol-y-asignarlo-03", "GUIA-sumar-una-empresa-03", "GUIA-sumar-una-empresa-04"]),
+  { ...definition("04", "Operador completo", "Cerrar Plataforma y comprobar el ancho de la portada", "/plataforma · /", "La salida vuelve a la portada; tras el render, viewport y captura conservan 1440 o 390 px sin desborde horizontal.", []), critical: false, severity: "low", probableArea: "Front · portada pública o captura tras restaurar el viewport." },
 ];
 
 export const localClosureProofGroups = {
@@ -122,6 +124,14 @@ export async function runLocalClosureCases(h) {
       const after = await read(h, page, `/api/users/${reserved.memberId}`); assert.deepEqual(after.roles, active.roles); assert.ok(after.companies.some((item) => item.companyId === company.id && item.roles.some((assigned) => assigned.id === role.id)));
       await page.getByText(active.displayName, { exact: true }).first().waitFor();
       return "La Dueña creó desde el listado Roles, abrió el miembro desde Usuarios y lo agregó desde la ficha de su empresa con el rol propio seleccionado; membresía y asignación confirmadas por GET real.";
+    });
+    await clean();
+    await h.record("CIERRE-04", () => page, async () => {
+      await h.login(page, h.width === 1440 ? "e2e-e9a-operator@example.test" : "e2e-e9b-operator@example.test", "platform"); signedIn = true;
+      await leave(); await page.getByRole("link", { name: "Ingresá", exact: true }).filter({ visible: true }).first().waitFor();
+      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      assert.equal(page.viewportSize().width, h.width); await assertViewport(page);
+      return `Salida de Plataforma por UI y portada renderizada sin desborde; el viewport conservó ${h.width} px antes de la captura.`;
     });
   } catch (error) { failures.push(error); }
   finally {

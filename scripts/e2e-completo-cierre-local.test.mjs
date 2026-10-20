@@ -18,7 +18,7 @@ test("LastTenantAdmin conserva exactamente membresía, roles y versión del úni
 });
 
 test("cada cierre local declara sólo la acción completa que ejecuta", () => {
-  assert.deepEqual(localClosureDefinitions.map((entry) => entry.id), ["CIERRE-01", "CIERRE-02", "CIERRE-03"]);
+  assert.deepEqual(localClosureDefinitions.map((entry) => entry.id), ["CIERRE-01", "CIERRE-02", "CIERRE-03", "CIERRE-04"]);
   assert.deepEqual(localClosureDefinitions[0].covers, ["BACK-CU-011"]);
   assert.deepEqual(localClosureDefinitions[1].covers, ["BACK-OR-017"]);
   assert.ok(localClosureDefinitions[2].covers.includes("GUIA-sumar-una-empresa-04"));
