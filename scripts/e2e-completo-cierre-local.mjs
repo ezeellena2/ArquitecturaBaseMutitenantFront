@@ -15,7 +15,7 @@ export const localClosureProofGroups = {
   "BACK-IN-001": [["SUP-BIZ-13", "BIZ-06", "BIZ-07", "AS-SUP-01"]],
   "GUIA-crear-un-rol-y-asignarlo-01": [["CIERRE-03", "BIZ-26", "SUP-RO-02"]],
   "GUIA-operador-en-la-puerta-publica-04": [["PLAT-10"]],
-  "GUIA-operador-en-la-puerta-publica-05": [["PLAT-11", "AS-SUP-05"]],
+  "GUIA-operador-en-la-puerta-publica-05": [["PLAT-11", "PLAT-C-13", "AS-SUP-05"]],
   "SCREEN-auditoria-org": [["PUB-C-08"]],
 };
 

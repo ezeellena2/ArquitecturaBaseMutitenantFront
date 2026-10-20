@@ -64,6 +64,7 @@ const suiteSpecs = {
   organizacionesextra: ["./e2e-completo-organizaciones-complemento.mjs", "organizationSupplementDefinitions", "runOrganizationSupplementCases"],
   plataformasesionarreglos: ["./e2e-completo-plataforma.mjs", "platformSessionRepairDefinitions", "runPlatformSessionRepairCases"],
   cierrelocal: ["./e2e-completo-cierre-local.mjs", "localClosureDefinitions", "runLocalClosureCases"],
+  cuotawhatsapp: ["./e2e-completo-cuota-whatsapp.mjs", "quotaWhatsAppDefinitions", "runQuotaWhatsAppCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
@@ -90,9 +91,13 @@ export function buildCaseDiagnostic(error, diagnostic) {
 
 export function parseArguments(args) {
   assert.ok(args.every((value) => ["--inventory-only", "--no-build", "--refresh-only", "--resume"].includes(value) || /^--suite=[a-z,]+$/.test(value) || /^--width=(1440|390)$/.test(value)), "Argumentos no admitidos.");
-  const suites = args.find((value) => value.startsWith("--suite="))?.slice(8).split(",") ?? Object.keys(suiteSpecs).filter((name) => !name.includes("arreglo") && !name.startsWith("baseline"));
+  const suites = args.find((value) => value.startsWith("--suite="))?.slice(8).split(",") ?? Object.keys(suiteSpecs).filter((name) => !name.includes("arreglo") && !name.startsWith("baseline") && name !== "cuotawhatsapp");
   assert.ok(suites.length > 0 && suites.every((name) => Object.hasOwn(suiteSpecs, name)), "Suite desconocida.");
   const width = args.find((value) => value.startsWith("--width="));
+  if (suites.includes("cuotawhatsapp")) {
+    assert.equal(suites.length, 1, "La cuota diaria necesita una suite aislada en un entorno fresco.");
+    assert.ok(width, "La cuota diaria requiere un único ancho por entorno fresco.");
+  }
   return { inventoryOnly: args.includes("--inventory-only"), refreshOnly: args.includes("--refresh-only"), resume: args.includes("--resume"), build: !args.includes("--no-build"), suites: [...new Set(suites)], ...(width ? { widths: [Number(width.slice(8))] } : {}) };
 }
 

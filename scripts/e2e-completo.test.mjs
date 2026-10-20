@@ -5,6 +5,13 @@ import os from "node:os";
 import path from "node:path";
 import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions, buildCaseDiagnostic } from "./e2e-completo.mjs";
 
+test("agotar la cuota diaria requiere selección explícita y un único ancho", () => {
+  assert.equal(parseArguments([]).suites.includes("cuotawhatsapp"), false);
+  assert.deepEqual(parseArguments(["--suite=cuotawhatsapp", "--width=390", "--resume", "--no-build"]).suites, ["cuotawhatsapp"]);
+  assert.throws(() => parseArguments(["--suite=cuotawhatsapp"]), /único ancho/);
+  assert.throws(() => parseArguments(["--suite=personal,cuotawhatsapp", "--width=1440"]), /aislada/);
+});
+
 test("el bloqueo del clic se resume antes de truncar sin copiar el contenido del elemento superpuesto", () => {
   const error = new Error('locator.click: Timeout\n - waiting for button Perfil\n <div role="dialog" data-state="open">contenido-privado</div> intercepts pointer events');
   const actual = buildCaseDiagnostic(error);
