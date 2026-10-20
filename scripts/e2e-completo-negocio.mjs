@@ -62,6 +62,7 @@ export const businessDefinitions = [
 export const businessRepairDefinitions = businessDefinitions.filter((entry) => ["BIZ-25", "BIZ-41"].includes(entry.id));
 export const businessAccessRepairDefinitions = businessDefinitions.filter((entry) => ["23", "24", "25", "26", "27", "28", "31", "34", "38", "42", "43", "44", "45"].includes(entry.id.slice(4)));
 export const businessAccessPendingRepairDefinitions = businessAccessRepairDefinitions.filter(({ id }) => id !== "BIZ-34");
+export const businessCompanyRoleRepairDefinitions = businessAccessRepairDefinitions.filter(({ id }) => ["BIZ-26", "BIZ-27", "BIZ-42", "BIZ-44", "BIZ-45"].includes(id));
 export const businessMobileBarDefinitions = ["19", "20", "21", "22", "34"].map((id) => businessDefinitions.find((entry) => entry.id === `BIZ-${id}`));
 
 export async function runBusinessMobileBarCases(h, { run = runBusinessCases } = {}) {
@@ -412,6 +413,19 @@ export async function runBusinessAccessPendingRepairCases(h, { run = runBusiness
   });
 }
 
+/** Sólo los cinco pendientes de roles a390;23/24 reconstruyen su miembro activo sin reemplazar evidencia. */
+export async function runBusinessCompanyRoleRepairCases(h, { run = runBusinessAccessRepairCases } = {}) {
+  return run(selectMobileBarCases(h, {
+    targets: businessCompanyRoleRepairDefinitions.map(({ id }) => id), prepare: ["BIZ-23", "BIZ-24"],
+  }));
+}
+
+export async function requireBusinessRoleLink(page, role) {
+  // ListRow móvil incluye conteos, empresa y permisos dentro del enlace: su nombre accesible excede role.name.
+  const link = page.getByRole("link").and(page.locator(`[href="/org/roles/${role.id}"]`));
+  await link.waitFor(); await link.getByText(role.name, { exact: true }).waitFor(); return link;
+}
+
 /** Sólo los trece afectados originales; las altas propias son preparación y no acreditan otros registros. */
 export async function runBusinessAccessRepairCases(h) {
   const page = await h.newPage(); let capturePage = page; let live;
@@ -477,7 +491,7 @@ export async function runBusinessAccessRepairCases(h) {
     await run("26", [], async () => {
       await as(owner.email); companyRole = await createReadRole(h, page, `Lectura empresa reparación ${tag}`, "Ver miembros", { companyName: company.name, area: "Miembros" });
       const detail = await read(h, page, `/api/roles/${companyRole.id}`); assert.equal(detail.scope, "SpecificCompany"); assert.equal(detail.companyId, company.id); assert.deepEqual(detail.permissions, ["company.members.read"]);
-      await filterRolesByCompany(h, page, company); await page.getByRole("link", { name: companyRole.name, exact: true }).waitFor(); return "Rol específico propio creado y listado con filtro UI, companyId API200 y vale en URL.";
+      await filterRolesByCompany(h, page, company); await requireBusinessRoleLink(page, companyRole); return "Rol específico propio creado y listado con filtro UI, companyId API200 y vale en URL.";
     });
     await run("27", ["24", "26"], async () => {
       await as(owner.email); await page.goto(new URL(`/org/empresas/${company.id}`, h.base).href);
@@ -1002,7 +1016,7 @@ export async function runBusinessCases(h) {
     assert.equal(detail.scope, "SpecificCompany"); assert.equal(detail.companyId, companyA.id);
     assert.deepEqual(detail.permissions, ["company.members.read"]);
     await filterRolesByCompany(h, page, companyA);
-    await page.getByRole("link", { name: companyRole.name, exact: true }).waitFor();
+    await requireBusinessRoleLink(page, companyRole);
     return "Rol específico creado por UI y listado bajo el filtro de su empresa con companyId real.";
   });
   await run("27", ["09", "26"], async () => {

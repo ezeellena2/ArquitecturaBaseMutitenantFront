@@ -4,6 +4,39 @@ import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { businessDefinitions, clickForResponse, invitationTokenFromMessage, requireOrganizationPermissions, requireProblem, requireSoleCompanyAdministrator, roleScopeNegativeAssignment, runBusinessDependencyCase } from "./e2e-completo-negocio.mjs";
 import * as business from "./e2e-completo-negocio.mjs";
 
+test("el rol listado se identifica por su href real y el texto hijo exacto aunque el enlace móvil incluya conteos y empresa", async () => {
+  const role = { id: "rol-propio", name: "Lectura empresa propia" };
+  for (const missingName of [false, true]) {
+    const calls = []; const failure = new Error("El nombre real no está dentro del enlace propio");
+    const link = { waitFor: async () => calls.push("enlace propio visible"), getByText: (text, options) => {
+      assert.equal(text, role.name); assert.deepEqual(options, { exact: true }); return { waitFor: async () => { if (missingName) throw failure; calls.push("nombre exacto visible"); } };
+    } };
+    const page = { getByRole: (kind, options) => { assert.equal(kind, "link"); assert.equal(options, undefined, "El nombre accesible móvil también contiene usuarios, empresa y permisos."); return { and: (target) => { assert.equal(target, "href propio"); return link; } }; },
+      locator: (selector) => { assert.equal(selector, '[href="/org/roles/rol-propio"]'); return "href propio"; } };
+    if (missingName) await assert.rejects(() => business.requireBusinessRoleLink(page, role), (error) => error === failure);
+    else assert.equal(await business.requireBusinessRoleLink(page, role), link);
+    assert.deepEqual(calls, ["enlace propio visible", ...(!missingName ? ["nombre exacto visible"] : [])]);
+  }
+});
+
+test("el focal móvil de roles sólo registra26/27/42/44/45 y prepara23/24 sin sustituir evidencia, manteniendo dependencias reales", async () => {
+  const targets = ["26", "27", "42", "44", "45"].map((id) => "BIZ-" + id);
+  assert.deepEqual(business.businessCompanyRoleRepairDefinitions.map(({ id }) => id), targets);
+  for (const failed26 of [false, true]) {
+    const records = []; const blocks = []; const actions = []; const outcomes = new Map();
+    const h = { width: 390, record: async (id, _getPage, action) => { records.push(id); await action(); return { ok: !(failed26 && id === "BIZ-26") }; }, block: async (id) => blocks.push(id) };
+    await business.runBusinessCompanyRoleRepairCases(h, { run: async (selected) => {
+      for (const [number, dependencies] of [["23", []], ["43", ["23"]], ["24", ["23"]], ["25", []], ["26", []], ["27", ["24", "26"]], ["28", []], ["31", ["24"]], ["38", ["31"]], ["34", ["24", "31"]], ["42", ["26"]], ["44", ["26"]], ["45", ["42", "44"]]]) {
+        const id = "BIZ-" + number;
+        await runBusinessDependencyCase(selected, outcomes, id, dependencies.map((number) => "BIZ-" + number), () => ({}), async () => actions.push(id));
+      }
+    } });
+    assert.deepEqual(records, failed26 ? ["BIZ-26"] : targets); assert.deepEqual(blocks, failed26 ? targets.slice(1) : []);
+    assert.deepEqual(actions, ["BIZ-23", "BIZ-24", ...(failed26 ? ["BIZ-26"] : targets)]);
+  }
+  await assert.rejects(() => business.runBusinessCompanyRoleRepairCases({ width: 1440 }, { run: async () => assert.fail("No repite escritorio.") }));
+});
+
 function companyRepairCandidateFixture(patch = {}, postedPatch = {}) {
   const calls = []; const waiting = []; const companyId = "empresa-propia"; const memberId = "miembro-propio";
   const candidates = { page: 1, pageSize: 20, totalCount: 1, hasNext: false, items: [{ memberId, displayName: "e2•••@example.test" }], ...patch };
