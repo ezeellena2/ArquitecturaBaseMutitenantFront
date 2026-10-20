@@ -5,6 +5,22 @@ import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
 import { roleSupplementDefinitions, assertPermissionCatalog, assertAssignedRoleUnchanged, assertCompanyOnlyPermissions, assertCompanyCyclePreserved } from "./e2e-completo-roles-complemento.mjs";
 import * as roles from "./e2e-completo-roles-complemento.mjs";
 
+test("el runner móvil de Roles repite06 con sólo01/03/05 y conserva los otros resultados", async () => {
+  const target = "SUP-RO-06"; const fixtures = ["SUP-RO-01", "SUP-RO-03", "SUP-RO-05"];
+  assert.deepEqual(roles.roleSupplementMobileBarDefinitions.map(({ id }) => id), [target]);
+  assert.equal(roles.roleSupplementMobileBarDefinitions[0], roleSupplementDefinitions.find(({ id }) => id === target));
+  const recorded = []; const executed = [];
+  const h = { width: 390, record: async (id, _page, action) => { recorded.push(id); return { ok: true, value: await action() }; } };
+  await roles.runRoleMobileBarCases(h, { run: async (selected) => {
+    for (const row of roleSupplementDefinitions) {
+      const result = await selected.record(row.id, () => ({}), async () => executed.push(row.id));
+      if (row.id !== target && !fixtures.includes(row.id)) assert.deepEqual(result, { ok: false, skipped: true });
+    }
+  } });
+  assert.deepEqual(recorded, [target]); assert.deepEqual(new Set(executed), new Set([...fixtures, target]));
+  await assert.rejects(roles.runRoleMobileBarCases({ ...h, width: 1440 }, { run: async () => assert.fail("Sólo390") }), /390/u);
+});
+
 test("las seis acciones enlazan filas existentes y RO007 sólo en la comprobación de todos los estados", () => {
   assert.equal(roleSupplementDefinitions.length, 6);
   assert.equal(new Set(roleSupplementDefinitions.map((entry) => entry.id)).size, 6);
@@ -81,15 +97,23 @@ test("el ciclo exige PUT y estado real, usando acción inversa móvil y badge de
     const next = active ? "Active" : "Inactive";
     const response = { url: () => "https://localtest.me/api/companies/propia/status", request: () => ({ method: () => "PUT" }), status: () => 200 };
     const write = async () => { status = next; open = false; writes++; };
+    const item = (name) => ({ click: async () => { assert.equal(open, true); if (active) await write(); else open = false; }, waitFor: async () => { assert.equal(name, active ? "Inactivar" : "Activar"); assert.equal(status, next); assert.equal(open, true); checked = true; } });
+    const menu = { waitFor: async (options) => assert.equal(open, options?.state !== "hidden"), getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.equal(options.exact, true); return item(options.name); } };
+    const sheet = { waitFor: menu.waitFor, getByRole: (role) => { assert.equal(role, "menu"); return menu; } };
+    const desktopMenu = { filter: () => desktopMenu, last: () => menu };
+    const title = { filter: () => title, first: () => title, innerText: async () => "Empresa propia" };
     const page = {
+      viewportSize: () => ({ width }),
       waitForResponse: async (predicate) => { assert.equal(predicate(response), true); return response; },
       keyboard: { press: async (key) => { assert.equal(key, "Escape"); open = false; } },
       getByText: (label) => { assert.equal(width, 1440, "La ficha móvil comunica el estado mediante el menú."); assert.equal(label, active ? "Activa" : "Inactiva"); return { first: () => ({ waitFor: async () => { assert.equal(status, next); checked = true; } }) }; },
       getByRole: (role, { name } = {}) => {
-        if (role === "button") { assert.equal(name, "Más acciones"); return { click: async () => { open = !open; } }; }
-        if (role === "dialog") return { getByRole: () => ({ click: write }) };
-        assert.equal(role, "menuitem");
-        return { click: async () => { assert.equal(open, true); if (active) await write(); else open = false; }, waitFor: async () => { assert.equal(name, active ? "Inactivar" : "Activar"); assert.equal(status, next); assert.equal(open, true); checked = true; } };
+        if (role === "heading") return title;
+        if (role === "menu") { assert.equal(width, 1440); return desktopMenu; }
+        if (role === "button") { assert.equal(name, "Más acciones"); return { getAttribute: async () => "dialog", click: async () => { open = !open; }, focus: async () => {}, press: async (key) => { assert.equal(key, "Enter"); open = true; } }; }
+        assert.equal(role, "dialog");
+        if (name) { assert.equal(width, 390); assert.equal(name, "Empresa propia"); return sheet; }
+        assert.equal(open, false, "La confirmación se usa después del cierre de la hoja."); return { getByRole: () => ({ click: write }) };
       },
     };
     const h = { width, api: async (target, route) => { assert.equal(target, page); assert.equal(route, "/api/companies/propia"); return { status: () => 200, json: async () => ({ status }) }; } };

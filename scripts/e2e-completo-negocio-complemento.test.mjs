@@ -4,6 +4,22 @@ import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { businessDefinitions } from "./e2e-completo-negocio.mjs";
 import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
 import { supplementBusinessDefinitions, businessHomeRepairDefinitions, runBusinessHomeRepairCases, businessFilterRepairDefinitions, runBusinessFilterRepairCases, assertUserFacetCounts, assertMemberChangesStayInCompany, requireHomeGroupPreview } from "./e2e-completo-negocio-complemento.mjs";
+import * as business from "./e2e-completo-negocio-complemento.mjs";
+
+test("el runner de barra móvil complementario sólo ejecuta01 sin otras altas o preparaciones", async () => {
+  assert.deepEqual(business.supplementBusinessMobileBarDefinitions.map(({ id }) => id), ["SUP-BIZ-01"]);
+  assert.equal(business.supplementBusinessMobileBarDefinitions[0], supplementBusinessDefinitions.find(({ id }) => id === "SUP-BIZ-01"));
+  const recorded = []; const executed = [];
+  const h = { width: 390, record: async (id, _page, action) => { recorded.push(id); return { ok: true, value: await action() }; } };
+  await business.runSupplementBusinessMobileBarCases(h, { run: async (selected) => {
+    for (const row of supplementBusinessDefinitions) {
+      const result = await selected.record(row.id, () => ({}), async () => executed.push(row.id));
+      if (row.id !== "SUP-BIZ-01") assert.deepEqual(result, { ok: false, skipped: true });
+    }
+  } });
+  assert.deepEqual(recorded, ["SUP-BIZ-01"]); assert.deepEqual(executed, recorded);
+  await assert.rejects(business.runSupplementBusinessMobileBarCases({ ...h, width: 1440 }, { run: async () => assert.fail("Sólo390") }), /390/u);
+});
 
 test("el complemento enlaza sólo acciones completas todavía sin covers nativos de Negocio", () => {
   assert.equal(supplementBusinessDefinitions.length, 13);

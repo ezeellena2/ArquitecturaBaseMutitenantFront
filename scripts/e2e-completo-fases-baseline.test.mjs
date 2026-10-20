@@ -6,7 +6,8 @@ import test from "node:test";
 import { existingScriptCases } from "./e2e-completo-inventario-front.mjs";
 import { baselinewhatsapp, baselineasistente, baselineorgwa, baselineseguridad,
   assistantEvidenceModuleUrl, exposeAssistantEvidence, loadAssistantEvidence, observeAssistantIsolation,
-  prepareBaselineFixture, runOriginalBaselinePhase, withAuditListReadiness, withBaselineFixture } from "./e2e-completo-fases-baseline.mjs";
+  prepareBaselineFixture, runOriginalBaselinePhase, withAuditListReadiness, withBaselineFixture,
+  runBaselineOrganizationWhatsAppMobileBarCases, runBaselineSecurityMobileBarCases } from "./e2e-completo-fases-baseline.mjs";
 import { runE9Journey } from "./recorrido-usuario-e9.mjs";
 import { authenticatorAuditEvents } from "./test-e2e-real-e9.mjs";
 
@@ -21,6 +22,39 @@ function harness(statuses = {}) {
     }, block: async (id, reason, page) => { blocks.push({ id, reason, page }); } };
   return { h, calls, blocks };
 }
+
+test("los focos móviles visitan el baseline íntegro pero sólo ejecutan objetivos y preparaciones indispensables", async () => {
+  for (const { run, definitions: originals, targets, prepare } of [
+    { run: runBaselineOrganizationWhatsAppMobileBarCases, definitions: baselineorgwa.definitions,
+      targets: ["BASE-E11-10", "BASE-E11-12", "BASE-E11-13"], prepare: Array.from({ length: 9 }, (_value, index) => "BASE-E11-" + String(index + 1).padStart(2, "0")) },
+    { run: runBaselineSecurityMobileBarCases, definitions: baselineseguridad.definitions,
+      targets: ["BASE-E9-03", "BASE-E9-05"], prepare: ["BASE-E9-01", "BASE-E9-02", "BASE-E9-04"] },
+  ]) {
+    const { h, calls, blocks } = harness(); h.width = 390; const performed = [];
+    const toast = { first() { return this; } };
+    const page = { locator: () => toast, addLocatorHandler: async () => {}, removeLocatorHandler: async () => {} };
+    const result = await run(h, { run: (selected) => runOriginalBaselinePhase(selected, originals, async (record) => {
+      for (const definition of originals) await record(definition.id.replace(/^BASE-/u, ""), 390, () => page, async () => { performed.push(definition.id); });
+    }) });
+    assert.deepEqual(result.visited, originals.map(({ id }) => id));
+    assert.deepEqual(calls.map(({ id }) => id), targets);
+    assert.deepEqual(performed, originals.filter(({ id }) => targets.includes(id) || prepare.includes(id)).map(({ id }) => id));
+    assert.deepEqual(blocks, []);
+  }
+});
+
+test("preparación móvil fallida corta el original y bloquea objetivos sin registrar verdes por visitas omitidas", async () => {
+  const { h, calls, blocks } = harness(); h.width = 390; const performed = [];
+  const failure = new Error("No se preparó el autenticador");
+  await assert.rejects(() => runBaselineSecurityMobileBarCases(h, { run: (selected) => runOriginalBaselinePhase(selected, baselineseguridad.definitions, async (record) => {
+    for (const definition of baselineseguridad.definitions) await record(definition.id, 390, () => "operador", async () => {
+      performed.push(definition.id); if (definition.id === "BASE-E9-02") throw failure;
+    });
+  }) }), (error) => error.cause === failure && error.message.includes("BASE-E9-02"));
+  assert.deepEqual(performed, ["BASE-E9-01", "BASE-E9-02"]);
+  assert.deepEqual(calls, []);
+  assert.deepEqual(blocks.map(({ id }) => id), ["BASE-E9-03", "BASE-E9-05"]);
+});
 
 test("bridge conserva callback original y no omite pasos por antecedentes verdes", async () => {
   const { h, calls } = harness({ "BASE-E8-01": "passed" }); let actions = 0;

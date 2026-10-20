@@ -4,6 +4,8 @@ import { setTimeout as delay } from "node:timers/promises";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { plainTextBody } from "./test-e2e-real-mail.mjs";
 import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
+import { openBarMenu, chooseBarAction } from "./e2e-completo-menu-barra.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
 const definition = (id, actor, action, route, expected, covers = []) => ({
   id: `BIZ-${id}`, area: "Administración y aislamiento", actor, action, route, expected, covers, critical: true,
@@ -59,6 +61,17 @@ export const businessDefinitions = [
 
 export const businessRepairDefinitions = businessDefinitions.filter((entry) => ["BIZ-25", "BIZ-41"].includes(entry.id));
 export const businessAccessRepairDefinitions = businessDefinitions.filter((entry) => ["23", "24", "25", "26", "27", "28", "31", "34", "38", "42", "43", "44", "45"].includes(entry.id.slice(4)));
+export const businessMobileBarDefinitions = ["19", "20", "21", "22", "34"].map((id) => businessDefinitions.find((entry) => entry.id === `BIZ-${id}`));
+
+export async function runBusinessMobileBarCases(h, { run = runBusinessCases } = {}) {
+  return run(selectMobileBarCases(h, {
+    targets: businessMobileBarDefinitions.map(({ id }) => id),
+    prepare: ["01", "02", "03", "06", "23", "24", "31"].map((id) => `BIZ-${id}`),
+  }));
+}
+
+export const openBusinessBarMenu = (page, options) => openBarMenu(page, page.getByRole("button", { name: "Más acciones", exact: true }), options);
+export const chooseBusinessBarAction = (page, action, options) => chooseBarAction(page, page.getByRole("button", { name: "Más acciones", exact: true }), action, options);
 
 /** Un recurso que existe en otra organización debe producir ProblemDetails, nunca datos ni un 403 ambiguo. */
 export async function requireProblem(response, status, code) {
@@ -285,8 +298,9 @@ export async function checkMemberStateChange(h, page, memberId, active) {
 export async function assertCompanyStateVisible(h, page, status) {
   assert.ok(["Active", "Inactive"].includes(status), "El estado debe pertenecer al contrato de empresas.");
   if (h.width === 390) {
-    await page.getByRole("button", { name: "Más acciones", exact: true }).click();
-    await page.getByRole("menuitem", { name: status === "Inactive" ? "Activar" : "Inactivar", exact: true }).waitFor();
+    const opened = await openBusinessBarMenu(page, { activation: "Enter" });
+    await opened.menu.getByRole("menuitem", { name: status === "Inactive" ? "Activar" : "Inactivar", exact: true }).waitFor();
+    return opened;
   } else await page.getByText(status === "Inactive" ? "Inactiva" : "Activa", { exact: true }).first().waitFor();
 }
 
@@ -855,9 +869,10 @@ export async function runBusinessCases(h) {
     ownInvitation = await invite(h, page, email);
     firstInvitationToken = await invitationTokenFromMail(h, email, firstMail);
     await page.goto(new URL(`/org/usuarios/${ownInvitation.memberId}`, h.base).href);
-    await page.getByRole("button", { name: "Más acciones", exact: true }).click();
+    const opened = await openBusinessBarMenu(page);
     const nextMail = new Set(await h.env.files());
-    const response = await clickForResponse(page, page.getByRole("menuitem", { name: "Reenviar invitación", exact: true }), `/api/users/invitations/${ownInvitation.invitationId}/resend`, "POST");
+    const response = await clickForResponse(page, opened.menu.getByRole("menuitem", { name: "Reenviar invitación", exact: true }), `/api/users/invitations/${ownInvitation.invitationId}/resend`, "POST");
+    await opened.waitForClosed();
     const nextId = await response.json(); assert.match(nextId, /^[0-9a-f-]{36}$/i);
     ownInvitation.invitationId = nextId;
     resentInvitationToken = await invitationTokenFromMail(h, email, nextMail);
@@ -869,8 +884,7 @@ export async function runBusinessCases(h) {
   });
   await run("20", ["19"], async () => {
     await page.goto(new URL(`/org/usuarios/${ownInvitation.memberId}`, h.base).href);
-    await page.getByRole("button", { name: "Más acciones", exact: true }).click();
-    await page.getByRole("menuitem", { name: "Revocar invitación", exact: true }).click();
+    await chooseBusinessBarAction(page, "Revocar invitación");
     await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Revocar", exact: true }), `/api/users/invitations/${ownInvitation.invitationId}`, "DELETE", 204);
     await page.goto(new URL("/org/usuarios", h.base).href);
     await page.getByRole("heading", { name: "Usuarios", exact: true }).waitFor();
@@ -883,8 +897,7 @@ export async function runBusinessCases(h) {
     await as(a.email);
     membersBeforeDeactivation = await read(h, page, `/api/companies/${companyA.id}/members/paged?page=1&pageSize=100`);
     await page.goto(new URL(`/org/empresas/${companyA.id}`, h.base).href);
-    await page.getByRole("button", { name: "Más acciones", exact: true }).click();
-    await page.getByRole("menuitem", { name: "Inactivar", exact: true }).click();
+    await chooseBusinessBarAction(page, "Inactivar");
     await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/companies/${companyA.id}/status`, "PUT");
     const detail = await read(h, page, `/api/companies/${companyA.id}`); assert.equal(detail.status, "Inactive");
     await assertCompanyStateVisible(h, page, "Inactive");
@@ -895,8 +908,9 @@ export async function runBusinessCases(h) {
     const inactive = await read(h, page, `/api/companies/${companyA.id}`);
     assert.equal(inactive.status, "Inactive", "La restauración comprueba el estado real aunque el caso21 haya fallado en su UI.");
     await page.goto(new URL(`/org/empresas/${companyA.id}`, h.base).href);
-    await page.getByRole("button", { name: "Más acciones", exact: true }).click();
-    await clickForResponse(page, page.getByRole("menuitem", { name: "Activar", exact: true }), `/api/companies/${companyA.id}/status`, "PUT");
+    const opened = await openBusinessBarMenu(page);
+    await clickForResponse(page, opened.menu.getByRole("menuitem", { name: "Activar", exact: true }), `/api/companies/${companyA.id}/status`, "PUT");
+    await opened.waitForClosed();
     const detail = await read(h, page, `/api/companies/${companyA.id}`); assert.equal(detail.status, "Active");
     const after = await read(h, page, `/api/companies/${companyA.id}/members/paged?page=1&pageSize=100`);
     assert.ok(membersBeforeDeactivation?.items, "La conservación necesita la lectura inicial de miembros.");
@@ -1054,8 +1068,7 @@ export async function runBusinessCases(h) {
   await run("34", ["24", "31"], async () => {
     await as(a.email);
     await page.goto(new URL(`/org/usuarios/${partial.memberId}`, h.base).href);
-    await page.getByRole("button", { name: "Más acciones", exact: true }).click();
-    await page.getByRole("menuitem", { name: "Quitar de la organización", exact: true }).click();
+    await chooseBusinessBarAction(page, "Quitar de la organización");
     await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Quitar", exact: true }), `/api/users/${partial.memberId}`, "DELETE", 204);
     await page.waitForURL((url) => url.pathname === "/org/usuarios");
     await requireProblem(await h.api(page, `/api/users/${partial.memberId}`), 404);

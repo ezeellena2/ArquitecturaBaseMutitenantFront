@@ -11,6 +11,7 @@ import { runE8Journey, sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs
 import { runE11Journey } from "./recorrido-usuario-e11.mjs";
 import { runE9Journey } from "./recorrido-usuario-e9.mjs";
 import { waitForPlatformHome } from "./recorrido-usuario.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
 const definitionsFor = (select) => existingScriptCases.filter((entry) => select(entry.id)).map((entry) => ({
   id: "BASE-" + entry.id, area: "Fase original del recorrido", actor: "Actor sintético del recorrido original",
@@ -346,6 +347,15 @@ export async function runBaselineOrganizationWhatsAppCases(h) {
   });
 }
 
+export async function runBaselineOrganizationWhatsAppMobileBarCases(h, { run = runBaselineOrganizationWhatsAppCases } = {}) {
+  return run(selectMobileBarCases(h, {
+    targets: ["BASE-E11-10", "BASE-E11-12", "BASE-E11-13"],
+    //13 usa el contacto leído en09 y12 los equipos de03; la nota11 no prepara ninguno de los dos.
+    prepare: Array.from({ length: 9 }, (_value, index) => "BASE-E11-" + String(index + 1).padStart(2, "0")),
+    skippedOk: true,
+  }));
+}
+
 export async function runBaselineSecurityCases(h) {
   return withBaselineFixture(h, { definitions: baselineSecurityDefinitions, business: false }, async (fixture) => {
     const ui = phaseUi(h, fixture);
@@ -354,6 +364,12 @@ export async function runBaselineSecurityCases(h) {
       login: ui.loginSecurity, requestCode: ui.requestCode, verify: ui.verify, awaitPlatformHome: waitForPlatformHome, operator: fixture.operator,
     }), { page: fixture.platformPage });
   });
+}
+
+export async function runBaselineSecurityMobileBarCases(h, { run = runBaselineSecurityCases } = {}) {
+  return run(selectMobileBarCases(h, {
+    targets: ["BASE-E9-03", "BASE-E9-05"], prepare: ["BASE-E9-01", "BASE-E9-02", "BASE-E9-04"], skippedOk: true,
+  }));
 }
 
 export const baselinewhatsapp = { definitions: baselineWhatsAppDefinitions, run: runBaselineWhatsAppCases };

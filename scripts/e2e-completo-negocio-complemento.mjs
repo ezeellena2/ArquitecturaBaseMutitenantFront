@@ -3,7 +3,8 @@ import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
-import { clickForResponse, invitationTokenFromMessage, requireProblem, runBusinessDependencyCase } from "./e2e-completo-negocio.mjs";
+import { clickForResponse, invitationTokenFromMessage, requireProblem, runBusinessDependencyCase, chooseBusinessBarAction } from "./e2e-completo-negocio.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
 const definition = (suffix, actor, action, route, expected, covers) => ({ id: `SUP-BIZ-${suffix}`, area: "Administración complementaria", actor, action, route, expected, covers, critical: true });
 export const supplementBusinessDefinitions = [
@@ -23,6 +24,11 @@ export const supplementBusinessDefinitions = [
 ];
 export const businessHomeRepairDefinitions = supplementBusinessDefinitions.filter((entry) => entry.id === "SUP-BIZ-13");
 export const businessFilterRepairDefinitions = supplementBusinessDefinitions.filter((entry) => ["SUP-BIZ-02", "SUP-BIZ-06"].includes(entry.id));
+export const supplementBusinessMobileBarDefinitions = supplementBusinessDefinitions.filter((entry) => entry.id === "SUP-BIZ-01");
+
+export async function runSupplementBusinessMobileBarCases(h, { run = runSupplementBusinessCases } = {}) {
+  return run(selectMobileBarCases(h, { targets: supplementBusinessMobileBarDefinitions.map(({ id }) => id) }));
+}
 
 export function assertUserFacetCounts(counts, expected) {
   assert.equal(counts.all, counts.active + counts.invited + counts.expired + counts.pendingDeletion + counts.inactive, "Cada persona tiene un único estado contado.");
@@ -331,7 +337,7 @@ export async function runSupplementBusinessCases(h) {
       await page.goto(new URL(`/org/empresas/${b.id}`, h.base).href); await heading(page, b.name);
       const before = b; const catalog = await read(h, page, "/api/reference-data");
       const zone = catalog.timeZones.find((item) => item.isEnabled && item.id !== b.timeZoneId && catalog.timeZones.filter((other) => other.city === item.city).length === 1); assert.ok(zone);
-      if (h.width === 390) { await page.getByRole("button", { name: "Más acciones", exact: true }).click(); await page.getByRole("menuitem", { name: "Editar empresa", exact: true }).click(); }
+      if (h.width === 390) await chooseBusinessBarAction(page, "Editar empresa");
       else await page.getByRole("button", { name: "Editar empresa", exact: true }).click();
       const dialog = page.getByRole("dialog", { name: "Editar empresa", exact: true });
       const renamed = `${prefix} Fiscal editada`; await dialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(renamed);
@@ -343,7 +349,7 @@ export async function runSupplementBusinessCases(h) {
       await page.reload(); await heading(page, b.name);
       inactive = await createCompany(h, page, `${prefix} Inactiva`);
       await page.goto(new URL(`/org/empresas/${inactive.id}`, h.base).href);
-      await page.getByRole("button", { name: "Más acciones", exact: true }).click(); await page.getByRole("menuitem", { name: "Inactivar", exact: true }).click();
+      await chooseBusinessBarAction(page, "Inactivar");
       await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/companies/${inactive.id}/status`, "PUT");
       assert.equal((await read(h, page, `/api/companies/${inactive.id}`)).status, "Inactive");
       return "Empresa fiscal creada201, ficha abierta y edición UI versionada de nombre/zona; su identificación fiscal siguió idéntica tras F5. Tercera empresa preparada inactiva.";

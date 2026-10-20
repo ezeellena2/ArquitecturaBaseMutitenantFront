@@ -107,17 +107,45 @@ test("el estado de empresa se comprueba por badge en escritorio y por la acción
   for (const width of [390, 1440]) for (const status of ["Active", "Inactive"]) {
     const calls = [];
     const control = (name) => ({ click: async () => calls.push(["click", name]), waitFor: async () => calls.push(["visible", name]), first: () => control(name) });
+    const inverse = { waitFor: async () => calls.push(["visible", status === "Inactive" ? "Activar" : "Inactivar"]) };
+    const menu = { waitFor: async () => {}, getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.deepEqual(options, { name: status === "Inactive" ? "Activar" : "Inactivar", exact: true }); return inverse; } };
+    const sheet = { waitFor: async () => {}, getByRole: (role) => { assert.equal(role, "menu"); return menu; } };
+    const title = { filter: () => title, first: () => title, innerText: async () => "Empresa propia" };
     const page = {
-      getByRole: (_role, { name }) => { assert.equal(width, 390); return control(name); },
+      viewportSize: () => ({ width }),
+      getByRole: (role, options) => {
+        assert.equal(width, 390);
+        if (role === "heading") return title;
+        if (role === "dialog") { assert.deepEqual(options, { name: "Empresa propia", exact: true }); return sheet; }
+        assert.equal(role, "button"); assert.deepEqual(options, { name: "Más acciones", exact: true });
+        return { getAttribute: async () => "dialog", focus: async () => calls.push(["focus", "Más acciones"]), press: async (key) => calls.push(["press", key]) };
+      },
       getByText: (name) => { assert.equal(width, 1440, "El tablero móvil no tiene badge de estado."); return control(name); },
     };
     await business.assertCompanyStateVisible({ width }, page, status);
-    assert.deepEqual(calls, width === 390 ? [["click", "Más acciones"], ["visible", status === "Inactive" ? "Activar" : "Inactivar"]]
+    assert.deepEqual(calls, width === 390 ? [["focus", "Más acciones"], ["press", "Enter"], ["visible", status === "Inactive" ? "Activar" : "Inactivar"]]
       : [["visible", status === "Inactive" ? "Inactiva" : "Activa"]]);
   }
   await assert.rejects(business.assertCompanyStateVisible({ width: 390 }, {}, "Desconocido"));
   const expected = businessDefinitions.find((entry) => entry.id === "BIZ-21").expected;
   assert.match(expected, /móvil/u); assert.match(expected, /Activar/u); assert.match(expected, /Inactiva/u);
+});
+
+test("el runner móvil de Negocio sólo registra sus cinco acciones y ejecuta las siete fixtures", async () => {
+  const targets = ["19", "20", "21", "22", "34"].map((id) => `BIZ-${id}`);
+  const fixtures = ["01", "02", "03", "06", "23", "24", "31"].map((id) => `BIZ-${id}`);
+  assert.deepEqual(business.businessMobileBarDefinitions.map((row) => row.id), targets);
+  for (const row of business.businessMobileBarDefinitions) assert.equal(row, businessDefinitions.find((original) => original.id === row.id));
+  const recorded = []; const executed = [];
+  const h = { width: 390, record: async (id, _page, action) => { recorded.push(id); return { ok: true, value: await action() }; } };
+  await business.runBusinessMobileBarCases(h, { run: async (selected) => {
+    for (const row of businessDefinitions) {
+      const result = await selected.record(row.id, () => ({}), async () => executed.push(row.id));
+      if (!targets.includes(row.id) && !fixtures.includes(row.id)) assert.deepEqual(result, { ok: false, skipped: true });
+    }
+  } });
+  assert.deepEqual(recorded, targets); assert.deepEqual(new Set(executed), new Set([...targets, ...fixtures]));
+  await assert.rejects(business.runBusinessMobileBarCases({ ...h, width: 1440 }, { run: async () => assert.fail("Sólo390") }), /390/u);
 });
 
 test("la reparación de negocio prepara una sola organización para25/41, captura y cierra por UI incluso si falla25", async () => {

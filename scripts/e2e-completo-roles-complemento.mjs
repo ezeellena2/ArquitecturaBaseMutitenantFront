@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { syntheticEmail } from "./e2e-completo-soporte.mjs";
-import { clickForResponse, forceBusinessLogin, requireProblem, runBusinessDependencyCase, assertCompanyStateVisible } from "./e2e-completo-negocio.mjs";
+import { clickForResponse, forceBusinessLogin, requireProblem, runBusinessDependencyCase, assertCompanyStateVisible, openBusinessBarMenu } from "./e2e-completo-negocio.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 import { cleanupContinuationSessions } from "./e2e-completo-continuacion.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
 
@@ -16,6 +17,13 @@ export const roleSupplementDefinitions = [
   definition("05", "Miembro con sólo un rol de empresa y Dueña", "Ver Tus empresas tras ingresar y comprobar la membresía activa", "/org", "El miembro ve su empresa y rol en Inicio; Me no concede permisos organizacionales o de Plataforma; la Dueña lo ve Activo en Usuarios.", ["SCREEN-inicio-miembro", "GUIA-invitar-y-aceptar-06"]),
   definition("06", "Dueña y miembro con token empresarial ya emitido", "Inactivar y reactivar la empresa sin perder datos, miembros ni permisos al restaurar", "/org/empresas/:id", "UI Active→Inactive→Active; la misma pestaña del miembro conserva identidad/token y pierde/recupera sus permisos, Inicio y GET miembros200→403→200. Datos y membresías intactos al reactivar.", ["BACK-EM-005"]),
 ];
+export const roleSupplementMobileBarDefinitions = roleSupplementDefinitions.filter((entry) => entry.id === "SUP-RO-06");
+
+export async function runRoleMobileBarCases(h, { run = runRoleSupplementCases } = {}) {
+  return run(selectMobileBarCases(h, {
+    targets: roleSupplementMobileBarDefinitions.map(({ id }) => id), prepare: ["SUP-RO-01", "SUP-RO-03", "SUP-RO-05"],
+  }));
+}
 
 export function assertPermissionCatalog(actual, expected) {
   assert.deepEqual(actual.map((group) => group.area), expected.map((group) => group.area), "El orden de áreas sale de Permissions.All.");
@@ -137,12 +145,12 @@ export async function disableMember(h, page, memberId) {
 }
 
 export async function companyStatus(h, page, company, active) {
-  await page.getByRole("button", { name: "Más acciones", exact: true }).click();
-  const action = page.getByRole("menuitem", { name: active ? "Activar" : "Inactivar", exact: true });
-  if (active) await clickForResponse(page, action, `/api/companies/${company.id}/status`, "PUT");
-  else { await action.click(); await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/companies/${company.id}/status`, "PUT"); }
-  await assertCompanyStateVisible(h, page, active ? "Active" : "Inactive");
-  if (h.width === 390) await page.keyboard.press("Escape");
+  const opened = await openBusinessBarMenu(page);
+  const action = opened.menu.getByRole("menuitem", { name: active ? "Activar" : "Inactivar", exact: true });
+  if (active) { await clickForResponse(page, action, `/api/companies/${company.id}/status`, "PUT"); await opened.waitForClosed(); }
+  else { await action.click(); await opened.waitForClosed(); await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/companies/${company.id}/status`, "PUT"); }
+  const inverse = await assertCompanyStateVisible(h, page, active ? "Active" : "Inactive");
+  if (h.width === 390) { await page.keyboard.press("Escape"); await inverse.waitForClosed(); }
   const result = await read(h, page, `/api/companies/${company.id}`); assert.equal(result.status, active ? "Active" : "Inactive"); return result;
 }
 
