@@ -5,6 +5,59 @@ import { platformWhatsAppDefinitions, platformWhatsAppLimitations, requirePlatfo
 import * as platformWhatsApp from "./e2e-completo-whatsapp-plataforma.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
+test("el equipo busca por correo al gestor sin nombre y selecciona sólo la opción real de su ID", async () => {
+  const manager = { id: "gestor-propio", email: "gestor-propio@example.test" };
+  for (const items of [[{ id: manager.id, name: "" }], [{ id: "ajeno", name: "Otro" }], [{ id: manager.id, name: "" }, { id: "ajeno", name: "Otro" }]]) {
+    const calls = []; let rendered = false; let selected = false;
+    const options = { count: async () => { assert.equal(rendered, true); return items.length; }, click: async () => { selected = true; calls.push("seleccionar gestor real"); }, waitFor: async () => {} };
+    const menu = { filter() { return this; }, last() { return this; }, getByRole: (role, query) => {
+      if (role === "searchbox") { assert.deepEqual(query, { name: "Buscar", exact: true }); return { fill: async (value) => { assert.equal(value, manager.email); calls.push("buscar correo propio"); } }; }
+      if (role === "status") return { waitFor: async (wait) => { assert.deepEqual(wait, { state: "hidden" }); rendered = true; calls.push("opciones renderizadas"); } };
+      assert.equal(role, "menuitemcheckbox"); assert.equal(query, undefined, "No inventar un nombre para la opción vacía."); return options;
+    } };
+    const response = { status: () => 200, json: async () => ({ items }) };
+    const page = { waitForResponse: async (predicate) => {
+      const request = { method: () => "GET" };
+      assert.equal(predicate({ url: () => "https://localtest.me/api/platform/whatsapp/teams/member-options?page=1&search=" + encodeURIComponent(manager.email), request: () => request }), true);
+      assert.equal(predicate({ url: () => "https://localtest.me/api/platform/whatsapp/teams/member-options?search=otra", request: () => request }), false);
+      calls.push("observar búsqueda real"); return response;
+    }, getByRole: (role) => { assert.equal(role, "menu"); return menu; }, keyboard: { press: async (key) => { assert.equal(key, "Escape"); calls.push("cerrar selector"); } } };
+    const picker = { focus: async () => {}, press: async (key) => assert.equal(key, "ArrowDown") };
+    const dialog = { getByRole: (role, query) => { assert.equal(role, "button"); assert.deepEqual(query, { name: "Operadores", exact: true }); return picker; } };
+    const choose = () => platformWhatsApp.selectPlatformWhatsAppTeamManager(page, dialog, manager);
+    if (items.length === 1 && items[0].id === manager.id) {
+      await choose(); assert.equal(selected, true);
+      assert.deepEqual(calls, ["observar búsqueda real", "buscar correo propio", "opciones renderizadas", "seleccionar gestor real", "cerrar selector"]);
+    } else { await assert.rejects(choose); assert.equal(selected, false); }
+  }
+});
+
+test("el focal de gestión sólo delega01 en ambos anchos y omite02 incluso cuando01 falló", async () => {
+  assert.deepEqual(platformWhatsApp.platformWhatsAppManagementRepairDefinitions.map(({ id }) => id), ["WAP-01"]);
+  for (const width of [1440, 390]) for (const failed of [false, true]) {
+    const records = []; const actions = []; const blocked = []; const failure = new Error("Gestión fallida");
+    const h = { width, record: async (id, _getPage, action) => { records.push(id); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; } }, block: async (id) => blocked.push(id) };
+    const result = await platformWhatsApp.runPlatformWhatsAppManagementRepairCases(h, { run: async (selected, mobile) => {
+      assert.equal(mobile, false); assert.equal(selected.width, width);
+      const first = await selected.record("WAP-01", () => ({}), async () => { actions.push("01"); if (failed) throw failure; });
+      await selected.record("WAP-02", () => ({}), async () => { actions.push("02"); });
+      await selected.block("WAP-02", "fixture fallida", {}); return first;
+    } });
+    assert.deepEqual(records, ["WAP-01"]); assert.deepEqual(actions, ["01"]); assert.deepEqual(blocked, []);
+    assert.equal(result.ok, !failed); if (failed) assert.equal(result.error, failure);
+  }
+});
+
+test("la opción del gestor conserva su nombre accesible real y el rótulo vacío sigue siendo un fallo", async () => {
+  for (const label of ["", "Gestor propio", "gestor-propio@example.test"]) {
+    const option = { getAttribute: async (name) => name === "aria-labelledby" ? "etiqueta-propia" : null,
+      innerText: async () => assert.fail("Con aria-labelledby se comprueba su texto referenciado real.") };
+    const page = { locator: (selector) => { assert.equal(selector, '[id="etiqueta-propia"]'); return { textContent: async () => label }; } };
+    if (label) assert.equal(await platformWhatsApp.requirePlatformWhatsAppTeamManagerLabel(page, option), label);
+    else await assert.rejects(() => platformWhatsApp.requirePlatformWhatsAppTeamManagerLabel(page, option), /gestor.*nombre accesible/iu);
+  }
+});
+
 test("permisos usa el título resuelto de la cuenta sin nombre y la acción directa de escritorio", async () => {
   for (const width of [1440, 390]) {
     const calls = []; const title = "operador-propio@example.test";

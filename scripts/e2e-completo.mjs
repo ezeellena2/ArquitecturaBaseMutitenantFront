@@ -85,6 +85,7 @@ const suiteSpecs = {
   asistenteborradoarreglo: ["./e2e-completo-asistente-complemento.mjs", "assistantAttachmentRepairDefinitions", "runAssistantAttachmentRepairCases"],
   whatsappatencionarreglos: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppRepairDefinitions", "runSupplementWhatsAppRepairCases"],
   whatsappmensajesarreglo: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppTakeRepairDefinitions", "runSupplementWhatsAppTakeRepairCases"],
+  whatsappgestionarreglo: ["./e2e-completo-whatsapp-plataforma.mjs", "platformWhatsAppManagementRepairDefinitions", "runPlatformWhatsAppManagementRepairCases"],
   ...Object.fromEntries(mobileBarPlans.map((plan) => [plan.name, [plan.module, plan.definitionsExport, plan.runExport, plan.definitions]])),
 };
 

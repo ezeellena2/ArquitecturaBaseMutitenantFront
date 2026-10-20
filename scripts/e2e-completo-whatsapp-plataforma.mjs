@@ -17,10 +17,11 @@ const def = (id, actor, action, expected, covers = [], extra = {}) => ({
 });
 export const platformWhatsAppDefinitions = [
   def("WAP-01", "Operador sólo con platform.whatsapp.manage", "Guardar bot y equipo con confirmación reciente, sin atención",
-    "Bot y equipo propios se guardan por UI; la prueba vencida exige403 ReauthenticationRequired y confirmación real. Gestión no permite leer consultas. Plantillas se leen sin acreditar escrituras en Meta.", [], { partialOf: ["BACK-WA-023"], route: "/plataforma/whatsapp/bot" }),
+    "Bot y equipo propios se guardan por UI; la prueba vencida exige403 ReauthenticationRequired y confirmación real. Gestión no permite leer consultas. Plantillas se leen sin acreditar escrituras en Meta. El gestor propio tiene un nombre accesible no vacío en el selector del equipo.", [], { partialOf: ["BACK-WA-023"], route: "/plataforma/whatsapp/bot", severity: "medium", probableArea: "Back · DTO PlatformWhatsAppOperatorResolver devuelve nombre vacío; Front · TeamDialog/MultiSelect conserva esa etiqueta sin fallback." }),
   def("WAP-02", "Operador sólo con atención, luego con lectura de cuentas", "Responder una consulta global con prueba vencida y comprobar la cuenta asociada",
     "attend permite responder201 sin confirmación reciente ni lectura de cuenta; al sumar accounts.read por UI, la misma consulta muestra la cuenta propia real.", ["BACK-WA-022"]),
 ];
+export const platformWhatsAppManagementRepairDefinitions = platformWhatsAppDefinitions.filter(({ id }) => id === "WAP-01");
 export const platformWhatsAppLimitations = {
   "BACK-WA-023": { partialExecutionIds: ["WAP-01"], missing: "Creación y borrado de plantillas de Plataforma en Meta.",
     reason: "Bot y equipos se preparan localmente; crear o borrar plantillas usa WhatsAppTemplateIssuer y Meta. El control Browser no ofrece una respuesta aprobada para plantillas ni credenciales reales. Leer el listado o abrir el formulario no acredita esas escrituras.",
@@ -201,16 +202,46 @@ async function addPhone(h, page, phone, cursor) {
   const methods = (await read(h, page, "/api/me/login-methods")).methods;
   assert.ok(methods.some((method) => method.id === methodId && method.type === "Phone" && method.isVerified));
 }
-async function createTeam(h, page, email, manager, name) {
+async function openPlatformTeamDialog(h, page) {
   await page.goto(new URL("/plataforma/whatsapp/equipos", h.base).href);
   await page.getByRole("button", { name: "Crear equipo", exact: true }).filter({ visible: true }).first().click();
-  const dialog = page.getByRole("dialog", { name: "Crear equipo", exact: true });
-  await dialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(name);
-  const options = await read(h, page, root + "/teams/member-options?page=1&pageSize=100&search=" + encodeURIComponent(manager.email));
-  const own = options.items.find((item) => item.id === manager.id); assert.ok(own, "El gestor propio debe ser una opción real del equipo.");
+  const dialog = page.getByRole("dialog", { name: "Crear equipo", exact: true }); await dialog.waitFor(); return dialog;
+}
+
+async function platformTeamManagerOption(page, dialog, manager) {
   const picker = dialog.getByRole("button", { name: "Operadores", exact: true }); await picker.focus(); await picker.press("ArrowDown");
-  await page.getByRole("searchbox", { name: "Buscar", exact: true }).fill(own.name);
-  await page.getByRole("menuitemcheckbox", { name: own.name, exact: true }).click(); await page.keyboard.press("Escape");
+  const menu = page.getByRole("menu").filter({ visible: true }).last();
+  const pending = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return url.pathname === root + "/teams/member-options" && url.searchParams.get("search") === manager.email && response.request().method() === "GET";
+  }); void pending.catch(() => {});
+  await menu.getByRole("searchbox", { name: "Buscar", exact: true }).fill(manager.email);
+  const response = await pending; assert.equal(response.status(), 200);
+  assert.deepEqual((await response.json()).items.map(({ id }) => id), [manager.id], "La búsqueda real debe devolver sólo el ID del gestor propio.");
+  await menu.getByRole("status").waitFor({ state: "hidden" });
+  const option = menu.getByRole("menuitemcheckbox");
+  assert.equal(await option.count(), 1, "Sólo se selecciona la opción única del gestor identificado por la API.");
+  await option.waitFor({ state: "visible" }); return option;
+}
+
+export async function selectPlatformWhatsAppTeamManager(page, dialog, manager) {
+  try { const option = await platformTeamManagerOption(page, dialog, manager); await option.click(); }
+  finally { await page.keyboard.press("Escape"); }
+}
+
+export async function requirePlatformWhatsAppTeamManagerLabel(page, option) {
+  const labelledBy = (await option.getAttribute("aria-labelledby") ?? "").trim();
+  let label;
+  if (labelledBy) label = (await Promise.all(labelledBy.split(/\s+/u).map((id) => page.locator('[id="' + id + '"]').textContent()))).join(" ");
+  else label = await option.getAttribute("aria-label") ?? await option.innerText();
+  assert.ok(label.trim(), "La opción del gestor propio debe tener un nombre accesible no vacío en el selector de Operadores.");
+  return label.trim();
+}
+
+async function createTeam(h, page, email, manager, name) {
+  const dialog = await openPlatformTeamDialog(h, page);
+  await dialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(name);
+  await selectPlatformWhatsAppTeamManager(page, dialog, manager);
   const created = await uiWrite(page, dialog.getByRole("button", { name: "Crear equipo", exact: true }), root + "/teams", "POST", 201, email);
   const team = await created.json(); assert.ok(team.id); await dialog.waitFor({ state: "hidden" });
   const persisted = await read(h, page, root + "/teams/" + team.id);
@@ -229,6 +260,12 @@ async function deleteTeam(h, page, email, name) {
 
 /** Dos comprobaciones con cuentas propias, dentro del contexto real que aporta main. */
 export async function runPlatformWhatsAppCases(h) { return runPlatformWhatsAppPlan(h, false); }
+export async function runPlatformWhatsAppManagementRepairCases(h, { run = runPlatformWhatsAppPlan } = {}) {
+  return run({ ...h,
+    record: (id, ...args) => id === "WAP-01" ? h.record(id, ...args) : { ok: false, skipped: true },
+    block: (id, ...args) => id === "WAP-01" ? h.block(id, ...args) : { ok: false, skipped: true },
+  }, false);
+}
 export async function runPlatformWhatsAppMobileBarCases(h) {
   return runPlatformWhatsAppPlan(selectMobileBarCases(h, { targets: ["WAP-02"], prepare: ["WAP-01"] }), true);
 }
@@ -283,7 +320,13 @@ async function runPlatformWhatsAppPlan(h, mobile) {
         await read(h, managerPage, root + "/templates?page=1&pageSize=20&group=Consultations");
         const savedWelcome = await welcomeDialog(h, managerPage);
         assert.equal(await savedWelcome.getByRole("textbox", { name: "Texto", exact: true }).inputValue(), "Bienvenida de prueba " + tag);
-        return "Gestor sólo manage confirmó F2 tras403 real, guardó Bienvenida y equipo; consultas403. Plantillas sólo se leyeron; sus escrituras en Meta siguen pendientes.";
+        await savedWelcome.getByRole("button", { name: "Cancelar", exact: true }).click(); await savedWelcome.waitFor({ state: "hidden" });
+        const memberDialog = await openPlatformTeamDialog(h, managerPage);
+        const ownOption = await platformTeamManagerOption(managerPage, memberDialog, manager);
+        await requirePlatformWhatsAppTeamManagerLabel(managerPage, ownOption);
+        await managerPage.keyboard.press("Escape");
+        await memberDialog.getByRole("button", { name: "Cancelar", exact: true }).click(); await memberDialog.waitFor({ state: "hidden" });
+        return "Gestor sólo manage confirmó F2 tras403 real, guardó Bienvenida y equipo con su ID exacto y nombre accesible; consultas403. Plantillas sólo se leyeron; sus escrituras en Meta siguen pendientes.";
     } });
     if (!ready) await h.block("WAP-02", "No se prepararon por UI la cuenta Phone y los operadores propios de WAP-01.", capturePage);
     else await h.record("WAP-02", () => capturePage, async () => withRestoredWhatsAppSettings({
