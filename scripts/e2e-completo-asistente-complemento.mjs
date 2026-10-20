@@ -42,10 +42,24 @@ function noPrivateContent(value, privateValues = []) {
   inspect(value); const serialized = JSON.stringify(value);
   for (const text of privateValues.filter(Boolean)) assert.equal(serialized.includes(text), false, "La respuesta no debe copiar el contenido del chat privado.");
 }
-export async function requirePrivateProblem(response, status, code) {
-  assert.equal(response.status(), status); const problem = await response.json();
-  assert.equal(problem.code, code); assert.ok(typeof problem.traceId === "string" && problem.traceId.length > 0);
+export async function requirePrivateProblem(response, status, code, operation) {
+  const actualStatus = response.status(); let problem;
+  if (operation) { try { problem = await response.json(); } catch { /* El diagnóstico no publica cuerpos que no sean ProblemDetails. */ } }
+  const observedCode = typeof problem?.code === "string" && /^(?:Assistant|Http|Validation|General|Auth|Legal)(?:\.[A-Za-z][A-Za-z0-9]*)+$/u.test(problem.code) ? problem.code : "no disponible";
+  const diagnostic = operation ? `Diagnóstico seguro: operación ${operation}; estado ${actualStatus}; problem.code ${observedCode}.` : undefined;
+  assert.equal(actualStatus, status, diagnostic); problem ??= await response.json();
+  if (operation) assert.ok(problem.code === code, diagnostic); else assert.equal(problem.code, code);
+  assert.ok(typeof problem.traceId === "string" && problem.traceId.length > 0);
   noPrivateContent(problem); return problem;
+}
+export async function requireForeignAssistantFeedbackAfterNotice(h, page, chat, prepareHome) {
+  // La política exige el aviso de este usuario antes de buscar la conversación y comprobar su propiedad.
+  await prepareHome();
+  const answer = chat.detail.messages.items.findLast((message) => message.role === "assistant");
+  assert.ok(answer, "La prueba requiere la respuesta real del Administrador de empresa.");
+  return requirePrivateProblem(await h.api(page, `${root}/conversations/${chat.id}/messages/${answer.id}/feedback`, {
+    method: "PUT", data: { rating: "up", version: answer.version },
+  }), 404, "Assistant.Conversation.NotFound", "PUT /api/organization/assistant/conversations/:id/messages/:messageId/feedback");
 }
 export function requireProjectedAssistant(me, organizationId, companyId) {
   assert.equal(me.access, "business"); assert.equal(me.activeTenantId, organizationId);
@@ -366,9 +380,8 @@ async function runAssistantCases(h, selected) {
       // La reparación prepara por UI el mismo chat ajeno de01 dentro de06, sin registrar ni acreditar01.
       if (!selected.has(1)) await prepareProjectedAdminChat();
       await prepareOwner(); await business(); assert.ok(adminChat?.detail, "La prueba requiere la respuesta real del Administrador de empresa.");
-      const foreignAnswer = adminChat.detail.messages.items.findLast((message) => message.role === "assistant");
-      await requirePrivateProblem(await h.api(page, `${root}/conversations/${adminChat.id}/messages/${foreignAnswer.id}/feedback`, { method: "PUT", data: { rating: "up", version: foreignAnswer.version } }), 404, "Assistant.Conversation.NotFound");
-      await chatHome(h, page, "business", false, { expectedTenantId: owner.me.activeTenantId }); await page.getByRole("button", { name: "Nueva conversación", exact: true }).first().click();
+      await requireForeignAssistantFeedbackAfterNotice(h, page, adminChat, () => chatHome(h, page, "business", false, { expectedTenantId: owner.me.activeTenantId }));
+      await page.getByRole("button", { name: "Nueva conversación", exact: true }).first().click();
       const fileName = `activo-${tag}.png`; const { upload, sent } = await sendAssistantAttachmentTurn(h, page, { fileName, buffer: png, text: "[E2E:slow] Borrar este turno activo con su imagen." });
       assert.equal(upload.status(), 201); const attachment = await upload.json(); requirePrivateAttachmentMetadata(attachment, fileName, png.length);
       const id = new URL(upload.url()).pathname.split("/").at(-2); const fileRoute = `${root}/conversations/${id}/attachments/${attachment.id}`;

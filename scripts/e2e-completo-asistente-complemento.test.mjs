@@ -3,6 +3,35 @@ import test from "node:test";
 import { assistantSupplementDefinitions, assistantSupplementProofGroups, requireProjectedAssistant, requirePrivateAttachmentMetadata, requireGlobalUsage, platformSettingsValues, requirePrivateProblem, assertGlobalSettingsRestored } from "./e2e-completo-asistente-complemento.mjs";
 import * as assistant from "./e2e-completo-asistente-complemento.mjs";
 
+test("el feedback ajeno espera la aceptación real del aviso propio y conserva payload, 404 y privacidad", async () => {
+  const calls = []; const response = { status: () => 404, json: async () => ({ code: "Assistant.Conversation.NotFound", traceId: "traza-propia" }) };
+  const page = {}; const chat = { id: "chat-ajeno", detail: { messages: { items: [{ id: "pregunta", role: "user", version: 1 }, { id: "respuesta-ajena", role: "assistant", version: 7 }] } } };
+  const h = { api: async (target, route, options) => {
+    assert.equal(target, page); assert.equal(route, "/api/organization/assistant/conversations/chat-ajeno/messages/respuesta-ajena/feedback");
+    assert.deepEqual(options, { method: "PUT", data: { rating: "up", version: 7 } }); calls.push("PUT feedback ajeno"); return response;
+  } };
+  const result = await assistant.requireForeignAssistantFeedbackAfterNotice(h, page, chat, async () => { calls.push("aceptar aviso del Dueño por UI"); calls.push("compositor visible"); });
+  assert.equal(result.code, "Assistant.Conversation.NotFound");
+  assert.deepEqual(calls, ["aceptar aviso del Dueño por UI", "compositor visible", "PUT feedback ajeno"]);
+  const failure = new Error("El aviso propio no se aceptó"); let requested = false;
+  await assert.rejects(() => assistant.requireForeignAssistantFeedbackAfterNotice({ api: async () => { requested = true; return response; } }, page, chat, async () => { throw failure; }), (error) => error === failure);
+  assert.equal(requested, false);
+});
+
+test("el fallo de feedback identifica operación, estado y código sin imprimir cuerpo ni direcciones privadas", async () => {
+  for (const code of ["Assistant.Notice.AcceptanceRequired", "https://private.test/?token=oculto"]) {
+    const h = { api: async () => ({ status: () => 400, json: async () => ({ code, traceId: "privada", detail: "contenido privado", url: "https://private.test/?token=oculto" }) }) };
+    const chat = { id: "ajeno", detail: { messages: { items: [{ id: "respuesta", role: "assistant", version: 7 }] } } };
+    await assert.rejects(() => assistant.requireForeignAssistantFeedbackAfterNotice(h, {}, chat, async () => {}), (error) => {
+      assert.match(error.message, /PUT \/api\/organization\/assistant\/conversations\/:id\/messages\/:messageId\/feedback/u);
+      assert.match(error.message, /estado 400/u);
+      assert.ok(error.message.includes(`problem.code ${code.startsWith("Assistant.") ? code : "no disponible"}`));
+      for (const secret of ["contenido privado", "https:", "private.test", "token", "oculto", "privada"]) assert.equal(error.message.includes(secret), false);
+      return true;
+    });
+  }
+});
+
 test("Borrar abre el diálogo mientras siguen las lecturas independientes y sólo envía tras validarlas y releer Generating", async () => {
   const calls = []; const inspected = Promise.withResolvers(); const opened = Promise.withResolvers();
   const counters = { titleCalls: 4 }; const dialog = {};
