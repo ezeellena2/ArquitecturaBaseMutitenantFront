@@ -26,6 +26,62 @@ export function requireGoogleChallenge(body, observedHost) {
   assert.equal(url.protocol, "https:"); assert.equal(url.hostname, "accounts.google.com");
   assert.equal(observedHost, "accounts.google.com"); return true;
 }
+
+async function observeAccountGoogleChallenge(page, button, base) {
+  const matches = (url) => url.hostname === "accounts.google.com";
+  let release; let arrived = false; let clicking;
+  const retained = new Promise((resolve) => { release = resolve; });
+  const abortions = []; const errors = [];
+  const handler = (route) => {
+    arrived = true;
+    const aborted = (async () => { await retained; await route.abort(); })();
+    abortions.push(aborted); return aborted;
+  };
+  // Sólo se retiene la navegación externa real. El POST local no se intercepta ni se reemplaza.
+  await page.route(matches, handler);
+  const responsePending = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return url.origin === base.origin && url.pathname === "/api/me/external/google" && response.request().method() === "POST";
+  });
+  const requestPending = page.waitForRequest((request) => matches(new URL(request.url())));
+  const failurePending = page.waitForEvent("requestfailed", { predicate: (request) => matches(new URL(request.url())) });
+  for (const pending of [responsePending, requestPending, failurePending]) void pending.catch(() => {});
+  try {
+    // El clic puede esperar la navegación retenida: leer el POST en paralelo evita ese ciclo.
+    clicking = button.click(); void clicking.catch(() => {});
+    const response = await Promise.race([responsePending, clicking.then(() => responsePending)]);
+    assert.equal(response.status(), 200, "Vincular Google debe responder200 con su desafío real.");
+    const challenge = await response.json(); const requested = await requestPending;
+    requireGoogleChallenge(challenge, new URL(requested.url()).hostname);
+  } catch (error) { errors.push(error); }
+  finally {
+    release();
+    if (clicking) { try { await clicking; } catch (error) { if (!errors.includes(error)) errors.push(error); } }
+    const settled = await Promise.allSettled(abortions);
+    for (const item of settled) if (item.status === "rejected" && !errors.includes(item.reason)) errors.push(item.reason);
+    if (arrived) { try { await failurePending; } catch (error) { errors.push(error); } }
+    try { await page.unroute(matches, handler); } catch (error) { errors.push(error); }
+  }
+  if (errors.length === 1) throw errors[0];
+  if (errors.length > 1) throw new AggregateError(errors, "Falló observar o detener el desafío real de Google.");
+}
+
+export async function linkGoogleAndRestoreAccount(page, base) {
+  let failure; let restorationFailure;
+  try { await observeAccountGoogleChallenge(page, page.getByRole("button", { name: "Vincular Google", exact: true }), base); }
+  catch (error) { failure = error; }
+  finally {
+    try {
+      await page.goto(new URL("/cuenta", base).href);
+      await page.getByRole("button", { name: "Vincular Google", exact: true }).waitFor();
+    } catch (error) { restorationFailure = error; }
+  }
+  if (failure && restorationFailure) throw new AggregateError([failure, restorationFailure], "Falló el desafío Google y no se pudo restaurar Mi cuenta para la salida UI.");
+  if (restorationFailure) throw restorationFailure;
+  if (failure) throw failure;
+  assert.equal(await page.getByRole("textbox", { name: "Código 1", exact: true }).count(), 0);
+  return "POST200 real y navegación dirigida a Google observada y detenida antes del proveedor; sin OTP local ni vínculo verificado. Mi cuenta sigue disponible; Google completo queda a mano.";
+}
 export function requireOwnerPreserved(before, after, problem) {
   assert.equal(problem.code, "Tenancy.Member.LastTenantAdmin"); assert.ok(problem.traceId);
   assert.equal(before.state, "Active"); assert.ok(before.roles.some((role) => role.name === "Dueño"));
@@ -72,17 +128,7 @@ export async function runLocalClosureCases(h) {
     await h.record("CIERRE-01", () => page, async () => {
       await h.registerPerson(page); signedIn = true; await page.goto(new URL("/cuenta", h.base).href);
       await page.getByRole("button", { name: "Vincular Google", exact: true }).waitFor();
-      const matches = (url) => url.hostname === "accounts.google.com";
-      const handler = (route) => route.abort(); await page.route(matches, handler);
-      try {
-        const navigation = page.waitForEvent("requestfailed", { predicate: (request) => new URL(request.url()).hostname === "accounts.google.com" }); void navigation.catch(() => {});
-        const response = await clickForResponse(page, page.getByRole("button", { name: "Vincular Google", exact: true }), "/api/me/external/google", "POST", 200);
-        const challenge = await response.json(); const requested = await navigation;
-        requireGoogleChallenge(challenge, new URL(requested.url()).hostname);
-        await page.goto(new URL("/cuenta", h.base).href); await page.getByRole("button", { name: "Vincular Google", exact: true }).waitFor();
-        assert.equal(await page.getByRole("textbox", { name: "Código 1", exact: true }).count(), 0);
-        return "POST200 real y navegación dirigida a Google observada y detenida antes del proveedor; sin OTP local ni vínculo verificado. Mi cuenta sigue disponible; Google completo queda a mano.";
-      } finally { await page.unroute(matches, handler); }
+      return linkGoogleAndRestoreAccount(page, h.base);
     });
     await clean();
     await h.record("CIERRE-02", () => page, async () => {
