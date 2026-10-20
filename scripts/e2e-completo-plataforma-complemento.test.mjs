@@ -117,6 +117,38 @@ test("aprobar desde el listado depende de la fixture12 y se ejecuta después del
   }
 });
 
+test("el aviso de aprobación reconoce Aprobamos con la organización exacta y exige un único correo", () => {
+  const name = "Organización propia (A)"; const reason = "Motivo interno";
+  const text = `Hola. Aprobamos ${name} y terminamos el alta. Ya podés entrar como Dueño de tu organización.`;
+  const message = (body) => ({ body: `Content-Type: text/plain; charset=utf-8\r\n\r\n${body}` });
+  assert.equal(/aprobad/iu.test(text), false, "La plantilla actual no contiene el participio que esperaba el guion.");
+  assert.equal(platform.matchesOrganizationApprovalNotice(text, name), true);
+  for (const other of [text.replace(name, name + " ajena"), `No aprobamos la solicitud de alta de ${name}.`, `Te invitaron a ${name}.`, `Aprobada ${name}.`]) assert.equal(platform.matchesOrganizationApprovalNotice(other, name), false);
+  const options = { name, kind: "approved", reason };
+  requireUniqueOrganizationNotice([message(text)], options);
+  for (const messages of [[], [message(text), message(text)], [message(text.replace(name, "Otra organización"))], [message(text + reason)]]) assert.throws(() => requireUniqueOrganizationNotice(messages, options));
+});
+
+test("la reparación sólo registra20 con fixture propia y cierra ambas sesiones aun si preparar o aprobar falla", async () => {
+  assert.deepEqual(platform.platformApprovalRepairDefinitions.map((row) => row.id), ["PLAT-C-20"]);
+  for (const width of [1440, 390]) for (const failedPhase of [null, "login", "prepare", "approve"]) {
+    const calls = []; const closed = []; const recordIds = []; const pages = [0, 1].map((id) => ({ id, isClosed: () => false, close: async () => closed.push(id) })); let nextPage = 0;
+    const fixture = { pendingBusiness: { id: "propia", name: "Pendiente propia" }, pendingOwner: "own@example.test" };
+    const h = { width, newPage: async () => pages[nextPage++],
+      login: async (page, email, access) => { assert.equal(page, pages[0]); assert.equal(email, width === 1440 ? "e2e-e9r-operator@example.test" : "e2e-e9l-operator@example.test"); assert.equal(access, "platform"); calls.push("login"); if (failedPhase === "login") throw new Error("Ingreso fallido"); return { access: "platform", effectivePermissions: { platform: ["platform.tenants.manage", "platform.settings.manage"] } }; },
+      signOut: async (page) => calls.push(`salir${page.id}`),
+      record: async (id, getPage, action) => { recordIds.push(id); assert.equal(getPage(), pages[0]); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; } },
+      block: async () => assert.fail("No depende de otros records"), registerPerson: async () => assert.fail("No crea otra persona"), registerBusiness: async () => assert.fail("No crea otra organización"),
+    };
+    await platform.runPlatformApprovalRepairCases(h, {
+      prepare: async (target, { page, publicPage, onPublicSignedIn }) => { assert.equal(target, h); assert.equal(page, pages[0]); assert.equal(publicPage, pages[1]); calls.push("prepare"); onPublicSignedIn(); if (failedPhase === "prepare") throw new Error("Fixture fallida"); return fixture; },
+      approve: async (target, { page, ...actualFixture }) => { assert.equal(target, h); assert.equal(page, pages[0]); assert.deepEqual(actualFixture, fixture); calls.push("approve"); if (failedPhase === "approve") throw new Error("Aprobación fallida"); return "Aprobación propia verificada"; },
+    });
+    assert.deepEqual(recordIds, ["PLAT-C-20"]); assert.deepEqual(closed, [0, 1]);
+    assert.deepEqual(calls, failedPhase === "login" ? ["login"] : failedPhase === "prepare" ? ["login", "prepare", "salir1", "salir0"] : ["login", "prepare", "approve", "salir1", "salir0"]);
+  }
+});
+
 test("un replay201 sin Location sigue fallando aunque conserve cuerpo e IDs", () => {
   const location = "https://localtest.me/api/platform/tenants/propia";
   const response = (value) => ({ headers: () => value === undefined ? {} : { location: value } });

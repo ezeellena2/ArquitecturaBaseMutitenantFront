@@ -42,6 +42,7 @@ export const supplementPlatformDefinitions = [
 ];
 export const platformRecoveryRepairDefinitions = [8, 9].map((number) => supplementPlatformDefinitions.find((entry) => entry.id === `PLAT-C-${String(number).padStart(2, "0")}`));
 export const platformOperatorInvitationRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-04");
+export const platformApprovalRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-20");
 
 export const supplementPlatformProofGroups = { "BACK-PL-008": [["PLAT-C-20", "PLAT-C-17"]], "BACK-PL-018": [["PLAT-25", "PLAT-26", "PLAT-C-18"]] };
 export const supplementPlatformLimitations = {
@@ -92,8 +93,12 @@ export async function waitForOrganizationHistoryReason(h, page, reason) {
 export function requireUniqueOrganizationNotice(messages, { name, kind, reason }) {
   assert.equal(messages.length, 1, "La operación y sus replays deben producir un único aviso al destinatario propio.");
   const body = plainTextBody(messages[0].body); assert.ok(body?.includes(name));
-  assert.match(body, kind === "rejected" ? /No aprobamos la solicitud de alta/u : /invit/iu);
+  if (kind === "approved") assert.ok(matchesOrganizationApprovalNotice(body, name), "El aviso debe confirmar la aprobación de la organización propia.");
+  else assert.match(body, kind === "rejected" ? /No aprobamos la solicitud de alta/u : /invit/iu);
   if (reason) assert.equal(body.includes(reason), false, "El aviso público no publica el motivo interno.");
+}
+export function matchesOrganizationApprovalNotice(text, name) {
+  return text.includes(`Aprobamos ${name} y terminamos el alta. Ya podés entrar como Dueño de tu organización.`);
 }
 export function requireOperatorDeletion(detail, { before, after, reason }) {
   assert.equal(detail.state, "PendingDeletion"); assert.equal(detail.deletion.requestedByPlatform, true);
@@ -344,6 +349,82 @@ async function changeOrganization(h, page, id, action, reason) {
   await dialog.waitFor({ state: "hidden" });
 }
 
+async function preparePendingOrganization(h, { page, publicPage, tag, onPublicSignedIn }) {
+  const operatorEmail = operatorByPage.get(page); assert.equal(typeof operatorEmail, "string");
+  await confirmRecentAuthenticationWhenAsked(page, operatorEmail);
+  let current; let pendingBusiness;
+  const pendingOwner = syntheticEmail("owner-pendiente"); const name = `Pendiente complemento ${h.width} ${tag}`; const slug = `pc-${h.width}-${tag}`;
+  await withRestoredSettings({
+    read: async () => current = await openPlatformSettings(page, h.base.origin),
+    prepare: async (baseline) => { current = await savePlatformSettings(page, current, { ...restorableSettings(baseline), consumerSignup: "Open", businessSignup: "RequiresApproval" }, "Preparar solicitud propia pendiente de aprobación."); },
+    body: async () => {
+      await publicPage.goto(new URL("/registro/empresa", h.base).href); await publicPage.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+      await publicPage.getByRole("textbox", { name: "Tu correo electrónico", exact: true }).fill(pendingOwner);
+      const before = new Set(await h.env.files()); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Continuar", exact: true }), "/api/auth/business-signup/code", 202);
+      await fillOtp(publicPage, await h.env.code(pendingOwner, before)); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/business-signup/verify", 204); onPublicSignedIn();
+      await publicPage.getByRole("heading", { name: "Tu organización", exact: true }).waitFor();
+      await publicPage.getByRole("textbox", { name: "Nombre de la organización", exact: true }).fill(name); await publicPage.getByRole("textbox", { name: /Dirección de tu página/ }).fill(slug); await publicPage.getByRole("textbox", { name: "Primera empresa", exact: true }).fill(`${name} Centro`); await publicPage.getByText("Disponible", { exact: true }).waitFor();
+      const response = await clickHttp(publicPage, publicPage.getByRole("button", { name: "Crear organización", exact: true }), "/api/auth/business-signup", 200); assert.equal((await response.json()).requiresApproval, true);
+      await publicPage.getByRole("heading", { name: "Recibimos el pedido", exact: true }).waitFor();
+      const matches = (await read(h, page, `/api/platform/tenants/paged?page=1&pageSize=100&search=${encodeURIComponent(name)}`)).items; assert.equal(matches.length, 1); pendingBusiness = matches[0]; assert.equal(pendingBusiness.status, "PendingApproval");
+    },
+    restore: async (baseline) => { current = await openPlatformSettings(page, h.base.origin); await savePlatformSettings(page, current, restorableSettings(baseline), "Restaurar política inicial antes de continuar el complemento."); },
+  });
+  return { pendingBusiness, pendingOwner };
+}
+
+async function approvePendingOrganizationFromList(h, { page, pendingBusiness, pendingOwner }) {
+  const query = `search=${encodeURIComponent(pendingBusiness.name)}&status=PendingApproval`;
+  const [listed] = await responsesForAction(page, [(response) => endpoint("/api/platform/tenants/paged", "GET")(response) && new URL(response.url()).searchParams.get("search") === pendingBusiness.name && new URL(response.url()).searchParams.get("status") === "PendingApproval"], () => page.goto(new URL(`/plataforma/organizaciones?${query}`, h.base).href));
+  assert.equal(listed.status(), 200); const rows = await listed.json(); assert.equal(rows.totalCount, 1); assert.equal(rows.items[0].id, pendingBusiness.id); assert.equal(rows.items[0].status, "PendingApproval");
+  await openPlatformListItem(page, `/plataforma/organizaciones/${pendingBusiness.id}`, pendingBusiness.name); await page.getByRole("heading", { name: pendingBusiness.name, exact: true }).waitFor();
+  for (const title of ["Historial", "Dueños", "Página pública"]) {
+    await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click(); const panel = page.getByRole("tabpanel"); await panel.waitFor(); await panel.getByRole("status").waitFor({ state: "hidden" });
+    assert.ok((await panel.innerText()).trim().length > 0); assert.equal(await panel.getByRole("alert").count(), 0);
+  }
+  const before = new Set(await h.env.files()); const reason = "Datos propios verificados para aprobar la organización.";
+  await changeOrganization(h, page, pendingBusiness.id, "Aprobar", reason); await page.getByText("Activa", { exact: true }).first().waitFor();
+  const persisted = await read(h, page, `/api/platform/tenants/${pendingBusiness.id}`); assert.equal(persisted.status, "Active"); assert.equal(persisted.lastStateChange.reason, reason);
+  await notice(h.env, pendingOwner, before, (text) => matchesOrganizationApprovalNotice(text, pendingBusiness.name));
+  const approvals = (await h.env.messages(pendingOwner, before)).filter(({ body }) => matchesOrganizationApprovalNotice(plainTextBody(body) ?? "", pendingBusiness.name));
+  requireUniqueOrganizationNotice(approvals, { name: pendingBusiness.name, kind: "approved", reason });
+  return "El listado filtrado abrió la solicitud propia por href y nombre; Historial/Dueños/Página cargaron, Aprobar con motivo respondió200 y persistió Active/motivo; la cuenta Dueña recibió un único correo real de aprobación, sin certificar WhatsApp.";
+}
+
+async function closePendingOwnerSession(h, publicPage) {
+  try { await h.signOut(publicPage); }
+  catch {
+    await publicPage.goto(new URL("/login", h.base).href);
+    const terms = publicPage.getByRole("heading", { name: "Actualizamos los términos", exact: true });
+    await terms.or(publicPage.getByRole("navigation", { name: "Secciones", exact: true })).or(publicPage.getByRole("button", { name: /, Personal$/ })).filter({ visible: true }).first().waitFor();
+    if (await terms.isVisible()) { await publicPage.getByRole("checkbox", { name: /Leí y acepto/ }).check(); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Aceptar y seguir", exact: true }), "/api/legal/accept", 204); }
+    await h.signOut(publicPage);
+  }
+}
+
+/** Sólo20: solicitud propia por UI y aprobación desde listado, sin Inicio13, Asistente u otras organizaciones. */
+export async function runPlatformApprovalRepairCases(h, { prepare = preparePendingOrganization, approve = approvePendingOrganizationFromList } = {}) {
+  const run = createPlatformRecorder(h); const page = await h.newPage(); const publicPage = await h.newPage(); let fullSignedIn = false; let publicSignedIn = false; let capturePage = page;
+  const failures = [];
+  const operatorEmail = h.width === 1440 ? "e2e-e9r-operator@example.test" : "e2e-e9l-operator@example.test";
+  try {
+    await run("PLAT-C-20", () => capturePage, async () => {
+      const operator = await h.login(page, operatorEmail, "platform"); fullSignedIn = true;
+      assert.equal(operator.access, "platform"); for (const permission of ["platform.tenants.manage", "platform.settings.manage"]) assert.ok(operator.effectivePermissions.platform.includes(permission));
+      operatorByPage.set(page, operatorEmail);
+      capturePage = publicPage;
+      const fixture = await prepare(h, { page, publicPage, tag: randomUUID().slice(0, 8), onPublicSignedIn: () => { publicSignedIn = true; } });
+      capturePage = page;
+      return approve(h, { page, ...fixture });
+    });
+  } finally {
+    if (publicSignedIn) { try { await closePendingOwnerSession(h, publicPage); } catch (error) { failures.push(error); } }
+    if (fullSignedIn) { try { await h.signOut(page); } catch (error) { failures.push(error); } }
+    for (const target of [page, publicPage]) if (!target.isClosed()) { await stopConfirmingRecentAuthentication(target); await target.close(); }
+  }
+  if (failures.length) throw new AggregateError(failures, "No se completó la salida por UI del complemento de aprobación.");
+}
+
 export async function runSupplementPlatformCases(h) {
   const run = createPlatformRecorder(h); const pages = [];
   const newPage = async () => { const page = await h.newPage(); pages.push(page); return page; };
@@ -474,24 +555,8 @@ export async function runSupplementPlatformCases(h) {
       return "Listado→Crear guardó organización/primera empresa e invitó Dueño; ficha y Dueños muestran Invitación pendiente y pickup contiene la invitación real.";
     }, [1]);
     await step(12, publicPage, async () => {
-      await ensureFull(); let current;
-      await withRestoredSettings({
-        read: async () => current = await openPlatformSettings(page, h.base.origin),
-        prepare: async (baseline) => { current = await savePlatformSettings(page, current, { ...restorableSettings(baseline), consumerSignup: "Open", businessSignup: "RequiresApproval" }, "Preparar solicitud propia pendiente de aprobación."); },
-        body: async () => {
-          pendingOwner = syntheticEmail("owner-pendiente"); const name = `Pendiente complemento ${h.width} ${tag}`; const slug = `pc-${h.width}-${tag}`;
-          await publicPage.goto(url("/registro/empresa")); await publicPage.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
-          await publicPage.getByRole("textbox", { name: "Tu correo electrónico", exact: true }).fill(pendingOwner);
-          const before = new Set(await h.env.files()); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Continuar", exact: true }), "/api/auth/business-signup/code", 202);
-          await fillOtp(publicPage, await h.env.code(pendingOwner, before)); await clickHttp(publicPage, publicPage.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/business-signup/verify", 204); publicSignedIn = true;
-          await publicPage.getByRole("heading", { name: "Tu organización", exact: true }).waitFor();
-          await publicPage.getByRole("textbox", { name: "Nombre de la organización", exact: true }).fill(name); await publicPage.getByRole("textbox", { name: /Dirección de tu página/ }).fill(slug); await publicPage.getByRole("textbox", { name: "Primera empresa", exact: true }).fill(`${name} Centro`); await publicPage.getByText("Disponible", { exact: true }).waitFor();
-          const response = await clickHttp(publicPage, publicPage.getByRole("button", { name: "Crear organización", exact: true }), "/api/auth/business-signup", 200); assert.equal((await response.json()).requiresApproval, true);
-          await publicPage.getByRole("heading", { name: "Recibimos el pedido", exact: true }).waitFor();
-          const matches = (await read(h, page, `/api/platform/tenants/paged?page=1&pageSize=100&search=${encodeURIComponent(name)}`)).items; assert.equal(matches.length, 1); pendingBusiness = matches[0]; assert.equal(pendingBusiness.status, "PendingApproval");
-        },
-        restore: async (baseline) => { current = await openPlatformSettings(page, h.base.origin); await savePlatformSettings(page, current, restorableSettings(baseline), "Restaurar política inicial antes de continuar el complemento."); },
-      });
+      await ensureFull();
+      ({ pendingOwner, pendingBusiness } = await preparePendingOrganization(h, { page, publicPage, tag, onPublicSignedIn: () => { publicSignedIn = true; } }));
       return "Alta propia PendingApproval/Recibimos el pedido; RequiresApproval temporal restaurado por UI en finally.";
     }, [1]);
     await runPendingOrganizationApprovalSteps({ step, page,
@@ -502,19 +567,8 @@ export async function runSupplementPlatformCases(h) {
         return "Inicio→Para resolver→Revisar abrió la ficha propia y su título; la organización conserva su aprobación pendiente para el record independiente.";
       },
       approveFromList: async () => {
-        await ensureFull(); const query = `search=${encodeURIComponent(pendingBusiness.name)}&status=PendingApproval`;
-        const [listed] = await responsesForAction(page, [(response) => endpoint("/api/platform/tenants/paged", "GET")(response) && new URL(response.url()).searchParams.get("search") === pendingBusiness.name && new URL(response.url()).searchParams.get("status") === "PendingApproval"], () => page.goto(url(`/plataforma/organizaciones?${query}`)));
-        assert.equal(listed.status(), 200); const rows = await listed.json(); assert.equal(rows.totalCount, 1); assert.equal(rows.items[0].id, pendingBusiness.id); assert.equal(rows.items[0].status, "PendingApproval");
-        await openPlatformListItem(page, `/plataforma/organizaciones/${pendingBusiness.id}`, pendingBusiness.name); await page.getByRole("heading", { name: pendingBusiness.name, exact: true }).waitFor();
-        for (const title of ["Historial", "Dueños", "Página pública"]) {
-          await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click(); const panel = page.getByRole("tabpanel"); await panel.waitFor(); await panel.getByRole("status").waitFor({ state: "hidden" });
-          assert.ok((await panel.innerText()).trim().length > 0); assert.equal(await panel.getByRole("alert").count(), 0);
-        }
-        const before = new Set(await h.env.files()); const reason = "Datos propios verificados para aprobar la organización.";
-        await changeOrganization(h, page, pendingBusiness.id, "Aprobar", reason); await page.getByText("Activa", { exact: true }).first().waitFor();
-        const persisted = await read(h, page, `/api/platform/tenants/${pendingBusiness.id}`); assert.equal(persisted.status, "Active"); assert.equal(persisted.lastStateChange.reason, reason);
-        await notice(h.env, pendingOwner, before, (text) => /aprobad/iu.test(text));
-        return "El listado filtrado abrió la solicitud propia por href y nombre; Historial/Dueños/Página cargaron, Aprobar con motivo respondió200 y persistió Active/motivo; la cuenta Dueña recibió el correo real, sin certificar WhatsApp.";
+        await ensureFull();
+        return approvePendingOrganizationFromList(h, { page, pendingBusiness, pendingOwner });
       },
     });
     await step(14, page, async () => {

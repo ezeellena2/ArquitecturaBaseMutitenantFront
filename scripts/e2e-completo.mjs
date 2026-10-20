@@ -67,6 +67,7 @@ const suiteSpecs = {
   cuotawhatsapp: ["./e2e-completo-cuota-whatsapp.mjs", "quotaWhatsAppDefinitions", "runQuotaWhatsAppCases"],
   negocioaccesosarreglos: ["./e2e-completo-negocio.mjs", "businessAccessRepairDefinitions", "runBusinessAccessRepairCases"],
   plataformainvitacionarreglos: ["./e2e-completo-plataforma-complemento.mjs", "platformOperatorInvitationRepairDefinitions", "runPlatformOperatorInvitationRepairCases"],
+  plataformaaprobacionarreglos: ["./e2e-completo-plataforma-complemento.mjs", "platformApprovalRepairDefinitions", "runPlatformApprovalRepairCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
