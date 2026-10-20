@@ -92,7 +92,7 @@ export function createBrowserSupport({ context, env, base, width }) {
       const menu = page.getByRole("button", { name: /, (Personal|Plataforma|.+)$/ }).filter({ visible: true }).last();
       await menu.click();
       await page.getByRole("menuitem", { name: "Salir", exact: true }).click();
-      await page.getByRole("link", { name: "Ingresá", exact: true }).first().waitFor();
+      await page.getByRole("link", { name: "Ingresá", exact: true }).filter({ visible: true }).first().waitFor();
       tokens.delete(page);
     } finally { await page.setViewportSize(original); }
   };

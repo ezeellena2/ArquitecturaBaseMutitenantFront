@@ -27,6 +27,87 @@ test("la integración externa es manual aunque haya cobertura controlada", () =>
   assert.ok(item.results.every((result) => result.status === "manual"));
 });
 
+test("proofIds y existingCaseIds originales forman una única prueba conjunta", () => {
+  const backend = [{ id: "A", proofIds: ["01"], existingCaseIds: ["02"] }];
+  const executions = [{ id: "BASE-01", results: [{ width: 1440, status: "passed", actual: "Primera acción" }] }];
+  let row = buildMatrix({ backend, executions })[0];
+  assert.deepEqual(row.proofGroups, [["BASE-01", "BASE-02"]]);
+  assert.deepEqual(row.results.map((result) => result.status), ["blocked", "blocked"]);
+  executions.push({ id: "BASE-02", results: [{ width: 1440, status: "passed", actual: "Segunda acción" }] });
+  row = buildMatrix({ backend, executions })[0];
+  assert.deepEqual(row.results.map((result) => result.status), ["passed", "blocked"]);
+  assert.deepEqual(row.results[0].proofIds, ["BASE-01", "BASE-02"]);
+});
+
+test("una ejecución covers completa es alternativa a originales pendientes", () => {
+  const execution = { id: "NUEVO", covers: ["A"], results: [{ width: 1440, status: "passed", actual: "Acción completa", image: "nueva.png" }] };
+  const [row] = buildMatrix({ backend: [{ id: "A", proofIds: ["01"], existingCaseIds: ["02"] }], executions: [execution] });
+  assert.deepEqual(row.proofGroups, [["BASE-01", "BASE-02"], ["NUEVO"]]);
+  assert.deepEqual(row.proofIds, ["BASE-01", "BASE-02", "NUEVO"]);
+  assert.deepEqual(row.results.map((result) => result.status), ["passed", "blocked"]);
+  assert.deepEqual(row.results[0].proofIds, ["NUEVO"]);
+  assert.equal(row.results[0].image, "nueva.png");
+});
+
+test("un grupo original completo pasa aunque otra alternativa no se haya ejecutado", () => {
+  const executions = [
+    { id: "BASE-01", results: [{ width: 1440, status: "passed", actual: "Primero" }] },
+    { id: "BASE-02", results: [{ width: 1440, status: "passed", actual: "Segundo" }] },
+    { id: "NUEVO", covers: ["A"], results: [{ width: 1440, status: "blocked", actual: "Preparación ausente" }] },
+  ];
+  const [row] = buildMatrix({ backend: [{ id: "A", existingCaseIds: ["01", "02"] }], executions });
+  assert.deepEqual(row.results.map((result) => result.status), ["passed", "blocked"]);
+  assert.deepEqual(row.results[0].proofIds, ["BASE-01", "BASE-02"]);
+  assert.equal(row.results[0].actual.includes("Preparación ausente"), false);
+});
+
+test("dos covers son alternativas por ancho y no se juntan con originales incompletos", () => {
+  const executions = [
+    { id: "BASE-01", results: [{ width: 1440, status: "passed", actual: "Sólo una parte" }, { width: 390, status: "passed" }] },
+    { id: "NUEVO-A", covers: ["A"], results: [{ width: 1440, status: "passed", actual: "Alternativa A" }] },
+    { id: "NUEVO-B", covers: ["A"], results: [{ width: 390, status: "passed", actual: "Alternativa B" }] },
+  ];
+  let row = buildMatrix({ backend: [{ id: "A", existingCaseIds: ["01", "02"] }], executions })[0];
+  assert.deepEqual(row.results.map((result) => result.status), ["passed", "passed"]);
+  assert.deepEqual(row.results.map((result) => result.proofIds), [["NUEVO-A"], ["NUEVO-B"]]);
+  executions[2].results[0].status = "pending";
+  row = buildMatrix({ backend: [{ id: "A", existingCaseIds: ["01", "02"] }], executions })[0];
+  assert.deepEqual(row.results.map((result) => result.status), ["passed", "blocked"]);
+});
+
+test("cualquier fallo ejecutado asociado prevalece aun si otro grupo está verde", () => {
+  const failure = { width: 1440, status: "failed", actual: "Fallo real", image: "fallo.png", severity: "high" };
+  for (const failedId of ["BASE-01", "NUEVO-A", "NUEVO-B"]) {
+    const executions = [
+      { id: "BASE-01", results: [{ width: 1440, status: "passed" }] },
+      { id: "NUEVO-A", covers: ["A"], results: [{ width: 1440, status: "passed" }] },
+      { id: "NUEVO-B", covers: ["A"], results: [{ width: 1440, status: "passed" }] },
+    ];
+    executions.find((item) => item.id === failedId).results[0] = failure;
+    const [row] = buildMatrix({ backend: [{ id: "A", existingCaseIds: ["01", "02"] }], executions });
+    assert.equal(row.results[0].status, "failed", failedId);
+    assert.equal(row.results[0].actual, failure.actual);
+    assert.equal(row.results[0].image, failure.image);
+    assert.equal(row.results[0].severity, failure.severity);
+    assert.equal(row.results[1].status, "blocked");
+  }
+});
+
+test("un motivo manual no oculta un fallo real asociado en ese ancho", () => {
+  const [row] = buildMatrix({ backend: [{ id: "META", manual: "Proveedor real pendiente" }], executions: [
+    { id: "REAL", covers: ["META"], results: [{ width: 1440, status: "failed", actual: "Rechazo incorrecto", image: "fallo.png" }, { width: 390, status: "passed" }] },
+  ] });
+  assert.deepEqual(row.results.map((result) => result.status), ["failed", "manual"]);
+  assert.equal(row.results[0].image, "fallo.png");
+  assert.equal(row.results[1].actual, "Proveedor real pendiente");
+});
+
+test("un estado desconocido o pendiente no acredita una prueba conjunta", () => {
+  for (const status of ["pending", "running", "skipped", undefined]) {
+    assert.equal(resultsFromProofs(["A"], [{ id: "A", results: [{ width: 1440, status }] }])[0].status, "blocked");
+  }
+});
+
 test("los pendientes de un recorrido cortado nunca se importan como aprobados", () => {
   const [item] = importedJourneySteps({ steps: [{ id: "01", title: "Entrar", results: [{ width: 1440, status: "passed", image: "01.png" }, { width: 390, status: "pending" }] }] }, "C:/front/recorrido/2026-10-20", "C:/front/completo/2026-10-20");
   assert.equal(item.results[0].status, "passed");

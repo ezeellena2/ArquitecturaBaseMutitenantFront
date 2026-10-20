@@ -8,26 +8,34 @@ export function safeEvidenceText(value) {
 }
 
 export function resultsFromProofs(ids, executions, widths = [1440, 390]) {
+  return resultsFromProofGroups(ids.length ? [ids] : [], executions, widths);
+}
+
+function resultsFromProofGroups(groups, executions, widths = [1440, 390]) {
   return widths.map((width) => {
-    const proofs = ids.map((id) => executions.find((item) => item.id === id)?.results?.find((result) => result.width === width));
-    const failed = proofs.find((proof) => proof?.status === "failed");
-    const manual = proofs.find((proof) => proof?.status === "manual");
+    const resolved = groups.filter((ids) => ids.length).map((ids) => ({ ids, proofs: ids.map((id) => executions.find((item) => item.id === id)?.results?.find((result) => result.width === width)) }));
+    // Una alternativa pendiente no invalida otra completa; una falla real sí.
+    const failed = resolved.flatMap(({ proofs }) => proofs).find((proof) => proof?.status === "failed");
     if (failed) return { ...failed, width };
-    if (!ids.length || proofs.some((proof) => !proof || proof.status === "blocked")) return { width, status: "blocked", actual: "Sin comprobación individual ejecutada para esta acción y este ancho." };
+    const passed = resolved.find(({ proofs }) => proofs.every((proof) => proof?.status === "passed"));
+    if (passed) return { ...passed.proofs.at(-1), width, actual: `Verificado por ${passed.ids.join(", ")}. ${passed.proofs.map((proof) => proof.actual).filter(Boolean).join(" ")}`, proofIds: passed.ids };
+    const manual = resolved.find(({ proofs }) => proofs.every((proof) => ["passed", "manual"].includes(proof?.status)))?.proofs.find((proof) => proof.status === "manual");
     if (manual) return { ...manual, width };
-    return { ...proofs.at(-1), width, actual: `Verificado por ${ids.join(", ")}. ${proofs.map((proof) => proof.actual).join(" ")}`, proofIds: ids };
+    return { width, status: "blocked", actual: "Sin comprobación individual ejecutada para esta acción y este ancho." };
   });
 }
 
 export function buildMatrix({ backend = [], guided = [], screens = [], executions = [] }) {
   return [...backend, ...guided, ...screens.map((screen) => ({ ...screen, id: `SCREEN-${screen.id}`, area: screen.chapter ?? "Pantallas", actor: screen.actors?.join("; "), action: `Abrir ${screen.title}`, expected: "La pantalla está disponible para su actor en su ruta a 1440 y 390 px; las capturas permiten revisar su presentación.", kind: "screen" }))].map((item) => {
     const linked = executions.filter((execution) => execution.covers?.includes(item.id)).map((execution) => execution.id);
-    const priorProofs = [...(item.proofIds ?? []), ...(item.existingCaseIds ?? [])].map((id) => executions.some((entry) => entry.id === id) ? id : `BASE-${id}`);
-    const proofIds = [...new Set([...linked, ...priorProofs])];
+    const priorProofs = [...new Set([...(item.proofIds ?? []), ...(item.existingCaseIds ?? [])].map((id) => id.startsWith("BASE-") || executions.some((entry) => entry.id === id) ? id : `BASE-${id}`))];
+    // Los pasos originales se necesitan juntos. Cada covers ya trazado acredita
+    // la acción completa por sí solo y constituye una alternativa independiente.
+    const proofGroups = [...(priorProofs.length ? [priorProofs] : []), ...linked.map((id) => [id])];
+    const proofIds = [...new Set(proofGroups.flat())];
     const manualReason = item.manualReason ?? (typeof item.manual === "string" ? item.manual : item.manual ? "Necesita una integración externa real; no se usaron credenciales ni datos reales." : null);
-    return { ...item, proofIds, manualReason, results: manualReason
-      ? [1440, 390].map((width) => ({ width, status: "manual", actual: manualReason }))
-      : resultsFromProofs(proofIds, executions) };
+    const results = resultsFromProofGroups(proofGroups, executions).map((result) => manualReason && result.status !== "failed" ? { width: result.width, status: "manual", actual: manualReason } : result);
+    return { ...item, proofIds, proofGroups, manualReason, results };
   });
 }
 

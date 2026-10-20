@@ -14,7 +14,7 @@ export const personalDefinitions = [
   definition("05", "Abrir una ruta inexistente", "/no-existe-e2e-completo", "Visitante sin sesión", "Muestra «No encontramos esta página» y una salida al inicio, sin desborde.", []),
   definition("06", "Validar el correo en recuperación", "/recuperar", "Visitante sin sesión", "Un correo mal escrito queda en el campo con su error accesible y no envía una solicitud ni un código.", ["recuperar"]),
   definition("07", "Preparar una persona nueva por UI", "/registro", "Persona con correo sintético", "El registro real crea una persona sin organizaciones. Se usa sólo como preparación de los casos nuevos.", [], { setup: true }),
-  definition("08", "Rechazar API de empresa y Plataforma con token Personal", "/", "Persona B2C sin organizaciones", "GET de los listados y POST de empresa responden 403 Tenancy.Access.Wrong con traceId; el token conserva access=consumer.", ["HT-006"], { critical: true }),
+  definition("08", "Rechazar API de empresa y Plataforma con token Personal", "/", "Persona B2C sin organizaciones", "GET de los listados y POST de empresa responden 403 Http.Forbidden con traceId; el token conserva access=consumer.", ["HT-006"], { critical: true }),
   definition("09", "Impedir las pantallas B2B y Plataforma desde Personal", "/org/usuarios · /plataforma/cuentas", "Persona B2C sin organizaciones", "Los enlaces directos vuelven al ingreso correspondiente; Personal no muestra Crear empresa ni administración B2B o Plataforma.", ["ID-020"], { critical: true }),
   definition("10", "Guardar el mismo perfil en dos pestañas", "/cuenta", "Persona B2C en dos pestañas", "La primera guarda; la segunda recibe 409 General.ConcurrencyConflict, conserva su borrador y muestra las dos opciones del conflicto.", ["avisos", "CU-002"], { critical: true }),
   definition("11", "Seguir editando conserva la versión vencida", "/cuenta", "Persona B2C con un borrador desactualizado", "Seguir editando conserva los datos; otro Guardar devuelve 409 con la misma versión y no sobrescribe lo guardado por la primera pestaña.", ["CU-002"], { critical: true }),
@@ -61,6 +61,16 @@ const apiMe = async (h, page) => {
   assert.equal(response.status(), 200);
   return response.json();
 };
+
+/** La cookie vigente del mismo contexto abre la segunda pestaña; volver a ingresar ya no mostraría el formulario OTP. */
+export async function openExistingPersonalAccount(h, page, expectedPersonId) {
+  await page.goto(new URL("/cuenta", h.base).href);
+  await heading(page, "Mi cuenta");
+  const account = await apiMe(h, page);
+  assert.equal(account.id, expectedPersonId, "La pestaña debe conservar la persona de este recorrido.");
+  assert.equal(account.access, "consumer", "El conflicto debe comparar dos pestañas del acceso Personal.");
+  return account;
+}
 
 /** Nuevos casos reales; el harness es dueño de la base aislada, el navegador y el informe. */
 export async function runPersonalCases(h) {
@@ -152,11 +162,13 @@ export async function runPersonalCases(h) {
       return;
     }
     await record("08", page, async () => {
-      for (const route of ["/api/companies/paged", "/api/platform/tenants/paged"]) await assertProblemResponse(await h.api(page, route), 403, "Tenancy.Access.Wrong");
+      // Estas rutas tienen políticas de permiso: el middleware corta antes del AccessFilter MVC y devuelve el 403
+      // genérico publicado por OpenAPI (PermissionAuthorizationHandler + ProblemDetailsMapper).
+      for (const route of ["/api/companies/paged", "/api/platform/tenants/paged"]) await assertProblemResponse(await h.api(page, route), 403, "Http.Forbidden");
       await assertProblemResponse(await h.api(page, "/api/companies", { method: "POST", headers: { "Idempotency-Key": randomUUID() },
-        data: { name: "Empresa no permitida", timeZoneId: person.me.timeZoneId } }), 403, "Tenancy.Access.Wrong");
+        data: { name: "Empresa no permitida", timeZoneId: person.me.timeZoneId } }), 403, "Http.Forbidden");
       assert.equal((await apiMe(h, page)).access, "consumer");
-      return "Los listados y el alta empresarial devolvieron 403 Tenancy.Access.Wrong con traceId usando el token Personal real.";
+      return "Los listados y el alta empresarial devolvieron 403 Http.Forbidden con traceId usando el token Personal real.";
     });
     await record("09", page, async () => {
       const deep = await h.newPage(); pages.push(deep);
@@ -179,12 +191,9 @@ export async function runPersonalCases(h) {
     });
 
     const race = await h.record("NUEVO-PER-10", () => stale ?? page, async () => {
-      await page.goto(new URL("/cuenta", h.base).href); await heading(page, "Mi cuenta");
-      const initial = await apiMe(h, page); oldVersion = initial.version;
+      const initial = await openExistingPersonalAccount(h, page, person.me.id); oldVersion = initial.version;
       stale = await h.newPage(); pages.push(stale);
-      await h.login(stale, person.email, "consumer");
-      await stale.goto(new URL("/cuenta", h.base).href); await heading(stale, "Mi cuenta");
-      assert.equal((await apiMe(h, stale)).version, oldVersion);
+      assert.equal((await openExistingPersonalAccount(h, stale, person.me.id)).version, oldVersion);
       savedName = `Guardado ${h.width}`; draftName = `Borrador ${h.width}`;
       await nameField(stale).fill(draftName);
       await nameField(page).fill(savedName);
