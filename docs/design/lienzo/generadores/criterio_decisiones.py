@@ -464,6 +464,11 @@ DECISIONES = {
         ("Sin correo verificado", "", "«Exportar» apagado con ⓘ; los dos abren el motivo, como «Dar de baja» de la única Dueña: «Agregá y verificá un correo para recibir tus datos.», con agregar un correo o vincular Google.", "Dibujada"),
         ("Desde el correo", "", "El enlace abre Mi cuenta con la sesión de la cuenta: «Descargando tus datos…» en un cartel y «Descargamos tus datos.» al terminar. Vencido, pedido con otra cuenta y no se pudo bajar, en el aviso rojo (los dos primeros sin «Reintentar»). Un pedido ajeno no dice si existe.", "Dibujada"),
     ],
+    "Menús de ficha y solo lectura · El Coordinador de la 9 · 20/10": [
+        ("⋮ de la barra", "A", "En el teléfono, el ⋮ de la barra de una ficha o de una lista abre una hoja desde abajo con el nombre de la ficha de título, como el ⋮ de una fila (lo eligió el usuario). Las hojas no llevan íconos; las de peligro van al final, en rojo, después de una franja. En la compu, abre debajo del ⋮.", "Dibujada"),
+        ("Íconos de los ⋮", "", "En la compu, cada opción con su ícono gris, el mismo para la misma acción en todo el lienzo (las de peligro, en rojo). Donde la compu tiene botones en la banda (Editar contacto, Cargar teléfonos, Suspender, Duplicar, Pasar), siguen siendo botones, sin ícono.", "Dibujada"),
+        ("Solo lectura (A11)", "", "El mismo campo apagado, nunca un rótulo con texto suelto: el Proveedor de un modelo, el teléfono al editar un contacto, la bandeja al editar un equipo y Configuración sin permiso (sin botones, sin agregar ni quitar dominios).", "Dibujada"),
+    ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
     ],
