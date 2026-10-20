@@ -184,10 +184,48 @@ function emptyWhatsAppOperatorLabelTriage() {
   };
 }
 
+function isActiveAssistantDeleteConflict(result) {
+  return result.status === "failed" && result.width === 1440 && result.currentRoute === "/org"
+    && /^La acción UI debe responder 204\.\r?\n(?:\r?\n)*409 !== 204(?:\r?\n|$)/u.test(String(result.actual ?? ""));
+}
+
+function activeAssistantDeleteConflictTriage() {
+  return {
+    analysis: "El DELETE de la conversación propia, emitido al confirmar Borrar por UI, respondió HTTP 409 frente al 204 esperado. La captura en /org muestra el diálogo abierto y «Otra persona cambió esto. Revisá la versión más reciente antes de guardar». Según el orden del callback actual, antes pasaron el rechazo 404 del feedback ajeno, el primer turno terminado y su fila de historial, el segundo turno con PNG en ese mismo ID, los metadatos privados y la descarga de bytes exactos con no-store y content-disposition attachment, y dos lecturas Generating antes del clic real. En Front, la acción del historial conserva el summary y su versión en el diálogo; confirmDialog envía esa versión en DELETE ?version, mientras send invalida el historial después de terminar su envío y reconciliación. En Back, admitir el turno modifica la conversación con turns.Touch y Delete comprueba su versión antes de limpiar y cancelar. Una versión de historial anterior al turno propio es la causa probable por inferencia de esas fuentes y el cartel observado. No quedó registrado el código de error HTTP ni el valor de versión enviado; no se presenta General.ConcurrencyConflict como código observado. El 204, los 404 de conversación y archivo, la no resurrección y la ausencia de nuevos títulos no quedaron acreditados porque el callback se detuvo en el 409.",
+    severity: "medium",
+    probableArea: "Front · versión del historial usada por el diálogo Borrar durante un turno propio activo, frente al control de versión del Back (inferencia).",
+    reproduce: [
+      "A 1440 px, ingresar como Dueña y abrir su Asistente con el Fake de Testing disponible; completar un primer turno por UI y comprobar su fila real de historial.",
+      "Enviar un segundo turno lento con PNG en el mismo ID; comprobar sus metadatos privados, descargar bytes exactos y verificar Generating.",
+      "Abrir Borrar desde esa fila de historial, volver a comprobar Generating inmediatamente antes y confirmar Borrar por UI sin sustituir la versión del diálogo.",
+      "Registrar el DELETE 409, el diálogo que permanece abierto y el aviso de versión desactualizada; no acreditar el 204 ni las comprobaciones posteriores de 404 y ausencia de resurrección.",
+    ],
+  };
+}
+
+function isCompletedAssistantDeletePreparation(result) {
+  return result.status === "failed" && result.width === 390 && result.currentRoute === "/org/asistente"
+    && /^La preparación debe llegar a Borrar antes del final del Fake\.\r?\n\+ actual - expected\r?\n\r?\n\+ 'Complete'\r?\n- 'Generating'(?:\r?\n|$)/u.test(String(result.actual ?? ""));
+}
+
+function completedAssistantDeletePreparationTriage() {
+  return {
+    analysis: "La última lectura de preparación recibió Complete donde el callback exigía Generating, antes del clic que debía emitir DELETE. La captura móvil muestra el diálogo Borrar abierto y la respuesta del segundo turno ya completa. FakeChatClient de Testing demora 3 segundos para [E2E:slow]; esa ventana terminó antes de intentar el borrado activo. Por el orden del callback y su Promise.allSettled, antes pasaron el rechazo 404 del feedback ajeno, el primer turno y su fila de historial, el PNG del segundo turno en el mismo ID y la primera lectura Generating; también terminaron la descarga de bytes exactos con no-store/attachment, la lectura del control de contadores y la apertura del diálogo Borrar. No se llegó a DELETE: el 204, los 404 de conversación/archivo, la no resurrección y la ausencia de nuevos títulos no quedaron acreditados. El resultado corresponde a la preparación temporal del arnés con ese Fake y no demuestra un defecto de borrado del producto; tampoco acredita qué respondería el servidor al borrar un turno todavía activo.",
+    severity: "medium",
+    probableArea: "Entorno de prueba · preparación temporal del arnés para Borrar durante la ventana de 3 segundos del Fake.",
+    reproduce: [
+      "A 390 px, ingresar como Dueña con el Fake de Testing y completar por UI un primer turno propio hasta que figure en el historial.",
+      "Enviar un segundo turno lento con PNG en ese mismo ID; comprobar metadata privada, bytes exactos y una primera lectura Generating, y abrir Borrar desde el historial.",
+      "Antes de confirmar Borrar, releer la conversación y exigir Generating; registrar si la respuesta ya es Complete tras la ventana de 3 segundos del Fake.",
+      "Conservar el fallo de preparación y su captura sin emitir DELETE ni acreditar 204, 404, ausencia de resurrección o de nuevos títulos.",
+    ],
+  };
+}
+
 /** Enriquece sólo firmas observadas; conserva la evidencia y nunca cambia estados. */
 export function enrichExecutionFailures(executions = []) {
   return executions.map((entry) => {
-    if (!["NUEVO-PER-09", "POL-11", "PLAT-C-13", "PLAT-C-16", "CUOTA-WA-01", "WAP-01"].includes(entry.id) || !Array.isArray(entry.results)) return entry;
+    if (!["NUEVO-PER-09", "POL-11", "PLAT-C-13", "PLAT-C-16", "CUOTA-WA-01", "WAP-01", "AS-SUP-06"].includes(entry.id) || !Array.isArray(entry.results)) return entry;
     let changed = false;
     const results = entry.results.map((result) => {
       let triage;
@@ -196,6 +234,8 @@ export function enrichExecutionFailures(executions = []) {
       else if (entry.id === "PLAT-C-16" && isCreatedReplayLocationFailure(result)) triage = createdReplayLocationTriage(result);
       else if (entry.id === "CUOTA-WA-01" && isQuotaSignupNavigationFailure(result)) triage = quotaSignupNavigationTriage(result);
       else if (entry.id === "WAP-01" && isEmptyWhatsAppOperatorLabelFailure(result)) triage = emptyWhatsAppOperatorLabelTriage();
+      else if (entry.id === "AS-SUP-06" && isActiveAssistantDeleteConflict(result)) triage = activeAssistantDeleteConflictTriage();
+      else if (entry.id === "AS-SUP-06" && isCompletedAssistantDeletePreparation(result)) triage = completedAssistantDeletePreparationTriage();
       if (!triage) return result;
       changed = true;
       return { ...result, ...triage };

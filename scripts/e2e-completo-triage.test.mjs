@@ -13,6 +13,71 @@ const original = (key) => parseFunctionalBaselineIncidents(`${names[key]}: fall�
 const quotaNavigationFailure = (mode = "domcontentloaded", route = "/registro") => `page.goto: Timeout 45000ms exceeded.\nCall log:\n  - navigating to "https://localtest.me:5174${route}?token=reservado", waiting until "${mode}"\n Captura no disponible (TimeoutError).`;
 
 const emptyOperatorLabelFailure = "La opción del gestor propio debe tener un nombre accesible no vacío en el selector de Operadores.";
+const activeConversationDeleteConflict = "La acción UI debe responder 204.\n\n409 !== 204\n Tránsito de autenticación: []";
+test("AS06 describe el DELETE409 real de escritorio sin acreditar el borrado ni alterar evidencias", () => {
+  const history = Object.freeze([Object.freeze({ status: "failed", actual: "La preparación debe llegar a Borrar antes del final del Fake.", image: "previa.png" })]);
+  const trace = Object.freeze([{ route: "/connect/token", status: 200 }]);
+  const failure = Object.freeze({ width: 1440, status: "failed", actual: activeConversationDeleteConflict, image: "AS-SUP-06-1440.png", currentRoute: "/org", severity: "high", previousAttempts: history, authenticationTrace: trace });
+  const phone = Object.freeze({ width: 390, status: "failed", actual: "La preparación debe llegar a Borrar antes del final del Fake.", currentRoute: "/org/asistente", image: "AS-SUP-06-390.png" });
+  const input = Object.freeze([Object.freeze({ id: "AS-SUP-06", actor: "Dueña de conversación propia", expected: "Borrar204 y luego404", results: Object.freeze([failure, phone]) })]);
+  const before = structuredClone(input); const [entry] = enrichExecutionFailures(input); const result = entry.results[0];
+  assert.deepEqual(input, before); assert.notEqual(entry, input[0]);
+  for (const key of Object.keys(failure).filter((key) => key !== "severity")) assert.equal(result[key], failure[key], key);
+  assert.equal(entry.actor, input[0].actor); assert.equal(entry.expected, input[0].expected); assert.equal(entry.results[1], phone);
+  assert.equal(result.severity, "medium"); assert.match(result.analysis, /DELETE.*409.*204/u);
+  assert.match(result.analysis, /primer turno.*PNG.*mismo ID/u); assert.match(result.analysis, /dos.*Generating/u);
+  assert.match(result.analysis, /bytes exactos.*no-store.*attachment/u);
+  assert.match(result.analysis, /historial.*versión.*inferencia/iu); assert.match(result.analysis, /no.*código.*HTTP/iu);
+  assert.match(result.analysis, /404.*no resurrección.*no.*acreditad/iu);
+  assert.match(result.probableArea, /Front.*historial.*inferencia/iu);
+  assert.match(result.reproduce.join(" "), /primer turno.*PNG.*Generating.*Borrar.*409/iu);
+  assert.doesNotMatch([result.analysis, ...result.reproduce].join(" "), /https:|@[a-z]|\b[0-9a-f]{8}-[0-9a-f]{4}/iu);
+  assert.deepEqual(enrichExecutionFailures([entry]), [entry]); assert.equal(history[0].analysis, undefined);
+});
+
+test("AS06 no aplica a otro ancho, ruta, firma, estado ni a un conflicto histórico", () => {
+  const failure = { width: 1440, status: "failed", actual: activeConversationDeleteConflict, currentRoute: "/org" };
+  const rows = [
+    { id: "OTRO", results: [failure] },
+    { id: "AS-SUP-06", results: [{ ...failure, width: 390 }, { ...failure, status: "passed" }, { ...failure, status: "blocked" },
+      { ...failure, currentRoute: "/org/asistente" }, { ...failure, actual: "Expected values to be strictly equal:\n\n409 !== 204" },
+      { ...failure, actual: activeConversationDeleteConflict.replace("409 !== 204", "400 !== 204") },
+      { ...failure, actual: "locator.waitFor: Timeout 30000ms exceeded.", previousAttempts: [failure] }] },
+  ];
+  const result = enrichExecutionFailures(rows); assert.deepEqual(result, rows); result.forEach((row, i) => assert.equal(row, rows[i]));
+});
+
+const completedActiveConversationPreparation = "La preparación debe llegar a Borrar antes del final del Fake.\n+ actual - expected\n\n+ 'Complete'\n- 'Generating'\n Tránsito de autenticación: []";
+test("AS06 distingue la ventana temporal móvil que terminó antes de intentar DELETE", () => {
+  const history = Object.freeze([Object.freeze({ width: 390, status: "failed", actual: "Expected values to be strictly equal: 400 !== 404", image: "previa-movil.png" })]);
+  const failure = Object.freeze({ width: 390, status: "failed", actual: completedActiveConversationPreparation, currentRoute: "/org/asistente", image: "AS-SUP-06-390.png", previousAttempts: history });
+  const input = Object.freeze([Object.freeze({ id: "AS-SUP-06", actor: "Dueña propia", results: Object.freeze([failure]) })]);
+  const snapshot = structuredClone(input); const [entry] = enrichExecutionFailures(input); const result = entry.results[0];
+  assert.deepEqual(input, snapshot); assert.notEqual(entry, input[0]);
+  for (const key of Object.keys(failure)) assert.equal(result[key], failure[key], key);
+  assert.equal(result.severity, "medium"); assert.match(result.probableArea, /entorno.*preparación.*arnés/iu);
+  assert.match(result.analysis, /Complete.*Generating/u); assert.match(result.analysis, /Fake.*3 segundos/u);
+  assert.match(result.analysis, /primera.*Generating.*bytes.*control.*diálogo/iu);
+  assert.match(result.analysis, /no.*DELETE.*204.*404.*no resurrección.*no.*acreditad/iu);
+  assert.match(result.analysis, /no demuestra.*defecto.*producto/iu); assert.doesNotMatch(result.analysis, /409|ConcurrencyConflict/u);
+  assert.match(result.reproduce.join(" "), /primer turno.*PNG.*Borrar.*Generating.*Complete/iu);
+  assert.deepEqual(enrichExecutionFailures([entry]), [entry]); assert.equal(history[0].analysis, undefined);
+});
+
+test("AS06 no infiere la preparación móvil desde firmas parecidas, históricas u otros actores", () => {
+  const failure = { width: 390, status: "failed", actual: completedActiveConversationPreparation, currentRoute: "/org/asistente" };
+  const rows = [
+    { id: "AS-SUP-05", results: [failure] },
+    { id: "AS-SUP-06", results: [{ ...failure, width: 1440 }, { ...failure, currentRoute: "/org" },
+      { ...failure, status: "passed" }, { ...failure, status: "blocked" },
+      { ...failure, actual: completedActiveConversationPreparation.replace("+ 'Complete'", "+ 'Stopped'") },
+      { ...failure, actual: completedActiveConversationPreparation.replace("- 'Generating'", "- 'Complete'") },
+      { ...failure, actual: "La preparación debe llegar a Borrar antes del final del Fake." },
+      { ...failure, actual: "locator.waitFor: Timeout 30000ms exceeded.", previousAttempts: [failure] }] },
+  ];
+  const result = enrichExecutionFailures(rows); assert.deepEqual(result, rows); result.forEach((row, i) => assert.equal(row, rows[i]));
+});
+
 test("WAP01 analiza sólo la etiqueta vacía observada y conserva el fallo, las capturas y sus antecedentes", () => {
   const history = Object.freeze([Object.freeze({ status: "failed", actual: "locator.click: Timeout 30000ms exceeded.", image: "anterior.png" })]);
   const trace = Object.freeze([{ route: "/connect/token", status: 200 }]);
