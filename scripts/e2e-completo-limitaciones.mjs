@@ -2,10 +2,11 @@ import { coverageLimitations } from "./e2e-completo-cobertura.mjs";
 import { supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemento.mjs";
 import { identitySupplementLimitations } from "./e2e-completo-identidad-complemento.mjs";
 import { domainSupplementLimitations } from "./e2e-completo-dominio-complemento.mjs";
+import { platformWhatsAppLimitations } from "./e2e-completo-whatsapp-plataforma.mjs";
 
 // Los estados técnicos existentes no acreditan DNS ni aprobación de plantillas por proveedores reales.
 export const verificationLimitations = {
-  ...coverageLimitations, ...supplementWhatsAppLimitations, ...identitySupplementLimitations, ...domainSupplementLimitations,
+  ...coverageLimitations, ...supplementWhatsAppLimitations, ...identitySupplementLimitations, ...domainSupplementLimitations, ...platformWhatsAppLimitations,
   "BACK-RE-007": {
     partialExecutionIds: ["PLAT-C-07"], missing: "Revisar un pedido que perdió su cuenta y sólo permite Rechazar.",
     reason: "El alta de recuperaciones rechaza el destino anterior sin cuenta. La rama histórica tras purgar la cuenta no se prepara por UI ni con el control publicado; no se agregaron semillas ni se alteró la base.",
