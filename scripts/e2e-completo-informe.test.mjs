@@ -6,6 +6,18 @@ const result = (width, status, extra = {}) => ({ width, status, actual: `Resulta
 const caseOf = (id, results, extra = {}) => ({ id, area: "Identidad", actor: "Visitante", action: "Ingresar", route: "/login", expected: "Acceso correcto", results, ...extra });
 const reportOf = (cases, extra = {}) => ({ date: "2026-10-20", commits: { back: "abc", front: "def" }, environment: "Local aislado", baseline: [], cases, ...extra });
 
+test("el análisis posterior aparece separado y escapado en el caso y en la falla final", () => {
+  const html = renderCompleteReport(reportOf([caseOf("callback", [result(1440, "failed", { analysis: "Hipótesis <callback>", actual: "Hecho observado", severity: "medium" }), result(390, "passed")])]));
+  const cases = html.slice(0, html.indexOf('<section id="fallas"'));
+  const failures = html.slice(html.indexOf('<section id="fallas"'));
+  for (const portion of [cases, failures]) {
+    assert.ok(portion.includes("Análisis posterior:"));
+    assert.ok(portion.includes("Hipótesis &lt;callback&gt;"));
+    assert.ok(portion.includes("Hecho observado"));
+    assert.equal(portion.includes("Hipótesis <callback>"), false);
+  }
+});
+
 test("un reintento conserva visible el incidente anterior sin cambiar su resultado actual", () => {
   const html = renderCompleteReport(reportOf([caseOf("reanudado", [result(1440, "passed", { previousAttempts: [{ status: "failed", actual: "Pantalla blanca <script>", reason: "Aislamiento del informe", image: "intento-1.png" }] }), result(390, "passed")])]));
   assert.match(html, /data-case-id="reanudado"[^>]*data-status="passed"/);

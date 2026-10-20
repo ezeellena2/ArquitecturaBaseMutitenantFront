@@ -31,3 +31,60 @@ export function enrichBaselineIncidents(incidents = []) {
     return enriched;
   });
 }
+
+function isGenericCallbackFailure(result) {
+  if (result.status !== "failed") return false;
+  const callback = /\/auth\/callback(?:[?#\s"'<>)]|$)/u;
+  return callback.test(String(result.currentRoute ?? ""))
+    || callback.test(String(result.actual ?? ""))
+    || /No pudimos iniciar tu sesión/iu.test(String(result.actual ?? ""));
+}
+
+function personalCallbackTriage(result) {
+  // Sólo el diagnóstico nuevo identifica el destino de este intento. Las rutas
+  // del caso, las URL del error y los intentos anteriores no lo acreditan.
+  const destination = /^Destino protegido (\/org\/usuarios|\/plataforma\/cuentas) desde Personal:/u.exec(String(result.actual ?? ""))?.[1];
+  const observedDestination = destination
+    ? `El destino protegido registrado fue ${destination}.`
+    : "El destino protegido que falló no quedó registrado en este intento; no se deduce de los intentos anteriores.";
+  return {
+    analysis: `El retorno de autenticación genérico no alcanzó el destino ni uno de los estados terminales esperados para una cuenta Personal. ${observedDestination} El detalle seguro de autenticación, cuando esté disponible, se conserva con este resultado; no se afirma una causa de servidor sin esa evidencia. El fallo no acredita acceso a una pantalla privada.`,
+    severity: "medium",
+    probableArea: "Front · retorno OIDC y recuperación de acceso en CallbackPage / SessionRecovery (inferencia).",
+    reproduce: [
+      "Ingresar por la UI con una cuenta Personal sin organizaciones.",
+      destination
+        ? `Abrir ${destination} en una pestaña nueva conservando la sesión Personal.`
+        : "Abrir ambas rutas por separado en pestañas nuevas: /org/usuarios y /plataforma/cuentas. El intento guardado no identifica cuál falló.",
+      "Esperar el ingreso o rechazo correspondiente, o el regreso a Inicio; registrar si queda en /auth/callback con el mensaje genérico de ingreso.",
+    ],
+  };
+}
+
+function pendingApprovalTriage() {
+  return {
+    analysis: "Tras el alta con RequiresApproval y la confirmación «Recibimos el pedido», entrar a /org terminó en el callback genérico en vez de mostrar «Estamos revisando…». CallbackPage no contempla PendingApproval, mientras LoginPage sí lo trata; esa diferencia es una causa probable por inferencia de las fuentes. El detalle seguro de autenticación, cuando esté disponible, se conserva con este resultado; no se afirma una causa de servidor sin esa evidencia.",
+    severity: "medium",
+    probableArea: "Front · CallbackPage, tratamiento de organización pendiente de aprobación (inferencia).",
+    reproduce: [
+      "Como operador completo, guardar temporalmente la política empresarial RequiresApproval y conservar su valor anterior.",
+      "Registrar por la UI una organización nueva y comprobar la confirmación «Recibimos el pedido».",
+      "Con la sesión pública de ese Dueño, abrir /org y esperar «Estamos revisando…»; observar si termina en /auth/callback con el mensaje genérico de ingreso.",
+      "Restaurar por la UI la política empresarial anterior aunque falle el acceso.",
+    ],
+  };
+}
+
+/** Enriquece dos fallos observados; conserva la evidencia y nunca cambia estados. */
+export function enrichExecutionFailures(executions = []) {
+  return executions.map((entry) => {
+    if (!["NUEVO-PER-09", "POL-11"].includes(entry.id) || !Array.isArray(entry.results)) return entry;
+    let changed = false;
+    const results = entry.results.map((result) => {
+      if (!isGenericCallbackFailure(result)) return result;
+      changed = true;
+      return { ...result, ...(entry.id === "NUEVO-PER-09" ? personalCallbackTriage(result) : pendingApprovalTriage()) };
+    });
+    return changed ? { ...entry, results } : entry;
+  });
+}
