@@ -55,6 +55,7 @@ const suiteSpecs = {
   asistenteextra: ["./e2e-completo-asistente-complemento.mjs", "assistantSupplementDefinitions", "runAssistantSupplementCases"],
   whatsappplataformaextra: ["./e2e-completo-whatsapp-plataforma.mjs", "platformWhatsAppDefinitions", "runPlatformWhatsAppCases"],
   legalesextra: ["./e2e-completo-legales-complemento.mjs", "legalSupplementDefinitions", "runLegalSupplementCases"],
+  configuracionplataformaextra: ["./e2e-completo-configuracion-plataforma.mjs", "platformConfigurationDefinitions", "runPlatformConfigurationCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
