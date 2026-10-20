@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { completeOperatorFactor } from "./platform-factor-real.mjs";
 import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
+import { safeAuthenticationEvent } from "./e2e-completo-oidc.mjs";
 
 export const viewports = [1440, 390];
 export const viewportOf = (width) => ({ width, height: width === 390 ? 844 : 900 });
@@ -47,6 +48,7 @@ export async function withSuccessToastClearance(page, action) {
 // Se observa el token que obtuvo la SPA por OIDC real. Nunca sale de esta memoria.
 export function createBrowserSupport({ context, env, base, width }) {
   const tokens = new WeakMap();
+  const authenticationEvents = new WeakMap();
   const observe = (page) => {
     page.setDefaultTimeout(15_000);
     page.setDefaultNavigationTimeout(45_000);
@@ -54,6 +56,10 @@ export function createBrowserSupport({ context, env, base, width }) {
       const url = new URL(request.url());
       const authorization = request.headers().authorization;
       if (url.origin === base.origin && url.pathname.startsWith("/api/") && authorization?.startsWith("Bearer ")) tokens.set(page, authorization);
+    });
+    page.on("response", (response) => {
+      const event = safeAuthenticationEvent(response, base);
+      if (event) authenticationEvents.set(page, [...(authenticationEvents.get(page) ?? []), event].slice(-6));
     });
   };
   context.on("page", observe);
@@ -156,5 +162,5 @@ export function createBrowserSupport({ context, env, base, width }) {
     await page.waitForURL((url) => url.pathname === "/org");
     return { email, organization, organizationName: organization, slug, companyName, me: await me(page) };
   };
-  return { newPage, api, login, signOut, registerPerson, registerBusiness, me };
+  return { newPage, api, login, signOut, registerPerson, registerBusiness, me, authenticationTrace: (page) => authenticationEvents.get(page) ?? [] };
 }

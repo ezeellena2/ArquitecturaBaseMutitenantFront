@@ -52,6 +52,7 @@ test("la captura conserva la pestaña protegida aunque falle su navegación", as
   await assert.rejects(personal.openPersonalProtectedRoute({ base: new URL("https://localtest.me:7433"), newPage: async () => deep },
     "/plataforma/cuentas", (page) => { target = page; }), (error) => error === failure);
   assert.equal(target, deep);
+  assert.match(failure.message, /^Destino protegido \/plataforma\/cuentas desde Personal: navegación incompleta$/u);
 });
 
 test("la salida de Cuenta usa la navegación visible y su destino real por ancho", () => {

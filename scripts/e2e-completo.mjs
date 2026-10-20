@@ -241,6 +241,10 @@ export async function main(options = parseArguments([])) {
         }
         const page = getPage?.();
         if (page && !page.isClosed()) {
+          if (result.status === "failed") {
+            result.authenticationTrace = support.authenticationTrace(page);
+            if (result.authenticationTrace.length) result.actual += ` Tránsito de autenticación: ${JSON.stringify(result.authenticationTrace)}.`;
+          }
           const currentLocation = new URL(page.url());
           result.currentRoute = currentLocation.pathname;
           result.currentHost = currentLocation.host;

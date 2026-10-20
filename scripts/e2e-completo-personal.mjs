@@ -87,11 +87,16 @@ export async function openExistingPersonalAccount(h, page, expectedPersonId) {
 export async function openPersonalProtectedRoute(h, route, onPage) {
   const page = await h.newPage();
   onPage(page);
-  await page.goto(new URL(route, h.base).href);
-  await page.getByRole("heading", { name: /^(Ingresá a tu cuenta|Ingresá como empresa|Tu cuenta no está en ninguna empresa todavía|Inicio)$/u })
-    .filter({ visible: true }).first().waitFor();
-  assert.equal(await page.getByRole("heading", { name: /^(Usuarios|Cuentas y operadores)$/u }).count(), 0);
-  await assertViewport(page);
+  try {
+    await page.goto(new URL(route, h.base).href);
+    await page.getByRole("heading", { name: /^(Ingresá a tu cuenta|Ingresá como empresa|Tu cuenta no está en ninguna empresa todavía|Inicio)$/u })
+      .filter({ visible: true }).first().waitFor();
+    assert.equal(await page.getByRole("heading", { name: /^(Usuarios|Cuentas y operadores)$/u }).count(), 0);
+    await assertViewport(page);
+  } catch (error) {
+    error.message = `Destino protegido ${route} desde Personal: ${error.message}`;
+    throw error;
+  }
   return page;
 }
 
