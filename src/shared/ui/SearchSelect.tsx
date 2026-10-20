@@ -145,17 +145,18 @@ export function SearchSelect({
       event.preventDefault();
       changeOpen(true);
     }}
+    // «Criterio · Formularios» (A11, 07/10): apagado es el mismo campo, con fondo y texto grises (.o-txt.sel de Rol).
     className={cn(
-      "flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3 text-left text-[13px] outline-none max-md:h-12 max-md:rounded-[12px] max-md:px-3.5 max-md:text-[16px]",
-      "focus-visible:border-[var(--marca)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] aria-expanded:border-[var(--marca)] aria-expanded:ring-[3px] aria-expanded:ring-[var(--foco-halo)] disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive",
+      "group flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3 text-left text-[13px] outline-none max-md:h-12 max-md:rounded-[12px] max-md:px-3.5 max-md:text-[16px]",
+      "focus-visible:border-[var(--marca)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] aria-expanded:border-[var(--marca)] aria-expanded:ring-[3px] aria-expanded:ring-[var(--foco-halo)] disabled:cursor-default disabled:border-[var(--borde)] disabled:bg-[var(--s2)] disabled:opacity-100 aria-invalid:border-destructive",
       className,
     )}
   >
-    <span className={cn("flex min-w-0 items-center gap-2 truncate", shown ? "text-[var(--t1)]" : "text-[var(--t3)]")}>
+    <span className={cn("flex min-w-0 items-center gap-2 truncate", shown ? "text-[var(--t1)] group-disabled:text-[var(--t2)]" : "text-[var(--t3)]")}>
       {selected?.icon && !renderValue ? selected.icon : null}
       <span className="truncate">{shown ?? placeholder}</span>
     </span>
-    <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)] max-md:size-[18px] max-md:text-[var(--t1)]" />
+    <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)] group-disabled:text-[var(--t3)] max-md:size-[18px] max-md:text-[var(--t1)] max-md:group-disabled:text-[var(--t3)]" />
   </button>;
 
   const search = withSearch ? <div className={phone ? "relative px-5 pt-1 pb-2" : "relative border-b border-[var(--borde)] p-2"}>

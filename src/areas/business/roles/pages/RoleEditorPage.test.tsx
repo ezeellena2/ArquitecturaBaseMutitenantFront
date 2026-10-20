@@ -199,12 +199,34 @@ describe("RoleEditorPage", () => {
       http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
       http.get("/api/roles/role-company", () => HttpResponse.json({ ...role, id: "role-company", scope: "SpecificCompany", companyId: "company-1", userCount: 4, permissions: ["company.members.read"] })),
     );
-    renderRouteWithProviders("/org/roles/role-company", { as: "business-e6-admin" });
+    const { container } = renderRouteWithProviders("/org/roles/role-company", { as: "business-e6-admin" });
 
     const heading = await screen.findByRole("heading", { level: 1, name: "Solo lectura" });
     await waitFor(() => expect(heading.parentElement).toHaveTextContent("Vale en Delta S.A. · 4 usuarios lo tienen"));
     expect(screen.queryByText("Una empresa específica")).not.toBeInTheDocument();
     expect(screen.queryByText("Empresa")).not.toBeInTheDocument();
+    // Tableros Rol y M-Rol (A11): «Delta S.A. ⌄» es el mismo desplegable, apagado, con fondo y texto grises.
+    const scope = screen.getByRole("combobox", { name: "Vale en" });
+    expect(scope).toBeDisabled();
+    expect(scope).toHaveTextContent("Delta S.A.");
+    expect(scope).toHaveClass("disabled:bg-[var(--s2)]");
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("390: «Vale en» de un rol que ya existe es el desplegable apagado, no un texto suelto", async () => {
+    const restore = asPhone();
+    try {
+      server.use(
+        http.get("/api/companies/paged", () => HttpResponse.json(companies)),
+        http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+        http.get("/api/roles/role-company", () => HttpResponse.json({ ...role, id: "role-company", scope: "SpecificCompany", companyId: "company-1", userCount: 4, permissions: ["company.members.read"] })),
+      );
+      const { container } = renderRouteWithProviders("/org/roles/role-company", { as: "business-e6-admin" });
+      const scope = await screen.findByRole("combobox", { name: "Vale en" });
+      expect(scope).toBeDisabled();
+      await waitFor(() => expect(scope).toHaveTextContent("Delta S.A."));
+      expect(await axe(container)).toHaveNoViolations();
+    } finally { restore(); }
   });
 
   it("manda la versión y conserva el borrador ante un 409 hasta que la persona vea lo nuevo", async () => {
@@ -259,7 +281,9 @@ describe("RoleEditorPage", () => {
     renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
 
     const name = await screen.findByRole("textbox", { name: "Nombre" });
-    expect(screen.queryByRole("combobox", { name: "Vale en" })).not.toBeInTheDocument();
+    // A11 (Criterio · Formularios): el mismo campo, deshabilitado.
+    expect(screen.getByRole("combobox", { name: "Vale en" })).toBeDisabled();
+    expect(screen.getByRole("combobox", { name: "Vale en" })).toHaveTextContent("Toda la organización");
     await user.clear(name);
     await user.type(name, "Solo lectura de la organización");
     await user.click(screen.getAllByRole("button", { name: "Guardar cambios" })[0]);
@@ -557,7 +581,7 @@ describe("RoleEditorPage", () => {
     expect(description).not.toHaveClass("resize-y");
   });
 
-  // Tablero M-Rol: en el teléfono los campos van sueltos, «Vale en» como texto, «Permisos» con la cuenta a la derecha
+  // Tablero M-Rol: en el teléfono los campos van sueltos, «Vale en» como el desplegable apagado (A11), «Permisos» con la cuenta a la derecha
   // y los botones fijos abajo.
   it("en el teléfono los campos van sueltos y los botones fijos abajo", async () => {
     const restore = asPhone();
@@ -569,9 +593,9 @@ describe("RoleEditorPage", () => {
       const { container } = renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
 
       await screen.findByRole("textbox", { name: "Nombre" });
-      // Tablero M-Rol: «Vale en» se lee como texto, de 16 debajo de su rótulo de 13,5.
-      expect(screen.getByText("Toda la organización")).toHaveClass("max-md:text-[16px]", "max-md:leading-[normal]");
-      expect(screen.getByText("Vale en")).toHaveClass("max-md:text-[13.5px]");
+      // Tablero M-Rol («Criterio · Formularios», A11): «Vale en» es el mismo desplegable, apagado.
+      expect(screen.getByRole("combobox", { name: "Vale en" })).toBeDisabled();
+      expect(screen.getByRole("combobox", { name: "Vale en" })).toHaveTextContent("Toda la organización");
       expect(await axe(container)).toHaveNoViolations();
       expect(screen.getByRole("heading", { level: 1, name: "Solo lectura" }).closest("header")).toHaveTextContent("Vale en toda la organización · 0 usuarios lo tienen");
       expect(screen.getByRole("heading", { name: "Datos del rol" })).toHaveClass("sr-only");
