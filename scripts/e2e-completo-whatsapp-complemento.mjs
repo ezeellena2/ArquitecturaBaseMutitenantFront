@@ -145,6 +145,7 @@ async function registerPhone(h, page, phone, cursor) {
   await fillOtp(page, (await cursor("code")).proof);
   await clickForResponse(page, page.getByRole("button", { name: "Verificar y crear la cuenta", exact: true }), "/api/auth/signup/verify", "POST", 204);
   await page.waitForURL((url) => url.pathname === "/");
+  await page.getByRole("navigation", { name: "Secciones", exact: true }).or(page.getByRole("button", { name: /, Personal$/ })).filter({ visible: true }).first().waitFor();
   return read(h, page, "/api/me");
 }
 async function addPhone(h, page, phone, cursor) {

@@ -20,6 +20,7 @@ import { parseFunctionalBaselineIncidents } from "./e2e-completo-incidentes.mjs"
 import { supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemento.mjs";
 import { enrichBaselineIncidents } from "./e2e-completo-triage.mjs";
 import { identitySupplementLimitations } from "./e2e-completo-identidad-complemento.mjs";
+import { enrichOriginalExecutions } from "./e2e-completo-metadatos-base.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const execute = promisify(execFile);
@@ -119,11 +120,11 @@ export async function main(options = parseArguments([])) {
   const definitions = collectSuiteDefinitions(suites);
   const selectedIds = new Set(definitions.map((definition) => definition.id));
   const selectedDefinitions = new Map(definitions.map((definition) => [definition.id, definition]));
-  const executions = [
+  const executions = enrichOriginalExecutions([
     ...imported,
     ...(saved.executions ?? []).filter((entry) => !entry.id.startsWith("BASE-") && (!selectedIds.has(entry.id) || options.refreshOnly || options.resume)).map((entry) => ({ ...entry, ...selectedDefinitions.get(entry.id), results: entry.results })),
     ...(!options.refreshOnly ? definitions.filter((item) => !item.id.startsWith("BASE-") && (!options.resume || !saved.executions?.some((entry) => entry.id === item.id))).map((item) => ({ ...item, results: [] })) : []),
-  ];
+  ]);
   const report = { date, commits, startedAtUtc: previous.startedAtUtc ?? new Date().toISOString(),
     environment: { ...previous.environment, cleanup: previous.environment?.cleanup ?? "sin iniciar", browser: "Chrome del sistema, contexto persistente", database: "PostgreSQL efímero; pickup .eml y control WhatsApp de Testing", scope: inventoryMetadata.scope },
     baseline: [
@@ -211,7 +212,9 @@ export async function main(options = parseArguments([])) {
         }
         const page = getPage?.();
         if (page && !page.isClosed()) {
-          result.currentRoute = new URL(page.url()).pathname;
+          const currentLocation = new URL(page.url());
+          result.currentRoute = currentLocation.pathname;
+          result.currentHost = currentLocation.host;
           const image = `${id}-${width}.png`;
           try {
             await page.screenshot({ path: path.join(output, image), fullPage: true, animations: "disabled",
