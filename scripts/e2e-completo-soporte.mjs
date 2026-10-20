@@ -6,7 +6,10 @@ import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 
 export const viewports = [1440, 390];
 export const viewportOf = (width) => ({ width, height: width === 390 ? 844 : 900 });
-export const syntheticEmail = (prefix = "persona") => `e2e-completo-${prefix}-${randomUUID()}@example.test`;
+export function syntheticEmail(prefix = "persona") {
+  assert.match(prefix, /^[a-z0-9][a-z0-9-]*$/i, "La etiqueta del buzón sólo usa letras, números y guiones.");
+  return `e2e-completo-${prefix.slice(0, 14)}-${randomUUID()}@example.test`;
+}
 
 export function localApiUrl(route, base) {
   const target = new URL(route, base);

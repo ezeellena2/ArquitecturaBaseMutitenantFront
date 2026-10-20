@@ -26,6 +26,57 @@ export const policyDefinitions = [
   definition(12, "Operador completo", "Restaurar las políticas iniciales antes de salir", "/plataforma/configuracion", "Registro personal, empresarial, máximo y contactos restaurables coinciden con la lectura inicial después de F5."),
 ];
 
+export const closedPolicyRepairDefinitions = policyDefinitions.filter((entry) => ["POL-01", "POL-02", "POL-03", "POL-04", "POL-12"].includes(entry.id));
+
+/** Sólo reconstruye el cierre temporal y repite las dos negativas afectadas por el buzón inválido del arnés. */
+export async function runClosedPolicyRepairCases(h) {
+  const operatorPage = await h.newPage();
+  const publicPage = await h.newPage();
+  const operatorEmail = h.width === 1440 ? "e2e-5a-operator@example.test" : "e2e-a8-operator@example.test";
+  let signedIn = false;
+  let original;
+  const record = (id, page, action) => h.record(id, () => page, action);
+  try {
+    await withRestoredSettings({
+      read: async () => {
+        const result = await record("POL-01", operatorPage, async () => {
+          await h.login(operatorPage, operatorEmail, "platform"); signedIn = true;
+          await confirmRecentAuthenticationWhenAsked(operatorPage, operatorEmail);
+          original = await openPlatformSettings(operatorPage, h.base.origin);
+          return "Operador autenticado y políticas originales leídas para la comprobación dirigida.";
+        });
+        assert.ok(result.ok, "No se pudo leer la política; no se cambia ningún registro.");
+        return original;
+      },
+      prepare: async () => {
+        const result = await record("POL-02", operatorPage, async () => {
+          await savePlatformSettings(operatorPage, original, { ...restorableSettings(original), consumerSignup: "Closed", businessSignup: "Closed" }, "Prueba dirigida: cerrar los registros temporalmente.");
+          return "Ambos registros cerrados por UI para las dos negativas dirigidas.";
+        });
+        assert.ok(result.ok, "No se pudo cerrar el registro; las negativas no se certifican.");
+      },
+      body: async () => {
+        for (const [id, access] of [["POL-03", "consumer"], ["POL-04", "business"]]) await record(id, publicPage, async () => {
+          await closedRegistration(h, publicPage, access);
+          return `${access}: 403 de registro cerrado con su código, sin OTP y con la salida visible; el buzón sintético es válido.`;
+        });
+      },
+      restore: async (initial) => {
+        const result = await record("POL-12", operatorPage, async () => {
+          const current = await openPlatformSettings(operatorPage, h.base.origin);
+          await savePlatformSettings(operatorPage, current, restorableSettings(initial), "Prueba dirigida: restaurar las políticas originales.");
+          return "Políticas originales restauradas por UI y releídas.";
+        });
+        assert.ok(result.ok, "No se pudo restaurar la configuración.");
+      },
+    });
+  } finally {
+    stopConfirmingRecentAuthentication(operatorPage);
+    try { if (signedIn) await h.signOut(operatorPage); }
+    finally { await publicPage.close(); await operatorPage.close(); }
+  }
+}
+
 export async function requireClosedSignup(response, access) {
   assert.ok(["consumer", "business"].includes(access));
   return assertPlatformProblem(response, 403, access === "consumer" ? "Auth.Signup.Closed" : "Auth.BusinessSignup.Closed");

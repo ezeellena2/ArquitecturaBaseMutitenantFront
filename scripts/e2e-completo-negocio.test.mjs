@@ -2,6 +2,107 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { businessDefinitions, clickForResponse, invitationTokenFromMessage, requireOrganizationPermissions, requireProblem, requireSoleCompanyAdministrator, roleScopeNegativeAssignment, runBusinessDependencyCase } from "./e2e-completo-negocio.mjs";
+import * as business from "./e2e-completo-negocio.mjs";
+
+function selfDisableFixture({ status = 403, code = "Tenancy.Member.CannotDisableSelf", changed = false, width = 1440 } = {}) {
+  const calls = [];
+  const before = { memberId: "own-member", userId: "own-person", state: "Active", version: 7,
+    roles: [{ id: "owner-role", name: "Dueño", isSystemRole: true, scope: "Organization" }], companies: [] };
+  let detailReads = 0;
+  const response = { status: () => status, json: async () => ({ code, traceId: "synthetic-trace" }),
+    url: () => "https://localtest.me:7433/api/users/own-member", request: () => ({ method: () => "PUT" }) };
+  const control = (name) => ({
+    click: async () => calls.push(["click", name]), check: async () => calls.push(["check", name]),
+    getByRole: (_role, options = {}) => control(String(options.name)), filter: () => control(name), first: () => control(name),
+    isVisible: async () => name === "Descartar cambios", waitFor: async () => calls.push(["visible", name]),
+  });
+  const page = {
+    goto: async (url) => calls.push(["goto", new URL(url).pathname]),
+    getByRole: (_role, options = {}) => control(String(options.name)),
+    getByText: (text) => control(text),
+    waitForResponse: async (predicate) => { assert.equal(predicate(response), true); return response; },
+    close: async () => calls.push(["close"]),
+  };
+  const h = {
+    width, base: new URL("https://localtest.me:7433"), newPage: async () => page,
+    api: async (target, route, options) => {
+      assert.equal(target, page); assert.equal(options, undefined, "Las escrituras se hacen por UI.");
+      calls.push(["read", route]);
+      const data = route.includes("paged") ? { items: [before] } : { ...before, version: changed && detailReads++ > 0 ? 8 : 7 };
+      return { status: () => 200, json: async () => data };
+    },
+    registerBusiness: async (target) => { assert.equal(target, page); calls.push(["register"]); return { me: { id: "own-person", access: "business", hasPersonalSpace: false } }; },
+    signOut: async (target) => { assert.equal(target, page); calls.push(["logout"]); },
+    record: async (id, getPage, action) => {
+      assert.ok(["BIZ-25", "BIZ-41"].includes(id)); assert.equal(getPage(), page);
+      calls.push(["record", id]);
+      if (id === "BIZ-41") return { ok: true };
+      try { const value = await action(); calls.push(["capture"]); return { ok: true, value }; }
+      catch (error) { calls.push(["capture"]); return { ok: false, error }; }
+    },
+  };
+  return { h, page, calls };
+}
+
+test("deshabilitarse exige 403 CannotDisableSelf y conserva el acceso, roles y versión", async () => {
+  for (const width of [1440, 390]) {
+    const { h, page, calls } = selfDisableFixture({ width });
+    assert.match(await business.checkSelfDisable(h, page, "own-person"), /403/u);
+    assert.ok(calls.some((entry) => entry[1] === "Deshabilitar y guardar"));
+    assert.ok(calls.some((entry) => entry[1] === "No podés deshabilitarte a vos misma."));
+  }
+  for (const options of [{ status: 409 }, { code: "Tenancy.Member.LastTenantAdmin" }, { changed: true }]) {
+    const { h, page } = selfDisableFixture(options);
+    await assert.rejects(business.checkSelfDisable(h, page, "own-person"));
+  }
+});
+
+test("la reparación de negocio prepara una sola organización para25/41, captura y cierra por UI incluso si falla25", async () => {
+  for (const options of [{}, { code: "Http.Forbidden" }]) {
+    const { h, calls } = selfDisableFixture(options);
+    const result = await business.runBusinessRepairCases(h);
+    assert.equal(result.get("BIZ-25").ok, !options.code);
+    assert.equal(result.get("BIZ-41").ok, true, "41 depende de la organización creada, no del resultado negativo de25.");
+    assert.equal(calls.filter(([action]) => action === "register").length, 1);
+    assert.deepEqual(calls.filter(([action]) => action === "record"), [["record", "BIZ-25"], ["record", "BIZ-41"]]);
+    assert.deepEqual(calls.slice(-3), [["click", "Descartar cambios"], ["logout"], ["close"]]);
+  }
+});
+
+test("la reparación de negocio incluye sólo BIZ25/41 y no acredita la guarda distinta del último Dueño", () => {
+  const definition = businessDefinitions.find((entry) => entry.id === "BIZ-25");
+  assert.deepEqual(business.businessRepairDefinitions, [definition, businessDefinitions.find((entry) => entry.id === "BIZ-41")]);
+  assert.match(definition.expected, /403 Tenancy.Member.CannotDisableSelf/u);
+  assert.doesNotMatch(definition.expected, /409/u);
+  assert.deepEqual(definition.covers, []);
+});
+
+test("la reparación de negocio bloquea41 si el alta propia no llegó a completarse", async () => {
+  const { h, calls } = selfDisableFixture();
+  h.registerBusiness = async () => { throw new Error("No se creó la organización"); };
+  const blocked = [];
+  h.block = async (...args) => blocked.push(args);
+  const results = await business.runBusinessRepairCases(h);
+  assert.equal(results.get("BIZ-25").ok, false);
+  assert.equal(results.get("BIZ-41").blocked, true);
+  assert.equal(blocked[0][0], "BIZ-41");
+  assert.equal(calls.some(([action]) => action === "logout"), false);
+  assert.deepEqual(calls.at(-1), ["close"]);
+});
+
+test("la lectura de vista previa sólo reemplaza el body CDP perdido por cambio de documento", async () => {
+  const stale = new Error("Protocol error (Network.getResponseBody): No resource with given identifier found\nResponse body is not available for a response that was navigated away from.");
+  const response = (status, body) => ({ status: () => status, json: async () => { if (body instanceof Error) throw body; return body; } });
+  let reloaded = 0;
+  const reload = async () => { reloaded++; return response(200, { state: "NoAccount" }); };
+  assert.deepEqual(await business.readInvitationPreviewResponse(response(200, stale), "NoAccount", reload), { state: "NoAccount" });
+  assert.equal(reloaded, 1);
+  for (const original of [response(403, stale), response(200, { state: "WrongSession" }), response(200, new Error("Timeout")), response(200, new Error("Protocol error (Network.getResponseBody): Target closed"))]) {
+    await assert.rejects(business.readInvitationPreviewResponse(original, "NoAccount", reload));
+  }
+  assert.equal(reloaded, 1, "No se oculta ningún status, estado funcional ni fallo de infraestructura distinto.");
+  await assert.rejects(business.readInvitationPreviewResponse(response(200, stale), "NoAccount", async () => response(403, { state: "NoAccount" })));
+});
 
 test("un fallo de preparación bloquea sólo sus dependientes y permite el siguiente caso independiente", async () => {
   const calls = [];

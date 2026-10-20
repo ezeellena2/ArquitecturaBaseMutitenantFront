@@ -3,6 +3,54 @@ import { test } from "node:test";
 import { assertPlatformProblem, createPlatformRecorder, platformDefinitions, platformWriteAttempts, assertDeniedPlatformWrites, assertReadOnlyPlatformPermissions } from "./e2e-completo-plataforma.mjs";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
+import * as platform from "./e2e-completo-plataforma.mjs";
+
+test("abrir una acción espera la ficha y elige botón directo, hoja móvil o menú de escritorio", async () => {
+  for (const mode of ["directo", "hoja", "menú"]) {
+    const calls = [];
+    const waiting = Promise.withResolvers(); const loaded = Promise.withResolvers();
+    let ready = false;
+    const action = (name) => ({ click: async () => calls.push(["click", name]) });
+    const direct = { ...action("Cerrar sesiones"), filter: () => direct, first: () => direct,
+      isVisible: async () => { assert.equal(ready, true, "isVisible no debe decidir mientras carga la ficha."); return mode === "directo"; },
+      or: () => ({ first: () => ({ waitFor: async () => { waiting.resolve(); await loaded.promise; } }) }) };
+    const menu = { ...action("Acciones"), filter: () => menu, first: () => menu,
+      getAttribute: async () => mode === "hoja" ? "dialog" : "menu",
+      focus: async () => calls.push(["focus"]), press: async (key) => calls.push(["press", key]) };
+    const page = { getByRole: (role, options) => {
+      if (role === "menuitem") { assert.equal(options.name, "Cerrar sesiones"); return action("opción Cerrar sesiones"); }
+      return typeof options.name === "string" ? direct : menu;
+    } };
+    const opened = platform.openAction(page, "Cerrar sus sesiones");
+    await waiting.promise;
+    assert.deepEqual(calls, [], "La carga pendiente no debe provocar un menú alternativo incorrecto.");
+    ready = true; loaded.resolve(); await opened;
+    assert.deepEqual(calls, mode === "directo" ? [["click", "Cerrar sesiones"]]
+      : mode === "hoja" ? [["click", "Acciones"], ["click", "opción Cerrar sesiones"]]
+        : [["focus"], ["press", "ArrowDown"], ["click", "opción Cerrar sesiones"]]);
+  }
+});
+
+test("la reparación de Plataforma sólo prepara sus fixtures y ejecuta los estados afectados", async () => {
+  const numbers = [8, 9, 10, 12, 18, 22, 23, 24, 25, 26, 27, 28, 29, 35];
+  assert.deepEqual(platform.platformRepairDefinitions.map((entry) => entry.id), numbers.map((number) => `PLAT-${String(number).padStart(2, "0")}`));
+  const records = []; const blocked = []; let closed = 0;
+  const h = {
+    width: 1440, base: new URL("https://localtest.me:7433"),
+    newPage: async () => ({ isClosed: () => false, close: async () => { closed++; } }),
+    registerPerson: async () => { throw new Error("No se creó la persona"); },
+    registerBusiness: async () => { throw new Error("No se creó la organización"); },
+    login: async () => { throw new Error("No ingresó el operador"); },
+    record: async (id, _getPage, action) => { records.push(id); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; } },
+    block: async (id, reason) => blocked.push([id, reason]),
+  };
+  await platform.runPlatformRepairCases(h);
+  assert.deepEqual(records, ["PLAT-08", "PLAT-09", "PLAT-10"]);
+  assert.deepEqual(blocked.map(([id]) => id), numbers.slice(3).map((number) => `PLAT-${String(number).padStart(2, "0")}`));
+  assert.ok(blocked.find(([id]) => id === "PLAT-23")[1].includes("PLAT-22"));
+  assert.ok(blocked.find(([id]) => id === "PLAT-28")[1].includes("PLAT-27"));
+  assert.equal(closed, 3);
+});
 
 test("un rechazo de seguridad exige estado, código y traceId reales", async () => {
   const response = (status, body) => ({ status: () => status, json: async () => body });

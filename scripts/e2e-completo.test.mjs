@@ -3,7 +3,12 @@ import { test } from "node:test";
 import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { parseArguments, createReportStore, reusePassedPreparation } from "./e2e-completo.mjs";
+import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions } from "./e2e-completo.mjs";
+
+test("seleccionar una suite y su reparación conserva una sola definición y no reintenta por defecto", () => {
+  assert.deepEqual(collectSuiteDefinitions([{ definitions: [{ id: "A", expected: "viejo" }] }, { definitions: [{ id: "A", expected: "corregido" }, { id: "B" }] }]), [{ id: "A", expected: "corregido" }, { id: "B" }]);
+  assert.equal(parseArguments([]).suites.some((name) => name.includes("arreglo") || name.startsWith("baseline")), false);
+});
 
 test("una preparación verde que ahora falla pierde la reutilización y conserva el error sin repetir la acción", async () => {
   const error = new Error("La sesión de Plataforma ya no aparece");

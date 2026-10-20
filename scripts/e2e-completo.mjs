@@ -18,6 +18,8 @@ import { createBrowserSupport, viewportOf } from "./e2e-completo-soporte.mjs";
 import { applyAdditionalCoverage, coverageLimitations } from "./e2e-completo-cobertura.mjs";
 import { parseFunctionalBaselineIncidents } from "./e2e-completo-incidentes.mjs";
 import { supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemento.mjs";
+import { enrichBaselineIncidents } from "./e2e-completo-triage.mjs";
+import { identitySupplementLimitations } from "./e2e-completo-identidad-complemento.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const execute = promisify(execFile);
@@ -35,11 +37,21 @@ const suiteSpecs = {
   baselineasistente: ["./e2e-completo-fases-baseline.mjs", "baselineAssistantDefinitions", "runBaselineAssistantCases"],
   baselineorgwa: ["./e2e-completo-fases-baseline.mjs", "baselineOrganizationWhatsAppDefinitions", "runBaselineOrganizationWhatsAppCases"],
   baselineseguridad: ["./e2e-completo-fases-baseline.mjs", "baselineSecurityDefinitions", "runBaselineSecurityCases"],
+  politicasarreglos: ["./e2e-completo-politicas.mjs", "closedPolicyRepairDefinitions", "runClosedPolicyRepairCases"],
+  modulosarreglos: ["./e2e-completo-modulos.mjs", "moduleAccessRepairDefinitions", "runModuleAccessRepairCases"],
+  publicoextra: ["./e2e-completo-publico-complemento.mjs", "publicSupplementDefinitions", "runPublicSupplementCases"],
+  identidadextra: ["./e2e-completo-identidad-complemento.mjs", "identitySupplementDefinitions", "runIdentitySupplementCases"],
+  negocioarreglos: ["./e2e-completo-negocio.mjs", "businessRepairDefinitions", "runBusinessRepairCases"],
+  plataformaarreglos: ["./e2e-completo-plataforma.mjs", "platformRepairDefinitions", "runPlatformRepairCases"],
 };
+
+export function collectSuiteDefinitions(suites) {
+  return [...new Map(suites.flatMap((suite) => suite.definitions.map((entry) => [entry.id, entry]))).values()];
+}
 
 export function parseArguments(args) {
   assert.ok(args.every((value) => ["--inventory-only", "--no-build", "--refresh-only", "--resume"].includes(value) || /^--suite=[a-z,]+$/.test(value) || /^--width=(1440|390)$/.test(value)), "Argumentos no admitidos.");
-  const suites = args.find((value) => value.startsWith("--suite="))?.slice(8).split(",") ?? Object.keys(suiteSpecs);
+  const suites = args.find((value) => value.startsWith("--suite="))?.slice(8).split(",") ?? Object.keys(suiteSpecs).filter((name) => !name.includes("arreglo") && !name.startsWith("baseline"));
   assert.ok(suites.length > 0 && suites.every((name) => Object.hasOwn(suiteSpecs, name)), "Suite desconocida.");
   const width = args.find((value) => value.startsWith("--width="));
   return { inventoryOnly: args.includes("--inventory-only"), refreshOnly: args.includes("--refresh-only"), resume: args.includes("--resume"), build: !args.includes("--no-build"), suites: [...new Set(suites)], ...(width ? { widths: [Number(width.slice(8))] } : {}) };
@@ -103,12 +115,13 @@ export async function main(options = parseArguments([])) {
     const prior = saved.executions?.find((item) => item.id === entry.id);
     entry.results = entry.results.map((result) => prior?.results?.find((item) => item.width === result.width && item.continued) ?? result);
   }
-  const selectedIds = new Set(suites.flatMap((suite) => suite.definitions.map((definition) => definition.id)));
-  const selectedDefinitions = new Map(suites.flatMap((suite) => suite.definitions.map((definition) => [definition.id, definition])));
+  const definitions = collectSuiteDefinitions(suites);
+  const selectedIds = new Set(definitions.map((definition) => definition.id));
+  const selectedDefinitions = new Map(definitions.map((definition) => [definition.id, definition]));
   const executions = [
     ...imported,
     ...(saved.executions ?? []).filter((entry) => !entry.id.startsWith("BASE-") && (!selectedIds.has(entry.id) || options.refreshOnly || options.resume)).map((entry) => ({ ...entry, ...selectedDefinitions.get(entry.id), results: entry.results })),
-    ...(!options.refreshOnly ? suites.flatMap((suite) => suite.definitions.filter((item) => !item.id.startsWith("BASE-") && (!options.resume || !saved.executions?.some((entry) => entry.id === item.id))).map((item) => ({ ...item, results: [] }))) : []),
+    ...(!options.refreshOnly ? definitions.filter((item) => !item.id.startsWith("BASE-") && (!options.resume || !saved.executions?.some((entry) => entry.id === item.id))).map((item) => ({ ...item, results: [] })) : []),
   ];
   const report = { date, commits, startedAtUtc: previous.startedAtUtc ?? new Date().toISOString(),
     environment: { ...previous.environment, cleanup: previous.environment?.cleanup ?? "sin iniciar", browser: "Chrome del sistema, contexto persistente", database: "PostgreSQL efímero; pickup .eml y control WhatsApp de Testing", scope: inventoryMetadata.scope },
@@ -125,10 +138,10 @@ export async function main(options = parseArguments([])) {
   try {
     const log = await readFile(path.resolve(root, "../ArquitecturaBaseMutitenant/.local/e2e-completo/baseline-e2e-core-ajustado.log"), "utf8");
     report.baseline.push({ source: "Núcleo con infraestructura ajustada", ...parseTapSummary(log), reason: "Chrome de sistema, readiness 180 s e informes generados fuera del scanner; mismas comprobaciones originales." });
-    report.baselineFunctionalIncidents = parseFunctionalBaselineIncidents(log);
+    report.baselineFunctionalIncidents = enrichBaselineIncidents(parseFunctionalBaselineIncidents(log));
   } catch (error) { if (error.code !== "ENOENT") throw error; }
   const persist = async (publish = false) => {
-    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations: { ...coverageLimitations, ...supplementWhatsAppLimitations } });
+    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations: { ...coverageLimitations, ...supplementWhatsAppLimitations, ...identitySupplementLimitations } });
     report.matrix = matrix;
     report.cases = matrix;
     report.summary = summarizeCases(report.cases);

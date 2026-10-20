@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { localApiUrl, requireSyntheticEmail, viewportOf } from "./e2e-completo-soporte.mjs";
+import { localApiUrl, requireSyntheticEmail, viewportOf, syntheticEmail } from "./e2e-completo-soporte.mjs";
+
+test("los buzones generados conservan un local-part válido aun con una etiqueta larga", () => {
+  const first = syntheticEmail("cerrado-consumer");
+  const second = syntheticEmail("cerrado-consumer");
+  requireSyntheticEmail(first);
+  assert.ok(first.split("@")[0].length <= 64);
+  assert.notEqual(first, second);
+  assert.throws(() => syntheticEmail("usuario@gmail.com"));
+});
 
 test("el control HTTP no permite mandar el bearer fuera de la API aislada", () => {
   const base = new URL("https://localtest.me:5174");

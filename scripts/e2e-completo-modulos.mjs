@@ -14,12 +14,17 @@ const wrongAccess = [
   ["10", "Chats de organización", "/api/organization/whatsapp/customers/conversations"],
   ["11", "Consultas de Plataforma", "/api/platform/whatsapp/conversations"],
 ];
+export function wrongAccessProblemCode(route) {
+  if (wrongAccess.some((entry) => entry[2] === route)) return "Http.Forbidden";
+  assert.ok(["/api/me/assistant", "/api/me/whatsapp/conversations"].includes(route), "La ruta debe tener una política verificada en su controller.");
+  return "Tenancy.Access.Wrong";
+}
 export const moduleDefinitions = [
   def("01", "Persona A", "Preparar conversación y PNG propios", "/asistente", "Registro por UI, proveedor controlado, aviso aceptado por UI y recursos privados reales.", [], { setup: true }),
   def("02", "Persona B", "Preparar otra persona independiente", "/asistente", "Otra cuenta creada por UI, con asistente configurado y aviso propio.", [], { setup: true }),
   def("03", "Persona B", "Consultar conversación existente de A", "/api/me/assistant/conversations/:id", "404 Assistant.Conversation.NotFound con traceId, sin título ni mensajes de A.", ["BACK-AS-014"]),
   def("04", "Persona B", "Descargar PNG existente de A", "/api/me/assistant/conversations/:id/attachments/:id", "404 del recurso privado, sin bytes del PNG ni metadatos de A."),
-  ...wrongAccess.map(([id, action, route]) => def(id, "Persona B con token consumer", "Denegar " + action + " desde Personal", route, "403 Tenancy.Access.Wrong con traceId; no se leen datos del otro acceso.")),
+  ...wrongAccess.map(([id, action, route]) => def(id, "Persona B con token consumer", "Denegar " + action + " desde Personal", route, "403 Http.Forbidden con traceId por permiso HTTP antes del filtro de acceso; no se leen datos del otro acceso.")),
   def("12", "Dueño A", "Registrar organización nueva para probar módulos apagados", "/registro/empresa", "Organización propia creada por UI, sin habilitar automáticamente Asistente ni WhatsApp.", [], { setup: true }),
   def("13", "Dueño A", "Consultar Asistente apagado", "/api/organization/assistant", "Estado y configuración devuelven 404 Http.NotFound antes de evaluar permisos."),
   def("14", "Dueño A", "Abrir la pantalla del Asistente apagado", "/org/asistente", "Muestra No encontramos esta página y no presenta un compositor ni enlaces de configuración utilizables."),
@@ -32,7 +37,7 @@ export const moduleDefinitions = [
   def("21", "Miembro sin permisos", "Intentar escribir OwnKey sin permiso", "/api/organization/assistant/settings", "403 Http.Forbidden antes de leer o escribir configuración, sin clave real."),
   def("22", "Dueño sin política OwnKey", "Intentar habilitar una clave propia no autorizada", "/org/asistente/configuracion", "403 Assistant.Settings.OwnKeyNotAllowed y modo/versión guardados intactos; no se inventa una clave de Anthropic."),
   def("23", "Dueño con token business", "Consultar asistente Personal", "/api/me/assistant", "403 Tenancy.Access.Wrong: pertenecer a una organización no mezcla los historiales de los accesos."),
-  def("24", "Dueño con token business", "Consultar modelos globales de Plataforma", "/api/platform/assistant/models", "403 Tenancy.Access.Wrong, sin catálogo global."),
+  def("24", "Dueño con token business", "Consultar modelos globales de Plataforma", "/api/platform/assistant/models", "403 Http.Forbidden por permiso de Plataforma, sin catálogo global."),
   def("25", "Dueño con token business", "Consultar Mensajes de una persona", "/api/me/whatsapp/conversations", "403 Tenancy.Access.Wrong; el permiso B2B no permite leer las copias B2C."),
   def("26", "Dueño B", "Registrar otra organización independiente", "/registro/empresa", "Otra cuenta/organización creadas por UI, con proveedor controlado propio.", [], { setup: true }),
   def("27", "Dueño B", "Consultar conversación real de A desde B", "/api/organization/assistant/conversations/:id", "404 Assistant.Conversation.NotFound aunque ambos sean Dueños y ambos módulos estén habilitados.", ["BACK-AS-014"]),
@@ -47,10 +52,67 @@ export const moduleDefinitions = [
   def("33", "Actores de esta suite", "Cerrar las sesiones por UI", "/org · /plataforma", "Salir cierra las sesiones pública y de Plataforma antes del siguiente ancho."),
 ];
 
+export const moduleAccessRepairDefinitions = moduleDefinitions.filter((entry) => [...wrongAccess.map(([id]) => `MOD-${id}`), "MOD-24", "MOD-34"].includes(entry.id));
+
+/** Repite ocho rechazos y el cambio Personal afectado por el mismo código esperado; conserva sus fixtures propias. */
+export async function runModuleAccessRepairCases(h) {
+  const page = await h.newPage(); const platformPage = await h.newPage(); let signedIn = false; let platformSignedIn = false;
+  try {
+    const person = await h.registerPerson(page); signedIn = true;
+    for (const [id, , route] of wrongAccess) await h.record(`MOD-${id}`, () => page, async () => {
+      await requireModuleProblem(await h.api(page, route), 403, [wrongAccessProblemCode(route)]);
+      return "El token consumer recibió 403 Http.Forbidden con traceId, sin datos del otro acceso.";
+    });
+    const control = createAssistantControl(h.env.command);
+    await prepareAssistant(h, page, person, control);
+    const operatorEmail = h.width === 1440 ? "e2e-5d-operator@example.test" : "e2e-a9-operator@example.test";
+    await assistantLogin(platformPage, h.env, h.base, operatorEmail, "platform"); platformSignedIn = true;
+    await h.record("MOD-34", () => page, () => verifyPersonalAssistantSwitch(h, page, platformPage, person));
+    await h.signOut(page); signedIn = false;
+    await h.registerBusiness(page); signedIn = true;
+    await h.record("MOD-24", () => page, async () => {
+      await requireModuleProblem(await h.api(page, "/api/platform/assistant/models"), 403, [wrongAccessProblemCode("/api/platform/assistant/models")]);
+      return "El token business recibió 403 Http.Forbidden sin catálogo global.";
+    });
+  } finally {
+    try { if (signedIn) await h.signOut(page); }
+    finally {
+      try { if (platformSignedIn) await h.signOut(platformPage); }
+      finally { await platformPage.close(); await page.close(); }
+    }
+  }
+}
+
+async function verifyPersonalAssistantSwitch(h, page, platformPage, person) {
+  const reader = () => read(h, platformPage, "/api/platform/assistant/settings");
+  const writer = (enabled) => savePersonalEnabled(h, platformPage, enabled);
+  return withRestoredPersonalSetting(reader, writer, async () => {
+    await writer(false);
+    await requireModuleProblem(await h.api(page, "/api/me/assistant"), 404, ["Http.NotFound"]);
+    let me = await read(h, page, "/api/me");
+    assert.equal(me.access, "consumer"); assert.equal(me.features.includes("assistant"), false);
+    await page.goto(new URL("/asistente", h.base).href); await heading(page, notFound);
+    assert.equal(await page.getByRole("textbox", { name: "Tu consulta", exact: true }).count(), 0);
+    await writer(true);
+    await page.goto(new URL(assistantHomeRoute("consumer", h.width), h.base).href);
+    await acceptAssistantNoticeFromHome(page);
+    const state = await read(h, page, "/api/me/assistant");
+    assert.equal(state.configured, true); assert.equal(state.noticeAccepted, true);
+    assert.equal(await page.getByRole("textbox", { name: "Tu consulta", exact: true }).isEnabled(), true);
+    me = await read(h, page, "/api/me");
+    assert.equal(me.access, "consumer"); assert.equal(me.id, person.me.id);
+    assert.equal(me.organizations.length, 0); assert.equal(me.features.includes("assistant"), true);
+    assert.deepEqual(me.effectivePermissions.organization, []);
+    await requireModuleProblem(await h.api(page, "/api/organization/assistant"), 403, [wrongAccessProblemCode("/api/organization/assistant")]);
+    await assertViewport(page);
+    return "La casilla de Plataforma produjo 404 sin compositor al apagar y chat Personal utilizable al habilitar, sin roles ni acceso empresarial; la política original se restauró por UI.";
+  });
+}
+
 export async function requireModuleProblem(response, status, codes) {
   assert.equal(response.status(), status, "La ruta real debe responder " + status + ".");
   const problem = await response.json();
-  assert.ok(codes.includes(problem.code), "El rechazo debe tener el código propio de esta política.");
+  assert.ok(codes.includes(problem.code), `El rechazo debe usar ${codes.join(" o ")}; recibido ${problem.code}.`);
   assert.ok(typeof problem.traceId === "string" && problem.traceId.length > 0, "ProblemDetails debe incluir traceId.");
   for (const field of ["conversation", "messages", "bytes", "file", "phone", "displayNumber", "apiKey"]) assert.equal(Object.hasOwn(problem, field), false, "Un rechazo no entrega datos privados.");
   return problem;
@@ -141,7 +203,6 @@ const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR
 const heading = (page, name) => page.getByRole("heading", { name, exact: true }).waitFor();
 const forbidden = "No tenés permiso para ver esta página";
 const notFound = "No encontramos esta página";
-const wrong = ["Tenancy.Access.Wrong"];
 const noPermission = ["Http.Forbidden"];
 const privateMissing = ["Assistant.Conversation.NotFound", "Assistant.Attachment.NotFound"];
 
@@ -255,8 +316,8 @@ export async function runModuleCases(h) {
       return "El PNG existente de otra persona no se descargó: 404 del recurso privado.";
     });
     for (const [id, , route] of wrongAccess) await run(id, ["02"], async () => {
-      await requireModuleProblem(await h.api(page, route), 403, wrong);
-      return "El token consumer fue rechazado con Tenancy.Access.Wrong y traceId antes de leer el otro acceso.";
+      await requireModuleProblem(await h.api(page, route), 403, [wrongAccessProblemCode(route)]);
+      return "El token consumer fue rechazado con Http.Forbidden y traceId por el permiso HTTP antes de leer el otro acceso.";
     });
     await run("12", [], async () => {
       await signOut(); ownerA = await h.registerBusiness(page); current = { email: ownerA.email, access: "business" };
@@ -322,7 +383,7 @@ export async function runModuleCases(h) {
       return "La política impidió OwnKey con el modo y la versión intactos, sin enviar una clave real.";
     });
     for (const [id, route] of [["23", "/api/me/assistant"], ["24", "/api/platform/assistant/models"], ["25", "/api/me/whatsapp/conversations"]]) await run(id, ["22"], async () => {
-      await requireModuleProblem(await h.api(page, route), 403, wrong);
+      await requireModuleProblem(await h.api(page, route), 403, [wrongAccessProblemCode(route)]);
       return "El token Business no autorizó recursos de Personal ni de Plataforma.";
     });
     await run("26", [], async () => {
@@ -372,29 +433,7 @@ export async function runModuleCases(h) {
     });
     await run("34", ["01", "29"], async () => {
       await as(personA.email, "consumer");
-      const reader = () => read(h, platformPage, "/api/platform/assistant/settings");
-      const writer = (enabled) => savePersonalEnabled(h, platformPage, enabled);
-      return withRestoredPersonalSetting(reader, writer, async () => {
-        await writer(false);
-        await requireModuleProblem(await h.api(page, "/api/me/assistant"), 404, ["Http.NotFound"]);
-        let me = await read(h, page, "/api/me");
-        assert.equal(me.access, "consumer"); assert.equal(me.features.includes("assistant"), false);
-        await page.goto(new URL("/asistente", h.base).href); await heading(page, notFound);
-        assert.equal(await page.getByRole("textbox", { name: "Tu consulta", exact: true }).count(), 0);
-        await writer(true);
-        await page.goto(new URL(assistantHomeRoute("consumer", h.width), h.base).href);
-        await acceptAssistantNoticeFromHome(page);
-        const state = await read(h, page, "/api/me/assistant");
-        assert.equal(state.configured, true); assert.equal(state.noticeAccepted, true);
-        assert.equal(await page.getByRole("textbox", { name: "Tu consulta", exact: true }).isEnabled(), true);
-        me = await read(h, page, "/api/me");
-        assert.equal(me.access, "consumer"); assert.equal(me.id, personA.me.id);
-        assert.equal(me.organizations.length, 0); assert.equal(me.features.includes("assistant"), true);
-        assert.deepEqual(me.effectivePermissions.organization, []);
-        await requireModuleProblem(await h.api(page, "/api/organization/assistant"), 403, wrong);
-        await assertViewport(page);
-        return "La casilla de Plataforma produjo 404 sin compositor al apagar y chat Personal utilizable al habilitar, sin roles ni acceso empresarial; la política original se restauró por UI.";
-      });
+      return verifyPersonalAssistantSwitch(h, page, platformPage, personA);
     });
     await run("35", ["17"], async () => {
       await as(ownerA.email);

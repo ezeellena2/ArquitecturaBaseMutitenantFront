@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { clearPlatformKeyFixtureRequest, ownKeyRequest, requireModuleProblem, requirePrivateUsage, runModuleDependency, withMissingAssistantKeyFixture, withRestoredPersonalSetting } from "./e2e-completo-modulos.mjs";
+import { clearPlatformKeyFixtureRequest, ownKeyRequest, requireModuleProblem, requirePrivateUsage, runModuleDependency, withMissingAssistantKeyFixture, withRestoredPersonalSetting, wrongAccessProblemCode } from "./e2e-completo-modulos.mjs";
+
+test("el permiso HTTP se evalúa antes del filtro de acceso sólo en las rutas que lo declaran", () => {
+  for (const route of ["/api/organization/assistant", "/api/platform/assistant", "/api/platform/assistant/models", "/api/platform/assistant/settings", "/api/platform/assistant/usage", "/api/organization/whatsapp/customers/conversations", "/api/platform/whatsapp/conversations"]) assert.equal(wrongAccessProblemCode(route), "Http.Forbidden");
+  for (const route of ["/api/me/assistant", "/api/me/whatsapp/conversations"]) assert.equal(wrongAccessProblemCode(route), "Tenancy.Access.Wrong");
+  assert.throws(() => wrongAccessProblemCode("/api/otra"));
+});
 
 test("una preparación fallida bloquea la acción dependiente sin ejecutarla", async () => {
   let actions = 0; const blocked = [];
