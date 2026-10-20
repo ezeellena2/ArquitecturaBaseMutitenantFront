@@ -4,6 +4,72 @@ import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { businessDefinitions, clickForResponse, invitationTokenFromMessage, requireOrganizationPermissions, requireProblem, requireSoleCompanyAdministrator, roleScopeNegativeAssignment, runBusinessDependencyCase } from "./e2e-completo-negocio.mjs";
 import * as business from "./e2e-completo-negocio.mjs";
 
+function companyRepairCandidateFixture(patch = {}, postedPatch = {}) {
+  const calls = []; const waiting = []; const companyId = "empresa-propia"; const memberId = "miembro-propio";
+  const candidates = { page: 1, pageSize: 20, totalCount: 1, hasNext: false, items: [{ memberId, displayName: "e2•••@example.test" }], ...patch };
+  const reply = (route, method, body, posted) => ({ url: () => `https://localtest.me${route}`, request: () => ({ method: () => method, postDataJSON: () => posted }), status: () => method === "GET" ? 200 : 204, json: async () => body });
+  const candidateReply = reply(`/api/companies/${companyId}/candidates/paged?page=1&pageSize=20&sort=displayName`, "GET", candidates);
+  const postReply = reply(`/api/companies/${companyId}/members`, "POST", undefined, { memberId, roleIds: [], ...postedPatch });
+  const send = (response) => { const matching = waiting.filter(({ predicate }) => predicate(response)); assert.equal(matching.length, 1); matching[0].resolve(response); };
+  const option = { waitFor: async () => calls.push("opción visible"), count: async () => 1, click: async () => calls.push("seleccionar candidato verificado") };
+  const dialog = { getByRole: (role, options) => {
+    if (role === "combobox") { assert.deepEqual(options, { name: "Usuario", exact: true }); return { click: async () => calls.push("abrir selector") }; }
+    assert.equal(role, "button"); assert.deepEqual(options, { name: "Agregar miembro", exact: true }); return { click: async () => { calls.push("POST UI"); send(postReply); } };
+  }, waitFor: async (options) => { assert.deepEqual(options, { state: "hidden" }); calls.push("diálogo cerrado"); } };
+  const page = { waitForResponse: (predicate) => { calls.push("observar respuesta"); const pending = { predicate, ...Promise.withResolvers() }; waiting.push(pending); return pending.promise; }, getByRole: (role, options) => {
+    if (role === "dialog") { assert.deepEqual(options, { name: "Agregar miembro", exact: true }); return dialog; }
+    if (role === "listbox") return { getByRole: (role, options) => { assert.equal(role, "option"); assert.deepEqual(options, { name: candidates.items[0].displayName, exact: true }); return option; } };
+    assert.equal(role, "button"); assert.deepEqual(options, { name: "Agregar miembro", exact: true });
+    const trigger = { first: () => trigger, click: async () => { calls.push("abrir Agregar miembro"); send(candidateReply); } }; return trigger;
+  } };
+  return { page, calls, companyId, memberId };
+}
+
+test("Agregar miembro usa el único ID candidato real y su etiqueta enmascarada sin buscar el correo completo", async () => {
+  const fixture = companyRepairCandidateFixture();
+  await business.addBusinessRepairCompanyMember(fixture.page, fixture.companyId, fixture.memberId);
+  assert.deepEqual(fixture.calls, ["observar respuesta", "abrir Agregar miembro", "abrir selector", "opción visible", "seleccionar candidato verificado", "observar respuesta", "POST UI", "diálogo cerrado"]);
+});
+
+test("Agregar miembro rechaza candidatos ajenos, múltiples, incompletos o sin etiqueta y conserva el POST exacto", async () => {
+  for (const patch of [
+    { items: [{ memberId: "ajeno", displayName: "Opción" }] }, { items: [{ memberId: "miembro-propio", displayName: "" }] },
+    { hasNext: true }, { hasMore: true }, { totalCount: 2 }, { page: 2 },
+    { items: [{ memberId: "miembro-propio", displayName: "Opción" }, { memberId: "otra", displayName: "Opción" }] },
+  ]) {
+    const fixture = companyRepairCandidateFixture(patch);
+    await assert.rejects(() => business.addBusinessRepairCompanyMember(fixture.page, fixture.companyId, fixture.memberId));
+    assert.equal(fixture.calls.includes("seleccionar candidato verificado"), false); assert.equal(fixture.calls.includes("POST UI"), false);
+  }
+  for (const posted of [{ memberId: "ajeno" }, { roleIds: ["rol-ajeno"] }]) {
+    const fixture = companyRepairCandidateFixture({}, posted);
+    await assert.rejects(() => business.addBusinessRepairCompanyMember(fixture.page, fixture.companyId, fixture.memberId));
+    assert.equal(fixture.calls.includes("diálogo cerrado"), false);
+  }
+});
+
+test("el nombre propio de la fixture se guarda por UI sin cambiar identidad, tenant, acceso ni permisos", async () => {
+  const before = { id: "persona-propia", access: "business", activeTenantId: "organización-propia", version: 2, culture: "es-AR", timeZoneId: "America/Argentina/Buenos_Aires",
+    effectivePermissions: { organization: ["users.read"], platform: [], companies: {} } };
+  const name = "Miembro reparación único"; const payload = { firstName: name, lastName: null, culture: before.culture, timeZoneId: before.timeZoneId, version: before.version };
+  for (const change of [{}, { id: "otra" }, { activeTenantId: "otra" }, { access: "consumer" },
+    { effectivePermissions: { ...before.effectivePermissions, organization: ["users.read", "users.manage"] } }, { post: { version: 999 } }]) {
+    const calls = []; const { post = {}, ...altered } = change;
+    const after = { ...before, firstName: name, lastName: null, displayName: name, version: 3, ...altered };
+    const response = { status: () => 200, url: () => "https://localtest.me/api/me", request: () => ({ method: () => "PUT", postDataJSON: () => ({ ...payload, ...post }) }), json: async () => ({ version: 3 }) };
+    const page = { goto: async (url) => { assert.equal(new URL(url).pathname, "/cuenta"); calls.push("cuenta propia"); }, getByRole: (role, options) => {
+      if (role === "heading") { assert.deepEqual(options, { name: "Mi cuenta", exact: true }); return { waitFor: async () => calls.push("cuenta lista") }; }
+      if (role === "textbox") return { fill: async (value) => { assert.ok(["Nombre", "Apellido"].includes(options.name)); calls.push([options.name, value]); } };
+      assert.equal(role, "button"); assert.deepEqual(options, { name: "Guardar cambios", exact: true }); return { click: async () => calls.push("PUT por UI") };
+    }, waitForResponse: async (predicate) => { assert.equal(predicate(response), true); return response; } };
+    const h = { base: new URL("https://localtest.me"), api: async (target, route) => { assert.equal(target, page); assert.equal(route, "/api/me"); return { status: () => 200, json: async () => after }; } };
+    const run = () => business.prepareBusinessRepairMemberProfile(h, page, before, name);
+    if (Object.keys(change).length) await assert.rejects(run); else {
+      assert.equal(await run(), after); assert.deepEqual(calls, ["cuenta propia", "cuenta lista", ["Nombre", name], ["Apellido", ""], "PUT por UI"]);
+    }
+  }
+});
+
 test("el Administrador empresarial de la reparación proyecta sólo assistant.use y conserva sus permisos exactos en una empresa", () => {
   const me = { access: "business", activeTenantId: "organizacion-propia", effectivePermissions: {
     organization: ["assistant.use"], platform: [], companies: { "empresa-propia": ["assistant.use", "company.members.manage", "company.members.read"] },

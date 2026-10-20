@@ -166,6 +166,39 @@ async function read(h, page, route) {
   return response.json();
 }
 
+export async function prepareBusinessRepairMemberProfile(h, page, before, name) {
+  requireOrganizationPermissions(before, ["users.read"]);
+  await page.goto(new URL("/cuenta", h.base).href); await page.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();
+  await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(name); await page.getByRole("textbox", { name: "Apellido", exact: true }).fill("");
+  const response = await clickForResponse(page, page.getByRole("button", { name: "Guardar cambios", exact: true }), "/api/me", "PUT", 200);
+  assert.deepEqual(response.request().postDataJSON(), { firstName: name, lastName: null, culture: before.culture, timeZoneId: before.timeZoneId, version: before.version });
+  const saved = await response.json(); const after = await read(h, page, "/api/me");
+  assert.equal(after.id, before.id); assert.equal(after.activeTenantId, before.activeTenantId); assert.equal(after.access, before.access);
+  requireOrganizationPermissions(after, ["users.read"]); assert.deepEqual(after.effectivePermissions, before.effectivePermissions);
+  assert.equal(after.displayName, name); assert.equal(after.firstName, name); assert.equal(after.lastName, null);
+  assert.equal(after.version, saved.version); assert.notEqual(after.version, before.version);
+  return after;
+}
+
+export async function addBusinessRepairCompanyMember(page, companyId, memberId) {
+  // Candidatos busca sólo por nombre y puede rotular con correo tapado: no usar el correo completo de Me como opción.
+  const candidateRoute = `/api/companies/${companyId}/candidates/paged`;
+  const pending = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return url.pathname === candidateRoute && response.request().method() === "GET" && !(url.searchParams.get("search") ?? "").trim();
+  });
+  void pending.catch(() => {});
+  await page.getByRole("button", { name: "Agregar miembro", exact: true }).first().click();
+  const dialog = page.getByRole("dialog", { name: "Agregar miembro", exact: true }); await dialog.getByRole("combobox", { name: "Usuario", exact: true }).click();
+  const response = await pending; assert.equal(response.status(), 200); const candidates = await response.json();
+  assert.equal(candidates.page, 1); assert.equal(candidates.totalCount, 1); assert.notEqual(candidates.hasNext, true); assert.notEqual(candidates.hasMore, true);
+  assert.deepEqual(candidates.items.map((candidate) => candidate.memberId), [memberId], "La fixture requiere sólo el candidato propio, sin escoger el primero de varios.");
+  const candidate = candidates.items[0]; assert.ok(typeof candidate.displayName === "string" && candidate.displayName.trim().length > 0, "El candidato real debe tener un rótulo legible.");
+  const option = page.getByRole("listbox").getByRole("option", { name: candidate.displayName, exact: true }); await option.waitFor(); assert.equal(await option.count(), 1); await option.click();
+  const added = await clickForResponse(page, dialog.getByRole("button", { name: "Agregar miembro", exact: true }), `/api/companies/${companyId}/members`, "POST", 204);
+  assert.deepEqual(added.request().postDataJSON(), { memberId, roleIds: [] }); await dialog.waitFor({ state: "hidden" });
+}
+
 async function createReadRole(h, page, name, permissionLabel, { companyName, area } = {}) {
   await page.goto(new URL("/org/roles/nuevo", h.base).href);
   await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(name);
@@ -406,16 +439,14 @@ export async function runBusinessAccessRepairCases(h) {
     partial = await invite(h, page, partialEmail, { roleName: role.name });
     empty = await invite(h, page, `e2e-repara-vacio-${tag}@example.test`);
     await invite(h, page, adminEmail, { companyName: company.name });
-    const member = await as(partialEmail); requireOrganizationPermissions(member, ["users.read"]); partialName = member.displayName || partialEmail;
+    const member = await as(partialEmail); requireOrganizationPermissions(member, ["users.read"]); assert.equal(member.activeTenantId, owner.me.activeTenantId);
+    const named = await prepareBusinessRepairMemberProfile(h, page, member, `Miembro reparación ${tag}`); partialName = named.displayName;
     const admin = await as(adminEmail); requireBusinessCompanyAdministrator(admin, owner.me.activeTenantId, company.id); assert.equal((await h.api(page, `/api/companies/${company.id}`)).status(), 200);
     await as(owner.email); await page.goto(new URL(`/org/empresas/${company.id}`, h.base).href);
-    await page.getByRole("button", { name: "Agregar miembro", exact: true }).first().click();
-    const dialog = page.getByRole("dialog", { name: "Agregar miembro", exact: true }); await dialog.getByRole("combobox", { name: "Usuario", exact: true }).click();
-    await page.getByRole("option", { name: partialName, exact: true }).click();
-    await clickForResponse(page, dialog.getByRole("button", { name: "Agregar miembro", exact: true }), `/api/companies/${company.id}/members`, "POST", 204); await dialog.waitFor({ state: "hidden" });
+    await addBusinessRepairCompanyMember(page, company.id, partial.memberId);
     await as(adminEmail);
     const route = `/api/companies/${company.id}/members/paged?page=1&pageSize=100`; const before = await read(h, page, route);
-    assert.equal(before.items.filter((item) => item.memberId === partial.memberId).length, 1);
+    assert.equal(before.items.filter((item) => item.memberId === partial.memberId).length, 1); assert.equal(before.items.find((item) => item.memberId === partial.memberId).displayName, partialName);
     await requireProblem(await h.api(page, `/api/companies/${company.id}/members`, { method: "POST", headers: { "Idempotency-Key": randomUUID() }, data: { memberId: partial.memberId, roleIds: [] } }), 409, "Companies.Membership.AlreadyExists");
     assert.deepEqual(await read(h, page, route), before); await as(owner.email); prepared = true;
   };
