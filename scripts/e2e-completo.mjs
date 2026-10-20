@@ -23,6 +23,7 @@ import { enrichOriginalExecutions } from "./e2e-completo-metadatos-base.mjs";
 import { securitySupplementProofGroups } from "./e2e-completo-seguridad-complemento.mjs";
 import { assistantSupplementProofGroups } from "./e2e-completo-asistente-complemento.mjs";
 import { legalSupplementProofGroups } from "./e2e-completo-legales-complemento.mjs";
+import { organizationSupplementProofGroups } from "./e2e-completo-organizaciones-complemento.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const execute = promisify(execFile);
@@ -56,6 +57,7 @@ const suiteSpecs = {
   whatsappplataformaextra: ["./e2e-completo-whatsapp-plataforma.mjs", "platformWhatsAppDefinitions", "runPlatformWhatsAppCases"],
   legalesextra: ["./e2e-completo-legales-complemento.mjs", "legalSupplementDefinitions", "runLegalSupplementCases"],
   configuracionplataformaextra: ["./e2e-completo-configuracion-plataforma.mjs", "platformConfigurationDefinitions", "runPlatformConfigurationCases"],
+  organizacionesextra: ["./e2e-completo-organizaciones-complemento.mjs", "organizationSupplementDefinitions", "runOrganizationSupplementCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
@@ -172,7 +174,7 @@ export async function main(options = parseArguments([])) {
     report.baselineFunctionalIncidents = enrichBaselineIncidents(parseFunctionalBaselineIncidents(log));
   } catch (error) { if (error.code !== "ENOENT") throw error; }
   const persist = async (publish = false) => {
-    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations, additionalProofGroups: { ...securitySupplementProofGroups, ...assistantSupplementProofGroups, ...legalSupplementProofGroups } });
+    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations, additionalProofGroups: { ...securitySupplementProofGroups, ...assistantSupplementProofGroups, ...legalSupplementProofGroups, ...organizationSupplementProofGroups } });
     report.matrix = matrix;
     report.cases = matrix;
     report.summary = summarizeCases(report.cases);
