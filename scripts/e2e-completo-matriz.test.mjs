@@ -2,6 +2,11 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { buildMatrix, importedJourneySteps, parseTapSummary, resultsFromProofs, safeEvidenceText } from "./e2e-completo-matriz.mjs";
 
+test("las láminas de referencia sin pantalla no se cuentan como flujos bloqueados de producto", () => {
+  const matrix = buildMatrix({ screens: [{ id: "mapa", reference: true, route: "—" }, { id: "cuenta", route: "/cuenta" }] });
+  assert.deepEqual(matrix.map((item) => item.id), ["SCREEN-cuenta"]);
+});
+
 test("los diagnósticos omiten queries y fragmentos HTTP y WebSocket", () => {
   const actual = safeEvidenceText("GET https://localtest.me:5174/login?state=privado#secreto y wss://localtest.me:5174/?token=privado");
   assert.ok(!actual.includes("privado") && !actual.includes("secreto"));

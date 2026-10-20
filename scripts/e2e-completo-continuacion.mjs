@@ -98,13 +98,13 @@ export async function runContinuationCases(h, { load = loadContinuationModule } 
   try {
     const { runWidth } = await load();
     await runWidth({ width: h.width, context: h.context, env: h.env, output: h.output, signal: h.signal,
-      record: (id, width, getPage, action) => {
+      record: (id, width, getPage, action, diagnostic) => {
         assert.equal(width, h.width, "El recorrido conserva el ancho elegido por el coordinador.");
         assert.ok(knownIds.has(id), "El recorrido no puede producir IDs fuera de su inventario.");
         const targetId = `BASE-${id}`;
         visited.add(targetId);
         // Root conserva resultados verdes anteriores y ejecuta estas acciones sólo para reconstruir la fixture.
-        return h.record(targetId, getPage, action);
+        return h.record(targetId, getPage, action, diagnostic);
       },
     });
   } catch (error) { failure = error; }

@@ -6,6 +6,14 @@ const result = (width, status, extra = {}) => ({ width, status, actual: `Resulta
 const caseOf = (id, results, extra = {}) => ({ id, area: "Identidad", actor: "Visitante", action: "Ingresar", route: "/login", expected: "Acceso correcto", results, ...extra });
 const reportOf = (cases, extra = {}) => ({ date: "2026-10-20", commits: { back: "abc", front: "def" }, environment: "Local aislado", baseline: [], cases, ...extra });
 
+test("un reintento conserva visible el incidente anterior sin cambiar su resultado actual", () => {
+  const html = renderCompleteReport(reportOf([caseOf("reanudado", [result(1440, "passed", { previousAttempts: [{ status: "failed", actual: "Pantalla blanca <script>", reason: "Aislamiento del informe", image: "intento-1.png" }] }), result(390, "passed")])]));
+  assert.match(html, /data-case-id="reanudado"[^>]*data-status="passed"/);
+  assert.ok(html.includes("Intentos anteriores"));
+  assert.ok(html.includes("Pantalla blanca &lt;script&gt;"));
+  assert.ok(html.includes('src="intento-1.png"'));
+});
+
 test("el fallo gana, luego el bloqueo y luego lo manual; sólo los dos anchos aprobados pasan", () => {
   assert.equal(aggregateStatus([result(1440, "passed"), result(390, "passed")]), "passed");
   assert.equal(aggregateStatus([result(1440, "failed"), result(390, "blocked")]), "failed");

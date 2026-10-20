@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { assertProblemResponse, assertViewport, openExistingPersonalAccount, withOffline } from "./e2e-completo-personal.mjs";
+import { assertProblemResponse, assertViewport, openExistingPersonalAccount, solePersonalMethod, withOffline } from "./e2e-completo-personal.mjs";
+
+test("la prueba del último método no acepta una fixture vacía, adicional, pendiente o administrada", () => {
+  const method = { id: "method", isVerified: true, canRemove: false, managedByTenantId: null };
+  assert.equal(solePersonalMethod([method]), method);
+  for (const methods of [[], [method, method], [{ ...method, isVerified: false }], [{ ...method, managedByTenantId: "org" }], [{ ...method, canRemove: true }]]) assert.throws(() => solePersonalMethod(methods));
+});
 
 test("la desconexión se restaura aunque falle el paso o su captura", async () => {
   const transitions = [];

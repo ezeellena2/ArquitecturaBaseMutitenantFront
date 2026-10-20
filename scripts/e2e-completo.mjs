@@ -16,6 +16,7 @@ import { screens, guidedCases, existingScriptCases, inventoryMetadata } from "./
 import { buildMatrix, importedJourneySteps, parseTapSummary, safeEvidenceText } from "./e2e-completo-matriz.mjs";
 import { createBrowserSupport, viewportOf } from "./e2e-completo-soporte.mjs";
 import { applyAdditionalCoverage } from "./e2e-completo-cobertura.mjs";
+import { parseFunctionalBaselineIncidents } from "./e2e-completo-incidentes.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const execute = promisify(execFile);
@@ -49,6 +50,14 @@ export async function createReportStore(output, checkpoint) {
       await writeFile(path.join(output, "index.html"), renderCompleteReport(report));
     },
   };
+}
+
+/** Reconstruir una fixture verde puede descubrir una regresión; nunca la oculta ni repite la escritura fallida. */
+export async function reusePassedPreparation({ previous, preserve, blockedReason, action }) {
+  if (!preserve || previous?.status !== "passed") return { reused: false };
+  if (blockedReason) return { reused: true };
+  try { return { reused: true, value: await action() }; }
+  catch (error) { return { reused: false, error }; }
 }
 
 async function readJson(file, fallback) {
@@ -95,8 +104,8 @@ export async function main(options = parseArguments([])) {
     environment: { ...previous.environment, cleanup: previous.environment?.cleanup ?? "sin iniciar", browser: "Chrome del sistema, contexto persistente", database: "PostgreSQL efímero; pickup .eml y control WhatsApp de Testing", scope: inventoryMetadata.scope },
     baseline: [
       { source: "npm run test:e2e:real", ...parseTapSummary(e2eLog), note: "Salida local en .local/e2e-completo/baseline-e2e.log del back; sin datos sensibles en este informe." },
-      { source: "node scripts/recorrido-usuario.mjs --no-build", finished: journey.finished ?? false, cleanup: journey.cleanup ?? "pendiente", report: path.relative(output, path.join(journeyDirectory, "index.html")).replaceAll("\\", "/"), passed: imported.reduce((count, entry) => count + entry.results.filter((result) => result.status === "passed").length, 0), total: imported.length * 2, failure: journey.failure },
-    ], inventoryMetadata, executions, cases: [], screens: [] };
+      { source: "node scripts/recorrido-usuario.mjs --no-build", finished: journey.finished ?? false, cleanup: journey.cleanup ?? "pendiente", report: path.relative(output, path.join(journeyDirectory, "index.html")).replaceAll("\\", "/"), passed: journey.steps.reduce((count, entry) => count + (entry.results ?? []).filter((result) => result.status === "passed").length, 0), total: imported.length * 2, failure: journey.failure },
+    ], inventoryMetadata: { ...inventoryMetadata, excludedReferences: screens.filter((screen) => screen.reference).map(({ id, title, source }) => ({ id, title, source, reason: "Lámina de referencia del diseño; no es una pantalla programable." })) }, executions, cases: [], screens: [] };
   for (const name of ["core", "assistant", "whatsapp"]) {
     try {
       const log = await readFile(path.resolve(root, `../ArquitecturaBaseMutitenant/.local/e2e-completo/baseline-e2e-${name}-retry.log`), "utf8");
@@ -106,6 +115,7 @@ export async function main(options = parseArguments([])) {
   try {
     const log = await readFile(path.resolve(root, "../ArquitecturaBaseMutitenant/.local/e2e-completo/baseline-e2e-core-ajustado.log"), "utf8");
     report.baseline.push({ source: "Núcleo con infraestructura ajustada", ...parseTapSummary(log), reason: "Chrome de sistema, readiness 180 s e informes generados fuera del scanner; mismas comprobaciones originales." });
+    report.baselineFunctionalIncidents = parseFunctionalBaselineIncidents(log);
   } catch (error) { if (error.code !== "ENOENT") throw error; }
   const persist = async (publish = false) => {
     const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions) });
@@ -142,33 +152,32 @@ export async function main(options = parseArguments([])) {
     } finally { await warmup.close(); }
     for (const width of [1440, 390]) {
       const support = createBrowserSupport({ context, env, base: baseUrl, width });
-      const recordResult = async (id, getPage, action, blockedReason) => {
+      const recordResult = async (id, getPage, action, blockedReason, diagnostic) => {
         if (interrupted) throw new Error("Prueba integral interrumpida.");
         const entry = executions.find((item) => item.id === id);
         assert.ok(entry, `Caso sin definición previa: ${id}`);
         const prior = entry.results.find((item) => item.width === width);
-        if ((id.startsWith("BASE-") || options.resume) && prior?.status === "passed") {
-          if (blockedReason) return { ok: true };
-          // Sólo prepara las identidades y el estado del recorrido pendiente en esta base nueva.
-          const value = await action();
-          return { ok: true, value, preparationOnly: true };
-        }
+        const prepared = await reusePassedPreparation({ previous: prior, preserve: id.startsWith("BASE-") || options.resume, blockedReason, action });
+        if (prepared.reused) return { ok: true, value: prepared.value, preparationOnly: true };
         const result = { width, status: blockedReason ? "blocked" : "passed", actual: blockedReason ?? "" };
-        if (prior && prior.status !== "passed") {
+        if (prior) {
           let image = prior.image;
           if (image && !image.startsWith("../")) {
             const archived = `${id}-${width}-intento-${(prior.previousAttempts?.length ?? 0) + 1}.png`;
             await copyFile(path.join(output, image), path.join(output, archived));
             image = archived;
           }
-          result.previousAttempts = [...(prior.previousAttempts ?? []), { status: prior.status, actual: prior.actual, image, reason: "Reejecución afectada por ajuste del aislamiento de informes del scanner de Tailwind." }];
+          result.previousAttempts = [...(prior.previousAttempts ?? []), { status: prior.status, actual: prior.actual, image, reason: "Reejecutado tras ajustar aislamiento de informes y preparaciones del arnés; esta prueba no modificó producto." }];
         }
         if (id.startsWith("BASE-")) result.continued = true;
         let value;
         let failure;
-        try { if (!blockedReason) { value = await action(); result.actual = typeof value === "string" ? value : "La comprobación terminó correctamente."; } }
+        try {
+          if (prepared.error) throw prepared.error;
+          if (!blockedReason) { value = await action(); result.actual = typeof value === "string" ? value : "La comprobación terminó correctamente."; }
+        }
         catch (error) {
-          failure = error; result.status = "failed"; result.actual = safeEvidenceText(safeDiagnostic(error.message));
+          failure = error; result.status = "failed"; result.actual = safeEvidenceText(safeDiagnostic(diagnostic ? diagnostic(error) : error.message));
           result.severity = entry.severity ?? (entry.critical ? "high" : "medium");
           result.probableArea = entry.probableArea ?? "Front o contrato Back; revisar respuesta HTTP y captura";
           result.reproduce = entry.reproduce ?? ["Ejecutar node scripts/e2e-completo.mjs --no-build en un entorno aislado.", `Ingresar como ${entry.actor}.`, `Abrir ${entry.route}.`, entry.action];
@@ -198,7 +207,7 @@ export async function main(options = parseArguments([])) {
           const result = executions.find((item) => item.id === id)?.results.find((entry) => entry.width === selectedWidth);
           return !result || ["blocked", "pending"].includes(result.status);
         },
-        record: (id, getPage, action) => recordResult(id, getPage, action),
+        record: (id, getPage, action, diagnostic) => recordResult(id, getPage, action, undefined, diagnostic),
         block: (id, reason, page) => recordResult(id, () => page, null, reason) };
       for (const suite of suites) {
         if (options.resume && suite.definitions.every((entry) => executions.find((item) => item.id === entry.id)?.results.some((result) => result.width === width && result.status === "passed"))) continue;

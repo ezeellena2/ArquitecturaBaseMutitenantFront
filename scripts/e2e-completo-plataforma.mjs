@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { confirmRecentAuthenticationWhenAsked, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
 import { requireSyntheticEmail } from "./e2e-completo-soporte.mjs";
@@ -35,6 +36,9 @@ const coverage = {
   33: ["SCREEN-config-plat"],
   34: ["BACK-PL-027", "SCREEN-config-plat"],
   35: ["BACK-PL-017"],
+  37: ["BACK-PL-023"],
+  38: ["BACK-PL-011"],
+  39: ["BACK-PL-019"],
 };
 
 const definition = (number, actor, action, route, expected, critical = false) => ({
@@ -77,7 +81,11 @@ export const platformDefinitions = [
   definition(33, operator, "Validar un límite de altas fuera de rango", "/plataforma/configuracion", "Cero organizaciones propias muestra «Usá un número de 1 a 50.» sin guardar."),
   definition(34, operator, "Guardar configuración desde dos pestañas con versión vieja", "/plataforma/configuracion", "Una escritura gana; la otra responde 409 General.ConcurrencyConflict y ofrece Ver lo nuevo. Se restaura el valor inicial.", true),
   definition(35, operator, "Cerrar las sesiones de la persona", "/plataforma/cuentas/:id", "La acción real cierra la sesión Personal: F5 ofrece volver a ingresar.", true),
-  definition(36, operator, "Salir de Plataforma", "/plataforma", "La salida cierra el acceso Plataforma y presenta la portada pública."),
+  definition(37, operator, "Dar sólo lectura de cuentas al otro operador reducido", "/plataforma/cuentas/:id", "El catálogo tiene 14 permisos; la UI guarda motivo y operatorVersion, y la lectura conserva exactamente tenants.read y accounts.read, sin roles.", true),
+  definition(38, "Operador con lectura de organizaciones y cuentas", "Consultar organización real e intentar crearla o cambiar su estado", "/plataforma/organizaciones/:id", "Consulta permitida y gestión oculta; crear, aprobar, rechazar, reintentar, suspender, reactivar y cerrar responden 403 Http.Forbidden con traceId.", true),
+  definition(39, "Operador con lectura de cuentas", "Consultar cuenta real e intentar todas sus acciones de gestión", "/plataforma/cuentas/:id", "La ficha carga sin controles de gestión; suspender, reactivar, cerrar sesiones y dar de baja responden 403 Http.Forbidden con traceId.", true),
+  definition(40, "Operador sin gestión de operadores", "Intentar invitar y cambiar permisos de otro operador", "/api/platform/operators/invitations", "Ambas escrituras responden 403 Http.Forbidden, sin pedir confirmación reciente ni conceder permisos.", true),
+  definition(36, "Operador de esta suite", "Salir de Plataforma", "/plataforma", "La salida cierra el acceso Plataforma y presenta la portada pública."),
 ];
 
 export async function assertPlatformProblem(response, status, code) {
@@ -86,6 +94,37 @@ export async function assertPlatformProblem(response, status, code) {
   assert.equal(problem.code, code, "El rechazo debe tener el código de negocio esperado.");
   assert.ok(typeof problem.traceId === "string" && problem.traceId.length > 0, "ProblemDetails debe tener traceId.");
   return problem;
+}
+
+export function assertReadOnlyPlatformPermissions(me) {
+  assert.equal(me.access, "platform");
+  assert.deepEqual([...me.effectivePermissions.platform].sort(), ["platform.accounts.read", "platform.tenants.read"]);
+}
+
+/** Los negativos usan IDs existentes y el cuerpo real: las acciones de cuenta no reciben versión. */
+export function platformWriteAttempts({ tenant, account, operator: targetOperator, ownerEmail }) {
+  for (const entity of [tenant, account, targetOperator]) assert.match(entity?.id ?? "", /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/iu);
+  for (const version of [tenant.version, targetOperator.operatorVersion]) assert.ok(Number.isInteger(version) && version >= 0);
+  requireSyntheticEmail(ownerEmail);
+  const reason = "Prueba integral: escritura sin permiso de gestión.";
+  const attempt = (route, data, method = "POST") => ({ route, method, data });
+  return {
+    organizations: [
+      attempt("/api/platform/tenants", { name: "Organización no autorizada E2E", firstCompanyName: "Empresa no autorizada E2E", ownerEmail, culture: "es-AR", timeZoneId: "America/Argentina/Buenos_Aires" }),
+      ...["approve", "retry-provisioning", "reject", "suspend", "reactivate", "close"].map((action) => attempt(`/api/platform/tenants/${tenant.id}/${action}`, action === "retry-provisioning" ? { version: tenant.version } : { version: tenant.version, reason })),
+    ],
+    accounts: ["suspend", "reactivate", "revoke-sessions", "deletion"].map((action) => attempt(`/api/platform/accounts/${account.id}/${action}`, { reason })),
+    operators: [
+      attempt("/api/platform/operators/invitations", { email: ownerEmail, permissions: ["platform.accounts.read"] }),
+      attempt(`/api/platform/accounts/${targetOperator.id}/operator`, { version: targetOperator.operatorVersion, reason, permissions: ["platform.accounts.read"] }, "PUT"),
+    ],
+  };
+}
+
+export async function assertDeniedPlatformWrites(h, page, attempts) {
+  for (const { route, method, data } of attempts) {
+    await assertPlatformProblem(await h.api(page, route, { method, data, headers: { "Idempotency-Key": randomUUID() } }), 403, "Http.Forbidden");
+  }
 }
 
 export function createPlatformRecorder(h) {
@@ -172,6 +211,40 @@ async function saveSettings(page, expectedStatus, reason) {
   if (expectedStatus === 409) await assertPlatformProblem(response, 409, "General.ConcurrencyConflict");
 }
 
+async function addAccountReadByUi(h, page, target, base) {
+  assert.deepEqual(target.operatorPermissions, ["platform.tenants.read"], "La fixture reducida empieza sólo con lectura de organizaciones.");
+  await page.goto(new URL(`/plataforma/cuentas/${target.id}`, base).href);
+  await page.getByRole("heading", { name: target.displayName, exact: true }).waitFor();
+  await openAction(page, "Cambiar permisos");
+  const form = page.getByRole("dialog", { name: `Cambiar permisos de ${target.displayName}`, exact: true });
+  const picker = form.getByRole("button", { name: "Permisos de plataforma", exact: true });
+  await picker.focus(); await picker.press("ArrowDown");
+  assert.equal(await page.getByRole("menuitemcheckbox").count(), 14, "Catálogo individual completo, con los módulos instalados.");
+  assert.equal(await page.getByRole("menuitemcheckbox", { name: "Ver organizaciones", exact: true }).getAttribute("aria-checked"), "true");
+  await page.getByRole("menuitemcheckbox", { name: "Ver cuentas", exact: true }).click();
+  await page.keyboard.press("Escape");
+  const reason = "Prueba integral: sólo consultar cuentas y organizaciones.";
+  await form.getByRole("textbox", { name: /^Motivo/ }).fill(reason);
+  const saved = responseAt(page, `/api/platform/accounts/${target.id}/operator`, "PUT");
+  void saved.catch(() => {});
+  await form.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+  // El handler real de confirmación puede intervenir antes de esperar la respuesta final.
+  await form.waitFor({ state: "hidden" });
+  const response = await saved; assert.equal(response.status(), 200);
+  const request = response.request().postDataJSON();
+  assert.deepEqual(Object.keys(request).sort(), ["permissions", "reason", "version"], "La escritura de operador nunca recibe roles ni permisos organizacionales.");
+  assert.equal(request.version, target.operatorVersion); assert.equal(request.reason, reason);
+  const expected = ["platform.accounts.read", "platform.tenants.read"];
+  assert.deepEqual([...request.permissions].sort(), expected);
+  const changed = await response.json(); assert.notEqual(changed.version, target.operatorVersion);
+  const persisted = await h.api(page, `/api/platform/accounts/${target.id}`); assert.equal(persisted.status(), 200);
+  const detail = await persisted.json();
+  assert.equal(detail.kind, "Operator"); assert.equal(detail.operatorVersion, changed.version);
+  assert.deepEqual([...detail.operatorPermissions].sort(), expected);
+  assert.equal(detail.hasPersonalSpace, false);
+  return detail;
+}
+
 export async function runPlatformCases(h) {
   const step = createPlatformRecorder(h);
   const pages = [];
@@ -180,11 +253,18 @@ export async function runPlatformCases(h) {
   const businessPage = await h.newPage(); pages.push(businessPage);
   const fullEmail = h.width === 1440 ? "e2e-e9a-operator@example.test" : "e2e-e9b-operator@example.test";
   const reducedEmail = h.width === 1440 ? "e2e-reduced@example.test" : "e2e-a2-operator@example.test";
-  let person; let business; let fullSignedIn = false; let reducedSignedIn = false;
+  let person; let business; let fullOperator; let readOnlyOperator; let fullSignedIn = false; let reducedSignedIn = false;
   const url = (route) => new URL(route, h.base).href;
   const accountRoute = () => `/plataforma/cuentas/${person.me.id}`;
   const organizationRoute = () => `/plataforma/organizaciones/${business.me.activeTenantId}`;
   const record = (number, target, action, dependencies = []) => step(idOf(number), target, action, dependencies.map(idOf));
+  const enterReadOnly = async () => {
+    if (reducedSignedIn) return;
+    await stopConfirmingRecentAuthentication(page);
+    if (fullSignedIn) { await h.signOut(page); fullSignedIn = false; }
+    const me = await h.login(page, reducedEmail, "platform"); reducedSignedIn = true;
+    assertReadOnlyPlatformPermissions(me); assert.equal(me.id, readOnlyOperator.id);
+  };
   try {
     await record(1, page, async () => {
       const me = await h.login(page, reducedEmail, "platform"); reducedSignedIn = true;
@@ -221,6 +301,7 @@ export async function runPlatformCases(h) {
     });
     await record(10, page, async () => {
       const me = await h.login(page, fullEmail, "platform"); fullSignedIn = true;
+      fullOperator = me;
       assert.equal(me.access, "platform");
       for (const permission of ["platform.accounts.manage", "platform.tenants.manage", "platform.settings.manage"]) assert.ok(me.effectivePermissions.platform.includes(permission));
       return "Operador completo ingresó por correo y autenticador, con acceso platform y permisos de gestión.";
@@ -374,8 +455,61 @@ export async function runPlatformCases(h) {
       await personPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).or(personPage.getByRole("link", { name: "Volver a ingresar", exact: true })).or(personPage.getByRole("link", { name: "Ingresá", exact: true })).first().waitFor();
       return "Cerrar sesiones por Plataforma revocó el acceso Personal; F5 ofreció volver a ingresar.";
     }, [26]);
+    await record(37, page, async () => {
+      assert.ok(fullOperator.effectivePermissions.platform.includes("platform.operators.manage"));
+      const found = await h.api(page, `/api/platform/accounts/paged?page=1&pageSize=10&search=${encodeURIComponent(reducedEmail)}`);
+      assert.equal(found.status(), 200);
+      const accounts = (await found.json()).items; assert.equal(accounts.length, 1);
+      assert.notEqual(accounts[0].id, fullOperator.id, "El operador completo cambia a otra cuenta.");
+      const current = await h.api(page, `/api/platform/accounts/${accounts[0].id}`); assert.equal(current.status(), 200);
+      readOnlyOperator = await addAccountReadByUi(h, page, await current.json(), h.base);
+      const own = await h.api(page, `/api/platform/accounts/${fullOperator.id}`); assert.equal(own.status(), 200);
+      fullOperator = { ...fullOperator, ...await own.json() };
+      return "Cambiar permisos mostró 14 opciones y guardó operatorVersion/motivo por UI; la otra cuenta conserva exactamente lectura de organizaciones y cuentas, sin Personal ni roles.";
+    }, [1, 10]);
+    const negativeFixtures = async () => {
+      const response = await h.api(page, `/api/platform/tenants/${business.me.activeTenantId}`); assert.equal(response.status(), 200);
+      const tenant = await response.json(); assert.equal(tenant.id, business.me.activeTenantId);
+      return platformWriteAttempts({ tenant, account: { id: person.me.id }, operator: fullOperator, ownerEmail: `e2e-denied-${randomUUID()}@example.test` });
+    };
+    await record(38, page, async () => {
+      await enterReadOnly();
+      await page.goto(url("/plataforma/organizaciones"));
+      await page.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+      assert.equal(await page.getByRole("button", { name: "Crear organización", exact: true }).count(), 0);
+      await page.goto(url(organizationRoute()));
+      await page.getByRole("heading", { name: business.organization, exact: true }).waitFor();
+      assert.equal(await page.getByRole("button", { name: /^Acciones de / }).count(), 0);
+      for (const label of ["Aprobar", "Rechazar", "Reintentar alta", "Suspender", "Reactivar", "Cerrar organización", "Cerrar"]) {
+        assert.equal(await page.getByRole("button", { name: label, exact: true }).count(), 0);
+        assert.equal(await page.getByRole("menuitem", { name: label, exact: true }).count(), 0);
+      }
+      await assertDeniedPlatformWrites(h, page, (await negativeFixtures()).organizations);
+      return "El operador con tenants.read consultó la organización real sin controles de gestión; sus siete POST de alta/transición devolvieron 403 Http.Forbidden con traceId antes del step-up.";
+    }, [8, 9, 37]);
+    await record(39, page, async () => {
+      await enterReadOnly();
+      await page.goto(url(accountRoute()));
+      await page.getByRole("heading", { name: person.email, exact: true }).waitFor();
+      const actual = await h.api(page, `/api/platform/accounts/${person.me.id}`); assert.equal(actual.status(), 200);
+      assert.equal((await actual.json()).id, person.me.id);
+      assert.equal(await page.getByRole("button", { name: /^Acciones de / }).count(), 0);
+      for (const label of ["Suspender", "Reactivar", "Cerrar sus sesiones", "Dar de baja"]) {
+        assert.equal(await page.getByRole("button", { name: label, exact: true }).count(), 0);
+        assert.equal(await page.getByRole("menuitem", { name: label, exact: true }).count(), 0);
+      }
+      await assertDeniedPlatformWrites(h, page, (await negativeFixtures()).accounts);
+      return "Con accounts.read la ficha real se consulta sin acciones de gestión; suspender, reactivar, cerrar sesiones y baja devolvieron 403 Http.Forbidden con traceId.";
+    }, [8, 9, 37]);
+    await record(40, page, async () => {
+      await enterReadOnly();
+      await assertDeniedPlatformWrites(h, page, (await negativeFixtures()).operators);
+      const current = await h.api(page, "/api/me"); assert.equal(current.status(), 200);
+      assertReadOnlyPlatformPermissions(await current.json());
+      return "Invitar operador y cambiar los permisos de otro operador real devolvieron 403 Http.Forbidden; la sesión mantiene sólo sus dos permisos de lectura.";
+    }, [8, 9, 37]);
     await record(36, page, async () => {
-      await h.signOut(page); fullSignedIn = false;
+      await h.signOut(page); fullSignedIn = false; reducedSignedIn = false;
       return "La salida cerró la sesión de Plataforma y volvió a la portada pública.";
     }, [10]);
   } finally {

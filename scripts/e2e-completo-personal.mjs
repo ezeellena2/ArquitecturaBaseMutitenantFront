@@ -24,7 +24,18 @@ export const personalDefinitions = [
   definition("15", "Editar y guardar con el navegador sin red", "/cuenta", "Persona B2C sin conexión", "Chromium está offline de verdad, muestra Sin conexión, conserva el borrador y no muestra éxito antes de reconectar.", ["avisos"]),
   definition("16", "Recuperar la conexión y persistir el mismo borrador", "/cuenta", "Persona B2C que vuelve a tener red", "La acción termina una sola vez, usando Reintentar si se ofrece; F5 conserva el valor y desaparece Sin conexión.", []),
   definition("17", "Cerrar la sesión Personal por UI", "/", "Persona B2C", "Salir vuelve a la portada y cierra la sesión Personal antes de la siguiente suite.", []),
+  definition("18", "Consultar una ruta privada sin sesión", "/cuenta", "Visitante sin sesión", "La pantalla exige ingreso y GET /api/users/paged devuelve 401 Http.Unauthorized con traceId, sin datos privados.", ["HT-005"], { critical: true }),
+  definition("19", "Intentar quitar el único método de ingreso", "/cuenta", "Persona B2C con un único correo verificado", "La UI no ofrece Quitar; DELETE real devuelve 409 Identity.LoginMethod.LastMethod y el método sigue disponible.", ["CU-010"], { critical: true }),
 ];
+
+export function solePersonalMethod(methods) {
+  assert.equal(methods.length, 1, "La fixture requiere exactamente un método de ingreso.");
+  const method = methods[0];
+  assert.equal(method.isVerified, true, "El único método debe estar verificado.");
+  assert.ok(!method.managedByTenantId, "Debe ser un método personal, no administrado por una organización.");
+  assert.equal(method.canRemove, false, "La API no debe ofrecer quitar el último método.");
+  return method;
+}
 
 /** Incluye la captura en el período offline y siempre devuelve la red al contexto compartido. */
 export async function withOffline(context, action) {
@@ -89,6 +100,17 @@ export async function runPersonalCases(h) {
   let offlineWrites = 0;
   let stopWriteObserver;
   try {
+    await record("18", publicPage, async () => {
+      const cookies = await h.context.cookies(h.base.href);
+      assert.ok(!cookies.some((cookie) => cookie.name === ".AspNetCore.Identity.Application"), "El visitante requiere que la suite anterior haya cerrado su sesión pública.");
+      await publicPage.goto(new URL("/cuenta", h.base).href);
+      await publicPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).waitFor();
+      assert.equal(new URL(publicPage.url()).pathname, "/login");
+      const response = await publicPage.request.get(new URL("/api/users/paged", h.base).href);
+      await assertProblemResponse(response, 401, "Http.Unauthorized");
+      await assertViewport(publicPage);
+      return "Sin cookie pública ni token: la pantalla pidió ingreso y la API devolvió 401 ProblemDetails con code y traceId.";
+    });
     for (const [suffix, kind, route, title] of [["01", "terms", "/terminos", "Términos y condiciones"], ["02", "privacy", "/privacidad", "Política de privacidad"]]) {
       await record(suffix, publicPage, async () => {
         await publicPage.goto(new URL(route, h.base).href);
@@ -155,12 +177,25 @@ export async function runPersonalCases(h) {
       return "Persona nueva por UI, correo sintético y código del pickup, sin organizaciones.";
     });
     if (!prepared.ok) {
-      for (const suffix of ["08", "09", "10", "11", "12", "13", "14", "15", "16"]) await block(suffix, "No se pudo preparar la persona por UI.", page);
+      for (const suffix of ["08", "09", "10", "11", "12", "13", "14", "15", "16", "19"]) await block(suffix, "No se pudo preparar la persona por UI.", page);
       if (await page.getByRole("button", { name: /, Personal$/ }).filter({ visible: true }).count()) {
         await record("17", page, async () => { await h.signOut(page); return "La preparación falló después del ingreso; su sesión se cerró por UI."; });
       } else await block("17", "La preparación no llegó a una sesión Personal utilizable.", page);
       return;
     }
+    await record("19", page, async () => {
+      await page.goto(new URL("/cuenta", h.base).href); await heading(page, "Mi cuenta");
+      const before = await h.api(page, "/api/me/login-methods");
+      assert.equal(before.status(), 200);
+      const method = solePersonalMethod((await before.json()).methods);
+      assert.equal(await page.getByRole("button", { name: `Acciones de ${method.value}`, exact: true }).count(), 0);
+      await assertProblemResponse(await h.api(page, `/api/me/login-methods/${method.id}`, { method: "DELETE" }), 409, "Identity.LoginMethod.LastMethod");
+      const after = await h.api(page, "/api/me/login-methods");
+      assert.equal(after.status(), 200);
+      assert.equal(solePersonalMethod((await after.json()).methods).id, method.id);
+      await assertViewport(page);
+      return "La UI ocultó la acción y el intento HTTP recibió 409; el mismo método personal verificado se conservó.";
+    });
     await record("08", page, async () => {
       // Estas rutas tienen políticas de permiso: el middleware corta antes del AccessFilter MVC y devuelve el 403
       // genérico publicado por OpenAPI (PermissionAuthorizationHandler + ProblemDetailsMapper).

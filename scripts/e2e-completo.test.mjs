@@ -3,7 +3,18 @@ import { test } from "node:test";
 import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { parseArguments, createReportStore } from "./e2e-completo.mjs";
+import { parseArguments, createReportStore, reusePassedPreparation } from "./e2e-completo.mjs";
+
+test("una preparación verde que ahora falla pierde la reutilización y conserva el error sin repetir la acción", async () => {
+  const error = new Error("La sesión de Plataforma ya no aparece");
+  let calls = 0;
+  const result = await reusePassedPreparation({ previous: { status: "passed" }, preserve: true, action: async () => { calls++; throw error; } });
+  assert.deepEqual(result, { reused: false, error });
+  assert.equal(calls, 1);
+  assert.deepEqual(await reusePassedPreparation({ previous: { status: "passed" }, preserve: true, action: async () => "fixture" }), { reused: true, value: "fixture" });
+  assert.deepEqual(await reusePassedPreparation({ previous: { status: "passed" }, preserve: true, blockedReason: "No se visitó", action: async () => { throw error; } }), { reused: true });
+  assert.deepEqual(await reusePassedPreparation({ previous: { status: "failed" }, preserve: true, action: async () => { throw error; } }), { reused: false });
+});
 
 test("el runner permite aislar suites y rechaza argumentos que ampliarían el alcance", () => {
   assert.deepEqual(parseArguments(["--suite=personal,plataforma", "--no-build", "--resume"]), { inventoryOnly: false, refreshOnly: false, resume: true, build: false, suites: ["personal", "plataforma"] });

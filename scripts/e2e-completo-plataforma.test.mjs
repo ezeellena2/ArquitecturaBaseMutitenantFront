@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { assertPlatformProblem, createPlatformRecorder, platformDefinitions } from "./e2e-completo-plataforma.mjs";
+import { assertPlatformProblem, createPlatformRecorder, platformDefinitions, platformWriteAttempts, assertDeniedPlatformWrites, assertReadOnlyPlatformPermissions } from "./e2e-completo-plataforma.mjs";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
 
@@ -55,4 +55,62 @@ test("la cobertura usa IDs reales y no confunde abrir una pestaña con modificar
   }
   assert.ok(platformDefinitions.find((entry) => entry.id === "PLAT-23").covers.includes("BACK-ID-021"));
   assert.ok(platformDefinitions.find((entry) => entry.id === "PLAT-34").covers.includes("BACK-PL-027"));
+});
+
+const fixtures = {
+  tenant: { id: "11111111-1111-4111-8111-111111111111", version: 7 },
+  account: { id: "22222222-2222-4222-8222-222222222222" },
+  operator: { id: "33333333-3333-4333-8333-333333333333", operatorVersion: 9 },
+  ownerEmail: "e2e-denied@example.test",
+};
+
+test("los rechazos usan recursos reales, versión de organización y cuerpos propios de cada contrato", () => {
+  const attempts = platformWriteAttempts(fixtures);
+  assert.equal(attempts.organizations.length, 7);
+  assert.equal(attempts.accounts.length, 4);
+  assert.equal(attempts.operators.length, 2);
+  for (const attempt of attempts.organizations.slice(1)) {
+    assert.ok(attempt.route.includes(fixtures.tenant.id));
+    assert.equal(attempt.data.version, fixtures.tenant.version);
+  }
+  for (const attempt of attempts.accounts) {
+    assert.ok(attempt.route.includes(fixtures.account.id));
+    assert.deepEqual(Object.keys(attempt.data), ["reason"], "Las acciones de cuenta no reciben versión de perfil.");
+  }
+  assert.equal(attempts.operators[1].data.version, fixtures.operator.operatorVersion);
+  assert.throws(() => platformWriteAttempts({ ...fixtures, tenant: { version: 7 } }));
+  assert.throws(() => platformWriteAttempts({ ...fixtures, tenant: { ...fixtures.tenant, version: null } }));
+  assert.throws(() => platformWriteAttempts({ ...fixtures, ownerEmail: "persona@real.com" }));
+});
+
+test("el actor de sólo lectura posee ambos permisos de consulta y ningún permiso de gestión", () => {
+  const me = { access: "platform", effectivePermissions: { platform: ["platform.accounts.read", "platform.tenants.read"] } };
+  assert.doesNotThrow(() => assertReadOnlyPlatformPermissions(me));
+  for (const permissions of [["platform.tenants.read"], ["platform.accounts.read"], [...me.effectivePermissions.platform, "platform.accounts.manage"]]) {
+    assert.throws(() => assertReadOnlyPlatformPermissions({ ...me, effectivePermissions: { platform: permissions } }));
+  }
+  assert.throws(() => assertReadOnlyPlatformPermissions({ ...me, access: "consumer" }));
+});
+
+test("cada escritura prohibida exige Http.Forbidden antes de validación o confirmación reciente", async () => {
+  const calls = [];
+  const attempts = platformWriteAttempts(fixtures).accounts;
+  const h = { api: async (_page, route, options) => {
+    calls.push({ route, ...options });
+    return { status: () => 403, json: async () => ({ code: "Http.Forbidden", traceId: "trace" }) };
+  } };
+  await assertDeniedPlatformWrites(h, {}, attempts);
+  assert.equal(calls.length, 4);
+  assert.equal(new Set(calls.map((call) => call.headers["Idempotency-Key"])).size, calls.length);
+  for (const [status, code] of [[200, "Http.Forbidden"], [400, "Validation.Failed"], [403, "Platform.Authentication.ReauthenticationRequired"]]) {
+    await assert.rejects(assertDeniedPlatformWrites({ api: async () => ({ status: () => status, json: async () => ({ code, traceId: "trace" }) }) }, {}, attempts));
+  }
+});
+
+test("sólo los casos con actor y acción completos enlazan lectura con escrituras denegadas", () => {
+  for (const [id, target] of [["PLAT-37", "BACK-PL-023"], ["PLAT-38", "BACK-PL-011"], ["PLAT-39", "BACK-PL-019"]]) {
+    assert.ok(platformDefinitions.find((entry) => entry.id === id)?.covers.includes(target));
+  }
+  assert.equal(platformDefinitions.find((entry) => entry.id === "PLAT-01").covers.includes("BACK-PL-011"), false);
+  assert.equal(platformDefinitions.find((entry) => entry.id === "PLAT-07").covers.includes("BACK-PL-019"), false);
 });

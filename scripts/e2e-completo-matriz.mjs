@@ -26,7 +26,7 @@ function resultsFromProofGroups(groups, executions, widths = [1440, 390]) {
 }
 
 export function buildMatrix({ backend = [], guided = [], screens = [], executions = [] }) {
-  return [...backend, ...guided, ...screens.map((screen) => ({ ...screen, id: `SCREEN-${screen.id}`, area: screen.chapter ?? "Pantallas", actor: screen.actors?.join("; "), action: `Abrir ${screen.title}`, expected: "La pantalla está disponible para su actor en su ruta a 1440 y 390 px; las capturas permiten revisar su presentación.", kind: "screen" }))].map((item) => {
+  return [...backend, ...guided, ...screens.filter((screen) => !screen.reference).map((screen) => ({ ...screen, id: `SCREEN-${screen.id}`, area: screen.chapter ?? "Pantallas", actor: screen.actors?.join("; "), action: `Abrir ${screen.title}`, expected: "La pantalla está disponible para su actor en su ruta a 1440 y 390 px; las capturas permiten revisar su presentación.", kind: "screen" }))].map((item) => {
     const linked = executions.filter((execution) => execution.covers?.includes(item.id)).map((execution) => execution.id);
     const priorProofs = [...new Set([...(item.proofIds ?? []), ...(item.existingCaseIds ?? [])].map((id) => id.startsWith("BASE-") || executions.some((entry) => entry.id === id) ? id : `BASE-${id}`))];
     // Los pasos originales se necesitan juntos. Cada covers ya trazado acredita

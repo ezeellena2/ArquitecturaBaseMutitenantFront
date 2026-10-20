@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { plainTextBody } from "./test-e2e-real-mail.mjs";
+import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 
 const definition = (id, actor, action, route, expected, covers = []) => ({
   id: `BIZ-${id}`, area: "Administración y aislamiento", actor, action, route, expected, covers, critical: true,
@@ -44,6 +45,16 @@ export const businessDefinitions = [
   definition("33", "Visitante con correo probado", "Intentar alta con slug inválido, reservado y ocupado", "/registro/empresa", "Cada dirección rechazada informa el motivo en su campo y no crea organización.", ["BACK-OR-003"]),
   definition("34", "Dueño A", "Quitar al miembro parcial después de probar sus accesos", "/org/usuarios/:id", "DELETE versionado termina su membresía, la ficha posterior da404 y deja de aparecer en Usuarios.", ["BACK-OR-016"]),
   definition("35", "Dueño A", "Crear otra empresa con CUIT sintético ya usado", "/org/empresas", "El primer alta es201 y el segundo nombre con igual CUIT recibe409 en el campo, sin duplicar empresas.", ["BACK-EM-004"]),
+  definition("36", "Miembro sin permisos de A", "Abrir una empresa existente de su propia organización", "/org/empresas/:id", "La membresía organizacional no concede la ficha: UI sin permiso y APIs de empresa/miembros 403, sin acciones.", ["BACK-EM-015"]),
+  definition("37", "Miembro B con roles.read", "Leer un rol sin crear, editar, inactivar ni asignar", "/org/roles", "Listado y ficha legibles; acciones ausentes y las cuatro escrituras HTTP devuelven403 sin modificar el rol.", ["BACK-RO-010"]),
+  definition("38", "Miembro B con una pestaña ya autenticada", "Reusar el token observado después de quitarle roles.read por UI", "/api/roles/paged", "El mismo usuario y organización pasan de200 a403 sin reingreso ni recarga de esa pestaña; /api/me refleja cero permisos.", ["BACK-RO-012"]),
+  definition("39", "Único Administrador de la empresa B, también Dueño", "Intentar quitarse el rol Administrador y salir de su empresa", "/org/empresas/:id", "Ambas acciones UI responden409 Companies.Membership.LastCompanyAdmin; la membresía activa y el rol permanecen.", ["BACK-EM-011"]),
+  definition("40", "Administrador de empresa A", "Agregar otra vez a un miembro existente", "/api/companies/:id/members", "409 Companies.Membership.AlreadyExists sin duplicar ni cambiar la membresía."),
+  definition("41", "Otra cuenta con sesión pública", "Abrir una invitación válida ajena y continuar como su destinatario", "/invitacion", "WrongSession y aceptación403 no vinculan la cuenta ajena; Salir y seguir permite aceptar con la cuenta correcta.", ["BACK-OR-011"]),
+  definition("42", "Dueño A", "Asignar un rol organizacional dentro de una empresa", "/api/users/:id", "400 Roles.RoleAssignment.CompanyNotAllowed sin cambiar roles, empresas ni versión."),
+  definition("43", "Administrador de empresa A", "Agregar una persona deshabilitada en la organización", "/api/companies/:id/members", "409 Companies.Membership.MemberInactive sin cambiar la membresía; ya se probó el duplicado activo.", ["BACK-EM-009"]),
+  definition("44", "Dueño A", "Asignar un rol de empresa sin indicar empresa", "/api/users/:id", "400 Roles.RoleAssignment.CompanyRequired y ninguna asignación nueva."),
+  definition("45", "Dueño A", "Asignar un rol específico a otra empresa del mismo tenant", "/api/users/:id", "400 Roles.RoleAssignment.CompanyMismatch sin privilegios nuevos; las otras dos variantes de alcance también rechazadas.", ["BACK-RO-009"]),
 ];
 
 /** Un recurso que existe en otra organización debe producir ProblemDetails, nunca datos ni un 403 ambiguo. */
@@ -62,6 +73,40 @@ export function requireOrganizationPermissions(me, expected) {
   assert.ok(me.activeTenantId, "El token debe identificar su organización activa.");
   assert.deepEqual([...(me.effectivePermissions?.organization ?? [])].sort(), [...expected].sort());
   assert.deepEqual(me.effectivePermissions?.platform ?? [], [], "Business no hereda permisos de Plataforma.");
+}
+
+/** El control de último Administrador necesita una sola asignación efectiva, no sólo una fila cualquiera. */
+export function requireSoleCompanyAdministrator(members, memberId) {
+  const active = members.filter((member) => member.state === "Active" && member.membershipStatus === "Active"
+    && member.roles.some((role) => role.isSystemRole && role.name === "Administrador"));
+  assert.equal(active.length, 1, "La fixture debe tener exactamente un Administrador efectivo.");
+  assert.equal(active[0].memberId, memberId, "El actor debe ser ese último Administrador.");
+  return active[0];
+}
+
+/** Cada variante infringe sólo la regla de alcance que se quiere comprobar, con IDs reales del mismo tenant. */
+export function roleScopeNegativeAssignment(kind, original, { organizationRoleId, companyRoleId, companyId, otherCompanyId }) {
+  assert.ok(companyId && otherCompanyId && companyId !== otherCompanyId, "La fixture necesita dos empresas diferentes de la misma organización.");
+  const base = { roleIds: original.roles.map((role) => role.id), companies: original.companies.map((company) => ({ companyId: company.companyId, roleIds: company.roles.map((role) => role.id) })), version: original.version };
+  if (kind === "CompanyNotAllowed") return { ...base, companies: [...base.companies, { companyId, roleIds: [organizationRoleId] }] };
+  if (kind === "CompanyRequired") return { ...base, roleIds: [...base.roleIds, companyRoleId] };
+  assert.equal(kind, "CompanyMismatch", "La variante debe pertenecer al contrato cerrado de alcance.");
+  return { ...base, companies: [...base.companies, { companyId: otherCompanyId, roleIds: [companyRoleId] }] };
+}
+
+/** prompt=login es la puerta pública existente para ingresar otra cuenta sin revocar el token de la pestaña viva. */
+export async function forceBusinessLogin(h, page, email) {
+  await page.goto(new URL("/login/empresa?prompt=login", h.base).href);
+  await page.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(email);
+  const before = new Set(await h.env.files());
+  const sent = await sendWithCooldown(() => clickForResponse(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", "POST", null));
+  assert.equal(sent.status(), 202, "El ingreso forzado debe enviar el OTP real.");
+  await page.getByRole("heading", { name: "Revisá tu correo", exact: true }).waitFor();
+  await fillOtp(page, await h.env.code(email, before));
+  await clickForResponse(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", "POST", 200);
+  await page.waitForURL((url) => url.pathname === "/org");
+  await page.getByRole("navigation", { name: h.width === 390 ? "Secciones" : "Áreas de la organización", exact: true }).waitFor();
+  return read(h, page, "/api/me");
 }
 
 /** Un fallo de preparación bloquea sólo sus dependientes; no se convierte en aprobación ni corta los demás casos. */
@@ -85,7 +130,7 @@ export async function clickForResponse(page, button, route, method, status = 200
   void pending.catch(() => {});
   await button.click();
   const response = await pending;
-  assert.equal(response.status(), status, `La acción UI debe responder ${status}.`);
+  if (status !== null) assert.equal(response.status(), status, `La acción UI debe responder ${status}.`);
   return response;
 }
 
@@ -137,14 +182,15 @@ async function invite(h, page, email, { roleName, companyName } = {}) {
   return { ...issued, memberId: member.memberId };
 }
 
-async function chooseOrganizationRole(page, width, roleName) {
+async function chooseOrganizationRole(page, width, roleName, selected = true) {
   await page.getByRole("button", { name: /Roles de la organización/ }).click();
   if (width === 390) {
     const sheet = page.getByRole("dialog", { name: "Roles de la organización", exact: true });
-    await sheet.getByRole("checkbox", { name: roleName, exact: true }).check();
+    await sheet.getByRole("checkbox", { name: roleName, exact: true }).setChecked(selected);
     await sheet.getByRole("button", { name: "Listo", exact: true }).click();
   } else {
-    await page.getByRole("menuitemcheckbox", { name: roleName, exact: true }).click();
+    const option = page.getByRole("menuitemcheckbox", { name: roleName, exact: true });
+    if (await option.getAttribute("aria-checked") !== String(selected)) await option.click();
     await page.keyboard.press("Escape");
   }
 }
@@ -236,7 +282,7 @@ export async function runBusinessCases(h) {
   const page = await h.newPage();
   let capturePage = page;
   let currentEmail = null;
-  let a; let b; let roleA; let roleB; let companyA; let companyB; let memberB;
+  let a; let b; let roleA; let roleB; let companyA; let companyB; let siblingCompany; let memberB;
   let partial; let empty; let companyAdmin; let invitationB; let ownInvitation; let firstInvitationToken; let resentInvitationToken;
   let companyRole; let settingsRole; let membersBeforeDeactivation; let rolesBeforeSuspension;
   let incompleteBusinessIdentity = false;
@@ -331,6 +377,16 @@ export async function runBusinessCases(h) {
     await page.getByRole("heading", { name: "No tenés permiso para ver esta página", exact: true }).waitFor();
     return "El miembro sin permisos ve su Inicio y la ruta/API Usuarios rechazan el acceso.";
   });
+  await run("36", ["07", "01"], async () => {
+    await as(emptyEmail);
+    await requireProblem(await h.api(page, `/api/companies/${companyA.id}`), 403, "Http.Forbidden");
+    await requireProblem(await h.api(page, `/api/companies/${companyA.id}/members/paged`), 403, "Http.Forbidden");
+    await page.goto(new URL(`/org/empresas/${companyA.id}`, h.base).href);
+    await page.getByRole("heading", { name: "No tenés permiso para ver esta página", exact: true }).waitFor();
+    assert.equal(await page.getByRole("heading", { name: a.companyName, exact: true }).count(), 0);
+    for (const name of ["Editar empresa", "Agregar miembro", "Más acciones"]) assert.equal(await page.getByRole("button", { name, exact: true }).count(), 0);
+    return "La empresa existe en A, pero su miembro sin permisos recibió403 en ambas APIs y Sin permiso en la ficha, sin datos ni acciones.";
+  });
   await run("08", ["05"], async () => {
     const me = await as(adminEmail);
     const permissions = me.effectivePermissions.organization;
@@ -358,6 +414,17 @@ export async function runBusinessCases(h) {
     assert.ok(list.items.some((entry) => entry.memberId === partial.memberId));
     await page.getByText(partialName, { exact: true }).first().waitFor();
     return "Agregó al candidato activo desde la ficha por UI sin users.read ni roles organizacionales.";
+  });
+  await run("40", ["09"], async () => {
+    await as(adminEmail);
+    const before = await read(h, page, `/api/companies/${companyA.id}/members/paged?page=1&pageSize=100`);
+    assert.equal(before.items.filter((entry) => entry.memberId === partial.memberId).length, 1);
+    await requireProblem(await h.api(page, `/api/companies/${companyA.id}/members`, { method: "POST", headers: { "Idempotency-Key": randomUUID() }, data: { memberId: partial.memberId, roleIds: [] } }), 409, "Companies.Membership.AlreadyExists");
+    const after = await read(h, page, `/api/companies/${companyA.id}/members/paged?page=1&pageSize=100`);
+    assert.deepEqual(after, before);
+    await page.goto(new URL(`/org/empresas/${companyA.id}`, h.base).href);
+    await page.getByText(partialName, { exact: true }).first().waitFor();
+    return "El Administrador no duplicó una membresía ya activa:409 y mismo listado, roles y versiones.";
   });
   await run("10", ["02"], async () => {
     await as(a.email);
@@ -448,6 +515,28 @@ export async function runBusinessCases(h) {
     assert.equal(await page.getByRole("link", { name: "Crear rol", exact: true }).count(), 0);
     return "Perfiles cambió a B: sólo lee Roles y no hereda users.read de A.";
   });
+  await run("37", ["16", "14"], async () => {
+    requireOrganizationPermissions(await read(h, page, "/api/me"), ["roles.read"]);
+    const role = await read(h, page, `/api/roles/${roleB.id}`);
+    await page.goto(new URL("/org/roles", h.base).href);
+    await page.getByRole("heading", { name: "Roles y permisos", exact: true }).waitFor();
+    assert.equal(await page.getByRole("link", { name: "Crear rol", exact: true }).count(), 0);
+    await page.getByRole("button", { name: `Acciones para ${roleB.name}`, exact: true }).click();
+    await page.getByRole("menuitem", { name: "Ver permisos", exact: true }).waitFor();
+    for (const name of ["Editar", "Inactivar"]) assert.equal(await page.getByRole("menuitem", { name, exact: true }).count(), 0);
+    await page.keyboard.press("Escape");
+    await page.goto(new URL(`/org/roles/${roleB.id}`, h.base).href);
+    await page.getByRole("heading", { name: roleB.name, exact: true }).waitFor();
+    assert.equal(await page.getByRole("textbox", { name: "Nombre", exact: true }).count(), 0);
+    assert.equal(await page.getByRole("button", { name: "Guardar cambios", exact: true }).count(), 0);
+    const body = { name: role.name, description: role.description, scope: role.scope, companyId: role.companyId, permissions: role.permissions };
+    await requireProblem(await h.api(page, "/api/roles", { method: "POST", headers: { "Idempotency-Key": randomUUID() }, data: { ...body, name: `No crear ${tag}` } }), 403, "Http.Forbidden");
+    await requireProblem(await h.api(page, `/api/roles/${role.id}`, { method: "PUT", data: { ...body, description: "No editar", version: role.version } }), 403, "Http.Forbidden");
+    await requireProblem(await h.api(page, `/api/roles/${role.id}`, { method: "DELETE", data: { version: role.version } }), 403, "Http.Forbidden");
+    await requireProblem(await h.api(page, `/api/users/${invitationB.memberId}`, { method: "PUT", data: { roleIds: [], companies: [], version: 1 } }), 403, "Http.Forbidden");
+    assert.deepEqual(await read(h, page, `/api/roles/${role.id}`), role);
+    return "Con sólo roles.read leyó listado y ficha de Roles; la UI ocultó edición/inactivación y crear, editar, borrar y asignar respondieron403 sin cambiar el rol.";
+  });
   await run("17", ["16"], async () => {
     await switchOrganization(h, page, a.organization, a.me.activeTenantId);
     await page.reload();
@@ -531,7 +620,19 @@ export async function runBusinessCases(h) {
     await page.getByText("Deshabilitado", { exact: true }).first().waitFor();
     return "La membresía pasó a Deshabilitado y conservó el rol users.read guardado.";
   });
+  await run("43", ["23", "40"], async () => {
+    await as(adminEmail);
+    const before = await read(h, page, `/api/companies/${companyA.id}/members/paged?page=1&pageSize=100`);
+    assert.equal(before.items.find((entry) => entry.memberId === partial.memberId)?.state, "Inactive");
+    await requireProblem(await h.api(page, `/api/companies/${companyA.id}/members`, { method: "POST", headers: { "Idempotency-Key": randomUUID() }, data: { memberId: partial.memberId, roleIds: [] } }), 409, "Companies.Membership.MemberInactive");
+    assert.deepEqual(await read(h, page, `/api/companies/${companyA.id}/members/paged?page=1&pageSize=100`), before);
+    await page.goto(new URL(`/org/empresas/${companyA.id}`, h.base).href);
+    await page.getByText(partialName, { exact: true }).first().waitFor();
+    return "El Administrador recibió409 MemberInactive para la persona deshabilitada; no cambió la empresa ni duplicó miembros. El duplicado activo también se rechazó en40.";
+  });
   await run("24", ["23"], async () => {
+    // El negativo43 se hace como Administrador; la rehabilitación siempre vuelve a la Dueña, aun si43 falló.
+    await as(a.email);
     await changeMemberState(h, page, partial.memberId, true);
     const detail = await read(h, page, `/api/users/${partial.memberId}`);
     assert.equal(detail.state, "Active");
@@ -618,6 +719,57 @@ export async function runBusinessCases(h) {
     await page.getByRole("heading", { name: "No tenés permiso para ver esta página", exact: true }).waitFor();
     return "Ni eventos ni selector de actores se obtuvieron sin audit.read; URL mostró permiso denegado.";
   });
+  await run("38", ["17", "31", "37"], async () => {
+    await as(partialEmail);
+    await switchOrganization(h, page, b.organization, b.me.activeTenantId);
+    const live = await h.newPage();
+    try {
+      await live.goto(new URL("/org/roles", h.base).href);
+      await live.getByRole("heading", { name: "Roles y permisos", exact: true }).waitFor();
+      const original = await read(h, live, "/api/me");
+      requireOrganizationPermissions(original, ["roles.read"]);
+      assert.equal(original.activeTenantId, b.me.activeTenantId);
+      assert.equal((await h.api(live, "/api/roles/paged")).status(), 200);
+      // No se cierra la sesión del miembro: Salir revocaría su autorización e invalidaría esta prueba de caché.
+      const owner = await forceBusinessLogin(h, page, b.email); currentEmail = b.email;
+      assert.equal(owner.id, b.me.id);
+      assert.equal((await read(h, live, "/api/me")).id, original.id, "La pestaña conserva el token real del miembro, pese a la otra cookie del navegador.");
+      assert.equal((await h.api(live, "/api/roles/paged")).status(), 200, "El token viejo debe seguir válido antes de revocar el permiso.");
+      await page.goto(new URL(`/org/usuarios/${invitationB.memberId}`, h.base).href);
+      await chooseOrganizationRole(page, h.width, roleB.name, false);
+      await clickForResponse(page, page.getByRole("button", { name: "Guardar cambios", exact: true }), `/api/users/${invitationB.memberId}`, "PUT");
+      assert.deepEqual((await read(h, page, `/api/users/${invitationB.memberId}`)).roles, []);
+      await requireProblem(await h.api(live, "/api/roles/paged"), 403, "Http.Forbidden");
+      const changed = await read(h, live, "/api/me");
+      assert.equal(changed.id, original.id); assert.equal(changed.activeTenantId, original.activeTenantId);
+      requireOrganizationPermissions(changed, []);
+      return "La pestaña viva del miembro conservó identidad/token: Roles pasó200→403 inmediatamente después del guardado UI de la Dueña, sin recargar ni reingresar.";
+    } finally { await live.close(); }
+  });
+  await run("39", ["13"], async () => {
+    await as(b.email);
+    const before = await read(h, page, `/api/companies/${companyB.id}/members/paged?page=1&pageSize=100`);
+    const sole = requireSoleCompanyAdministrator(before.items, memberB.memberId);
+    await page.goto(new URL(`/org/empresas/${companyB.id}`, h.base).href);
+    await page.getByRole("button", { name: `Acciones para ${sole.displayName}`, exact: true }).click();
+    await page.getByRole("menuitem", { name: "Cambiar roles", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: `Roles de ${sole.displayName}`, exact: true });
+    await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click();
+    await page.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click();
+    await page.keyboard.press("Escape");
+    const roles = await clickForResponse(page, dialog.getByRole("button", { name: "Guardar cambios", exact: true }), `/api/companies/${companyB.id}/members/${sole.memberId}/roles`, "PUT", 409);
+    const problem = await requireProblem(roles, 409, "Companies.Membership.LastCompanyAdmin");
+    await dialog.getByText(problem.detail, { exact: true }).waitFor();
+    await dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
+    await page.getByRole("button", { name: `Acciones para ${sole.displayName}`, exact: true }).click();
+    await page.getByRole("menuitem", { name: "Quitar de la empresa", exact: true }).click();
+    const status = await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Quitar", exact: true }), `/api/companies/${companyB.id}/members/${sole.memberId}/status`, "PUT", 409);
+    const rejected = await requireProblem(status, 409, "Companies.Membership.LastCompanyAdmin");
+    await page.getByText(rejected.detail, { exact: true }).first().waitFor();
+    const after = await read(h, page, `/api/companies/${companyB.id}/members/paged?page=1&pageSize=100`);
+    assert.deepEqual(requireSoleCompanyAdministrator(after.items, sole.memberId), sole);
+    return "El único Administrador efectivo no pudo quitar su rol ni inactivar su propia membresía: ambos guardados UI dieron409 y conservaron la misma asignación y versión.";
+  });
   await run("34", ["24", "31"], async () => {
     await as(a.email);
     await page.goto(new URL(`/org/usuarios/${partial.memberId}`, h.base).href);
@@ -663,6 +815,7 @@ export async function runBusinessCases(h) {
     await dialog.getByRole("textbox", { name: "CUIT", exact: true }).fill(syntheticTaxId);
     const created = await clickForResponse(page, dialog.getByRole("button", { name: "Crear empresa", exact: true }), "/api/companies", "POST", 201);
     const companyId = await created.json(); assert.match(companyId, /^[0-9a-f-]{36}$/i);
+    siblingCompany = { id: companyId, name: firstName };
     await dialog.waitFor({ state: "hidden" });
     await page.getByRole("button", { name: "Crear empresa", exact: true }).click();
     dialog = page.getByRole("dialog", { name: "Crear empresa", exact: true });
@@ -680,6 +833,83 @@ export async function runBusinessCases(h) {
     return "Un CUIT sintético válido creó la primera empresa; otro nombre con igual CUIT dio409 en el campo y no se guardó.";
   });
   if (outcomes.get("BIZ-35")?.ok) await page.getByRole("dialog").getByRole("button", { name: "Cancelar", exact: true }).click();
+  for (const [id, kind, dependencies] of [
+    ["42", "CompanyNotAllowed", ["02", "26", "29", "35"]],
+    ["44", "CompanyRequired", ["02", "26", "29", "35"]],
+    ["45", "CompanyMismatch", ["42", "44"]],
+  ]) await run(id, dependencies, async () => {
+    await as(a.email);
+    // Las dos empresas existen en A. Un ID de B probaría404 por tenant, no la regla de alcance400.
+    assert.equal((await read(h, page, `/api/companies/${siblingCompany.id}`)).id, siblingCompany.id);
+    const original = await read(h, page, `/api/users/${empty.memberId}`);
+    const request = roleScopeNegativeAssignment(kind, original, { organizationRoleId: roleA.id, companyRoleId: companyRole.id,
+      companyId: companyA.id, otherCompanyId: siblingCompany.id });
+    await requireProblem(await h.api(page, `/api/users/${empty.memberId}`, { method: "PUT", data: request }), 400, `Roles.RoleAssignment.${kind}`);
+    assert.deepEqual(await read(h, page, `/api/users/${empty.memberId}`), original, "El rechazo de alcance no cambia ninguna asignación ni la versión.");
+    await page.goto(new URL(`/org/usuarios/${empty.memberId}`, h.base).href);
+    await page.getByRole("region", { name: "Acceso a la organización", exact: true }).waitFor();
+    return `${kind}:400 real con los roles y las dos empresas de A creados por UI; la ficha conserva exactamente roles, empresas y versión originales.`;
+  });
+  await run("41", ["01"], async () => {
+    await as(a.email);
+    const recipientEmail = `e2e-integral-sesion-ajena-${tag}@example.test`;
+    const mailBefore = new Set(await h.env.files());
+    const issued = await invite(h, page, recipientEmail);
+    const token = await invitationTokenFromMail(h, recipientEmail, mailBefore);
+    const original = await read(h, page, `/api/users/${issued.memberId}`);
+    assert.equal(original.state, "Invited"); assert.equal(original.userId, null);
+    const ownerMethods = await read(h, page, "/api/me/login-methods");
+    const flow = await h.newPage();
+    let recipient;
+    try {
+      const preview = flow.waitForResponse((response) => pathOf(response) === "/api/invitations/preview" && response.request().method() === "POST");
+      void preview.catch(() => {});
+      await flow.goto(new URL(`/invitacion#${token}`, h.base).href);
+      assert.equal((await (await preview).json()).state, "WrongSession");
+      assert.ok(new URL(flow.url()).hash === "", "El secreto de la invitación no queda en la URL.");
+      await flow.getByRole("heading", { name: `Te sumás a ${a.organization}`, exact: true }).waitFor();
+      const switchAccount = flow.getByRole("button", { name: `Salir y seguir como ${recipientEmail}`, exact: true });
+      await switchAccount.waitFor();
+      assert.equal(await flow.getByRole("button", { name: "Aceptar invitación", exact: true }).count(), 0);
+      // La página de invitación puede ser anónima para OIDC aunque su cookie dé WrongSession. La negativa HTTP usa
+      // la página empresarial, donde el Bearer ya fue observado, y un antiforgery leído bajo esa misma identidad.
+      const csrf = await read(h, page, "/api/auth/external/google/antiforgery");
+      assert.ok(csrf.requestToken);
+      await requireProblem(await h.api(page, "/api/invitations/accept", { method: "POST", headers: { "RequestVerificationToken": csrf.requestToken, "Idempotency-Key": randomUUID() }, data: { token, acceptedTerms: true } }), 403, "Invitations.Invitation.WrongAccount");
+      assert.deepEqual(await read(h, page, `/api/users/${issued.memberId}`), original);
+      assert.deepEqual(await read(h, page, "/api/me/login-methods"), ownerMethods, "La sesión ajena no adquiere el método del destinatario.");
+      const anonymousPreview = flow.waitForResponse(async (response) => pathOf(response) === "/api/invitations/preview" && response.status() === 200 && (await response.json()).state === "NoAccount");
+      void anonymousPreview.catch(() => {});
+      await switchAccount.click(); currentEmail = null;
+      await anonymousPreview;
+      await clickForResponse(flow, flow.getByRole("button", { name: "Aceptar invitación", exact: true }), "/api/invitations/accept", "POST", 200);
+      await flow.getByRole("heading", { name: `Te sumaste a ${a.organization}`, exact: true }).waitFor();
+      await flow.getByRole("button", { name: "Más tarde", exact: true }).click();
+      await flow.waitForURL((url) => url.pathname === "/org");
+      await flow.getByRole("heading", { name: "Tus empresas", exact: true }).waitFor();
+      recipient = await read(h, flow, "/api/me");
+      assert.notEqual(recipient.id, a.me.id); assert.equal(recipient.activeTenantId, a.me.activeTenantId);
+      requireOrganizationPermissions(recipient, []);
+    } finally {
+      // El registro33 y las otras suites nunca heredan una sesión intermedia del flujo, aunque41 haya fallado.
+      try {
+        await flow.goto(new URL("/org", h.base).href);
+        const frame = flow.getByRole("navigation", { name: h.width === 390 ? "Secciones" : "Áreas de la organización", exact: true });
+        const loginField = flow.getByRole("textbox", { name: "Correo electrónico", exact: true });
+        await frame.or(loginField).filter({ visible: true }).first().waitFor();
+        if (await frame.isVisible()) await h.signOut(flow);
+      } finally {
+        try {
+          const owner = await forceBusinessLogin(h, page, a.email); currentEmail = a.email;
+          assert.equal(owner.id, a.me.id);
+        } finally { await flow.close(); }
+      }
+    }
+    const accepted = await read(h, page, `/api/users/${issued.memberId}`);
+    assert.equal(accepted.state, "Active"); assert.equal(accepted.userId, recipient.id);
+    assert.deepEqual(await read(h, page, "/api/me/login-methods"), ownerMethods);
+    return "La cuenta ajena recibió WrongSession y403 sin activar ni vincularse; Salir y seguir permitió crear y aceptar con el destinatario correcto. La Dueña recuperó su sesión por UI.";
+  });
   await run("33", ["01"], async () => {
     if (currentEmail) await endSession();
     const email = `e2e-integral-slug-${tag}@example.test`;
