@@ -1,5 +1,12 @@
 import path from "node:path";
 
+export function safeEvidenceText(value) {
+  return String(value ?? "").replace(/(?:https?|wss?):\/\/[^\s"'<>]+/g, (raw) => {
+    try { const url = new URL(raw); return `${url.origin}${url.pathname}`; }
+    catch { return "[URL omitida]"; }
+  }).replace(/\b\d{6}\b/g, "[código]").slice(0, 1600);
+}
+
 export function resultsFromProofs(ids, executions, widths = [1440, 390]) {
   return widths.map((width) => {
     const proofs = ids.map((id) => executions.find((item) => item.id === id)?.results?.find((result) => result.width === width));
@@ -13,7 +20,7 @@ export function resultsFromProofs(ids, executions, widths = [1440, 390]) {
 }
 
 export function buildMatrix({ backend = [], guided = [], screens = [], executions = [] }) {
-  return [...backend, ...guided, ...screens.map((screen) => ({ ...screen, id: `SCREEN-${screen.id}`, area: screen.chapter ?? "Pantallas", actor: screen.actors?.join("; "), action: `Abrir ${screen.title}`, expected: "La pantalla está disponible para su actor en su ruta, con la disposición de 1440 y 390 px.", kind: "screen" }))].map((item) => {
+  return [...backend, ...guided, ...screens.map((screen) => ({ ...screen, id: `SCREEN-${screen.id}`, area: screen.chapter ?? "Pantallas", actor: screen.actors?.join("; "), action: `Abrir ${screen.title}`, expected: "La pantalla está disponible para su actor en su ruta a 1440 y 390 px; las capturas permiten revisar su presentación.", kind: "screen" }))].map((item) => {
     const linked = executions.filter((execution) => execution.covers?.includes(item.id)).map((execution) => execution.id);
     const priorProofs = [...(item.proofIds ?? []), ...(item.existingCaseIds ?? [])].map((id) => executions.some((entry) => entry.id === id) ? id : `BASE-${id}`);
     const proofIds = [...new Set([...linked, ...priorProofs])];
@@ -33,7 +40,7 @@ export function importedJourneySteps(journey, journeyDirectory, outputDirectory)
     results: [1440, 390].map((width) => {
       const result = step.results?.find((entry) => entry.width === width);
       return { ...result, width, status: ["passed", "failed"].includes(result?.status) ? result.status : "blocked",
-        actual: result?.actual ?? "El recorrido no llegó a ejecutar este paso.",
+        actual: safeEvidenceText(result?.actual ?? "El recorrido no llegó a ejecutar este paso."),
         image: result?.image ? path.relative(outputDirectory, path.join(journeyDirectory, result.image)).replaceAll("\\", "/") : undefined,
         severity: result?.status === "failed" ? "high" : undefined,
         reproduce: ["Ejecutar node scripts/recorrido-usuario.mjs --no-build en un entorno aislado.", `Seguir el recorrido hasta ${step.id}: ${step.title}.`], probableArea: "Determinar con la respuesta HTTP y la captura del paso" };

@@ -1,0 +1,387 @@
+import assert from "node:assert/strict";
+import { fillOtp } from "./test-e2e-real-ui.mjs";
+import { confirmRecentAuthenticationWhenAsked, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
+import { requireSyntheticEmail } from "./e2e-completo-soporte.mjs";
+
+// Sólo se enlazan acciones ejercidas. Leer Módulos, Dominio o Página pública no acredita sus escrituras.
+const coverage = {
+  1: ["BACK-PL-003"],
+  2: ["BACK-PL-003"],
+  3: ["BACK-PL-003"],
+  4: ["BACK-PL-003"],
+  5: ["BACK-PL-003"],
+  6: ["BACK-PL-003"],
+  7: ["BACK-PL-003"],
+  8: ["BACK-ID-001", "GUIA-registrarse-02", "GUIA-registrarse-03", "GUIA-registrarse-04", "GUIA-registrarse-05"],
+  9: ["BACK-OR-001"],
+  10: ["BACK-PL-001"],
+  12: ["SCREEN-organizaciones", "SCREEN-organizacion"],
+  13: ["SCREEN-organizacion"],
+  14: ["SCREEN-organizacion"],
+  15: ["SCREEN-organizacion"],
+  16: ["SCREEN-organizacion"],
+  17: ["SCREEN-organizacion"],
+  18: ["SCREEN-cuentas", "SCREEN-cuenta-plat", "GUIA-suspender-y-reactivar-01"],
+  19: ["SCREEN-cuenta-plat", "GUIA-suspender-y-reactivar-02"],
+  20: ["SCREEN-cuenta-plat", "GUIA-suspender-y-reactivar-02"],
+  21: ["SCREEN-cuenta-plat", "GUIA-suspender-y-reactivar-02"],
+  22: ["BACK-PL-016", "GUIA-suspender-y-reactivar-02", "GUIA-suspender-y-reactivar-04"],
+  23: ["BACK-ID-021", "BACK-PL-016"],
+  24: ["BACK-PL-016", "GUIA-suspender-y-reactivar-04"],
+  26: ["BACK-ID-022", "BACK-ID-023"],
+  30: ["SCREEN-recuperaciones"],
+  31: ["SCREEN-auditoria-plat"],
+  32: ["SCREEN-legales"],
+  33: ["SCREEN-config-plat"],
+  34: ["BACK-PL-027", "SCREEN-config-plat"],
+  35: ["BACK-PL-017"],
+};
+
+const definition = (number, actor, action, route, expected, critical = false) => ({
+  id: `PLAT-${String(number).padStart(2, "0")}`, area: "Plataforma", actor, action, route, expected,
+  source: "back:docs/features/plataforma.md; front:docs/design/guia/recorrido.py#5", critical, covers: coverage[number] ?? [],
+});
+const reduced = "Operador con pocos permisos";
+const operator = "Operador con todos los permisos";
+const deniedPages = [
+  [2, "Cuentas", "/plataforma/cuentas", "/api/platform/accounts/paged?page=1&pageSize=10"],
+  [3, "Configuración", "/plataforma/configuracion", "/api/platform/settings"],
+  [4, "Auditoría", "/plataforma/auditoria", "/api/platform/audit?period=all&limit=10"],
+  [5, "Recuperaciones", "/plataforma/recuperaciones", "/api/platform/recoveries/paged?page=1&pageSize=10"],
+  [6, "Documentos legales", "/plataforma/legales", "/api/platform/legal-documents"],
+];
+
+export const platformDefinitions = [
+  definition(1, reduced, "Ingresar y consultar Organizaciones sin controles de gestión", "/plataforma/organizaciones", "Sólo tiene platform.tenants.read, ve Organizaciones y no puede crear ni administrar.", true),
+  ...deniedPages.map(([number, title, route]) => definition(number, reduced, `Abrir ${title} por su URL`, route, "La pantalla dice «No tenés permiso para ver esta página».", true)),
+  definition(7, reduced, "Consultar por API áreas sin permiso", "/api/platform/*", "Cuentas, configuración, auditoría, recuperaciones y legales responden 403 con code y traceId.", true),
+  definition(8, "Persona nueva", "Registrarse por UI para probar estados de cuenta", "/registro", "Cuenta sintética real creada por UI y acceso Personal cerrado antes de continuar."),
+  definition(9, "Dueño nuevo", "Crear organización por UI para probar su suspensión", "/registro/empresa", "Organización sintética creada por UI, con empresa y Dueño."),
+  definition(10, operator, "Ingresar con correo y autenticador", "/plataforma", "Entra con acceso platform y permisos de administración.", true),
+  definition(11, operator, "Abrir Inicio de Plataforma", "/plataforma", "El marco de Plataforma y su página inicial se muestran sin acceso empresarial."),
+  definition(12, operator, "Buscar y abrir la organización creada", "/plataforma/organizaciones", "La lista encuentra la organización y abre su ficha con el nombre correcto."),
+  ...[[13, "Historial"], [14, "Dueños"], [15, "Módulos"], [16, "Dominio verificado"], [17, "Página pública"]].map(([number, title]) => definition(number, operator, `Abrir organización › ${title}`, "/plataforma/organizaciones/:id", `La pestaña ${title} muestra datos o el vacío correspondiente de esa organización.`)),
+  definition(18, operator, "Buscar y abrir la cuenta creada", "/plataforma/cuentas", "La lista encuentra el correo sintético y abre su ficha."),
+  ...[[19, "Métodos de ingreso"], [20, "Organizaciones"], [21, "Historial"]].map(([number, title]) => definition(number, operator, `Abrir cuenta › ${title}`, "/plataforma/cuentas/:id", `La pestaña ${title} corresponde a la persona creada.`)),
+  definition(22, operator, "Suspender la cuenta con motivo", "/plataforma/cuentas/:id", "Suspender responde 2xx, cierra el diálogo y la ficha indica Suspendida.", true),
+  definition(23, "Cuenta suspendida", "Intentar ingresar con su código real", "/login", "La verificación devuelve 403 Identity.Account.Suspended, con aviso visible y sin acceso Personal.", true),
+  definition(24, operator, "Reactivar la cuenta con motivo", "/plataforma/cuentas/:id", "La ficha vuelve a indicar Activa.", true),
+  definition(25, operator, "Dar de baja una cuenta sin organizaciones", "/plataforma/cuentas/:id", "La ficha indica Baja pedida y conserva la fecha de eliminación.", true),
+  definition(26, "Cuenta en baja", "Ingresar, ver la baja y cancelarla", "/login", "El código real lleva a «Tu cuenta tiene la baja pedida»; cancelar devuelve Personal.", true),
+  definition(27, operator, "Suspender la organización con motivo", "/plataforma/organizaciones/:id", "La ficha indica Suspendida y sus miembros pierden acceso empresarial.", true),
+  definition(28, "Dueño de organización suspendida", "Intentar entrar a la organización", "/login/empresa", "La organización suspendida no permite entrar a /org y muestra el motivo de indisponibilidad.", true),
+  definition(29, operator, "Reactivar la organización con motivo", "/plataforma/organizaciones/:id", "La ficha indica Activa.", true),
+  definition(30, operator, "Consultar Recuperaciones", "/plataforma/recuperaciones", "La lista de recuperaciones carga desde la API real."),
+  definition(31, operator, "Consultar Auditoría", "/plataforma/auditoria", "Auditoría carga eventos reales del entorno, incluidos los cambios de cuenta."),
+  definition(32, operator, "Consultar Documentos legales", "/plataforma/legales", "Se muestran las versiones y la opción Publicar versión nueva."),
+  definition(33, operator, "Validar un límite de altas fuera de rango", "/plataforma/configuracion", "Cero organizaciones propias muestra «Usá un número de 1 a 50.» sin guardar."),
+  definition(34, operator, "Guardar configuración desde dos pestañas con versión vieja", "/plataforma/configuracion", "Una escritura gana; la otra responde 409 General.ConcurrencyConflict y ofrece Ver lo nuevo. Se restaura el valor inicial.", true),
+  definition(35, operator, "Cerrar las sesiones de la persona", "/plataforma/cuentas/:id", "La acción real cierra la sesión Personal: F5 ofrece volver a ingresar.", true),
+  definition(36, operator, "Salir de Plataforma", "/plataforma", "La salida cierra el acceso Plataforma y presenta la portada pública."),
+];
+
+export async function assertPlatformProblem(response, status, code) {
+  assert.equal(response.status(), status, `Se esperaba HTTP ${status}.`);
+  const problem = await response.json();
+  assert.equal(problem.code, code, "El rechazo debe tener el código de negocio esperado.");
+  assert.ok(typeof problem.traceId === "string" && problem.traceId.length > 0, "ProblemDetails debe tener traceId.");
+  return problem;
+}
+
+export function createPlatformRecorder(h) {
+  const outcomes = new Map();
+  return async (id, page, action, dependencies = []) => {
+    const currentPage = typeof page === "function" ? page : () => page;
+    const failed = dependencies.find((dependency) => outcomes.get(dependency)?.ok !== true);
+    if (failed) {
+      await h.block(id, `No se completó la dependencia ${failed}.`, currentPage());
+      const blocked = { ok: false };
+      outcomes.set(id, blocked);
+      return blocked;
+    }
+    const outcome = await h.record(id, currentPage, action);
+    outcomes.set(id, outcome);
+    return outcome;
+  };
+}
+
+const idOf = (number) => `PLAT-${String(number).padStart(2, "0")}`;
+const responseAt = (page, route, method) => page.waitForResponse((response) => new URL(response.url()).pathname === route && response.request().method() === method && response.status() !== 403);
+
+async function openAction(page, label) {
+  const button = page.getByRole("button", { name: label, exact: true });
+  if (await button.isVisible()) await button.click();
+  else {
+    const actions = page.getByRole("button", { name: /^Acciones de / }).filter({ visible: true }).first();
+    await actions.focus();
+    await actions.press("ArrowDown");
+    await page.getByRole("menuitem", { name: label, exact: true }).click();
+  }
+}
+
+async function changeWithReason(page, label, route, reason) {
+  await openAction(page, label);
+  const dialog = page.getByRole("dialog").filter({ has: page.getByRole("textbox", { name: /^Motivo/ }) });
+  await dialog.getByRole("textbox", { name: /^Motivo/ }).fill(reason);
+  const answer = responseAt(page, route, "POST");
+  await dialog.getByRole("button", { name: label === "Cerrar sus sesiones" ? "Cerrar sesiones" : label, exact: true }).click();
+  // La acción siguiente también dispara el handler del autenticador si la prueba reciente venció.
+  await dialog.waitFor({ state: "hidden" });
+  assert.ok((await answer).ok(), "La acción de Plataforma debe responder 2xx.");
+}
+
+async function proveLogin(h, page, email, access = "consumer") {
+  requireSyntheticEmail(email);
+  await page.goto(new URL(access === "business" ? "/login/empresa" : "/login", h.base).href);
+  await page.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(email);
+  const before = new Set(await h.env.files());
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const sent = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/login-code" && response.request().method() === "POST", { timeout: 90_000 });
+    // Si el envío anterior respondió 429, el botón permanece deshabilitado durante la espera que indicó la API.
+    // El segundo clic espera a que la propia UI vuelva a habilitarlo, sin forzar ni eludir ese límite real.
+    await page.getByRole("button", { name: "Enviar código", exact: true }).click({ timeout: 90_000 });
+    const response = await sent;
+    if (response.status() !== 429 || attempt === 1) { assert.ok(response.ok(), "El pedido de código debe responder 2xx."); break; }
+    const problem = await response.json();
+    assert.equal(problem.code, "Auth.LoginCode.ResendTooSoon", "Sólo se reintenta la espera real de ese destino.");
+  }
+  await page.getByRole("heading", { name: "Revisá tu correo", exact: true }).waitFor();
+  await fillOtp(page, await h.env.code(email, before));
+  const verified = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/login-code/verify" && response.request().method() === "POST");
+  await page.getByRole("button", { name: "Verificar", exact: true }).click();
+  return verified;
+}
+
+async function settingsFields(page, value) {
+  await page.getByRole("textbox", { name: "Organizaciones propias por persona", exact: true }).fill(String(value));
+  for (const [label, email] of [["Correo de ventas", "e2e-sales@example.test"], ["Correo de soporte", "e2e-support@example.test"]]) {
+    const input = page.getByRole("textbox", { name: label, exact: true });
+    if (!(await input.inputValue())) await input.fill(email);
+  }
+}
+
+async function saveSettings(page, expectedStatus, reason) {
+  await page.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "¿Guardar la configuración?", exact: true });
+  await dialog.getByRole("textbox", { name: /^Motivo/ }).fill(reason);
+  const answer = responseAt(page, "/api/platform/settings", "PUT");
+  await dialog.getByRole("button", { name: "Guardar", exact: true }).click();
+  await dialog.waitFor({ state: "hidden" });
+  const response = await answer;
+  assert.equal(response.status(), expectedStatus, "Estado del guardado de configuración.");
+  if (expectedStatus === 409) await assertPlatformProblem(response, 409, "General.ConcurrencyConflict");
+}
+
+export async function runPlatformCases(h) {
+  const step = createPlatformRecorder(h);
+  const pages = [];
+  const page = await h.newPage(); pages.push(page);
+  const personPage = await h.newPage(); pages.push(personPage);
+  const businessPage = await h.newPage(); pages.push(businessPage);
+  const fullEmail = h.width === 1440 ? "e2e-e9a-operator@example.test" : "e2e-e9b-operator@example.test";
+  const reducedEmail = h.width === 1440 ? "e2e-reduced@example.test" : "e2e-a2-operator@example.test";
+  let person; let business; let fullSignedIn = false; let reducedSignedIn = false;
+  const url = (route) => new URL(route, h.base).href;
+  const accountRoute = () => `/plataforma/cuentas/${person.me.id}`;
+  const organizationRoute = () => `/plataforma/organizaciones/${business.me.activeTenantId}`;
+  const record = (number, target, action, dependencies = []) => step(idOf(number), target, action, dependencies.map(idOf));
+  try {
+    await record(1, page, async () => {
+      const me = await h.login(page, reducedEmail, "platform"); reducedSignedIn = true;
+      assert.equal(me.access, "platform");
+      assert.deepEqual(me.effectivePermissions.platform, ["platform.tenants.read"]);
+      await page.goto(url("/plataforma/organizaciones"));
+      await page.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+      assert.equal(await page.getByRole("button", { name: "Crear organización", exact: true }).count(), 0);
+      assert.equal(await page.getByRole("link", { name: "Cuentas", exact: true }).filter({ visible: true }).count(), 0);
+      return "Operador reducido ingresó con autenticador; sólo consulta organizaciones y no tiene crear ni Cuentas en el menú.";
+    });
+    for (const [number, title, route] of deniedPages) await record(number, page, async () => {
+      await page.goto(url(route));
+      await page.getByRole("heading", { name: "No tenés permiso para ver esta página", exact: true }).waitFor();
+      return `${title} por URL directa muestra el rechazo de permiso.`;
+    }, [1]);
+    await record(7, page, async () => {
+      for (const [, , , route] of deniedPages) await assertPlatformProblem(await h.api(page, route), 403, "Http.Forbidden");
+      return "Las cinco lecturas de API sin permiso devolvieron 403 Http.Forbidden y traceId.";
+    }, [1]);
+    if (reducedSignedIn) { await h.signOut(page).catch(() => {}); reducedSignedIn = false; }
+
+    await record(8, personPage, async () => {
+      person = await h.registerPerson(personPage);
+      assert.equal(person.me.access, "consumer");
+      await h.signOut(personPage);
+      return "Persona nueva creada por registro real; se cerró su acceso Personal.";
+    });
+    await record(9, businessPage, async () => {
+      business = await h.registerBusiness(businessPage);
+      assert.ok(business.me.activeTenantId);
+      await h.signOut(businessPage);
+      return "Organización nueva con su Dueño y primera empresa creada desde la UI.";
+    });
+    await record(10, page, async () => {
+      const me = await h.login(page, fullEmail, "platform"); fullSignedIn = true;
+      assert.equal(me.access, "platform");
+      for (const permission of ["platform.accounts.manage", "platform.tenants.manage", "platform.settings.manage"]) assert.ok(me.effectivePermissions.platform.includes(permission));
+      return "Operador completo ingresó por correo y autenticador, con acceso platform y permisos de gestión.";
+    });
+    await record(11, page, async () => {
+      await page.goto(url("/plataforma"));
+      await page.getByRole("main").waitFor();
+      const me = await h.api(page, "/api/me"); assert.equal(me.status(), 200); assert.equal((await me.json()).access, "platform");
+      return "Inicio real de Plataforma y su marco cargaron con la sesión operadora.";
+    }, [10]);
+    await record(12, page, async () => {
+      await page.goto(url("/plataforma/organizaciones"));
+      await page.getByRole("searchbox").fill(business.organization);
+      await page.getByRole("link", { name: business.organization, exact: true }).first().click();
+      await page.getByRole("heading", { name: business.organization, exact: true }).waitFor();
+      assert.equal(new URL(page.url()).pathname, organizationRoute());
+      return "La lista filtró la organización creada y abrió su ficha real.";
+    }, [9, 10]);
+    for (const [number, title] of [[13, "Historial"], [14, "Dueños"], [15, "Módulos"], [16, "Dominio verificado"], [17, "Página pública"]]) await record(number, page, async () => {
+      await page.goto(url(organizationRoute()));
+      await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click();
+      const panel = page.getByRole("tabpanel");
+      await panel.waitFor();
+      await panel.getByRole("status").waitFor({ state: "hidden" });
+      if (title === "Dominio verificado") await panel.getByText("Sin dominio de correo", { exact: true }).waitFor();
+      else if (title === "Dueños") await panel.getByText(business.email, { exact: false }).first().waitFor();
+      else if (title === "Página pública") await panel.getByText("Borrador", { exact: true }).first().waitFor();
+      else assert.ok((await panel.innerText()).trim().length > 0, "La pestaña debe mostrar datos o un vacío explícito.");
+      assert.equal(await panel.getByRole("alert").count(), 0, "La pestaña no debe mostrar un fallo de carga.");
+      return `${title} de la organización creada cargó desde el sistema real.`;
+    }, [12]);
+    await record(18, page, async () => {
+      await page.goto(url("/plataforma/cuentas"));
+      await page.getByRole("searchbox", { name: "Buscar por nombre, correo o teléfono", exact: true }).fill(person.email);
+      await page.getByRole("link", { name: person.email, exact: true }).first().click();
+      await page.getByRole("heading", { name: person.email, exact: true }).waitFor();
+      assert.equal(new URL(page.url()).pathname, accountRoute());
+      return "Cuentas encontró a la persona nueva y abrió su ficha.";
+    }, [8, 10]);
+    for (const [number, title] of [[19, "Métodos de ingreso"], [20, "Organizaciones"], [21, "Historial"]]) await record(number, page, async () => {
+      await page.goto(url(accountRoute()));
+      await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click();
+      const panel = page.getByRole("tabpanel"); await panel.waitFor();
+      assert.ok((await panel.innerText()).trim().length > 0);
+      return `${title} de la persona muestra datos o vacío explícito.`;
+    }, [18]);
+    await record(22, page, async () => {
+      await page.goto(url(accountRoute()));
+      await changeWithReason(page, "Suspender", `/api/platform/accounts/${person.me.id}/suspend`, "Prueba integral: suspensión de cuenta sintética.");
+      await page.getByText("Suspendida", { exact: true }).first().waitFor();
+      return "Se suspendió la cuenta por la UI con motivo; la ficha muestra Suspendida.";
+    }, [18]);
+    await record(23, personPage, async () => {
+      await assertPlatformProblem(await proveLogin(h, personPage, person.email), 403, "Identity.Account.Suspended");
+      await personPage.getByText("Tu cuenta está suspendida.", { exact: false }).first().waitFor();
+      assert.equal(await personPage.getByRole("button", { name: /, Personal$/ }).count(), 0);
+      return "El código real de la cuenta suspendida fue rechazado con 403 Identity.Account.Suspended y aviso visible.";
+    }, [22]);
+    await record(24, page, async () => {
+      await page.goto(url(accountRoute()));
+      await changeWithReason(page, "Reactivar", `/api/platform/accounts/${person.me.id}/reactivate`, "Prueba integral: reactivar cuenta sintética.");
+      await page.getByText("Activa", { exact: true }).first().waitFor();
+      return "La cuenta volvió a Activa desde Plataforma.";
+    }, [22]);
+    await record(25, page, async () => {
+      await page.goto(url(accountRoute()));
+      await changeWithReason(page, "Dar de baja", `/api/platform/accounts/${person.me.id}/deletion`, "Prueba integral: baja cancelable de cuenta sintética.");
+      await page.getByText("Baja pedida", { exact: true }).first().waitFor();
+      return "Plataforma pidió la baja; la cuenta sin organizaciones muestra Baja pedida.";
+    }, [24]);
+    await record(26, personPage, async () => {
+      // El rechazo anterior consumió un código del mismo destino; se respeta su espera real antes de pedir otro.
+      const requested = await proveLogin(h, personPage, person.email);
+      await assertPlatformProblem(requested, 403, "Identity.Account.PendingDeletion");
+      await personPage.getByRole("heading", { name: "Tu cuenta tiene la baja pedida", exact: true }).waitFor();
+      const cancelled = responseAt(personPage, "/api/auth/deletion/cancel", "POST");
+      await personPage.getByRole("button", { name: "Cancelar la baja y entrar", exact: true }).click();
+      assert.equal((await cancelled).status(), 200);
+      await personPage.waitForURL((target) => target.pathname === "/");
+      const me = await h.api(personPage, "/api/me"); assert.equal(me.status(), 200); assert.equal((await me.json()).access, "consumer");
+      return "La persona vio la baja pendiente y la canceló por UI; recuperó su acceso Personal.";
+    }, [25]);
+    await record(27, page, async () => {
+      await page.goto(url(organizationRoute()));
+      await changeWithReason(page, "Suspender", `/api/platform/tenants/${business.me.activeTenantId}/suspend`, "Prueba integral: suspensión de organización sintética.");
+      await page.getByText("Suspendida", { exact: true }).first().waitFor();
+      return "La organización sintética quedó Suspendida por UI con motivo.";
+    }, [12]);
+    await record(28, businessPage, async () => {
+      const response = await proveLogin(h, businessPage, business.email, "business");
+      await assertPlatformProblem(response, 403, "Tenancy.Tenant.Suspended");
+      await businessPage.getByRole("heading", { name: `${business.organization} está suspendida`, exact: true }).waitFor();
+      assert.notEqual(new URL(businessPage.url()).pathname, "/org");
+      return "El Dueño no pudo entrar a la organización suspendida; recibió 403 Tenancy.Tenant.Suspended y aviso visible.";
+    }, [27]);
+    await record(29, page, async () => {
+      await page.goto(url(organizationRoute()));
+      await changeWithReason(page, "Reactivar", `/api/platform/tenants/${business.me.activeTenantId}/reactivate`, "Prueba integral: reactivar organización sintética.");
+      await page.getByText("Activa", { exact: true }).first().waitFor();
+      return "La organización volvió a Activa desde su ficha.";
+    }, [27]);
+    for (const [number, route, title, endpoint] of [[30, "/plataforma/recuperaciones", "Recuperaciones", "/api/platform/recoveries/paged"], [31, "/plataforma/auditoria", "Auditoría", "/api/platform/audit"], [32, "/plataforma/legales", "Documentos legales", "/api/platform/legal-documents"]]) await record(number, page, async () => {
+      const loaded = responseAt(page, endpoint, "GET");
+      await page.goto(url(route));
+      await page.getByRole("heading", { name: title, exact: true }).waitFor();
+      assert.equal((await loaded).status(), 200);
+      if (number === 32) await page.getByRole("link", { name: "Publicar versión nueva", exact: true }).first().waitFor();
+      return `${title} cargó desde su API real con HTTP 200.`;
+    }, [10]);
+    await record(33, page, async () => {
+      await page.goto(url("/plataforma/configuracion"));
+      const field = page.getByRole("textbox", { name: "Organizaciones propias por persona", exact: true });
+      await field.fill("0");
+      await page.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+      await page.getByText("Usá un número de 1 a 50.", { exact: true }).waitFor();
+      assert.equal(await page.getByRole("dialog").count(), 0);
+      const group = page.getByRole("group", { name: "Límites de uso", exact: true });
+      assert.equal(await group.getByRole("textbox", { name: /^Pedidos · / }).count(), 12);
+      await page.getByRole("button", { name: "Descartar cambios", exact: true }).click();
+      return "Configuración rechazó cero organizaciones propias y muestra los doce perfiles de límites.";
+    }, [10]);
+    let conflictPage;
+    await record(34, () => conflictPage ?? page, async () => {
+      await page.goto(url("/plataforma/configuracion"));
+      const field = page.getByRole("textbox", { name: "Organizaciones propias por persona", exact: true });
+      const original = Number((await field.inputValue()).replaceAll(".", ""));
+      assert.ok(Number.isInteger(original) && original >= 1 && original <= 50);
+      conflictPage = await h.newPage(); pages.push(conflictPage);
+      await confirmRecentAuthenticationWhenAsked(conflictPage, fullEmail);
+      await conflictPage.goto(url("/plataforma/configuracion"));
+      await settingsFields(page, original === 50 ? 49 : original + 1);
+      await settingsFields(conflictPage, original > 48 ? 47 : original + 2);
+      try {
+        await saveSettings(page, 200, "Prueba integral: primer editor de configuración.");
+        await saveSettings(conflictPage, 409, "Prueba integral: segundo editor con versión vieja.");
+        await conflictPage.getByText("Otra persona cambió esto mientras lo editabas.", { exact: true }).waitFor();
+        await conflictPage.getByRole("button", { name: "Ver lo nuevo", exact: true }).waitFor();
+      } finally {
+        await settingsFields(page, original);
+        await saveSettings(page, 200, "Prueba integral: restaurar límite original de altas.");
+      }
+      return "La segunda pestaña recibió 409 General.ConcurrencyConflict y ofrece Ver lo nuevo; se restauró el límite original.";
+    }, [10]);
+    // El 409 tiene su captura propia: conservar la pestaña ya fallada hasta que record haya capturado el caso.
+    if (conflictPage) { await stopConfirmingRecentAuthentication(conflictPage); await conflictPage.close(); }
+    await record(35, page, async () => {
+      await page.goto(url(accountRoute()));
+      await changeWithReason(page, "Cerrar sus sesiones", `/api/platform/accounts/${person.me.id}/revoke-sessions`, "Prueba integral: cerrar sesiones de cuenta sintética.");
+      await personPage.reload();
+      await personPage.getByRole("button", { name: /, Personal$/ }).waitFor({ state: "hidden" });
+      await personPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).or(personPage.getByRole("link", { name: "Volver a ingresar", exact: true })).or(personPage.getByRole("link", { name: "Ingresá", exact: true })).first().waitFor();
+      return "Cerrar sesiones por Plataforma revocó el acceso Personal; F5 ofreció volver a ingresar.";
+    }, [26]);
+    await record(36, page, async () => {
+      await h.signOut(page); fullSignedIn = false;
+      return "La salida cerró la sesión de Plataforma y volvió a la portada pública.";
+    }, [10]);
+  } finally {
+    if (fullSignedIn || reducedSignedIn) await h.signOut(page).catch(() => {});
+    for (const target of pages) {
+      if (!target.isClosed()) { await stopConfirmingRecentAuthentication(target); await target.close(); }
+    }
+  }
+}

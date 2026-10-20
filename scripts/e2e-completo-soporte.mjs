@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { completeOperatorFactor } from "./platform-factor-real.mjs";
+import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 
 export const viewports = [1440, 390];
 export const viewportOf = (width) => ({ width, height: width === 390 ? 844 : 900 });
@@ -47,7 +48,7 @@ export function createBrowserSupport({ context, env, base, width }) {
   const me = async (page) => {
     // El marco sólo se presenta después de que /api/me resuelve la sesión.
     const terms = page.getByRole("heading", { name: "Actualizamos los términos", exact: true });
-    await terms.or(page.locator('nav[aria-label="Secciones"], button[aria-haspopup="menu"]')).first().waitFor();
+    await terms.or(page.locator('nav[aria-label="Secciones"], button[aria-haspopup="menu"]')).filter({ visible: true }).first().waitFor();
     if (await terms.isVisible()) {
       await page.getByRole("checkbox", { name: /Leí y acepto/ }).check();
       await page.getByRole("button", { name: "Aceptar y seguir", exact: true }).click();
@@ -61,9 +62,12 @@ export function createBrowserSupport({ context, env, base, width }) {
   const code = async (page, email, buttonName, endpoint) => {
     requireSyntheticEmail(email);
     const before = new Set(await env.files());
-    const sent = page.waitForResponse((response) => new URL(response.url()).pathname === endpoint && response.request().method() === "POST");
-    await page.getByRole("button", { name: buttonName, exact: true }).click();
-    const response = await sent;
+    const response = await sendWithCooldown(async () => {
+      const sent = page.waitForResponse((reply) => new URL(reply.url()).pathname === endpoint && reply.request().method() === "POST", { timeout: 90_000 });
+      void sent.catch(() => {});
+      await page.getByRole("button", { name: buttonName, exact: true }).click({ timeout: 90_000 });
+      return sent;
+    });
     assert.ok(response.ok(), `El envío del código debe responder 2xx; respondió ${response.status()}.`);
     await page.getByRole("heading", { name: "Revisá tu correo", exact: true }).waitFor();
     await fillOtp(page, await env.code(email, before));

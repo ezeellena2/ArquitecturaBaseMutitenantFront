@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { buildMatrix, importedJourneySteps, parseTapSummary, resultsFromProofs } from "./e2e-completo-matriz.mjs";
+import { buildMatrix, importedJourneySteps, parseTapSummary, resultsFromProofs, safeEvidenceText } from "./e2e-completo-matriz.mjs";
+
+test("los diagnósticos omiten queries y fragmentos HTTP y WebSocket", () => {
+  const actual = safeEvidenceText("GET https://localtest.me:5174/login?state=privado#secreto y wss://localtest.me:5174/?token=privado");
+  assert.ok(!actual.includes("privado") && !actual.includes("secreto"));
+  assert.match(actual, /localtest\.me:5174\/login/);
+});
 
 test("la matriz no aprueba por el nombre de un script o por compartir ruta", () => {
   const [item] = buildMatrix({ backend: [{ id: "A", route: "/org", existingScripts: ["recorrido-usuario.mjs"] }], executions: [{ id: "otro", route: "/org", results: [{ width: 1440, status: "passed" }, { width: 390, status: "passed" }] }] });
