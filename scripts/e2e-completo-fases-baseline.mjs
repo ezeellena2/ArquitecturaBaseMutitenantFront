@@ -141,6 +141,34 @@ async function blockUnvisited(h, definitions, visited, error, page) {
   }
 }
 
+/** E9 consulta count()/isVisible() sin autoespera; el título también existe durante la carga. */
+export async function withAuditListReadiness(page, action) {
+  const goto = page.goto; const waitForResponse = page.waitForResponse;
+  const descriptors = new Map(["goto", "waitForResponse"].map((key) => [key, Object.getOwnPropertyDescriptor(page, key)]));
+  const waitForList = () => page.locator('main table[aria-busy="false"], main ul[aria-busy="false"]').first().waitFor({ state: "visible", timeout: 30_000 });
+  page.goto = async (...args) => {
+    const navigation = await goto.apply(page, args);
+    if (new URL(args[0], page.url()).pathname === "/plataforma/auditoria") await waitForList();
+    return navigation;
+  };
+  page.waitForResponse = async (...args) => {
+    const response = await waitForResponse.apply(page, args);
+    if (new URL(response.url()).pathname === "/api/platform/audit" && response.request().method() === "GET" && response.status() === 200) {
+      const failure = await response.finished();
+      if (failure) throw failure;
+      await waitForList();
+    }
+    return response;
+  };
+  try { return await action(); }
+  finally {
+    for (const [key, descriptor] of descriptors) {
+      if (descriptor) Object.defineProperty(page, key, descriptor);
+      else delete page[key];
+    }
+  }
+}
+
 /** Ejecuta los callbacks originales. Un h.record fallido debe volver a cortar el flujo original. */
 export async function runOriginalBaselinePhase(h, definitions, run, { page } = {}) {
   const ids = new Set(definitions.map((entry) => entry.id)); const visited = new Set();
@@ -151,7 +179,9 @@ export async function runOriginalBaselinePhase(h, definitions, run, { page } = {
     assert.ok(ids.has(targetId), "La fase no puede registrar un ID de otra fase.");
     assert.ok(!visited.has(targetId), "Un paso original se ejecuta una sola vez en la fase.");
     visited.add(targetId);
-    const perform = targetId === "BASE-E11-03" && h.width === 390 ? () => withSuccessToastClearance(getPage(), action) : action;
+    let perform = action;
+    if (targetId === "BASE-E11-03" && h.width === 390) perform = () => withSuccessToastClearance(getPage(), action);
+    if (targetId === "BASE-E9-07") perform = () => withAuditListReadiness(getPage(), action);
     const result = await h.record(targetId, getPage, perform, diagnostic);
     if (result?.ok !== true) throw asError(result?.error);
     return result;

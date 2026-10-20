@@ -6,7 +6,9 @@ import test from "node:test";
 import { existingScriptCases } from "./e2e-completo-inventario-front.mjs";
 import { baselinewhatsapp, baselineasistente, baselineorgwa, baselineseguridad,
   assistantEvidenceModuleUrl, exposeAssistantEvidence, loadAssistantEvidence, observeAssistantIsolation,
-  prepareBaselineFixture, runOriginalBaselinePhase, withBaselineFixture } from "./e2e-completo-fases-baseline.mjs";
+  prepareBaselineFixture, runOriginalBaselinePhase, withAuditListReadiness, withBaselineFixture } from "./e2e-completo-fases-baseline.mjs";
+import { runE9Journey } from "./recorrido-usuario-e9.mjs";
+import { authenticatorAuditEvents } from "./test-e2e-real-e9.mjs";
 
 const definitions = ["E8-01", "E8-02", "E8-03"].map((id) => ({ id: "BASE-" + id }));
 function harness(statuses = {}) {
@@ -28,6 +30,59 @@ test("bridge conserva callback original y no omite pasos por antecedentes verdes
     assert.equal(result.value, "comprobado");
   });
   assert.equal(actions, 1); assert.deepEqual(calls, [{ id: "BASE-E8-01", page: "pantalla" }]);
+});
+
+function auditPage({ missing = [], paged = false, status = 200 } = {}) {
+  const page = new EventEmitter(); const calls = []; let rendered = false; let next = false; let waited;
+  const summaries = ["configured", "reset", "reauthenticated", "signedInWithAuthenticator"].map((key) => authenticatorAuditEvents[key].summary);
+  page.url = () => "https://app.example.test/plataforma/auditoria";
+  page.goto = async () => { calls.push("navegar"); rendered = false; return "navegación original"; };
+  page.waitForResponse = async () => new Promise((resolve) => { waited = resolve; });
+  page.locator = () => ({ first: () => ({ waitFor: async () => { calls.push("renderizar lista"); rendered = true; } }) });
+  page.getByText = (text) => ({ filter: () => ({ count: async () => Number(rendered && !missing.includes(text) && (!paged || next || text === summaries[0])) }) });
+  page.getByRole = (role) => role === "heading" ? { waitFor: async () => {} } : {
+    isVisible: async () => paged && rendered && !next,
+    click: async () => {
+      calls.push("cargar más"); rendered = false;
+      waited({ url: () => "https://app.example.test/api/platform/audit?after=cursor-real", request: () => ({ method: () => "GET" }),
+        status: () => status, finished: async () => { calls.push("cuerpo completo"); next = true; return null; } });
+    },
+  };
+  return { page, calls, summaries };
+}
+
+async function originalAuditAction(page, decorate = (action) => action()) {
+  return runE9Journey({ platformPage: page, width: 390, env: { command: async () => { throw new Error("El test aislado de07 no prepara datos."); } }, base: new URL("https://app.example.test"),
+    record: async (id, _width, _getPage, action) => id === "E9-07" ? decorate(action) : undefined });
+}
+
+test("E9 original falla mientras sólo hay título; el adaptador espera filas antes de su misma aserción", async () => {
+  const current = auditPage();
+  await assert.rejects(() => originalAuditAction(current.page), (error) => error.code === "ERR_ASSERTION" && error.actual.length === 4);
+  const fixed = auditPage(); const goto = fixed.page.goto; const response = fixed.page.waitForResponse;
+  const { h } = harness(); h.width = 390;
+  await originalAuditAction(fixed.page, (action) => runOriginalBaselinePhase(h, [{ id: "BASE-E9-07" }],
+    (record) => record("E9-07", 390, () => fixed.page, action)));
+  assert.deepEqual(fixed.calls, ["navegar", "renderizar lista"]);
+  assert.equal(fixed.page.goto, goto); assert.equal(fixed.page.waitForResponse, response);
+});
+
+test("E9 espera el cuerpo y las filas de Cargar más sin cambiar sus pedidos ni sus eventos", async () => {
+  const { page, calls } = auditPage({ paged: true });
+  await originalAuditAction(page, (action) => withAuditListReadiness(page, action));
+  assert.deepEqual(calls, ["navegar", "renderizar lista", "cargar más", "cuerpo completo", "renderizar lista"]);
+});
+
+test("readiness no aprueba un evento ausente ni un GET fallido y restaura la página al fallar", async () => {
+  const summary = authenticatorAuditEvents.reauthenticated.summary;
+  const missing = auditPage({ missing: [summary] }); const goto = missing.page.goto; const response = missing.page.waitForResponse;
+  await assert.rejects(() => originalAuditAction(missing.page, (action) => withAuditListReadiness(missing.page, action)),
+    (error) => error.code === "ERR_ASSERTION" && error.actual.length === 1 && error.actual[0] === summary);
+  assert.equal(missing.page.goto, goto); assert.equal(missing.page.waitForResponse, response);
+  const failed = auditPage({ paged: true, status: 403 });
+  await assert.rejects(() => originalAuditAction(failed.page, (action) => withAuditListReadiness(failed.page, action)),
+    (error) => error.code === "ERR_ASSERTION" && error.actual === 403 && error.expected === 200);
+  assert.deepEqual(failed.calls, ["navegar", "renderizar lista", "cargar más"]);
 });
 
 test("record fallido corta el flujo original y bloquea sólo pendientes no visitados de la fase", async () => {
