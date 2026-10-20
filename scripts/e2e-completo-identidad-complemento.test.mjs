@@ -45,6 +45,45 @@ test("una dependencia fallida bloquea sólo su caso y conserva los independiente
   assert.deepEqual(actions, ["IDS-06"]); assert.equal(outcomes.get("IDS-06").ok, true);
 });
 
+function publicAccountUi(initial = "account") {
+  let state = initial; let accepted = false; const actions = [];
+  const locator = (matches) => ({ matches,
+    or: (other) => locator([...matches, ...other.matches]), filter: () => locator(matches), first: () => locator(matches),
+    waitFor: async () => { assert.ok(matches.some((match) => match()), "La interfaz privada o la puerta pública todavía no está lista."); actions.push("interfaz lista"); },
+    isVisible: async () => matches.some((match) => match()),
+  });
+  const page = { goto: async (url) => { assert.equal(new URL(url).pathname, "/cuenta"); actions.push("abrir Mi cuenta"); },
+    getByRole: (role, options = {}) => {
+      if (role === "checkbox") return { check: async () => { accepted = true; actions.push("consentimiento explícito"); } };
+      if (role === "button" && options.name === "Aceptar y seguir") return { click: async () => { assert.equal(accepted, true); state = "account"; actions.push("aceptar términos"); } };
+      return locator([() => role === "heading" && options.name === "Mi cuenta" && state === "account"
+        || role === "heading" && options.name === "Actualizamos los términos" && state === "terms"
+        || role === "textbox" && options.name === "Correo electrónico" && state === "login"]);
+    },
+  };
+  return { page, actions };
+}
+
+test("cerrar la sesión reconoce Mi cuenta móvil sin nav y sigue saliendo por UI, con consentimiento si aparece", async () => {
+  for (const state of ["account", "login", "terms", "loading"]) {
+    const { page, actions } = publicAccountUi(state); let signOuts = 0;
+    const close = () => identity.closeIdentityPublicSession({ base: new URL("https://localtest.me"), signOut: async (target) => {
+      assert.equal(target, page); signOuts++; actions.push("Salir por UI");
+    } }, page);
+    if (state === "loading") await assert.rejects(close, /todavía no está lista/u); else await close();
+    assert.equal(signOuts, state === "account" || state === "terms" ? 1 : 0);
+    if (state === "terms") assert.ok(actions.indexOf("consentimiento explícito") < actions.indexOf("Salir por UI"));
+  }
+});
+
+test("Mi cuenta lista habilita la lectura privada200 pero no sustituye comprobar el acceso real", async () => {
+  const { page } = publicAccountUi(); let reads = 0; let status = 200; let access = "consumer";
+  const h = { api: async (target, route) => { assert.equal(target, page); assert.equal(route, "/api/me"); reads++; return { status: () => status, json: async () => ({ access }) }; } };
+  assert.equal((await identity.requireAuthenticatedIdentity(h, page, "consumer")).access, "consumer"); assert.equal(reads, 1);
+  status = 401; await assert.rejects(() => identity.requireAuthenticatedIdentity(h, page, "consumer"));
+  status = 200; access = "business"; await assert.rejects(() => identity.requireAuthenticatedIdentity(h, page, "consumer"));
+});
+
 test("LastAdmin espera el bloqueo renderizado y mantiene la exigencia de aria-disabled", async () => {
   const waiting = Promise.withResolvers(); const ready = Promise.withResolvers(); let loaded = false; let reads = 0; let opened = false;
   const info = { waitFor: async () => { waiting.resolve(); await ready.promise; }, click: async () => { opened = true; } };

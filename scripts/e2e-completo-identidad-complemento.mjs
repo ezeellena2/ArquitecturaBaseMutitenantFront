@@ -98,8 +98,14 @@ async function choosePhone(page, phone, label = /^(Tu )?número de WhatsApp$/iu)
   await page.getByRole("button", { name: "WhatsApp", exact: true }).click();
   await page.getByRole("textbox", { name: label }).fill(nationalPhone(phone));
 }
+function publicIdentityFrame(page) {
+  // Mi cuenta usa FixedActions también sin cambios: en móvil oculta Secciones,
+  // pero su título sólo se presenta después de resolver la identidad privada.
+  return page.getByRole("navigation", { name: "Secciones", exact: true }).or(page.getByRole("button", { name: /, .+$/u }))
+    .or(page.getByRole("heading", { name: "Mi cuenta", exact: true })).filter({ visible: true }).first();
+}
 async function authenticated(h, page, access) {
-  await page.getByRole("navigation", { name: "Secciones", exact: true }).or(page.getByRole("button", { name: /, (Personal|.+)$/u })).filter({ visible: true }).first().waitFor();
+  await publicIdentityFrame(page).waitFor();
   const me = await read(h, page, "/api/me"); assert.equal(me.access, access); return me;
 }
 async function registerEmail(h, page, email) {
@@ -128,13 +134,14 @@ async function provePhone(h, page, phone, scenario, expectedStatus = 200) {
 }
 async function closePublic(h, page) {
   await page.goto(new URL("/cuenta", h.base).href);
-  const frame = page.getByRole("navigation", { name: "Secciones", exact: true }).or(page.getByRole("button", { name: /, .+$/u })).filter({ visible: true }).first();
+  const frame = publicIdentityFrame(page);
   const login = page.getByRole("textbox", { name: "Correo electrónico", exact: true });
   const terms = page.getByRole("heading", { name: "Actualizamos los términos", exact: true });
   await frame.or(login).or(terms).first().waitFor();
   if (await terms.isVisible()) { await page.getByRole("checkbox", { name: /Leí y acepto/ }).check(); await page.getByRole("button", { name: "Aceptar y seguir", exact: true }).click(); await frame.waitFor(); }
   if (await frame.isVisible()) await h.signOut(page);
 }
+export { authenticated as requireAuthenticatedIdentity, closePublic as closeIdentityPublicSession };
 async function switchProfile(h, page, name, access, tenantId = null) {
   const changed = page.waitForResponse(async (response) => endpoint("/api/me", "GET")(response) && response.status() === 200 && (await response.json()).access === access && (tenantId === null || (await response.json()).activeTenantId === tenantId));
   void changed.catch(() => {});
