@@ -458,6 +458,12 @@ DECISIONES = {
         ("En el editor", "", "«Cuándo lo ofrece el asistente» en «El formulario», a todo el ancho. «Qué sugerir después» debajo de las reglas, con su guardado: el formulario, La IA decide o Preguntar siempre, el «cuándo» y los datos que pasan, del mismo tipo.", "Dibujada"),
         ("De dónde vino", "", "En el detalle, «La mandó el asistente» con lo que propuso y lo que cambió la persona, y «La cadena» con la respuesta que sugirió la siguiente.", "Dibujada"),
     ],
+    "E10 · Exportar mis datos · La Guía · 20/10": [
+        ("Pedir los datos", "", "En Mi cuenta › Privacidad, «Exportar» pide todo de una vez: sin opciones, sin historial y sin «Confirmá que sos vos». Mientras sale, «Pidiendo…»; al aceptarse, el aviso verde «Recibimos tu pedido. Te mandamos tus datos por correo cuando estén listos.»", "Dibujada"),
+        ("Si falla", "", "Sin conexión, el aviso rojo con «Reintentar» y ✕. Con muchos pedidos, el cartel de la Etapa 9 y el botón «Reintentá en 0:41».", "Dibujada"),
+        ("Sin correo verificado", "", "«Exportar» apagado con ⓘ; los dos abren el motivo, como «Dar de baja» de la única Dueña: «Agregá y verificá un correo para recibir tus datos.», con agregar un correo o vincular Google.", "Dibujada"),
+        ("Desde el correo", "", "El enlace abre Mi cuenta con la sesión de la cuenta: «Descargando tus datos…» en un cartel y «Descargamos tus datos.» al terminar. Vencido, pedido con otra cuenta y no se pudo bajar, en el aviso rojo (los dos primeros sin «Reintentar»). Un pedido ajeno no dice si existe.", "Dibujada"),
+    ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
     ],
