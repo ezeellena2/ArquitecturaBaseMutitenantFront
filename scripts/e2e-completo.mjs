@@ -95,9 +95,10 @@ export async function main(options = parseArguments([])) {
     entry.results = entry.results.map((result) => prior?.results?.find((item) => item.width === result.width && item.continued) ?? result);
   }
   const selectedIds = new Set(suites.flatMap((suite) => suite.definitions.map((definition) => definition.id)));
+  const selectedDefinitions = new Map(suites.flatMap((suite) => suite.definitions.map((definition) => [definition.id, definition])));
   const executions = [
     ...imported,
-    ...(saved.executions ?? []).filter((entry) => !entry.id.startsWith("BASE-") && (!selectedIds.has(entry.id) || options.refreshOnly || options.resume)),
+    ...(saved.executions ?? []).filter((entry) => !entry.id.startsWith("BASE-") && (!selectedIds.has(entry.id) || options.refreshOnly || options.resume)).map((entry) => ({ ...entry, ...selectedDefinitions.get(entry.id), results: entry.results })),
     ...(!options.refreshOnly ? suites.flatMap((suite) => suite.definitions.filter((item) => !item.id.startsWith("BASE-") && (!options.resume || !saved.executions?.some((entry) => entry.id === item.id))).map((item) => ({ ...item, results: [] }))) : []),
   ];
   const report = { date, commits, startedAtUtc: previous.startedAtUtc ?? new Date().toISOString(),

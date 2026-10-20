@@ -51,3 +51,25 @@ test("el HTML escapa todos los campos, ordena por gravedad y explica la captura 
   assert.equal(renderBaselineIncidentsHTML([base]).split("Sin determinar por el script").length - 1, 2);
   assert.equal(renderBaselineIncidentsHTML([]), "");
 });
+
+test("el análisis posterior se distingue del resultado original y admite una captura real relativa", () => {
+  const [base] = parseFunctionalBaselineIncidents("A3: convivencia: falló en “salir” [TimeoutError] No salió.");
+  const html = renderBaselineIncidentsHTML([{ ...base, analysis: "Convivencia y F5 pasaron; falló sólo <b>Salir</b>. https://localhost/ruta?token=oculto", image: '../evidencia/captura "real"-123456.png' }]);
+  assert.match(html, /Incidentes de la línea de base/u);
+  assert.match(html, /Análisis posterior/u);
+  assert.match(html, /Convivencia y F5 pasaron; falló sólo &lt;b&gt;Salir&lt;\/b&gt;/u);
+  assert.match(html, /\[TimeoutError\] No salió/u);
+  assert.equal(html.includes("oculto"), false);
+  assert.match(html, /href="\.\.\/evidencia\/captura &quot;real&quot;-123456\.png"/u);
+  assert.match(html, /<img src=/u);
+  assert.equal(html.includes("El script de línea de base no guardó captura individual"), false);
+});
+
+test("una imagen absoluta, remota o insegura no oculta la falta de captura", () => {
+  for (const image of ["https://localhost/captura.png", "//otro/captura.png", "/tmp/captura.png", "C:\\evidencia\\captura.png", "javascript:alert(1)", "data:image/png,abc", "captura.png?token=oculto", "captura.png#fragmento", "captura\u0000.png", ""]) {
+    const html = renderBaselineIncidentsHTML([{ name: "Caso", actual: "Fallo", image }]);
+    assert.equal(html.includes("<img"), false, image);
+    assert.match(html, /El script de línea de base no guardó captura individual/u);
+  }
+  assert.match(renderBaselineIncidentsHTML([{ name: "Caso", actual: "Fallo", image: "carpeta\\captura.png" }]), /src="carpeta\/captura\.png"/u);
+});

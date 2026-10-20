@@ -89,6 +89,11 @@ export function createBrowserSupport({ context, env, base, width }) {
     const original = page.viewportSize();
     await page.setViewportSize(viewportOf(1440));
     try {
+      const notice = page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true });
+      if (await notice.isVisible()) {
+        await notice.getByRole("button", { name: "Entendido", exact: true }).click();
+        await notice.waitFor({ state: "hidden" });
+      }
       const menu = page.getByRole("button", { name: /, (Personal|Plataforma|.+)$/ }).filter({ visible: true }).last();
       await menu.click();
       await page.getByRole("menuitem", { name: "Salir", exact: true }).click();
