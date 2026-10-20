@@ -3,10 +3,11 @@ import { supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemen
 import { identitySupplementLimitations } from "./e2e-completo-identidad-complemento.mjs";
 import { domainSupplementLimitations } from "./e2e-completo-dominio-complemento.mjs";
 import { platformWhatsAppLimitations } from "./e2e-completo-whatsapp-plataforma.mjs";
+import { supplementPlatformLimitations } from "./e2e-completo-plataforma-complemento.mjs";
 
 // Los estados técnicos existentes no acreditan DNS ni aprobación de plantillas por proveedores reales.
 export const verificationLimitations = {
-  ...coverageLimitations, ...supplementWhatsAppLimitations, ...identitySupplementLimitations, ...domainSupplementLimitations, ...platformWhatsAppLimitations,
+  ...coverageLimitations, ...supplementWhatsAppLimitations, ...identitySupplementLimitations, ...domainSupplementLimitations, ...platformWhatsAppLimitations, ...supplementPlatformLimitations,
   "BACK-RE-007": {
     partialExecutionIds: ["PLAT-C-07"], missing: "Revisar un pedido que perdió su cuenta y sólo permite Rechazar.",
     reason: "El alta de recuperaciones rechaza el destino anterior sin cuenta. La rama histórica tras purgar la cuenta no se prepara por UI ni con el control publicado; no se agregaron semillas ni se alteró la base.",
@@ -31,4 +32,20 @@ export const verificationLimitations = {
     source: ["tools/ArquitecturaBaseMultitenant.RealE2ESetup/RecorridoWhatsAppModule.cs", "src/ArquitecturaBaseMultitenant.Infrastructure/Modules/WhatsApp/WhatsAppInfrastructureModule.cs", "src/ArquitecturaBaseMultitenant.Application/Modules/WhatsApp/Services/WhatsAppBroadcastChannelResolver.cs"],
   },
   "BACK-WA-018": { ...supplementWhatsAppLimitations["BACK-WA-018"], manualReason: "La baja del bot se prueba localmente en WAS-06; certificar que una difusión pendiente la relee requiere una plantilla aprobada por Meta." },
+  "GUIA-configuracion-y-dominio-04": { ...domainSupplementLimitations["BACK-CF-005"], manualReason: "Completar la verificación del dominio requiere publicar el TXT en DNS real. Leer el dominio Verified del preparador no certifica ese paso." },
+  "SCREEN-wa-difusiones": {
+    partialExecutionIds: [], missing: "Abrir las vistas nueva y resultados con una plantilla Marketing aprobada.",
+    manualReason: "Las pantallas de difusión completa necesitan una plantilla Marketing realmente aprobada por Meta, ausente del entorno aislado.",
+    source: ["src/ArquitecturaBaseMultitenant.Application/Modules/WhatsApp/Services/WhatsAppBroadcastChannelResolver.cs"],
+  },
+  "SCREEN-wa-plantillas": {
+    partialExecutionIds: [], missing: "Leer y crear plantillas de una WABA real.",
+    manualReason: "El cliente de plantillas usa Graph de Meta y no se sustituye por el transporte controlado; no se cargan credenciales reales.",
+    source: ["tests/ArquitecturaBaseMultitenant.Api.IntegrationTests/TestFeatures/WhatsAppBrowser/RecorridoWhatsAppModule.cs", "src/ArquitecturaBaseMultitenant.Infrastructure/Modules/WhatsApp/WhatsAppInfrastructureModule.cs"],
+  },
+  "SCREEN-plat-wa": {
+    partialExecutionIds: ["WAP-01", "WAP-02"], missing: "Completar las vistas de alta de número y plantillas reales, además de las vistas locales de consultas, bot y equipos.",
+    manualReason: "Consultas, número controlado, bot y equipos se prueban localmente; el alta y las plantillas de Meta necesitan cuenta y número reales.",
+    source: ["scripts/e2e-completo-whatsapp-plataforma.mjs"],
+  },
 };

@@ -24,6 +24,10 @@ import { securitySupplementProofGroups } from "./e2e-completo-seguridad-compleme
 import { assistantSupplementProofGroups } from "./e2e-completo-asistente-complemento.mjs";
 import { legalSupplementProofGroups } from "./e2e-completo-legales-complemento.mjs";
 import { organizationSupplementProofGroups } from "./e2e-completo-organizaciones-complemento.mjs";
+import { identitySupplementProofGroups } from "./e2e-completo-identidad-complemento.mjs";
+import { contractSupplementProofGroups } from "./e2e-completo-contrato-complemento.mjs";
+import { supplementPlatformProofGroups } from "./e2e-completo-plataforma-complemento.mjs";
+import { localClosureProofGroups } from "./e2e-completo-cierre-local.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const execute = promisify(execFile);
@@ -59,6 +63,7 @@ const suiteSpecs = {
   configuracionplataformaextra: ["./e2e-completo-configuracion-plataforma.mjs", "platformConfigurationDefinitions", "runPlatformConfigurationCases"],
   organizacionesextra: ["./e2e-completo-organizaciones-complemento.mjs", "organizationSupplementDefinitions", "runOrganizationSupplementCases"],
   plataformasesionarreglos: ["./e2e-completo-plataforma.mjs", "platformSessionRepairDefinitions", "runPlatformSessionRepairCases"],
+  cierrelocal: ["./e2e-completo-cierre-local.mjs", "localClosureDefinitions", "runLocalClosureCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
@@ -177,7 +182,7 @@ export async function main(options = parseArguments([])) {
   const persist = async (publish = false) => {
     const annotatedExecutions = enrichExecutionFailures(executions);
     report.executions = annotatedExecutions;
-    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(annotatedExecutions), verificationLimitations, additionalProofGroups: { ...securitySupplementProofGroups, ...assistantSupplementProofGroups, ...legalSupplementProofGroups, ...organizationSupplementProofGroups } });
+    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(annotatedExecutions), verificationLimitations, additionalProofGroups: { ...securitySupplementProofGroups, ...assistantSupplementProofGroups, ...legalSupplementProofGroups, ...organizationSupplementProofGroups, ...identitySupplementProofGroups, ...contractSupplementProofGroups, ...supplementPlatformProofGroups, ...localClosureProofGroups } });
     report.matrix = matrix;
     report.cases = matrix;
     report.summary = summarizeCases(report.cases);
