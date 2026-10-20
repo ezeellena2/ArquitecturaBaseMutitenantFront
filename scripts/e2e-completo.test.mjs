@@ -14,6 +14,8 @@ test("el reintento de Mensajes WhatsApp es explícito y queda fuera de la corrid
 test("el arreglo de borrado con PNG del Asistente se selecciona sin repetir su suite", () => {
   assert.equal(parseArguments([]).suites.includes("asistenteborradoarreglo"), false);
   assert.deepEqual(parseArguments(["--suite=asistenteborradoarreglo", "--resume", "--no-build"]).suites, ["asistenteborradoarreglo"]);
+  assert.equal(parseArguments([]).suites.includes("negociopendientesarreglo"), false);
+  assert.deepEqual(parseArguments(["--suite=negociopendientesarreglo", "--width=390", "--resume", "--no-build"]).suites, ["negociopendientesarreglo"]);
 });
 
 test("reanudar una selección ya verde evita iniciar otro entorno, salvo revalidación móvil expresa", () => {

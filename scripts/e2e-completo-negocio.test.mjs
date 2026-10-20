@@ -4,6 +4,37 @@ import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { businessDefinitions, clickForResponse, invitationTokenFromMessage, requireOrganizationPermissions, requireProblem, requireSoleCompanyAdministrator, roleScopeNegativeAssignment, runBusinessDependencyCase } from "./e2e-completo-negocio.mjs";
 import * as business from "./e2e-completo-negocio.mjs";
 
+test("el Administrador empresarial de la reparación proyecta sólo assistant.use y conserva sus permisos exactos en una empresa", () => {
+  const me = { access: "business", activeTenantId: "organizacion-propia", effectivePermissions: {
+    organization: ["assistant.use"], platform: [], companies: { "empresa-propia": ["assistant.use", "company.members.manage", "company.members.read"] },
+  } };
+  business.requireBusinessCompanyAdministrator(me, "organizacion-propia", "empresa-propia");
+  for (const patch of [
+    { activeTenantId: "ajena" }, { access: "consumer" },
+    { effectivePermissions: { ...me.effectivePermissions, organization: [] } },
+    ...["assistant.configure", "users.manage", "users.read", "roles.read"].map((permission) => ({ effectivePermissions: { ...me.effectivePermissions, organization: ["assistant.use", permission] } })),
+    { effectivePermissions: { ...me.effectivePermissions, platform: ["platform.tenants.read"] } },
+    { effectivePermissions: { ...me.effectivePermissions, companies: { "empresa-ajena": me.effectivePermissions.companies["empresa-propia"] } } },
+    { effectivePermissions: { ...me.effectivePermissions, companies: { "empresa-propia": ["company.members.read"] } } },
+    { effectivePermissions: { ...me.effectivePermissions, companies: { "empresa-propia": [...me.effectivePermissions.companies["empresa-propia"], "users.manage"] } } },
+  ]) assert.throws(() => business.requireBusinessCompanyAdministrator({ ...me, ...patch }, "organizacion-propia", "empresa-propia"));
+  assert.throws(() => requireOrganizationPermissions(me, []), "El comparador general no debe eliminar assistant.use para otros actores.");
+});
+
+test("la reparación pendiente incluye los12 IDs pedidos y no vuelve a ejecutar ni bloquear34", async () => {
+  const ids = ["23", "24", "25", "26", "27", "28", "31", "38", "42", "43", "44", "45"].map((id) => "BIZ-" + id);
+  assert.deepEqual(business.businessAccessPendingRepairDefinitions.map(({ id }) => id), ids);
+  const records = []; const blocks = [];
+  const h = { width: 390, record: async (id, _getPage, action) => { records.push(id); return { ok: true, value: await action() }; }, block: async (id) => blocks.push(id) };
+  await business.runBusinessAccessPendingRepairCases(h, { run: async (selected) => {
+    for (const { id } of business.businessAccessRepairDefinitions) {
+      await selected.record(id, () => ({}), async () => { assert.notEqual(id, "BIZ-34"); return id; });
+      await selected.block(id, "Fallo de preparación", {});
+    }
+  } });
+  assert.deepEqual(records, ids); assert.deepEqual(blocks, ids);
+});
+
 function selfDisableFixture({ status = 403, code = "Tenancy.Member.CannotDisableSelf", changed = false, width = 1440, initialState = "Active", cycle } = {}) {
   const calls = [];
   const before = { memberId: "own-member", userId: "own-person", state: initialState, version: 7,

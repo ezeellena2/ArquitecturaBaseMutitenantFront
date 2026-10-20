@@ -61,6 +61,7 @@ export const businessDefinitions = [
 
 export const businessRepairDefinitions = businessDefinitions.filter((entry) => ["BIZ-25", "BIZ-41"].includes(entry.id));
 export const businessAccessRepairDefinitions = businessDefinitions.filter((entry) => ["23", "24", "25", "26", "27", "28", "31", "34", "38", "42", "43", "44", "45"].includes(entry.id.slice(4)));
+export const businessAccessPendingRepairDefinitions = businessAccessRepairDefinitions.filter(({ id }) => id !== "BIZ-34");
 export const businessMobileBarDefinitions = ["19", "20", "21", "22", "34"].map((id) => businessDefinitions.find((entry) => entry.id === `BIZ-${id}`));
 
 export async function runBusinessMobileBarCases(h, { run = runBusinessCases } = {}) {
@@ -89,6 +90,15 @@ export function requireOrganizationPermissions(me, expected) {
   assert.ok(me.activeTenantId, "El token debe identificar su organización activa.");
   assert.deepEqual([...(me.effectivePermissions?.organization ?? [])].sort(), [...expected].sort());
   assert.deepEqual(me.effectivePermissions?.platform ?? [], [], "Business no hereda permisos de Plataforma.");
+}
+
+/** SystemRoles.CompanyAdmin aporta assistant.use por la proyección explícita de empresa, aun con el módulo apagado. */
+export function requireBusinessCompanyAdministrator(me, organizationId, companyId) {
+  requireOrganizationPermissions(me, ["assistant.use"]);
+  assert.equal(me.activeTenantId, organizationId, "El Administrador debe pertenecer a la organización propia de la fixture.");
+  const companies = me.effectivePermissions?.companies ?? {};
+  assert.deepEqual(Object.keys(companies), [companyId], "El rol de empresa sólo debe aportar permisos de la empresa propia.");
+  assert.deepEqual([...companies[companyId]].sort(), ["assistant.use", "company.members.manage", "company.members.read"]);
 }
 
 /** El control de último Administrador necesita una sola asignación efectiva, no sólo una fila cualquiera. */
@@ -360,7 +370,16 @@ export async function runBusinessRepairCases(h) {
   }
 }
 
-/** Sólo los trece afectados; las altas propias son preparación y no acreditan otros registros. */
+/** Los doce pendientes comparten callbacks y fixtures del runner de reparación, sin repetir34. */
+export async function runBusinessAccessPendingRepairCases(h, { run = runBusinessAccessRepairCases } = {}) {
+  const selected = new Set(businessAccessPendingRepairDefinitions.map(({ id }) => id));
+  return run({ ...h,
+    record: (id, ...args) => selected.has(id) ? h.record(id, ...args) : { ok: false, skipped: true },
+    block: (id, ...args) => selected.has(id) ? h.block(id, ...args) : { ok: false, skipped: true },
+  });
+}
+
+/** Sólo los trece afectados originales; las altas propias son preparación y no acreditan otros registros. */
 export async function runBusinessAccessRepairCases(h) {
   const page = await h.newPage(); let capturePage = page; let live;
   const outcomes = new Map(); const tag = randomUUID().slice(0, 8);
@@ -388,7 +407,7 @@ export async function runBusinessAccessRepairCases(h) {
     empty = await invite(h, page, `e2e-repara-vacio-${tag}@example.test`);
     await invite(h, page, adminEmail, { companyName: company.name });
     const member = await as(partialEmail); requireOrganizationPermissions(member, ["users.read"]); partialName = member.displayName || partialEmail;
-    const admin = await as(adminEmail); requireOrganizationPermissions(admin, []); assert.equal((await h.api(page, `/api/companies/${company.id}`)).status(), 200);
+    const admin = await as(adminEmail); requireBusinessCompanyAdministrator(admin, owner.me.activeTenantId, company.id); assert.equal((await h.api(page, `/api/companies/${company.id}`)).status(), 200);
     await as(owner.email); await page.goto(new URL(`/org/empresas/${company.id}`, h.base).href);
     await page.getByRole("button", { name: "Agregar miembro", exact: true }).first().click();
     const dialog = page.getByRole("dialog", { name: "Agregar miembro", exact: true }); await dialog.getByRole("combobox", { name: "Usuario", exact: true }).click();
