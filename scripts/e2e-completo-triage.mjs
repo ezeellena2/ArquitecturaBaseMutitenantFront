@@ -47,8 +47,14 @@ function personalCallbackTriage(result) {
   const observedDestination = destination
     ? `El destino protegido registrado fue ${destination}.`
     : "El destino protegido que falló no quedó registrado en este intento; no se deduce de los intentos anteriores.";
+  const observedDenial = destination === "/org/usuarios" && Array.isArray(result.authenticationTrace)
+    && result.authenticationTrace.some((item) => item?.route === "/connect/authorize" && item.status === 302
+      && item.access === "business" && item.error === "access_denied" && item.domainCode === "Tenancy.Access.NotMember");
+  const observedAuthentication = observedDenial
+    ? " En este intento, /connect/authorize registró HTTP 302, acceso business, error access_denied y código Tenancy.Access.NotMember. Esa observación no identifica la causa interna del callback genérico."
+    : "";
   return {
-    analysis: `El retorno de autenticación genérico no alcanzó el destino ni uno de los estados terminales esperados para una cuenta Personal. ${observedDestination} El detalle seguro de autenticación, cuando esté disponible, se conserva con este resultado; no se afirma una causa de servidor sin esa evidencia. El fallo no acredita acceso a una pantalla privada.`,
+    analysis: `El retorno de autenticación genérico no alcanzó el destino ni uno de los estados terminales esperados para una cuenta Personal. ${observedDestination}${observedAuthentication} El detalle seguro de autenticación, cuando esté disponible, se conserva con este resultado; no se afirma una causa de servidor sin esa evidencia. El fallo no acredita acceso a una pantalla privada.`,
     severity: "medium",
     probableArea: "Front · retorno OIDC y recuperación de acceso en CallbackPage / SessionRecovery (inferencia).",
     reproduce: [

@@ -166,3 +166,39 @@ test("conserva authenticationTrace sin afirmar que falta un código que el resul
     assert.doesNotMatch(entry.results[0].analysis, /código OAuth.*no (?:quedó )?registrado/iu);
   }
 });
+
+test("Personal agrega sólo la respuesta OAuth segura del intento actual y conserva toda su evidencia", () => {
+  const authenticationTrace = Object.freeze([Object.freeze({ route: "/connect/authorize", status: 302, access: "business", error: "access_denied", domainCode: "Tenancy.Access.NotMember" })]);
+  const previousAttempts = Object.freeze([Object.freeze({ status: "failed", actual: "Callback anterior", image: "anterior.png" })]);
+  const result = Object.freeze({ width: 390, status: "failed", currentRoute: "/auth/callback", image: "NUEVO-PER-09-390.png",
+    actual: "Destino protegido /org/usuarios desde Personal: Timeout", authenticationTrace, previousAttempts });
+  const input = Object.freeze([Object.freeze({ id: "NUEVO-PER-09", results: Object.freeze([result]) })]);
+  const snapshot = structuredClone(input);
+  const [enriched] = enrichExecutionFailures(input); const actual = enriched.results[0];
+  assert.match(actual.analysis, /\/connect\/authorize.*302.*business.*access_denied.*Tenancy\.Access\.NotMember/u);
+  assert.match(actual.analysis, /no identifica la causa interna/u);
+  assert.deepEqual(input, snapshot);
+  for (const key of Object.keys(result)) assert.equal(actual[key], result[key], key);
+  assert.deepEqual(enrichExecutionFailures([enriched]), [enriched]);
+  assert.equal(previousAttempts[0].analysis, undefined);
+});
+
+test("Personal no hereda códigos de otro intento ni une trazas parciales o rutas distintas", () => {
+  const observed = { route: "/connect/authorize", status: 302, access: "business", error: "access_denied", domainCode: "Tenancy.Access.NotMember" };
+  const variants = [undefined, [],
+    ...Object.keys(observed).map((key) => [{ ...observed, [key]: undefined }]),
+    [{ ...observed, status: 400 }], [{ ...observed, access: "consumer" }], [{ ...observed, route: "/connect/token" }],
+    [{ ...observed, error: "otro_error" }], [{ ...observed, domainCode: "Tenancy.Access.Other" }],
+    [{ ...observed, error: undefined }, { ...observed, domainCode: undefined }],
+  ];
+  for (const authenticationTrace of variants) {
+    const [entry] = enrichExecutionFailures([{ id: "NUEVO-PER-09", results: [{ status: "failed", currentRoute: "/auth/callback",
+      actual: "Destino protegido /org/usuarios desde Personal: Timeout", authenticationTrace,
+      previousAttempts: [{ authenticationTrace: [observed] }] }] }]);
+    assert.doesNotMatch(entry.results[0].analysis, /access_denied|Tenancy\.Access\.NotMember/u);
+  }
+  for (const actual of ["Timeout", "Destino protegido /plataforma/cuentas desde Personal: Timeout"]) {
+    const [entry] = enrichExecutionFailures([{ id: "NUEVO-PER-09", results: [{ status: "failed", currentRoute: "/auth/callback", actual, authenticationTrace: [observed] }] }]);
+    assert.doesNotMatch(entry.results[0].analysis, /access_denied|Tenancy\.Access\.NotMember/u);
+  }
+});
