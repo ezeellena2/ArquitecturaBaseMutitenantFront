@@ -2,9 +2,10 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
+import { axe } from "vitest-axe";
 import { AppChromeProvider } from "./app/AppChrome";
 import { Page, SublineSeparator } from "./Page";
-import { UsersIcon } from "./icons";
+import { CloseIcon, RotateIcon, UsersIcon } from "./icons";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -271,6 +272,47 @@ describe("Page", () => {
       </AppChromeProvider>);
 
       expect(screen.getByRole("button", { name: "Más acciones" }).querySelector("svg")).toHaveClass("size-5");
+    });
+
+    // «Criterio · Menús» (v136; M-Usuario, M-Usuarios, M-WA-Contacto): el ⋮ de la barra de una ficha o de una lista abre
+    // la hoja de abajo con su nombre de título, sin íconos; lo de peligro va al final, en rojo, después de una franja.
+    it("en el teléfono, el ⋮ de la barra abre la hoja con el nombre de la ficha y lo de peligro al final", async () => {
+      const user = userEvent.setup();
+      const resend = vi.fn();
+      const { container } = renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+        <MemoryRouter><Page title="Martina López" moreActions={{ label: "Acciones de Martina López", items: [
+          { label: "Revocar invitación", icon: CloseIcon, destructive: true, onSelect: () => {} },
+          { label: "Reenviar invitación", icon: RotateIcon, onSelect: resend },
+          { label: "Cambiar roles", hidden: true, onSelect: () => {} },
+        ] }}><p>{"datos"}</p></Page></MemoryRouter>
+      </AppChromeProvider>);
+
+      const trigger = screen.getByRole("button", { name: "Acciones de Martina López" });
+      expect(trigger).toHaveAttribute("aria-haspopup", "dialog");
+      await user.click(trigger);
+      const sheet = await screen.findByRole("dialog", { name: "Martina López" });
+      const menu = within(sheet).getByRole("menu", { name: "Acciones de Martina López" });
+      expect(within(menu).getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["Reenviar invitación", "Revocar invitación"]);
+      expect(within(menu).getByRole("separator")).toBeInTheDocument();
+      expect(within(menu).getByRole("menuitem", { name: "Revocar invitación" })).toHaveClass("text-[var(--peligro)]");
+      expect(menu.querySelector("svg")).toBeNull();
+      expect(await axe(container.ownerDocument.body)).toHaveNoViolations();
+
+      await user.click(within(menu).getByRole("menuitem", { name: "Reenviar invitación" }));
+      expect(resend).toHaveBeenCalledWith(trigger);
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    });
+
+    // «Criterio · Menús» (v136): en la compu, cada opción del ⋮ de la banda lleva su ícono gris de 16.
+    it("en la compu, cada opción del ⋮ de la banda lleva su ícono", async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<MemoryRouter><Page title="Martina López" moreActions={{ label: "Acciones de Martina López", items: [
+        { label: "Reenviar invitación", icon: RotateIcon, onSelect: () => {} },
+      ] }}><p>{"datos"}</p></Page></MemoryRouter>);
+
+      screen.getByRole("button", { name: "Acciones de Martina López" }).focus();
+      await user.keyboard("{Enter}");
+      expect((await screen.findByRole("menuitem", { name: "Reenviar invitación" })).querySelector("svg")).toHaveClass("size-4");
     });
 
     // M-Configuracion y M-Rol (.ap-cuerpo): el cuerpo con margen va con 4 arriba, 20 a los costados y 14 entre bloques.

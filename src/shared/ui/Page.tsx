@@ -20,7 +20,8 @@ import { TabCount, Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
 export interface PageOverflowAction {
   label: string;
-  /** «Criterio · Menús»: en la compu, cada opción con su ícono gris de 16 a la izquierda (tablero Cuenta-Plat). */
+  /** «Criterio · Menús» (v136): en la compu, cada opción con su ícono de 16 a la izquierda, gris tenue; el de una de
+   * peligro, en rojo. La hoja del teléfono no lleva íconos. */
   icon?: ComponentType<{ className?: string }>;
   /** Recibe el ⋮ de la banda: un diálogo que se abre desde acá le devuelve el foco al cerrar (la opción se va con el menú). */
   onSelect: (trigger: HTMLButtonElement | null) => void;
@@ -28,10 +29,12 @@ export interface PageOverflowAction {
   hidden?: boolean;
 }
 
-/** Una opción del ⋮ de la banda, con su ícono gris a la izquierda si lo tiene (como RowActions). */
+/** Una opción del ⋮ de la banda, con su ícono a la izquierda si lo tiene (como RowActions). */
 function OverflowLabel({ action }: { action: PageOverflowAction }): ReactNode {
   const Icon = action.icon;
-  return Icon ? <span className="inline-flex items-center gap-2"><Icon className="size-4" />{action.label}</span> : action.label;
+  return Icon
+    ? <span className="inline-flex items-center gap-2"><Icon className={cn("size-4", action.destructive ? "text-current" : "text-[var(--t3)]")} />{action.label}</span>
+    : action.label;
 }
 
 /** Una opción del ⋮ como la pide la hoja del teléfono. */
@@ -74,9 +77,9 @@ interface PageProps {
   actionsNotice?: ReactNode;
   /** Ir a algo que vive afuera («Ver página»): en la compu, la primera de las acciones; en el teléfono, texto en la barra. */
   barAction?: { label: string; href?: string; onClick?: () => void };
-  /** El ⋮ de la banda. `phoneSheet`: en el teléfono abre la hoja de RowActions con el título de la ficha, como dibuja
-   * M-Cuenta-Plat («Operador: acciones»); sin él, todavía un desplegable. */
-  moreActions?: { label: string; items: readonly PageOverflowAction[]; phoneSheet?: boolean };
+  /** El ⋮ de la banda. «Criterio · Menús» (v136): en la compu abre debajo del ⋮, con el ícono de cada opción; en el
+   * teléfono, la hoja de RowActions desde abajo, con el nombre de la ficha o de la lista de título y sin íconos. */
+  moreActions?: { label: string; items: readonly PageOverflowAction[] };
   /** Un cartel de algo que sigue pasando (tablero «Criterio · Avisos»): debajo de la banda, arriba del contenido. */
   banner?: ReactNode;
   /** Los grupos de datos de una ficha («Criterio · Marco», Pestañas). Con dos o más, una pestaña por grupo: en la compu
@@ -202,17 +205,15 @@ export function Page({
           {barAction ? barAction.href
             ? <a href={barAction.href} target="_blank" rel="noreferrer" className={barTextClass}>{barAction.label}</a>
             : <button type="button" onClick={barAction.onClick} className={barTextClass}>{barAction.label}</button> : null}
-          {visibleMoreActions.length > 0 && moreActions ? moreActions.phoneSheet ? <>
-            {/* M-Cuenta-Plat («Operador: acciones»): el ⋮ abre la hoja de abajo, con el nombre de la ficha de título. */}
+          {visibleMoreActions.length > 0 && moreActions ? <>
+            {/* «Criterio · Menús» (v136; M-Cuenta-Plat, M-Usuario, M-Usuarios, M-WA-Contacto, M-WA-Conversacion…): el ⋮ de
+                la barra de una ficha o de una lista abre la hoja de abajo, con su nombre de título; lo de peligro, al final. */}
             <AppIconButton ref={moreTrigger} label={moreActions.label} aria-haspopup="dialog" aria-expanded={moreSheetOpen}
               onClick={() => setMoreSheetOpen(true)}><MoreVerticalIcon className="size-5" /></AppIconButton>
             <PhoneActionsSheet open={moreSheetOpen} onOpenChange={setMoreSheetOpen} label={moreActions.label} title={title} reasonId={moreSheetId}
               regular={regularActions.map(sheetAction)} destructive={destructiveActions.map(sheetAction)}
               onSelect={(action) => { setMoreSheetOpen(false); action.run(moreTrigger.current); }} />
-          </> : <DropdownMenu>
-            <DropdownMenuTrigger asChild><AppIconButton ref={moreTrigger} label={moreActions.label}><MoreVerticalIcon className="size-5" /></AppIconButton></DropdownMenuTrigger>
-            <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>
-          </DropdownMenu> : null}
+          </> : null}
         </>} />
       {tabList ? <div data-slot="page-tabs" className="border-b border-[var(--borde)] bg-[var(--lado-activo)]">{tabList}</div> : null}
       {/* M-Avisos (.ap-cuerpo): debajo de un cartel, el cuerpo con margen arranca a 14 y no a 4. Lo decide el cartel que se

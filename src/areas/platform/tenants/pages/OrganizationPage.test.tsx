@@ -111,11 +111,11 @@ describe("Ficha de Organización", () => {
   it("403 principal y falta de read bloquean la ficha", async () => {
     server.use(http.get("/api/platform/tenants/delta", () => HttpResponse.json({ code: "Auth.Forbidden" }, { status: 403 }))); render(); expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
   });
-  it("a 390 usa menú con menuitem, fecha corta y actor/motivo; axe", async () => {
+  it("a 390 el ⋮ abre la hoja con menuitem, fecha corta y actor/motivo; axe", async () => {
     asPhone(); const user = userEvent.setup(); const { container } = render(); expect(await screen.findByRole("heading", { name: "Grupo Delta" })).toBeVisible();
     expect(screen.getByText(/3 empresas · 11 miembros/)).toBeVisible(); expect(await screen.findByText("20/09 11:02")).toBeVisible(); expect(screen.getByText("Martín Sosa · Se resolvió el reclamo")).toBeVisible();
     expect(screen.getByText(history.action)).toBeVisible(); expect(screen.queryByText(history.summary)).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Suspender" })).not.toBeInTheDocument(); const trigger = screen.getByRole("button", { name: "Acciones de Grupo Delta" }); trigger.focus(); await user.keyboard("{ArrowDown}"); expect(await screen.findByRole("menuitem", { name: "Suspender" })).toBeVisible(); await user.keyboard("{Escape}"); expect(await axe(container)).toHaveNoViolations();
+    expect(screen.queryByRole("button", { name: "Suspender" })).not.toBeInTheDocument(); const trigger = screen.getByRole("button", { name: "Acciones de Grupo Delta" }); await user.click(trigger); expect(within(await screen.findByRole("dialog", { name: "Grupo Delta" })).getByRole("menuitem", { name: "Suspender" })).toBeVisible(); await user.keyboard("{Escape}"); expect(await axe(container)).toHaveNoViolations();
   });
   it("en-US conserva formatos y textos traducidos", async () => {
     const { queryClient } = render(); await screen.findByRole("heading", { name: "Grupo Delta" });

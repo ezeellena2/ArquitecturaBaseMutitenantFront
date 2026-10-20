@@ -532,3 +532,80 @@ export function AlertTriangleIcon(props: IconProps) {
     </Icon>
   );
 }
+
+// «Criterio · Menús» (v136): los íconos de las opciones de un ⋮ en la compu, con el dibujo que el lienzo usa para la
+// misma acción (generador menus_y_solo_lectura_1004.py, IC).
+
+/// «Reenviar invitación» y «Comprobar medio de pago» (tableros Usuario, Usuarios, Empresa, Cuentas, Plat-WA-Numero y
+/// WA-Admin): la flecha circular.
+export function RotateIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M20 11a8 8 0 1 0-2.3 5.7" />
+      <path d="M20 5v6h-6" />
+    </Icon>
+  );
+}
+
+/// «Quitar de la empresa» y «Quitar de la organización» (tablero Usuario): la persona con «−».
+export function UserMinusIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="10" cy="8" r="3.5" />
+      <path d="M4 20a6 6 0 0 1 12 0" />
+      <path d="M16 11h5" />
+    </Icon>
+  );
+}
+
+/// «Desconectar» y «Desvincular» (tableros WA-Admin y WA-Mensajes): el eslabón cortado.
+export function UnlinkIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M9 15l6-6" />
+      <path d="M10.5 6.5 12 5a4 4 0 0 1 6 6l-1.5 1.5" />
+      <path d="M13.5 17.5 12 19a4 4 0 0 1-6-6l1.5-1.5" />
+    </Icon>
+  );
+}
+
+/// «Hacer principal» (tablero Cuenta-Metodo): la estrella.
+export function StarIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m12 4 2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 16.4l-4.8 2.5.9-5.4-3.9-3.8 5.4-.8z" />
+    </Icon>
+  );
+}
+
+/// «Cambiar a quién atiende» (tablero WA-Admin): las dos flechas.
+export function SwapIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M7 7h12" />
+      <path d="m15 3 4 4-4 4" />
+      <path d="M17 17H5" />
+      <path d="m9 13-4 4 4 4" />
+    </Icon>
+  );
+}
+
+/// «Editar» en el ⋮ de una fila (tableros WA-Equipos y WA-Respuestas): el lápiz entero, de punta a punta.
+export function EditIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 20h4L19 9l-4-4L4 16z" />
+    </Icon>
+  );
+}
+
+/// «Borrar» o «Quitar» en el ⋮ de una fila (tableros Cuenta-Metodo, WA-Equipos y WA-Respuestas): el tacho de lados rectos.
+export function DeleteIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4.5 7h15" />
+      <path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7" />
+      <path d="M6.5 7l1 12.5h9l1-12.5" />
+    </Icon>
+  );
+}

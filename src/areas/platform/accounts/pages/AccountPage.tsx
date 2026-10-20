@@ -137,7 +137,7 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
         {canResend ? <Button variant="outline" pending={busy} pendingLabel={t("platformAccounts:detail.resending")} onClick={() => resend.mutate({ id: data.id, name })}>{t("platformAccounts:actions.resend")}</Button> : null}</> : undefined}
       // «Criterio · Menús»: cada opción con su ícono gris (Cuenta-Plat: candado en «Restablecer el autenticador», ✕ en «Quitar
       // operador», tacho en «Dar de baja»; las demás, las del ⋮ de la lista de Cuentas). En el teléfono, la hoja (M-Cuenta-Plat).
-      moreActions={{ label: t("platformAccounts:rowActions", { name }), phoneSheet: true, items: [
+      moreActions={{ label: t("platformAccounts:rowActions", { name }), items: [
         ...accountActions.map((action) => ({ label: t(action === "revoke-sessions" ? "platformAccounts:detail.closeSessions" : `platformAccounts:actions.${action}`), icon: accountActionIcons[action], hidden: !phone, destructive: action === "suspend", onSelect: (trigger: HTMLElement | null) => open(action, trigger) })),
         { label: t("platformAccounts:operator.change"), icon: Pencil, hidden: !phone || !mutable || !canOperators || !operator || invitation, onSelect: (trigger) => open("permissions", trigger) },
         { label: t("platformAccounts:actions.resend"), icon: RotateCw, hidden: !phone || !canResend || busy, onSelect: () => resend.mutate({ id: data.id, name }) },

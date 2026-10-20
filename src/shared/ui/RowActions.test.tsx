@@ -74,6 +74,9 @@ describe("RowActions", () => {
     expect(items.map((item) => item.textContent)).toEqual(["Roles", "Eliminar"]);
     expect(menu.querySelector("[role='separator']")).not.toBeNull();
     expect(items[1]).toHaveAttribute("data-variant", "destructive");
+    // «Criterio · Menús» (.mn .it svg y .it.pel svg): el ícono va en el gris tenue; el de una de peligro, del rojo de su texto.
+    expect(items[0].querySelector("svg")).toHaveClass("size-4", "text-[var(--t3)]");
+    expect(items[1].querySelector("svg")).toHaveClass("text-current");
   });
 
   it("keeps the trigger and focus when the row name changes", () => {

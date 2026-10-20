@@ -62,7 +62,7 @@ export function RowActions({ label, title, actions }: { label: string; title?: s
         aria-disabled={off || undefined} aria-describedby={off ? id : undefined}
         className={off ? "flex-col items-start gap-0.5 text-[var(--t3)] focus:bg-transparent focus:text-[var(--t3)] [&_svg:not([class*='text-'])]:text-[var(--t3)]" : undefined}
         onSelect={(event) => { if (off) event.preventDefault(); else action.onSelect(trigger.current); }}>
-        <span className="inline-flex items-center gap-2"><Icon className="size-4" />{action.label}</span>
+        <span className="inline-flex items-center gap-2"><Icon className={cn("size-4", danger && !off ? "text-current" : "text-[var(--t3)]")} />{action.label}</span>
         {off ? <span id={id} className="pl-6 text-[12px] leading-[1.35] whitespace-normal">{action.disabledReason}</span> : null}
       </DropdownMenuItem>
     );
@@ -92,7 +92,8 @@ export type PhoneSheetAction = Pick<RowAction, "label" | "accessibleName" | "dis
 /// Tableros M-Empresa («Invitación: acciones»), M-Cuenta-Metodo y M-Cuenta-Plat («Operador: acciones») (.ap-hoja
 /// .ap-acciones): en el teléfono el ⋮ abre una hoja desde abajo, con el dato de la fila o de la ficha de título y sin ✕;
 /// cada opción mide 54, con letra de 16,5 y una línea entre ellas; las de peligro van al final, en rojo, después de una
-/// franja gris. Un toque afuera la cierra, como un menú. La usan RowActions y el ⋮ de la barra de una ficha (Page).
+/// franja gris. Un toque afuera la cierra, como un menú. La usan RowActions y el ⋮ de la barra de una ficha o de una lista
+/// (Page), sin íconos («Criterio · Menús», v136).
 export function PhoneActionsSheet<T extends PhoneSheetAction>({ open, onOpenChange, label, title, regular, destructive, reasonId, onSelect }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
