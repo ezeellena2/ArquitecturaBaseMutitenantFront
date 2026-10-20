@@ -3,6 +3,21 @@ import test from "node:test";
 import { identitySupplementDefinitions, identitySupplementLimitations, identityPhoneFixtures, requireThirtyDayGrace, requireEmailOwnership, runIdentityDependency } from "./e2e-completo-identidad-complemento.mjs";
 import * as identity from "./e2e-completo-identidad-complemento.mjs";
 
+test("la barra móvil de Identidad registra sólo06 y09 sin ejecutar otras preparaciones", async () => {
+  const targets = ["IDS-06", "IDS-09"]; const recorded = []; const executed = [];
+  assert.deepEqual(identity.identitySupplementMobileBarDefinitions.map(({ id }) => id), targets);
+  for (const row of identity.identitySupplementMobileBarDefinitions) assert.equal(row, identitySupplementDefinitions.find(({ id }) => id === row.id));
+  const h = { width: 390, record: async (id, _page, action) => { recorded.push(id); return { ok: true, value: await action() }; } };
+  await identity.runIdentityMobileBarCases(h, { run: async (selected) => {
+    for (const row of identitySupplementDefinitions) {
+      const result = await selected.record(row.id, () => ({}), async () => executed.push(row.id));
+      if (!targets.includes(row.id)) assert.deepEqual(result, { ok: false, skipped: true });
+    }
+  } });
+  assert.deepEqual(recorded, targets); assert.deepEqual(executed, targets);
+  await assert.rejects(identity.runIdentityMobileBarCases({ ...h, width: 1440 }, { run: async () => assert.fail("Sólo390") }), /390/u);
+});
+
 test("nueve registros de identidad cubren el desempate y el fallback por antigüedad mediante grupo conjunto", () => {
   assert.equal(identitySupplementDefinitions.length, 9);
   assert.equal(new Set(identitySupplementDefinitions.map((item) => item.id)).size, 9);
@@ -126,11 +141,15 @@ test("cambiar organización espera la ficha antes de decidir acción y conserva 
       click: async () => actions.push("abrir directo"), or: () => ({ first: () => ({ waitFor: async () => { waiting.resolve(); await loaded.promise; } }) }) };
     const menu = { filter: () => menu, first: () => menu, getAttribute: async () => "dialog", click: async () => actions.push("abrir hoja") };
     const dialog = { filter: () => dialog, getByRole: (role) => role === "textbox" ? { fill: async (reason) => assert.match(reason, /última Dueña/u) } : { click: async () => actions.push("confirmar") }, waitFor: async ({ state }) => assert.equal(state, "hidden") };
+    const sheetMenu = { waitFor: async () => {}, getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.equal(options.name, "Suspender"); return { click: async () => actions.push("opción Suspender") }; } };
+    const sheet = { waitFor: async () => {}, getByRole: (role) => { assert.equal(role, "menu"); return sheetMenu; } };
+    const heading = { filter: () => heading, first: () => heading, innerText: async () => "Organización propia" };
     const response = { url: () => "https://localtest.me/api/platform/tenants/propia/suspend", request: () => ({ method: () => "POST" }), status: () => 200 };
-    const page = { goto: async (url) => assert.equal(new URL(url).pathname, "/plataforma/organizaciones/propia"),
+    const page = { viewportSize: () => ({ width: mode === "hoja" ? 390 : 1440 }), goto: async (url) => assert.equal(new URL(url).pathname, "/plataforma/organizaciones/propia"),
       waitForResponse: async (predicate) => { assert.equal(predicate(response), true); return response; },
       getByRole: (role, options = {}) => {
-        if (role === "dialog") return dialog;
+        if (role === "heading") return heading;
+        if (role === "dialog") { if (options.name) { assert.deepEqual(options, { name: "Organización propia", exact: true }); return sheet; } return dialog; }
         if (role === "textbox") return {};
         if (role === "menuitem") { assert.equal(options.name, "Suspender"); return { click: async () => actions.push("opción Suspender") }; }
         return typeof options.name === "string" ? direct : menu;

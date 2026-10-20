@@ -6,6 +6,7 @@ import { requireModuleProblem, runModuleDependency } from "./e2e-completo-modulo
 import { cleanupContinuationSessions } from "./e2e-completo-continuacion.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
 import { openAction } from "./e2e-completo-plataforma.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
 const definition = (number, actor, action, route, expected, covers = []) => ({
   id: "PUB-C-" + String(number).padStart(2, "0"), area: "Sitio público y Configuración", actor, action, route, expected, covers,
@@ -21,6 +22,11 @@ export const publicSupplementDefinitions = [
   definition(7, "Dueño A", "Salir con cambios y seguir editando", "/org/configuracion", "Seguir editando conserva borrador; Salir sin guardar restaura lo persistido sin PUT ni cambiar versión.", ["BACK-CF-002"]),
   definition(8, "Dueño A", "Buscar, filtrar y abrir auditoría de persona/empresa y Plataforma", "/org/auditoria", "Cursor sin total, búsqueda y filtros reales, detalle de invitación enmascarado; Plataforma sin id/nombre/correo del operador ni motivo interno.", ["BACK-CF-007"]),
 ];
+export const publicSupplementMobileBarDefinitions = publicSupplementDefinitions.filter(({ id }) => ["PUB-C-02", "PUB-C-05"].includes(id));
+
+export async function runPublicMobileBarCases(h, { run = runPublicSupplementCases } = {}) {
+  return run(selectMobileBarCases(h, { targets: publicSupplementMobileBarDefinitions.map(({ id }) => id), prepare: ["PUB-C-01"] }));
+}
 
 export function publicHostUrl(base, slug, route) {
   assert.match(slug, /^[a-z][a-z0-9-]{0,62}$/u);

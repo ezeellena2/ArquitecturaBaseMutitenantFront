@@ -9,6 +9,7 @@ import { parseLegalPublicationReceipt, assertPendingTerms, acceptPublishedLegalA
 import { journeyDate } from "./recorrido-usuario.mjs";
 import { nationalPhone } from "./recorrido-usuario-e11.mjs";
 import { openAction } from "./e2e-completo-plataforma.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
 const definition = (number, actor, action, route, expected, covers) => ({ id: `IDS-${String(number).padStart(2, "0")}`, area: "Complemento de identidad", actor, action, route, expected, covers, critical: true, source: "scripts/e2e-completo-identidad-complemento.mjs" });
 export const identitySupplementDefinitions = [
@@ -25,6 +26,12 @@ export const identitySupplementDefinitions = [
 
 export const identitySupplementLimitations = {};
 export const identitySupplementProofGroups = { "BACK-ID-019": [["IDS-07", "IDS-09"]] };
+export const identitySupplementMobileBarDefinitions = identitySupplementDefinitions.filter(({ id }) => ["IDS-06", "IDS-09"].includes(id));
+
+export async function runIdentityMobileBarCases(h, { run = runIdentitySupplementCases } = {}) {
+  return run(selectMobileBarCases(h, { targets: identitySupplementMobileBarDefinitions.map(({ id }) => id) }));
+}
+
 export function identityPhoneFixtures(width) {
   assert.ok([1440, 390].includes(width)); const offset = width === 1440 ? 0 : 1;
   return { foreign: `+54911345678${40 + offset}`, unknown: `+54911345678${44 + offset}` };

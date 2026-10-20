@@ -3,8 +3,16 @@ import { test } from "node:test";
 import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions, buildCaseDiagnostic, archivePreviousAttempt } from "./e2e-completo.mjs";
+import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions, buildCaseDiagnostic, archivePreviousAttempt, needsRealExecution } from "./e2e-completo.mjs";
 import { mobileBarPlans } from "./e2e-completo-acciones-moviles.mjs";
+
+test("reanudar una selección ya verde evita iniciar otro entorno, salvo revalidación móvil expresa", () => {
+  const suites = [{ definitions: [{ id: "A" }] }];
+  const executions = [{ id: "A", results: [{ width: 390, status: "passed" }] }];
+  assert.equal(needsRealExecution(suites, executions, { resume: true, widths: [390] }), false);
+  for (const options of [{ resume: true }, { resume: false, widths: [390] }, { resume: true, widths: [390], repeatMobileActions: true }]) assert.equal(needsRealExecution(suites, executions, options), true);
+  for (const status of ["failed", "blocked", "manual"]) assert.equal(needsRealExecution(suites, [{ id: "A", results: [{ width: 390, status }] }], { resume: true, widths: [390] }), true);
+});
 
 test("repetir evidencia verde requiere selección expresa de barras móviles y conserva el avance", () => {
   const options = parseArguments(["--repeat-mobile-actions", "--width=390", "--resume", "--no-build"]);

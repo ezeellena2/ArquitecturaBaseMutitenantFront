@@ -4,6 +4,53 @@ import { EventEmitter } from "node:events";
 import * as organization from "./e2e-completo-organizaciones-complemento.mjs";
 import { organizationSupplementDefinitions, organizationSupplementProofGroups, requireExpiredMemberOnce, requireUrgentPageFirst, requirePreservedPersonal, requireUnavailableInvitation, requireStateHistory, requireRevokedBusiness } from "./e2e-completo-organizaciones-complemento.mjs";
 
+test("la barra móvil de Organización selecciona sólo01 y04 sobre el plan original", async () => {
+  const targets = ["ORX-01", "ORX-04"]; const recorded = []; const executed = [];
+  assert.deepEqual(organization.organizationSupplementMobileBarDefinitions.map(({ id }) => id), targets);
+  const h = { width: 390, record: async (id, _page, action) => { recorded.push(id); return { ok: true, value: await action() }; } };
+  await organization.runOrganizationMobileBarCases(h, { run: async (selected, repair, definitions) => {
+    assert.equal(selected, h); assert.equal(repair, true);
+    for (const row of definitions) assert.equal(row, organizationSupplementDefinitions.find(({ id }) => id === row.id));
+    const run = organization.createOrganizationRecorder(selected, { repair, definitions, outcomes: new Map(), getPage: () => "Plataforma", setCapturePage: () => {} });
+    for (const number of [1, 2, 3, 4]) await run(number, async () => executed.push(`ORX-${String(number).padStart(2, "0")}`));
+  } });
+  assert.deepEqual(recorded, targets); assert.deepEqual(executed, targets);
+  await assert.rejects(organization.runOrganizationMobileBarCases({ ...h, width: 1440 }, { run: async () => assert.fail("Sólo390") }), /390/u);
+});
+
+test("el estado móvil de Organización elige la acción dentro del menú de la hoja titulada", async () => {
+  const calls = [];
+  const ready = { filter: () => ready, first: () => ready, waitFor: async () => calls.push("ficha lista") };
+  const direct = { or: () => ready, isVisible: async () => false };
+  const trigger = { filter: () => trigger, first: () => trigger, getAttribute: async () => "dialog", click: async () => calls.push("abrir barra") };
+  const menu = { waitFor: async () => calls.push("menú visible"), getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.deepEqual(options, { name: "Suspender", exact: true }); return { click: async () => calls.push("Suspender") }; } };
+  const dialog = { waitFor: async (options) => calls.push(options?.state === "hidden" ? "hoja cerrada" : "hoja visible"), getByRole: (role) => { assert.equal(role, "menu"); return menu; } };
+  const heading = { filter: () => heading, first: () => heading, innerText: async () => "Organización propia" };
+  const page = { viewportSize: () => ({ width: 390 }), getByRole: (role, options) => {
+    if (role === "button") return options.name === "Suspender" ? direct : trigger;
+    if (role === "heading") return heading;
+    assert.equal(role, "dialog", "No se busca un menuitem global bajo el overlay.");
+    assert.deepEqual(options, { name: "Organización propia", exact: true }); return dialog;
+  } };
+  await organization.openOrganizationStateAction(page, "Suspender");
+  assert.deepEqual(calls, ["ficha lista", "abrir barra", "hoja visible", "menú visible", "Suspender", "hoja cerrada"]);
+});
+
+test("el estado de Organización conserva botón directo o RowActions de escritorio", async () => {
+  for (const visible of [true, false]) {
+    const calls = [];
+    const ready = { filter: () => ready, first: () => ready, waitFor: async () => calls.push("ficha lista") };
+    const direct = { or: () => ready, isVisible: async () => visible, click: async () => calls.push("directo") };
+    const trigger = { filter: () => trigger, first: () => trigger, click: async () => calls.push("RowActions") };
+    const page = { viewportSize: () => ({ width: 1440 }), getByRole: (role, options) => {
+      if (role === "button") return options.name === "Suspender" ? direct : trigger;
+      assert.equal(role, "menuitem"); assert.deepEqual(options, { name: "Suspender", exact: true }); return { click: async () => calls.push("acción") };
+    } };
+    await organization.openOrganizationStateAction(page, "Suspender");
+    assert.deepEqual(calls, visible ? ["ficha lista", "directo"] : ["ficha lista", "RowActions", "acción"]);
+  }
+});
+
 test("la reparación de estados ejecuta sólo ORX04 sin reconstruir invitaciones ni moderación verdes", async () => {
   assert.deepEqual(organization.organizationStateRepairDefinitions.map((entry) => entry.id), ["ORX-04"]);
   const seen = []; const outcomes = new Map(); let captured;

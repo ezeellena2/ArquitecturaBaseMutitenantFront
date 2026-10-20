@@ -7,6 +7,7 @@ import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 import { confirmRecentAuthentication, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
 import { openPublicModerationAction } from "./e2e-completo-publico-complemento.mjs";
+import { chooseBarAction } from "./e2e-completo-menu-barra.mjs";
 
 const def = (number, actor, action, route, expected, covers = [], extra = {}) => ({ id: `ORX-${String(number).padStart(2, "0")}`, area: "Organizaciones · complemento", actor, action, route, expected, covers, critical: true, source: "scripts/e2e-completo-organizaciones-complemento.mjs", ...extra });
 export const organizationSupplementDefinitions = [
@@ -19,6 +20,21 @@ export const organizationSupplementProofGroups = { "BACK-OR-012": [["BIZ-20", "O
 export const proofGroups = organizationSupplementProofGroups;
 export const organizationRepairDefinitions = organizationSupplementDefinitions.slice(0, 3);
 export const organizationStateRepairDefinitions = organizationSupplementDefinitions.filter((entry) => entry.id === "ORX-04");
+export const organizationSupplementMobileBarDefinitions = organizationSupplementDefinitions.filter(({ id }) => ["ORX-01", "ORX-04"].includes(id));
+
+export async function runOrganizationMobileBarCases(h, { run = runOrganizationPlan } = {}) {
+  assert.equal(h.width, 390, "La repetición del menú de barra corresponde sólo a390 px.");
+  return run(h, true, organizationSupplementMobileBarDefinitions);
+}
+
+export async function openOrganizationStateAction(page, action) {
+  const button = page.getByRole("button", { name: action, exact: true });
+  const actions = page.getByRole("button", { name: /^Acciones de /u }).filter({ visible: true }).first();
+  await button.or(actions).filter({ visible: true }).first().waitFor();
+  if (await button.isVisible()) await button.click();
+  else if (page.viewportSize().width === 390) await chooseBarAction(page, actions, action);
+  else { await actions.click(); await page.getByRole("menuitem", { name: action, exact: true }).click(); }
+}
 
 export function createOrganizationRecorder(h, { repair = false, definitions, outcomes, getPage, setCapturePage, defaultPage }) {
   const selectedIds = new Set((definitions ?? (repair ? organizationRepairDefinitions : organizationSupplementDefinitions)).map((row) => row.id));
@@ -174,10 +190,7 @@ async function runOrganizationPlan(h, repair, definitions) {
   };
   const state = async (tenantId, action, reason) => {
     await admin(); await platformPage.goto(url(`/plataforma/organizaciones/${tenantId}`));
-    const button = platformPage.getByRole("button", { name: action, exact: true });
-    await button.or(platformPage.getByRole("button", { name: /^Acciones de /u })).filter({ visible: true }).first().waitFor();
-    if (await button.isVisible()) await button.click();
-    else { await platformPage.getByRole("button", { name: /^Acciones de /u }).filter({ visible: true }).first().click(); await platformPage.getByRole("menuitem", { name: action, exact: true }).click(); }
+    await openOrganizationStateAction(platformPage, action);
     const dialog = platformPage.getByRole("dialog").filter({ has: platformPage.getByRole("textbox", { name: /^Motivo/u }) }); await dialog.getByRole("textbox", { name: /^Motivo/u }).fill(reason);
     const transition = { Suspender: ["suspend", "Suspended"], Reactivar: ["reactivate", "Active"], Cerrar: ["close", "Closed"] }[action]; assert.ok(transition);
     await operatorClick(dialog.getByRole("button", { name: action, exact: true }), `/api/platform/tenants/${tenantId}/${transition[0]}`);

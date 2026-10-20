@@ -5,6 +5,35 @@ import { publicSupplementDefinitions, requireUnavailableMatrix, chooseReferenceC
   requireAuditPrivacy, withPublicRestoration, publicHostUrl } from "./e2e-completo-publico-complemento.mjs";
 import * as publicCases from "./e2e-completo-publico-complemento.mjs";
 
+test("la barra móvil pública prepara01 sin alterar evidencia y registra sólo02 y05", async () => {
+  const targets = ["PUB-C-02", "PUB-C-05"]; const recorded = []; const executed = [];
+  const historical = new Map(publicSupplementDefinitions.map(({ id }) => [id, { status: "passed", image: id + "-previa.png" }]));
+  const fixtureEvidence = historical.get("PUB-C-01");
+  assert.deepEqual(publicCases.publicSupplementMobileBarDefinitions.map(({ id }) => id), targets);
+  for (const row of publicCases.publicSupplementMobileBarDefinitions) assert.equal(row, publicSupplementDefinitions.find(({ id }) => id === row.id));
+  const h = { width: 390, record: async (id, _page, action) => { recorded.push(id); const value = await action(); historical.set(id, { status: "passed", image: id + "-nueva.png" }); return { ok: true, value }; } };
+  await publicCases.runPublicMobileBarCases(h, { run: async (selected) => {
+    for (const row of publicSupplementDefinitions) {
+      const result = await selected.record(row.id, () => ({}), async () => executed.push(row.id));
+      if (row.id === "PUB-C-01") assert.equal(result.preparationOnly, true);
+      else if (!targets.includes(row.id)) assert.deepEqual(result, { ok: false, skipped: true });
+    }
+  } });
+  assert.deepEqual(recorded, targets); assert.deepEqual(executed, ["PUB-C-01", ...targets]);
+  assert.equal(historical.get("PUB-C-01"), fixtureEvidence);
+  await assert.rejects(publicCases.runPublicMobileBarCases({ ...h, width: 1440 }, { run: async () => assert.fail("Sólo390") }), /390/u);
+});
+
+test("si falla la fixture pública01 el runner móvil no registra02 ni05", async () => {
+  const failure = new Error("No se creó la organización propia"); const recorded = [];
+  const h = { width: 390, record: async (id) => recorded.push(id) };
+  await assert.rejects(publicCases.runPublicMobileBarCases(h, { run: async (selected) => {
+    await selected.record("PUB-C-01", () => ({}), async () => { throw failure; });
+    assert.fail("No continúa sin fixture");
+  } }), (error) => error.cause === failure);
+  assert.deepEqual(recorded, []);
+});
+
 const problem = { status: 404, code: "PublicSite.PublicPage.NotFound", title: "No disponible", traceId: "traza" };
 const matrix = () => ["unknown", "draft", "blocked", "suspended"].flatMap((state) => ["anonymous", "member"].flatMap((actor) => ["/api/public-site", "/api/public-site/logo"].map((route) => ({ state, actor, route, status: 404, body: { ...problem, traceId: state + actor + route } }))));
 test("404 uniforme exige todas las variantes y actores sin aceptar información extra", () => {

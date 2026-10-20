@@ -90,6 +90,12 @@ export function collectSuiteDefinitions(suites) {
   return [...new Map(suites.flatMap((suite) => suite.definitions.map((entry) => [entry.id, entry]))).values()];
 }
 
+export function needsRealExecution(suites, executions, options) {
+  if (!options.resume || options.repeatMobileActions) return true;
+  return suites.some((suite) => suite.definitions.some((entry) => (options.widths ?? [1440, 390]).some((width) =>
+    !executions.find((row) => row.id === entry.id)?.results.some((result) => result.width === width && result.status === "passed"))));
+}
+
 /** Conserva la causa de un clic bloqueado sin copiar el HTML ni el contenido del elemento superpuesto. */
 export function buildCaseDiagnostic(error, diagnostic) {
   const message = String(error.message ?? error);
@@ -243,6 +249,11 @@ export async function main(options = parseArguments([])) {
   await persist(options.inventoryOnly || options.refreshOnly);
   if (options.inventoryOnly || options.refreshOnly) {
     console.info(`Matriz: ${report.matrix.length} casos; informe: ${path.join(output, "index.html")}`);
+    return report;
+  }
+  if (!needsRealExecution(suites, executions, options)) {
+    await persist(true);
+    console.info(`Resultado directo: ${JSON.stringify(report.executionSummary)}. Sin casos pendientes en la selección; no se inició otro entorno.`);
     return report;
   }
   let env;
