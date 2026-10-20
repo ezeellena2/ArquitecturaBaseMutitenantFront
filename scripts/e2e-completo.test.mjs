@@ -3,7 +3,17 @@ import { test } from "node:test";
 import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions } from "./e2e-completo.mjs";
+import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions, buildCaseDiagnostic } from "./e2e-completo.mjs";
+
+test("el bloqueo del clic se resume antes de truncar sin copiar el contenido del elemento superpuesto", () => {
+  const error = new Error('locator.click: Timeout\n - waiting for button Perfil\n <div role="dialog" data-state="open">contenido-privado</div> intercepts pointer events');
+  const actual = buildCaseDiagnostic(error);
+  assert.match(actual, /role=dialog/);
+  assert.match(actual, /open/);
+  assert.match(actual, /waiting for button Perfil/);
+  assert.equal(actual.includes("contenido-privado"), false);
+  assert.match(buildCaseDiagnostic(new Error("HTTP inesperado"), () => "Ruta /login; fase methods"), /fase methods.*HTTP inesperado/);
+});
 
 test("seleccionar una suite y su reparación conserva una sola definición y no reintenta por defecto", () => {
   assert.deepEqual(collectSuiteDefinitions([{ definitions: [{ id: "A", expected: "viejo" }] }, { definitions: [{ id: "A", expected: "corregido" }, { id: "B" }] }]), [{ id: "A", expected: "corregido" }, { id: "B" }]);

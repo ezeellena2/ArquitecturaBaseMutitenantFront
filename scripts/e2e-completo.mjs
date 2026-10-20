@@ -15,11 +15,10 @@ import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { screens, guidedCases, existingScriptCases, inventoryMetadata } from "./e2e-completo-inventario-front.mjs";
 import { buildMatrix, importedJourneySteps, parseTapSummary, safeEvidenceText } from "./e2e-completo-matriz.mjs";
 import { createBrowserSupport, viewportOf } from "./e2e-completo-soporte.mjs";
-import { applyAdditionalCoverage, coverageLimitations } from "./e2e-completo-cobertura.mjs";
+import { applyAdditionalCoverage } from "./e2e-completo-cobertura.mjs";
 import { parseFunctionalBaselineIncidents } from "./e2e-completo-incidentes.mjs";
-import { supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemento.mjs";
 import { enrichBaselineIncidents } from "./e2e-completo-triage.mjs";
-import { identitySupplementLimitations } from "./e2e-completo-identidad-complemento.mjs";
+import { verificationLimitations } from "./e2e-completo-limitaciones.mjs";
 import { enrichOriginalExecutions } from "./e2e-completo-metadatos-base.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -45,10 +44,30 @@ const suiteSpecs = {
   negocioarreglos: ["./e2e-completo-negocio.mjs", "businessRepairDefinitions", "runBusinessRepairCases"],
   plataformaarreglos: ["./e2e-completo-plataforma.mjs", "platformRepairDefinitions", "runPlatformRepairCases"],
   negocioinicioarreglo: ["./e2e-completo-negocio-complemento.mjs", "businessHomeRepairDefinitions", "runBusinessHomeRepairCases"],
+  dominioextra: ["./e2e-completo-dominio-complemento.mjs", "domainSupplementDefinitions", "runDomainSupplementCases"],
+  rolesextra: ["./e2e-completo-roles-complemento.mjs", "roleSupplementDefinitions", "runRoleSupplementCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
   return [...new Map(suites.flatMap((suite) => suite.definitions.map((entry) => [entry.id, entry]))).values()];
+}
+
+/** Conserva la causa de un clic bloqueado sin copiar el HTML ni el contenido del elemento superpuesto. */
+export function buildCaseDiagnostic(error, diagnostic) {
+  const message = String(error.message ?? error);
+  const lines = message.split("\n");
+  const intercepted = lines.filter((line) => line.includes("intercepts pointer events")).at(-1);
+  const custom = diagnostic?.(error);
+  let details = custom ? `${custom} ${lines[0]}` : message;
+  if (intercepted) {
+    const tag = intercepted.match(/<([a-z0-9-]+)/i)?.[1] ?? "elemento";
+    const role = intercepted.match(/\brole="([a-z-]+)"/)?.[1];
+    const state = intercepted.match(/\bdata-state="([a-z-]+)"/)?.[1];
+    const notification = /data-(?:sonner-toast|title|toast)/.test(intercepted);
+    const obstruction = `Obstáculo: ${tag}${role ? ` role=${role}` : ""}${state ? ` (${state})` : ""}${notification ? " de una notificación" : ""} interceptó el clic.`;
+    details = [custom, lines[0], lines.find((line) => line.includes("waiting for")), obstruction].filter(Boolean).join(" ");
+  }
+  return safeEvidenceText(safeDiagnostic(details));
 }
 
 export function parseArguments(args) {
@@ -143,7 +162,7 @@ export async function main(options = parseArguments([])) {
     report.baselineFunctionalIncidents = enrichBaselineIncidents(parseFunctionalBaselineIncidents(log));
   } catch (error) { if (error.code !== "ENOENT") throw error; }
   const persist = async (publish = false) => {
-    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations: { ...coverageLimitations, ...supplementWhatsAppLimitations, ...identitySupplementLimitations } });
+    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations });
     report.matrix = matrix;
     report.cases = matrix;
     report.summary = summarizeCases(report.cases);
@@ -205,7 +224,7 @@ export async function main(options = parseArguments([])) {
           if (!blockedReason) { value = await action(); result.actual = typeof value === "string" ? value : "La comprobación terminó correctamente."; }
         }
         catch (error) {
-          failure = error; result.status = "failed"; result.actual = safeEvidenceText(safeDiagnostic(diagnostic ? `${diagnostic(error)} ${error.message.split("\n")[0]}` : error.message));
+          failure = error; result.status = "failed"; result.actual = buildCaseDiagnostic(error, diagnostic);
           result.severity = entry.severity ?? (entry.critical ? "high" : "medium");
           result.probableArea = entry.probableArea ?? "Front o contrato Back; revisar respuesta HTTP y captura";
           result.reproduce = entry.reproduce ?? ["Ejecutar node scripts/e2e-completo.mjs --no-build en un entorno aislado.", `Ingresar como ${entry.actor}.`, `Abrir ${entry.route}.`, entry.action];

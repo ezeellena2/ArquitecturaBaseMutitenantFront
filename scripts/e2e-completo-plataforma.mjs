@@ -168,6 +168,21 @@ export async function openAction(page, label) {
   }
 }
 
+async function searchPlatformList(h, page, value, name) {
+  if (h.width === 390) await page.getByRole("button", { name, exact: true }).click();
+  await page.getByRole("searchbox", { name, exact: true }).fill(value);
+}
+
+export const searchPlatformOrganizations = (h, page, value) => searchPlatformList(h, page, value, "Buscar por nombre o correo");
+export const searchPlatformAccounts = (h, page, value) => searchPlatformList(h, page, value, "Buscar por nombre, correo o teléfono");
+
+export async function assertPlatformSettingsConflict(page, expectedDraft) {
+  await page.getByRole("alert").filter({ hasText: "Otra persona cambió esto mientras lo editabas." }).waitFor();
+  for (const name of ["Seguir editando", "Ver lo nuevo"]) await page.getByRole("button", { name, exact: true }).waitFor();
+  const value = await page.getByRole("textbox", { name: "Organizaciones propias por persona", exact: true }).inputValue();
+  assert.equal(Number(value.replaceAll(".", "")), expectedDraft, "El 409 conserva el borrador del segundo editor.");
+}
+
 async function changeWithReason(page, label, route, reason) {
   await openAction(page, label);
   const dialog = page.getByRole("dialog").filter({ has: page.getByRole("textbox", { name: /^Motivo/ }) });
@@ -282,7 +297,7 @@ function createPlatformLifecycleActions(h, state) {
     }],
     [12, async () => {
       await page.goto(url("/plataforma/organizaciones"));
-      await page.getByRole("searchbox").fill(state.business.organization);
+      await searchPlatformOrganizations(h, page, state.business.organization);
       await page.getByRole("link", { name: state.business.organization, exact: true }).first().click();
       await page.getByRole("heading", { name: state.business.organization, exact: true }).waitFor();
       assert.equal(new URL(page.url()).pathname, organizationRoute());
@@ -290,7 +305,7 @@ function createPlatformLifecycleActions(h, state) {
     }],
     [18, async () => {
       await page.goto(url("/plataforma/cuentas"));
-      await page.getByRole("searchbox", { name: "Buscar por nombre, correo o teléfono", exact: true }).fill(state.person.email);
+      await searchPlatformAccounts(h, page, state.person.email);
       await page.getByRole("link", { name: state.person.email, exact: true }).first().click();
       await page.getByRole("heading", { name: state.person.email, exact: true }).waitFor();
       assert.equal(new URL(page.url()).pathname, accountRoute());
@@ -500,12 +515,12 @@ export async function runPlatformCases(h) {
       await confirmRecentAuthenticationWhenAsked(conflictPage, fullEmail);
       await conflictPage.goto(url("/plataforma/configuracion"));
       await settingsFields(page, original === 50 ? 49 : original + 1);
-      await settingsFields(conflictPage, original > 48 ? 47 : original + 2);
+      const draft = original > 48 ? 47 : original + 2;
+      await settingsFields(conflictPage, draft);
       try {
         await saveSettings(page, 200, "Prueba integral: primer editor de configuración.");
         await saveSettings(conflictPage, 409, "Prueba integral: segundo editor con versión vieja.");
-        await conflictPage.getByText("Otra persona cambió esto mientras lo editabas.", { exact: true }).waitFor();
-        await conflictPage.getByRole("button", { name: "Ver lo nuevo", exact: true }).waitFor();
+        await assertPlatformSettingsConflict(conflictPage, draft);
       } finally {
         await settingsFields(page, original);
         await saveSettings(page, 200, "Prueba integral: restaurar límite original de altas.");

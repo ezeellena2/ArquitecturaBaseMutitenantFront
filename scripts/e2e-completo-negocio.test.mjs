@@ -12,7 +12,9 @@ function selfDisableFixture({ status = 403, code = "Tenancy.Member.CannotDisable
   const response = { status: () => status, json: async () => ({ code, traceId: "synthetic-trace" }),
     url: () => "https://localtest.me:7433/api/users/own-member", request: () => ({ method: () => "PUT" }) };
   const control = (name) => ({
+    name,
     click: async () => calls.push(["click", name]), check: async () => calls.push(["check", name]),
+    locator: (selector, { has }) => { assert.equal(selector, "label"); assert.equal(has.name, "Deshabilitado"); return control("label Deshabilitado"); },
     getByRole: (_role, options = {}) => control(String(options.name)), filter: () => control(name), first: () => control(name),
     isVisible: async () => name === "Descartar cambios", waitFor: async () => calls.push(["visible", name]),
   });
@@ -50,11 +52,32 @@ test("deshabilitarse exige 403 CannotDisableSelf y conserva el acceso, roles y v
     assert.match(await business.checkSelfDisable(h, page, "own-person"), /403/u);
     assert.ok(calls.some((entry) => entry[1] === "Deshabilitar y guardar"));
     assert.ok(calls.some((entry) => entry[1] === "No podés deshabilitarte a vos misma."));
+    if (width === 390) {
+      assert.ok(calls.some((entry) => entry[0] === "click" && entry[1] === "label Deshabilitado"));
+      assert.equal(calls.some(([action]) => action === "check"), false, "El input sr-only no recibe clicks forzados.");
+    }
   }
   for (const options of [{ status: 409 }, { code: "Tenancy.Member.LastTenantAdmin" }, { changed: true }]) {
     const { h, page } = selfDisableFixture(options);
     await assert.rejects(business.checkSelfDisable(h, page, "own-person"));
   }
+});
+
+test("el estado de empresa se comprueba por badge en escritorio y por la acción disponible en móvil", async () => {
+  for (const width of [390, 1440]) for (const status of ["Active", "Inactive"]) {
+    const calls = [];
+    const control = (name) => ({ click: async () => calls.push(["click", name]), waitFor: async () => calls.push(["visible", name]), first: () => control(name) });
+    const page = {
+      getByRole: (_role, { name }) => { assert.equal(width, 390); return control(name); },
+      getByText: (name) => { assert.equal(width, 1440, "El tablero móvil no tiene badge de estado."); return control(name); },
+    };
+    await business.assertCompanyStateVisible({ width }, page, status);
+    assert.deepEqual(calls, width === 390 ? [["click", "Más acciones"], ["visible", status === "Inactive" ? "Activar" : "Inactivar"]]
+      : [["visible", status === "Inactive" ? "Inactiva" : "Activa"]]);
+  }
+  await assert.rejects(business.assertCompanyStateVisible({ width: 390 }, {}, "Desconocido"));
+  const expected = businessDefinitions.find((entry) => entry.id === "BIZ-21").expected;
+  assert.match(expected, /móvil/u); assert.match(expected, /Activar/u); assert.match(expected, /Inactiva/u);
 });
 
 test("la reparación de negocio prepara una sola organización para25/41, captura y cierra por UI incluso si falla25", async () => {

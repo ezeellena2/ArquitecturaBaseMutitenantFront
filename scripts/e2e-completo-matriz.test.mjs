@@ -14,6 +14,22 @@ test("una limitación explica sólo lo bloqueado y conserva evidencia completa o
   assert.equal(row.results[1].actual, "Fallo real");
 });
 
+test("una limitación externa queda a mano y no se certifica con el proveedor controlado", () => {
+  const [row] = buildMatrix({ backend: [{ id: "DNS" }], verificationLimitations: { DNS: { manualReason: "Necesita un TXT en DNS real." } } });
+  assert.ok(row.results.every((result) => result.status === "manual"));
+  assert.match(row.manualReason, /TXT/);
+});
+
+test("una rama nueva sólo completa la cobertura conjunta cuando las anteriores pasaron en el mismo ancho", () => {
+  const input = { backend: [{ id: "P" }], additionalProofGroups: { P: [["ANTERIOR", "RAMA-NUEVA"]] }, executions: [{ id: "ANTERIOR", results: [{ width: 1440, status: "passed" }] }] };
+  assert.equal(buildMatrix(input)[0].results[0].status, "blocked");
+  input.executions.push({ id: "RAMA-NUEVA", results: [{ width: 1440, status: "passed" }] });
+  assert.equal(buildMatrix(input)[0].results[0].status, "passed");
+  assert.equal(buildMatrix(input)[0].results[1].status, "blocked");
+  input.executions[0].results[0].status = "failed";
+  assert.equal(buildMatrix(input)[0].results[0].status, "failed");
+});
+
 test("las láminas de referencia sin pantalla no se cuentan como flujos bloqueados de producto", () => {
   const matrix = buildMatrix({ screens: [{ id: "mapa", reference: true, route: "—" }, { id: "cuenta", route: "/cuenta" }] });
   assert.deepEqual(matrix.map((item) => item.id), ["SCREEN-cuenta"]);

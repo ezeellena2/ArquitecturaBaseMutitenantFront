@@ -30,7 +30,7 @@ export const businessDefinitions = [
   definition("18", "La misma persona en B2C", "Entrar a Personal y llamar APIs empresariales", "/", "Token consumer, sin Crear empresa, y las APIs Business responden 403.", ["BACK-ID-020", "BACK-HT-006"]),
   definition("19", "Dueño A", "Reenviar una invitación pendiente propia", "/org/usuarios/:id", "Encola otro correo real, renueva la invitación y el enlace anterior responde inválido."),
   definition("20", "Dueño A", "Revocar la invitación reenviada", "/org/usuarios/:id", "La UI revoca y el nuevo enlace también queda inválido; no hay acceso activo.", ["BACK-OR-013"]),
-  definition("21", "Dueño A", "Inactivar su empresa", "/org/empresas/:id", "La transición versionada conserva miembros y datos, y deja de conceder permisos de empresa."),
+  definition("21", "Dueño A", "Inactivar su empresa", "/org/empresas/:id", "El PUT versionado y GET confirman Inactive; escritorio muestra Inactiva y móvil ofrece Activar en Más acciones. Conserva la identidad y los datos de la empresa."),
   definition("22", "Dueño A", "Reactivar su empresa", "/org/empresas/:id", "La empresa recupera el estado activo con los mismos miembros.", ["BACK-EM-005"]),
   definition("23", "Dueño A", "Deshabilitar una membresía sin borrar sus roles", "/org/usuarios/:id", "Un guardado versionado cambia a Deshabilitado y conserva el rol de lectura."),
   definition("24", "Dueño A", "Rehabilitar la membresía", "/org/usuarios/:id", "Vuelve a Activo con las mismas asignaciones guardadas."),
@@ -253,7 +253,9 @@ async function changeMemberState(h, page, memberId, active, status = 200) {
   const label = active ? "Activo" : "Deshabilitado";
   if (h.width === 390) {
     await page.getByRole("region", { name: "Acceso a la organización", exact: true }).getByRole("button", { name: /^Estado/ }).click();
-    await page.getByRole("dialog", { name: "Estado", exact: true }).getByRole("radio", { name: label, exact: true }).check();
+    const sheet = page.getByRole("dialog", { name: "Estado", exact: true });
+    const radio = sheet.getByRole("radio", { name: label, exact: true });
+    await sheet.locator("label", { has: radio }).click();
   } else {
     await page.getByRole("combobox", { name: "Estado", exact: true }).click();
     await page.getByRole("option", { name: label, exact: true }).click();
@@ -262,6 +264,15 @@ async function changeMemberState(h, page, memberId, active, status = 200) {
   if (active) return clickForResponse(page, save, `/api/users/${memberId}`, "PUT", status);
   await save.click();
   return clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Deshabilitar y guardar", exact: true }), `/api/users/${memberId}`, "PUT", status);
+}
+
+/** M-Empresa muestra CUIT/zona en el subtítulo; la acción inversa comunica el estado en su menú. */
+export async function assertCompanyStateVisible(h, page, status) {
+  assert.ok(["Active", "Inactive"].includes(status), "El estado debe pertenecer al contrato de empresas.");
+  if (h.width === 390) {
+    await page.getByRole("button", { name: "Más acciones", exact: true }).click();
+    await page.getByRole("menuitem", { name: status === "Inactive" ? "Activar" : "Inactivar", exact: true }).waitFor();
+  } else await page.getByText(status === "Inactive" ? "Inactiva" : "Activa", { exact: true }).first().waitFor();
 }
 
 export async function checkSelfDisable(h, page, personId) {
@@ -742,17 +753,21 @@ export async function runBusinessCases(h) {
     await page.getByRole("menuitem", { name: "Inactivar", exact: true }).click();
     await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/companies/${companyA.id}/status`, "PUT");
     const detail = await read(h, page, `/api/companies/${companyA.id}`); assert.equal(detail.status, "Inactive");
-    await page.getByText("Inactiva", { exact: true }).first().waitFor();
-    return "La empresa quedó inactiva por UI; conserva su identidad y datos.";
+    await assertCompanyStateVisible(h, page, "Inactive");
+    return `La empresa quedó Inactive por PUT y GET; ${h.width === 390 ? "el menú móvil ofrece Activar" : "la ficha muestra Inactiva"}, con la misma identidad y datos.`;
   });
-  await run("22", ["21"], async () => {
+  await run("22", ["01"], async () => {
+    await as(a.email);
+    const inactive = await read(h, page, `/api/companies/${companyA.id}`);
+    assert.equal(inactive.status, "Inactive", "La restauración comprueba el estado real aunque el caso21 haya fallado en su UI.");
     await page.goto(new URL(`/org/empresas/${companyA.id}`, h.base).href);
     await page.getByRole("button", { name: "Más acciones", exact: true }).click();
     await clickForResponse(page, page.getByRole("menuitem", { name: "Activar", exact: true }), `/api/companies/${companyA.id}/status`, "PUT");
     const detail = await read(h, page, `/api/companies/${companyA.id}`); assert.equal(detail.status, "Active");
     const after = await read(h, page, `/api/companies/${companyA.id}/members/paged?page=1&pageSize=100`);
+    assert.ok(membersBeforeDeactivation?.items, "La conservación necesita la lectura inicial de miembros.");
     assert.deepEqual(after.items.map((entry) => entry.memberId).sort(), membersBeforeDeactivation.items.map((entry) => entry.memberId).sort());
-    await page.getByText("Activa", { exact: true }).first().waitFor();
+    await assertCompanyStateVisible(h, page, "Active");
     return "Activar por UI recuperó la empresa con los mismos miembros.";
   });
   await run("23", ["06"], async () => {
@@ -955,6 +970,8 @@ export async function runBusinessCases(h) {
     const companyId = await created.json(); assert.match(companyId, /^[0-9a-f-]{36}$/i);
     siblingCompany = { id: companyId, name: firstName };
     await dialog.waitFor({ state: "hidden" });
+    await page.mouse.move(0, 0);
+    await page.getByText(`Creamos ${firstName}. Quedaste con el rol Administrador.`, { exact: true }).waitFor({ state: "hidden" });
     await page.getByRole("button", { name: "Crear empresa", exact: true }).click();
     dialog = page.getByRole("dialog", { name: "Crear empresa", exact: true });
     const secondName = `Fiscal repetida ${tag}`;

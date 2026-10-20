@@ -5,6 +5,34 @@ import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
 import * as platform from "./e2e-completo-plataforma.mjs";
 
+test("las búsquedas de organizaciones y cuentas montan el campo móvil desde su lupa antes de llenarlo", async () => {
+  for (const [helper, label] of [["searchPlatformOrganizations", "Buscar por nombre o correo"], ["searchPlatformAccounts", "Buscar por nombre, correo o teléfono"]]) for (const width of [390, 1440]) {
+    let visible = width === 1440; let typed;
+    const page = { getByRole: (role, { name }) => {
+      assert.equal(name, label);
+      if (role === "button") return { click: async () => { assert.equal(width, 390); visible = true; } };
+      assert.equal(role, "searchbox");
+      return { fill: async (value) => { assert.equal(visible, true, "El input móvil sólo existe después de abrir la lupa."); typed = value; } };
+    } };
+    await platform[helper]({ width }, page, "Organización propia");
+    assert.equal(typed, "Organización propia");
+  }
+});
+
+test("el conflicto de configuración verifica la alerta móvil, sus salidas y el borrador intacto", async () => {
+  let draft = "3"; const visible = [];
+  const page = { getByRole: (role, options) => {
+    if (role === "alert") return { filter: ({ hasText }) => { assert.equal(hasText, "Otra persona cambió esto mientras lo editabas."); return { waitFor: async () => visible.push("alerta") }; } };
+    if (role === "button") return { waitFor: async () => visible.push(options.name) };
+    assert.equal(role, "textbox"); assert.equal(options.name, "Organizaciones propias por persona");
+    return { inputValue: async () => draft };
+  } };
+  await platform.assertPlatformSettingsConflict(page, 3);
+  assert.deepEqual(visible, ["alerta", "Seguir editando", "Ver lo nuevo"]);
+  draft = "2";
+  await assert.rejects(platform.assertPlatformSettingsConflict(page, 3), /borrador/u);
+});
+
 test("abrir una acción espera la ficha y elige botón directo, hoja móvil o menú de escritorio", async () => {
   for (const mode of ["directo", "hoja", "menú"]) {
     const calls = [];
