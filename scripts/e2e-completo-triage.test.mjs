@@ -202,3 +202,48 @@ test("Personal no hereda códigos de otro intento ni une trazas parciales o ruta
     assert.doesNotMatch(entry.results[0].analysis, /access_denied|Tenancy\.Access\.NotMember/u);
   }
 });
+
+const pendingHomeFailure = "locator.waitFor: Timeout 15000ms exceeded. waiting for getByRole('dialog', { name: 'Antes de tu primera consulta', exact: true }).or(getByRole('heading', { name: '¿Qué querés consultar?', exact: true })).or(getByRole('heading', { name: 'El asistente todavía no está configurado', exact: true })).first() to be visible";
+const replayLocationFailure = "Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'https://localtest.me:5174/api/platform/tenants/a87b6b2a-49b8-4afe-ab64-f9efe9249c1e'";
+
+test("C13 móvil identifica la composición del inicio sin atribuir una falla a la aprobación todavía no visitada", () => {
+  const previousAttempts = Object.freeze([Object.freeze({ status: "blocked", actual: "Dependencia anterior" })]);
+  const authenticationTrace = Object.freeze([Object.freeze({ route: "/connect/token", status: 200 })]);
+  const result = Object.freeze({ width: 390, status: "failed", actual: pendingHomeFailure, currentRoute: "/plataforma/organizaciones", image: "PLAT-C-13-390.png", previousAttempts, authenticationTrace, severity: "high" });
+  const input = Object.freeze([Object.freeze({ id: "PLAT-C-13", results: Object.freeze([result]) })]); const snapshot = structuredClone(input);
+  const [entry] = enrichExecutionFailures(input); const actual = entry.results[0];
+  assert.deepEqual(input, snapshot); assert.equal(actual.status, "failed"); assert.equal(actual.width, 390);
+  for (const key of Object.keys(result).filter((key) => key !== "severity")) assert.equal(actual[key], result[key], key);
+  assert.match(actual.analysis, /PlatformHomeRoute.*Organizaciones/iu);
+  assert.match(actual.analysis, /PlatformHomePage.*PlatformToResolve.*escritorio/iu);
+  assert.match(actual.analysis, /antes de.*Revisar/iu);
+  assert.match(actual.analysis, /aprobación.*correo.*sin acreditar/iu);
+  assert.match(actual.probableArea, /Front.*390.*arnés/iu); assert.equal(actual.severity, "medium");
+  assert.deepEqual(enrichExecutionFailures([entry]), [entry]);
+});
+
+test("C16 atribuye sólo Location ausente al replay BufferedJson y conserva su evidencia HTTP y captura", () => {
+  const result = Object.freeze({ width: 390, status: "failed", actual: replayLocationFailure, currentRoute: "/plataforma/organizaciones", image: "PLAT-C-16-390.png", severity: "high", authenticationTrace: Object.freeze([{ route: "/connect/token", status: 200 }]) });
+  const input = Object.freeze([Object.freeze({ id: "PLAT-C-16", results: Object.freeze([result]) })]); const snapshot = structuredClone(input);
+  const [entry] = enrichExecutionFailures(input); const actual = entry.results[0];
+  assert.deepEqual(input, snapshot); for (const key of Object.keys(result).filter((key) => key !== "severity")) assert.equal(actual[key], result[key], key);
+  assert.match(actual.analysis, /201.*Location/iu); assert.match(actual.analysis, /status.*cuerpo.*IDs/iu);
+  assert.match(actual.analysis, /BufferedJson.*ContentResult/iu); assert.match(actual.analysis, /api-http\.md/iu);
+  assert.match(actual.analysis, /no acredita.*duplicación.*perfiles.*aceptación/iu);
+  assert.match(actual.probableArea, /^Back.*IdempotencyFilter.*BufferedJson/iu);
+  assert.doesNotMatch([actual.analysis, actual.probableArea, ...actual.reproduce].join(" "), /https:|localtest|a87b6b2a/u);
+  assert.deepEqual(enrichExecutionFailures([entry]), [entry]);
+});
+
+test("el triage de Plataforma exige ID, fallo y señal actuales, sin heredar causas de otros anchos o intentos", () => {
+  const c13 = { width: 390, status: "failed", actual: pendingHomeFailure, currentRoute: "/plataforma/organizaciones" };
+  const c16 = { width: 390, status: "failed", actual: replayLocationFailure, currentRoute: "/plataforma/organizaciones" };
+  const untouched = [
+    { id: "PLAT-C-13", results: [{ ...c13, width: 1440 }, { ...c13, currentRoute: "/auth/callback" }, { ...c13, status: "blocked" }, { ...c13, actual: "Otro timeout" }] },
+    { id: "PLAT-C-16", results: [{ ...c16, status: "passed" }, { ...c16, actual: "Otro fallo", previousAttempts: [c16] }, { ...c16, actual: replayLocationFailure.replace("/api/platform/tenants/", "/api/otra-ruta/") }] },
+    { id: "PLAT-C-16 (otro)", results: [c16] }, { id: "PLAT-C-12", results: [c13] },
+  ];
+  for (const [index, entry] of enrichExecutionFailures(untouched).entries()) assert.equal(entry, untouched[index]);
+  const [newWait] = enrichExecutionFailures([{ id: "PLAT-C-13", results: [{ ...c13, actual: "locator.waitFor: Timeout waiting for getByRole('region', { name: 'Para resolver', exact: true })" }] }]);
+  assert.match(newWait.results[0].analysis, /PlatformHomeRoute/iu);
+});
