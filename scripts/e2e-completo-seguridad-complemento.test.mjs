@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { securitySupplementDefinitions, securitySupplementProofGroups, requireRecoveryRejected, requireTenFailuresAndReload, requireCancelledStepUp, requireExclusivePlatformActor } from "./e2e-completo-seguridad-complemento.mjs";
+import * as security from "./e2e-completo-seguridad-complemento.mjs";
 
 const problem = (status, code, retryAfter, header = retryAfter) => ({
   status: () => status,
@@ -56,5 +57,37 @@ test("ambas ramas exigen un operador exclusivo con exactamente el permiso espera
   requireExclusivePlatformActor(actor, ["platform.audit.read"]);
   for (const changed of [{ hasPersonalSpace: true }, { organizations: [{ id: "ajena" }] }, { access: "consumer" }, { activeTenantId: "org" }, { effectivePermissions: { ...actor.effectivePermissions, platform: ["platform.audit.read", "platform.accounts.read"] } }]) {
     assert.throws(() => requireExclusivePlatformActor({ ...actor, ...changed }, ["platform.audit.read"]));
+  }
+});
+
+test("preparar permisos espera ficha antes del botón desktop o la hoja móvil y conserva motivo y selección", async () => {
+  for (const mobile of [false, true]) {
+    const waiting = Promise.withResolvers(); const loaded = Promise.withResolvers(); const calls = []; let ready = false; let opened = false; let text;
+    const direct = {
+      or: () => ({ filter: () => ({ first: () => ({ waitFor: async () => { waiting.resolve(); await loaded.promise; } }) }) }),
+      isVisible: async () => { assert.equal(ready, true, "No se puede decidir el tipo de acción durante la carga."); return !mobile; },
+      click: async () => { assert.equal(mobile, false); calls.push("directo"); opened = true; },
+    };
+    const picker = { focus: async () => calls.push("picker"), press: async (key) => assert.equal(key, "ArrowDown"), innerText: async () => "Ver organizaciones, Ver la auditoría" };
+    const form = { waitFor: async () => assert.equal(opened, true), getByRole: (role, options) => {
+      if (role === "button") { assert.equal(options.name, "Permisos de plataforma"); return picker; }
+      assert.equal(role, "textbox"); return { fill: async (value) => { text = value; } };
+    } };
+    const page = {
+      keyboard: { press: async (key) => assert.equal(key, "Escape") },
+      getByRole: (role, { name } = {}) => {
+        if (role === "button" && name === "Cambiar permisos") return direct;
+        if (role === "button") { assert.equal(name, "Acciones de Cuenta propia"); return { getAttribute: async () => "dialog", click: async () => { assert.equal(mobile, true); calls.push("hoja"); } }; }
+        if (role === "menuitem") { assert.equal(name, "Cambiar permisos"); return { click: async () => { assert.equal(mobile, true); opened = true; } }; }
+        if (role === "dialog") { assert.equal(name, "Cambiar permisos de Cuenta propia"); return form; }
+        if (role === "menu") return { isVisible: async () => true };
+        assert.equal(role, "menuitemcheckbox"); return { nth: (index) => { assert.equal(index, 0); return { click: async () => calls.push("selección") }; } };
+      },
+    };
+    const pending = security.prepareSecurityPermissions(page, "Cuenta propia", 0, "Motivo conservado.");
+    await waiting.promise; assert.deepEqual(calls, []);
+    ready = true; loaded.resolve(); const prepared = await pending;
+    assert.deepEqual(calls, [mobile ? "hoja" : "directo", "picker", "selección"]);
+    assert.equal(text, "Motivo conservado."); assert.equal(prepared.form, form); assert.equal(prepared.picker, picker); assert.equal(prepared.selection, "Ver organizaciones, Ver la auditoría");
   }
 });

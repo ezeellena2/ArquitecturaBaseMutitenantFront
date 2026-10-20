@@ -53,6 +53,15 @@ export function requireExclusivePlatformActor(me, permissions) {
   assert.deepEqual(me.effectivePermissions.organization, []); assert.deepEqual(me.effectivePermissions.companies, {});
 }
 
+export async function prepareSecurityPermissions(page, name, toggle, reason) {
+  // La lectura HTTP del arnés no espera que la ficha renderice sus acciones.
+  // El helper original decide botón/menú después de esta barrera de UI real.
+  const change = page.getByRole("button", { name: "Cambiar permisos", exact: true });
+  const actions = page.getByRole("button", { name: `Acciones de ${name}`, exact: true });
+  await change.or(actions).filter({ visible: true }).first().waitFor();
+  return preparePermissions(page, name, toggle, reason);
+}
+
 const matches = (route, method = "POST") => (response) => new URL(response.url()).pathname === route && response.request().method() === method;
 async function clickResponse(page, button, route, method = "POST") {
   const answered = page.waitForResponse(matches(route, method), { timeout: 90_000 }); void answered.catch(() => {});
@@ -177,7 +186,7 @@ export async function runSecuritySupplementCases(h) {
       await stopConfirmingRecentAuthentication(page);
       const expired = await h.env.command("recent-proof", { kind: "expire", email: currentEmail }); assert.ok(expired.expired >= 1);
       const reason = "Prueba propia: cancelar la confirmación sin guardar permisos.";
-      const { form, picker, selection } = await preparePermissions(page, before.displayName || lockout.email, 0, reason);
+      const { form, picker, selection } = await prepareSecurityPermissions(page, before.displayName || lockout.email, 0, reason);
       const proofs = watchResponses(page, (method, path) => method === "POST" && path === "/api/platform/reauthentication");
       const writes = watchResponses(page, isOperatorWrite); const attempts = [];
       try {
