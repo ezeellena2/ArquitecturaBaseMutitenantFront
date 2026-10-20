@@ -47,10 +47,20 @@ async function sendCode(page, button, route) {
     const waiting = page.waitForResponse((reply) => pathOf(reply) === route && reply.request().method() === "POST"); void waiting.catch(() => {}); await button.click({ timeout: 90_000 }); return waiting;
   }); assert.equal(response.status(), 202); return response;
 }
-async function memberState(h, page, memberId, active, onSaved = () => {}) {
-  await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href); const label = active ? "Activo" : "Deshabilitado";
-  if (h.width === 390) { await page.getByRole("region", { name: "Acceso a la organización", exact: true }).getByRole("button", { name: /^Estado/u }).click(); await page.getByRole("dialog", { name: "Estado", exact: true }).getByRole("radio", { name: label, exact: true }).check(); }
+export async function chooseDomainMemberState(h, page, active) {
+  const label = active ? "Activo" : "Deshabilitado";
+  if (h.width === 390) {
+    const state = page.getByRole("region", { name: "Acceso a la organización", exact: true }).getByRole("button", { name: /^Estado/u });
+    await state.click();
+    const sheet = page.getByRole("dialog", { name: "Estado", exact: true });
+    // RadioRow conserva el input sr-only para el teclado; su etiqueta visible recibe el toque.
+    await sheet.getByText(label, { exact: true }).click(); await sheet.waitFor({ state: "hidden" });
+    await state.getByText(label, { exact: true }).waitFor();
+  }
   else { await page.getByRole("combobox", { name: "Estado", exact: true }).click(); await page.getByRole("option", { name: label, exact: true }).click(); }
+}
+async function memberState(h, page, memberId, active, onSaved = () => {}) {
+  await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href); await chooseDomainMemberState(h, page, active);
   const save = page.getByRole("button", { name: "Guardar cambios", exact: true });
   if (active) await clickForResponse(page, save, `/api/users/${memberId}`, "PUT");
   else { await save.click(); await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Deshabilitar y guardar", exact: true }), `/api/users/${memberId}`, "PUT"); }
