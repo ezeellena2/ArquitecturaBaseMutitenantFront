@@ -36,6 +36,8 @@ export function buildMatrix({ backend = [], guided = [], screens = [], execution
     const verificationLimitation = verificationLimitations[item.id];
     const manualReason = item.manualReason ?? (typeof item.manual === "string" ? item.manual : item.manual ? "Necesita una integración externa real; no se usaron credenciales ni datos reales." : verificationLimitation?.manualReason ?? null);
     const results = resultsFromProofGroups(proofGroups, executions).map((result) => {
+      const partialFailure = verificationLimitation?.partialExecutionIds?.map((id) => executions.find((execution) => execution.id === id)?.results?.find((proof) => proof.width === result.width && proof.status === "failed")).find(Boolean);
+      if (partialFailure) return { ...partialFailure, width: result.width };
       if (manualReason && result.status !== "failed") return { width: result.width, status: "manual", actual: manualReason };
       if (verificationLimitation && result.status === "blocked") return { ...result, actual: `Falta comprobar: ${verificationLimitation.missing} ${verificationLimitation.reason ?? ""} Comprobaciones parciales: ${verificationLimitation.partialExecutionIds?.join(", ") || "ninguna"}.` };
       return result;

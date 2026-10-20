@@ -14,6 +14,14 @@ test("una limitación explica sólo lo bloqueado y conserva evidencia completa o
   assert.equal(row.results[1].actual, "Fallo real");
 });
 
+test("una prueba parcial no aprueba la fila pero su fallo real tampoco queda oculto por un límite manual", () => {
+  const input = { backend: [{ id: "A" }], verificationLimitations: { A: { partialExecutionIds: ["PARCIAL"], manualReason: "Falta Meta" } },
+    executions: [{ id: "PARCIAL", results: [{ width: 1440, status: "failed", actual: "No salió el mensaje local" }, { width: 390, status: "passed", actual: "Parcial verde" }] }] };
+  const results = buildMatrix(input)[0].results;
+  assert.equal(results[0].status, "failed"); assert.equal(results[0].actual, "No salió el mensaje local");
+  assert.equal(results[1].status, "manual");
+});
+
 test("una limitación externa queda a mano y no se certifica con el proveedor controlado", () => {
   const [row] = buildMatrix({ backend: [{ id: "DNS" }], verificationLimitations: { DNS: { manualReason: "Necesita un TXT en DNS real." } } });
   assert.ok(row.results.every((result) => result.status === "manual"));
