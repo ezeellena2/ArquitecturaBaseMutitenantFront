@@ -178,9 +178,11 @@ export async function runSupplementPlatformCases(h) {
     operatorByPage.set(page, operatorEmail);
   };
   try {
-    await step(1, page, async () => {
+    let preparationPage = publicPage;
+    await step(1, () => preparationPage, async () => {
       person = await h.registerPerson(publicPage); publicSignedIn = true; await h.signOut(publicPage); publicSignedIn = false;
       business = await h.registerBusiness(publicPage); publicSignedIn = true; await h.signOut(publicPage); publicSignedIn = false;
+      preparationPage = page;
       await ensureFull();
       for (const permission of ["platform.operators.manage", "platform.recoveries.manage", "platform.tenants.manage", "platform.legal.manage"]) assert.ok(operator.effectivePermissions.platform.includes(permission));
       await page.goto(url(`/plataforma/organizaciones/${business.me.activeTenantId}`));

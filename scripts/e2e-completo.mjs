@@ -20,6 +20,7 @@ import { parseFunctionalBaselineIncidents } from "./e2e-completo-incidentes.mjs"
 import { enrichBaselineIncidents } from "./e2e-completo-triage.mjs";
 import { verificationLimitations } from "./e2e-completo-limitaciones.mjs";
 import { enrichOriginalExecutions } from "./e2e-completo-metadatos-base.mjs";
+import { securitySupplementProofGroups } from "./e2e-completo-seguridad-complemento.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const execute = promisify(execFile);
@@ -44,8 +45,10 @@ const suiteSpecs = {
   negocioarreglos: ["./e2e-completo-negocio.mjs", "businessRepairDefinitions", "runBusinessRepairCases"],
   plataformaarreglos: ["./e2e-completo-plataforma.mjs", "platformRepairDefinitions", "runPlatformRepairCases"],
   negocioinicioarreglo: ["./e2e-completo-negocio-complemento.mjs", "businessHomeRepairDefinitions", "runBusinessHomeRepairCases"],
+  negociofiltrosarreglos: ["./e2e-completo-negocio-complemento.mjs", "businessFilterRepairDefinitions", "runBusinessFilterRepairCases"],
   dominioextra: ["./e2e-completo-dominio-complemento.mjs", "domainSupplementDefinitions", "runDomainSupplementCases"],
   rolesextra: ["./e2e-completo-roles-complemento.mjs", "roleSupplementDefinitions", "runRoleSupplementCases"],
+  seguridadextra: ["./e2e-completo-seguridad-complemento.mjs", "securitySupplementDefinitions", "runSecuritySupplementCases"],
 };
 
 export function collectSuiteDefinitions(suites) {
@@ -162,7 +165,7 @@ export async function main(options = parseArguments([])) {
     report.baselineFunctionalIncidents = enrichBaselineIncidents(parseFunctionalBaselineIncidents(log));
   } catch (error) { if (error.code !== "ENOENT") throw error; }
   const persist = async (publish = false) => {
-    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations });
+    const matrix = buildMatrix({ backend: backendUseCases, guided: guidedCases, screens, executions: applyAdditionalCoverage(executions), verificationLimitations, additionalProofGroups: securitySupplementProofGroups });
     report.matrix = matrix;
     report.cases = matrix;
     report.summary = summarizeCases(report.cases);
@@ -237,7 +240,7 @@ export async function main(options = parseArguments([])) {
           const image = `${id}-${width}.png`;
           try {
             await page.screenshot({ path: path.join(output, image), fullPage: true, animations: "disabled",
-              mask: [page.locator('input[autocomplete="one-time-code"], [role="group"][aria-label="Código"] input, input[type="password"]'), ...factorSecretMasks(page)], maskColor: "#d9d4ca" });
+              mask: [page.locator('input[autocomplete="one-time-code"], [role="group"][aria-label="Código"] input, input[type="password"]'), page.getByRole("textbox", { name: "Código de recuperación", exact: true }), ...factorSecretMasks(page)], maskColor: "#d9d4ca" });
             result.image = image;
           } catch (error) {
             result.actual += ` Captura no disponible (${error.name}).`;

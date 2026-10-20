@@ -22,6 +22,7 @@ export const supplementBusinessDefinitions = [
   definition("13", "Dueña", "Leer el Inicio de la organización nueva", "/org", "Atajos o tarjetas de Usuarios, Roles y Empresas coinciden con la respuesta real; Para resolver contiene la página en borrador.", ["SCREEN-inicio-org"]),
 ];
 export const businessHomeRepairDefinitions = supplementBusinessDefinitions.filter((entry) => entry.id === "SUP-BIZ-13");
+export const businessFilterRepairDefinitions = supplementBusinessDefinitions.filter((entry) => ["SUP-BIZ-02", "SUP-BIZ-06"].includes(entry.id));
 
 export function assertUserFacetCounts(counts, expected) {
   assert.equal(counts.all, counts.active + counts.invited + counts.expired + counts.pendingDeletion + counts.inactive, "Cada persona tiene un único estado contado.");
@@ -174,7 +175,13 @@ async function openInvitation(h, page, token, state) {
 async function chooseFilter(h, page, { label, index, key, value, option }) {
   if (h.width === 390) {
     await page.getByRole("button", { name: label, exact: true }).click();
-    await page.getByRole("dialog", { name: label, exact: true }).locator(`input[type="radio"][name="${key}"][value="${value}"]`).check();
+    const sheet = page.getByRole("dialog", { name: label, exact: true });
+    const radio = page.locator(`input[type="radio"][name="${key}"][value="${value}"]`);
+    // La fila visible aplica el filtro y cierra la hoja. check() exige volver a leer un input que el cierre desmonta.
+    const row = sheet.locator("label").filter({ has: radio });
+    assert.equal(await row.count(), 1, "Cada valor del filtro debe tener una única etiqueta visible.");
+    await row.click();
+    await sheet.waitFor({ state: "hidden" });
   } else {
     await page.locator('[data-slot="filter-pills"] button').nth(index).click();
     await page.getByRole("menuitemradio", { name: new RegExp(`^${escapeRegex(option)}(?:\\s|$)`) }).click();
@@ -195,6 +202,102 @@ async function changeCompanyMemberRoles(h, page, company, member, roleName) {
   await page.getByRole("menuitemcheckbox", { name: roleName, exact: true }).click(); await page.keyboard.press("Escape");
   const response = await clickForResponse(page, dialog.getByRole("button", { name: "Guardar cambios", exact: true }), `/api/companies/${company.id}/members/${member.memberId}/roles`, "PUT");
   assert.equal(response.request().postDataJSON().version, member.version); await dialog.waitFor({ state: "hidden" });
+}
+
+async function checkCompanyFilters(h, page, { owner, prefix, b, inactive }) {
+  assert.equal((await read(h, page, "/api/me")).activeTenantId, owner.me.activeTenantId);
+  assert.deepEqual(await read(h, page, "/api/companies/filter-counts"), { all: 3, active: 2, inactive: 1 });
+  await page.goto(new URL(`/org/empresas?search=${encodeURIComponent(prefix)}`, h.base).href); await heading(page, "Empresas");
+  let list = await read(h, page, `/api/companies/paged?search=${encodeURIComponent(prefix)}&pageSize=100`); assert.equal(list.totalCount, 2); assert.deepEqual(list.items.map((item) => item.id).sort(), [b.id, inactive.id].sort());
+  assert.deepEqual(await read(h, page, `/api/companies/filter-counts?search=${encodeURIComponent(prefix)}`), { all: 2, active: 1, inactive: 1 });
+  const filtered = waitRead(page, "/api/companies/paged", (url) => url.searchParams.get("status") === "Inactive");
+  await chooseFilter(h, page, { label: "Filtrar empresas", index: 0, key: "status", value: "Inactive", option: "Inactivas" });
+  list = await (await filtered).json(); assert.equal(list.totalCount, 1); assert.equal(list.items[0].id, inactive.id);
+  assert.equal(new URL(page.url()).searchParams.get("search"), prefix); assert.equal(new URL(page.url()).searchParams.get("status"), "Inactive");
+  await page.getByRole("link", { name: new RegExp(`^${escapeRegex(inactive.name)}`) }).first().click(); await heading(page, inactive.name);
+  assert.equal((await read(h, page, `/api/companies/${inactive.id}`)).status, "Inactive");
+  return "La organización nueva mostró3 empresas, dos coinciden con la búsqueda y una inactiva; filtro y ficha conservaron el recurso y estado correctos.";
+}
+
+async function checkUserFilters(h, page, { tag, a, b, readerA, readerB, orgReader, member, existing, pending }) {
+  for (let index = 0; index < 12; index++) pending.push(await invite(h, page, `e2e-supp-${tag}-${index}@example.test`, a, { companyRole: readerA.name, organizationRole: index === 2 ? orgReader.name : undefined }));
+  await addCompanyToUser(h, page, pending[1].memberId, b, readerB.name);
+  await page.goto(new URL("/org/usuarios", h.base).href); await heading(page, "Usuarios");
+  let found = await searchUsers(h, page, "miembro"); assert.equal(found.totalCount, 1); assert.equal(found.items[0].memberId, member.memberId);
+  found = await searchUsers(h, page, existing.email); assert.equal(found.totalCount, 1); assert.equal(found.items[0].userId, existing.me.id);
+  await page.goto(new URL("/org/usuarios", h.base).href); await heading(page, "Usuarios");
+  let changed = waitRead(page, "/api/users/paged", (url) => url.searchParams.get("state") === "Invited");
+  await chooseFilter(h, page, { label: "Filtrar usuarios", index: 0, key: "state", value: "Invited", option: "Invitación pendiente" }); await changed;
+  changed = waitRead(page, "/api/users/paged", (url) => url.searchParams.get("state") === "Invited" && url.searchParams.get("companyId") === a.id);
+  await chooseFilter(h, page, { label: "Filtrar usuarios", index: 1, key: "companyId", value: a.id, option: a.name }); const first = await (await changed).json();
+  assert.equal(first.totalCount, 12); assert.equal(first.items.length, 10);
+  const facets = await read(h, page, `/api/users/filter-counts?state=Invited&companyId=${a.id}`);
+  assertUserFacetCounts(facets, { all: 15, active: 3, invited: 12, companyAll: 12, companies: { [a.id]: 12, [b.id]: 1 } });
+  const next = waitRead(page, "/api/users/paged", (url) => url.searchParams.get("companyId") === a.id && url.searchParams.get("state") === "Invited" && (url.searchParams.get("page") === "2" || Number(url.searchParams.get("pageSize")) > 10));
+  await page.getByRole("button", { name: h.width === 390 ? "Cargar más" : "Página siguiente", exact: true }).click(); const second = await (await next).json();
+  if (h.width === 390) assert.equal(second.items.length, 12); else { assert.equal(second.items.length, 2); assert.equal(second.items.some((item) => first.items.some((prior) => prior.memberId === item.memberId)), false); }
+  assert.equal(second.totalCount, 12); assert.equal(new URL(page.url()).searchParams.get("companyId"), a.id); assert.equal(new URL(page.url()).searchParams.get("state"), "Invited");
+  return "Nombre sin acento y correo verificado encontraron la misma persona. Doce invitaciones distintas conservaron total y conteos cruzados en la segunda página/Cargar más.";
+}
+
+async function prepareBusinessFilterFixture(h, page, owner) {
+  const tag = randomUUID().slice(0, 8); const prefix = `Complemento ${tag}`; let currentEmail = owner.email;
+  const leave = async () => { await h.signOut(page); currentEmail = null; };
+  const as = async (email) => { if (currentEmail !== email) { if (currentEmail) await leave(); const me = await h.login(page, email, "business"); currentEmail = email; return me; } return read(h, page, "/api/me"); };
+  const companies = await read(h, page, "/api/companies/paged?pageSize=100"); const a = companies.items.find((item) => item.name === owner.companyName); assert.ok(a?.id);
+  const b = await createCompany(h, page, `${prefix} Fiscal`); const inactive = await createCompany(h, page, `${prefix} Inactiva`);
+  await page.goto(new URL(`/org/empresas/${inactive.id}`, h.base).href);
+  await page.getByRole("button", { name: "Más acciones", exact: true }).click(); await page.getByRole("menuitem", { name: "Inactivar", exact: true }).click();
+  await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/companies/${inactive.id}/status`, "PUT");
+  assert.equal((await read(h, page, `/api/companies/${inactive.id}`)).status, "Inactive");
+  await fillRole(h, page, `Lectura filtros ${tag}`, a); const readerA = await saveRole(h, page);
+  await fillRole(h, page, `Lectura filtros ${tag}`, b); const readerB = await saveRole(h, page);
+  await fillRole(h, page, `Consulta filtros ${tag}`, null, "Ver usuarios", "Usuarios"); const orgReader = await saveRole(h, page);
+  await leave(); const existing = await h.registerPerson(page); currentEmail = existing.email;
+  await page.goto(new URL("/cuenta", h.base).href); await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(`Miémbro Complemento ${tag}`);
+  await clickForResponse(page, page.getByRole("button", { name: "Guardar cambios", exact: true }), "/api/me", "PUT");
+  await as(owner.email); const member = await invite(h, page, existing.email, a, { companyRole: readerA.name });
+  // Preparación: el OTP empresarial acepta la invitación vigente por ADR0047; no se vuelve a probar el enlace.
+  const accepted = await as(existing.email); assert.equal(accepted.id, existing.me.id); assert.equal(accepted.activeTenantId, owner.me.activeTenantId);
+  await as(owner.email); assert.equal((await read(h, page, `/api/users/${member.memberId}`)).state, "Active");
+  await addCompanyToUser(h, page, member.memberId, b, readerB.name);
+  const administrator = await invite(h, page, `e2e-filtros-admin-${tag}@example.test`, a, { companyRole: "Administrador" });
+  const admin = await as(administrator.email); assert.equal(admin.activeTenantId, owner.me.activeTenantId);
+  await as(owner.email); assert.equal((await read(h, page, `/api/users/${administrator.memberId}`)).state, "Active");
+  return { owner, tag, prefix, a, b, inactive, readerA, readerB, orgReader, existing, member, pending: [] };
+}
+
+/** Repite sólo02/06; la preparación UI no certifica de nuevo altas, enlaces, duplicados ni administración. */
+export async function runBusinessFilterRepairCases(h, { prepare = prepareBusinessFilterFixture, checkCompanies = checkCompanyFilters, checkUsers = checkUserFilters } = {}) {
+  const page = await h.newPage(); let registered = false; const outcomes = new Map(); const failures = [];
+  try {
+    let fixture;
+    try { const owner = await h.registerBusiness(page); registered = true; fixture = await prepare(h, page, owner); }
+    catch (error) {
+      for (const entry of businessFilterRepairDefinitions) await h.block(entry.id, `No se completó la fixture propia de filtros por UI (${error.name}).`, page);
+      throw error;
+    }
+    for (const [id, check] of [["SUP-BIZ-02", checkCompanies], ["SUP-BIZ-06", checkUsers]]) outcomes.set(id, await h.record(id, () => page, () => check(h, page, fixture)));
+  } catch (error) { failures.push(error); }
+  finally {
+    try {
+      if (registered) {
+        const cancel = page.getByRole("dialog").getByRole("button", { name: "Cancelar", exact: true }).first(); if (await cancel.isVisible()) await cancel.click();
+        await h.signOut(page);
+      } else if ((await h.context.cookies(h.base.href)).some((cookie) => cookie.name === ".AspNetCore.Identity.Application")) {
+        await page.goto(new URL("/org", h.base).href);
+        const frame = page.getByRole("navigation", { name: h.width === 390 ? "Secciones" : "Áreas de la organización", exact: true });
+        const login = page.getByRole("textbox", { name: "Correo electrónico", exact: true }); const exit = page.getByRole("button", { name: "Salir", exact: true });
+        await frame.or(login).or(exit).filter({ visible: true }).first().waitFor();
+        if (await frame.isVisible()) await h.signOut(page);
+        else if (await exit.isVisible()) { await exit.click(); await page.getByRole("link", { name: "Ingresá", exact: true }).filter({ visible: true }).first().waitFor(); }
+      }
+    } catch (error) { failures.push(error); }
+    try { await page.close(); } catch (error) { failures.push(error); }
+  }
+  if (failures.length === 1) throw failures[0];
+  if (failures.length > 1) throw new AggregateError(failures, "Fallaron la reparación dirigida de filtros o su salida UI.");
+  return outcomes;
 }
 
 export async function runSupplementBusinessCases(h) {
@@ -251,18 +354,7 @@ export async function runSupplementBusinessCases(h) {
     });
 
     await run("02", ["01"], async () => {
-      await as(owner.email); assert.equal((await read(h, page, "/api/me")).activeTenantId, owner.me.activeTenantId);
-      assert.deepEqual(await read(h, page, "/api/companies/filter-counts"), { all: 3, active: 2, inactive: 1 });
-      await page.goto(new URL(`/org/empresas?search=${encodeURIComponent(prefix)}`, h.base).href); await heading(page, "Empresas");
-      let list = await read(h, page, `/api/companies/paged?search=${encodeURIComponent(prefix)}&pageSize=100`); assert.equal(list.totalCount, 2); assert.deepEqual(list.items.map((item) => item.id).sort(), [b.id, inactive.id].sort());
-      assert.deepEqual(await read(h, page, `/api/companies/filter-counts?search=${encodeURIComponent(prefix)}`), { all: 2, active: 1, inactive: 1 });
-      const filtered = waitRead(page, "/api/companies/paged", (url) => url.searchParams.get("status") === "Inactive");
-      await chooseFilter(h, page, { label: "Filtrar empresas", index: 0, key: "status", value: "Inactive", option: "Inactivas" });
-      list = await (await filtered).json(); assert.equal(list.totalCount, 1); assert.equal(list.items[0].id, inactive.id);
-      assert.equal(new URL(page.url()).searchParams.get("search"), prefix); assert.equal(new URL(page.url()).searchParams.get("status"), "Inactive");
-      await page.getByRole("link", { name: new RegExp(`^${escapeRegex(inactive.name)}`) }).first().click(); await heading(page, inactive.name);
-      assert.equal((await read(h, page, `/api/companies/${inactive.id}`)).status, "Inactive");
-      return "La organización nueva mostró3 empresas, dos coinciden con la búsqueda y una inactiva; filtro y ficha conservaron el recurso y estado correctos.";
+      await as(owner.email); return checkCompanyFilters(h, page, { owner, prefix, b, inactive });
     });
 
     await run("03", ["01"], async () => {
@@ -317,25 +409,7 @@ export async function runSupplementBusinessCases(h) {
     });
 
     await run("06", ["03", "04", "05"], async () => {
-      await as(owner.email);
-      for (let index = 0; index < 12; index++) pending.push(await invite(h, page, `e2e-supp-${tag}-${index}@example.test`, a, { companyRole: readerA.name, organizationRole: index === 2 ? orgReader.name : undefined }));
-      await addCompanyToUser(h, page, pending[1].memberId, b, readerB.name);
-      await page.goto(new URL("/org/usuarios", h.base).href); await heading(page, "Usuarios");
-      let found = await searchUsers(h, page, "miembro"); assert.equal(found.totalCount, 1); assert.equal(found.items[0].memberId, member.memberId);
-      found = await searchUsers(h, page, existing.email); assert.equal(found.totalCount, 1); assert.equal(found.items[0].userId, existing.me.id);
-      await page.goto(new URL("/org/usuarios", h.base).href); await heading(page, "Usuarios");
-      let changed = waitRead(page, "/api/users/paged", (url) => url.searchParams.get("state") === "Invited");
-      await chooseFilter(h, page, { label: "Filtrar usuarios", index: 0, key: "state", value: "Invited", option: "Invitación pendiente" }); await changed;
-      changed = waitRead(page, "/api/users/paged", (url) => url.searchParams.get("state") === "Invited" && url.searchParams.get("companyId") === a.id);
-      await chooseFilter(h, page, { label: "Filtrar usuarios", index: 1, key: "companyId", value: a.id, option: a.name }); const first = await (await changed).json();
-      assert.equal(first.totalCount, 12); assert.equal(first.items.length, 10);
-      const facets = await read(h, page, `/api/users/filter-counts?state=Invited&companyId=${a.id}`);
-      assertUserFacetCounts(facets, { all: 15, active: 3, invited: 12, companyAll: 12, companies: { [a.id]: 12, [b.id]: 1 } });
-      const next = waitRead(page, "/api/users/paged", (url) => url.searchParams.get("companyId") === a.id && url.searchParams.get("state") === "Invited" && (url.searchParams.get("page") === "2" || Number(url.searchParams.get("pageSize")) > 10));
-      await page.getByRole("button", { name: h.width === 390 ? "Cargar más" : "Página siguiente", exact: true }).click(); const second = await (await next).json();
-      if (h.width === 390) assert.equal(second.items.length, 12); else { assert.equal(second.items.length, 2); assert.equal(second.items.some((item) => first.items.some((prior) => prior.memberId === item.memberId)), false); }
-      assert.equal(second.totalCount, 12); assert.equal(new URL(page.url()).searchParams.get("companyId"), a.id); assert.equal(new URL(page.url()).searchParams.get("state"), "Invited");
-      return "Nombre sin acento y correo verificado encontraron la misma persona. Doce invitaciones distintas conservaron total y conteos cruzados en la segunda página/Cargar más.";
+      await as(owner.email); return checkUserFilters(h, page, { tag, a, b, readerA, readerB, orgReader, member, existing, pending });
     });
 
     await run("07", ["03", "04", "05"], async () => {

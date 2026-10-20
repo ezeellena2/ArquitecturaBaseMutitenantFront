@@ -3,7 +3,7 @@ import test from "node:test";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { businessDefinitions } from "./e2e-completo-negocio.mjs";
 import { guidedCases, screens } from "./e2e-completo-inventario-front.mjs";
-import { supplementBusinessDefinitions, businessHomeRepairDefinitions, runBusinessHomeRepairCases, assertUserFacetCounts, assertMemberChangesStayInCompany, requireHomeGroupPreview } from "./e2e-completo-negocio-complemento.mjs";
+import { supplementBusinessDefinitions, businessHomeRepairDefinitions, runBusinessHomeRepairCases, businessFilterRepairDefinitions, runBusinessFilterRepairCases, assertUserFacetCounts, assertMemberChangesStayInCompany, requireHomeGroupPreview } from "./e2e-completo-negocio-complemento.mjs";
 
 test("el complemento enlaza sólo acciones completas todavía sin covers nativos de Negocio", () => {
   assert.equal(supplementBusinessDefinitions.length, 13);
@@ -55,4 +55,30 @@ test("la reparación de Inicio registra sólo SUP13 con una organización propia
   assert.deepEqual(events, ["registrar organización por UI", "SUP-BIZ-13", "salir por UI", "cerrar"]);
   assert.deepEqual(businessHomeRepairDefinitions.map((entry) => entry.id), ["SUP-BIZ-13"]);
   assert.equal(businessHomeRepairDefinitions[0], supplementBusinessDefinitions.find((entry) => entry.id === "SUP-BIZ-13"));
+});
+
+test("la reparación de filtros registra sólo02/06 y continúa con Usuarios si falla Empresas", async () => {
+  const events = []; const page = { close: async () => { events.push("cerrar"); }, getByRole: () => ({ getByRole: () => ({ first: () => ({ isVisible: async () => false }) }) }) };
+  const fixture = { propia: true };
+  const h = { newPage: async () => page, registerBusiness: async () => { events.push("alta UI"); return { email: "propia@example.test" }; },
+    record: async (id, getPage, action) => { assert.equal(getPage(), page); events.push(id); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; } },
+    signOut: async () => { events.push("salir UI"); } };
+  const error = new Error("Empresas falló");
+  const outcomes = await runBusinessFilterRepairCases(h, {
+    prepare: async (_h, _page, owner) => { assert.equal(owner.email, "propia@example.test"); events.push("preparación mínima UI"); return fixture; },
+    checkCompanies: async (_h, _page, state) => { assert.equal(state, fixture); throw error; },
+    checkUsers: async (_h, _page, state) => { assert.equal(state, fixture); return "Usuarios comprobado"; },
+  });
+  assert.equal(outcomes.get("SUP-BIZ-02").ok, false); assert.equal(outcomes.get("SUP-BIZ-02").error, error);
+  assert.equal(outcomes.get("SUP-BIZ-06").ok, true);
+  assert.deepEqual(events, ["alta UI", "preparación mínima UI", "SUP-BIZ-02", "SUP-BIZ-06", "salir UI", "cerrar"]);
+  assert.deepEqual(businessFilterRepairDefinitions.map((entry) => entry.id), ["SUP-BIZ-02", "SUP-BIZ-06"]);
+});
+
+test("una preparación incompleta bloquea ambos filtros y conserva el fallo con salida UI", async () => {
+  const events = []; const page = { close: async () => { events.push("cerrar"); }, getByRole: () => ({ getByRole: () => ({ first: () => ({ isVisible: async () => false }) }) }) }; const error = new Error("No se activó el miembro");
+  const h = { newPage: async () => page, registerBusiness: async () => ({}), record: async () => { assert.fail("No debe comprobar filtros sin su fixture."); },
+    block: async (id) => { events.push(id); }, signOut: async () => { events.push("salir UI"); } };
+  await assert.rejects(runBusinessFilterRepairCases(h, { prepare: async () => { throw error; } }), (caught) => caught === error);
+  assert.deepEqual(events, ["SUP-BIZ-02", "SUP-BIZ-06", "salir UI", "cerrar"]);
 });
