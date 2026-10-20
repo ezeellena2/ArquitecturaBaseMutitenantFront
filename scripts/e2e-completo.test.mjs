@@ -1,9 +1,28 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions, buildCaseDiagnostic } from "./e2e-completo.mjs";
+import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions, buildCaseDiagnostic, archivePreviousAttempt } from "./e2e-completo.mjs";
+
+test("el historial omite la página de error del navegador y retira sólo su captura propia antes de archivarla", async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "historial-e2e-"));
+  const image = "CIERRE-01-1440.png";
+  try {
+    await writeFile(path.join(directory, image), "URL OAuth sintética");
+    const prior = Object.freeze({ status: "failed", actual: "Protocol error", image, currentHost: "chromewebdata" });
+    const hidden = await archivePreviousAttempt({ id: "CIERRE-01", width: 1440, prior, output: directory });
+    assert.equal(hidden.image, undefined);
+    assert.equal(hidden.actual, prior.actual);
+    assert.match(hidden.reason, /parámetros OAuth/);
+    await assert.rejects(stat(path.join(directory, image)), { code: "ENOENT" });
+    assert.equal(prior.image, image);
+    await writeFile(path.join(directory, image), "Captura normal");
+    const kept = await archivePreviousAttempt({ id: "CIERRE-01", width: 1440, prior: { ...prior, currentHost: "localtest.me:5174" }, output: directory });
+    assert.equal(await readFile(path.join(directory, kept.image), "utf8"), "Captura normal");
+    assert.equal(await readFile(path.join(directory, image), "utf8"), "Captura normal");
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
 
 test("agotar la cuota diaria requiere selección explícita y un único ancho", () => {
   assert.equal(parseArguments([]).suites.includes("cuotawhatsapp"), false);

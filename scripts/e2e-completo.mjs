@@ -2,7 +2,7 @@
 // Primero correr npm run test:e2e:real y node scripts/recorrido-usuario.mjs.
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile, copyFile, unlink } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
@@ -100,6 +100,24 @@ export function buildCaseDiagnostic(error, diagnostic) {
     details = [custom, lines[0], lines.find((line) => line.includes("waiting for")), obstruction].filter(Boolean).join(" ");
   }
   return safeEvidenceText(safeDiagnostic(details));
+}
+
+/** Las páginas de error de Chrome pueden imprimir el desafío OAuth completo, aun con credenciales sintéticas. */
+export async function archivePreviousAttempt({ id, width, prior, output }) {
+  let image = prior.image;
+  let reason = "Reejecutado tras ajustar aislamiento de informes y preparaciones del arnés; esta prueba no modificó producto.";
+  const own = typeof image === "string" && path.dirname(path.resolve(output, image)) === path.resolve(output);
+  if (prior.currentHost === "chromewebdata") {
+    reason += " Se omitió la captura de error del navegador porque podía mostrar parámetros OAuth del entorno de prueba.";
+    if (own && image === `${id}-${width}.png`) {
+      try { await unlink(path.join(output, image)); } catch (error) { if (error.code !== "ENOENT") throw error; }
+    }
+    image = undefined;
+  } else if (image && own) {
+    const archived = `${id}-${width}-intento-${(prior.previousAttempts?.length ?? 0) + 1}.png`;
+    await copyFile(path.join(output, image), path.join(output, archived)); image = archived;
+  }
+  return { status: prior.status, actual: prior.actual, image, reason };
 }
 
 export function parseArguments(args) {
@@ -248,13 +266,7 @@ export async function main(options = parseArguments([])) {
         }
         const result = { width, status: blockedReason ? "blocked" : "passed", actual: blockedReason ?? "" };
         if (prior) {
-          let image = prior.image;
-          if (image && !image.startsWith("../")) {
-            const archived = `${id}-${width}-intento-${(prior.previousAttempts?.length ?? 0) + 1}.png`;
-            await copyFile(path.join(output, image), path.join(output, archived));
-            image = archived;
-          }
-          result.previousAttempts = [...(prior.previousAttempts ?? []), { status: prior.status, actual: prior.actual, image, reason: "Reejecutado tras ajustar aislamiento de informes y preparaciones del arnés; esta prueba no modificó producto." }];
+          result.previousAttempts = [...(prior.previousAttempts ?? []), await archivePreviousAttempt({ id, width, prior, output })];
         }
         if (id.startsWith("BASE-")) result.continued = true;
         let value;
@@ -278,10 +290,12 @@ export async function main(options = parseArguments([])) {
           const currentLocation = new URL(page.url());
           result.currentRoute = currentLocation.pathname;
           result.currentHost = currentLocation.host;
+          const browserErrorMasks = currentLocation.host === "chromewebdata" ? [page.locator("body")] : [];
+          if (browserErrorMasks.length) result.actual += " La captura de error del navegador se ocultó para no mostrar parámetros OAuth del entorno de prueba.";
           const image = `${id}-${width}.png`;
           try {
             await page.screenshot({ path: path.join(output, image), fullPage: true, animations: "disabled",
-              mask: [page.locator('input[autocomplete="one-time-code"], [role="group"][aria-label="Código"] input, input[type="password"]'), page.getByRole("textbox", { name: "Código de recuperación", exact: true }), page.getByRole("textbox", { name: /^(Clave de Anthropic|Clave de la plataforma)$/ }), ...factorSecretMasks(page)], maskColor: "#d9d4ca" });
+              mask: [page.locator('input[autocomplete="one-time-code"], [role="group"][aria-label="Código"] input, input[type="password"]'), page.getByRole("textbox", { name: "Código de recuperación", exact: true }), page.getByRole("textbox", { name: /^(Clave de Anthropic|Clave de la plataforma)$/ }), ...factorSecretMasks(page), ...browserErrorMasks], maskColor: "#d9d4ca" });
             result.image = image;
           } catch (error) {
             result.actual += ` Captura no disponible (${error.name}).`;
