@@ -87,8 +87,8 @@ async function blockUnvisitedPending(h, visited, error) {
   for (const entry of continuationDefinitions) {
     if (visited.has(entry.id)) continue;
     const previous = h.resultFor?.(entry.id, h.width);
-    const pending = h.isPending?.(entry.id, h.width) ?? (!previous || ["pending", "blocked"].includes(previous.status));
-    if (pending) await h.block(entry.id, `La continuación no llegó a este paso: ${error.name ?? "Error"}.`);
+    const unverified = h.resultFor ? previous?.status !== "passed" : h.isPending?.(entry.id, h.width) ?? true;
+    if (unverified) await h.block(entry.id, `La continuación no llegó a este paso: ${error.name ?? "Error"}.`);
   }
 }
 

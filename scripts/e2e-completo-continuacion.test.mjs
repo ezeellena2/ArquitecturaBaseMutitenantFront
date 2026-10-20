@@ -83,12 +83,12 @@ test("delega runWidth sin cambiar acciones y ante aborto sólo bloquea IDs pendi
   assert.deepEqual(calls.filter(([kind]) => kind === "block").map(([, id]) => id), [pendingId]);
 });
 
-test("un record fallido corta la secuencia, bloquea sólo pendientes y conserva verdes anteriores", async () => {
+test("un record fallido corta la secuencia y bloquea los no visitados, incluso fallas anteriores, conservando verdes", async () => {
   const failure = new Error("Falló la primera acción real"); const calls = []; let nextRan = false;
   const previous = new Map(continuationDefinitions.map((entry) => [entry.id, { status: "passed", actual: "Verificado antes" }]));
   previous.set("BASE-01", { status: "blocked" }); previous.set("BASE-03", { status: "pending" }); previous.set("BASE-04", { status: "blocked" });
   previous.set("BASE-05", { status: "failed", actual: "Fallo anterior conservado" });
-  const originalGreen = previous.get("BASE-02"); const originalFailure = previous.get("BASE-05");
+  const originalGreen = previous.get("BASE-02");
   const h = {
     width: 1440, context: { cookies: async () => [] }, base: new URL("https://localtest.me:7433"),
     record: async (id, _page, action) => {
@@ -105,9 +105,9 @@ test("un record fallido corta la secuencia, bloquea sólo pendientes y conserva 
     await record("02", 1440, () => null, async () => "No debe ejecutarse");
   } }) }), (error) => error === failure);
   assert.equal(nextRan, false);
-  assert.deepEqual(calls, [["record", "BASE-01"], ["block", "BASE-03"], ["block", "BASE-04"]]);
+  assert.deepEqual(calls, [["record", "BASE-01"], ["block", "BASE-03"], ["block", "BASE-04"], ["block", "BASE-05"]]);
   assert.equal(previous.get("BASE-02"), originalGreen);
-  assert.equal(previous.get("BASE-05"), originalFailure);
+  assert.equal(previous.get("BASE-05").status, "blocked");
 });
 
 test("un record fallido sin error ofrece un diagnóstico corto y no ejecuta la siguiente acción", async () => {
