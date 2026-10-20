@@ -16,7 +16,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { IconButton } from "@/shared/ui/IconButton";
-import { MoreVerticalIcon, WhatsAppIcon } from "@/shared/ui/icons";
+import { MoreVerticalIcon, UnlinkIcon, WhatsAppIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { LoadMore } from "@/shared/ui/LoadMore";
 import { Page } from "@/shared/ui/Page";
@@ -162,7 +162,7 @@ function PersonalConversation({ id, back, phone }: { id: string; back: { to: str
         <DropdownMenuTrigger asChild><IconButton ref={menuTrigger} label={t("personal.actionsOf", { name })}><MoreVerticalIcon className="size-4" /></IconButton></DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {/* El menú se va con la opción: el diálogo le devuelve el foco al ⋮. */}
-          <DropdownMenuItem variant="destructive" onSelect={() => setConfirming({ trigger: menuTrigger.current })}>{t("personal.unlink")}</DropdownMenuItem>
+          <DropdownMenuItem variant="destructive" onSelect={() => setConfirming({ trigger: menuTrigger.current })}><UnlinkIcon className="size-4" />{t("personal.unlink")}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

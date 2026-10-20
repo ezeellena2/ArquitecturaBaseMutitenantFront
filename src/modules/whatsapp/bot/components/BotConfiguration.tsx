@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Trash2 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -7,6 +6,7 @@ import { toastActionError } from "@/shared/api/errorMessage";
 import { useFormat } from "@/shared/format/useFormat";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
+import { DeleteIcon, EditIcon } from "@/shared/ui/icons";
 import { ImportantNotice } from "@/shared/ui/ImportantNotice";
 import { List, ListItem } from "@/shared/ui/List";
 import { RowActions, type RowAction } from "@/shared/ui/RowActions";
@@ -66,7 +66,7 @@ export function BotConfiguration({ bot, variant, teams, onSave }: {
   const outOfHoursDetail = format.isLoading ? "" : scheduleSummary(bot.schedule, t, format);
 
   const edit = (onSelect: (trigger: HTMLButtonElement | null) => void): RowAction =>
-    ({ label: t("whatsapp:bot.edit"), accessibleName: t("whatsapp:bot.edit"), icon: Pencil, onSelect });
+    ({ label: t("whatsapp:bot.edit"), accessibleName: t("whatsapp:bot.edit"), icon: EditIcon, onSelect });
   const rowActions = (name: string, actions: readonly RowAction[]) => <RowActions label={t("whatsapp:bot.rowActions", { name })} title={name} actions={actions} />;
   // Quitar una opción es un PUT directo con el menú sin ella; en el teléfono sale de su diálogo, que se cierra después.
   const remove = (index: number, label: string, after?: () => void) => direct.mutate(
@@ -74,7 +74,7 @@ export function BotConfiguration({ bot, variant, teams, onSave }: {
     after ? { onSettled: after } : undefined);
   const optionActions = (index: number, label: string) => rowActions(label, [
     edit((trigger) => setOpen({ kind: "option", index, trigger })),
-    { label: t("whatsapp:bot.option.remove"), accessibleName: t("whatsapp:bot.option.remove"), icon: Trash2, destructive: true, onSelect: () => remove(index, label) },
+    { label: t("whatsapp:bot.option.remove"), accessibleName: t("whatsapp:bot.option.remove"), icon: DeleteIcon, destructive: true, onSelect: () => remove(index, label) },
   ]);
   const editingIndex = open?.kind === "option" ? open.index : null;
   const editing = editingIndex === null ? undefined : bot.menu[editingIndex];

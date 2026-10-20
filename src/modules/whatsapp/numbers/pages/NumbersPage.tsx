@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Building2, Plus, RefreshCw, Unplug } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
@@ -10,7 +10,7 @@ import { usePagination } from "@/shared/hooks/usePagination";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable } from "@/shared/ui/DataTable";
-import { WhatsAppIcon } from "@/shared/ui/icons";
+import { RotateIcon, SwapIcon, UnlinkIcon, WhatsAppIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
@@ -89,11 +89,11 @@ export function NumbersPage() {
 
   const rowActions = (number: WhatsAppNumberResponse) => <RowActions label={t("whatsapp:numbers.rowActions", { number: phoneLabel(number) })} title={phoneLabel(number)}
     actions={[
-      { label: t("whatsapp:numbers.actions.changeCompany"), accessibleName: t("whatsapp:numbers.actions.changeCompany"), icon: Building2,
+      { label: t("whatsapp:numbers.actions.changeCompany"), accessibleName: t("whatsapp:numbers.actions.changeCompany"), icon: SwapIcon,
         onSelect: (trigger) => setOpen({ kind: "company", number, trigger }), hidden: number.status === "Disconnected" },
-      { label: t("whatsapp:numbers.actions.check"), accessibleName: t("whatsapp:numbers.actions.check"), icon: RefreshCw,
+      { label: t("whatsapp:numbers.actions.check"), accessibleName: t("whatsapp:numbers.actions.check"), icon: RotateIcon,
         onSelect: () => check.mutate(number), hidden: number.status !== "PaymentMissing" },
-      { label: t("whatsapp:numbers.actions.disconnect"), accessibleName: t("whatsapp:numbers.actions.disconnect"), icon: Unplug, destructive: true,
+      { label: t("whatsapp:numbers.actions.disconnect"), accessibleName: t("whatsapp:numbers.actions.disconnect"), icon: UnlinkIcon, destructive: true,
         onSelect: (trigger) => setOpen({ kind: "disconnect", number, trigger }), hidden: number.status === "Disconnected" },
     ]} />;
   const columns = createNumberColumns(t, (number) => showPayment(number), rowActions);

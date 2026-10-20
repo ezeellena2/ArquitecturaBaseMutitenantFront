@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Copy, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
@@ -8,7 +8,7 @@ import type { ModuleContentProps } from "@/shared/modules/types";
 import { Button } from "@/shared/ui/button";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { FilterBar } from "@/shared/ui/FilterBar";
-import { CloseIcon, CopyIcon } from "@/shared/ui/icons";
+import { BanIcon } from "@/shared/ui/icons";
 import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -42,8 +42,8 @@ export function BroadcastsPage(_props: ModuleContentProps) {
   const filtered = Boolean(query.status || pagination.search);
 
   const rowActions = (broadcast: WhatsAppBroadcastResponse) => <RowActions label={t("whatsapp:broadcasts.rowActions", { name: broadcast.name })} title={broadcast.name} actions={[
-    { label: t("whatsapp:broadcasts.actions.duplicate"), accessibleName: t("whatsapp:broadcasts.actions.duplicate"), icon: CopyIcon, onSelect: () => actions.duplicate(broadcast) },
-    { label: t("whatsapp:broadcasts.actions.cancel"), accessibleName: t("whatsapp:broadcasts.actions.cancel"), icon: CloseIcon, destructive: true,
+    { label: t("whatsapp:broadcasts.actions.duplicate"), accessibleName: t("whatsapp:broadcasts.actions.duplicate"), icon: Copy, onSelect: () => actions.duplicate(broadcast) },
+    { label: t("whatsapp:broadcasts.actions.cancel"), accessibleName: t("whatsapp:broadcasts.actions.cancel"), icon: BanIcon, destructive: true,
       hidden: broadcast.status !== "Scheduled", onSelect: (trigger) => actions.askCancel(broadcast, trigger) },
   ]} />;
   const columns: Column<WhatsAppBroadcastResponse>[] = [

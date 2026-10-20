@@ -15,7 +15,7 @@ import { Button } from "@/shared/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { IconButton } from "@/shared/ui/IconButton";
-import { MoreVerticalIcon } from "@/shared/ui/icons";
+import { EyeIcon, MoreVerticalIcon, type IconComponent } from "@/shared/ui/icons";
 import { PhoneText } from "@/shared/ui/format/PhoneText";
 import { ImportantNotice } from "@/shared/ui/ImportantNotice";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
@@ -194,7 +194,7 @@ export function ConversationView({ scope, id, links, back, phone }: {
           ? <Button type="button" size="sm" pending={take.isPending} pendingLabel={t("chats.header.taking")} onClick={() => take.mutate()}>{t("chats.header.take")}</Button>
           : <TransferDropdown scope={scope} row={row} pending={transfer.isPending} onTransfer={onTransfer} />}
         <HeaderMenu name={row.contactName ? t("chats.header.actionsOf", { name }) : t("chats.header.chatActions")}
-          items={contactPath ? [{ label: t("chats.header.viewContact"), to: contactPath }] : []} />
+          items={contactPath ? [{ label: t("chats.header.viewContact"), icon: EyeIcon, to: contactPath }] : []} />
       </div>
     </header>
     {thread}
@@ -203,13 +203,14 @@ export function ConversationView({ scope, id, links, back, phone }: {
   </section>;
 }
 
-/** El ⋮ del encabezado del chat en la compu: lo que lleva a otra pantalla. Sin nada que ofrecer, no va. */
-function HeaderMenu({ name, items }: { name: string; items: readonly { label: string; to: string }[] }) {
+/** El ⋮ del encabezado del chat en la compu: lo que lleva a otra pantalla, cada opción con su ícono gris («Criterio · Menús»,
+ * WA-Chats). Sin nada que ofrecer, no va. */
+function HeaderMenu({ name, items }: { name: string; items: readonly { label: string; icon: IconComponent; to: string }[] }) {
   if (items.length === 0) return null;
   return <DropdownMenu>
     <DropdownMenuTrigger asChild><IconButton label={name}><MoreVerticalIcon className="size-4" /></IconButton></DropdownMenuTrigger>
     <DropdownMenuContent align="end">
-      {items.map((item) => <DropdownMenuItem key={item.label} asChild><Link to={item.to}>{item.label}</Link></DropdownMenuItem>)}
+      {items.map(({ label, icon: Icon, to }) => <DropdownMenuItem key={label} asChild><Link to={to}><Icon className="size-4 text-[var(--t3)]" />{label}</Link></DropdownMenuItem>)}
     </DropdownMenuContent>
   </DropdownMenu>;
 }

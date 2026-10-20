@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, RefreshCw } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -10,7 +10,7 @@ import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { Button } from "@/shared/ui/button";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
-import { PhoneIcon, WhatsAppIcon } from "@/shared/ui/icons";
+import { PhoneIcon, RotateIcon, WhatsAppIcon } from "@/shared/ui/icons";
 import { InfoButton } from "@/shared/ui/InfoButton";
 import { List, ListItem } from "@/shared/ui/List";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
@@ -82,7 +82,7 @@ export function PlatformNumberPage() {
       {current.status === "PaymentMissing" ? <InfoButton label={t("whatsapp:numbers.platform.whyNoMessages")} onClick={() => setPayment({})} /> : null}
     </span>;
     const actions = <RowActions label={t("whatsapp:numbers.rowActions", { number: label })} title={label} actions={[
-      { label: t("whatsapp:numbers.actions.check"), accessibleName: t("whatsapp:numbers.actions.check"), icon: RefreshCw,
+      { label: t("whatsapp:numbers.actions.check"), accessibleName: t("whatsapp:numbers.actions.check"), icon: RotateIcon,
         onSelect: () => check.mutate(current), hidden: current.status !== "PaymentMissing" },
       { label: t("whatsapp:numbers.platform.connectOther"), accessibleName: t("whatsapp:numbers.platform.connectOther"), icon: Plus,
         onSelect: connect, hidden: !signup },

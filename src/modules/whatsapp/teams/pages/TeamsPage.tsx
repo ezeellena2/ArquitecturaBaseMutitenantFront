@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -8,7 +8,7 @@ import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
-import { WhatsAppIcon } from "@/shared/ui/icons";
+import { DeleteIcon, EditIcon, WhatsAppIcon } from "@/shared/ui/icons";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -45,8 +45,8 @@ function TeamsPage({ scope }: { scope: TeamScope }) {
   });
 
   const rowActions = (team: WhatsAppTeamResponse) => <RowActions label={t("whatsapp:teams.rowActions", { name: team.name })} title={team.name} actions={[
-    { label: t("whatsapp:teams.edit"), accessibleName: t("whatsapp:teams.edit"), icon: Pencil, onSelect: (trigger) => setEditing({ team, returnFocusTo: trigger }) },
-    { label: t("whatsapp:teams.delete"), accessibleName: t("whatsapp:teams.delete"), icon: Trash2, destructive: true, onSelect: (trigger) => setDeleting({ team, returnFocusTo: trigger }) },
+    { label: t("whatsapp:teams.edit"), accessibleName: t("whatsapp:teams.edit"), icon: EditIcon, onSelect: (trigger) => setEditing({ team, returnFocusTo: trigger }) },
+    { label: t("whatsapp:teams.delete"), accessibleName: t("whatsapp:teams.delete"), icon: DeleteIcon, destructive: true, onSelect: (trigger) => setDeleting({ team, returnFocusTo: trigger }) },
   ]} />;
   const columns: Column<WhatsAppTeamResponse>[] = [
     ...createTeamColumns(t, scope),
