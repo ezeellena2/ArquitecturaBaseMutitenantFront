@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 133 · 18 de octubre de 2026"
+VERSION = "versión 134 · 20 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -147,12 +147,16 @@ CAPITULOS = [
         ("frm-biblioteca", "Biblioteca de plantillas", "Formularios › Nuevo formulario › Desde una plantilla", "no", "17", ["FRM-Biblioteca"], ["M-FRM-Biblioteca"],
          ["FRM-Plantilla", "M-FRM-Plantilla", "FRM-Plantilla-Usar"],
          "Las plantillas que publica la plataforma, por categoría. Usar una crea una copia propia en borrador, con sus catálogos."),
+        ("frm-reglas-plantilla", "Las reglas que trae una plantilla", "/org/formularios/:id", "no", "17", ["FRM-Editor-Reglas-Plantilla"], ["M-FRM-Reglas-Plantilla"], [],
+         "Al usar una plantilla, sus reglas llegan sin guardar: se elige el rol de cada acción que lo pide y se guardan. El diseño del PDF llega listo."),
     ]),
     ("plataforma", "La plataforma", "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales, el WhatsApp propio y la biblioteca de formularios.", [
         ("plat-frm-biblioteca", "Biblioteca de formularios", "Administración › Formularios › Biblioteca", "no", "17", ["Plat-FRM-Biblioteca"], ["M-Plat-FRM-Biblioteca"], ["Plat-FRM-Plantilla-Nueva"],
          "Las plantillas que la plataforma ofrece a las organizaciones: borrador, publicada o retirada, y cuántas organizaciones la usaron."),
         ("plat-frm-plantilla", "Una plantilla", "Administración › Formularios › Biblioteca › una plantilla", "no", "17", ["Plat-FRM-Plantilla"], [], ["Plat-FRM-Publicar", "Plat-FRM-Retirar"],
          "El mismo editor de los formularios, con sus catálogos y la publicación: versiones con motivo, publicar, retirar y volver a publicar."),
+        ("plat-frm-reglas", "Reglas de ejemplo de una plantilla", "Administración › Formularios › Biblioteca › una plantilla", "no", "17", ["Plat-FRM-Plantilla-Reglas"], [], ["Plat-FRM-Pdf"],
+         "Debajo de las preguntas, las reglas que trae la plantilla y el diseño de su PDF. Los roles los elige cada organización: la plantilla solo sugiere uno."),
         ("plat-frm-categorias", "Categorías de formularios", "Administración › Formularios › Categorías", "no", "17", ["Plat-FRM-Categorias"], [], [],
          "La lista corta de categorías, con su orden. Todo pide motivo, y una categoría en uso no se borra."),
         ("organizaciones", "Organizaciones", "/plataforma/organizaciones", "no", "5", ["Organizaciones"], ["M-Organizaciones"], ["M-Mas-Plat"],

@@ -3,7 +3,7 @@
   "titulo": "Usar una plantilla",
   "etapa": "Etapa 17 · Biblioteca",
   "orden": 20,
-  "resumen": "Lucía arranca un formulario desde la biblioteca: elige «Visita a cliente» y obtiene una copia propia en borrador.",
+  "resumen": "Lucía arranca un formulario desde la biblioteca: elige «Visita a cliente», obtiene una copia propia en borrador y guarda las reglas que trae.",
   "pasos": [
     {
       "tablero": "FRM-Listado",
@@ -52,10 +52,61 @@
       "resaltar": ".w-dlg button.cb-pri:has-text(\"Crear el formulario\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Crea su copia",
-      "texto": "VIS ya lo usa otro formulario, así que propone VIS2. Se abre el editor del formulario nuevo, en borrador, para revisarlo y publicarlo.",
-      "avanzar": "Fin del recorrido.",
+      "texto": "VIS ya lo usa otro formulario, así que propone VIS2. Se abre el editor del formulario nuevo, en borrador.",
+      "avanzar": "Tocá «Crear el formulario».",
       "ruta": "/org/formularios/biblioteca/:id",
       "accion": "Crea el formulario."
+    },
+    {
+      "tablero": "FRM-Editor-Reglas-Plantilla",
+      "tweaks": {
+        "estado": "Reglas de la plantilla"
+      },
+      "resaltar": ".rg-falta",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Las reglas llegan sin guardar",
+      "texto": "La plantilla trae sus reglas de ejemplo. Los roles los elige ella: la plantilla solo sugiere uno.",
+      "avanzar": "Tocá «Elegí el rol» en la regla 1.",
+      "ruta": "/org/formularios/:id",
+      "accion": "Abre la regla 1."
+    },
+    {
+      "tablero": "FRM-Editor-Reglas-Plantilla",
+      "tweaks": {
+        "estado": "Elegir el rol"
+      },
+      "resaltar": ".q-catmn span:has-text(\"Supervisor\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Elige el rol",
+      "texto": "Ninguno viene elegido, aunque coincida con el sugerido.",
+      "avanzar": "Tocá «Supervisor».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Elige Supervisor."
+    },
+    {
+      "tablero": "FRM-Editor-Reglas-Plantilla",
+      "tweaks": {
+        "estado": "Roles elegidos"
+      },
+      "resaltar": ".rg button.cb-pri:has-text(\"Guardar reglas\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Guarda las reglas",
+      "texto": "Con los roles elegidos, ya se pueden guardar. Hasta entonces no corren.",
+      "avanzar": "Tocá «Guardar reglas».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Guarda las reglas."
+    },
+    {
+      "tablero": "FRM-Editor-Reglas-Plantilla",
+      "tweaks": {
+        "estado": "Reglas guardadas"
+      },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Quedan andando",
+      "texto": "Nace la revisión 1. Desde ahora, cada respuesta que llegue sigue estas reglas.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/:id",
+      "accion": "Revisa el historial."
     }
   ]
 }
