@@ -167,10 +167,12 @@ describe("SettingsPage", () => {
 
   // Tablero «Criterio · Formularios»: lo que no se edita se muestra como texto, nunca como un campo gris.
   // A11 («Criterio · Formularios», v113): sin permiso para cambiar, el mismo campo, apagado; los desplegables con su flechita.
+  // Tweak «permiso → Solo lectura» (Configuracion) y estado «Solo lectura» (M-Configuracion): sin «Descartar» ni «Guardar»,
+  // sin «Agregar dominio», sin «Verificar» ni quitar un dominio, y sin el asterisco de obligatorio.
   it("sin permiso para cambiar, muestra cada dato en su campo apagado y sin botones", async () => {
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
+      http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified, { ...pending, id: "domain-2", domain: "delta-sur.example.test" }]))),
     );
 
     const { container } = renderRouteWithProviders("/org/configuracion", { as: "business-settings-reader" });
@@ -184,6 +186,11 @@ describe("SettingsPage", () => {
     expect(within(data).queryByRole("combobox")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Agregar dominio" })).not.toBeInTheDocument();
+    expect(await screen.findByText("delta-sur.example.test")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Descartar cambios" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Verificar" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Acciones de / })).not.toBeInTheDocument();
+    expect(data).not.toHaveTextContent("*");
     expect(within(data).getByRole("group", { name: "Nombre de la organización" }).querySelector("[data-slot=read-only-field]")).toHaveClass("bg-[var(--s2)]", "text-[var(--t2)]");
     for (const name of ["Idioma y región predeterminados", "Zona horaria predeterminada", "Moneda predeterminada"]) {
       expect(within(data).getByRole("group", { name }).querySelector("[data-slot=read-only-field] svg")).not.toBeNull();
