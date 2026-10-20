@@ -4,6 +4,39 @@ import { buildMatrix } from "./e2e-completo-matriz.mjs";
 import { contractSupplementDefinitions, contractSupplementProofGroups, assertLegacyDoorCookies, requireSharedQuotaResponse, assertNoAutomaticRoleRetry, withRestoredTenantQuota, assertSameIdempotentAttempt, requireSuccessfulRoleReplay, assertSingleRoleEffects, assertAbandonedSettings } from "./e2e-completo-contrato-complemento.mjs";
 import * as contract from "./e2e-completo-contrato-complemento.mjs";
 
+test("abandonar Configuración usa Volver a Más en móvil y luego Inicio; escritorio conserva Inicio directo", async () => {
+  for (const width of [390, 1440]) {
+    let route = "/org/configuracion"; let blocked = false; let destination; const calls = [];
+    const page = { goto: async () => assert.fail("La salida debe pasar por la guarda real de navegación"), getByRole: (role, options) => {
+      assert.equal(options.exact, true);
+      if (role === "dialog") {
+        assert.equal(options.name, "¿Salir sin guardar?");
+        return { getByRole: (buttonRole, buttonOptions) => {
+          assert.equal(buttonRole, "button"); assert.deepEqual(buttonOptions, { name: "Salir sin guardar", exact: true });
+          return { click: async () => { assert.equal(blocked, true); calls.push("confirmar descarte"); route = destination; blocked = false; } };
+        } };
+      }
+      assert.equal(role, "link"); const name = options.name;
+      assert.ok(name === "Inicio" || name === "Volver a Más");
+      const link = { filter: () => link, first: () => link, click: async () => {
+        calls.push("clic " + name);
+        if (route === "/org/configuracion") { assert.equal(name, width === 390 ? "Volver a Más" : "Inicio"); blocked = true; destination = width === 390 ? "/mas" : "/org"; }
+        else { assert.equal(route, "/mas"); assert.equal(name, "Inicio"); route = "/org"; }
+      } }; return link;
+    }, waitForURL: async (predicate) => { assert.equal(blocked, false); assert.equal(predicate(new URL("https://localtest.me" + route)), true); calls.push("ruta " + route); } };
+    await contract.abandonSettingsThroughNavigation({ width }, page);
+    assert.equal(route, "/org");
+    assert.deepEqual(calls, width === 390 ? ["clic Volver a Más", "confirmar descarte", "ruta /mas", "clic Inicio", "ruta /org"] : ["clic Inicio", "confirmar descarte", "ruta /org"]);
+  }
+});
+
+test("un fallo del descarte conserva el error y no salta a Inicio ni continúa la prueba", async () => {
+  const failure = new Error("La guarda no confirmó la salida"); let links = 0;
+  const link = { filter: () => link, first: () => link, click: async () => { links++; } };
+  const page = { getByRole: (role) => role === "link" ? link : { getByRole: () => ({ click: async () => { throw failure; } }) }, waitForURL: async () => assert.fail("No se confirmó el descarte"), goto: async () => assert.fail("Sin bypass") };
+  await assert.rejects(() => contract.abandonSettingsThroughNavigation({ width: 390 }, page), (error) => error === failure); assert.equal(links, 1);
+});
+
 test("cada record enlaza sólo su conducta completa y HTTP offline requiere todos los pasos por ancho", () => {
   assert.deepEqual(contractSupplementDefinitions.map((entry) => entry.id), ["CON-01", "CON-02", "CON-03", "CON-04"]);
   assert.deepEqual(contractSupplementDefinitions.flatMap((entry) => entry.covers), ["BACK-ID-029", "BACK-HT-003", "BACK-HT-002"]);
@@ -115,7 +148,8 @@ test("los repairs de contrato aíslan02 de03/04 y omiten01, capturando Plataform
   assert.deepEqual(contract.contractQuotaRepairDefinitions.map((entry) => entry.id), ["CON-02"]);
   assert.deepEqual(contract.contractTransportRepairDefinitions.map((entry) => entry.id), ["CON-03", "CON-04"]);
   assert.deepEqual(contract.contractSharedDefinitions.map((entry) => entry.id), ["CON-01", "CON-03", "CON-04"]);
-  for (const [runner, ids] of [[contract.runContractQuotaRepairCases, ["CON-02"]], [contract.runContractTransportRepairCases, ["CON-03", "CON-04"]], [contract.runContractSupplementCases, ["CON-01", "CON-03", "CON-04"]]]) {
+  assert.deepEqual(contract.contractAbandonmentRepairDefinitions.map((entry) => entry.id), ["CON-04"]);
+  for (const [runner, ids] of [[contract.runContractQuotaRepairCases, ["CON-02"]], [contract.runContractTransportRepairCases, ["CON-03", "CON-04"]], [contract.runContractSupplementCases, ["CON-01", "CON-03", "CON-04"]], [contract.runContractAbandonmentRepairCases, ["CON-04"]]]) {
     const seen = []; const captures = []; const closed = []; const pages = [];
     const checks = new Map(ids.map((id) => [id, async () => { seen.push(id); throw new Error(`Fallo propio ${id}`); }]));
     const h = { newPage: async () => { const page = { ownPage: pages.length }; pages.push(page); return page; },

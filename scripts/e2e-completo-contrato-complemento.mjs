@@ -19,6 +19,7 @@ export const contractSupplementDefinitions = [
 // La cuota global se prueba sola, con un único ancho y entorno propio: nunca en el lote compartido.
 export const contractQuotaRepairDefinitions = contractSupplementDefinitions.filter((entry) => entry.id === "CON-02");
 export const contractTransportRepairDefinitions = contractSupplementDefinitions.filter((entry) => ["CON-03", "CON-04"].includes(entry.id));
+export const contractAbandonmentRepairDefinitions = contractSupplementDefinitions.filter((entry) => entry.id === "CON-04");
 export const contractSharedDefinitions = contractSupplementDefinitions.filter((entry) => entry.id !== "CON-02");
 
 export const contractSupplementProofGroups = { "BACK-HT-004": [["NUEVO-PER-15", "NUEVO-PER-16", "CON-04"]] };
@@ -284,6 +285,18 @@ async function openSettingsThroughNavigation(h, page) {
   await settings.click(); await page.waitForURL((url) => url.pathname === "/org/configuracion");
 }
 
+export async function abandonSettingsThroughNavigation(h, page) {
+  // FixedActions oculta BottomNav en el editor móvil; su AppBar vuelve al moreTo real de Business (/mas).
+  await page.getByRole("link", { name: h.width === 390 ? "Volver a Más" : "Inicio", exact: true }).filter({ visible: true }).first().click();
+  const leave = page.getByRole("dialog", { name: "¿Salir sin guardar?", exact: true });
+  await leave.getByRole("button", { name: "Salir sin guardar", exact: true }).click();
+  await page.waitForURL((url) => url.pathname === (h.width === 390 ? "/mas" : "/org"));
+  if (h.width === 390) {
+    await page.getByRole("link", { name: "Inicio", exact: true }).filter({ visible: true }).first().click();
+    await page.waitForURL((url) => url.pathname === "/org");
+  }
+}
+
 async function checkAbandonedSettings(h, page, _platformPage, state) {
   await h.registerBusiness(page); state.publicSignedIn = true;
   const routePath = "/api/organization/settings"; const routeUrl = new URL(routePath, h.base).href;
@@ -328,9 +341,7 @@ async function checkAbandonedSettings(h, page, _platformPage, state) {
     await page.getByRole("button", { name: "Guardar cambios", exact: true }).click(); await sent;
     const held = await acquired.promise; assert.equal(held.request.name, lateName);
     const committed = await read(h, page, routePath); assert.equal(committed.name, lateName); assert.ok(committed.version > before.version);
-    await page.getByRole("link", { name: "Inicio", exact: true }).filter({ visible: true }).first().click();
-    const leave = page.getByRole("dialog", { name: "¿Salir sin guardar?", exact: true }); await leave.getByRole("button", { name: "Salir sin guardar", exact: true }).click();
-    await page.waitForURL((url) => url.pathname === "/org");
+    await abandonSettingsThroughNavigation(h, page);
     // La lectura puede seguir fresca en React Query: volver por UI no exige un GET nuevo para esta comprobación.
     await openSettingsThroughNavigation(h, page); await nameField.waitFor();
     const nextDraft = "Borrador posterior " + randomUUID().slice(0, 8); await nameField.fill(nextDraft);
@@ -388,3 +399,4 @@ async function runContractCases(h, definitions, { checks = contractChecks, close
 export async function runContractSupplementCases(h, options) { return runContractCases(h, contractSharedDefinitions, options); }
 export async function runContractQuotaRepairCases(h, options) { return runContractCases(h, contractQuotaRepairDefinitions, options); }
 export async function runContractTransportRepairCases(h, options) { return runContractCases(h, contractTransportRepairDefinitions, options); }
+export async function runContractAbandonmentRepairCases(h, options) { return runContractCases(h, contractAbandonmentRepairDefinitions, options); }

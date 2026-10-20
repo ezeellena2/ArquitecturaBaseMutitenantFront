@@ -61,6 +61,7 @@ const suiteSpecs = {
   contratoextra: ["./e2e-completo-contrato-complemento.mjs", "contractSharedDefinitions", "runContractSupplementCases"],
   cuotacontrato: ["./e2e-completo-contrato-complemento.mjs", "contractQuotaRepairDefinitions", "runContractQuotaRepairCases"],
   contratotransportearreglos: ["./e2e-completo-contrato-complemento.mjs", "contractTransportRepairDefinitions", "runContractTransportRepairCases"],
+  contratoabandonoarreglo: ["./e2e-completo-contrato-complemento.mjs", "contractAbandonmentRepairDefinitions", "runContractAbandonmentRepairCases"],
   asistenteextra: ["./e2e-completo-asistente-complemento.mjs", "assistantSupplementDefinitions", "runAssistantSupplementCases"],
   whatsappplataformaextra: ["./e2e-completo-whatsapp-plataforma.mjs", "platformWhatsAppDefinitions", "runPlatformWhatsAppCases"],
   legalesextra: ["./e2e-completo-legales-complemento.mjs", "legalSupplementDefinitions", "runLegalSupplementCases"],
