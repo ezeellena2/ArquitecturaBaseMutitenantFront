@@ -10,6 +10,49 @@ const names = {
 };
 const original = (key) => parseFunctionalBaselineIncidents(`${names[key]}: falló en “paso original” [TimeoutError] detalle original.`)[0];
 
+const quotaNavigationFailure = (mode = "domcontentloaded", route = "/registro") => `page.goto: Timeout 45000ms exceeded.\nCall log:\n  - navigating to "https://localtest.me:5174${route}?token=reservado", waiting until "${mode}"\n Captura no disponible (TimeoutError).`;
+
+test("cuota analiza sólo el timeout real de navegación y conserva actual, estado, imágenes e historial sin acreditar progreso", () => {
+  const previousAttempts = Object.freeze([Object.freeze({ status: "failed", actual: quotaNavigationFailure("load"), image: "", reason: "Primer intento conservado" })]);
+  const results = [1440, 390].map((width) => Object.freeze({ width, status: "failed", actual: quotaNavigationFailure(), currentRoute: "/registro", image: undefined,
+    previousAttempts, severity: "high", authenticationTrace: Object.freeze([{ route: "/connect/token", status: 200 }]), extra: "Conservado" }));
+  const input = Object.freeze([Object.freeze({ id: "CUOTA-WA-01", expected: "800 admisiones y reserva protegida", results: Object.freeze(results) })]);
+  const snapshot = structuredClone(input); const [entry] = enrichExecutionFailures(input);
+  assert.deepEqual(input, snapshot); assert.notEqual(entry, input[0]); assert.equal(entry.expected, input[0].expected);
+  for (const [index, result] of entry.results.entries()) {
+    for (const key of Object.keys(results[index]).filter((key) => key !== "severity")) assert.equal(result[key], results[index][key], key);
+    assert.equal(result.previousAttempts, previousAttempts); assert.equal(result.severity, "medium");
+    assert.match(result.probableArea, /entorno.*navegación.*arnés/iu);
+    assert.match(result.analysis, /no acreditó.*800/iu); assert.match(result.analysis, /no se comprob(?:ó|aron).*DailyLimit/iu);
+    assert.match(result.analysis, /no demuestra.*(?:bug|defecto).*cuota/iu); assert.match(result.analysis, /ausencia.*LoginCodes\/outbox/iu);
+    assert.match(result.analysis, /causa.*sin confirmar/iu); assert.match(result.analysis, /primer intento.*único reintento aislado/iu);
+    assert.doesNotMatch(result.analysis, /\b100\b/u);
+    assert.match(result.reproduce.join(" "), new RegExp(String(result.width), "u"));
+    assert.match(result.reproduce.join(" "), /e2e-completo-cuota-whatsapp\.mjs/u);
+    assert.match(result.reproduce.join(" "), /detener.*sin.*reintentos adicionales/iu);
+    assert.doesNotMatch([result.analysis, result.probableArea, ...result.reproduce].join(" "), /reservado|https:|\?token/u);
+  }
+  assert.deepEqual(enrichExecutionFailures([entry]), [entry]); assert.equal(previousAttempts[0].analysis, undefined);
+});
+
+test("cuota no hereda la firma de un intento previo ni enriquece passed, otros IDs o fallos distintos", () => {
+  const rows = [
+    { id: "CUOTA-WA-01 (otro)", results: [{ status: "failed", actual: quotaNavigationFailure() }] },
+    { id: "OTRO", results: [{ status: "failed", actual: quotaNavigationFailure() }] },
+    { id: "CUOTA-WA-01", results: [
+      { status: "passed", actual: quotaNavigationFailure() }, { status: "blocked", actual: quotaNavigationFailure() },
+      { status: "failed", actual: "No llegó DailyLimit", previousAttempts: [{ status: "failed", actual: quotaNavigationFailure() }] },
+      { status: "failed", actual: quotaNavigationFailure().replace("page.goto", "locator.waitFor") },
+      { status: "failed", actual: quotaNavigationFailure().replace("45000", "30000") },
+      { status: "failed", actual: quotaNavigationFailure("load", "/login") },
+      { status: "failed", actual: quotaNavigationFailure().replace(" Captura no disponible (TimeoutError).", "") },
+      { status: "failed", actual: "page.goto: Timeout 45000ms exceeded.", currentRoute: "/registro" },
+    ] },
+  ];
+  const actual = enrichExecutionFailures(rows); assert.deepEqual(actual, rows);
+  actual.forEach((row, index) => assert.equal(row, rows[index]));
+});
+
 test("enriquece sólo los tres nombres exactos sin agregar incidentes ni modificar hechos originales", () => {
   const input = ["A8", "A9", "A3"].map((key) => Object.freeze(original(key)));
   const before = structuredClone(input);

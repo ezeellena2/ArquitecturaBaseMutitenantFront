@@ -134,16 +134,47 @@ function createdReplayLocationTriage(result) {
   };
 }
 
+function isQuotaSignupNavigationFailure(result) {
+  if (result.status !== "failed") return false;
+  const actual = String(result.actual ?? "");
+  if (!/^page\.goto: Timeout 45000ms exceeded\./u.test(actual) || !actual.includes("Captura no disponible (TimeoutError)")) return false;
+  const navigation = /navigating to ["']([^"'\r\n]+)["'], waiting until ["'](?:load|domcontentloaded)["']/u.exec(actual);
+  if (!navigation) return false;
+  try { return new URL(navigation[1]).pathname === "/registro"; }
+  catch { return false; }
+}
+
+function quotaSignupNavigationTriage(result) {
+  const wait = /waiting until ["']domcontentloaded["']/u.test(String(result.actual)) ? "DOMContentLoaded" : "load";
+  const previous = result.previousAttempts;
+  const history = Array.isArray(previous) && previous.length === 1 && isQuotaSignupNavigationFailure(previous[0])
+    ? "El primer intento y el único reintento aislado registrado se conservan en el historial. No se indican nuevas repeticiones."
+    : "Se conserva el intento y el historial recibido, sin completar antecedentes que no estén registrados ni indicar nuevas repeticiones.";
+  const width = [1440, 390].includes(result.width) ? `${result.width} px` : "el ancho registrado en este intento";
+  return {
+    analysis: `La navegación del entorno de prueba a /registro agotó 45 segundos esperando ${wait}. La ejecución quedó interrumpida y no acreditó llegar a 800 admisiones nuevas. No se comprobaron el 429 WhatsApp.LoginCode.DailyLimit, el rechazo del destino fresco ni el ingreso con OTP del Phone verificado que debe conservar la capacidad protegida. El timeout no demuestra un defecto de cuota ni la ausencia persistida de LoginCodes/outbox. La causa sigue sin confirmar; el bloqueo observado corresponde a navegación del entorno o del arnés. La captura tampoco estuvo disponible por TimeoutError, según este resultado. ${history}`,
+    severity: "medium",
+    probableArea: "Entorno de prueba · navegación a /registro y arnés phoneForm; causa sin confirmar, verificación de cuota pendiente.",
+    reproduce: [
+      `Usar runQuotaWhatsAppCases de scripts/e2e-completo-cuota-whatsapp.mjs en un entorno nuevo aislado, con control Testing real, un solo contexto de navegador y ${width}.`,
+      "Seguir el registro Phone por UI, su verificación y los pedidos de emisión previstos por el script, conservando los límites reales, el cooldown y el presupuesto máximo de 1000 pedidos.",
+      "Observar la navegación real a /registro y registrar si page.goto agota 45000 ms antes de que el formulario quede disponible; no deducir admisiones ni resultados de cuota a partir de ese timeout.",
+      "Detener el intento al timeout y conservar su resultado con los antecedentes ya registrados, sin iniciar reintentos adicionales.",
+    ],
+  };
+}
+
 /** Enriquece sólo firmas observadas; conserva la evidencia y nunca cambia estados. */
 export function enrichExecutionFailures(executions = []) {
   return executions.map((entry) => {
-    if (!["NUEVO-PER-09", "POL-11", "PLAT-C-13", "PLAT-C-16"].includes(entry.id) || !Array.isArray(entry.results)) return entry;
+    if (!["NUEVO-PER-09", "POL-11", "PLAT-C-13", "PLAT-C-16", "CUOTA-WA-01"].includes(entry.id) || !Array.isArray(entry.results)) return entry;
     let changed = false;
     const results = entry.results.map((result) => {
       let triage;
       if (["NUEVO-PER-09", "POL-11"].includes(entry.id) && isGenericCallbackFailure(result)) triage = entry.id === "NUEVO-PER-09" ? personalCallbackTriage(result) : pendingApprovalTriage();
       else if (entry.id === "PLAT-C-13" && isMobilePendingHomeFailure(result)) triage = mobilePendingHomeTriage(result);
       else if (entry.id === "PLAT-C-16" && isCreatedReplayLocationFailure(result)) triage = createdReplayLocationTriage(result);
+      else if (entry.id === "CUOTA-WA-01" && isQuotaSignupNavigationFailure(result)) triage = quotaSignupNavigationTriage(result);
       if (!triage) return result;
       changed = true;
       return { ...result, ...triage };
