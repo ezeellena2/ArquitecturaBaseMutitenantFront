@@ -11,18 +11,42 @@ test("el reenvío de la ficha usa el botón en escritorio y el menú real sólo 
   for (const width of [1440, 390]) {
     const calls = []; const email = "operador-propio@example.test";
     const control = { own: true };
-    const page = { getByRole: (role, options) => {
+    const item = { click: async (options) => { assert.deepEqual(options, { timeout: 123 }); calls.push("reenviar"); } };
+    const menu = { waitFor: async () => {}, getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.deepEqual(options, { name: "Reenviar invitación", exact: true }); return item; } };
+    const sheet = { waitFor: async (options) => { if (options?.state === "hidden") calls.push("hoja cerrada"); }, getByRole: (role) => { assert.equal(role, "menu"); return menu; } };
+    const page = { viewportSize: () => ({ width }), getByRole: (role, options) => {
       calls.push([role, options.name]); assert.equal(options.exact, true);
+      if (role === "dialog") { assert.equal(options.name, email); return sheet; }
       if (options.name === `Acciones de ${email}`) {
         assert.equal(width, 390); assert.equal(role, "button");
         return { getAttribute: async (name) => { assert.equal(name, "aria-haspopup"); return "dialog"; }, click: async () => calls.push("abrir hoja") };
       }
-      assert.equal(options.name, "Reenviar invitación"); assert.equal(role, width === 1440 ? "button" : "menuitem");
+      assert.equal(options.name, "Reenviar invitación"); assert.equal(role, "button");
       return control;
     } };
-    assert.equal(await platform.operatorInvitationResendControl({ width }, page, email), control);
-    assert.deepEqual(calls, width === 1440 ? [["button", "Reenviar invitación"]] : [["button", `Acciones de ${email}`], "abrir hoja", ["menuitem", "Reenviar invitación"]]);
+    const result = await platform.operatorInvitationResendControl({ width }, page, email);
+    if (width === 1440) assert.equal(result, control);
+    else await result.click({ timeout: 123 });
+    assert.deepEqual(calls, width === 1440 ? [["button", "Reenviar invitación"]] : [["button", `Acciones de ${email}`], "abrir hoja", ["dialog", email], "reenviar", "hoja cerrada"]);
   }
+});
+
+test("el runner móvil complementario conserva callbacks y sólo prepara02/12 para los cinco objetivos", async () => {
+  const targets = [1, 4, 17, 18, 20].map((number) => `PLAT-C-${String(number).padStart(2, "0")}`);
+  const fixtures = ["PLAT-C-02", "PLAT-C-12"];
+  assert.deepEqual(platform.supplementPlatformMobileBarDefinitions.map((row) => row.id), targets);
+  for (const row of platform.supplementPlatformMobileBarDefinitions) assert.equal(row, supplementPlatformDefinitions.find((original) => original.id === row.id));
+  const recorded = []; const executed = [];
+  const h = { width: 390, record: async (id, _page, action) => { recorded.push(id); return { ok: true, value: await action() }; }, block: () => assert.fail("Sin bloqueo") };
+  await platform.runSupplementPlatformMobileBarCases(h, { run: async (selected) => {
+    for (const row of supplementPlatformDefinitions) {
+      const result = await selected.record(row.id, () => ({}), async () => executed.push(row.id));
+      if (!targets.includes(row.id) && !fixtures.includes(row.id)) assert.deepEqual(result, { ok: false, skipped: true });
+    }
+  } });
+  assert.deepEqual(new Set(recorded), new Set(targets)); assert.equal(recorded.length, targets.length);
+  assert.deepEqual(new Set(executed), new Set([...targets, ...fixtures]));
+  await assert.rejects(platform.runSupplementPlatformMobileBarCases({ ...h, width: 1440 }, { run: async () => assert.fail("Sólo390") }), /390/u);
 });
 
 test("el diagnóstico HTTP distingue reenvío, revocación y alta sin publicar la query", async () => {

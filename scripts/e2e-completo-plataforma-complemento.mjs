@@ -8,7 +8,6 @@ import { responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
 import { recoveryRow, selectRecovery } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { requireE8Control, sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 import { assertPlatformProblem, createPlatformRecorder, openAction, openPlatformListItem } from "./e2e-completo-plataforma.mjs";
-import { openAccountActions } from "./test-e2e-real-e9.mjs";
 import { syntheticEmail, requireSyntheticEmail, localApiUrl } from "./e2e-completo-soporte.mjs";
 import { confirmRecentAuthentication, confirmRecentAuthenticationWhenAsked, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
 import { openPlatformSettings, savePlatformSettings, restorableSettings, withRestoredSettings } from "./test-e2e-real-whatsapp-settings.mjs";
@@ -16,6 +15,8 @@ import { parseLegalPublicationReceipt, acceptPublishedLegalAndReturn, assertPend
 import { journeyDate } from "./recorrido-usuario.mjs";
 import { createAssistantControl } from "./assistant-real-control.mjs";
 import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
+import { openBarMenu } from "./e2e-completo-menu-barra.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
 const definition = (number, actor, action, route, expected, covers = []) => ({ id: `PLAT-C-${String(number).padStart(2, "0")}`, area: "Complemento de Plataforma", actor, action, route, expected, covers, critical: true, source: "scripts/e2e-completo-plataforma-complemento.mjs" });
 export const supplementPlatformDefinitions = [
@@ -45,6 +46,15 @@ export const platformOperatorInvitationRepairDefinitions = supplementPlatformDef
 export const platformApprovalRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-20");
 export const platformAccountLifecycleRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-18");
 export const platformOccupiedRecoveryRepairDefinitions = supplementPlatformDefinitions.filter((entry) => entry.id === "PLAT-C-10");
+export const supplementPlatformMobileBarDefinitions = [1, 4, 17, 18, 20].map((number) => supplementPlatformDefinitions.find((entry) => entry.id === `PLAT-C-${String(number).padStart(2, "0")}`));
+
+/** Conserva los callbacks completos y prepara sólo las invitaciones y la solicitud requeridas por04/20. */
+export async function runSupplementPlatformMobileBarCases(h, { run = runSupplementPlatformCases } = {}) {
+  return run(selectMobileBarCases(h, {
+    targets: supplementPlatformMobileBarDefinitions.map(({ id }) => id),
+    prepare: ["PLAT-C-02", "PLAT-C-12"],
+  }));
+}
 
 export const supplementPlatformProofGroups = { "BACK-PL-008": [["PLAT-C-20", "PLAT-C-17"]], "BACK-PL-018": [["PLAT-25", "PLAT-26", "PLAT-C-18"]] };
 export const supplementPlatformLimitations = {
@@ -171,8 +181,9 @@ export { clickHttp as clickSupplementHttp };
 /** En la ficha, escritorio presenta Reenviar como botón; el teléfono lo incluye en la hoja de acciones. */
 export async function operatorInvitationResendControl(h, page, email) {
   if (h.width === 390) {
-    await openAccountActions(page, email);
-    return page.getByRole("menuitem", { name: "Reenviar invitación", exact: true });
+    const opened = await openBarMenu(page, page.getByRole("button", { name: `Acciones de ${email}`, exact: true }), { title: email });
+    const item = opened.menu.getByRole("menuitem", { name: "Reenviar invitación", exact: true });
+    return { click: async (options) => { await item.click(options); await opened.waitForClosed(); } };
   }
   assert.equal(h.width, 1440);
   return page.getByRole("button", { name: "Reenviar invitación", exact: true });
@@ -222,7 +233,7 @@ async function operatorInvitationLifecycle(h, page, disposable) {
   const resent = await clickHttp(page, resend, `/api/platform/operators/${disposable.id}/invitation/resend`, 200);
   const renewed = await resent.json(); assert.ok(Date.parse(renewed.expiresAtUtc) > Date.parse(disposable.expiresAtUtc));
   await notice(h.env, disposable.email, before, (text) => /operador/iu.test(text));
-  await openAccountActions(page, disposable.email); await page.getByRole("menuitem", { name: "Revocar invitación", exact: true }).click();
+  await openAction(page, "Revocar invitación");
   const dialog = page.getByRole("dialog", { name: `¿Revocar la invitación a ${disposable.email}?`, exact: true });
   await clickHttp(page, dialog.getByRole("button", { name: "Revocar", exact: true }), `/api/platform/operators/${disposable.id}/invitation`, 204, "DELETE");
   await dialog.waitFor({ state: "hidden" });

@@ -116,7 +116,7 @@ test("el conflicto de configuración verifica la alerta móvil, sus salidas y el
   await assert.rejects(platform.assertPlatformSettingsConflict(page, 3), /borrador/u);
 });
 
-test("abrir una acción espera la ficha y elige botón directo, hoja móvil o menú de escritorio", async () => {
+test("abrir una acción espera la ficha y acota la hoja móvil antes de esperar su cierre", async () => {
   for (const mode of ["directo", "hoja", "menú"]) {
     const calls = [];
     const waiting = Promise.withResolvers(); const loaded = Promise.withResolvers();
@@ -128,8 +128,15 @@ test("abrir una acción espera la ficha y elige botón directo, hoja móvil o me
     const menu = { ...action("Acciones"), filter: () => menu, first: () => menu,
       getAttribute: async () => mode === "hoja" ? "dialog" : "menu",
       focus: async () => calls.push(["focus"]), press: async (key) => calls.push(["press", key]) };
-    const page = { getByRole: (role, options) => {
-      if (role === "menuitem") { assert.equal(options.name, "Cerrar sesiones"); return action("opción Cerrar sesiones"); }
+    const scopedMenu = { waitFor: async (options) => { if (options?.state === "hidden") calls.push(["menú cerrado"]); }, getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.deepEqual(options, { name: "Cerrar sesiones", exact: true }); return action("opción Cerrar sesiones"); } };
+    const sheet = { waitFor: async (options) => { if (options?.state === "hidden") calls.push(["hoja cerrada"]); }, getByRole: (role) => { assert.equal(role, "menu"); return scopedMenu; } };
+    const heading = { filter: () => heading, first: () => heading, innerText: async () => "Cuenta propia" };
+    const desktopMenu = { filter: () => desktopMenu, last: () => scopedMenu };
+    const page = { viewportSize: () => ({ width: mode === "hoja" ? 390 : 1440 }), getByRole: (role, options) => {
+      if (role === "heading") return heading;
+      if (role === "dialog") { assert.deepEqual(options, { name: "Cuenta propia", exact: true }); return sheet; }
+      if (role === "menu") return desktopMenu;
+      assert.equal(role, "button");
       return typeof options.name === "string" ? direct : menu;
     } };
     const opened = platform.openAction(page, "Cerrar sus sesiones");
@@ -137,9 +144,27 @@ test("abrir una acción espera la ficha y elige botón directo, hoja móvil o me
     assert.deepEqual(calls, [], "La carga pendiente no debe provocar un menú alternativo incorrecto.");
     ready = true; loaded.resolve(); await opened;
     assert.deepEqual(calls, mode === "directo" ? [["click", "Cerrar sesiones"]]
-      : mode === "hoja" ? [["click", "Acciones"], ["click", "opción Cerrar sesiones"]]
-        : [["focus"], ["press", "ArrowDown"], ["click", "opción Cerrar sesiones"]]);
+      : mode === "hoja" ? [["click", "Acciones"], ["click", "opción Cerrar sesiones"], ["hoja cerrada"]]
+        : [["click", "Acciones"], ["click", "opción Cerrar sesiones"], ["menú cerrado"]]);
   }
+});
+
+test("el runner móvil de Plataforma sólo acredita los siete objetivos y prepara sus dependencias", async () => {
+  const targets = [22, 24, 25, 27, 29, 35, 37].map((number) => `PLAT-${String(number).padStart(2, "0")}`);
+  const fixtures = [1, 8, 9, 10, 12, 18, 26].map((number) => `PLAT-${String(number).padStart(2, "0")}`);
+  assert.deepEqual(platform.platformMobileBarDefinitions.map((row) => row.id), targets);
+  for (const row of platform.platformMobileBarDefinitions) assert.equal(row, platformDefinitions.find((original) => original.id === row.id));
+  const recorded = []; const executed = [];
+  const h = { width: 390, record: async (id, _page, action) => { recorded.push(id); return { ok: true, value: await action() }; }, block: () => assert.fail("No se bloquean objetivos preparados") };
+  await platform.runPlatformMobileBarCases(h, { run: async (selected) => {
+    for (const row of platformDefinitions) {
+      const result = await selected.record(row.id, () => ({}), async () => executed.push(row.id));
+      if (!targets.includes(row.id) && !fixtures.includes(row.id)) assert.deepEqual(result, { ok: false, skipped: true });
+    }
+  } });
+  assert.deepEqual(recorded, targets);
+  assert.deepEqual(new Set(executed), new Set([...targets, ...fixtures]));
+  await assert.rejects(platform.runPlatformMobileBarCases({ ...h, width: 1440 }, { run: async () => assert.fail("Sólo390") }), /390/u);
 });
 
 test("la reparación de Plataforma sólo prepara sus fixtures y ejecuta las fichas y estados afectados", async () => {

@@ -3,6 +3,8 @@ import { randomUUID } from "node:crypto";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { confirmRecentAuthenticationWhenAsked, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
 import { requireSyntheticEmail } from "./e2e-completo-soporte.mjs";
+import { chooseBarAction } from "./e2e-completo-menu-barra.mjs";
+import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
 // Sólo se enlazan acciones ejercidas. Leer Módulos, Dominio o Página pública no acredita sus escrituras.
 const coverage = {
@@ -100,6 +102,15 @@ export const platformDefinitions = [
 
 export const platformRepairDefinitions = platformRepairPlan.map(([number]) => platformDefinitions.find((entry) => entry.id === `PLAT-${String(number).padStart(2, "0")}`));
 export const platformSessionRepairDefinitions = [26, 35, 28].map((number) => platformDefinitions.find((entry) => entry.id === `PLAT-${String(number).padStart(2, "0")}`));
+export const platformMobileBarDefinitions = [22, 24, 25, 27, 29, 35, 37].map((number) => platformDefinitions.find((entry) => entry.id === `PLAT-${String(number).padStart(2, "0")}`));
+
+/** Los mismos callbacks completos; las altas, consultas y cancelación de baja sólo preparan sus dependencias. */
+export async function runPlatformMobileBarCases(h, { run = runPlatformCases } = {}) {
+  return run(selectMobileBarCases(h, {
+    targets: platformMobileBarDefinitions.map(({ id }) => id),
+    prepare: [1, 8, 9, 10, 12, 18, 26].map((number) => `PLAT-${String(number).padStart(2, "0")}`),
+  }));
+}
 
 export async function assertPlatformProblem(response, status, code) {
   assert.equal(response.status(), status, `Se esperaba HTTP ${status}.`);
@@ -160,17 +171,13 @@ export function createPlatformRecorder(h) {
 const idOf = (number) => `PLAT-${String(number).padStart(2, "0")}`;
 const responseAt = (page, route, method) => page.waitForResponse((response) => new URL(response.url()).pathname === route && response.request().method() === method && response.status() !== 403);
 
-export async function openAction(page, label) {
+export async function openAction(page, label, options) {
   const name = label === "Cerrar sus sesiones" ? "Cerrar sesiones" : label;
   const button = page.getByRole("button", { name, exact: true }).filter({ visible: true }).first();
   const actions = page.getByRole("button", { name: /^Acciones de / }).filter({ visible: true }).first();
   await button.or(actions).first().waitFor();
   if (await button.isVisible()) await button.click();
-  else {
-    if (await actions.getAttribute("aria-haspopup") === "dialog") await actions.click();
-    else { await actions.focus(); await actions.press("ArrowDown"); }
-    await page.getByRole("menuitem", { name, exact: true }).click();
-  }
+  else await chooseBarAction(page, actions, name, options);
 }
 
 async function searchPlatformList(h, page, value, name) {
