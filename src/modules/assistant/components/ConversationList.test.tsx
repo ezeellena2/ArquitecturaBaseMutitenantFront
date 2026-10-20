@@ -49,7 +49,10 @@ it("deshabilitado no consulta el historial", async () => {
   let requests = 0;
   server.use(http.get("/api/organization/assistant/conversations", () => { requests++; return HttpResponse.json({ items: [], hasMore: false }); }));
   renderWithProviders(<MemoryRouter><OwnedList enabled={false} onSelect={() => {}} /></MemoryRouter>);
-  expect(await screen.findByRole("button", { name: "Nueva conversación" })).toBeVisible();
+  const create = await screen.findByRole("button", { name: "Nueva conversación" });
+  expect(create).toBeVisible();
+  // «Criterio · Botones»: el único ícono es el «+» de crear, delante del texto.
+  expect(create.querySelector("svg.lucide-plus")).not.toBeNull();
   expect(requests).toBe(0);
 });
 it("cerrar el dueño cancela la lectura y una respuesta tardía no publica metadatos", async () => {

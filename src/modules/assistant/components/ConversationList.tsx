@@ -1,4 +1,5 @@
 import { AssistantRuntimeProvider, ThreadListItemPrimitive, ThreadListPrimitive, useExternalStoreRuntime, type ThreadMessageLike } from "@assistant-ui/react";
+import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { AssistantConversationSummaryResponse } from "@/modules/assistant/api/types";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
@@ -64,7 +65,8 @@ export function ConversationList(props: ConversationListProps) {
     onSwitchToNewThread: props.onNew, onSwitchToThread: props.onSelect,
   } } });
   return <AssistantRuntimeProvider runtime={runtime}><ThreadListPrimitive.Root className="flex min-h-0 flex-col overflow-auto p-3">
-    <ThreadListPrimitive.New asChild><Button variant="outline">{t("history.new")}</Button></ThreadListPrimitive.New>
+    {/* «Criterio · Botones»: el único ícono es el «+» de agregar, crear o invitar (Asistente-Org, -Personal y -Plat). */}
+    <ThreadListPrimitive.New asChild><Button variant="outline"><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("history.new")}</Button></ThreadListPrimitive.New>
     {saved.isSuccess && recent.isSuccess && conversations.length === 0 ? <p className="px-2.5 py-4 text-[13.5px] text-[var(--t3)]">{t("history.empty")}</p>
       : <><Group {...props} query={saved} saved /><Group {...props} query={recent} saved={false} /></>}
   </ThreadListPrimitive.Root></AssistantRuntimeProvider>;
