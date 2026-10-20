@@ -5,6 +5,7 @@ import { assistantLogin } from "./assistant-real-ui.mjs";
 import { requireModuleProblem, runModuleDependency } from "./e2e-completo-modulos.mjs";
 import { cleanupContinuationSessions } from "./e2e-completo-continuacion.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
+import { openAction } from "./e2e-completo-plataforma.mjs";
 
 const definition = (number, actor, action, route, expected, covers = []) => ({
   id: "PUB-C-" + String(number).padStart(2, "0"), area: "Sitio público y Configuración", actor, action, route, expected, covers,
@@ -70,10 +71,13 @@ export function requireAuditPrivacy({ invitation, platforms, invitedEmail, actor
     for (const secret of [operator.id, operator.email, operator.displayName, reason].filter(Boolean)) assert.equal(serialized.includes(secret), false);
   }
 }
-export async function withPublicRestoration(action, restore) {
-  let value; const failures = [];
+export async function withPublicRestoration(action, restore, { getPage, setPage } = {}) {
+  let value; let actionPage; const failures = [];
   try { value = await action(); } catch (error) { failures.push(error); }
-  try { await restore(); } catch (error) { failures.push(error); }
+  finally { actionPage = getPage?.(); }
+  try { await restore(); }
+  catch (error) { if (failures.length === 0) actionPage = undefined; failures.push(error); }
+  finally { if (actionPage !== undefined) setPage?.(actionPage); }
   if (failures.length === 1) throw failures[0];
   if (failures.length) throw new AggregateError(failures, "Fallaron la comprobación pública y su restauración por UI.");
   return value;
@@ -114,9 +118,7 @@ async function operatorAction(h, page, tenantId, action, reason, moderation = fa
     await page.getByRole("menuitem", { name: action, exact: true }).click();
     route = "/api/platform/tenants/" + tenantId + "/public-site/" + (action === "Despublicar" ? "unpublish" : "allow-publish");
   } else {
-    const button = page.getByRole("button", { name: action, exact: true });
-    if (await button.isVisible()) await button.click();
-    else { await page.getByRole("button", { name: /^Acciones de /u }).first().click(); await page.getByRole("menuitem", { name: action, exact: true }).click(); }
+    await openAction(page, action);
     route = "/api/platform/tenants/" + tenantId + "/" + (action === "Suspender" ? "suspend" : "reactivate");
   }
   const dialog = page.getByRole("dialog").filter({ has: page.getByRole("textbox", { name: /^Motivo/u }) });
@@ -159,27 +161,32 @@ export async function runPublicSupplementCases(h) {
   const operatorEmail = h.width === 1440 ? "e2e-5d-operator@example.test" : "e2e-a9-operator@example.test";
   const internalReason = "qa-interno-" + tag; const tenantId = () => a.me.activeTenantId;
   const run = (number, dependencies, action) => runModuleDependency(h, outcomes, "PUB-C-" + String(number).padStart(2, "0"), dependencies.map((id) => "PUB-C-" + String(id).padStart(2, "0")), () => capturePage, async () => { capturePage = aPage; return action(); });
-  const asA = async () => { await discard(aPage); const me = await forceBusinessLogin(h, aPage, a.email); activePages.add(aPage); return me; };
+  const asA = async () => { capturePage = aPage; await discard(aPage); const me = await forceBusinessLogin(h, aPage, a.email); activePages.add(aPage); return me; };
+  const publishA = async (published) => { capturePage = aPage; return publication(h, aPage, published); };
+  const operate = async (action, moderation = false) => { capturePage = platformPage; return operatorAction(h, platformPage, tenantId(), action, internalReason, moderation); };
   const siteRead = (page, slug, route, { member = false, headers = {} } = {}) => {
     const authorization = member ? bearers.get(page) : null;
     if (member) assert.ok(authorization, "Debe existir el Bearer obtenido por UI real, sólo en memoria.");
     return page.request.get(publicHostUrl(h.base, slug, route).href, { headers: { ...headers, ...(authorization ? { Authorization: authorization } : {}) } });
   };
   const restore = async () => {
+    capturePage = platformPage;
     const state = await read(h, platformPage, "/api/platform/tenants/" + tenantId());
-    if (state.status === "Suspended") await operatorAction(h, platformPage, tenantId(), "Reactivar", internalReason);
+    if (state.status === "Suspended") await operate("Reactivar");
     const metadata = await read(h, platformPage, "/api/platform/tenants/" + tenantId() + "/public-site");
-    if (metadata.publishBlockedAtUtc) await operatorAction(h, platformPage, tenantId(), "Permitir publicar", internalReason, true);
-    await asA(); await publication(h, aPage, true);
+    if (metadata.publishBlockedAtUtc) await operate("Permitir publicar", true);
+    await asA(); await publishA(true);
   };
+  const withRestore = (action) => withPublicRestoration(action, restore, { getPage: () => capturePage, setPage: (target) => { capturePage = target; } });
   const unavailable = async (samples, state, slug) => {
+    capturePage = aPage;
     for (const actor of ["anonymous", "member"]) for (const route of ["/api/public-site", "/api/public-site/logo"]) {
       const response = await siteRead(aPage, slug, route, { member: actor === "member" });
       samples.push({ state, actor, route, status: response.status(), body: await response.json() });
     }
     const site = publicHostUrl(h.base, slug, "/api/public-site"); site.pathname = "/";
-    await visitor.goto(site.href); await visitor.getByRole("heading", { name: "Esta página no está disponible", exact: true }).waitFor();
     capturePage = visitor;
+    await visitor.goto(site.href); await visitor.getByRole("heading", { name: "Esta página no está disponible", exact: true }).waitFor();
   };
   try {
     await run(1, [], async () => {
@@ -189,27 +196,27 @@ export async function runPublicSupplementCases(h) {
       await clickForResponse(aPage, aPage.getByRole("button", { name: "Guardar cambios", exact: true }), "/api/me", "PUT");
       await savePublicPage(h, aPage, pageName, logoFixtures().valid); assert.equal((await read(h, aPage, "/api/organization/public-page")).isPublished, false);
       await h.signOut(aPage); activePages.delete(aPage);
-      b = await h.registerBusiness(bPage); activePages.add(bPage);
+      capturePage = bPage; b = await h.registerBusiness(bPage); activePages.add(bPage);
       companyB = (await read(h, bPage, "/api/companies/paged?page=1&pageSize=100")).items.find((row) => row.name === b.companyName); assert.ok(companyB?.id);
       await savePublicPage(h, bPage, "Borrador B " + tag); await h.signOut(bPage); activePages.delete(bPage);
-      await assistantLogin(platformPage, h.env, h.base, operatorEmail, "platform");
+      capturePage = platformPage; await assistantLogin(platformPage, h.env, h.base, operatorEmail, "platform");
       activePages.add(platformPage);
       operator = { ...await read(h, platformPage, "/api/me"), email: operatorEmail }; assert.equal(operator.access, "platform");
       await asA(); await aPage.goto(new URL("/org/pagina", h.base).href); await assertViewport(aPage);
       return "Dos organizaciones y borradores por UI, logo PNG real y operador con MFA; A sigue sin publicar.";
     });
-    await run(2, [1], () => withPublicRestoration(async () => {
+    await run(2, [1], () => withRestore(async () => {
       await asA(); const samples = [];
       await unavailable(samples, "unknown", "desconocido-" + tag); await unavailable(samples, "draft", a.slug);
-      await publication(h, aPage, true);
-      await operatorAction(h, platformPage, tenantId(), "Despublicar", internalReason, true); await unavailable(samples, "blocked", a.slug);
-      await operatorAction(h, platformPage, tenantId(), "Permitir publicar", internalReason, true); await publication(h, aPage, true);
-      await operatorAction(h, platformPage, tenantId(), "Suspender", internalReason); await unavailable(samples, "suspended", a.slug);
+      await publishA(true);
+      await operate("Despublicar", true); await unavailable(samples, "blocked", a.slug);
+      await operate("Permitir publicar", true); await publishA(true);
+      await operate("Suspender"); await unavailable(samples, "suspended", a.slug);
       requireUnavailableMatrix(samples); await assertViewport(visitor);
       return "Las16 respuestas404 de página/logo, cuatro causas y dos actores coincidieron salvo traceId; UI no disponible uniforme.";
-    }, restore));
+    }));
     await run(3, [1], async () => {
-      await restore(); await forceBusinessLogin(h, bPage, b.email); activePages.add(bPage); capturePage = visitor;
+      await restore(); capturePage = bPage; await forceBusinessLogin(h, bPage, b.email); activePages.add(bPage);
       const publicResponse = await siteRead(bPage, a.slug, "/api/public-site", { member: true }); assert.equal(publicResponse.status(), 200);
       const publicData = await publicResponse.json(); assert.equal(publicData.name, pageName); assert.equal(publicData.slug, a.slug);
       assert.deepEqual(Object.keys(publicData).sort(), ["address", "description", "email", "logoUrl", "name", "phone", "slug", "website"]);
@@ -220,6 +227,7 @@ export async function runPublicSupplementCases(h) {
       const companies = (await list.json()).items; assert.ok(companies.some((row) => row.id === companyB.id)); assert.ok(companies.every((row) => row.id !== companyA.id));
       await requireModuleProblem(await siteRead(bPage, a.slug, "/api/companies/" + companyA.id, { member: true }), 404, ["Tenancy.Company.NotFound"]);
       const site = publicHostUrl(h.base, a.slug, "/api/public-site"); site.pathname = "/";
+      capturePage = visitor;
       await visitor.goto(site.href); await visitor.getByRole("heading", { name: pageName, exact: true }).waitFor(); await assertViewport(visitor);
       return "Host A publicó sólo A; Bearer real de B mantuvo Me/borrador/empresas en B y empresa privada A404.";
     });
@@ -240,22 +248,22 @@ export async function runPublicSupplementCases(h) {
       const after = await read(h, aPage, "/api/organization/public-page"); assert.equal(after.logoDataUri, before.logoDataUri); assert.equal(after.version, before.version);
       await assertViewport(aPage); return "Firma PNG falsa400 real, archivo512KiB+1 rechazado sin PUT, URL arbitraria400 y logo/version intactos.";
     });
-    await run(5, [1], () => withPublicRestoration(async () => {
+    await run(5, [1], () => withRestore(async () => {
       await restore(); capturePage = visitor;
       const first = await siteRead(visitor, a.slug, "/api/public-site/logo"); assert.equal(first.status(), 200);
       assert.deepEqual(await first.body(), logoFixtures().valid.buffer); const etag = first.headers().etag; assert.ok(etag);
       assert.match(first.headers()["cache-control"], /max-age=0/u); assert.match(first.headers()["cache-control"], /must-revalidate/u);
       const unchanged = await siteRead(visitor, a.slug, "/api/public-site/logo", { headers: { "If-None-Match": etag } }); assert.equal(unchanged.status(), 304); assert.equal((await unchanged.body()).length, 0);
-      await publication(h, aPage, false);
+      await publishA(false); capturePage = visitor;
       await requireModuleProblem(await siteRead(visitor, a.slug, "/api/public-site/logo", { headers: { "If-None-Match": etag } }), 404, ["PublicSite.PublicPage.NotFound"]);
-      await publication(h, aPage, true);
+      await publishA(true); capturePage = visitor;
       const current = await siteRead(visitor, a.slug, "/api/public-site/logo"); assert.equal(current.status(), 200); const currentEtag = current.headers().etag; assert.ok(currentEtag);
-      await operatorAction(h, platformPage, tenantId(), "Suspender", internalReason);
+      await operate("Suspender"); capturePage = visitor;
       await requireModuleProblem(await siteRead(visitor, a.slug, "/api/public-site/logo", { headers: { "If-None-Match": currentEtag } }), 404, ["PublicSite.PublicPage.NotFound"]);
       const site = publicHostUrl(h.base, a.slug, "/api/public-site"); site.pathname = "/"; await visitor.goto(site.href);
       await visitor.getByRole("heading", { name: "Esta página no está disponible", exact: true }).waitFor();
       return "Logo200 bytes exactos, ETag/304 sin cuerpo; despublicación y suspensión devolvieron404 aun con If-None-Match.";
-    }, restore));
+    }));
     await run(6, [1], async () => {
       await asA(); await aPage.goto(new URL("/org/configuracion", h.base).href);
       const before = await read(h, aPage, "/api/organization/settings"); const data = await read(h, aPage, "/api/reference-data"); const next = chooseReferenceChanges(data, before);
@@ -307,7 +315,7 @@ export async function runPublicSupplementCases(h) {
       await invite.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await aPage.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click(); await aPage.keyboard.press("Escape");
       await clickForResponse(aPage, invite.getByRole("button", { name: "Invitar", exact: true }), "/api/users/invitations", "POST", 201); await invite.waitFor({ state: "hidden" });
       // Genera el evento de Plataforma por una acción UI legítima, sin seed de auditoría.
-      await operatorAction(h, platformPage, tenantId(), "Despublicar", internalReason, true); await restore();
+      await operate("Despublicar", true); await restore();
       const first = await read(h, aPage, "/api/organization/audit?period=all&limit=1"); assert.deepEqual(Object.keys(first).sort(), ["hasMore", "items", "nextCursor"]); assert.equal(first.hasMore, true); assert.ok(first.nextCursor);
       const second = await read(h, aPage, "/api/organization/audit?period=all&limit=1&after=" + encodeURIComponent(first.nextCursor)); assert.ok(second.items.every((entry) => entry.id !== first.items[0].id));
       const searchResponse = aPage.waitForResponse((response) => at("/api/organization/audit")(response) && new URL(response.url()).searchParams.get("search") === actorName);

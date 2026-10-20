@@ -42,6 +42,28 @@ test("restauración UI ocurre si una aserción falla y no oculta el fallo origin
   assert.equal(restored, true);
   await assert.rejects(() => withPublicRestoration(async () => { throw failure; }, async () => { throw new Error("fallo restauración"); }), AggregateError);
 });
+
+test("la captura conserva la página de la acción aunque la restauración use otra pestaña", async () => {
+  for (const fail of [false, true]) {
+    const visitor = {}; const operator = {}; const owner = {}; let page = visitor;
+    const failure = new Error("falló la acción operadora");
+    const run = () => withPublicRestoration(async () => {
+      page = operator;
+      if (fail) throw failure;
+      return "acción completa";
+    }, async () => { page = owner; }, { getPage: () => page, setPage: (target) => { page = target; } });
+    if (fail) await assert.rejects(run, (error) => error === failure);
+    else assert.equal(await run(), "acción completa");
+    assert.equal(page, operator, "El finally no debe cambiar la evidencia al último actor que restaura.");
+  }
+});
+
+test("si sólo falla restaurar, la captura queda en la página de ese fallo", async () => {
+  const visitor = {}; const operator = {}; let page = visitor;
+  await assert.rejects(() => withPublicRestoration(async () => "completa", async () => { page = operator; throw new Error("restauración operadora falló"); },
+    { getPage: () => page, setPage: (target) => { page = target; } }), /restauración operadora/u);
+  assert.equal(page, operator);
+});
 test("hosts se limitan al subdominio propio y las lecturas API locales", () => {
   const base = new URL("https://localtest.me:5174");
   assert.equal(publicHostUrl(base, "propia", "/api/public-site").href, "https://propia.localtest.me:5174/api/public-site");
