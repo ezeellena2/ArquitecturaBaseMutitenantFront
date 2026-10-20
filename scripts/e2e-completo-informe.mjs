@@ -1,4 +1,5 @@
 import { renderBaselineIncidentsHTML } from "./e2e-completo-incidentes.mjs";
+import { normalizeCaseAreas } from "./e2e-completo-areas.mjs";
 
 const widths = [1440, 390];
 const statusLabels = { passed: "Pasó", failed: "Falló", blocked: "Bloqueado", manual: "A mano" };
@@ -98,9 +99,28 @@ function renderBaseline(baseline) {
   }).join("")}</tbody></table><p>La línea de base se conserva como antecedente; cada caso necesita sus propias comprobaciones.</p></section>`;
 }
 
+function variantOf(item) {
+  return [...new Set([item.screen, item.title, item.areaOriginal !== item.area ? item.areaOriginal : undefined].filter((value) => value != null && value !== "").map((value) => describe(value)))].join(" · ");
+}
+
+function areaMetadata(item) {
+  const variant = variantOf(item); const chapter = item.chapterTitle ?? item.chapter;
+  return `<dt>Área</dt><dd>${escape(describe(item.area))}</dd>${variant ? `<dt>Pantalla / variante</dt><dd>${escape(variant)}</dd>` : ""}${chapter ? `<dt>Capítulo</dt><dd>${escape(describe(chapter))}</dd>` : ""}`;
+}
+
+function renderAreaGroups(rows, scope, prefix = "") {
+  const groups = new Map();
+  for (const [index, item] of rows.entries()) {
+    const area = describe(item.area, "Sin área registrada.");
+    if (!groups.has(area)) groups.set(area, { firstIndex: index, items: [] });
+    groups.get(area).items.push({ item, index });
+  }
+  return [...groups].map(([area, group]) => `<section class="area-group" id="area-${scope}-${group.firstIndex}" data-area="${escape(area)}"><h2>${escape(area)}</h2>${group.items.map(({ item, index }) => renderCase(item, `${prefix}${index}`)).join("")}</section>`).join("");
+}
+
 function renderCase(item, index) {
   const status = aggregateStatus(item.results);
-  return `<section id="caso-${index}" data-case-id="${escape(item.id)}" data-status="${status}"><h2>${escape(item.id)} · ${escape(item.action)} ${badge(status)}</h2><dl><dt>Área / pantalla</dt><dd>${escape(describe(item.area))}</dd><dt>Quién</dt><dd>${escape(describe(item.actor))}</dd><dt>Qué</dt><dd>${escape(describe(item.action))}</dd><dt>Ruta</dt><dd><code>${escape(describe(item.route))}</code></dd><dt>Esperado</dt><dd>${escape(describe(item.expected))}</dd>${item.source ? `<dt>Fuente</dt><dd><pre>${escape(describe(item.source))}</pre></dd>` : ""}<dt>Cobertura previa</dt><dd><pre>${escape(describe(item.existingScripts, "Caso nuevo o sin script previo identificado."))}</pre></dd></dl>${item.manualReason ? `<p><strong>A mano:</strong> ${escape(describe(item.manualReason))}</p>` : ""}<div class="pair">${resultsByWidth(item.results).map((result) => `<article data-width="${result.width}"><h3>${result.width} px · ${badge(result.status)}</h3><p><strong>Lo que pasó:</strong> ${escape(result.actual)}</p>${result.analysis ? `<p><strong>Análisis posterior:</strong> ${escape(result.analysis)}</p>` : ""}${result.currentRoute ? `<p><strong>Ruta observada:</strong> <code>${escape((result.currentHost ?? "") + result.currentRoute)}</code></p>` : ""}${capture(result.image, `${item.id} · ${result.width} px`, item.manualReason ?? result.actual, result.captureNote)}${renderAttempts(result)}</article>`).join("")}</div></section>`;
+  return `<section id="caso-${index}" data-case-id="${escape(item.id)}" data-status="${status}"><h2>${escape(item.id)} · ${escape(item.action)} ${badge(status)}</h2><dl>${areaMetadata(item)}<dt>Quién</dt><dd>${escape(describe(item.actor))}</dd><dt>Qué</dt><dd>${escape(describe(item.action))}</dd><dt>Ruta</dt><dd><code>${escape(describe(item.route))}</code></dd><dt>Esperado</dt><dd>${escape(describe(item.expected))}</dd>${item.source ? `<dt>Fuente</dt><dd><pre>${escape(describe(item.source))}</pre></dd>` : ""}<dt>Cobertura previa</dt><dd><pre>${escape(describe(item.existingScripts, "Caso nuevo o sin script previo identificado."))}</pre></dd></dl>${item.manualReason ? `<p><strong>A mano:</strong> ${escape(describe(item.manualReason))}</p>` : ""}<div class="pair">${resultsByWidth(item.results).map((result) => `<article data-width="${result.width}"><h3>${result.width} px · ${badge(result.status)}</h3><p><strong>Lo que pasó:</strong> ${escape(result.actual)}</p>${result.analysis ? `<p><strong>Análisis posterior:</strong> ${escape(result.analysis)}</p>` : ""}${result.currentRoute ? `<p><strong>Ruta observada:</strong> <code>${escape((result.currentHost ?? "") + result.currentRoute)}</code></p>` : ""}${capture(result.image, `${item.id} · ${result.width} px`, item.manualReason ?? result.actual, result.captureNote)}${renderAttempts(result)}</article>`).join("")}</div></section>`;
 }
 
 function renderAttempts(result) {
@@ -115,7 +135,7 @@ function renderFailures(cases) {
   return `<section id="fallas"><h2>Fallas por gravedad</h2>${failures.length ? failures.map(({ item, result }) => {
     const severity = severityOrder.includes(result.severity) ? result.severity : "unrated";
     const steps = Array.isArray(result.reproduce) ? result.reproduce : [];
-    return `<article class="failure" data-severity="${severity}"><h3>${severityLabels[severity] ?? "Sin clasificar"} · ${escape(item.id)} · ${result.width} px</h3><p><strong>Quién / acción:</strong> ${escape(describe(item.actor))} · ${escape(describe(item.action))}</p><p><strong>Área probable:</strong> ${escape(describe(result.probableArea, "Sin determinar."))} · <strong>Pantalla:</strong> ${escape(describe(item.area))} · <strong>Ruta:</strong> <code>${escape(describe(item.route))}</code></p><p><strong>Esperado:</strong> ${escape(describe(item.expected))}</p><p><strong>Lo que pasó:</strong> ${escape(result.actual)}</p>${result.analysis ? `<p><strong>Análisis posterior:</strong> ${escape(result.analysis)}</p>` : ""}<h4>Cómo reproducir</h4>${steps.length ? `<ol>${steps.map((step) => `<li>${escape(describe(step))}</li>`).join("")}</ol>` : `<p>No se registraron pasos de reproducción.</p>`}${capture(result.image, `${item.id} · falla a ${result.width} px`, result.actual, result.captureNote)}</article>`;
+    return `<article class="failure" data-severity="${severity}"><h3>${severityLabels[severity] ?? "Sin clasificar"} · ${escape(item.id)} · ${result.width} px</h3><p><strong>Quién / acción:</strong> ${escape(describe(item.actor))} · ${escape(describe(item.action))}</p><p><strong>Área probable:</strong> ${escape(describe(result.probableArea, "Sin determinar."))} · <strong>Área:</strong> ${escape(describe(item.area))} · <strong>Pantalla / variante:</strong> ${escape(variantOf(item) || describe(item.area))} · <strong>Ruta:</strong> <code>${escape(describe(item.route))}</code></p><p><strong>Esperado:</strong> ${escape(describe(item.expected))}</p><p><strong>Lo que pasó:</strong> ${escape(result.actual)}</p>${result.analysis ? `<p><strong>Análisis posterior:</strong> ${escape(result.analysis)}</p>` : ""}<h4>Cómo reproducir</h4>${steps.length ? `<ol>${steps.map((step) => `<li>${escape(describe(step))}</li>`).join("")}</ol>` : `<p>No se registraron pasos de reproducción.</p>`}${capture(result.image, `${item.id} · falla a ${result.width} px`, result.actual, result.captureNote)}</article>`;
   }).join("") : `<p>No hay fallas registradas. Los casos bloqueados o a mano siguen pendientes.</p>`}</section>`;
 }
 
@@ -129,11 +149,11 @@ function renderScreens(screens) {
 }
 
 export function renderCompleteReport(report) {
-  const cases = Array.isArray(report.cases) ? report.cases : [];
+  const cases = normalizeCaseAreas(Array.isArray(report.cases) ? report.cases : []);
   const summary = summarizeCases(cases);
-  const executions = Array.isArray(report.executions) ? report.executions : [];
-  const executionEvidence = executions.length ? `<section id="comprobaciones"><h2>Comprobaciones directas</h2><p>La matriz enlaza estas comprobaciones por su ID. Sus totales se muestran separados para no contar dos veces una acción.</p>${summaryTable(summarizeCases(executions))}</section>${executions.map((item, index) => renderCase(item, `ejecucion-${index}`)).join("")}` : "";
+  const executions = normalizeCaseAreas(Array.isArray(report.executions) ? report.executions : []);
+  const executionEvidence = executions.length ? `<section id="comprobaciones"><h2>Comprobaciones directas</h2><p>La matriz enlaza estas comprobaciones por su ID. Sus totales se muestran separados para no contar dos veces una acción.</p>${summaryTable(summarizeCases(executions))}</section>${renderAreaGroups(executions, "ejecuciones", "ejecucion-")}` : "";
   return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Prueba completa · ${escape(report.date)}</title><style>
 body{font:16px/1.5 system-ui,sans-serif;margin:0;background:#f3f5f7;color:#192630}header,main{max-width:1440px;margin:auto;padding:24px}section{background:#fff;border:1px solid #cbd3d9;border-radius:10px;padding:24px;margin:24px 0}h1,h2,h3{line-height:1.3}h2{margin-top:0}a{color:#174b80}table{border-collapse:collapse;width:100%}th,td{border:1px solid #cbd3d9;padding:10px;text-align:left;vertical-align:top}caption{text-align:left;font-weight:700;margin-bottom:8px}pre{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}code{overflow-wrap:anywhere}dt{font-weight:700}dd{margin:0 0 10px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:24px}.pair article{min-width:0}.status{display:inline-block;border-radius:5px;padding:2px 8px;font-size:14px;white-space:nowrap}.passed{color:#145c35;background:#d9f3e2}.failed{color:#8e1627;background:#ffe0e6}.blocked{color:#744900;background:#fff0c2}.manual{color:#29459a;background:#e7ecff}.missing{padding:12px;border:1px dashed #9aa7b1;background:#f5f7f9}.capture img{display:block;width:100%;height:auto;border:1px solid #cbd3d9}.failure{border-top:1px solid #cbd3d9;padding-top:16px;margin-top:24px}.failure img{max-width:900px}nav{display:flex;flex-wrap:wrap;gap:8px 16px}@media(max-width:760px){header,main{padding:12px}section{padding:16px}.pair{grid-template-columns:1fr}table{font-size:13px}th,td{padding:5px}}
-</style></head><body><header><h1>Prueba completa del sistema</h1><p>${escape(describe(report.date))}</p>${summaryTable(summary)}<details><summary>Commits y entorno</summary><h2>Commits</h2><pre>${escape(describe(report.commits))}</pre><h2>Entorno</h2><pre>${escape(describe(report.environment))}</pre></details><nav aria-label="Casos">${cases.map((item, index) => `<a href="#caso-${index}">${escape(item.id)}</a>`).join("")}<a href="#comprobaciones">Comprobaciones directas</a><a href="#fallas">Fallas por gravedad</a></nav></header><main>${renderBaseline(report.baseline)}${report.failure ? `<section><h2>Interrupción de la ejecución</h2><pre>${escape(describe(report.failure))}</pre><p>Los pasos sin resultado quedan bloqueados.</p></section>` : ""}${cases.map(renderCase).join("")}${executionEvidence}${renderScreens(report.screens)}${renderFailures([...cases, ...executions.filter((entry) => !cases.some((item) => item.proofIds?.includes(entry.id)))])}${renderBaselineIncidentsHTML(report.baselineFunctionalIncidents)}</main></body></html>`;
+</style></head><body><header><h1>Prueba completa del sistema</h1><p>${escape(describe(report.date))}</p>${summaryTable(summary)}<details><summary>Commits y entorno</summary><h2>Commits</h2><pre>${escape(describe(report.commits))}</pre><h2>Entorno</h2><pre>${escape(describe(report.environment))}</pre></details><nav aria-label="Casos">${cases.map((item, index) => `<a href="#caso-${index}">${escape(item.id)}</a>`).join("")}<a href="#comprobaciones">Comprobaciones directas</a><a href="#fallas">Fallas por gravedad</a></nav></header><main>${renderBaseline(report.baseline)}${report.failure ? `<section><h2>Interrupción de la ejecución</h2><pre>${escape(describe(report.failure))}</pre><p>Los pasos sin resultado quedan bloqueados.</p></section>` : ""}${renderAreaGroups(cases, "matriz")}${executionEvidence}${renderScreens(report.screens)}${renderFailures([...cases, ...executions.filter((entry) => !cases.some((item) => item.proofIds?.includes(entry.id)))])}${renderBaselineIncidentsHTML(report.baselineFunctionalIncidents)}</main></body></html>`;
 }

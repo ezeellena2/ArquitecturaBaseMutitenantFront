@@ -6,6 +6,35 @@ const result = (width, status, extra = {}) => ({ width, status, actual: `Resulta
 const caseOf = (id, results, extra = {}) => ({ id, area: "Identidad", actor: "Visitante", action: "Ingresar", route: "/login", expected: "Acceso correcto", results, ...extra });
 const reportOf = (cases, extra = {}) => ({ date: "2026-10-20", commits: { back: "abc", front: "def" }, environment: "Local aislado", baseline: [], cases, ...extra });
 
+test("matriz y comprobaciones se agrupan por área canónica conservando anclas de sus índices originales", () => {
+  const cases = [caseOf("M-0", [], { area: "platform", title: "Cuenta de Plataforma", chapter: "plataforma", chapterTitle: "Opera desde Plataforma" }),
+    caseOf("M-1", [], { area: "identity" }), caseOf("M-2", [], { area: "PLATAFORMA" })];
+  const executions = [caseOf("E-0", [], { area: "assistant", route: "/org/asistente", actor: "Dueña" }),
+    caseOf("E-1", [], { area: "WhatsApp de Plataforma" }), caseOf("E-2", [], { area: "Asistente", route: "/plataforma/asistente", actor: "Operador" })];
+  const report = reportOf(cases, { executions }); const before = structuredClone(report); const html = renderCompleteReport(report);
+  assert.deepEqual(report, before);
+  const matrix = html.slice(html.indexOf("<main>"), html.indexOf('<section id="comprobaciones"'));
+  const direct = html.slice(html.indexOf('<section id="comprobaciones"'), html.indexOf('<section id="fallas"'));
+  assert.equal((matrix.match(/data-area="Plataforma"/gu) ?? []).length, 1);
+  assert.ok(matrix.indexOf('data-case-id="M-0"') < matrix.indexOf('data-case-id="M-2"'));
+  assert.ok(matrix.indexOf('data-case-id="M-2"') < matrix.indexOf('data-case-id="M-1"'));
+  assert.equal((direct.match(/data-area="Asistente"/gu) ?? []).length, 1);
+  assert.ok(direct.indexOf('data-case-id="E-0"') < direct.indexOf('data-case-id="E-2"'));
+  assert.ok(direct.indexOf('data-case-id="E-2"') < direct.indexOf('data-case-id="E-1"'));
+  for (let index = 0; index < 3; index++) {
+    assert.ok(html.includes(`href="#caso-${index}"`));
+    assert.ok(html.includes(`id="caso-${index}" data-case-id="M-${index}"`));
+    assert.ok(html.includes(`id="caso-ejecucion-${index}" data-case-id="E-${index}"`));
+  }
+  for (const value of ["Pantalla / variante", "Cuenta de Plataforma", "platform", "Opera desde Plataforma", "/org/asistente", "/plataforma/asistente", "Dueña", "Operador"]) assert.ok(html.includes(value), value);
+});
+
+test("las áreas desconocidas y sus variantes se conservan y se escapan al agrupar", () => {
+  const html = renderCompleteReport(reportOf([caseOf("nuevo", [], { area: "<Área nueva>", title: "<Variante propia>" })]));
+  assert.ok(html.includes('data-area="&lt;Área nueva&gt;"')); assert.ok(html.includes("&lt;Variante propia&gt;"));
+  assert.equal(html.includes("<Área nueva>"), false); assert.equal(html.includes("<Variante propia>"), false);
+});
+
 test("la nota factual de una captura ampliada aparece escapada sin cambiar el resultado", () => {
   const html = renderCompleteReport(reportOf([caseOf("captura", [result(1440, "passed"), result(390, "passed", { image: "movil.png", captureSize: { width: 621, height: 3439 }, captureNote: "Imagen <621>; viewport nominal390, causa sin determinar." })])]));
   assert.match(html, /data-case-id="captura"[^>]*data-status="passed"/);
@@ -108,7 +137,7 @@ test("las capturas rechazan rutas absolutas, controles y protocolos y conservan 
 });
 
 test("las fallas finales se ordenan por gravedad y traen reproducción, captura, área y ruta", () => {
-  const cases = ["low", "critical", "medium", "high"].map((severity) => caseOf(severity, [result(1440, "failed", { severity, reproduce: [`Paso ${severity}`], image: `${severity}.png`, probableArea: "back" }), result(390, "passed")], { route: `/ruta/${severity}` }));
+  const cases = ["low", "critical", "medium", "high"].map((severity, index) => caseOf(severity, [result(1440, "failed", { severity, reproduce: [`Paso ${severity}`], image: `${severity}.png`, probableArea: "back" }), result(390, "passed")], { area: index % 2 ? "identity" : "platform", route: `/ruta/${severity}` }));
   const html = renderCompleteReport(reportOf(cases));
   const failures = html.slice(html.indexOf('id="fallas"'));
   assert.ok(failures.indexOf('data-severity="critical"') < failures.indexOf('data-severity="high"'));
