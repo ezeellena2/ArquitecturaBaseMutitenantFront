@@ -67,6 +67,21 @@ export async function inspectPlatformChatAccountAction(page, allowed) {
   } finally { await page.keyboard.press("Escape"); await opened.waitForClosed(); }
 }
 
+/** AccountPage y OperatorPermissionsDialog comparten accountLabel, incluso sin displayName. */
+export async function openPlatformWhatsAppPermissions(page, account, expectedId) {
+  assert.equal(account.id, expectedId, "La ficha debe conservar la identidad exacta del agente invitado.");
+  assert.equal(account.kind, "Operator");
+  const phone = page.viewportSize().width === 390;
+  const trigger = page.getByRole("button", phone ? { name: /^Acciones de /u } : { name: "Cambiar permisos", exact: true });
+  await trigger.waitFor({ state: "visible" });
+  const name = (await page.getByRole("heading", { level: 1 }).filter({ visible: true }).first().innerText()).trim();
+  assert.ok(name, "La ficha debe tener su etiqueta real antes de abrir permisos.");
+  if (phone) await chooseBarAction(page, trigger, "Cambiar permisos", { title: name });
+  else await trigger.click();
+  const dialog = page.getByRole("dialog", { name: "Cambiar permisos de " + name, exact: true });
+  await dialog.waitFor(); return dialog;
+}
+
 async function closePlatformSession(h, page) {
   await stopConfirmingRecentAuthentication(page);
   await page.goto(new URL("/plataforma", h.base).href);
@@ -307,8 +322,7 @@ async function runPlatformWhatsAppPlan(h, mobile) {
         await full();
         const account = await read(h, fullPage, "/api/platform/accounts/" + agent.id);
         await fullPage.goto(new URL("/plataforma/cuentas/" + agent.id, h.base).href);
-        await chooseBarAction(fullPage, fullPage.getByRole("button", { name: /^Acciones de /u }), "Cambiar permisos");
-        const permissions = fullPage.getByRole("dialog", { name: "Cambiar permisos de " + account.displayName, exact: true });
+        const permissions = await openPlatformWhatsAppPermissions(fullPage, account, agent.id);
         await choosePermissions(fullPage, permissions, ["Ver cuentas"]); await permissions.getByRole("textbox", { name: /^Motivo/u }).fill("Verificar cuenta asociada de una consulta propia.");
         await uiWrite(fullPage, permissions.getByRole("button", { name: "Guardar cambios", exact: true }), "/api/platform/accounts/" + agent.id + "/operator", "PUT", 200, fullEmail);
         await permissions.waitFor({ state: "hidden" });

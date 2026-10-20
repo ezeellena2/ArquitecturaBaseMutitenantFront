@@ -5,6 +5,39 @@ import { platformWhatsAppDefinitions, platformWhatsAppLimitations, requirePlatfo
 import * as platformWhatsApp from "./e2e-completo-whatsapp-plataforma.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
+test("permisos usa el título resuelto de la cuenta sin nombre y la acción directa de escritorio", async () => {
+  for (const width of [1440, 390]) {
+    const calls = []; const title = "operador-propio@example.test";
+    const account = { id: "agente-propio", kind: "Operator", displayName: null, primaryEmail: title };
+    let ready = false;
+    const trigger = { waitFor: async () => { ready = true; calls.push("acción visible"); }, getAttribute: async () => "dialog", click: async () => calls.push(width === 390 ? "abrir hoja" : "acción directa") };
+    const heading = { filter: () => heading, first: () => heading, innerText: async () => { assert.equal(ready, true, "No leer Iniciando sesión antes de la acción real."); calls.push("título real"); return title; } };
+    const menu = { waitFor: async () => {}, getByRole: (role, options) => {
+      assert.equal(role, "menuitem"); assert.deepEqual(options, { name: "Cambiar permisos", exact: true });
+      return { click: async () => calls.push("opción de la hoja") };
+    } };
+    const sheet = { waitFor: async () => {}, getByRole: (role) => { assert.equal(role, "menu"); return menu; } };
+    const form = { waitFor: async () => calls.push("formulario exacto") };
+    const page = { viewportSize: () => ({ width }), getByRole: (role, options) => {
+      if (role === "button") {
+        if (width === 390) assert.equal(options.name.test("Acciones de " + title), true);
+        else assert.deepEqual(options, { name: "Cambiar permisos", exact: true });
+        return trigger;
+      }
+      if (role === "heading") { assert.deepEqual(options, { level: 1 }); return heading; }
+      assert.equal(role, "dialog"); assert.equal(options.exact, true);
+      if (options.name === title) { assert.equal(width, 390); return sheet; }
+      assert.equal(options.name, "Cambiar permisos de " + title); return form;
+    } };
+    assert.equal(await platformWhatsApp.openPlatformWhatsAppPermissions(page, account, "agente-propio"), form);
+    assert.equal(calls[0], "acción visible"); assert.equal(calls[1], "título real");
+    assert.equal(calls.includes("opción de la hoja"), width === 390);
+    assert.equal(calls.includes("acción directa"), width === 1440);
+    assert.equal(calls.at(-1), "formulario exacto");
+    await assert.rejects(() => platformWhatsApp.openPlatformWhatsAppPermissions(page, { ...account, id: "otro" }, "agente-propio"), /identidad/u);
+  }
+});
+
 test("la repetición móvil prepara el canal y agente sin recapturar01 ni ejecutar gestión de bot/equipo", async () => {
   for (const mobile of [false, true]) {
     const calls = []; const records = [];
