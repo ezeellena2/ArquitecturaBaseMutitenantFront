@@ -2,6 +2,25 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { parseFunctionalBaselineIncidents, renderBaselineIncidentsHTML } from "./e2e-completo-incidentes.mjs";
 
+test("actor y esperado explícitos se muestran saneados sin alterar el incidente", () => {
+  const incident = Object.freeze({ name: "Caso", actor: "Operador <b>propio</b> 123456", expected: "Volver a https://localtest.me/plataforma?token=oculto#ticket <script>", actual: "Falló el clic", severity: "high" });
+  const html = renderBaselineIncidentsHTML([incident]);
+  assert.match(html, /<dt>Quién<\/dt><dd>Operador &lt;b&gt;propio&lt;\/b&gt; \[código\]<\/dd>/u);
+  assert.match(html, /<dt>Esperado<\/dt><dd>Volver a https:\/\/localtest\.me\/plataforma &lt;script&gt;<\/dd>/u);
+  for (const secret of ["123456", "oculto", "ticket", "<script>"]) assert.equal(html.includes(secret), false, secret);
+  assert.equal(incident.actual, "Falló el clic"); assert.equal(incident.expected.includes("token=oculto"), true);
+});
+
+test("actor y esperado ausentes se explican sin deducirlos del nombre ni de la acción", () => {
+  for (const missing of [undefined, null, "", "   "]) {
+    const incident = Object.freeze({ name: "Dueña que vuelve a Inicio", action: "Debe salir", actual: "No salió", actor: missing, expected: missing });
+    const html = renderBaselineIncidentsHTML([incident]);
+    assert.match(html, /<dt>Quién<\/dt><dd>El script de línea de base no registró el actor por separado\.<\/dd>/u);
+    assert.match(html, /<dt>Esperado<\/dt><dd>El script de línea de base no registró el resultado esperado por separado\.<\/dd>/u);
+    assert.equal(incident.actor, missing); assert.equal(incident.expected, missing);
+  }
+});
+
 test("extrae sólo fallas funcionales únicas y conserva el paso sin inventar anchos, área o ruta", () => {
   const line = "A3: Plataforma y persona conviven: falló en “sale de Plataforma” (última Api: GET /api/me → 200) [TimeoutError] locator.click: Timeout 30000ms exceeded.";
   const incidents = parseFunctionalBaselineIncidents(["✔ Otro caso", line, "  " + line, "  Error: " + line, "ℹ tests 40", "not ok 1 - A3", "Error antes del entorno"].join("\n"));

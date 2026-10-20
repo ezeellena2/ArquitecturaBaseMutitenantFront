@@ -31,8 +31,10 @@ function renderCapture(incident) {
 
 function renderIncident(incident) {
   const analysis = typeof incident.analysis === "object" && incident.analysis !== null ? JSON.stringify(incident.analysis, null, 2) : incident.analysis;
+  const actor = typeof incident.actor === "string" && incident.actor.trim() ? incident.actor : "El script de línea de base no registró el actor por separado.";
+  const expected = typeof incident.expected === "string" && incident.expected.trim() ? incident.expected : "El script de línea de base no registró el resultado esperado por separado.";
   return `<article class="case failed"><h3>${escape(incident.name)}</h3><p>Gravedad: ${escape(severityLabels[incident.severity] ?? "Alta")}</p>
-<dl><dt>Acción y etapa de reproducción</dt><dd>${escape(incident.action ?? incident.stage)}</dd><dt>Resultado real</dt><dd>${escape(incident.actual)}</dd>
+<dl><dt>Quién</dt><dd>${escape(actor)}</dd><dt>Acción y etapa de reproducción</dt><dd>${escape(incident.action ?? incident.stage)}</dd><dt>Esperado</dt><dd>${escape(expected)}</dd><dt>Resultado real</dt><dd>${escape(incident.actual)}</dd>
 <dt>Área informada</dt><dd>${escape(incident.area || "Sin determinar por el script")}</dd><dt>Ruta informada</dt><dd>${escape(incident.route || "Sin determinar por el script")}</dd>
 ${analysis ? `<dt>Análisis posterior</dt><dd>${escape(analysis)}</dd>` : ""}</dl>${renderCapture(incident)}
 <ol>${(incident.reproduce ?? []).map((step) => `<li>${escape(step)}</li>`).join("")}</ol><pre>${escape(incident.command)}</pre></article>`;
