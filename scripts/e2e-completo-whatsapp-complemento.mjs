@@ -24,10 +24,11 @@ export const supplementWhatsAppDefinitions = [
   def("06", "Cliente por transporte controlado", "Dar de baja promociones con el botón real del bot", "/org/whatsapp/contactos/:id", "Accepted pasa a Unsubscribed con origen/fecha y confirmación real del bot; no certifica una difusión pendiente.", [], { partialOf: ["BACK-WA-018"] }),
   def("07", "Dueño con atención Clientes", "Revisar CSV/XLSX, límites y conservar una baja al importar", "/org/whatsapp/contactos", "Preview no guarda, informa fila/motivo; CSV/XLSX y 5000 filas aceptados, 5001 rechazadas; importar no revierte Unsubscribed.", ["BACK-WA-013"]),
   def("08", "Dueño con permiso de invitar", "Confirmar Cargar teléfonos con empresa y rol", "/org/usuarios/cargar-telefonos", "El POST real reserva la invitación con empresa/rol elegidos; no certifica el rechazo 503 sin canal o pago.", [], { partialOf: ["BACK-WA-015"] }),
+  def("11", "Persona B2C vinculada", "Abrir la conversación desde Mensajes y leer antes de desvincular", "/mensajes · /mensajes/:id", "Lista→detalle de la organización propia, respuesta posterior al vínculo y ausencia de nota, mensaje previo y autores internos; sin editor y con Seguir en WhatsApp al número real. La captura permanece en el detalle vinculado.", ["SCREEN-mensajes-persona"]),
   def("09", "Persona B2C vinculada", "Leer Mensajes y desvincular por UI", "/mensajes/:id", "Sólo copias propias posteriores al vínculo, sin nota ni autor interno; Desvincular borra copias/vínculo y conserva el chat de la organización.", ["BACK-WA-019"]),
   def("10", "Actores del complemento", "Salir de todas las sesiones por UI", "/ · /org · /plataforma", "Las pestañas de Persona, Dueño, agente y operador salen por UI antes de cerrar."),
 ];
-const repairIds = new Set(["WAS-03", "WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-09"]);
+const repairIds = new Set(["WAS-03", "WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-11", "WAS-09"]);
 export const supplementWhatsAppRepairDefinitions = supplementWhatsAppDefinitions.filter((item) => repairIds.has(item.id));
 
 // Son límites de preparación/observación del protocolo existente, no resultados aprobados.
@@ -56,6 +57,31 @@ export function requirePersonalCopies(detail, { answer, note, beforeLink }) {
   assert.ok(messages.some((message) => message.text === answer), "La copia debe contener la respuesta posterior al vínculo.");
   assert.ok(messages.every((message) => message.kind !== "Note" && message.author == null), "Mensajes no publica notas ni autores internos.");
   for (const text of [note, beforeLink].filter(Boolean)) assert.ok(messages.every((message) => message.text !== text), "Mensajes no copia contenido privado ni previo al vínculo.");
+}
+
+export async function openPersonalMessageDetail(page, { linkedId, organizationName }) {
+  const route = "/mensajes/" + linkedId;
+  if (new URL(page.url()).pathname !== route) {
+    assert.equal(new URL(page.url()).pathname, "/mensajes", "La conversación propia se abre desde la lista de Mensajes de esta misma sesión.");
+    await heading(page, "Mensajes");
+    const link = page.getByRole("list", { name: "Conversaciones con organizaciones", exact: true }).locator("a[href='" + route + "']").filter({ hasText: organizationName });
+    await link.waitFor(); assert.equal(await link.count(), 1, "La lista debe tener un único enlace a la conversación propia.");
+    await link.click();
+  }
+  await page.waitForURL((url) => url.pathname === route);
+}
+
+export async function assertPersonalMessageScreen(page, conversation, { answer, note, beforeLink, privateAuthors = [] }) {
+  const thread = page.getByRole("log", { name: /^Mensajes con / });
+  await thread.getByText(answer, { exact: true }).waitFor();
+  const text = await thread.innerText(); assert.ok(text.includes(answer), "El detalle debe mostrar la respuesta posterior al vínculo.");
+  for (const hidden of [note, beforeLink, ...privateAuthors].filter(Boolean)) assert.equal(text.includes(hidden), false, "La pantalla de la persona no publica notas, contenido previo ni autores internos.");
+  for (const label of ["Mensaje", "Nota interna"]) assert.equal(await page.getByRole("textbox", { name: label, exact: true }).count(), 0, "Mensajes es de sólo lectura, sin editor.");
+  assert.equal(await page.getByRole("button", { name: "Enviar", exact: true }).count(), 0, "La persona continúa fuera de la app, sin enviar desde Mensajes.");
+  const follow = page.getByRole("link", { name: "Seguir en WhatsApp", exact: true }); await follow.waitFor();
+  assert.equal(await follow.getAttribute("href"), "https://wa.me/" + conversation.displayNumber.replace(/\D/gu, ""), "El enlace debe usar el número real de la organización.");
+  assert.equal(await follow.getAttribute("target"), "_blank");
+  assert.ok((await follow.getAttribute("rel") ?? "").split(/\s+/u).includes("noreferrer"));
 }
 
 /** Consumer firma tenant_id del espacio Personal creado en el alta; no usa la organización atendiente. */
@@ -272,6 +298,22 @@ async function runWhatsAppSupplementPlan(h, repair) {
     });
     assert.equal(signedIn.size, 0);
     return "Persona, agente, Dueño y operador salieron por UI; no se borraron cookies ni se reemplazó el contexto.";
+  };
+  const verifyPersonalMessages = async () => {
+    capturePage = personPage;
+    const me = await read(h, personPage, "/api/me"); requirePersonalClient(me, owner.me.activeTenantId);
+    assert.equal(me.id, person.id, "Mensajes debe conservar la identidad del cliente B2C."); assert.equal(me.activeTenantId, person.activeTenantId, "Mensajes conserva el espacio Personal del cliente.");
+    const endpoint = "/api/me/whatsapp/conversations/" + linkedId;
+    const list = await read(h, personPage, "/api/me/whatsapp/conversations"); assert.ok(list.items.some((item) => item.id === linkedId));
+    const detail = await read(h, personPage, endpoint);
+    assert.equal(detail.conversation.id, linkedId); assert.equal(detail.conversation.organizationName, owner.organization);
+    const expected = { answer, note, beforeLink, privateAuthors: ["Dueño complemento " + tag, "Agente complemento " + tag] };
+    requirePersonalCopies(detail, expected);
+    // Navegar dentro de la SPA conserva la identidad B2C aunque otras pestañas ingresaron como empresa.
+    await openPersonalMessageDetail(personPage, { linkedId, organizationName: owner.organization });
+    await assertPersonalMessageScreen(personPage, detail.conversation, expected);
+    await assertViewport(personPage);
+    return endpoint;
   };
   try {
     await run("01", [], async () => {
@@ -496,17 +538,14 @@ async function runWhatsAppSupplementPlan(h, repair) {
       await assertViewport(ownerPage);
       return "Confirmación por UI creó una invitación real con empresa/rol elegidos; 503 por canal/pago sigue sin preparación disponible.";
     });
-    await run("09", ["02", "04"], async () => {
+    await run("11", ["02", "04"], async () => {
       capturePage = personPage;
-      const endpoint = "/api/me/whatsapp/conversations/" + linkedId;
-      const list = await read(h, personPage, "/api/me/whatsapp/conversations");
-      assert.ok(list.items.some((item) => item.id === linkedId));
-      requirePersonalCopies(await read(h, personPage, endpoint), { answer, note, beforeLink });
-      // La pestaña conserva la identidad B2C y navega dentro de la SPA, aunque otras pestañas ingresaron como empresa.
-      await personPage.locator("a[href='/mensajes/" + linkedId + "']").first().click();
-      await personPage.getByRole("log", { name: /^Mensajes con / }).getByText(answer, { exact: true }).waitFor();
-      assert.equal(await personPage.getByText(note, { exact: true }).count(), 0);
-      assert.equal(await personPage.getByText(beforeLink, { exact: true }).count(), 0);
+      assert.equal(new URL(personPage.url()).pathname, "/mensajes", "La evidencia visual comienza en la lista personal, antes de abrir el detalle.");
+      await verifyPersonalMessages();
+      return "Lista de Mensajes→detalle propio, con respuesta posterior al vínculo y sin nota, texto previo ni autor interno; lectura sin editor y Seguir en WhatsApp al número real. Captura en el detalle antes de desvincular, con identidad y espacio Personal intactos.";
+    });
+    await run("09", ["11"], async () => {
+      const endpoint = await verifyPersonalMessages();
       await (await moreAction(personPage, "Desvincular")).click();
       const dialog = personPage.getByRole("dialog", { name: "¿Desvincular la conversación con " + owner.organization + "?", exact: true });
       await clickForResponse(personPage, dialog.getByRole("button", { name: "Desvincular", exact: true }), endpoint + "/link", "DELETE", 204);

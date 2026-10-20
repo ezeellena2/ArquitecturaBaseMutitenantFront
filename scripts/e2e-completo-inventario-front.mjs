@@ -554,11 +554,11 @@ export const screens = [
     "area": "personal",
     "chapterTitle": "Su perfil personal",
     "stage": "11",
-    "existingCaseIds": [
-      "E11-15"
-    ],
+    "existingCaseIds": [],
+    "proofIds": ["WAS-11"],
     "guidedCaseIds": [],
     "coverageNotes": [
+      "BASE-E11-15 conserva la comprobación funcional original; su captura posterior al logout muestra la portada. WAS-11 toma la pantalla de lectura antes de desvincular.",
       "Estos IDs prueban acciones concretas de esta pantalla; no certifican todos sus tableros, actores ni estados. Consultar guidedCaseIds y expected del script."
     ]
   },

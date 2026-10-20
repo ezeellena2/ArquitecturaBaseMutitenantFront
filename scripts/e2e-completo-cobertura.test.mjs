@@ -14,6 +14,22 @@ const definitions = [...businessDefinitions, ...platformDefinitions, ...personal
 const knownExecutions = new Map(definitions.map((item) => [item.id, item]));
 const knownMatrix = new Set([...guidedCases, ...backendUseCases].map((item) => item.id).concat(screens.map((item) => "SCREEN-" + item.id)));
 
+test("Mensajes usa la captura de lectura antes de desvincular y no la portada posterior al logout", () => {
+  const executions = [
+    { id: "BASE-E11-15", results: [1440, 390].map((width) => ({ width, status: "passed", image: `portada-${width}.png`, actual: "Lectura seguida de salida" })) },
+    { id: "WAS-11", covers: ["SCREEN-mensajes-persona"], results: [1440, 390].map((width) => ({ width, status: "passed", image: `mensajes-${width}.png`, actual: "Detalle de Mensajes visible" })) },
+  ];
+  const screen = screens.find((item) => item.id === "mensajes-persona");
+  const [row] = buildMatrix({ screens: [screen], executions });
+  assert.deepEqual(row.proofIds, ["WAS-11"]);
+  for (const result of row.results) {
+    assert.equal(result.status, "passed");
+    assert.equal(result.image, `mensajes-${result.width}.png`);
+  }
+  const [pending] = buildMatrix({ screens: [screen], executions: executions.slice(0, 1) });
+  assert.ok(pending.results.every((result) => result.status === "blocked"));
+});
+
 test("cada enlace tiene ejecución y fila reales, con IDs únicos y evidencia concreta", () => {
   assert.equal(new Set(additionalCoverageRows.map((row) => row.executionId)).size, additionalCoverageRows.length);
   assert.equal(Object.keys(additionalCovers).length, additionalCoverageRows.length);

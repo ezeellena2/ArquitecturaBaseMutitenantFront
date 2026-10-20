@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { closeSupplementSessions, contactImportCsv, enterAcceptedInvitation, requirePersonalClient, requirePersonalCopies, requireTakeRace, supplementWhatsAppDefinitions, supplementWhatsAppLimitations } from "./e2e-completo-whatsapp-complemento.mjs";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
+import { screens } from "./e2e-completo-inventario-front.mjs";
 import * as whatsapp from "./e2e-completo-whatsapp-complemento.mjs";
 
 const winner = { status: 200, body: { assignee: { id: "miembro", name: "Agente sintético" } } };
@@ -51,16 +52,45 @@ test("la llegada temprana a org no permite leer con el Bearer Consumer anterior"
 });
 
 test("la reparación prepara01/02 dentro03, bloquea dependientes si falla y no ejecuta08/10", async () => {
-  assert.deepEqual(whatsapp.supplementWhatsAppRepairDefinitions.map((item) => item.id), ["WAS-03", "WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-09"]);
+  assert.deepEqual(whatsapp.supplementWhatsAppRepairDefinitions.map((item) => item.id), ["WAS-03", "WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-11", "WAS-09"]);
   for (const failure of [null, "01", "02", "03"]) {
     const calls = []; const records = []; const blocked = []; const outcomes = new Map();
     const h = { record: async (id, _page, action) => { records.push(id); try { return { ok: true, value: await action() }; } catch (error) { return { ok: false, error }; } }, block: async (id) => blocked.push(id) };
     const run = whatsapp.createSupplementWhatsAppRunner(h, { repair: true, outcomes, getPage: () => ({}), beforeAction: () => {} });
     const action = (id) => async () => { if (["08", "10"].includes(id)) assert.fail("No se repiten los independientes"); calls.push(id); if (id === failure) throw new Error("Fallo propio"); };
-    for (const [id, dependencies] of [["01", []], ["02", ["01"]], ["03", ["02"]], ["04", ["03"]], ["05", ["03"]], ["06", ["03"]], ["07", ["06"]], ["08", ["01"]], ["09", ["02", "04"]], ["10", []]]) await run(id, dependencies, action(id));
-    assert.deepEqual(records, failure ? ["WAS-03"] : ["WAS-03", "WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-09"]);
-    assert.deepEqual(blocked, failure ? ["WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-09"] : []);
-    assert.deepEqual(calls, failure === "01" ? ["01"] : failure === "02" ? ["01", "02"] : failure === "03" ? ["01", "02", "03"] : ["01", "02", "03", "04", "05", "06", "07", "09"]);
+    for (const [id, dependencies] of [["01", []], ["02", ["01"]], ["03", ["02"]], ["04", ["03"]], ["05", ["03"]], ["06", ["03"]], ["07", ["06"]], ["08", ["01"]], ["11", ["02", "04"]], ["09", ["11"]], ["10", []]]) await run(id, dependencies, action(id));
+    assert.deepEqual(records, failure ? ["WAS-03"] : ["WAS-03", "WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-11", "WAS-09"]);
+    assert.deepEqual(blocked, failure ? ["WAS-04", "WAS-05", "WAS-06", "WAS-07", "WAS-11", "WAS-09"] : []);
+    assert.deepEqual(calls, failure === "01" ? ["01"] : failure === "02" ? ["01", "02"] : failure === "03" ? ["01", "02", "03"] : ["01", "02", "03", "04", "05", "06", "07", "11", "09"]);
+  }
+});
+
+test("Mensajes muestra la respuesta sin datos internos ni editor y su enlace usa el número real de la organización", async () => {
+  const conversation = { organizationName: "Organización propia", displayNumber: "+5491134567890" };
+  const expected = { answer: "Respuesta pública posterior", note: "Nota reservada", beforeLink: "Texto previo", privateAuthors: ["Agente privado"] };
+  const check = async (patch = {}) => {
+    const state = { text: `${expected.answer}\nOrganización propia · 10:30`, editors: 0, send: 0, href: "https://wa.me/5491134567890", target: "_blank", rel: "noreferrer", ...patch };
+    const page = { getByRole: (role) => {
+      if (role === "log") return { getByText: () => ({ waitFor: async () => {} }), innerText: async () => state.text };
+      if (role === "textbox") return { count: async () => state.editors };
+      if (role === "button") return { count: async () => state.send };
+      assert.equal(role, "link"); return { waitFor: async () => {}, getAttribute: async (key) => state[key] };
+    } };
+    await whatsapp.assertPersonalMessageScreen(page, conversation, expected);
+  };
+  await check();
+  for (const patch of [{ text: "Sin respuesta" }, { text: expected.answer + expected.note }, { text: expected.answer + expected.beforeLink }, { text: expected.answer + expected.privateAuthors[0] }, { editors: 1 }, { send: 1 }, { href: "https://wa.me/5491134567899" }, { target: "_self" }, { rel: "" }]) await assert.rejects(() => check(patch));
+});
+
+test("abrir Mensajes conserva la SPA personal y reutiliza el detalle ya abierto antes de desvincular", async () => {
+  for (const alreadyOpen of [false, true]) {
+    let route = alreadyOpen ? "/mensajes/propia" : "/mensajes"; let clicks = 0;
+    const row = { filter: () => row, waitFor: async () => {}, count: async () => 1, click: async () => { clicks++; route = "/mensajes/propia"; } };
+    const page = { url: () => `https://localtest.me${route}`, goto: async () => assert.fail("No recarga ni reingresa"), getByRole: (role) => role === "heading" ? { waitFor: async () => {} } : { locator: () => row }, waitForURL: async (predicate) => assert.equal(predicate(new URL(`https://localtest.me${route}`)), true) };
+    await whatsapp.openPersonalMessageDetail(page, { linkedId: "propia", organizationName: "Organización propia" });
+    assert.equal(route, "/mensajes/propia"); assert.equal(clicks, alreadyOpen ? 0 : 1);
+    route = "/mensajes/ajena";
+    await assert.rejects(() => whatsapp.openPersonalMessageDetail(page, { linkedId: "propia", organizationName: "Organización propia" }));
   }
 });
 
@@ -105,12 +135,12 @@ test("el CSV incluye filas válidas, inválida, repetida y contacto dado de baja
   assert.ok(csv.endsWith(";+5491134567870;;Sí"));
 });
 
-test("sólo los cuatro escenarios completos enlazan filas del inventario", () => {
-  assert.equal(supplementWhatsAppDefinitions.length, 10);
-  assert.equal(new Set(supplementWhatsAppDefinitions.map((item) => item.id)).size, 10);
-  const targets = new Set(backendUseCases.map((item) => item.id));
+test("los escenarios completos y la pantalla previa a desvincular enlazan filas del inventario", () => {
+  assert.equal(supplementWhatsAppDefinitions.length, 11);
+  assert.equal(new Set(supplementWhatsAppDefinitions.map((item) => item.id)).size, 11);
+  const targets = new Set([...backendUseCases.map((item) => item.id), ...screens.map((item) => "SCREEN-" + item.id)]);
   const linked = supplementWhatsAppDefinitions.flatMap((item) => item.covers ?? []);
-  assert.deepEqual(linked.sort(), ["BACK-WA-008", "BACK-WA-010", "BACK-WA-013", "BACK-WA-019"]);
+  assert.deepEqual(linked.sort(), ["BACK-WA-008", "BACK-WA-010", "BACK-WA-013", "BACK-WA-019", "SCREEN-mensajes-persona"]);
   for (const id of linked) assert.ok(targets.has(id));
   for (const id of ["BACK-WA-015", "BACK-WA-018", "BACK-WA-025"]) assert.equal(linked.includes(id), false);
 });
