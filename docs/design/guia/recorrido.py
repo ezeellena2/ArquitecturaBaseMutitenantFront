@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 134 · 20 de octubre de 2026"
+VERSION = "versión 135 · 20 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -42,7 +42,7 @@ CAPITULOS = [
         ("inicio-personal", "Inicio personal", "/", "si", "3", ["Inicio-Personal"], ["M-Inicio-Personal"], ["M-Mas-Personal"],
          "Con el aviso para sumar un correo propio si solo entra con el de la empresa. El contenido llega con los módulos."),
         ("cuenta", "Mi cuenta", "/cuenta", "parte", "3, 8 y 10", ["Cuenta"], ["M-Cuenta"], ["Cuenta-Agregar", "Cuenta-Verificar", "Cuenta-Metodo", "Cuenta-Baja", "M-Cuenta-Agregar", "M-Cuenta-Verificar", "M-Cuenta-Metodo", "M-Cuenta-Baja"],
-         "Tus datos, cómo entrás y privacidad. Agregar, verificar, quitar y dar de baja van en diálogos. WhatsApp es de la Etapa 8 y exportar, de la 10."),
+         "Tus datos, cómo entrás y privacidad. Agregar, verificar, quitar y dar de baja van en diálogos. Exportar mis datos los manda por correo, con un enlace que vence a las 48 horas."),
         ("mensajes-persona", "Mensajes", "/mensajes", "no", "11", ["WA-Mensajes"], ["M-WA-Mensajes"], ["M-WA-Mensaje"],
          "Las charlas de la persona con las organizaciones por WhatsApp, solo para leer, con «Seguir en WhatsApp»."),
     ]),

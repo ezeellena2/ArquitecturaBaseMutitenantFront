@@ -1,0 +1,74 @@
+{
+  "id": "pedir-mis-datos",
+  "titulo": "Pedir mis datos",
+  "etapa": "Mi cuenta",
+  "orden": 40,
+  "resumen": "Lucía pide sus datos desde Mi cuenta, le llega el correo y los descarga desde el enlace.",
+  "pasos": [
+    {
+      "tablero": "Cuenta",
+      "tweaks": {
+        "exportar": "Sin pedir"
+      },
+      "resaltar": "button.cb-sec:has-text(\"Exportar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Pide sus datos",
+      "texto": "En Privacidad. Llegan todos sus datos juntos, sin elegir nada.",
+      "avanzar": "Tocá «Exportar».",
+      "ruta": "/cuenta",
+      "accion": "Pide sus datos."
+    },
+    {
+      "tablero": "Cuenta",
+      "tweaks": {
+        "exportar": "Recibimos el pedido"
+      },
+      "resaltar": ".p-aviso",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Queda pedido",
+      "texto": "Los preparamos aparte. Puede seguir usando el sistema mientras tanto.",
+      "avanzar": "Seguí al correo.",
+      "ruta": "/cuenta",
+      "accion": "Espera el correo."
+    },
+    {
+      "tablero": "Mensajes",
+      "tweaks": {
+        "mensaje": "Exportación de datos lista"
+      },
+      "resaltar": "a.pl-boton:has-text(\"Descargar mis datos\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Le llega el correo",
+      "texto": "El enlace vence a las 48 horas y solo sirve entrando con su cuenta.",
+      "avanzar": "Tocá «Descargar mis datos».",
+      "ruta": "Correo",
+      "accion": "Abre el enlace."
+    },
+    {
+      "tablero": "Cuenta",
+      "tweaks": {
+        "exportar": "Desde el correo: descargando"
+      },
+      "resaltar": ".w-cartel.info",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Descarga sus datos",
+      "texto": "El enlace abre Mi cuenta y la descarga empieza sola.",
+      "avanzar": "Seguí.",
+      "ruta": "/cuenta?dataExport=…",
+      "accion": "Descarga el archivo."
+    },
+    {
+      "tablero": "Cuenta",
+      "tweaks": {
+        "exportar": "Desde el correo: descargado"
+      },
+      "resaltar": ".p-aviso",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Los tiene",
+      "texto": "Queda el archivo «mis-datos.json». Mientras no venza, el enlace sirve otra vez.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/cuenta",
+      "accion": "Guarda el archivo."
+    }
+  ]
+}
