@@ -2204,11 +2204,10 @@
         "now": "2026-09-27T21:00:00Z",
         "actions": [
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
             "name": "Acciones de Laura Díaz",
-            "exact": true,
-            "key": "ArrowDown"
+            "exact": true
           }
         ],
         "readySelector": "main",
@@ -2318,11 +2317,10 @@
         "now": "2026-09-27T21:00:00Z",
         "actions": [
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
             "name": "Acciones de Laura Díaz",
-            "exact": true,
-            "key": "ArrowDown"
+            "exact": true
           },
           {
             "type": "click",
@@ -2449,11 +2447,10 @@
         "now": "2026-09-27T21:00:00Z",
         "actions": [
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
             "name": "Acciones de Laura Díaz",
-            "exact": true,
-            "key": "ArrowDown"
+            "exact": true
           },
           {
             "type": "click",
@@ -2625,11 +2622,10 @@
         "now": "2026-09-27T21:00:00Z",
         "actions": [
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
             "name": "Acciones de Laura Díaz",
-            "exact": true,
-            "key": "ArrowDown"
+            "exact": true
           },
           {
             "type": "click",
@@ -2823,11 +2819,10 @@
         "now": "2026-09-27T21:00:00Z",
         "actions": [
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
             "name": "Acciones de Laura Díaz",
-            "exact": true,
-            "key": "ArrowDown"
+            "exact": true
           },
           {
             "type": "click",
@@ -3009,11 +3004,10 @@
         "now": "2026-09-27T21:00:00Z",
         "actions": [
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
             "name": "Acciones de Laura Díaz",
-            "exact": true,
-            "key": "ArrowDown"
+            "exact": true
           },
           {
             "type": "click",
@@ -3224,11 +3218,10 @@
         "now": "2026-09-27T21:00:00Z",
         "actions": [
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
             "name": "Acciones de Laura Díaz",
-            "exact": true,
-            "key": "ArrowDown"
+            "exact": true
           },
           {
             "type": "click",
@@ -3423,11 +3416,10 @@
         "now": "2026-09-27T21:00:00Z",
         "actions": [
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
             "name": "Acciones de Laura Díaz",
-            "exact": true,
-            "key": "ArrowDown"
+            "exact": true
           },
           {
             "type": "click",

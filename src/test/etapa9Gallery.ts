@@ -58,7 +58,8 @@ function cuentaPlat(board: "Cuenta-Plat" | "M-Cuenta-Plat"): GalleryCase[] {
   const route = `/plataforma/cuentas/${laura.id}`;
   const responses = [api("GET", `/api/platform/accounts/${laura.id}`, laura), operator];
   const props = (state: string) => board === "Cuenta-Plat" ? { stateKey: "cuenta", props: { estado: "Activa", cuenta: state } } : {};
-  const open = press("Acciones de Laura Díaz", "button", "ArrowDown");
+  // En la compu el ⋮ es un desplegable; en el teléfono abre la hoja de abajo con un toque (M-Cuenta-Plat).
+  const open = board === "Cuenta-Plat" ? press("Acciones de Laura Díaz", "button", "ArrowDown") : click("Acciones de Laura Díaz");
   const reset = (state: string, readyText: string, actions: GalleryAction[]) => galleryCase("cuenta-plat", board, state,
     galleryApp("visual-operator", route, responses, { now, readyText, actions }), props(state));
   // «Cambiar permisos» con «Administrar cuentas» de más y su motivo; guardar pide «Confirmá que sos vos» (tablero, v125).

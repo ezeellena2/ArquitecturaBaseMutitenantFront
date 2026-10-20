@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 import { AppBar, AppIconButton } from "./app/AppBar";
@@ -15,14 +15,28 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 import { ChevronLeftIcon, MoreVerticalIcon } from "./icons";
+import { PhoneActionsSheet } from "./RowActions";
 import { TabCount, Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
 export interface PageOverflowAction {
   label: string;
+  /** «Criterio · Menús»: en la compu, cada opción con su ícono gris de 16 a la izquierda (tablero Cuenta-Plat). */
+  icon?: ComponentType<{ className?: string }>;
   /** Recibe el ⋮ de la banda: un diálogo que se abre desde acá le devuelve el foco al cerrar (la opción se va con el menú). */
   onSelect: (trigger: HTMLButtonElement | null) => void;
   destructive?: boolean;
   hidden?: boolean;
+}
+
+/** Una opción del ⋮ de la banda, con su ícono gris a la izquierda si lo tiene (como RowActions). */
+function OverflowLabel({ action }: { action: PageOverflowAction }): ReactNode {
+  const Icon = action.icon;
+  return Icon ? <span className="inline-flex items-center gap-2"><Icon className="size-4" />{action.label}</span> : action.label;
+}
+
+/** Una opción del ⋮ como la pide la hoja del teléfono. */
+function sheetAction(action: PageOverflowAction) {
+  return { label: action.label, accessibleName: action.label, run: action.onSelect };
 }
 
 /** Un grupo de datos de una ficha: su pestaña y su contenido. */
@@ -60,7 +74,9 @@ interface PageProps {
   actionsNotice?: ReactNode;
   /** Ir a algo que vive afuera («Ver página»): en la compu, la primera de las acciones; en el teléfono, texto en la barra. */
   barAction?: { label: string; href?: string; onClick?: () => void };
-  moreActions?: { label: string; items: readonly PageOverflowAction[] };
+  /** El ⋮ de la banda. `phoneSheet`: en el teléfono abre la hoja de RowActions con el título de la ficha, como dibuja
+   * M-Cuenta-Plat («Operador: acciones»); sin él, todavía un desplegable. */
+  moreActions?: { label: string; items: readonly PageOverflowAction[]; phoneSheet?: boolean };
   /** Un cartel de algo que sigue pasando (tablero «Criterio · Avisos»): debajo de la banda, arriba del contenido. */
   banner?: ReactNode;
   /** Los grupos de datos de una ficha («Criterio · Marco», Pestañas). Con dos o más, una pestaña por grupo: en la compu
@@ -134,19 +150,21 @@ export function Page({
     return () => markHome?.(false);
   }, [fromHome, markHome]);
   const moreTrigger = useRef<HTMLButtonElement>(null);
+  const [moreSheetOpen, setMoreSheetOpen] = useState(false);
+  const moreSheetId = useId();
   const visibleMoreActions = moreActions?.items.filter((action) => !action.hidden) ?? [];
   const regularActions = visibleMoreActions.filter((action) => !action.destructive);
   const destructiveActions = visibleMoreActions.filter((action) => action.destructive);
   const moreMenuItems = <>
     {regularActions.map((action) => (
       <DropdownMenuItem key={action.label} onSelect={() => action.onSelect(moreTrigger.current)}>
-        {action.label}
+        <OverflowLabel action={action} />
       </DropdownMenuItem>
     ))}
     {regularActions.length > 0 && destructiveActions.length > 0 ? <DropdownMenuSeparator /> : null}
     {destructiveActions.map((action) => (
       <DropdownMenuItem key={action.label} variant="destructive" onSelect={() => action.onSelect(moreTrigger.current)}>
-        {action.label}
+        <OverflowLabel action={action} />
       </DropdownMenuItem>
     ))}
   </>;
@@ -184,7 +202,14 @@ export function Page({
           {barAction ? barAction.href
             ? <a href={barAction.href} target="_blank" rel="noreferrer" className={barTextClass}>{barAction.label}</a>
             : <button type="button" onClick={barAction.onClick} className={barTextClass}>{barAction.label}</button> : null}
-          {visibleMoreActions.length > 0 && moreActions ? <DropdownMenu>
+          {visibleMoreActions.length > 0 && moreActions ? moreActions.phoneSheet ? <>
+            {/* M-Cuenta-Plat («Operador: acciones»): el ⋮ abre la hoja de abajo, con el nombre de la ficha de título. */}
+            <AppIconButton ref={moreTrigger} label={moreActions.label} aria-haspopup="dialog" aria-expanded={moreSheetOpen}
+              onClick={() => setMoreSheetOpen(true)}><MoreVerticalIcon className="size-5" /></AppIconButton>
+            <PhoneActionsSheet open={moreSheetOpen} onOpenChange={setMoreSheetOpen} label={moreActions.label} title={title} reasonId={moreSheetId}
+              regular={regularActions.map(sheetAction)} destructive={destructiveActions.map(sheetAction)}
+              onSelect={(action) => { setMoreSheetOpen(false); action.run(moreTrigger.current); }} />
+          </> : <DropdownMenu>
             <DropdownMenuTrigger asChild><AppIconButton ref={moreTrigger} label={moreActions.label}><MoreVerticalIcon className="size-5" /></AppIconButton></DropdownMenuTrigger>
             <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>
           </DropdownMenu> : null}

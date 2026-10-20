@@ -86,21 +86,25 @@ export function RowActions({ label, title, actions }: { label: string; title?: s
   );
 }
 
-/// Tableros M-Empresa («Invitación: acciones») y M-Cuenta-Metodo (.ap-hoja .ap-acciones): en el teléfono el ⋮ abre una hoja
-/// desde abajo, con el dato de la fila de título y sin ✕; cada opción mide 54, con letra de 16,5 y una línea entre ellas; las
-/// de peligro van al final, en rojo, después de una franja gris. Un toque afuera la cierra, como un menú.
-function PhoneActionsSheet({ open, onOpenChange, label, title, regular, destructive, reasonId, onSelect }: {
+/** Lo que la hoja del teléfono necesita de una opción: su texto y, si va apagada, su motivo. */
+export type PhoneSheetAction = Pick<RowAction, "label" | "accessibleName" | "disabledReason">;
+
+/// Tableros M-Empresa («Invitación: acciones»), M-Cuenta-Metodo y M-Cuenta-Plat («Operador: acciones») (.ap-hoja
+/// .ap-acciones): en el teléfono el ⋮ abre una hoja desde abajo, con el dato de la fila o de la ficha de título y sin ✕;
+/// cada opción mide 54, con letra de 16,5 y una línea entre ellas; las de peligro van al final, en rojo, después de una
+/// franja gris. Un toque afuera la cierra, como un menú. La usan RowActions y el ⋮ de la barra de una ficha (Page).
+export function PhoneActionsSheet<T extends PhoneSheetAction>({ open, onOpenChange, label, title, regular, destructive, reasonId, onSelect }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   label: string;
   title: string;
-  regular: readonly RowAction[];
-  destructive: readonly RowAction[];
+  regular: readonly T[];
+  destructive: readonly T[];
   reasonId: string;
-  onSelect: (action: RowAction) => void;
+  onSelect: (action: T) => void;
 }) {
   // Tablero M-WA-Chats-Formulario (.ap-menu span.off): apagada, en gris y con el motivo debajo, de 13.
-  const option = (action: RowAction, danger: boolean, id: string) => {
+  const option = (action: T, danger: boolean, id: string) => {
     const off = action.disabledReason !== undefined;
     return <button key={action.label} type="button" role="menuitem" aria-label={action.accessibleName}
       aria-disabled={off || undefined} aria-describedby={off ? id : undefined}

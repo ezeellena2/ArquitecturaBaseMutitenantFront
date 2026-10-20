@@ -69,9 +69,11 @@ export function watchResponses(page, matches) {
 export const isOperatorWrite = (method, pathname) => method === "PUT" && /^\/api\/platform\/accounts\/[^/]+\/operator$/u.test(pathname);
 const isReauthentication = (method, pathname) => method === "POST" && pathname === "/api/platform/reauthentication";
 
-/** El menú «Acciones de …» de la ficha de una cuenta, abierto con el teclado. */
+/** El menú «Acciones de …» de la ficha de una cuenta: en la compu, el desplegable con el teclado; en el teléfono, la hoja de
+ * abajo con un toque (M-Cuenta-Plat). */
 export async function openAccountActions(page, name) {
   const actions = page.getByRole("button", { name: `Acciones de ${name}`, exact: true });
+  if (await actions.getAttribute("aria-haspopup") === "dialog") { await actions.click(); return; }
   await actions.focus();
   await actions.press("ArrowDown");
 }

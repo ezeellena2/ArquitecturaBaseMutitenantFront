@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, type ComponentType } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
@@ -19,7 +19,8 @@ import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { NumberText } from "@/shared/ui/format/NumberText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
-import { UsersIcon } from "@/shared/ui/icons";
+import { Pencil, Power, RotateCw, Trash2 } from "lucide-react";
+import { CloseIcon, LockIcon, LogOutIcon, UsersIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { Page, SublineSeparator } from "@/shared/ui/Page";
@@ -42,6 +43,11 @@ type Confirmation = AccountConfirmation | { account: PlatformAccountDetailRespon
   | { account: PlatformAccountDetailResponse; action: "removeOperator"; trigger: HTMLElement | null }
   | { account: PlatformAccountDetailResponse; action: "resetAuthenticator"; trigger: HTMLElement | null };
 
+
+/** Los íconos de las acciones de una cuenta, los mismos del ⋮ de la lista de Cuentas. */
+const accountActionIcons: Record<AccountAction, ComponentType<{ className?: string }>> = {
+  suspend: Power, reactivate: Power, "revoke-sessions": LogOutIcon, deletion: Trash2,
+};
 export function AccountPage() {
   const { id = "" } = useParams();
   return <AccountDetail key={id} id={id} />;
@@ -129,16 +135,18 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
       actions={!phone ? <>{accountActions.map((action) => <Button key={action} variant="outline" onClick={(event) => open(action, event.currentTarget)}>{t(action === "revoke-sessions" ? "platformAccounts:detail.closeSessions" : `platformAccounts:actions.${action}`)}</Button>)}
         {mutable && canOperators && operator && !invitation ? <Button variant="outline" onClick={(event) => open("permissions", event.currentTarget)}>{t("platformAccounts:operator.change")}</Button> : null}
         {canResend ? <Button variant="outline" pending={busy} pendingLabel={t("platformAccounts:detail.resending")} onClick={() => resend.mutate({ id: data.id, name })}>{t("platformAccounts:actions.resend")}</Button> : null}</> : undefined}
-      moreActions={{ label: t("platformAccounts:rowActions", { name }), items: [
-        ...accountActions.map((action) => ({ label: t(action === "revoke-sessions" ? "platformAccounts:detail.closeSessions" : `platformAccounts:actions.${action}`), hidden: !phone, destructive: action === "suspend", onSelect: (trigger: HTMLElement | null) => open(action, trigger) })),
-        { label: t("platformAccounts:operator.change"), hidden: !phone || !mutable || !canOperators || !operator || invitation, onSelect: (trigger) => open("permissions", trigger) },
-        { label: t("platformAccounts:actions.resend"), hidden: !phone || !canResend || busy, onSelect: () => resend.mutate({ id: data.id, name }) },
+      // «Criterio · Menús»: cada opción con su ícono gris (Cuenta-Plat: candado en «Restablecer el autenticador», ✕ en «Quitar
+      // operador», tacho en «Dar de baja»; las demás, las del ⋮ de la lista de Cuentas). En el teléfono, la hoja (M-Cuenta-Plat).
+      moreActions={{ label: t("platformAccounts:rowActions", { name }), phoneSheet: true, items: [
+        ...accountActions.map((action) => ({ label: t(action === "revoke-sessions" ? "platformAccounts:detail.closeSessions" : `platformAccounts:actions.${action}`), icon: accountActionIcons[action], hidden: !phone, destructive: action === "suspend", onSelect: (trigger: HTMLElement | null) => open(action, trigger) })),
+        { label: t("platformAccounts:operator.change"), icon: Pencil, hidden: !phone || !mutable || !canOperators || !operator || invitation, onSelect: (trigger) => open("permissions", trigger) },
+        { label: t("platformAccounts:actions.resend"), icon: RotateCw, hidden: !phone || !canResend || busy, onSelect: () => resend.mutate({ id: data.id, name }) },
         // Tablero Cuenta-Plat («Operador: acciones»): «Restablecer el autenticador» y, de peligro, «Quitar operador». Nunca
         // sobre la propia cuenta ni sobre una invitación sin aceptar.
-        { label: t("platformAccounts:operator.reset"), hidden: !mutable || !canOperators || !operator || invitation, onSelect: (trigger) => open("resetAuthenticator", trigger) },
-        { label: t("platformAccounts:operator.remove"), hidden: !mutable || !canOperators || !operator || invitation, destructive: true, onSelect: (trigger) => open("removeOperator", trigger) },
-        { label: t("platformAccounts:actions.revoke"), hidden: !canResend || busy, destructive: true, onSelect: (trigger) => open("revoke", trigger) },
-        { label: t("platformAccounts:actions.deletion"), hidden: !mutable || !canManage || operator || invitation || Boolean(data.deletion), destructive: true, onSelect: (trigger) => open("deletion", trigger) },
+        { label: t("platformAccounts:operator.reset"), icon: LockIcon, hidden: !mutable || !canOperators || !operator || invitation, onSelect: (trigger) => open("resetAuthenticator", trigger) },
+        { label: t("platformAccounts:operator.remove"), icon: CloseIcon, hidden: !mutable || !canOperators || !operator || invitation, destructive: true, onSelect: (trigger) => open("removeOperator", trigger) },
+        { label: t("platformAccounts:actions.revoke"), icon: CloseIcon, hidden: !canResend || busy, destructive: true, onSelect: (trigger) => open("revoke", trigger) },
+        { label: t("platformAccounts:actions.deletion"), icon: Trash2, hidden: !mutable || !canManage || operator || invitation || Boolean(data.deletion), destructive: true, onSelect: (trigger) => open("deletion", trigger) },
       ] }}
       tabs={{ label: t("platformAccounts:detail.tabsLabel"), value: tab, onValueChange: setTab, phoneColumns: 2, items: [
         { value: "methods", label: t("platformAccounts:detail.methods"), count: data.loginMethods.length, hidden: operator, content: <AccountMethodsTab methods={data.loginMethods} /> },

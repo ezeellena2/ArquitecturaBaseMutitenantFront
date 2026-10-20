@@ -20,7 +20,10 @@ let reads: number;
 const open = () => renderRouteWithProviders(`/plataforma/cuentas/${data.id}`, { as: "platform-operator" });
 async function menu(user: ReturnType<typeof userEvent.setup>, label: string) {
   const trigger = await screen.findByRole("button", { name: `Acciones de ${data.displayName || data.maskedPrimaryPhone || data.primaryEmail || "Sin dato"}` });
-  trigger.focus(); await user.keyboard("{ArrowDown}"); await user.click(await screen.findByRole("menuitem", { name: label }));
+  // En el teléfono el ⋮ abre la hoja de abajo (M-Cuenta-Plat); en la compu, el desplegable.
+  if (trigger.getAttribute("aria-haspopup") === "dialog") await user.click(trigger);
+  else { trigger.focus(); await user.keyboard("{ArrowDown}"); }
+  await user.click(await screen.findByRole("menuitem", { name: label }));
 }
 async function reason(user: ReturnType<typeof userEvent.setup>, label: string) {
   await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Revisión");
@@ -76,7 +79,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
     expect(await screen.findByRole("heading", { name: empty, level: 1 })).toBeVisible();
     if (!phone) expect(screen.getByRole("navigation", { name: breadcrumbs })).toHaveTextContent(empty);
     const trigger = screen.getByRole("button", { name: actions });
-    if (phone) { trigger.focus(); await user.keyboard("{ArrowDown}"); await user.click(await screen.findByRole("menuitem", { name: suspend })); }
+    if (phone) { await user.click(trigger); await user.click(await screen.findByRole("menuitem", { name: suspend })); }
     else await user.click(screen.getByRole("button", { name: suspend }));
     expect(screen.getByRole("dialog", { name: title })).toBeVisible();
     await user.type(screen.getByRole("textbox", { name: reasonLabel }), "Revisión");
@@ -200,6 +203,26 @@ describe("Ficha de Cuenta de Plataforma", () => {
     await waitFor(() => expect(bodies).toHaveLength(1));
     expect(bodies[0]).toEqual({ version: 1, reason: "Revisión", permissions: [...(data.operatorPermissions ?? []), "platform.assistant.use"] });
   });
+  // M-Cuenta-Plat («Operador: acciones»): en el teléfono el ⋮ de la ficha abre una hoja desde abajo con el nombre de título,
+  // como el ⋮ de una fila (RowActions); las de peligro van al final, después de la franja.
+  it("390: el ⋮ de la ficha abre la hoja con el nombre de título y sus opciones", async () => {
+    asPhone();
+    data = platformAccountDetailFixture({ kind: "Operador" });
+    const user = userEvent.setup(); const { container } = open(); await screen.findByRole("heading", { name: "Laura Díaz", level: 1 });
+    const trigger = screen.getByRole("button", { name: "Acciones de Laura Díaz" });
+    expect(trigger).toHaveAttribute("aria-haspopup", "dialog");
+    await user.click(trigger);
+    const sheet = await screen.findByRole("dialog", { name: "Laura Díaz" });
+    expect(sheet).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(within(sheet).getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["Cambiar permisos", "Restablecer el autenticador", "Quitar operador"]);
+    expect(within(sheet).getByRole("separator")).toBeInTheDocument();
+    expect(within(sheet).getByRole("menuitem", { name: "Quitar operador" })).toHaveClass("text-[var(--peligro)]");
+    expect(await axe(container)).toHaveNoViolations();
+    await user.click(within(sheet).getByRole("menuitem", { name: "Restablecer el autenticador" }));
+    expect(await screen.findByRole("dialog", { name: "¿Restablecer el autenticador de Laura Díaz?" })).toBeVisible();
+    expect(screen.queryByRole("dialog", { name: "Laura Díaz" })).not.toBeInTheDocument();
+  });
+
   // F3 (Etapa 9, tablero Cuenta-Plat): «Restablecer el autenticador» de otro operador, con motivo y la versión de cuando se
   // abrió el diálogo; después se vuelven a leer la cuenta, la lista y la auditoría.
   it("restablecer el autenticador manda versión y motivo, avisa y vuelve a leer la cuenta", async () => {
@@ -208,6 +231,8 @@ describe("Ficha de Cuenta de Plataforma", () => {
     const user = userEvent.setup(); const { container } = open(); await screen.findByRole("heading", { name: "Laura Díaz", level: 1 });
     const trigger = screen.getByRole("button", { name: "Acciones de Laura Díaz" }); trigger.focus(); await user.keyboard("{ArrowDown}");
     expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Restablecer el autenticador", "Quitar operador"]);
+    // «Criterio · Menús» y tablero Cuenta-Plat: cada opción con su ícono gris (candado y ✕).
+    for (const name of ["Restablecer el autenticador", "Quitar operador"]) expect(screen.getByRole("menuitem", { name }).querySelector("svg")).not.toBeNull();
     await user.click(screen.getByRole("menuitem", { name: "Restablecer el autenticador" }));
     const dialog = await screen.findByRole("dialog", { name: "¿Restablecer el autenticador de Laura Díaz?" });
     expect(dialog).toHaveTextContent("Se cierran sus sesiones y sus códigos de recuperación dejan de servir. Al volver a entrar, configura el autenticador de nuevo.");
