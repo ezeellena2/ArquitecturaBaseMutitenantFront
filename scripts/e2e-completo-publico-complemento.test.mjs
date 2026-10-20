@@ -5,6 +5,41 @@ import { publicSupplementDefinitions, requireUnavailableMatrix, chooseReferenceC
   requireAuditPrivacy, withPublicRestoration, publicHostUrl } from "./e2e-completo-publico-complemento.mjs";
 import * as publicCases from "./e2e-completo-publico-complemento.mjs";
 
+test("el filtro móvil pulsa el texto visible, espera cierre y verifica URL y radio persistido al reabrir", async () => {
+  for (const selected of [true, false]) {
+    const calls = []; let open = false; let current = new URL("https://localtest.me/org/auditoria?search=propio");
+    const radio = { getAttribute: async (key) => { assert.equal(key, "value"); return "users"; }, waitFor: async () => assert.equal(open, true),
+      check: async () => assert.fail("onChange desmonta este radio antes de la postcondición de check"), isChecked: async () => selected };
+    const group = { getByRole: (role, options) => { assert.equal(role, "radio"); assert.deepEqual(options, { name: "Usuarios", exact: true }); return radio; },
+      getByText: (label, options) => { assert.equal(label, "Usuarios"); assert.deepEqual(options, { exact: true }); return { click: async () => { calls.push("Usuarios visible"); current.searchParams.set("category", "users"); open = false; } }; } };
+    const sheet = { getByRole: (role, options) => { assert.equal(role, "group"); assert.deepEqual(options, { name: "Tema", exact: true }); return group; },
+      waitFor: async (options) => { assert.deepEqual(options, { state: "hidden" }); assert.equal(open, false); calls.push("hoja cerrada"); } };
+    const trigger = { click: async () => { open = true; calls.push("abrir filtros"); } };
+    const page = { getByRole: (role, options) => {
+      assert.deepEqual(options, { name: "Filtros de auditoría", exact: true }); return role === "button" ? trigger : sheet;
+    }, waitForURL: async (predicate) => {
+      assert.equal(predicate(current), true); assert.equal(predicate(new URL("https://localtest.me/org/auditoria?category=roles")), false); calls.push("category users en URL");
+    }, keyboard: { press: async (key) => { assert.equal(key, "Escape"); open = false; calls.push("Escape"); } } };
+    const filter = () => publicCases.auditFilter({ width: 390 }, page, "category", "Usuarios");
+    if (selected) await filter(); else await assert.rejects(filter, /filtro.*seleccionado/iu);
+    assert.deepEqual(calls, ["abrir filtros", "Usuarios visible", "hoja cerrada", "category users en URL", "abrir filtros", "Escape", "hoja cerrada"]);
+  }
+});
+
+test("el focal de auditoría sólo registra08 y prepara01 sin repetir02..07 ni acreditar la fixture", async () => {
+  assert.deepEqual(publicCases.publicAuditRepairDefinitions.map(({ id }) => id), ["PUB-C-08"]);
+  const recorded = []; const actions = [];
+  const h = { width: 390, record: async (id, _getPage, action) => { recorded.push(id); return { ok: true, value: await action() }; } };
+  await publicCases.runPublicAuditRepairCases(h, { run: async (selected) => {
+    for (const { id } of publicSupplementDefinitions) {
+      const result = await selected.record(id, () => ({}), async () => { actions.push(id); return id; });
+      if (id === "PUB-C-01") assert.equal(result.preparationOnly, true);
+      else if (id !== "PUB-C-08") assert.equal(result.ok, false);
+    }
+  } });
+  assert.deepEqual(recorded, ["PUB-C-08"]); assert.deepEqual(actions, ["PUB-C-01", "PUB-C-08"]);
+});
+
 test("la barra móvil pública prepara01 sin alterar evidencia y registra sólo02 y05", async () => {
   const targets = ["PUB-C-02", "PUB-C-05"]; const recorded = []; const executed = [];
   const historical = new Map(publicSupplementDefinitions.map(({ id }) => [id, { status: "passed", image: id + "-previa.png" }]));

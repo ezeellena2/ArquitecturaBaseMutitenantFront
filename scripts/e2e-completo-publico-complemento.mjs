@@ -23,9 +23,13 @@ export const publicSupplementDefinitions = [
   definition(8, "Dueño A", "Buscar, filtrar y abrir auditoría de persona/empresa y Plataforma", "/org/auditoria", "Cursor sin total, búsqueda y filtros reales, detalle de invitación enmascarado; Plataforma sin id/nombre/correo del operador ni motivo interno.", ["BACK-CF-007"]),
 ];
 export const publicSupplementMobileBarDefinitions = publicSupplementDefinitions.filter(({ id }) => ["PUB-C-02", "PUB-C-05"].includes(id));
+export const publicAuditRepairDefinitions = publicSupplementDefinitions.filter(({ id }) => id === "PUB-C-08");
 
 export async function runPublicMobileBarCases(h, { run = runPublicSupplementCases } = {}) {
   return run(selectMobileBarCases(h, { targets: publicSupplementMobileBarDefinitions.map(({ id }) => id), prepare: ["PUB-C-01"] }));
+}
+export async function runPublicAuditRepairCases(h, { run = runPublicSupplementCases } = {}) {
+  return run(selectMobileBarCases(h, { targets: ["PUB-C-08"], prepare: ["PUB-C-01"] }));
 }
 
 export function publicHostUrl(base, slug, route) {
@@ -155,11 +159,25 @@ async function selectReference(page, label, wanted, search) {
   await page.getByRole("option", { name: new RegExp(escapeRegex(wanted), "u") }).first().click();
   return control.innerText();
 }
-async function auditFilter(h, page, key, label) {
+export async function auditFilter(h, page, key, label) {
   if (h.width === 390) {
-    await page.getByRole("button", { name: "Filtros de auditoría", exact: true }).click();
-    const group = page.getByRole("dialog", { name: "Filtros de auditoría", exact: true }).getByRole("group", { name: { period: "Período", category: "Tema", actor: "Quién" }[key], exact: true });
-    await group.getByRole("radio", { name: label, exact: true }).check();
+    const trigger = page.getByRole("button", { name: "Filtros de auditoría", exact: true }); await trigger.click();
+    const sheet = page.getByRole("dialog", { name: "Filtros de auditoría", exact: true });
+    const group = sheet.getByRole("group", { name: { period: "Período", category: "Tema", actor: "Quién" }[key], exact: true });
+    const radio = group.getByRole("radio", { name: label, exact: true });
+    const value = await radio.getAttribute("value"); assert.ok(value, "El filtro debe tener un valor real antes de seleccionarlo.");
+    // FilterBar onChange actualiza la URL y desmonta la hoja: check no puede verificar ese mismo nodo después.
+    await group.getByText(label, { exact: true }).click(); await sheet.waitFor({ state: "hidden" });
+    await page.waitForURL((url) => {
+      if (url.pathname !== "/org/auditoria") return false;
+      const query = url.searchParams;
+      if (key === "actor") return value === "all" ? !query.has("actorId") && !query.has("actorKind")
+        : query.get("actorId") === value && !query.has("actorKind") || query.get("actorKind") === value && !query.has("actorId");
+      return value === "all" && key === "category" || value === "30" && key === "period" ? !query.has(key) : query.get(key) === value;
+    });
+    await trigger.click(); await radio.waitFor({ state: "visible" });
+    try { assert.equal(await radio.isChecked(), true, "El filtro elegido debe conservarse seleccionado al reabrir su hoja."); }
+    finally { await page.keyboard.press("Escape"); await sheet.waitFor({ state: "hidden" }); }
   } else {
     const trigger = { period: /^(Últimos 30 días|Todo|Hoy|Últimos 7 días)$/u, category: /^(Tema: todos|Usuarios)$/u, actor: /^(Quién: todos|Plataforma)$/u }[key];
     await page.getByRole("button", { name: trigger }).first().click();

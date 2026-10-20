@@ -52,6 +52,7 @@ const suiteSpecs = {
   politicasarreglos: ["./e2e-completo-politicas.mjs", "closedPolicyRepairDefinitions", "runClosedPolicyRepairCases"],
   modulosarreglos: ["./e2e-completo-modulos.mjs", "moduleAccessRepairDefinitions", "runModuleAccessRepairCases"],
   publicoextra: ["./e2e-completo-publico-complemento.mjs", "publicSupplementDefinitions", "runPublicSupplementCases"],
+  publicoauditoriaarreglo: ["./e2e-completo-publico-complemento.mjs", "publicAuditRepairDefinitions", "runPublicAuditRepairCases"],
   identidadextra: ["./e2e-completo-identidad-complemento.mjs", "identitySupplementDefinitions", "runIdentitySupplementCases"],
   negocioarreglos: ["./e2e-completo-negocio.mjs", "businessRepairDefinitions", "runBusinessRepairCases"],
   plataformaarreglos: ["./e2e-completo-plataforma.mjs", "platformRepairDefinitions", "runPlatformRepairCases"],
