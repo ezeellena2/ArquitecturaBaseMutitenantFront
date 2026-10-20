@@ -3036,7 +3036,7 @@ export const guidedCases = [
     "board": "Ingreso",
     "critical": true,
     "manual": true,
-    "manualReason": "El ingreso completo requiere una cuenta real de Google. Los scripts sólo comprueban el destino OAuth desde registro, no este flujo completo de /login.",
+    "manualReason": "El ingreso completo requiere una cuenta real de Google. Las verificaciones locales del destino OAuth no completan el ingreso desde /login.",
     "coverageNotes": [
       "Sólo hay cobertura parcial del desafío OAuth en registro: recorrido-usuario 06/07 y E2E A4; no se importa como paso aprobado de este guion."
     ]
@@ -3058,7 +3058,7 @@ export const guidedCases = [
     "board": "Sesion",
     "critical": true,
     "manual": true,
-    "manualReason": "El ingreso completo requiere una cuenta real de Google. Los scripts sólo comprueban el destino OAuth desde registro, no este flujo completo de /login."
+    "manualReason": "El ingreso completo requiere una cuenta real de Google. Las verificaciones locales del destino OAuth no completan el ingreso desde /login."
   },
   {
     "id": "GUIA-ingresar-con-google-03",
@@ -3077,7 +3077,7 @@ export const guidedCases = [
     "board": "Inicio-Personal",
     "critical": true,
     "manual": true,
-    "manualReason": "El ingreso completo requiere una cuenta real de Google. Los scripts sólo comprueban el destino OAuth desde registro, no este flujo completo de /login."
+    "manualReason": "El ingreso completo requiere una cuenta real de Google. Las verificaciones locales del destino OAuth no completan el ingreso desde /login."
   },
   {
     "id": "GUIA-ingresar-por-whatsapp-01",
