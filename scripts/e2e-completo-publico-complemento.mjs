@@ -109,13 +109,18 @@ async function publication(h, page, published) {
   }
   assert.equal((await read(h, page, "/api/organization/public-page")).isPublished, published);
 }
+export async function openPublicModerationAction(page, action) {
+  await page.getByRole("tab", { name: "Página pública", exact: true }).click();
+  // El menú superior ya existe mientras la fila carga; sólo el panel identifica su propia moderación.
+  const actions = page.getByRole("tabpanel").getByRole("button", { name: /^Acciones de /u }).filter({ visible: true });
+  await actions.waitFor(); await actions.click();
+  await page.getByRole("menuitem", { name: action, exact: true }).click();
+}
 async function operatorAction(h, page, tenantId, action, reason, moderation = false) {
   await page.goto(new URL("/plataforma/organizaciones/" + tenantId, h.base).href);
   let route;
   if (moderation) {
-    await page.getByRole("tab", { name: "Página pública", exact: true }).click();
-    await page.getByRole("button", { name: /^Acciones de /u }).filter({ visible: true }).last().click();
-    await page.getByRole("menuitem", { name: action, exact: true }).click();
+    await openPublicModerationAction(page, action);
     route = "/api/platform/tenants/" + tenantId + "/public-site/" + (action === "Despublicar" ? "unpublish" : "allow-publish");
   } else {
     await openAction(page, action);

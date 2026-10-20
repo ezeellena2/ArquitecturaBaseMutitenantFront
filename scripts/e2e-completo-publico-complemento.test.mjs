@@ -3,6 +3,7 @@ import test from "node:test";
 import { backendUseCases } from "./e2e-completo-inventario-back.mjs";
 import { publicSupplementDefinitions, requireUnavailableMatrix, chooseReferenceChanges, logoFixtures,
   requireAuditPrivacy, withPublicRestoration, publicHostUrl } from "./e2e-completo-publico-complemento.mjs";
+import * as publicCases from "./e2e-completo-publico-complemento.mjs";
 
 const problem = { status: 404, code: "PublicSite.PublicPage.NotFound", title: "No disponible", traceId: "traza" };
 const matrix = () => ["unknown", "draft", "blocked", "suspended"].flatMap((state) => ["anonymous", "member"].flatMap((actor) => ["/api/public-site", "/api/public-site/logo"].map((route) => ({ state, actor, route, status: 404, body: { ...problem, traceId: state + actor + route } }))));
@@ -63,6 +64,25 @@ test("si sólo falla restaurar, la captura queda en la página de ese fallo", as
   await assert.rejects(() => withPublicRestoration(async () => "completa", async () => { page = operator; throw new Error("restauración operadora falló"); },
     { getPage: () => page, setPage: (target) => { page = target; } }), /restauración operadora/u);
   assert.equal(page, operator);
+});
+
+test("moderar espera las acciones de la página pública y no abre el menú de la organización durante la carga", async () => {
+  for (const action of ["Despublicar", "Permitir publicar"]) {
+    const waiting = Promise.withResolvers(); const loaded = Promise.withResolvers(); const calls = [];
+    const actions = { filter: ({ visible }) => { assert.equal(visible, true); return actions; },
+      waitFor: async () => { waiting.resolve(); await loaded.promise; }, click: async () => calls.push("acciones página pública") };
+    const panel = { getByRole: (role, { name }) => { assert.equal(role, "button"); assert.equal(String(name), String(/^Acciones de /u)); return actions; } };
+    const page = { getByRole: (role, options) => {
+      if (role === "tab") { assert.deepEqual(options, { name: "Página pública", exact: true }); return { click: async () => calls.push("pestaña") }; }
+      if (role === "tabpanel") return panel;
+      assert.equal(role, "menuitem", "El botón global de la organización no identifica la fila de la página pública.");
+      assert.deepEqual(options, { name: action, exact: true }); return { click: async () => calls.push(action) };
+    } };
+    const pending = publicCases.openPublicModerationAction(page, action);
+    await waiting.promise; assert.deepEqual(calls, ["pestaña"]);
+    loaded.resolve(); await pending;
+    assert.deepEqual(calls, ["pestaña", "acciones página pública", action]);
+  }
 });
 test("hosts se limitan al subdominio propio y las lecturas API locales", () => {
   const base = new URL("https://localtest.me:5174");
