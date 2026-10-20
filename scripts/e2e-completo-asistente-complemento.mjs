@@ -175,6 +175,18 @@ export async function sendAssistantAttachmentTurn(h, page, { fileName, buffer, t
   }
 }
 
+/** Las lecturas privadas no frenan abrir Borrar; el último Generating queda junto al clic real. */
+export async function deleteActiveAssistantConversation({ inspectAttachment, readCounters, openDialog, requireGenerating, deleteByUi }) {
+  const settled = await Promise.allSettled([inspectAttachment, readCounters, openDialog].map((operation) => Promise.resolve().then(operation)));
+  const failures = settled.filter((result) => result.status === "rejected").map((result) => result.reason);
+  // Esperar todas las tareas evita que la UI siga abriendo un diálogo mientras el caller restaura sus sesiones.
+  if (failures.length === 1) throw failures[0];
+  if (failures.length > 1) throw new AggregateError(failures, "Fallaron las comprobaciones previas a Borrar el turno activo.");
+  await requireGenerating();
+  await deleteByUi(settled[2].value);
+  return { counters: settled[1].value };
+}
+
 async function runAssistantCases(h, selected) {
   const page = await h.newPage(); const platformPage = await h.newPage(); let stalePage;
   const control = createAssistantControl(h.env.command); const url = (route) => new URL(route, h.base).href;
@@ -360,12 +372,28 @@ async function runAssistantCases(h, selected) {
       const fileName = `activo-${tag}.png`; const { upload, sent } = await sendAssistantAttachmentTurn(h, page, { fileName, buffer: png, text: "[E2E:slow] Borrar este turno activo con su imagen." });
       assert.equal(upload.status(), 201); const attachment = await upload.json(); requirePrivateAttachmentMetadata(attachment, fileName, png.length);
       const id = new URL(upload.url()).pathname.split("/").at(-2); const fileRoute = `${root}/conversations/${id}/attachments/${attachment.id}`;
-      const downloaded = await h.api(page, fileRoute); assert.equal(downloaded.status(), 200); assert.deepEqual(await downloaded.body(), png); assert.match(downloaded.headers()["cache-control"], /no-store/u); assert.match(downloaded.headers()["content-disposition"], /^attachment/iu);
-      assert.equal(sent.id, id); await page.getByRole("button", { name: "Detener", exact: true }).waitFor();
-      let current = await read(h, page, `${root}/conversations/${id}`); assert.equal(current.messages.items.at(-1).status, "Generating"); const before = await control("providerCounters");
-      await conversationAction(page, h.width, current.conversation.title ?? "Nueva conversación", "Borrar"); const dialog = page.getByRole("dialog");
-      current = await read(h, page, `${root}/conversations/${id}`); assert.equal(current.messages.items.at(-1).status, "Generating", "La preparación debe llegar a Borrar antes del final del Fake.");
-      await clickForResponse(page, dialog.getByRole("button", { name: "Borrar", exact: true }), `${root}/conversations/${id}`, "DELETE", 204); await dialog.waitFor({ state: "hidden" });
+      assert.equal(sent.id, id);
+      const { counters: before } = await deleteActiveAssistantConversation({
+        inspectAttachment: async () => {
+          const downloaded = await h.api(page, fileRoute); assert.equal(downloaded.status(), 200); assert.deepEqual(await downloaded.body(), png);
+          assert.match(downloaded.headers()["cache-control"], /no-store/u); assert.match(downloaded.headers()["content-disposition"], /^attachment/iu);
+        },
+        readCounters: () => control("providerCounters"),
+        openDialog: async () => {
+          await page.getByRole("button", { name: "Detener", exact: true }).waitFor();
+          const current = await read(h, page, `${root}/conversations/${id}`); assert.equal(current.messages.items.at(-1).status, "Generating");
+          await conversationAction(page, h.width, current.conversation.title ?? "Nueva conversación", "Borrar");
+          const dialog = page.getByRole("dialog"); await dialog.waitFor(); return dialog;
+        },
+        requireGenerating: async () => {
+          const current = await read(h, page, `${root}/conversations/${id}`);
+          assert.equal(current.messages.items.at(-1).status, "Generating", "La preparación debe llegar a Borrar antes del final del Fake.");
+        },
+        deleteByUi: async (dialog) => {
+          await clickForResponse(page, dialog.getByRole("button", { name: "Borrar", exact: true }), `${root}/conversations/${id}`, "DELETE", 204);
+          await dialog.waitFor({ state: "hidden" });
+        },
+      });
       await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); await requirePrivateProblem(await h.api(page, fileRoute), 404, "Assistant.Attachment.NotFound");
       await delay(3500); await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); assert.equal((await control("providerCounters")).titleCalls, before.titleCalls);
       return "Feedback a la respuesta de otro Dueño404; PNG propio descargó bytes exactos con attachment/no-store y sin URL. Borrar204 ocurrió mientras Generating; conversación/archivo404 y, pasado el Fake, no reaparecieron ni generaron título.";

@@ -3,6 +3,42 @@ import test from "node:test";
 import { assistantSupplementDefinitions, assistantSupplementProofGroups, requireProjectedAssistant, requirePrivateAttachmentMetadata, requireGlobalUsage, platformSettingsValues, requirePrivateProblem, assertGlobalSettingsRestored } from "./e2e-completo-asistente-complemento.mjs";
 import * as assistant from "./e2e-completo-asistente-complemento.mjs";
 
+test("Borrar abre el diálogo mientras siguen las lecturas independientes y sólo envía tras validarlas y releer Generating", async () => {
+  const calls = []; const inspected = Promise.withResolvers(); const opened = Promise.withResolvers();
+  const counters = { titleCalls: 4 }; const dialog = {};
+  const pending = assistant.deleteActiveAssistantConversation({
+    inspectAttachment: async () => { calls.push("descarga iniciada"); await inspected.promise; calls.push("bytes y headers válidos"); },
+    readCounters: async () => { calls.push("contadores reales"); return counters; },
+    openDialog: async () => { calls.push("primer GET Generating"); calls.push("Borrar abierto por UI"); opened.resolve(); return dialog; },
+    requireGenerating: async () => calls.push("segundo GET Generating"),
+    deleteByUi: async (target) => { assert.equal(target, dialog); calls.push("DELETE204 por clic UI"); },
+  });
+  await opened.promise;
+  assert.ok(calls.includes("descarga iniciada")); assert.equal(calls.includes("DELETE204 por clic UI"), false);
+  inspected.resolve(); assert.deepEqual(await pending, { counters });
+  assert.deepEqual(calls.slice(-3), ["bytes y headers válidos", "segundo GET Generating", "DELETE204 por clic UI"]);
+});
+
+test("fallo de probe o segundo Generating impide DELETE y espera la UI pendiente antes de devolver el control al cleanup", async () => {
+  for (const failureAt of ["adjunto", "Generating"]) {
+    const failure = new Error("Fallo " + failureAt); const open = Promise.withResolvers(); const started = Promise.withResolvers();
+    let uiFinished = false; let removed = false; let cleaned = false;
+    const run = async () => {
+      try {
+        return await assistant.deleteActiveAssistantConversation({
+          inspectAttachment: async () => { if (failureAt === "adjunto") throw failure; }, readCounters: async () => ({ titleCalls: 0 }),
+          openDialog: async () => { started.resolve(); await open.promise; uiFinished = true; return {}; },
+          requireGenerating: async () => { if (failureAt === "Generating") throw failure; }, deleteByUi: async () => { removed = true; },
+        });
+      } finally { assert.equal(uiFinished, true); cleaned = true; }
+    };
+    const pending = run(); void pending.catch(() => {}); await started.promise;
+    await Promise.resolve(); assert.equal(cleaned, false); assert.equal(removed, false);
+    open.resolve(); await assert.rejects(() => pending, (error) => error === failure);
+    assert.equal(cleaned, true); assert.equal(removed, false);
+  }
+});
+
 test("Inicio de Administrador acepta el aviso real antes de exigir Tus empresas, sin confundir ese heading temprano con readiness", async () => {
   for (const width of [1440, 390]) for (const missingHome of [false, true]) {
     const calls = []; let accepted = false; let ready = false; const failure = new Error("Tus empresas ausente");
