@@ -10,9 +10,9 @@ test("el equipo busca por correo al gestor sin nombre y selecciona sólo la opci
   for (const items of [[{ id: manager.id, name: "" }], [{ id: "ajeno", name: "Otro" }], [{ id: manager.id, name: "" }, { id: "ajeno", name: "Otro" }]]) {
     const calls = []; let rendered = false; let selected = false;
     const options = { count: async () => { assert.equal(rendered, true); return items.length; }, click: async () => { selected = true; calls.push("seleccionar gestor real"); }, waitFor: async () => {} };
-    const menu = { filter() { return this; }, last() { return this; }, getByRole: (role, query) => {
-      if (role === "searchbox") { assert.deepEqual(query, { name: "Buscar", exact: true }); return { fill: async (value) => { assert.equal(value, manager.email); calls.push("buscar correo propio"); } }; }
-      if (role === "status") return { waitFor: async (wait) => { assert.deepEqual(wait, { state: "hidden" }); rendered = true; calls.push("opciones renderizadas"); } };
+    const search = { fill: async (value) => { assert.equal(value, manager.email); calls.push("buscar correo propio"); } };
+    const popup = { getByRole: (role) => { assert.equal(role, "status"); return { waitFor: async (wait) => { assert.deepEqual(wait, { state: "hidden" }); rendered = true; calls.push("opciones renderizadas"); } }; } };
+    const menu = { filter() { return this; }, last() { return this; }, locator: (selector) => { assert.equal(selector, ".."); return popup; }, getByRole: (role, query) => {
       assert.equal(role, "menuitemcheckbox"); assert.equal(query, undefined, "No inventar un nombre para la opción vacía."); return options;
     } };
     const response = { status: () => 200, json: async () => ({ items }) };
@@ -21,7 +21,7 @@ test("el equipo busca por correo al gestor sin nombre y selecciona sólo la opci
       assert.equal(predicate({ url: () => "https://localtest.me/api/platform/whatsapp/teams/member-options?page=1&search=" + encodeURIComponent(manager.email), request: () => request }), true);
       assert.equal(predicate({ url: () => "https://localtest.me/api/platform/whatsapp/teams/member-options?search=otra", request: () => request }), false);
       calls.push("observar búsqueda real"); return response;
-    }, getByRole: (role) => { assert.equal(role, "menu"); return menu; }, keyboard: { press: async (key) => { assert.equal(key, "Escape"); calls.push("cerrar selector"); } } };
+    }, getByRole: (role, query) => { if (role === "searchbox") { assert.deepEqual(query, { name: "Buscar", exact: true }); return search; } assert.equal(role, "menu"); return menu; }, keyboard: { press: async (key) => { assert.equal(key, "Escape"); calls.push("cerrar selector"); } } };
     const picker = { focus: async () => {}, press: async (key) => assert.equal(key, "ArrowDown") };
     const dialog = { getByRole: (role, query) => { assert.equal(role, "button"); assert.deepEqual(query, { name: "Operadores", exact: true }); return picker; } };
     const choose = () => platformWhatsApp.selectPlatformWhatsAppTeamManager(page, dialog, manager);

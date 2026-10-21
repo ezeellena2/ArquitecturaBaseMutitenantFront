@@ -215,10 +215,10 @@ async function platformTeamManagerOption(page, dialog, manager) {
     const url = new URL(response.url());
     return url.pathname === root + "/teams/member-options" && url.searchParams.get("search") === manager.email && response.request().method() === "GET";
   }); void pending.catch(() => {});
-  await menu.getByRole("searchbox", { name: "Buscar", exact: true }).fill(manager.email);
+  await page.getByRole("searchbox", { name: "Buscar", exact: true }).fill(manager.email);
   const response = await pending; assert.equal(response.status(), 200);
   assert.deepEqual((await response.json()).items.map(({ id }) => id), [manager.id], "La búsqueda real debe devolver sólo el ID del gestor propio.");
-  await menu.getByRole("status").waitFor({ state: "hidden" });
+  await menu.locator("..").getByRole("status").waitFor({ state: "hidden" });
   const option = menu.getByRole("menuitemcheckbox");
   assert.equal(await option.count(), 1, "Sólo se selecciona la opción única del gestor identificado por la API.");
   await option.waitFor({ state: "visible" }); return option;
@@ -323,7 +323,7 @@ async function runPlatformWhatsAppPlan(h, mobile) {
         await savedWelcome.getByRole("button", { name: "Cancelar", exact: true }).click(); await savedWelcome.waitFor({ state: "hidden" });
         const memberDialog = await openPlatformTeamDialog(h, managerPage);
         const ownOption = await platformTeamManagerOption(managerPage, memberDialog, manager);
-        await requirePlatformWhatsAppTeamManagerLabel(managerPage, ownOption);
+        assert.equal(await requirePlatformWhatsAppTeamManagerLabel(managerPage, ownOption), manager.email, "El operador propio sin nombre se identifica por su correo.");
         await managerPage.keyboard.press("Escape");
         await memberDialog.getByRole("button", { name: "Cancelar", exact: true }).click(); await memberDialog.waitFor({ state: "hidden" });
         return "Gestor sólo manage confirmó F2 tras403 real, guardó Bienvenida y equipo con su ID exacto y nombre accesible; consultas403. Plantillas sólo se leyeron; sus escrituras en Meta siguen pendientes.";
