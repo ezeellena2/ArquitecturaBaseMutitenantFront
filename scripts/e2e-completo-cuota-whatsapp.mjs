@@ -58,11 +58,13 @@ export async function requireWhatsAppDailyLimit(response) {
   assert.equal(response.headers()["retry-after"], String(problem.retryAfter)); return problem;
 }
 
-async function waitRealCooldown(milliseconds, budget) {
-  const readyAt = Date.now() + milliseconds;
-  while (Date.now() < readyAt) {
-    budget.check(); const chunk = Math.min(60_000, readyAt - Date.now(), budget.remainingMs);
-    assert.ok(chunk > 0, "No queda tiempo para respetar el cooldown real."); await delay(chunk);
+export async function waitRealCooldown(milliseconds, budget, { now = Date.now, sleep = delay } = {}) {
+  const readyAt = now() + milliseconds;
+  while (now() < readyAt) {
+    budget.check(); const remaining = readyAt - now();
+    if (remaining <= 0) break;
+    const chunk = Math.min(60_000, remaining, budget.remainingMs);
+    assert.ok(chunk > 0, "No queda tiempo para respetar el cooldown real."); await sleep(chunk);
   }
   budget.check();
 }

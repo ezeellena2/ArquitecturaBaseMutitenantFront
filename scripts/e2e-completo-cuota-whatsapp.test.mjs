@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { buildMatrix } from "./e2e-completo-matriz.mjs";
-import { quotaWhatsAppDefinitions, quotaWhatsAppLimitations, quotaPhonePlan, createQuotaBudget, nextQuotaDestination, rememberQuotaKey, requireWhatsAppDailyLimit, phoneForm, observeQuotaResources, diagnoseQuotaNavigation } from "./e2e-completo-cuota-whatsapp.mjs";
+import { quotaWhatsAppDefinitions, quotaWhatsAppLimitations, quotaPhonePlan, createQuotaBudget, nextQuotaDestination, rememberQuotaKey, requireWhatsAppDailyLimit, phoneForm, observeQuotaResources, diagnoseQuotaNavigation, waitRealCooldown } from "./e2e-completo-cuota-whatsapp.mjs";
 
 test("el formulario Phone espera DOMContentLoaded y cada control visible, sin esperar load ni reintentar navegación", async () => {
   for (const route of ["/registro", "/login"]) for (const missingPhone of [false, true]) {
@@ -133,6 +133,24 @@ test("el siguiente destino respeta el cooldown real y espera sólo cuando todos 
   assert.deepEqual(nextQuotaDestination(pool, 1000), { index: 1, waitMs: 0 });
   pool[1].readyAt = 80_000; assert.deepEqual(nextQuotaDestination(pool, 1000), { index: 0, waitMs: 60_000 });
   assert.deepEqual(nextQuotaDestination(pool, 61_000), { index: 0, waitMs: 0 }); assert.throws(() => nextQuotaDestination([], 0));
+});
+
+test("cruzar el instante listo entre lecturas no se confunde con agotar el presupuesto", async () => {
+  const times = [0, 0, 1]; let checks = 0;
+  await waitRealCooldown(1, { check: () => checks++, remainingMs: 60 * 60_000 }, {
+    now: () => times.shift() ?? 1, sleep: async () => assert.fail("El cooldown ya terminó; no queda espera real"),
+  });
+  assert.equal(checks, 2);
+});
+
+test("la espera conserva tramos reales de60s y propaga el presupuesto agotado", async () => {
+  let now = 0; const sleeps = [];
+  await waitRealCooldown(60_001, { check() {}, get remainingMs() { return 120_000 - now; } }, {
+    now: () => now, sleep: async (milliseconds) => { sleeps.push(milliseconds); now += milliseconds; },
+  });
+  assert.deepEqual(sleeps, [60_000, 1]); assert.equal(now, 60_001);
+  const failure = new Error("Presupuesto agotado");
+  await assert.rejects(() => waitRealCooldown(1, { check: () => { throw failure; } }, { now: () => 0, sleep: async () => assert.fail("No se espera sin presupuesto") }), (error) => error === failure);
 });
 
 test("cada formulario nuevo emite una clave nueva y válida, nunca replay para agotar capacidad", () => {
