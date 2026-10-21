@@ -15,7 +15,7 @@ export const personalDefinitions = [
   definition("06", "Validar el correo en recuperación", "/recuperar", "Visitante sin sesión", "Un correo mal escrito queda en el campo con su error accesible y no envía una solicitud ni un código.", ["recuperar"]),
   definition("07", "Preparar una persona nueva por UI", "/registro", "Persona con correo sintético", "El registro real crea una persona sin organizaciones. Se usa sólo como preparación de los casos nuevos.", [], { setup: true }),
   definition("08", "Rechazar API de empresa y Plataforma con token Personal", "/", "Persona B2C sin organizaciones", "GET de los listados y POST de empresa responden 403 Http.Forbidden con traceId; el token conserva access=consumer.", ["HT-006"], { critical: true }),
-  definition("09", "Impedir las pantallas B2B y Plataforma desde Personal", "/org/usuarios · /plataforma/cuentas", "Persona B2C sin organizaciones", "Los enlaces directos vuelven al ingreso correspondiente; Personal no muestra Crear empresa ni administración B2B o Plataforma.", ["ID-020"], { critical: true }),
+  definition("09", "Impedir las pantallas B2B y Plataforma desde Personal", "/org/usuarios · /plataforma/cuentas", "Persona B2C sin organizaciones", "La ruta B2B muestra Tu cuenta no está en ninguna empresa todavía y Salir; Plataforma termina fuera de su área privada. Personal no muestra Crear empresa ni administración B2B o Plataforma.", ["ID-020"], { critical: true }),
   definition("10", "Guardar el mismo perfil en dos pestañas", "/cuenta", "Persona B2C en dos pestañas", "La primera guarda; la segunda recibe 409 General.ConcurrencyConflict, conserva su borrador y muestra las dos opciones del conflicto.", ["avisos", "CU-002"], { critical: true }),
   definition("11", "Seguir editando conserva la versión vencida", "/cuenta", "Persona B2C con un borrador desactualizado", "Seguir editando conserva los datos; otro Guardar devuelve 409 con la misma versión y no sobrescribe lo guardado por la primera pestaña.", ["CU-002"], { critical: true }),
   definition("12", "Ver lo nuevo pide descartar el borrador", "/cuenta", "Persona B2C con conflicto", "Ver lo nuevo pide confirmación; al descartar carga la versión guardada por la otra pestaña y deja Guardar desactivado.", ["cuenta"]),
@@ -89,8 +89,10 @@ export async function openPersonalProtectedRoute(h, route, onPage) {
   onPage(page);
   try {
     await page.goto(new URL(route, h.base).href);
-    await page.getByRole("heading", { name: /^(Ingresá a tu cuenta|Ingresá como empresa|Tu cuenta no está en ninguna empresa todavía|Inicio)$/u })
+    const title = route.startsWith("/org/") ? /^Tu cuenta no está en ninguna empresa todavía$/u : /^(Ingresá a tu cuenta|Ingresá como empresa|Tu cuenta no está en ninguna empresa todavía|Inicio)$/u;
+    await page.getByRole("heading", { name: title })
       .filter({ visible: true }).first().waitFor();
+    if (route.startsWith("/org/")) await page.getByRole("button", { name: "Salir", exact: true }).waitFor({ state: "visible" });
     assert.equal(await page.getByRole("heading", { name: /^(Usuarios|Cuentas y operadores)$/u }).count(), 0);
     await assertViewport(page);
   } catch (error) {

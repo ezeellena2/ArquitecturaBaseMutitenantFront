@@ -13,12 +13,14 @@ test("cada ruta protegida abre una pestaña propia y espera una vista terminal a
     getByRole: (role, { name: title }) => ({
       filter: () => ({ first: () => ({ waitFor: async () => {
         assert.ok(title.test("Tu cuenta no está en ninguna empresa todavía"), "El rechazo puede terminar en el callback OIDC.");
+        if (name === "organización") assert.ok(!title.test("Inicio") && !title.test("Ingresá como empresa"), "La ruta B2B debe mostrar el rechazo sin empresa, no sólo una puerta o un inicio.");
         assert.ok(!title.test("Iniciando sesión…"), "Una vista de transición no completa el paso.");
         assert.ok(!title.test("No pudimos iniciar tu sesión"), "Un error OIDC no certifica el rechazo esperado.");
         if (name === "organización") { firstWaiting.resolve(); await firstView.promise; }
         calls.push([name, "vista terminal"]);
       } }) }),
       count: async () => 0,
+      waitFor: async () => { assert.equal(role, "button"); assert.equal(title, "Salir"); },
     }),
     evaluate: async () => ({ width: 390, document: 390, body: 390 }),
   }));
