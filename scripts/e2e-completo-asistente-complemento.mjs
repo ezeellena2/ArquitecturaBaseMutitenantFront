@@ -196,15 +196,25 @@ export async function openListedAssistantConversationAction(page, width, title, 
   await page.getByRole("menuitem", { name: `${action}: ${title}`, exact: true }).click();
 }
 
-export async function sendAssistantAttachmentTurn(h, page, { fileName, buffer, text }) {
+export async function sendAssistantAttachmentTurn(h, page, { fileName, buffer, text, inspectUpload }) {
   const uploaded = page.waitForResponse((response) => response.request().method() === "POST" && /^\/api\/organization\/assistant\/conversations\/[^/]+\/attachments$/u.test(new URL(response.url()).pathname));
+  // La UI sube antes de admitir el turno. Aprovechar ese intervalo conserva la
+  // ventana real del Fake para abrir Borrar, sin omitir checks de bytes/metadata.
+  let inspectAllowed = true; let inspectionStarted = false;
+  const inspectedUpload = inspectUpload ? uploaded.then((response) => {
+    if (!inspectAllowed) return;
+    inspectionStarted = true; return inspectUpload(response);
+  }) : undefined;
+  void inspectedUpload?.catch(() => {});
   void uploaded.catch(() => {}); let phase = "seleccionar archivo";
   try {
     await page.locator('input[type="file"]').setInputFiles({ name: fileName, mimeType: "image/png", buffer });
     // El composer conserva el archivo local hasta Enviar; la UI sube el adjunto antes del POST de mensajes.
     phase = "enviar turno"; const sent = await sendUi(h, page, text, root, false);
-    phase = "esperar adjunto"; return { upload: await uploaded, sent };
+    phase = "esperar adjunto"; return { upload: await uploaded, sent, ...(inspectUpload ? { inspectedUpload } : {}) };
   } catch (cause) {
+    inspectAllowed = false;
+    if (inspectionStarted) await inspectedUpload.catch(() => {});
     throw new Error(`Adjunto de Asistente: etapa ${phase}; POST ${root}/conversations/:id/attachments; POST ${root}/conversations/:id/messages. ${cause.message}`, { cause });
   }
 }
@@ -404,16 +414,22 @@ async function runAssistantCases(h, selected) {
       await page.getByRole("button", { name: "Nueva conversación", exact: true }).first().click();
       // El historial se refresca al terminar un envío. La fila debe existir antes del turno que se borrará activo.
       const listed = await prepareListedAssistantConversation(h, page);
-      const fileName = `activo-${tag}.png`; const { upload, sent } = await sendAssistantAttachmentTurn(h, page, { fileName, buffer: png, text: "[E2E:slow] Borrar este turno activo con su imagen." });
-      assert.equal(upload.status(), 201); const attachment = await upload.json(); requirePrivateAttachmentMetadata(attachment, fileName, png.length);
-      const id = new URL(upload.url()).pathname.split("/").at(-2); const fileRoute = `${root}/conversations/${id}/attachments/${attachment.id}`;
-      assert.equal(sent.id, id); assert.equal(id, listed.id, "El PNG y el turno lento deben pertenecer a la conversación ya listada.");
-      const { counters: before } = await deleteActiveAssistantConversation({
-        inspectAttachment: async () => {
+      const countersBeforeTurn = await control("providerCounters");
+      const fileName = `activo-${tag}.png`; const { sent, inspectedUpload } = await sendAssistantAttachmentTurn(h, page, {
+        fileName, buffer: png, text: "[E2E:slow] Borrar este turno activo con su imagen.",
+        inspectUpload: async (upload) => {
+          assert.equal(upload.status(), 201); const attachment = await upload.json(); requirePrivateAttachmentMetadata(attachment, fileName, png.length);
+          const id = new URL(upload.url()).pathname.split("/").at(-2); assert.equal(id, listed.id, "El PNG debe pertenecer a la conversación ya listada.");
+          const fileRoute = `${root}/conversations/${id}/attachments/${attachment.id}`;
           const downloaded = await h.api(page, fileRoute); assert.equal(downloaded.status(), 200); assert.deepEqual(await downloaded.body(), png);
           assert.match(downloaded.headers()["cache-control"], /no-store/u); assert.match(downloaded.headers()["content-disposition"], /^attachment/iu);
+          return { fileRoute };
         },
-        readCounters: () => control("providerCounters"),
+      });
+      const id = sent.id; assert.equal(id, listed.id, "El PNG y el turno lento deben pertenecer a la conversación ya listada.");
+      const { counters: before } = await deleteActiveAssistantConversation({
+        inspectAttachment: () => inspectedUpload,
+        readCounters: async () => countersBeforeTurn,
         openDialog: async () => {
           await page.getByRole("button", { name: "Detener", exact: true }).waitFor();
           const current = await read(h, page, `${root}/conversations/${id}`); assert.equal(current.messages.items.at(-1).status, "Generating");
@@ -430,6 +446,7 @@ async function runAssistantCases(h, selected) {
           await dialog.waitFor({ state: "hidden" });
         },
       });
+      const { fileRoute } = await inspectedUpload;
       await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); await requirePrivateProblem(await h.api(page, fileRoute), 404, "Assistant.Attachment.NotFound");
       await delay(3500); await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); assert.equal((await control("providerCounters")).titleCalls, before.titleCalls);
       return "Feedback a la respuesta de otro Dueño404; conversación propia quedó listada tras un turno inicial por UI. Otro turno lento con PNG usó ese mismo ID; descargó bytes exactos con attachment/no-store y sin URL. Borrar204 ocurrió mientras Generating; conversación/archivo404 y, pasado el Fake, no reaparecieron ni generaron nuevos títulos.";

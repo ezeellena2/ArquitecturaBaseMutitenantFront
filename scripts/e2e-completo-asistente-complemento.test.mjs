@@ -170,6 +170,28 @@ test("el timeout del adjunto conserva su causa e identifica la etapa y ambos POS
   });
 });
 
+test("inspecciona el upload real antes de recibir la admisión del turno lento y espera sus checks antes de Borrar", async () => {
+  const replies = []; const calls = []; const inspected = Promise.withResolvers(); let inspectionStarted = false;
+  const response = (suffix, status) => ({ url: () => `https://localtest.me/api/organization/assistant/conversations/propia/${suffix}`, request: () => ({ method: () => "POST" }), status: () => status, headers: () => ({ "content-type": "text/event-stream" }) });
+  const upload = response("attachments", 201); const sent = response("messages", 200);
+  const page = { waitForResponse: (predicate) => { const reply = { predicate, ...Promise.withResolvers() }; replies.push(reply); return reply.promise; }, locator: () => ({ setInputFiles: async () => {} }),
+    getByRole: (role) => role === "textbox" ? { fill: async () => {} } : { click: async () => {
+      replies.find((reply) => reply.predicate(upload)).resolve(upload);
+      await Promise.resolve(); await Promise.resolve();
+      assert.equal(inspectionStarted, true, "No espera el POST messages para empezar metadata y descarga privada.");
+      calls.push("admisión del turno lento"); replies.find((reply) => reply.predicate(sent)).resolve(sent);
+    } },
+  };
+  const result = await assistant.sendAssistantAttachmentTurn({}, page, { fileName: "propio.png", buffer: Buffer.from([1]), text: "[E2E:slow] Consulta",
+    inspectUpload: async (actual) => { assert.equal(actual, upload); inspectionStarted = true; calls.push("metadata y bytes iniciados"); await inspected.promise; calls.push("metadata y bytes verificados"); return "archivo propio"; },
+  });
+  const deletion = assistant.deleteActiveAssistantConversation({ inspectAttachment: () => result.inspectedUpload, readCounters: async () => ({ titleCalls: 1 }),
+    openDialog: async () => { calls.push("abrir Borrar por UI"); return {}; }, requireGenerating: async () => calls.push("exigir Generating"), deleteByUi: async () => calls.push("DELETE204 por UI") });
+  await Promise.resolve(); assert.equal(calls.includes("abrir Borrar por UI"), true); assert.equal(calls.includes("DELETE204 por UI"), false);
+  inspected.resolve(); await deletion;
+  assert.deepEqual(calls, ["metadata y bytes iniciados", "admisión del turno lento", "abrir Borrar por UI", "metadata y bytes verificados", "exigir Generating", "DELETE204 por UI"]);
+});
+
 test("la reparación del operador sólo registra05 con su callback, sin ejecutar01–04 ni06", async () => {
   assert.deepEqual(assistant.assistantOperatorRepairDefinitions.map((entry) => entry.id), ["AS-SUP-05"]);
   const records = []; let closed = 0; let logins = 0;
