@@ -73,6 +73,25 @@ test("si falta el regreso por UI se conserva su fallo y no se sustituye por una 
   assert.deepEqual(calls, ["esperar regreso"]);
 });
 
+test("el destino fresco posterior aDailyLimit abre Registro una sola vez y espera el formulario real", async () => {
+  const calls = [];
+  const control = (name) => ({
+    waitFor: async () => calls.push("visible " + name), click: async () => calls.push("click " + name),
+    fill: async () => calls.push("llenar número"), check: async () => calls.push("términos"),
+  });
+  const page = {
+    url: () => "https://localtest.me/registro",
+    goto: async (url, options) => { assert.equal(url, "https://localtest.me/registro"); assert.deepEqual(options, { waitUntil: "domcontentloaded" }); calls.push("navegación completa"); },
+    getByRole: (role, options) => {
+      if (role === "link") { calls.push("enlace inesperado"); return control(options.name); }
+      return control(role === "textbox" ? "número" : role === "checkbox" ? "términos" : options.name);
+    },
+    waitForURL: async () => {},
+  };
+  await phoneForm({ base: new URL("https://localtest.me/") }, page, "+5491134567898", "/registro", { previousStatus: 429, freshNavigation: true });
+  assert.deepEqual(calls, ["navegación completa", "visible WhatsApp", "click WhatsApp", "visible número", "llenar número", "visible términos", "términos"]);
+});
+
 test("el diagnóstico inicia cuatro probes independientes y descarta datos de respuesta ajenos a las métricas", async () => {
   const started = []; const complete = [];
   const result = diagnoseQuotaNavigation({ base: new URL("https://localtest.me:5174/registro"), resources: { pending: { document: 1 } }, probe: (url) => {

@@ -69,8 +69,8 @@ export async function waitRealCooldown(milliseconds, budget, { now = Date.now, s
   budget.check();
 }
 
-export async function phoneForm(h, page, phone, route, { previousStatus, onNavigationFailure } = {}) {
-  const reuse = route === "/registro" && previousStatus !== undefined && new URL(page.url()).origin === h.base.origin && new URL(page.url()).pathname === route;
+export async function phoneForm(h, page, phone, route, { previousStatus, freshNavigation = false, onNavigationFailure } = {}) {
+  const reuse = !freshNavigation && route === "/registro" && previousStatus !== undefined && new URL(page.url()).origin === h.base.origin && new URL(page.url()).pathname === route;
   if (reuse) {
     if (previousStatus === 202) {
       const back = page.getByRole("button", { name: "Usar otro número", exact: true });
@@ -177,8 +177,8 @@ export async function runQuotaWhatsAppCases(h) {
         const directory = new URL("../.local/e2e-completo/", import.meta.url); await mkdir(directory, { recursive: true });
         await appendFile(new URL(`cuota-diagnostico-${h.width}.jsonl`, directory), JSON.stringify({ observedAtUtc: new Date().toISOString(), width: h.width, ...navigationDiagnostic }) + "\n");
       };
-      const issue = async (phone, route = "/registro") => {
-        budget.check(); await phoneForm(h, page, phone, route, { previousStatus, onNavigationFailure }); budget.take(); const before = requests;
+      const issue = async (phone, route = "/registro", { freshNavigation = false } = {}) => {
+        budget.check(); await phoneForm(h, page, phone, route, { previousStatus, freshNavigation, onNavigationFailure }); budget.take(); const before = requests;
         const response = await clickForResponse(page, page.getByRole("button", { name: route === "/registro" ? "Crear cuenta" : "Enviar código", exact: true }), route === "/registro" ? "/api/auth/signup" : "/api/auth/login-code", "POST", null);
         assert.equal(requests, before + 1, "No se permiten envíos automáticos fuera del presupuesto."); assert.equal(requests, budget.count);
         rememberQuotaKey(keys, response.request().headers()["idempotency-key"]); previousStatus = response.status(); used.add(phone); budget.check(); return response;
@@ -214,7 +214,7 @@ export async function runQuotaWhatsAppCases(h) {
         }
         assert.equal(exhausted, true, "No se alcanzó DailyLimit dentro de1000 pedidos y el timeout; no se infiere un límite diario de otros errores.");
         assert.equal(used.has(plan.freshPhone), false, "El destino final debe conservarse sin ninguna petición anterior de esta prueba.");
-        const fresh = await issue(plan.freshPhone); await requireWhatsAppDailyLimit(fresh);
+        const fresh = await issue(plan.freshPhone, "/registro", { freshNavigation: true }); await requireWhatsAppDailyLimit(fresh);
         await page.getByRole("alert").first().waitFor(); assert.equal(await page.getByRole("textbox", { name: "Código 1", exact: true }).count(), 0);
         // No se pide code de98: ese control no representa ausencia durable y puede terminar el host.
         const login = await begin(`quota-wa-login-${tag}`, plan.protectedPhone);
