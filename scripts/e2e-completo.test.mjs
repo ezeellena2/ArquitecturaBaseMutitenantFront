@@ -6,6 +6,27 @@ import path from "node:path";
 import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions, buildCaseDiagnostic, archivePreviousAttempt, needsRealExecution } from "./e2e-completo.mjs";
 import { mobileBarPlans } from "./e2e-completo-acciones-moviles.mjs";
 
+test("repetir seleccionados exige suite, ancho y resume explícitos sin ampliar la selección", async () => {
+  const options = parseArguments(["--suite=ingresopersonarevisionarreglo", "--width=1440", "--resume", "--repeat-selected", "--date=2026-10-20", "--no-build"]);
+  assert.equal(options.repeatSelected, true); assert.deepEqual(options.suites, ["ingresopersonarevisionarreglo"]); assert.deepEqual(options.widths, [1440]); assert.equal(options.resume, true);
+  for (const args of [
+    ["--repeat-selected", "--width=1440", "--resume"],
+    ["--repeat-selected", "--suite=personal", "--resume"],
+    ["--repeat-selected", "--suite=personal", "--width=1440"],
+    ["--repeat-selected", "--suite=personal", "--width=1440", "--width=390", "--resume"],
+    ...["--inventory-only", "--refresh-only", "--repeat-mobile-actions"].map((flag) => ["--repeat-selected", "--suite=personal", "--width=390", "--resume", flag]),
+  ]) assert.throws(() => parseArguments(args));
+  const suites = [{ definitions: [{ id: "NUEVO-PER-09" }] }];
+  const executions = [{ id: "NUEVO-PER-09", results: [{ width: 1440, status: "passed" }, { width: 390, status: "passed" }] }];
+  assert.equal(needsRealExecution(suites, executions, options), true);
+  assert.equal(needsRealExecution(suites, executions, { ...options, repeatSelected: false }), false);
+  let prematureActions = 0;
+  assert.deepEqual(await reusePassedPreparation({ previous: executions[0].results[0], preserve: true, repeat: true, action: async () => { prematureActions++; } }), { reused: false });
+  assert.equal(prematureActions, 0, "El record real debe ejecutar el objetivo una sola vez y archivar el intento anterior.");
+  assert.deepEqual(await reusePassedPreparation({ previous: executions[0].results[1], preserve: true, action: async () => "fixture" }), { reused: true, value: "fixture" });
+  assert.deepEqual(executions[0].results.map((result) => result.status), ["passed", "passed"], "La selección no edita estados ni resultados de otro ancho.");
+});
+
 test("la revisión conserva la fecha del informe original aunque termine otro día", () => {
   assert.equal(parseArguments(["--date=2026-10-20", "--resume"]).date, "2026-10-20");
   for (const date of ["../salida", "2026-02-30", "2026-13-01"]) assert.throws(() => parseArguments([`--date=${date}`]));
@@ -29,11 +50,11 @@ test("el arreglo de borrado con PNG del Asistente se selecciona sin repetir su s
   assert.deepEqual(parseArguments(["--suite=negocioempresarolesarreglo", "--width=390", "--resume", "--no-build"]).suites, ["negocioempresarolesarreglo"]);
 });
 
-test("reanudar una selección ya verde evita iniciar otro entorno, salvo revalidación móvil expresa", () => {
+test("reanudar una selección ya verde evita iniciar otro entorno sin repetición expresa", () => {
   const suites = [{ definitions: [{ id: "A" }] }];
   const executions = [{ id: "A", results: [{ width: 390, status: "passed" }] }];
   assert.equal(needsRealExecution(suites, executions, { resume: true, widths: [390] }), false);
-  for (const options of [{ resume: true }, { resume: false, widths: [390] }, { resume: true, widths: [390], repeatMobileActions: true }]) assert.equal(needsRealExecution(suites, executions, options), true);
+  for (const options of [{ resume: true }, { resume: false, widths: [390] }, { resume: true, widths: [390], repeatMobileActions: true }, { resume: true, widths: [390], repeatSelected: true }]) assert.equal(needsRealExecution(suites, executions, options), true);
   for (const status of ["failed", "blocked", "manual"]) assert.equal(needsRealExecution(suites, [{ id: "A", results: [{ width: 390, status }] }], { resume: true, widths: [390] }), true);
 });
 

@@ -102,7 +102,7 @@ export function collectSuiteDefinitions(suites) {
 }
 
 export function needsRealExecution(suites, executions, options) {
-  if (!options.resume || options.repeatMobileActions) return true;
+  if (!options.resume || options.repeatMobileActions || options.repeatSelected) return true;
   return suites.some((suite) => suite.definitions.some((entry) => (options.widths ?? [1440, 390]).some((width) =>
     !executions.find((row) => row.id === entry.id)?.results.some((result) => result.width === width && result.status === "passed"))));
 }
@@ -143,14 +143,22 @@ export async function archivePreviousAttempt({ id, width, prior, output, reason 
 }
 
 export function parseArguments(args) {
-  assert.ok(args.every((value) => ["--inventory-only", "--no-build", "--refresh-only", "--resume", "--repeat-mobile-actions"].includes(value) || /^--suite=[a-z,]+$/.test(value) || /^--width=(1440|390)$/.test(value) || /^--date=\d{4}-\d{2}-\d{2}$/.test(value)), "Argumentos no admitidos.");
+  assert.ok(args.every((value) => ["--inventory-only", "--no-build", "--refresh-only", "--resume", "--repeat-mobile-actions", "--repeat-selected"].includes(value) || /^--suite=[a-z,]+$/.test(value) || /^--width=(1440|390)$/.test(value) || /^--date=\d{4}-\d{2}-\d{2}$/.test(value)), "Argumentos no admitidos.");
   const date = args.find((value) => value.startsWith("--date="))?.slice(7);
   if (date) assert.equal(new Date(`${date}T00:00:00Z`).toISOString().slice(0, 10), date, "Fecha de informe inválida.");
   const repeatMobileActions = args.includes("--repeat-mobile-actions");
+  const repeatSelected = args.includes("--repeat-selected");
   const mobileNames = mobileBarPlans.map((plan) => plan.name);
   const suites = args.find((value) => value.startsWith("--suite="))?.slice(8).split(",") ?? (repeatMobileActions ? mobileNames : Object.keys(suiteSpecs).filter((name) => !name.includes("arreglo") && !name.startsWith("baseline") && !["cuotawhatsapp", "cuotacontrato"].includes(name)));
   assert.ok(suites.length > 0 && suites.every((name) => Object.hasOwn(suiteSpecs, name)), "Suite desconocida.");
   const width = args.find((value) => value.startsWith("--width="));
+  if (repeatSelected) {
+    assert.ok(args.some((value) => value.startsWith("--suite=")), "Repetir seleccionados requiere --suite explícita.");
+    assert.equal(args.filter((value) => value.startsWith("--width=")).length, 1, "Repetir seleccionados requiere un único ancho explícito.");
+    assert.ok(args.includes("--resume"), "Repetir seleccionados conserva el historial y requiere --resume.");
+    assert.ok(!repeatMobileActions, "Los dos modos de repetición se ejecutan por separado.");
+    assert.ok(!args.includes("--inventory-only") && !args.includes("--refresh-only"), "Repetir seleccionados necesita ejecución real.");
+  }
   if (repeatMobileActions) {
     assert.equal(width, "--width=390", "La revalidación de barras sólo admite390 px.");
     assert.ok(args.includes("--resume"), "La revalidación conserva el avance y requiere --resume.");
@@ -161,7 +169,7 @@ export function parseArguments(args) {
     assert.equal(suites.length, 1, "La cuota necesita una suite aislada en un entorno fresco.");
     assert.ok(width, "La cuota requiere un único ancho por entorno fresco.");
   }
-  return { inventoryOnly: args.includes("--inventory-only"), refreshOnly: args.includes("--refresh-only"), resume: args.includes("--resume"), build: !args.includes("--no-build"), suites: [...new Set(suites)], ...(repeatMobileActions ? { repeatMobileActions: true } : {}), ...(width ? { widths: [Number(width.slice(8))] } : {}), ...(date ? { date } : {}) };
+  return { inventoryOnly: args.includes("--inventory-only"), refreshOnly: args.includes("--refresh-only"), resume: args.includes("--resume"), build: !args.includes("--no-build"), suites: [...new Set(suites)], ...(repeatMobileActions ? { repeatMobileActions: true } : {}), ...(repeatSelected ? { repeatSelected: true } : {}), ...(width ? { widths: [Number(width.slice(8))] } : {}), ...(date ? { date } : {}) };
 }
 
 /** Los avances no entran al scanner de Tailwind; el HTML se publica con el entorno apagado. */
@@ -181,8 +189,8 @@ export async function createReportStore(output, checkpoint) {
 }
 
 /** Reconstruir una fixture verde puede descubrir una regresión; nunca la oculta ni repite la escritura fallida. */
-export async function reusePassedPreparation({ previous, preserve, blockedReason, action }) {
-  if (!preserve || previous?.status !== "passed") return { reused: false };
+export async function reusePassedPreparation({ previous, preserve, repeat = false, blockedReason, action }) {
+  if (repeat || !preserve || previous?.status !== "passed") return { reused: false };
   if (blockedReason) return { reused: true };
   try { return { reused: true, value: await action() }; }
   catch (error) { return { reused: false, error }; }
@@ -298,7 +306,8 @@ export async function main(options = parseArguments([])) {
         assert.ok(entry, `Caso sin definición previa: ${id}`);
         const prior = entry.results.find((item) => item.width === width);
         const repeatForMobileBar = options.repeatMobileActions && selectedIds.has(id);
-        const prepared = await reusePassedPreparation({ previous: prior, preserve: !repeatForMobileBar && (id.startsWith("BASE-") || options.resume), blockedReason, action });
+        const repeatForSelection = options.repeatSelected && selectedIds.has(id);
+        const prepared = await reusePassedPreparation({ previous: prior, preserve: id.startsWith("BASE-") || options.resume, repeat: repeatForMobileBar || repeatForSelection, blockedReason, action });
         if (prepared.reused) {
           if (!blockedReason) console.info(`${id} ${width}: preparación completada; evidencia verde conservada.`);
           return { ok: true, value: prepared.value, preparationOnly: true };
@@ -358,7 +367,7 @@ export async function main(options = parseArguments([])) {
         record: (id, getPage, action, diagnostic) => recordResult(id, getPage, action, undefined, diagnostic),
         block: (id, reason, page) => recordResult(id, () => page, null, reason) };
       for (const suite of suites) {
-        if (options.resume && !options.repeatMobileActions && suite.definitions.every((entry) => executions.find((item) => item.id === entry.id)?.results.some((result) => result.width === width && result.status === "passed"))) continue;
+        if (!needsRealExecution([suite], executions, { ...options, widths: [width] })) continue;
         try { await suite.run(h); }
         catch (error) {
           report.failure = `${suite.name} ${width}: ${safeDiagnostic(error.message)}`;
