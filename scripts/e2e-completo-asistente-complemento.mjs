@@ -31,6 +31,23 @@ export const assistantSupplementProofGroups = {
   "BACK-AS-014": [["MOD-03", "MOD-27", "AS-TEC-03"]],
 };
 
+const measuredAssistantPhases = new Set(["slow-send", "stop-visible", "first-generating", "history-open", "actions-open",
+  "delete-menuitem", "dialog-visible", "second-generating", "delete-ui"]);
+export function createAssistantPhaseTimer({ now = () => performance.now(), emit = (event) => console.log(`[assistant-active-delete] ${JSON.stringify(event)}`) } = {}) {
+  const origin = now();
+  const publish = (phase, started, outcome) => {
+    const current = now();
+    try { emit({ phase, elapsedMs: current - origin, durationMs: outcome === "started" ? 0 : current - started, outcome }); }
+    catch { /* La salida diagnóstica no cambia el resultado ni la causa del callback real. */ }
+  };
+  return async (phase, action) => {
+    assert.ok(measuredAssistantPhases.has(phase), "Fase de medición no permitida.");
+    const started = now(); publish(phase, started, "started");
+    try { const result = await action(); publish(phase, started, "passed"); return result; }
+    catch (error) { publish(phase, started, "failed"); throw error; }
+  };
+}
+
 function noPrivateContent(value, privateValues = []) {
   const inspect = (node) => {
     if (!node || typeof node !== "object") return;
@@ -190,10 +207,10 @@ export async function prepareListedAssistantConversation(h, page, { send = sendU
   if (h.width === 390) await page.keyboard.press("Escape");
   return { ...chat, title };
 }
-export async function openListedAssistantConversationAction(page, width, title, action) {
-  if (width === 390) await page.getByRole("button", { name: "Conversaciones", exact: true }).click();
-  await selectedAssistantConversationRow(page, title).getByRole("button", { name: `Acciones de ${title}`, exact: true }).click();
-  await page.getByRole("menuitem", { name: `${action}: ${title}`, exact: true }).click();
+export async function openListedAssistantConversationAction(page, width, title, action, { phase = (_name, operation) => operation() } = {}) {
+  if (width === 390) await phase("history-open", () => page.getByRole("button", { name: "Conversaciones", exact: true }).click());
+  await phase("actions-open", () => selectedAssistantConversationRow(page, title).getByRole("button", { name: `Acciones de ${title}`, exact: true }).click());
+  await phase("delete-menuitem", () => page.getByRole("menuitem", { name: `${action}: ${title}`, exact: true }).click());
 }
 
 export async function sendAssistantAttachmentTurn(h, page, { fileName, buffer, text, inspectUpload }) {
@@ -439,26 +456,29 @@ async function runAssistantCases(h, selected) {
       });
       const { fileRoute } = listed.attachment; assert.equal(listed.attachment.conversationId, listed.id, "El PNG debe pertenecer a la conversación ya listada.");
       const countersBeforeTurn = await control("providerCounters");
-      const sent = await sendUi(h, page, "[E2E:slow] Borrar este turno activo y el PNG de su conversación.", root, false);
+      const phase = createAssistantPhaseTimer();
+      const sent = await phase("slow-send", () => sendUi(h, page, "[E2E:slow] Borrar este turno activo y el PNG de su conversación.", root, false));
       const id = sent.id; assert.equal(id, listed.id, "El PNG y el turno lento deben pertenecer a la conversación ya listada.");
       const { counters: before } = await deleteActiveAssistantConversation({
         inspectAttachment: async () => listed.attachment,
         readCounters: async () => countersBeforeTurn,
         openDialog: async () => {
-          await page.getByRole("button", { name: "Detener", exact: true }).waitFor();
-          const current = await read(h, page, `${root}/conversations/${id}`); assert.equal(current.messages.items.at(-1).status, "Generating");
-          assert.equal(current.conversation.id, listed.id); assert.equal(current.conversation.title, listed.title);
-          await openListedAssistantConversationAction(page, h.width, current.conversation.title, "Borrar");
-          const dialog = page.getByRole("dialog"); await dialog.waitFor(); return dialog;
+          await phase("stop-visible", () => page.getByRole("button", { name: "Detener", exact: true }).waitFor());
+          const current = await phase("first-generating", async () => {
+            const current = await read(h, page, `${root}/conversations/${id}`); assert.equal(current.messages.items.at(-1).status, "Generating");
+            assert.equal(current.conversation.id, listed.id); assert.equal(current.conversation.title, listed.title); return current;
+          });
+          await openListedAssistantConversationAction(page, h.width, current.conversation.title, "Borrar", { phase });
+          const dialog = page.getByRole("dialog"); await phase("dialog-visible", () => dialog.waitFor()); return dialog;
         },
-        requireGenerating: async () => {
+        requireGenerating: () => phase("second-generating", async () => {
           const current = await read(h, page, `${root}/conversations/${id}`);
           assert.equal(current.messages.items.at(-1).status, "Generating", "La preparación debe llegar a Borrar antes del final del Fake.");
-        },
-        deleteByUi: async (dialog) => {
+        }),
+        deleteByUi: (dialog) => phase("delete-ui", async () => {
           await clickForResponse(page, dialog.getByRole("button", { name: "Borrar", exact: true }), `${root}/conversations/${id}`, "DELETE", 204);
           await dialog.waitFor({ state: "hidden" });
-        },
+        }),
       });
       await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); await requirePrivateProblem(await h.api(page, fileRoute), 404, "Assistant.Attachment.NotFound");
       await delay(3500); await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); assert.equal((await control("providerCounters")).titleCalls, before.titleCalls);

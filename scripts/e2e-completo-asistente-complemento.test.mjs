@@ -3,6 +3,45 @@ import test from "node:test";
 import { assistantSupplementDefinitions, assistantSupplementProofGroups, requireProjectedAssistant, requirePrivateAttachmentMetadata, requireGlobalUsage, platformSettingsValues, requirePrivateProblem, assertGlobalSettingsRestored } from "./e2e-completo-asistente-complemento.mjs";
 import * as assistant from "./e2e-completo-asistente-complemento.mjs";
 
+test("el temporizador de fases mide inicio, duración y resultado sin emitir el valor privado del callback", async () => {
+  let clock = 100; const events = []; const value = { id: "identidad-privada", email: "privado@example.test", text: "Consulta privada" };
+  const phase = assistant.createAssistantPhaseTimer({ now: () => clock, emit: (event) => events.push(event) });
+  clock = 105;
+  assert.equal(await phase("slow-send", async () => { clock = 125; return value; }), value);
+  clock = 130;
+  await phase("stop-visible", async () => { clock = 137; });
+  assert.deepEqual(events, [
+    { phase: "slow-send", elapsedMs: 5, durationMs: 0, outcome: "started" },
+    { phase: "slow-send", elapsedMs: 25, durationMs: 20, outcome: "passed" },
+    { phase: "stop-visible", elapsedMs: 30, durationMs: 0, outcome: "started" },
+    { phase: "stop-visible", elapsedMs: 37, durationMs: 7, outcome: "passed" },
+  ]);
+  for (const privateValue of Object.values(value)) assert.equal(JSON.stringify(events).includes(privateValue), false);
+});
+
+test("el temporizador conserva el error original sin publicar mensaje, URL ni datos aun si el emisor falla", async () => {
+  for (const brokenEmitter of [false, true]) {
+    let clock = 20; const events = [];
+    const failure = new Error("id-privado correo@example.test Consulta https://private.test/?code=privado");
+    const phase = assistant.createAssistantPhaseTimer({ now: () => clock, emit: (event) => { events.push(event); if (brokenEmitter) throw new Error("Emisor no disponible"); } });
+    clock = 25;
+    await assert.rejects(() => phase("second-generating", async () => { clock = 42; throw failure; }), (error) => error === failure);
+    assert.deepEqual(events, [
+      { phase: "second-generating", elapsedMs: 5, durationMs: 0, outcome: "started" },
+      { phase: "second-generating", elapsedMs: 22, durationMs: 17, outcome: "failed" },
+    ]);
+    const serialized = JSON.stringify(events);
+    for (const privateValue of [failure.message, "id-privado", "correo@", "Consulta", "https:", "code=", "Emisor"]) assert.equal(serialized.includes(privateValue), false);
+  }
+});
+
+test("el temporizador sólo admite nombres de fase fijos y nunca imprime una etiqueta externa", async () => {
+  const events = []; let called = false;
+  const phase = assistant.createAssistantPhaseTimer({ now: () => 0, emit: (event) => events.push(event) });
+  await assert.rejects(() => phase("https://private.test/?token=privado", async () => { called = true; }), /Fase de medición no permitida/u);
+  assert.deepEqual(events, []); assert.equal(called, false);
+});
+
 test("el PNG de preparación termina metadata, bytes y respuesta antes de habilitar el turno activo", async () => {
   const inspected = Promise.withResolvers(); const terminal = Promise.withResolvers(); const waiting = Promise.withResolvers();
   const h = {}; const page = {}; const calls = []; let ready = false;
@@ -65,7 +104,11 @@ test("la preparación lista por UI el chat propio antes del turno activo y sus a
     assert.equal(calls[0], "turno rápido propio completado"); assert.ok(calls.includes("fila propia listada"));
     if (width === 390) assert.equal(historyOpen, false, "El compositor queda disponible para el turno lento.");
     calls.push("turno lento en el mismo ID");
-    await assistant.openListedAssistantConversationAction(page, width, primed.title, "Borrar");
+    const phases = [];
+    await assistant.openListedAssistantConversationAction(page, width, primed.title, "Borrar", {
+      phase: async (name, action) => { phases.push(name); return action(); },
+    });
+    assert.deepEqual(phases, [...(width === 390 ? ["history-open"] : []), "actions-open", "delete-menuitem"]);
     assert.deepEqual(calls.slice(-2), ["abrir acciones de la fila propia", "elegir Borrar"]);
   }
 });
