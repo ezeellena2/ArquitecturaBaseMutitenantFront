@@ -2,6 +2,65 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { assertProblemResponse, assertViewport, openExistingPersonalAccount, solePersonalMethod, withOffline } from "./e2e-completo-personal.mjs";
 import * as personal from "./e2e-completo-personal.mjs";
+import { runReviewedPersonalCases } from "./e2e-completo-revision.mjs";
+
+function reviewedPersonalHarness(width) {
+  const calls = []; let menuOpen = false;
+  const me = { id: "persona-propia", access: "consumer", organizations: [] };
+  const page = (kind) => {
+    const target = {
+      goto: async () => {}, url: () => "https://localtest.me/", isClosed: () => false, close: async () => {},
+      evaluate: async () => ({ width, document: width, body: width }), on() {}, off() {},
+      getByRole: (role, options = {}) => {
+        const locator = {
+          filter: () => locator, first: () => locator, last: () => locator, count: async () => 0, isVisible: async () => false,
+          waitFor: async () => {},
+          click: async () => { if (kind === "persona" && role === "button" && options.name instanceof RegExp && options.name.test(", Personal")) { menuOpen = true; calls.push("abrir menú"); } },
+          press: async (key) => { assert.equal(role, "menu"); assert.equal(key, "Escape"); menuOpen = false; calls.push("cerrar menú"); },
+        }; return locator;
+      },
+    }; return target;
+  };
+  const pages = [page("público"), page("persona"), page("empresa"), page("plataforma")];
+  const h = { width, base: new URL("https://localtest.me/"),
+    newPage: async () => pages.shift(), registerPerson: async () => ({ me }),
+    api: async () => ({ status: () => 200, json: async () => me }),
+    context: { setOffline: async (value) => calls.push("offline " + value) },
+    record: async (id, getPage, action) => { calls.push("registrar " + id); return { ok: true, value: await action() }; },
+    block: () => assert.fail("Los casos ajenos no deben bloquear una revisión seleccionada"),
+    signOut: async () => { assert.equal(menuOpen, false, "El menú modal oculta el botón que busca signOut."); calls.push("salir por UI"); },
+  };
+  return { h, calls };
+}
+
+test("la revisión Personal desktop cierra el menú inspeccionado antes de preparar la salida", async () => {
+  const { h, calls } = reviewedPersonalHarness(1440);
+  await runReviewedPersonalCases(h);
+  assert.ok(calls.indexOf("cerrar menú") > calls.indexOf("abrir menú"));
+  assert.ok(calls.indexOf("salir por UI") > calls.indexOf("cerrar menú"));
+  assert.deepEqual(calls.filter((call) => call.startsWith("registrar ")), ["registrar NUEVO-PER-09"]);
+});
+
+test("la revisión Personal omite15 sin desconectar el contexto compartido", async () => {
+  const { h, calls } = reviewedPersonalHarness(390);
+  await runReviewedPersonalCases(h);
+  assert.deepEqual(calls.filter((call) => call.startsWith("offline ")), []);
+  assert.ok(calls.includes("salir por UI"));
+});
+
+test("el record offline seleccionado conserva la desconexión hasta la captura y restaura ante error", async () => {
+  const transitions = []; const captureStarted = Promise.withResolvers(); const captureFinished = Promise.withResolvers();
+  const context = { setOffline: async (value) => transitions.push(value) };
+  const recorded = personal.recordWhileOffline(context, async (action) => {
+    const value = await action(); captureStarted.resolve(); await captureFinished.promise;
+    assert.deepEqual(transitions, [true]); return { ok: true, value };
+  }, async () => "guardado sin red");
+  await captureStarted.promise; assert.deepEqual(transitions, [true]); captureFinished.resolve();
+  assert.deepEqual(await recorded, { ok: true, value: "guardado sin red" }); assert.deepEqual(transitions, [true, false]);
+  transitions.length = 0; const failure = new Error("falló la captura");
+  await assert.rejects(personal.recordWhileOffline(context, async (action) => { await action(); throw failure; }, async () => {}), (error) => error === failure);
+  assert.deepEqual(transitions, [true, false]);
+});
 
 test("cada ruta protegida abre una pestaña propia y espera una vista terminal antes de la siguiente", async () => {
   const calls = [];

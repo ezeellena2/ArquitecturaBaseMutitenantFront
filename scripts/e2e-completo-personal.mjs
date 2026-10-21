@@ -44,6 +44,14 @@ export async function withOffline(context, action) {
   finally { await context.setOffline(false); }
 }
 
+/** Sólo desconecta si el record ejecuta su acción; restaura después de su captura. */
+export async function recordWhileOffline(context, record, action) {
+  let activated = false;
+  try {
+    return await record(async () => { activated = true; await context.setOffline(true); return action(); });
+  } finally { if (activated) await context.setOffline(false); }
+}
+
 export async function assertProblemResponse(response, status, code) {
   assert.equal(response.status(), status, `La API debe responder ${status}.`);
   const problem = await response.json();
@@ -239,13 +247,20 @@ export async function runPersonalCases(h) {
       }
       if (h.width === 390) await page.getByRole("link", { name: "Más", exact: true }).filter({ visible: true }).click();
       else await page.getByRole("button", { name: /, Personal$/ }).filter({ visible: true }).click();
-      assert.equal(await page.getByRole("link", { name: /^Crear empresa$/ }).count(), 0);
-      assert.equal(await page.getByRole("button", { name: /^Crear empresa$/ }).count(), 0);
-      for (const name of ["Usuarios", "Roles y permisos", "Organizaciones", "Cuentas y operadores"]) {
-        assert.equal(await page.getByRole("link", { name, exact: true }).filter({ visible: true }).count(), 0);
+      try {
+        assert.equal(await page.getByRole("link", { name: /^Crear empresa$/ }).count(), 0);
+        assert.equal(await page.getByRole("button", { name: /^Crear empresa$/ }).count(), 0);
+        for (const name of ["Usuarios", "Roles y permisos", "Organizaciones", "Cuentas y operadores"]) {
+          assert.equal(await page.getByRole("link", { name, exact: true }).filter({ visible: true }).count(), 0);
+        }
+        assert.equal((await apiMe(h, page)).access, "consumer");
+        await assertViewport(page);
+      } finally {
+        if (h.width !== 390) {
+          const menu = page.getByRole("menu").filter({ visible: true }).last();
+          await menu.press("Escape"); await menu.waitFor({ state: "hidden" });
+        }
       }
-      assert.equal((await apiMe(h, page)).access, "consumer");
-      await assertViewport(page);
       return "Los enlaces protegidos terminaron fuera de las áreas privadas; Personal conservó su acceso y no ofreció Crear empresa.";
     });
 
@@ -330,27 +345,24 @@ export async function runPersonalCases(h) {
       await assertViewport(page);
       return "101 caracteres dieron 400 de validación y error de campo; el valor guardado quedó intacto.";
     });
-    // El bloque sin red se implementa fuera del record para mantener el contexto offline durante la captura.
-    offlineName = `Sin red ${h.width}`;
-    const observe = (response) => { if (isProfileWrite(response) && response.status() >= 200 && response.status() < 300) offlineWrites++; };
-    page.on("response", observe); stopWriteObserver = () => page.off("response", observe);
-    await withOffline(h.context, async () => {
-      const offline = await record("15", page, async () => {
-        await visibleButton(page, "Descartar cambios").click();
-        await nameField(page).fill(offlineName);
-        await page.mouse.move(0, 0);
-        await page.getByText("Guardamos tus datos.", { exact: true }).waitFor({ state: "hidden" });
-        await page.waitForFunction(() => navigator.onLine === false);
-        await page.getByRole("status", { name: "Sin conexión", exact: true }).waitFor();
-        await visibleButton(page, "Guardar cambios").click();
-        assert.equal(await nameField(page).inputValue(), offlineName);
-        assert.equal(offlineWrites, 0, "No puede haber éxito de guardado con Chromium sin conexión.");
-        assert.equal(await page.getByText("Guardamos tus datos.", { exact: true }).count(), 0);
-        await assertViewport(page);
-        return "Chromium sin red, aviso Sin conexión y borrador intacto; el guardado no informó éxito.";
-      });
-      onlinePending = offline.ok;
+    const offline = await recordWhileOffline(h.context, (action) => record("15", page, action), async () => {
+      offlineName = `Sin red ${h.width}`;
+      const observe = (response) => { if (isProfileWrite(response) && response.status() >= 200 && response.status() < 300) offlineWrites++; };
+      page.on("response", observe); stopWriteObserver = () => page.off("response", observe);
+      await visibleButton(page, "Descartar cambios").click();
+      await nameField(page).fill(offlineName);
+      await page.mouse.move(0, 0);
+      await page.getByText("Guardamos tus datos.", { exact: true }).waitFor({ state: "hidden" });
+      await page.waitForFunction(() => navigator.onLine === false);
+      await page.getByRole("status", { name: "Sin conexión", exact: true }).waitFor();
+      await visibleButton(page, "Guardar cambios").click();
+      assert.equal(await nameField(page).inputValue(), offlineName);
+      assert.equal(offlineWrites, 0, "No puede haber éxito de guardado con Chromium sin conexión.");
+      assert.equal(await page.getByText("Guardamos tus datos.", { exact: true }).count(), 0);
+      await assertViewport(page);
+      return "Chromium sin red, aviso Sin conexión y borrador intacto; el guardado no informó éxito.";
     });
+    onlinePending = offline.ok;
     if (onlinePending) {
       await record("16", page, async () => {
         await page.waitForFunction(() => navigator.onLine === true);
@@ -375,7 +387,6 @@ export async function runPersonalCases(h) {
     });
   } finally {
     stopWriteObserver?.();
-    await h.context.setOffline(false);
     for (const target of pages) if (!target.isClosed()) await target.close();
   }
 }
