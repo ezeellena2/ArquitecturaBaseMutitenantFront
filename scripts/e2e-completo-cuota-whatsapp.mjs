@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import { get } from "node:https";
+import { appendFile, mkdir } from "node:fs/promises";
+import { freemem } from "node:os";
 import { setTimeout as delay } from "node:timers/promises";
 import { requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import { nationalPhone } from "./recorrido-usuario-e11.mjs";
@@ -64,8 +67,30 @@ async function waitRealCooldown(milliseconds, budget) {
   budget.check();
 }
 
-export async function phoneForm(h, page, phone, route) {
-  await page.goto(new URL(route, h.base).href, { waitUntil: "domcontentloaded" });
+export async function phoneForm(h, page, phone, route, { previousStatus, onNavigationFailure } = {}) {
+  const reuse = route === "/registro" && previousStatus !== undefined && new URL(page.url()).origin === h.base.origin && new URL(page.url()).pathname === route;
+  if (reuse) {
+    if (previousStatus === 202) {
+      const back = page.getByRole("button", { name: "Usar otro número", exact: true });
+      await back.waitFor({ state: "visible" }); await back.click();
+    } else {
+      // Un rechazo conserva el countdown del formulario. Salir y volver por los enlaces
+      // reales inicia otro recorrido; no se altera el reloj ni se fuerza el botón bloqueado.
+      const login = page.getByRole("link", { name: "Ingresá", exact: true });
+      await login.waitFor({ state: "visible" }); await login.click();
+      await page.waitForURL((url) => url.origin === h.base.origin && url.pathname === "/login");
+      const signup = page.getByRole("link", { name: "Creá una", exact: true });
+      await signup.waitFor({ state: "visible" }); await signup.click();
+      await page.waitForURL((url) => url.origin === h.base.origin && url.pathname === "/registro");
+    }
+  } else {
+    try { await page.goto(new URL(route, h.base).href, { waitUntil: "domcontentloaded" }); }
+    catch (error) {
+      try { await onNavigationFailure?.(error); }
+      catch { console.error("CUOTA-WA-01: el diagnóstico no pudo completarse; se conserva el fallo de navegación original."); }
+      throw error;
+    }
+  }
   const channel = page.getByRole("button", { name: "WhatsApp", exact: true });
   await channel.waitFor({ state: "visible" }); await channel.click();
   const number = page.getByRole("textbox", { name: /^(Tu )?número de WhatsApp$/iu });
@@ -76,6 +101,58 @@ export async function phoneForm(h, page, phone, route) {
   }
 }
 
+/** Sólo métricas: no guarda URLs, cabeceras, destinos ni cuerpos de la sesión. */
+export function observeQuotaResources(page) {
+  const pending = new Map(); const counts = { started: 0, finished: 0, failed: 0 }; const cpu = process.cpuUsage();
+  const started = (request) => { pending.set(request, request.resourceType()); counts.started++; };
+  const finished = (request) => { pending.delete(request); counts.finished++; };
+  const failed = (request) => { pending.delete(request); counts.failed++; };
+  page.on("request", started); page.on("requestfinished", finished); page.on("requestfailed", failed);
+  return {
+    snapshot() {
+      const types = {}; for (const type of pending.values()) types[type] = (types[type] ?? 0) + 1;
+      const memory = process.memoryUsage(); const usage = process.cpuUsage(cpu);
+      return { ...counts, pending: types, nodeRssMiB: Math.round(memory.rss / 1024 ** 2), nodeHeapMiB: Math.round(memory.heapUsed / 1024 ** 2), systemFreeMiB: Math.round(freemem() / 1024 ** 2), nodeCpuMs: Math.round((usage.user + usage.system) / 1000) };
+    },
+    stop() { page.off("request", started); page.off("requestfinished", finished); page.off("requestfailed", failed); },
+  };
+}
+
+function probeQuotaEndpoint(url) {
+  const started = Date.now();
+  return new Promise((resolve) => {
+    let bytes = 0; let status; let settled = false;
+    const finish = (outcome) => {
+      if (settled) return; settled = true;
+      resolve({ outcome, ...(status === undefined ? {} : { status }), bytes, elapsedMs: Date.now() - started });
+    };
+    // Sin cookies, tokens ni redirecciones; la fecha límite incluye DNS/TLS/cuerpo.
+    const request = get(url, { rejectUnauthorized: false, signal: AbortSignal.timeout(5000) }, (response) => {
+      status = response.statusCode;
+      response.on("data", (chunk) => { bytes += chunk.length; });
+      response.on("end", () => finish("response"));
+      response.on("error", () => finish("transport-error"));
+    });
+    request.on("error", (error) => finish(error.name === "AbortError" ? "timeout" : "transport-error"));
+  });
+}
+
+export async function diagnoseQuotaNavigation({ base, resources, probe = probeQuotaEndpoint }) {
+  const front = new URL(base); assert.equal(front.protocol, "https:");
+  assert.ok(["localtest.me", "localhost", "127.0.0.1"].includes(front.hostname), "Los probes sólo visitan el entorno local de la prueba.");
+  const endpoints = [
+    ["api-alive", new URL("https://127.0.0.1:7280/alive")], ["front-index", new URL("/", front)],
+    ["vite-client", new URL("/@vite/client", front)], ["front-css", new URL("/src/index.css", front)],
+  ];
+  const http = await Promise.all(endpoints.map(async ([name, url]) => {
+    try {
+      const result = await probe(url);
+      return { name, outcome: result.outcome, status: result.status, bytes: result.bytes, elapsedMs: result.elapsedMs };
+    } catch { return { name, outcome: "probe-error" }; }
+  }));
+  return { kind: "navigation-timeout", http, resources };
+}
+
 async function privatePerson(h, page) {
   await page.getByRole("navigation", { name: "Secciones", exact: true }).or(page.getByRole("button", { name: /, Personal$/u })).filter({ visible: true }).first().waitFor();
   const response = await h.api(page, "/api/me"); assert.equal(response.status(), 200);
@@ -83,18 +160,26 @@ async function privatePerson(h, page) {
 }
 
 export async function runQuotaWhatsAppCases(h) {
-  const page = await h.newPage(); let signedIn = false;
+  const page = await h.newPage(); let signedIn = false; let navigationDiagnostic;
   try {
     return await h.record("CUOTA-WA-01", () => page, async () => {
       const budget = createQuotaBudget(); const plan = quotaPhonePlan(); const begin = requireE8Control(h.env);
-      const tag = `${h.width}-${randomUUID().slice(0, 8)}`; const keys = new Set(); const used = new Set(); let requests = 0; let admittedNew = 0;
+      const tag = `${h.width}-${randomUUID().slice(0, 8)}`; const keys = new Set(); const used = new Set(); let requests = 0; let admittedNew = 0; let previousStatus;
       const observed = (request) => { if (request.method() === "POST" && ["/api/auth/signup", "/api/auth/login-code"].includes(new URL(request.url()).pathname)) requests++; };
-      page.on("request", observed);
+      page.on("request", observed); const resources = observeQuotaResources(page);
+      const onNavigationFailure = async (error) => {
+        if (error.name !== "TimeoutError" || !String(error.message).startsWith("page.goto:")) return;
+        const snapshot = resources.snapshot();
+        navigationDiagnostic = await diagnoseQuotaNavigation({ base: h.base, resources: { ...snapshot, pages: h.context.pages().length, admittedNew, emissionRequests: requests } });
+        console.log(`CUOTA-WA-01 ${h.width}: diagnóstico seguro ${JSON.stringify(navigationDiagnostic)}`);
+        const directory = new URL("../.local/e2e-completo/", import.meta.url); await mkdir(directory, { recursive: true });
+        await appendFile(new URL(`cuota-diagnostico-${h.width}.jsonl`, directory), JSON.stringify({ observedAtUtc: new Date().toISOString(), width: h.width, ...navigationDiagnostic }) + "\n");
+      };
       const issue = async (phone, route = "/registro") => {
-        budget.check(); await phoneForm(h, page, phone, route); budget.take(); const before = requests;
+        budget.check(); await phoneForm(h, page, phone, route, { previousStatus, onNavigationFailure }); budget.take(); const before = requests;
         const response = await clickForResponse(page, page.getByRole("button", { name: route === "/registro" ? "Crear cuenta" : "Enviar código", exact: true }), route === "/registro" ? "/api/auth/signup" : "/api/auth/login-code", "POST", null);
         assert.equal(requests, before + 1, "No se permiten envíos automáticos fuera del presupuesto."); assert.equal(requests, budget.count);
-        rememberQuotaKey(keys, response.request().headers()["idempotency-key"]); used.add(phone); budget.check(); return response;
+        rememberQuotaKey(keys, response.request().headers()["idempotency-key"]); previousStatus = response.status(); used.add(phone); budget.check(); return response;
       };
       const reportProgress = () => { if (admittedNew > 0 && admittedNew % 100 === 0) console.log(`CUOTA-WA-01 ${h.width}: ${admittedNew} altas admitidas; ${requests} pedidos de emisión.`); };
       try {
@@ -137,8 +222,8 @@ export async function runQuotaWhatsAppCases(h) {
         const returned = await privatePerson(h, page); signedIn = true; assert.equal(returned.id, person.id);
         assert.equal(requests, budget.count); assert.ok(requests <= 1000); budget.check(); await assertViewport(page);
         return `800 admisiones nuevas reales (1alta verificada y799 pendientes), DailyLimit429 y destino fresco429 con Retry-After/traceId; ingreso protegido202+OTP+Me200 de la misma persona. ${requests} pedidos de emisión, cooldown real60s, sin cambio de cuotas/reloj. No acredita ausencia persistida de LoginCodes/outbox.`;
-      } finally { page.off("request", observed); }
-    });
+      } finally { page.off("request", observed); resources.stop(); }
+    }, () => navigationDiagnostic ? `Diagnóstico de navegación: ${JSON.stringify(navigationDiagnostic)}.` : "");
   } finally {
     try { if (signedIn) await h.signOut(page); }
     finally { try { await cleanupContinuationSessions(h); } finally { await page.close(); } }

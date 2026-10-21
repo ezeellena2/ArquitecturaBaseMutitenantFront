@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { buildMatrix } from "./e2e-completo-matriz.mjs";
-import { quotaWhatsAppDefinitions, quotaWhatsAppLimitations, quotaPhonePlan, createQuotaBudget, nextQuotaDestination, rememberQuotaKey, requireWhatsAppDailyLimit, phoneForm } from "./e2e-completo-cuota-whatsapp.mjs";
+import { quotaWhatsAppDefinitions, quotaWhatsAppLimitations, quotaPhonePlan, createQuotaBudget, nextQuotaDestination, rememberQuotaKey, requireWhatsAppDailyLimit, phoneForm, observeQuotaResources, diagnoseQuotaNavigation } from "./e2e-completo-cuota-whatsapp.mjs";
 
 test("el formulario Phone espera DOMContentLoaded y cada control visible, sin esperar load ni reintentar navegación", async () => {
   for (const route of ["/registro", "/login"]) for (const missingPhone of [false, true]) {
@@ -24,6 +24,85 @@ test("el formulario Phone espera DOMContentLoaded y cada control visible, sin es
     assert.deepEqual(calls, ["DOMContentLoaded", "visible WhatsApp", "elegir WhatsApp", "visible número",
       ...(missingPhone ? [] : ["llenar número", ...(route === "/registro" ? ["visible términos", "aceptar términos"] : [])])]);
   }
+});
+
+test("una navegación que vence conserva el error y observa diagnóstico antes de volver al record", async () => {
+  const failure = Object.assign(new Error("page.goto: Timeout 45000ms exceeded."), { name: "TimeoutError" });
+  const calls = [];
+  const page = { goto: async () => { calls.push("navegar"); throw failure; }, getByRole: () => assert.fail("No se interactúa después del timeout") };
+  await assert.rejects(() => phoneForm({ base: new URL("https://localtest.me/") }, page, "+5491134567897", "/registro", {
+    onNavigationFailure: async (error) => { assert.equal(error, failure); calls.push("diagnosticar"); },
+  }), (error) => error === failure);
+  assert.deepEqual(calls, ["navegar", "diagnosticar"]);
+});
+
+test("las altas siguientes vuelven por Usar otro número o enlaces reales y nunca recargan Vite", async () => {
+  for (const previousStatus of [202, 429]) {
+    const calls = []; let currentPath = "/registro";
+    const control = (name) => ({
+      waitFor: async () => calls.push("visible " + name),
+      click: async () => { calls.push("click " + name); if (name === "Ingresá") currentPath = "/login"; if (name === "Creá una") currentPath = "/registro"; },
+      fill: async (value) => { assert.equal(value, "11 3456-7897"); calls.push("llenar número"); },
+      check: async () => calls.push("términos"),
+    });
+    const page = {
+      url: () => "https://localtest.me" + currentPath,
+      goto: async () => { calls.push("recarga inesperada"); },
+      waitForURL: async (predicate) => { assert.equal(predicate(new URL(page.url())), true); calls.push("ruta " + currentPath); },
+      getByRole: (role, options) => control(role === "textbox" ? "número" : role === "checkbox" ? "términos" : options.name),
+    };
+    await phoneForm({ base: new URL("https://localtest.me/") }, page, "+5491134567897", "/registro", { previousStatus });
+    assert.deepEqual(calls, [
+      ...(previousStatus === 202 ? ["visible Usar otro número", "click Usar otro número"]
+        : ["visible Ingresá", "click Ingresá", "ruta /login", "visible Creá una", "click Creá una", "ruta /registro"]),
+      "visible WhatsApp", "click WhatsApp", "visible número", "llenar número", "visible términos", "términos",
+    ]);
+  }
+});
+
+test("si falta el regreso por UI se conserva su fallo y no se sustituye por una recarga", async () => {
+  const failure = new Error("El regreso al formulario no está disponible"); const calls = [];
+  const page = {
+    url: () => "https://localtest.me/registro", goto: async () => assert.fail("No hay fallback de recarga"),
+    getByRole: (role, options) => {
+      assert.equal(role, "button"); assert.equal(options.name, "Usar otro número");
+      return { waitFor: async () => { calls.push("esperar regreso"); throw failure; }, click: async () => assert.fail("No se fuerza el regreso") };
+    },
+  };
+  await assert.rejects(() => phoneForm({ base: new URL("https://localtest.me/") }, page, "+5491134567897", "/registro", { previousStatus: 202 }), (error) => error === failure);
+  assert.deepEqual(calls, ["esperar regreso"]);
+});
+
+test("el diagnóstico inicia cuatro probes independientes y descarta datos de respuesta ajenos a las métricas", async () => {
+  const started = []; const complete = [];
+  const result = diagnoseQuotaNavigation({ base: new URL("https://localtest.me:5174/registro"), resources: { pending: { document: 1 } }, probe: (url) => {
+    started.push({ origin: url.origin, path: url.pathname, query: url.search });
+    return new Promise((resolve, reject) => complete.push({ resolve, reject }));
+  } });
+  assert.deepEqual(started.map((entry) => entry.path), ["/alive", "/", "/@vite/client", "/src/index.css"]);
+  assert.equal(started[0].origin, "https://127.0.0.1:7280"); assert.ok(started.every((entry) => entry.query === ""));
+  complete[0].resolve({ outcome: "response", status: 200, bytes: 12, elapsedMs: 2, body: "privado", headers: { location: "privado" } });
+  complete[1].reject(new Error("dato privado del transporte"));
+  complete[2].resolve({ outcome: "timeout", bytes: 0, elapsedMs: 5000 });
+  complete[3].resolve({ outcome: "response", status: 200, bytes: 123, elapsedMs: 4 });
+  const diagnostic = await result;
+  assert.deepEqual(diagnostic.http.map((entry) => [entry.name, entry.outcome]), [["api-alive", "response"], ["front-index", "probe-error"], ["vite-client", "timeout"], ["front-css", "response"]]);
+  assert.equal(diagnostic.http[0].status, 200); assert.equal(diagnostic.http[3].bytes, 123);
+  assert.doesNotMatch(JSON.stringify(diagnostic), /privado|https?:|location|headers|body/u);
+  await assert.rejects(() => diagnoseQuotaNavigation({ base: "https://example.com/", probe: () => assert.fail("No se visita un origen externo") }));
+});
+
+test("los recursos pendientes conservan sólo tipos y contadores y desmontan todos sus listeners", () => {
+  const listeners = new Map(); const removed = [];
+  const observer = observeQuotaResources({ on: (event, listener) => listeners.set(event, listener), off: (event, listener) => { assert.equal(listeners.get(event), listener); removed.push(event); listeners.delete(event); } });
+  const request = (type) => ({ resourceType: () => type, url: () => assert.fail("No se leen URLs de recursos") });
+  const document = request("document"), script = request("script"), stylesheet = request("stylesheet");
+  for (const item of [document, script, stylesheet]) listeners.get("request")(item);
+  listeners.get("requestfinished")(script); listeners.get("requestfailed")(stylesheet);
+  const snapshot = observer.snapshot();
+  assert.deepEqual(snapshot.pending, { document: 1 }); assert.equal(snapshot.started, 3); assert.equal(snapshot.finished, 1); assert.equal(snapshot.failed, 1);
+  for (const key of ["nodeRssMiB", "nodeHeapMiB", "systemFreeMiB", "nodeCpuMs"]) assert.ok(Number.isSafeInteger(snapshot[key]) && snapshot[key] >= 0);
+  observer.stop(); assert.equal(listeners.size, 0); assert.deepEqual(removed, ["request", "requestfinished", "requestfailed"]);
 });
 
 test("una ejecución parcial verde nunca aprueba la ausencia persistida no observable", () => {
