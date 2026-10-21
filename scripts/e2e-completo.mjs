@@ -90,6 +90,10 @@ const suiteSpecs = {
   whatsappatencionarreglos: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppRepairDefinitions", "runSupplementWhatsAppRepairCases"],
   whatsappmensajesarreglo: ["./e2e-completo-whatsapp-complemento.mjs", "supplementWhatsAppTakeRepairDefinitions", "runSupplementWhatsAppTakeRepairCases"],
   whatsappgestionarreglo: ["./e2e-completo-whatsapp-plataforma.mjs", "platformWhatsAppManagementRepairDefinitions", "runPlatformWhatsAppManagementRepairCases"],
+  ingresopersonarevisionarreglo: ["./e2e-completo-revision.mjs", "reviewedPersonalDefinitions", "runReviewedPersonalCases"],
+  ingresopendienterevisionarreglo: ["./e2e-completo-revision.mjs", "reviewedPendingDefinitions", "runReviewedPendingCases"],
+  plataformamovilrevisionarreglo: ["./e2e-completo-revision.mjs", "reviewedPlatformMobileDefinitions", "runReviewedPlatformMobileCases"],
+  idempotenciarevisionarreglo: ["./e2e-completo-revision.mjs", "reviewedIdempotencyDefinitions", "runReviewedIdempotencyCases"],
   ...Object.fromEntries(mobileBarPlans.map((plan) => [plan.name, [plan.module, plan.definitionsExport, plan.runExport, plan.definitions]])),
 };
 

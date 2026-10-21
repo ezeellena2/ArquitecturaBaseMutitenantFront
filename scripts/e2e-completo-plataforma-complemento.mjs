@@ -32,7 +32,7 @@ export const supplementPlatformDefinitions = [
   definition(10, "Persona Phone y operador de recuperaciones", "Ocupar por UI el destino probado antes de aprobar", "/recuperar · /registro · /plataforma/recuperaciones", "Aprobar409 MethodInUse; pedido Pending, misma versión y métodos originales intactos.", ["BACK-RE-008"]),
   definition(11, "Operador con tenants.manage", "Crear organización desde el listado e invitar Dueño", "/plataforma/organizaciones", "Crear abre el formulario, guarda organización/primera empresa, abre su ficha y Dueños; invitación real en pickup.", ["GUIA-crear-una-organizacion-01", "GUIA-crear-una-organizacion-02", "GUIA-crear-una-organizacion-03"]),
   definition(12, "Dueño nuevo y operador de configuración", "Preparar alta pendiente con RequiresApproval temporal", "/registro/empresa", "Alta propia requiresApproval y Recibimos el pedido; la política se restaura por UI en finally antes de continuar."),
-  definition(13, "Operador con organización pendiente propia", "Abrir la ficha desde Para resolver del inicio", "/plataforma · /plataforma/organizaciones/:id", "Inicio muestra la solicitud pendiente en Para resolver; Revisar con su href propio abre la ficha y su título, sin aprobarla.", ["GUIA-aprobar-una-organizacion-01"]),
+  definition(13, "Operador con organización pendiente propia", "Abrir la solicitud desde Inicio en escritorio o desde Organizaciones por estado en el teléfono", "/plataforma · /plataforma/organizaciones · /plataforma/organizaciones/:id", "Escritorio muestra la solicitud en Para resolver; el teléfono la busca en Organizaciones con estado PendingApproval. Ambos abren la ficha propia y su título, sin aprobarla.", ["GUIA-aprobar-una-organizacion-01"]),
   definition(20, "Operador y Dueño destinatario por correo", "Revisar desde el listado y aprobar con motivo y aviso real", "/plataforma/organizaciones · /plataforma/organizaciones/:id", "El listado filtrado abre la solicitud propia por href y nombre; Historial, Dueños y Página cargan; aprobar responde200, persiste Active y motivo y emite el correo real al Dueño.", ["GUIA-aprobar-una-organizacion-02", "GUIA-aprobar-una-organizacion-03", "GUIA-aprobar-una-organizacion-04", "GUIA-aprobar-una-organizacion-05"]),
   definition(14, "Operador con legal.manage", "Publicar términos nuevos vigentes por UI", "/plataforma/legales/nueva", "Abre Publicar versión nueva, elige documento/fecha/ambos idiomas, confirma201 y conserva recibo/versionado.", ["GUIA-publicar-una-version-legal-01", "GUIA-publicar-una-version-legal-02"]),
   definition(15, "Dueño de organización propia", "Aceptar la nueva versión al volver a ingresar", "/aceptar-terminos", "La versión del recibo figura pendiente; casilla explícita, POST204, retorno empresarial200 y Me sin pendientes.", ["GUIA-publicar-una-version-legal-03", "SCREEN-aceptar-terminos"]),
@@ -81,11 +81,14 @@ export function requireCreatedReplayLocation(initial, replay) {
   assert.equal(replay.headers().location, location, "El replay201 debe conservar Location del alta201.");
 }
 
-export async function openPlatformPendingHome(h, page, { acceptNotice = acceptAssistantNoticeFromHome } = {}) {
+export async function openPlatformPendingHome(h, page, { pendingBusiness, acceptNotice = acceptAssistantNoticeFromHome, openList = openPendingOrganizationFromList } = {}) {
+  if (h.width === 390) {
+    assert.equal(pendingBusiness?.status, "PendingApproval");
+    await openList(h, page, pendingBusiness);
+    return null;
+  }
   await page.goto(new URL("/plataforma", h.base).href);
-  // PlatformHomePage sólo compone Asistente en escritorio. En móvil no se elude
-  // la ausencia de Para resolver entrando a otra ruta o directamente a la ficha.
-  if (h.width === 1440) await acceptNotice(page);
+  await acceptNotice(page);
   const pending = page.getByRole("region", { name: "Para resolver", exact: true }); await pending.waitFor();
   return pending;
 }
@@ -460,11 +463,15 @@ async function preparePendingOrganization(h, { page, publicPage, tag, onPublicSi
   return { pendingBusiness, pendingOwner };
 }
 
-async function approvePendingOrganizationFromList(h, { page, pendingBusiness, pendingOwner }) {
+async function openPendingOrganizationFromList(h, page, pendingBusiness) {
   const query = `search=${encodeURIComponent(pendingBusiness.name)}&status=PendingApproval`;
   const [listed] = await responsesForAction(page, [(response) => endpoint("/api/platform/tenants/paged", "GET")(response) && new URL(response.url()).searchParams.get("search") === pendingBusiness.name && new URL(response.url()).searchParams.get("status") === "PendingApproval"], () => page.goto(new URL(`/plataforma/organizaciones?${query}`, h.base).href));
   assert.equal(listed.status(), 200); const rows = await listed.json(); assert.equal(rows.totalCount, 1); assert.equal(rows.items[0].id, pendingBusiness.id); assert.equal(rows.items[0].status, "PendingApproval");
   await openPlatformListItem(page, `/plataforma/organizaciones/${pendingBusiness.id}`, pendingBusiness.name); await page.getByRole("heading", { name: pendingBusiness.name, exact: true }).waitFor();
+}
+
+async function approvePendingOrganizationFromList(h, { page, pendingBusiness, pendingOwner }) {
+  await openPendingOrganizationFromList(h, page, pendingBusiness);
   for (const title of ["Historial", "Dueños", "Página pública"]) {
     await page.getByRole("tab", { name: new RegExp(`^${title}`) }).click(); const panel = page.getByRole("tabpanel"); await panel.waitFor(); await panel.getByRole("status").waitFor({ state: "hidden" });
     assert.ok((await panel.innerText()).trim().length > 0); assert.equal(await panel.getByRole("alert").count(), 0);
@@ -713,10 +720,14 @@ export async function runSupplementPlatformCases(h) {
     }, [1]);
     await runPendingOrganizationApprovalSteps({ step, page,
       visitHome: async () => {
-        await ensureFull(); await createAssistantControl(h.env.command)("prepare", { email: operatorEmail, access: "platform" });
-        const pending = await openPlatformPendingHome(h, page); await pending.getByText(pendingBusiness.name, { exact: true }).waitFor();
-        await pending.getByRole("link", { name: "Revisar", exact: true }).and(page.locator(`a[href='/plataforma/organizaciones/${pendingBusiness.id}']`)).click(); await page.getByRole("heading", { name: pendingBusiness.name, exact: true }).waitFor();
-        return "Inicio→Para resolver→Revisar abrió la ficha propia y su título; la organización conserva su aprobación pendiente para el record independiente.";
+        await ensureFull();
+        if (h.width === 1440) await createAssistantControl(h.env.command)("prepare", { email: operatorEmail, access: "platform" });
+        const pending = await openPlatformPendingHome(h, page, { pendingBusiness });
+        if (pending) {
+          await pending.getByText(pendingBusiness.name, { exact: true }).waitFor();
+          await pending.getByRole("link", { name: "Revisar", exact: true }).and(page.locator(`a[href='/plataforma/organizaciones/${pendingBusiness.id}']`)).click(); await page.getByRole("heading", { name: pendingBusiness.name, exact: true }).waitFor();
+        }
+        return `${h.width === 390 ? "Organizaciones filtrada por PendingApproval" : "Inicio→Para resolver→Revisar"} abrió la ficha propia y su título; la organización conserva su aprobación pendiente para el record independiente.`;
       },
       approveFromList: async () => {
         await ensureFull();

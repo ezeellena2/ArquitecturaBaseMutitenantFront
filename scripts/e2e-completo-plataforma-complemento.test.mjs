@@ -185,19 +185,21 @@ test("la reparación10 sólo registra el callback completo propio, sin preparar1
   }
 });
 
-test("Inicio móvil exige Para resolver en su propia ruta y no lo reemplaza por ficha o Asistente", async () => {
+test("el teléfono busca solicitudes en Organizaciones por estado y escritorio conserva Para resolver", async () => {
   for (const width of [390, 1440]) {
-    const calls = []; const missing = new Error("Para resolver no está disponible en el Inicio móvil.");
-    const region = { waitFor: async () => { calls.push("Para resolver"); if (width === 390) throw missing; } };
+    const calls = []; const business = { id: "solicitud-propia", name: "Organización propia", status: "PendingApproval" };
+    const region = { waitFor: async () => calls.push("Para resolver") };
     const page = { goto: async (url) => calls.push(new URL(url).pathname), getByRole: (role, options) => {
+      assert.equal(width, 1440, "El teléfono no tiene Para resolver");
       assert.equal(role, "region"); assert.deepEqual(options, { name: "Para resolver", exact: true }); return region;
     } };
     const open = () => platform.openPlatformPendingHome({ width, base: new URL("https://localtest.me") }, page, {
+      pendingBusiness: business,
       acceptNotice: async () => calls.push("Aviso Asistente escritorio"),
+      openList: async (_h, target, pending) => { assert.equal(target, page); assert.equal(pending, business); calls.push("Organizaciones PendingApproval"); },
     });
-    if (width === 390) await assert.rejects(open, (error) => error === missing);
-    else assert.equal(await open(), region);
-    assert.deepEqual(calls, width === 390 ? ["/plataforma", "Para resolver"] : ["/plataforma", "Aviso Asistente escritorio", "Para resolver"]);
+    assert.equal(await open(), width === 390 ? null : region);
+    assert.deepEqual(calls, width === 390 ? ["Organizaciones PendingApproval"] : ["/plataforma", "Aviso Asistente escritorio", "Para resolver"]);
   }
 });
 
