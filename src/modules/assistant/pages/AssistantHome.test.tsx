@@ -713,6 +713,47 @@ describe("interfaz del asistente", () => {
   });
 });
 
+it.each(["Generating", "Complete"] as const)("Borrar abre con la versión actual de la conversación propia %s aunque su historial sea anterior", async (status) => {
+  const app = setup(); app.changeDetail(detail());
+  const current: AssistantConversationResponse = { ...detail(), conversation: { ...detail().conversation, version: 23 },
+    activeTurnId: status === "Generating" ? "own-turn" : null, messages: { items: [message("own-answer", "assistant", "Respuesta propia", status)], hasMore: false } };
+  let deleted = false; const versions: Array<string | null> = [];
+  server.use(http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.json(current)),
+    http.delete("/api/organization/assistant/conversations/chat", ({ request }) => {
+      const version = new URL(request.url).searchParams.get("version"); versions.push(version);
+      if (version !== String(current.conversation.version)) return HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar.", traceId: "stale-own-history" }, { status: 409 });
+      deleted = true; return new HttpResponse(null, { status: 204 });
+    }), http.get("/api/organization/assistant/conversations", ({ request }) => HttpResponse.json({ items: !deleted && new URL(request.url).searchParams.get("saved") === "false" ? [detail().conversation] : [], hasMore: false })));
+  await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
+  await screen.findByText("Respuesta propia");
+  screen.getByRole("button", { name: "Acciones de Mi consulta" }).focus(); await app.user.keyboard("{Enter}");
+  await app.user.click(await screen.findByRole("menuitem", { name: "Borrar: Mi consulta" }));
+  await app.user.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Borrar" }));
+  await waitFor(() => expect(versions).toHaveLength(1));
+  expect(versions).toEqual(["23"]); expect(deleted).toBe(true);
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+});
+
+it("Borrar conserva la versión de apertura y rechaza una edición real posterior sin reintentar", async () => {
+  const app = setup(); app.changeDetail(detail());
+  let current: AssistantConversationResponse = { ...detail(), conversation: { ...detail().conversation, version: 23 } };
+  let detailReads = 0; const versions: Array<string | null> = [];
+  server.use(http.get("/api/organization/assistant/conversations/chat", () => { detailReads++; return HttpResponse.json(current); }),
+    http.delete("/api/organization/assistant/conversations/chat", ({ request }) => {
+      versions.push(new URL(request.url).searchParams.get("version"));
+      return HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar.", traceId: "concurrent-edit" }, { status: 409 });
+    }));
+  await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
+  screen.getByRole("button", { name: "Acciones de Mi consulta" }).focus(); await app.user.keyboard("{Enter}");
+  await app.user.click(await screen.findByRole("menuitem", { name: "Borrar: Mi consulta" }));
+  const dialog = await screen.findByRole("dialog"); const readsAtOpening = detailReads;
+  current = { ...current, conversation: { ...current.conversation, version: 24, title: "Cambio en otra pestaña" } };
+  await app.user.click(within(dialog).getByRole("button", { name: "Borrar" }));
+  expect(await within(dialog).findByRole("alert")).toHaveTextContent("Otra persona cambió esto");
+  expect(versions).toEqual(["23"]); expect(detailReads).toBe(readsAtOpening);
+  expect(dialog).toBeVisible(); expect(within(dialog).getByRole("button", { name: "Borrar" })).toBeEnabled();
+});
+
 it("borrar una conversación del historial invalida su Retry anterior de exportación", async () => {
   const app = setup();
   app.changeDetail(detail());

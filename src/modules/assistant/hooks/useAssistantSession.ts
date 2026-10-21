@@ -265,7 +265,17 @@ export function useAssistantSession(props: AssistantHomeProps) {
   }
   function actions(conversation: AssistantConversationSummaryResponse) {
     const title = conversation.title ?? t("history.untitled");
-    const edit = (kind: "rename" | "delete", trigger: HTMLButtonElement | null) => { setHistoryOpen(false); setDialog({ kind, conversation, trigger }); };
+    const edit = (kind: "rename" | "delete", trigger: HTMLButtonElement | null) => {
+      setHistoryOpen(false);
+      if (kind === "rename") { setDialog({ kind, conversation, trigger }); return; }
+      // Un envío propio ya puede haber cambiado la versión aunque su fila de
+      // historial todavía no se haya invalidado. La base se captura al abrir;
+      // confirmar conserva esa versión y no reintenta un conflicto posterior.
+      fire(async (context) => {
+        const current = await read(conversation.id, context);
+        setDialog({ kind, conversation: current.conversation, trigger });
+      }, conversation.id);
+    };
     return [
       { label: t(conversation.isSaved ? "history.unsave" : "history.save"), accessibleName: t(conversation.isSaved ? "history.unsave" : "history.save"), icon: CopyIcon, onSelect: () => fire(async (context) => {
         await updateAssistantConversation(scope, conversation.id, { isSaved: !conversation.isSaved, version: conversation.version }, context.signal);
