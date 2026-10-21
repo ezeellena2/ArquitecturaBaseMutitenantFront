@@ -2,6 +2,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
 import { FormField } from "./FormField";
 import { MultiSelect } from "./MultiSelect";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
@@ -131,5 +132,33 @@ describe("MultiSelect", () => {
     expect(screen.getByRole("menuitemcheckbox", { name: "Oro" })).toHaveAttribute("aria-checked", "true");
     await user.keyboard("{Escape}");
     expect(screen.getByRole("button", { name: "Etiquetas" })).toHaveTextContent("Oro");
+  });
+
+  it("keeps remote search and paging outside the menu while preserving keyboard selection and focus", async () => {
+    function Remote() {
+      const [value, setValue] = useState<string[]>([]);
+      const [search, setSearch] = useState("");
+      const remote = { search, onSearch: setSearch, hasMore: true, loading: false, error: null, onLoadMore: () => {}, onRetry: () => {} };
+      return <FormField label="Roles"><MultiSelect remote={remote} options={options} value={value} onChange={setValue} placeholder="Sin roles" /></FormField>;
+    }
+    renderWithProviders(<Remote />);
+    const user = userEvent.setup();
+    const trigger = screen.getByRole("button", { name: "Roles" });
+    trigger.focus();
+    await user.keyboard("{ArrowDown}");
+    const search = await screen.findByRole("searchbox");
+    const menu = screen.getByRole("menu");
+    const popup = menu.closest<HTMLElement>('[data-slot="dropdown-menu-content"]');
+    expect(popup).not.toBeNull();
+    expect(menu).not.toContainElement(search);
+    expect(await axe(popup!)).toHaveNoViolations();
+    await user.click(search);
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("menuitemcheckbox", { name: "Admin" })).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("menuitemcheckbox", { name: "Admin" })).toHaveAttribute("aria-checked", "true");
+    await user.keyboard("{Escape}");
+    expect(trigger).toHaveTextContent("Admin");
+    expect(trigger).toHaveFocus();
   });
 });

@@ -116,6 +116,33 @@ describe("Equipos de la organización", () => {
 });
 
 describe("Equipos de Plataforma", () => {
+  it.each([false, true])("identifica por correo al operador sin nombre y permite seleccionarlo con teclado (teléfono: %s)", async (phone) => {
+    if (phone) asPhone();
+    const bodies: unknown[] = [];
+    const email = "gestor@example.test";
+    server.use(
+      http.get("/api/platform/whatsapp/teams", () => HttpResponse.json(page([]))),
+      http.get("/api/platform/whatsapp/teams/member-options", () => HttpResponse.json(page([{ id: "operator-1", name: email }]))),
+      http.post("/api/platform/whatsapp/teams", async ({ request }) => { bodies.push(await request.json()); return HttpResponse.json({ ...sales, inbox: null, memberPreview: [email] }, { status: 201 }); }),
+    );
+    const { user } = mountWhatsApp(whatsappOperator(), "/plataforma/whatsapp/equipos");
+    await user.click(await screen.findByRole("button", { name: "Crear equipo" }));
+    const dialog = await screen.findByRole("dialog", { name: "Crear equipo" });
+    await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
+    await user.paste("Soporte");
+    within(dialog).getByRole("button", { name: "Operadores" }).focus();
+    await user.keyboard("{ArrowDown}");
+    const option = await screen.findByRole("menuitemcheckbox", { name: email });
+    expect(option).toHaveAccessibleName(email);
+    expect(screen.queryByRole("menuitemcheckbox", { name: "" })).not.toBeInTheDocument();
+    expect(await axe(screen.getByRole("menu"))).toHaveNoViolations();
+    await user.keyboard("{Enter}{Escape}");
+    expect(within(dialog).getByRole("button", { name: "Operadores" })).toHaveTextContent(email);
+    expect(await axe(dialog)).toHaveNoViolations();
+    await user.click(within(dialog).getByRole("button", { name: "Crear equipo" }));
+    await waitFor(() => expect(bodies).toEqual([{ name: "Soporte", inbox: null, memberIds: ["operator-1"], notifyAfterMinutes: 10 }]));
+  });
+
   it("son de operadores y se crean sin bandeja", async () => {
     const bodies: unknown[] = [];
     server.use(

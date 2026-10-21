@@ -14,7 +14,7 @@ export function RemoteOptionSearch({ remote, label }: { remote: RemoteOptions; l
     onKeyDown={(event) => {
       if (event.key === "ArrowDown") {
         event.preventDefault();
-        event.currentTarget.closest('[role="menu"]')?.querySelector<HTMLElement>('[role="menuitemcheckbox"], [role="menuitemradio"]')?.focus();
+        event.currentTarget.closest('[data-slot="dropdown-menu-content"]')?.querySelector<HTMLElement>('[role="menuitemcheckbox"], [role="menuitemradio"]')?.focus();
       }
       if (event.key !== "Escape") event.stopPropagation();
     }} /></div>;

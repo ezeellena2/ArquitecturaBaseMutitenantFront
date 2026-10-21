@@ -66,6 +66,8 @@ export function MultiSelect({
     ? t("fields.selectedList", { rest: labels.slice(0, -1).join(", "), last: labels.at(-1) }) : labels.join(", ");
   const list = summary === "list";
   const optionId = useId();
+  const triggerId = id ?? `${optionId}-trigger`;
+  const menuId = `${optionId}-menu`;
   const typed = remote?.search.trim() ?? "";
   const same = (text: string) => text.localeCompare(typed, undefined, { sensitivity: "accent" }) === 0;
   // Se ofrece crear solo con la búsqueda ya respondida: así no se duplica una que existe y todavía no llegó.
@@ -76,10 +78,38 @@ export function MultiSelect({
     onChange(checked ? [...value, optionValue] : value.filter((item) => item !== optionValue));
   }
 
+  const menuItems = <>
+    {offerCreate ? <DropdownMenuItem onSelect={(event) => {
+      event.preventDefault();
+      // La opción desaparece al crearla: el foco vuelve al buscador para que la lista siga abierta.
+      if (event.target instanceof HTMLElement) event.target.closest('[data-slot="dropdown-menu-content"]')?.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
+      onChange([...value, typed]);
+      remote?.onSearch("");
+    }}>{t("fields.createOption", { value: typed })}</DropdownMenuItem> : null}
+    {[...created, ...options].map((option, index) => (
+      <DropdownMenuCheckboxItem
+        key={option.value}
+        checked={value.includes(option.value)}
+        onCheckedChange={(checked) => toggle(option.value, checked)}
+        onSelect={(event) => event.preventDefault()}
+        aria-labelledby={`${optionId}-${index}`}
+        aria-describedby={option.description ? `${optionId}-${index}-description` : undefined}
+      >
+        <span className="flex min-w-0 flex-col leading-[1.35]">
+          <span id={`${optionId}-${index}`}>{option.label}</span>
+          {option.description ? (
+            <span id={`${optionId}-${index}-description`} className="text-[12px] text-[var(--t3)]">{option.description}</span>
+          ) : null}
+        </span>
+      </DropdownMenuCheckboxItem>
+    ))}
+  </>;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        id={id}
+        id={remote ? triggerId : id}
+        {...(remote ? { "aria-controls": menuId } : {})}
         disabled={disabled}
         aria-busy={remote?.loading || undefined}
         aria-invalid={ariaInvalid}
@@ -101,33 +131,11 @@ export function MultiSelect({
       </DropdownMenuTrigger>
       {/* Tablero Usuario (.o-lst) y «Criterio · Formularios», Desplegable: la lista se abre debajo del campo y mide lo mismo
           que él, con 4 de margen adentro; cada opción, el nombre y debajo su descripción, en gris de 12 (.n2 y .d). */}
-      <DropdownMenuContent side="bottom" align="start" className="w-(--radix-dropdown-menu-trigger-width) max-w-none min-w-0 p-1">
+      <DropdownMenuContent side="bottom" align="start" className="w-(--radix-dropdown-menu-trigger-width) max-w-none min-w-0 p-1"
+        {...(remote ? { role: "presentation", "aria-orientation": undefined, "aria-labelledby": undefined } as const : {})}>
         {remote ? <RemoteOptionSearch remote={remote} /> : null}
-        {offerCreate ? <DropdownMenuItem onSelect={(event) => {
-          event.preventDefault();
-          // La opción desaparece al crearla: el foco vuelve al buscador para que la lista siga abierta.
-          if (event.target instanceof HTMLElement) event.target.closest('[role="menu"]')?.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
-          onChange([...value, typed]);
-          remote?.onSearch("");
-        }}>{t("fields.createOption", { value: typed })}</DropdownMenuItem> : null}
-        {[...created, ...options].map((option, index) => (
-          // El nombre de la opción es el rol; la descripción la acompaña como descripción, no como parte del nombre.
-          <DropdownMenuCheckboxItem
-            key={option.value}
-            checked={value.includes(option.value)}
-            onCheckedChange={(checked) => toggle(option.value, checked)}
-            onSelect={(event) => event.preventDefault()}
-            aria-labelledby={`${optionId}-${index}`}
-            aria-describedby={option.description ? `${optionId}-${index}-description` : undefined}
-          >
-            <span className="flex min-w-0 flex-col leading-[1.35]">
-              <span id={`${optionId}-${index}`}>{option.label}</span>
-              {option.description ? (
-                <span id={`${optionId}-${index}-description`} className="text-[12px] text-[var(--t3)]">{option.description}</span>
-              ) : null}
-            </span>
-          </DropdownMenuCheckboxItem>
-        ))}
+        {/* La búsqueda y la paginación pertenecen al desplegable; el menú contiene sólo sus opciones. */}
+        {remote ? <div id={menuId} role="menu" aria-labelledby={triggerId} aria-orientation="vertical">{menuItems}</div> : menuItems}
         {remote ? <RemoteOptionFooter remote={remote} /> : null}
       </DropdownMenuContent>
     </DropdownMenu>
