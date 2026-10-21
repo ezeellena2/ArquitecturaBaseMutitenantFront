@@ -19,7 +19,7 @@ export const assistantSupplementDefinitions = [
   def(3, "Operador con assistant.configure", "Editar configuración global y catálogo con validaciones y versión anterior", "/plataforma/asistente/configuracion", "Prueba reciente403→confirmación200; versión anterior409; modelo creado/editado por UI y duplicados, moneda, tarifa y modelo inválidos rechazados. La clave permanece write-only.", ["BACK-AS-019"]),
   def(4, "Operador con assistant.read", "Consultar uso global con consumos Business, Personal y Plataforma", "/plataforma/asistente/uso", "Filas reales de organización/Personas/Operadores; OwnKey y PlatformKey separados, sumas Money coincidentes y ninguna conversación ni texto privado.", ["BACK-AS-020"]),
   def(5, "Operador sólo con assistant.use", "Usar su chat sin gestión ni lectura global", "/plataforma/asistente", "Turno real propio; configure y read403; otro operador completo recibe404 Conversation.NotFound para ese historial.", ["BACK-AS-021"]),
-  def(6, "Dueña de conversación propia", "Rechazar feedback ajeno y borrar un turno activo con PNG en su conversación", "/org/asistente", "Turno inicial con PNG por UI: metadata privada y bytes exactos verificados antes de iniciar otro turno lento en esa conversación ya listada. El segundo turno permanece Generating antes de Borrar204; conversación y PNG404, sin resurrección ni nuevos títulos después del plazo del Fake."),
+  def(6, "Dueña de conversación propia", "Rechazar feedback ajeno y borrar un turno activo con PNG en su conversación", "/org/asistente", "Turno inicial con PNG por UI: metadata privada y bytes exactos verificados antes de iniciar otro turno lento en esa conversación ya listada. El tramo crítico usa Enter real en ambos anchos: Enviar, abrir historial cuando corresponde, acciones y Borrar. El segundo turno permanece Generating antes de Borrar204; conversación y PNG404, sin resurrección ni nuevos títulos después del plazo del Fake."),
 ];
 export const assistantPreparationRepairDefinitions = assistantSupplementDefinitions.filter((entry) => ["AS-SUP-02", "AS-SUP-03", "AS-SUP-04", "AS-SUP-06"].includes(entry.id));
 export const assistantOperatorRepairDefinitions = assistantSupplementDefinitions.filter((entry) => entry.id === "AS-SUP-05");
@@ -184,13 +184,23 @@ export async function openProjectedAssistantCompanyHome(h, page) {
   if (h.width === 1440) await acceptAssistantNoticeFromHome(page);
   await page.getByRole("heading", { name: "Tus empresas", exact: true }).waitFor();
 }
-async function sendUi(h, page, text, chatRoot = root, terminal = true) {
+async function sendUi(h, page, text, chatRoot = root, terminal = true, activation = "click") {
   await page.getByRole("textbox", { name: "Tu consulta", exact: true }).fill(text);
   const sent = page.waitForResponse((response) => response.request().method() === "POST" && new URL(response.url()).pathname.startsWith(`${chatRoot}/conversations/`) && new URL(response.url()).pathname.endsWith("/messages"));
-  void sent.catch(() => {}); await page.getByRole("button", { name: "Enviar", exact: true }).click(); const response = await sent;
+  void sent.catch(() => {});
+  const send = page.getByRole("button", { name: "Enviar", exact: true });
+  if (activation === "Enter") await send.press("Enter"); else await send.click();
+  const response = await sent;
   assert.equal(response.status(), 200); assert.match(response.headers()["content-type"], /^text\/event-stream/u);
   const id = new URL(response.url()).pathname.split("/").at(-2);
   return { id, ...(terminal ? { detail: await waitAssistantTerminal(page, chatRoot, id) } : {}) };
+}
+export async function sendAssistantActiveTurn(h, page, text) { return sendUi(h, page, text, root, false, "Enter"); }
+
+export async function pressAssistantActionForResponse(page, control, route, method, status) {
+  const pending = page.waitForResponse(endpoint(route, method)); void pending.catch(() => {});
+  await control.press("Enter"); const response = await pending;
+  assert.equal(response.status(), status, `La acción UI debe responder ${status}.`); return response;
 }
 
 function selectedAssistantConversationRow(page, title) {
@@ -208,9 +218,9 @@ export async function prepareListedAssistantConversation(h, page, { send = sendU
   return { ...chat, title };
 }
 export async function openListedAssistantConversationAction(page, width, title, action, { phase = (_name, operation) => operation() } = {}) {
-  if (width === 390) await phase("history-open", () => page.getByRole("button", { name: "Conversaciones", exact: true }).click());
-  await phase("actions-open", () => selectedAssistantConversationRow(page, title).getByRole("button", { name: `Acciones de ${title}`, exact: true }).click());
-  await phase("delete-menuitem", () => page.getByRole("menuitem", { name: `${action}: ${title}`, exact: true }).click());
+  if (width === 390) await phase("history-open", () => page.getByRole("button", { name: "Conversaciones", exact: true }).press("Enter"));
+  await phase("actions-open", () => selectedAssistantConversationRow(page, title).getByRole("button", { name: `Acciones de ${title}`, exact: true }).press("Enter"));
+  await phase("delete-menuitem", () => page.getByRole("menuitem", { name: `${action}: ${title}`, exact: true }).press("Enter"));
 }
 
 export async function sendAssistantAttachmentTurn(h, page, { fileName, buffer, text, inspectUpload }) {
@@ -457,7 +467,7 @@ async function runAssistantCases(h, selected) {
       const { fileRoute } = listed.attachment; assert.equal(listed.attachment.conversationId, listed.id, "El PNG debe pertenecer a la conversación ya listada.");
       const countersBeforeTurn = await control("providerCounters");
       const phase = createAssistantPhaseTimer();
-      const sent = await phase("slow-send", () => sendUi(h, page, "[E2E:slow] Borrar este turno activo y el PNG de su conversación.", root, false));
+      const sent = await phase("slow-send", () => sendAssistantActiveTurn(h, page, "[E2E:slow] Borrar este turno activo y el PNG de su conversación."));
       const id = sent.id; assert.equal(id, listed.id, "El PNG y el turno lento deben pertenecer a la conversación ya listada.");
       const { counters: before } = await deleteActiveAssistantConversation({
         inspectAttachment: async () => listed.attachment,
@@ -476,13 +486,13 @@ async function runAssistantCases(h, selected) {
           assert.equal(current.messages.items.at(-1).status, "Generating", "La preparación debe llegar a Borrar antes del final del Fake.");
         }),
         deleteByUi: (dialog) => phase("delete-ui", async () => {
-          await clickForResponse(page, dialog.getByRole("button", { name: "Borrar", exact: true }), `${root}/conversations/${id}`, "DELETE", 204);
+          await pressAssistantActionForResponse(page, dialog.getByRole("button", { name: "Borrar", exact: true }), `${root}/conversations/${id}`, "DELETE", 204);
           await dialog.waitFor({ state: "hidden" });
         }),
       });
       await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); await requirePrivateProblem(await h.api(page, fileRoute), 404, "Assistant.Attachment.NotFound");
       await delay(3500); await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); assert.equal((await control("providerCounters")).titleCalls, before.titleCalls);
-      return "Feedback a la respuesta de otro Dueño404; primer turno propio con PNG por UI, metadata y bytes exactos con attachment/no-store verificados antes de iniciar otro turno lento en ese mismo ID ya listado. Borrar204 ocurrió mientras el segundo turno estaba Generating; conversación/PNG404 y, pasado el Fake, no reaparecieron ni generaron nuevos títulos.";
+      return "Feedback a la respuesta de otro Dueño404; primer turno propio con PNG por UI, metadata y bytes exactos con attachment/no-store verificados antes de iniciar otro turno lento en ese mismo ID ya listado. Tramo crítico mediante Enter real en este ancho: Enviar, abrir historial cuando corresponde, acciones y Borrar. Borrar204 ocurrió mientras el segundo turno estaba Generating; conversación/PNG404 y, pasado el Fake, no reaparecieron ni generaron nuevos títulos.";
     });
   } catch (error) { failures.push(error); } finally {
     if (stalePage) { try { await discard(stalePage); await stalePage.close(); } catch (error) { failures.push(error); } }

@@ -84,7 +84,7 @@ test("la preparación lista por UI el chat propio antes del turno activo y sus a
     let historyOpen = width === 1440;
     const row = { getByRole: (role, options) => {
       assert.equal(role, "button"); assert.deepEqual(options, { name: "Acciones de Consulta de prueba", exact: true });
-      return { waitFor: async () => { assert.equal(historyOpen, true); calls.push("fila propia listada"); }, click: async () => calls.push("abrir acciones de la fila propia") };
+      return { waitFor: async () => { assert.equal(historyOpen, true); calls.push("fila propia listada"); }, press: async (key) => { assert.equal(key, "Enter"); calls.push("abrir acciones de la fila propia"); } };
     } };
     const selected = { locator: (selector) => { assert.equal(selector, ".."); return row; } };
     const titleButton = { and: (current) => { assert.equal(current, "aria-current=true"); calls.push("limitar a selección propia"); return selected; } };
@@ -92,9 +92,9 @@ test("la preparación lista por UI el chat propio antes del turno activo y sus a
     page.keyboard = { press: async (key) => { assert.equal(key, "Escape"); historyOpen = false; calls.push("cerrar historial"); } };
     page.getByRole = (role, options) => {
       assert.equal(options.exact, true);
-      if (role === "menuitem") { assert.equal(options.name, "Borrar: Consulta de prueba"); return { click: async () => calls.push("elegir Borrar") }; }
+      if (role === "menuitem") { assert.equal(options.name, "Borrar: Consulta de prueba"); return { press: async (key) => { assert.equal(key, "Enter"); calls.push("elegir Borrar"); } }; }
       assert.equal(role, "button");
-      if (options.name === "Conversaciones") return { click: async () => { historyOpen = true; calls.push("abrir historial"); } };
+      if (options.name === "Conversaciones") return { click: async () => { historyOpen = true; calls.push("abrir historial"); }, press: async (key) => { assert.equal(key, "Enter"); historyOpen = true; calls.push("abrir historial"); } };
       assert.equal(options.name, "Consulta de prueba", "No busca acciones globales ni conserva el título nulo del primer turno."); return titleButton;
     };
     const h = { width }; const primed = await assistant.prepareListedAssistantConversation(h, page, { send: async (actualH, target, text) => {
@@ -110,6 +110,37 @@ test("la preparación lista por UI el chat propio antes del turno activo y sus a
     });
     assert.deepEqual(phases, [...(width === 390 ? ["history-open"] : []), "actions-open", "delete-menuitem"]);
     assert.deepEqual(calls.slice(-2), ["abrir acciones de la fila propia", "elegir Borrar"]);
+  }
+});
+
+test("el turno activo usa Enter real después de armar su waiter y conserva admisión200 y SSE", async () => {
+  const calls = []; let match;
+  const response = { url: () => "https://localtest.me/api/organization/assistant/conversations/propia/messages", request: () => ({ method: () => "POST" }), status: () => 200, headers: () => ({ "content-type": "text/event-stream" }) };
+  const page = { waitForResponse: (predicate) => { match = predicate; calls.push("observar POST antes de Enter"); return Promise.resolve(response); }, getByRole: (role, options) => {
+    assert.equal(options.exact, true);
+    if (role === "textbox") { assert.equal(options.name, "Tu consulta"); return { fill: async (text) => { assert.equal(text, "[E2E:slow] Turno activo"); calls.push("escribir consulta"); } }; }
+    assert.equal(role, "button"); assert.equal(options.name, "Enviar");
+    return { press: async (key) => { assert.equal(key, "Enter"); assert.equal(match(response), true); calls.push("Enviar con Enter"); } };
+  } };
+  assert.deepEqual(await assistant.sendAssistantActiveTurn({}, page, "[E2E:slow] Turno activo"), { id: "propia" });
+  assert.deepEqual(calls, ["escribir consulta", "observar POST antes de Enter", "Enviar con Enter"]);
+});
+
+test("la confirmación por Enter exige el mismo DELETE204 y no acepta409 ni un endpoint ajeno", async () => {
+  const route = "/api/organization/assistant/conversations/propia";
+  for (const status of [204, 409]) {
+    const response = { url: () => `https://localtest.me${route}`, request: () => ({ method: () => "DELETE" }), status: () => status };
+    let observing = false; let activated = false;
+    const page = { waitForResponse: (predicate) => {
+      observing = true; assert.equal(predicate(response), true);
+      assert.equal(predicate({ ...response, request: () => ({ method: () => "GET" }) }), false);
+      assert.equal(predicate({ ...response, url: () => `https://localtest.me${route}/ajena` }), false);
+      return Promise.resolve(response);
+    } };
+    const control = { press: async (key) => { assert.equal(key, "Enter"); assert.equal(observing, true); activated = true; } };
+    const result = assistant.pressAssistantActionForResponse(page, control, route, "DELETE", 204);
+    if (status === 204) assert.equal(await result, response); else await assert.rejects(() => result, { actual: 409, expected: 204 });
+    assert.equal(activated, true);
   }
 });
 
