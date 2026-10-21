@@ -6,6 +6,11 @@ import path from "node:path";
 import { parseArguments, createReportStore, reusePassedPreparation, collectSuiteDefinitions, buildCaseDiagnostic, archivePreviousAttempt, needsRealExecution } from "./e2e-completo.mjs";
 import { mobileBarPlans } from "./e2e-completo-acciones-moviles.mjs";
 
+test("la revisión conserva la fecha del informe original aunque termine otro día", () => {
+  assert.equal(parseArguments(["--date=2026-10-20", "--resume"]).date, "2026-10-20");
+  for (const date of ["../salida", "2026-02-30", "2026-13-01"]) assert.throws(() => parseArguments([`--date=${date}`]));
+});
+
 test("el reintento de Mensajes WhatsApp es explícito y queda fuera de la corrida general", () => {
   assert.equal(parseArguments([]).suites.includes("whatsappmensajesarreglo"), false);
   assert.deepEqual(parseArguments(["--suite=whatsappmensajesarreglo", "--width=390", "--resume", "--no-build"]).suites, ["whatsappmensajesarreglo"]);

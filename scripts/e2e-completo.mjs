@@ -126,7 +126,7 @@ export function buildCaseDiagnostic(error, diagnostic) {
 }
 
 /** Las páginas de error de Chrome pueden imprimir el desafío OAuth completo, aun con credenciales sintéticas. */
-export async function archivePreviousAttempt({ id, width, prior, output, reason = "Reejecutado tras ajustar aislamiento de informes y preparaciones del arnés; esta prueba no modificó producto." }) {
+export async function archivePreviousAttempt({ id, width, prior, output, reason = "Evidencia anterior conservada al repetir el caso después de revisar la aplicación o su preparación de prueba." }) {
   let image = prior.image;
   const own = typeof image === "string" && path.dirname(path.resolve(output, image)) === path.resolve(output);
   if (prior.currentHost === "chromewebdata") {
@@ -143,7 +143,9 @@ export async function archivePreviousAttempt({ id, width, prior, output, reason 
 }
 
 export function parseArguments(args) {
-  assert.ok(args.every((value) => ["--inventory-only", "--no-build", "--refresh-only", "--resume", "--repeat-mobile-actions"].includes(value) || /^--suite=[a-z,]+$/.test(value) || /^--width=(1440|390)$/.test(value)), "Argumentos no admitidos.");
+  assert.ok(args.every((value) => ["--inventory-only", "--no-build", "--refresh-only", "--resume", "--repeat-mobile-actions"].includes(value) || /^--suite=[a-z,]+$/.test(value) || /^--width=(1440|390)$/.test(value) || /^--date=\d{4}-\d{2}-\d{2}$/.test(value)), "Argumentos no admitidos.");
+  const date = args.find((value) => value.startsWith("--date="))?.slice(7);
+  if (date) assert.equal(new Date(`${date}T00:00:00Z`).toISOString().slice(0, 10), date, "Fecha de informe inválida.");
   const repeatMobileActions = args.includes("--repeat-mobile-actions");
   const mobileNames = mobileBarPlans.map((plan) => plan.name);
   const suites = args.find((value) => value.startsWith("--suite="))?.slice(8).split(",") ?? (repeatMobileActions ? mobileNames : Object.keys(suiteSpecs).filter((name) => !name.includes("arreglo") && !name.startsWith("baseline") && !["cuotawhatsapp", "cuotacontrato"].includes(name)));
@@ -159,7 +161,7 @@ export function parseArguments(args) {
     assert.equal(suites.length, 1, "La cuota necesita una suite aislada en un entorno fresco.");
     assert.ok(width, "La cuota requiere un único ancho por entorno fresco.");
   }
-  return { inventoryOnly: args.includes("--inventory-only"), refreshOnly: args.includes("--refresh-only"), resume: args.includes("--resume"), build: !args.includes("--no-build"), suites: [...new Set(suites)], ...(repeatMobileActions ? { repeatMobileActions: true } : {}), ...(width ? { widths: [Number(width.slice(8))] } : {}) };
+  return { inventoryOnly: args.includes("--inventory-only"), refreshOnly: args.includes("--refresh-only"), resume: args.includes("--resume"), build: !args.includes("--no-build"), suites: [...new Set(suites)], ...(repeatMobileActions ? { repeatMobileActions: true } : {}), ...(width ? { widths: [Number(width.slice(8))] } : {}), ...(date ? { date } : {}) };
 }
 
 /** Los avances no entran al scanner de Tailwind; el HTML se publica con el entorno apagado. */
@@ -192,7 +194,7 @@ async function readJson(file, fallback) {
 }
 
 export async function main(options = parseArguments([])) {
-  const date = journeyDate();
+  const date = options.date ?? journeyDate();
   const output = path.join(root, "docs/design/capturas/e2e-completo", date);
   const checkpoint = path.join(root, ".local/e2e-completo", date);
   const journeyDirectory = path.join(root, "docs/design/capturas/recorrido", date);
