@@ -45,7 +45,7 @@ describe("CallbackPage", () => {
       error: { name: innerError.name, message: innerError.message, source: "signinCallback", innerError } });
     expect(screen.getByRole("heading", { name: "Tu cuenta no está en ninguna empresa todavía" })).toBeVisible();
     expect(screen.queryByText("No pudimos iniciar tu sesión")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Salir", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Salir" }));
     expect(await screen.findByText("Otro ingreso empresa")).toBeVisible(); expect(signoutRedirect).toHaveBeenCalledOnce();
     expect(screen.queryByText(/Tenancy\.Access/u)).not.toBeInTheDocument();
   });
@@ -63,7 +63,7 @@ describe("CallbackPage", () => {
     expect(screen.queryByText("No pudimos iniciar tu sesión")).not.toBeInTheDocument(); expect(signinRedirect).not.toHaveBeenCalled();
     expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("href", "/login");
     expect(await axe(container)).toHaveNoViolations();
-    fireEvent.click(screen.getByRole("button", { name: "Salir", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Salir" }));
     expect(await screen.findByText("Otro ingreso empresa")).toBeVisible(); expect(signoutRedirect).toHaveBeenCalledOnce();
   });
 
