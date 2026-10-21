@@ -40,6 +40,8 @@ export function useAssistantSession(props: AssistantHomeProps) {
   const restoreRetention = useRestoreFocusOnClose(retentionOpen, historyTrigger);
   const restoreActions = useRestoreFocusOnClose(!!phoneActions, historyTrigger);
   const [dialog, setDialog] = useState<ConversationDialogState | null>(null);
+  const [dialogPending, setDialogPending] = useState(false);
+  const dialogSubmission = useRef<ConversationDialogState | null>(null);
   const dialogRef = useRef(dialog);
   useLayoutEffect(() => { dialogRef.current = dialog; }, [dialog]);
   const [files, setFiles] = useState<PendingAssistantFile[]>([]);
@@ -85,7 +87,7 @@ export function useAssistantSession(props: AssistantHomeProps) {
   const root = assistantQueryKeyRoot(scope);
   const pendingKey = (id: string) => [...root, "pendingAttachments", id] as const;
   useEffect(() => operations.lifetime.subscribe(() => {
-    if (!operations.lifetime.getSnapshot()) { changeFiles([]); void latest.current.runtime.thread.composer.reset(); setDialog(null); setPhoneActions(null); setFileError(null); }
+    if (!operations.lifetime.getSnapshot()) { changeFiles([]); void latest.current.runtime.thread.composer.reset(); setDialog(null); dialogSubmission.current = null; setDialogPending(false); setPhoneActions(null); setFileError(null); }
   }), [operations.lifetime]);
   useEffect(() => () => { client.removeQueries({ queryKey: assistantQueryKeyRoot(scope) }); }, [client, scope]);
   function select(id: string | null) {
@@ -98,6 +100,8 @@ export function useAssistantSession(props: AssistantHomeProps) {
     setRetentionOpen(false);
     setPhoneActions(null);
     setDialog(null);
+    dialogSubmission.current = null;
+    setDialogPending(false);
     client.removeQueries({ queryKey: [...root, "pendingAttachments"] });
   }
   async function read(id: string, context: AssistantOperationContext) {
@@ -288,9 +292,12 @@ export function useAssistantSession(props: AssistantHomeProps) {
     ].map((action) => ({ ...action, accessibleName: `${action.accessibleName}: ${title}` }));
   }
   function confirmDialog(title: string) {
-    if (!dialog) return;
+    if (!dialog || dialogSubmission.current) return;
     const original = dialog;
-    fire(async (context) => {
+    // El envío puede seguir activo: el diálogo sólo espera su propia confirmación.
+    dialogSubmission.current = original;
+    setDialogPending(true);
+    void operations.run(async (context) => {
       const assertDialog = () => { context.assertActive(); if (dialogRef.current !== original) throw new DOMException("", "AbortError"); };
       assertDialog();
       if (original.kind === "delete") {
@@ -311,7 +318,11 @@ export function useAssistantSession(props: AssistantHomeProps) {
       assertDialog();
       if (original.kind === "rename" && selectedId === original.conversation.id) { await latest.current.detail.refetch(); context.assertActive(); }
       setDialog(null);
-    }, original.kind === "delete" ? undefined : original.conversation.id);
+    }, original.kind === "delete" ? undefined : original.conversation.id).finally(() => {
+      if (dialogSubmission.current !== original) return;
+      dialogSubmission.current = null;
+      setDialogPending(false);
+    }).catch(() => undefined);
   }
   function closeDialog() {
     dialogRef.current = null;
@@ -335,5 +346,5 @@ export function useAssistantSession(props: AssistantHomeProps) {
   useEffect(() => client.getQueryCache().subscribe((event) => {
     if (event.type === "updated" && event.action.type === "error") recoverConversation(event.query.queryKey, event.query.state.error);
   }), [client]);
-  return { scope, t, format, phone, selectedId, generation, collapsed, setCollapsed, historyOpen, setHistoryOpen, retentionOpen, setRetentionOpen, phoneActions, setPhoneActions, historyTrigger, restoreHistory, restoreRetention, restoreActions, dialog, files, fileError, fileErrorId, invalidFiles, hasAttachmentError, operations, runtime, state, select, quick, actions, download, retryFailed, acceptNotice, confirmDialog, closeDialog, unavailable, setFileError };
+  return { scope, t, format, phone, selectedId, generation, collapsed, setCollapsed, historyOpen, setHistoryOpen, retentionOpen, setRetentionOpen, phoneActions, setPhoneActions, historyTrigger, restoreHistory, restoreRetention, restoreActions, dialog, dialogPending, files, fileError, fileErrorId, invalidFiles, hasAttachmentError, operations, runtime, state, select, quick, actions, download, retryFailed, acceptNotice, confirmDialog, closeDialog, unavailable, setFileError };
 }

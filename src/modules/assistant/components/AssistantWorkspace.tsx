@@ -28,7 +28,7 @@ import type { useAssistantSession } from "../hooks/useAssistantSession";
 
 export function AssistantWorkspace({ props, session, state }: { props: AssistantHomeProps; session: ReturnType<typeof useAssistantSession>; state: AssistantStateResponse }) {
   const { t } = useTranslation("assistant");
-  const { scope, format, phone, selectedId, generation, collapsed, setCollapsed, historyOpen, setHistoryOpen, retentionOpen, setRetentionOpen, phoneActions, setPhoneActions, historyTrigger, restoreHistory, restoreRetention, restoreActions, dialog, files, fileError, fileErrorId, invalidFiles, hasAttachmentError, operations, runtime, select, quick, actions, download, retryFailed, acceptNotice, confirmDialog, closeDialog, setFileError } = session;
+  const { scope, format, phone, selectedId, generation, collapsed, setCollapsed, historyOpen, setHistoryOpen, retentionOpen, setRetentionOpen, phoneActions, setPhoneActions, historyTrigger, restoreHistory, restoreRetention, restoreActions, dialog, dialogPending, files, fileError, fileErrorId, invalidFiles, hasAttachmentError, operations, runtime, select, quick, actions, download, retryFailed, acceptNotice, confirmDialog, closeDialog, setFileError } = session;
   const code = runtime.blockedCode ?? (operations.error instanceof ApiError ? operations.error.code : null);
   const configured = state.configured && code !== "Assistant.Settings.NotConfigured";
   const monthly = state.monthlyBudgetProgress?.status === "LimitReached" || code === "Assistant.Limit.MonthlyReached";
@@ -93,6 +93,6 @@ export function AssistantWorkspace({ props, session, state }: { props: Assistant
       <DialogFooter><Button onClick={() => setRetentionOpen(false)}>{t("common:notice.understood")}</Button></DialogFooter>
     </DialogContent></Dialog> : null}
     {notice ? <AssistantNotice pending={operations.pending} error={actionError} onAccept={acceptNotice} onPrivacy={props.onPrivacy} /> : null}
-    {dialog && !notice ? <ConversationDialog value={dialog} pending={operations.pending} error={actionError} onClose={closeDialog} onConfirm={confirmDialog} /> : null}
+    {dialog && !notice ? <ConversationDialog value={dialog} pending={dialogPending} error={actionError} onClose={closeDialog} onConfirm={confirmDialog} /> : null}
   </div></AssistantRuntimeProvider>;
 }

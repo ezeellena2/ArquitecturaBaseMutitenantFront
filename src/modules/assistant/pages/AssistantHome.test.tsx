@@ -713,6 +713,45 @@ describe("interfaz del asistente", () => {
   });
 });
 
+it.each([false, true])("Borrar se confirma durante el SSE abierto sin esperar done (teléfono=%s)", async (phone) => {
+  const app = setup(state, phone); app.changeDetail(detail());
+  let current = detail(); let deleted = false; let streamOpen = false; let stream: ReadableStreamDefaultController<Uint8Array> | undefined;
+  const versions: Array<string | null> = []; const encoder = new TextEncoder(); let releaseDelete!: () => void;
+  const deleteReply = new Promise<void>((resolve) => { releaseDelete = resolve; });
+  server.use(http.get("/api/organization/assistant/conversations", ({ request }) => HttpResponse.json({ items: !deleted && new URL(request.url).searchParams.get("saved") === "false" ? [detail().conversation] : [], hasMore: false })),
+    http.get("/api/organization/assistant/conversations/chat", () => deleted ? HttpResponse.json({ code: "Assistant.Conversation.NotFound" }, { status: 404 }) : HttpResponse.json(current)),
+    http.post("/api/organization/assistant/conversations/chat/messages", async ({ request }) => {
+      const body = await request.json() as SendAssistantMessageRequest;
+      current = { ...detail(), conversation: { ...detail().conversation, version: 23 }, activeTurnId: "own-turn",
+        messages: { items: [message("own-question", "user", body.text ?? ""), message("own-answer", "assistant", "Parcial activo sin terminar", "Generating")], hasMore: false } };
+      return new HttpResponse(new ReadableStream<Uint8Array>({ start(controller) {
+        stream = controller; streamOpen = true;
+        controller.enqueue(encoder.encode(`event: start\ndata: ${JSON.stringify({ turnId: "own-turn", userMessageId: "own-question", assistantMessageId: "own-answer", conversationVersion: 23 })}\n\nevent: delta\ndata: ${JSON.stringify({ turnId: "own-turn", sequence: 1, text: "Parcial activo sin terminar" })}\n\n`));
+      }, cancel() { streamOpen = false; stream = undefined; } }), { headers: { "Content-Type": "text/event-stream" } });
+    }), http.delete("/api/organization/assistant/conversations/chat", async ({ request }) => {
+      expect(streamOpen).toBe(true); expect(current.messages.items.at(-1)?.status).toBe("Generating");
+      versions.push(new URL(request.url).searchParams.get("version")); await deleteReply; deleted = true; return new HttpResponse(null, { status: 204 });
+    }));
+  try {
+    if (phone) await app.user.click(await screen.findByRole("button", { name: "Conversaciones" }));
+    await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
+    const input = await screen.findByRole("textbox", { name: "Tu consulta" }); await app.user.click(input); await app.user.paste("Borrar mientras la respuesta sigue activa");
+    await app.user.click(screen.getByRole("button", { name: "Enviar" })); await screen.findByText("Parcial activo sin terminar");
+    if (phone) await app.user.click(screen.getByRole("button", { name: "Conversaciones" }));
+    (await screen.findByRole("button", { name: "Acciones de Mi consulta" })).focus(); await app.user.keyboard("{Enter}");
+    await app.user.click(await screen.findByRole("menuitem", { name: "Borrar: Mi consulta" }));
+    const dialog = await screen.findByRole("dialog", { name: "¿Borrar «Mi consulta»?" });
+    const remove = within(dialog).getByRole("button", { name: /^Borr(?:ar|ando)/u });
+    await waitFor(() => expect(remove).toBeEnabled()); expect(streamOpen).toBe(true);
+    await app.user.click(remove); await waitFor(() => expect(versions).toEqual(["23"]));
+    expect(within(dialog).getByRole("button", { name: /^Borrando/u })).toBeDisabled();
+    expect(within(dialog).getByRole("button", { name: "Cancelar" })).toBeDisabled();
+    await act(async () => { releaseDelete(); });
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(await screen.findByRole("heading", { name: "¿Qué querés consultar?" })).toBeVisible();
+  } finally { releaseDelete(); app.unmount(); stream?.close(); }
+});
+
 it.each(["Generating", "Complete"] as const)("Borrar abre con la versión actual de la conversación propia %s aunque su historial sea anterior", async (status) => {
   const app = setup(); app.changeDetail(detail());
   const current: AssistantConversationResponse = { ...detail(), conversation: { ...detail().conversation, version: 23 },
