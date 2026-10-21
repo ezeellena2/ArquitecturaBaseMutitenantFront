@@ -19,7 +19,7 @@ export const assistantSupplementDefinitions = [
   def(3, "Operador con assistant.configure", "Editar configuración global y catálogo con validaciones y versión anterior", "/plataforma/asistente/configuracion", "Prueba reciente403→confirmación200; versión anterior409; modelo creado/editado por UI y duplicados, moneda, tarifa y modelo inválidos rechazados. La clave permanece write-only.", ["BACK-AS-019"]),
   def(4, "Operador con assistant.read", "Consultar uso global con consumos Business, Personal y Plataforma", "/plataforma/asistente/uso", "Filas reales de organización/Personas/Operadores; OwnKey y PlatformKey separados, sumas Money coincidentes y ninguna conversación ni texto privado.", ["BACK-AS-020"]),
   def(5, "Operador sólo con assistant.use", "Usar su chat sin gestión ni lectura global", "/plataforma/asistente", "Turno real propio; configure y read403; otro operador completo recibe404 Conversation.NotFound para ese historial.", ["BACK-AS-021"]),
-  def(6, "Dueña de conversación propia", "Rechazar feedback ajeno y borrar un turno activo con PNG", "/org/asistente", "Conversación propia ya listada tras un turno inicial por UI; otro turno con PNG en ese mismo ID permanece Generating antes de Borrar204. Conversación y archivo404 sin URL/bytes ni resurrección ni nuevos títulos después del plazo del Fake; metadatos del upload privados."),
+  def(6, "Dueña de conversación propia", "Rechazar feedback ajeno y borrar un turno activo con PNG en su conversación", "/org/asistente", "Turno inicial con PNG por UI: metadata privada y bytes exactos verificados antes de iniciar otro turno lento en esa conversación ya listada. El segundo turno permanece Generating antes de Borrar204; conversación y PNG404, sin resurrección ni nuevos títulos después del plazo del Fake."),
 ];
 export const assistantPreparationRepairDefinitions = assistantSupplementDefinitions.filter((entry) => ["AS-SUP-02", "AS-SUP-03", "AS-SUP-04", "AS-SUP-06"].includes(entry.id));
 export const assistantOperatorRepairDefinitions = assistantSupplementDefinitions.filter((entry) => entry.id === "AS-SUP-05");
@@ -219,6 +219,16 @@ export async function sendAssistantAttachmentTurn(h, page, { fileName, buffer, t
   }
 }
 
+export async function prepareAssistantAttachmentConversation(h, page, options, { send = sendAssistantAttachmentTurn, terminal = waitAssistantTerminal } = {}) {
+  const uploaded = await send(h, page, { ...options, text: "[E2E:answer] Preparar la conversación propia con PNG antes del turno que se borrará activo." });
+  assert.ok(uploaded.inspectedUpload, "El PNG debe tener su comprobación privada antes de iniciar el turno activo.");
+  const settled = await Promise.allSettled([uploaded.inspectedUpload, Promise.resolve().then(() => terminal(page, root, uploaded.sent.id))]);
+  const failures = settled.filter((result) => result.status === "rejected").map((result) => result.reason);
+  if (failures.length === 1) throw failures[0];
+  if (failures.length > 1) throw new AggregateError(failures, "Falló la preparación del PNG y de su respuesta inicial.");
+  return { id: uploaded.sent.id, detail: settled[1].value, attachment: settled[0].value };
+}
+
 /** Las lecturas privadas no frenan abrir Borrar; el último Generating queda junto al clic real. */
 export async function deleteActiveAssistantConversation({ inspectAttachment, readCounters, openDialog, requireGenerating, deleteByUi }) {
   const settled = await Promise.allSettled([inspectAttachment, readCounters, openDialog].map((operation) => Promise.resolve().then(operation)));
@@ -412,23 +422,27 @@ async function runAssistantCases(h, selected) {
       await prepareOwner(); await business(); assert.ok(adminChat?.detail, "La prueba requiere la respuesta real del Administrador de empresa.");
       await requireForeignAssistantFeedbackAfterNotice(h, page, adminChat, () => chatHome(h, page, "business", false, { expectedTenantId: owner.me.activeTenantId }));
       await page.getByRole("button", { name: "Nueva conversación", exact: true }).first().click();
-      // El historial se refresca al terminar un envío. La fila debe existir antes del turno que se borrará activo.
-      const listed = await prepareListedAssistantConversation(h, page);
-      const countersBeforeTurn = await control("providerCounters");
-      const fileName = `activo-${tag}.png`; const { sent, inspectedUpload } = await sendAssistantAttachmentTurn(h, page, {
-        fileName, buffer: png, text: "[E2E:slow] Borrar este turno activo con su imagen.",
-        inspectUpload: async (upload) => {
-          assert.equal(upload.status(), 201); const attachment = await upload.json(); requirePrivateAttachmentMetadata(attachment, fileName, png.length);
-          const id = new URL(upload.url()).pathname.split("/").at(-2); assert.equal(id, listed.id, "El PNG debe pertenecer a la conversación ya listada.");
-          const fileRoute = `${root}/conversations/${id}/attachments/${attachment.id}`;
-          const downloaded = await h.api(page, fileRoute); assert.equal(downloaded.status(), 200); assert.deepEqual(await downloaded.body(), png);
-          assert.match(downloaded.headers()["cache-control"], /no-store/u); assert.match(downloaded.headers()["content-disposition"], /^attachment/iu);
-          return { fileRoute };
-        },
+      // El PNG y su descarga pertenecen al turno inicial: terminan antes de iniciar la ventana real del turno lento.
+      const fileName = `activo-${tag}.png`;
+      const listed = await prepareListedAssistantConversation(h, page, {
+        send: (actualH, target) => prepareAssistantAttachmentConversation(actualH, target, {
+          fileName, buffer: png,
+          inspectUpload: async (upload) => {
+            assert.equal(upload.status(), 201); const attachment = await upload.json(); requirePrivateAttachmentMetadata(attachment, fileName, png.length);
+            const id = new URL(upload.url()).pathname.split("/").at(-2);
+            const fileRoute = `${root}/conversations/${id}/attachments/${attachment.id}`;
+            const downloaded = await h.api(page, fileRoute); assert.equal(downloaded.status(), 200); assert.deepEqual(await downloaded.body(), png);
+            assert.match(downloaded.headers()["cache-control"], /no-store/u); assert.match(downloaded.headers()["content-disposition"], /^attachment/iu);
+            return { fileRoute, conversationId: id };
+          },
+        }),
       });
+      const { fileRoute } = listed.attachment; assert.equal(listed.attachment.conversationId, listed.id, "El PNG debe pertenecer a la conversación ya listada.");
+      const countersBeforeTurn = await control("providerCounters");
+      const sent = await sendUi(h, page, "[E2E:slow] Borrar este turno activo y el PNG de su conversación.", root, false);
       const id = sent.id; assert.equal(id, listed.id, "El PNG y el turno lento deben pertenecer a la conversación ya listada.");
       const { counters: before } = await deleteActiveAssistantConversation({
-        inspectAttachment: () => inspectedUpload,
+        inspectAttachment: async () => listed.attachment,
         readCounters: async () => countersBeforeTurn,
         openDialog: async () => {
           await page.getByRole("button", { name: "Detener", exact: true }).waitFor();
@@ -446,10 +460,9 @@ async function runAssistantCases(h, selected) {
           await dialog.waitFor({ state: "hidden" });
         },
       });
-      const { fileRoute } = await inspectedUpload;
       await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); await requirePrivateProblem(await h.api(page, fileRoute), 404, "Assistant.Attachment.NotFound");
       await delay(3500); await requirePrivateProblem(await h.api(page, `${root}/conversations/${id}`), 404, "Assistant.Conversation.NotFound"); assert.equal((await control("providerCounters")).titleCalls, before.titleCalls);
-      return "Feedback a la respuesta de otro Dueño404; conversación propia quedó listada tras un turno inicial por UI. Otro turno lento con PNG usó ese mismo ID; descargó bytes exactos con attachment/no-store y sin URL. Borrar204 ocurrió mientras Generating; conversación/archivo404 y, pasado el Fake, no reaparecieron ni generaron nuevos títulos.";
+      return "Feedback a la respuesta de otro Dueño404; primer turno propio con PNG por UI, metadata y bytes exactos con attachment/no-store verificados antes de iniciar otro turno lento en ese mismo ID ya listado. Borrar204 ocurrió mientras el segundo turno estaba Generating; conversación/PNG404 y, pasado el Fake, no reaparecieron ni generaron nuevos títulos.";
     });
   } catch (error) { failures.push(error); } finally {
     if (stalePage) { try { await discard(stalePage); await stalePage.close(); } catch (error) { failures.push(error); } }

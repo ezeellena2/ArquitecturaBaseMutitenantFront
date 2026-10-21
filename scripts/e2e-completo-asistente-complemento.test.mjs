@@ -3,6 +3,42 @@ import test from "node:test";
 import { assistantSupplementDefinitions, assistantSupplementProofGroups, requireProjectedAssistant, requirePrivateAttachmentMetadata, requireGlobalUsage, platformSettingsValues, requirePrivateProblem, assertGlobalSettingsRestored } from "./e2e-completo-asistente-complemento.mjs";
 import * as assistant from "./e2e-completo-asistente-complemento.mjs";
 
+test("el PNG de preparación termina metadata, bytes y respuesta antes de habilitar el turno activo", async () => {
+  const inspected = Promise.withResolvers(); const terminal = Promise.withResolvers(); const waiting = Promise.withResolvers();
+  const h = {}; const page = {}; const calls = []; let ready = false;
+  const detail = { conversation: { id: "propia", title: "Consulta de prueba" } }; const attachment = { fileRoute: "/archivo-propio", conversationId: "propia" };
+  const options = { fileName: "propio.png", buffer: Buffer.from([1]), inspectUpload: async () => {} };
+  const pending = assistant.prepareAssistantAttachmentConversation(h, page, options, {
+    send: async (actualH, target, request) => {
+      assert.equal(actualH, h); assert.equal(target, page); assert.equal(request.inspectUpload, options.inspectUpload);
+      assert.equal(request.fileName, options.fileName); assert.equal(request.buffer, options.buffer); assert.match(request.text, /^\[E2E:answer\]/u);
+      calls.push("PNG enviado en turno inicial rápido"); return { sent: { id: "propia" }, inspectedUpload: inspected.promise };
+    },
+    terminal: async (target, route, id) => {
+      assert.equal(target, page); assert.equal(route, "/api/organization/assistant"); assert.equal(id, "propia");
+      calls.push("esperar respuesta inicial"); waiting.resolve(); await terminal.promise; return detail;
+    },
+  }).then((value) => { ready = true; calls.push("habilitar preparación del turno activo"); return value; });
+  await waiting.promise; assert.equal(ready, false);
+  terminal.resolve(); await Promise.resolve(); await Promise.resolve(); assert.equal(ready, false, "No basta iniciar la descarga antes del Fake: sus bytes deben estar comprobados.");
+  inspected.resolve(attachment); assert.deepEqual(await pending, { id: "propia", detail, attachment });
+  assert.deepEqual(calls, ["PNG enviado en turno inicial rápido", "esperar respuesta inicial", "habilitar preparación del turno activo"]);
+});
+
+test("el fallo en la preparación del PNG espera la otra tarea antes de permitir cleanup", async () => {
+  for (const failureAt of ["archivo", "respuesta"]) {
+    const failure = new Error(`Falló ${failureAt}`); const release = Promise.withResolvers(); const waiting = Promise.withResolvers(); let completed = false;
+    const independent = async () => { waiting.resolve(); await release.promise; completed = true; };
+    const inspectedUpload = failureAt === "archivo" ? Promise.reject(failure) : independent(); void inspectedUpload.catch(() => {});
+    const pending = assistant.prepareAssistantAttachmentConversation({}, {}, {}, {
+      send: async () => ({ sent: { id: "propia" }, inspectedUpload }),
+      terminal: async () => failureAt === "respuesta" ? Promise.reject(failure) : independent(),
+    });
+    void pending.catch(() => {}); await waiting.promise; await Promise.resolve(); assert.equal(completed, false);
+    release.resolve(); await assert.rejects(() => pending, (error) => error === failure); assert.equal(completed, true);
+  }
+});
+
 test("la preparación lista por UI el chat propio antes del turno activo y sus acciones usan la fila seleccionada aun con títulos repetidos", async () => {
   for (const width of [1440, 390]) {
     const calls = []; const page = {}; const detail = { conversation: { id: "propia", title: "Consulta de prueba" } };
