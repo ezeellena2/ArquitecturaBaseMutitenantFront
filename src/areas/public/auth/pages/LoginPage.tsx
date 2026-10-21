@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation, useSearchParams } from "react-router";
+import { useLocation, useSearchParams } from "react-router";
 import { carriedLoginEmail, carryLoginEmail, emailFromNavigation, forgetLoginEmail } from "../lib/loginEmail";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { takeExpiredSessionNotice } from "@/auth/sessionExpiredNotice";
@@ -12,9 +12,8 @@ import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useCountdown } from "@/shared/hooks/useCountdown";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
-import { AlertTriangleIcon, ClockIcon, LockIcon } from "@/shared/ui/icons";
+import { ClockIcon } from "@/shared/ui/icons";
 import { requestLoginCode, verifyLoginCode } from "../api/loginCode";
-import { AuthStatus, type AuthStatusProps } from "../components/AuthStatus";
 import { BusinessAccessResult } from "../components/BusinessAccessResult";
 import { PlatformAccessResult } from "../components/PlatformAccessResult";
 import { AuthCodeStep } from "../components/AuthCodeStep";
@@ -42,13 +41,6 @@ export interface LoginPageProps {
 }
 
 const followAuthorize = (url: string) => globalThis.location.assign(url);
-
-// La organización suspendida, en revisión o cerrada: los textos de la organización no disponible, con el círculo de su estado.
-const unavailableResults: Record<UnavailableCode, { title: string; description: string; icon: AuthStatusProps["icon"]; tone: AuthStatusProps["tone"] }> = {
-  "Tenancy.Tenant.Suspended": { title: "suspendedTitle", description: "suspendedDescription", icon: AlertTriangleIcon, tone: "warning" },
-  "Tenancy.Tenant.PendingApproval": { title: "pendingTitle", description: "pendingDescription", icon: ClockIcon, tone: "brand" },
-  "Tenancy.Tenant.Closed": { title: "closedTitle", description: "closedDescription", icon: LockIcon, tone: "neutral" },
-};
 
 export function LoginPage({ access, completeLogin = followAuthorize }: LoginPageProps) {
   const { t } = useTranslation(["auth", "errors"]);
@@ -216,7 +208,6 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const codeSpent = error?.code === "Auth.LoginCode.TooManyAttempts" || error?.code === "Identity.Account.LockedOut";
   const accountClosed = error?.code === "Identity.Account.Suspended";
   const organizationName = typeof error?.problem.organizationName === "string" ? error.problem.organizationName : "";
-  const unavailable = isUnavailableCode(result) ? unavailableResults[result] : null;
 
   return <AuthLayout access={access}>
     {factorPending ? <PlatformFactorStep onCompleted={completeLogin} onRestart={restartAfterFactor} />
@@ -224,10 +215,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       : result === "platformOnly" ? <PlatformAccessResult access={access} onSignedOut={() => { backToEmail(); setLastDestination({ type: "email", email: "" }); dismissGoogleError(); setPending(null); setCancelFailure(null); }} />
       : result === "noBusiness" ? <BusinessAccessResult status="noBusiness" />
         : result === "inactive" ? <BusinessAccessResult status="inactive" organizationName={organizationName} />
-          : unavailable ? <AuthStatus icon={unavailable.icon} tone={unavailable.tone}
-            title={t(`errors:errorPage.unavailable.${unavailable.title}`, { organizationName })}
-            detail={t(`errors:errorPage.unavailable.${unavailable.description}`)}
-            actions={<Button asChild size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>} />
+          : isUnavailableCode(result) ? <BusinessAccessResult status={result} organizationName={organizationName} />
             : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{access === "business" ? t("login.businessTitle") : t("login.personalTitle")}</h1>
       {/* Tableros Ingreso y M-Ingreso («Tu sesión venció», .msj.info): la franja de los mensajes, en petróleo y con el reloj. */}

@@ -38,6 +38,41 @@ function show(auth: Partial<AuthContextProps>, host?: string) {
 }
 
 describe("CallbackPage", () => {
+  it("la respuesta OIDC validada dentro del error del proveedor muestra la cuenta sin empresa y permite salir", async () => {
+    const signoutRedirect = vi.fn(async () => null);
+    const innerError = new ErrorResponse({ error: "access_denied", error_description: "Tenancy.Access.NotMember", userState: { returnTo: "/org/usuarios" } });
+    show({ isLoading: false, isAuthenticated: false, signoutRedirect: signoutRedirect as unknown as AuthContextProps["signoutRedirect"],
+      error: { name: innerError.name, message: innerError.message, source: "signinCallback", innerError } });
+    expect(screen.getByRole("heading", { name: "Tu cuenta no está en ninguna empresa todavía" })).toBeVisible();
+    expect(screen.queryByText("No pudimos iniciar tu sesión")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Salir", exact: true }));
+    expect(await screen.findByText("Otro ingreso empresa")).toBeVisible(); expect(signoutRedirect).toHaveBeenCalledOnce();
+    expect(screen.queryByText(/Tenancy\.Access/u)).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["Tenancy.Tenant.PendingApproval", "Estamos revisando Grupo Delta"],
+    ["Tenancy.Tenant.Suspended", "Grupo Delta está suspendida"],
+    ["Tenancy.Tenant.Closed", "Grupo Delta está cerrada"],
+  ])("el callback del proveedor muestra el estado empresarial %s sin emitir otra autorización", async (code, title) => {
+    const signinRedirect = vi.fn(); const signoutRedirect = vi.fn(async () => null);
+    const innerError = new ErrorResponse({ error: "access_denied", error_description: `${code}|Grupo%20Delta`, userState: { returnTo: "/org" } });
+    const { container } = show({ isLoading: false, isAuthenticated: false, signinRedirect, signoutRedirect: signoutRedirect as unknown as AuthContextProps["signoutRedirect"],
+      error: { name: innerError.name, message: innerError.message, source: "signinCallback", innerError } });
+    expect(screen.getByRole("heading", { name: title })).toBeVisible();
+    expect(screen.queryByText("No pudimos iniciar tu sesión")).not.toBeInTheDocument(); expect(signinRedirect).not.toHaveBeenCalled();
+    expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("href", "/login");
+    expect(await axe(container)).toHaveNoViolations();
+    fireEvent.click(screen.getByRole("button", { name: "Salir", exact: true }));
+    expect(await screen.findByText("Otro ingreso empresa")).toBeVisible(); expect(signoutRedirect).toHaveBeenCalledOnce();
+  });
+
+  it("el error normalizado conserva sólo el retorno validado de OIDC y no interpreta el error de la URL", () => {
+    const innerError = new ErrorResponse({ error: "server_error", userState: { returnTo: "/org/usuarios" } });
+    show({ isLoading: false, isAuthenticated: false, error: { name: innerError.name, message: innerError.message, source: "signinCallback", innerError } });
+    expect(screen.getByRole("link", { name: "Volver a ingresar" })).toHaveAttribute("href", "/login/empresa?prompt=login&returnUrl=%2Forg%2Fusuarios");
+  });
+
   it("el operador rechazado en el subdominio tiene su puerta en el principal y Salir vuelve a la raíz pública", async () => {
     const signoutRedirect = vi.fn(async () => null);
     const error = Object.assign(new ErrorResponse({ error: "access_denied", error_description: "Tenancy.Access.PlatformOnly", userState: { returnTo: "/" } }), { source: "unknown" as const });

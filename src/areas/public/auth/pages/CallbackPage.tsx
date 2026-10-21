@@ -5,28 +5,39 @@ import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { BusinessAccessResult } from "../components/BusinessAccessResult";
 import { PlatformAccessResult } from "../components/PlatformAccessResult";
-import { accessOfPath, homeOf, loginPathOf } from "@/tenancy/access";
+import { accessOfPath, homeOf, isUnavailableCode, loginPathOf } from "@/tenancy/access";
 import { safeReturnUrl } from "../lib/returnUrl";
 import { mainSiteUrl, siteOfHost } from "@/tenancy/publicSite";
 import { PublicSiteHostContext } from "@/tenancy/usePublicSite";
 
 interface CallbackState { returnTo?: string }
 
-function accessError(error: Error | undefined) {
-  if (!error || !("error" in error) || error.error !== "access_denied" ||
+function protocolError(error: Error | undefined): unknown {
+  // react-oidc-context conserva el ErrorResponse validado por OIDC en innerError al normalizar el fallo.
+  return error && "innerError" in error ? error.innerError : error;
+}
+
+function callbackState(error: unknown): CallbackState | undefined {
+  return error && typeof error === "object" && "state" in error && error.state && typeof error.state === "object"
+    ? error.state as CallbackState : undefined;
+}
+
+function accessError(error: unknown) {
+  if (!error || typeof error !== "object" || !("error" in error) || error.error !== "access_denied" ||
     !("error_description" in error) || typeof error.error_description !== "string") return null;
 
   const [code, encodedName] = error.error_description.split("|", 2);
   if (code === "Tenancy.Access.PlatformOnly") {
     // ErrorResponse.state es el userState recuperado por OIDC. El código del error no contiene la puerta.
-    const state = "state" in error ? error.state as CallbackState | undefined : undefined;
+    const state = callbackState(error);
     const returnTo = safeReturnUrl(state?.returnTo ?? null, "/");
     return { status: "platformOnly" as const, access: accessOfPath(returnTo.split(/[?#]/u)[0] ?? returnTo) === "business" ? "business" as const : "consumer" as const };
   }
   if (code === "Tenancy.Access.NotMember") return { status: "noBusiness" as const };
-  if (code !== "Tenancy.Member.Inactive" || !encodedName) return null;
+  if ((!isUnavailableCode(code) && code !== "Tenancy.Member.Inactive") || !encodedName) return null;
   try {
-    return { status: "inactive" as const, organizationName: decodeURIComponent(encodedName) };
+    const organizationName = decodeURIComponent(encodedName);
+    return isUnavailableCode(code) ? { status: code, organizationName } : { status: "inactive" as const, organizationName };
   } catch {
     return null;
   }
@@ -46,18 +57,18 @@ export function CallbackPage() {
     navigate(safeReturnUrl(state?.returnTo ?? null, "/"), { replace: true });
   }, [auth.isAuthenticated, auth.user, navigate]);
 
-  const deniedBusiness = accessError(auth.error);
+  const error = protocolError(auth.error);
+  const deniedBusiness = accessError(error);
   if (deniedBusiness?.status === "platformOnly") return <AuthLayout access={deniedBusiness.access}>
     <PlatformAccessResult access={deniedBusiness.access} platformHref={storefront ? mainSiteUrl(homeOf("platform")) : undefined}
       onSignedOut={() => { void navigate(storefront ? "/" : loginPathOf(deniedBusiness.access), { replace: true }); }} />
   </AuthLayout>;
   if (deniedBusiness) return <AuthLayout access="business">
-    {deniedBusiness.status === "noBusiness" ? <BusinessAccessResult status="noBusiness" />
-      : <BusinessAccessResult status="inactive" organizationName={deniedBusiness.organizationName} />}
+    <BusinessAccessResult {...deniedBusiness} onSignedOut={() => { void navigate(storefront ? "/" : loginPathOf("business"), { replace: true }); }} />
   </AuthLayout>;
 
   // El retorno viene del estado validado por OIDC, nunca de los parámetros del callback.
-  const state = auth.error && "state" in auth.error ? auth.error.state as CallbackState | undefined : undefined;
+  const state = callbackState(error);
   const returnTo = state ? safeReturnUrl(state.returnTo ?? null, "/") : undefined;
   const retryDoor = loginPathOf(accessOfPath(returnTo?.split(/[?#]/u)[0] ?? "/") ?? "consumer");
   const retryQuery = new URLSearchParams({ prompt: "login", ...(returnTo ? { returnUrl: returnTo } : {}) });
