@@ -14,7 +14,7 @@
       "resaltar": "button.cb-pri:has-text(\"Guardar cambios\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Cambia su apellido",
-      "texto": "Nombre y apellido van en dos campos. Al cambiar algo, aparece «Cambios sin guardar».",
+      "texto": "Nombre y apellido van en dos campos. Al cambiar algo, se habilita «Guardar cambios».",
       "avanzar": "Tocá «Guardar cambios».",
       "ruta": "/cuenta",
       "accion": "Cambia el apellido y toca «Guardar cambios»."
