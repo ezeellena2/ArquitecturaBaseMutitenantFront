@@ -1710,7 +1710,7 @@
       "y": 260,
       "w": 1440,
       "h": 1400,
-      "title": "Formularios · publicar en WhatsApp",
+      "title": "Formularios · publicar en WhatsApp · para aprobar",
       "page": "formularios",
       "is_interactive": true
     },
@@ -1727,7 +1727,7 @@
       "y": 1780,
       "w": 1440,
       "h": 900,
-      "title": "WhatsApp · Internos · enviar un formulario",
+      "title": "WhatsApp · Internos · enviar un formulario · para aprobar",
       "page": "formularios",
       "is_interactive": true
     },
@@ -1736,7 +1736,7 @@
       "y": 1780,
       "w": 1440,
       "h": 900,
-      "title": "WhatsApp · Internos · respuesta del formulario",
+      "title": "WhatsApp · Internos · respuesta del formulario · para aprobar",
       "page": "formularios",
       "is_interactive": true
     },
@@ -1770,7 +1770,7 @@
       "y": 2800,
       "w": 390,
       "h": 844,
-      "title": "WhatsApp · Internos · enviar un formulario · teléfono",
+      "title": "WhatsApp · Internos · enviar un formulario · teléfono · para aprobar",
       "page": "formularios",
       "is_interactive": true
     },
@@ -1779,7 +1779,7 @@
       "y": 2800,
       "w": 390,
       "h": 844,
-      "title": "WhatsApp · Internos · respuesta del formulario · teléfono",
+      "title": "WhatsApp · Internos · respuesta del formulario · teléfono · para aprobar",
       "page": "formularios",
       "is_interactive": true
     },
@@ -2022,7 +2022,7 @@
       "y": 260,
       "w": 1440,
       "h": 1400,
-      "title": "Formularios · editor",
+      "title": "Formularios · editor · para aprobar",
       "page": "formularios",
       "is_interactive": true
     },
@@ -2031,7 +2031,7 @@
       "y": 260,
       "w": 1440,
       "h": 1400,
-      "title": "Formularios · cómo termina una publicación",
+      "title": "Formularios · cómo termina una publicación · para aprobar",
       "page": "formularios",
       "is_interactive": true
     },
@@ -2040,7 +2040,7 @@
       "y": 2800,
       "w": 390,
       "h": 844,
-      "title": "Editor del formulario · teléfono",
+      "title": "Editor del formulario · teléfono · para aprobar",
       "page": "formularios",
       "is_interactive": true
     },

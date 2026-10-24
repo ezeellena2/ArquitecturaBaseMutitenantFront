@@ -3,11 +3,13 @@
   "titulo": "Publicar un formulario",
   "etapa": "Etapa 12 · Formularios",
   "orden": 10,
-  "resumen": "Lucía cambia una pregunta, guarda el borrador y publica la versión 4; WhatsApp la revisa y queda publicada.",
+  "resumen": "Lucía cambia una pregunta, guarda los cambios y publica la versión 4; WhatsApp la revisa y queda publicada.",
   "pasos": [
     {
       "tablero": "FRM-Listado",
-      "tweaks": { "estado": "Todos" },
+      "tweaks": {
+        "estado": "Todos"
+      },
       "resaltar": "a:text-is(\"Visita a cliente\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Abre el formulario",
@@ -18,51 +20,61 @@
     },
     {
       "tablero": "FRM-Editor",
-      "tweaks": { "estado": "Cambios sin guardar" },
-      "resaltar": "button.cb-sec:has-text(\"Guardar borrador\")",
+      "tweaks": {
+        "estado": "Elegir varias"
+      },
+      "resaltar": "button.cb-sec:has-text(\"Guardar cambios\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Cambia una pregunta y guarda",
-      "texto": "Todo está en una sola pantalla: los textos, el formulario y las preguntas, que se abren en el lugar. Al costado, así lo ve el empleado.",
-      "avanzar": "Tocá «Guardar borrador».",
+      "texto": "Todo está en una sola pantalla: el formulario y las preguntas, que se abren en el lugar. «Fallas» deja elegir hasta 3; al costado, así lo ve el empleado.",
+      "avanzar": "Tocá «Guardar cambios».",
       "ruta": "/org/formularios/:id",
-      "accion": "Guarda el borrador."
+      "accion": "Guarda los cambios."
     },
     {
       "tablero": "FRM-Editor",
-      "tweaks": { "estado": "Guardado" },
+      "tweaks": {
+        "estado": "Guardado"
+      },
       "resaltar": "a.cb-pri:has-text(\"Publicar en WhatsApp\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Pide publicar",
-      "texto": "El borrador quedó guardado. La versión 3 sigue andando en WhatsApp hasta que se publique la 4.",
+      "texto": "Los cambios quedaron guardados. La versión 3 sigue andando en WhatsApp hasta que se publique la 4.",
       "avanzar": "Tocá «Publicar en WhatsApp».",
       "ruta": "/org/formularios/:id",
       "accion": "Toca «Publicar en WhatsApp»."
     },
     {
       "tablero": "FRM-Publicar",
-      "tweaks": { "estado": "Versión nueva" },
+      "tweaks": {
+        "estado": "Versión nueva"
+      },
       "resaltar": ".w-dlg button.cb-pri:has-text(\"Publicar versión 4\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Revisa qué cambia",
-      "texto": "El diálogo dice qué cambia, en qué idioma sale (el inglés, cuando esté completo), qué queda fijo y qué va a pasar.",
+      "texto": "El diálogo dice qué cambia, qué queda fijo y qué va a pasar.",
       "avanzar": "Tocá «Publicar versión 4».",
       "ruta": "/org/formularios/:id",
       "accion": "Publica la versión 4."
     },
     {
       "tablero": "FRM-Publicando",
-      "tweaks": { "estado": "Publicando" },
+      "tweaks": {
+        "estado": "Publicando"
+      },
       "resaltar": ".e-sup.info",
       "actor": "Sistema",
       "titulo": "WhatsApp la revisa",
       "texto": "Arriba del editor se ven los pasos: aceptada, enviada a WhatsApp, en revisión y lista para mandar. Mientras tanto sigue andando la 3.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/:id",
-      "accion": "Ve «Publicando versión 4…»."
+      "accion": "Ve «Publicando la versión 4»."
     },
     {
       "tablero": "FRM-Publicando",
-      "tweaks": { "estado": "Vista oficial" },
+      "tweaks": {
+        "estado": "Vista oficial"
+      },
       "resaltar": ".ab-seg",
       "actor": "Lucía · Dueña · web",
       "titulo": "Queda publicada",

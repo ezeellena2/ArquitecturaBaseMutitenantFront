@@ -7,7 +7,9 @@
   "pasos": [
     {
       "tablero": "WA-Chats-Formulario",
-      "tweaks": { "estado": "Con el botón" },
+      "tweaks": {
+        "estado": "Con el botón"
+      },
       "resaltar": ".w-escr button.cb-sec:has-text(\"Enviar formulario\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Elige mandar un formulario",
@@ -18,18 +20,22 @@
     },
     {
       "tablero": "WA-Chats-Formulario",
-      "tweaks": { "estado": "Elegir el formulario" },
+      "tweaks": {
+        "estado": "Elegir el formulario"
+      },
       "resaltar": ".w-dlg button.cb-pri:has-text(\"Enviar formulario\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Elige el formulario y el mensaje",
-      "texto": "Cada formulario dice su versión y cuántas preguntas tiene. Le llega en el idioma de su cuenta, con el mensaje arriba del botón «Abrir formulario».",
+      "texto": "Cada formulario dice su versión y cuántas preguntas tiene. El mensaje va arriba del botón «Abrir formulario», y se puede mandar hasta 24 horas después de su último mensaje.",
       "avanzar": "Tocá «Enviar formulario».",
       "ruta": "/org/whatsapp/chats",
       "accion": "Manda el formulario."
     },
     {
       "tablero": "WA-Chats-Formulario",
-      "tweaks": { "estado": "En cola" },
+      "tweaks": {
+        "estado": "En cola"
+      },
       "actor": "Sistema",
       "titulo": "Sale el mensaje",
       "texto": "La burbuja lleva la tarjeta del formulario y queda en cola hasta que WhatsApp lo recibe.",
@@ -39,7 +45,9 @@
     },
     {
       "tablero": "WA-Chats-Formulario",
-      "tweaks": { "estado": "Leído" },
+      "tweaks": {
+        "estado": "Leído"
+      },
       "actor": "Tomás · empleado · WhatsApp",
       "titulo": "Tomás lo completa",
       "texto": "Tomás lo leyó y lo completa dentro de WhatsApp. Si lo cierra sin enviar, no se guarda nada.",
@@ -49,7 +57,9 @@
     },
     {
       "tablero": "WA-Chats-Respuesta",
-      "tweaks": { "estado": "Guardada" },
+      "tweaks": {
+        "estado": "Guardada"
+      },
       "resaltar": ".r-mas button",
       "actor": "Lucía · Dueña · web",
       "titulo": "Llega la respuesta",
@@ -60,7 +70,9 @@
     },
     {
       "tablero": "WA-Chats-Respuesta",
-      "tweaks": { "estado": "Guardada, todas" },
+      "tweaks": {
+        "estado": "Guardada, todas"
+      },
       "actor": "Lucía · Dueña · web",
       "titulo": "Ve todas las respuestas",
       "texto": "Lo que quedó sin responder dice «Sin respuesta». En el teléfono, las respuestas se abren en una hoja.",

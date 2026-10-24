@@ -119,7 +119,7 @@ CAPITULOS = [
         ("frm-listado", "Diseñar formularios", "/org/formularios", "no", "12", ["FRM-Listado"], ["M-FRM-Listado"], [],
          "Cada formulario con sus preguntas, cómo está en WhatsApp y su último cambio. «Nuevo formulario» empieza desde cero o desde una plantilla."),
         ("frm-editor", "Editor de un formulario", "/org/formularios/:id", "no", "12 y 14", ["FRM-Editor"], ["M-FRM-Editor"], [],
-         "Una sola pantalla: los textos en español (el inglés es opcional), el formulario, las preguntas que se abren en el lugar (también fotos y documentos, hasta 10 archivos) y cómo lo ve el empleado. Se guarda como borrador."),
+         "Una sola pantalla: el formulario, las preguntas que se abren en el lugar (también «elegir varias», fotos y documentos, hasta 10 archivos) y cómo lo ve el empleado. Se guarda como borrador; con cambios sin guardar, publicar queda grisado."),
         ("frm-publicar", "Publicar en WhatsApp", "/org/formularios/:id", "no", "12", ["FRM-Publicar"], [], ["FRM-Publicando"],
          "La comprobación antes de publicar (también los más de 10 archivos) y cómo termina: los pasos mientras WhatsApp la revisa, el rechazo con la pregunta marcada y la vista oficial."),
         ("frm-chat", "Enviar un formulario", "WhatsApp › Chats › Internos", "no", "12 y 14", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta", "WA-Chats-Visor", "M-WA-Chats-Visor", "WA-Chats-Avisos", "M-WA-Conversacion-Avisos"],
