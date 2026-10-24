@@ -3,20 +3,33 @@
   "titulo": "Aprobar o rechazar una respuesta",
   "etapa": "Etapa 16 · Reglas",
   "orden": 10,
-  "resumen": "Lucía entra a «Por aprobar», revisa una visita al costado de la planilla y la rechaza con un motivo.",
+  "resumen": "Lucía entra a «Formularios», abre Visita a cliente, revisa una visita que espera su decisión y la rechaza con un motivo.",
   "pasos": [
     {
-      "tablero": "FRM-Por-Aprobar",
+      "tablero": "FRM-Formularios",
       "tweaks": {
-        "estado": "Para mí"
+        "estado": "Activos"
       },
-      "resaltar": "a.pl-num:has-text(\"VIS-000130\")",
+      "resaltar": ".fm-n a:has-text(\"Visita a cliente\")",
       "actor": "Lucía · Dueña · web",
-      "titulo": "Abre «Por aprobar»",
-      "texto": "Las respuestas que esperan su decisión, de la más vieja a la más nueva. También aparecen en «Para resolver» del inicio.",
-      "avanzar": "Tocá VIS-000130.",
-      "ruta": "/org/formularios/por-aprobar",
-      "accion": "Abre VIS-000130."
+      "titulo": "Abre «Formularios»",
+      "texto": "Cada formulario publicado con lo que tiene por aprobar. El número del panel dice cuántas esperan su decisión; también aparecen en «Para resolver» del inicio.",
+      "avanzar": "Tocá «Visita a cliente».",
+      "ruta": "/org/formularios/respuestas",
+      "accion": "Abre Visita a cliente."
+    },
+    {
+      "tablero": "FRM-Respuestas",
+      "tweaks": {
+        "estado": "Planilla"
+      },
+      "resaltar": ".fm-pend .w-tr:last-child a.cb-sec",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo que espera, arriba",
+      "texto": "Arriba de la planilla, las respuestas que esperan una decisión, de la más vieja a la más nueva.",
+      "avanzar": "Tocá «Revisar» en VIS-000130.",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Revisa VIS-000130."
     },
     {
       "tablero": "FRM-Respuesta-Aprobacion",
@@ -28,7 +41,7 @@
       "titulo": "Revisa la respuesta",
       "texto": "Se abre al costado de la planilla, con sus respuestas y sus fotos. Aprobar y Rechazar van en el momento «Por aprobar».",
       "avanzar": "Tocá «Rechazar».",
-      "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000130",
+      "ruta": "/org/formularios/:id/respuestas?aprobacion=VIS-000130",
       "accion": "Toca «Rechazar»."
     },
     {

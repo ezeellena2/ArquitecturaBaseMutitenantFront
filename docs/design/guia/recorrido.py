@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 137 · 24 de octubre de 2026"
+VERSION = "versión 138 · 24 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -115,7 +115,7 @@ CAPITULOS = [
          ["M-Asistente-Uso-Org", "M-Plat-Asistente-Uso"], [],
          "El tope del mes y el uso por día y por persona; en Plataforma, el costo por organización. Nunca el texto de las conversaciones."),
     ]),
-    ("formularios", "Diseña formularios", "Formularios que se completan dentro de WhatsApp: la organización los diseña, los publica y se los manda a sus empleados desde un chat. Los catálogos son las listas de opciones que comparten.", [
+    ("formularios", "Diseña formularios", "Formularios que se completan dentro de WhatsApp, en «Gestión de formularios»: la organización los diseña, los publica, se los manda a sus empleados desde un chat y revisa lo que responden. Los catálogos son las listas de opciones que comparten.", [
         ("frm-listado", "Diseñar formularios", "/org/formularios", "no", "12", ["FRM-Listado"], ["M-FRM-Listado"], [],
          "Cada formulario con sus preguntas, cómo está en WhatsApp y su último cambio. «Nuevo formulario» empieza desde cero o desde una plantilla."),
         ("frm-editor", "Editor de un formulario", "/org/formularios/:id", "no", "12 y 14", ["FRM-Editor"], ["M-FRM-Editor"], [],
@@ -124,14 +124,16 @@ CAPITULOS = [
          "La comprobación antes de publicar (también los más de 10 archivos) y cómo termina: los pasos mientras WhatsApp la revisa, el rechazo con la pregunta marcada y la vista oficial."),
         ("frm-chat", "Enviar un formulario", "WhatsApp › Chats › Internos", "no", "12 y 14", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta", "WA-Chats-Visor", "M-WA-Chats-Visor", "WA-Chats-Avisos", "M-WA-Conversacion-Avisos"],
          "En un chat con un empleado: elegir el formulario y el mensaje, y la respuesta que vuelve al chat guardada con su número, con sus fotos y documentos, que se abren en el visor. En el teléfono, desde el ⋮."),
-        ("frm-respuestas", "Respuestas", "/org/formularios/:id/respuestas", "no", "15", ["FRM-Respuestas"], ["M-FRM-Respuestas"], ["FRM-Respuestas-Filtros", "FRM-Respuestas-Exportar"],
-         "La planilla de un formulario publicado: una fila por respuesta y una columna por pregunta, con «Empresa ▾», «Más filtros», «Columnas» y exportar a Excel."),
+        ("frm-formularios", "Formularios", "/org/formularios/respuestas", "no", "15", ["FRM-Formularios"], ["M-FRM-Respuestas"], [],
+         "La lista de formularios publicados: lo que cada uno tiene por aprobar, sus respuestas y la última. «Activos | Dados de baja» y «Aprobación ▾»; cambia según lo que puede hacer cada uno."),
+        ("frm-respuestas", "Respuestas de un formulario", "/org/formularios/:id/respuestas", "no", "15 y 16", ["FRM-Respuestas"], [], ["FRM-Respuestas-Filtros", "FRM-Respuestas-Exportar"],
+         "Arriba, lo que espera aprobación, con «Revisar»; debajo, la planilla: una fila por respuesta y una columna por pregunta, con «Empresa ▾», «Más filtros», «Columnas» y exportar a Excel."),
         ("frm-respuesta", "Una respuesta", "/org/formularios/:id/respuestas?respuesta=VIS-000126", "no", "15", ["FRM-Respuesta"], ["M-FRM-Respuesta"], [],
          "Se abre al costado de la planilla, con ↑ ↓ para pasar a la siguiente: cuándo llegó, quién la respondió, sus respuestas y sus fotos. En el teléfono, a pantalla completa."),
         ("frm-reglas", "Cuando llega una respuesta", "/org/formularios/:id", "no", "16", ["FRM-Editor-Reglas"], ["M-FRM-Reglas"], ["FRM-Pdf"],
          "Las reglas del formulario, en palabras: cuándo, si y qué hacer en orden. Se guardan aparte, con su historial. «Ver el diseño» abre el PDF que se arma al aprobar."),
-        ("frm-por-aprobar", "Por aprobar", "/org/formularios/por-aprobar", "no", "16", ["FRM-Por-Aprobar"], ["M-FRM-Por-Aprobar"], ["FRM-Respuesta-Aprobacion", "M-FRM-Respuesta-Aprobacion"],
-         "Las respuestas que esperan una decisión, de la más vieja a la más nueva. Se aprueban o rechazan al costado de la planilla, con lo que pasó después y el PDF."),
+        ("frm-aprobar", "Aprobar o rechazar", "/org/formularios/:id/respuestas?aprobacion=VIS-000130", "no", "16", ["FRM-Respuesta-Aprobacion"], ["M-FRM-Respuesta-Aprobacion"], [],
+         "«Revisar» abre la respuesta al costado de la planilla, con Aprobar y Rechazar, lo que pasó después y el PDF. No hay bandeja aparte."),
         ("frm-asistente-chat", "El asistente en el chat", "WhatsApp › Chats › Internos", "no", "—", ["WA-Chats-Asistente"], ["M-WA-Conversacion-Asistente"], ["WA-Chats-Sugerencia", "WA-Chats-Audio"],
          "En modo Asistente reconoce el pedido y manda el formulario prellenado, con por qué lo mandó; «Tomar atención manual» lo corta. En atención manual, sugiere. Los audios se pasan a texto."),
         ("frm-asistente-editor", "Lo que ofrece el asistente", "/org/formularios/:id", "no", "—", ["FRM-Editor-Asistente"], [], ["FRM-Editor-Sugerencias", "FRM-Respuesta-Cadena"],
