@@ -5,7 +5,7 @@
 ## Cómo se hace
 - Todo formulario usa react-hook-form + zod, mensajes i18n y defaultValues de lo guardado; el editor se desmonta por key si cambia su registro.
 - Diálogo: Dialog, título/campos/botonera y useRestoreFocusOnClose; se monta sólo abierto.
-- Pantalla: Page/backTo + useEditPage (cambios, 409, franja y salida) + useEditForm (borrador y versión).
+- Pantalla: Page/backTo + useEditPage (409, franja y aviso al salir con cambios; la banda no dice «Cambios sin guardar») + useEditForm (borrador y versión).
 - Una Section por tema, título arena y SectionFields (16 arriba, 20 costados/abajo; relleno móvil según variante).
 - Dos columnas iguales por caja; tres sólo para datos cortos; texto largo ocupa todas. Campos simples según tipo y FormField con rótulo/error/aria-describedby.
 - Sin ayudas ni ejemplos; asterisco obligatorio; sólo buscador tiene placeholder. Lo que no se edita va en el mismo campo, apagado, con fondo y texto grises (A11, v113): `ReadOnlyField`, o el control deshabilitado si ya lo dibuja así (`SearchSelect`).
