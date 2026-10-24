@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 2080px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 2540px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -677,9 +677,22 @@
     <div class="g4">
       <div class="pieza"><div class="muestra"><button type="button" class="cb cb-pri">Guardar cambios</button></div><strong>Normal</strong></div>
       <div class="pieza"><div class="muestra"><button type="button" class="cb cb-pri h">Guardar cambios</button></div><strong>Mouse encima</strong><p>Un poco más claro. El de peligro, un poco más oscuro.</p></div>
-      <div class="pieza"><div class="muestra"><button type="button" class="cb cb-pri" disabled="{si}" style="opacity: 0.85;"><span class="girar2" aria-hidden="true"></span> Guardando…</button></div><strong>Guardando</strong><p>Dice qué está haciendo y no se puede volver a tocar: «Guardando…», «Enviando…», «Verificando…», «Aceptando…», «Comprobando…», «Creando…», «Invitando…», «Agregando…», «Quitando…», «Desvinculando…», «Dando de baja…».</p></div>
-      <div class="pieza"><div class="muestra"><button type="button" class="cb cb-pri" disabled="{si}">Guardar cambios</button></div><strong>Deshabilitado</strong><p>Solo «Guardar cambios» cuando no hay cambios, en todas las ediciones, también en los diálogos. Lo demás, siempre habilitado: si falta un dato, al tocarlo se marca el campo.</p></div>
+      <div class="pieza"><div class="muestra"><button type="button" class="cb cb-pri" disabled="{si}"><span class="girar2" aria-hidden="true"></span> Guardar cambios</button></div><strong>Mientras trabaja</strong><p>Grisado, con el aro y su mismo texto, y no se puede volver a tocar. Nunca «Guardando…», «Invitando…» ni otro texto de espera.</p></div>
+      <div class="pieza"><div class="muestra"><button type="button" class="cb cb-pri" disabled="{si}">Guardar cambios</button></div><strong>Grisado</strong><p>«Guardar cambios» se habilita cuando hay cambios, también en los diálogos. Lo que necesita algo antes queda grisado, como publicar con cambios sin guardar. Si falta un dato, sigue habilitado: al tocarlo se marca el campo.</p></div>
     </div>
+  </section>
+
+  <section>
+    <h2>Habilitado o grisado, y nada más</h2>
+    <ul class="reglas2" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 40px;">
+      <li><strong>Un botón está habilitado o grisado,</strong> sin textos al lado ni debajo. Si el motivo no es obvio, va en su tooltip.</li>
+      <li><strong>Que «Guardar cambios» esté habilitado ya dice que hay cambios.</strong> Al salir con cambios, se pregunta «¿Salir sin guardar?».</li>
+      <li><strong>La banda no cuenta qué pasa:</strong> su segunda línea es el resumen o el estado del objeto, sin «Cambios sin guardar» ni números de revisión, que quedan en los historiales.</li>
+      <li><strong>Lo que salió bien,</strong> en el aviso verde de abajo. <strong>Los errores,</strong> con sus estilos de siempre: debajo del campo o en el aviso rojo. Nunca va en rojo una fila recién agregada.</li>
+      <li><strong>Las acciones van al borde derecho</strong> del encabezado de su superficie: la banda, la caja o el diálogo.</li>
+      <li><strong>Lo que no se edita</strong> va en su campo, apagado y gris, sin textos al lado (A11, Criterio · Formularios), también lo elegido al crear que ya no se cambia.</li>
+      <li><strong>Mientras dura un límite de pedidos,</strong> el botón queda grisado con su mismo texto, y cuándo se puede volver a probar lo dice el aviso de error.</li>
+    </ul>
   </section>
 
   <section>
@@ -692,13 +705,13 @@
       <li>Botones en la barra de filtros.</li>
       <li>Un enlace como acción principal.</li>
       <li>Textos genéricos: Aceptar, OK, Sí, Enviar.</li>
-      <li>Deshabilitar un botón en vez de explicar qué falta.</li>
+      <li>Textos al lado o debajo de un botón: «No hay cambios para guardar», «Primero guardá los cambios», «Revisá los datos marcados».</li><li>«Cambios sin guardar», números de revisión fuera del historial o un botón que cambia su texto mientras trabaja.</li>
     </ul>
   </section>
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2080}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2540}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

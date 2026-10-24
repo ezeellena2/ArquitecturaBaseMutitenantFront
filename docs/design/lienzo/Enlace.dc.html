@@ -631,7 +631,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <div class="msj {{msjTipo}}" role="alert"><svg class="ic-mal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><svg class="ic-aten" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span>{{msjTexto}}<sc-if value="{{msjSub}}" hint-placeholder-val="{{no}}"><span class="sub2">{{msjSub}}</span></sc-if></span></div>
           </sc-if>
 
-          <sc-if value="{{espera}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-pri lg" disabled="{{si}}">Reintentá en {{textoEspera}}</button></sc-if>
+          <sc-if value="{{espera}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-pri lg" disabled="{{si}}">Continuar</button></sc-if>
           <sc-if value="{{sinEspera}}" hint-placeholder-val="{{si}}"><a class="b b-pri lg" href="Inicio-Org.dc.html">Continuar</a></sc-if>
           <p class="nota">¿No pediste entrar? Cerrá esta página: si no tocás Continuar, no pasa nada.</p>
         </div>
@@ -885,7 +885,7 @@ class Component extends DCLogic {
       enSuspendida: s.vista === 'suspendida',
       hayMsj: s.espera > 0,
       msjTipo: 'mal',
-      msjTexto: 'Hiciste demasiadas solicitudes. Esperá un momento y volvé a intentar.',
+      msjTexto: 'Hiciste muchos pedidos seguidos. Probá de nuevo en 0:' + String(s.espera).padStart(2, '0') + '.',
       msjSub: '',
       espera: s.espera > 0,
       sinEspera: s.espera === 0,

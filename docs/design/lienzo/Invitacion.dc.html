@@ -647,7 +647,7 @@ button.b.lg:disabled { cursor: default; }
             </div>
           </sc-if>
           <sc-if value="{{aceptaDirecto}}" hint-placeholder-val="{{si}}">
-            <sc-if value="{{noEnviando}}" hint-placeholder-val="{{si}}"><a class="b b-pri lg" href="Inicio-Org.dc.html">Aceptar invitación</a></sc-if><sc-if value="{{enviando}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-pri lg" disabled="{{si}}" style="opacity: 0.85;"><span class="girar2" aria-hidden="true"></span> Aceptando…</button></sc-if>
+            <sc-if value="{{noEnviando}}" hint-placeholder-val="{{si}}"><a class="b b-pri lg" href="Inicio-Org.dc.html">Aceptar invitación</a></sc-if><sc-if value="{{enviando}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-pri lg" disabled="{{si}}"><span class="girar2" aria-hidden="true"></span> Aceptar invitación</button></sc-if>
             <p class="nota">{{notaAceptar}}</p><sc-if value="{{errAceptar}}" hint-placeholder-val="{{no}}"><div class="msj mal" role="alert"><svg class="ic-mal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><svg class="ic-aten" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span>{{errAceptar}}</span></div></sc-if>
           </sc-if>
           <sc-if value="{{debeIngresar}}" hint-placeholder-val="{{no}}">

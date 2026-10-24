@@ -519,7 +519,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 .roles .rol + .rol::before { content: ", "; }
 /* Sin etiquetas con fondo: el rótulo chico del panel de la marca queda como texto. */
 .kicker { background: transparent !important; padding: 0 !important; border: 0 !important; font-size: 13px !important; font-weight: 600 !important; }
-/* Banda: al lado del título no va nada; estado, «De sistema» y «Cambios sin guardar» van en la segunda línea, separados por un punto medio. */
+/* Banda: al lado del título no va nada; estado y «De sistema» van en la segunda línea, separados por un punto medio. */
 .banda-pag .res { display: flex !important; align-items: center; flex-wrap: wrap; gap: 6px; }
 .banda-pag .res > :empty { display: none !important; }
 .banda-pag .res > * + *::before { content: "·"; color: var(--t3); margin-right: 6px; }
@@ -769,7 +769,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             </div>
           </sc-for>
           <sc-if value="{{limite}}" hint-placeholder-val="{{no}}">
-            <div class="vacio" role="alert"><strong>No pudimos cargar los usuarios.</strong><span>Hiciste muchos pedidos seguidos. Esperá un momento.</span><button type="button" class="b b-sec" disabled>Reintentá en 0:41</button></div>
+            <div class="vacio" role="alert"><strong>No pudimos cargar los usuarios.</strong><span>Hiciste muchos pedidos seguidos. Probá de nuevo en 0:41.</span><button type="button" class="b b-sec" disabled>Reintentar</button></div>
           </sc-if>
           <sc-if value="{{sinResultados}}" hint-placeholder-val="{{no}}">
             <div class="vacio"><strong>Ningún usuario coincide con los filtros</strong><button type="button" class="b b-sec" onClick="{{limpiar}}">Limpiar filtros</button></div>
@@ -1288,7 +1288,7 @@ class Component extends DCLogic {
       ...this.uno('Emp', 'emp', [{ v: null, n: 'Ninguna' }, ...EMPRESAS.map((e) => ({ v: e.id, n: e.n }))], 'Ninguna', { alElegir: () => ({ rolesEmp: [] }) }),
       ...this.varios('RolesEmp', 'rolesEmp', s.emp ? rolesDeEmpresa(s.emp) : [], s.emp ? 'Ninguno' : 'Elegí una empresa primero', { bloqueado: !s.emp }),
       enviando: s.enviando,
-      textoInvitar: s.enviando ? 'Invitando…' : 'Invitar',
+      textoInvitar: 'Invitar',
       invitar: () => this.invitar(),
     };
   }

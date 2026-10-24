@@ -6,7 +6,7 @@ nueva, sin historial, sin opciones de alcance ni destinatario y sin «Confirmá 
 - lo que salió bien, el aviso verde de abajo a la derecha (en el teléfono, la franja oscura);
 - lo que falló, el aviso rojo con ✕ y, si es de red, «Reintentar» (tablero Avisos);
 - lo que sigue pasando, el cartel arriba del contenido: «Descargando tus datos…»;
-- el límite de pedidos, el cartel y el botón «Reintentá en 0:41» de la Etapa 9;
+- el límite de pedidos, el aviso rojo con cuándo probar de nuevo y el botón grisado (24/10);
 - sin un correo verificado, el botón apagado con ⓘ que abre el motivo, como «Dar de baja» de la única Dueña.
 Los textos de error son los del contrato (Identity.DataExport.*), salvo el de un pedido ajeno (404), que no cuenta si existe.
 
@@ -30,10 +30,9 @@ T_RED = "No pudimos conectarnos. Revisá tu conexión."
 T_VENCIO = "Este enlace venció. Volvé a pedir tus datos."
 T_AJENO = "No encontramos esos datos en tu cuenta. Si los pediste con otra, entrá con esa."
 T_DESCARGA = "No pudimos descargar tus datos. Probá de nuevo."
-T_LIMITE = "Hiciste muchos pedidos seguidos. Esperá un momento."
+T_LIMITE = "Hiciste muchos pedidos seguidos. Probá de nuevo en 0:41."  # el aviso de error de siempre (24/10)
 T_BAJANDO = "Descargando tus datos…"
 T_SIN_CORREO = "Agregá y verificá un correo para recibir tus datos."
-BOTON_LIMITE = "Reintentá en 0:41"
 TEL = "011 15-5555-4521"
 
 ESTADOS = ["Sin pedir", "Pidiendo", "Recibimos el pedido", "Sin conexión", "Demasiados pedidos", "Sin correo verificado",
@@ -71,16 +70,17 @@ def fin_de(t, i, abre, cierra):
 # ================================================================ Cuenta (compu): un Tweak «exportar»
 JS_CUENTA = """// Etapa 10 · Exportar mis datos: textos del contrato (Identity.DataExport.*) y avisos comunes de la app.
 const EXP_OK = { 'Recibimos el pedido': %(ok1)s, 'Desde el correo: descargado': %(ok2)s };
-const EXP_MAL = { 'Sin conexión': %(red)s, 'Desde el correo: venció': %(vencio)s, 'Desde el correo: otra cuenta': %(ajeno)s, 'Desde el correo: no se pudo descargar': %(descarga)s };
+const EXP_MAL = { 'Sin conexión': %(red)s, 'Demasiados pedidos': %(limite)s, 'Desde el correo: venció': %(vencio)s, 'Desde el correo: otra cuenta': %(ajeno)s, 'Desde el correo: no se pudo descargar': %(descarga)s };
 const EXP_REINTENTAR = ['Sin conexión', 'Desde el correo: no se pudo descargar'];
 function exportar(e, s, c, conModulo) {
   // Sin correo verificado: la cuenta entra solo con su WhatsApp (400 Identity.DataExport.EmailRequired).
   const soloTel = e.startsWith('Sin correo verificado');
   const v = {
-    expTexto: e === 'Pidiendo' ? 'Pidiendo…' : e === 'Demasiados pedidos' ? %(boton)s : 'Exportar',
+    // 24/10: mientras pide o mientras dura el límite, grisado con su mismo texto (y el aro, si está pidiendo).
+    expPidiendo: e === 'Pidiendo',
     expApag: e === 'Pidiendo' || e === 'Demasiados pedidos',
     expPuede: !soloTel, expSinCorreo: soloTel,
-    expLimite: e === 'Demasiados pedidos', expBajando: e === 'Desde el correo: descargando',
+    expBajando: e === 'Desde el correo: descargando',
     expMal: s.expCerrado ? '' : (EXP_MAL[e] || ''), expReintentar: EXP_REINTENTAR.includes(e),
     expCerrar: () => c.setState({ expCerrado: true }),
     expInfo: s.expInfo || (e === 'Sin correo verificado: el motivo' && !s.expVisto),
@@ -94,13 +94,15 @@ function exportar(e, s, c, conModulo) {
 
 """ % {"ok1": json.dumps(T_OK_PEDIDO, ensure_ascii=False), "ok2": json.dumps(T_OK_BAJADO, ensure_ascii=False), "red": json.dumps(T_RED, ensure_ascii=False),
        "vencio": json.dumps(T_VENCIO, ensure_ascii=False), "ajeno": json.dumps(T_AJENO, ensure_ascii=False), "descarga": json.dumps(T_DESCARGA, ensure_ascii=False),
-       "boton": json.dumps(BOTON_LIMITE, ensure_ascii=False), "tel": json.dumps(TEL, ensure_ascii=False)}
+       "limite": json.dumps(T_LIMITE, ensure_ascii=False), "tel": json.dumps(TEL, ensure_ascii=False)}
 
 CSS_CUENTA = """  <style MARCA>
 .p-aviso.mal { border-color: oklch(0.57 0.2 25 / 0.45); align-items: flex-start; }
 .p-aviso .o-tt { flex: 1; display: flex; flex-direction: column; gap: 6px; padding-top: 1px; }
 .p-aviso .ib { margin: -6px -6px -6px 0; }
 .p-aviso .o-lnk { height: auto; padding: 0; font-size: 13px; }
+.ex-gira { display: inline-block; width: 14px; height: 14px; margin-right: 6px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; vertical-align: -2px; animation: ex-gira 0.8s linear infinite; }
+@keyframes ex-gira { to { transform: rotate(360deg); } }
 .w-body > .w-cartel { flex-shrink: 0; }
 .w-cartel svg { flex-shrink: 0; }
   </style>""".replace("MARCA", MARCA)
@@ -125,7 +127,8 @@ def cuenta():
     assert m, "la fila de Exportar mis datos"
     ic = m.group(1)
     fila = (f'<sc-if value="{{{{expPuede}}}}" hint-placeholder-val="{{{{si}}}}"><div class="w-it" {MARCA}><span class="p-ic">{ic}</span><span class="dato"><b>Exportar mis datos</b></span>'
-            '<button type="button" class="cb cb-sec ch" disabled="{{expApag}}">{{expTexto}}</button></div></sc-if>'
+            '<button type="button" class="cb cb-sec ch" disabled="{{expApag}}"><sc-if value="{{expPidiendo}}" hint-placeholder-val="{{no}}">'
+            '<span class="ex-gira" aria-hidden="true"></span></sc-if>Exportar</button></div></sc-if>'
             f'<sc-if value="{{{{expSinCorreo}}}}" hint-placeholder-val="{{{{no}}}}"><div class="w-it"><span class="p-ic">{ic}</span><span class="dato"><b class="o-fila-tit">Exportar mis datos'
             f'<button type="button" class="o-i" aria-label="Por qué no podés exportar tus datos" onClick="{{{{verExp}}}}">{INFO}</button></b></span>'
             '<button type="button" class="cb cb-sec ch o-apagado" aria-disabled="true" onClick="{{verExp}}">Exportar</button></div></sc-if>')
@@ -145,7 +148,6 @@ def cuenta():
     # Carteles arriba del contenido: el límite (Etapa 9) y la descarga desde el correo
     a = '</div></div><div class="w-body"><div class="w-caja"><div class="w-cab"><span>Tus datos</span>'
     t = r(t, a, a.replace('<div class="w-body">', '<div class="w-body">'
-                          f'<sc-if value="{{{{expLimite}}}}" hint-placeholder-val="{{{{no}}}}"><div class="w-cartel" role="alert">{TRI}<span class="tx">{T_LIMITE}</span></div></sc-if>'
                           f'<sc-if value="{{{{expBajando}}}}" hint-placeholder-val="{{{{no}}}}"><div class="w-cartel info" role="status">{RELOJ}<span class="tx">{T_BAJANDO}</span></div></sc-if>'))
     # El aviso rojo, que se cierra a mano; si es de red o de la descarga, con «Reintentar»
     rojo = (f'<sc-if value="{{{{expMal}}}}" hint-placeholder-val="{{{{no}}}}"><div class="p-aviso mal" role="alert"><span style="color: oklch(0.55 0.2 25); display: inline-flex;">{ALERTA}</span>'
@@ -205,10 +207,10 @@ def tel_variante(base, estado):
     b = r(base, INICIO_CUERPO, INICIO_CUERPO.replace('<span class="ap-gtit">', f'<span class="ap-gtit" style="margin-top: -{SUBIR_TEL}px;">'))
     cuerpo = INICIO_CUERPO.replace('<span class="ap-gtit">', f'<span class="ap-gtit" style="margin-top: -{SUBIR_TEL}px;">')
     if estado == "Pidiendo":
-        b = r(b, FILA_TEL, FILA_TEL.replace('<span class="acc-t">Exportar</span>', '<span class="acc-t apag">Pidiendo…</span>'))
+        b = r(b, FILA_TEL, FILA_TEL.replace('<span class="acc-t">Exportar</span>', '<span class="acc-t apag">Exportar</span>'))
     elif estado == "Demasiados pedidos":
-        b = r(b, FILA_TEL, FILA_TEL.replace('<span class="acc-t">Exportar</span>', f'<span class="acc-t apag">{BOTON_LIMITE}</span>'))
-        b = r(b, cuerpo, cartel(T_LIMITE) + cuerpo)
+        b = r(b, FILA_TEL, FILA_TEL.replace('<span class="acc-t">Exportar</span>', '<span class="acc-t apag">Exportar</span>'))
+        b = b[:b.rindex("</div>")] + SNACK_MAL.format(T_LIMITE, "") + "</div>"
     elif estado.startswith("Sin correo verificado"):
         # Solo el WhatsApp, como principal: sin correos
         b = re.sub(r'<div class="ap-it "><span class="tx"><b>lucia\.fer@gmail\.com</b><span>Principal</span></span></div>', "", b, count=1)

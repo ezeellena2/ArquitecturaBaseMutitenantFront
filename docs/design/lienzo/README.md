@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 136** (2026-10-20) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 283 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 137** (2026-10-24) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 283 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 El 2026-10-10 el usuario aprobó corregir localmente, sobre v115, la confirmación y el aviso de revocación de clave propia en `Organizacion.dc.html`: revocar no cambia automáticamente la financiación ni los topes. El tablero móvil sólo contiene la fila y su hoja de acciones, sin esas promesas. Este ajuste de fuente no declara una publicación remota ni una versión nueva del lienzo. La versión 116 lo publica, junto con «Avanzado: datos técnicos» en el diálogo de agregar o editar un modelo del catálogo (`Plat-Asistente-Config` y `M-Plat-Asistente-Config`, D26). La versión 117 suma el segundo factor de los operadores (Etapa 9: bloqueo, recuperación, «Confirmá que sos vos» y «Restablecer el autenticador») y pone al día los tableros de WhatsApp de atención (Etapa 11) con las ADR 0043 a 0049, con `generadores/alineamiento_v117_1004.py`. La versión 118 completa «Avanzado: datos técnicos» del catálogo de modelos con los campos del contrato del back (`853b5aed`): capacidades, esfuerzos permitidos, caché de 5 minutos y de 1 hora, y contexto largo con su caché. La versión 119 saca del resumen de `Asistente-Uso-Org` la clave en uso y las consultas por persona por día, que pueden cambiar a mitad de mes y se ven en Configuración. La versión 120 pone un tope a «Para resolver»: cada tipo de pendiente en su grupo, con su total, hasta 10 filas y «Ver todos» hacia el listado filtrado (`generadores/para_resolver_v120_1004.py`). La versión 121 pasa «Decisiones por pantalla» a tres columnas, para que quede debajo de los 8000 de alto que el lienzo admite. La versión 122 dibuja la Etapa 12, Formularios por WhatsApp: la página «Organización · Formularios» con 10 tableros de compu y 5 de teléfono (listado, nuevo, ficha con Preguntas, Inglés y Publicación, pregunta, prefijo, publicar, y mandar y recibir un formulario en un chat de Internos), y suma «Formularios» al menú de la organización, sus 5 permisos en Rol y el módulo en la ficha de una organización (`generadores/formularios_1004.py` y `generadores/formularios_ajustes_1004.py`). La versión 123 publica la regla única de secciones, pestañas y filtros en todo el lienzo y la Etapa 13 en curso, tal como las dejó Diseño (`f2f8e5bb`), y deja los tableros de la Etapa 11 sin contradicciones con las decisiones D1 a D9 del plan y con los estados que faltaban (`generadores/etapa11_1004.py`):
 - números con el contador siempre, sin medio de pago, el tope pasado, desconectar y «A quién atiende»;
@@ -93,6 +93,8 @@ La versión 136, aprobada por el usuario el 20/10, ordena los menús de ficha y 
 - en la compu, cada opción de un ⋮ lleva su ícono gris, el mismo para la misma acción, en los diez tableros que no lo tenían;
 - A11: el Proveedor de un modelo, el teléfono al editar un contacto y la bandeja al editar un equipo pasan a campo apagado, y Configuración suma su estado de solo lectura (Tweak «permiso» y estado en `M-Configuracion`).
 
+La versión 137, aprobada por el usuario el 24/10, pasa al lienzo el flujo de botones y avisos que decidió el usuario ese día (`generadores/botones_sin_explicar_1004.py`, que corre al final de todo): un botón está habilitado o grisado, sin textos al lado ni debajo; la banda no dice «Cambios sin guardar»; el botón que trabaja o espera queda grisado con su mismo texto, sin «Guardando…» ni la cuenta «Reintentá en…», que pasa al aviso de error. Lo cambian Criterio · Botones, Criterio · Marco, Criterio · Decisiones, este README y los tableros del sistema; los de formularios cambian con su etapa, y «Reenviar en 30 s» queda hasta que el usuario decida.
+
 Los generadores de Formularios leen sus tableros base de commits fijos (`f2f8e5bb` y `d5d5edc5`) para no seguir cambios posteriores de otros generadores.
 
 **La guía del lienzo** recorre estas pantallas en el orden en que una persona usa el sistema: <https://claude.ai/artifact/3afhCQaqwMx6kLxY4B6gpZ>. Se regenera y se publica con cada versión del lienzo; cómo, en [`../guia/README.md`](../guia/README.md).
@@ -159,10 +161,13 @@ Lo que manda son los tableros «Criterio · …». Estas son las decisiones que 
   - un error de formulario: debajo del campo, o en una franja arriba;
   - lo que sigue pasando: un cartel debajo de la banda;
   - lo que no se deshace: un diálogo de confirmación, sin ✕ y con el botón rojo lleno.
-- **Botones:**
-  - solo «Guardar cambios» se apaga cuando no hay cambios;
+- **Botones** (decisión del usuario del 2026-10-24):
+  - un botón está habilitado o grisado, sin textos al lado ni debajo; si el motivo no es obvio, va en su tooltip;
+  - «Guardar cambios» se habilita cuando hay cambios, y al salir con cambios se pregunta «¿Salir sin guardar?»; la banda no dice «Cambios sin guardar» ni muestra revisiones;
+  - lo que necesita algo antes queda grisado, como publicar con cambios sin guardar;
+  - mientras trabaja, el botón queda grisado con su mismo texto: nada de «Guardando…»;
+  - mientras dura un límite de pedidos, también: cuándo se puede volver a probar lo dice el aviso de error («Reenviar en 30 s», al pedir un código, queda hasta que el usuario decida);
   - «Descartar cambios» siempre está habilitado;
-  - nada se deshabilita sin explicar por qué;
   - el único ícono que lleva un botón es el «+».
 - **Menús:**
   - las acciones de fila y las secundarias van en ⋮;
