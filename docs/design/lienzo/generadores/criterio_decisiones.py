@@ -6,7 +6,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 6900
+ALTO = 7320
 ANCHO = 5920
 COLUMNAS = 4
 ARCHIVO = "Criterio-Decisiones.dc.html"
@@ -370,7 +370,7 @@ DECISIONES = {
         ("Aviso al llegar a un límite", "A", "El botón queda grisado con su mismo texto mientras dura, y el aviso de error dice cuándo probar de nuevo (24/10: antes el botón decía «Reintentá en 0:41»); después se toca a mano y no se pierde lo escrito. Si el botón es un ícono (mandar en el Asistente), la cuenta va en el aviso. En una lectura, el estado de error de la página con el mismo botón. Nunca se repite solo (Asistente, Rol y Usuarios).", "Dibujada"),
         ("Auditoría · eventos nuevos", "", "Configuró el autenticador, Restableció el autenticador (con su motivo), Ingresó con un código de recuperación y Confirmó con el autenticador; sin códigos ni secretos.", "Dibujada"),
         ("Etapa 9 · teléfono", "", "Las mismas piezas en la hoja de abajo; los límites, en filas con «cada», y el aviso arriba de la barra de abajo.", "Dibujada"),
-        ("Roles · Inactivar", "", "Con usuarios, «Inactivar» va apagado en el ⋮ con el motivo debajo: «Lo tiene 1 usuario. Quitáselo primero.» o «Lo tienen N usuarios. Quitáselo primero.» (correctivo R10, como la app).", "Dibujada"),
+        ("Roles · Inactivar", "", "Con usuarios, «Inactivar» va grisado en el ⋮, sin texto debajo, con el motivo en su tooltip: «Lo tiene 1 usuario. Quitáselo primero.» o «Lo tienen N usuarios. Quitáselo primero.» (correctivo R10; decisión 43 del 24/10).", "Dibujada"),
     ],
     "E17 · Biblioteca de formularios · El usuario · 14/10 a 17/10": [
         ("Plataforma · dónde", "A", "«Formularios» es un grupo de Administración, con Biblioteca y Categorías.", "Dibujada"),
@@ -426,7 +426,7 @@ DECISIONES = {
         ("El ⋮ de una fila", "", "Abre hacia abajo; sube solo si no hay lugar, en las dos últimas filas de una página llena.", "Dibujada"),
     ],
     "E15 · La planilla, el detalle y el Excel · La Guía · 18/10": [
-        ("Respuestas en el panel", "", "Un grupo del panel de Formularios, como «Gestión de usuarios»: un enlace por formulario publicado y, con muchos, «Ver todos». Sin el permiso de ver respuestas, el grupo no aparece. En el teléfono, Más › Formularios › Respuestas.", "Dibujada"),
+        ("Respuestas en el panel", "", "Desde el 24/10 no es un grupo del panel: «Formularios» lleva a la lista de formularios (MF1) y, desde ahí, a la planilla de cada uno (decisión 34).", "Dibujada"),
         ("La planilla", "", "Columnas fijas N°, Recibida, Cargó (con el canal) y Empresas; después una por pregunta, con las retiradas al final. «Sin respuesta» y «—» (no existía en esa versión) en gris. Se desplaza a lo ancho con el N° fijo.", "Dibujada"),
         ("Filtros", "", "«Buscar en Observaciones» (solo los textos largos), «Empresa ▾» (decisión 24), «Recibida ▾» y «Más filtros» en un panel al costado, con cuántas respuestas hay en cada opción. Lo elegido va en el filtro, sin fila de chips (Criterio · Menús).", "Dibujada"),
         ("Columnas", "", "«Columnas · 1 oculta ▾» con casillas: lo de la respuesta, las preguntas y las retiradas. Vive en la dirección.", "Dibujada"),
@@ -436,7 +436,7 @@ DECISIONES = {
     "E16 · Reglas, aprobación, PDF y avisos · La Guía · 18/10": [
         ("Cuando llega una respuesta", "", "Sección del editor, debajo de las preguntas, con su propio «Guardar reglas» y el historial a la derecha. Cada regla en palabras (Cuando, Si, Hacer) con ⋮; se edita en el lugar. Que se guardan aparte va en ⓘ.", "Dibujada"),
         ("Diseño del PDF", "", "Página en dos columnas, con «Descartar» y «Guardar diseño» en la banda y la vista previa en Español o English. Si falta el inglés, la vista previa sale en español y lo avisa.", "Dibujada"),
-        ("Por aprobar", "", "En el panel de Formularios, con su cantidad, y en «Para resolver» del inicio. «Ver: para mí ▾» en lugar del segmentado y «Formulario ▾»; de la más vieja a la más nueva. Sin permiso de ver respuestas, se decide en un diálogo sin los datos.", "Dibujada"),
+        ("Por aprobar", "", "Desde el 24/10 no hay bandeja aparte: lo que espera va arriba de la planilla de su formulario, de la más vieja a la más nueva, con «Revisar». El número de «Formularios» en el panel dice cuántas esperan tu decisión; también en «Para resolver» del inicio (decisión 34).", "Dibujada"),
         ("Decidir", "", "En el detalle, Aprobar y Rechazar van en el momento «Por aprobar»; rechazar pide un motivo de hasta 500. La respuesta propia queda apagada con ⓘ; si otra persona decidió antes, avisa y se actualiza. En el teléfono, los botones van fijos abajo.", "Dibujada"),
         ("Actividad y PDF", "", "Pestañas del detalle: qué hizo cada regla, con su estado (Hecho, Leído, Entregado, No se pudo, Sin confirmar), Reintentar y Consultar, y «Resolver el envío». El PDF es una copia fija, con Ver y Descargar.", "Dibujada"),
         ("Avisos en el chat", "", "Burbuja «Automático» con la tarjeta «Acción del formulario» (aviso o documento). Fuera de las 24 horas queda «No se pudo» (decisión 26).", "Dibujada"),
@@ -474,6 +474,13 @@ DECISIONES = {
         ("Mientras trabaja o espera", "A", "Grisado con su mismo texto: sin «Guardando…», «Invitando…» ni «Pidiendo…», y sin la cuenta «Reintentá en 0:41» después de muchos pedidos, que pasa al aviso de error. «Reenviar en 30 s», al pedir un código, queda hasta que el usuario decida.", "Dibujada"),
         ("Sin «Cambios sin guardar»", "A", "La banda no dice «Cambios sin guardar» ni muestra revisiones: su segunda línea es el resumen o el estado del objeto. Se conserva «¿Salir sin guardar?». Salió de los tableros del sistema; los de formularios cambian con su etapa.", "Dibujada"),
         ("Avisos y lugar de las acciones", "A", "Lo que salió bien, en el aviso verde; los errores, debajo del campo o en el aviso rojo, nunca una fila recién agregada en rojo. Las acciones, al borde derecho del encabezado de su superficie. Lo que no se edita, en su campo apagado y gris, sin textos (A11), también lo elegido al crear.", "Decidido"),
+    ],
+    "Gestión de formularios · El usuario · 24/10": [
+        ("El menú", "A", "«Gestión de formularios» en el menú principal; su panel tiene Formularios, con lo que espera tu decisión, Diseñar formularios, Catálogos y Formularios que faltan. «Por aprobar» y «Respuestas» salen del panel; en el teléfono, Más › Gestión de formularios (decisión 34, como ArquitecturaBase).", "Dibujada"),
+        ("Formularios (MF1)", "A", "Una fila por formulario publicado: Por aprobar, Respuestas y Última respuesta con su estado; primero los que tienen algo por aprobar. «Activos | Dados de baja» arriba de la lista, como dos vistas de lo mismo, y «Aprobación ▾» en la caja de filtros en lugar de la casilla de allá (Criterio · Menús).", "Dibujada"),
+        ("Al entrar en uno", "A", "Arriba de la planilla, «Por aprobar · 3», de la más vieja a la más nueva, con «Revisar»; la ← vuelve a Formularios. En el teléfono, el mismo grupo arriba y «Todas las respuestas» debajo.", "Dibujada"),
+        ("Según los permisos", "", "Quien solo ve respuestas: sin «Por aprobar» ni número en el panel. Quien solo aprueba: solo sus formularios con algo por aprobar, sin Respuestas ni Última respuesta. Sin ninguno de los dos, no ve «Formularios» y la dirección dice que no tiene permiso.", "Dibujada"),
+        ("Opción de menú apagada", "A", "Queda solo grisada, sin texto debajo, con el motivo en su tooltip (decisión 43; reemplaza la del 13/10). Las de formularios cambian con su etapa.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

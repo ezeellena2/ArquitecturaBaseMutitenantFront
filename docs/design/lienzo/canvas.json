@@ -849,7 +849,7 @@
       "x": 10640,
       "y": 260,
       "w": 5920,
-      "h": 6900,
+      "h": 7320,
       "title": "Criterio · Decisiones por pantalla",
       "page": "criterio"
     },
@@ -2104,7 +2104,7 @@
       "x": 0,
       "y": 260,
       "w": 1440,
-      "h": 1195,
+      "h": 1214,
       "title": "Índice general · tocá Play y elegí un área",
       "page": "mapa",
       "is_interactive": true
@@ -2227,7 +2227,7 @@
       "is_interactive": true
     },
     "FRM-Respuestas.dc.html": {
-      "x": 0,
+      "x": 1520,
       "y": 8200,
       "w": 1440,
       "h": 900,
@@ -2236,7 +2236,7 @@
       "is_interactive": true
     },
     "FRM-Respuestas-Filtros.dc.html": {
-      "x": 1520,
+      "x": 3040,
       "y": 8200,
       "w": 1440,
       "h": 900,
@@ -2245,7 +2245,7 @@
       "is_interactive": true
     },
     "FRM-Respuesta.dc.html": {
-      "x": 3040,
+      "x": 4560,
       "y": 8200,
       "w": 1440,
       "h": 900,
@@ -2254,7 +2254,7 @@
       "is_interactive": true
     },
     "FRM-Respuestas-Exportar.dc.html": {
-      "x": 4560,
+      "x": 6080,
       "y": 8200,
       "w": 1440,
       "h": 900,
@@ -2267,7 +2267,7 @@
       "y": 9220,
       "w": 390,
       "h": 844,
-      "title": "Formularios · Respuestas · teléfono",
+      "title": "Formularios · Formularios y sus respuestas · teléfono",
       "page": "formularios",
       "is_interactive": true
     },
@@ -2299,12 +2299,12 @@
       "is_interactive": true
     },
     "FRM-Por-Aprobar.dc.html": {
-      "x": 3040,
-      "y": 10240,
+      "x": 0,
+      "y": 5360,
       "w": 1440,
       "h": 900,
       "title": "Formularios · por aprobar",
-      "page": "formularios",
+      "page": "archivo",
       "is_interactive": true
     },
     "FRM-Respuesta-Aprobacion.dc.html": {
@@ -2335,12 +2335,12 @@
       "is_interactive": true
     },
     "M-FRM-Por-Aprobar.dc.html": {
-      "x": 3040,
-      "y": 11220,
+      "x": 0,
+      "y": 6380,
       "w": 390,
       "h": 844,
       "title": "Formularios · por aprobar · teléfono",
-      "page": "formularios",
+      "page": "archivo",
       "is_interactive": true
     },
     "M-FRM-Respuesta-Aprobacion.dc.html": {
@@ -2486,6 +2486,15 @@
       "title": "Formularios · las reglas que trae una plantilla · teléfono",
       "page": "formularios",
       "is_interactive": true
+    },
+    "FRM-Formularios.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "formularios",
+      "title": "Formularios · la lista de formularios",
+      "w": 1440,
+      "x": 0,
+      "y": 8200
     }
   },
   "createdOnFiles": {

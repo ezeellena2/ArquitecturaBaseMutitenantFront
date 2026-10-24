@@ -150,7 +150,7 @@ BODY = f"""<div class="crit">
       <div class="caso3"><span class="rotc">Usuario deshabilitado</span>{menu_fila("Marcos Giménez", "Deshabilitado", [(CHECKC, "Habilitar", ""), "-", (QUITAR, "Quitar de la organización", "pel")])}</div>
     </div>
     <ul class="reglas2" style="margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 40px;">
-      <li><strong>Solo lo que se puede hacer con esa fila.</strong> Lo que no aplica no aparece; nada de opciones grises.</li>
+      <li><strong>Solo lo que se puede hacer con esa fila.</strong> Lo que no aplica no aparece. Lo que no se puede usar todavía queda grisado, sin texto debajo, con el motivo en su tooltip: «Inactivar» en un rol con usuarios.</li>
       <li><strong>Las comunes arriba;</strong> las de peligro abajo, en rojo y después de una franja.</li>
       <li><strong>Una línea fina entre cada opción,</strong> en la compu y en el teléfono.</li>
       <li><strong>Cada opción con su ícono gris</strong> y un verbo: «Editar», «Reenviar invitación».</li>
@@ -278,7 +278,7 @@ BODY = f"""<div class="crit">
     <h2>Prohibido</h2>
     <ul class="prohibido">
       <li>Submenús que se abren al costado de otro menú.</li>
-      <li>Una opción gris sin su motivo. Si no aplica, no va; si no se puede usar por algo que se puede resolver, va en gris con el motivo debajo.</li>
+      <li>Una opción gris con un texto debajo que explica por qué: el motivo va en su tooltip.</li>
       <li>La acción principal escondida en un ⋮.</li>
       <li>Más de 8 opciones: es una pantalla o un desplegable con buscador.</li>
       <li>Íconos de colores, etiquetas o textos sueltos a la derecha que cuentan un estado.</li>
