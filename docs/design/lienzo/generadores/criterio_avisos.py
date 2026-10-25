@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 2620
+ALTO = 2920
 ARCHIVO = "Criterio-Avisos.dc.html"
 TITULO = "Criterio · Avisos y errores"
 
@@ -72,6 +72,23 @@ CSS = """  <style data-criterio="avisos">
 .sw3 { width: 36px; height: 20px; border-radius: 999px; background: oklch(0.88 0.01 78); position: relative; margin-left: 8px; }
 .sw3::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
 .esc .tarj .ej { font-size: 13.5px; color: var(--t1); background: var(--s2); border-radius: 8px; padding: 8px 10px; }
+.pant .barra { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 0 14px; }
+.pant .barra .yo { width: 120px; height: 14px; border-radius: 7px; background: oklch(0.87 0.022 75); }
+.pant .banda { flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; height: 64px; }
+.cmp { position: relative; width: 34px; height: 34px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; color: var(--t2); }
+.cmp.on { background: oklch(0.24 0.014 78 / 0.06); color: var(--t1); }
+.cmp .n { position: absolute; top: 0; right: -2px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: var(--marca); color: #fff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; border: 2px solid oklch(0.925 0.02 75); }
+.cmp-l { position: absolute; right: 150px; top: 46px; width: 330px; background: #fff; border: 1px solid var(--borde); border-radius: 12px; box-shadow: 0 16px 40px oklch(0.24 0.014 78 / 0.16); overflow: hidden; font-size: 13px; }
+.cmp-l .it { display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; }
+.cmp-l .it + .it { border-top: 1px solid var(--borde); }
+.cmp-l .it small { font-size: 12px; color: var(--t3); }
+.cmp-l .cab { padding: 10px 14px; border-bottom: 1px solid var(--borde); font-weight: 700; }
+.mini-cmp { display: flex; flex-direction: column; border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: 13px; }
+.mini-cmp .it { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; }
+.mini-cmp .it + .it { border-top: 1px solid var(--borde); }
+.mini-cmp .it small { font-size: 12px; color: var(--t3); }
+.banda-mini { display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border: 1px solid var(--borde); border-radius: 10px; }
+.banda-mini strong { font-size: 15px; }
   </style>"""
 
 OK = '<span class="ic-ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg></span>'
@@ -80,6 +97,7 @@ X = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="current
 INFO = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><path d="M12 7.8h.01"/></svg>'
 TRI = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>'
 NUBE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M8.5 8.5A5 5 0 0 0 7 18h10"/><path d="M12 6a5 5 0 0 1 5 5 4 4 0 0 1 3 6"/></svg>'
+CAMPANA = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>'
 CERRAR = f'<button type="button" class="ib" aria-label="Cerrar">{X}</button>'
 
 
@@ -90,7 +108,7 @@ def fila(que, donde, dura, ej):
 BODY = f"""<div class="crit">
   <div>
     <h1>Avisos y errores</h1>
-    <p class="sub">Cada cosa que pasa tiene un solo lugar. Así se sabe al instante si algo salió bien, salió mal o queda algo pendiente.</p>
+    <p class="sub">Cada aviso tiene un solo lugar: lo que acabás de hacer, abajo; el estado de lo que mirás, en la banda; todo lo demás, en la campana.</p>
   </div>
 
   <section>
@@ -98,9 +116,11 @@ BODY = f"""<div class="crit">
     <div class="donde">
       <div class="c"><span>Qué pasó</span><span>Dónde se ve</span><span>Cuánto dura</span><span>Ejemplo</span></div>
       {fila("Hiciste algo y salió bien", "Aviso abajo a la derecha, con tilde verde", "Se va solo a los 4 segundos", "«Guardamos tus datos.»")}
-      {fila("Un formulario tiene algo mal", "En el formulario: debajo del campo, o una franja arriba de los botones", "Hasta que lo corregís", "«Escribí el correo.»")}
-      {fila("Una acción directa falló (un ⋮, un botón)", "Aviso abajo a la derecha, rojo, con ✕", "No se va solo: lo cerrás vos", "«No pudimos conectarnos. Revisá tu conexión.»")}
-      {fila("Hay algo pendiente o que sigue pasando", "Cartel arriba del contenido, debajo de la banda", "Mientras siga pasando", "«Agregá un correo personal o tu WhatsApp…»")}
+      {fila("Hiciste algo y falló (un botón, un ⋮)", "Aviso abajo a la derecha, rojo, con ✕", "No se va solo: lo cerrás vos", "«No pudimos conectarnos. Revisá tu conexión.»")}
+      {fila("Un formulario tiene algo mal", "En su franja; el de un dato, debajo del campo, al intentar guardar", "Hasta que lo corregís", "«Escribí el correo.»")}
+      {fila("El estado de lo que mirás", "En la banda, con punto y palabra; lo que falló, marcado en su lugar", "Mientras siga así", "«● No se pudo publicar»")}
+      {fila("Llegó algo, falló algo en segundo plano o algo espera a alguien", "En la campana del encabezado, con su número; cada aviso lleva a donde se resuelve", "Hasta que se resuelve", "«4 respuestas por aprobar»")}
+      {fila("Algo bloquea la pantalla entera", "Cartel arriba del contenido: el único cartel en el cuerpo", "Mientras siga pasando", "«Grupo Delta está suspendida»")}
       {fila("La pantalla no se puede mostrar", "La pantalla entera", "Hasta que reintentás o te vas", "«No pudimos abrir esta pantalla»")}
       {fila("Vas a hacer algo que no se deshace", "Diálogo de confirmación, antes de hacerlo", "Hasta que decidís", "«¿Revocar la invitación a Sofía Herrera?»")}
     </div>
@@ -108,25 +128,27 @@ BODY = f"""<div class="crit">
 
   <section>
     <h2>Dónde queda cada uno en la pantalla</h2>
-    <div class="pant" aria-label="Pantalla de ejemplo con un cartel y un aviso">
+    <div class="pant" aria-label="Pantalla de ejemplo con la campana, la banda y un aviso">
       <div class="lado"></div>
       <div class="col">
-        <div class="barra"></div>
-        <div class="banda">Mi cuenta</div>
+        <div class="barra"><span class="cmp on">{CAMPANA}<span class="n">4</span></span><span class="yo"></span></div>
+        <div class="banda">Control de vehículo<span class="est2">No se pudo publicar</span></div>
         <div class="cont">
-          <div class="cartel aten">{TRI}<span class="tx">Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.</span><button type="button" class="cb cb-sec ch">Agregar</button></div>
           <div class="bloque"></div>
           <div class="bloque" style="height: 80px;"></div>
         </div>
       </div>
-      <div style="position: absolute; right: 20px; bottom: 20px;"><div class="toast3">{OK}<span class="tx">Guardamos tus datos.</span></div></div>
-      <span class="marca-num" style="left: 214px; top: 112px;">1</span>
-      <span class="marca-num" style="right: 386px; bottom: 32px;">2</span>
+      <div class="cmp-l"><div class="cab">Avisos</div><div class="it">Llegaron 5 tickets de combustible que no encajan en ningún formulario<small>hace 10 min</small></div><div class="it">4 respuestas por aprobar<small>hoy, 09:12</small></div></div>
+      <div style="position: absolute; right: 20px; bottom: 20px;"><div class="toast3">{OK}<span class="tx">Guardamos los cambios.</span></div></div>
+      <span class="marca-num" style="right: 196px; top: 9px;">1</span>
+      <span class="marca-num" style="left: 440px; top: 78px;">2</span>
+      <span class="marca-num" style="right: 386px; bottom: 32px;">3</span>
     </div>
     <ul class="reglas2" style="margin-top: 14px;">
-      <li><strong>1 · Cartel:</strong> arriba del contenido, a todo el ancho. Cuenta algo que sigue pasando y, si hay algo para hacer, lleva un botón chico.</li>
-      <li><strong>2 · Aviso:</strong> abajo a la derecha, encima de todo. Si hay varios, se apilan; como mucho, tres.</li>
-      <li><strong>En el teléfono,</strong> el aviso va abajo, en una franja oscura encima de la barra de abajo; el cartel, debajo de la barra de arriba.</li>
+      <li><strong>1 · Campana:</strong> en el encabezado, al lado del nombre, con su número. Abre la lista: cada aviso es una línea y cuándo, y lleva a donde se resuelve.</li>
+      <li><strong>2 · Banda:</strong> el estado de lo que mirás, con punto y palabra. Lo que falló se marca en su lugar, con un ⓘ.</li>
+      <li><strong>3 · Aviso:</strong> abajo a la derecha, encima de todo, solo para lo que acabás de hacer. Si hay varios, se apilan; como mucho, tres.</li>
+      <li><strong>En el teléfono,</strong> la campana va en la barra de arriba de las pantallas principales y abre su pantalla; lo pasajero, en la franja oscura de abajo.</li>
     </ul>
   </section>
 
@@ -136,9 +158,9 @@ BODY = f"""<div class="crit">
       <div class="pieza2"><div class="dib"><div class="toast3">{OK}<span class="tx">Guardamos tus datos.</span></div></div><strong>Salió bien</strong><p>Tilde verde. Se va solo. No lleva botones.</p></div>
       <div class="pieza2"><div class="dib"><div class="toast3 mal">{MAL}<span class="tx">No pudimos conectarnos. Revisá tu conexión.</span>{CERRAR}</div></div><strong>Falló una acción directa</strong><p>Ícono rojo y ✕. Queda hasta que lo cerrás.</p></div>
       <div class="pieza2"><div class="dib"><div class="campo-err"><span class="rot">Correo</span><div class="ctl">sofia.herrera@</div><span class="e">Revisá el correo: no parece válido.</span></div></div><strong>Error en un formulario</strong><p>En el lugar, nunca en un aviso. Ver «Formularios y campos».</p></div>
-      <div class="pieza2"><div class="dib"><div class="cartel info">{INFO}<span class="tx">Hay una versión nueva</span><button type="button" class="cb cb-sec ch">Actualizar</button></div></div><strong>Cartel de información</strong><p>Petróleo: te contamos algo.</p></div>
-      <div class="pieza2"><div class="dib"><div class="cartel aten">{TRI}<span class="tx">Agregá un correo personal o tu WhatsApp para no perder tu cuenta.</span></div></div><strong>Cartel de atención</strong><p>Ámbar: tenés que hacer algo.</p></div>
-      <div class="pieza2"><div class="dib"><div class="cartel prob">{NUBE}<span class="tx">Sin conexión</span></div></div><strong>Cartel de problema</strong><p>Rojo: algo no funciona ahora.</p></div>
+      <div class="pieza2"><div class="dib"><div class="mini-cmp"><div class="it">WhatsApp rechazó la versión 3 de Control de vehículo<small>hace 1 hora</small></div><div class="it">4 respuestas por aprobar<small>hoy, 09:12</small></div></div></div><strong>La campana</strong><p>Lo que llegó, lo que falló en segundo plano y lo que espera a alguien.</p></div>
+      <div class="pieza2"><div class="dib"><div class="banda-mini"><strong>Control de vehículo</strong><span class="est2">No se pudo publicar</span></div></div><strong>El estado, en la banda</strong><p>Punto y palabra; el motivo, en el ⓘ de donde falló.</p></div>
+      <div class="pieza2"><div class="dib"><div class="cartel prob">{NUBE}<span class="tx">Sin conexión</span></div></div><strong>Cartel que bloquea</strong><p>Solo si la pantalla entera no se puede usar.</p></div>
     </div>
     <div class="g3c" style="margin-top: 16px;">
       <div class="pieza2"><div class="dib"><div class="err-pant"><span class="circ">{MAL}</span><strong>No pudimos abrir esta pantalla</strong><button type="button" class="cb cb-sec ch">Reintentar</button></div></div><strong>Pantalla de error</strong><p>Cuando no se puede mostrar nada de la pantalla.</p></div>
@@ -150,7 +172,7 @@ BODY = f"""<div class="crit">
     <div class="esc">
       <div class="tarj"><strong>Salió bien</strong><span class="f">En pasado y en plural: lo que hicimos.</span><span class="ej">Guardamos tus datos.</span><span class="ej">Quitamos lucia.fer@gmail.com.</span></div>
       <div class="tarj"><strong>Salió mal</strong><span class="f">«No pudimos» y qué, y después qué hacer.</span><span class="ej">No pudimos conectarnos. Revisá tu conexión.</span><span class="ej">No pudimos completar el ingreso con Google.</span></div>
-      <div class="tarj"><strong>Cartel</strong><span class="f">Qué pasa y, si hay algo para hacer, un botón.</span><span class="ej">Hay una versión nueva · Actualizar</span><span class="ej">Grupo Delta está suspendida</span></div>
+      <div class="tarj"><strong>En la campana</strong><span class="f">Qué pasó y con qué, en una línea.</span><span class="ej">Llegaron 5 tickets de combustible que no encajan en ningún formulario</span><span class="ej">No se pudo mandar el aviso de VIS-000126</span></div>
     </div>
   </section>
 
@@ -180,7 +202,9 @@ BODY = f"""<div class="crit">
       <li>Un error en un aviso que se va solo.</li>
       <li>El mismo error en dos lugares: en el formulario y abajo.</li>
       <li>Un diálogo para contar que algo salió bien.</li>
-      <li>Cerrar un cartel mientras lo que avisa sigue pasando.</li>
+      <li>Un cartel en el cuerpo de una pantalla para algo que no la bloquea: va en la campana.</li>
+      <li>Lo que llegó o falló en segundo plano en un aviso de abajo: va en la campana.</li>
+      <li>Cerrar el cartel que bloquea mientras sigue pasando.</li>
       <li>Textos como «Error», «Ups», «Operación exitosa» o con signos de exclamación.</li>
       <li>Códigos técnicos o textos en inglés.</li>
       <li>Párrafos o líneas que explican en la pantalla: van detrás de un ⓘ.</li>

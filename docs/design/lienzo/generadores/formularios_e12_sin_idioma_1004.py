@@ -8,6 +8,9 @@
   WhatsApp» queda grisado con cambios sin guardar, con el motivo en su tooltip. Sin «Cambios sin guardar», sin textos al
   lado de los botones, sin «Guardado sin confirmar», «Consultar guardado», «Consultar envío» ni «La comprobación venció».
   El prefijo ya publicado va como la A11. La opción de menú apagada del chat queda solo grisada, con el motivo en su tooltip.
+- Avisos (25/10, pantallas-y-ui.md): sin carteles en el cuerpo. El estado de la publicación va en la banda con su ⓘ (los
+  pasos de «Publicando» y «Consultar ahora» de «Sin confirmar», en el diálogo que abre); la pregunta que rechazó WhatsApp
+  se marca en su lugar; en el teléfono, el estado en la barra y «Publicamos la versión 4» en la franja oscura de abajo.
 
 Rehace FRM-Editor, M-FRM-Editor, FRM-Publicar, FRM-Publicando y los cuatro tableros del chat con las piezas de
 `formularios_ab_1004.py`, cambiadas acá, y les vuelve a pasar lo que les suman los generadores de después (el panel de
@@ -49,8 +52,33 @@ CSS_E12 = """.cb[aria-disabled="true"] { opacity: 0.55; cursor: default; }
 .q-ed .q-rango { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--t2); }
 .q-ed .q-rango .ct { width: 64px; text-align: center; }
 .rt .f-i { margin-left: 4px; }
+.e-kw { position: relative; display: inline-flex; }
+.w-bnd .ac .ib.o-borde { width: 40px; height: 40px; border: 1px solid var(--borde2); border-radius: 10px; box-sizing: border-box; background: #fff; }
+.e-kw .f-menu { position: absolute; top: calc(100% + 6px); right: 0; left: auto; z-index: 30; min-width: 220px; }
+.f-mi.off { color: var(--t3); cursor: default; }
+.f-mi.off svg { color: var(--t3); }
+.f-mi { position: relative; }
+.f-mi .e-tip { top: 50%; right: calc(100% + 12px); transform: translateY(-50%); }
+.f-mi .e-tip::before { top: calc(50% - 4px); right: -4px; }
 .e-dif .no .f-i { margin-left: 4px; }
+.f-bnd-est { white-space: nowrap; }
+.f-bnd-est .f-i { margin-left: 6px; vertical-align: -3px; }
+.f-bnd-est .f-i.btn { cursor: pointer; }
+.q-it.mal { background: oklch(0.985 0.012 25); }
+.ab-chip.mal { border-color: oklch(0.85 0.06 25); background: var(--peligro-t); color: oklch(0.45 0.17 25); }
+.q-it.mal .chips .f-i { color: oklch(0.52 0.19 25); display: inline-flex; align-items: center; }
+.e-pasos.vert { flex-direction: column; gap: 14px; }
+.e-pasos.vert .e-paso { flex: none; }
+.f-snack { position: absolute; z-index: 5; left: 12px; right: 12px; bottom: 110px; display: flex; align-items: center; gap: 10px; padding: 13px 14px 13px 16px; border-radius: 14px; background: oklch(0.27 0.012 60); color: #fff; font-size: 14.5px; line-height: 1.4; box-shadow: 0 8px 24px oklch(0.2 0.01 60 / 0.3); }
+.f-snack .tx { flex: 1; min-width: 0; }
+.f-snack .ok { color: oklch(0.8 0.13 155); display: inline-flex; }
 """
+MAL_OBS = "La ayuda es más larga de lo que admite WhatsApp."
+
+
+def info_btn(texto):
+    """El ⓘ que abre el aviso importante (ImportantNotice): el detalle va en el diálogo."""
+    return F.info(texto).replace('class="f-i"', 'class="f-i btn"', 1).replace('role="img"', 'role="button"', 1)
 
 
 # ================================================================ Las piezas del editor, sin idioma
@@ -129,7 +157,7 @@ def pregunta_fallas():
             "</div></div>")
 
 
-def caja_preguntas(abierta="motivo", vacia=False, menu=False, solo_ver=False, catalogo=None, **_):
+def caja_preguntas(abierta="motivo", vacia=False, menu=False, solo_ver=False, catalogo=None, mal=None, **_):
     if vacia:
         filas, cuenta = '<div class="e-vacio">Todavía no agregaste preguntas.</div>', "0 preguntas"
     else:
@@ -141,6 +169,9 @@ def caja_preguntas(abierta="motivo", vacia=False, menu=False, solo_ver=False, ca
                 filas += pregunta_motivo()
             elif k == 6 and abierta == "fallas":
                 filas += pregunta_fallas()
+            elif k == mal:
+                filas += (A.fila_pregunta(k, n, tipo, ob, None).replace('<div class="q-it">', '<div class="q-it mal">', 1)
+                          .replace('<span class="chips">', '<span class="chips"><span class="ab-chip mal">Corregir</span>' + F.info(MAL_OBS), 1))
             else:
                 filas += A.fila_pregunta(k, n, tipo, ob, None, menu=(menu and k == 4), solo_ver=solo_ver)
         cuenta = f"{len(A.PREGUNTAS)} preguntas"
@@ -161,20 +192,33 @@ def vista(ingles=False, vacia=False, nombre="Visita a cliente"):
     return pv
 
 
-def cuerpo_editor(sup="", abierta="motivo", vacia=False, nombre="Visita a cliente", prefijo="VIS", modo="normal", menu=False, solo_ver=False, catalogo=None, quien=False, **_):
+def cuerpo_editor(sup="", abierta="motivo", vacia=False, nombre="Visita a cliente", prefijo="VIS", modo="normal", menu=False, solo_ver=False, catalogo=None, quien=False, mal=None, **_):
     if abierta is True:
         abierta = "motivo"
     return ('<div class="w-body">' + sup + '<div class="f-cols"><div class="f-pila">'
             + caja_formulario(nombre=nombre, prefijo=prefijo, modo=modo, quien=quien)
-            + caja_preguntas(abierta=None if vacia else abierta, vacia=vacia, menu=menu, solo_ver=solo_ver, catalogo=catalogo)
+            + caja_preguntas(abierta=None if vacia else abierta, vacia=vacia, menu=menu, solo_ver=solo_ver, catalogo=catalogo, mal=mal)
             + "</div>" + vista(vacia=vacia, nombre=nombre) + "</div></div>")
 
 
 A.caja_formulario, A.caja_preguntas, A.vista, A.cuerpo_editor = caja_formulario, caja_preguntas, vista, cuerpo_editor
 
 
-def acc(modo="limpio", publicado=True, tip=False):
-    """Las acciones de la banda (43): limpio | cambios | guardando | nuevo | nuevo-guardando | solo."""
+def menu_formulario(nombre="Visita a cliente", items=None):
+    """El ⋮ de la banda (E12b): Copiar y Dar de baja; con respuestas, Eliminar no aparece."""
+    items = items if items is not None else (f'<a class="f-mi" role="menuitem" href="FRM-Copiar.dc.html">{M.IC["duplicar"]} Copiar</a>'
+                                             f'<a class="f-mi" role="menuitem" href="FRM-Dar-De-Baja.dc.html">{M.IC["cancelar"]} Dar de baja</a>')
+    return f'<div class="f-menu" role="menu" aria-label="Acciones de {nombre}">{items}</div>'
+
+
+def kebab(abierto=False, nombre="Visita a cliente", items=None):
+    menu = menu_formulario(nombre, items) if abierto else ""
+    return (f'<span class="e-kw"><button type="button" class="ib o-borde" aria-label="Acciones de {nombre}" aria-haspopup="menu" '
+            f'aria-expanded="{"true" if abierto else "false"}">{A.KEBAB}</button>{menu}</span>')
+
+
+def acc(modo="limpio", publicado=True, tip=False, menu=False):
+    """Las acciones de la banda (43): limpio | cambios | guardando | nuevo | nuevo-guardando | solo; y el ⋮ de la E12b."""
     oficial = '<a class="cb cb-sec" href="FRM-Publicando.dc.html">Ver vista oficial</a>' if publicado else ""
     if modo == "solo":
         return oficial
@@ -192,7 +236,7 @@ def acc(modo="limpio", publicado=True, tip=False):
     else:
         b = f'<button type="button" class="cb cb-pri" aria-disabled="true" title="{MOTIVO_GUARDAR}">Publicar en WhatsApp</button>'
         a += f'<span class="e-tipw">{b}<span class="e-tip" role="tooltip">{MOTIVO_GUARDAR}</span></span>' if tip else b
-    return a + oficial
+    return a + oficial + (kebab(menu) if publicado else "")
 
 
 EST_BOR = '<span class="w-est off">Borrador</span>'
@@ -205,7 +249,7 @@ toast, confirmar = A.toast, A.confirmar
 
 # ================================================================ FRM-Editor
 ESTADOS_EDITOR = ["Sin cambios", "Con cambios", "Guardando", "Guardado", "No se guardó", "Otra persona guardó", "Comparar los cambios",
-                  "Nuevo formulario", "Prefijo ocupado", "Para quién es", "Acciones de una pregunta", "Quitar una pregunta", "Cambiar el tipo", "Elegir varias",
+                  "Nuevo formulario", "Prefijo ocupado", "Para quién es", "Acciones del formulario", "Acciones de una pregunta", "Quitar una pregunta", "Cambiar el tipo", "Elegir varias",
                   "Elegir de un catálogo", "Elegir el catálogo", "Sin catálogos", "Pregunta de foto", "Pregunta de documento", "Sin almacenamiento",
                   "Descartar cambios", "Solo lectura", "Cargando", "No existe"]
 CONFLICTO = ('<div class="e-sup alerta" role="alert"><div class="fila">' + ALERTA
@@ -236,6 +280,7 @@ def editor():
         "Nuevo formulario": nuevo("nuevo", cuerpo_editor(vacia=True, nombre="Inspección de obra", prefijo="OBR")),
         "Prefijo ocupado": nuevo("nuevo", cuerpo_editor(abierta=None, nombre="Registro de visita", prefijo="VIS", modo="ocupado")),
         "Para quién es": pub("cambios", cuerpo_editor(abierta=None, modo="fijo", quien=True)),
+        "Acciones del formulario": (banda("Visita a cliente", EST_PUB, acc("limpio", menu=True), VOL), cuerpo_editor(abierta=None, modo="fijo")),
         "Acciones de una pregunta": pub("limpio", cuerpo_editor(abierta=None, menu=True, modo="fijo")),
         "Quitar una pregunta": pub("limpio", cuerpo_editor(abierta=None, modo="fijo")),
         "Cambiar el tipo": pub("cambios", cuerpo_editor(modo="fijo")),
@@ -324,43 +369,51 @@ def publicar():
 
 
 # ================================================================ FRM-Publicando
-ESTADOS_PUBLICANDO = A.ESTADOS_PUBLICANDO
+ESTADOS_PUBLICANDO = ["Publicando", "Publicando: los pasos", "Publicado", "WhatsApp rechazó una pregunta", "Sin confirmar", "Sin confirmar: el detalle",
+                      "Necesita revisión", "Vista oficial", "Vista oficial cargando", "Vista oficial vencida"]
 
 
-def sup_publicando():
+def dlg_pasos():
+    """El ⓘ de «Publicando la versión 4»: los pasos, en el aviso importante."""
     p = [("hecho", "Aceptada", "Hoy, 15:20"), ("hecho", "Enviada a WhatsApp", "15:21"), ("ahora", "WhatsApp la revisa", ""), ("", "Lista para mandar", "")]
     pasos = "".join(f'<div class="e-paso {c}"><span class="bo">{TILDE if c == "hecho" else ""}</span><span class="tx">{a}<small>{b}</small></span></div>' for c, a, b in p)
-    return ('<div class="e-sup info" role="status"><div class="fila">' + RELOJ + '<span class="tx"><b>Publicando la versión 4 en WhatsApp</b>'
-            + F.info("La versión 3 sigue andando. Lo que guardes ahora va a la versión 5.") + "</span></div>"
-            f'<div class="e-pasos">{pasos}</div></div>')
+    return F.dialogo("Publicando la versión 4", f'<div class="e-pasos vert">{pasos}</div>'
+                     '<p class="d-tx">La versión 3 sigue andando. Lo que guardes ahora va a la versión 5.</p>',
+                     '<button type="button" class="cb cb-sec">Cerrar</button>')
+
+
+def dlg_sin_confirmar():
+    return F.dialogo("La versión 4 en WhatsApp", '<p class="d-tx">Todavía no sabemos si WhatsApp recibió la versión 4. La seguimos consultando: no la mandamos de nuevo.</p>',
+                     '<button type="button" class="cb cb-sec">Cerrar</button><button type="button" class="cb cb-pri">Consultar ahora</button>')
 
 
 def publicando():
     acc_off = acc("limpio", publicado=False).replace('<a class="cb cb-pri" href="FRM-Publicar.dc.html">Publicar en WhatsApp</a>',
                                                       '<button type="button" class="cb cb-pri" aria-disabled="true" title="Se está publicando la versión 4.">Publicar en WhatsApp</button>')
-    rechazo = ('<div class="e-sup mal" role="alert"><div class="fila">' + ALERTA + '<span class="tx">WhatsApp rechazó la versión 4. La versión 3 sigue andando.</span></div>'
-               '<div class="p-prob" style="background: #fff;"><span class="mal">' + ALERTA + '</span><span class="tx"><b>7 · Observaciones</b><span>La ayuda es más larga de lo que admite WhatsApp.</span></span>'
-               '<a href="FRM-Editor.dc.html">Ir a la pregunta</a></div></div>')
-    sin_conf = ('<div class="e-sup alerta" role="status"><div class="fila">' + RELOJ + '<span class="tx">Todavía no sabemos si WhatsApp recibió la versión 4.'
-                + F.info("La seguimos consultando: no la mandamos de nuevo.") + '</span><button type="button" class="cb cb-sec">Consultar ahora</button></div></div>')
-    revision = ('<div class="e-sup mal" role="alert"><div class="fila">' + ALERTA + '<span class="tx">No pudimos confirmar qué pasó con la versión 4 en WhatsApp.'
-                + F.info("Quien publica formularios la revisa en Meta y la resuelve antes de publicar otra.") + "</span></div></div>")
+    publicando_e = '<span class="w-est pend">Publicando la versión 4</span>' + info_btn("Ver los pasos")
+    rechazo_e = '<span class="w-est mal">No se pudo publicar la versión 4</span>' + F.info("WhatsApp rechazó la versión 4. La versión 3 sigue andando.")
+    sin_conf_e = '<span class="w-est pend">Sin confirmar</span>' + info_btn("Todavía no sabemos si WhatsApp recibió la versión 4.")
+    revision_e = ('<span class="w-est mal">Necesita revisión</span>'
+                  + F.info("No pudimos confirmar qué pasó con la versión 4 en WhatsApp. Quien publica formularios la revisa en Meta y la resuelve antes de publicar otra."))
 
-    def cuerpo(sup, pv=None):
-        c = cuerpo_editor(sup=sup, abierta=None, modo="fijo")
+    def cuerpo(sup, pv=None, mal=None):
+        c = cuerpo_editor(sup=sup, abierta=None, modo="fijo", mal=mal)
         return c.replace(vista(), A.vista_oficial(pv), 1) if pv else c
     ok = acc("limpio")
     V = {
-        "Publicando": (banda("Visita a cliente", '<span class="w-est pend">Publicando la versión 4</span>', acc_off, VOL), cuerpo(sup_publicando())),
+        "Publicando": (banda("Visita a cliente", publicando_e, acc_off, VOL), cuerpo("")),
+        "Publicando: los pasos": (banda("Visita a cliente", publicando_e, acc_off, VOL), cuerpo("")),
         "Publicado": (banda("Visita a cliente", EST_PUB4, ok, VOL), cuerpo("")),
-        "WhatsApp rechazó una pregunta": (banda("Visita a cliente", '<span class="w-est mal">No se pudo publicar la versión 4</span>', ok, VOL), cuerpo(rechazo)),
-        "Sin confirmar": (banda("Visita a cliente", '<span class="w-est pend">Sin confirmar</span>', acc_off, VOL), cuerpo(sin_conf)),
-        "Necesita revisión": (banda("Visita a cliente", '<span class="w-est mal">Necesita revisión</span>', acc_off, VOL), cuerpo(revision)),
+        "WhatsApp rechazó una pregunta": (banda("Visita a cliente", rechazo_e, ok, VOL), cuerpo("", mal=7)),
+        "Sin confirmar": (banda("Visita a cliente", sin_conf_e, acc_off, VOL), cuerpo("")),
+        "Sin confirmar: el detalle": (banda("Visita a cliente", sin_conf_e, acc_off, VOL), cuerpo("")),
+        "Necesita revisión": (banda("Visita a cliente", revision_e, acc_off, VOL), cuerpo("")),
         "Vista oficial": (banda("Visita a cliente", EST_PUB4, ok, VOL), cuerpo("", "vista")),
         "Vista oficial cargando": (banda("Visita a cliente", EST_PUB4, ok, VOL), cuerpo("", "cargando")),
         "Vista oficial vencida": (banda("Visita a cliente", EST_PUB4, ok, VOL), cuerpo("", "vencida")),
     }
-    capas = {"Publicado": toast("Publicamos la versión 4. Ya la podés mandar desde el chat.")}
+    capas = {"Publicando: los pasos": dlg_pasos(), "Publicado": toast("Publicamos la versión 4. Ya la podés mandar desde el chat."),
+             "Sin confirmar: el detalle": dlg_sin_confirmar()}
     return A.pagina_editor(V, capas, ESTADOS_PUBLICANDO, "Publicar en WhatsApp · cómo termina", CSS_E12)
 
 
@@ -368,7 +421,7 @@ def publicando():
 T_PREG = [("Cliente", "Texto corto · Obligatoria"), ("Fecha de la visita", "Fecha · Opcional"), ("¿Se concretó la venta?", "Sí o no · Opcional"),
           ("Monto estimado", "Número · 2 decimales · Opcional"), ("Motivo", "Elegir una · 3 opciones · Opcional"),
           ("Fallas", "Elegir varias · de 1 a 3 · Obligatoria"), ("Observaciones", "Texto largo · Opcional")]
-ESTADOS_TED = ["Sin cambios", "Con cambios", "Guardando", "Acciones de una pregunta", "Editar una pregunta", "Elegir varias", "Pregunta con catálogo",
+ESTADOS_TED = ["Sin cambios", "Con cambios", "Guardando", "Acciones del formulario", "Acciones de una pregunta", "Editar una pregunta", "Elegir varias", "Pregunta con catálogo",
                "Pregunta de foto", "Así lo ve el empleado", "Publicar", "Publicando", "Publicado", "WhatsApp rechazó una pregunta", "Nuevo formulario"]
 CSS_TED_E12 = """.ap-fijo .cb .girar2 { width: 16px; height: 16px; }
 .t-cks { display: flex; flex-wrap: wrap; gap: 0 20px; }
@@ -385,18 +438,20 @@ def t_preguntas(vacia=False, mal=None):
     h = ""
     for k, (n, d) in enumerate(T_PREG, 1):
         chip = '<span class="t-chip mal">Corregir</span>' if mal == k else ""
+        d = MAL_OBS if mal == k else d
         h += (f'<div class="q-row{" mal" if mal == k else ""}"><span class="num">{k}</span><span class="tx"><b>{n}{chip}</b><span>{d}</span></span>'
               f'<button type="button" class="ap-ib" aria-label="Acciones de {n}">{F.TKEBAB}</button></div>')
     return h
 
 
-def t_cuerpo(vacia=False, fijo=True, banda_html="", mal=None, nombre="Visita a cliente", prefijo="VIS"):
+def t_cuerpo(vacia=False, fijo=True, banda_html="", mal=None, nombre="Visita a cliente", prefijo="VIS", desde_preguntas=False):
     campos = F.tcampo("Nombre", nombre, req=True) + F.tcampo("Texto del botón final", "Enviar", req=True)
     ct = f'<div class="ct ro">{prefijo}</div>' if fijo else f'<div class="ct">{prefijo}</div>'
     campos += f'<div class="ap-cmp"><span class="rt"><span>Prefijo de numeración <span class="rq">*</span></span></span>{ct}</div>'
     campos += F.tcampo("Para quién es", "Empleados", req=True, select=True)
     cant = "0 preguntas" if vacia else f"{len(T_PREG)} preguntas"
-    return (banda_html + '<div class="ap-cuerpo"><div class="ap-gtit">El formulario</div><div class="f-campos">' + campos + "</div>"
+    formulario = "" if desde_preguntas else '<div class="ap-gtit">El formulario</div><div class="f-campos">' + campos + "</div>"
+    return (banda_html + '<div class="ap-cuerpo">' + formulario
             + f'<div class="ap-gtit">Preguntas · {cant}<a href="#">Agregar</a></div><div class="ap-grupo">' + t_preguntas(vacia, mal) + "</div>"
             + '<div style="height: 20px;"></div></div>')
 
@@ -419,15 +474,15 @@ def tel_editor():
 
     def bar(titulo, sub):
         return (f'<div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Listado.dc.html">{F.TVOLVER}</a>'
-                f'<div class="tit"><h1>{titulo}</h1><span class="sub">{sub}</span></div><button type="button" class="ap-ib" aria-label="Así lo ve el empleado">{F.OJO}</button></div>')
+                f'<div class="tit"><h1>{titulo}</h1><span class="sub">{sub}</span></div><button type="button" class="ap-ib" aria-label="Así lo ve el empleado">{F.OJO}</button>'
+                + ("" if titulo == "Nuevo formulario" else f'<button type="button" class="ap-ib" aria-label="Acciones de {titulo}">{F.TKEBAB}</button>') + "</div>")
     pub = "Publicado · versión 3"
-    publicando_b = f'<div class="t-banda info" role="status">{RELOJ}<span class="tx">WhatsApp está revisando la versión 4.</span></div>'
-    publicado_b = f'<div class="t-banda ok" role="status">{OK}<span class="tx">Publicamos la versión 4.</span></div>'
-    rechazo_b = f'<div class="t-banda mal" role="alert">{ALERTA}<span class="tx">WhatsApp rechazó la versión 4: la ayuda de «Observaciones» es demasiado larga.</span></div>'
+    snack = f'<div class="f-snack" role="status"><span class="ok">{OK}</span><span class="tx">Publicamos la versión 4.</span></div>'
     V = {
         "Sin cambios": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("limpio")),
         "Con cambios": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("cambios")),
         "Guardando": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("guardando")),
+        "Acciones del formulario": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("limpio")),
         "Acciones de una pregunta": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("limpio")),
         "Editar una pregunta": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("cambios")),
         "Elegir varias": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("cambios")),
@@ -435,9 +490,10 @@ def tel_editor():
         "Pregunta de foto": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("cambios")),
         "Así lo ve el empleado": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("limpio")),
         "Publicar": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("limpio")),
-        "Publicando": (bar("Visita a cliente", "Publicando la versión 4"), t_cuerpo(banda_html=publicando_b), t_fijo("off")),
-        "Publicado": (bar("Visita a cliente", "Publicado · versión 4"), t_cuerpo(banda_html=publicado_b), t_fijo("limpio")),
-        "WhatsApp rechazó una pregunta": (bar("Visita a cliente", "No se pudo publicar la versión 4"), t_cuerpo(banda_html=rechazo_b, mal=7), t_fijo("limpio")),
+        "Publicando": (bar("Visita a cliente", "Publicando la versión 4"), t_cuerpo(), t_fijo("off")),
+        "Publicado": (bar("Visita a cliente", "Publicado · versión 4"), t_cuerpo(), t_fijo("limpio") + snack),
+        # la lista ya bajada hasta las preguntas: la que rechazó WhatsApp, marcada en su lugar
+        "WhatsApp rechazó una pregunta": (bar("Visita a cliente", "No se pudo publicar la versión 4"), t_cuerpo(mal=7, desde_preguntas=True), t_fijo("limpio")),
         "Nuevo formulario": (bar("Nuevo formulario", "Borrador"), t_cuerpo(vacia=True, fijo=False, nombre="Inspección de obra", prefijo="OBR"), t_fijo("nuevo")),
     }
     assert list(V) == E
@@ -477,6 +533,7 @@ def tel_editor():
     cuantas = ('<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' + F.tcampo("Mínimo", "1") + F.tcampo("Máximo", "4") + "</div>"
                '<span class="t-lin">' + A.CLIP + ' Archivos: hasta 5 de 10 en el formulario.</span>')
     capas = {
+        "Acciones del formulario": M.hoja("Visita a cliente", '<a role="menuitem" href="M-FRM-Listado.dc.html">Copiar</a><a role="menuitem" href="M-FRM-Listado.dc.html">Dar de baja</a>'),
         "Acciones de una pregunta": F.thoja("Monto estimado", '<div class="ap-acciones2"><span role="menuitem">Editar</span><span role="menuitem">Subir</span><span role="menuitem">Bajar</span>'
                                             '<span class="pel" role="menuitem">Quitar</span></div>', ""),
         "Editar una pregunta": F.thoja("Editar pregunta", editar, listo),
@@ -500,7 +557,7 @@ def tel_editor():
     props = {"estado": {"editor": "enum", "options": E, "default": E[0], "section": "Estado"}, "$preview": {"width": 390, "height": 844}}
     t = t.replace("""data-props='{"$preview":{"width":390,"height":844}}'""", "data-props='" + json.dumps(props, ensure_ascii=False, separators=(",", ":")) + "'")
     t = t.replace("    return { si: true, no: false };", f"    const e = this.props.estado ?? {json.dumps(E[0], ensure_ascii=False)};\n" + A.js_estados(E))
-    return re.sub(r"<title>[^<]*</title>", "<title>Editor del formulario · teléfono</title>", t)
+    return M.css(re.sub(r"<title>[^<]*</title>", "<title>Editor del formulario · teléfono</title>", t), M.CSS_HOJA, "hoja")
 
 
 # ================================================================ El chat: enviar y la respuesta
@@ -806,6 +863,8 @@ NUEVOS = {"WA-Chats-Formulario-Cliente": (4560, 1780, 1440, 900, "WhatsApp · Cl
 
 # ================================================================ Escritura y post-procesos
 def post(n, t, alto=None):
+    # La vista previa es de quien lo recibe (revisión del bloque, 24/10); las piezas de A la siguen llamando «Así lo ve el empleado»
+    t = t.replace("Así lo ve el empleado", "Así lo ve quien lo recibe")
     # Los tipos de respuesta de la E12 (38): «Elegir una» y «Elegir varias», y «Número» con sus decimales aparte
     t = t.replace("<span>Número con decimales</span>", "<span>Número</span>").replace("<span>Elegir de una lista</span>", "<span>Elegir una</span><span>Elegir varias</span>")
     if alto:

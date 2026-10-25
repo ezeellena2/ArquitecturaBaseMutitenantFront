@@ -646,6 +646,26 @@ textarea.in2 { height: auto; min-height: 84px; }
 </style>
 <style data-vuelta="1004-plataforma-v111">
 </style>
+<style data-campana="1">
+.w-cmp-env { position: relative; display: inline-flex; margin-left: auto; margin-right: 6px; }
+.w-campana { position: relative; width: 38px; height: 38px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; color: var(--t2); text-decoration: none; }
+.w-campana:hover, .w-campana.on { background: oklch(0.24 0.014 78 / 0.06); color: var(--t1); }
+.w-campana .n { position: absolute; top: 2px; right: 1px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: var(--marca); color: #fff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; border: 2px solid oklch(0.95 0.018 76); }
+.w-cmp-env + .w-umd, .w-cmp-env + .envoltura { margin-left: 0 !important; }
+.cmp-lista { position: absolute; z-index: 40; top: calc(100% + 8px); right: 0; width: 420px; background: #fff; border: 1px solid var(--borde); border-radius: 12px; box-shadow: 0 16px 40px oklch(0.24 0.014 78 / 0.18); overflow: hidden; text-align: left; }
+.cmp-cab { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--borde); font-size: 15px; font-weight: 700; color: var(--t1); }
+.cmp-cab span { font-size: 13px; font-weight: 500; color: var(--t3); }
+.cmp-it { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; text-decoration: none; color: var(--t1); }
+.cmp-it + .cmp-it { border-top: 1px solid var(--borde); }
+.cmp-it:hover { background: var(--s2); }
+.cmp-ic { width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; background: var(--s2); color: var(--t2); }
+.cmp-ic.fallo { background: var(--peligro-t); color: oklch(0.52 0.19 25); }
+.cmp-ic.espera { background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); }
+.cmp-ic.llego { background: var(--marca-t); color: var(--marca-tx); }
+.cmp-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: 14px; line-height: 1.35; }
+.cmp-tx small { font-size: 12.5px; color: var(--t3); }
+.cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -670,7 +690,7 @@ textarea.in2 { height: auto; min-height: 84px; }
           <li class="ab-breadcrumbs__item ab-breadcrumbs__item--current" aria-current="page">Configuración</li>
         </ol></nav>
       </div>
-      <span class="envoltura">
+      <span class="w-cmp-env"><a class="w-campana" href="Campana.dc.html" aria-label="Avisos: 2"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="n">2</span></a></span><span class="envoltura">
         <button type="button" class="um-btn" aria-haspopup="menu" aria-expanded="{{expUsuario}}" onClick="{{alternarUsuario}}">
           <span class="avatar" aria-hidden="true">M</span>
           <span class="um-txt"><span class="n1">Martín Sosa</span><span class="n2">Plataforma</span></span>

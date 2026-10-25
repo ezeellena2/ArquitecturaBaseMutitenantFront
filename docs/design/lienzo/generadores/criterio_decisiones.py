@@ -6,7 +6,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 7320
+ALTO = 7800
 ANCHO = 5920
 COLUMNAS = 4
 ARCHIVO = "Criterio-Decisiones.dc.html"
@@ -53,6 +53,7 @@ ESTADOS = {
 
 # Reglas generales que salieron de las decisiones: (regla, tablero donde quedó, fecha).
 REGLAS = [
+    ("Cada aviso en un solo lugar: lo que acabás de hacer, en el aviso de abajo; el estado, en la banda; lo que llegó, lo que falló en segundo plano y lo que espera a alguien, en la campana del encabezado. Ningún cartel en el cuerpo, salvo el que bloquea la pantalla entera.", "Avisos y errores", "25/10/2026"),
     ("Un número sin cuenta o que ya es de otra cuenta se avisa debajo del campo, como un correo, y no manda código.", "Formularios y campos", "08/10/2026"),
     ("Un dato que no se puede cambiar va en el mismo campo que al editar, deshabilitado (fondo y texto grises); nunca rótulo y texto suelto.", "Formularios y campos", "07/10/2026"),
     ("En el teléfono, la barra de abajo lleva hasta cinco pestañas; lo que no entra pasa a «Más».", "Marco y pantallas", "07/10/2026"),
@@ -69,7 +70,7 @@ REGLAS = [
     ("Dentro de una caja, dos columnas iguales que ocupan todo el ancho; tres solo si todos los datos son cortos, como en «Tus datos».", "Formularios y campos", "04/10/2026"),
     ("El selector de país de un teléfono lleva la bandera, como imagen y no emoji, en la lista y en el control cerrado: «[bandera] +54».", "Formularios y campos", "04/10/2026"),
     ("Sin textos que explican: el estado se dice una vez arriba y un ⓘ abre el aviso importante.", "Avisos y errores · Diálogos", "02/10/2026"),
-    ("En el teléfono, lo pasajero va abajo en una franja oscura y lo que sigue, debajo de la barra de arriba.", "Avisos y errores", "03/10/2026"),
+    ("En el teléfono, lo pasajero va abajo en una franja oscura y la campana, en la barra de arriba de las pantallas principales.", "Avisos y errores", "25/10/2026"),
     ("En el teléfono, la franja de error de un formulario usa la letra de los avisos del teléfono: 14,5 con interlineado 1,4. En la compu, 13.", "Formularios y campos", "04/10/2026"),
     ("Nada revela si un correo o un teléfono tiene cuenta, en «Recuperar mi cuenta» ni en Mi cuenta: la pantalla sigue igual y a ese correo le llega un aviso en lugar del código. Excepción: «Invitar operador», porque quien tiene permiso de cuentas ya las ve.", "Avisos y errores", "03/10/2026"),
     ("Una celda puede llevar una segunda línea gris que aclara la primera.", "Tablas y listas", "02/10/2026"),
@@ -394,7 +395,7 @@ DECISIONES = {
         ("Idioma", "", "Desde el 24/10, el contenido no tiene idioma: un solo texto por campo, como lo escribe la persona, y una sola vista previa (decisión 35; reemplaza la 17).", "Dibujada"),
         ("Guardar", "", "Guardado, no se guardó (lo escrito se conserva) y, si otra persona guardó, la banda ⚠ con «Revisar» y la revisión «Qué cambió | Guardado actualmente | Mis cambios». Desde el 24/10, sin «Guardado sin confirmar» ni «Consultar guardado»: la pantalla vuelve a leer sola.", "Dibujada"),
         ("Publicar", "", "«Publicar la versión N en WhatsApp»: qué cambia, qué queda fijo y qué va a pasar. Comprobando, una pregunta que no se puede mostrar (con el botón grisado), cambió después de comprobar y ya se está publicando. Desde el 24/10, sin el idioma, sin la hora del borrador al lado de los botones y sin «venció».", "Dibujada"),
-        ("Cómo termina", "", "Arriba del editor, los pasos Aceptada, Enviada a WhatsApp, WhatsApp la revisa y Lista para mandar. Rechazada con «Ir a la pregunta»; sin confirmar con «Consultar ahora», nunca «Reintentar»; necesita revisión. La vista oficial va al costado, con «Borrador | Versión N en WhatsApp».", "Dibujada"),
+        ("Cómo termina", "", "Desde el 25/10, sin carteles (regla de avisos): el estado va en la banda con su ⓘ, que abre los pasos (Aceptada, Enviada a WhatsApp, WhatsApp la revisa y Lista para mandar) o, sin confirmar, «Consultar ahora», nunca «Reintentar». Rechazada: la pregunta, marcada en su lugar con «Corregir». La vista oficial va al costado, con «Borrador | Versión N en WhatsApp».", "Dibujada"),
         ("Enviar desde el chat", "", "«Enviar formulario» al lado de «Enviar» en Internos. El diálogo: tarjetas con «Versión N · K preguntas» (buscador y paginado si son muchos), el mensaje prellenado (hasta 1024) y hasta cuándo se puede mandar. Reglas del lienzo: el motivo de un botón apagado va en su ⓘ y el diálogo va sin descripción arriba. Desde el 24/10, sin el idioma en que le llega.", "Dibujada"),
         ("Después de enviar", "", "La burbuja lleva la tarjeta del formulario; abajo, En cola, Leído, No se pudo mandar (con ⓘ, sin reintento) o Envío sin confirmar con «Ya lo revisé», que abre «Resolver el envío»: Salió o No salió, como en la E16. Desde el 24/10, sin «Consultar envío». Con el diálogo abierto: ventana cerrada y formulario que ya no está.", "Dibujada"),
         ("La respuesta", "", "Tarjeta con las primeras 3 en grilla, «Ver las N respuestas» y «Guardada como VIS-000123»; guardando, no se pudo guardar, no reconocida, sin permiso, una de «elegir varias» y el mensaje que ya no está. El encabezado del chat sigue el de la E11 (teléfono · Empleado · empresa).", "Dibujada"),
@@ -490,6 +491,21 @@ DECISIONES = {
         ("Para quién es", "A", "Un desplegable más en «El formulario»: Empleados, Clientes o Empleados y clientes (decisión 50). El envío, el asistente y las sugerencias ofrecen solo los que corresponden a quien recibe.", "Dibujada"),
         ("Enviar a un cliente", "A", "«Enviar formulario» también en un chat de Clientes, con el mismo diálogo y solo los formularios para clientes; en el teléfono, en el ⋮ del chat (decisión 49). Sin ninguno publicado, el botón queda grisado con el motivo en su ⓘ.", "Dibujada"),
         ("El panel", "", "El lienzo muestra el panel completo de Gestión de formularios; al programarse la E12 solo tiene «Diseñar formularios» (§9 de la spec).", "Decidido"),
+    ],
+    "E12b · Ciclo de vida · La Guía y el usuario · 24/10": [
+        ("Diseñar formularios", "A", "«Activos | Dados de baja» arriba de la lista, como en Formularios (MF1), y «Estado ▾» dentro de Activos; suma la columna Respuestas. Las acciones van en un ⋮ por fila, como en Usuarios, no en los íconos de ArquitecturaBase (Criterio · Menús).", "Dibujada"),
+        ("El ⋮ de una fila", "A", "Publicado: Copiar y Dar de baja. Borrador: Copiar y Eliminar. Dado de baja: Reactivar y Copiar. Con respuestas, Eliminar no aparece; mientras se publica, Dar de baja queda grisado con el motivo en su tooltip; sin el permiso, la opción no se dibuja (con solo publicar: Dar de baja y Reactivar).", "Dibujada"),
+        ("Dar de baja", "A", "El diálogo dice qué deja de pasar (el chat, el asistente y las sugerencias hacia él), los envíos abiertos y que en WhatsApp no se deshace, y lo que se conserva. Si falla, el aviso rojo y el diálogo sigue abierto.", "Dibujada"),
+        ("Un dado de baja", "A", "«Dado de baja» en la banda; su ⓘ dice quién, cuándo, qué deja de pasar y qué pasa en WhatsApp (desde el 25/10, sin cartel). Sin confirmar o no se pudo deprecar, al lado del estado. «Reactivar» va en el lugar de Publicar y queda grisado con cambios sin guardar.", "Dibujada"),
+        ("Reactivar y eliminar", "", "Reactivar es publicar la versión siguiente con el borrador: qué se publica, qué va a pasar y que la numeración sigue; con algo que corregir, Reactivar grisado. Eliminar, solo sin respuestas: desaparece y el prefijo queda reservado.", "Dibujada"),
+        ("Copiar", "A", "Desde el ⋮ de la lista y del editor: nombre y prefijo propuesto (letras del nombre y un número si ya está tomado), y la copia queda en borrador con el borrador del original (decisión 74). El PDF y las reglas se suman con la E16.", "Dibujada"),
+        ("El circuito", "", "Va como recorrido de la guía: dar de baja con envíos abiertos, el editor del dado de baja, deprecados al vencer y reactivar (BA5). La sugerencia hacia un dado de baja (BA6) va con la E18.", "Dibujada"),
+    ],
+    "Avisos y la campana · El usuario · 25/10": [
+        ("Avisos", "", "Cada uno en un solo lugar: lo que acabás de hacer, en el aviso de abajo; el estado, en la banda, con punto y palabra, y lo que falló, marcado en su lugar; lo que llegó, lo que falló en segundo plano y lo que espera a alguien, en la campana. Ningún cartel en el cuerpo, salvo el que bloquea la pantalla entera.", "Dibujada"),
+        ("La campana", "", "En el encabezado de todas las pantallas con sesión, al lado del nombre, con su número. Abre la lista: cada aviso es una línea y cuándo, y lleva a donde se resuelve (Campana).", "Dibujada"),
+        ("En el teléfono", "", "La campana va en la barra de arriba de Inicio, Chats, Contactos, Más y el inicio personal, y la lista, en su pantalla (M-Campana). Lo pasajero sigue en la franja oscura de abajo.", "Dibujada"),
+        ("Los carteles que quedan", "", "Los tableros con carteles en el cuerpo pasan a la regla cuando les toca su etapa; los de la E12 y la E12b ya pasaron.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
