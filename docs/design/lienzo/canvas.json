@@ -1710,7 +1710,7 @@
       "y": 260,
       "w": 1440,
       "h": 1400,
-      "title": "Formularios · publicar en WhatsApp · para aprobar",
+      "title": "Formularios · publicar en WhatsApp",
       "page": "formularios",
       "is_interactive": true
     },
@@ -1727,7 +1727,7 @@
       "y": 1780,
       "w": 1440,
       "h": 900,
-      "title": "WhatsApp · Internos · enviar un formulario · para aprobar",
+      "title": "WhatsApp · Internos · enviar un formulario",
       "page": "formularios",
       "is_interactive": true
     },
@@ -1736,7 +1736,7 @@
       "y": 1780,
       "w": 1440,
       "h": 900,
-      "title": "WhatsApp · Internos · respuesta del formulario · para aprobar",
+      "title": "WhatsApp · Internos · respuesta del formulario",
       "page": "formularios",
       "is_interactive": true
     },
@@ -1770,7 +1770,7 @@
       "y": 2800,
       "w": 390,
       "h": 844,
-      "title": "WhatsApp · Internos · enviar un formulario · teléfono · para aprobar",
+      "title": "WhatsApp · Internos · enviar un formulario · teléfono",
       "page": "formularios",
       "is_interactive": true
     },
@@ -1779,7 +1779,7 @@
       "y": 2800,
       "w": 390,
       "h": 844,
-      "title": "WhatsApp · Internos · respuesta del formulario · teléfono · para aprobar",
+      "title": "WhatsApp · Internos · respuesta del formulario · teléfono",
       "page": "formularios",
       "is_interactive": true
     },
@@ -2022,7 +2022,7 @@
       "y": 260,
       "w": 1440,
       "h": 1400,
-      "title": "Formularios · editor · para aprobar",
+      "title": "Formularios · editor",
       "page": "formularios",
       "is_interactive": true
     },
@@ -2031,7 +2031,7 @@
       "y": 260,
       "w": 1440,
       "h": 1400,
-      "title": "Formularios · cómo termina una publicación · para aprobar",
+      "title": "Formularios · cómo termina una publicación",
       "page": "formularios",
       "is_interactive": true
     },
@@ -2040,7 +2040,7 @@
       "y": 2800,
       "w": 390,
       "h": 844,
-      "title": "Editor del formulario · teléfono · para aprobar",
+      "title": "Editor del formulario · teléfono",
       "page": "formularios",
       "is_interactive": true
     },
@@ -2185,7 +2185,7 @@
       "x": 3040,
       "y": 3326,
       "w": 1440,
-      "h": 1419,
+      "h": 1440,
       "title": "Índice · Diseña formularios · tocá Play y elegí una pantalla",
       "page": "mapa",
       "is_interactive": true
@@ -2495,6 +2495,24 @@
       "w": 1440,
       "x": 0,
       "y": 8200
+    },
+    "WA-Chats-Formulario-Cliente.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "formularios",
+      "title": "WhatsApp · Clientes · enviar un formulario",
+      "w": 1440,
+      "x": 4560,
+      "y": 1780
+    },
+    "M-WA-Chats-Formulario-Cliente.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "formularios",
+      "title": "WhatsApp · Clientes · enviar un formulario · teléfono",
+      "w": 390,
+      "x": 2350,
+      "y": 2800
     }
   },
   "createdOnFiles": {

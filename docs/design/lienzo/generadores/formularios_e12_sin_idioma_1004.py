@@ -28,7 +28,7 @@ import gestion_formularios_1004 as G  # noqa: E402
 import menus_y_solo_lectura_1004 as M  # noqa: E402
 
 PROJ = A.PROJ
-APROBADO = False
+APROBADO = True  # el usuario la aprobó el 24/10 («Publica y continúa», versión 139)
 PARA_APROBAR = " · para aprobar"
 svg, MAS, X, CHEV, ALERTA, OK, TILDE, RELOJ, RELOJ14, DOC = A.svg, A.MAS, A.X, A.CHEV, A.ALERTA, A.OK, A.TILDE, A.RELOJ, A.RELOJ14, A.DOC
 GIRA = '<span class="girar2" aria-hidden="true"></span>'
@@ -70,8 +70,20 @@ A.PREGUNTAS_ARCHIVOS = A.PREGUNTAS[:5] + [
 ] + A.PREGUNTAS[5:]
 
 
-def caja_formulario(nombre="Visita a cliente", boton="Enviar", prefijo="VIS", modo="normal", ingles=False):
-    """Nombre, texto del botón final y prefijo, sin ayudas debajo; el prefijo publicado va como la A11."""
+PARA_QUIEN = ["Empleados", "Clientes", "Empleados y clientes"]
+
+
+def para_quien(abierto=False, valor="Empleados"):
+    """50 · Para quién es el formulario: el envío, el asistente y las sugerencias ofrecen solo los que corresponden."""
+    if not abierto:
+        return f'<div class="w-cmp"><span class="rt">Para quién es <span class="req">*</span></span><div class="ct sel">{valor}{CHEV}</div></div>'
+    items = "".join(f'<span class="{"on" if o == valor else ""}" role="option">{o}</span>' for o in PARA_QUIEN)
+    return (f'<div class="w-cmp q-cat"><span class="rt">Para quién es <span class="req">*</span></span><div class="ct sel abierto">{valor}{CHEV}</div>'
+            f'<div class="q-catmn" role="listbox" aria-label="Para quién es">{items}</div></div>')
+
+
+def caja_formulario(nombre="Visita a cliente", boton="Enviar", prefijo="VIS", modo="normal", ingles=False, quien=False):
+    """Nombre, texto del botón final, prefijo y para quién es, sin ayudas debajo; el prefijo publicado va como la A11."""
     if modo == "fijo":
         pref, i = f'<div class="ct ro">{prefijo}</div>', F.info(f"Las respuestas se numeran {prefijo}-000001.")
     elif modo == "ocupado":
@@ -84,7 +96,7 @@ def caja_formulario(nombre="Visita a cliente", boton="Enviar", prefijo="VIS", mo
             f'<div class="w-cmp"><span class="rt">Nombre <span class="req">*</span></span><div class="ct">{nombre}</div></div>'
             f'<div class="w-cmp"><span class="rt">Texto del botón final <span class="req">*</span></span><div class="ct">{boton}</div></div>'
             f'<div class="w-cmp"><span class="rt">Prefijo de numeración <span class="req">*</span>{i}</span>{pref}</div>'
-            "</div></div>")
+            + para_quien(quien) + "</div></div>")
 
 
 def pregunta_motivo():
@@ -149,11 +161,11 @@ def vista(ingles=False, vacia=False, nombre="Visita a cliente"):
     return pv
 
 
-def cuerpo_editor(sup="", abierta="motivo", vacia=False, nombre="Visita a cliente", prefijo="VIS", modo="normal", menu=False, solo_ver=False, catalogo=None, **_):
+def cuerpo_editor(sup="", abierta="motivo", vacia=False, nombre="Visita a cliente", prefijo="VIS", modo="normal", menu=False, solo_ver=False, catalogo=None, quien=False, **_):
     if abierta is True:
         abierta = "motivo"
     return ('<div class="w-body">' + sup + '<div class="f-cols"><div class="f-pila">'
-            + caja_formulario(nombre=nombre, prefijo=prefijo, modo=modo)
+            + caja_formulario(nombre=nombre, prefijo=prefijo, modo=modo, quien=quien)
             + caja_preguntas(abierta=None if vacia else abierta, vacia=vacia, menu=menu, solo_ver=solo_ver, catalogo=catalogo)
             + "</div>" + vista(vacia=vacia, nombre=nombre) + "</div></div>")
 
@@ -193,7 +205,7 @@ toast, confirmar = A.toast, A.confirmar
 
 # ================================================================ FRM-Editor
 ESTADOS_EDITOR = ["Sin cambios", "Con cambios", "Guardando", "Guardado", "No se guardó", "Otra persona guardó", "Comparar los cambios",
-                  "Nuevo formulario", "Prefijo ocupado", "Acciones de una pregunta", "Quitar una pregunta", "Cambiar el tipo", "Elegir varias",
+                  "Nuevo formulario", "Prefijo ocupado", "Para quién es", "Acciones de una pregunta", "Quitar una pregunta", "Cambiar el tipo", "Elegir varias",
                   "Elegir de un catálogo", "Elegir el catálogo", "Sin catálogos", "Pregunta de foto", "Pregunta de documento", "Sin almacenamiento",
                   "Descartar cambios", "Solo lectura", "Cargando", "No existe"]
 CONFLICTO = ('<div class="e-sup alerta" role="alert"><div class="fila">' + ALERTA
@@ -223,6 +235,7 @@ def editor():
         "Comparar los cambios": pub("cambios", cuerpo_editor(sup=CONFLICTO, modo="fijo")),
         "Nuevo formulario": nuevo("nuevo", cuerpo_editor(vacia=True, nombre="Inspección de obra", prefijo="OBR")),
         "Prefijo ocupado": nuevo("nuevo", cuerpo_editor(abierta=None, nombre="Registro de visita", prefijo="VIS", modo="ocupado")),
+        "Para quién es": pub("cambios", cuerpo_editor(abierta=None, modo="fijo", quien=True)),
         "Acciones de una pregunta": pub("limpio", cuerpo_editor(abierta=None, menu=True, modo="fijo")),
         "Quitar una pregunta": pub("limpio", cuerpo_editor(abierta=None, modo="fijo")),
         "Cambiar el tipo": pub("cambios", cuerpo_editor(modo="fijo")),
@@ -381,6 +394,7 @@ def t_cuerpo(vacia=False, fijo=True, banda_html="", mal=None, nombre="Visita a c
     campos = F.tcampo("Nombre", nombre, req=True) + F.tcampo("Texto del botón final", "Enviar", req=True)
     ct = f'<div class="ct ro">{prefijo}</div>' if fijo else f'<div class="ct">{prefijo}</div>'
     campos += f'<div class="ap-cmp"><span class="rt"><span>Prefijo de numeración <span class="rq">*</span></span></span>{ct}</div>'
+    campos += F.tcampo("Para quién es", "Empleados", req=True, select=True)
     cant = "0 preguntas" if vacia else f"{len(T_PREG)} preguntas"
     return (banda_html + '<div class="ap-cuerpo"><div class="ap-gtit">El formulario</div><div class="f-campos">' + campos + "</div>"
             + f'<div class="ap-gtit">Preguntas · {cant}<a href="#">Agregar</a></div><div class="ap-grupo">' + t_preguntas(vacia, mal) + "</div>"
@@ -689,6 +703,107 @@ def tel_respuesta():
     return con_varias(t, respuestas(E0), movil=True)
 
 
+# ================================================================ 49 · Enviar un formulario a un cliente (bandeja Clientes)
+FORMS_CLIENTE = [("Entrega de pedido", "Versión 1 · 5 preguntas")]  # el único publicado para empleados y clientes
+CLIENTE_ANTES = ('<div class="w-m ent"><span class="gl">Hola, Lucía. Ya terminé la visita en Ferretería Rosales.</span><span class="pie">10:48</span></div>'
+                 '<span class="o-sis">Lucía Fernández tomó la conversación</span>'
+                 '<div class="w-m sal"><span class="gl">Genial, Tomás. Te mando el formulario de la visita.</span><span class="pie">Lucía Fernández · 10:50</span></div>')
+CLIENTE_DESPUES = ('<div class="w-m ent"><span class="gl">Hola, ya me llegó el pedido.</span><span class="pie">10:48</span></div>'
+                   '<span class="o-sis">Lucía Fernández tomó la conversación</span>'
+                   '<div class="w-m sal"><span class="gl">¡Qué bueno, Martina! Te mando el formulario para confirmar la entrega.</span><span class="pie">Lucía Fernández · 10:50</span></div>')
+E_CLIENTE = ["Con el botón", "Elegir el formulario", "Enviando", "En cola", "Leído", "Sin formularios para clientes"]
+E_TCLIENTE = ["Menú abierto", "Elegir el formulario", "En cola", "Sin formularios para clientes"]
+SIN_CLIENTES = "No hay formularios publicados para clientes."
+
+
+def con_forms_cliente(fn, *a, **k):
+    viejo = A.FORMS_CHAT
+    A.FORMS_CHAT = FORMS_CLIENTE
+    try:
+        return fn(*a, **k)
+    finally:
+        A.FORMS_CHAT = viejo
+
+
+def card_cliente():
+    return (f'<span class="c-card"><span class="ic">{F.ICONO}</span><span class="t"><b>Entrega de pedido</b>'
+            '<small>Formulario · versión 1 · botón «Abrir formulario»</small></span></span>')
+
+
+def otros_clientes():
+    """Los demás chats de la bandeja Clientes, tal como están en WA-Chats (5 en total con el de Martina)."""
+    t = (PROJ / "WA-Chats.dc.html").read_text(encoding="utf-8")
+    i = t.index('<div class="w-bandeja">')
+    j = t.index('<div class="w-hilo">', i)
+    items = re.findall(r'<div class="w-conv[^"]*">.*?</span></span></div>', t[i:j], re.S)
+    assert len(items) == 5 and "Martina López" in items[0], len(items)
+    return "".join(items[1:])
+
+
+def a_cliente(t):
+    """El chat de Internos con Tomás pasa a ser el de Clientes con Martina López (WA-Chats)."""
+    for a, b in [
+        ('<span role="radio" aria-checked="false">Clientes <span class="c">5</span></span><span class="on" role="radio" aria-checked="true">Internos <span class="c">2</span></span>',
+         '<span class="on" role="radio" aria-checked="true">Clientes <span class="c">5</span></span><span role="radio" aria-checked="false">Internos <span class="c">2</span></span>'),
+        ('<span class="w-av">TA</span><span class="tx"><span class="l1"><b>Tomás Acosta</b>', '<span class="w-av">ML</span><span class="tx"><span class="l1"><b>Martina López</b>'),
+        ('<span class="l3">Carga de pedidos · Lucía Fernández</span></span></div><div class="w-conv "><span class="w-av">MP</span><span class="tx"><span class="l1"><b>Martín Paz</b><span>Ayer</span></span>'
+         '<span class="l2"><span>Mañana paso por el depósito.</span></span><span class="l3">Carga de pedidos · Lucía Fernández</span></span></div>',
+         '<span class="l3">Ventas · Lucía Fernández</span></span></div>' + otros_clientes()),
+        ('<span class="w-av">TA</span><span class="tx"><b>Tomás Acosta</b><span>011 15-5555-4521 · Empleado · Delta S.A.</span></span>',
+         '<span class="w-av">ML</span><span class="tx"><b>Martina López</b><span>011 15-5555-6203 · Vinculada a su cuenta · Mayorista</span></span>'),
+        ('aria-label="Acciones de Tomás Acosta"', 'aria-label="Acciones de Martina López"'),
+        (CLIENTE_ANTES, CLIENTE_DESPUES),
+    ]:
+        assert a in t, a[:90]
+        t = t.replace(a, b)
+    return t.replace("Enviar un formulario a Tomás Acosta", "Enviar un formulario a Martina López")
+
+
+def chat_cliente():
+    E = E_CLIENTE
+    esc = {e: A.escr() for e in E}
+    esc["En cola"] = A.escr("off", "Hay un envío pendiente en esta conversación.", enviar=False)
+    esc["Sin formularios para clientes"] = A.escr("off", SIN_CLIENTES)
+
+    def burbuja(pie, icono=""):
+        return (f'<div class="w-m sal"><span class="gl">{A.MENSAJE_AB}{card_cliente()}</span><span class="pie">{icono}{pie}</span></div>')
+    msgs = {"En cola": burbuja("En cola · 10:51", f'<span class="rel">{RELOJ14}</span>'), "Leído": burbuja("Lucía Fernández · 10:51 · Leído")}
+    capas = {"Elegir el formulario": con_forms_cliente(dlg_enviar), "Enviando": con_forms_cliente(dlg_enviar, pie="enviando")}
+    vp = {e: "Vos: ¡Qué bueno, Martina! Te mando el formulario para confirmar la entrega." for e in E}
+    vp.update({"En cola": "Vos: Formulario · Entrega de pedido", "Leído": "Vos: Formulario · Entrega de pedido"})
+    hora = {"En cola": "10:51", "Leído": "10:51"}
+    t = A.pagina_chat(E, esc, msgs, capas, vp, hora, "WhatsApp · Clientes · enviar un formulario")
+    t = t.replace("</helmet>", f'<style data-e12="cliente">\n{CSS_E12}</style>\n</helmet>', 1)
+    return a_cliente(t)
+
+
+def tel_chat_cliente():
+    E = E_TCLIENTE
+    esc = {e: A.t_escr() for e in E}
+
+    def menu(motivo=""):
+        item = ('<span role="menuitem">Enviar formulario</span>' if not motivo else
+                f'<span role="menuitem" class="off" aria-disabled="true" title="{motivo}">Enviar formulario</span>')
+        return M.hoja("Martina López", '<span role="menuitem">Pasar</span><span role="menuitem">Ver ficha del contacto</span>' + item)
+    burbuja = (f'<div class="ap-m sal"><span class="gl">{A.MENSAJE_AB}{card_cliente()}</span>'
+               f'<span class="pie"><span class="rel">{F.TRELOJ}</span>En cola · 10:51</span></div>')
+    capas = {"Menú abierto": menu(), "Elegir el formulario": con_forms_cliente(t_hoja_enviar).replace("A Tomás Acosta", "A Martina López"),
+             "Sin formularios para clientes": menu(SIN_CLIENTES)}
+    t = A.pagina_tchat(E, esc, {"En cola": burbuja}, capas, "WhatsApp · Clientes · enviar un formulario · teléfono", CSS_E12)
+    t = M.css(t, M.CSS_HOJA, "hoja")
+    for a, b in [('<span class="w-av">TA</span><span class="tx"><b>Tomás Acosta</b><span>Empleado · Delta S.A.</span></span>',
+                  '<span class="w-av">ML</span><span class="tx"><b>Martina López</b><span>Vinculada a su cuenta · Mayorista</span></span>'),
+                 ('aria-label="Acciones de Tomás Acosta"', 'aria-label="Acciones de Martina López"'),
+                 (CLIENTE_ANTES.replace("w-m", "ap-m").replace("o-sis", "ap-sis"), CLIENTE_DESPUES.replace("w-m", "ap-m").replace("o-sis", "ap-sis"))]:
+        assert a in t, a[:90]
+        t = t.replace(a, b)
+    return t
+
+
+NUEVOS = {"WA-Chats-Formulario-Cliente": (4560, 1780, 1440, 900, "WhatsApp · Clientes · enviar un formulario"),
+          "M-WA-Chats-Formulario-Cliente": (2350, 2800, 390, 844, "WhatsApp · Clientes · enviar un formulario · teléfono")}
+
+
 # ================================================================ Escritura y post-procesos
 def post(n, t, alto=None):
     # Los tipos de respuesta de la E12 (38): «Elegir una» y «Elegir varias», y «Número» con sus decimales aparte
@@ -705,12 +820,14 @@ def escribir(n, t):
 
 
 TABLEROS = ["FRM-Editor", "FRM-Publicar", "FRM-Publicando", "M-FRM-Editor", "WA-Chats-Formulario", "M-WA-Chats-Formulario",
-            "WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta"]
+            "WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta"] + list(NUEVOS)
 
 
 def registrar():
     ruta = PROJ / "canvas.json"
     c = json.loads(ruta.read_text(encoding="utf-8"))
+    for n, (x, y, w, h, titulo) in NUEVOS.items():
+        c["boards"].setdefault(f"{n}.dc.html", {"h": h, "is_interactive": True, "page": "formularios", "title": titulo, "w": w, "x": x, "y": y})
     for n in TABLEROS:
         b = c["boards"][f"{n}.dc.html"]
         b["title"] = b["title"].replace(PARA_APROBAR, "") + ("" if APROBADO else PARA_APROBAR)
@@ -734,5 +851,19 @@ if __name__ == "__main__":
     escribir("M-WA-Chats-Formulario", post("M-WA-Chats-Formulario", tel_chat_enviar()))
     escribir("WA-Chats-Respuesta", post("WA-Chats-Respuesta", chat_respuesta()))
     escribir("M-WA-Conversacion-Respuesta", post("M-WA-Conversacion-Respuesta", tel_respuesta()))
+    escribir("WA-Chats-Formulario-Cliente", post("WA-Chats-Formulario-Cliente", chat_cliente()))
+    escribir("M-WA-Chats-Formulario-Cliente", post("M-WA-Chats-Formulario-Cliente", tel_chat_cliente()))
+    # La vista previa es de quien lo recibe: empleados o clientes (revisión del bloque, 24/10)
+    archivo = {k[:-8] for k, v in json.loads((PROJ / "canvas.json").read_text(encoding="utf-8"))["boards"].items() if v.get("page") == "archivo"}
+    renombrados = []
+    for f in sorted(PROJ.glob("*.dc.html")):
+        n = f.name[:-8]
+        if n in archivo or n == "Criterio-Decisiones":
+            continue
+        t = f.read_text(encoding="utf-8")
+        if "Así lo ve el empleado" in t:
+            f.write_text(t.replace("Así lo ve el empleado", "Así lo ve quien lo recibe"), encoding="utf-8")
+            renombrados.append(n)
+    print("vista previa renombrada en", renombrados)
     registrar()
     print("listo", TABLEROS)
