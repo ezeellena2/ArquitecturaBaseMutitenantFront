@@ -21,7 +21,16 @@
   - el estado se dice una vez, arriba. Donde está la acción va solo un ⓘ (`InfoButton`); lo que no se puede usar queda apagado y abre lo mismo. El ⓘ abre el aviso importante (`ImportantNotice`), con el motivo y qué hacer.
 - **Opciones de un menú o un desplegable:** si no aplica, no va. Si no se puede usar por algo que se puede resolver, va apagada y sin texto debajo, como «Elegir de un catálogo» en `FRM-Pregunta` o «Mandar formulario» en el ⋮ del chat de `M-WA-Chats-Formulario`. El motivo va en su tooltip en la compu y como descripción para el lector de pantalla (decisión del usuario del 2026-10-24, que reemplaza la del 2026-10-13). En el ⋮ de una fila, `RowAction.disabledReason` la apaga con ese motivo, en la compu y en la hoja del teléfono: se lee con el teclado y no corre, como «Inactivar» de un rol con usuarios (R10).
 - Botones: normal de 36 px, chico de 32, de ícono de 32 y grande de 44 (solo ingreso y registro). El principal, con el degradé de la marca en todas las pantallas, también en el teléfono («Criterio · Botones» y «Criterio · Decisiones», v107). Mientras guarda o manda, `Button` con `pending` se ve como apagado, con el aro de 14 y su mismo texto. No dice «Guardando…» ni otro texto de espera: es la decisión del usuario del 2026-10-24, que reemplaza la del 2026-10-05. No se puede tocar y no se achica. Campos de 36 px (en el teléfono, 48, con radio 12 y letra de 16, como los M-* de la app); en el ingreso y el registro (`FormField variant="auth"`), 44 con radio 10 y letra de 15, también en el teléfono, como M-Ingreso y M-Registro. El texto común de páginas, filas y menús mide 13 px.
-- Avisos: un error de campo queda debajo del control; lo que sigue pasando va en un cartel debajo de la banda; lo que salió bien, en un aviso verde que se cierra solo; un fallo directo, en un aviso rojo con ✕ que no se va solo. En el teléfono, lo pasajero va en una franja oscura abajo y lo que sigue, debajo de la barra.
+- **Avisos** (decisión del usuario del 2026-10-25). Cada aviso tiene un solo lugar:
+  - **lo que acabás de hacer:**
+    - si salió, un aviso verde abajo, que se cierra solo;
+    - si falló, un aviso rojo con ✕, que no se va solo;
+    - el error de un formulario va en su franja, como hasta ahora;
+  - **el error de un dato:** debajo de su campo, al intentar guardar;
+  - **el estado del objeto:** en la banda, con punto y palabra («● No se pudo publicar»). Lo que falló se marca en su lugar, como en la pregunta o el campo;
+  - **todo lo demás** va en la campana del encabezado, con su número: lo que llegó, lo que falló en segundo plano y lo que espera a alguien. Cada aviso lleva a donde se resuelve. En el teléfono, la campana va en la barra de arriba;
+  - **ningún cartel en el cuerpo de una pantalla,** salvo el que bloquea la pantalla entera (una organización suspendida, sin conexión);
+  - **en el teléfono,** lo pasajero va en la franja oscura de abajo.
 - La confirmación irreversible no tiene ✕ y su acción usa un botón rojo lleno.
 - Colores solo con los tokens de [tema.md](../architecture/tema.md), por nombre (`bg-[var(--fondo)]`, `text-[var(--t2)]`). Las variables de shadcn (`--primary`, `--ring`, `--destructive`…) son solo alias de esos tokens en `index.css`. Si falta un color, se agrega un token en `index.css` y en la tabla de tema.md.
 - shadcn se genera con `npx shadcn@4.21.0 add` y se edita lo mínimo; las piezas propias van en PascalCase.
@@ -29,11 +38,12 @@
 - **Una sola forma de armar secciones, pestañas y filtros** en todas las pantallas (decisión del usuario del 2026-10-13, en «Criterio · Menús»):
   - **Secciones de un área:** un segundo panel junto al menú lateral (`AdminPanel`, token `--panel`), con la flechita en el ítem del menú y un solo panel abierto a la vez; en el teléfono, un grupo de «Más». Así van Administración, WhatsApp y Gestión de formularios («Formularios», «Diseñar formularios», «Catálogos» y «Formularios que faltan», decisión del usuario del 2026-10-24). No se agregan enlaces del área hasta que su tablero esté aprobado.
   - **Pestañas:** solo para los grupos de datos de una ficha, como Empresa, Organización o la ficha de un formulario (ver «Ficha»).
-  - **Filtros de un listado:** desplegables en la caja de `FilterBar`, con la cantidad por opción, lo elegido en petróleo (`--marca`) y «Limpiar filtros». En el teléfono, el botón «Filtros» de la barra abre una hoja, y un filtro elegido se marca con un punto en ese botón.
+  - **Filtros de un listado:** desplegables en la caja de `FilterBar`, con la cantidad por opción, lo elegido en petróleo (`--marca`) y «Limpiar filtros». El buscador y hasta tres filtros van en una sola fila; los demás, en «Más filtros», como en la planilla de respuestas (2026-10-25). En el teléfono, el botón «Filtros» de la barra abre una hoja, y un filtro elegido se marca con un punto en ese botón.
   - **Dos vistas de lo mismo** (de una lista o de una configuración): van con `SegmentedControl` arriba, en la compu y en el teléfono. Son las bandejas «Clientes | Internos» de Chats, «Para consultas | Del sistema» en las plantillas de Plataforma, «Por día | Por persona» en Uso del asistente y «Configuración | Recorrido» del bot.
 
 ## Prohibido
 - Inventar piezas visuales, columnas o acciones que no están en el tablero aprobado.
+- Sumar avisos o textos que no están en el tablero aprobado, o un cartel en el cuerpo de una pantalla para algo que no la bloquea: va en la campana.
 - Superficies a medio ancho, todo en una sola tarjeta o bandas grises con rótulos en mayúsculas.
 - Una pestaña «Resumen» con rótulos y valores: los datos van en la banda.
 - Rótulos y valores sueltos sobre blanco, o en viñetas, en un detalle de solo lectura.
