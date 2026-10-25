@@ -38,7 +38,7 @@
       },
       "actor": "Martín · Operador · web",
       "titulo": "Arma la plantilla",
-      "texto": "Es el mismo editor que usan las organizaciones: la categoría, el prefijo sugerido, la descripción y las preguntas, con cómo lo ve el empleado.",
+      "texto": "Es el mismo editor que usan las organizaciones: la categoría, el prefijo sugerido, la descripción y las preguntas, con cómo lo ve quien lo recibe.",
       "avanzar": "Siguiente.",
       "ruta": "/plataforma/formularios/:id",
       "accion": "Ve la plantilla."

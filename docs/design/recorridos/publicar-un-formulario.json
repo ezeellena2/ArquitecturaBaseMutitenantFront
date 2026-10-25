@@ -26,7 +26,7 @@
       "resaltar": "button.cb-sec:has-text(\"Guardar cambios\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Cambia una pregunta y guarda",
-      "texto": "Todo está en una sola pantalla: el formulario y las preguntas, que se abren en el lugar. «Fallas» deja elegir hasta 3; al costado, así lo ve el empleado.",
+      "texto": "Todo está en una sola pantalla: el formulario y las preguntas, que se abren en el lugar. «Fallas» deja elegir hasta 3; al costado, así lo ve quien lo recibe.",
       "avanzar": "Tocá «Guardar cambios».",
       "ruta": "/org/formularios/:id",
       "accion": "Guarda los cambios."

@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 138 · 24 de octubre de 2026"
+VERSION = "versión 139 · 24 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -119,11 +119,11 @@ CAPITULOS = [
         ("frm-listado", "Diseñar formularios", "/org/formularios", "no", "12", ["FRM-Listado"], ["M-FRM-Listado"], [],
          "Cada formulario con sus preguntas, cómo está en WhatsApp y su último cambio. «Nuevo formulario» empieza desde cero o desde una plantilla."),
         ("frm-editor", "Editor de un formulario", "/org/formularios/:id", "no", "12 y 14", ["FRM-Editor"], ["M-FRM-Editor"], [],
-         "Una sola pantalla: el formulario, las preguntas que se abren en el lugar (también «elegir varias», fotos y documentos, hasta 10 archivos) y cómo lo ve el empleado. Se guarda como borrador; con cambios sin guardar, publicar queda grisado."),
+         "Una sola pantalla: el formulario, las preguntas que se abren en el lugar (también «elegir varias», fotos y documentos, hasta 10 archivos) y cómo lo ve quien lo recibe. Se guarda como borrador; con cambios sin guardar, publicar queda grisado."),
         ("frm-publicar", "Publicar en WhatsApp", "/org/formularios/:id", "no", "12", ["FRM-Publicar"], [], ["FRM-Publicando"],
          "La comprobación antes de publicar (también los más de 10 archivos) y cómo termina: los pasos mientras WhatsApp la revisa, el rechazo con la pregunta marcada y la vista oficial."),
-        ("frm-chat", "Enviar un formulario", "WhatsApp › Chats › Internos", "no", "12 y 14", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta", "WA-Chats-Visor", "M-WA-Chats-Visor", "WA-Chats-Avisos", "M-WA-Conversacion-Avisos"],
-         "En un chat con un empleado: elegir el formulario y el mensaje, y la respuesta que vuelve al chat guardada con su número, con sus fotos y documentos, que se abren en el visor. En el teléfono, desde el ⋮."),
+        ("frm-chat", "Enviar un formulario", "WhatsApp › Chats › Internos", "no", "12 y 14", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Formulario-Cliente", "M-WA-Chats-Formulario-Cliente", "WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta", "WA-Chats-Visor", "M-WA-Chats-Visor", "WA-Chats-Avisos", "M-WA-Conversacion-Avisos"],
+         "En un chat con un empleado o con un cliente: elegir el formulario y el mensaje, y la respuesta que vuelve al chat guardada con su número, con sus fotos y documentos, que se abren en el visor. En el teléfono, desde el ⋮."),
         ("frm-formularios", "Formularios", "/org/formularios/respuestas", "no", "15", ["FRM-Formularios"], ["M-FRM-Respuestas"], [],
          "La lista de formularios publicados: lo que cada uno tiene por aprobar, sus respuestas y la última. «Activos | Dados de baja» y «Aprobación ▾»; cambia según lo que puede hacer cada uno."),
         ("frm-respuestas", "Respuestas de un formulario", "/org/formularios/:id/respuestas", "no", "15 y 16", ["FRM-Respuestas"], [], ["FRM-Respuestas-Filtros", "FRM-Respuestas-Exportar"],
@@ -143,7 +143,7 @@ CAPITULOS = [
         ("frm-catalogos", "Catálogos", "Formularios › Catálogos", "no", "13", ["FRM-Catalogos"], ["M-FRM-Catalogos"], ["FRM-Catalogo-Nuevo"],
          "Las listas de opciones que comparten los formularios: escritas a mano o tomadas de los miembros con filtros, y si se pueden usar."),
         ("frm-catalogo", "Un catálogo escrito a mano", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo"], ["M-FRM-Catalogo"], [],
-         "Una sola pantalla: el catálogo, sus opciones que se abren en el lugar (texto, código y detalle), quién lo usa y cómo lo ve el empleado. Se ordenan y se dan de baja sin borrarse."),
+         "Una sola pantalla: el catálogo, sus opciones que se abren en el lugar (texto, código y detalle), quién lo usa y cómo lo ve quien lo recibe. Se ordenan y se dan de baja sin borrarse."),
         ("frm-catalogo-filtros", "Un catálogo con filtros", "Formularios › Catálogos › un catálogo", "no", "13", ["FRM-Catalogo-Filtros"], ["M-FRM-Catalogo-Filtros"], ["FRM-Catalogo-Propuesta"],
          "Las condiciones sobre los miembros y «Como si lo recibiera», para probar qué opciones le llegan a una persona. Con más de 200 avisa que no se va a poder mandar."),
         ("frm-biblioteca", "Biblioteca de plantillas", "Formularios › Nuevo formulario › Desde una plantilla", "no", "17", ["FRM-Biblioteca"], ["M-FRM-Biblioteca"],
