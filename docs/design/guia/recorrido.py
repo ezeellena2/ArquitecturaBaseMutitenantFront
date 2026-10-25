@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 139 · 24 de octubre de 2026"
+VERSION = "versión 140 · 25 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -84,6 +84,8 @@ CAPITULOS = [
          "Las pantallas de error dentro de la organización."),
         ("avisos", "Avisos del sistema", "—", "si", "1", ["Avisos"], ["M-Avisos"], [],
          "Sin conexión, error del servidor, alguien cambió esto, salir sin guardar y los demás avisos comunes."),
+        ("campana", "La campana", "—", "no", "—", ["Campana"], ["M-Campana"], [],
+         "En el encabezado de todas las pantallas con sesión, con su número: lo que llegó, lo que falló en segundo plano y lo que espera a alguien. Cada aviso lleva a donde se resuelve; en el teléfono, en la barra de arriba."),
     ]),
     ("whatsapp", "Atiende por WhatsApp", "El módulo de WhatsApp de cada organización: chats con clientes y empleados, contactos, difusiones, bot y números.", [
         ("wa-chats", "Chats", "WhatsApp › Chats", "no", "11", ["WA-Chats"], ["M-WA-Chats"],
@@ -117,9 +119,12 @@ CAPITULOS = [
     ]),
     ("formularios", "Diseña formularios", "Formularios que se completan dentro de WhatsApp, en «Gestión de formularios»: la organización los diseña, los publica, se los manda a sus empleados desde un chat y revisa lo que responden. Los catálogos son las listas de opciones que comparten.", [
         ("frm-listado", "Diseñar formularios", "/org/formularios", "no", "12", ["FRM-Listado"], ["M-FRM-Listado"], [],
-         "Cada formulario con sus preguntas, cómo está en WhatsApp y su último cambio. «Nuevo formulario» empieza desde cero o desde una plantilla."),
+         "Activos y dados de baja, cada uno con sus preguntas, cómo está en WhatsApp, sus respuestas y su último cambio, y su ⋮. «Nuevo formulario» empieza desde cero o desde una plantilla."),
         ("frm-editor", "Editor de un formulario", "/org/formularios/:id", "no", "12 y 14", ["FRM-Editor"], ["M-FRM-Editor"], [],
          "Una sola pantalla: el formulario, las preguntas que se abren en el lugar (también «elegir varias», fotos y documentos, hasta 10 archivos) y cómo lo ve quien lo recibe. Se guarda como borrador; con cambios sin guardar, publicar queda grisado."),
+        ("frm-ciclo", "Dar de baja, reactivar, eliminar y copiar", "/org/formularios", "no", "12b", ["FRM-Editor-Baja"], ["M-FRM-Editor-Baja"],
+         ["FRM-Dar-De-Baja", "FRM-Reactivar-Eliminar", "FRM-Copiar"],
+         "Desde el ⋮ de cada formulario: darlo de baja (deja de mandarse y de ofrecerse, y se conserva lo cargado), reactivarlo con una versión nueva, eliminarlo si no tiene respuestas o copiarlo en borrador. El editor de un dado de baja dice quién y cuándo, y qué pasa en WhatsApp."),
         ("frm-publicar", "Publicar en WhatsApp", "/org/formularios/:id", "no", "12", ["FRM-Publicar"], [], ["FRM-Publicando"],
          "La comprobación antes de publicar (también los más de 10 archivos) y cómo termina: los pasos mientras WhatsApp la revisa, el rechazo con la pregunta marcada y la vista oficial."),
         ("frm-chat", "Enviar un formulario", "WhatsApp › Chats › Internos", "no", "12 y 14", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Formulario-Cliente", "M-WA-Chats-Formulario-Cliente", "WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta", "WA-Chats-Visor", "M-WA-Chats-Visor", "WA-Chats-Avisos", "M-WA-Conversacion-Avisos"],

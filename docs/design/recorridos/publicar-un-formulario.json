@@ -8,7 +8,7 @@
     {
       "tablero": "FRM-Listado",
       "tweaks": {
-        "estado": "Todos"
+        "estado": "Activos"
       },
       "resaltar": "a:text-is(\"Visita a cliente\")",
       "actor": "Lucía · Dueña · web",
@@ -60,12 +60,12 @@
     {
       "tablero": "FRM-Publicando",
       "tweaks": {
-        "estado": "Publicando"
+        "estado": "Publicando: los pasos"
       },
-      "resaltar": ".e-sup.info",
+      "resaltar": ".w-dlg",
       "actor": "Sistema",
       "titulo": "WhatsApp la revisa",
-      "texto": "Arriba del editor se ven los pasos: aceptada, enviada a WhatsApp, en revisión y lista para mandar. Mientras tanto sigue andando la 3.",
+      "texto": "El estado va arriba, en la banda; su ⓘ muestra los pasos: aceptada, enviada a WhatsApp, en revisión y lista para mandar. Mientras tanto sigue andando la 3.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/:id",
       "accion": "Ve «Publicando la versión 4»."
