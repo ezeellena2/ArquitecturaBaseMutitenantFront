@@ -1,4 +1,4 @@
-"""E17 · Biblioteca de plantillas de formularios (docs/plans/formularios/e17-texto-diseno.md del back).
+"""E17 · Biblioteca de plantillas de formularios (docs/plans/formularios/22-texto-diseno.md del back).
 
 Plataforma arma plantillas (página «Plataforma · Formularios», prefijo Plat-FRM-) y la organización las usa (página «Organización ·
 Formularios», prefijo FRM-). Usa las piezas de `formularios_1004.py` y `formularios_catalogos_1004.py`. Los tableros base de Plataforma se

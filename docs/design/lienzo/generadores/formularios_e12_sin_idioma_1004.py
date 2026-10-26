@@ -11,6 +11,12 @@
 - Avisos (25/10, pantallas-y-ui.md): sin carteles en el cuerpo. El estado de la publicación va en la banda con su ⓘ (los
   pasos de «Publicando» y «Consultar ahora» de «Sin confirmar», en el diálogo que abre); la pregunta que rechazó WhatsApp
   se marca en su lugar; en el teléfono, el estado en la barra y «Publicamos la versión 4» en la franja oscura de abajo.
+- 80 (25/10): sin «Envío sin confirmar», «Ya lo revisé» ni «Resolver el envío» en el chat; lo que no se sabe si salió se
+  reintenta solo.
+- E14 con el orden nuevo (78): CA4, la pregunta de catálogo con «Permitir elegir varias» (mínimo y máximo, «varias, hasta N»
+  y las casillas en la vista previa), más de 20 en varias y la presentación propia, con los catálogos de la E12; «Un
+  catálogo demasiado grande» al publicar; al mandar, menos que el mínimo y una opción que no entra. Lo que es de otra
+  etapa lo separa `formularios_14_formularios_1004.py`.
 
 Rehace FRM-Editor, M-FRM-Editor, FRM-Publicar, FRM-Publicando y los cuatro tableros del chat con las piezas de
 `formularios_ab_1004.py`, cambiadas acá, y les vuelve a pasar lo que les suman los generadores de después (el panel de
@@ -96,6 +102,96 @@ A.PREGUNTAS_ARCHIVOS = A.PREGUNTAS[:5] + [
     ("Fotos de la visita", "Foto · solo cámara · de 1 a 4", True, None),
     ("Remito firmado", "Documento · PDF, Excel, Word o imagen · hasta 1", False, None),
 ] + A.PREGUNTAS[5:]
+
+
+# ================================================================ CA4 · Elegir de un catálogo, con los catálogos de la E12 (78)
+A.CATALOGOS_K6 = [
+    ("Clientes", "De los contactos de WhatsApp", ""),
+    ("Depósitos", "Dado de baja", "off"),
+    ("Motivos de visita", "Escritas a mano · 3 opciones activas", "on"),
+    ("Proveedores", "Escritas a mano · 1.097 opciones", ""),
+    ("Recargo por zona", "Escritas a mano · 6 opciones", ""),
+    ("Responsables de obra", "No se puede usar", "off"),
+    ("Supervisores", "De los miembros", ""),
+]
+CSS_CA4 = """.q-cat .rt .q-ver { margin-left: auto; font-weight: 600; color: var(--marca-tx); text-decoration: none; }
+.q-cat .rt { display: flex; align-items: center; gap: 4px; }
+.q-varias { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.q-varias .q-rango { gap: 8px; }
+.q-pres { display: flex; flex-direction: column; gap: 10px; }
+.q-pres .ab-seg { align-self: flex-start; }
+.q-pres .q-g2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+.q-ed .err2 { font-size: 12.5px; color: var(--peligro); }
+"""
+CA4 = {  # modo: (pregunta, catálogo, varias (mín, máx) o None, presentación propia, error en el catálogo)
+    "elegido": ("Motivo", "Motivos de visita", None, False, ""),
+    "abierto": ("Motivo", "Motivos de visita", None, False, ""),
+    "varias": ("Motivo", "Motivos de visita", (1, 2), False, ""),
+    "mas20": ("Proveedor", "Proveedores", (1, 3), False, "Tiene 1.097 opciones. Con varias, WhatsApp muestra hasta 20."),
+    "propia": ("Supervisor", "Supervisores", None, True, ""),
+}
+
+
+def pregunta_catalogo(modo="elegido"):
+    """CA4: la pregunta «Elegir de un catálogo», abierta en el lugar, con «Permitir elegir varias» y su mínimo y máximo, y la
+    presentación de cada opción (la del catálogo o la suya) en los catálogos de los miembros o de los contactos."""
+    if modo == "sin":
+        sel = f'<div class="ct sel abierto ph">Elegí un catálogo{CHEV}</div>'
+        menu = ('<div class="q-catmn" role="listbox" aria-label="Catálogo"><span class="vacio">Todavía no hay catálogos disponibles.</span>'
+                '<a class="cb cb-enl" href="FRM-Catalogos.dc.html" style="align-self: flex-start;">Ir a Catálogos</a></div>')
+        n, cat, varias, propia, err = "Motivo", "", None, False, ""
+    else:
+        n, cat, varias, propia, err = CA4[modo]
+        sel = f'<div class="ct sel{" abierto" if modo == "abierto" else ""}{" mal" if err else ""}">{cat}{CHEV}</div>'
+        menu = ""
+        if modo == "abierto":
+            items = "".join(f'<span class="{c}" role="option"{" aria-disabled=" + chr(34) + "true" + chr(34) if c == "off" else ""}>{x}<small>{d}</small></span>'
+                            for x, d, c in A.CATALOGOS_K6)
+            menu = f'<div class="q-catmn" role="listbox" aria-label="Catálogo"><span class="w-bus bus">{F.BUSCAR} Buscar catálogo</span>{items}</div>'
+    destino = "FRM-Catalogo-Filtros.dc.html" if propia else "FRM-Catalogo.dc.html"
+    ver = f'<a class="q-ver" href="{destino}">Ver el catálogo</a>' if cat else ""
+    tipo_fila = "Elegir de un catálogo" + (f" · {cat}" if cat else "") + (f" · varias, hasta {varias[1]}" if varias else "")
+    if varias:
+        cuantas = ('<div class="w-cmp ancho"><div class="q-varias"><span class="q-chk"><i>' + TILDE + '</i>Permitir elegir varias</span>'
+                   f'<div class="q-rango">Mínimo <div class="ct">{varias[0]}</div> Máximo <div class="ct">{varias[1]}</div></div>'
+                   + F.info("WhatsApp muestra hasta 20 opciones en una pregunta de varias. Con un mínimo de 1 o más, es obligatoria.") + "</div></div>")
+    else:
+        cuantas = '<div class="w-cmp ancho"><span class="q-chk"><i class="no"></i>Permitir elegir varias</span></div>'
+    pres = ""
+    if propia:
+        pres = ('<div class="w-cmp ancho q-pres"><span class="rt">Cómo se muestra cada opción</span>'
+                '<span class="ab-seg" role="radiogroup" aria-label="Cómo se muestra cada opción"><span role="radio">Como el catálogo</span><span class="on" role="radio">Propia</span></span>'
+                f'<div class="q-g2"><div class="w-cmp"><span class="rt">Texto</span><div class="ct sel">Nombre{CHEV}</div></div>'
+                f'<div class="w-cmp"><span class="rt">Detalle</span><div class="ct sel">Rol{CHEV}</div></div></div></div>')
+    e = f'<span class="err2" role="alert">{err}</span>' if err else ""
+    return ('<div class="q-ab">' + A.fila_pregunta(5, n, tipo_fila, False, None)
+            + '<div class="q-ed">'
+            f'<div class="w-cmp"><span class="rt">Pregunta <span class="req">*</span></span><div class="ct">{n}</div></div>'
+            f'<div class="w-cmp"><span class="rt">Tipo de respuesta</span><div class="ct sel">Elegir de un catálogo{CHEV}</div></div>'
+            f'<div class="w-cmp ancho q-cat"><span class="rt">Catálogo <span class="req">*</span>{ver}</span>{sel}{menu}{e}</div>'
+            + cuantas + pres
+            + '<div class="w-cmp"><span class="rt">Ayuda para el empleado</span><div class="ct ph">Opcional</div></div>'
+            '<div class="w-cmp" style="justify-content: flex-end;"><span class="q-chk"><i class="no"></i>Obligatoria</span></div>'
+            f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{ARRIBA} Listo</button></div>'
+            "</div></div>")
+
+
+A.pregunta_catalogo = pregunta_catalogo
+
+
+def vista_catalogo(t_cuerpo, modo):
+    """La vista previa de la pregunta de catálogo: casillas con «Elegí hasta N» si permite varias; el rótulo de la pregunta."""
+    n, cat, varias, _p, _e = CA4[modo]
+    if n != "Motivo":
+        t_cuerpo = t_cuerpo.replace(">Motivo (opcional)", f">{n} (opcional)", 1)
+    if varias:
+        ops = ["Seguimiento", "Venta nueva", "Reclamo"] if cat == "Motivos de visita" else ["Abrasivos del Sur", "Aceros Rosario", "Aislantes Norte", "…"]
+        m = re.search(rf'<div class="pv-c">{n} \(opcional\)(?:(?!<div class="pv-c">).)*', t_cuerpo, re.S)
+        assert m, modo
+        nuevo = (f'<div class="pv-c">{n} (opcional)<span class="pv-ay">Elegí hasta {varias[1]}</span><div class="pv-ck">'
+                 + "".join(f"<span><i></i>{o}</span>" for o in ops) + "</div></div>")
+        t_cuerpo = t_cuerpo[:m.start()] + nuevo + t_cuerpo[m.end():]
+    return t_cuerpo
 
 
 PARA_QUIEN = ["Empleados", "Clientes", "Empleados y clientes"]
@@ -250,7 +346,7 @@ toast, confirmar = A.toast, A.confirmar
 # ================================================================ FRM-Editor
 ESTADOS_EDITOR = ["Sin cambios", "Con cambios", "Guardando", "Guardado", "No se guardó", "Otra persona guardó", "Comparar los cambios",
                   "Nuevo formulario", "Prefijo ocupado", "Para quién es", "Acciones del formulario", "Acciones de una pregunta", "Quitar una pregunta", "Cambiar el tipo", "Elegir varias",
-                  "Elegir de un catálogo", "Elegir el catálogo", "Sin catálogos", "Pregunta de foto", "Pregunta de documento", "Sin almacenamiento",
+                  "Elegir de un catálogo", "Elegir el catálogo", "Varias de un catálogo", "Más de 20 en varias", "Presentación propia", "Sin catálogos", "Pregunta de foto", "Pregunta de documento", "Sin almacenamiento",
                   "Descartar cambios", "Solo lectura", "Cargando", "No existe"]
 CONFLICTO = ('<div class="e-sup alerta" role="alert"><div class="fila">' + ALERTA
              + '<span class="tx">Otra persona cambió esto mientras lo editabas.</span><button type="button" class="cb cb-sec">Revisar</button></div></div>')
@@ -287,6 +383,9 @@ def editor():
         "Elegir varias": pub("cambios", cuerpo_editor(abierta="fallas", modo="fijo")),
         "Elegir de un catálogo": pub("cambios", cuerpo_editor(modo="fijo", catalogo="elegido")),
         "Elegir el catálogo": pub("cambios", cuerpo_editor(modo="fijo", catalogo="abierto")),
+        "Varias de un catálogo": pub("cambios", vista_catalogo(cuerpo_editor(modo="fijo", catalogo="varias"), "varias")),
+        "Más de 20 en varias": pub("cambios", vista_catalogo(cuerpo_editor(modo="fijo", catalogo="mas20"), "mas20")),
+        "Presentación propia": pub("cambios", vista_catalogo(cuerpo_editor(modo="fijo", catalogo="propia"), "propia")),
         "Sin catálogos": pub("cambios", cuerpo_editor(modo="fijo", catalogo="sin")),
         "Pregunta de foto": pub("cambios", archivos("foto")),
         "Pregunta de documento": pub("cambios", archivos("documento")),
@@ -313,11 +412,11 @@ def editor():
         "Cambiar el tipo": confirmar("¿Cambiar el tipo de respuesta?", "Esta será una pregunta nueva. Las respuestas anteriores conservan el tipo original.", "Cambiar tipo", peligro=False),
         "Descartar cambios": confirmar("¿Descartar los cambios?", "Vas a perder lo que cambiaste sin guardar.", "Descartar", cancelar="Seguir editando"),
     }
-    return A.pagina_editor(V, capas, ESTADOS_EDITOR, "Editor del formulario · /org/formularios/:id", CSS_E12)
+    return A.pagina_editor(V, capas, ESTADOS_EDITOR, "Editor del formulario · /org/formularios/:id", CSS_E12 + CSS_CA4)
 
 
 # ================================================================ FRM-Publicar
-ESTADOS_PUBLICAR = ["Versión nueva", "Primera publicación", "Comprobando", "Con cambios sin guardar", "Una pregunta no se puede mostrar",
+ESTADOS_PUBLICAR = ["Versión nueva", "Primera publicación", "Comprobando", "Con cambios sin guardar", "Una pregunta no se puede mostrar", "Un catálogo demasiado grande",
                     "Más de 10 archivos", "Cambió después de comprobar", "Ya se está publicando"]
 SIETE = "Cliente, Fecha de la visita, ¿Se concretó la venta?, Monto estimado, Motivo, Fallas y Observaciones"
 
@@ -356,6 +455,10 @@ def publicar():
         "Primera publicación": dlg("Publicar la versión 1 en WhatsApp", p_ok("1", primera=True), pie_pub("1")),
         "Comprobando": dlg("Publicar la versión 4 en WhatsApp", esq, pie_pub(trabajando=True)),
         "Una pregunta no se puede mostrar": dlg("Publicar la versión 4 en WhatsApp", '<span class="p-cap">Antes hay que resolver</span>' + prob, pie_pub(activo=False)),
+        "Un catálogo demasiado grande": dlg("Publicar la versión 4 en WhatsApp", '<span class="p-cap">Antes hay que resolver</span>'
+                                            '<div class="p-prob"><span class="mal">' + ALERTA + '</span><span class="tx"><b>Proveedor · catálogo «Proveedores»</b>'
+                                            '<span>Tiene 1.097 opciones y WhatsApp muestra hasta 200.</span></span><a href="FRM-Editor.dc.html">Ir a la pregunta</a></div>',
+                                            pie_pub(activo=False)),
         "Más de 10 archivos": dlg("Publicar la versión 4 en WhatsApp", '<span class="p-cap">Antes hay que resolver</span>'
                                   '<div class="p-prob"><span class="mal">' + ALERTA + '</span><span class="tx"><b>Archivos: hasta 12 de 10</b>'
                                   '<span>WhatsApp acepta 10 archivos por respuesta.</span></span><a href="FRM-Editor.dc.html">Ir a las preguntas</a></div>',
@@ -541,6 +644,8 @@ def tel_editor():
         "Pregunta con catálogo": F.thoja("Editar pregunta", F.tcampo("Pregunta", "Motivo", req=True) + F.tcampo("Tipo de respuesta", "Elegir de un catálogo", select=True)
                                          + F.tcampo("Catálogo", "Motivos de visita", req=True, select=True)
                                          + '<a class="t-mas" href="M-FRM-Catalogo.dc.html" style="text-decoration: none;">Ver el catálogo</a>'
+                                         + f'<span class="t-chk"><i class="on">{tilde}</i>Permitir elegir varias</span>'
+                                         + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' + F.tcampo("Mínimo", "1") + F.tcampo("Máximo", "2") + "</div>"
                                          + F.tcampo("Ayuda para el empleado", "Opcional", vacio=True) + f'<span class="t-chk"><i>{tilde}</i>Obligatoria</span>', listo),
         "Pregunta de foto": F.thoja("Editar pregunta", F.tcampo("Pregunta", "Fotos de la visita", req=True) + F.tcampo("Tipo de respuesta", "Foto", select=True)
                                     + F.tcampo("Ayuda para el empleado", "Sacá una foto del frente del local y otra de la góndola.") + origen + cuantas, listo),
@@ -572,47 +677,27 @@ def dlg_enviar(*a, **k):
 if not hasattr(A, "_dlg_enviar_original"):
     A._dlg_enviar_original = A.dlg_enviar
 A.dlg_enviar = dlg_enviar
-RESOLVER_CSS = """.k-ops { display: flex; flex-direction: column; gap: 10px; }
-.k-op { display: flex; align-items: flex-start; gap: 12px; padding: 14px; border: 1px solid var(--borde); border-radius: 10px; background: #fff; }
-.k-op .rd { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--borde2); box-sizing: border-box; flex-shrink: 0; margin-top: 2px; background: #fff; }
-.k-op .tx { display: flex; flex-direction: column; gap: 3px; line-height: 1.35; }
-.k-op .tx b { font-size: 14px; font-weight: 600; }
-.k-op .tx span { font-size: 13px; color: var(--t3); }
-.k-op.on { border-color: var(--marca); box-shadow: 0 0 0 1px var(--marca); background: oklch(0.975 0.01 180); }
-.k-op.on .rd { border: 5px solid var(--marca); }
-"""
 
 
-def dlg_resolver():
-    """«Ya lo revisé» pide confirmación: salió o no salió, atribuido y durable (§9 de la spec)."""
-    cuerpo = ('<p class="d-tx">Visita a cliente · a Tomás Acosta · hoy, 10:51</p><div class="k-ops">'
-              '<div class="k-op on" role="radio" aria-checked="true"><span class="rd"></span><span class="tx"><b>Salió</b><span>Queda como enviado.</span></span></div>'
-              '<div class="k-op" role="radio" aria-checked="false"><span class="rd"></span><span class="tx"><b>No salió</b><span>Lo podés mandar de nuevo.</span></span></div></div>')
-    t = F.dialogo("Resolver el envío", cuerpo, '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Confirmar que salió</button>')
-    t = t.replace('class="w-dlg"', 'class="w-dlg" style="width: 560px;"', 1)
-    return t.replace("<span>Resolver el envío</span>", "<span>Resolver el envío " + F.info("Queda anotado con tu nombre. No le manda nada a Tomás.") + "</span>", 1)
-
-
-ESTADOS_CHAT = [e for e in A.ESTADOS_CHAT_AB if e != "No se sabe si se guardó"]
-ESTADOS_CHAT[ESTADOS_CHAT.index("Confirmar la revisión")] = "Resolver el envío"
+# Decisión 80 (25/10): sin «Envío sin confirmar», «Ya lo revisé» ni «Resolver el envío»; lo que no se sabe si salió se reintenta solo.
+SIN_CONFIRMAR = ("No se sabe si se guardó", "Envío sin confirmar", "Confirmar la revisión", "Resolver el envío")
+ESTADOS_CHAT = [e for e in A.ESTADOS_CHAT_AB if e not in SIN_CONFIRMAR]
+# E14 (§9): también menos que el mínimo y una opción que no entra
+ESTADOS_CHAT[ESTADOS_CHAT.index("Ninguna opción") + 1:ESTADOS_CHAT.index("Ninguna opción") + 1] = ["Menos que el mínimo", "Una opción que no entra"]
 
 
 def chat_enviar():
     E = ESTADOS_CHAT
     esc = {e: A.escr() for e in E}
-    esc["Envío sin confirmar"] = esc["Resolver el envío"] = A.escr("off", "Hay un envío sin confirmar en esta conversación.", "Hay un envío sin confirmar", aviso=True, enviar=False)
     esc["En cola"] = A.escr("off", "Hay un envío pendiente en esta conversación.", enviar=False)
     esc["Ventana cerrada"] = A.escr("off", "Pasaron 24 horas desde su último mensaje.", "Pasaron 24 horas", cerrada=True)
     esc["Cuenta inactiva"] = A.escr("off", "La cuenta de Tomás está inactiva: no puede completar formularios.")
     esc["Sin formularios para Tomás"] = A.escr("off", "Tomás no tiene formularios publicados que pueda completar.")
-    revisar = F.info("Puede que haya salido. No lo mandamos de nuevo solo.") + '<span class="lnk2">Ya lo revisé</span>'
     burbuja = A.burbuja
     msgs = {
         "En cola": burbuja("En cola · 10:51", icono=f'<span class="rel">{RELOJ14}</span>'),
         "Leído": burbuja("Lucía Fernández · 10:51 · Leído"),
         "No se pudo mandar": burbuja("No se pudo mandar", "mal", F.info("El formulario no le llegó. Podés mandarlo de nuevo con «Enviar formulario».")),
-        "Envío sin confirmar": burbuja("Lucía Fernández · 10:51 · Envío sin confirmar", "amb", revisar),
-        "Resolver el envío": burbuja("Lucía Fernández · 10:51 · Envío sin confirmar", "amb", revisar),
     }
     ventana = A.c_aviso("Pasaron 24 horas desde su último mensaje.", RELOJ14)
     capas = {
@@ -624,21 +709,21 @@ def chat_enviar():
         "Falta el mensaje": dlg_enviar(err="vacio"),
         "Mensaje muy largo": dlg_enviar(err="largo", mensaje="Tomás, te paso el formulario de la visita. Acordate de anotar todo lo que revisaste en el local, si quedaron pedidos pendientes, qué productos faltaban en la góndola y cuándo conviene volver a pasar…"),
         "Enviando": dlg_enviar(pie="enviando"),
-        "Resolver el envío": dlg_resolver(),
         "Se cerró la ventana": dlg_enviar(aviso=ventana, pie="off", hasta=False),
         "El formulario ya no está": dlg_enviar("baja", aviso=A.c_aviso("Visita a cliente ya no está disponible para Tomás. Elegí otro."), pie="off"),
         "Con catálogos": dlg_enviar(prob=A.prep_catalogo()),
         "Preparando las opciones": dlg_enviar(prob=A.prep_catalogo("preparando"), pie="off"),
         "Más de 200 opciones": dlg_enviar(prob=A.prob_catalogo("Supervisor a cargo: supera las 200 opciones que admite WhatsApp. Ajustá el catálogo antes de mandar."), pie="off"),
         "Ninguna opción": dlg_enviar(prob=A.prob_catalogo("Supervisor a cargo: no tiene opciones y la pregunta es obligatoria."), pie="off"),
+        "Menos que el mínimo": dlg_enviar(prob=A.prob_catalogo("Motivo: tiene 1 opción y se piden al menos 2."), pie="off"),
+        "Una opción que no entra": dlg_enviar(prob=A.prob_catalogo("Supervisor a cargo: una opción es más larga de lo que admite WhatsApp."), pie="off"),
         "Catálogo que no se puede usar": dlg_enviar(prob=A.prob_catalogo("Supervisor a cargo: el catálogo no se puede usar. Avisale a quien lo administra."), pie="off"),
     }
-    enviado = {"En cola": "Vos: Formulario · Visita a cliente", "Leído": "Vos: Formulario · Visita a cliente", "No se pudo mandar": "No se pudo mandar un formulario",
-               "Envío sin confirmar": "Vos: Formulario · Visita a cliente", "Resolver el envío": "Vos: Formulario · Visita a cliente"}
+    enviado = {"En cola": "Vos: Formulario · Visita a cliente", "Leído": "Vos: Formulario · Visita a cliente", "No se pudo mandar": "No se pudo mandar un formulario"}
     vp = {e: enviado.get(e, "Vos: Genial, Tomás. Te mando el formulario de la visita.") for e in E}
     hora = {e: "10:51" for e in enviado}
     t = A.pagina_chat(E, esc, msgs, capas, vp, hora, "WhatsApp · Internos · enviar un formulario")
-    return t.replace("</helmet>", f'<style data-e12="resolver">\n{RESOLVER_CSS}{CSS_E12}</style>\n</helmet>', 1)
+    return t.replace("</helmet>", f'<style data-e12="resolver">\n{CSS_E12}</style>\n</helmet>', 1)
 
 
 def t_hoja_enviar(*a, **k):
@@ -661,38 +746,29 @@ def t_menu(motivo=""):
 
 
 A.t_menu = t_menu
-ESTADOS_TCHAT = [e for e in A.ESTADOS_TCHAT_AB if e != "No se sabe si se guardó"]
-ESTADOS_TCHAT.insert(ESTADOS_TCHAT.index("Envío sin confirmar") + 1, "Resolver el envío")
+ESTADOS_TCHAT = [e for e in A.ESTADOS_TCHAT_AB if e not in SIN_CONFIRMAR]
 
 
 def tel_chat_enviar():
     E = ESTADOS_TCHAT
     esc = {e: A.t_escr() for e in E}
-    esc["Envío sin confirmar"] = esc["Resolver el envío"] = A.t_escr(aviso="Hay un envío sin confirmar")
     esc["Ventana cerrada"] = A.t_escr(cerrada=True)
-    revisar = A.t_info("Puede que haya salido. No lo mandamos de nuevo solo.") + '<span class="lnk2">Ya lo revisé</span>'
     tb = A.t_burbuja
     msgs = {
         "En cola": tb("En cola · 10:51", icono=f'<span class="rel">{F.TRELOJ}</span>'),
         "Leído": tb("Lucía Fernández · 10:51 · Leído"),
         "No se pudo mandar": tb("No se pudo mandar", "mal", A.t_info("El formulario no le llegó. Podés mandarlo de nuevo con «Enviar formulario».")),
-        "Envío sin confirmar": tb("10:51 · Envío sin confirmar", "amb", revisar),
-        "Resolver el envío": tb("10:51 · Envío sin confirmar", "amb", revisar),
     }
     ventana = f'<div class="t-aviso">{RELOJ14}<span>Pasaron 24 horas desde su último mensaje.</span></div>'
 
     def prob(texto):
         return f'<div class="t-prob2">{ALERTA}<span>{texto}</span></div>'
-    opciones = ('<div class="k-ops"><div class="k-op on" role="radio" aria-checked="true"><span class="rd"></span><span class="tx"><b>Salió</b><span>Queda como enviado.</span></span></div>'
-                '<div class="k-op" role="radio" aria-checked="false"><span class="rd"></span><span class="tx"><b>No salió</b><span>Lo podés mandar de nuevo.</span></span></div></div>')
     capas = {
         "Menú abierto": t_menu(),
         "Elegir el formulario": t_hoja_enviar(),
         "Cargando formularios": t_hoja_enviar("cargando", pie="off"),
         "Falta el mensaje": t_hoja_enviar(err="vacio"),
         "Enviando": t_hoja_enviar(pie="enviando"),
-        "Resolver el envío": F.thoja("Resolver el envío", opciones, '<button type="button" class="cb cb-pri">Confirmar que salió</button><button type="button" class="cb cb-sec">Cancelar</button>',
-                                     sub="Visita a cliente · hoy, 10:51"),
         "Se cerró la ventana": t_hoja_enviar(aviso=ventana, pie="off", hasta=False),
         "El formulario ya no está": t_hoja_enviar("baja", aviso='<div class="t-aviso">' + ALERTA + '<span>Visita a cliente ya no está disponible para Tomás. Elegí otro.</span></div>', pie="off"),
         "Ventana cerrada": t_menu("Pasaron 24 horas desde su último mensaje."),
@@ -703,7 +779,7 @@ def tel_chat_enviar():
         "Ninguna opción": t_hoja_enviar(prob=prob("Supervisor a cargo: no tiene opciones y la pregunta es obligatoria."), pie="off"),
         "Catálogo que no se puede usar": t_hoja_enviar(prob=prob("Supervisor a cargo: el catálogo no se puede usar. Avisale a quien lo administra."), pie="off"),
     }
-    t = A.pagina_tchat(E, esc, msgs, capas, "WhatsApp · Internos · enviar un formulario · teléfono", RESOLVER_CSS + CSS_E12)
+    t = A.pagina_tchat(E, esc, msgs, capas, "WhatsApp · Internos · enviar un formulario · teléfono", CSS_E12)
     return M.css(t, M.CSS_HOJA, "hoja")
 
 

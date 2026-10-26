@@ -1,4 +1,4 @@
-"""E13 · Catálogos de Formularios por WhatsApp (docs/plans/formularios/e13-texto-diseno.md del back).
+"""E13 · Catálogos de Formularios por WhatsApp (docs/plans/formularios/12-texto-diseno.md del back).
 
 Usa las piezas de `formularios_1004.py` (E12) y la regla única del 13/10: los catálogos son una sección del panel «Formularios»;
 sus filtros, desplegables. Corre después de `formularios_1004.py` y de `formularios_ajustes_1004.py`.

@@ -1,14 +1,15 @@
 """Tablero «Criterio · Decisiones por pantalla»: lo que el usuario eligió en cada pantalla y las reglas que dejó.
 Cada decisión nueva suma una fila en DECISIONES; si deja una regla, va también a REGLAS y al tablero de esa pieza.
-Va en cuatro columnas (5920 de ancho): el lienzo recorta un tablero a 8000 de alto; en dos columnas ya no entraba (v120) y en tres tampoco (v130)."""
+Va en cinco columnas (7400 de ancho): el lienzo recorta un tablero a 8000 de alto; en dos columnas ya no entraba (v120), en tres tampoco (v130) y en cuatro
+tampoco (v141)."""
 import json
 import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 7800
-ANCHO = 5920
-COLUMNAS = 4
+ALTO = 6600
+ANCHO = 7400
+COLUMNAS = 5
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -35,7 +36,7 @@ CSS = """  <style data-criterio="decisiones">
 .est.alerta::before { background: oklch(0.72 0.15 70); }
 .est.off { color: var(--t2); }
 .est.off::before { background: oklch(0.75 0.01 78); }
-.cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 48px; align-items: start; }
+.cols { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 48px; align-items: start; }
 .cols > div { display: flex; flex-direction: column; gap: 36px; }
   </style>"""
 
@@ -490,7 +491,7 @@ DECISIONES = {
         ("Opción apagada del chat", "", "En el teléfono, «Enviar formulario» apagado en el ⋮ queda solo grisado, con el motivo en su tooltip (decisión 43).", "Dibujada"),
         ("Para quién es", "A", "Un desplegable más en «El formulario»: Empleados, Clientes o Empleados y clientes (decisión 50). El envío, el asistente y las sugerencias ofrecen solo los que corresponden a quien recibe.", "Dibujada"),
         ("Enviar a un cliente", "A", "«Enviar formulario» también en un chat de Clientes, con el mismo diálogo y solo los formularios para clientes; en el teléfono, en el ⋮ del chat (decisión 49). Sin ninguno publicado, el botón queda grisado con el motivo en su ⓘ.", "Dibujada"),
-        ("El panel", "", "El lienzo muestra el panel completo de Gestión de formularios; al programarse la E12 solo tiene «Diseñar formularios» (§9 de la spec).", "Decidido"),
+        ("El panel", "", "Desde el 25/10, el de su etapa (fila «El panel» de Formularios por etapa).", "Decidido"),
     ],
     "E12b · Ciclo de vida · La Guía y el usuario · 24/10": [
         ("Diseñar formularios", "A", "«Activos | Dados de baja» arriba de la lista, como en Formularios (MF1), y «Estado ▾» dentro de Activos; suma la columna Respuestas. Las acciones van en un ⋮ por fila, como en Usuarios, no en los íconos de ArquitecturaBase (Criterio · Menús).", "Dibujada"),
@@ -506,6 +507,26 @@ DECISIONES = {
         ("La campana", "", "En el encabezado de todas las pantallas con sesión, al lado del nombre, con su número. Abre la lista: cada aviso es una línea y cuándo, y lleva a donde se resuelve (Campana).", "Dibujada"),
         ("En el teléfono", "", "La campana va en la barra de arriba de Inicio, Chats, Contactos, Más y el inicio personal, y la lista, en su pantalla (M-Campana). Lo pasajero sigue en la franja oscura de abajo.", "Dibujada"),
         ("Los carteles que quedan", "", "Los tableros con carteles en el cuerpo pasan a la regla cuando les toca su etapa; los de la E12 y la E12b ya pasaron.", "Dibujada"),
+    ],
+    "Formularios por etapa · El usuario · 25/10": [
+        ("Un tablero por etapa", "A", "Cada tablero muestra solo lo que existe hasta su etapa (decisión 78). Si una pantalla cambia después, esa versión es otro tablero, con la etapa en el nombre (FRM-Formularios-15); la página Formularios va en filas, una por etapa.", "Dibujada"),
+        ("El panel", "", "El de su etapa: «Catálogos» desde la 12, «Formularios» desde la 14, con lo que espera aprobación desde la 21, y «Formularios que faltan» desde la 23 (reemplaza la fila «El panel» de la E12).", "Dibujada"),
+        ("Una sola lista (79)", "", "Sale «Diseñar formularios»: queda «Formularios», con «Nuevo formulario», y cada formulario se abre con sus pestañas; en la 14, solo «Diseño», y con una sola pestaña no hay barra.", "Dibujada"),
+        ("Lo que no se sabe si salió (80)", "", "La cola de WhatsApp lo reintenta sola: sin «Envío sin confirmar», «Ya lo revisé» ni «Resolver el envío».", "Dibujada"),
+        ("Un contacto sin nombre (81)", "", "Toma el nombre de su perfil de WhatsApp; el teléfono nunca se ve.", "Dibujada"),
+        ("El PDF (82)", "", "Color, logo y datos de la página pública de la organización: se dibuja con la etapa 21.", "Falta dibujar"),
+    ],
+    "E12 · Catálogos · La Guía · 25/10": [
+        ("El catálogo a mano (CA1-A)", "A", "Todo a la vista: el catálogo con el origen y el tipo de valor como la A11, «Así lo ve quien lo recibe» con «Una opción | Varias», y las opciones en una tabla que se edita en el lugar, con su barra (Agregar, Pegar desde Excel, Importar, Exportar y «⋯»), la búsqueda y la selección de filas.", "Dibujada"),
+        ("Pegar e importar", "", "En un catálogo nuevo o con cambios sin guardar, grisados con el motivo en su tooltip. Importar revisa errores, altas, cambios y bajas antes de aplicar; las muchas bajas y las muchas filas con error piden una casilla al pie.", "Dibujada"),
+        ("De los contactos (55)", "A", "Un tercer origen: los contactos de Clientes, con filtros por etiqueta y la vista previa; sin WhatsApp, «No se puede usar».", "Dibujada"),
+        ("Sin persona de ejemplo", "", "«Crear catálogo» de los miembros queda grisado, con el motivo en su tooltip, hasta elegir a quién y probar.", "Dibujada"),
+        ("Lo usan", "", "La columna llega con los formularios (FRM-Catalogos-14).", "Dibujada"),
+    ],
+    "E14 · Formularios · La Guía · 25/10": [
+        ("Elegir de un catálogo (CA4)", "A", "«Permitir elegir varias» con Mínimo y Máximo; en la lista, «varias, hasta 2», y en la vista previa, casillas. En los catálogos de los miembros, «Cómo se muestra cada opción»: como el catálogo o propia.", "Dibujada"),
+        ("Más de 20 o de 200", "", "En el editor, el error debajo del catálogo; al publicar, «Antes hay que resolver» con «Ir a la pregunta».", "Dibujada"),
+        ("Mis mensajes (T16)", "", "Quien vinculó su cuenta ve su respuesta como una tarjeta suya, con «Tu respuesta», los valores y el número.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

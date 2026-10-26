@@ -1,0 +1,60 @@
+{
+  "id": "usar-un-catalogo",
+  "titulo": "Usar un catálogo en un formulario",
+  "etapa": "Etapa 14 · Formularios",
+  "orden": 30,
+  "resumen": "Lucía usa «Motivos de visita» en una pregunta de «Visita a cliente», deja elegir varias, lo manda por WhatsApp y vuelve la respuesta con lo que eligió la persona.",
+  "pasos": [
+    {
+      "tablero": "FRM-Editor",
+      "tweaks": {
+        "estado": "Elegir el catálogo"
+      },
+      "resaltar": ".q-catmn",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "La usa en una pregunta",
+      "texto": "En el editor del formulario, una pregunta del tipo «Elegir de un catálogo» apunta a la lista. Los que no se pueden usar aparecen apagados.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id",
+      "accion": "Elige «Motivos de visita»."
+    },
+    {
+      "tablero": "FRM-Editor",
+      "tweaks": {
+        "estado": "Varias de un catálogo"
+      },
+      "resaltar": ".q-varias",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Deja elegir varias",
+      "texto": "Con «Permitir elegir varias», el mínimo y el máximo; la lista de preguntas dice «varias, hasta 2» y la vista previa muestra casillas.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id",
+      "accion": "Marca «Permitir elegir varias»."
+    },
+    {
+      "tablero": "WA-Chats-Formulario",
+      "tweaks": {
+        "estado": "Con catálogos"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Enviar formulario\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Manda el formulario",
+      "texto": "Al mandarlo, las opciones se arman para la persona que lo recibe: el diálogo dice cuántas tiene cada pregunta.",
+      "avanzar": "Tocá «Enviar formulario».",
+      "ruta": "/org/whatsapp/chats",
+      "accion": "Manda el formulario."
+    },
+    {
+      "tablero": "WA-Chats-Respuesta",
+      "tweaks": {
+        "estado": "Con un valor de catálogo"
+      },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Vuelve la respuesta",
+      "texto": "La respuesta trae lo que eligió la persona, con el catálogo y el código debajo, tal como era al responder.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/whatsapp/chats",
+      "accion": "Ve la respuesta."
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-"""La Etapa 12b, ciclo de vida: dar de baja, reactivar, eliminar y copiar (resumen e12b-ciclo-de-vida.md del back y anexo D
+"""La Etapa 12b, ciclo de vida: dar de baja, reactivar, eliminar y copiar (resumen 17-ciclo-de-vida.md del back y anexo D
 del traspaso 2: BA1-A a BA5, más FRM-Copiar de la decisión 74). Con nuestras piezas y la decisión 43:
 - «Diseñar formularios» (FRM-Listado, rehecho): «Activos | Dados de baja» como en Formularios (MF1), «Estado ▾» dentro de
   Activos, la columna Respuestas y un ⋮ por fila (no los íconos de allá: Criterio · Menús) con Copiar, Dar de baja,
@@ -457,7 +457,7 @@ NUEVOS = {"FRM-Editor-Baja": (6080, 260, 1440, 1400, "Formularios · editor de u
           "FRM-Reactivar-Eliminar": (6080, 1780, 1440, 900, "Formularios · reactivar y eliminar"),
           "FRM-Copiar": (7600, 1780, 1440, 900, "Formularios · copiar un formulario"),
           "M-FRM-Editor-Baja": (2820, 2800, 390, 844, "Formularios · editor de un dado de baja · teléfono")}
-TABLEROS = ["FRM-Listado", "M-FRM-Listado", "FRM-Editor", "M-FRM-Editor"] + list(NUEVOS)
+TABLEROS = ["FRM-Editor", "M-FRM-Editor"] + list(NUEVOS)
 
 
 def escribir(n, t, alto=None):
@@ -481,12 +481,11 @@ def registrar():
 if __name__ == "__main__":
     panel_e16 = re.search(r'<style data-e16="panel">\n(.*?)</style>', (PROJ / "FRM-Catalogos.dc.html").read_text(encoding="utf-8"), re.S)
     E.R.CSS_PANEL_E16 = panel_e16.group(1) if panel_e16 else ""
-    escribir("FRM-Listado", listado())
+    # la lista y su teléfono, desde la 79: FRM-Formularios y M-FRM-Formularios (formularios_lista_y_ficha_1004.py)
     escribir("FRM-Copiar", copiar())
     escribir("FRM-Reactivar-Eliminar", reactivar_eliminar())
     escribir("FRM-Dar-De-Baja", dar_de_baja(), 1400)
     escribir("FRM-Editor-Baja", editor_baja(), 1400)
-    escribir("M-FRM-Listado", tel_listado())
     escribir("M-FRM-Editor-Baja", tel_editor_baja())
     registrar()
     print("listo", TABLEROS)

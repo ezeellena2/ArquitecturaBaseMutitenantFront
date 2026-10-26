@@ -1,12 +1,12 @@
 {
   "id": "dar-de-baja-y-reactivar",
   "titulo": "Dar de baja y reactivar un formulario",
-  "etapa": "Etapa 12b · Ciclo de vida",
+  "etapa": "Etapa 17 · Ciclo de vida",
   "orden": 10,
   "resumen": "Lucía da de baja Visita a cliente con dos envíos abiertos, ve cómo queda un formulario dado de baja y reactiva Relevamiento de obra con una versión nueva.",
   "pasos": [
     {
-      "tablero": "FRM-Listado",
+      "tablero": "FRM-Formularios-17",
       "tweaks": {
         "estado": "Acciones de un publicado"
       },

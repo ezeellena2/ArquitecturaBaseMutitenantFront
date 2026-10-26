@@ -1,16 +1,16 @@
 {
   "id": "revisar-las-respuestas",
   "titulo": "Revisar las respuestas y exportarlas",
-  "etapa": "Etapa 15 · Planilla",
+  "etapa": "Etapa 15 · Respuestas",
   "orden": 10,
   "resumen": "Lucía entra a «Formularios», abre la planilla de Visita a cliente, filtra las ventas nuevas de Delta S.A., revisa una respuesta al costado y exporta lo filtrado a Excel.",
   "pasos": [
     {
-      "tablero": "FRM-Formularios",
+      "tablero": "FRM-Formularios-15",
       "tweaks": {
-        "estado": "Activos"
+        "estado": "Lista"
       },
-      "resaltar": ".fm-n a:has-text(\"Visita a cliente\")",
+      "resaltar": ".fx-n a:has-text(\"Visita a cliente\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Abre «Formularios»",
       "texto": "En «Gestión de formularios», cada formulario publicado con sus respuestas y la última.",

@@ -1,6 +1,6 @@
 """Etapa 17 · Las reglas de ejemplo y el diseño del PDF de una plantilla (decisiones 30 a 33 de la hoja de ruta, 18/10).
 
-Spec: §3 («Reglas de ejemplo y diseño del PDF») y §8 de `docs/plans/formularios/e17-biblioteca.md` del back. Copia las piezas de la E16
+Spec: §3 («Reglas de ejemplo y diseño del PDF») y §8 de `docs/plans/formularios/22-biblioteca.md` del back. Copia las piezas de la E16
 (`formularios_ab_reglas_1004.py`): la sección «Cuando llega una respuesta» y el diseño del PDF. Lo que cambia:
 - en Plataforma, las reglas y el PDF van en la pestaña «Plantilla», debajo de las preguntas, y se guardan con el borrador de la plantilla:
   sin «Guardar reglas» ni historial. Una acción que pide un rol dice «Lo elige cada organización» y lleva un «Rol sugerido» que solo se

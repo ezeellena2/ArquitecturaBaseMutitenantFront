@@ -1,7 +1,7 @@
 """Etapa 15 · Planilla, detalle y Excel con la disposición de ArquitecturaBase (T1, T2, T4, T5 y D2 del lienzo «Formularios por WhatsApp»).
 
 Sigue a `formularios_ab_1004.py` (E12), `formularios_ab_catalogos_1004.py` (E13) y `formularios_ab_archivos_1004.py` (E14), con las mismas
-piezas. Spec: `docs/plans/formularios/e15-planilla.md` del back. Donde la disposición de allá choca con una regla escrita del lienzo, manda la
+piezas. Spec: `docs/plans/formularios/15-respuestas.md` del back. Donde la disposición de allá choca con una regla escrita del lienzo, manda la
 nuestra: «Respuestas» es un grupo del panel como «Gestión de usuarios»; lo elegido va en el filtro («Empresa: Delta S.A.») y no en una fila
 de chips; los atajos de ↑ ↓ y Esc van en el tooltip y no en una línea de ayuda; la aclaración de los archivos al exportar va en ⓘ.
 Multitenant: «Empresa ▾» y la columna «Empresas», que se oculta desde «Columnas» (decisión 24). Solo lee: no hay estado ni aprobación (E16).

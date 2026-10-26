@@ -1,16 +1,16 @@
 {
   "id": "aprobar-o-rechazar",
   "titulo": "Aprobar o rechazar una respuesta",
-  "etapa": "Etapa 16 · Reglas",
+  "etapa": "Etapa 21 · Reglas y aprobación",
   "orden": 10,
   "resumen": "Lucía entra a «Formularios», abre Visita a cliente, revisa una visita que espera su decisión y la rechaza con un motivo.",
   "pasos": [
     {
-      "tablero": "FRM-Formularios",
+      "tablero": "FRM-Formularios-21",
       "tweaks": {
         "estado": "Activos"
       },
-      "resaltar": ".fm-n a:has-text(\"Visita a cliente\")",
+      "resaltar": ".fx-n a:has-text(\"Visita a cliente\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Abre «Formularios»",
       "texto": "Cada formulario publicado con lo que tiene por aprobar. El número del panel dice cuántas esperan su decisión; también aparecen en «Para resolver» del inicio.",

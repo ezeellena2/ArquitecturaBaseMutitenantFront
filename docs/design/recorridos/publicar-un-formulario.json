@@ -1,19 +1,19 @@
 {
   "id": "publicar-un-formulario",
   "titulo": "Publicar un formulario",
-  "etapa": "Etapa 12 · Formularios",
+  "etapa": "Etapa 14 · Formularios",
   "orden": 10,
   "resumen": "Lucía cambia una pregunta, guarda los cambios y publica la versión 4; WhatsApp la revisa y queda publicada.",
   "pasos": [
     {
-      "tablero": "FRM-Listado",
+      "tablero": "FRM-Formularios",
       "tweaks": {
-        "estado": "Activos"
+        "estado": "Lista"
       },
-      "resaltar": "a:text-is(\"Visita a cliente\")",
+      "resaltar": ".fx-n a:has-text(\"Visita a cliente\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Abre el formulario",
-      "texto": "«Diseñar formularios» muestra cada formulario con sus preguntas y cómo está en WhatsApp. «Visita a cliente» está publicado en la versión 3.",
+      "texto": "«Formularios» muestra cada formulario con sus preguntas, cómo está en WhatsApp y su último cambio. «Visita a cliente» está publicado; su nombre abre la pestaña Diseño.",
       "avanzar": "Tocá «Visita a cliente».",
       "ruta": "/org/formularios",
       "accion": "Abre «Visita a cliente»."

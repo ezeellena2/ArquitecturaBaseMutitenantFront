@@ -1,6 +1,6 @@
 """Etapa 16 · Reglas, aprobación, PDF y avisos con la disposición de ArquitecturaBase (G1 a G6 del lienzo «Formularios por WhatsApp»).
 
-Sigue a `formularios_ab_planilla_1004.py` (E15), con las mismas piezas. Spec: `docs/plans/formularios/e16-reglas-y-aprobacion.md` del back y el
+Sigue a `formularios_ab_planilla_1004.py` (E15), con las mismas piezas. Spec: `docs/plans/formularios/21-reglas-y-aprobacion.md` del back y el
 anexo B del traspaso (E4.1 a E4.7). Donde la disposición de allá choca con una regla escrita del lienzo, manda la nuestra: ⋮ en las filas de
 reglas y de acciones en lugar de botones sueltos; «Ver: para mí ▾» en lugar del segmentado; las explicaciones van en ⓘ; las acciones de la
 página del PDF van en la banda («Descartar» y «Guardar diseño»). Decisiones del usuario: 25 (quién aprueba) y 26 (fuera de las 24 horas, «No se pudo»).

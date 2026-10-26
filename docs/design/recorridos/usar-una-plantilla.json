@@ -1,12 +1,12 @@
 {
   "id": "usar-una-plantilla",
   "titulo": "Usar una plantilla",
-  "etapa": "Etapa 17 · Biblioteca",
+  "etapa": "Etapa 22 · Biblioteca",
   "orden": 20,
   "resumen": "Lucía arranca un formulario desde la biblioteca: elige «Visita a cliente», obtiene una copia propia en borrador y guarda las reglas que trae.",
   "pasos": [
     {
-      "tablero": "FRM-Listado",
+      "tablero": "FRM-Formularios-22",
       "tweaks": {
         "estado": "Nuevo formulario: menú"
       },

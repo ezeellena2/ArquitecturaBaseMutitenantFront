@@ -1,4 +1,4 @@
-"""E12 · Formularios por WhatsApp (docs/plans/formularios/e12-formularios.md del back, §9): los tableros `FRM-*`.
+"""E12 · Formularios por WhatsApp (docs/plans/formularios/14-formularios.md del back, §9): los tableros `FRM-*`.
 Se arman desde WA-Contactos (el listado de la familia de WhatsApp) y van en la página «Organización · Formularios».
 Uso: `python formularios_1004.py opciones` deja las opciones de cada tablero para mostrarlas (no entran en canvas.json);
 sin argumentos, arma los tableros elegidos."""
