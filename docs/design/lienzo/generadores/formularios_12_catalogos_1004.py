@@ -390,31 +390,38 @@ def opcion_abierta(n="Venta nueva", cod="VEN", det="Primera visita a un cliente"
 
 
 def barra(modo):
-    """La barra de Opciones de CA1-A. modo: normal | cambios | nuevo | tope | lectura; con el «⋯» abierto, menu=True."""
-    def b(icono, texto):
-        return f'<button type="button" class="cb cb-sec">{icono} {texto}</button>'
-    agregar, pegar, importar, exportar = b(MAS, "Agregar opción"), b(PEGAR, "Pegar desde Excel"), b(IMPORTAR, "Importar"), b(EXPORTAR, "Exportar")
+    """El encabezado de Opciones: solo «+ Agregar opción» y un ⋮ con lo demás, sin cantidades (el usuario, 26/10, front 29451ed6).
+    modo: normal | cambios | nuevo | tope | lectura."""
+    agregar = f'<button type="button" class="cb cb-sec">{MAS} Agregar opción</button>'
     mas = f'<button type="button" class="ib" aria-label="Más acciones de las opciones" aria-haspopup="menu" aria-expanded="{{{{expMas}}}}">{KEBAB}</button>'
     if modo == "lectura":
-        return exportar + mas
-    if modo == "nuevo":
-        return agregar + tip(pegar, MOTIVO_NUEVO, abierto=True) + tip(importar, MOTIVO_NUEVO) + tip(exportar, MOTIVO_NUEVO) + mas
-    if modo == "cambios":
-        return agregar + tip(pegar, MOTIVO_CAMBIOS) + tip(importar, MOTIVO_CAMBIOS) + exportar + mas
+        return mas
     if modo == "tope":
-        return tip(agregar, MOTIVO_TOPE, abierto=True) + tip(pegar, MOTIVO_TOPE) + importar + exportar + mas
-    return agregar + pegar + importar + exportar + mas
+        return tip(agregar, MOTIVO_TOPE, abierto=True) + mas
+    return agregar + mas
 
 
-def menu_mas(lectura=False):
-    items = f'<span class="f-mi" role="menuitem">{PLANTILLA} Bajar la plantilla</span>'
-    if not lectura:
-        items += f'<span class="f-mi" role="menuitem">{AZ} Ordenar de la A a la Z</span><span class="f-mi" role="menuitem">{CODIGOS} Generar los códigos que faltan</span>'
+def menu_mas(modo="normal"):
+    """El ⋮ de Opciones. Lo que no se puede todavía va apagado, con el motivo en su tooltip (43)."""
+    motivo = {"nuevo": MOTIVO_NUEVO, "cambios": MOTIVO_CAMBIOS, "tope": MOTIVO_TOPE}.get(modo, "")
+
+    def mi(icono, texto, apagado=""):
+        if apagado:
+            return f'<span class="f-mi off" role="menuitem" aria-disabled="true" title="{apagado}">{icono} {texto}</span>'
+        return f'<span class="f-mi" role="menuitem">{icono} {texto}</span>'
+    exportar = mi(EXPORTAR, "Exportar", MOTIVO_NUEVO if modo == "nuevo" else "")
+    plantilla = mi(PLANTILLA, "Descargar la plantilla")
+    if modo == "lectura":
+        items = exportar + plantilla
+    else:
+        items = (mi(PEGAR, "Pegar desde Excel", motivo) + mi(IMPORTAR, "Importar", motivo if modo != "tope" else "") + exportar
+                 + '<span class="f-sep" role="separator"></span>' + plantilla
+                 + mi(AZ, "Ordenar de la A a la Z") + mi(CODIGOS, "Generar los códigos que faltan"))
     return f'<sc-if value="{{{{menuMas}}}}" hint-placeholder-val="{{{{no}}}}"><div class="f-menu" role="menu" aria-label="Más acciones de las opciones">{items}</div></sc-if>'
 
 
 def caja_opciones(filas, cuenta, pie, modo="normal", seleccion="", tabla="ke", vacia=False, cab=None, ancho=None):
-    lectura = modo == "lectura"
+    """cuenta ya no se muestra: el encabezado de una sección no lleva cantidades (29451ed6); lo que hay, en la tabla y el paginado."""
     cab_tabla = cab or {"ke": ["", "#", "Texto", "Código", "Detalle", "Estado", ""],
                         "kv": ["", "#", "Texto", "Código", "Valor", "Detalle", "Estado", ""],
                         "kl": ["#", "Texto", "Código", "Detalle", "Estado"]}[tabla]
@@ -433,7 +440,7 @@ def caja_opciones(filas, cuenta, pie, modo="normal", seleccion="", tabla="ke", v
     tabla_html = f'<div class="k-desp"><div class="k-tabla" style="min-width: {ancho or ANCHOS[tabla]}px;">{th}{filas}</div></div>'
     fb = '' if vacia else f'<div class="k-fb"><span class="w-bus {{{{busClase}}}}">{F.BUSCAR} {{{{busqueda}}}}</span><span class="w-pil">Estado {CHEV}</span></div>'
     cuerpo = (f'<div class="k-vacio">Todavía no hay opciones.</div>' if vacia else seleccion + tabla_html + pie)
-    return (f'<div class="w-caja"><div class="f-cab"><span>Opciones</span><span class="der"><span class="cuenta">{cuenta}</span>{barra(modo)}{menu_mas(lectura)}</span></div>'
+    return (f'<div class="w-caja"><div class="f-cab"><span>Opciones</span><span class="der">{barra(modo)}{menu_mas(modo)}</span></div>'
             f"{fb}{cuerpo}</div>")
 
 
@@ -1016,10 +1023,9 @@ def tel_editor():
         return h
 
     def cuerpo(sub="Activo", vacia=False, lectura=False, cambio=False, fijo=""):
-        cuenta = "0 opciones" if vacia else "4 · 3 activas"
-        agregar = "" if lectura else '<a href="#">Agregar</a>'
+        agregar = "" if lectura else '<a href="#">Agregar opción</a>'  # la acción entera, como en la compu (la Guía, 26/10)
         return (C.t_bar("Motivos de visita", sub, derecha=der) + '<div class="ap-cuerpo"><div class="ap-gtit">El catálogo</div><div class="f-campos">' + campos(lectura) + "</div>"
-                + f'<div class="ap-gtit">Opciones · {cuenta}{agregar}</div><div class="ap-grupo">' + opciones(vacia, lectura, cambio) + '</div><div style="height: 20px;"></div></div>' + fijo)
+                + f'<div class="ap-gtit">Opciones{agregar}</div><div class="ap-grupo">' + opciones(vacia, lectura, cambio) + '</div><div style="height: 20px;"></div></div>' + fijo)
     fijo = '<div class="ap-fijo"><button type="button" class="cb cb-sec full">Descartar</button><button type="button" class="cb cb-pri full">Guardar cambios</button></div>'
     snack = f'<div class="f-snack" role="status"><span class="ok">{F.OK}</span><span class="tx">Guardamos el catálogo.</span></div>'
     Cu = {"Sin cambios": cuerpo(), "Con cambios": cuerpo(cambio=True, fijo=fijo), "Acciones de una opción": cuerpo(), "Editar una opción": cuerpo(fijo=fijo),
@@ -1039,7 +1045,7 @@ def tel_editor():
     pie = '<button type="button" class="cb cb-pri">Listo</button><button type="button" class="cb cb-sec">Cancelar</button>'
     items = [(n, d) for n, _c, d, a in OPS if a]
     vista = ('<div class="ap-grupo k-prev" style="margin: 0;">' + "".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in items) + "</div>")
-    mas = ('<div class="ap-acciones2"><span role="menuitem">Exportar</span><span role="menuitem">Bajar la plantilla</span><span role="menuitem">Ordenar de la A a la Z</span>'
+    mas = ('<div class="ap-acciones2"><span role="menuitem">Exportar</span><span role="menuitem">Descargar la plantilla</span><span role="menuitem">Ordenar de la A a la Z</span>'
            '<span role="menuitem">Generar los códigos que faltan</span><span class="pel" role="menuitem">Dar de baja el catálogo</span></div>')
     capas = {
         "Acciones de una opción": F.thoja("Reclamo", '<div class="ap-acciones2"><span role="menuitem">Editar</span><span role="menuitem">Subir</span><span role="menuitem">Bajar</span>'
@@ -1078,7 +1084,7 @@ def tel_filtros():
         desc = "Quienes pueden aprobar una visita." if titulo == "Supervisores" else "Supervisores y jefes de obra."
         return (C.t_bar(titulo, sub, derecha=der) + '<div class="ap-cuerpo"><div class="ap-gtit">El catálogo</div><div class="f-campos">'
                 + F.tcampo("Nombre", titulo, req=True) + F.tcampo("Descripción", desc) + "</div>"
-                + f'<div class="ap-gtit">Qué miembros entran<a href="#">Agregar</a></div><div class="ap-grupo">{filas}</div>'
+                + f'<div class="ap-gtit">Qué miembros entran<a href="#">Agregar condición</a></div><div class="ap-grupo">{filas}</div>'
                 + f'<div class="ap-gtit">Otras opciones</div><div class="ap-grupo">{otras}</div><div style="height: 20px;"></div></div>')
     fijo = '<div class="ap-fijo"><button type="button" class="cb cb-sec full">Descartar</button><button type="button" class="cb cb-pri full">Guardar cambios</button></div>'
     Cu = {"Sin cambios": cuerpo(), "Con cambios": cuerpo() + fijo, "Acciones de una condición": cuerpo(), "Editar una condición": cuerpo() + fijo,

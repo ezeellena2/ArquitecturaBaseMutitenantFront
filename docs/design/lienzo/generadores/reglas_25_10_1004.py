@@ -192,7 +192,7 @@ BORRAR_FRASES = [("Dar de baja mi cuenta", "Borrar mi cuenta"), ("¿Dar de baja 
                  ("No podés dar de baja tu cuenta", "No podés borrar tu cuenta"), ('aria-label="Dar de baja tu cuenta"', 'aria-label="Borrar tu cuenta"'),
                  ("'¿Dar de baja la cuenta de '", "'¿Borrar la cuenta de '"),
                  ("Tu cuenta tiene la baja pedida", "Tu cuenta está por borrarse"), ("Cancelar la baja y entrar", "Cancelar el borrado y entrar"),
-                 ("Cuenta con la baja pedida", "Cuenta por borrar"), ("Diego (baja pedida)", "Diego (por borrar)"), ("Baja pedida", "Por borrar"),
+                 ("Cuenta con la baja pedida", "Cuenta por borrar"), ("Diego (baja pedida)", "Diego (por borrar)"), ("Bajas pedidas", "Cuentas por borrar"), ("Baja pedida", "Por borrar"),
                  ("Cerramos tu sesión por la baja", "Cerramos tu sesión por el borrado"),
                  ("podés cancelar la baja; después eliminamos tu cuenta", "podés cancelar el borrado; después borramos tu cuenta"),
                  ("Tiene 30 días para cancelar la baja ingresando; después se elimina la cuenta. La plataforma no puede cancelarla.",
@@ -259,6 +259,41 @@ def sin_eliminar(t):
     return t
 
 
+# ================================================================ Sin cantidades en el encabezado de una sección (v145)
+# El encabezado de una sección lleva su título, su acción y un ⋮; nunca cantidades (el usuario, 26/10, front 29451ed6). Los catálogos
+# lo hacen en su generador; acá, «Preguntas» del editor de formularios, en la compu y en el teléfono.
+# «7 preguntas» va suelto antes del botón. En la 18 sale también «Archivos: hasta 5 de 10» (la Guía, 26/10): el total del formulario
+# va en la pregunta que lo configura, en el ⓘ de «Cuántas», y sin lugar para más, Foto y Documento se apagan en su «Tipo de respuesta».
+# Tampoco llevan cantidades los títulos de grupo: sale el «N de M» de cada grupo de permisos de un rol. Y en el teléfono, la acción de
+# una sección va entera, como en la compu («Agregar pregunta», no «Agregar»; la Guía, 26/10).
+SIN_CUENTA = re.compile(r'(<div class="f-cab"><span>Preguntas</span><span class="der">)((?:<span class="arch">.*?</span>)?)(?: · )?\d+ preguntas', re.S)
+# En el teléfono, el total de archivos sale de debajo de Mínimo y Máximo (nada de texto debajo de un campo) y va en el ⓘ de Máximo
+SIN_ARCHIVOS_TEL = re.compile(r'(<span class="rt"><span>Máximo</span>)(</span><div class="ct">4</div></div></div>)<span class="t-lin">(?:<svg(?:(?!</svg>).)*</svg>)?\s*'
+                              r'Archivos: hasta 5 de 10 en el formulario\.</span>', re.S)
+INFO_ARCHIVOS_TEL = ('<button type="button" class="ap-i" aria-label="Por qué" style="color: var(--t3); height: 16px;" title="Con mínimo 1 es obligatoria; con 0, opcional. '
+                     'Cada archivo, hasta 25 MB. En todo el formulario, hasta 10 archivos: este pide hasta 5.">'
+                     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '
+                     'aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><path d="M12 7.8h.01"/></svg></button>')
+SIN_CUENTA_TEL = re.compile(r'(<div class="ap-gtit">Preguntas) · \d+ preguntas')
+SIN_GRUPO_TEL = re.compile(r'<span class="c">\d+ de \d+</span>')
+SIN_ELEGIDOS_TEL = re.compile(r'<span style="font-weight: 500; color: var\(--t3\);">\d+ de \d+ elegidos</span>')
+
+
+def sin_cuentas(t):
+    t = SIN_CUENTA.sub(r"\1", t)
+    t = SIN_ARCHIVOS_TEL.sub(lambda m: m.group(1) + INFO_ARCHIVOS_TEL + m.group(2), t)
+    for viejo in ("Con mínimo 1 es obligatoria; con 0, opcional. Cada archivo, hasta 25 MB.", "Con mínimo 0 es opcional. Cada archivo, hasta 25 MB."):
+        if viejo + " En todo" not in t:
+            t = t.replace(viejo, viejo + " En todo el formulario, hasta 10 archivos: este pide hasta 5.")
+    t = t.replace('<span class="cnt">{{a.cuenta}}</span>', "")  # Rol: el grupo de permisos sin «3 de 5»
+    t = SIN_GRUPO_TEL.sub("", t)  # M-Rol
+    # y la banda «Permisos» del rol, sin «1 de 2 elegidos»
+    t = t.replace('<span style="font-weight: 500; color: var(--t3); padding-right: 12px;">{{conteo}}</span>', "")
+    t = SIN_ELEGIDOS_TEL.sub("", t)
+    t = SIN_CUENTA_TEL.sub(r"\1", t)
+    return t.replace('<div class="ap-gtit">Preguntas<a href="#">Agregar</a>', '<div class="ap-gtit">Preguntas<a href="#">Agregar pregunta</a>')
+
+
 if __name__ == "__main__":
     c = json.loads((PROJ / "canvas.json").read_text(encoding="utf-8"))
     archivo = {k[:-8] for k, v in c["boards"].items() if v.get("page") == "archivo"}
@@ -291,7 +326,7 @@ if __name__ == "__main__":
         if n in archivo or n == "Criterio-Decisiones":
             continue
         t = f.read_text(encoding="utf-8")
-        nuevo = sin_eliminar(borrar_cuenta(n, dar_de_baja(t)))
+        nuevo = sin_cuentas(sin_eliminar(borrar_cuenta(n, dar_de_baja(t))))
         if nuevo != t:
             f.write_text(nuevo, encoding="utf-8")
             tocados.append(n)
