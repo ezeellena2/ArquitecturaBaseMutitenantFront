@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 142 · 25 de octubre de 2026"
+VERSION = "versión 143 · 25 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -123,9 +123,11 @@ CAPITULOS = [
         ("frm-catalogo", "Un catálogo escrito a mano", "/org/formularios/catalogos/:id", "no", "12", ["FRM-Catalogo"], ["M-FRM-Catalogo"], ["FRM-Catalogo-Importar", "FRM-Catalogo-Tipo"],
          "Todo a la vista: el catálogo, con el origen y el tipo de valor apagados; las opciones en una tabla que se edita en el lugar, con pegar desde Excel, importar y exportar; y cómo lo ve quien lo recibe. Hasta 10.000 opciones; se dan de baja sin borrarse."),
         ("frm-catalogo-filtros", "Un catálogo de los miembros", "/org/formularios/catalogos/:id", "no", "12", ["FRM-Catalogo-Filtros"], ["M-FRM-Catalogo-Filtros"], [],
-         "Las condiciones sobre los miembros y «Como si lo recibiera», para probar qué opciones le llegan a una persona. Con más de 200 se guarda igual: lo que frena es el envío."),
+         "Las condiciones sobre los miembros y, al costado, el teléfono de la persona que elijas, que se actualiza solo. Con más de 200 se guarda igual: lo frena publicar el formulario."),
         ("frm-catalogo-contactos", "Un catálogo de los contactos", "/org/formularios/catalogos/:id", "no", "12", ["FRM-Catalogo-Contactos"], [], [],
          "Los contactos de Clientes, filtrados por etiqueta, con su nombre; el teléfono nunca se ve. Sin WhatsApp, no se puede usar."),
+        ("frm-catalogo-campos", "Los campos de un catálogo", "/org/formularios/catalogos/:id", "no", "13", ["FRM-Catalogo-13"], ["M-FRM-Catalogo-13"], [],
+         "Un catálogo escrito a mano suma sus campos, como CUIT o Zona, en una tabla que se edita ahí mismo, y las opciones, una columna por campo. Hasta 20 campos. Si una tabla no entra, se desplaza a lo ancho con lo principal fijo."),
         ("frm-formularios", "Formularios", "/org/formularios", "no", "14, 15, 17, 21 y 22", ["FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-21", "FRM-Formularios-22"], ["M-FRM-Formularios", "M-FRM-Formularios-17"], [],
          "Una sola lista, con los borradores y los publicados, y cómo está cada uno en WhatsApp. Cada etapa le suma lo suyo: las respuestas (15), el ⋮ y los dados de baja (17), lo que espera aprobación (21) y «Nuevo formulario» desde una plantilla (22)."),
         ("frm-editor", "Diseño de un formulario", "/org/formularios/:id", "no", "14 y 18", ["FRM-Editor", "FRM-Editor-18"], ["M-FRM-Editor", "M-FRM-Editor-18"], [],
