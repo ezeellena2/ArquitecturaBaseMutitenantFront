@@ -728,7 +728,7 @@ textarea.in2 { height: auto; min-height: 84px; }
       <sc-if value="{{enDeshabilitado}}" hint-placeholder-val="{{no}}">
         <div style="display: flex; flex-direction: column; gap: 22px;">
           <span class="circulo gris"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m6 6 12 12"/></svg></span>
-          <div class="centro"><h1>Tu acceso a Grupo Delta está deshabilitado</h1><p class="sub">Pedile a un Dueño de la organización que te vuelva a habilitar.</p></div>
+          <div class="centro"><h1>Tu acceso a Grupo Delta está de baja</h1><p class="sub">Pedile a un Dueño de la organización que te reactive.</p></div>
           <div style="display: flex; flex-direction: column; gap: 10px;">
             <a class="b b-pri lg" href="M-Inicio-Personal.dc.html">Ingresá como persona</a>
             <a class="b b-sec lg" href="M-Registro-Empresa.dc.html">Registrá tu empresa</a>
@@ -738,9 +738,9 @@ textarea.in2 { height: auto; min-height: 84px; }
       <sc-if value="{{enBajaPedida}}" hint-placeholder-val="{{no}}">
         <div style="display: flex; flex-direction: column; gap: 22px;">
           <span class="circulo alerta"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span>
-          <div class="centro"><h1>Tu cuenta tiene la baja pedida</h1><p class="sub">Se elimina el 27/10/2026.</p></div>
+          <div class="centro"><h1>Tu cuenta está por borrarse</h1><p class="sub">Se borra el 27/10/2026 09:15.</p></div>
           <div style="display: flex; flex-direction: column; gap: 10px;">
-            <button type="button" class="b b-pri lg" onClick="{{cancelarBaja}}" disabled="{{cancelandoBaja}}">Cancelar la baja y entrar</button>
+            <button type="button" class="b b-pri lg" onClick="{{cancelarBaja}}" disabled="{{cancelandoBaja}}">Cancelar el borrado y entrar</button>
             <button type="button" class="b b-sec lg" onClick="{{volver}}" disabled="{{cancelandoBaja}}">Salir</button>
           </div>
           <a id="ir-destino-baja" href="{{destino}}" style="display: none;" aria-hidden="true" tabindex="-1">Entrar</a>
@@ -814,7 +814,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","WhatsApp: número sin cuenta","Correo inválido","Correo sin cuenta","Esperá para pedir otro código","Demasiados pedidos","No pudimos entrar con Google","Código enviado","Código enviado por WhatsApp","Código incorrecto","Código vencido","Sin intentos","Cuenta bloqueada","Cuenta suspendida","Operador: segundo factor","Operador: código del autenticador incorrecto","Operador: demasiados códigos incorrectos","Operador: código de recuperación","Operador: código de recuperación incorrecto","Operador: configurar el autenticador","Operador: configurar · código incorrecto","Operador: guardar los códigos","Operador: la cuenta entra por Plataforma","Empresa: la cuenta no está en ninguna empresa","Empresa: de baja","Cuenta con la baja pedida","Tu sesión venció"],"default":"Correo","section":"Estado"},"puerta":{"editor":"enum","options":["Persona","Empresa"],"default":"Persona","section":"Estado"},"cuenta":{"editor":"enum","options":["Lucía (miembro de Grupo Delta)","Beto (sin organizaciones)","Martín (operador de la plataforma)"],"default":"Lucía (miembro de Grupo Delta)","section":"Estado"},"$preview":{"width":390,"height":844}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","WhatsApp: número sin cuenta","Correo inválido","Correo sin cuenta","Esperá para pedir otro código","Demasiados pedidos","No pudimos entrar con Google","Código enviado","Código enviado por WhatsApp","Código incorrecto","Código vencido","Sin intentos","Cuenta bloqueada","Cuenta suspendida","Operador: segundo factor","Operador: código del autenticador incorrecto","Operador: demasiados códigos incorrectos","Operador: código de recuperación","Operador: código de recuperación incorrecto","Operador: configurar el autenticador","Operador: configurar · código incorrecto","Operador: guardar los códigos","Operador: la cuenta entra por Plataforma","Empresa: la cuenta no está en ninguna empresa","Empresa: de baja","Cuenta por borrar","Tu sesión venció"],"default":"Correo","section":"Estado"},"puerta":{"editor":"enum","options":["Persona","Empresa"],"default":"Persona","section":"Estado"},"cuenta":{"editor":"enum","options":["Lucía (miembro de Grupo Delta)","Beto (sin organizaciones)","Martín (operador de la plataforma)"],"default":"Lucía (miembro de Grupo Delta)","section":"Estado"},"$preview":{"width":390,"height":844}}'>
 const CUENTAS = {
   // Destino después del código, según la puerta: Persona, al inicio personal; Empresa, al inicio de la organización que eligió la última vez.
   'Lucía (miembro de Grupo Delta)': { id: 'lucia', correo: 'lucia.fernandez@delta.ejemplo.com', tel: '11 5555 4521', Persona: 'M-Inicio-Personal.dc.html', Empresa: 'M-Inicio-Org.dc.html' },
@@ -855,7 +855,7 @@ const ESTADOS = {
   'Operador: configurar · código incorrecto': { cuenta: 'Martín (operador de la plataforma)', paso: 'alta', alt: COD('551203'), malAlt: true, msj: ['mal', 'El código no es válido.', 'Revisá que la hora de tu celular esté bien.'] },
   'Operador: guardar los códigos': { cuenta: 'Martín (operador de la plataforma)', paso: 'codigos' },
   // Identity.Account.PendingDeletion: el servidor no emite tokens y devuelve la fecha y un cancelTicket (multitenancy §3.2).
-  'Cuenta con la baja pedida': { cuenta: 'Lucía (miembro de Grupo Delta)', paso: 'bajaPedida' },
+  'Cuenta por borrar': { cuenta: 'Lucía (miembro de Grupo Delta)', paso: 'bajaPedida' },
   'Tu sesión venció': { vencida: true },
   'Empresa: la cuenta no está en ninguna empresa': { cuenta: 'Beto (sin organizaciones)', puerta: 'Empresa', paso: 'sinEmpresa' },
   // Tenancy.Member.Inactive: su única membresía está deshabilitada; con otra activa, entra a esa.

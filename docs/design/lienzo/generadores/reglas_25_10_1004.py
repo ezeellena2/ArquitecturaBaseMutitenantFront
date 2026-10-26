@@ -8,6 +8,8 @@ Desde la v143 (el usuario, 25/10, por la Guía): la columna por la que está ord
 de la compu también llevan un renglón por fila (lo que aclaraba va a la derecha, como su estado con punto), en el criterio y en
 «Cómo entrás» de Mi cuenta; la versión nueva del sistema se avisa en la campana (campana_1004.py), así que sale de Avisos; y un
 solo verbo para dejar de usar algo sin borrarlo, «Dar de baja» y «Reactivar», con el estado «De baja», en todos los tableros vigentes.
+Desde la v144 (el usuario, 26/10): borrar la cuenta propia es «Borrar mi cuenta», con el estado «Por borrar», y borrar para
+siempre es «Borrar», nunca «Eliminar».
 
 Los tableros de las etapas que se redibujan (12, 13 y 14 primero) lo aplican en su generador; los de las etapas cerradas
 cambian en la base de la 12. Corre después de `formularios_14_formularios_1004.py` y antes de `formularios_etapas_1004.py`.
@@ -163,6 +165,8 @@ BAJA_FRASES = [("No podés deshabilitarte a vos misma.", "No podés darte de baj
                ("antes de deshabilitarte", "antes de darte de baja"), ("(deshabilitado)", "(de baja)"), ("Empresa: acceso deshabilitado", "Empresa: de baja"),
                ("Cuenta inactiva", "Cuenta de baja"), ("está inactiva:", "está de baja:"), ("'Dar de baja' : 'Activar'", "'Dar de baja' : 'Reactivar'"), ("this.avisar('Activamos '", "this.avisar('Reactivamos '"),
                ("Dar de baja · Quitar · Desactivar · Eliminar", "Dar de baja · Quitar · Eliminar"), ("Usuario deshabilitado", "Usuario de baja"),
+               ("está deshabilitado</h1>", "está de baja</h1>"), ("que te vuelva a habilitar.", "que te reactive."),
+               ("Editar, deshabilitar y activar usuarios.", "Editar, dar de baja y reactivar usuarios."), ("Los deshabilitados no se ofrecen.", "Los dados de baja no se ofrecen."),
                ('<span class="est">De baja</span>', '<span class="est off">De baja</span>')]
 # El punto del estado «De baja» va gris, como en las demás listas (Criterio · Menús lo tenía verde)
 EST_PUNTO = '.est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }'
@@ -176,6 +180,82 @@ def dar_de_baja(t):
         t = t.replace(viejo, nuevo)
     if '<span class="est off">De baja</span>' in t and EST_OFF.strip() not in t:
         t = t.replace(EST_PUNTO, EST_PUNTO + EST_OFF, 1)
+    return t
+
+
+# ================================================================ «Borrar mi cuenta» y «Por borrar» (v144)
+# Borrar la cuenta propia nunca dice «dar de baja», que es reversible (el usuario, 26/10, front 87609fd0): «Borrar mi cuenta», el
+# estado «Por borrar» y, donde se ve el detalle, «Se borra el …» con fecha y hora; en Plataforma, «¿Borrar la cuenta de …?». El
+# sustantivo pasa a «el borrado». Los nombres de las plantillas de WhatsApp (baja_cuenta_pedida y las demás) no cambian. Los miembros
+# de una empresa: «Dar de baja» y «Reactivar» en vez de «Quitar de la empresa» y «Volver a sumar».
+BORRAR_FRASES = [("Dar de baja mi cuenta", "Borrar mi cuenta"), ("¿Dar de baja tu cuenta?", "¿Borrar tu cuenta?"),
+                 ("No podés dar de baja tu cuenta", "No podés borrar tu cuenta"), ('aria-label="Dar de baja tu cuenta"', 'aria-label="Borrar tu cuenta"'),
+                 ("'¿Dar de baja la cuenta de '", "'¿Borrar la cuenta de '"),
+                 ("Tu cuenta tiene la baja pedida", "Tu cuenta está por borrarse"), ("Cancelar la baja y entrar", "Cancelar el borrado y entrar"),
+                 ("Cuenta con la baja pedida", "Cuenta por borrar"), ("Diego (baja pedida)", "Diego (por borrar)"), ("Baja pedida", "Por borrar"),
+                 ("Cerramos tu sesión por la baja", "Cerramos tu sesión por el borrado"),
+                 ("podés cancelar la baja; después eliminamos tu cuenta", "podés cancelar el borrado; después borramos tu cuenta"),
+                 ("Tiene 30 días para cancelar la baja ingresando; después se elimina la cuenta. La plataforma no puede cancelarla.",
+                  "Tiene 30 días para cancelar el borrado ingresando; después se borra la cuenta. La plataforma no puede cancelarlo."),
+                 ("Pidió la baja de su cuenta. Se elimina el {{seElimina}}.", "Pidió borrar su cuenta. Se borra el {{seElimina}}."),
+                 ("Se elimina el {{seElimina}}.", "Se borra el {{seElimina}}."), ("'Pidió la baja de su cuenta'", "'Pidió borrar su cuenta'"),
+                 ("'Inició la baja de la cuenta'", "'Pidió borrar la cuenta'"),
+                 ("'La plataforma inició la baja el' : 'Pidió la baja el'", "'La plataforma pidió borrarla el' : 'Pidió borrarla el'"),
+                 ("seElimina: '27/10/2026'", "seElimina: '27/10/2026 09:15'"), ("bajaPedidaEl: '27/09/2026'", "bajaPedidaEl: '27/09/2026 09:15'"),
+                 ("Pediste la baja de tu cuenta", "Pediste borrar tu cuenta"), ("pediste la baja de tu cuenta", "pediste borrar tu cuenta"),
+                 ("Cancelaste la baja de tu cuenta", "Cancelaste el borrado de tu cuenta"), ("cancelaste la baja de tu cuenta", "cancelaste el borrado de tu cuenta"),
+                 ("La plataforma inició la baja de tu cuenta", "La plataforma pidió borrar tu cuenta"),
+                 ("la plataforma inició la baja de tu cuenta", "la plataforma pidió borrar tu cuenta"), ("no podés cancelar la baja", "no podés cancelar el borrado"),
+                 ("antes de esa fecha para cancelarla.", "antes de esa fecha para cancelar el borrado."),
+                 # los miembros de una empresa
+                 ("act || baja ? 'Quitar de la empresa' : 'Volver a sumar'", "act || baja ? 'Dar de baja' : 'Reactivar'"),
+                 ("'Volvimos a sumar a ' + m.nombre + '. Dale los roles de nuevo.'", "'Reactivamos a ' + m.nombre + '. Dale los roles de nuevo.'"),
+                 ("No podés quitar al último administrador de la empresa.", "No podés dar de baja al último administrador de la empresa."),
+                 ("titulo: '¿Quitar a ' + m.nombre + ' de la empresa?'", "titulo: '¿Dar de baja a ' + m.nombre + ' en la empresa?'"),
+                 ("boton: 'Quitar', accion: () => { this.setState({ miembros:", "boton: 'Dar de baja', accion: () => { this.setState({ miembros:"),
+                 ("'Quitamos a ' + m.nombre + ' de la empresa.'", "'Dimos de baja a ' + m.nombre + ' en la empresa.'"),
+                 ("Conserva sus roles por si lo volvés a habilitar.", "Conserva sus roles por si lo reactivás.")]
+# El aviso de la plataforma, con la fecha y la hora en que se borra: la de Diego; en Mensajes, la de sus correos (14:35)
+BORRAR_TOAST = re.compile(r"'Dimos de baja la cuenta de ' \+ ([\w.]+) \+ '\. Se elimina el 27/10/2026\.'")
+BORRAR_FECHA = re.compile(r"([Ss]e) elimina el 27/10/2026(?! \d)")
+
+
+# Los botones que borran la cuenta dicen «Borrar»: el de Mi cuenta, el de su diálogo y el de Plataforma
+BORRAR_BOTONES = [('href="Cuenta-Baja.dc.html">Dar de baja</a>', 'href="Cuenta-Baja.dc.html">Borrar</a>'),
+                  ('href="M-Cuenta-Baja.dc.html" style="text-decoration: none;">Dar de baja</a>', 'href="M-Cuenta-Baja.dc.html" style="text-decoration: none;">Borrar</a>'),
+                  ('onClick="{{verInfo}}">Dar de baja</button>', 'onClick="{{verInfo}}">Borrar</button>'),
+                  ("La plataforma no puede cancelarlo.', boton: 'Dar de baja'", "La plataforma no puede cancelarlo.', boton: 'Borrar'")]
+BORRAR_MENU = re.compile(r'(onClick="\{\{(?:c\.)?darDeBaja\}\}">(?:<svg(?:(?!</svg>).)*</svg>)?) Dar de baja</button>', re.S)  # el ⋮ de una cuenta, en Plataforma
+BORRAR_CRITERIO = re.compile(r'(¿Borrar tu cuenta\?</strong>(?:(?!</div></div>).)*?<button type="button" class="cb cb-pel lleno">)Dar de baja(</button>)', re.S)
+
+
+def borrar_cuenta(n, t):
+    for viejo, nuevo in BORRAR_FRASES + BORRAR_BOTONES:
+        t = t.replace(viejo, nuevo)
+    if n in ("Cuenta-Baja", "M-Cuenta-Baja"):  # el diálogo de borrar la cuenta: su botón y el nombre del estado
+        t = t.replace("Dar de baja", "Borrar")
+    t = BORRAR_CRITERIO.sub(r"\1Borrar\2", t)
+    t = BORRAR_MENU.sub(r"\1 Borrar</button>", t)
+    t = BORRAR_TOAST.sub(lambda m: f"'La cuenta de ' + {m.group(1)} + ' se borra el 27/10/2026 09:15.'", t)
+    return BORRAR_FECHA.sub(lambda m: f"{m.group(1)} borra el 27/10/2026 {'14:35' if n == 'Mensajes' else '09:15'}", t)
+
+
+# ================================================================ «Borrar», nunca «Eliminar» (v144)
+# Borrar para siempre es «Borrar» y «Borrado», nunca «Eliminar» (el usuario, 26/10, front 75663922): el ⋮ de un formulario y su
+# diálogo, y una cuenta ya borrada («Borrada», «Borrada el …»). Los nombres de archivo (FRM-Reactivar-Eliminar) y de las plantillas
+# de WhatsApp (cuenta_eliminada) no cambian: van pegados a un guion o a un guion bajo.
+ELIMINAR_PALABRAS = [("Eliminando", "Borrando"), ("Eliminadas", "Borradas"), ("Eliminados", "Borrados"), ("Eliminada", "Borrada"), ("Eliminado", "Borrado"),
+                     ("Eliminamos", "Borramos"), ("Eliminar", "Borrar")]
+ELIMINAR_FRASES = [("Cuenta eliminada", "Cuenta borrada"), ("fue eliminada", "fue borrada"), ("Se eliminó la cuenta", "Se borró la cuenta"),
+                   ("Reactivar y eliminar", "Reactivar y borrar"), ("reactivar, eliminar y copiar", "reactivar, borrar y copiar"),
+                   ("eliminadaEl: '11/09/2026'", "eliminadaEl: '11/09/2026 03:00'")]  # «Borrada el …», con la hora, como su historial
+
+
+def sin_eliminar(t):
+    for viejo, nuevo in ELIMINAR_PALABRAS:
+        t = re.sub(rf"(?<![{_LETRA}_-]){viejo}(?![{_LETRA}_-])", nuevo, t)
+    for viejo, nuevo in ELIMINAR_FRASES:
+        t = t.replace(viejo, nuevo)
     return t
 
 
@@ -211,8 +291,8 @@ if __name__ == "__main__":
         if n in archivo or n == "Criterio-Decisiones":
             continue
         t = f.read_text(encoding="utf-8")
-        nuevo = dar_de_baja(t)
+        nuevo = sin_eliminar(borrar_cuenta(n, dar_de_baja(t)))
         if nuevo != t:
             f.write_text(nuevo, encoding="utf-8")
             tocados.append(n)
-    print("«Dar de baja» y «Reactivar»:", len(tocados), tocados)
+    print("«Dar de baja», «Reactivar» y «Borrar mi cuenta»:", len(tocados), tocados)

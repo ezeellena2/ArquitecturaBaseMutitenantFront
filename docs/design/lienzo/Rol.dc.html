@@ -932,7 +932,7 @@ textarea.ct.area { resize: none; display: block; }
 <script type="text/x-dc" data-dc-script data-props='{"modo":{"editor":"enum","options":["Editar el rol Solo lectura","Editar el rol Recursos humanos","Crear un rol","Ver el rol Dueño","Guardar: demasiados pedidos"],"default":"Editar el rol Solo lectura","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 // GET /api/permissions: el catálogo agrupado por área y alcance.
 const AREAS_ORG = [
-  { n: 'Usuarios', ps: [['users.read', 'Ver usuarios', 'El listado de usuarios y sus datos.'], ['users.invite', 'Invitar usuarios', 'Invitar, reenviar y revocar invitaciones.'], ['users.manage', 'Administrar usuarios', 'Editar, deshabilitar y activar usuarios.']] },
+  { n: 'Usuarios', ps: [['users.read', 'Ver usuarios', 'El listado de usuarios y sus datos.'], ['users.invite', 'Invitar usuarios', 'Invitar, reenviar y revocar invitaciones.'], ['users.manage', 'Administrar usuarios', 'Editar, dar de baja y reactivar usuarios.']] },
   { n: 'Roles', ps: [['roles.read', 'Ver roles', 'Los roles y sus permisos.'], ['roles.manage', 'Administrar roles', 'Crear, editar e inactivar roles.'], ['roles.assign', 'Asignar roles', 'Dar y quitar roles a los usuarios.']] },
   { n: 'Empresas', ps: [['companies.read', 'Ver empresas', 'El listado de empresas y sus datos.'], ['companies.manage', 'Administrar empresas', 'Crear, editar, inactivar y activar empresas.']] },
   { n: 'Configuración', ps: [['settings.read', 'Ver la configuración', 'Los ajustes generales de la organización.'], ['settings.manage', 'Cambiar la configuración', 'Nombre, idioma y región, zona horaria y moneda.']] },

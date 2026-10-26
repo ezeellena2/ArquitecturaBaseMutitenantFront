@@ -717,14 +717,14 @@ textarea.in2 { height: auto; min-height: 84px; }
     <sc-if value="{{esPersona}}" hint-placeholder-val="{{si}}"><main class="ab-app-shell__main">
       <div class="banda-pag">
         <div class="izq"><a class="atras" href="Cuentas.dc.html" aria-label="Volver a Cuentas"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></a><div style="min-width: 0;"><div class="tit"><h1>{{nombre}}</h1></div><p class="res"><span class="pill {{pill}}">{{textoEstado}}</span><span>{{resumen}}</span></p></div></div>
-        <div class="acciones"><sc-if value="{{puedeDarDeBaja}}" hint-placeholder-val="{{si}}"><span class="envoltura"><button type="button" class="mas" aria-label="Más acciones" aria-haspopup="menu" aria-expanded="{{expMas}}" onClick="{{alternarMas}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><sc-if value="{{abiertoMas}}" hint-placeholder-val="{{no}}"><div class="menu der" role="menu"><button type="button" class="menu-it pel" role="menuitem" onClick="{{darDeBaja}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4L17.2 7"/></svg> Dar de baja</button></div></sc-if></span></sc-if><sc-if value="{{puedeCerrarSesiones}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-sec" onClick="{{cerrarSesiones}}">Cerrar sesiones</button></sc-if><sc-if value="{{suspendida}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-sec" onClick="{{reactivar}}">Reactivar</button></sc-if><sc-if value="{{puedeSuspender}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-sec" onClick="{{suspender}}">Suspender</button></sc-if></div>
+        <div class="acciones"><sc-if value="{{puedeDarDeBaja}}" hint-placeholder-val="{{si}}"><span class="envoltura"><button type="button" class="mas" aria-label="Más acciones" aria-haspopup="menu" aria-expanded="{{expMas}}" onClick="{{alternarMas}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><sc-if value="{{abiertoMas}}" hint-placeholder-val="{{no}}"><div class="menu der" role="menu"><button type="button" class="menu-it pel" role="menuitem" onClick="{{darDeBaja}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4L17.2 7"/></svg> Borrar</button></div></sc-if></span></sc-if><sc-if value="{{puedeCerrarSesiones}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-sec" onClick="{{cerrarSesiones}}">Cerrar sesiones</button></sc-if><sc-if value="{{suspendida}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-sec" onClick="{{reactivar}}">Reactivar</button></sc-if><sc-if value="{{puedeSuspender}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-sec" onClick="{{suspender}}">Suspender</button></sc-if></div>
       </div>
       <div class="pagina">
         <sc-if value="{{suspendida}}" hint-placeholder-val="{{no}}">
           <div class="aviso-linea alerta" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span><strong>Suspendida el {{suspendidaEl}}.</strong> Motivo: {{motivoSuspension}}</span></div>
         </sc-if>
         <sc-if value="{{bajaPedida}}" hint-placeholder-val="{{no}}">
-          <div class="aviso-linea alerta" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span><strong>{{textoBajaPor}} {{bajaPedidaEl}}.</strong> Se elimina el {{seElimina}}.</span></div>
+          <div class="aviso-linea alerta" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span><strong>{{textoBajaPor}} {{bajaPedidaEl}}.</strong> Se borra el {{seElimina}}.</span></div>
         </sc-if>
         <sc-if value="{{recuperacion}}" hint-placeholder-val="{{no}}">
           <div class="aviso-linea alerta" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span><strong>Necesita recuperación.</strong> Su único método de ingreso era un correo administrado por Kappa S.R.L. y la membresía terminó el 20/09/2026. <a class="lnk" href="Recuperaciones.dc.html">Ver recuperaciones</a></span></div>
@@ -806,7 +806,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Activa","Suspendida","Necesita recuperación","Baja pedida","Baja iniciada por la plataforma","Eliminada"],"default":"Activa","section":"Estado"},"pestana":{"editor":"enum","options":["Métodos de ingreso","Organizaciones","Historial de seguridad"],"default":"Métodos de ingreso","section":"Estado"},"cuenta":{"editor":"enum","options":["Persona","Operador","Operador: acciones","Operador: cambiar permisos","Operador: quitar operador","Operador: restablecer el autenticador","Operador: confirmar que sos vos","Operador: confirmar que sos vos · código incorrecto","Operador: confirmar con un código de recuperación","Operador: confirmar · código de recuperación incorrecto","Operador: confirmar · demasiados intentos","Operador: cancelar la confirmación","Invitación de operador pendiente","Invitación de operador vencida"],"default":"Persona","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Activa","Suspendida","Necesita recuperación","Por borrar","Baja iniciada por la plataforma","Borrada"],"default":"Activa","section":"Estado"},"pestana":{"editor":"enum","options":["Métodos de ingreso","Organizaciones","Historial de seguridad"],"default":"Métodos de ingreso","section":"Estado"},"cuenta":{"editor":"enum","options":["Persona","Operador","Operador: acciones","Operador: cambiar permisos","Operador: quitar operador","Operador: restablecer el autenticador","Operador: confirmar que sos vos","Operador: confirmar que sos vos · código incorrecto","Operador: confirmar con un código de recuperación","Operador: confirmar · código de recuperación incorrecto","Operador: confirmar · demasiados intentos","Operador: cancelar la confirmación","Invitación de operador pendiente","Invitación de operador vencida"],"default":"Persona","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 // GET /api/platform/accounts/{id}: la identidad y sus metadatos. Nunca los datos del perfil personal ni los de sus organizaciones.
 // Los métodos de ingreso salen de identity.LoginMethods, enmascarados.
 const CUENTAS = {
@@ -856,26 +856,26 @@ const CUENTAS = {
       { n: 'Grupo Delta', rol: 'Miembro', sis: false, desde: '18/02/2026', activa: true },
     ],
     historial: [
-      { fecha: '27/09/2026 09:15', que: 'Pidió la baja de su cuenta', quien: 'Diego Ríos', motivo: 'Ya no uso el servicio.' },
+      { fecha: '27/09/2026 09:15', que: 'Pidió borrar su cuenta', quien: 'Diego Ríos', motivo: 'Ya no uso el servicio.' },
       { fecha: '27/09/2026 09:12', que: 'Ingresó con código por correo', quien: 'Diego Ríos', motivo: '—' },
       { fecha: '18/02/2026 10:05', que: 'Creó la cuenta', quien: 'Diego Ríos', motivo: '—' },
     ],
   },
-  // Eliminada: la identidad queda anonimizada y se borran sus métodos; sus membresías terminan. Solo queda el historial de seguridad.
+  // Borrada: la identidad queda anonimizada y se borran sus métodos; sus membresías terminan. Solo queda el historial de seguridad.
   eliminada: {
-    n: 'Cuenta eliminada', alta: '04/03/2026', ultimo: '12/08/2026', eliminadaEl: '11/09/2026',
+    n: 'Cuenta borrada', alta: '04/03/2026', ultimo: '12/08/2026', eliminadaEl: '11/09/2026 03:00',
     metodos: [],
     orgs: [],
     historial: [
-      { fecha: '11/09/2026 03:00', que: 'Se eliminó la cuenta', quien: 'Sistema', motivo: '—' },
-      { fecha: '12/08/2026 18:40', que: 'Pidió la baja de su cuenta', quien: 'Cuenta eliminada', motivo: '—' },
-      { fecha: '12/08/2026 18:36', que: 'Ingresó con código por WhatsApp', quien: 'Cuenta eliminada', motivo: '—' },
-      { fecha: '04/03/2026 16:22', que: 'Creó la cuenta', quien: 'Cuenta eliminada', motivo: '—' },
+      { fecha: '11/09/2026 03:00', que: 'Se borró la cuenta', quien: 'Sistema', motivo: '—' },
+      { fecha: '12/08/2026 18:40', que: 'Pidió borrar su cuenta', quien: 'Cuenta borrada', motivo: '—' },
+      { fecha: '12/08/2026 18:36', que: 'Ingresó con código por WhatsApp', quien: 'Cuenta borrada', motivo: '—' },
+      { fecha: '04/03/2026 16:22', que: 'Creó la cuenta', quien: 'Cuenta borrada', motivo: '—' },
     ],
   },
 };
-const ESTADOS = { 'Activa': 'activa', 'Suspendida': 'suspendida', 'Necesita recuperación': 'recuperacion', 'Baja pedida': 'baja', 'Baja iniciada por la plataforma': 'baja', 'Eliminada': 'eliminada' };
-const BAJA_PLATAFORMA = { fecha: '27/09/2026 10:30', que: 'Inició la baja de la cuenta', quien: 'Laura Díaz', motivo: 'Pedido legal recibido por correo.' };
+const ESTADOS = { 'Activa': 'activa', 'Suspendida': 'suspendida', 'Necesita recuperación': 'recuperacion', 'Por borrar': 'baja', 'Baja iniciada por la plataforma': 'baja', 'Borrada': 'eliminada' };
+const BAJA_PLATAFORMA = { fecha: '27/09/2026 10:30', que: 'Pidió borrar la cuenta', quien: 'Laura Díaz', motivo: 'Pedido legal recibido por correo.' };
 const PESTANAS = { 'Métodos de ingreso': 'metodos', 'Organizaciones': 'orgs', 'Historial de seguridad': 'historial' };
 const SUSPENSION = { fecha: '27/09/2026 10:30', que: 'Suspendió la cuenta', quien: 'Laura Díaz', motivo: 'Denuncia de uso indebido.' };
 
@@ -891,9 +891,9 @@ class Component extends DCLogic {
     const c = CUENTAS[{ recuperacion: 'pablo', baja: 'diego', eliminada: 'eliminada' }[estado] || 'lucia'];
 
     return {
-      claveEstado: props.estado, estado, cuenta: c, suspendidaEl: '27/09/2026', motivoSuspension: SUSPENSION.motivo, bajaPedidaEl: '27/09/2026', seElimina: '27/10/2026',
+      claveEstado: props.estado, estado, cuenta: c, suspendidaEl: '27/09/2026', motivoSuspension: SUSPENSION.motivo, bajaPedidaEl: '27/09/2026 09:15', seElimina: '27/10/2026 09:15',
       bajaPor: props.estado === 'Baja iniciada por la plataforma' ? 'plataforma' : 'persona',
-      historial: estado === 'suspendida' ? [SUSPENSION, ...c.historial] : props.estado === 'Baja iniciada por la plataforma' ? [BAJA_PLATAFORMA, ...c.historial.filter((h) => h.que !== 'Pidió la baja de su cuenta')] : c.historial,
+      historial: estado === 'suspendida' ? [SUSPENSION, ...c.historial] : props.estado === 'Baja iniciada por la plataforma' ? [BAJA_PLATAFORMA, ...c.historial.filter((h) => h.que !== 'Pidió borrar su cuenta')] : c.historial,
       clavePestana: props.pestana, pestana: PESTANAS[props.pestana ?? 'Métodos de ingreso'],
     };
   }
@@ -1138,8 +1138,8 @@ class Component extends DCLogic {
 
       nombre: c.n,
       pill: { activa: 'ok', suspendida: 'alerta', recuperacion: 'mal', baja: 'alerta', eliminada: 'off' }[s.estado],
-      textoEstado: { activa: 'Activa', suspendida: 'Suspendida', recuperacion: 'Necesita recuperación', baja: 'Baja pedida', eliminada: 'Eliminada' }[s.estado],
-      resumen: 'Alta el ' + c.alta + (s.estado === 'eliminada' ? ' · Eliminada el ' + c.eliminadaEl : ' · Último ingreso ' + c.ultimo),
+      textoEstado: { activa: 'Activa', suspendida: 'Suspendida', recuperacion: 'Necesita recuperación', baja: 'Por borrar', eliminada: 'Borrada' }[s.estado],
+      resumen: 'Alta el ' + c.alta + (s.estado === 'eliminada' ? ' · Borrada el ' + c.eliminadaEl : ' · Último ingreso ' + c.ultimo),
       suspendida: s.estado === 'suspendida',
       noSuspendida: s.estado !== 'suspendida',
       // Con la baja pedida o eliminada no hay acciones: las sesiones ya están revocadas y solo la persona puede cancelar la baja.
@@ -1147,12 +1147,12 @@ class Component extends DCLogic {
       puedeDarDeBaja: s.estado !== 'baja' && s.estado !== 'eliminada',
       bajaPedida: s.estado === 'baja',
       bajaPedidaEl: s.bajaPedidaEl,
-      textoBajaPor: s.bajaPor === 'plataforma' ? 'La plataforma inició la baja el' : 'Pidió la baja el',
+      textoBajaPor: s.bajaPor === 'plataforma' ? 'La plataforma pidió borrarla el' : 'Pidió borrarla el',
       seElimina: s.seElimina,
       sinMetodos: nm === 0,
       sinOrgs: c.orgs.length === 0,
       // POST /api/platform/accounts/{id}/deletion: lleva motivo y no pide reautenticar a la persona. Mismo camino: 30 días, avisos y eliminación.
-      darDeBaja: () => this.pedirConfirmacion({ titulo: '¿Dar de baja la cuenta de ' + c.n + '?', error: c.unicoDueno ? 'Es el único Dueño de ' + c.unicoDueno + '. Primero la organización tiene que sumar otro Dueño, o la plataforma tiene que cerrarla.' : '', texto: 'Se cierran sus sesiones y le avisamos por todos sus métodos de ingreso. Tiene 30 días para cancelar la baja ingresando; después se elimina la cuenta. La plataforma no puede cancelarla.', boton: 'Dar de baja', motivo: true, accion: (m) => { this.setState({ estado: 'baja', bajaPor: 'plataforma', bajaPedidaEl: '27/09/2026', seElimina: '27/10/2026' }); this.anotar('Inició la baja de la cuenta', m); this.avisar('Dimos de baja la cuenta de ' + c.n + '. Se elimina el 27/10/2026.'); } }),
+      darDeBaja: () => this.pedirConfirmacion({ titulo: '¿Borrar la cuenta de ' + c.n + '?', error: c.unicoDueno ? 'Es el único Dueño de ' + c.unicoDueno + '. Primero la organización tiene que sumar otro Dueño, o la plataforma tiene que cerrarla.' : '', texto: 'Se cierran sus sesiones y le avisamos por todos sus métodos de ingreso. Tiene 30 días para cancelar el borrado ingresando; después se borra la cuenta. La plataforma no puede cancelarlo.', boton: 'Borrar', motivo: true, accion: (m) => { this.setState({ estado: 'baja', bajaPor: 'plataforma', bajaPedidaEl: '27/09/2026 09:15', seElimina: '27/10/2026 09:15' }); this.anotar('Pidió borrar la cuenta', m); this.avisar('La cuenta de ' + c.n + ' se borra el 27/10/2026 09:15.'); } }),
       recuperacion: s.estado === 'recuperacion',
       puedeCerrarSesiones: s.estado === 'activa',
       suspendidaEl: s.suspendidaEl,

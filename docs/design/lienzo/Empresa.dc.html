@@ -1077,7 +1077,7 @@ const MIEMBROS_DN = [
   { id: 'u10', email: 'carolina.vega@delta.ejemplo.com', nombre: 'Carolina Vega', roles: ['Solo lectura'], estado: 'activo' },
   { id: 'u9', email: 'martin.paz@delta.ejemplo.com', nombre: 'Martín Paz', roles: ['Solo lectura'], estado: 'vencida', vence: '29/09/2026' },
 ];
-// Usuarios de la organización que todavía no están en la empresa. Los deshabilitados no se ofrecen.
+// Usuarios de la organización que todavía no están en la empresa. Los dados de baja no se ofrecen.
 const CANDIDATOS = [
   { id: 'u3', email: 'julieta.sosa@delta.ejemplo.com', nombre: 'Julieta Sosa' },
   { id: 'u10', email: 'carolina.vega@delta.ejemplo.com', nombre: 'Carolina Vega' },
@@ -1412,7 +1412,7 @@ class Component extends DCLogic {
       ...this.filtro('Rol', 'rol', [{ v: undefined, n: 'Todos' }, ...ROLES_C1.map((r) => ({ v: r.v, n: r.n })), { v: null, n: 'Sin roles' }], 'Rol: todos', (v) => this.filtrar({ rol: v }).length),
       claseRol: s.rol === undefined ? '' : 'con',
       textoRol: s.rol === undefined ? 'Rol: todos' : s.rol === null ? 'Sin roles' : s.rol,
-      ...this.filtro('EstadoM', 'estadoM', [{ v: null, n: 'Todos' }, { v: 'activo', n: 'Activos' }, { v: 'inactivo', n: 'Dados de baja' }, { v: 'bajaPedida', n: 'Baja pedida' }], 'Estado: todos', (v) => this.filtrar({ estadoM: v }).length),
+      ...this.filtro('EstadoM', 'estadoM', [{ v: null, n: 'Todos' }, { v: 'activo', n: 'Activos' }, { v: 'inactivo', n: 'Dados de baja' }, { v: 'bajaPedida', n: 'Por borrar' }], 'Estado: todos', (v) => this.filtrar({ estadoM: v }).length),
       hayFiltros: s.busqueda.trim() !== '' || s.estadoM !== null || s.rol !== undefined,
       limpiar: () => this.setState({ busqueda: '', estadoM: null, rol: undefined, abierto: null }),
       ...pg.vals,
@@ -1427,7 +1427,7 @@ class Component extends DCLogic {
           ...this.fila(m.id, m.nombre),
           email: m.email, nombre: m.nombre, roles: m.roles, sinRoles: m.roles.length === 0, activo: act,
           pill: act ? 'ok' : baja || m.estado === 'vencida' ? 'alerta' : inv ? 'pend' : 'off',
-          textoEstado: act ? 'Activo' : baja ? 'Baja pedida' : m.estado === 'invitado' ? 'Invitación pendiente' : m.estado === 'vencida' ? 'Invitación vencida' : 'De baja',
+          textoEstado: act ? 'Activo' : baja ? 'Por borrar' : m.estado === 'invitado' ? 'Invitación pendiente' : m.estado === 'vencida' ? 'Invitación vencida' : 'De baja',
           invitado: inv, noInvitado: !inv, textoVence: (m.estado === 'vencida' ? 'Venció ' : 'Vence ') + (m.vence || ''),
           // POST /api/companies/{id}/invitations/{invitationId}/resend con company.members.manage (decisión del 05/10).
           reenviar: () => {
@@ -1436,7 +1436,7 @@ class Component extends DCLogic {
           },
           clase: m.nuevo ? 'nueva' : '',
           abrirRoles: () => this.setState({ abierto: null, dialogo: 'roles', dlgMiembro: m.id, borrador: [...m.roles], errRoles: '' }),
-          accion: inv ? 'Revocar invitación' : act || baja ? 'Quitar de la empresa' : 'Volver a sumar',
+          accion: inv ? 'Revocar invitación' : act || baja ? 'Dar de baja' : 'Reactivar',
           claseAccion: inv || act || baja ? 'pel' : '',
           // PUT /api/companies/{id}/members/{userId}/status: 409 Companies.Member.LastCompanyAdmin.
           cambiarEstado: () => {
@@ -1456,25 +1456,25 @@ class Component extends DCLogic {
 
             if (!act && !baja) {
               this.setState({ abierto: null, miembros: s.miembros.map((x) => (x.id === m.id ? { ...x, estado: 'activo' } : x)) });
-              this.avisar('Volvimos a sumar a ' + m.nombre + '. Dale los roles de nuevo.');
+              this.avisar('Reactivamos a ' + m.nombre + '. Dale los roles de nuevo.');
 
               return;
             }
 
             if (m.roles.includes('Administrador') && this.administradores(m.id) === 0) {
               this.setState({ abierto: null });
-              this.avisar('No podés quitar al último administrador de la empresa. Dale el rol a otro miembro primero.', 'error');
+              this.avisar('No podés dar de baja al último administrador de la empresa. Dale el rol a otro miembro primero.', 'error');
 
               return;
             }
 
             this.pedirConfirmacion({
-              titulo: '¿Quitar a ' + m.nombre + ' de la empresa?',
+              titulo: '¿Dar de baja a ' + m.nombre + ' en la empresa?',
               texto: 'Deja de entrar a ' + e.n + ' y pierde sus roles acá. Sigue en la organización y en sus otras empresas.',
               boton: 'Quitar',
               accion: () => {
                 this.setState({ miembros: this.state.miembros.map((x) => (x.id === m.id ? { ...x, estado: 'inactivo', roles: [] } : x)) });
-                this.avisar('Quitamos a ' + m.nombre + ' de la empresa.');
+                this.avisar('Dimos de baja a ' + m.nombre + ' en la empresa.');
               },
             });
           },

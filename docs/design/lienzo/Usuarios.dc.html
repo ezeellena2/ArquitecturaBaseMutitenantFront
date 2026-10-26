@@ -938,7 +938,7 @@ const USUARIOS = [
   { id: 'u2', n: 'Tomás Acosta', email: 'tomas.acosta@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '03/02/2026' },
   { id: 'u3', n: 'Julieta Sosa', email: 'julieta.sosa@delta.ejemplo.com', estado: 'activo', rolesOrg: ['Auditor'], empresas: [], desde: '03/02/2026' },
   // Pidió la baja de su cuenta: el estado sale de la identidad, no de la membresía (multitenancy §3.2).
-  { id: 'u4', n: 'Diego Ríos', email: 'diego.rios@delta.ejemplo.com', estado: 'bajaPedida', seElimina: '27/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '18/02/2026' },
+  { id: 'u4', n: 'Diego Ríos', email: 'diego.rios@delta.ejemplo.com', estado: 'bajaPedida', seElimina: '27/10/2026 09:15', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '18/02/2026' },
   { id: 'u5', n: 'Paula Méndez', email: 'paula.mendez@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }, { c: 'c2', roles: ['Solo lectura'] }], desde: '02/03/2026' },
   { id: 'u9', n: 'Martín Paz', email: 'martin.paz@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '10/03/2026' },
   { id: 'u10', n: 'Carolina Vega', email: 'carolina.vega@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c2', roles: ['Administrador'] }, { c: 'c3', roles: ['Administrador'] }], desde: '10/03/2026' },
@@ -955,7 +955,7 @@ const ESTADOS_USUARIO = {
   invitado: { n: 'Invitación pendiente', pill: 'pend' },
   vencida: { n: 'Invitación vencida', pill: 'alerta' },
   deshabilitado: { n: 'De baja', pill: 'off' },
-  bajaPedida: { n: 'Baja pedida', pill: 'alerta' },
+  bajaPedida: { n: 'Por borrar', pill: 'alerta' },
 };
 const nombreDe = (u) => u.n || u.email;
 
@@ -1194,7 +1194,7 @@ class Component extends DCLogic {
       resumen: total + ' usuarios · ' + cuenta('activo') + ' activos · ' + (cuenta('invitado') + cuenta('vencida')) + ' invitaciones',
       busqueda: s.busqueda,
       onBuscar: (e) => this.setState({ busqueda: e.target.value }),
-      ...this.filtro('Estado', 'estado', [{ v: null, n: 'Todos' }, { v: 'activo', n: 'Activos' }, { v: 'invitado', n: 'Invitación pendiente' }, { v: 'vencida', n: 'Invitación vencida' }, { v: 'deshabilitado', n: 'Dados de baja' }, { v: 'bajaPedida', n: 'Baja pedida' }], 'Estado: todos', (v) => this.filtrar({ estado: v }).length),
+      ...this.filtro('Estado', 'estado', [{ v: null, n: 'Todos' }, { v: 'activo', n: 'Activos' }, { v: 'invitado', n: 'Invitación pendiente' }, { v: 'vencida', n: 'Invitación vencida' }, { v: 'deshabilitado', n: 'Dados de baja' }, { v: 'bajaPedida', n: 'Por borrar' }], 'Estado: todos', (v) => this.filtrar({ estado: v }).length),
       ...this.filtro('Empresa', 'empresa', [{ v: null, n: 'Todas' }, ...EMPRESAS.map((e) => ({ v: e.id, n: e.n })), { v: 'ninguna', n: 'Sin empresa' }], 'Empresa: todas', (v) => this.filtrar({ empresa: v }).length),
       hayFiltros,
       claseEncabezado: { 'Gris': 'gris', 'Azul claro': 'azul-claro', 'Azul': 'azul' }[this.props.encabezado] || '',

@@ -7,7 +7,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 6600
+ALTO = 6900  # v144: la columna más alta mide 6763
 ANCHO = 7400
 COLUMNAS = 5
 ARCHIVO = "Criterio-Decisiones.dc.html"
@@ -108,7 +108,7 @@ REGLAS = [
 # Decisiones por página: (pantalla, opción elegida, qué se eligió, estado en el lienzo).
 DECISIONES = {
     "Perfil personal": [
-        ("Mi cuenta · única Dueña", "", "Un ⓘ junto a «Dar de baja mi cuenta» y el botón apagado; los dos abren el aviso importante.", "Dibujada"),
+        ("Mi cuenta · única Dueña", "", "Un ⓘ junto a «Borrar mi cuenta» y el botón apagado; los dos abren el aviso importante.", "Dibujada"),
         ("Mi cuenta · el ⋮ de «Cómo entrás»", "", "Solo en las filas con acciones: el principal, si es el único método personal, no lo lleva; el correo de la empresa, con «Hacer principal» y «Quitar»; el teléfono sin verificar, con «Quitar».", "Dibujada"),
         ("Mi cuenta › WhatsApp · agregar y verificar", "", "«WhatsApp» con país y número (solo los países que habilita WhatsApp); error: país que no habilita (un número de otra cuenta no da error: no se revela); el código por WhatsApp con «Reenviar», incorrecto o vencido. Sin el módulo, ni la fila ni la opción.", "Dibujada"),
         ("Mi cuenta › WhatsApp · quitar o hacer principal", "A", "⋮ con «Hacer principal» y «Quitar»; el código llega a otro método, y el WhatsApp también es ese otro método. Para cambiar el número se agrega el nuevo y se quita el viejo.", "Dibujada"),
@@ -229,7 +229,7 @@ DECISIONES = {
         ("Ficha de una cuenta", "", "Los métodos como en Mi cuenta: filas sin encabezado, el tipo y quién lo administra debajo, y el estado solo si pide atención.", "Dibujada"),
         ("Recuperaciones · Auditoría · Legales · Configuración", "", "Cuenta con la fecha debajo; auditoría sin ojo ni cantidad y detalle en grilla; legales como lista («Versión N · vigente desde…»); «Registro y altas» con su encabezado.", "Dibujada"),
         ("Configuración · Contacto", "", "Correo de ventas y correo de soporte, debajo de «Registro y altas»: son los que muestran el registro de empresa cerrado o en el límite y la cuenta suspendida.", "Dibujada"),
-        ("Aviso de baja por la plataforma", "", "«La plataforma inició la baja de tu cuenta», en dos variantes: cuenta activa, con «Ingresar» para cancelarla antes de la fecha; cuenta suspendida, sin «Ingresar» y con el correo de soporte. Por WhatsApp, las plantillas baja_cuenta_plataforma y baja_cuenta_plataforma_suspendida.", "Dibujada"),
+        ("Aviso de baja por la plataforma", "", "«La plataforma pidió borrar tu cuenta», en dos variantes: cuenta activa, con «Ingresar» para cancelarla antes de la fecha; cuenta suspendida, sin «Ingresar» y con el correo de soporte. Por WhatsApp, las plantillas baja_cuenta_plataforma y baja_cuenta_plataforma_suspendida.", "Dibujada"),
         ("Aviso «Alguien pidió recuperar tu cuenta»", "", "A los métodos de la cuenta que siguen andando, antes de que lo revise un operador; nunca a quien lo pidió (ADR 0041). Sin botón; la nota da el correo de soporte. Por WhatsApp, la plantilla recuperacion_aviso_cuenta.", "Dibujada"),
         ("Invitar operador", "B", "La invitación queda pendiente hasta el primer ingreso y vence a los 7 días: «Invitación pendiente» o «Invitación vencida», con «Reenviar invitación» y «Revocar invitación». El correo dice quién invita, los permisos y el vencimiento; sale solo por correo.", "Dibujada"),
         ("Invitar operador · casos", "A", "Si quien invita no tiene nombre, el correo firma «El equipo de ArquitecturaBase». Si el correo ya tiene una invitación pendiente o vencida: «Ese correo ya tiene una invitación. Reenviala desde la lista.»", "Dibujada"),
@@ -258,7 +258,7 @@ DECISIONES = {
     "Estados que faltaban · 04/10": [
         ("Invitación", "", "Cargando («Cargando invitación…»), aceptando (el botón con la ruedita) y error al aceptar (la franja roja debajo del texto legal), en la compu y en el teléfono.", "Dibujada"),
         ("Inicios", "", "Inicio personal sin el aviso (solo el título, como la app). En el teléfono, el de la organización con «Nada para resolver» y uno nuevo para alguien con roles en una sola empresa: la billetera con «Tus empresas» y, si administra, su «Para resolver».", "Dibujada"),
-        ("Mi cuenta", "", "Correo inválido, código incorrecto, vincular y desvincular Google, la baja sin motivo o con código incorrecto, la sesión cerrada por la baja y los avisos de cada acción con la lista como queda. En el teléfono, además, «Cambios sin guardar». No se dibuja «ese correo ya lo usa otra cuenta» (ADR 0041).", "Dibujada"),
+        ("Mi cuenta", "", "Correo inválido, código incorrecto, vincular y desvincular Google, el borrado sin motivo o con código incorrecto, la sesión cerrada por el borrado y los avisos de cada acción con la lista como queda. En el teléfono, además, «Cambios sin guardar». No se dibuja «ese correo ya lo usa otra cuenta» (ADR 0041).", "Dibujada"),
         ("Roles · teléfono", "", "Crear un rol, un rol de toda la organización y el rol Dueño, solo para leer.", "Dibujada"),
         ("Usuario", "", "En el teléfono, la hoja de roles de una empresa y la franja de error al guardar. «Sumar empresa» con el 409 («Otra persona cambió esto…»), en la compu y en el teléfono.", "Dibujada"),
         ("Empresas y Empresa", "", "«Crear empresa» con el CUIT repetido, en la compu y en el teléfono. En el teléfono, la hoja de crear y la de editar, la pestaña Roles y la hoja de roles de un miembro con su error. Las hojas suben desde abajo, no a pantalla completa.", "Dibujada"),
@@ -326,7 +326,7 @@ DECISIONES = {
         ("Uso del asistente de la organización", "", "El resumen del mes deja solo el gasto contra el tope, las consultas y las personas: la clave y los topes pueden cambiar a mitad de mes, así que se ven en Configuración.", "Dibujada"),
     ],
     "El usuario · 12/10": [
-        ("Para resolver", "", "Cada tipo de pendiente va en su grupo, con su área y su total, y muestra hasta 10 filas; si hay más, «Ver todos» lleva al listado ya filtrado (Usuarios con «Vencidas» o «Baja pedida», Organizaciones con «Pendiente de aprobación», Recuperaciones con «Pendientes»). Con 10 o menos no hay «Ver todos». En los inicios de la organización, de Plataforma y del miembro, en compu y teléfono.", "Dibujada"),
+        ("Para resolver", "", "Cada tipo de pendiente va en su grupo, con su área y su total, y muestra hasta 10 filas; si hay más, «Ver todos» lleva al listado ya filtrado (Usuarios con «Vencidas» o «Por borrar», Organizaciones con «Pendiente de aprobación», Recuperaciones con «Pendientes»). Con 10 o menos no hay «Ver todos». En los inicios de la organización, de Plataforma y del miembro, en compu y teléfono.", "Dibujada"),
     ],
     "E12 · Formularios · El usuario · 13/10": [
         ("Formularios · listado", "A", "«Formularios» en el menú principal, debajo de WhatsApp, con su panel (Formularios y Catálogos); filtro «Estado ▾» (regla única del 13/10); nombre, prefijo, estado (el motivo de «No se pudo publicar» en ⓘ) y última publicación, con ⋮ y «Nuevo formulario».", "Dibujada"),
@@ -495,10 +495,10 @@ DECISIONES = {
     ],
     "E12b · Ciclo de vida · La Guía y el usuario · 24/10": [
         ("Diseñar formularios", "A", "«Activos | Dados de baja» arriba de la lista, como en Formularios (MF1), y «Estado ▾» dentro de Activos; suma la columna Respuestas. Las acciones van en un ⋮ por fila, como en Usuarios, no en los íconos de ArquitecturaBase (Criterio · Menús).", "Dibujada"),
-        ("El ⋮ de una fila", "A", "Publicado: Copiar y Dar de baja. Borrador: Copiar y Eliminar. De baja: Reactivar y Copiar. Con respuestas, Eliminar no aparece; mientras se publica, Dar de baja queda grisado con el motivo en su tooltip; sin el permiso, la opción no se dibuja (con solo publicar: Dar de baja y Reactivar).", "Dibujada"),
+        ("El ⋮ de una fila", "A", "Publicado: Copiar y Dar de baja. Borrador: Copiar y Borrar. De baja: Reactivar y Copiar. Con respuestas, Borrar no aparece; mientras se publica, Dar de baja queda grisado con el motivo en su tooltip; sin el permiso, la opción no se dibuja (con solo publicar: Dar de baja y Reactivar).", "Dibujada"),
         ("Dar de baja", "A", "El diálogo dice qué deja de pasar (el chat, el asistente y las sugerencias hacia él), los envíos abiertos y que en WhatsApp no se deshace, y lo que se conserva. Si falla, el aviso rojo y el diálogo sigue abierto.", "Dibujada"),
         ("Un dado de baja", "A", "«De baja» en la banda; su ⓘ dice quién, cuándo, qué deja de pasar y qué pasa en WhatsApp (desde el 25/10, sin cartel). Sin confirmar o no se pudo deprecar, al lado del estado. «Reactivar» va en el lugar de Publicar y queda grisado con cambios sin guardar.", "Dibujada"),
-        ("Reactivar y eliminar", "", "Reactivar es publicar la versión siguiente con el borrador: qué se publica, qué va a pasar y que la numeración sigue; con algo que corregir, Reactivar grisado. Eliminar, solo sin respuestas: desaparece y el prefijo queda reservado.", "Dibujada"),
+        ("Reactivar y borrar", "", "Reactivar es publicar la versión siguiente con el borrador: qué se publica, qué va a pasar y que la numeración sigue; con algo que corregir, Reactivar grisado. Borrar, solo sin respuestas: desaparece y el prefijo queda reservado.", "Dibujada"),
         ("Copiar", "A", "Desde el ⋮ de la lista y del editor: nombre y prefijo propuesto (letras del nombre y un número si ya está tomado), y la copia queda en borrador con el borrador del original (decisión 74). El PDF y las reglas se suman con la E16.", "Dibujada"),
         ("El circuito", "", "Va como recorrido de la guía: dar de baja con envíos abiertos, el editor del dado de baja, deprecados al vencer y reactivar (BA5). La sugerencia hacia un dado de baja (BA6) va con la E18.", "Dibujada"),
     ],
@@ -540,7 +540,11 @@ DECISIONES = {
         ("Las listas cortas", "", "En la compu, también una fila es un renglón: lo que iba debajo («Principal», «Sin verificar») va a la derecha, como su estado con punto; en el editor, el tipo de cada pregunta va como una columna.", "Dibujada"),
         ("La versión nueva", "", "Se avisa en la campana, primera y sin leer, con la hora; tocarla recarga la página. Sin botón ni franja (Campana).", "Dibujada"),
         ("Catálogos de los miembros y de los contactos", "", "El teléfono al costado, como el escrito a mano, con solo el campo «Persona» arriba; la lista se actualiza sola, sin «Probar» ni la cuenta de opciones.", "Dibujada"),
-        ("Dar de baja y Reactivar", "", "Un solo verbo para dejar de usar algo sin borrarlo, en todo el sistema: «Dar de baja» y «Reactivar»; el estado es «De baja» y la opción del filtro, «Dados de baja». Salen «Deshabilitar», «Habilitar», «Inactivar», «Activar» e «Inactivo». Quedan «Baja pedida» y «Revocar invitación».", "Dibujada"),
+        ("Borrar mi cuenta", "", "Borrar la cuenta propia nunca dice «dar de baja», que es reversible: «Borrar mi cuenta», el estado «Por borrar» y, donde se ve el detalle, «Se borra el …» con fecha y hora. En Plataforma, «¿Borrar la cuenta de …?».", "Dibujada"),
+        ("Borrar para siempre", "", "«Borrar» y «Borrado», nunca «Eliminar»: el ⋮ de un formulario, con «¿Borrar «…»?», y una cuenta ya borrada, «Borrada» y «Borrada el …» en Plataforma.", "Dibujada"),
+        ("Miembros de una empresa", "", "«Dar de baja» y «Reactivar», como todo lo demás; en las listas de cosas en femenino, el filtro dice «Todas · Activas · Dadas de baja».", "Dibujada"),
+        ("Otro acceso", "A", "Un link del otro acceso no lleva al inicio: dentro del marco, en el lugar y con la forma de «No encontramos esta página», un título corto y «Entrar como empresa» (o «Entrar como persona»); al entrar, se abre el link. Si está en varias organizaciones, elige con cuál. Sin ese acceso, o para un operador, «No encontramos esta página» (Otro-Acceso).", "Dibujada"),
+        ("Dar de baja y Reactivar", "", "Un solo verbo para dejar de usar algo sin borrarlo, en todo el sistema: «Dar de baja» y «Reactivar»; el estado es «De baja» y la opción del filtro, «Dados de baja». Salen «Deshabilitar», «Habilitar», «Inactivar», «Activar» e «Inactivo». Quedan «Revocar invitación» y los verbos de lo que es otra cosa: «Suspender», «Retirar», «Prender» y «Apagar», y «Pausar».", "Dibujada"),
         ("Las tablas de un catálogo", "", "No se aplastan: cada columna con su ancho mínimo y, si no entran, se desplazan a lo ancho, con la casilla, el número y «Texto» (o «Campo») fijos a la izquierda y el ⋮ fijo a la derecha, cada uno con una línea (FRM-Catalogo-13, a 1280).", "Dibujada"),
         ("Los campos de un catálogo (B)", "B", "Una tabla que se edita ahí mismo: Campo, Tipo, Obligatorio, Único, Límite y ⋮; el tipo en un solo desplegable (Texto, Número entero, Número con decimales, Fecha, Sí/No o «De un catálogo: Zonas»); el límite, «hasta N caracteres» o Mínimo y Máximo; «Agregar campo» suma una fila; quitarlo pregunta «¿Quitar el campo…?»; en el teléfono, una hoja por campo (FRM-Catalogo-13).", "Dibujada"),
     ],

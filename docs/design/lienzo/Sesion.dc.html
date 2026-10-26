@@ -622,7 +622,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Iniciando sesión","Cambiando de lado: a Grupo Delta","Cambiando de lado: a Personal","Cerrando sesión","No pudimos iniciar tu sesión","Cerramos tu sesión por la baja"],"default":"Iniciando sesión","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Iniciando sesión","Cambiando de lado: a Grupo Delta","Cambiando de lado: a Personal","Cerrando sesión","No pudimos iniciar tu sesión","Cerramos tu sesión por el borrado"],"default":"Iniciando sesión","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const ESTADOS = {
   'Iniciando sesión': ['Iniciando sesión…', 'Esto puede tardar unos segundos.'],
   // signinSilent con tenant=<id> (o sin tenant, al lado Personal); después se limpia la caché del front para no mezclar datos de los dos lados.
@@ -631,7 +631,7 @@ const ESTADOS = {
   'Cerrando sesión': ['Cerrando sesión…', ''],
   'No pudimos iniciar tu sesión': ['No pudimos iniciar tu sesión', 'Volvé a ingresar. Si vuelve a pasar, probá en otra ventana.'],
   // Después de pedir la baja (account.json, closedSession y deletionDate).
-  'Cerramos tu sesión por la baja': ['Cerramos tu sesión', 'Tu cuenta se elimina el 27/10/2026.'],
+  'Cerramos tu sesión por el borrado': ['Cerramos tu sesión', 'Tu cuenta se borra el 27/10/2026 09:15.'],
 };
 
 class Component extends DCLogic {
@@ -816,8 +816,8 @@ class Component extends DCLogic {
 
     return {
       ...this.comunes(),
-      cargando: est !== 'No pudimos iniciar tu sesión' && est !== 'Cerramos tu sesión por la baja',
-      baja: est === 'Cerramos tu sesión por la baja',
+      cargando: est !== 'No pudimos iniciar tu sesión' && est !== 'Cerramos tu sesión por el borrado',
+      baja: est === 'Cerramos tu sesión por el borrado',
       error: est === 'No pudimos iniciar tu sesión',
       titulo: ESTADOS[est][0],
       texto: ESTADOS[est][1],

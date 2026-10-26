@@ -665,7 +665,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Consultas esperando","Código para verificar un método","Enlace para entrar (bot)","Bot: número sin cuenta","Bot: número sin cuenta y registro cerrado","Bot: cuenta de operador","Bot: ofrecer vincular","Bot: conversación vinculada","Invitación a una organización","Invitación como operador","Invitación como operador: sin nombre","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Baja pedida","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: aprobada","Recuperación: rechazada","Organización aprobada","Organización rechazada","Página pública: la despublicó la plataforma","Página pública: se puede volver a publicar","Asistente: 80 % del tope (su clave)","Asistente: tope alcanzado (su clave)","Asistente: 80 % del tope (plataforma)","Asistente: tope alcanzado (plataforma)"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Consultas esperando","Código para verificar un método","Enlace para entrar (bot)","Bot: número sin cuenta","Bot: número sin cuenta y registro cerrado","Bot: cuenta de operador","Bot: ofrecer vincular","Bot: conversación vinculada","Invitación a una organización","Invitación como operador","Invitación como operador: sin nombre","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Por borrar","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta borrada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: aprobada","Recuperación: rechazada","Organización aprobada","Organización rechazada","Página pública: la despublicó la plataforma","Página pública: se puede volver a publicar","Asistente: 80 % del tope (su clave)","Asistente: tope alcanzado (su clave)","Asistente: 80 % del tope (plataforma)","Asistente: tope alcanzado (plataforma)"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
 // Mensajes que manda el sistema en los flujos de la plantilla. Salen por el outbox, con textos de Notifications.resx
 // (y los del módulo WhatsApp), en la cultura de la persona y con fechas de DisplayFormatter (es-AR, Buenos Aires).
 // Correo: la estructura de _Layout.html, LoginCode.html e Invitation.html de ArquitecturaBase.
@@ -871,72 +871,72 @@ const MENSAJES = [
     },
   },
   {
-    n: 'Baja pedida',
+    n: 'Por borrar',
     // multitenancy.md §3.2: se avisa en todos sus métodos, con la fecha y "si no fuiste vos, ingresá para cancelarla".
     correo: {
-      asunto: 'Pediste la baja de tu cuenta',
+      asunto: 'Pediste borrar tu cuenta',
       para: 'diego.rios@delta.ejemplo.com',
-      titulo: 'Pediste la baja de tu cuenta',
-      parrafos: [P('Hola, Diego. El 27/09/2026 a las 14:35 pediste la baja de tu cuenta de ArquitecturaBase y cerramos todas tus sesiones.'), P('Tu cuenta se elimina el 27/10/2026.')],
+      titulo: 'Pediste borrar tu cuenta',
+      parrafos: [P('Hola, Diego. El 27/09/2026 a las 14:35 pediste borrar tu cuenta de ArquitecturaBase y cerramos todas tus sesiones.'), P('Tu cuenta se borra el 27/10/2026 14:35.')],
       boton: 'Ingresar',
-      notas: [P('Si no fuiste vos o te arrepentiste, ingresá antes de esa fecha para cancelarla.')],
+      notas: [P('Si no fuiste vos o te arrepentiste, ingresá antes de esa fecha para cancelar el borrado.')],
     },
     // Plantilla `baja_cuenta_pedida`: la fecha de eliminación.
-    wa: { plantilla: 'baja_cuenta_pedida', texto: [N('Pediste la baja de tu cuenta de ArquitecturaBase. Se elimina el 27/10/2026. Si no fuiste vos o te arrepentiste, ingresá antes de esa fecha para cancelarla.')] },
+    wa: { plantilla: 'baja_cuenta_pedida', texto: [N('Pediste borrar tu cuenta de ArquitecturaBase. Se borra el 27/10/2026 14:35. Si no fuiste vos o te arrepentiste, ingresá antes de esa fecha para cancelar el borrado.')] },
   },
   {
     n: 'Baja por la plataforma',
     // ADR 0035: la plataforma inicia la baja de una cuenta activa; pasa a baja pedida y se puede cancelar ingresando antes de la fecha.
     correo: {
-      asunto: 'La plataforma inició la baja de tu cuenta',
+      asunto: 'La plataforma pidió borrar tu cuenta',
       para: 'diego.rios@delta.ejemplo.com',
-      titulo: 'La plataforma inició la baja de tu cuenta',
-      parrafos: [P('Hola, Diego. El 27/09/2026 a las 14:35 la plataforma inició la baja de tu cuenta de ArquitecturaBase y cerramos todas tus sesiones.'), P('Tu cuenta se elimina el 27/10/2026.')],
+      titulo: 'La plataforma pidió borrar tu cuenta',
+      parrafos: [P('Hola, Diego. El 27/09/2026 a las 14:35 la plataforma pidió borrar tu cuenta de ArquitecturaBase y cerramos todas tus sesiones.'), P('Tu cuenta se borra el 27/10/2026 14:35.')],
       boton: 'Ingresar',
-      notas: [P('Si creés que es un error, ingresá antes de esa fecha para cancelarla.')],
+      notas: [P('Si creés que es un error, ingresá antes de esa fecha para cancelar el borrado.')],
     },
     // Plantilla `baja_cuenta_plataforma`: la fecha de eliminación.
-    wa: { plantilla: 'baja_cuenta_plataforma', texto: [N('La plataforma inició la baja de tu cuenta de ArquitecturaBase y cerramos todas tus sesiones. Se elimina el 27/10/2026. Si creés que es un error, ingresá antes de esa fecha para cancelarla.')] },
+    wa: { plantilla: 'baja_cuenta_plataforma', texto: [N('La plataforma pidió borrar tu cuenta de ArquitecturaBase y cerramos todas tus sesiones. Se borra el 27/10/2026 14:35. Si creés que es un error, ingresá antes de esa fecha para cancelar el borrado.')] },
   },
   {
     n: 'Baja por la plataforma: suspendida',
     // ADR 0035: sobre una cuenta suspendida, sigue suspendida con la fecha y no se puede cancelar. Sin «Ingresar»: no puede entrar.
     // El correo de soporte es el de la configuración de la plataforma (Config-Plat › Contacto).
     correo: {
-      asunto: 'La plataforma inició la baja de tu cuenta',
+      asunto: 'La plataforma pidió borrar tu cuenta',
       para: 'diego.rios@delta.ejemplo.com',
-      titulo: 'La plataforma inició la baja de tu cuenta',
-      parrafos: [P('Hola, Diego. El 27/09/2026 a las 14:35 la plataforma inició la baja de tu cuenta de ArquitecturaBase.'), P('Tu cuenta se elimina el 27/10/2026.')],
-      notas: [P('Tu cuenta está suspendida, así que no podés cancelar la baja. Si creés que es un error, escribí a soporte@ejemplo.com.')],
+      titulo: 'La plataforma pidió borrar tu cuenta',
+      parrafos: [P('Hola, Diego. El 27/09/2026 a las 14:35 la plataforma pidió borrar tu cuenta de ArquitecturaBase.'), P('Tu cuenta se borra el 27/10/2026 14:35.')],
+      notas: [P('Tu cuenta está suspendida, así que no podés cancelar el borrado. Si creés que es un error, escribí a soporte@ejemplo.com.')],
     },
     // Plantilla `baja_cuenta_plataforma_suspendida`: la fecha de eliminación y el correo de soporte.
-    wa: { plantilla: 'baja_cuenta_plataforma_suspendida', texto: [N('La plataforma inició la baja de tu cuenta de ArquitecturaBase. Se elimina el 27/10/2026. Tu cuenta está suspendida, así que no podés cancelar la baja. Si creés que es un error, escribí a soporte@ejemplo.com para pedir ayuda.')] },
+    wa: { plantilla: 'baja_cuenta_plataforma_suspendida', texto: [N('La plataforma pidió borrar tu cuenta de ArquitecturaBase. Se borra el 27/10/2026 14:35. Tu cuenta está suspendida, así que no podés cancelar el borrado. Si creés que es un error, escribí a soporte@ejemplo.com para pedir ayuda.')] },
   },
   {
     n: 'Baja cancelada',
     // multitenancy.md §3.2: al cancelar se avisa en todos los métodos.
     correo: {
-      asunto: 'Cancelaste la baja de tu cuenta',
+      asunto: 'Cancelaste el borrado de tu cuenta',
       para: 'diego.rios@delta.ejemplo.com',
-      titulo: 'Cancelaste la baja de tu cuenta',
-      parrafos: [P('Hola, Diego. El 27/09/2026 a las 14:35 cancelaste la baja de tu cuenta de ArquitecturaBase. Tu cuenta sigue activa.')],
+      titulo: 'Cancelaste el borrado de tu cuenta',
+      parrafos: [P('Hola, Diego. El 27/09/2026 a las 14:35 cancelaste el borrado de tu cuenta de ArquitecturaBase. Tu cuenta sigue activa.')],
       boton: 'Ir a Mi cuenta',
       notas: [P(SI_NO_FUISTE)],
     },
     // Plantilla `baja_cuenta_cancelada`: sin variables.
-    wa: { plantilla: 'baja_cuenta_cancelada', texto: [N('Cancelaste la baja de tu cuenta de ArquitecturaBase. Tu cuenta sigue activa. ' + SI_NO_FUISTE)] },
+    wa: { plantilla: 'baja_cuenta_cancelada', texto: [N('Cancelaste el borrado de tu cuenta de ArquitecturaBase. Tu cuenta sigue activa. ' + SI_NO_FUISTE)] },
   },
   {
-    n: 'Cuenta eliminada',
+    n: 'Cuenta borrada',
     // multitenancy.md §3.2: el aviso final va al método principal y se encola antes de borrar los métodos.
     correo: {
-      asunto: 'Tu cuenta fue eliminada',
+      asunto: 'Tu cuenta fue borrada',
       para: 'diego.rios@delta.ejemplo.com',
-      titulo: 'Tu cuenta fue eliminada',
-      parrafos: [P('Hola, Diego. Eliminamos tu cuenta de ArquitecturaBase, con sus métodos de ingreso y tu espacio personal.'), P('Este correo ya no está asociado a ninguna cuenta.')],
+      titulo: 'Tu cuenta fue borrada',
+      parrafos: [P('Hola, Diego. Borramos tu cuenta de ArquitecturaBase, con sus métodos de ingreso y tu espacio personal.'), P('Este correo ya no está asociado a ninguna cuenta.')],
     },
     // Plantilla `cuenta_eliminada`: sin variables.
-    wa: { plantilla: 'cuenta_eliminada', texto: [N('Tu cuenta de ArquitecturaBase fue eliminada, con sus métodos de ingreso y tu espacio personal. Este número ya no está asociado a ninguna cuenta.')] },
+    wa: { plantilla: 'cuenta_eliminada', texto: [N('Tu cuenta de ArquitecturaBase fue borrada, con sus métodos de ingreso y tu espacio personal. Este número ya no está asociado a ninguna cuenta.')] },
   },
   {
     n: 'Recuperación: pedido recibido',

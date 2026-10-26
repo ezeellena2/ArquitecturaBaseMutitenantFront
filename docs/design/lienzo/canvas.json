@@ -849,7 +849,7 @@
       "x": 10640,
       "y": 260,
       "w": 7400,
-      "h": 6600,
+      "h": 6900,
       "title": "Criterio · Decisiones por pantalla",
       "page": "criterio"
     },
@@ -2774,6 +2774,42 @@
       "h": 844,
       "page": "formularios",
       "title": "Catálogo escrito a mano · campos · teléfono · etapa 13 · para aprobar"
+    },
+    "Otro-Acceso.dc.html": {
+      "x": 7600,
+      "y": 1280,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "page": "ingreso",
+      "title": "Otro acceso · un link de empresa, como persona · para aprobar"
+    },
+    "Otro-Acceso-Persona.dc.html": {
+      "x": 9120,
+      "y": 1280,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "page": "ingreso",
+      "title": "Otro acceso · un link personal, como empresa · para aprobar"
+    },
+    "M-Otro-Acceso.dc.html": {
+      "x": 4700,
+      "y": 2300,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "ingreso",
+      "title": "Otro acceso · un link de empresa, como persona · teléfono · para aprobar"
+    },
+    "M-Otro-Acceso-Persona.dc.html": {
+      "x": 5170,
+      "y": 2300,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "ingreso",
+      "title": "Otro acceso · un link personal, como empresa · teléfono · para aprobar"
     }
   },
   "createdOnFiles": {
