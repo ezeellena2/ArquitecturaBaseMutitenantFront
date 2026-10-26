@@ -517,7 +517,7 @@ DECISIONES = {
         ("El PDF (82)", "", "Color, logo y datos de la página pública de la organización: se dibuja con la etapa 21.", "Falta dibujar"),
     ],
     "E12 · Catálogos · La Guía · 25/10": [
-        ("El catálogo a mano (CA1-A)", "A", "Todo a la vista: el catálogo con el origen y el tipo de valor como la A11, «Así lo ve quien lo recibe» con «Una opción | Varias», y las opciones en una tabla que se edita en el lugar, con su barra (Agregar, Pegar desde Excel, Importar, Exportar y «⋯»), la búsqueda y la selección de filas.", "Dibujada"),
+        ("El catálogo a mano (CA1-A)", "A", "Todo a la vista: el catálogo, el teléfono de quien lo recibe al costado y las opciones en una tabla que se edita en el lugar, con su barra (Agregar, Pegar desde Excel, Importar, Exportar y «⋯»), la búsqueda y la selección de filas.", "Dibujada"),
         ("Pegar e importar", "", "En un catálogo nuevo o con cambios sin guardar, grisados con el motivo en su tooltip. Importar revisa errores, altas, cambios y bajas antes de aplicar; las muchas bajas y las muchas filas con error piden una casilla al pie.", "Dibujada"),
         ("De los contactos (55)", "A", "Un tercer origen: los contactos de Clientes, con filtros por etiqueta y la vista previa; sin WhatsApp, «No se puede usar».", "Dibujada"),
         ("Sin persona de ejemplo", "", "«Crear catálogo» de los miembros queda grisado, con el motivo en su tooltip, hasta elegir a quién y probar.", "Dibujada"),
@@ -527,6 +527,15 @@ DECISIONES = {
         ("Elegir de un catálogo (CA4)", "A", "«Permitir elegir varias» con Mínimo y Máximo; en la lista, «varias, hasta 2», y en la vista previa, casillas. En los catálogos de los miembros, «Cómo se muestra cada opción»: como el catálogo o propia.", "Dibujada"),
         ("Más de 20 o de 200", "", "En el editor, el error debajo del catálogo; al publicar, «Antes hay que resolver» con «Ir a la pregunta».", "Dibujada"),
         ("Mis mensajes (T16)", "", "Quien vinculó su cuenta ve su respuesta como una tarjeta suya, con «Tu respuesta», los valores y el número.", "Dibujada"),
+    ],
+    "Reglas del 25/10 · El usuario": [
+        ("Un dato por celda", "", "En la compu, cada celda lleva un dato, en un renglón; lo que lo aclaraba va en su propia columna (Correo, Vencimiento) o no va. En el teléfono, la fila sigue con el nombre y una línea de datos (Criterio · Tablas y listas).", "Dibujada"),
+        ("Las fechas", "", "Siempre completas, con año y hora, en la zona de quien mira: 25/10/2026 18:07. Nunca «hoy», «ayer» ni «hace 2 horas».", "Dibujada"),
+        ("La vista previa", "", "El teléfono va sin rótulo: sale «Así lo ve quien lo recibe» de arriba, en el editor, las plantillas y los catálogos.", "Dibujada"),
+        ("El catálogo", "", "El nombre y el tipo en una fila y la descripción debajo; de dónde salen, en la banda al lado del estado; sin «Una opción | Varias», que lo decide la pregunta del formulario.", "Dibujada"),
+        ("Dados de baja", "", "Es una opción del filtro Estado (Activos, Publicados, Borradores y Dados de baja) desde la 17; sale la vista «Activos | Dados de baja».", "Dibujada"),
+        ("Las etapas cerradas", "", "Sus tableros pasan a estas reglas en la base de la 12; hasta entonces, las muestran los de la 12 y la 14.", "Falta dibujar"),
+        ("El tamaño", "", "El lienzo no se achica: sigue con su tamaño aunque la maqueta vaya con la letra al 85 %.", "Decidido"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

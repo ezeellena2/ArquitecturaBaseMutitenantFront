@@ -93,17 +93,17 @@ class Etapa:
         self.n, self.resp, self.ciclo, self.aprob, self.plantilla = n, n >= 15, n >= 17, n >= 21, n >= 22
 
 
-# (nombre, detalle, clave, (clase, estado en WhatsApp, ⓘ), preguntas, último cambio, por aprobar, respuestas, última o None)
+# (nombre, clave, (clase, estado en WhatsApp, ⓘ), preguntas, último cambio, por aprobar, respuestas, última o None)
+# Un dato por celda, en un renglón (decisión del usuario del 25/10): sin el prefijo debajo del nombre ni quién hizo el último cambio;
+# las fechas, completas y con su hora (formatos.md, 25/10).
 FILAS = [
-    ("Visita a cliente", "VIS", "Vis", ("{{estVisClase}}", "{{estVis}}", ""), 7, "08/10/2026 · Lucía Fernández", 3, 24,
-     ("VIS-000130", "15/10/2026 16:20", "amb", "Por aprobar", "FRM-Respuesta-Aprobacion.dc.html")),
-    ("Entrega de pedido", "ENT · Para empleados y clientes", "Ent", ("", "Publicado · versión 1", ""), 5, "02/10/2026 · Tomás Acosta", 1, 48,
-     ("ENT-000048", "14/10/2026 10:05", "", "Aprobada", "FRM-Respuesta.dc.html")),
-    ("Control de vehículo", "VEH", "Con", ("mal", "No se pudo publicar", "La versión 2 publicada sigue activa."), 7, "12/10/2026 · Lucía Fernández", 0, 31,
-     ("VEH-000031", "12/10/2026 18:05", "off", "Recibida", "FRM-Respuesta.dc.html")),
-    ("Reclamo", "REC", "Rec", ("off", "Borrador", ""), 4, "14/10/2026 · —", 0, 0, None),
-    ("Relevamiento de obra", "REL", "Rel", ("baja", "Dado de baja · versión 2", "Se deprecan en WhatsApp cuando venzan los 2 envíos abiertos."), 6,
-     "09/10/2026 · Lucía Fernández", 0, 12, ("REL-000012", "30/09/2026 10:15", "", "Aprobada", "FRM-Respuesta.dc.html")),
+    ("Visita a cliente", "Vis", ("{{estVisClase}}", "{{estVis}}", ""), 7, "08/10/2026 14:20", 3, 24, ("15/10/2026 16:20", "FRM-Respuesta-Aprobacion.dc.html")),
+    ("Entrega de pedido", "Ent", ("", "Publicado · versión 1", ""), 5, "02/10/2026 09:15", 1, 48, ("14/10/2026 10:05", "FRM-Respuesta.dc.html")),
+    ("Control de vehículo", "Con", ("mal", "No se pudo publicar", "La versión 2 publicada sigue activa."), 7, "12/10/2026 17:40", 0, 31,
+     ("12/10/2026 18:05", "FRM-Respuesta.dc.html")),
+    ("Reclamo", "Rec", ("off", "Borrador", ""), 4, "14/10/2026 11:05", 0, 0, None),
+    ("Relevamiento de obra", "Rel", ("baja", "Dado de baja · versión 2", "Se deprecan en WhatsApp cuando venzan los 2 envíos abiertos."), 6,
+     "09/10/2026 16:30", 0, 12, ("30/09/2026 10:15", "FRM-Respuesta.dc.html")),
 ]
 COPIAR = mi("duplicar", "Copiar", "FRM-Copiar.dc.html")
 MENUS = {  # como la maqueta: Editar (o Ver, sin permiso de diseñar), y lo de la 17 según el estado y el permiso
@@ -139,17 +139,14 @@ def estados_lista(e):
     return est + ["Sin coincidencias", "Cargando", "Todavía no hay formularios", "No se pudo cargar", "Sin permiso"]
 
 
-CSS_LISTA = """.fm-seg { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); align-self: flex-start; width: 320px; flex-shrink: 0; }
-.fm-seg button { height: 30px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 13px; font-weight: 600; color: var(--t2); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.fm-seg button.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
-.fm-seg .c { font-weight: 500; color: var(--t3); }
-.w-th.fx14, .w-tr.fx14 { grid-template-columns: minmax(200px, 1.4fr) 100px minmax(200px, 1.2fr) minmax(220px, 1.2fr); }
+CSS_LISTA = """.w-th.fx14, .w-tr.fx14 { grid-template-columns: minmax(200px, 1.4fr) 100px minmax(200px, 1.2fr) minmax(220px, 1.2fr); }
 .w-th.fx15, .w-tr.fx15 { grid-template-columns: minmax(200px, 1.3fr) minmax(190px, 1.1fr) 100px minmax(240px, 1.3fr); }
 .w-th.fx17, .w-tr.fx17 { grid-template-columns: minmax(180px, 1.3fr) minmax(180px, 1.1fr) 100px minmax(220px, 1.2fr) 40px; }
 .w-th.fx21, .w-tr.fx21 { grid-template-columns: minmax(160px, 1.25fr) minmax(170px, 1.1fr) 92px 92px minmax(190px, 1.15fr) 40px; }
 .w-th.fx3, .w-tr.fx3 { grid-template-columns: minmax(220px, 1.4fr) 110px minmax(260px, 1.4fr); }
 .w-th.fx2, .w-tr.fx2 { grid-template-columns: minmax(220px, 1fr) 160px; }
-.w-tr.fx14, .w-tr.fx15, .w-tr.fx17, .w-tr.fx21, .w-tr.fx3, .w-tr.fx2 { position: relative; min-height: 56px; }
+.w-tr.fx14, .w-tr.fx15, .w-tr.fx17, .w-tr.fx21, .w-tr.fx3, .w-tr.fx2 { position: relative; min-height: 40px; }
+.w-tr .fx-f { color: var(--t1); text-decoration: none; font-variant-numeric: tabular-nums; }
 .fx-n, .fx-u { display: flex; flex-direction: column; gap: 2px; min-width: 0; line-height: 1.35; }
 .fx-n a { color: var(--t1); font-weight: 500; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fx-n a:hover { text-decoration: underline; }
@@ -174,8 +171,8 @@ CSS_LISTA = """.fm-seg { display: inline-grid; grid-template-columns: 1fr 1fr; g
 """
 
 
-def c_nombre(n, det, abre):
-    return f'<span class="fx-n"><a href="{abre}">{n}</a><small>{det}</small></span>'
+def c_nombre(n, abre):
+    return f'<span class="fx-n"><a href="{abre}">{n}</a></span>'
 
 
 def c_whatsapp(clase, texto, info):
@@ -187,12 +184,11 @@ def c_aprobar(apr):
 
 
 def c_ultima(u, e):
+    """Cuándo llegó la última respuesta, y se abre; lo que espera aprobación lo dice «Por aprobar» desde la 21."""
     if not u:
         return '<span class="fm-no">—</span>'
-    num, cuando, clase, est, destino = u
-    if not e.aprob:  # antes de la 21 no hay aprobación: toda respuesta queda «Recibida»
-        clase, est, destino = "off", "Recibida", "FRM-Respuesta.dc.html"
-    return f'<span class="fx-u"><a class="pl-num" href="{destino}">{num}</a><small>{cuando}<span class="w-est {clase}">{est}</span></small></span>'
+    cuando, destino = u
+    return f'<span><a class="fx-f" href="{destino if e.aprob else "FRM-Respuesta.dc.html"}">{cuando}</a></span>'
 
 
 def grilla_de(e):
@@ -200,25 +196,24 @@ def grilla_de(e):
 
 
 def fila(f, cols, e):
-    n, det, k, (clase, texto, info), preg, cambio, apr, resp, ult = f
+    n, k, (clase, texto, info), preg, cambio, apr, resp, ult = f
     defecto = "no" if k == "Rel" else "si"
     abre = "FRM-Respuestas.dc.html" if e.resp and k != "Rec" else ("FRM-Editor-Baja.dc.html" if k == "Rel" else "FRM-Editor.dc.html")
-    version = "Versión 3" if k == "Vis" else "Versión 1" if k == "Ent" else "Versión 2"
     if cols == "todas":
         if not e.resp:
-            celdas = c_nombre(n, det, abre) + f'<span class="num">{preg}</span>' + c_whatsapp(clase, texto, info) + f"<span>{cambio}</span>"
+            celdas = c_nombre(n, abre) + f'<span class="num">{preg}</span>' + c_whatsapp(clase, texto, info) + f'<span class="num">{cambio}</span>'
         else:
-            celdas = c_nombre(n, det, abre) + c_whatsapp(clase, texto, info) + (c_aprobar(apr) if e.aprob else "") + f'<span class="num">{resp}</span>' + c_ultima(ult, e)
+            celdas = c_nombre(n, abre) + c_whatsapp(clase, texto, info) + (c_aprobar(apr) if e.aprob else "") + f'<span class="num">{resp}</span>' + c_ultima(ult, e)
             if e.ciclo:
                 menus = "".join(f'<sc-if value="{{{{m{clave}}}}}" hint-placeholder-val="{{{{no}}}}"><div class="f-menu" role="menu" aria-label="Acciones de {n}">{h}</div></sc-if>'
                                 for clave, h in MENUS.items() if clave.startswith(k))
                 celdas += f'<span><button type="button" class="ib" aria-label="Acciones de {n}" aria-haspopup="menu">{A.KEBAB}</button></span>{menus}'
         grilla = grilla_de(e)
     elif cols == "lee":
-        celdas = c_nombre(n, version, abre) + f'<span class="num">{resp}</span>' + c_ultima(ult, e)
+        celdas = c_nombre(n, abre) + f'<span class="num">{resp}</span>' + c_ultima(ult, e)
         grilla = "fx3"
     else:
-        celdas = c_nombre(n, version, abre) + c_aprobar(apr)
+        celdas = c_nombre(n, abre) + c_aprobar(apr)
         grilla = "fx2"
     return f'<sc-if value="{{{{r{k}}}}}" hint-placeholder-val="{{{{{defecto}}}}}"><div class="w-tr {grilla}">{celdas}</div></sc-if>'
 
@@ -234,20 +229,18 @@ def tabla(cols, bandera, e):
     else:
         cab, clase = ["Formulario", "Por aprobar"], "fx2"
     th = f'<div class="w-th {clase}">' + "".join(c if c.startswith("<span") else f"<span>{c}</span>" for c in cab) + "</div>"
-    filas = "".join(fila(f, cols, e) for f in FILAS if (cols == "todas" or f[2] != "Rec") and (e.ciclo or f[2] != "Rel"))
+    filas = "".join(fila(f, cols, e) for f in FILAS if (cols == "todas" or f[1] != "Rec") and (e.ciclo or f[1] != "Rel"))
     return f'<sc-if value="{{{{{bandera}}}}}" hint-placeholder-val="{{{{{"si" if cols == "todas" else "no"}}}}}">{th}{filas}</sc-if>'
 
 
 def cuerpo_lista(e):
-    seg = ('<sc-if value="{{conSeg}}" hint-placeholder-val="{{si}}"><div class="fm-seg" role="radiogroup" aria-label="Ver">'
-           '<button type="button" role="radio" aria-checked="{{selAct}}" class="{{segAct}}">Activos <span class="c">{{cntAct}}</span></button>'
-           '<button type="button" role="radio" aria-checked="{{selBaja}}" class="{{segBaja}}">Dados de baja <span class="c">1</span></button></div></sc-if>') if e.ciclo else ""
     aprob = ('<sc-if value="{{conAprobacion}}" hint-placeholder-val="{{si}}">'
              + F.filtro("Aprobación", [("t", "Todos", 4), ("c", "Con algo por aprobar", 2), ("n", "Nada por aprobar", 2)], "apr") + "</sc-if>") if e.aprob else ""
     caja = ('<sc-if value="{{conFiltros}}" hint-placeholder-val="{{si}}"><div class="w-caja o-fb">'
             f'<span class="w-bus {{{{busClase}}}}">{F.BUSCAR} {{{{busqueda}}}}</span>'
             '<sc-if value="{{conEstado}}" hint-placeholder-val="{{si}}">'
-            + F.filtro("Estado", [("t", "Todos los estados", 4), ("p", "Publicados", 3), ("b", "Borradores", 1)], "est") + "</sc-if>" + aprob
+            + F.filtro("Estado", ([("t", "Activos", 4), ("p", "Publicados", 3), ("b", "Borradores", 1), ("d", "Dados de baja", 1)] if e.ciclo
+                                  else [("t", "Todos los estados", 4), ("p", "Publicados", 3), ("b", "Borradores", 1)]), "est") + "</sc-if>" + aprob
             + '<sc-if value="{{hayFiltro}}" hint-placeholder-val="{{no}}"><button type="button" class="cb cb-enl">Limpiar filtros</button></sc-if>'
             '<span class="tot">{{total}}</span></div></sc-if>')
     tablas = tabla("todas", "colsTodas", e) + (tabla("lee", "colsLee", e) if e.resp else "") + (tabla("aprueba", "colsAprueba", e) if e.aprob else "")
@@ -261,7 +254,7 @@ def cuerpo_lista(e):
              "</div></sc-if>")
     sin_permiso = (f'<sc-if value="{{{{sinPermiso}}}}" hint-placeholder-val="{{{{no}}}}"><div class="pl-pagina"><span class="ic">{G.CANDADO}</span>'
                    '<b>No tenés permiso para ver esta página.</b><a class="cb cb-sec" href="Inicio-Org.dc.html">Ir al inicio</a></div></sc-if>')
-    return '<div class="w-body">' + seg + caja + lista + sin_permiso + "</div>"
+    return '<div class="w-body">' + caja + lista + sin_permiso + "</div>"
 
 
 def acciones_lista(e):
@@ -292,17 +285,15 @@ def js_lista(vista, e):
       resumen: v === 'Cargando' || v === 'No se pudo cargar' ? '' : v === 'Todavía no hay formularios' ? 'Sin formularios'
         : baja ? '1 dado de baja' : lee ? '3 activos' : aprueba ? '4 por aprobar' : !CI ? '4 formularios' : AP ? '4 activos · 4 por aprobar' : '4 activos · 1 dado de baja',
       conNuevo: disena && !soloPub && !lectura, menuNuevo: nuevoMenu, expNuevo: nuevoMenu ? 'true' : 'false',
-      conSeg: lista || v === 'Sin coincidencias', cntAct: lee || aprueba ? '3' : '4',
-      selAct: baja ? 'false' : 'true', selBaja: baja ? 'true' : 'false', segAct: baja ? '' : 'on', segBaja: baja ? 'on' : '',
-      conFiltros: !['Todavía no hay formularios', 'Sin permiso'].includes(v), conEstado: disena && !baja, conAprobacion: !lee && v !== 'Sin permiso' && !baja,
+      conFiltros: !['Todavía no hay formularios', 'Sin permiso'].includes(v), conEstado: disena, conAprobacion: !lee && v !== 'Sin permiso' && !baja,
       busqueda: v === 'Sin coincidencias' ? 'inspección' : 'Buscar formulario', busClase: v === 'Sin coincidencias' ? 'lleno' : '',
-      estTexto: pub ? 'Estado: Publicados' : bor ? 'Estado: Borradores' : 'Estado', estClase: pub || bor ? 'con' : '', estMenu, estAlternar: () => {{}},
-      estOn_t: pub || bor ? '' : 'on', estOn_p: pub ? 'on' : '', estOn_b: bor ? 'on' : '', estC_t: '4', estC_p: '3', estC_b: '1',
-      estElegir_t: () => {{}}, estElegir_p: () => {{}}, estElegir_b: () => {{}},
+      estTexto: pub ? 'Estado: Publicados' : bor ? 'Estado: Borradores' : baja ? 'Estado: Dados de baja' : 'Estado', estClase: pub || bor || baja ? 'con' : '', estMenu, estAlternar: () => {{}},
+      estOn_t: pub || bor || baja ? '' : 'on', estOn_p: pub ? 'on' : '', estOn_b: bor ? 'on' : '', estOn_d: baja ? 'on' : '', estC_t: '4', estC_p: '3', estC_b: '1', estC_d: '1',
+      estElegir_t: () => {{}}, estElegir_p: () => {{}}, estElegir_b: () => {{}}, estElegir_d: () => {{}},
       aprTexto: conAlgo ? 'Aprobación: Con algo por aprobar' : 'Aprobación', aprClase: conAlgo ? 'con' : '', aprMenu, aprAlternar: () => {{}},
       aprOn_t: conAlgo ? '' : 'on', aprOn_c: conAlgo ? 'on' : '', aprOn_n: '', aprC_t: '4', aprC_c: '2', aprC_n: '2',
       aprElegir_t: () => {{}}, aprElegir_c: () => {{}}, aprElegir_n: () => {{}},
-      hayFiltro: pub || bor || conAlgo || v === 'Sin coincidencias',
+      hayFiltro: pub || bor || baja || conAlgo || v === 'Sin coincidencias',
       total: v === 'Sin coincidencias' ? '0 formularios' : filas === 1 ? '1 formulario' : filas + ' formularios',
       conTabla: v !== 'Sin permiso', conFilas: lista, colsTodas: disena, colsLee: lee, colsAprueba: aprueba,
       rango: filas === 1 ? '1 de 1' : '1–' + filas + ' de ' + filas,
@@ -379,22 +370,19 @@ def tel_lista(n):
     fab = f'<a class="ap-fab" aria-label="Nuevo formulario" href="{"#" if e.plantilla else "M-FRM-Editor.dc.html"}">{F.TFAB}</a>'
 
     def seg(baja, act="4"):
-        if not e.ciclo:
-            return ""
-        a, b = ("", "on") if baja else ("on", "")
-        return (f'<div class="ap-seg" role="radiogroup" aria-label="Ver"><span class="{a}" role="radio" aria-checked="{"false" if baja else "true"}">Activos <span class="c">{act}</span></span>'
-                f'<span class="{b}" role="radio" aria-checked="{"true" if baja else "false"}">Dados de baja <span class="c">1</span></span></div>')
+        return ""
     activos = bar + seg(False) + '<div class="ap-cuerpo">' + "".join(t_fila(f, e) for f in T_FILAS) + "</div>" + fab
     esq = bar + seg(False) + '<div class="ap-cuerpo"><div class="ap-esq"><span style="width: 80%;"></span><span style="width: 60%;"></span><span style="width: 72%;"></span></div></div>'
     error = bar + seg(False) + '<div class="ap-cuerpo"><div class="ap-vacio">No pudimos cargar los formularios.<button type="button" class="cb cb-sec">Reintentar</button></div></div>'
-    filtros = ('<div class="p-tit2">Estado</div><div class="ap-acciones"><span role="menuitemradio" aria-checked="true">Todos los estados <span class="c">4</span></span>'
-               '<span role="menuitemradio" aria-checked="false">Publicados <span class="c">3</span></span>'
-               '<span role="menuitemradio" aria-checked="false">Borradores <span class="c">1</span></span></div>')
+    tilde = svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 18, "2.25")
+
+    def grupo(tit, ops):  # como la hoja de filtros de Catálogos: cada opción con su cantidad a la derecha
+        return f'<div class="p-tit2">{tit}</div>' + "".join(f'<span class="t-opc {"on" if k == 0 else ""}" role="menuitemradio" aria-checked="{"true" if k == 0 else "false"}">{x}'
+                                                         f'<span class="d">{c}{tilde if k == 0 else ""}</span></span>' for k, (x, c) in enumerate(ops))
+    filtros = grupo("Estado", [("Activos" if e.ciclo else "Todos los estados", 4), ("Publicados", 3), ("Borradores", 1)] + ([("Dados de baja", 1)] if e.ciclo else []))
     if e.aprob:
-        filtros += ('<div class="p-tit2">Aprobación</div><div class="ap-acciones"><span role="menuitemradio" aria-checked="true">Todos <span class="c">4</span></span>'
-                    '<span role="menuitemradio" aria-checked="false">Con algo por aprobar <span class="c">2</span></span>'
-                    '<span role="menuitemradio" aria-checked="false">Nada por aprobar <span class="c">2</span></span></div>')
-    capas = {"Filtros": F.thoja("Filtros", filtros, "")}
+        filtros += grupo("Aprobación", [("Todos", 4), ("Con algo por aprobar", 2), ("Nada por aprobar", 2)])
+    capas = {"Filtros": F.thoja("Filtros", filtros, '<button type="button" class="cb cb-pri">Ver 4 formularios</button>').replace('<div class="hb">', '<div class="hb lst">', 1)}
     if not e.ciclo:
         E_T = ["Lista", "Filtros", "Cargando", "No se pudo cargar"]
         cuerpo = {"Lista": activos, "Filtros": activos, "Cargando": esq, "No se pudo cargar": error}
@@ -425,7 +413,7 @@ def tel_lista(n):
         })
         if e.plantilla:
             capas["Nuevo formulario: elegir"] = M.hoja("Nuevo formulario", '<a role="menuitem" href="M-FRM-Editor.dc.html">Desde cero</a><a role="menuitem" href="M-FRM-Biblioteca.dc.html">Desde una plantilla</a>')
-    t = C.tel_pagina(cuerpo, E_T, capas, f"Formularios · teléfono · etapa {e.n}", A.CSS_TCHAT_AB + E.CSS_E12 + B.CSS_E12B + E.CSS_TED_E12)
+    t = C.tel_pagina(cuerpo, E_T, capas, f"Formularios · teléfono · etapa {e.n}", A.CSS_TCHAT_AB + E.CSS_E12 + B.CSS_E12B + E.CSS_TED_E12 + F.CSS_TFILTRO)
     t = M.css(t, M.CSS_HOJA, "hoja")
     return con_css(E.post(n, t), "tlista", CSS_TLISTA)
 

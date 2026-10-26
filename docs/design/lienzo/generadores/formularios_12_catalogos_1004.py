@@ -2,15 +2,17 @@
 
 La E12 es la primera de formularios y llega antes que ellos: en el panel solo está «Catálogos», y nada nombra preguntas,
 formularios, «Lo usan» ni respuestas. Con la 35 (un solo texto, sin «Textos en»), la 43 (botones habilitados o grisados,
-sin «Cambios sin guardar»; lo que necesita algo antes, grisado con el motivo en su tooltip), el origen y el tipo de valor
-como la A11 (en su campo, apagados y grises), la 55 (los contactos de WhatsApp como origen) y la 81 (un contacto sin
-nombre toma el de su perfil; el teléfono nunca se ve). La disposición se copia de ArquitecturaBase (anexo D del traspaso
-2: CA1-A, CA2 y CA3), con nuestras piezas.
+sin «Cambios sin guardar»; lo que necesita algo antes, grisado con el motivo en su tooltip), el tipo de valor como la A11
+(en su campo, apagado y gris), la 55 (los contactos de WhatsApp como origen) y la 81 (un contacto sin nombre toma el de su
+perfil; el teléfono nunca se ve). La disposición se copia de ArquitecturaBase (anexo D del traspaso 2: CA1-A, CA2 y CA3),
+con nuestras piezas. Desde la v142, los pedidos del usuario del 25/10, como la maqueta (52505a0 y cde670e): el nombre y el
+tipo en una fila y la descripción debajo; de dónde salen, en la banda al lado del estado; el teléfono sin rótulo ni «Una
+opción | Varias»; un dato por celda en la lista y las fechas con su año.
 
 - FRM-Catalogos (la 12, sin «Lo usan») y FRM-Catalogos-14 (lo suma la 14), con sus teléfonos.
 - FRM-Catalogo-Nuevo: tres orígenes y el tipo de valor de los escritos a mano.
 - FRM-Catalogo (CA1-A, todo a la vista): la barra de Opciones (Agregar opción, Pegar desde Excel, Importar, Exportar y
-  «⋯»), la búsqueda, la tabla que se edita en el lugar, elegir filas y «Así lo ve quien lo recibe» con «Una opción | Varias».
+  «⋯»), la búsqueda, la tabla que se edita en el lugar, elegir filas y, al costado, el teléfono de quien lo recibe.
 - FRM-Catalogo-Importar (CA2): archivo o filas pegadas, revisar y aplicar.
 - FRM-Catalogo-Tipo (CA3): un catálogo decimal, con la columna «Valor».
 - FRM-Catalogo-Contactos: un catálogo de los contactos de WhatsApp, con filtros por etiqueta.
@@ -81,9 +83,9 @@ CATS = [  # nombre, descripción, origen, sub, opciones, lo usan (14), clase, es
     ("Supervisores", "Quienes pueden aprobar una visita.", "De los miembros", "con filtros", "7", "1 formulario", "", "Activo", "", "FRM-Catalogo-Filtros"),
 ]
 ESTADOS_LISTA = ["Todos", "Filtro abierto", "Escritas a mano", "De los miembros", "De los contactos", "Sin coincidencias", "Cargando", "Vacío", "Error"]
-CSS_LISTA = """.w-th.k12, .w-tr.k12 { grid-template-columns: minmax(240px, 1.6fr) minmax(200px, 1.1fr) 100px minmax(190px, 1fr); }
-.w-th.k14, .w-tr.k14 { grid-template-columns: minmax(220px, 1.5fr) minmax(190px, 1.1fr) 90px 130px minmax(180px, 1fr); }
-.w-tr.k12, .w-tr.k14 { min-height: 56px; }
+CSS_LISTA = """.w-th.k12, .w-tr.k12 { grid-template-columns: minmax(200px, 1.3fr) minmax(220px, 1.3fr) 130px 100px minmax(170px, 1fr); }
+.w-th.k14, .w-tr.k14 { grid-template-columns: minmax(180px, 1.2fr) minmax(210px, 1.2fr) 120px 90px 120px minmax(160px, 1fr); }
+.w-tr.k12, .w-tr.k14 { min-height: 40px; }
 .w-tr .k-tc { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .w-tr .k-tc a { color: var(--t1); text-decoration: none; font-weight: 500; }
 .w-tr .k-tc small { font-size: 12px; color: var(--t3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -97,8 +99,10 @@ CSS_LISTA = """.w-th.k12, .w-tr.k12 { grid-template-columns: minmax(240px, 1.6fr
 
 
 def fila_cat(c, con_usan):
+    """Un dato por celda, en un renglón (decisión del usuario del 25/10): la descripción no va en la lista y el tipo de valor tiene su columna."""
     n, desc, origen, sub, ops, usan, clase, estado, motivo, destino = c
-    o = f'<span class="k-tc"><span>{origen}</span><small>{sub}</small></span>'
+    o = f"<span>{origen}</span>"
+    tipo = f"<span>{sub}</span>" if origen == "Escritas a mano" else '<span class="gris">—</span>'
     op = f'<span class="gris">{ops}</span>' if ops == "—" else f"<span>{ops}</span>"
     u = ""
     if con_usan:
@@ -106,14 +110,13 @@ def fila_cat(c, con_usan):
              f'<a class="usan" href="FRM-Editor.dc.html" aria-label="Ver los formularios que usan {n}">{usan}</a>')
     e = f'<span class="est2"><span class="w-est {clase}">{estado}</span>{F.info(motivo) if motivo else ""}</span>'
     grupo = {"Escritas a mano": "verMano", "De los miembros": "verMiembros"}.get(origen, "verContactos")
-    d = f"<small>{desc}</small>" if desc else ""
     return (f'<sc-if value="{{{{{grupo}}}}}" hint-placeholder-val="{{{{si}}}}"><div class="w-tr {"k14" if con_usan else "k12"}">'
-            f'<span class="k-tc"><a href="{destino}.dc.html">{n}</a>{d}</span>{o}{op}{u}{e}</div></sc-if>')
+            f'<span class="k-tc"><a href="{destino}.dc.html">{n}</a></span>{o}{tipo}{op}{u}{e}</div></sc-if>')
 
 
 def lista_catalogos(con_usan=False):
     clase = "k14" if con_usan else "k12"
-    cab = ["Catálogo", "De dónde salen", "Opciones"] + (["Lo usan"] if con_usan else []) + ["Estado"]
+    cab = ["Catálogo", "De dónde salen", "Tipo de valor", "Opciones"] + (["Lo usan"] if con_usan else []) + ["Estado"]
     filas = "".join(fila_cat(c, con_usan) for c in CATS)
     caja = ('<sc-if value="{{conFiltros}}" hint-placeholder-val="{{si}}"><div class="w-caja o-fb">'
             f'<span class="w-bus {{{{busClase}}}}">{F.BUSCAR} {{{{busqueda}}}}</span>'
@@ -218,9 +221,10 @@ PROVEEDORES = [("Abrasivos del Sur", "PRV-0001", "CUIT 30-71234567-1", True), ("
                ("Caños y Conexiones", "PRV-0009", "CUIT 30-71123987-3", True), ("Cementos del Plata", "PRV-0010", "CUIT 30-69001234-8", True)]
 ZONAS = [("Capital", "CAP", "", "0,00", True), ("Gran Buenos Aires", "GBA", "", "2.500,00", True), ("Interior", "INT", "Más de 100 km", "4.800,50", True),
          ("Patagonia", "PAT", "", "9.200,00", True), ("Litoral", "LIT", "", "3.100,00", True), ("Retiro en depósito", "RET", "Sin envío", "0,00", True)]
-CSS_EDITOR = """.k-cab2 { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: stretch; }
-.k-g2 .ct.area { height: 72px; align-items: flex-start; padding-top: 10px; box-sizing: border-box; }
-.k-pv .pv-tit > span:first-child, .k-pv .seg2 span { white-space: nowrap; }
+CSS_EDITOR = """.k-cab2 { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; align-items: stretch; }
+.k-g2.t2 { grid-template-columns: minmax(0, 1fr) 192px; }
+.k-g2.t1 { grid-template-columns: minmax(0, 1fr); }
+.f-bnd-est .k-orig { color: var(--t3); margin-left: 6px; }
 .k-g2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; padding: 16px; }
 .k-g2 .ancho { grid-column: 1 / -1; }
 .k-g2 .ct.ro, .k-g3 .ct.ro { background: var(--s2); color: var(--t3); }
@@ -268,12 +272,12 @@ CSS_EDITOR = """.k-cab2 { display: grid; grid-template-columns: minmax(0, 1fr) 3
 .k-pie { display: flex; justify-content: space-between; align-items: center; }
 .k-act { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
 .k-act i { width: 16px; height: 16px; border-radius: 4px; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
-.k-pv { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 0; }
+.k-pv { display: flex; flex-direction: column; }
 .k-pv .pv-tit { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 600; color: var(--t2); }
 .k-pv .seg2 { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 2px; border-radius: 8px; background: var(--s3); font-size: 12px; }
 .k-pv .seg2 span { padding: 3px 10px; border-radius: 6px; color: var(--t2); text-align: center; }
 .k-pv .seg2 span.on { background: #fff; color: var(--t1); font-weight: 600; box-shadow: 0 1px 2px oklch(0.24 0.014 78 / 0.12); }
-.k-pv .tel { height: 300px; }
+.k-pv .tel { flex: 1; height: auto; min-height: 236px; width: 100%; box-sizing: border-box; }
 .tel .k-campo { margin: 4px 14px; display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; color: oklch(0.3 0.01 150); }
 .tel .k-campo .sel { display: flex; justify-content: space-between; align-items: center; height: 34px; box-sizing: border-box; padding: 0 10px; border: 1px solid oklch(0.85 0.006 150); border-radius: 8px; color: oklch(0.5 0.01 150); }
 .tel .k-li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 14px; border-bottom: 1px solid oklch(0.94 0.004 150); }
@@ -301,14 +305,11 @@ def campo(rotulo, valor, req=False, ro=False, ph=False, err="", info=""):
 
 
 def caja_catalogo(nombre, desc, origen="Escritas a mano", tipo="Texto", err_nombre=False, lectura=False):
+    """El nombre y el tipo de valor en una fila y la descripción debajo; de dónde salen va en la banda (pedido del usuario, 25/10)."""
     n = campo("Nombre", nombre or "Nombre del catálogo", req=not lectura, ro=lectura, ph=not nombre, err="Escribí el nombre del catálogo." if err_nombre else "")
-    o = campo("De dónde salen", origen, ro=True)
-    d = campo("Descripción", desc or "Opcional", ro=lectura, ph=not desc).replace('class="w-cmp"', 'class="w-cmp ancho"', 1).replace('class="ct', 'class="ct area', 1)
-    if tipo:
-        cuerpo = n.replace('class="w-cmp"', 'class="w-cmp ancho"', 1) + o + campo("Tipo de valor", tipo, ro=True) + d
-    else:
-        cuerpo = n + o + d
-    return f'<div class="w-caja"><div class="f-cab"><span>El catálogo</span></div><div class="k-g2">{cuerpo}</div></div>'
+    d = campo("Descripción", desc or "Opcional", ro=lectura, ph=not desc).replace('class="w-cmp"', 'class="w-cmp ancho"', 1)
+    cuerpo = n + (campo("Tipo de valor", tipo, ro=True) if tipo else "") + d
+    return f'<div class="w-caja"><div class="f-cab"><span>El catálogo</span></div><div class="k-g2 {"t2" if tipo else "t1"}">{cuerpo}</div></div>'
 
 
 def k_menu_fila(n, baja=False):
@@ -397,17 +398,13 @@ def caja_opciones(filas, cuenta, pie, modo="normal", seleccion="", tabla="ke", v
 
 
 def vista_previa(items, titulo="Motivo"):
-    """«Así lo ve quien lo recibe»: por defecto el campo cerrado; tocado, la lista; con «Varias», las casillas."""
+    """El teléfono, sin rótulo: por defecto el campo cerrado; tocado, la lista. Si se elige una o varias lo decide la pregunta del formulario."""
     lista = "".join(f'<div class="k-li"><span class="t">{n}<small>{d}</small></span><i></i></div>' for n, d in items)
-    varias = "".join(f'<div class="k-li"><span class="t">{n}<small>{d}</small></span><i class="cua"></i></div>' for n, d in items)
-    return ('<div class="k-pv"><div class="pv-tit"><span>Así lo ve quien lo recibe</span>'
-            '<span class="seg2" role="radiogroup" aria-label="Cómo se elige"><span class="{{pvUna}}" role="radio">Una opción</span><span class="{{pvVarias}}" role="radio">Varias</span></span></div>'
-            '<div class="tel"><div class="pv-hoja">'
+    return ('<div class="k-pv">'
+            '<div class="tel" aria-label="Así lo ve quien lo recibe"><div class="pv-hoja">'
             f'<sc-if value="{{{{pvCerrado}}}}" hint-placeholder-val="{{{{si}}}}"><div class="pv-hc"><span class="pv-x">×</span>Formulario</div>'
             f'<div class="k-campo">{titulo}<span class="sel">Elegí una opción{CHEV}</span></div></sc-if>'
             f'<sc-if value="{{{{pvAbierto}}}}" hint-placeholder-val="{{{{no}}}}"><div class="pv-hc"><span class="pv-x">‹</span>{titulo}</div><div class="pv-hb lst">{lista}</div></sc-if>'
-            f'<sc-if value="{{{{pvVariasLista}}}}" hint-placeholder-val="{{{{no}}}}"><div class="pv-hc"><span class="pv-x">×</span>Formulario</div>'
-            f'<div class="k-ay">{titulo} · Elegí hasta 3</div><div class="pv-hb lst">{varias}</div></sc-if>'
             "</div></div></div>")
 
 
@@ -430,8 +427,13 @@ def acc_editor(cambios=False, guardando=False, nuevo=False, baja=False, lectura=
 
 
 ACTIVO = '<span class="w-est">Activo</span>'
+# De dónde salen las opciones va en la banda, al lado del estado (pedido del usuario, 25/10); en uno nuevo, con el punto neutro
+ORIGEN_MANO, ORIGEN_MIEMBROS, ORIGEN_CONTACTOS = ('<span class="k-orig">· Escritas a mano</span>', '<span class="k-orig">· De los miembros</span>',
+                                                 '<span class="k-orig">· De los contactos de WhatsApp</span>')
+NUEVO_MANO, NUEVO_MIEMBROS, NUEVO_CONTACTOS = ('<span class="w-est off">Escritas a mano</span>', '<span class="w-est off">De los miembros</span>',
+                                              '<span class="w-est off">De los contactos de WhatsApp</span>')
 ESTADOS_EDITOR = ["Sin cambios", "Con cambios", "Agregar una opción", "Editar una opción", "Opción sin completar", "Código repetido", "Texto repetido",
-                  "Texto de más de 30", "Acciones de una opción", "Más acciones", "Varias elegidas", "Vista previa abierta", "Vista previa: varias",
+                  "Texto de más de 30", "Acciones de una opción", "Más acciones", "Varias elegidas", "Vista previa abierta",
                   "Guardando", "Guardado", "No se guardó", "Otra persona guardó", "Más acciones del catálogo", "Dar de baja el catálogo", "Dado de baja",
                   "Sin opciones", "1.097 opciones", "10.000 opciones", "Nuevo catálogo", "Falta el nombre", "Solo lectura", "Cargando", "No existe"]
 
@@ -477,7 +479,7 @@ def cuerpo_editor(opciones, catalogo=None, items=ITEMS_MOTIVOS, titulo="Motivo")
 
 def editor():
     tit = "Motivos de visita"
-    b = lambda est=ACTIVO, **k: C.banda_k(tit, est, acc_editor(**k))
+    b = lambda est=ACTIVO, **k: C.banda_k(tit, est + ORIGEN_MANO, acc_editor(**k))
     norm = caja_opciones(filas_motivos(), "4 opciones · 3 activas", PIE4)
     sucio = lambda modo: caja_opciones(filas_motivos(modo), "4 opciones · 3 activas", PIE4, modo="cambios")
     seleccion = ('<div class="k-sel">2 elegidas<button type="button" class="cb cb-sec">Dar de baja</button>'
@@ -505,22 +507,21 @@ def editor():
         "Más acciones": (b(), cuerpo_editor(norm)),
         "Varias elegidas": (b(), cuerpo_editor(caja_opciones(filas_motivos("elegidas"), "4 opciones · 3 activas", PIE4, seleccion=seleccion))),
         "Vista previa abierta": (b(), cuerpo_editor(norm)),
-        "Vista previa: varias": (b(), cuerpo_editor(norm)),
         "Guardando": (b(cambios=True, guardando=True), cuerpo_editor(sucio("cambios"))),
         "Guardado": (b(), cuerpo_editor(norm)),
         "No se guardó": (b(cambios=True), cuerpo_editor(sucio("cambios"))),
         "Otra persona guardó": (b(cambios=True), cuerpo_editor(sucio("cambios"))),
         "Más acciones del catálogo": (b(menu=True), cuerpo_editor(norm)),
         "Dar de baja el catálogo": (b(), cuerpo_editor(norm)),
-        "Dado de baja": (C.banda_k(tit, '<span class="w-est off">Dado de baja</span>', acc_editor(baja=True)),
+        "Dado de baja": (C.banda_k(tit, '<span class="w-est off">Dado de baja</span>' + ORIGEN_MANO, acc_editor(baja=True)),
                          cuerpo_editor(caja_opciones("".join(fila_lectura(k, n, cod, det, a) for k, (n, cod, det, a) in enumerate(OPS, 1)), "4 opciones · 3 activas", PIE4, modo="lectura", tabla="kl"),
                                        caja_catalogo("Motivos de visita", "Por qué se visita a un cliente.", lectura=True))),
         "Sin opciones": (b(no_se_puede), cuerpo_editor(caja_opciones("", "0 opciones", "", vacia=True), items=[])),
-        "1.097 opciones": (C.banda_k("Proveedores", ACTIVO, acc_editor()), cuerpo_editor(caja_opciones(prov, "1.097 opciones · 1.090 activas", pie_prov), cat_prov, items_prov, "Proveedor")),
-        "10.000 opciones": (C.banda_k("Proveedores", ACTIVO, acc_editor()), cuerpo_editor(caja_opciones(prov, "10.000 opciones · 9.912 activas", pie_tope, modo="tope"), cat_prov, items_prov, "Proveedor")),
-        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", "Escritas a mano · Texto", acc_editor(nuevo=True)), cuerpo_editor(nuevo_op, caja_catalogo("", ""), items=[], titulo="Pregunta")),
-        "Falta el nombre": (C.banda_k("Nuevo catálogo", "Escritas a mano · Texto", acc_editor(nuevo=True)), cuerpo_editor(nuevo_op, caja_catalogo("", "", err_nombre=True), items=[], titulo="Pregunta")),
-        "Solo lectura": (C.banda_k(tit, ACTIVO, acc_editor(lectura=True)), cuerpo_editor(lectura, caja_catalogo("Motivos de visita", "Por qué se visita a un cliente.", lectura=True))),
+        "1.097 opciones": (C.banda_k("Proveedores", ACTIVO + ORIGEN_MANO, acc_editor()), cuerpo_editor(caja_opciones(prov, "1.097 opciones · 1.090 activas", pie_prov), cat_prov, items_prov, "Proveedor")),
+        "10.000 opciones": (C.banda_k("Proveedores", ACTIVO + ORIGEN_MANO, acc_editor()), cuerpo_editor(caja_opciones(prov, "10.000 opciones · 9.912 activas", pie_tope, modo="tope"), cat_prov, items_prov, "Proveedor")),
+        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", NUEVO_MANO, acc_editor(nuevo=True)), cuerpo_editor(nuevo_op, caja_catalogo("", ""), items=[], titulo="Pregunta")),
+        "Falta el nombre": (C.banda_k("Nuevo catálogo", NUEVO_MANO, acc_editor(nuevo=True)), cuerpo_editor(nuevo_op, caja_catalogo("", "", err_nombre=True), items=[], titulo="Pregunta")),
+        "Solo lectura": (C.banda_k(tit, ACTIVO + ORIGEN_MANO, acc_editor(lectura=True)), cuerpo_editor(lectura, caja_catalogo("Motivos de visita", "Por qué se visita a un cliente.", lectura=True))),
         "Cargando": (C.banda_k(tit, "", ""), cargando),
         "No existe": (C.banda_k("Catálogo", "", ""), no_existe),
     }
@@ -539,7 +540,7 @@ def editor():
     }
     js = A.js_estados(ESTADOS_EDITOR, extra=(
         "      menuMas: k === 9, expMas: k === 9 ? 'true' : 'false', chkTodas: k === 10 ? ' medio' : '',\n"
-        "      pvCerrado: k !== 11 && k !== 12, pvAbierto: k === 11, pvVariasLista: k === 12, pvUna: k === 12 ? '' : 'on', pvVarias: k === 12 ? 'on' : '',\n"
+        "      pvCerrado: k !== 11, pvAbierto: k === 11,\n"
         "      busqueda: 'Buscar opción', busClase: '',\n"))
     t = C.pagina_k("Catálogo escrito a mano · /org/formularios/catalogos/:id", "Inicio / Formularios / Catálogos / Motivos de visita",
                    A.con_estados([(k, v[0]) for k, v in V.items()]), A.con_estados([(k, v[1]) for k, v in V.items()]),
@@ -672,9 +673,9 @@ def importar():
     }
     prov = "".join(fila_editable(k, n, cod, det, a) for k, (n, cod, det, a) in enumerate(PROVEEDORES, 1))
     pie_prov = '<div class="w-pie"><span>1–10 de 1.097</span><span>10 por página · Página 1 de 110</span></div>'
-    fondo = (C.banda_k("Proveedores", ACTIVO, acc_editor()),
+    fondo = (C.banda_k("Proveedores", ACTIVO + ORIGEN_MANO, acc_editor()),
              cuerpo_editor(caja_opciones(prov, "1.097 opciones · 1.090 activas", pie_prov), caja_catalogo("Proveedores", ""), [(n, d) for n, _c, d, a in PROVEEDORES[:6] if a], "Proveedor"))
-    js = A.js_estados(ESTADOS_IMPORTAR, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, pvVariasLista: false, pvUna: 'on', pvVarias: '', busqueda: 'Buscar opción', busClase: '',\n")
+    js = A.js_estados(ESTADOS_IMPORTAR, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, busqueda: 'Buscar opción', busClase: '',\n")
     t = C.pagina_k("Importar y pegar opciones", "Inicio / Formularios / Catálogos / Proveedores", fondo[0], fondo[1],
                    F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + A.CSS_AB + E.CSS_E12 + CSS_EDITOR, ESTADOS_IMPORTAR, js, alto=1200)
     over = "".join(f'<sc-if value="{{{{s{ESTADOS_IMPORTAR.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
@@ -704,14 +705,14 @@ def tipo_valor():
     pie = '<div class="w-pie"><span>1–6 de 6</span><span>10 por página · Página 1 de 1</span></div>'
     cat = caja_catalogo(tit, "Cuánto se suma según la zona de entrega.", tipo="Decimal")
     items = [(n, d) for n, _c, d, _v, a in ZONAS if a]
-    b = lambda **k: C.banda_k(tit, ACTIVO, acc_editor(**k))
+    b = lambda **k: C.banda_k(tit, ACTIVO + ORIGEN_MANO, acc_editor(**k))
     V = {
         "Con valores": (b(), cuerpo_editor(caja_opciones(filas(), "6 opciones · 6 activas", pie, tabla="kv"), cat, items, "Zona")),
         "Valor de otro tipo": (b(cambios=True), cuerpo_editor(caja_opciones(filas("otro"), "6 opciones · 6 activas", pie, modo="cambios", tabla="kv"), cat, items, "Zona")),
         "Agregar una opción": (b(cambios=True), cuerpo_editor(caja_opciones(filas("agregar"), "7 opciones · 7 activas", pie, modo="cambios", tabla="kv"), cat, items, "Zona")),
         "Falta el valor": (b(cambios=True), cuerpo_editor(caja_opciones(filas("falta"), "7 opciones · 7 activas", pie, modo="cambios", tabla="kv"), cat, items, "Zona")),
     }
-    js = A.js_estados(ESTADOS_TIPO, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, pvVariasLista: false, pvUna: 'on', pvVarias: '', busqueda: 'Buscar opción', busClase: '',\n")
+    js = A.js_estados(ESTADOS_TIPO, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, busqueda: 'Buscar opción', busClase: '',\n")
     t = C.pagina_k("Catálogo con tipo de valor · /org/formularios/catalogos/:id", "Inicio / Formularios / Catálogos / Recargo por zona",
                    A.con_estados([(k, v[0]) for k, v in V.items()]), A.con_estados([(k, v[1]) for k, v in V.items()]),
                    F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + A.CSS_AB + E.CSS_E12 + CSS_EDITOR, ESTADOS_TIPO, js, alto=1000)
@@ -785,11 +786,11 @@ def prev(modo, quien=True, items=MIEMBROS, total="3"):
     else:
         q = '<div class="q"><div class="fila" style="justify-content: flex-end;"><button type="button" class="cb cb-sec">Probar</button></div></div>'
     if modo in ("lista", "elegir"):
-        cuerpo = "".join(f'<div class="li">{n}' + (f"<small>{d}</small>" if d else "") + "</div>" for n, d in items) + f'<div class="k-pie2">{total} opciones · probado hoy a las 10:42</div>'
+        cuerpo = "".join(f'<div class="li">{n}' + (f"<small>{d}</small>" if d else "") + "</div>" for n, d in items) + f'<div class="k-pie2">{total} opciones · probado el 25/10/2026 10:42</div>'
     elif modo == "probando":
         cuerpo = '<div class="p-esq"><span style="width: 80%;"></span><span style="width: 60%;"></span><span style="width: 70%;"></span></div>'
     elif modo == "ninguna":
-        cuerpo = '<div class="vacio2">Ninguna opción</div><div class="k-pie2">0 opciones · probado hoy a las 10:44</div>'
+        cuerpo = '<div class="vacio2">Ninguna opción</div><div class="k-pie2">0 opciones · probado el 25/10/2026 10:44</div>'
     elif modo == "mas200":
         cuerpo = ("".join(f'<div class="li">{n}' + (f"<small>{d}</small>" if d else "") + "</div>" for n, d in items[:2]) + '<div class="li" style="color: var(--t3);">…</div>'
                   + f'<div class="k-pie2 mal">214 opciones · más de 200{F.info("Se guarda igual. No se va a poder mandar a quien le toquen más de 200.")}</div>')
@@ -809,7 +810,7 @@ def miembros():
         return ('<div class="w-body"><div class="f-cols k4"><div class="f-pila">' + caja_catalogo(nombre, desc, origen="De los miembros", tipo="")
                 + seccion_miembros(rol_borrado) + "</div>" + prev(p) + "</div></div>")
     nomas = '<span class="w-est mal">No se puede usar</span>' + F.info("Un rol de los filtros ya no existe.")
-    b = lambda **k: C.banda_k(tit, ACTIVO, acc_editor(**k))
+    b = lambda **k: C.banda_k(tit, ACTIVO + ORIGEN_MIEMBROS, acc_editor(**k))
     V = {
         "Sin cambios": (b(), cuerpo("lista")),
         "Con cambios": (b(cambios=True), cuerpo("sucio")),
@@ -817,9 +818,9 @@ def miembros():
         "Probando": (b(cambios=True), cuerpo("probando")),
         "Ninguna opción": (b(cambios=True), cuerpo("ninguna")),
         "Más de 200": (b(cambios=True), cuerpo("mas200")),
-        "Rol que ya no existe": (C.banda_k("Responsables de obra", nomas, acc_editor()), cuerpo("lista", True, "Responsables de obra", "Supervisores y jefes de obra.")),
-        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", "De los miembros", acc_editor(nuevo=True, motivo=MOTIVO_PERSONA)), cuerpo("sin_persona", nombre="", desc="")),
-        "Sin persona de ejemplo": (C.banda_k("Nuevo catálogo", "De los miembros", acc_editor(nuevo=True, motivo=MOTIVO_PERSONA, abierto=True)),
+        "Rol que ya no existe": (C.banda_k("Responsables de obra", nomas + ORIGEN_MIEMBROS, acc_editor()), cuerpo("lista", True, "Responsables de obra", "Supervisores y jefes de obra.")),
+        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", NUEVO_MIEMBROS, acc_editor(nuevo=True, motivo=MOTIVO_PERSONA)), cuerpo("sin_persona", nombre="", desc="")),
+        "Sin persona de ejemplo": (C.banda_k("Nuevo catálogo", NUEVO_MIEMBROS, acc_editor(nuevo=True, motivo=MOTIVO_PERSONA, abierto=True)),
                                    cuerpo("falta", nombre="Responsables de depósito", desc="")),
         "Guardado": (b(), cuerpo("lista")),
     }
@@ -842,7 +843,7 @@ def contactos():
         return ('<div class="w-body"><div class="f-cols k4"><div class="f-pila">' + caja_catalogo(nombre, desc, origen="De los contactos de WhatsApp", tipo="")
                 + seccion_contactos(menu) + "</div>" + prev(p, quien=False, items=CONTACTOS_EJ, total="42") + "</div></div>")
     sin_wa = '<span class="w-est mal">No se puede usar</span>' + F.info("La organización no tiene WhatsApp.")
-    b = lambda **k: C.banda_k(tit, ACTIVO, acc_editor(**k))
+    b = lambda **k: C.banda_k(tit, ACTIVO + ORIGEN_CONTACTOS, acc_editor(**k))
     V = {
         "Sin cambios": (b(), cuerpo("lista")),
         "Con cambios": (b(cambios=True), cuerpo("sucio")),
@@ -850,8 +851,8 @@ def contactos():
         "Probando": (b(cambios=True), cuerpo("probando")),
         "Ninguna opción": (b(cambios=True), cuerpo("ninguna")),
         "Más de 200": (b(cambios=True), cuerpo("mas200")),
-        "Sin WhatsApp": (C.banda_k(tit, sin_wa, acc_editor()), cuerpo("sucio")),
-        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", "De los contactos de WhatsApp", acc_editor(nuevo=True)), cuerpo("sucio", nombre="", desc="")),
+        "Sin WhatsApp": (C.banda_k(tit, sin_wa + ORIGEN_CONTACTOS, acc_editor()), cuerpo("sucio")),
+        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", NUEVO_CONTACTOS, acc_editor(nuevo=True)), cuerpo("sucio", nombre="", desc="")),
         "Guardado": (b(), cuerpo("lista")),
     }
     assert list(V) == ESTADOS_CONTACTOS
@@ -933,9 +934,9 @@ def tel_editor():
 
     def campos(lectura=False):
         if lectura:
-            return (tel_ro("Nombre", "Motivos de visita") + tel_ro("De dónde salen", "Escritas a mano") + tel_ro("Tipo de valor", "Texto")
+            return (tel_ro("Nombre", "Motivos de visita") + tel_ro("Tipo de valor", "Texto")
                     + tel_ro("Descripción", "Por qué se visita a un cliente."))
-        return (F.tcampo("Nombre", "Motivos de visita", req=True) + tel_ro("De dónde salen", "Escritas a mano") + tel_ro("Tipo de valor", "Texto")
+        return (F.tcampo("Nombre", "Motivos de visita", req=True) + tel_ro("Tipo de valor", "Texto")
                 + F.tcampo("Descripción", "Por qué se visita a un cliente."))
 
     def opciones(vacia=False, lectura=False, cambio=False):
@@ -973,8 +974,7 @@ def tel_editor():
         return texto + c + F.tcampo("Detalle", det or "Opcional", vacio=not det) + f'<span class="t-chk"><i class="on">{TILDE14}</i>Activa</span>'
     pie = '<button type="button" class="cb cb-pri">Listo</button><button type="button" class="cb cb-sec">Cancelar</button>'
     items = [(n, d) for n, _c, d, a in OPS if a]
-    vista = ('<div class="t-seg" role="radiogroup" style="margin: 0 0 12px;"><span class="on" role="radio">Una opción</span><span role="radio">Varias</span></div>'
-             '<div class="ap-grupo k-prev" style="margin: 0;">' + "".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in items) + "</div>")
+    vista = ('<div class="ap-grupo k-prev" style="margin: 0;">' + "".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in items) + "</div>")
     mas = ('<div class="ap-acciones2"><span role="menuitem">Exportar</span><span role="menuitem">Bajar la plantilla</span><span role="menuitem">Ordenar de la A a la Z</span>'
            '<span role="menuitem">Generar los códigos que faltan</span><span class="pel" role="menuitem">Dar de baja el catálogo</span></div>')
     capas = {
@@ -1011,11 +1011,11 @@ def tel_filtros():
                  '<div class="ap-dato"><span class="k">Orden</span><span class="v">Nombre, A → Z</span></div>'
                  '<div class="ap-dato"><span class="k">Sin incluir a quien lo recibe</span><span class="v">Sí</span></div>')
         if prev == "lista":
-            res = "".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in MIEMBROS) + '<div class="pie">3 opciones · probado hoy a las 10:42</div>'
+            res = "".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in MIEMBROS) + '<div class="pie">3 opciones · probado el 25/10/2026 10:42</div>'
         elif prev == "probando":
             res = '<div class="ap-esq"><span style="width: 80%;"></span><span style="width: 60%;"></span></div>'
         elif prev == "ninguna":
-            res = '<div class="vacio2">Ninguna opción</div><div class="pie">0 opciones · probado hoy a las 10:44</div>'
+            res = '<div class="vacio2">Ninguna opción</div><div class="pie">0 opciones · probado el 25/10/2026 10:44</div>'
         elif prev == "sucio":
             res = '<div class="vacio2">Sin probar</div>'
         else:
@@ -1023,7 +1023,7 @@ def tel_filtros():
                    + '<div class="pie mal">214 opciones · más de 200' + t_info("Se guarda igual. No se va a poder mandar a quien le toquen más de 200.") + "</div>")
         desc = "Quienes pueden aprobar una visita." if titulo == "Supervisores" else "Supervisores y jefes de obra."
         return (C.t_bar(titulo, sub) + f'<div class="ap-cuerpo">{corrido}<div class="ap-gtit">El catálogo</div><div class="f-campos">'
-                + F.tcampo("Nombre", titulo, req=True) + tel_ro("De dónde salen", "De los miembros") + F.tcampo("Descripción", desc) + "</div>"
+                + F.tcampo("Nombre", titulo, req=True) + F.tcampo("Descripción", desc) + "</div>"
                 + f'<div class="ap-gtit">Qué miembros entran<a href="#">Agregar</a></div><div class="ap-grupo">{filas}</div>'
                 + f'<div class="ap-gtit">Otras opciones</div><div class="ap-grupo">{otras}</div>'
                 + '<div class="ap-gtit">Vista previa</div><div class="k-prueba">' + F.tcampo("Como si lo recibiera", "Tomás Acosta", select=True)
@@ -1066,8 +1066,10 @@ def registrar():
 
 
 def comprobar(n, t):
-    html = t[:t.index("<script")] if "<script" in t else t
-    for prohibido in ("Textos en", "Cambios sin guardar", "No se cambia", "Guardando…", "Diseñar formularios", "FRM-Listado", "English"):
+    html = t[:t.index('<script type="text/x-dc"')]  # sin el JS del tablero (el primer <script> es el de support.js)
+    html = re.sub(r'\s(?:title|aria-label)="[^"]*"', "", html)  # lo que va en un ⓘ o en un tooltip no cuenta
+    for prohibido in ("Textos en", "Cambios sin guardar", "No se cambia", "Guardando…", "Diseñar formularios", "FRM-Listado", "English", "probado hoy",
+                      "Una opción</span>", "De dónde salen</span></span>"):
         assert prohibido not in html, (n, prohibido)
     if n in ("FRM-Catalogos", "M-FRM-Catalogos"):
         assert "Lo usan" not in html and " formulario<" not in html, n

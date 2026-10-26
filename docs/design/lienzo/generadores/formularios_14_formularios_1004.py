@@ -9,6 +9,8 @@ etapa): la versión de la 14 queda sin lo que llega después, y lo de la 18 pasa
 - M-FRM-Editor, sin el ⋮, sin las reglas (21) ni la pregunta de foto (M-FRM-Editor-18).
 - WA-Chats-Respuesta y M-WA-Conversacion-Respuesta, sin los archivos (sus -18).
 - «Mis mensajes» (T16): WA-Mensajes-14 y M-WA-Mensaje-14, con la tarjeta de una respuesta propia de quien vinculó su cuenta.
+- Desde la v142, las fechas completas, con año y hora, en la zona de quien mira (formatos.md, decisión del usuario del 25/10):
+  nunca «Hoy», «Ayer», «hace 2 minutos» ni «mañana»; y en Chats, nunca un teléfono como nombre (81).
 
 Corre después de `formularios_12_catalogos_1004.py` y antes de `formularios_etapas_1004.py`. Se puede volver a correr.
 """
@@ -42,7 +44,7 @@ def leer(n):
 
 
 def escribir(n, t):
-    (PROJ / f"{n}.dc.html").write_text(L.sin_disenar(n, t), encoding="utf-8")
+    (PROJ / f"{n}.dc.html").write_text(L.sin_disenar(n, fechas(t)), encoding="utf-8")
 
 
 def solo(t, estados):
@@ -61,9 +63,38 @@ def sin_kebab(t):
 
 
 def comprobar(n, t, prohibidos):
-    html = t[:t.index("<script")]
+    html = t[:t.index('<script type="text/x-dc"')]  # sin el JS del tablero (el primer <script> es el de support.js)
+    html = re.sub(r'\s(?:title|aria-label)="[^"]*"', "", html)  # lo que va en un ⓘ o en un tooltip no cuenta
     for p in prohibidos:
         assert p not in html, (n, p)
+
+
+# ================================================================ Las fechas, completas (formatos.md, 25/10)
+HOY, AYER = "25/10/2026", "24/10/2026"
+FECHAS = [
+    ('<span class="w-dia">Hoy</span>', f'<span class="w-dia">{HOY}</span>'), ('<span class="ap-dia">Hoy</span>', f'<span class="ap-dia">{HOY}</span>'),
+    ("guardó este formulario hace 2 minutos.", f"guardó este formulario el {HOY} 10:46."), ("Hoy, 15:20", f"{HOY} 15:20"),
+    ("Se puede mandar hasta mañana a las 10:48.", "Se puede mandar hasta el 26/10/2026 10:48."), (" · hoy, 11:04", f" · {HOY} 11:04"),
+    ("<b>Martín Paz</b><span>Ayer</span>", f"<b>Martín Paz</b><span>{AYER} 18:30</span>"),
+    ("<b>Federico Díaz</b><span>Ayer</span>", f"<b>Federico Díaz</b><span>{AYER} 17:20</span>"),
+    ("<b>Javier Pereyra</b><span>Ayer</span>", f"<b>Javier Pereyra</b><span>{AYER} 09:45</span>"),
+    ("<b>Carla Ruiz</b><span>05/10</span>", "<b>Carla Ruiz</b><span>05/10/2026 12:10</span>"),
+    # 81: un contacto sin nombre toma el de su perfil de WhatsApp; nunca un teléfono como nombre
+    ("<b>0351 15-555-0192</b><span>10:15</span>", f"<b>Sergio Molina</b><span>{HOY} 10:15</span>"),
+    ("<b>La Clementina</b><span>17:12</span>", f"<b>La Clementina</b><span>{HOY} 17:12</span>"),
+    ("<b>Grupo Delta</b><span>Ayer</span>", f"<b>Grupo Delta</b><span>{AYER} 19:05</span>"),
+    ("<b>Ferretería Rosales</b><span>28/09</span>", "<b>Ferretería Rosales</b><span>28/09/2026 11:20</span>"),
+]
+
+
+def fechas(t):
+    for a, b in FECHAS:
+        t = t.replace(a, b)
+    # la hora del chat elegido en la lista, que arma el JS del tablero
+    return re.sub(r"(hora: \{[^}]*\}\[e\] \?\? '[^']*')", lambda m: re.sub(r"([\"'])(\d\d:\d\d)([\"'])", rf"\g<1>{HOY} \2\3", m.group(1)), t)
+
+
+RELATIVAS = ["Hoy<", "Ayer<", "hace 2 minutos", "mañana a las", "hoy, ", "0351 15-555-0192"]
 
 
 # ================================================================ «Mis mensajes» (T16): la tarjeta de la respuesta propia
@@ -113,7 +144,8 @@ NUEVOS = {"FRM-Editor-18": (1440, 1400, "Formularios · un formulario · Diseño
           "M-WA-Conversacion-Respuesta-18": (390, 844, "WhatsApp · Internos · la respuesta · teléfono · etapa 18"),
           "WA-Mensajes-14": (1440, 900, "Perfil personal · Mensajes · una respuesta propia · etapa 14"),
           "M-WA-Mensaje-14": (390, 844, "Mensajes · conversación · teléfono · etapa 14")}
-TOCADOS = ["FRM-Editor", "M-FRM-Editor", "FRM-Publicar", "FRM-Publicando", "WA-Chats-Formulario", "WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta"]
+TOCADOS = ["FRM-Editor", "M-FRM-Editor", "FRM-Publicar", "FRM-Publicando", "WA-Chats-Formulario", "WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta",
+           "M-WA-Chats-Formulario", "WA-Chats-Formulario-Cliente", "M-WA-Chats-Formulario-Cliente"]
 
 
 def registrar():
@@ -149,7 +181,13 @@ if __name__ == "__main__":
         escribir(n, sin(t, RESPUESTA_18))
     escribir("WA-Mensajes-14", mis_mensajes(leer("WA-Mensajes"), "w-m"))
     escribir("M-WA-Mensaje-14", mis_mensajes(leer("M-WA-Mensaje"), "ap-m"))
+    # Los chats de la 14 que arma formularios_e12_sin_idioma_1004.py: solo las fechas (se puede volver a correr)
+    for n in ("WA-Chats-Formulario", "M-WA-Chats-Formulario", "WA-Chats-Formulario-Cliente", "M-WA-Chats-Formulario-Cliente"):
+        escribir(n, leer(n))
     for n in ("FRM-Editor", "M-FRM-Editor", "FRM-Publicar", "FRM-Publicando"):
-        comprobar(n, leer(n), ["Copiar", "Dar de baja", "Fotos de la visita", "Remito firmado", "Cuando llega una respuesta", "Más de 10 archivos"])
+        comprobar(n, leer(n), ["Dar de baja", "Fotos de la visita", "Remito firmado", "Cuando llega una respuesta", "Más de 10 archivos"] + RELATIVAS)
+    for n in ("WA-Chats-Formulario", "M-WA-Chats-Formulario", "WA-Chats-Formulario-Cliente", "M-WA-Chats-Formulario-Cliente", "WA-Chats-Respuesta",
+              "M-WA-Conversacion-Respuesta", "WA-Mensajes-14", "M-WA-Mensaje-14"):
+        comprobar(n, leer(n), RELATIVAS)
     registrar()
     print("listo", list(NUEVOS))

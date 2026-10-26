@@ -38,7 +38,7 @@
       },
       "actor": "Lucía · Dueña · web",
       "titulo": "Le pone nombre",
-      "texto": "Todo va en una sola pantalla: el catálogo arriba, con el origen y el tipo apagados, y las opciones debajo. Pegar e importar esperan a que lo cree.",
+      "texto": "Todo va en una sola pantalla: el catálogo arriba, con el tipo apagado y de dónde salen en la banda, y las opciones debajo. Pegar e importar esperan a que lo cree.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/catalogos",
       "accion": "Escribe «Motivos de visita» y lo crea."
@@ -64,7 +64,7 @@
       "resaltar": ".k-pv",
       "actor": "Lucía · Dueña · web",
       "titulo": "Mira cómo lo ven",
-      "texto": "Al costado, «Así lo ve quien lo recibe»: con «Una opción», la lista; con «Varias», las casillas.",
+      "texto": "Al costado, el teléfono muestra cómo le llegan las opciones a quien lo recibe. Si elige una o varias lo decide la pregunta del formulario.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/catalogos",
       "accion": "Abre la vista previa."
