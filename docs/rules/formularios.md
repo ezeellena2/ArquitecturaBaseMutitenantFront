@@ -22,7 +22,7 @@
 - applyApiErrorToForm asigna campos; FormError queda sobre botones o bajo banda. En diálogo desaparece al cerrar; 409 relee raíz salvo borrador sin guardar.
 - Red/5xx/429 siguen [errores](errores.md), sin duplicar el aviso de MutationCache. ReasonDialog conserva respuesta original y motivo según [Plataforma](../../../ArquitecturaBaseMutitenant/docs/features/plataforma.md).
 - Un campo onSubmit (OTP/términos) limpia error al cambiar y revalida al enviar; AuthCodeStep es la excepción controlada por OtpInput, según [Identidad](../../../ArquitecturaBaseMutitenant/docs/features/identidad.md).
-- Fields inválidos conservan texto, emiten null/validity=false inmediatamente y muestran error tras blur; corregir devuelve valor/true.
+- Fields inválidos conservan texto y emiten null/validity=false inmediatamente; el error se muestra al tocar el botón de guardar, no al salir del campo (decisión del usuario del 2026-10-24); corregir devuelve valor/true.
 - DateField.invalidMessage omitido usa el común; texto lo reemplaza; null lo cede a FormField sin perder aria-invalid/valididez. Un mensaje, un aria-describedby.
 - Catálogos aportan opciones y valores guardados deshabilitados; búsqueda no oculta el elegido.
 - `MultiSelect creatable` (con búsqueda remota) y `SearchSelect creatable` ofrecen «Crear «X»» si lo buscado no existe sin distinguir mayúsculas, como las etiquetas de un contacto y la de una importación (E11, D10); el back valida el valor nuevo al guardar. TextLimits y máscaras fiscales salen del contrato/catálogo.

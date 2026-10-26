@@ -4,7 +4,7 @@
 
 ## Cómo se hace
 - Un namespace por módulo (`useTranslation("roles")`). Lo compartido va en `common:` y los enums en `enums:<Enum>.<Valor>`.
-- Un texto que dicen dos áreas va una sola vez en `common:`. Los del paso del código («Revisá tu correo», «Te mandamos un código a…», «Código», «Verificar», «Reenviar código», «Te quedan N intentos.», «Enviando…») están en `common:code`: los usan el ingreso, los dos registros y los diálogos de Mi cuenta.
+- Un texto que dicen dos áreas va una sola vez en `common:`. Los del paso del código («Revisá tu correo», «Te mandamos un código a…», «Código», «Verificar», «Reenviar código», «Te quedan N intentos.») están en `common:code`: los usan el ingreso, los dos registros y los diálogos de Mi cuenta.
 - Plurales con `_one` / `_other`; interpolación con `{{count}}`.
 - Vocabulario: "Organización" (nunca tenant), "Dueño" (TenantAdmin; nunca "Administrador general"), "Administrador" (CompanyAdmin), "Personal" (el lado B2C, su espacio personal), "lado" (persona o empresa), "Empresa" (Company), "Usuario" (en Gestión de usuarios de la organización), "Miembro" (de una empresa), "Ingresá" (`/login`, la puerta de persona), "Ingresá como empresa" (`/login/empresa`, la puerta B2B), "Registrá tu empresa" (el alta B2B).
 - Acciones sobre usuarios: "Deshabilitar" / "Habilitar" (nunca "Activar"), "Revocar invitación". El estado de quien pidió la baja de su cuenta es "Baja pedida".
