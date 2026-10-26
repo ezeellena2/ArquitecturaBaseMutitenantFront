@@ -16,10 +16,10 @@
 |---|---|---|
 | Fecha | DateText, date | es-AR 27/09/2026; en-US 09/27/2026; tooltip absoluto |
 | Fecha y hora | DateText, dateTime | es-AR 27/09/2026 14:35; en-US 09/27/2026 2:35 PM, sin coma |
-| Fecha corta | shortDate / shortDateTime | Solo listas del teléfono y año actual en la zona personal; otro año lleva año |
+| Fecha corta | — | No se usa: una fecha se muestra completa, con su año (decisión del usuario del 2026-10-25) |
 | Hora / fecha larga | time / long | 14:35 / 2:35 PM; 27 de septiembre de 2026 / September 27, 2026 |
-| Relativa | relative | Actividad/último ingreso, menos de siete días; después fecha; tooltip absoluto |
-| Calendario | formatCalendar | Tarjeta Auditoría de Inicio: hoy/ayer con hora, otro día solo fecha |
+| Relativa | — | No se usa: nunca «hace 2 horas»; siempre fecha y hora en la zona de quien mira (decisión del usuario del 2026-10-25) |
+| Calendario | — | No se usa: nunca «hoy» ni «ayer»; siempre fecha y hora (decisión del usuario del 2026-10-25) |
 | Rango | DateRangeText | Dos fechas separadas por guion largo con espacios |
 | Entero / decimal | NumberText | Miles y decimal de cultura; decimal con escala fija declarada |
 | Cantidad | quantity | Cero a tres decimales, sin ceros sobrantes |
