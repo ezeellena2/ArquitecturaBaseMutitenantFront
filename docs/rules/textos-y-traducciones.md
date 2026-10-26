@@ -7,7 +7,7 @@
 - Un texto que dicen dos áreas va una sola vez en `common:`. Los del paso del código («Revisá tu correo», «Te mandamos un código a…», «Código», «Verificar», «Reenviar código», «Te quedan N intentos.») están en `common:code`: los usan el ingreso, los dos registros y los diálogos de Mi cuenta.
 - Plurales con `_one` / `_other`; interpolación con `{{count}}`.
 - Vocabulario: "Organización" (nunca tenant), "Dueño" (TenantAdmin; nunca "Administrador general"), "Administrador" (CompanyAdmin), "Personal" (el lado B2C, su espacio personal), "lado" (persona o empresa), "Empresa" (Company), "Usuario" (en Gestión de usuarios de la organización), "Miembro" (de una empresa), "Ingresá" (`/login`, la puerta de persona), "Ingresá como empresa" (`/login/empresa`, la puerta B2B), "Registrá tu empresa" (el alta B2B).
-- Acciones sobre usuarios: "Deshabilitar" / "Habilitar" (nunca "Activar"), "Revocar invitación". El estado de quien pidió la baja de su cuenta es "Baja pedida".
+- Dejar de usar algo sin borrarlo, en todo el sistema (usuarios, roles, formularios, catálogos y lo demás): «Dar de baja» y «Reactivar» (decisión del usuario del 2026-10-25). El estado es «De baja» y la opción del filtro, «Dados de baja». En usuarios va también «Revocar invitación»; el estado de quien pidió la baja de su cuenta es «Baja pedida».
 - La lista de culturas habilitadas, su `LanguageCode`, su cultura de respaldo y la marcada por defecto salen de `Cultures`, no de una lista en el front. El catálogo inicial habilita `es-AR` y `en-US`; cada idioma habilitado tiene su carpeta de textos.
 - Los archivos de idioma empaquetados inicializan i18n antes de pedir `GET /api/reference-data`, para que los errores de arranque y sus acciones siempre tengan texto. Al recibir `Cultures`, su selección habilitada y `FallbackCulture` gobiernan el idioma efectivo.
 - La cultura efectiva sale de `resolveCulture`: la de la cuenta (`/api/me`); si no, la elegida en este navegador (`arquitecturabasemt.culture`); si no, la predeterminada del catálogo. La aplica i18n y la leen con `useEffectiveCulture` los formatos, el catálogo y el `Accept-Language` de `httpClient`. Para un texto que falta, la caída es cultura pedida → `FallbackCulture` → cultura por defecto.
@@ -19,7 +19,7 @@
 - Nombres de monedas, países, zonas o tipos fiscales en archivos de i18n o arrays de código: pertenecen a los datos de referencia.
 - Textos que nadie pidió: ayudas bajo cada campo, bajadas de diálogo, notas al pie.
 - Concatenar traducciones para armar frases.
-- Decir "Activar" o "Administrador general" en lugar de los términos del vocabulario.
+- Decir «Deshabilitar», «Habilitar», «Inactivar», «Desactivar», «Activar» o «Administrador general» en lugar de los términos del vocabulario.
 
 ## Copiá de
 - `src/locales/es/roles.json` (E4)

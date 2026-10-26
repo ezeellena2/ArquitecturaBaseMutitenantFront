@@ -8,6 +8,7 @@
   - `<AccessRoute access="business">` para `/org/…`;
   - `<AccessRoute access="platform">` para `/plataforma/…`;
   - las rutas públicas (`/` sin sesión, `/empresas`, `/login…`, `/registro…`, `/recuperar`, `/invitacion`, `/auth/callback`, `/terminos`, `/privacidad` y las del subdominio) no llevan `AccessRoute`.
+- **Un link del otro acceso** (decisión del usuario del 2026-10-25): `AccessRoute` no lleva al inicio; muestra «Otro acceso», que ofrece entrar con el acceso del link y, al entrar, abre el link. Si la cuenta no tiene ese acceso, `NotFoundPage`.
 - **Manifiesto de rutas:** cada ruta del área se declara una vez en `layouts/navigation/<área>.ts` (`businessRoutes`): camino, permiso, módulo y, si va en el menú, rótulo e ícono. El menú (`businessNavigation`) usa esas mismas entradas y muestra cada una solo con su permiso y su módulo (`visibleNavigation`). `app/routes.tsx` le suma a cada una su pantalla con `lazyPage` y la guarda `<RequirePermission>`: sin el permiso, «No tenés permiso» dentro del marco; con el módulo apagado, `NotFoundPage`. La pantalla no repite la comprobación. Una ruta de una empresa (`:companyId`) puede declarar además `companyPermission`: también se abre con ese permiso en esa empresa (`canInCompany`), como `[HasCompanyPermission(…, organizationPermission: …)]` del back. La ficha de Empresa pide `companies.read` o `company.members.read` de esa empresa (B4).
 - **Plataforma:** `platformRoutes` declara `platformPermission`, del catálogo de nueve códigos del back; `canPlatform` lee sólo `effectivePermissions.platform`. `platformPages` monta las nueve páginas lazy de T21–T23. El constructor admite páginas parciales para etapas futuras y no monta las ausentes; el índice siempre conserva su guarda. Si el operador no abre Organizaciones (el inicio `/plataforma`), el inicio lo lleva con `replace` a la primera pantalla disponible que pueda abrir, en el orden Gestión y luego Administración; sin ninguna, muestra `ForbiddenPage` dentro del marco.
 - **Permisos de un operador:** invitar, «Cambiar permisos» y la pestaña Permisos usan el catálogo compuesto (`usePlatformPermissionCatalog`): los nueve del núcleo, los que declara cada módulo instalado en `permissions.platform` y, al final, «Cambiar la configuración», como Cuenta-Plat. Los textos de un permiso de módulo viven en su módulo (`<módulo>:platformPermissions.<código>`); sin el módulo, sus permisos no aparecen (ADR 0048, R03).
@@ -27,7 +28,7 @@
   1. pantalla «Cambiando a …»;
   2. `signinSilent({ forceIframeAuth: true, extraQueryParams: { access, tenant } })`: `oidc-client-ts` usa el refresh token si existe e ignora esos parámetros; el iframe fuerza `authorize` para emitir el token del acceso solicitado;
   3. `queryClient.clear()`;
-  4. el inicio del acceso nuevo.
+  4. el inicio del acceso nuevo, o el link que lo pidió desde «Otro acceso».
   Desde Storefront, `useProfiles` activa `useSwitchAccess({ mainSite: true })`: el paso 4 navega al principal, conservando la organización elegida.
 - **Módulos habilitados:** `GET /api/me` trae `features` del acceso activo.
   - `usePermissions().hasFeature("x")` muestra u oculta.
