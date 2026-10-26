@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 143 · 25 de octubre de 2026"
+VERSION = "versión 144 · 26 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -30,7 +30,9 @@ CAPITULOS = [
         ("registro", "Crear cuenta", "/registro", "parte", "3 y 8", ["Registro"], ["M-Registro"], [],
          "Alta de una persona con correo, WhatsApp o Google, con la casilla de los términos."),
         ("sesion", "Iniciando y cerrando la sesión", "/auth/callback", "si", "3", ["Sesion"], ["M-Sesion"], [],
-         "Las esperas entre una pantalla y otra, cambiar de perfil y la sesión cerrada después de pedir la baja."),
+         "Las esperas entre una pantalla y otra, cambiar de perfil y la sesión cerrada después de pedir que se borre la cuenta."),
+        ("otro-acceso", "Un link del otro acceso", "/org/… como persona · /… como empresa", "no", "—", ["Otro-Acceso", "Otro-Acceso-Persona"], ["M-Otro-Acceso", "M-Otro-Acceso-Persona"], [],
+         "Si alguien abre un link del otro acceso, se le ofrece entrar con ese acceso y, al entrar, se abre el link. Con varias organizaciones, elige con cuál. Sin ese acceso, «No encontramos esta página»."),
         ("aceptar-terminos", "Aceptar términos nuevos", "/aceptar-terminos", "si", "3", ["Aceptar-Terminos"], ["M-Aceptar-Terminos"], [],
          "Bloquea la entrada hasta aceptar la versión nueva."),
         ("recuperar", "Recuperar mi cuenta", "/recuperar", "no", "5", ["Recuperar"], ["M-Recuperar"], [],
@@ -142,8 +144,8 @@ CAPITULOS = [
          "La pestaña Tablero: se arma sola con las preguntas, con cuántas llegaron por día, semana o mes, los totales de los números y cuántas veces salió cada opción. Cada tarjeta se cuenta, se ve como tabla o se quita; «Agregar gráfico» la devuelve."),
         ("frm-respuesta", "Una respuesta", "/org/formularios/:id/respuestas?respuesta=VIS-000126", "no", "15", ["FRM-Respuesta"], ["M-FRM-Respuesta"], [],
          "Se abre al costado de la planilla, con ↑ ↓ para pasar a la siguiente: cuándo llegó, quién la respondió y sus respuestas. En el teléfono, a pantalla completa."),
-        ("frm-ciclo", "Dar de baja, reactivar, eliminar y copiar", "/org/formularios", "no", "17", ["FRM-Editor-Baja"], ["M-FRM-Editor-Baja"], ["FRM-Dar-De-Baja", "FRM-Reactivar-Eliminar", "FRM-Copiar"],
-         "Desde el ⋮ de cada formulario: darlo de baja (deja de mandarse y de ofrecerse, y se conserva lo cargado), reactivarlo con una versión nueva, eliminarlo si no tiene respuestas o copiarlo en borrador. El editor de un dado de baja dice quién y cuándo, y qué pasa en WhatsApp."),
+        ("frm-ciclo", "Dar de baja, reactivar, borrar y copiar", "/org/formularios", "no", "17", ["FRM-Editor-Baja"], ["M-FRM-Editor-Baja"], ["FRM-Dar-De-Baja", "FRM-Reactivar-Eliminar", "FRM-Copiar"],
+         "Desde el ⋮ de cada formulario: darlo de baja (deja de mandarse y de ofrecerse, y se conserva lo cargado), reactivarlo con una versión nueva, borrarlo si no tiene respuestas o copiarlo en borrador. El editor de un dado de baja dice quién y cuándo, y qué pasa en WhatsApp."),
         ("frm-reglas", "Cuando llega una respuesta", "/org/formularios/:id", "no", "21", ["FRM-Editor-Reglas"], ["M-FRM-Reglas"], ["FRM-Pdf"],
          "Las reglas del formulario, en palabras: cuándo, si y qué hacer en orden. Se guardan aparte, con su historial. «Ver el diseño» abre el PDF que se arma al aprobar."),
         ("frm-aprobar", "Aprobar o rechazar", "/org/formularios/:id/respuestas?aprobacion=VIS-000130", "no", "21", ["FRM-Respuesta-Aprobacion"], ["M-FRM-Respuesta-Aprobacion"], [],

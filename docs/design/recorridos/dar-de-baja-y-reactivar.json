@@ -13,7 +13,7 @@
       "resaltar": ".f-menu a.f-mi:has-text(\"Dar de baja\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Abre el ⋮ del formulario",
-      "texto": "Cada formulario tiene su ⋮ con lo que se le puede hacer. Visita a cliente tiene respuestas: se puede dar de baja, pero no eliminar.",
+      "texto": "Cada formulario tiene su ⋮ con lo que se le puede hacer. Visita a cliente tiene respuestas: se puede dar de baja, pero no borrar.",
       "avanzar": "Tocá «Dar de baja».",
       "ruta": "/org/formularios",
       "accion": "Toca «Dar de baja»."
