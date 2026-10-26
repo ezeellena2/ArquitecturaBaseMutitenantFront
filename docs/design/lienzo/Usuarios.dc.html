@@ -778,11 +778,11 @@ textarea.in2 { height: auto; min-height: 84px; }
                   <div class="menu der {{u.claseMenu}}" role="menu">
                     <a class="menu-it" role="menuitem" href="Usuario.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 5.5 18.5 8.5 9 18H6v-3z"/></svg> Editar</a>
                     <sc-if value="{{u.esInvitacion}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it" role="menuitem" onClick="{{u.reenviar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg> Reenviar invitación</button></sc-if>
-                    <sc-if value="{{u.esDeshabilitado}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it" role="menuitem" onClick="{{u.activar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> Habilitar</button></sc-if>
+                    <sc-if value="{{u.esDeshabilitado}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it" role="menuitem" onClick="{{u.activar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> Reactivar</button></sc-if>
                     <sc-if value="{{u.conPeligro}}" hint-placeholder-val="{{si}}"><div class="menu-sep" role="separator"></div></sc-if>
                     <sc-if value="{{u.esInvitacion}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it pel" role="menuitem" onClick="{{u.revocar}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg> Revocar invitación</button></sc-if>
                     <sc-if value="{{u.esBajaPedida}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it pel" role="menuitem" onClick="{{u.quitar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 3 17.5V19"/><circle cx="9" cy="7.5" r="3.5"/><path d="M16 11h5"/></svg> Quitar de la organización</button></sc-if>
-                    <sc-if value="{{u.esActivo}}" hint-placeholder-val="{{si}}"><button type="button" class="menu-it pel" role="menuitem" onClick="{{u.deshabilitar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> Deshabilitar</button></sc-if>
+                    <sc-if value="{{u.esActivo}}" hint-placeholder-val="{{si}}"><button type="button" class="menu-it pel" role="menuitem" onClick="{{u.deshabilitar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> Dar de baja</button></sc-if>
                   </div>
                 </sc-if>
               </span>
@@ -923,7 +923,7 @@ const nombreEmpresa = (id) => (EMPRESAS.find((e) => e.id === id) || { n: '' }).n
 // plantilla; cada producto suma los suyos.
 const ROLES = [
   { id: 'r1', n: 'Dueño', vale: 'org', d: 'Tiene todos los permisos de la organización.', u: 1, p: 12, sistema: true },
-  { id: 'r2', n: 'Recursos humanos', vale: 'org', d: 'Invita, edita y deshabilita usuarios.', u: 0, p: 3 },
+  { id: 'r2', n: 'Recursos humanos', vale: 'org', d: 'Invita, edita y da de baja usuarios.', u: 0, p: 3 },
   { id: 'r3', n: 'Auditor', vale: 'org', d: 'Ve los usuarios y la auditoría. No cambia nada.', u: 1, p: 2 },
   { id: 'r4', n: 'Administrador', vale: 'cada', d: 'Administra la empresa: sus miembros y sus roles.', u: 2, p: 2, sistema: true },
   { id: 'r5', n: 'Solo lectura', vale: 'c1', d: 'Ve los miembros de la empresa. No cambia nada.', u: 4, p: 1 },
@@ -954,7 +954,7 @@ const ESTADOS_USUARIO = {
   activo: { n: 'Activo', pill: 'ok' },
   invitado: { n: 'Invitación pendiente', pill: 'pend' },
   vencida: { n: 'Invitación vencida', pill: 'alerta' },
-  deshabilitado: { n: 'Deshabilitado', pill: 'off' },
+  deshabilitado: { n: 'De baja', pill: 'off' },
   bajaPedida: { n: 'Baja pedida', pill: 'alerta' },
 };
 const nombreDe = (u) => u.n || u.email;
@@ -1194,15 +1194,15 @@ class Component extends DCLogic {
       resumen: total + ' usuarios · ' + cuenta('activo') + ' activos · ' + (cuenta('invitado') + cuenta('vencida')) + ' invitaciones',
       busqueda: s.busqueda,
       onBuscar: (e) => this.setState({ busqueda: e.target.value }),
-      ...this.filtro('Estado', 'estado', [{ v: null, n: 'Todos' }, { v: 'activo', n: 'Activos' }, { v: 'invitado', n: 'Invitación pendiente' }, { v: 'vencida', n: 'Invitación vencida' }, { v: 'deshabilitado', n: 'Deshabilitados' }, { v: 'bajaPedida', n: 'Baja pedida' }], 'Estado: todos', (v) => this.filtrar({ estado: v }).length),
+      ...this.filtro('Estado', 'estado', [{ v: null, n: 'Todos' }, { v: 'activo', n: 'Activos' }, { v: 'invitado', n: 'Invitación pendiente' }, { v: 'vencida', n: 'Invitación vencida' }, { v: 'deshabilitado', n: 'Dados de baja' }, { v: 'bajaPedida', n: 'Baja pedida' }], 'Estado: todos', (v) => this.filtrar({ estado: v }).length),
       ...this.filtro('Empresa', 'empresa', [{ v: null, n: 'Todas' }, ...EMPRESAS.map((e) => ({ v: e.id, n: e.n })), { v: 'ninguna', n: 'Sin empresa' }], 'Empresa: todas', (v) => this.filtrar({ empresa: v }).length),
       hayFiltros,
       claseEncabezado: { 'Gris': 'gris', 'Azul claro': 'azul-claro', 'Azul': 'azul' }[this.props.encabezado] || '',
       // Opción B: los indicadores filtran por estado.
-      indicadores: [[null, 'Usuarios', total], ['activo', 'Activos', cuenta('activo')], ['invitado', 'Invitaciones pendientes', cuenta('invitado')], ['vencida', 'Invitaciones vencidas', cuenta('vencida')], ['deshabilitado', 'Deshabilitados', cuenta('deshabilitado')]]
+      indicadores: [[null, 'Usuarios', total], ['activo', 'Activos', cuenta('activo')], ['invitado', 'Invitaciones pendientes', cuenta('invitado')], ['vencida', 'Invitaciones vencidas', cuenta('vencida')], ['deshabilitado', 'Dados de baja', cuenta('deshabilitado')]]
         .map(([v, k, n]) => ({ k, v: String(n), clase: s.estado === v ? 'on' : '', sel: s.estado === v ? 'true' : 'false', elegir: () => this.setState({ estado: v, pag: 1 }) })),
       // Opción D: los estados como pestañas de la tabla.
-      estados: [[null, 'Todos', total], ['activo', 'Activos', cuenta('activo')], ['invitaciones', 'Invitaciones', cuenta('invitado') + cuenta('vencida')], ['deshabilitado', 'Deshabilitados', cuenta('deshabilitado')]]
+      estados: [[null, 'Todos', total], ['activo', 'Activos', cuenta('activo')], ['invitaciones', 'Invitaciones', cuenta('invitado') + cuenta('vencida')], ['deshabilitado', 'Dados de baja', cuenta('deshabilitado')]]
         .map(([v, n, c]) => ({ n, c: String(c), sel: s.estado === v ? 'true' : 'false', elegir: () => this.setState({ estado: v, pag: 1 }) })),
       limpiar: () => this.setState({ busqueda: '', estado: null, empresa: null, abierto: null }),
       ...pg.vals,
@@ -1267,7 +1267,7 @@ class Component extends DCLogic {
           deshabilitar: () => {
             if (u.yo) {
               this.setState({ abierto: null });
-              this.avisar('No podés deshabilitarte a vos misma.', 'error');
+              this.avisar('No podés darte de baja a vos misma.', 'error');
 
               return;
             }
@@ -1280,19 +1280,19 @@ class Component extends DCLogic {
             }
 
             this.pedirConfirmacion({
-              titulo: '¿Deshabilitar a ' + u.n + '?',
+              titulo: '¿Dar de baja a ' + u.n + '?',
               texto: 'Deja de entrar a Grupo Delta y a sus empresas. Su cuenta y su perfil personal siguen funcionando.',
-              boton: 'Deshabilitar',
+              boton: 'Dar de baja',
               accion: () => {
                 this.cambiar(u.id, { estado: 'deshabilitado' });
-                this.avisar('Deshabilitamos a ' + u.n + '.');
+                this.avisar('Dimos de baja a ' + u.n + '.');
               },
             });
           },
           activar: () => {
             this.setState({ abierto: null });
             this.cambiar(u.id, { estado: 'activo' });
-            this.avisar('Habilitamos a ' + u.n + '.');
+            this.avisar('Reactivamos a ' + u.n + '.');
           },
         };
       }),

@@ -4,6 +4,11 @@
 - «Criterio · Tablas y listas»: un dato por celda, en un renglón (front 4fdcab2b), y las fechas completas, con año y hora,
   en la zona de quien mira (formatos.md, d7644064). Lo que aclaraba una celda va en su propia columna o no va.
 
+Desde la v143 (el usuario, 25/10, por la Guía): la columna por la que está ordenada una tabla muestra ▲ o ▼; las listas cortas
+de la compu también llevan un renglón por fila (lo que aclaraba va a la derecha, como su estado con punto), en el criterio y en
+«Cómo entrás» de Mi cuenta; la versión nueva del sistema se avisa en la campana (campana_1004.py), así que sale de Avisos; y un
+solo verbo para dejar de usar algo sin borrarlo, «Dar de baja» y «Reactivar», con el estado «De baja», en todos los tableros vigentes.
+
 Los tableros de las etapas que se redibujan (12, 13 y 14 primero) lo aplican en su generador; los de las etapas cerradas
 cambian en la base de la 12. Corre después de `formularios_14_formularios_1004.py` y antes de `formularios_etapas_1004.py`.
 Se puede volver a correr.
@@ -28,6 +33,12 @@ MARCA = 'data-reglas="25-10"'
 CSS = """<style data-reglas="25-10">
 .tb .th, .tb .tr { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 1fr) 140px 48px; }
 .tb .tr .num { font-variant-numeric: tabular-nums; }
+.tb .th .ord, .w-th .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.lista .it .dato { flex-direction: row; align-items: center; gap: 16px; }
+.lista .it .dato > .l2 { margin-left: auto; width: 230px; flex: none; font-size: 13px; color: var(--t2); display: inline-flex; align-items: center; gap: 6px; }
+.lista .it .dato > .l2::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }
+.lista .it .dato > .l2.off::before { background: oklch(0.75 0.01 78); }
+.lista .it .dato > .l2.pend::before { background: oklch(0.72 0.15 70); }
 </style>
 </helmet>"""
 GUION = '<span class="nada">—</span>'
@@ -41,6 +52,14 @@ FILAS = [  # usuario, correo, rol en la organización, empresa, estado, vencimie
     ("Sofía Herrera", "sofia.herrera@delta.ejemplo.com", GUION, "Delta S.A.", '<span class="est pend">Invitación pendiente</span>', "02/10/2026 18:00", False),
 ]
 TEXTOS = [
+    ('<span class="l2">Administrado por Grupo Delta</span>', '<span class="l2 off">Administrado por Grupo Delta</span>'),
+    ('<span class="l2">Sin verificar</span>', '<span class="l2 pend">Sin verificar</span>'),
+    ("<li><strong>Sin encabezado de columnas.</strong> Filas de 44 px; con segunda línea, 56 px.</li>",
+     "<li><strong>Sin encabezado de columnas.</strong> Filas de 44 px, de un renglón.</li>"),
+    ("<li><strong>Lo que aclara cada fila</strong> («Principal», «Sin verificar») va en la segunda línea, en gris. Nunca como etiqueta ni como texto suelto a la derecha.</li>",
+     "<li><strong>Lo que aclara cada fila</strong> («Principal», «Sin verificar») va a la derecha, en la misma fila, como su estado con punto. Nunca en una segunda línea ni como etiqueta.</li>"),
+    ("<strong>Fila de lista</strong><span>44 o 56 px</span><span>Letra de 13. Lo que aclara la fila, en una segunda línea gris de 12.</span>",
+     "<strong>Fila de lista</strong><span>44 px</span><span>Un renglón con letra de 13: el dato, su estado a la derecha y el ⋮.</span>"),
     ("<li><strong>Filas de 40 px</strong>; si alguna tiene segunda línea, todas las de la tabla son de 52. Letra de hoy (13), alternadas. Al pasar el mouse, petróleo claro.</li>",
      "<li><strong>Filas de 40 px</strong>, alternadas, con letra de 13. Al pasar el mouse, petróleo claro.</li>"),
     ("<li><strong>Un tema por columna.</strong> Debajo, en gris, lo que lo aclara: el correo, el rol en la empresa, cuándo vence. Sin dato, una sola raya.</li>",
@@ -56,26 +75,108 @@ TEXTOS = [
 
 
 def criterio_tablas(t):
+    """Idempotente: rehace el bloque de estilo y la tabla de ejemplo, y cambia los textos que todavía no cambió."""
     if MARCA in t:
-        return t.replace(t[t.index('<style data-reglas="25-10">'):t.index("</helmet>", t.index('<style data-reglas="25-10">')) + len("</helmet>")], CSS, 1)
-    t = t.replace("</helmet>", CSS, 1)
-    i = t.index('<div class="th"><span>Usuario</span><span>Rol en la organización</span>')
+        k = t.index('<style data-reglas="25-10">')
+        t = t[:k] + CSS + t[t.index("</helmet>", k) + len("</helmet>"):]
+    else:
+        t = t.replace("</helmet>", CSS, 1)
+    i = t.index('<div class="th"><span', t.index('<div class="tb">'))
     j = t.index('<div class="pie">', i)
     filas = ""
     for n, correo, rol, empresa, estado, vence, menu in FILAS:
         filas += (f'<div class="tr{" h" if menu else ""}"><span class="n">{n}</span><span>{correo}</span><span>{rol}</span><span>{empresa}</span><span>{estado}</span>'
                   f'<span class="num">{vence}</span><span class="der"><button type="button" class="ib{" h" if menu else ""}" aria-label="Acciones de {n}">{KEBAB}</button>'
                   + (MENU if menu else "") + "</span></div>\n        ")
-    th = ('<div class="th"><span>Usuario</span><span>Correo</span><span>Rol en la organización</span><span>Empresa</span><span>Estado</span>'
+    th = ('<div class="th"><span aria-sort="ascending">Usuario<span class="ord" aria-hidden="true">▲</span></span><span>Correo</span><span>Rol en la organización</span><span>Empresa</span><span>Estado</span>'
           '<span>Vencimiento</span><span class="sr">Acciones</span></div>\n        ')
     t = t[:i] + th + filas + t[j:]
     for a, b in TEXTOS:
-        assert t.count(a) == 1, a[:60]
+        assert t.count(a) == 1 or b.splitlines()[0] in t, a[:60]
         t = t.replace(a, b)
+    ordenada = "<li><strong>La columna ordenada</strong> muestra ▲ o ▼ en su encabezado; tocarla invierte el orden. Las demás, sin flecha.</li>"
+    if ordenada not in t:
+        a = "<li><strong>Las fechas, completas:</strong>"
+        assert t.count(a) == 1
+        t = t.replace(a, ordenada + "\n        " + a)
     return t
 
 
 KEBAB = MENU = ""
+
+
+# ================================================================ «Cómo entrás» de Mi cuenta: un renglón por fila, con el estado a la derecha
+CSS_CUENTA = """<style data-reglas="25-10">
+.w-it .dato { flex-direction: row; align-items: center; gap: 16px; }
+.w-it .dato > b { flex: none; width: 380px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-it .dato > .w-est { flex: none; width: 260px; font-size: 13px; color: var(--t2); }
+</style>
+</helmet>"""
+ESTADOS_CUENTA = [("Principal · Administrado por Grupo Delta", ""), ("Principal", ""), ("Administrado por Grupo Delta", " off"), ("Sin verificar", " pend"),
+                  ("Sin vincular", " off")]
+
+
+def cuenta(t):
+    if MARCA in t:
+        k = t.index('<style data-reglas="25-10">')
+        return t[:k] + CSS_CUENTA + t[t.index("</helmet>", k) + len("</helmet>"):]
+    t = t.replace("</helmet>", CSS_CUENTA, 1)
+    for texto, clase in ESTADOS_CUENTA:
+        t = t.replace(f"</b><span>{texto}</span></span>", f'</b><span class="w-est{clase}">{texto}</span></span>')
+    return t
+
+
+def sin_version(t):
+    """La versión nueva va en la campana (campana_1004.py): sale el caso de Avisos y su franja."""
+    import json as _json
+    m = re.search(r"data-props='([^']*)'", t)
+    props = _json.loads(m.group(1))
+    if "Versión nueva" not in props["caso"]["options"]:
+        return t
+    props["caso"]["options"].remove("Versión nueva")
+    t = t[:m.start()] + "data-props='" + _json.dumps(props, ensure_ascii=False, separators=(",", ":")) + "'" + t[m.end():]
+    for inicio in ('<sc-if value="{{versionNueva}}"', '<sc-if value="{{e7}}"'):
+        while inicio in t:
+            i = t.index(inicio)
+            nivel = 0
+            for x in re.finditer(r"<sc-if\b|</sc-if>", t[i:]):
+                nivel += 1 if x.group(0) == "<sc-if" else -1
+                if nivel == 0:
+                    t = t[:i] + t[i + x.end():]
+                    break
+    return t
+
+
+# ================================================================ «Dar de baja» y «Reactivar» (v143)
+# Un solo verbo para dejar de usar algo sin borrarlo, en todo el sistema (el usuario, 25/10, front 744e3931): «Dar de baja» y
+# «Reactivar»; el estado es «De baja» y la opción del filtro, «Dados de baja». Salen «Deshabilitar/Habilitar» (usuarios),
+# «Inactivar/Activar» (roles y empresas) e «Inactivo». No cambian «Baja pedida» ni «Revocar invitación», ni «Activar» la app de
+# autenticación del operador, ni «deshabilitado» cuando es un campo o un botón grisado. Las palabras van enteras: los nombres del
+# código del tablero (esDeshabilitado, puedeInactivar) quedan como están.
+_LETRA = "A-Za-zÁÉÍÓÚáéíóúÑñ"
+BAJA_PALABRAS = [("Deshabilitamos", "Dimos de baja"), ("Deshabilitados", "Dados de baja"), ("Deshabilitadas", "Dadas de baja"),
+                 ("Deshabilitado", "De baja"), ("Deshabilitada", "De baja"), ("Deshabilitar", "Dar de baja"), ("Deshabilitó", "Dio de baja"),
+                 ("Habilitamos", "Reactivamos"), ("Habilitar", "Reactivar"), ("Habilitó", "Reactivó"),
+                 ("Inactivamos", "Dimos de baja"), ("Inactivar", "Dar de baja"), ("Inactivos", "Dados de baja"), ("Inactivas", "Dadas de baja"),
+                 ("Inactivo", "De baja"), ("Inactiva", "De baja"), ("Dado de baja", "De baja"), ("Dada de baja", "De baja")]
+BAJA_FRASES = [("No podés deshabilitarte a vos misma.", "No podés darte de baja a vos misma."), ("y deshabilita usuarios", "y da de baja usuarios"),
+               ("antes de deshabilitarte", "antes de darte de baja"), ("(deshabilitado)", "(de baja)"), ("Empresa: acceso deshabilitado", "Empresa: de baja"),
+               ("Cuenta inactiva", "Cuenta de baja"), ("está inactiva:", "está de baja:"), ("'Dar de baja' : 'Activar'", "'Dar de baja' : 'Reactivar'"), ("this.avisar('Activamos '", "this.avisar('Reactivamos '"),
+               ("Dar de baja · Quitar · Desactivar · Eliminar", "Dar de baja · Quitar · Eliminar"), ("Usuario deshabilitado", "Usuario de baja"),
+               ('<span class="est">De baja</span>', '<span class="est off">De baja</span>')]
+# El punto del estado «De baja» va gris, como en las demás listas (Criterio · Menús lo tenía verde)
+EST_PUNTO = '.est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }'
+EST_OFF = "\n.est.off::before { background: oklch(0.72 0.01 78); }"
+
+
+def dar_de_baja(t):
+    for viejo, nuevo in BAJA_PALABRAS:
+        t = re.sub(rf"(?<![{_LETRA}]){viejo}(?![{_LETRA}])", nuevo, t)
+    for viejo, nuevo in BAJA_FRASES:
+        t = t.replace(viejo, nuevo)
+    if '<span class="est off">De baja</span>' in t and EST_OFF.strip() not in t:
+        t = t.replace(EST_PUNTO, EST_PUNTO + EST_OFF, 1)
+    return t
 
 
 if __name__ == "__main__":
@@ -95,6 +196,23 @@ if __name__ == "__main__":
     ruta = PROJ / "Criterio-Tablas.dc.html"
     t = ruta.read_text(encoding="utf-8")
     KEBAB = re.search(r'aria-label="Acciones de Lucía Fernández">(<svg.*?</svg>)</button>', t, re.S).group(1)
-    MENU = re.search(r'<div class="menu2" role="menu">.*?Deshabilitar</span></div>', t, re.S).group(0)
+    MENU = re.search(r'<div class="menu2" role="menu">.*?(?:Deshabilitar|Dar de baja)</span></div>', t, re.S).group(0)
     ruta.write_text(criterio_tablas(t), encoding="utf-8")
+    ruta = PROJ / "Cuenta.dc.html"
+    ruta.write_text(cuenta(ruta.read_text(encoding="utf-8")), encoding="utf-8")
+    for n in ("Avisos", "M-Avisos"):
+        ruta = PROJ / f"{n}.dc.html"
+        ruta.write_text(sin_version(ruta.read_text(encoding="utf-8")), encoding="utf-8")
+    print("Mi cuenta: «Cómo entrás» en un renglón; Avisos sin la franja de versión nueva")
     print("Criterio · Tablas y listas: un dato por celda y fechas completas")
+    tocados = []
+    for f in sorted(PROJ.glob("*.dc.html")):
+        n = f.name[:-8]
+        if n in archivo or n == "Criterio-Decisiones":
+            continue
+        t = f.read_text(encoding="utf-8")
+        nuevo = dar_de_baja(t)
+        if nuevo != t:
+            f.write_text(nuevo, encoding="utf-8")
+            tocados.append(n)
+    print("«Dar de baja» y «Reactivar»:", len(tocados), tocados)

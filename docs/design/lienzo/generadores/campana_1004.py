@@ -8,6 +8,9 @@ aviso lleva a donde se resuelve. Ningún cartel en el cuerpo de una pantalla, sa
   4 en la organización, 2 en Plataforma y 1 en el perfil personal.
 - En el teléfono, en la barra de arriba de las pantallas principales (Inicio, Chats, Contactos, Más y el inicio personal).
 - `Campana` (la lista abierta sobre Formularios) y `M-Campana` (la lista en su pantalla), nuevos, en la página Organización.
+- Desde la v143 (el usuario, 25/10, maqueta 6691dff): la versión nueva del sistema se avisa en la campana, primera, sin leer y con la
+  hora; al tocarla, recarga la página. No va como franja;
+  las fechas de los avisos, completas (formatos.md).
 
 Corre al final de todo. Se puede volver a correr.
 """
@@ -36,12 +39,13 @@ CAMPANA = svg('<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M1
 LLEGO = svg('<path d="M4 13.5h4.5l1.5 2.5h4l1.5-2.5H20"/><path d="M5.5 6.5h13L20 13.5v5H4v-5z"/>', 18)
 FALLO = svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8v.2"/>', 18)
 ESPERA = svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', 18)
+VERSION = svg('<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/>', 18)
 CANT = {"org": "4", "propuesta-whatsapp": "4", "formularios": "4", "plataforma": "2", "plat-formularios": "2", "personal": "1"}
 AVISOS = [  # (tipo, ícono, texto, cuándo, destino en la compu, destino en el teléfono)
-    ("llego", LLEGO, "Llegaron 5 tickets de combustible que no encajan en ningún formulario", "hace 10 min", "FRM-Faltan.dc.html", "M-FRM-Faltan.dc.html"),
-    ("fallo", FALLO, "WhatsApp rechazó la versión 3 de Control de vehículo", "hace 1 hora", "FRM-Publicando.dc.html", "M-FRM-Editor.dc.html"),
-    ("espera", ESPERA, "4 respuestas por aprobar", "hoy, 09:12", "FRM-Formularios.dc.html", "M-FRM-Respuestas.dc.html"),
-    ("fallo", FALLO, "No se pudo mandar el aviso de <span class=\"cod\">VIS-000126</span>", "ayer", "FRM-Respuesta-Aprobacion.dc.html", "M-FRM-Respuesta-Aprobacion.dc.html"),
+    ("llego", LLEGO, "Llegaron 5 tickets de combustible que no encajan en ningún formulario", "25/10/2026 18:20", "FRM-Faltan.dc.html", "M-FRM-Faltan.dc.html"),
+    ("fallo", FALLO, "WhatsApp rechazó la versión 3 de Control de vehículo", "25/10/2026 17:30", "FRM-Publicando.dc.html", "M-FRM-Editor.dc.html"),
+    ("espera", ESPERA, "4 respuestas por aprobar", "25/10/2026 09:12", "FRM-Formularios.dc.html", "M-FRM-Respuestas.dc.html"),
+    ("fallo", FALLO, "No se pudo mandar el aviso de <span class=\"cod\">VIS-000126</span>", "24/10/2026 16:40", "FRM-Respuesta-Aprobacion.dc.html", "M-FRM-Respuesta-Aprobacion.dc.html"),
 ]
 CSS = """.w-cmp-env { position: relative; display: inline-flex; margin-left: auto; margin-right: 6px; }
 .w-campana { position: relative; width: 38px; height: 38px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; color: var(--t2); text-decoration: none; }
@@ -58,6 +62,9 @@ CSS = """.w-cmp-env { position: relative; display: inline-flex; margin-left: aut
 .cmp-ic.fallo { background: var(--peligro-t); color: oklch(0.52 0.19 25); }
 .cmp-ic.espera { background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); }
 .cmp-ic.llego { background: var(--marca-t); color: var(--marca-tx); }
+.cmp-ic.version { background: var(--marca-t); color: var(--marca-tx); }
+.cmp-it.sin-leer .cmp-tx { font-weight: 600; }
+.cmp-it .cmp-punto { margin-left: auto; align-self: center; width: 8px; height: 8px; border-radius: 50%; background: var(--marca); flex-shrink: 0; }
 .cmp-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: 14px; line-height: 1.35; }
 .cmp-tx small { font-size: 12.5px; color: var(--t3); }
 .cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }
@@ -80,13 +87,22 @@ def boton(n, href="Campana.dc.html", abierto=False, lista=""):
             f"{lista}</span>")
 
 
-def lista(vacia=False):
+# La versión nueva del sistema va primera, sin leer; al tocarla vuelve a cargar la página (no va como franja: el usuario, 25/10)
+AVISO_VERSION = ("version", VERSION, "Hay una versión nueva del sistema", "25/10/2026 18:45")
+
+
+def lista(vacia=False, version=False):
     if vacia:
         cuerpo = '<div class="cmp-vacia">No hay avisos.</div>'
     else:
         cuerpo = "".join(f'<a class="cmp-it" href="{d}"><span class="cmp-ic {tipo}">{ic}</span><span class="cmp-tx">{tx}<small>{cuando}</small></span></a>'
                          for tipo, ic, tx, cuando, d, _m in AVISOS)
-    return (f'<div class="cmp-lista" role="dialog" aria-label="Avisos"><div class="cmp-cab">Avisos<span>{"" if vacia else len(AVISOS)}</span></div>{cuerpo}</div>')
+        if version:
+            tipo, ic, tx, cuando = AVISO_VERSION
+            cuerpo = (f'<a class="cmp-it sin-leer" href="#" aria-label="{tx}, sin leer"><span class="cmp-ic {tipo}">{ic}</span>'
+                      f'<span class="cmp-tx">{tx}<small>{cuando}</small></span><span class="cmp-punto" aria-hidden="true"></span></a>') + cuerpo
+    cant = "" if vacia else len(AVISOS) + (1 if version else 0)
+    return (f'<div class="cmp-lista" role="dialog" aria-label="Avisos"><div class="cmp-cab">Avisos<span>{cant}</span></div>{cuerpo}</div>')
 
 
 def css(t, bloque, marca):
@@ -140,19 +156,21 @@ def inicio_tel():
 
 
 # ================================================================ Campana (la lista abierta) y M-Campana
-ESTADOS = ["Con avisos", "Sin avisos"]
+ESTADOS = ["Con avisos", "Versión nueva", "Sin avisos"]
 
 
 def campana():
     t = (PROJ / "FRM-Formularios.dc.html").read_text(encoding="utf-8")
-    t = t.replace(boton("4"), boton("4", abierto=True, lista='<sc-if value="{{cmpCon}}" hint-placeholder-val="{{si}}">' + lista()
+    t = t.replace(boton("4"), boton("{{cmpCant}}", abierto=True, lista='<sc-if value="{{cmpCon}}" hint-placeholder-val="{{si}}">' + lista()
+                                     + '</sc-if><sc-if value="{{cmpVersion}}" hint-placeholder-val="{{no}}">' + lista(version=True)
                                      + '</sc-if><sc-if value="{{cmpSin}}" hint-placeholder-val="{{no}}">' + lista(True) + "</sc-if>"), 1)
     assert "cmp-lista" in t
     props = {"campana": {"editor": "enum", "options": ESTADOS, "default": ESTADOS[0], "section": "Estado"}, "$preview": {"width": 1440, "height": 900}}
     t = re.sub(r"data-props='[^']*'", "data-props='" + json.dumps(props, ensure_ascii=False, separators=(",", ":")) + "'", t, count=1)
-    t = t.replace("      si: true, no: false,\n", "      si: true, no: false,\n      cmpCon: (this.props.campana ?? 'Con avisos') === 'Con avisos', cmpSin: this.props.campana === 'Sin avisos',\n", 1)
+    t = t.replace("      si: true, no: false,\n", "      si: true, no: false,\n      cmpCon: (this.props.campana ?? 'Con avisos') === 'Con avisos', cmpSin: this.props.campana === 'Sin avisos',\n"
+                  "      cmpVersion: this.props.campana === 'Versión nueva', cmpCant: this.props.campana === 'Versión nueva' ? '5' : '4',\n", 1)
     t = re.sub(r"<title>[^<]*</title>", "<title>Avisos · la campana</title>", t)
-    t = t.replace('href="Campana.dc.html" aria-label="Avisos: 4"', 'href="#" aria-label="Avisos: 4" aria-expanded="true"', 1)
+    t = t.replace('href="Campana.dc.html" aria-label="Avisos: {{cmpCant}}"', 'href="#" aria-label="Avisos: {{cmpCant}}" aria-expanded="true"', 1)
     (PROJ / "Campana.dc.html").write_text(t, encoding="utf-8")
 
 
@@ -161,7 +179,10 @@ def campana_tel():
                     f'<span class="chev">{svg("<path d=" + chr(34) + "m9.5 5.5 6.5 6.5-6.5 6.5" + chr(34) + "/>", 18, "2")}</span></a>'
                     for tipo, ic, tx, cuando, _d, m in AVISOS)
     bar = C.t_bar("Avisos", "Grupo Delta", "M-Inicio-Org.dc.html")
-    cuerpo = {"Con avisos": bar + f'<div class="ap-cuerpo">{filas}</div>',
+    tipo, ic, tx, cuando = AVISO_VERSION
+    version = (f'<a class="cp-fila" href="#"><span class="cmp-ic {tipo}">{ic}</span><span class="tx"><b style="font-weight: 600;">{tx}</b><small>{cuando}</small></span>'
+               '<span class="cmp-punto" aria-hidden="true" style="align-self: center; width: 9px; height: 9px; border-radius: 50%; background: var(--marca);"></span></a>')
+    cuerpo = {"Con avisos": bar + f'<div class="ap-cuerpo">{filas}</div>', "Versión nueva": bar + f'<div class="ap-cuerpo">{version}{filas}</div>',
               "Sin avisos": bar + '<div class="ap-cuerpo"><div class="ap-vacio">No hay avisos.</div></div>'}
     t = C.tel_pagina(cuerpo, ESTADOS, {}, "Avisos · la campana · teléfono", CSS + CSS_TEL)
     (PROJ / "M-Campana.dc.html").write_text(t, encoding="utf-8")

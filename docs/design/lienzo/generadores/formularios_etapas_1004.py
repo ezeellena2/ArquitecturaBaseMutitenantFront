@@ -29,6 +29,7 @@ FILAS = [
     (12, "Etapa 12 · Catálogos", ["FRM-Catalogos", "FRM-Catalogo-Nuevo", "FRM-Catalogo", "FRM-Catalogo-Importar", "FRM-Catalogo-Tipo", "FRM-Catalogo-Filtros",
                                   "FRM-Catalogo-Contactos"],
      ["M-FRM-Catalogos", "M-FRM-Catalogo", "M-FRM-Catalogo-Filtros"]),
+    (13, "Etapa 13 · Campos de los catálogos", ["FRM-Catalogo-13"], ["M-FRM-Catalogo-13"]),
     (14, "Etapa 14 · Formularios", ["FRM-Formularios", "FRM-Editor", "FRM-Publicar", "FRM-Publicando", "WA-Chats-Formulario", "WA-Chats-Respuesta",
                                     "WA-Chats-Formulario-Cliente", "WA-Mensajes-14", "FRM-Catalogos-14"],
      ["M-FRM-Formularios", "M-FRM-Editor", "M-WA-Chats-Formulario", "M-WA-Conversacion-Respuesta", "M-WA-Chats-Formulario-Cliente", "M-WA-Mensaje-14",

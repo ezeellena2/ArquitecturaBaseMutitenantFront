@@ -763,7 +763,7 @@ textarea.in2 { height: auto; min-height: 84px; }
                 <sc-if value="{{r.menu}}" hint-placeholder-val="{{no}}">
                   <div class="menu der {{r.claseMenu}}" role="menu">
                     <a class="menu-it" role="menuitem" href="Rol.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 5.5 18.5 8.5 9 18H6v-3z"/></svg> {{r.textoEditar}}</a>
-                    <sc-if value="{{r.puedeInactivar}}" hint-placeholder-val="{{si}}"><div class="menu-sep" role="separator"></div><button type="button" class="menu-it pel" role="menuitem" onClick="{{r.inactivar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4L17.2 7"/></svg> Inactivar</button></sc-if><sc-if value="{{r.inactivarOff}}" hint-placeholder-val="{{no}}"><div class="menu-sep" role="separator"></div><button type="button" class="menu-it apagado" role="menuitem" aria-disabled="true" title="{{r.motivoInactivar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4L17.2 7"/></svg> Inactivar</button></sc-if>
+                    <sc-if value="{{r.puedeInactivar}}" hint-placeholder-val="{{si}}"><div class="menu-sep" role="separator"></div><button type="button" class="menu-it pel" role="menuitem" onClick="{{r.inactivar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4L17.2 7"/></svg> Dar de baja</button></sc-if><sc-if value="{{r.inactivarOff}}" hint-placeholder-val="{{no}}"><div class="menu-sep" role="separator"></div><button type="button" class="menu-it apagado" role="menuitem" aria-disabled="true" title="{{r.motivoInactivar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4L17.2 7"/></svg> Dar de baja</button></sc-if>
                   </div>
                 </sc-if>
               </span>
@@ -825,7 +825,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 // plantilla; cada producto suma los suyos.
 const ROLES = [
   { id: 'r1', n: 'Dueño', vale: 'org', d: 'Tiene todos los permisos de la organización.', u: 1, p: 12, sistema: true },
-  { id: 'r2', n: 'Recursos humanos', vale: 'org', d: 'Invita, edita y deshabilita usuarios.', u: 0, p: 3 },
+  { id: 'r2', n: 'Recursos humanos', vale: 'org', d: 'Invita, edita y da de baja usuarios.', u: 0, p: 3 },
   { id: 'r3', n: 'Auditor', vale: 'org', d: 'Ve los usuarios y la auditoría. No cambia nada.', u: 1, p: 2 },
   { id: 'r4', n: 'Administrador', vale: 'cada', d: 'Administra la empresa: sus miembros y sus roles.', u: 2, p: 2, sistema: true },
   { id: 'r5', n: 'Solo lectura', vale: 'c1', d: 'Ve los miembros de la empresa. No cambia nada.', u: 4, p: 1 },
@@ -1057,12 +1057,12 @@ class Component extends DCLogic {
           }
 
           this.pedirConfirmacion({
-            titulo: '¿Inactivar el rol ' + r.n + '?',
+            titulo: '¿Dar de baja el rol ' + r.n + '?',
             texto: 'Deja de aparecer para asignar. Nadie lo tiene, así que no le cambia nada a ningún usuario.',
-            boton: 'Inactivar',
+            boton: 'Dar de baja',
             accion: () => {
               this.setState({ roles: this.state.roles.filter((x) => x.id !== r.id) });
-              this.avisar('Inactivamos el rol ' + r.n + '.');
+              this.avisar('Dimos de baja el rol ' + r.n + '.');
             },
           });
         },

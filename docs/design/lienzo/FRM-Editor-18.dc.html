@@ -1017,6 +1017,12 @@ body { margin: 0; }
 <style data-e16="panel">
 .w-panel .w-ln .cnt { margin-left: auto; font-size: 12px; font-weight: 600; min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); display: inline-flex; align-items: center; justify-content: center; }
 </style>
+<style data-e14="una-linea">
+.q-it .dato { flex-direction: row; align-items: center; gap: 16px; }
+.q-it .dato > b { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-it .dato > span { flex: 0 0 60%; min-width: 0; font-size: 13px; color: var(--t2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-it .chips { flex: none; width: 92px; justify-content: flex-end; }
+</style>
 <style data-campana="1">
 .w-cmp-env { position: relative; display: inline-flex; margin-left: auto; margin-right: 6px; }
 .w-campana { position: relative; width: 38px; height: 38px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; color: var(--t2); text-decoration: none; }
@@ -1033,6 +1039,9 @@ body { margin: 0; }
 .cmp-ic.fallo { background: var(--peligro-t); color: oklch(0.52 0.19 25); }
 .cmp-ic.espera { background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); }
 .cmp-ic.llego { background: var(--marca-t); color: var(--marca-tx); }
+.cmp-ic.version { background: var(--marca-t); color: var(--marca-tx); }
+.cmp-it.sin-leer .cmp-tx { font-weight: 600; }
+.cmp-it .cmp-punto { margin-left: auto; align-self: center; width: 8px; height: 8px; border-radius: 50%; background: var(--marca); flex-shrink: 0; }
 .cmp-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: 14px; line-height: 1.35; }
 .cmp-tx small { font-size: 12.5px; color: var(--t3); }
 .cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }

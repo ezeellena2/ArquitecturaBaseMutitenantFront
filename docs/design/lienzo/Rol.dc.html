@@ -948,7 +948,7 @@ const AREAS_EMPRESA = [
 const LUGARES = { org: 'Toda la organización', cada: 'Cada empresa', c1: 'Delta S.A.', c2: 'Delta Sur S.R.L.', c3: 'Delta Norte S.A.' };
 const MODOS = {
   'Editar el rol Solo lectura': { nombre: 'Solo lectura', vale: 'c1', descripcion: 'Ve los miembros de la empresa. No cambia nada.', u: 4, elegidos: ['company.members.read'] },
-  'Editar el rol Recursos humanos': { nombre: 'Recursos humanos', vale: 'org', descripcion: 'Invita, edita y deshabilita usuarios.', u: 0, elegidos: ['users.read', 'users.invite', 'users.manage'] },
+  'Editar el rol Recursos humanos': { nombre: 'Recursos humanos', vale: 'org', descripcion: 'Invita, edita y da de baja usuarios.', u: 0, elegidos: ['users.read', 'users.invite', 'users.manage'] },
   'Crear un rol': { nombre: '', vale: null, descripcion: '', u: 0, elegidos: [], nuevo: true },
   'Ver el rol Dueño': { nombre: 'Dueño', vale: 'org', descripcion: 'Tiene todos los permisos de la organización.', u: 1, elegidos: AREAS_ORG.flatMap((a) => a.ps.map((p) => p[0])), sistema: true },
 };

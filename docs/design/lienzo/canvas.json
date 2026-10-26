@@ -1707,7 +1707,7 @@
     },
     "FRM-Publicar.dc.html": {
       "x": 3040,
-      "y": 3144,
+      "y": 6028,
       "w": 1440,
       "h": 1400,
       "title": "Formularios · publicar en WhatsApp",
@@ -1724,7 +1724,7 @@
     },
     "WA-Chats-Formulario.dc.html": {
       "x": 6080,
-      "y": 3144,
+      "y": 6028,
       "w": 1440,
       "h": 900,
       "title": "WhatsApp · Internos · enviar un formulario",
@@ -1733,7 +1733,7 @@
     },
     "WA-Chats-Respuesta.dc.html": {
       "x": 7600,
-      "y": 3144,
+      "y": 6028,
       "w": 1440,
       "h": 900,
       "title": "WhatsApp · Internos · respuesta del formulario",
@@ -1767,7 +1767,7 @@
     },
     "M-WA-Chats-Formulario.dc.html": {
       "x": 940,
-      "y": 4664,
+      "y": 7548,
       "w": 390,
       "h": 844,
       "title": "WhatsApp · Internos · enviar un formulario · teléfono",
@@ -1776,7 +1776,7 @@
     },
     "M-WA-Conversacion-Respuesta.dc.html": {
       "x": 1410,
-      "y": 4664,
+      "y": 7548,
       "w": 390,
       "h": 844,
       "title": "WhatsApp · Internos · respuesta del formulario · teléfono",
@@ -1915,7 +1915,7 @@
     },
     "FRM-Biblioteca.dc.html": {
       "x": 1520,
-      "y": 17664,
+      "y": 20548,
       "w": 1440,
       "h": 900,
       "title": "Formularios · biblioteca",
@@ -1923,7 +1923,7 @@
     },
     "FRM-Plantilla.dc.html": {
       "x": 3040,
-      "y": 17664,
+      "y": 20548,
       "w": 1440,
       "h": 1480,
       "title": "Formularios · una plantilla",
@@ -1931,7 +1931,7 @@
     },
     "FRM-Plantilla-Usar.dc.html": {
       "x": 4560,
-      "y": 17664,
+      "y": 20548,
       "w": 1440,
       "h": 1480,
       "title": "Formularios · usar una plantilla",
@@ -1939,7 +1939,7 @@
     },
     "M-FRM-Biblioteca.dc.html": {
       "x": 0,
-      "y": 19264,
+      "y": 22148,
       "w": 390,
       "h": 844,
       "title": "Formularios · biblioteca · teléfono",
@@ -1947,7 +1947,7 @@
     },
     "M-FRM-Plantilla.dc.html": {
       "x": 470,
-      "y": 19264,
+      "y": 22148,
       "w": 390,
       "h": 844,
       "title": "Formularios · una plantilla · teléfono",
@@ -2019,7 +2019,7 @@
     },
     "FRM-Editor.dc.html": {
       "x": 1520,
-      "y": 3144,
+      "y": 6028,
       "w": 1440,
       "h": 1400,
       "title": "Formularios · editor",
@@ -2028,7 +2028,7 @@
     },
     "FRM-Publicando.dc.html": {
       "x": 4560,
-      "y": 3144,
+      "y": 6028,
       "w": 1440,
       "h": 1400,
       "title": "Formularios · cómo termina una publicación",
@@ -2037,7 +2037,7 @@
     },
     "M-FRM-Editor.dc.html": {
       "x": 470,
-      "y": 4664,
+      "y": 7548,
       "w": 390,
       "h": 844,
       "title": "Editor del formulario · teléfono",
@@ -2210,7 +2210,7 @@
     },
     "WA-Chats-Visor.dc.html": {
       "x": 4560,
-      "y": 11896,
+      "y": 14780,
       "w": 1440,
       "h": 900,
       "title": "WhatsApp · Internos · ver las fotos de una respuesta",
@@ -2219,7 +2219,7 @@
     },
     "M-WA-Chats-Visor.dc.html": {
       "x": 940,
-      "y": 13416,
+      "y": 16300,
       "w": 390,
       "h": 844,
       "title": "WhatsApp · Internos · ver las fotos · teléfono",
@@ -2228,7 +2228,7 @@
     },
     "FRM-Respuestas.dc.html": {
       "x": 1520,
-      "y": 6028,
+      "y": 8912,
       "w": 1440,
       "h": 900,
       "title": "Formularios · Respuestas · la planilla",
@@ -2237,7 +2237,7 @@
     },
     "FRM-Respuestas-Filtros.dc.html": {
       "x": 3040,
-      "y": 6028,
+      "y": 8912,
       "w": 1440,
       "h": 900,
       "title": "Formularios · Respuestas · más filtros",
@@ -2246,7 +2246,7 @@
     },
     "FRM-Respuesta.dc.html": {
       "x": 4560,
-      "y": 6028,
+      "y": 8912,
       "w": 1440,
       "h": 900,
       "title": "Formularios · Respuestas · una respuesta al costado",
@@ -2255,7 +2255,7 @@
     },
     "FRM-Respuestas-Exportar.dc.html": {
       "x": 6080,
-      "y": 6028,
+      "y": 8912,
       "w": 1440,
       "h": 900,
       "title": "Formularios · Respuestas · exportar a Excel",
@@ -2264,7 +2264,7 @@
     },
     "M-FRM-Respuestas.dc.html": {
       "x": 0,
-      "y": 7648,
+      "y": 10532,
       "w": 390,
       "h": 844,
       "title": "Formularios · un formulario · Respuestas · teléfono",
@@ -2273,7 +2273,7 @@
     },
     "M-FRM-Respuesta.dc.html": {
       "x": 470,
-      "y": 7648,
+      "y": 10532,
       "w": 390,
       "h": 844,
       "title": "Formularios · una respuesta · teléfono",
@@ -2282,7 +2282,7 @@
     },
     "FRM-Editor-Reglas.dc.html": {
       "x": 1520,
-      "y": 14780,
+      "y": 17664,
       "w": 1440,
       "h": 1400,
       "title": "Formularios · editor · cuando llega una respuesta",
@@ -2291,7 +2291,7 @@
     },
     "FRM-Pdf.dc.html": {
       "x": 3040,
-      "y": 14780,
+      "y": 17664,
       "w": 1440,
       "h": 900,
       "title": "Formularios · diseño del PDF",
@@ -2309,7 +2309,7 @@
     },
     "FRM-Respuesta-Aprobacion.dc.html": {
       "x": 4560,
-      "y": 14780,
+      "y": 17664,
       "w": 1440,
       "h": 900,
       "title": "Formularios · una respuesta con aprobación, actividad y PDF",
@@ -2318,7 +2318,7 @@
     },
     "WA-Chats-Avisos.dc.html": {
       "x": 6080,
-      "y": 14780,
+      "y": 17664,
       "w": 1440,
       "h": 900,
       "title": "WhatsApp · Internos · avisos automáticos de un formulario",
@@ -2327,7 +2327,7 @@
     },
     "M-FRM-Reglas.dc.html": {
       "x": 0,
-      "y": 16300,
+      "y": 19184,
       "w": 390,
       "h": 844,
       "title": "Formularios · reglas · teléfono",
@@ -2345,7 +2345,7 @@
     },
     "M-FRM-Respuesta-Aprobacion.dc.html": {
       "x": 470,
-      "y": 16300,
+      "y": 19184,
       "w": 390,
       "h": 844,
       "title": "Formularios · una respuesta con aprobación · teléfono",
@@ -2354,7 +2354,7 @@
     },
     "M-WA-Conversacion-Avisos.dc.html": {
       "x": 940,
-      "y": 16300,
+      "y": 19184,
       "w": 390,
       "h": 844,
       "title": "WhatsApp · avisos automáticos · teléfono",
@@ -2363,7 +2363,7 @@
     },
     "WA-Chats-Asistente.dc.html": {
       "x": 7600,
-      "y": 20628,
+      "y": 23512,
       "w": 1440,
       "h": 900,
       "title": "WhatsApp · Internos · el asistente atiende",
@@ -2372,7 +2372,7 @@
     },
     "WA-Chats-Sugerencia.dc.html": {
       "x": 9120,
-      "y": 20628,
+      "y": 23512,
       "w": 1440,
       "h": 900,
       "title": "WhatsApp · Internos · el asistente sugiere",
@@ -2381,7 +2381,7 @@
     },
     "WA-Chats-Audio.dc.html": {
       "x": 10640,
-      "y": 20628,
+      "y": 23512,
       "w": 1440,
       "h": 900,
       "title": "WhatsApp · Internos · audios",
@@ -2390,7 +2390,7 @@
     },
     "FRM-Catalogo-Propuesta.dc.html": {
       "x": 3040,
-      "y": 20628,
+      "y": 23512,
       "w": 1440,
       "h": 1000,
       "title": "Formularios · catálogo propuesto por el asistente",
@@ -2399,7 +2399,7 @@
     },
     "FRM-Faltan.dc.html": {
       "x": 6080,
-      "y": 20628,
+      "y": 23512,
       "w": 1440,
       "h": 900,
       "title": "Formularios · formularios que faltan",
@@ -2408,7 +2408,7 @@
     },
     "FRM-Editor-Asistente.dc.html": {
       "x": 0,
-      "y": 20628,
+      "y": 23512,
       "w": 1440,
       "h": 1400,
       "title": "Formularios · editor · cuándo lo ofrece el asistente",
@@ -2417,7 +2417,7 @@
     },
     "FRM-Editor-Sugerencias.dc.html": {
       "x": 1520,
-      "y": 20628,
+      "y": 23512,
       "w": 1440,
       "h": 1400,
       "title": "Formularios · editor · qué sugerir después",
@@ -2426,7 +2426,7 @@
     },
     "FRM-Respuesta-Cadena.dc.html": {
       "x": 4560,
-      "y": 20628,
+      "y": 23512,
       "w": 1440,
       "h": 900,
       "title": "Formularios · una respuesta · de dónde vino",
@@ -2435,7 +2435,7 @@
     },
     "M-WA-Conversacion-Asistente.dc.html": {
       "x": 470,
-      "y": 22148,
+      "y": 25032,
       "w": 390,
       "h": 844,
       "title": "WhatsApp · el asistente · teléfono",
@@ -2444,7 +2444,7 @@
     },
     "M-FRM-Faltan.dc.html": {
       "x": 0,
-      "y": 22148,
+      "y": 25032,
       "w": 390,
       "h": 844,
       "title": "Formularios · formularios que faltan · teléfono",
@@ -2471,7 +2471,7 @@
     },
     "FRM-Editor-Reglas-Plantilla.dc.html": {
       "x": 6080,
-      "y": 17664,
+      "y": 20548,
       "w": 1440,
       "h": 1400,
       "title": "Formularios · editor · las reglas que trae una plantilla",
@@ -2480,7 +2480,7 @@
     },
     "M-FRM-Reglas-Plantilla.dc.html": {
       "x": 940,
-      "y": 19264,
+      "y": 22148,
       "w": 390,
       "h": 844,
       "title": "Formularios · las reglas que trae una plantilla · teléfono",
@@ -2494,7 +2494,7 @@
       "title": "Formularios · la lista",
       "w": 1440,
       "x": 0,
-      "y": 3144
+      "y": 6028
     },
     "WA-Chats-Formulario-Cliente.dc.html": {
       "h": 900,
@@ -2503,7 +2503,7 @@
       "title": "WhatsApp · Clientes · enviar un formulario",
       "w": 1440,
       "x": 9120,
-      "y": 3144
+      "y": 6028
     },
     "M-WA-Chats-Formulario-Cliente.dc.html": {
       "h": 844,
@@ -2512,7 +2512,7 @@
       "title": "WhatsApp · Clientes · enviar un formulario · teléfono",
       "w": 390,
       "x": 1880,
-      "y": 4664
+      "y": 7548
     },
     "FRM-Editor-Baja.dc.html": {
       "h": 1400,
@@ -2521,7 +2521,7 @@
       "title": "Formularios · editor de un dado de baja",
       "w": 1440,
       "x": 1520,
-      "y": 9012
+      "y": 11896
     },
     "FRM-Dar-De-Baja.dc.html": {
       "h": 1400,
@@ -2530,7 +2530,7 @@
       "title": "Formularios · dar de baja",
       "w": 1440,
       "x": 3040,
-      "y": 9012
+      "y": 11896
     },
     "FRM-Reactivar-Eliminar.dc.html": {
       "h": 900,
@@ -2539,7 +2539,7 @@
       "title": "Formularios · reactivar y eliminar",
       "w": 1440,
       "x": 4560,
-      "y": 9012
+      "y": 11896
     },
     "FRM-Copiar.dc.html": {
       "h": 900,
@@ -2548,7 +2548,7 @@
       "title": "Formularios · copiar un formulario",
       "w": 1440,
       "x": 6080,
-      "y": 9012
+      "y": 11896
     },
     "M-FRM-Editor-Baja.dc.html": {
       "h": 844,
@@ -2557,7 +2557,7 @@
       "title": "Formularios · editor de un dado de baja · teléfono",
       "w": 390,
       "x": 470,
-      "y": 10532
+      "y": 13416
     },
     "Campana.dc.html": {
       "h": 900,
@@ -2584,7 +2584,7 @@
       "title": "Formularios · la lista · teléfono",
       "w": 390,
       "x": 0,
-      "y": 4664
+      "y": 7548
     },
     "FRM-Tablero.dc.html": {
       "h": 1500,
@@ -2593,7 +2593,7 @@
       "title": "Formularios · un formulario · Tablero",
       "w": 1440,
       "x": 7600,
-      "y": 6028
+      "y": 8912
     },
     "M-FRM-Tablero.dc.html": {
       "h": 844,
@@ -2602,7 +2602,7 @@
       "title": "Formularios · un formulario · Tablero · teléfono",
       "w": 390,
       "x": 940,
-      "y": 7648
+      "y": 10532
     },
     "FRM-Formularios-15.dc.html": {
       "h": 900,
@@ -2611,7 +2611,7 @@
       "title": "Formularios · la lista · etapa 15",
       "w": 1440,
       "x": 0,
-      "y": 6028
+      "y": 8912
     },
     "FRM-Formularios-17.dc.html": {
       "h": 900,
@@ -2620,7 +2620,7 @@
       "title": "Formularios · la lista · etapa 17",
       "w": 1440,
       "x": 0,
-      "y": 9012
+      "y": 11896
     },
     "FRM-Formularios-21.dc.html": {
       "h": 900,
@@ -2629,7 +2629,7 @@
       "title": "Formularios · la lista · etapa 21",
       "w": 1440,
       "x": 0,
-      "y": 14780
+      "y": 17664
     },
     "M-FRM-Formularios-17.dc.html": {
       "h": 844,
@@ -2638,11 +2638,11 @@
       "title": "Formularios · la lista · teléfono · etapa 17",
       "w": 390,
       "x": 0,
-      "y": 10532
+      "y": 13416
     },
     "FRM-Catalogos-14.dc.html": {
       "x": 12160,
-      "y": 3144,
+      "y": 6028,
       "is_interactive": true,
       "w": 1440,
       "h": 900,
@@ -2678,7 +2678,7 @@
     },
     "M-FRM-Catalogos-14.dc.html": {
       "x": 2820,
-      "y": 4664,
+      "y": 7548,
       "is_interactive": true,
       "w": 390,
       "h": 844,
@@ -2687,7 +2687,7 @@
     },
     "FRM-Editor-18.dc.html": {
       "x": 0,
-      "y": 11896,
+      "y": 14780,
       "is_interactive": true,
       "w": 1440,
       "h": 1400,
@@ -2696,7 +2696,7 @@
     },
     "M-FRM-Editor-18.dc.html": {
       "x": 0,
-      "y": 13416,
+      "y": 16300,
       "is_interactive": true,
       "w": 390,
       "h": 844,
@@ -2705,7 +2705,7 @@
     },
     "FRM-Publicar-18.dc.html": {
       "x": 1520,
-      "y": 11896,
+      "y": 14780,
       "is_interactive": true,
       "w": 1440,
       "h": 1400,
@@ -2714,7 +2714,7 @@
     },
     "WA-Chats-Respuesta-18.dc.html": {
       "x": 3040,
-      "y": 11896,
+      "y": 14780,
       "is_interactive": true,
       "w": 1440,
       "h": 900,
@@ -2723,7 +2723,7 @@
     },
     "M-WA-Conversacion-Respuesta-18.dc.html": {
       "x": 470,
-      "y": 13416,
+      "y": 16300,
       "is_interactive": true,
       "w": 390,
       "h": 844,
@@ -2732,7 +2732,7 @@
     },
     "WA-Mensajes-14.dc.html": {
       "x": 10640,
-      "y": 3144,
+      "y": 6028,
       "is_interactive": true,
       "w": 1440,
       "h": 900,
@@ -2741,7 +2741,7 @@
     },
     "M-WA-Mensaje-14.dc.html": {
       "x": 2350,
-      "y": 4664,
+      "y": 7548,
       "is_interactive": true,
       "w": 390,
       "h": 844,
@@ -2755,7 +2755,25 @@
       "title": "Formularios · la lista · etapa 22",
       "w": 1440,
       "x": 0,
-      "y": 17664
+      "y": 20548
+    },
+    "FRM-Catalogo-13.dc.html": {
+      "x": 0,
+      "y": 3144,
+      "is_interactive": true,
+      "w": 1280,
+      "h": 1400,
+      "page": "formularios",
+      "title": "Formularios · catálogo escrito a mano · campos · a 1280 · etapa 13 · para aprobar"
+    },
+    "M-FRM-Catalogo-13.dc.html": {
+      "x": 0,
+      "y": 4664,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "formularios",
+      "title": "Catálogo escrito a mano · campos · teléfono · etapa 13 · para aprobar"
     }
   },
   "createdOnFiles": {
@@ -2936,7 +2954,7 @@
     "t-formularios-14": {
       "kind": "title1",
       "x": 0,
-      "y": 2944,
+      "y": 5828,
       "w": 900,
       "maxW": 8000,
       "text": "Etapa 14 · Formularios",
@@ -2945,7 +2963,7 @@
     "t-formularios-15": {
       "kind": "title1",
       "x": 0,
-      "y": 5828,
+      "y": 8712,
       "w": 900,
       "maxW": 8000,
       "text": "Etapa 15 · Respuestas",
@@ -2954,7 +2972,7 @@
     "t-formularios-17": {
       "kind": "title1",
       "x": 0,
-      "y": 8812,
+      "y": 11696,
       "w": 900,
       "maxW": 8000,
       "text": "Etapa 17 · Ciclo de vida",
@@ -2963,7 +2981,7 @@
     "t-formularios-18": {
       "kind": "title1",
       "x": 0,
-      "y": 11696,
+      "y": 14580,
       "w": 900,
       "maxW": 8000,
       "text": "Etapa 18 · Fotos y documentos",
@@ -2972,7 +2990,7 @@
     "t-formularios-21": {
       "kind": "title1",
       "x": 0,
-      "y": 14580,
+      "y": 17464,
       "w": 900,
       "maxW": 8000,
       "text": "Etapa 21 · Reglas, aprobación y PDF",
@@ -2981,7 +2999,7 @@
     "t-formularios-22": {
       "kind": "title1",
       "x": 0,
-      "y": 17464,
+      "y": 20348,
       "w": 900,
       "maxW": 8000,
       "text": "Etapa 22 · Biblioteca",
@@ -2990,10 +3008,19 @@
     "t-formularios-23": {
       "kind": "title1",
       "x": 0,
-      "y": 20428,
+      "y": 23312,
       "w": 900,
       "maxW": 8000,
       "text": "Etapa 23 · El asistente",
+      "page": "formularios"
+    },
+    "t-formularios-13": {
+      "kind": "title1",
+      "x": 0,
+      "y": 2944,
+      "w": 900,
+      "maxW": 8000,
+      "text": "Etapa 13 · Campos de los catálogos",
       "page": "formularios"
     }
   },

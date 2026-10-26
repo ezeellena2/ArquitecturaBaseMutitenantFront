@@ -96,14 +96,15 @@ class Etapa:
 # (nombre, clave, (clase, estado en WhatsApp, ⓘ), preguntas, último cambio, por aprobar, respuestas, última o None)
 # Un dato por celda, en un renglón (decisión del usuario del 25/10): sin el prefijo debajo del nombre ni quién hizo el último cambio;
 # las fechas, completas y con su hora (formatos.md, 25/10).
+# La última respuesta, como la maqueta (3b9c967): su número en una columna y cuándo llegó en otra («Recibida»).
 FILAS = [
-    ("Visita a cliente", "Vis", ("{{estVisClase}}", "{{estVis}}", ""), 7, "08/10/2026 14:20", 3, 24, ("15/10/2026 16:20", "FRM-Respuesta-Aprobacion.dc.html")),
-    ("Entrega de pedido", "Ent", ("", "Publicado · versión 1", ""), 5, "02/10/2026 09:15", 1, 48, ("14/10/2026 10:05", "FRM-Respuesta.dc.html")),
+    ("Visita a cliente", "Vis", ("{{estVisClase}}", "{{estVis}}", ""), 7, "08/10/2026 14:20", 3, 24, ("VIS-000130", "15/10/2026 16:20", "FRM-Respuesta-Aprobacion.dc.html")),
+    ("Entrega de pedido", "Ent", ("", "Publicado · versión 1", ""), 5, "02/10/2026 09:15", 1, 48, ("ENT-000048", "14/10/2026 10:05", "FRM-Respuesta.dc.html")),
     ("Control de vehículo", "Con", ("mal", "No se pudo publicar", "La versión 2 publicada sigue activa."), 7, "12/10/2026 17:40", 0, 31,
-     ("12/10/2026 18:05", "FRM-Respuesta.dc.html")),
+     ("VEH-000031", "12/10/2026 18:05", "FRM-Respuesta.dc.html")),
     ("Reclamo", "Rec", ("off", "Borrador", ""), 4, "14/10/2026 11:05", 0, 0, None),
     ("Relevamiento de obra", "Rel", ("baja", "Dado de baja · versión 2", "Se deprecan en WhatsApp cuando venzan los 2 envíos abiertos."), 6,
-     "09/10/2026 16:30", 0, 12, ("30/09/2026 10:15", "FRM-Respuesta.dc.html")),
+     "09/10/2026 16:30", 0, 12, ("REL-000012", "30/09/2026 10:15", "FRM-Respuesta.dc.html")),
 ]
 COPIAR = mi("duplicar", "Copiar", "FRM-Copiar.dc.html")
 MENUS = {  # como la maqueta: Editar (o Ver, sin permiso de diseñar), y lo de la 17 según el estado y el permiso
@@ -140,10 +141,12 @@ def estados_lista(e):
 
 
 CSS_LISTA = """.w-th.fx14, .w-tr.fx14 { grid-template-columns: minmax(200px, 1.4fr) 100px minmax(200px, 1.2fr) minmax(220px, 1.2fr); }
-.w-th.fx15, .w-tr.fx15 { grid-template-columns: minmax(200px, 1.3fr) minmax(190px, 1.1fr) 100px minmax(240px, 1.3fr); }
-.w-th.fx17, .w-tr.fx17 { grid-template-columns: minmax(180px, 1.3fr) minmax(180px, 1.1fr) 100px minmax(220px, 1.2fr) 40px; }
-.w-th.fx21, .w-tr.fx21 { grid-template-columns: minmax(160px, 1.25fr) minmax(170px, 1.1fr) 92px 92px minmax(190px, 1.15fr) 40px; }
-.w-th.fx3, .w-tr.fx3 { grid-template-columns: minmax(220px, 1.4fr) 110px minmax(260px, 1.4fr); }
+.w-th.fx15, .w-tr.fx15 { grid-template-columns: minmax(200px, 1.3fr) minmax(190px, 1.1fr) 100px 136px 150px; }
+.w-th.fx17, .w-tr.fx17 { grid-template-columns: minmax(170px, 1.2fr) minmax(180px, 1.1fr) 96px 130px 146px 40px; }
+.w-th.fx21, .w-tr.fx21 { grid-template-columns: minmax(150px, 1.15fr) minmax(170px, 1.1fr) 88px 92px 122px 140px 40px; }
+.w-th.fx3, .w-tr.fx3 { grid-template-columns: minmax(220px, 1.4fr) 110px 136px 150px; }
+.w-th .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.w-tr .fx-num { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; color: var(--t1); text-decoration: none; }
 .w-th.fx2, .w-tr.fx2 { grid-template-columns: minmax(220px, 1fr) 160px; }
 .w-tr.fx14, .w-tr.fx15, .w-tr.fx17, .w-tr.fx21, .w-tr.fx3, .w-tr.fx2 { position: relative; min-height: 40px; }
 .w-tr .fx-f { color: var(--t1); text-decoration: none; font-variant-numeric: tabular-nums; }
@@ -184,11 +187,12 @@ def c_aprobar(apr):
 
 
 def c_ultima(u, e):
-    """Cuándo llegó la última respuesta, y se abre; lo que espera aprobación lo dice «Por aprobar» desde la 21."""
+    """La última respuesta: su número, que la abre, y cuándo llegó, cada uno en su columna; lo que espera aprobación lo dice
+    «Por aprobar» desde la 21."""
     if not u:
-        return '<span class="fm-no">—</span>'
-    cuando, destino = u
-    return f'<span><a class="fx-f" href="{destino if e.aprob else "FRM-Respuesta.dc.html"}">{cuando}</a></span>'
+        return '<span class="fm-no">—</span><span class="fm-no">—</span>'
+    num, cuando, destino = u
+    return f'<span><a class="fx-num" href="{destino if e.aprob else "FRM-Respuesta.dc.html"}">{num}</a></span><span class="num">{cuando}</span>'
 
 
 def grilla_de(e):
@@ -221,14 +225,16 @@ def fila(f, cols, e):
 def tabla(cols, bandera, e):
     if cols == "todas":
         cab = ["Formulario", "Preguntas", "En WhatsApp", "Último cambio"] if not e.resp else (
-            ["Formulario", "En WhatsApp"] + (["Por aprobar"] if e.aprob else []) + ["Respuestas", "Última respuesta"]
+            ["Formulario", "En WhatsApp"] + (["Por aprobar"] if e.aprob else []) + ["Respuestas", "Última respuesta", "Recibida"]
             + (['<span class="sr">Acciones</span>'] if e.ciclo else []))
         clase = grilla_de(e)
     elif cols == "lee":
-        cab, clase = ["Formulario", "Respuestas", "Última respuesta"], "fx3"
+        cab, clase = ["Formulario", "Respuestas", "Última respuesta", "Recibida"], "fx3"
     else:
         cab, clase = ["Formulario", "Por aprobar"], "fx2"
-    th = f'<div class="w-th {clase}">' + "".join(c if c.startswith("<span") else f"<span>{c}</span>" for c in cab) + "</div>"
+    # La columna por la que está ordenada muestra ▲ (el usuario, 25/10)
+    th = f'<div class="w-th {clase}">' + "".join(c if c.startswith("<span") else f'<span aria-sort="ascending">{c}<span class="ord" aria-hidden="true">▲</span></span>'
+                                                 if c == "Formulario" else f"<span>{c}</span>" for c in cab) + "</div>"
     filas = "".join(fila(f, cols, e) for f in FILAS if (cols == "todas" or f[1] != "Rec") and (e.ciclo or f[1] != "Rel"))
     return f'<sc-if value="{{{{{bandera}}}}}" hint-placeholder-val="{{{{{"si" if cols == "todas" else "no"}}}}}">{th}{filas}</sc-if>'
 

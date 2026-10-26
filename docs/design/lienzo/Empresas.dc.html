@@ -1149,7 +1149,7 @@ const activas = s.empresas.filter((e) => e.estado === 'activa').length;
       resumen: s.empresas.length + ' empresas · ' + activas + (activas === 1 ? ' activa' : ' activas'),
   busqueda: s.busqueda,
   onBuscar: (e) => this.setState({ busqueda: e.target.value }),
-  ...this.filtro('Estado', 'estado', [{ v: null, n: 'Todas' }, { v: 'activa', n: 'Activas' }, { v: 'inactiva', n: 'Inactivas' }], 'Estado: todas', (v) => this.filtrar({ estado: v }).length),
+  ...this.filtro('Estado', 'estado', [{ v: null, n: 'Todas' }, { v: 'activa', n: 'Activas' }, { v: 'inactiva', n: 'Dadas de baja' }], 'Estado: todas', (v) => this.filtrar({ estado: v }).length),
   hayFiltros: s.busqueda.trim() !== '' || s.estado !== null,
   limpiar: () => this.setState({ busqueda: '', estado: null, abierto: null }),
   ...pg.vals,
@@ -1165,27 +1165,27 @@ const activas = s.empresas.filter((e) => e.estado === 'activa').length;
       zona: nombreZona(e.zona ?? ORG_ZONA),
       miembros: String(e.miembros),
       pill: activa ? 'ok' : 'off',
-      textoEstado: activa ? 'Activa' : 'Inactiva',
+      textoEstado: activa ? 'Activa' : 'De baja',
       clase: e.nueva ? 'nueva' : '',
       editar: () => this.setState({ abierto: null, dialogo: e.id, nombre: e.n, cuit: e.cuit.replace(/\D/g, ''), zona: e.zona, errNombre: '', errCuit: '' }),
-      accion: activa ? 'Inactivar' : 'Activar',
+      accion: activa ? 'Dar de baja' : 'Reactivar',
       claseAccion: activa ? 'pel' : '',
       // PUT /api/companies/{id}/status
       cambiarEstado: () => {
         if (!activa) {
           this.setState({ abierto: null, empresas: s.empresas.map((x) => (x.id === e.id ? { ...x, estado: 'activa' } : x)) });
-          this.avisar('Activamos ' + e.n + '.');
+          this.avisar('Reactivamos ' + e.n + '.');
 
           return;
         }
 
         this.pedirConfirmacion({
-          titulo: '¿Inactivar ' + e.n + '?',
+          titulo: '¿Dar de baja ' + e.n + '?',
           texto: 'Nadie entra a esta empresa mientras esté inactiva. Sus datos y sus miembros se conservan.',
-          boton: 'Inactivar',
+          boton: 'Dar de baja',
           accion: () => {
             this.setState({ empresas: this.state.empresas.map((x) => (x.id === e.id ? { ...x, estado: 'inactiva' } : x)) });
-            this.avisar('Inactivamos ' + e.n + '.');
+            this.avisar('Dimos de baja ' + e.n + '.');
           },
         });
       },

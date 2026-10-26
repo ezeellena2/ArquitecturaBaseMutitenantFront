@@ -39,7 +39,7 @@
       "resaltar": ".w-dlg",
       "actor": "Lucía · Dueña · web",
       "titulo": "Así queda un dado de baja",
-      "texto": "Arriba dice «Dado de baja»; su ⓘ cuenta quién lo dio de baja y cuándo, qué deja de pasar y qué pasa en WhatsApp: los Flows se deprecan cuando vencen los envíos abiertos.",
+      "texto": "Arriba dice «De baja»; su ⓘ cuenta quién lo dio de baja y cuándo, qué deja de pasar y qué pasa en WhatsApp: los Flows se deprecan cuando vencen los envíos abiertos.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/:id",
       "accion": "Ve el formulario dado de baja."

@@ -43,8 +43,25 @@ def leer(n):
     return (PROJ / f"{n}.dc.html").read_text(encoding="utf-8")
 
 
+# Una fila es un renglón, también en las listas cortas de la compu (el usuario, 25/10, v143): en la lista de preguntas, el tipo va a
+# la derecha, como una columna, y no en una segunda línea gris
+CSS_UNA_LINEA = """<style data-e14="una-linea">
+.q-it .dato { flex-direction: row; align-items: center; gap: 16px; }
+.q-it .dato > b { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-it .dato > span { flex: 0 0 60%; min-width: 0; font-size: 13px; color: var(--t2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-it .chips { flex: none; width: 92px; justify-content: flex-end; }
+</style>
+</helmet>"""
+
+
+def una_linea(n, t):
+    if n.startswith("M-") or 'class="q-it' not in t or 'data-e14="una-linea"' in t:
+        return t
+    return t.replace("</helmet>", CSS_UNA_LINEA, 1)
+
+
 def escribir(n, t):
-    (PROJ / f"{n}.dc.html").write_text(L.sin_disenar(n, fechas(t)), encoding="utf-8")
+    (PROJ / f"{n}.dc.html").write_text(una_linea(n, L.sin_disenar(n, fechas(t))), encoding="utf-8")
 
 
 def solo(t, estados):

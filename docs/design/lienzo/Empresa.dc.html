@@ -1047,7 +1047,7 @@ const nombreEmpresa = (id) => (EMPRESAS.find((e) => e.id === id) || { n: '' }).n
 // plantilla; cada producto suma los suyos.
 const ROLES = [
   { id: 'r1', n: 'Dueño', vale: 'org', d: 'Tiene todos los permisos de la organización.', u: 1, p: 12, sistema: true },
-  { id: 'r2', n: 'Recursos humanos', vale: 'org', d: 'Invita, edita y deshabilita usuarios.', u: 0, p: 3 },
+  { id: 'r2', n: 'Recursos humanos', vale: 'org', d: 'Invita, edita y da de baja usuarios.', u: 0, p: 3 },
   { id: 'r3', n: 'Auditor', vale: 'org', d: 'Ve los usuarios y la auditoría. No cambia nada.', u: 1, p: 2 },
   { id: 'r4', n: 'Administrador', vale: 'cada', d: 'Administra la empresa: sus miembros y sus roles.', u: 2, p: 2, sistema: true },
   { id: 'r5', n: 'Solo lectura', vale: 'c1', d: 'Ve los miembros de la empresa. No cambia nada.', u: 4, p: 1 },
@@ -1381,23 +1381,23 @@ class Component extends DCLogic {
       yoNombre: s.solo ? 'Valentina Ruiz' : 'Lucía Fernández', yoCorreo: s.solo ? 'valentina.ruiz@gmail.com' : 'lucia.fernandez@delta.ejemplo.com', yoInicial: s.solo ? 'V' : 'L',
       yoRol: s.solo ? 'Administrador en Delta Norte S.A.' : 'Dueño',
       pillEmpresa: activa ? 'ok' : 'off',
-      estadoEmpresa: activa ? 'Activa' : 'Inactiva',
+      estadoEmpresa: activa ? 'Activa' : 'De baja',
       meta: [e.cuit ? 'CUIT ' + e.cuit : '', nombreZona(e.zona ?? ORG_ZONA)].filter(Boolean).join(' · '),
       claseAccionEstado: activa ? 'pel' : '',
-      accionEstado: activa ? 'Inactivar' : 'Activar',
+      accionEstado: activa ? 'Dar de baja' : 'Reactivar',
       cambiarEstado: () => {
         if (!activa) {
           this.setState({ empresa: { ...e, estado: 'activa' }, abierto: null });
-          this.avisar('Activamos ' + e.n + '.');
+          this.avisar('Reactivamos ' + e.n + '.');
 
           return;
         }
 
         this.pedirConfirmacion({
-          titulo: '¿Inactivar ' + e.n + '?',
+          titulo: '¿Dar de baja ' + e.n + '?',
           texto: 'Nadie entra a esta empresa mientras esté inactiva. Sus datos y sus miembros se conservan.',
-          boton: 'Inactivar',
-          accion: () => { this.setState({ empresa: { ...this.state.empresa, estado: 'inactiva' } }); this.avisar('Inactivamos ' + e.n + '.'); },
+          boton: 'Dar de baja',
+          accion: () => { this.setState({ empresa: { ...this.state.empresa, estado: 'inactiva' } }); this.avisar('Dimos de baja ' + e.n + '.'); },
         });
       },
 
@@ -1412,7 +1412,7 @@ class Component extends DCLogic {
       ...this.filtro('Rol', 'rol', [{ v: undefined, n: 'Todos' }, ...ROLES_C1.map((r) => ({ v: r.v, n: r.n })), { v: null, n: 'Sin roles' }], 'Rol: todos', (v) => this.filtrar({ rol: v }).length),
       claseRol: s.rol === undefined ? '' : 'con',
       textoRol: s.rol === undefined ? 'Rol: todos' : s.rol === null ? 'Sin roles' : s.rol,
-      ...this.filtro('EstadoM', 'estadoM', [{ v: null, n: 'Todos' }, { v: 'activo', n: 'Activos' }, { v: 'inactivo', n: 'Inactivos' }, { v: 'bajaPedida', n: 'Baja pedida' }], 'Estado: todos', (v) => this.filtrar({ estadoM: v }).length),
+      ...this.filtro('EstadoM', 'estadoM', [{ v: null, n: 'Todos' }, { v: 'activo', n: 'Activos' }, { v: 'inactivo', n: 'Dados de baja' }, { v: 'bajaPedida', n: 'Baja pedida' }], 'Estado: todos', (v) => this.filtrar({ estadoM: v }).length),
       hayFiltros: s.busqueda.trim() !== '' || s.estadoM !== null || s.rol !== undefined,
       limpiar: () => this.setState({ busqueda: '', estadoM: null, rol: undefined, abierto: null }),
       ...pg.vals,
@@ -1427,7 +1427,7 @@ class Component extends DCLogic {
           ...this.fila(m.id, m.nombre),
           email: m.email, nombre: m.nombre, roles: m.roles, sinRoles: m.roles.length === 0, activo: act,
           pill: act ? 'ok' : baja || m.estado === 'vencida' ? 'alerta' : inv ? 'pend' : 'off',
-          textoEstado: act ? 'Activo' : baja ? 'Baja pedida' : m.estado === 'invitado' ? 'Invitación pendiente' : m.estado === 'vencida' ? 'Invitación vencida' : 'Inactivo',
+          textoEstado: act ? 'Activo' : baja ? 'Baja pedida' : m.estado === 'invitado' ? 'Invitación pendiente' : m.estado === 'vencida' ? 'Invitación vencida' : 'De baja',
           invitado: inv, noInvitado: !inv, textoVence: (m.estado === 'vencida' ? 'Venció ' : 'Vence ') + (m.vence || ''),
           // POST /api/companies/{id}/invitations/{invitationId}/resend con company.members.manage (decisión del 05/10).
           reenviar: () => {
