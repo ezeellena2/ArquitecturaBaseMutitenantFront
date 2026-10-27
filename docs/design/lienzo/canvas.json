@@ -2764,7 +2764,7 @@
       "w": 1280,
       "h": 1560,
       "page": "formularios",
-      "title": "Formularios · catálogo escrito a mano · campos · a 1280 · etapa 13 · para aprobar"
+      "title": "Formularios · catálogo escrito a mano · campos · a 1280 · etapa 13"
     },
     "M-FRM-Catalogo-13.dc.html": {
       "x": 0,
@@ -2773,7 +2773,7 @@
       "w": 390,
       "h": 844,
       "page": "formularios",
-      "title": "Catálogo escrito a mano · campos · teléfono · etapa 13 · para aprobar"
+      "title": "Catálogo escrito a mano · campos · teléfono · etapa 13"
     },
     "Otro-Acceso.dc.html": {
       "x": 7600,
@@ -2782,7 +2782,7 @@
       "w": 1440,
       "h": 900,
       "page": "ingreso",
-      "title": "Otro acceso · un link de empresa, como persona · para aprobar"
+      "title": "Otro acceso · un link de empresa, como persona"
     },
     "Otro-Acceso-Persona.dc.html": {
       "x": 9120,
@@ -2791,7 +2791,7 @@
       "w": 1440,
       "h": 900,
       "page": "ingreso",
-      "title": "Otro acceso · un link personal, como empresa · para aprobar"
+      "title": "Otro acceso · un link personal, como empresa"
     },
     "M-Otro-Acceso.dc.html": {
       "x": 4700,
@@ -2800,7 +2800,7 @@
       "w": 390,
       "h": 844,
       "page": "ingreso",
-      "title": "Otro acceso · un link de empresa, como persona · teléfono · para aprobar"
+      "title": "Otro acceso · un link de empresa, como persona · teléfono"
     },
     "M-Otro-Acceso-Persona.dc.html": {
       "x": 5170,
@@ -2809,7 +2809,7 @@
       "w": 390,
       "h": 844,
       "page": "ingreso",
-      "title": "Otro acceso · un link personal, como empresa · teléfono · para aprobar"
+      "title": "Otro acceso · un link personal, como empresa · teléfono"
     }
   },
   "createdOnFiles": {

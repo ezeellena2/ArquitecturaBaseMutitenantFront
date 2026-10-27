@@ -28,7 +28,7 @@ import formularios_lista_y_ficha_1004 as L  # noqa: E402
 import estados_util as EU  # noqa: E402
 
 PROJ = A.PROJ
-APROBADO = False
+APROBADO = True  # el usuario los aprobó el 27/10
 PARA_APROBAR = " · para aprobar"
 CHEV, MAS, KEBAB, TILDE = F.CHEV, F.MAS, F.KEBAB, A.TILDE
 MOTIVO_TOPE = "Llegó a 20 campos, el máximo de un catálogo."

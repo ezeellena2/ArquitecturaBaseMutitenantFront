@@ -17,7 +17,7 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
 PROJ = pathlib.Path(__file__).resolve().parent.parent
-APROBADO = False
+APROBADO = True  # el usuario los aprobó el 27/10
 PARA_APROBAR = " · para aprobar"
 
 
