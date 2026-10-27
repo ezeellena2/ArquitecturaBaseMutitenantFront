@@ -641,6 +641,10 @@ textarea.in2 { height: auto; min-height: 84px; }
 .cmp-tx small { font-size: 12.5px; color: var(--t3); }
 .cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }
 </style>
+<style data-b0="org">
+.tt-h .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -756,9 +760,9 @@ textarea.in2 { height: auto; min-height: 84px; }
         </div>
 
         <div class="tarjeta">
-          <div class="tt-h" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.3fr) 100px 100px 28px;"><span>Rol</span><span>Vale en</span><span class="num">Usuarios</span><span class="num">Permisos</span><span class="sr">Acciones</span></div>
+          <div class="tt-h" style="grid-template-columns: minmax(0, 1.3fr) 140px minmax(0, 1.2fr) 100px 100px 28px;"><span aria-sort="ascending">Rol<span class="ord" aria-hidden="true">▲</span></span><span>Tipo</span><span>Vale en</span><span class="num">Usuarios</span><span class="num">Permisos</span><span class="sr">Acciones</span></div>
           <sc-for list="{{filas}}" as="r" hint-placeholder-count="8">
-            <div class="tt-f o-alto" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.3fr) 100px 100px 28px;"><span class="dos"><a class="c1" href="Rol.dc.html">{{r.n}}</a><sc-if value="{{r.sistema}}" hint-placeholder-val="{{no}}"><span class="n2">De sistema</span></sc-if></span><span class="c1 n">{{r.vale}}</span><span class="num">{{r.u}}</span><span class="num">{{r.p}}</span><span class="der envoltura">
+            <div class="tt-f" style="grid-template-columns: minmax(0, 1.3fr) 140px minmax(0, 1.2fr) 100px 100px 28px;"><a class="c1" href="Rol.dc.html">{{r.n}}</a><span class="c1 n">{{r.tipo}}</span><span class="c1 n">{{r.vale}}</span><span class="num">{{r.u}}</span><span class="num">{{r.p}}</span><span class="der envoltura">
                 <button type="button" class="kebab" aria-haspopup="menu" aria-expanded="{{r.exp}}" aria-label="{{r.ariaMenu}}" onClick="{{r.alternar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
                 <sc-if value="{{r.menu}}" hint-placeholder-val="{{no}}">
                   <div class="menu der {{r.claseMenu}}" role="menu">
@@ -1041,7 +1045,8 @@ class Component extends DCLogic {
       sinResultados: filas.length === 0,
       filas: pg.items.map((r, i) => ({
         ...this.fila(r.id, r.n, i, pg.items.length),
-        n: r.n, d: r.d, vale: LUGARES[r.vale], tipo: r.sistema ? 'De sistema' : 'Propio', u: String(r.u), p: String(r.p), sistema: !!r.sistema, editable: !r.sistema,
+        n: r.n, d: r.d, vale: LUGARES[r.vale], tipo: r.sistema ? 'De sistema' : 'Propio', u: String(r.u), p: String(r.p), sistema: !!r.sistema,
+        tipo: r.sistema ? 'De sistema' : 'Personalizado', editable: !r.sistema,
         textoEditar: r.sistema ? 'Ver permisos' : 'Editar',
         // Etapa 9 (R10): con usuarios no se puede inactivar; la opción va apagada, con el motivo en su tooltip (decisión 43).
         puedeInactivar: !r.sistema && r.u === 0,

@@ -647,6 +647,10 @@ textarea.in2 { height: auto; min-height: 84px; }
 .cmp-tx small { font-size: 12.5px; color: var(--t3); }
 .cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }
 </style>
+<style data-b0="org">
+.tt-h .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -756,10 +760,10 @@ textarea.in2 { height: auto; min-height: 84px; }
     </div>
 
     <div class="tarjeta">
-      <div class="tt-h" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) 100px 150px 28px;"><span>Empresa</span><span>Zona horaria</span><span class="num">Miembros</span><span>Estado</span><span class="sr">Acciones</span></div>
+      <div class="tt-h" style="grid-template-columns: minmax(0, 1.3fr) 150px minmax(0, 1.2fr) 100px 150px 28px;"><span aria-sort="ascending">Empresa<span class="ord" aria-hidden="true">▲</span></span><span>CUIT</span><span>Zona horaria</span><span class="num">Miembros</span><span>Estado</span><span class="sr">Acciones</span></div>
       <sc-for list="{{filas}}" as="e" hint-placeholder-count="3">
-        <div class="tt-f {{e.clase}} o-alto" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) 100px 150px 28px;">
-          <span class="dos"><a class="c1" href="Empresa.dc.html">{{e.n}}</a><span class="n2 {{e.claseCuit}}">{{e.cuit}}</span></span>
+        <div class="tt-f {{e.clase}}" style="grid-template-columns: minmax(0, 1.3fr) 150px minmax(0, 1.2fr) 100px 150px 28px;">
+          <a class="c1" href="Empresa.dc.html">{{e.n}}</a><span class="c1 n {{e.claseCuit}}">{{e.cuit}}</span>
           <span class="c1 n">{{e.zona}}</span>
           <span class="num">{{e.miembros}}</span>
           <span><span class="pill {{e.pill}}">{{e.textoEstado}}</span></span>
@@ -1160,7 +1164,7 @@ const activas = s.empresas.filter((e) => e.estado === 'activa').length;
     return {
       ...this.fila(e.id, e.n),
       n: e.n,
-      cuit: e.cuit ? 'CUIT ' + e.cuit : 'Sin CUIT',
+      cuit: e.cuit || '—',
       claseCuit: e.cuit ? '' : 'nada',
       zona: nombreZona(e.zona ?? ORG_ZONA),
       miembros: String(e.miembros),

@@ -647,6 +647,10 @@ textarea.in2 { height: auto; min-height: 84px; }
 .cmp-tx small { font-size: 12.5px; color: var(--t3); }
 .cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }
 </style>
+<style data-b0="org">
+.tt-h .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -770,9 +774,9 @@ textarea.in2 { height: auto; min-height: 84px; }
           <sc-if value="{{hayFiltros}}" hint-placeholder-val="{{no}}"><button type="button" class="fb-limpiar" onClick="{{limpiar}}">Limpiar</button></sc-if>
         </div>
         <div class="tarjeta">
-          <div class="tt-h {{claseEncabezado}}" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1.3fr) 190px 28px;"><span>Usuario</span><span>Rol en la organización</span><span>Empresa</span><span>Estado</span><span class="sr">Acciones</span></div>
+          <div class="tt-h {{claseEncabezado}}" style="grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr) 160px minmax(0, 1fr) 150px 90px 28px;"><span aria-sort="ascending">Usuario<span class="ord" aria-hidden="true">▲</span></span><span>Correo</span><span>Rol en la organización</span><span>Empresa</span><span>Estado</span><span>Vence</span><span class="sr">Acciones</span></div>
           <sc-for list="{{filas}}" as="u" hint-placeholder-count="8">
-            <div class="tt-f {{u.clase}} o-alto" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1.3fr) 190px 28px;"><span class="dos"><sc-if value="{{u.conNombre}}" hint-placeholder-val="{{si}}"><a class="c1" href="Usuario.dc.html">{{u.nombre}}</a></sc-if><sc-if value="{{u.sinNombre}}" hint-placeholder-val="{{no}}"><a class="c1" href="Usuario.dc.html">{{u.email}}</a></sc-if><sc-if value="{{u.conNombre}}" hint-placeholder-val="{{si}}"><span class="n2">{{u.email}}</span></sc-if></span><span class="roles"><sc-for list="{{u.rolesOrg}}" as="r" hint-placeholder-count="1"><span class="rol">{{r}}</span></sc-for><sc-if value="{{u.sinRolesOrg}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span class="dos"><sc-if value="{{u.conEmpresa}}" hint-placeholder-val="{{si}}"><span>{{u.empresa}}</span><span class="n2">{{u.rolesEmpresa}}</span></sc-if><sc-if value="{{u.sinEmpresa}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span class="dos"><span><span class="pill {{u.pill}}">{{u.estado}}</span></span><sc-if value="{{u.esInvitacion}}" hint-placeholder-val="{{no}}"><span class="n2 sang">{{u.textoVence}}</span></sc-if></span><span class="der envoltura">
+            <div class="tt-f {{u.clase}}" style="grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr) 160px minmax(0, 1fr) 150px 90px 28px;"><span class="dos"><sc-if value="{{u.conNombre}}" hint-placeholder-val="{{si}}"><a class="c1" href="Usuario.dc.html">{{u.nombre}}</a></sc-if><sc-if value="{{u.sinNombre}}" hint-placeholder-val="{{no}}"><a class="c1" href="Usuario.dc.html">{{u.email}}</a></sc-if></span><span class="c2b">{{u.correo}}</span><span class="roles"><sc-for list="{{u.rolesOrg}}" as="r" hint-placeholder-count="1"><span class="rol">{{r}}</span></sc-for><sc-if value="{{u.sinRolesOrg}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span class="dos"><sc-if value="{{u.conEmpresa}}" hint-placeholder-val="{{si}}"><span>{{u.empresa}}</span></sc-if><sc-if value="{{u.sinEmpresa}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span><span class="pill {{u.pill}}">{{u.estado}}</span></span><span class="c1 n {{u.claseVence}}">{{u.vence}}</span><span class="der envoltura">
                 <button type="button" class="kebab" aria-haspopup="menu" aria-expanded="{{u.exp}}" aria-label="{{u.ariaMenu}}" onClick="{{u.alternar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
                 <sc-if value="{{u.menu}}" hint-placeholder-val="{{no}}">
                   <div class="menu der {{u.claseMenu}}" role="menu">
@@ -1221,6 +1225,7 @@ class Component extends DCLogic {
           conNombre: !!u.n,
           sinNombre: !u.n,
           email: u.email,
+          correo: u.email.includes('@') ? u.email : '—',
           rolesOrg: u.rolesOrg,
           sinRolesOrg: u.rolesOrg.length === 0,
           empresa: primera ? nombreEmpresa(primera.c) + (u.empresas.length > 1 ? ' y ' + (u.empresas.length - 1) + ' más' : '') : '—',
