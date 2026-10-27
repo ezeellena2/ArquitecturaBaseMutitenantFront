@@ -9,13 +9,18 @@ explicativo ni «Ir al inicio», porque el menú ya está.
 - Sin ese acceso, o para un operador de Plataforma, es «No encontramos esta página», como hoy (Error-Org).
 
 Escribe Otro-Acceso (de persona a empresa) y Otro-Acceso-Persona (de empresa a persona), con sus teléfonos, en la página Ingreso.
-Se arman sobre Inicio-Personal e Inicio-Org (y sus teléfonos), que no cambian. Se puede volver a correr.
+Se arman sobre Inicio-Personal e Inicio-Org (y sus teléfonos), que no cambian (la campana del Inicio personal, que desde el
+bloque 0 se abre con su aviso, vuelve a la simple). Se puede volver a correr.
 """
 import json
 import pathlib
 import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import bloque0_personal_1004 as BP  # noqa: E402
+import campana_1004 as K  # noqa: E402
+
 PROJ = pathlib.Path(__file__).resolve().parent.parent
 APROBADO = True  # el usuario los aprobó el 27/10
 PARA_APROBAR = " · para aprobar"
@@ -111,7 +116,7 @@ def armar(base, estados, apps, css, w, h):
 
 
 def compu(marco, casos):
-    a0 = cuerpo_app(leer(marco))
+    a0 = cuerpo_app(leer(marco)).replace(BP.CAMPANA_INICIO, K.boton("1"))
     apps = []
     for estado, titulo, boton, icono, varias in casos:
         personal = '<div class="w-bnd">' in a0

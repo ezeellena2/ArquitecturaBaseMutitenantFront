@@ -107,7 +107,33 @@ FECHA_CORTA = (
 TELEFONOS = ("M-Usuarios", "M-Usuarios-Invitar", "M-Empresa", "M-Auditoria-Org", "M-Asistente-Uso-Org")
 
 
+# Las listas cortas de la compu, en un renglón (maqueta 8b2ebca): lo que iba debajo va en la misma fila, como una columna; el
+# estado de un dominio, con su punto, como «Cómo entrás» de Mi cuenta. En el teléfono no cambia.
+CSS_LISTA = """<style data-b0="lista">
+.w-it .dato { flex-direction: row; align-items: center; gap: 16px; }
+.w-it .dato > b { flex: none; width: 380px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-it .dato > span { flex: 1; min-width: 0; font-size: 13px; color: var(--t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-it .dato > .w-est { display: inline-flex; align-items: center; gap: 6px; }
+.w-it .dato > .w-est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); flex: none; }
+.w-it .dato > .w-est.pend::before { background: oklch(0.72 0.15 70); }
+</style>
+"""
+LISTAS = ("Configuracion", "Configuracion-Verificar", "Avisos", "Usuario")
+ESTADOS_DOMINIO = (("<b>delta.ejemplo.com</b><span>Pendiente</span>", '<b>delta.ejemplo.com</b><span class="w-est pend">Pendiente</span>'),
+                   ("<span>Verificado · 10 correos administrados por Grupo Delta</span>",
+                    '<span class="w-est">Verificado · 10 correos administrados por Grupo Delta</span>'))
+
+
 if __name__ == "__main__":
+    for n in LISTAS:
+        p = PROJ / f"{n}.dc.html"
+        t = p.read_text(encoding="utf-8")
+        if 'data-b0="lista"' in t:
+            continue
+        for a, b in ESTADOS_DOMINIO:
+            t = t.replace(a, b)
+        p.write_text(t.replace("</helmet>", CSS_LISTA + "</helmet>", 1), encoding="utf-8")
+        print(n, "lista en un renglón")
     for n in TELEFONOS:
         p = PROJ / f"{n}.dc.html"
         t = p.read_text(encoding="utf-8")

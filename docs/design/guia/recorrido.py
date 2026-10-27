@@ -41,10 +41,10 @@ CAPITULOS = [
          "El enlace de un solo uso que manda el bot para entrar."),
     ]),
     ("persona", "Su perfil personal", "Lo que ve una persona como persona, separado de lo que ve como empresa.", [
-        ("inicio-personal", "Inicio personal", "/", "si", "3", ["Inicio-Personal"], ["M-Inicio-Personal"], ["M-Mas-Personal"],
-         "Con el aviso para sumar un correo propio si solo entra con el de la empresa. El contenido llega con los módulos."),
+        ("inicio-personal", "Inicio personal", "/", "si", "3", ["Inicio-Personal"], ["M-Inicio-Personal"], ["M-Mas-Personal", "M-Campana-Personal"],
+         "Si solo entra con el correo de la empresa, la campana le avisa que sume uno propio y lo lleva a Mi cuenta. El contenido llega con los módulos."),
         ("cuenta", "Mi cuenta", "/cuenta", "parte", "3, 8 y 10", ["Cuenta"], ["M-Cuenta"], ["Cuenta-Agregar", "Cuenta-Verificar", "Cuenta-Metodo", "Cuenta-Baja", "M-Cuenta-Agregar", "M-Cuenta-Verificar", "M-Cuenta-Metodo", "M-Cuenta-Baja"],
-         "Tus datos, cómo entrás y privacidad. Agregar, verificar, quitar y dar de baja van en diálogos. Exportar mis datos los manda por correo, con un enlace que vence a las 48 horas."),
+         "Tus datos, cómo entrás y privacidad. Agregar, verificar, quitar y borrar la cuenta van en diálogos. Exportar mis datos los manda por correo, con un enlace que vence a las 48 horas."),
         ("mensajes-persona", "Mensajes", "/mensajes", "no", "11 y 14", ["WA-Mensajes", "WA-Mensajes-14"], ["M-WA-Mensajes"], ["M-WA-Mensaje", "M-WA-Mensaje-14"],
          "Las charlas de la persona con las organizaciones por WhatsApp, solo para leer, con «Seguir en WhatsApp»."),
     ]),

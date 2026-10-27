@@ -2810,6 +2810,15 @@
       "h": 844,
       "page": "ingreso",
       "title": "Otro acceso · un link personal, como empresa · teléfono"
+    },
+    "M-Campana-Personal.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "personal",
+      "title": "Avisos · personal · teléfono",
+      "w": 390,
+      "x": 4810,
+      "y": 1280
     }
   },
   "createdOnFiles": {
