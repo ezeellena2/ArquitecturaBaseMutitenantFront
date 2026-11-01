@@ -20,8 +20,7 @@ import campana_1004 as K  # noqa: E402
 import reglas_25_10_1004 as R  # noqa: E402
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent
-TEXTO = "Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa"
-CUANDO = "20/09/2026 10:12"
+TEXTO, CUANDO = K.METODO, K.METODO_CUANDO
 CARTEL = re.compile(r'<sc-if value="\{\{conAviso\}\}" hint-placeholder-val="\{\{si\}\}"><div class="(?:w-cartel|ap-sug)">.*?</sc-if>', re.S)
 VALS = 'conAviso: e === "Con el aviso",'
 VALS_NUEVOS = VALS + '\n      sinAviso: e !== "Con el aviso", claseCampana: e === "Con el aviso" ? " on" : "",'

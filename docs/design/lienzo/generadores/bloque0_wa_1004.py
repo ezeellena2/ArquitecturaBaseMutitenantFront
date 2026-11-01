@@ -22,6 +22,12 @@ las reglas del 25 y 26/10, copiando la maqueta (3b9c967, 8ba7f7f, bde7167, 3680a
 - Debajo de un estado no va una oración: «Cargar teléfonos» sin «Queda vinculado», también en el teléfono.
 - «Sin medio de pago · qué significa» dice lo que la maqueta, sin «O esperá al 1/11».
 El teléfono sigue con el nombre y una línea de datos. Se puede volver a correr.
+
+Desde la v147 suma los chats de la 14 (14-texto-diseno.md, punto 5): WA-Chats-Formulario, WA-Chats-Formulario-Cliente y WA-Chats-Respuesta,
+con sus teléfonos, llevan la barra de la bandeja y las fechas como WA-Chats. Llegan con las fechas del 25/10, que comparten con sus
+versiones de la 18, y acá pasan al 27/09: la bandeja con las de WA-Chats y el hilo de Tomás, antes de las 10:45 de ese día. Los demás chats
+de etapas posteriores siguen con la barra vieja: se pasan con su etapa. «Mis mensajes» de la 14 (WA-Mensajes-14 y M-WA-Mensaje-14) toma las
+fechas de WA-Mensajes.
 """
 import pathlib
 import re
@@ -49,6 +55,11 @@ ENVIOS = {"25/09/2026": "09:30", "02/09/2026": "10:00", "04/08/2026": "10:00", "
 PLANTILLAS = {"20/09/2026": "11:30", "18/09/2026": "16:10", "30/09/2026": "09:40", "29/09/2026": "15:25", "28/09/2026": "10:20",
               "02/10/2026": "12:05", "15/09/2026": "09:00", "04/10/2026": "09:00", "06/10/2026": "09:00", "08/10/2026": "09:00"}
 CONVERSACION_HOY, CONVERSACION_VIEJA = f"{HOY} 10:39", "12/09/2026 16:20"
+# Los chats de la 14: lo que llega de formularios_14_formularios_1004.py y cómo queda; el 13/10 es la «Fecha de la visita» de una respuesta
+FECHAS_14 = {"25/10/2026": HOY, "24/10/2026": AYER, "26/10/2026": "28/09/2026", "13/10/2026": AYER}
+HORAS_14 = {"10:48": "10:28", "10:50": "10:30", "10:51": "10:31", "11:04": "10:44"}
+PERFIL_14 = "Sergio Molina"  # el nombre que le dio formularios_14_formularios_1004.py al contacto sin nombre, antes de la maqueta
+MENSAJES_14 = {"25/10/2026": HOY, "24/10/2026 19:05": f"{AYER} 12:20", "28/09/2026 11:20": "22/09/2026 17:45"}  # lo que tiene WA-Mensajes en esas filas
 
 FILA_LISTA = re.compile(r'(<span class="l1"><b>)([^<]*)(</b><span>)([^<]*)(</span>)')
 COMPLETA = re.compile(r"\d{2}/\d{2}/\d{4} \d{2}:\d{2}")
@@ -198,6 +209,46 @@ def chats():
             t = ordenar_bandeja(t)
         guardar(n, t, CSS_CHATS)
         hechos.append(n)
+    return hechos
+
+
+def fechas_14(t):
+    """Del 25/10 al 27/09, con las horas antes de las 10:45: el hilo, el separador de días, la hora que arma el JS y hasta cuándo se puede mandar."""
+    t = re.sub(r"(?<![\d/])(\d{2}/\d{2}/2026)(?![\d/])", lambda m: FECHAS_14.get(m[1], m[1]), t)
+    return re.sub(r"(?<![\d:])(10:48|10:50|10:51|11:04)(?![\d:])", lambda m: HORAS_14[m[1]], t)
+
+
+def chats_14():
+    """La barra, el perfil y las fechas de WA-Chats. La fila elegida sale del JS del tablero ({{hora}})."""
+    def una(m):
+        return f"{m[1]}{m[2]}{m[3]}{FECHAS[m[2]]}{m[5]}" if m[2] in FECHAS and not m[4].startswith("{{") else m[0]
+    hechos = []
+    for n in ("WA-Chats-Formulario", "WA-Chats-Formulario-Cliente", "WA-Chats-Respuesta"):
+        t = leer(n)
+        if MARCA in t:
+            continue
+        t = sub(r"(</svg>) Buscar por nombre o número(</span>)", r"\1 Buscar\2", t, n)
+        t = re.sub(rf'<span class="w-av g">(?:(?!</span>).)*</span>(<span class="tx"><span class="l1"><b>){PERFIL_14}</b>', rf'<span class="w-av">{INICIALES}</span>\g<1>{PERFIL}</b>', t)
+        guardar(n, fechas_14(FILA_LISTA.sub(una, t)), CSS_CHATS)
+        hechos.append(n)
+    return hechos
+
+
+def telefonos_chats_14():
+    hechos = []
+    for n in ("M-WA-Chats-Formulario", "M-WA-Chats-Formulario-Cliente", "M-WA-Conversacion-Respuesta"):
+        t = leer(n)
+        nuevo = fechas_14(t)
+        if nuevo != t:
+            (PROJ / f"{n}.dc.html").write_text(nuevo, encoding="utf-8")
+            hechos.append(n)
+    for n in ("WA-Mensajes-14", "M-WA-Mensaje-14"):
+        t = nuevo = leer(n)
+        for viejo, fecha in MENSAJES_14.items():
+            nuevo = nuevo.replace(viejo, fecha)
+        if nuevo != t:
+            (PROJ / f"{n}.dc.html").write_text(nuevo, encoding="utf-8")
+            hechos.append(n)
     return hechos
 
 
@@ -401,7 +452,9 @@ def revisar():
     """Lo que no tiene que quedar en ningún tablero de la tanda, corra la primera vez o la segunda."""
     for n in ("WA-Chats", "WA-Chats-24h", "WA-Chats-Nota", "WA-Chats-Pasar", "WA-Chats-Plantilla", "WA-Chats-SinTomar", "Plat-WA-Chats", "WA-Mensajes", "M-WA-Mensajes",
               "M-WA-Mensaje", "M-WA-Chats", "M-WA-Conversacion", "M-WA-24h", "M-WA-Chats-Nota", "M-WA-Chats-Pasar", "M-WA-Chats-Plantilla", "M-WA-Chats-SinTomar",
-              "M-Plat-WA-Chats", "M-Plat-WA-Conversacion", "WA-Contactos", "WA-Contactos-Importar", "M-WA-Contactos", "M-WA-Contactos-Importar", "WA-Contacto", "M-WA-Contacto"):
+              "M-Plat-WA-Chats", "M-Plat-WA-Conversacion", "WA-Contactos", "WA-Contactos-Importar", "M-WA-Contactos", "M-WA-Contactos-Importar", "WA-Contacto", "M-WA-Contacto",
+              "WA-Chats-Formulario", "WA-Chats-Formulario-Cliente", "WA-Chats-Respuesta", "M-WA-Chats-Formulario", "M-WA-Chats-Formulario-Cliente", "M-WA-Conversacion-Respuesta",
+              "WA-Mensajes-14", "M-WA-Mensaje-14"):
         t = leer(n)
         t = t[t.find("<x-dc>"):t.find("</x-dc>")]
         assert not re.search(r">(?:Hoy|Ayer|Lunes)<", t), n
@@ -410,7 +463,7 @@ def revisar():
 
 
 if __name__ == "__main__":
-    for nombre, f in (("chats", chats), ("teléfonos de chats y mensajes", telefonos_chats), ("números", numeros), ("listas cortas", listas_cortas),
+    for nombre, f in (("chats", chats), ("teléfonos de chats y mensajes", telefonos_chats), ("chats de la 14", chats_14), ("teléfonos de los chats de la 14", telefonos_chats_14), ("números", numeros), ("listas cortas", listas_cortas),
                       ("contactos", contactos), ("teléfonos de contactos", telefonos_contactos), ("ficha del contacto", contacto), ("difusiones", difusiones),
                       ("resultados", resultados), ("equipos", equipos), ("plantillas", plantillas), ("cargar teléfonos", cargar_telefonos),
                       ("fechas en el teléfono", telefonos_fechas)):

@@ -11,6 +11,12 @@ aviso lleva a donde se resuelve. Ningún cartel en el cuerpo de una pantalla, sa
 - Desde la v143 (el usuario, 25/10, maqueta 6691dff): la versión nueva del sistema se avisa en la campana, primera, sin leer y con la
   hora; al tocarla, recarga la página. No va como franja;
   las fechas de los avisos, completas (formatos.md).
+- Desde la v147 (14-texto-diseno.md, punto 2, y base-de-la-12.md): cada acceso ve solo sus avisos, y `Campana` y `M-Campana` solo los de la
+  base: un método de ingreso propio (también en `M-Campana-Personal`), la versión nueva y, para un operador, una organización pendiente y
+  una recuperación pedida. El operador, con otro marco, tiene `Campana-Plat` y `M-Campana-Plat`: un tablero por marco, como Otro-Acceso. Cada
+  etapa dibuja su versión: `Campana-14` y `M-Campana-14` suman «WhatsApp rechazó la versión N de …». `Campana` se abre sobre Usuarios, de la
+  base; la versión de la 14, sobre Formularios. El número es el de lo que lista esa campana: 1 en una organización, hasta que una etapa dibuje
+  la suya (2 en la 14), y 2 en Plataforma. Los teléfonos de Plataforma suman la campana en sus pantallas principales (base-de-la-12.md).
 
 Corre al final de todo. Se puede volver a correr.
 """
@@ -40,13 +46,14 @@ LLEGO = svg('<path d="M4 13.5h4.5l1.5 2.5h4l1.5-2.5H20"/><path d="M5.5 6.5h13L20
 FALLO = svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8v.2"/>', 18)
 ESPERA = svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', 18)
 VERSION = svg('<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/>', 18)
-CANT = {"org": "4", "propuesta-whatsapp": "4", "formularios": "4", "plataforma": "2", "plat-formularios": "2", "personal": "1"}
-AVISOS = [  # (tipo, ícono, texto, cuándo, destino en la compu, destino en el teléfono)
-    ("llego", LLEGO, "Llegaron 5 tickets de combustible que no encajan en ningún formulario", "25/10/2026 18:20", "FRM-Faltan.dc.html", "M-FRM-Faltan.dc.html"),
-    ("fallo", FALLO, "WhatsApp rechazó la versión 3 de Control de vehículo", "25/10/2026 17:30", "FRM-Publicando.dc.html", "M-FRM-Editor.dc.html"),
-    ("espera", ESPERA, "4 respuestas por aprobar", "25/10/2026 09:12", "FRM-Formularios.dc.html", "M-FRM-Respuestas.dc.html"),
-    ("fallo", FALLO, "No se pudo mandar el aviso de <span class=\"cod\">VIS-000126</span>", "24/10/2026 16:40", "FRM-Respuesta-Aprobacion.dc.html", "M-FRM-Respuesta-Aprobacion.dc.html"),
-]
+CANT = {"org": "1", "propuesta-whatsapp": "1", "formularios": "1", "plataforma": "2", "plat-formularios": "2", "personal": "1"}
+METODO = "Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa"
+METODO_CUANDO = "20/09/2026 10:12"
+# (tipo, ícono, texto, cuándo, destino en la compu, destino en el teléfono), de lo más nuevo a lo más viejo
+AVISOS = [("espera", ESPERA, METODO, METODO_CUANDO, "Cuenta.dc.html", "M-Cuenta.dc.html")]
+AVISOS_14 = [("fallo", FALLO, "WhatsApp rechazó la versión 4 de Visita a cliente", "27/09/2026 10:38", "FRM-Publicando.dc.html", "M-FRM-Editor.dc.html")] + AVISOS
+AVISOS_PLAT = [("espera", ESPERA, "Pablo Ortiz pidió recuperar su cuenta", "27/09/2026 10:20", "Recuperaciones.dc.html", "M-Recuperaciones.dc.html"),
+               ("espera", ESPERA, "Gamma S.A. espera aprobación", "27/09/2026 09:05", "Organizacion.dc.html", "M-Organizacion.dc.html")]
 CSS = """.w-cmp-env { position: relative; display: inline-flex; margin-left: auto; margin-right: 6px; }
 .w-campana { position: relative; width: 38px; height: 38px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; color: var(--t2); text-decoration: none; }
 .w-campana:hover, .w-campana.on { background: oklch(0.24 0.014 78 / 0.06); color: var(--t1); }
@@ -88,20 +95,20 @@ def boton(n, href="Campana.dc.html", abierto=False, lista=""):
 
 
 # La versión nueva del sistema va primera, sin leer; al tocarla vuelve a cargar la página (no va como franja: el usuario, 25/10)
-AVISO_VERSION = ("version", VERSION, "Hay una versión nueva del sistema", "25/10/2026 18:45")
+AVISO_VERSION = ("version", VERSION, "Hay una versión nueva del sistema", "27/09/2026 10:40")
 
 
-def lista(vacia=False, version=False):
+def lista(vacia=False, version=False, avisos=AVISOS):
     if vacia:
         cuerpo = '<div class="cmp-vacia">No hay avisos.</div>'
     else:
         cuerpo = "".join(f'<a class="cmp-it" href="{d}"><span class="cmp-ic {tipo}">{ic}</span><span class="cmp-tx">{tx}<small>{cuando}</small></span></a>'
-                         for tipo, ic, tx, cuando, d, _m in AVISOS)
+                         for tipo, ic, tx, cuando, d, _m in avisos)
         if version:
             tipo, ic, tx, cuando = AVISO_VERSION
             cuerpo = (f'<a class="cmp-it sin-leer" href="#" aria-label="{tx}, sin leer"><span class="cmp-ic {tipo}">{ic}</span>'
                       f'<span class="cmp-tx">{tx}<small>{cuando}</small></span><span class="cmp-punto" aria-hidden="true"></span></a>') + cuerpo
-    cant = "" if vacia else len(AVISOS) + (1 if version else 0)
+    cant = "" if vacia else len(avisos) + (1 if version else 0)
     return (f'<div class="cmp-lista" role="dialog" aria-label="Avisos"><div class="cmp-cab">Avisos<span>{cant}</span></div>{cuerpo}</div>')
 
 
@@ -127,15 +134,22 @@ def con_campana(t, n):
     return css(t, CSS, "1") if hechos else t
 
 
-TEL_RAIZ = {"M-WA-Chats": "4", "M-WA-Menu": "4", "M-WA-Contactos": "4", "M-Inicio-Personal": "1"}
+TEL_RAIZ = {"M-WA-Chats": "1", "M-WA-Menu": "1", "M-WA-Contactos": "1", "M-Inicio-Personal": "1"}
+TEL_RAIZ_PLAT = ["M-Organizaciones", "M-Cuentas", "M-Plat-WA-Chats", "M-Asistente-Plat", "M-Mas-Plat"]  # la barra de abajo de Plataforma
 
 
-def con_campana_tel(t, n):
+def numero(t, n):
+    """El número de la campana en un tablero que ya la tiene: el de lo que lista la que abre."""
+    t = re.sub(r'(<a class="(?:w-campana|ap-ib ap-campana|c-campana)" href="[^"]*" aria-label="Avisos: )\d+(">)', rf"\g<1>{n}\2", t)
+    return re.sub(rf'({re.escape(CAMPANA)}<span class="n">)\d+(</span></a>)', rf"\g<1>{n}\2", t)
+
+
+def con_campana_tel(t, n, destino="M-Campana"):
     if "ap-campana" in t or "c-campana" in t:
-        return t
-    b = f'<a class="ap-ib ap-campana" href="M-Campana.dc.html" aria-label="Avisos: {n}">{CAMPANA}<span class="n">{n}</span></a>'
+        return numero(t, n)
+    b = f'<a class="ap-ib ap-campana" href="{destino}.dc.html" aria-label="Avisos: {n}">{CAMPANA}<span class="n">{n}</span></a>'
     salida, k = [], 0
-    for m in re.finditer(r'<div class="ap-bar">', t):
+    for m in re.finditer(r'<div class="ap-bar(?: as-bar)?">', t):
         i = m.start()
         uno = t.index("</div>", t.index('<div class="tit">', i)) + len("</div>")
         cierre = t.index("</div>", uno)
@@ -148,54 +162,94 @@ def con_campana_tel(t, n):
 def inicio_tel():
     t = (PROJ / "M-Inicio-Org.dc.html").read_text(encoding="utf-8")
     if "c-campana" not in t:
-        b = f'<a class="c-campana" href="M-Campana.dc.html" aria-label="Avisos: 4">{CAMPANA}<span class="n">4</span></a>'
+        b = f'<a class="c-campana" href="M-Campana.dc.html" aria-label="Avisos: 1">{CAMPANA}<span class="n">1</span></a>'
         assert t.count('<div class="c-hola">') >= 1
         t = t.replace('<div class="c-hola">', b + '<div class="c-hola">')
         t = css(t, CSS_TEL, "tel")
-    (PROJ / "M-Inicio-Org.dc.html").write_text(t, encoding="utf-8")
+    (PROJ / "M-Inicio-Org.dc.html").write_text(numero(t, "1"), encoding="utf-8")
 
 
 # ================================================================ Campana (la lista abierta) y M-Campana
 ESTADOS = ["Con avisos", "Versión nueva", "Sin avisos"]
+GANCHOS = ("      si: true, no: false,\n", "      si: true,\n      no: false,\n")  # la pieza donde cada tablero arma sus valores
+NUMERO = '<sc-if value="{{cmpHay}}" hint-placeholder-val="{{si}}"><span class="n">{{cmpCant}}</span></sc-if>'
+# Los tableros de la 14 abren su versión, con sus dos avisos
+TABLEROS_14 = ["FRM-Formularios", "FRM-Editor", "FRM-Publicar", "FRM-Publicando", "FRM-Catalogos-14", "FRM-Catalogo-14", "WA-Chats-Formulario", "WA-Chats-Respuesta",
+               "WA-Chats-Formulario-Cliente"]
+
+
+def la_suya(n, t, pagina):
+    """Cada campana abre la de su acceso y su etapa, con su número."""
+    if pagina in ("plataforma", "plat-formularios"):
+        return t.replace('<a class="w-campana" href="Campana.dc.html"', '<a class="w-campana" href="Campana-Plat.dc.html"')
+    if pagina == "personal":
+        return t
+    if n in TABLEROS_14:
+        return numero(t.replace('<a class="w-campana" href="Campana.dc.html"', '<a class="w-campana" href="Campana-14.dc.html"'), "2")
+    return numero(t, "1")
+
+
+def abierta(base, cant, avisos, destino, titulo, estados=ESTADOS):
+    """La lista abierta sobre un tablero, con la campana con su número."""
+    t = (PROJ / f"{base}.dc.html").read_text(encoding="utf-8")
+    capas = ('<sc-if value="{{cmpCon}}" hint-placeholder-val="{{si}}">' + lista(avisos=avisos)
+             + ('</sc-if><sc-if value="{{cmpVersion}}" hint-placeholder-val="{{no}}">' + lista(version=True, avisos=avisos)
+                + '</sc-if><sc-if value="{{cmpSin}}" hint-placeholder-val="{{no}}">' + lista(True) if len(estados) > 1 else "") + "</sc-if>")
+    viejo = re.search(r'<span class="w-cmp-env"><a class="w-campana" href="[^"]*" aria-label="Avisos: \d+">.*?</a></span>', t, re.S).group(0)
+    t = t.replace(viejo, boton("{{cmpCant}}", abierto=True, lista=capas).replace('<span class="n">{{cmpCant}}</span>', NUMERO), 1)
+    assert "cmp-lista" in t
+    props = {"campana": {"editor": "enum", "options": estados, "default": estados[0], "section": "Estado"}, "$preview": {"width": 1440, "height": 900}}
+    t = re.sub(r"data-props='[^']*'", "data-props='" + json.dumps(props, ensure_ascii=False, separators=(",", ":")) + "'", t, count=1)
+    gancho = next(g for g in GANCHOS if g in t)
+    t = t.replace(gancho, gancho + "      cmpCon: (this.props.campana ?? 'Con avisos') === 'Con avisos', cmpSin: this.props.campana === 'Sin avisos', cmpHay: this.props.campana !== 'Sin avisos',\n"
+                  f"      cmpVersion: this.props.campana === 'Versión nueva', cmpCant: {{'Versión nueva': '{cant + 1}', 'Sin avisos': '0'}}[this.props.campana] ?? '{cant}',\n", 1)
+    t = re.sub(r"<title>[^<]*</title>", f"<title>{titulo}</title>", t)
+    t = t.replace('href="Campana.dc.html" aria-label="Avisos: {{cmpCant}}"', 'href="#" aria-label="Avisos: {{cmpCant}}" aria-expanded="true"', 1)
+    (PROJ / f"{destino}.dc.html").write_text(t, encoding="utf-8")
 
 
 def campana():
-    t = (PROJ / "FRM-Formularios.dc.html").read_text(encoding="utf-8")
-    t = t.replace(boton("4"), boton("{{cmpCant}}", abierto=True, lista='<sc-if value="{{cmpCon}}" hint-placeholder-val="{{si}}">' + lista()
-                                     + '</sc-if><sc-if value="{{cmpVersion}}" hint-placeholder-val="{{no}}">' + lista(version=True)
-                                     + '</sc-if><sc-if value="{{cmpSin}}" hint-placeholder-val="{{no}}">' + lista(True) + "</sc-if>"), 1)
-    assert "cmp-lista" in t
-    props = {"campana": {"editor": "enum", "options": ESTADOS, "default": ESTADOS[0], "section": "Estado"}, "$preview": {"width": 1440, "height": 900}}
-    t = re.sub(r"data-props='[^']*'", "data-props='" + json.dumps(props, ensure_ascii=False, separators=(",", ":")) + "'", t, count=1)
-    t = t.replace("      si: true, no: false,\n", "      si: true, no: false,\n      cmpCon: (this.props.campana ?? 'Con avisos') === 'Con avisos', cmpSin: this.props.campana === 'Sin avisos',\n"
-                  "      cmpVersion: this.props.campana === 'Versión nueva', cmpCant: this.props.campana === 'Versión nueva' ? '5' : '4',\n", 1)
-    t = re.sub(r"<title>[^<]*</title>", "<title>Avisos · la campana</title>", t)
-    t = t.replace('href="Campana.dc.html" aria-label="Avisos: {{cmpCant}}"', 'href="#" aria-label="Avisos: {{cmpCant}}" aria-expanded="true"', 1)
-    (PROJ / "Campana.dc.html").write_text(t, encoding="utf-8")
+    abierta("Usuarios", len(AVISOS), AVISOS, "Campana", "Avisos · la campana")
+    abierta("FRM-Formularios", len(AVISOS_14), AVISOS_14, "Campana-14", "Avisos · la campana · etapa 14", ["Con avisos"])
+    abierta("Organizaciones", len(AVISOS_PLAT), AVISOS_PLAT, "Campana-Plat", "Avisos · la campana · Plataforma")
+
+
+def filas_tel(avisos):
+    return "".join(f'<a class="cp-fila" href="{m}"><span class="cmp-ic {tipo}">{ic}</span><span class="tx">{tx}<small>{cuando}</small></span>'
+                   f'<span class="chev">{svg("<path d=" + chr(34) + "m9.5 5.5 6.5 6.5-6.5 6.5" + chr(34) + "/>", 18, "2")}</span></a>'
+                   for tipo, ic, tx, cuando, _d, m in avisos)
 
 
 def campana_tel():
-    filas = "".join(f'<a class="cp-fila" href="{m}"><span class="cmp-ic {tipo}">{ic}</span><span class="tx">{tx}<small>{cuando}</small></span>'
-                    f'<span class="chev">{svg("<path d=" + chr(34) + "m9.5 5.5 6.5 6.5-6.5 6.5" + chr(34) + "/>", 18, "2")}</span></a>'
-                    for tipo, ic, tx, cuando, _d, m in AVISOS)
+    filas = filas_tel(AVISOS)
     bar = C.t_bar("Avisos", "Grupo Delta", "M-Inicio-Org.dc.html")
     tipo, ic, tx, cuando = AVISO_VERSION
     version = (f'<a class="cp-fila" href="#"><span class="cmp-ic {tipo}">{ic}</span><span class="tx"><b style="font-weight: 600;">{tx}</b><small>{cuando}</small></span>'
                '<span class="cmp-punto" aria-hidden="true" style="align-self: center; width: 9px; height: 9px; border-radius: 50%; background: var(--marca);"></span></a>')
-    cuerpo = {"Con avisos": bar + f'<div class="ap-cuerpo">{filas}</div>', "Versión nueva": bar + f'<div class="ap-cuerpo">{version}{filas}</div>',
-              "Sin avisos": bar + '<div class="ap-cuerpo"><div class="ap-vacio">No hay avisos.</div></div>'}
-    t = C.tel_pagina(cuerpo, ESTADOS, {}, "Avisos · la campana · teléfono", CSS + CSS_TEL)
+
+    def tres(barra, avisos):
+        return {"Con avisos": barra + f'<div class="ap-cuerpo">{avisos}</div>', "Versión nueva": barra + f'<div class="ap-cuerpo">{version}{avisos}</div>',
+                "Sin avisos": barra + '<div class="ap-cuerpo"><div class="ap-vacio">No hay avisos.</div></div>'}
+    t = C.tel_pagina(tres(bar, filas), ESTADOS, {}, "Avisos · la campana · teléfono", CSS + CSS_TEL)
     (PROJ / "M-Campana.dc.html").write_text(t, encoding="utf-8")
+    t = C.tel_pagina(tres(C.t_bar("Avisos", "Plataforma", "M-Organizaciones.dc.html"), filas_tel(AVISOS_PLAT)), ESTADOS, {}, "Avisos · la campana · Plataforma · teléfono", CSS + CSS_TEL)
+    (PROJ / "M-Campana-Plat.dc.html").write_text(t, encoding="utf-8")
+    bar14 = C.t_bar("Avisos", "Grupo Delta", "M-Inicio-Org.dc.html")
+    t = C.tel_pagina({"Con avisos": bar14 + f'<div class="ap-cuerpo">{filas_tel(AVISOS_14)}</div>'}, ["Con avisos"], {}, "Avisos · la campana · teléfono · etapa 14", CSS + CSS_TEL)
+    (PROJ / "M-Campana-14.dc.html").write_text(t, encoding="utf-8")
 
 
-NUEVOS = {"Campana": (4560, 2300, 1440, 900, "Avisos · la campana"), "M-Campana": (6110, 3320, 390, 844, "Avisos · la campana · teléfono")}
+NUEVOS = {"Campana": (4560, 2300, 1440, 900, "Avisos · la campana"), "M-Campana": (6110, 3320, 390, 844, "Avisos · la campana · teléfono"),
+          "Campana-Plat": (4560, 1280, 1440, 900, "Avisos · la campana · Plataforma"),
+          "M-Campana-Plat": (7990, 2300, 390, 844, "Avisos · la campana · Plataforma · teléfono")}
+PAGINA = {"Campana-Plat": "plataforma", "M-Campana-Plat": "plataforma"}
 
 
 def registrar(tocados):
     ruta = PROJ / "canvas.json"
     c = json.loads(ruta.read_text(encoding="utf-8"))
     for n, (x, y, w, h, titulo) in NUEVOS.items():
-        c["boards"].setdefault(f"{n}.dc.html", {"h": h, "is_interactive": True, "page": "org", "title": titulo, "w": w, "x": x, "y": y})
+        c["boards"].setdefault(f"{n}.dc.html", {"h": h, "is_interactive": True, "page": PAGINA.get(n, "org"), "title": titulo, "w": w, "x": x, "y": y})
     for n in tocados:
         b = c["boards"][f"{n}.dc.html"]
         b["title"] = b["title"].replace(PARA_APROBAR, "") + ("" if APROBADO else PARA_APROBAR)
@@ -207,11 +261,11 @@ if __name__ == "__main__":
     hechos = []
     for k, v in c["boards"].items():
         n = k[:-8]
-        if n.startswith("M-") or v.get("page") not in CANT or n in NUEVOS:
+        if n.startswith("M-") or v.get("page") not in CANT or n in NUEVOS or n == "Campana-14":
             continue
         f = PROJ / k
         t = f.read_text(encoding="utf-8")
-        nuevo = con_campana(t, CANT[v["page"]])
+        nuevo = la_suya(n, con_campana(t, CANT[v["page"]]), v["page"])
         if nuevo != t:
             f.write_text(nuevo, encoding="utf-8")
             hechos.append(n)
@@ -220,6 +274,9 @@ if __name__ == "__main__":
         f = PROJ / f"{n}.dc.html"
         t = f.read_text(encoding="utf-8")
         f.write_text(con_campana_tel(t, cant), encoding="utf-8")
+    for n in TEL_RAIZ_PLAT:
+        f = PROJ / f"{n}.dc.html"
+        f.write_text(con_campana_tel(f.read_text(encoding="utf-8"), "2", "M-Campana-Plat"), encoding="utf-8")
     inicio_tel()
     campana()
     campana_tel()

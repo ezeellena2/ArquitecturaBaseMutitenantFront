@@ -236,14 +236,6 @@
     .toast2 { position: absolute; z-index: 41; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 10px; padding: 12px 16px; max-width: 460px; background: #fff; border: 1px solid var(--borde); border-radius: 12px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); font-size: 14px; color: var(--t1); }
     .toast2 svg { flex-shrink: 0; }
 
-    .doc2 { width: 1440px; background: var(--fondo); padding: 36px 40px; box-sizing: border-box; font-size: 13px; line-height: 1.5; color: var(--t1); display: flex; flex-direction: column; gap: 22px; }
-    .doc2 h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
-    .doc2 .reglas { margin: 0; padding-left: 18px; color: var(--t2); display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; }
-    .caso2 { display: flex; flex-direction: column; gap: 8px; }
-    .caso2 .rot { font-size: 12px; font-weight: 600; color: var(--t2); }
-    .marco { border: 1px solid var(--borde); border-radius: 12px; overflow: visible; background: #fff; box-shadow: 0 1px 2px oklch(0.24 0.014 78 / 0.04); }
-    .marco .banda-pag { border-radius: 12px; border-bottom: 0; }
-
     /* Compacto: medidas finales de todo el sistema (pisan las de arriba). */
     .pagina { padding: 20px 24px; gap: 14px; font-size: 13px; }
     .ph h1, .hero h1 { font-size: 20px; }
@@ -404,6 +396,8 @@
     .tt-grupo .cnt-area { font-weight: 400; color: var(--t2); }
     .fila-perm { min-height: 36px !important; }
     .tt-grupo { box-sizing: border-box; min-height: 40px; }
+    /* Etapa 9: la lista no carga por un límite de uso */
+    .vacio .b:disabled { opacity: 0.5; cursor: default; }
   </style>
                                 <style data-tema="c2">
 /* Común a las tres direcciones: marca con nombre, rótulos sin mayúsculas, sombras suaves. */
@@ -487,244 +481,70 @@
 .tt-f:hover { background: oklch(0.95 0.025 185) !important; }
 
   </style><!-- /tema -->
-  <style data-criterio="botones">
-.crit { width: 1440px; min-height: 2080px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
-.crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
-.crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
-.crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
-.g4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.g3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.g2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-.pieza { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
-.pieza .muestra { display: flex; align-items: center; gap: 10px; min-height: 44px; flex-wrap: wrap; }
-.pieza strong { font-size: 15px; }
-.pieza p { margin: 0; color: var(--t2); font-size: 13.5px; }
-.pieza .ej { font-size: 12.5px; color: var(--t3); }
-.cb { height: 36px; box-sizing: border-box; padding: 0 14px; border-radius: 8px; border: 1px solid transparent; font-family: inherit; font-size: 14px; font-weight: 600; line-height: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; white-space: nowrap; text-decoration: none; }
-.cb svg { width: 16px; height: 16px; flex-shrink: 0; }
-.cb.ch { height: 32px; padding: 0 12px; font-size: 13px; }
-.cb.ch svg { width: 14px; height: 14px; }
-.cb.gr { height: 44px; padding: 0 18px; font-size: 15px; border-radius: 10px; }
-.cb-pri { background: var(--marca); color: #fff; }
-.cb-pri:hover, .cb-pri.h { background: var(--marca-h); }
-.cb-sec { background: #fff; border-color: var(--borde2); color: var(--t1); }
-.cb-sec:hover, .cb-sec.h { background: var(--s2); border-color: oklch(0.78 0.014 78); }
-.cb-pel { background: #fff; border-color: oklch(0.57 0.2 25 / 0.4); color: oklch(0.52 0.19 25); }
-.cb-pel:hover, .cb-pel.h { background: var(--peligro-t); }
-.cb-pel.lleno { background: oklch(0.55 0.2 25); border-color: oklch(0.55 0.2 25); color: #fff; }
-.cb-enl { height: auto; padding: 0; background: transparent; color: var(--marca-tx); }
-.cb-enl:hover, .cb-enl.h { text-decoration: underline; text-underline-offset: 3px; }
-.cb:disabled { opacity: 0.5; cursor: default; }
-.ib { width: 32px; height: 32px; box-sizing: border-box; border-radius: 8px; border: 1px solid transparent; background: transparent; color: var(--t2); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
-.ib:hover, .ib.h { background: #fff; border-color: var(--borde); color: var(--t1); }
-.medidas { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
-.medidas .cab { display: grid; grid-template-columns: 200px 150px minmax(0, 1fr) 420px; gap: 16px; align-items: center; min-height: 44px; padding: 0 18px; background: oklch(0.945 0.018 76); font-size: 13px; font-weight: 600; color: var(--t2); border-bottom: 1px solid oklch(0.89 0.02 76); }
-.medidas .fil { display: grid; grid-template-columns: 200px 150px minmax(0, 1fr) 420px; gap: 16px; align-items: center; min-height: 64px; padding: 10px 18px; border-bottom: 1px solid var(--borde); }
-.medidas .fil:last-child { border-bottom: 0; }
-.medidas .fil .muestra { display: flex; align-items: center; gap: 10px; }
-.caso { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.caso .rot { font-size: 13px; font-weight: 600; color: var(--t2); }
-.caso .nota { font-size: 12.5px; color: var(--t3); }
-.cuadro { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
-.cuadro .banda { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; padding: 0 18px; }
-.cuadro .banda h3 { margin: 0; font-size: 16px; font-weight: 700; white-space: nowrap; }
-.cuadro .cab-caja { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 8px 0 16px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 14px; font-weight: 600; }
-.cuadro .fila { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 8px 0 16px; font-size: 14px; }
-.cuadro .fila .dato { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
-.cuadro .pie { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--borde); }
-.cuadro .cuerpo { padding: 16px; color: var(--t2); font-size: 13.5px; }
-.cuadro .cuerpo strong { display: block; color: var(--t1); font-size: 16px; margin-bottom: 4px; }
-.filtros { display: flex; align-items: center; gap: 10px; padding: 12px 16px; }
-.filtros .bus { flex: 1; height: 36px; border: 1px solid var(--borde); border-radius: 8px; background: var(--s2); display: flex; align-items: center; padding: 0 12px; color: var(--t3); font-size: 13.5px; }
-.filtros .pil { height: 36px; box-sizing: border-box; border: 1px solid var(--borde); border-radius: 999px; padding: 0 14px; display: inline-flex; align-items: center; font-size: 13.5px; color: var(--t2); background: #fff; }
-.si-no { display: flex; flex-direction: column; gap: 12px; }
-.si-no .t { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
-.si-no .t.si { color: var(--ok); }
-.si-no .t.no { color: oklch(0.52 0.19 25); }
-.si-no .muestra { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.tachado { position: relative; opacity: 0.55; }
-.tachado::after { content: ""; position: absolute; left: -4px; right: -4px; top: 50%; border-top: 2px solid oklch(0.52 0.19 25); transform: rotate(-8deg); }
-.prohibido { margin: 0; padding-left: 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 32px; color: var(--t2); font-size: 14px; }
-.girar2 { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid oklch(1 0 0 / 0.4); border-top-color: #fff; }
+  <style data-criterio="aplicado">
+/* Botones: 4 tipos y 2 tamaños (36 y 32); 44 solo en ingreso y registro. Esquinas de 8 (10 en los grandes). */
+.b { height: 36px !important; padding: 0 14px !important; border-radius: 8px !important; font-size: 14px !important; font-weight: 600 !important; gap: 6px !important; }
+.b-sm { height: 32px !important; padding: 0 12px !important; font-size: 13px !important; border-radius: 8px !important; }
+.b-lg, .b.lg { height: 44px !important; padding: 0 18px !important; font-size: 15px !important; border-radius: 10px !important; }
+.b-sec { border-color: var(--borde2) !important; }
+.b-pel { background: #fff !important; border: 1px solid oklch(0.57 0.2 25 / 0.4) !important; color: oklch(0.52 0.19 25) !important; }
+.dlg-f .b-pel, .velo .b-pel { background: oklch(0.55 0.2 25) !important; border-color: oklch(0.55 0.2 25) !important; color: #fff !important; }
+.b-google { height: 44px !important; border-radius: 10px !important; border-color: var(--borde2) !important; }
+.kebab, .ico-btn { width: 32px !important; height: 32px !important; border-radius: 8px !important; }
+/* Campos: 36 en la app; en ingreso y registro, a la altura de sus botones (44). El código, 44. */
+.in2 { height: 36px; border-radius: 8px !important; border-color: var(--borde2) !important; font-size: 13.5px !important; }
+.in2.lg { height: 44px !important; font-size: 15px !important; border-radius: 10px !important; }
+textarea.in2 { height: auto; min-height: 84px; }
+.otp input { height: 44px !important; border-radius: 8px !important; }
+.et { font-size: 12.5px !important; font-weight: 600 !important; color: var(--t2) !important; }
+.err2 { font-size: 12.5px !important; }
+/* Encabezados con color: arena, sin mayúsculas, 40 de alto en tablas y 48 en diálogos. */
+.tt-h, .tt-h.gris { background: oklch(0.945 0.018 76) !important; border-bottom-color: oklch(0.89 0.02 76) !important; text-transform: none !important; letter-spacing: 0 !important; min-height: 40px !important; height: 40px !important; font-size: 13px !important; }
+.tt-f { min-height: 40px !important; font-size: 13px !important; box-sizing: border-box !important; padding-top: 4px !important; padding-bottom: 4px !important; }
+.tt-h { box-sizing: border-box !important; }
+.dlg-h { background: oklch(0.945 0.018 76) !important; border-bottom-color: oklch(0.89 0.02 76) !important; padding-top: 12px !important; padding-bottom: 12px !important; }
+.dlg-h h2 { font-size: 15px !important; font-weight: 600 !important; }
+.dlg-h p { display: none !important; }
+/* Estados: punto de color y palabra, sin fondo ni etiqueta. */
+.pill { background: transparent !important; padding: 0 !important; color: var(--t1) !important; font-size: 13px !important; font-weight: 400 !important; }
+.pill::before { width: 8px !important; height: 8px !important; }
+.pill.ok::before { background: oklch(0.6 0.13 155) !important; }
+.pill.pend::before { background: var(--marca) !important; }
+.pill.alerta::before { background: oklch(0.72 0.15 70) !important; }
+.pill.mal::before { background: oklch(0.57 0.2 25) !important; }
+.pill.off { color: var(--t2) !important; }
+.pill.off::before { background: oklch(0.75 0.01 78) !important; }
+.rol, .rol.sis { background: transparent !important; padding: 0 !important; font-weight: 400 !important; color: var(--t1) !important; font-size: 13px !important; }
+.roles { gap: 0 !important; }
+.roles .rol + .rol::before { content: ", "; }
+/* Sin etiquetas con fondo: el rótulo chico del panel de la marca queda como texto. */
+.kicker { background: transparent !important; padding: 0 !important; border: 0 !important; font-size: 13px !important; font-weight: 600 !important; }
+/* Banda: al lado del título no va nada; estado y «De sistema» van en la segunda línea, separados por un punto medio. */
+.banda-pag .res { display: flex !important; align-items: center; flex-wrap: wrap; gap: 6px; }
+.banda-pag .res > :empty { display: none !important; }
+.banda-pag .res > * + *::before { content: "·"; color: var(--t3); margin-right: 6px; }
+.banda-pag .res .rol { color: var(--t2) !important; }
+.banda-pag .res .sucio { color: oklch(0.5 0.12 70) !important; font-weight: 500 !important; }
+/* La cantidad de una pestaña, en gris y sin fondo. */
+.cnt { background: transparent !important; padding: 0 !important; color: var(--t3) !important; font-weight: 500 !important; }
+/* El error de una acción directa: borde rojo y ✕; no se va solo. */
+.toast2.mal { border-color: oklch(0.57 0.2 25 / 0.45) !important; }
+/* Formularios: cada título de sección es un encabezado arena a lo ancho de la caja (el «colorcito»), sin líneas sueltas. */
+.hoja { overflow: hidden; }
+.hoja:has(> h2:first-child) { padding-top: 0 !important; }
+.hoja .campo2.ancho > input.in2 { max-width: 420px; }
+.hoja h2 { grid-column: 1 / -1; margin: 0 -20px !important; padding: 10px 20px !important; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 13.5px !important; font-weight: 600 !important; }
+.hoja h2:not(:first-child) { border-top: 1px solid oklch(0.89 0.02 76); margin-top: 6px !important; }
+.hoja .linea { display: none !important; }
   </style>
-
-  <style data-propuesta="whatsapp">
-body { margin: 0; }
-.w-app { display: flex; width: 1440px; height: 900px; overflow: hidden; background: var(--fondo); font-family: Inter, system-ui, sans-serif; font-size: 13px; color: var(--t1); position: relative; }
-.w-sb { width: 232px; flex-shrink: 0; background: oklch(0.925 0.02 75); border-right: 1px solid oklch(0.87 0.022 75); display: flex; flex-direction: column; }
-.w-mk { height: 52px; flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 0 14px; font-size: 14px; font-weight: 700; border-bottom: 1px solid oklch(0.87 0.022 75); }
-.w-br { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, oklch(0.5 0.1 195), oklch(0.58 0.11 170)); flex-shrink: 0; }
-.w-cx { padding: 12px 14px; line-height: 1.35; }
-.w-cx b { display: block; font-size: 14px; }
-.w-cx span { color: var(--t3); font-size: 12.5px; }
-.w-nav { display: flex; flex-direction: column; gap: 2px; padding: 4px 8px; }
-.w-ln { display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: 8px; color: oklch(0.42 0.018 60); }
-.w-ln svg { flex-shrink: 0; }
-.w-ln.on { background: #fff; color: oklch(0.43 0.09 195); font-weight: 600; box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.08), 0 0 0 1px var(--borde); }
-.w-ln .cnt { margin-left: auto; font-size: 12px; font-weight: 600; color: oklch(0.43 0.09 195); }
-.w-ln.grupo { font-weight: 600; color: var(--t1); }
-.w-ln .fl { margin-left: auto; color: var(--t3); display: inline-flex; }
-.w-esp { flex: 1; }
-.w-abajo { border-top: 1px solid oklch(0.87 0.022 75); padding: 8px; }
-.w-us { border-top: 1px solid oklch(0.87 0.022 75); display: flex; align-items: center; gap: 10px; padding: 10px 14px; }
-.w-us .tx { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
-.w-us .tx span { color: var(--t3); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.w-panel { width: 232px; flex-shrink: 0; background: oklch(0.905 0.022 75); border-right: 1px solid oklch(0.85 0.026 75); display: flex; flex-direction: column; }
-.w-panel .pc { height: 52px; display: flex; align-items: center; padding: 0 14px; font-size: 14px; font-weight: 700; border-bottom: 1px solid oklch(0.85 0.026 75); }
-.w-panel .w-nav { padding: 10px 8px; }
-.w-av { width: 32px; height: 32px; border-radius: 50%; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
-.w-av.g { background: oklch(0.9 0.012 78); color: var(--t2); }
-.w-av.chico { width: 28px; height: 28px; font-size: 12px; }
-.w-co { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.w-tb { height: 52px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: oklch(0.925 0.02 75); border-bottom: 1px solid oklch(0.87 0.022 75); color: var(--t2); }
-.w-tb .um { display: inline-flex; align-items: center; gap: 10px; padding: 4px 8px 4px 4px; border-radius: 10px; }
-.w-tb .um .tx { display: flex; flex-direction: column; line-height: 1.25; }
-.w-tb .um b { color: var(--t1); font-size: 13px; }
-.w-tb .um span { font-size: 12px; }
-.w-bnd { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; box-sizing: border-box; padding: 10px 24px; background: #fff; border-bottom: 1px solid var(--borde); }
-.w-bnd .iz { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.w-bnd .ic { width: 36px; height: 36px; border-radius: 10px; background: var(--marca-t); color: var(--marca-tx); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.w-bnd .vol { width: 28px; height: 28px; box-sizing: border-box; border-radius: 7px; border: 1px solid var(--borde); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.w-bnd h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
-.w-bnd .res { margin: 2px 0 0; font-size: 13px; color: var(--t2); }
-.w-bnd .ac { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.w-est { display: inline-flex; align-items: center; gap: 6px; }
-.w-est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }
-.w-est.off::before { background: oklch(0.75 0.01 78); }
-.w-est.pend::before { background: oklch(0.72 0.15 70); }
-.w-body { flex: 1; min-height: 0; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; overflow: hidden; }
-.w-caja { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
-.w-cab { display: flex; align-items: center; justify-content: space-between; min-height: 40px; box-sizing: border-box; padding: 0 4px 0 16px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 13px; font-weight: 600; }
-.w-it { display: flex; align-items: center; gap: 12px; min-height: 56px; box-sizing: border-box; padding: 6px 8px 6px 16px; border-bottom: 1px solid var(--borde); }
-.w-it:last-child { border-bottom: 0; }
-.w-it .dato { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.35; }
-.w-it .dato b { font-weight: 500; }
-.w-it .dato span { font-size: 12px; color: var(--t3); }
-.w-sw { width: 36px; height: 20px; border-radius: 999px; background: var(--marca); position: relative; flex-shrink: 0; }
-.w-sw::after { content: ""; position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px oklch(0.2 0 0 / 0.2); }
-.w-sw.off { background: oklch(0.85 0.01 78); }
-.w-sw.off::after { right: auto; left: 2px; }
-.w-th, .w-tr { display: grid; grid-template-columns: 160px minmax(0, 1fr) 200px 120px 48px; gap: 16px; align-items: center; padding: 0 8px 0 16px; }
-.w-th { min-height: 40px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 13px; font-weight: 600; color: var(--t2); }
-.w-tr { min-height: 40px; border-bottom: 1px solid var(--borde); }
-.w-tr:nth-child(odd) { background: oklch(0.975 0.008 78); }
-.w-tr:last-child { border-bottom: 0; }
-.w-tr > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.w-tr .r { text-align: right; font-variant-numeric: tabular-nums; }
-.w-chat { flex: 1; min-height: 0; display: flex; background: #fff; border-top: 0; }
-.w-bandeja { width: 380px; flex-shrink: 0; border-right: 1px solid var(--borde); display: flex; flex-direction: column; }
-.w-bandeja .filtro { display: flex; gap: 8px; padding: 12px; border-bottom: 1px solid var(--borde); }
-.w-bus { flex: 1; height: 36px; box-sizing: border-box; border: 1px solid var(--borde); border-radius: 8px; background: var(--s2); display: flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--t3); }
-.w-pil { height: 36px; box-sizing: border-box; border: 1px solid var(--borde); border-radius: 999px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; color: var(--t2); background: #fff; white-space: nowrap; }
-.w-conv { display: flex; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--borde); align-items: flex-start; }
-.w-conv.on { background: var(--marca-t); }
-.w-conv .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.w-conv .l1 { display: flex; justify-content: space-between; gap: 8px; }
-.w-conv .l1 b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.w-conv .l1 span { font-size: 12px; color: var(--t3); flex-shrink: 0; }
-.w-conv .l2 { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--t3); }
-.w-conv .l2 span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.w-conv.nuevo .l1 b, .w-conv.nuevo .l2 span { font-weight: 600; color: var(--t1); }
-.w-conv.nuevo .l1 span { color: var(--marca-tx); font-weight: 600; }
-.w-punto { width: 8px; height: 8px; border-radius: 50%; background: var(--marca); flex-shrink: 0; margin-top: 5px; }
-.w-hilo { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.w-hilo .hc { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 0 12px 0 16px; border-bottom: 1px solid var(--borde); }
-.w-hilo .hc .tx { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
-.w-hilo .hc .tx b { font-size: 14px; font-weight: 600; }
-.w-hilo .hc .tx span { font-size: 12.5px; color: var(--t3); }
-.w-msjs { flex: 1; min-height: 0; background: oklch(0.975 0.008 78); padding: 16px 24px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
-.w-dia { align-self: center; font-size: 12px; color: var(--t3); background: #fff; border: 1px solid var(--borde); border-radius: 999px; padding: 2px 10px; }
-.w-m { max-width: 62%; display: flex; flex-direction: column; gap: 3px; }
-.w-m .gl { padding: 8px 12px; border-radius: 12px; font-size: 13.5px; line-height: 1.45; }
-.w-m .pie { font-size: 11.5px; color: var(--t3); padding: 0 4px; }
-.w-m.ent { align-self: flex-start; }
-.w-m.ent .gl { background: #fff; border: 1px solid var(--borde); border-top-left-radius: 4px; }
-.w-m.sal { align-self: flex-end; align-items: flex-end; }
-.w-m.sal .gl { background: var(--marca-t); color: oklch(0.3 0.05 195); border-top-right-radius: 4px; }
-.w-escr { flex-shrink: 0; display: flex; gap: 8px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--borde); background: #fff; }
-.w-escr .area { flex: 1; height: 40px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; display: flex; align-items: center; padding: 0 12px; color: var(--t3); }
-.w-cartel { display: flex; align-items: center; gap: 10px; min-height: 44px; box-sizing: border-box; padding: 6px 8px 6px 14px; border-radius: 10px; font-size: 13px; background: oklch(0.96 0.06 85); color: oklch(0.4 0.1 70); }
-.w-cartel .tx { flex: 1; }
-.w-cartel.info { background: var(--marca-t); color: var(--marca-tx); }
-.w-vacio { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 48px 16px; text-align: center; color: var(--t2); }
-.w-vacio .circ { width: 48px; height: 48px; border-radius: 50%; background: var(--s3); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; }
-.w-vacio b { color: var(--t1); font-size: 14px; }
-.w-oscuro { position: absolute; inset: 0; z-index: 5; background: oklch(0.3 0.014 78 / 0.5); display: flex; align-items: center; justify-content: center; }
-.w-dlg { width: 560px; background: #fff; border-radius: 12px; box-shadow: 0 24px 48px oklch(0.2 0.014 78 / 0.28); overflow: hidden; }
-.w-dlg .dc { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 8px 0 20px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 15px; font-weight: 600; }
-.w-dlg .db { padding: 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.w-dlg .df { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--borde); }
-.w-cmp { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.w-cmp .rt { font-size: 12.5px; font-weight: 600; color: var(--t2); }
-.w-cmp .ct { height: 36px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; }
-.w-cmp .ct.area { height: 84px; align-items: flex-start; padding-top: 9px; line-height: 1.45; }
-.w-tel { width: 390px; height: 844px; overflow: hidden; background: var(--fondo); font-family: Inter, system-ui, sans-serif; font-size: 13px; color: var(--t1); display: flex; flex-direction: column; position: relative; }
-.w-tel .w-tb { padding: 0 12px; }
-.w-tel .w-bnd { padding: 10px 16px; }
-.w-tel .w-bnd h1 { font-size: 17px; }
-.w-tel .w-body { padding: 12px 16px; gap: 12px; }
-.w-tel .w-conv { padding: 12px 16px; }
-.w-tel .cb { height: 44px; }
-.w-tel .cb.ch { height: 36px; }
-.w-tel .ib { width: 44px; height: 44px; }
-.w-tel .w-escr { padding: 10px 12px 20px; }
-.w-tel .w-msjs { padding: 14px 12px; }
-.w-tel .w-m { max-width: 82%; }
-.w-hoja { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 16px 16px 0 0; display: flex; flex-direction: column; }
-.w-hoja .dc { display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 4px 0 16px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); border-radius: 16px 16px 0 0; font-size: 15px; font-weight: 600; }
-.w-hoja .db { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
-.w-hoja .df { display: flex; gap: 8px; padding: 12px 16px 24px; border-top: 1px solid var(--borde); }
-.w-hoja .df .cb { flex: 1; }
-.w-fija { margin-top: auto; flex-shrink: 0; }
-.w-hijos { margin-left: 18px; padding-left: 10px; border-left: 1px solid oklch(0.85 0.026 75); display: flex; flex-direction: column; gap: 2px; }
-.w-panel .w-hijos { border-left-color: oklch(0.82 0.03 75); }
-.w-th.c, .w-tr.c { grid-template-columns: minmax(0, 1fr) 220px 200px 140px 48px; }
-.w-th.p, .w-tr.p { grid-template-columns: minmax(0, 1fr) 180px 200px 200px 48px; }
-.w-pie { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 16px; border-top: 1px solid var(--borde); font-size: 13px; color: var(--t2); }
-.w-cajon { position: absolute; z-index: 6; left: 0; top: 0; bottom: 0; width: 300px; background: oklch(0.925 0.02 75); display: flex; flex-direction: column; box-shadow: 8px 0 24px oklch(0.2 0.014 78 / 0.2); }
-.w-cajon .w-ln { height: 38px; }
-:where(.w-app, .w-tel) a { text-decoration: none; color: inherit; cursor: pointer; }
-  </style>
-  <style data-menu-usuario="">
-/* Tu menú, arriba a la derecha (criterio de menús): se abre al tocar tu nombre. */
-.w-umd { position: relative; }
-.w-umd > summary { list-style: none; cursor: pointer; }
-.w-umd > summary::-webkit-details-marker { display: none; }
-.w-umd > summary:hover, .w-umd[open] > summary { background: oklch(0.24 0.014 78 / 0.06); }
-.w-umd > summary.av-tel { display: inline-flex; border-radius: 50%; }
-.w-mn { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: 320px; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); padding: 4px; display: flex; flex-direction: column; font-size: 13px; color: var(--t1); text-align: left; }
-.w-mn .w-mn-it { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 10px; border-radius: 6px; white-space: nowrap; color: var(--t1); text-decoration: none; }
-.w-mn .w-mn-it:hover { background: var(--s2); }
-.w-mn .w-mn-it[role="menuitemradio"] { min-height: 44px; }
-.w-mn .w-mn-it svg { color: var(--t3); flex-shrink: 0; }
-.w-mn .w-mn-it.on { background: var(--marca-t); color: var(--marca-tx); }
-.w-mn .w-mn-it.on svg { color: var(--marca-tx); }
-.w-mn .w-mn-it.apag { color: var(--t3); }
-.w-mn .w-mn-sep { height: 1px; background: var(--borde); margin: 4px 0; }
-.w-mn .w-mn-tit { padding: 8px 10px 4px; font-size: 12.5px; font-weight: 600; color: var(--t3); }
-.w-mn .w-mn-cab { display: flex; align-items: center; gap: 10px; padding: 10px; }
-.w-mn .w-mn-perf { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
-.w-mn .w-mn-perf b { font-weight: 600; }
-.w-mn .w-mn-perf .s { font-size: 12.5px; color: var(--t3); overflow: hidden; text-overflow: ellipsis; }
-.w-mn .w-mn-it.on .w-mn-perf .s { color: var(--marca-tx); }
-.w-mn .w-mn-ico { width: 28px; height: 28px; border-radius: 8px; background: var(--s3); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; flex-shrink: 0; }
-.w-mn .w-mn-it.on .w-mn-ico { background: #fff; color: var(--marca-tx); }
-.w-mn .w-mn-on { margin-left: auto; }
-.w-tel .w-mn { width: 300px; right: -4px; }
-  </style>
-<style data-propuesta="wa-contactos">
-.o-fb { display: flex; align-items: center; gap: 10px; padding: 12px 16px; }
-.o-fb .w-bus { flex: 0 0 360px; }
-.w-th.k, .w-tr.k { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) 170px 170px 48px; }
-.w-tr.k { min-height: 52px; }
-.w-tr .dos { display: flex; flex-direction: column; line-height: 1.35; }
-.w-tr .dos b { font-weight: 500; }
-.w-tr .dos a { font-weight: 500; color: var(--t1); }
-.w-tr .dos span { font-size: 12px; color: var(--t3); }
-.w-est.baja::before { background: oklch(0.72 0.15 70); }
-.o-chk { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.45; grid-column: 1 / -1; }
-.o-cas { width: 16px; height: 16px; box-sizing: border-box; border-radius: 4px; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+<style data-vuelta="1002-Usuarios">
+.tt-f .dos { display: flex; flex-direction: column; gap: 1px; line-height: 1.35; min-width: 0; }
+.tt-f .dos > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-f .dos .n2 { font-size: 12px; color: var(--t3); }
+.tt-f .dos .c1 { font-weight: 500; }
+.tt-f.o-alto { min-height: 52px !important; }
 </style>
+<style data-vuelta="1003-Usuarios"></style>
 <style data-regla="menus-con-lineas">
 .menu[role="menu"] { padding: 0; overflow: hidden; }
 .menu[role="menu"] .menu-it { border-radius: 0; min-height: 42px; padding: 8px 14px; border-top: 1px solid var(--borde); margin-top: -1px; }
@@ -742,170 +562,70 @@ body { margin: 0; }
 .w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
   content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 </style>
-<style data-vuelta="1004-avatar-degrade">
-.w-av:not(.g) { background: linear-gradient(135deg, var(--marca) 0%, var(--marca-2) 100%); }
+<style data-vuelta="1004-panel-admin">
+.adm-cab { padding: 0 14px; }
+.adm-panel .ab-sidebar__nav { padding: 10px 8px; }
+.adm-panel .ab-sidebar__list, .adm-panel .ab-sidebar__children { display: flex; flex-direction: column; gap: 2px; }
+.adm-panel .ab-sidebar__list > li, .adm-panel .ab-sidebar__children > li { position: relative; margin: 0; border-top: 0 !important; padding-top: 0 !important; }
+.adm-panel .ab-sidebar__list > li + li::before, .adm-panel .ab-sidebar__children > li + li::before { content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
+.adm-panel .ab-sidebar__link, .adm-panel .ab-sidebar__branch { display: flex; align-items: center; gap: 10px; width: 100%; height: 32px; box-sizing: border-box; padding: 0 10px !important; font-size: 13px; font-weight: 400 !important; text-decoration: none; }
+.adm-panel .ab-sidebar__link--active { font-weight: 600 !important; }
+.adm-panel .ab-sidebar__list > li > .ab-sidebar__branch { font-weight: 600 !important; color: var(--t1) !important; }
+.adm-panel .ab-sidebar__chevron { margin-left: auto; width: 14px; height: 14px; color: var(--t3); flex-shrink: 0; }
+.adm-panel .ab-cerrado .ab-sidebar__chevron { transform: rotate(-90deg); }
+.adm-panel .ab-sidebar__children { margin: 2px 0 0 18px !important; padding-left: 10px !important; border-left: 1px solid oklch(0.82 0.03 75) !important; }
+</style>
+<style data-vuelta="1004-marco-criterio">
+.ab-sidebar__head { height: 53px; box-sizing: border-box; padding: 0 14px !important; }
+.scope { padding: 12px 14px !important; border-bottom: 0 !important; }
+.scope-name { font-size: 14px !important; font-weight: 700 !important; line-height: 18.9px !important; color: var(--t1) !important; }
+.scope-detail { margin: 0 !important; font-size: 12.5px !important; line-height: 18.9px !important; color: var(--t3) !important; }
+.ab-sidebar > .ab-sidebar__nav { padding: 4px 8px 0 !important; }
+.ab-sidebar .admin-grupo { margin: auto -8px 0 !important; padding: 8px !important; border-top: 1px solid oklch(0.87 0.022 75) !important; }
+.ab-sidebar .ab-sidebar__list { display: flex; flex-direction: column; gap: 2px; }
+.ab-sidebar .ab-sidebar__list > li { position: relative; margin: 0; border-top: 0 !important; padding-top: 0 !important; }
+.ab-sidebar .ab-sidebar__list > li + li::before { content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
+.ab-sidebar .ab-sidebar__link { height: 32px; box-sizing: border-box; padding: 0 10px !important; font-size: 13px; font-weight: 400 !important; }
+.ab-sidebar .ab-sidebar__link-label { font-weight: inherit !important; }
+.ab-sidebar .ab-sidebar__link--active, .ab-root.adm-abierto .adm-btn, .ab-root.wa-abierto .wa-btn { font-weight: 600 !important; }
+.ab-sidebar__footer { padding: 10px 14px !important; }
+.ab-sidebar__user { gap: 10px !important; }
+.ab-sidebar__user .avatar { width: 32px; height: 32px; font-size: 13px; }
+.ab-sidebar__name { font-size: 13px !important; font-weight: 700 !important; line-height: 1.3 !important; }
+.ab-sidebar__email { font-size: 12px !important; line-height: 1.3 !important; color: var(--t3) !important; }
+.ab-breadcrumbs__list, .ab-breadcrumbs__item, .ab-breadcrumbs__link, .ab-breadcrumbs__separator { font-size: 13px !important; font-weight: 400 !important; color: var(--t2) !important; }
+.ab-topbar .um-btn .avatar { width: 32px; height: 32px; font-size: 12px; }
+</style>
+<style data-vuelta="1004-buscador-36">
+.fb-bus { flex: 0 1 360px; max-width: 360px; }
+.fb-bus input { height: 36px; padding-left: 36px; border-radius: 8px; font-size: 13px; }
+.fb-bus svg { left: 12px; width: 16px; height: 16px; }
+</style>
+<style data-vuelta="1004-cuit-valido">
+</style>
+<style data-vuelta="1004-dialogos-r2b">
+.dlg-b { padding: 20px; gap: 14px; }
 </style>
 <style data-vuelta="1004-alineacion-app">
-.w-sb, .w-panel { position: relative; }
-.w-plegar { padding: 0; font-family: inherit; position: absolute; right: -14px; top: 64px; width: 28px; height: 28px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: #fff; border: 1px solid var(--borde2); box-shadow: 0 1px 3px oklch(0.24 0.012 60 / 0.15); color: var(--t1); cursor: pointer; z-index: 4; }
-.w-plegar:hover { color: var(--marca); }
-.cb-pri { background: linear-gradient(180deg, var(--marca) 0%, var(--marca-h) 100%) !important; box-shadow: 0 1px 2px var(--marca-sombra), inset 0 1px 0 rgb(255 255 255 / 0.15); }
-.cb-pri:hover, .cb-pri.h { filter: brightness(1.05); }
+.dos .n2.sang { padding-left: 13px; }
+.in2.mal { border-color: var(--peligro) !important; }
+</style>
+<style data-vuelta="1004-cola-guia-b"></style>
+<style data-vuelta="1004-desplegable">
+.campo2.envoltura .menu.lista { left: 0; right: 0; width: auto; min-width: 0; max-width: none; }
+</style>
+<style data-vuelta="1004-piezas-comunes">
+.banda-pag { height: 64px !important; min-height: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; box-sizing: border-box !important; }
+.ab-breadcrumbs__list { gap: 4px !important; }
+.dlg { border-radius: 12px !important; }
+.dlg-h { min-height: 48px !important; box-sizing: border-box !important; padding: 0 8px 0 20px !important; align-items: center !important; }
+.dlg-x { width: 32px !important; height: 32px !important; color: var(--t2) !important; }
+.dlg-x svg { width: 16px !important; height: 16px !important; }
+.tarjeta, .fb { border-radius: 12px !important; box-shadow: none !important; }
+.tarjeta > .tt-h:first-child { border-radius: 11px 11px 0 0 !important; }
 </style>
 <style data-vuelta="1004-e12-ajustes"></style>
-<style data-e12="formularios">
-.w-th.f, .w-tr.f { grid-template-columns: minmax(0, 1.6fr) 140px 240px 170px 48px; }
-.w-tr.f { min-height: 52px; }
-.w-tr .pre { font-variant-numeric: tabular-nums; letter-spacing: 0.04em; color: var(--t2); }
-.w-est.mal { color: oklch(0.5 0.19 25); }
-.w-est.mal::before { background: oklch(0.57 0.2 25); }
-.f-i { display: inline-flex; vertical-align: middle; margin-left: 4px; color: var(--t3); cursor: help; }
-.o-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--borde); flex-shrink: 0; }
-.o-tabs > span { padding: 10px 14px; font-size: 13.5px; font-weight: 600; color: var(--t2); border-bottom: 2px solid transparent; margin-bottom: -1px; }
-.o-tabs > span.on { color: var(--marca-tx); border-bottom-color: var(--marca); }
-.o-tabs .c { margin-left: 6px; font-size: 12px; font-weight: 600; color: var(--t3); }
-.esq { align-self: stretch; display: flex; flex-direction: column; gap: 14px; padding: 4px 0; }
-.esq span { height: 12px; border-radius: 6px; background: oklch(0.93 0.01 78); }
-.f-cuerpo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px 16px; text-align: center; color: var(--t2); }
-.f-cuerpo.izq { align-items: stretch; padding: 20px 16px; }
-.f-cuerpo b { color: var(--t1); font-size: 14px; }
-.f-cuerpo .cb { flex: 0 0 auto; }
-.w-bus.lleno { color: var(--t1); }
-.f-env { position: relative; display: inline-flex; }
-.w-caja.o-fb { overflow: visible; position: relative; z-index: 5; }
-.w-pil { cursor: pointer; }
-.w-pil.con { color: var(--marca-tx); border-color: oklch(0.51 0.099 195 / 0.35); background: var(--marca-t); font-weight: 500; }
-.f-mn { position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; width: 240px; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); padding: 4px; display: flex; flex-direction: column; font-size: 13.5px; }
-.f-mn > span { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 36px; padding: 0 10px; border-radius: 6px; color: var(--t1); cursor: pointer; }
-.f-mn > span.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 500; }
-.f-mn .cnt { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--s3); color: var(--t2); }
-.o-fb .cb-enl { font-size: 13px; height: 36px; }
-.w-cartel { display: flex; align-items: center; gap: 10px; min-height: 44px; box-sizing: border-box; padding: 6px 8px 6px 14px; border-radius: 10px; font-size: 13px; background: oklch(0.96 0.06 85); color: oklch(0.4 0.1 70); margin-top: 16px; }
-.w-cartel .tx { flex: 1; }
-.w-cartel .cb { flex: 0 0 auto; height: 32px; font-size: 13px; }
-.f-toast { position: absolute; z-index: 41; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px; max-width: 460px; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); font-size: 13px; color: var(--t1); }
-.f-toast .ok { color: oklch(0.55 0.13 155); display: inline-flex; }
-.f-toast .mal { color: oklch(0.55 0.2 25); display: inline-flex; }
-.f-toast .ib { width: 28px; height: 28px; }
-.ac .cb:disabled { opacity: 0.6; cursor: default; }
-.q-it { position: relative; }
-.q-it.abierta { background: var(--s2); }
-.f-menu { position: absolute; right: 8px; top: 46px; z-index: 6; min-width: 180px; padding: 6px; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 28px oklch(0.24 0.014 78 / 0.14); display: flex; flex-direction: column; }
-.f-mi { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; font-size: 13.5px; color: var(--t1); }
-.f-mi:hover { background: var(--s2); }
-.f-mi.pel { color: oklch(0.5 0.19 25); }
-.f-sep { height: 1px; background: var(--borde); margin: 4px 0; }
-.f-vacia { padding: 32px 16px; text-align: center; color: var(--t1); font-size: 14px; font-weight: 600; }
-.d-tx { grid-column: 1 / -1; margin: 0; font-size: 14px; line-height: 1.5; color: var(--t2); }
-.w-dlg .df .cb[disabled] { opacity: 0.55; cursor: default; }
-.ac .cb[disabled] { opacity: 0.55; cursor: default; }
-.f-toast { position: absolute; z-index: 41; right: 24px; bottom: 24px; }
-.ab-sub { font-size: 12.5px; color: var(--t3); }
-.ab-chip { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 6px; border: 1px solid var(--borde); background: #fff; font-size: 12px; font-weight: 600; color: var(--t2); white-space: nowrap; }
-.ab-chip.falta { border-color: oklch(0.85 0.08 85); background: oklch(0.97 0.04 85); color: oklch(0.45 0.1 70); }
-.ab-seg { display: inline-flex; border: 1px solid var(--borde2); border-radius: 8px; overflow: hidden; background: #fff; }
-.ab-seg > span { padding: 6px 14px; font-size: 13.5px; color: var(--t2); border-left: 1px solid var(--borde2); white-space: nowrap; }
-.ab-seg > span:first-child { border-left: 0; }
-.ab-seg > span.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 600; }
-.ab-seg .falta { color: oklch(0.5 0.12 70); font-weight: 500; }
-.w-th.ab, .w-tr.ab { grid-template-columns: minmax(200px, 1.5fr) 110px minmax(220px, 1.3fr) 230px; }
-.w-tr.ab a { color: var(--t1); text-decoration: none; font-weight: 500; }
-.w-tr.ab .est2 { display: flex; flex-direction: column; gap: 2px; }
-.w-tr.ab .est2 small { font-size: 12px; color: var(--t3); }
-.o-fb { display: flex; align-items: center; gap: 8px; }
-.o-fb .w-bus { width: 320px; flex: none; }
-.o-fb .tot { margin-left: auto; font-size: 13px; color: var(--t3); }
-.w-bnd .ac { position: relative; }
-.w-bnd .ac .f-menu { position: absolute; top: calc(100% + 6px); right: 0; left: auto; z-index: 20; min-width: 220px; }
-.w-bnd .ac .f-mi { text-decoration: none; }
-.cb[aria-disabled="true"] { opacity: 0.55; cursor: default; }
-.cb .girar2 { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; display: inline-block; animation: girar2 0.8s linear infinite; flex-shrink: 0; }
-@keyframes girar2 { to { transform: rotate(360deg); } }
-.e-tipw { position: relative; display: inline-flex; }
-.e-tip { position: absolute; z-index: 30; top: calc(100% + 8px); right: 0; padding: 6px 10px; border-radius: 6px; background: oklch(0.27 0.012 78); color: #fff; font-size: 12.5px; font-weight: 500; white-space: nowrap; box-shadow: 0 6px 18px oklch(0.24 0.014 78 / 0.2); }
-.e-tip::before { content: ""; position: absolute; top: -4px; right: 18px; width: 8px; height: 8px; background: inherit; transform: rotate(45deg); }
-.pv .tel { height: 700px; }
-.tel .pv-ck { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
-.tel .pv-ck span { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: oklch(0.3 0.01 150); }
-.tel .pv-ck i { width: 14px; height: 14px; box-sizing: border-box; border-radius: 3px; border: 1.5px solid oklch(0.55 0.01 150); }
-.q-ed .q-rango { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--t2); }
-.q-ed .q-rango .ct { width: 64px; text-align: center; }
-.rt .f-i { margin-left: 4px; }
-.e-kw { position: relative; display: inline-flex; }
-.w-bnd .ac .ib.o-borde { width: 40px; height: 40px; border: 1px solid var(--borde2); border-radius: 10px; box-sizing: border-box; background: #fff; }
-.e-kw .f-menu { position: absolute; top: calc(100% + 6px); right: 0; left: auto; z-index: 30; min-width: 220px; }
-.f-mi.off { color: var(--t3); cursor: default; }
-.f-mi.off svg { color: var(--t3); }
-.f-mi { position: relative; }
-.f-mi .e-tip { top: 50%; right: calc(100% + 12px); transform: translateY(-50%); }
-.f-mi .e-tip::before { top: calc(50% - 4px); right: -4px; }
-.e-dif .no .f-i { margin-left: 4px; }
-.f-bnd-est { white-space: nowrap; }
-.f-bnd-est .f-i { margin-left: 6px; vertical-align: -3px; }
-.f-bnd-est .f-i.btn { cursor: pointer; }
-.q-it.mal { background: oklch(0.985 0.012 25); }
-.ab-chip.mal { border-color: oklch(0.85 0.06 25); background: var(--peligro-t); color: oklch(0.45 0.17 25); }
-.q-it.mal .chips .f-i { color: oklch(0.52 0.19 25); display: inline-flex; align-items: center; }
-.e-pasos.vert { flex-direction: column; gap: 14px; }
-.e-pasos.vert .e-paso { flex: none; }
-.f-snack { position: absolute; z-index: 5; left: 12px; right: 12px; bottom: 110px; display: flex; align-items: center; gap: 10px; padding: 13px 14px 13px 16px; border-radius: 14px; background: oklch(0.27 0.012 60); color: #fff; font-size: 14.5px; line-height: 1.4; box-shadow: 0 8px 24px oklch(0.2 0.01 60 / 0.3); }
-.f-snack .tx { flex: 1; min-width: 0; }
-.f-snack .ok { color: oklch(0.8 0.13 155); display: inline-flex; }
-.fm-seg { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); align-self: flex-start; width: 320px; flex-shrink: 0; }
-.fm-seg button { height: 30px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 13px; font-weight: 600; color: var(--t2); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.fm-seg button.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
-.fm-seg .c { font-weight: 500; color: var(--t3); }
-.w-th.cv, .w-tr.cv { grid-template-columns: minmax(170px, 1.3fr) 84px minmax(190px, 1.2fr) 96px 200px 40px; }
-.w-tr.cv { position: relative; min-height: 52px; }
-.w-tr.cv a.n { color: var(--t1); text-decoration: none; font-weight: 500; }
-.w-tr.cv .est2 { display: flex; align-items: center; gap: 2px; }
-.w-tr.cv .num { font-variant-numeric: tabular-nums; text-align: left; justify-self: start; }
-.w-tr.cv .f-menu { position: absolute; right: 12px; top: calc(100% - 8px); left: auto; z-index: 25; min-width: 220px; }
-.w-body .w-caja:has(.f-menu) { overflow: visible; }
-.w-est.baja { color: var(--t2); }
-.w-est.baja::before { background: var(--t3); }
-.w-est.pend::before { background: oklch(0.72 0.15 70); }
-.e-sup .lin2 { font-size: 13px; }
-.p-sec2 { display: flex; flex-direction: column; gap: 8px; }
-.cp-campos { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 14px 16px; }
-.cp-campos .err2 { font-size: 12.5px; color: var(--peligro); }
-.cp-campos .ct.mal { border-color: var(--peligro); }
-</style>
-<style data-e16="panel">
-.w-panel .w-ln .cnt { margin-left: auto; font-size: 12px; font-weight: 600; min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); display: inline-flex; align-items: center; justify-content: center; }
-</style>
-<style data-f79="lista">
-.w-th.fx14, .w-tr.fx14 { grid-template-columns: minmax(200px, 1.4fr) 100px minmax(200px, 1.2fr) minmax(220px, 1.2fr); }
-.w-th.fx15, .w-tr.fx15 { grid-template-columns: minmax(200px, 1.3fr) minmax(190px, 1.1fr) 100px 136px 150px; }
-.w-th.fx17, .w-tr.fx17 { grid-template-columns: minmax(170px, 1.2fr) minmax(180px, 1.1fr) 96px 130px 146px 40px; }
-.w-th.fx21, .w-tr.fx21 { grid-template-columns: minmax(150px, 1.15fr) minmax(170px, 1.1fr) 88px 92px 122px 140px 40px; }
-.w-th.fx3, .w-tr.fx3 { grid-template-columns: minmax(220px, 1.4fr) 110px 136px 150px; }
-.w-th .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
-.w-tr .fx-num { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; color: var(--t1); text-decoration: none; }
-.w-th.fx2, .w-tr.fx2 { grid-template-columns: minmax(220px, 1fr) 160px; }
-.w-tr.fx14, .w-tr.fx15, .w-tr.fx17, .w-tr.fx21, .w-tr.fx3, .w-tr.fx2 { position: relative; min-height: 40px; }
-.w-tr .fx-f { color: var(--t1); text-decoration: none; font-variant-numeric: tabular-nums; }
-.fx-n, .fx-u { display: flex; flex-direction: column; gap: 2px; min-width: 0; line-height: 1.35; }
-.fx-n a { color: var(--t1); font-weight: 500; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.fx-n a:hover { text-decoration: underline; }
-.fx-n small, .fx-u small { font-size: 12.5px; color: var(--t3); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-.fx-u .pl-num { font-weight: 600; color: var(--t1); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; text-decoration: none; font-size: 13px; }
-.w-tr .est2 { display: flex; align-items: center; gap: 2px; min-width: 0; }
-.w-tr .num { font-variant-numeric: tabular-nums; justify-self: start; text-align: left; }
-.w-tr .f-menu { position: absolute; right: 12px; top: calc(100% - 8px); left: auto; z-index: 25; min-width: 220px; }
-.w-body .w-caja:has(.f-menu) { overflow: visible; }
-.fm-cnt { min-width: 22px; height: 22px; padding: 0 7px; box-sizing: border-box; border-radius: 999px; background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); font-size: 12.5px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
-.fm-no { color: var(--t3); }
-.w-est.amb { color: oklch(0.45 0.1 70); }
-.w-est.amb::before { background: oklch(0.72 0.15 70); }
-.w-est.off::before { background: var(--t3); }
-.w-est.baja { color: var(--t2); }
-.w-est.baja::before { background: var(--t3); }
-.w-est.pend::before { background: oklch(0.72 0.15 70); }
-.pl-pagina { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; color: var(--t1); min-height: 520px; }
-.pl-pagina .ic { width: 52px; height: 52px; border-radius: 14px; background: var(--s2); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; }
-.pl-pagina b { font-size: 18px; font-weight: 600; }
-.w-us .tx b span, .um .tx b span { color: inherit; font-size: inherit; }
+<style data-e11tb>
 </style>
 <style data-campana="1">
 .w-cmp-env { position: relative; display: inline-flex; margin-left: auto; margin-right: 6px; }
@@ -923,63 +643,680 @@ body { margin: 0; }
 .cmp-ic.fallo { background: var(--peligro-t); color: oklch(0.52 0.19 25); }
 .cmp-ic.espera { background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); }
 .cmp-ic.llego { background: var(--marca-t); color: var(--marca-tx); }
-.cmp-ic.version { background: var(--marca-t); color: var(--marca-tx); }
-.cmp-it.sin-leer .cmp-tx { font-weight: 600; }
-.cmp-it .cmp-punto { margin-left: auto; align-self: center; width: 8px; height: 8px; border-radius: 50%; background: var(--marca); flex-shrink: 0; }
 .cmp-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: 14px; line-height: 1.35; }
 .cmp-tx small { font-size: 12.5px; color: var(--t3); }
 .cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }
-.cod { white-space: nowrap; }
+</style>
+<style data-b0="org">
+.tt-h .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
 </style>
 </helmet>
 
-<div class="w-app"><style data-menu="wa-panel">.w-abajo { display: flex; flex-direction: column; gap: 2px; } .w-ln .cnt + .fl { margin-left: 8px; }</style><aside class="w-sb" aria-label="Menú principal"><div class="w-mk"><span class="brand" style="width: 28px; height: 28px; border-radius: 8px;"></span>ArquitecturaBase</div><div class="w-cx"><b>Grupo Delta</b><span>Organización</span></div><nav class="w-nav"><a class="w-ln" href="Inicio-Org.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg> Inicio</a><a class="w-ln" href="WA-Chats.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/></svg> WhatsApp<span class="cnt">2</span><span class="fl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></svg></span></a><a class="w-ln on" href="FRM-Formularios.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 3.5H7a1.5 1.5 0 0 0-1.5 1.5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3.5V8h4.5"/><path d="M9 12.5h6"/><path d="M9 16h4"/></svg> Gestión de formularios<span class="fl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></svg></span></a></nav><div class="w-esp"></div><div class="w-abajo"><sc-if value="{{conAdmin}}" hint-placeholder-val="{{si}}"><a class="w-ln" href="WA-Admin.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg> Administración <span class="fl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></svg></span></a></sc-if></div><div class="w-us"><span class="w-av">{{yoIni}}</span><span class="tx"><b>{{yo}}</b><span>{{yoCorreo}}</span></span></div></aside><aside class="w-panel" aria-label="Gestión de formularios"><button type="button" class="w-plegar" aria-label="Cerrar Gestión de formularios"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><div class="pc">Gestión de formularios</div><nav class="w-nav"><sc-if value="{{verFormularios}}" hint-placeholder-val="{{si}}"><a class="w-ln on" href="FRM-Formularios.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 3.5H7a1.5 1.5 0 0 0-1.5 1.5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3.5V8h4.5"/><path d="M9 12.5h6"/><path d="M9 16h4"/></svg> Formularios</a></sc-if><sc-if value="{{verDisena}}" hint-placeholder-val="{{si}}"><a class="w-ln" href="FRM-Catalogos.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6.5h10.5M9 12h10.5M9 17.5h10.5"/><circle cx="4.8" cy="6.5" r="1.1"/><circle cx="4.8" cy="12" r="1.1"/><circle cx="4.8" cy="17.5" r="1.1"/></svg> Catálogos</a></sc-if></nav></aside><div class="w-co"><header class="w-tb"><span>Inicio / Gestión de formularios / Formularios</span><span class="w-cmp-env"><a class="w-campana on" href="#" aria-label="Avisos: {{cmpCant}}" aria-expanded="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="n">{{cmpCant}}</span></a><sc-if value="{{cmpCon}}" hint-placeholder-val="{{si}}"><div class="cmp-lista" role="dialog" aria-label="Avisos"><div class="cmp-cab">Avisos<span>4</span></div><a class="cmp-it" href="FRM-Faltan.dc.html"><span class="cmp-ic llego"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13.5h4.5l1.5 2.5h4l1.5-2.5H20"/><path d="M5.5 6.5h13L20 13.5v5H4v-5z"/></svg></span><span class="cmp-tx">Llegaron 5 tickets de combustible que no encajan en ningún formulario<small>25/10/2026 18:20</small></span></a><a class="cmp-it" href="FRM-Publicando.dc.html"><span class="cmp-ic fallo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8v.2"/></svg></span><span class="cmp-tx">WhatsApp rechazó la versión 3 de Control de vehículo<small>25/10/2026 17:30</small></span></a><a class="cmp-it" href="FRM-Formularios.dc.html"><span class="cmp-ic espera"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="cmp-tx">4 respuestas por aprobar<small>25/10/2026 09:12</small></span></a><a class="cmp-it" href="FRM-Respuesta-Aprobacion.dc.html"><span class="cmp-ic fallo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8v.2"/></svg></span><span class="cmp-tx">No se pudo mandar el aviso de <span class="cod">VIS-000126</span><small>24/10/2026 16:40</small></span></a></div></sc-if><sc-if value="{{cmpVersion}}" hint-placeholder-val="{{no}}"><div class="cmp-lista" role="dialog" aria-label="Avisos"><div class="cmp-cab">Avisos<span>5</span></div><a class="cmp-it sin-leer" href="#" aria-label="Hay una versión nueva del sistema, sin leer"><span class="cmp-ic version"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/></svg></span><span class="cmp-tx">Hay una versión nueva del sistema<small>25/10/2026 18:45</small></span><span class="cmp-punto" aria-hidden="true"></span></a><a class="cmp-it" href="FRM-Faltan.dc.html"><span class="cmp-ic llego"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13.5h4.5l1.5 2.5h4l1.5-2.5H20"/><path d="M5.5 6.5h13L20 13.5v5H4v-5z"/></svg></span><span class="cmp-tx">Llegaron 5 tickets de combustible que no encajan en ningún formulario<small>25/10/2026 18:20</small></span></a><a class="cmp-it" href="FRM-Publicando.dc.html"><span class="cmp-ic fallo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8v.2"/></svg></span><span class="cmp-tx">WhatsApp rechazó la versión 3 de Control de vehículo<small>25/10/2026 17:30</small></span></a><a class="cmp-it" href="FRM-Formularios.dc.html"><span class="cmp-ic espera"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="cmp-tx">4 respuestas por aprobar<small>25/10/2026 09:12</small></span></a><a class="cmp-it" href="FRM-Respuesta-Aprobacion.dc.html"><span class="cmp-ic fallo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8v.2"/></svg></span><span class="cmp-tx">No se pudo mandar el aviso de <span class="cod">VIS-000126</span><small>24/10/2026 16:40</small></span></a></div></sc-if><sc-if value="{{cmpSin}}" hint-placeholder-val="{{no}}"><div class="cmp-lista" role="dialog" aria-label="Avisos"><div class="cmp-cab">Avisos<span></span></div><div class="cmp-vacia">No hay avisos.</div></div></sc-if></span><details class="w-umd"><summary class="um" aria-label="Abrir tu menú"><span class="w-av">{{yoIni}}</span><span class="tx"><b>{{yo}}</b><span>Grupo Delta</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></summary><div class="w-mn" role="menu" aria-label="Menú de Lucía Fernández"><div class="w-mn-cab"><span class="w-av" style="width: 36px; height: 36px; font-size: 15px;">L</span><span class="w-mn-perf"><b>Lucía Fernández</b><span class="s">lucia.fernandez@delta.ejemplo.com</span></span></div><div class="w-mn-sep" role="separator"></div><div class="w-mn-tit">Perfiles</div><a class="w-mn-it" role="menuitemradio" aria-checked="false" href="Inicio-Personal.dc.html"><span class="w-mn-ico">P</span><span class="w-mn-perf">Personal<span class="s">Tu perfil personal</span></span></a><a class="w-mn-it on" role="menuitemradio" aria-checked="true" href="Inicio-Org.dc.html"><span class="w-mn-ico">GD</span><span class="w-mn-perf">Grupo Delta<span class="s">Dueño</span></span><span class="w-mn-on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></a><a class="w-mn-it apag" role="menuitemradio" aria-checked="false" href="Perfil-Suspendido.dc.html"><span class="w-mn-ico">BS</span><span class="w-mn-perf">Beta S.R.L.<span class="s">Suspendida</span></span></a><div class="w-mn-sep" role="separator"></div><a class="w-mn-it" role="menuitem" href="Cuenta.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Mi cuenta</a><div class="w-mn-sep" role="separator"></div><a class="w-mn-it" role="menuitem" href="Ingreso.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Salir</a></div></details></header><sc-if value="{{conBanda}}" hint-placeholder-val="{{si}}"><div class="w-bnd"><div class="iz"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 3.5H7a1.5 1.5 0 0 0-1.5 1.5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3.5V8h4.5"/><path d="M9 12.5h6"/><path d="M9 16h4"/></svg></span><div><h1>Formularios</h1><p class="res">{{resumen}}</p></div></div><div class="ac"><sc-if value="{{conNuevo}}" hint-placeholder-val="{{si}}"><a class="cb cb-pri" href="FRM-Editor.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Nuevo formulario</a></sc-if></div></div></sc-if><div class="w-body"><sc-if value="{{conFiltros}}" hint-placeholder-val="{{si}}"><div class="w-caja o-fb"><span class="w-bus {{busClase}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 3.5 3.5"/></svg> {{busqueda}}</span><sc-if value="{{conEstado}}" hint-placeholder-val="{{si}}"><span class="f-env"><span class="w-pil {{estClase}}" role="button" aria-haspopup="listbox" onClick="{{estAlternar}}">{{estTexto}} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></span><sc-if value="{{estMenu}}" hint-placeholder-val="{{no}}"><span class="f-mn" role="listbox" aria-label="Filtrar por estado"><span role="option" class="{{estOn_t}}" onClick="{{estElegir_t}}">Todos los estados<span class="cnt">{{estC_t}}</span></span><span role="option" class="{{estOn_p}}" onClick="{{estElegir_p}}">Publicados<span class="cnt">{{estC_p}}</span></span><span role="option" class="{{estOn_b}}" onClick="{{estElegir_b}}">Borradores<span class="cnt">{{estC_b}}</span></span></span></sc-if></span></sc-if><sc-if value="{{hayFiltro}}" hint-placeholder-val="{{no}}"><button type="button" class="cb cb-enl">Limpiar filtros</button></sc-if><span class="tot">{{total}}</span></div></sc-if><sc-if value="{{conTabla}}" hint-placeholder-val="{{si}}"><div class="w-caja"><sc-if value="{{conFilas}}" hint-placeholder-val="{{si}}"><sc-if value="{{colsTodas}}" hint-placeholder-val="{{si}}"><div class="w-th fx14"><span aria-sort="ascending">Formulario<span class="ord" aria-hidden="true">▲</span></span><span>Preguntas</span><span>En WhatsApp</span><span>Último cambio</span></div><sc-if value="{{rVis}}" hint-placeholder-val="{{si}}"><div class="w-tr fx14"><span class="fx-n"><a href="FRM-Editor.dc.html">Visita a cliente</a></span><span class="num">7</span><span class="est2"><span class="w-est {{estVisClase}}">{{estVis}}</span></span><span class="num">08/10/2026 14:20</span></div></sc-if><sc-if value="{{rEnt}}" hint-placeholder-val="{{si}}"><div class="w-tr fx14"><span class="fx-n"><a href="FRM-Editor.dc.html">Entrega de pedido</a></span><span class="num">5</span><span class="est2"><span class="w-est ">Publicado · versión 1</span></span><span class="num">02/10/2026 09:15</span></div></sc-if><sc-if value="{{rCon}}" hint-placeholder-val="{{si}}"><div class="w-tr fx14"><span class="fx-n"><a href="FRM-Editor.dc.html">Control de vehículo</a></span><span class="num">7</span><span class="est2"><span class="w-est mal">No se pudo publicar</span><span class="f-i" tabindex="0" role="img" aria-label="La versión 2 publicada sigue activa." title="La versión 2 publicada sigue activa."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">12/10/2026 17:40</span></div></sc-if><sc-if value="{{rRec}}" hint-placeholder-val="{{si}}"><div class="w-tr fx14"><span class="fx-n"><a href="FRM-Editor.dc.html">Reclamo</a></span><span class="num">4</span><span class="est2"><span class="w-est off">Borrador</span></span><span class="num">14/10/2026 11:05</span></div></sc-if></sc-if><div class="w-pie"><span>{{rango}}</span><span>10 por página · Página 1 de 1</span></div></sc-if><sc-if value="{{cargando}}" hint-placeholder-val="{{no}}"><div class="f-cuerpo izq"><div class="esq"><span style="width: 80%;"></span><span style="width: 65%;"></span><span style="width: 72%;"></span></div></div></sc-if><sc-if value="{{vacio}}" hint-placeholder-val="{{no}}"><div class="f-cuerpo"><b>Todavía no hay formularios.</b></div></sc-if><sc-if value="{{sinCoincidencias}}" hint-placeholder-val="{{no}}"><div class="f-cuerpo"><b>Ningún formulario coincide con los filtros.</b><button type="button" class="cb cb-enl">Limpiar filtros</button></div></sc-if><sc-if value="{{error}}" hint-placeholder-val="{{no}}"><div class="f-cuerpo"><b>No pudimos cargar los formularios.</b><button type="button" class="cb cb-sec">Reintentar</button></div></sc-if></div></sc-if><sc-if value="{{sinPermiso}}" hint-placeholder-val="{{no}}"><div class="pl-pagina"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><b>No tenés permiso para ver esta página.</b><a class="cb cb-sec" href="Inicio-Org.dc.html">Ir al inicio</a></div></sc-if></div></div>
+<style data-menu="wa-ab">
+.wa-btn { cursor: pointer; user-select: none; width: 100%; border: 0; background: transparent; font-family: inherit; text-align: left; }
+.wa-btn .adm-flecha { margin-left: auto; transition: transform 0.15s; }
+.wa-btn .wa-cnt { margin-left: auto; font-size: 12px; font-weight: 600; color: oklch(0.43 0.09 195); }
+.wa-btn .wa-cnt + .adm-flecha { margin-left: 8px; }
+.ab-root .adm-panel.wa-panel { display: none; }
+.ab-root.wa-abierto .adm-panel.wa-panel { display: flex; }
+.ab-root.wa-abierto .wa-btn { background: var(--lado-activo) !important; color: var(--lado-activo-t) !important; font-weight: 600 !important; box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.08), 0 0 0 1px var(--borde); }
+.ab-root.wa-abierto .wa-btn .adm-flecha { transform: rotate(180deg); }
+.ab-root.wa-abierto .ab-sidebar__toggle { display: none; }
+.wa-panel .wa-cnt { margin-left: auto; font-size: 12px; font-weight: 600; color: oklch(0.43 0.09 195); }
+</style>
+<div class="ab-root ab-app-shell {{admClase}} {{waClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
+  <aside class="ab-sidebar" aria-label="Navegación principal">
+    <div class="ab-sidebar__head"><span class="brand" aria-hidden="true"></span></div>
+    <button type="button" class="ab-btn ab-btn--ghost ab-btn--size-icon ab-sidebar__toggle" aria-label="Contraer navegación"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <div class="scope">
+      <p class="scope-name">Grupo Delta</p>
+      <p class="scope-detail">Organización</p>
+    </div>
+    <nav class="ab-sidebar__nav" aria-label="Secciones">
+      <ul class="ab-sidebar__list">
+        <li><a class="ab-sidebar__link" href="Inicio-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span class="ab-sidebar__link-label">Inicio</span></a></li>
+      <li><button type="button" class="ab-sidebar__link wa-btn" aria-controls="wa-panel" aria-expanded="{{waExp}}" onClick="{{alternarWa}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/></svg><span class="ab-sidebar__link-label">WhatsApp</span><span class="wa-cnt">2</span><svg class="adm-flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button></li>
+      <li><a class="ab-sidebar__link" href="FRM-Formularios.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__icon"><path d="M14.5 3.5H7a1.5 1.5 0 0 0-1.5 1.5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3.5V8h4.5"/><path d="M9 12.5h6"/><path d="M9 16h4"/></svg><span class="ab-sidebar__link-label">Gestión de formularios</span><svg class="adm-flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li></ul>
+      <div class="admin-grupo">
+        <ul class="ab-sidebar__list"><li><button type="button" class="ab-sidebar__link adm-btn" aria-controls="adm-panel" aria-expanded="{{admExp}}" onClick="{{alternarAdm}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 5 6v5.5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6Z"/><path d="m9.5 12 1.8 1.8 3.4-3.6"/></svg><span class="ab-sidebar__link-label">Administración</span><svg class="adm-flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button></li></ul>
+      </div>
+    </nav>
+    <div class="ab-sidebar__footer"><div class="ab-sidebar__user"><span class="avatar" aria-hidden="true">L</span><div class="ab-sidebar__identity"><p class="ab-sidebar__name">Lucía Fernández</p><p class="ab-sidebar__email">lucia.fernandez@delta.ejemplo.com</p></div></div></div>
+  </aside>
+  <aside class="adm-panel" id="adm-panel" aria-label="Administración">
+    <div class="adm-cab"><strong>Administración</strong><button type="button" class="adm-cerrar" aria-label="Cerrar Administración" onClick="{{alternarAdm}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button></div>
+    <nav class="ab-sidebar__nav" aria-label="Administración">
+      <ul class="ab-sidebar__list">
+          <li>
+            <button type="button" class="ab-sidebar__branch" aria-expanded="true" aria-controls="menu-usuarios"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/><circle cx="10" cy="8" r="3.5"/><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.6-3.4"/><path d="M15.5 4.7a3.5 3.5 0 0 1 0 6.6"/></svg><span class="ab-sidebar__branch-label">Gestión de usuarios</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__chevron"><path d="m6 9 6 6 6-6"></path></svg></button>
+            <ul class="ab-sidebar__children" id="menu-usuarios">
+              <li><a class="ab-sidebar__link ab-sidebar__link--active" href="Usuarios.dc.html" aria-current="page"><span class="ab-sidebar__link-label">Usuarios</span></a></li>
+              <li><a class="ab-sidebar__link" href="Roles.dc.html"><span class="ab-sidebar__link-label">Roles y permisos</span></a></li>
+            </ul>
+          </li>
+          <li><a class="ab-sidebar__link" href="Empresas.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16"/><path d="M15 9h4a1 1 0 0 1 1 1v11"/><path d="M3 21h18"/><path d="M8 8h3"/><path d="M8 12h3"/><path d="M8 16h3"/></svg><span class="ab-sidebar__link-label">Empresas</span></a></li>
+          <li><a class="ab-sidebar__link" href="Configuracion.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10"/><circle cx="16" cy="6" r="2"/><path d="M4 12h4"/><path d="M12 12h8"/><circle cx="10" cy="12" r="2"/><path d="M4 18h12"/><circle cx="18" cy="18" r="2"/></svg><span class="ab-sidebar__link-label">Configuración</span></a></li>
+          <li><a class="ab-sidebar__link" href="Pagina-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.4 2.6 3.5 5.5 3.5 8.5s-1.1 5.9-3.5 8.5c-2.4-2.6-3.5-5.5-3.5-8.5s1.1-5.9 3.5-8.5Z"/></svg><span class="ab-sidebar__link-label">Página pública</span></a></li>
+          <li><a class="ab-sidebar__branch ab-cerrado" href="WA-Admin.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/></svg><span class="ab-sidebar__branch-label">WhatsApp</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__chevron"><path d="m6 9 6 6 6-6"></path></svg></a></li><li><a class="ab-sidebar__branch ab-cerrado" href="Asistente-Config-Org.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l1.9 4.6 4.6 1.9-4.6 1.9L12 16.5l-1.9-4.6L5.5 10l4.6-1.9z"/><path d="M18.5 15.5l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z"/></svg><span class="ab-sidebar__branch-label">Asistente</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__chevron"><path d="m6 9 6 6 6-6"></path></svg></a></li><li><a class="ab-sidebar__link" href="Auditoria-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"/><path d="M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/><path d="M9 12h6"/><path d="M9 16h4"/></svg><span class="ab-sidebar__link-label">Auditoría</span></a></li>
+        </ul>
+    </nav>
+  </aside>
+  <aside class="adm-panel wa-panel" id="wa-panel" aria-label="WhatsApp">
+    <div class="adm-cab"><strong>WhatsApp</strong><button type="button" class="adm-cerrar" aria-label="Cerrar WhatsApp" onClick="{{alternarWa}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div>
+    <nav class="ab-sidebar__nav" aria-label="WhatsApp"><ul class="ab-sidebar__list"><li><a class="ab-sidebar__link" href="WA-Chats.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 17H10l-4.5 3.5V17H5a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 5 5z"/></svg><span class="ab-sidebar__link-label">Chats</span><span class="wa-cnt">2</span></a></li><li><a class="ab-sidebar__link" href="WA-Contactos.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M15.5 5.2a3.2 3.2 0 0 1 0 5.6"/><path d="M17.5 13.5A5.5 5.5 0 0 1 20.5 19"/></svg><span class="ab-sidebar__link-label">Contactos</span></a></li><li><a class="ab-sidebar__link" href="WA-Difusiones.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4h3l6 4V6L7 10z"/><path d="M16.5 9a4 4 0 0 1 0 6"/></svg><span class="ab-sidebar__link-label">Difusiones</span></a></li></ul></nav>
+  </aside>
+
+
+  <div class="ab-app-shell__column">
+    <header class="ab-topbar">
+      <div class="ab-topbar__start">
+        <nav class="ab-breadcrumbs" aria-label="Ruta de navegación"><ol class="ab-breadcrumbs__list">
+          <li class="ab-breadcrumbs__item"><a class="ab-breadcrumbs__link" href="Inicio-Org.dc.html">Inicio</a></li>
+          <li class="ab-breadcrumbs__separator" aria-hidden="true">/</li>
+          <li class="ab-breadcrumbs__item ab-breadcrumbs__item--muted">Gestión de usuarios</li>
+          <li class="ab-breadcrumbs__separator" aria-hidden="true">/</li>
+          <li class="ab-breadcrumbs__item ab-breadcrumbs__item--current" aria-current="page">Usuarios</li>
+        </ol></nav>
+      </div>
+      <span class="w-cmp-env"><a class="w-campana on" href="#" aria-label="Avisos: {{cmpCant}}" aria-expanded="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><sc-if value="{{cmpHay}}" hint-placeholder-val="{{si}}"><span class="n">{{cmpCant}}</span></sc-if></a><sc-if value="{{cmpCon}}" hint-placeholder-val="{{si}}"><div class="cmp-lista" role="dialog" aria-label="Avisos"><div class="cmp-cab">Avisos<span>1</span></div><a class="cmp-it" href="Cuenta.dc.html"><span class="cmp-ic espera"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="cmp-tx">Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa<small>20/09/2026 10:12</small></span></a></div></sc-if><sc-if value="{{cmpVersion}}" hint-placeholder-val="{{no}}"><div class="cmp-lista" role="dialog" aria-label="Avisos"><div class="cmp-cab">Avisos<span>2</span></div><a class="cmp-it sin-leer" href="#" aria-label="Hay una versión nueva del sistema, sin leer"><span class="cmp-ic version"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/></svg></span><span class="cmp-tx">Hay una versión nueva del sistema<small>27/09/2026 10:40</small></span><span class="cmp-punto" aria-hidden="true"></span></a><a class="cmp-it" href="Cuenta.dc.html"><span class="cmp-ic espera"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="cmp-tx">Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa<small>20/09/2026 10:12</small></span></a></div></sc-if><sc-if value="{{cmpSin}}" hint-placeholder-val="{{no}}"><div class="cmp-lista" role="dialog" aria-label="Avisos"><div class="cmp-cab">Avisos<span></span></div><div class="cmp-vacia">No hay avisos.</div></div></sc-if></span><span class="envoltura">
+        <button type="button" class="um-btn" aria-haspopup="menu" aria-expanded="{{expUsuario}}" onClick="{{alternarUsuario}}">
+          <span class="avatar" aria-hidden="true">L</span>
+          <span class="um-txt"><span class="n1">Lucía Fernández</span><span class="n2">Grupo Delta</span></span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+        </button>
+        <sc-if value="{{abiertoUsuario}}" hint-placeholder-val="{{no}}">
+          <div class="menu der" role="menu" aria-label="Menú de Lucía Fernández" style="min-width: 320px;">
+          <div class="menu-cab"><span class="avatar" aria-hidden="true" style="width: 40px; height: 40px; font-size: 16px;">L</span><span class="perfil-t"><span class="n1" style="font-size: 15px; font-weight: 600;">Lucía Fernández</span><span class="n2">lucia.fernandez@delta.ejemplo.com</span></span></div>
+          <div class="menu-sep" role="separator"></div>
+          <div class="menu-tit">Perfiles</div>
+          <a class="menu-it" role="menuitemradio" aria-checked="false" href="Inicio-Personal.dc.html"><span class="ico-perfil">P</span><span class="perfil-t"><span class="n1">Personal</span><span class="n2">Tu perfil personal</span></span></a>
+          <a class="menu-it on" role="menuitemradio" aria-checked="true" href="Inicio-Org.dc.html"><span class="ico-perfil">GD</span><span class="perfil-t"><span class="n1">Grupo Delta</span><span class="n2">Dueño</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></a>
+          <a class="menu-it apagado" role="menuitem" href="Perfil-Suspendido.dc.html"><span class="ico-perfil">BS</span><span class="perfil-t"><span class="n1">Beta S.R.L.</span><span class="n2">Suspendida</span></span></a>
+          <div class="menu-sep" role="separator"></div>
+          <a class="menu-it" role="menuitem" href="Cuenta.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Mi cuenta</a>
+          <div class="menu-sep" role="separator"></div>
+          <a class="menu-it" role="menuitem" href="Ingreso.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Salir</a>
+          </div>
+        </sc-if>
+      </span>
+    </header>
+
+    <main class="ab-app-shell__main">
+      <div class="banda-pag">
+        <div class="izq"><span class="ico" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/><circle cx="10" cy="8" r="3.5"/><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.6-3.4"/><path d="M15.5 4.7a3.5 3.5 0 0 1 0 6.6"/></svg></span><div style="min-width: 0;"><div class="tit"><h1>Usuarios</h1></div><p class="res">{{resumen}}</p></div></div>
+        <div class="acciones"><a class="b b-sec" href="WA-Telefonos.dc.html">Cargar teléfonos</a><button type="button" class="b b-pri" onClick="{{abrirInvitar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Invitar usuario</button></div>
+      </div>
+      <div class="pagina">
+        <div class="fb" role="search" aria-label="Filtrar usuarios">
+          <span class="fb-bus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 3.5 3.5"/></svg><input type="search" aria-label="Buscar por nombre o correo" placeholder="Buscar por nombre o correo" value="{{busqueda}}" onChange="{{onBuscar}}"></span>
+          <span class="envoltura">
+            <button type="button" class="pill-sel {{claseEstado}}" aria-haspopup="listbox" aria-expanded="{{expEstado}}" onClick="{{alternarEstado}}">{{textoEstado}} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+            <sc-if value="{{abiertoEstado}}" hint-placeholder-val="{{no}}">
+              <div class="menu izq" role="listbox" aria-label="Filtrar por estado">
+                <sc-for list="{{opcionesEstado}}" as="o" hint-placeholder-count="3">
+                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}<span class="menu-cnt">{{o.c}}</span></button>
+                </sc-for>
+              </div>
+            </sc-if>
+          </span>
+          <span class="envoltura">
+            <button type="button" class="pill-sel {{claseEmpresa}}" aria-haspopup="listbox" aria-expanded="{{expEmpresa}}" onClick="{{alternarEmpresa}}">{{textoEmpresa}} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+            <sc-if value="{{abiertoEmpresa}}" hint-placeholder-val="{{no}}">
+              <div class="menu izq" role="listbox" aria-label="Filtrar por empresa">
+                <sc-for list="{{opcionesEmpresa}}" as="o" hint-placeholder-count="3">
+                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}<span class="menu-cnt">{{o.c}}</span></button>
+                </sc-for>
+              </div>
+            </sc-if>
+          </span>
+
+          <sc-if value="{{hayFiltros}}" hint-placeholder-val="{{no}}"><button type="button" class="fb-limpiar" onClick="{{limpiar}}">Limpiar</button></sc-if>
+        </div>
+        <div class="tarjeta">
+          <div class="tt-h {{claseEncabezado}}" style="grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr) 160px minmax(0, 1fr) 150px 90px 28px;"><span aria-sort="ascending">Usuario<span class="ord" aria-hidden="true">▲</span></span><span>Correo</span><span>Rol en la organización</span><span>Empresa</span><span>Estado</span><span>Vence</span><span class="sr">Acciones</span></div>
+          <sc-for list="{{filas}}" as="u" hint-placeholder-count="8">
+            <div class="tt-f {{u.clase}}" style="grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr) 160px minmax(0, 1fr) 150px 90px 28px;"><span class="dos"><sc-if value="{{u.conNombre}}" hint-placeholder-val="{{si}}"><a class="c1" href="Usuario.dc.html">{{u.nombre}}</a></sc-if><sc-if value="{{u.sinNombre}}" hint-placeholder-val="{{no}}"><a class="c1" href="Usuario.dc.html">{{u.email}}</a></sc-if></span><span class="c2b">{{u.correo}}</span><span class="roles"><sc-for list="{{u.rolesOrg}}" as="r" hint-placeholder-count="1"><span class="rol">{{r}}</span></sc-for><sc-if value="{{u.sinRolesOrg}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span class="dos"><sc-if value="{{u.conEmpresa}}" hint-placeholder-val="{{si}}"><span>{{u.empresa}}</span></sc-if><sc-if value="{{u.sinEmpresa}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span><span class="pill {{u.pill}}">{{u.estado}}</span></span><span class="c1 n {{u.claseVence}}">{{u.vence}}</span><span class="der envoltura">
+                <button type="button" class="kebab" aria-haspopup="menu" aria-expanded="{{u.exp}}" aria-label="{{u.ariaMenu}}" onClick="{{u.alternar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
+                <sc-if value="{{u.menu}}" hint-placeholder-val="{{no}}">
+                  <div class="menu der {{u.claseMenu}}" role="menu">
+                    <a class="menu-it" role="menuitem" href="Usuario.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 5.5 18.5 8.5 9 18H6v-3z"/></svg> Editar</a>
+                    <sc-if value="{{u.esInvitacion}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it" role="menuitem" onClick="{{u.reenviar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg> Reenviar invitación</button></sc-if>
+                    <sc-if value="{{u.esDeshabilitado}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it" role="menuitem" onClick="{{u.activar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> Reactivar</button></sc-if>
+                    <sc-if value="{{u.conPeligro}}" hint-placeholder-val="{{si}}"><div class="menu-sep" role="separator"></div></sc-if>
+                    <sc-if value="{{u.esInvitacion}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it pel" role="menuitem" onClick="{{u.revocar}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg> Revocar invitación</button></sc-if>
+                    <sc-if value="{{u.esBajaPedida}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it pel" role="menuitem" onClick="{{u.quitar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 3 17.5V19"/><circle cx="9" cy="7.5" r="3.5"/><path d="M16 11h5"/></svg> Quitar de la organización</button></sc-if>
+                    <sc-if value="{{u.esActivo}}" hint-placeholder-val="{{si}}"><button type="button" class="menu-it pel" role="menuitem" onClick="{{u.deshabilitar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> Dar de baja</button></sc-if>
+                  </div>
+                </sc-if>
+              </span>
+            </div>
+          </sc-for>
+          <sc-if value="{{limite}}" hint-placeholder-val="{{no}}">
+            <div class="vacio" role="alert"><strong>No pudimos cargar los usuarios.</strong><span>Hiciste muchos pedidos seguidos. Probá de nuevo en 0:41.</span><button type="button" class="b b-sec" disabled>Reintentar</button></div>
+          </sc-if>
+          <sc-if value="{{sinResultados}}" hint-placeholder-val="{{no}}">
+            <div class="vacio"><strong>Ningún usuario coincide con los filtros</strong><button type="button" class="b b-sec" onClick="{{limpiar}}">Limpiar filtros</button></div>
+          </sc-if>
+<sc-if value="{{noLimite}}" hint-placeholder-val="{{si}}">          <div class="pie">
+            <span>{{pagRango}}</span>
+            <span class="pag">
+              <span class="envoltura">
+                <button type="button" class="pill-sel" aria-haspopup="listbox" aria-expanded="{{expTamano}}" onClick="{{alternarTamano}}">{{pagTamano}} por página <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+                <sc-if value="{{abiertoTamano}}" hint-placeholder-val="{{no}}">
+                  <div class="menu der arriba" role="listbox" aria-label="Filas por página" style="min-width: 160px;">
+                    <sc-for list="{{opcionesTamano}}" as="o" hint-placeholder-count="4"><button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}</button></sc-for>
+                  </div>
+                </sc-if>
+              </span>
+              <span>{{pagTexto}}</span>
+              <button type="button" class="ico-btn" aria-label="Página anterior" disabled="{{pagSinAnterior}}" onClick="{{pagAnterior}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button>
+              <button type="button" class="ico-btn" aria-label="Página siguiente" disabled="{{pagSinSiguiente}}" onClick="{{pagSiguiente}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg></button>
+            </span>
+          </div></sc-if>
+        </div>
+      </div>
+    </main>
+  </div>
+  <sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if>
+  <sc-if value="{{dlgInvitar}}" hint-placeholder-val="{{no}}">
+    <div class="velo">
+      <sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if>
+      <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-dlgInvitar">
+        <div class="dlg-h">
+          <div><h2 id="dlg-dlgInvitar">Invitar usuario</h2></div>
+          <button type="button" class="dlg-x" aria-label="Cerrar" onClick="{{cerrarDialogo}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button>
+        </div>
+        <div class="dlg-b">
+            <div class="campo2 ancho">
+              <label class="et" for="f-Correo">Correo<span class="req" aria-hidden="true">*</span></label>
+              <input class="in2 {{malCorreo}}" id="f-Correo" type="email" autocomplete="off" placeholder="nombre@empresa.com" value="{{Correo}}" onChange="{{onCorreo}}">
+              <sc-if value="{{errCorreo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCorreo}}</span></sc-if>
+            </div>
+            <div class="campo2 envoltura ancho">
+              <span class="et"><span id="et-RolesOrg">Roles de la organización</span></span>
+              <button type="button" class="in2" aria-haspopup="listbox" aria-expanded="{{expRolesOrg}}" aria-labelledby="et-RolesOrg" onClick="{{alternarRolesOrg}}" disabled="{{bloqRolesOrg}}"><span class="val {{claseValRolesOrg}}">{{textoRolesOrg}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+              <sc-if value="{{abiertoRolesOrg}}" hint-placeholder-val="{{no}}">
+                <div class="menu lista" role="listbox" aria-multiselectable="true" aria-labelledby="et-RolesOrg" style="top: 60px;">
+                  <sc-for list="{{opcionesRolesOrg}}" as="o" hint-placeholder-count="3">
+                    <label class="op2"><input type="checkbox" checked="{{o.on}}" onChange="{{o.alternar}}"><span><span class="opn">{{o.n}}</span><sc-if value="{{o.d}}" hint-placeholder-val="{{no}}"><span class="opd">{{o.d}}</span></sc-if></span></label>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+            <div class="campo2 envoltura">
+              <span class="et" id="et-Emp">Empresa</span>
+              <button type="button" class="in2 {{malEmp}}" aria-haspopup="listbox" aria-expanded="{{expEmp}}" aria-labelledby="et-Emp" onClick="{{alternarEmp}}" disabled="{{bloqEmp}}"><span class="val {{claseValEmp}}">{{textoEmp}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+              <sc-if value="{{abiertoEmp}}" hint-placeholder-val="{{no}}">
+                <div class="menu lista" role="listbox" aria-labelledby="et-Emp" style="top: 60px;">
+                  <sc-for list="{{opcionesEmp}}" as="o" hint-placeholder-count="3">
+                    <button type="button" role="option" aria-selected="{{o.sel}}" class="op2 {{o.clase}}" onClick="{{o.elegir}}"><span><span class="opn">{{o.n}}</span><sc-if value="{{o.d}}" hint-placeholder-val="{{no}}"><span class="opd">{{o.d}}</span></sc-if></span></button>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{errEmp}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errEmp}}</span></sc-if>
+            </div>
+            <div class="campo2 envoltura">
+              <span class="et"><span id="et-RolesEmp">Roles en la empresa</span></span>
+              <button type="button" class="in2" aria-haspopup="listbox" aria-expanded="{{expRolesEmp}}" aria-labelledby="et-RolesEmp" onClick="{{alternarRolesEmp}}" disabled="{{bloqRolesEmp}}"><span class="val {{claseValRolesEmp}}">{{textoRolesEmp}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+              <sc-if value="{{abiertoRolesEmp}}" hint-placeholder-val="{{no}}">
+                <div class="menu lista" role="listbox" aria-multiselectable="true" aria-labelledby="et-RolesEmp" style="top: 60px;">
+                  <sc-for list="{{opcionesRolesEmp}}" as="o" hint-placeholder-count="3">
+                    <label class="op2"><input type="checkbox" checked="{{o.on}}" onChange="{{o.alternar}}"><span><span class="opn">{{o.n}}</span><sc-if value="{{o.d}}" hint-placeholder-val="{{no}}"><span class="opd">{{o.d}}</span></sc-if></span></label>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+
+        </div>
+        <div class="dlg-f">
+          <button type="button" class="b b-sec" onClick="{{cerrarDialogo}}">Cancelar</button>
+          <button type="button" class="b b-pri" onClick="{{invitar}}" disabled="{{enviando}}">{{textoInvitar}}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{confirmacion}}" hint-placeholder-val="{{no}}">
+    <div class="velo">
+      <div class="dlg chico" role="alertdialog" aria-modal="true" aria-labelledby="conf-t">
+        <div class="dlg-h"><h2 id="conf-t">{{tituloConfirmacion}}</h2></div>
+        <div class="dlg-t">{{textoConfirmacion}}</div>
+        <sc-if value="{{hayMotivo}}" hint-placeholder-val="{{no}}">
+          <div class="dlg-b una" style="padding-top: 0;">
+            <div class="campo2"><label class="et" for="conf-motivo">Motivo<span class="req" aria-hidden="true">*</span></label><textarea class="in2 {{malMotivo}}" id="conf-motivo" value="{{motivo}}" onChange="{{onMotivo}}"></textarea><sc-if value="{{errMotivo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errMotivo}}</span></sc-if></div>
+          </div>
+        </sc-if>
+        <div class="dlg-f">
+          <button type="button" class="b b-sec" onClick="{{cancelarConfirmacion}}">Cancelar</button>
+          <button type="button" class="b {{claseConfirmar}}" onClick="{{confirmar}}">{{botonConfirmacion}}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{aviso}}" hint-placeholder-val="{{no}}">
+    <div class="toast2 {{claseAviso}}" role="status">
+      <sc-if value="{{avisoOk}}" hint-placeholder-val="{{si}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.13 155)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg></sc-if>
+      <sc-if value="{{avisoError}}" hint-placeholder-val="{{no}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.57 0.2 25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg></sc-if>
+      <span>{{aviso}}</span><sc-if value="{{avisoError}}" hint-placeholder-val="{{no}}"><button type="button" class="ico-btn" aria-label="Cerrar" onClick="{{cerrarAviso}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></sc-if>
+    </div>
+  </sc-if>
+
+</div>
 </x-dc>
 
 <script type="text/x-dc" data-dc-script data-props='{"campana":{"editor":"enum","options":["Con avisos","Versión nueva","Sin avisos"],"default":"Con avisos","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+const ORG_ZONA = 'America/Argentina/Buenos_Aires';
+// La zona se guarda con su ID; en pantalla va la ciudad y el desfase.
+const NOMBRES_ZONA = { 'America/Argentina/Buenos_Aires': 'Buenos Aires (GMT−3)', 'America/Argentina/Cordoba': 'Córdoba (GMT−3)', 'America/Argentina/Mendoza': 'Mendoza (GMT−3)', 'America/Argentina/Tucuman': 'Tucumán (GMT−3)', 'America/Montevideo': 'Montevideo (GMT−3)', 'America/Santiago': 'Santiago (GMT−3)', 'America/Asuncion': 'Asunción (GMT−3)' };
+const nombreZona = (z) => NOMBRES_ZONA[z] || z;
+const ZONAS = [
+  { v: null, n: 'La de la organización', d: nombreZona(ORG_ZONA) },
+  ...['America/Argentina/Cordoba', 'America/Argentina/Mendoza', 'America/Argentina/Tucuman', 'America/Montevideo'].map((z) => ({ v: z, n: nombreZona(z) })),
+];
+const ZONAS_TODAS = ['America/Argentina/Buenos_Aires', 'America/Argentina/Cordoba', 'America/Argentina/Mendoza', 'America/Argentina/Tucuman', 'America/Montevideo', 'America/Santiago', 'America/Asuncion'].map((z) => ({ v: z, n: nombreZona(z) }));
+const IDIOMAS = [{ v: 'es-AR', n: 'Español (Argentina)', d: '27/09/2026 14:35 · 1.234,50' }, { v: 'en-US', n: 'English (United States)', d: '09/27/2026 2:35 PM · 1,234.50' }];
+const MONEDAS = [{ v: 'ARS', n: 'Peso argentino (ARS)', d: '$ 1.234,50' }, { v: 'USD', n: 'Dólar estadounidense (USD)', d: 'US$ 1.234,50' }];
+// GET /api/companies
+const EMPRESAS = [
+  { id: 'c1', n: 'Delta S.A.', cuit: '30-71234567-1', zona: null, miembros: 6, estado: 'activa' },
+  { id: 'c2', n: 'Delta Sur S.R.L.', cuit: '30-71555444-1', zona: 'America/Argentina/Cordoba', miembros: 4, estado: 'activa' },
+  { id: 'c3', n: 'Delta Norte S.A.', cuit: '', zona: null, miembros: 3, estado: 'activa' },
+];
+const nombreEmpresa = (id) => (EMPRESAS.find((e) => e.id === id) || { n: '' }).n;
+// GET /api/roles: los de sistema y los que crea cada organización. Solo usan los permisos que existen en la
+// plantilla; cada producto suma los suyos.
+const ROLES = [
+  { id: 'r1', n: 'Dueño', vale: 'org', d: 'Tiene todos los permisos de la organización.', u: 1, p: 12, sistema: true },
+  { id: 'r2', n: 'Recursos humanos', vale: 'org', d: 'Invita, edita y da de baja usuarios.', u: 0, p: 3 },
+  { id: 'r3', n: 'Auditor', vale: 'org', d: 'Ve los usuarios y la auditoría. No cambia nada.', u: 1, p: 2 },
+  { id: 'r4', n: 'Administrador', vale: 'cada', d: 'Administra la empresa: sus miembros y sus roles.', u: 2, p: 2, sistema: true },
+  { id: 'r5', n: 'Solo lectura', vale: 'c1', d: 'Ve los miembros de la empresa. No cambia nada.', u: 4, p: 1 },
+  { id: 'r6', n: 'Solo lectura', vale: 'c2', d: 'Ve los miembros de la empresa. No cambia nada.', u: 1, p: 1 },
+  { id: 'r7', n: 'Solo lectura', vale: 'c3', d: 'Ve los miembros de la empresa. No cambia nada.', u: 0, p: 1 },
+];
+const rolesDeOrg = () => ROLES.filter((r) => r.vale === 'org').map((r) => ({ v: r.n, n: r.n, d: r.d }));
+const rolesDeEmpresa = (c) => ROLES.filter((r) => r.vale === 'cada' || r.vale === c).map((r) => ({ v: r.n, n: r.n, d: r.d }));
+// GET /api/users: parte de los miembros de la organización (tenant.Members), con su identidad.
+const USUARIOS = [
+  { id: 'u1', n: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', estado: 'activo', rolesOrg: ['Dueño'], empresas: [{ c: 'c1', roles: ['Administrador'] }], desde: '12/01/2026', yo: true },
+  { id: 'u2', n: 'Tomás Acosta', email: 'tomas.acosta@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '03/02/2026' },
+  { id: 'u3', n: 'Julieta Sosa', email: 'julieta.sosa@delta.ejemplo.com', estado: 'activo', rolesOrg: ['Auditor'], empresas: [], desde: '03/02/2026' },
+  // Pidió la baja de su cuenta: el estado sale de la identidad, no de la membresía (multitenancy §3.2).
+  { id: 'u4', n: 'Diego Ríos', email: 'diego.rios@delta.ejemplo.com', estado: 'bajaPedida', seElimina: '27/10/2026 09:15', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '18/02/2026' },
+  { id: 'u5', n: 'Paula Méndez', email: 'paula.mendez@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }, { c: 'c2', roles: ['Solo lectura'] }], desde: '02/03/2026' },
+  { id: 'u9', n: 'Martín Paz', email: 'martin.paz@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '10/03/2026' },
+  { id: 'u10', n: 'Carolina Vega', email: 'carolina.vega@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c2', roles: ['Administrador'] }, { c: 'c3', roles: ['Administrador'] }], desde: '10/03/2026' },
+  { id: 'u12', n: '', email: '011 15-5555-8812', estado: 'invitado', vence: '20/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
+  { id: 'u13', n: '', email: '011 15-5555-9934', estado: 'invitado', vence: '20/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
+  { id: 'u14', n: '', email: '011 15-5555-1200', estado: 'invitado', vence: '20/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
+  { id: 'u8', n: 'Marcos Giménez', email: 'marcos.gimenez@delta.ejemplo.com', estado: 'deshabilitado', rolesOrg: [], empresas: [], desde: '05/02/2026' },
+  { id: 'u6', n: 'Sofía Herrera', email: 'sofia.herrera@delta.ejemplo.com', estado: 'invitado', vence: '02/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
+  { id: 'u7', n: '', email: 'valentina.ruiz@gmail.com', estado: 'invitado', vence: '03/10/2026', rolesOrg: [], empresas: [{ c: 'c3', roles: ['Solo lectura'] }] },
+  { id: 'u11', n: '', email: 'carla.bianchi@delta.ejemplo.com', estado: 'vencida', vence: '25/09/2026', rolesOrg: [], empresas: [{ c: 'c2', roles: ['Solo lectura'] }] },
+];
+const ESTADOS_USUARIO = {
+  activo: { n: 'Activo', pill: 'ok' },
+  invitado: { n: 'Invitación pendiente', pill: 'pend' },
+  vencida: { n: 'Invitación vencida', pill: 'alerta' },
+  deshabilitado: { n: 'De baja', pill: 'off' },
+  bajaPedida: { n: 'Por borrar', pill: 'alerta' },
+};
+const nombreDe = (u) => u.n || u.email;
+
 class Component extends DCLogic {
-  renderVals() {
-    const e = this.props.estado ?? "Lista";
-    const v = e;
-    const R = false, CI = false, AP = false;
-    const lee = v === 'Quien solo ve respuestas', aprueba = v === 'Quien solo aprueba', soloPub = v === 'Solo puede publicar', lectura = v === 'Solo lectura';
-    const baja = v === 'Dados de baja' || v === 'Acciones de un dado de baja';
-    const pub = v === 'Publicados', bor = v === 'Borradores', conAlgo = v === 'Con algo por aprobar';
-    const estMenu = v === 'Estado: menú', aprMenu = v === 'Aprobación: menú', nuevoMenu = v === 'Nuevo formulario: menú';
-    const publicando = v === 'Acciones mientras se publica' || v === 'Publicando';
-    const lista = !['Sin coincidencias', 'Cargando', 'Todavía no hay formularios', 'No se pudo cargar', 'Sin permiso'].includes(v);
-    const disena = !lee && !aprueba && v !== 'Sin permiso';
-    const quien = lee ? ['Julieta Sosa', 'julieta.sosa@delta.ejemplo.com', 'J'] : aprueba ? ['Martín Paz', 'martin.paz@delta.ejemplo.com', 'M']
-      : v === 'Sin permiso' ? ['Tomás Acosta', 'tomas.acosta@delta.ejemplo.com', 'T'] : ['Lucía Fernández', 'lucia.fernandez@delta.ejemplo.com', 'L'];
-    const filas = baja || bor ? 1 : conAlgo ? 2 : pub || lee || aprueba ? 3 : 4;
+  constructor(props) {
+    super(props);
+    
+    this.state = { wa: false, adm: true, abierto: null, aviso: props.estado === 'Teléfonos cargados' ? 'Vinculamos 2 teléfonos y mandamos 3 invitaciones.' : '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', usuarios: USUARIOS, busqueda: '', estado: null, empresa: null, dialogo: null, correo: '', errCorreo: '', rolesOrg: [], emp: null, rolesEmp: [], enviando: false };
+  }
+
+  avisar(texto, tipo = 'ok') {
+    this.setState({ aviso: texto, avisoTipo: tipo });
+    clearTimeout(this.timerAviso);
+    if (tipo !== 'error') this.timerAviso = setTimeout(() => this.setState({ aviso: '' }), 4000);
+  }
+
+  alternarMenu(clave) {
+    this.setState({ abierto: this.state.abierto === clave ? null : clave });
+  }
+
+  // Un desplegable de una opción: clave del estado, opciones [{ v, n, d }] y texto cuando no hay nada elegido.
+  uno(clave, campo, opciones, vacio, extra = {}) {
+    const s = this.state;
+    const actual = opciones.find((o) => o.v === s[campo]);
+    const abierto = s.abierto === clave;
+
     return {
-      si: true, no: false,
-      cmpCon: (this.props.campana ?? 'Con avisos') === 'Con avisos', cmpSin: this.props.campana === 'Sin avisos',
-      cmpVersion: this.props.campana === 'Versión nueva', cmpCant: this.props.campana === 'Versión nueva' ? '5' : '4',
-      yo: quien[0], yoCorreo: quien[1], yoIni: quien[2], conAdmin: disena, verFormularios: v !== 'Sin permiso', verDisena: disena,
-      conCnt: AP && !lee, cntMenu: '4', conBanda: v !== 'Sin permiso',
-      resumen: v === 'Cargando' || v === 'No se pudo cargar' ? '' : v === 'Todavía no hay formularios' ? 'Sin formularios'
-        : baja ? '1 dado de baja' : lee ? '3 activos' : aprueba ? '4 por aprobar' : !CI ? '4 formularios' : AP ? '4 activos · 4 por aprobar' : '4 activos · 1 dado de baja',
-      conNuevo: disena && !soloPub && !lectura, menuNuevo: nuevoMenu, expNuevo: nuevoMenu ? 'true' : 'false',
-      conFiltros: !['Todavía no hay formularios', 'Sin permiso'].includes(v), conEstado: disena, conAprobacion: !lee && v !== 'Sin permiso' && !baja,
-      busqueda: v === 'Sin coincidencias' ? 'inspección' : 'Buscar formulario', busClase: v === 'Sin coincidencias' ? 'lleno' : '',
-      estTexto: pub ? 'Estado: Publicados' : bor ? 'Estado: Borradores' : baja ? 'Estado: Dados de baja' : 'Estado', estClase: pub || bor || baja ? 'con' : '', estMenu, estAlternar: () => {},
-      estOn_t: pub || bor || baja ? '' : 'on', estOn_p: pub ? 'on' : '', estOn_b: bor ? 'on' : '', estOn_d: baja ? 'on' : '', estC_t: '4', estC_p: '3', estC_b: '1', estC_d: '1',
-      estElegir_t: () => {}, estElegir_p: () => {}, estElegir_b: () => {}, estElegir_d: () => {},
-      aprTexto: conAlgo ? 'Aprobación: Con algo por aprobar' : 'Aprobación', aprClase: conAlgo ? 'con' : '', aprMenu, aprAlternar: () => {},
-      aprOn_t: conAlgo ? '' : 'on', aprOn_c: conAlgo ? 'on' : '', aprOn_n: '', aprC_t: '4', aprC_c: '2', aprC_n: '2',
-      aprElegir_t: () => {}, aprElegir_c: () => {}, aprElegir_n: () => {},
-      hayFiltro: pub || bor || baja || conAlgo || v === 'Sin coincidencias',
-      total: v === 'Sin coincidencias' ? '0 formularios' : filas === 1 ? '1 formulario' : filas + ' formularios',
-      conTabla: v !== 'Sin permiso', conFilas: lista, colsTodas: disena, colsLee: lee, colsAprueba: aprueba,
-      rango: filas === 1 ? '1 de 1' : '1–' + filas + ' de ' + filas,
-      rVis: lista && !baja && !bor, rEnt: lista && !baja && !bor, rCon: lista && !baja && !bor && !conAlgo,
-      rRec: lista && !baja && !pub && !conAlgo && !lee && !aprueba, rRel: baja,
-      estVis: publicando ? 'Publicando la versión 4' : 'Publicado · versión 3', estVisClase: publicando ? 'pend' : '',
-      mVis: v === 'Acciones de un publicado', mVisPub: v === 'Acciones mientras se publica', mVisSoloPublica: soloPub, mVisLectura: CI && lectura,
-      mRec: v === 'Acciones de un borrador', mRel: v === 'Acciones de un dado de baja',
-      cargando: v === 'Cargando', vacio: v === 'Todavía no hay formularios', sinCoincidencias: v === 'Sin coincidencias', error: v === 'No se pudo cargar',
-      sinPermiso: v === 'Sin permiso',
+      ['abierto' + clave]: abierto,
+      ['exp' + clave]: abierto ? 'true' : 'false',
+      ['alternar' + clave]: () => this.alternarMenu(clave),
+      ['texto' + clave]: actual ? actual.n : vacio,
+      ['claseVal' + clave]: actual ? '' : 'vacio2',
+      ['mal' + clave]: extra.error ? 'mal' : '',
+      ['err' + clave]: extra.error || '',
+      ['bloq' + clave]: !!extra.bloqueado,
+      ['opciones' + clave]: opciones.map((o) => ({
+        n: o.n, d: o.d || '', sel: o.v === s[campo] ? 'true' : 'false', clase: o.v === s[campo] ? 'on' : '',
+        elegir: () => this.setState({ [campo]: o.v, abierto: null, ...(extra.alElegir ? extra.alElegir(o.v) : {}) }),
+      })),
+    };
+  }
+
+  // Un desplegable de varias opciones sobre una lista del estado.
+  varios(clave, campo, opciones, vacio, extra = {}) {
+    const s = this.state;
+    const lista = s[campo];
+    const abierto = s.abierto === clave;
+    const elegidos = opciones.filter((o) => lista.includes(o.v));
+    const poner = (nueva) => this.setState({ [campo]: nueva, ...(extra.alCambiar ? extra.alCambiar(nueva) : {}) });
+
+    return {
+      ['abierto' + clave]: abierto,
+      ['exp' + clave]: abierto ? 'true' : 'false',
+      ['alternar' + clave]: () => this.alternarMenu(clave),
+      ['texto' + clave]: elegidos.length === 0 ? vacio : elegidos.map((o) => o.n).join(', '),
+      ['claseVal' + clave]: elegidos.length === 0 ? 'vacio2' : '',
+      ['bloq' + clave]: !!extra.bloqueado,
+      ['todos' + clave]: opciones.length > 0 && elegidos.length === opciones.length,
+      ['alternarTodos' + clave]: () => {
+        const codigos = opciones.map((o) => o.v);
+        const resto = this.state[campo].filter((x) => !codigos.includes(x));
+        poner(elegidos.length === opciones.length ? resto : [...resto, ...codigos]);
+      },
+      ['opciones' + clave]: opciones.map((o) => ({
+        n: o.n, d: o.d || '', on: lista.includes(o.v),
+        alternar: () => {
+          const actual = this.state[campo];
+          poner(actual.includes(o.v) ? actual.filter((x) => x !== o.v) : [...actual, o.v]);
+        },
+      })),
+    };
+  }
+
+  // Filtro en pastilla: opciones [{ v, n }] con conteo calculado por `contar(v)`.
+  filtro(clave, campo, opciones, textoTodos, contar) {
+    const s = this.state;
+    const abierto = s.abierto === clave;
+    const actual = opciones.find((o) => o.v === s[campo]);
+
+    return {
+      ['abierto' + clave]: abierto,
+      ['exp' + clave]: abierto ? 'true' : 'false',
+      ['alternar' + clave]: () => this.alternarMenu(clave),
+      ['texto' + clave]: actual && actual.v !== null ? actual.corto || actual.n : textoTodos,
+      ['clase' + clave]: actual && actual.v !== null ? 'con' : '',
+      ['opciones' + clave]: opciones.map((o) => ({
+        n: o.n, c: String(contar(o.v)), sel: o.v === s[campo] ? 'true' : 'false', clase: o.v === s[campo] ? 'on' : '',
+        elegir: () => this.setState({ [campo]: o.v, abierto: null }),
+      })),
+    };
+  }
+
+  // Menú ⋮ de una fila.
+  // Paginado por páginas (usePagination): devuelve la página actual y los valores de paginacion(p).
+  paginar(lista, p = '') {
+    const s = this.state;
+    const tam = s['tam' + p] || 10;
+    const paginas = Math.max(1, Math.ceil(lista.length / tam));
+    const pag = Math.min(s['pag' + p] || 1, paginas);
+    const desde = lista.length === 0 ? 0 : (pag - 1) * tam + 1;
+    const hasta = Math.min(pag * tam, lista.length);
+    const clave = 'tam' + p;
+    const abierto = s.abierto === clave;
+
+    return {
+      items: lista.slice((pag - 1) * tam, pag * tam),
+      vals: {
+        [p + 'pagRango']: lista.length === 0 ? '0 de 0' : (desde === hasta ? String(desde) : desde + '–' + hasta) + ' de ' + lista.length,
+        [p + 'pagTexto']: 'Página ' + pag + ' de ' + paginas,
+        [p + 'pagSinAnterior']: pag <= 1,
+        [p + 'pagSinSiguiente']: pag >= paginas,
+        [p + 'pagAnterior']: () => this.setState({ ['pag' + p]: pag - 1 }),
+        [p + 'pagSiguiente']: () => this.setState({ ['pag' + p]: pag + 1 }),
+        [p + 'pagTamano']: String(tam),
+        [p + 'abiertoTamano']: abierto,
+        [p + 'expTamano']: abierto ? 'true' : 'false',
+        [p + 'alternarTamano']: () => this.alternarMenu(clave),
+        [p + 'opcionesTamano']: [10, 20, 50, 100].map((n) => ({ n: n + ' por página', sel: n === tam ? 'true' : 'false', clase: n === tam ? 'on' : '', elegir: () => this.setState({ ['tam' + p]: n, ['pag' + p]: 1, abierto: null }) })),
+      },
+    };
+  }
+
+  // Menú ⋮ de una fila: abre hacia abajo; solo sube en las dos últimas filas de una página llena.
+  fila(id, nombre, i = 0, n = 0) {
+    const clave = 'fila:' + id;
+    const abierto = this.state.abierto === clave;
+
+    return { menu: abierto, exp: abierto ? 'true' : 'false', ariaMenu: 'Acciones de ' + nombre, alternar: () => this.alternarMenu(clave), claseMenu: n >= 10 && i >= n - 2 ? 'arriba' : '' };
+  }
+
+  // Confirmación: { titulo, texto, boton, peligro, motivo (bool), accion(motivo) }.
+  pedirConfirmacion(c) {
+    this.setState({ abierto: null, confirmar: c, motivo: '', errMotivo: '' });
+  }
+
+  comunes() {
+    const s = this.state;
+    const c = s.confirmar;
+
+    return {
+      si: true,
+      no: false,
+      cmpCon: (this.props.campana ?? 'Con avisos') === 'Con avisos', cmpSin: this.props.campana === 'Sin avisos', cmpHay: this.props.campana !== 'Sin avisos',
+      cmpVersion: this.props.campana === 'Versión nueva', cmpCant: {'Versión nueva': '2', 'Sin avisos': '0'}[this.props.campana] ?? '1',
+      hayAbierto: s.abierto !== null,
+      cerrarMenus: () => this.setState({ abierto: null }),
+      abiertoDrawer: s.abierto === 'drawer',
+      alternarDrawer: () => this.alternarMenu('drawer'),
+      abiertoMas: s.abierto === 'mas',
+      expMas: s.abierto === 'mas' ? 'true' : 'false',
+      alternarMas: () => this.alternarMenu('mas'),
+      abiertoUsuario: s.abierto === 'usuario',
+      expUsuario: s.abierto === 'usuario' ? 'true' : 'false',
+      alternarUsuario: () => this.alternarMenu('usuario'),
+      aviso: s.aviso,
+      avisoOk: s.avisoTipo !== 'error',
+      avisoError: s.avisoTipo === 'error',
+      claseAviso: s.avisoTipo === 'error' ? 'mal' : '',
+      cerrarAviso: () => this.setState({ aviso: '' }),
+      confirmacion: !!c,
+      tituloConfirmacion: c ? c.titulo : '',
+      textoConfirmacion: c ? c.texto : '',
+      botonConfirmacion: c ? c.boton : '',
+      claseConfirmar: c && c.peligro === false ? 'b-pri' : 'b-pel',
+      hayMotivo: !!(c && c.motivo),
+      motivo: s.motivo,
+      onMotivo: (e) => this.setState({ motivo: e.target.value, errMotivo: '' }),
+      malMotivo: s.errMotivo ? 'mal' : '',
+      errMotivo: s.errMotivo,
+      cancelarConfirmacion: () => this.setState({ confirmar: null }),
+      confirmar: () => {
+        if (c.motivo && s.motivo.trim() === '') {
+          this.setState({ errMotivo: 'Escribí el motivo.' });
+
+          return;
+        }
+
+        this.setState({ confirmar: null });
+        c.accion(s.motivo.trim());
+      },
+    };
+  }
+
+  filtrar(cambios) {
+    const f = { busqueda: this.state.busqueda, estado: this.state.estado, empresa: this.state.empresa, ...cambios };
+    const q = f.busqueda.trim().toLowerCase();
+
+    return this.state.usuarios.filter((u) => (q === '' || u.email.includes(q) || u.n.toLowerCase().includes(q))
+      && (f.estado === null || u.estado === f.estado || (f.estado === 'invitaciones' && (u.estado === 'invitado' || u.estado === 'vencida')))
+      && (f.empresa === null || (f.empresa === 'ninguna' ? u.empresas.length === 0 : u.empresas.some((e) => e.c === f.empresa))));
+  }
+
+  cambiar(id, cambios) {
+    this.setState({ usuarios: this.state.usuarios.map((x) => (x.id === id ? { ...x, ...cambios } : x)) });
+  }
+
+  // POST /api/users/invitations { email, roleIds, companies: [{ companyId, roleIds }] }
+  invitar() {
+    const s = this.state;
+    const correo = s.correo.trim().toLowerCase();
+
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) {
+      this.setState({ errCorreo: correo === '' ? 'Escribí el correo.' : 'Revisá el correo: no parece válido.', abierto: null });
+
+      return;
+    }
+
+    const existente = s.usuarios.find((u) => u.email === correo);
+
+    if (existente) {
+      // 409 Users.Member.AlreadyMember o Users.Invitation.AlreadyPending.
+      this.setState({ errCorreo: existente.estado === 'invitado' ? 'Ya tiene una invitación pendiente. Podés reenviarla desde su fila.' : 'Ya es usuario de la organización.', abierto: null });
+
+      return;
+    }
+
+    this.setState({ enviando: true, abierto: null });
+
+    setTimeout(() => {
+      const u = { id: 'n' + Date.now(), n: '', email: correo, estado: 'invitado', vence: '04/10/2026', rolesOrg: [...s.rolesOrg], empresas: s.emp ? [{ c: s.emp, roles: [...s.rolesEmp] }] : [], nuevo: true };
+      this.setState({ usuarios: [u, ...this.state.usuarios], dialogo: null, enviando: false });
+      this.avisar('Invitamos a ' + correo + '. La invitación vence el 04/10/2026.');
+    }, 700);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const filas = this.filtrar({});
+    const pg = this.paginar(filas);
+    const total = s.usuarios.length;
+    const cuenta = (e) => s.usuarios.filter((u) => u.estado === e).length;
+    const hayFiltros = s.busqueda.trim() !== '' || s.estado !== null || s.empresa !== null;
+    const admins = s.usuarios.filter((u) => u.estado === 'activo' && u.rolesOrg.includes('Dueño')).length;
+
+    return {
+      ...this.comunes(),
+      admClase: this.state.adm ? 'adm-abierto' : '', admExp: this.state.adm ? 'true' : 'false', alternarAdm: () => this.setState({ adm: !this.state.adm, wa: false }), waClase: this.state.wa ? 'wa-abierto' : '', waExp: this.state.wa ? 'true' : 'false', alternarWa: () => this.setState({ wa: !this.state.wa, adm: false }),
+      resumen: total + ' usuarios · ' + cuenta('activo') + ' activos · ' + (cuenta('invitado') + cuenta('vencida')) + ' invitaciones',
+      busqueda: s.busqueda,
+      onBuscar: (e) => this.setState({ busqueda: e.target.value }),
+      ...this.filtro('Estado', 'estado', [{ v: null, n: 'Todos' }, { v: 'activo', n: 'Activos' }, { v: 'invitado', n: 'Invitación pendiente' }, { v: 'vencida', n: 'Invitación vencida' }, { v: 'deshabilitado', n: 'Dados de baja' }, { v: 'bajaPedida', n: 'Por borrar' }], 'Estado: todos', (v) => this.filtrar({ estado: v }).length),
+      ...this.filtro('Empresa', 'empresa', [{ v: null, n: 'Todas' }, ...EMPRESAS.map((e) => ({ v: e.id, n: e.n })), { v: 'ninguna', n: 'Sin empresa' }], 'Empresa: todas', (v) => this.filtrar({ empresa: v }).length),
+      hayFiltros,
+      claseEncabezado: { 'Gris': 'gris', 'Azul claro': 'azul-claro', 'Azul': 'azul' }[this.props.encabezado] || '',
+      // Opción B: los indicadores filtran por estado.
+      indicadores: [[null, 'Usuarios', total], ['activo', 'Activos', cuenta('activo')], ['invitado', 'Invitaciones pendientes', cuenta('invitado')], ['vencida', 'Invitaciones vencidas', cuenta('vencida')], ['deshabilitado', 'Dados de baja', cuenta('deshabilitado')]]
+        .map(([v, k, n]) => ({ k, v: String(n), clase: s.estado === v ? 'on' : '', sel: s.estado === v ? 'true' : 'false', elegir: () => this.setState({ estado: v, pag: 1 }) })),
+      // Opción D: los estados como pestañas de la tabla.
+      estados: [[null, 'Todos', total], ['activo', 'Activos', cuenta('activo')], ['invitaciones', 'Invitaciones', cuenta('invitado') + cuenta('vencida')], ['deshabilitado', 'Dados de baja', cuenta('deshabilitado')]]
+        .map(([v, n, c]) => ({ n, c: String(c), sel: s.estado === v ? 'true' : 'false', elegir: () => this.setState({ estado: v, pag: 1 }) })),
+      limpiar: () => this.setState({ busqueda: '', estado: null, empresa: null, abierto: null }),
+      ...pg.vals,
+      sinResultados: this.props.estado !== 'Demasiados pedidos' && filas.length === 0,
+
+      limite: this.props.estado === 'Demasiados pedidos',
+      noLimite: this.props.estado !== 'Demasiados pedidos',
+      filas: this.props.estado === 'Demasiados pedidos' ? [] : pg.items.map((u, i) => {
+        const est = ESTADOS_USUARIO[u.estado];
+        const invitacion = u.estado === 'invitado' || u.estado === 'vencida';
+        const primera = u.empresas[0];
+
+        return {
+          ...this.fila(u.id, nombreDe(u), i, pg.items.length),
+          nombre: u.n,
+          conNombre: !!u.n,
+          sinNombre: !u.n,
+          email: u.email,
+          correo: u.email.includes('@') ? u.email : '—',
+          rolesOrg: u.rolesOrg,
+          sinRolesOrg: u.rolesOrg.length === 0,
+          empresa: primera ? nombreEmpresa(primera.c) + (u.empresas.length > 1 ? ' y ' + (u.empresas.length - 1) + ' más' : '') : '—',
+          conEmpresa: !!primera,
+          sinEmpresa: !primera,
+          rolesEmpresa: primera ? [...new Set(u.empresas.flatMap((e) => e.roles))].join(', ') || 'Sin roles' : '—',
+          estado: est.n,
+          pill: est.pill,
+          vence: invitacion ? u.vence : '—',
+          claseVence: u.estado === 'vencida' ? 'vencido' : invitacion ? '' : 'nada',
+          clase: u.nuevo ? 'nueva' : '',
+          esInvitacion: invitacion,
+          textoVence: (u.estado === 'vencida' ? 'Venció ' : 'Vence ') + u.vence,
+          esActivo: u.estado === 'activo',
+          esDeshabilitado: u.estado === 'deshabilitado',
+          esBajaPedida: u.estado === 'bajaPedida',
+          conPeligro: invitacion || u.estado === 'activo' || u.estado === 'bajaPedida',
+          // DELETE /api/users/{id}: con la baja pedida no se le pueden cambiar los roles, pero sí quitarlo.
+          quitar: () => this.pedirConfirmacion({
+            titulo: '¿Quitar a ' + u.n + ' de Grupo Delta?',
+            texto: 'Deja de ser miembro de la organización y de sus empresas.',
+            boton: 'Quitar',
+            accion: () => {
+              this.setState({ usuarios: this.state.usuarios.filter((x) => x.id !== u.id) });
+              this.avisar('Quitamos a ' + u.n + ' de Grupo Delta.');
+            },
+          }),
+          // POST /api/users/invitations/{id}/resend: renueva el vencimiento.
+          reenviar: () => {
+            this.setState({ abierto: null });
+            this.cambiar(u.id, { estado: 'invitado', vence: '04/10/2026' });
+            this.avisar('Reenviamos la invitación a ' + u.email + '.');
+          },
+          revocar: () => this.pedirConfirmacion({
+            titulo: '¿Revocar la invitación a ' + u.email + '?',
+            texto: 'El enlace deja de funcionar. Podés volver a invitarla cuando quieras.',
+            boton: 'Revocar',
+            accion: () => {
+              this.setState({ usuarios: this.state.usuarios.filter((x) => x.id !== u.id) });
+              this.avisar('Revocamos la invitación a ' + u.email + '.');
+            },
+          }),
+          // PUT /api/users/{id}/status: 409 Users.Member.LastTenantAdmin; 400 Users.Member.CannotDisableSelf.
+          deshabilitar: () => {
+            if (u.yo) {
+              this.setState({ abierto: null });
+              this.avisar('No podés darte de baja a vos misma.', 'error');
+
+              return;
+            }
+
+            if (u.rolesOrg.includes('Dueño') && admins === 1) {
+              this.setState({ abierto: null });
+              this.avisar('Tiene que quedar al menos un Dueño activo.', 'error');
+
+              return;
+            }
+
+            this.pedirConfirmacion({
+              titulo: '¿Dar de baja a ' + u.n + '?',
+              texto: 'Deja de entrar a Grupo Delta y a sus empresas. Su cuenta y su perfil personal siguen funcionando.',
+              boton: 'Dar de baja',
+              accion: () => {
+                this.cambiar(u.id, { estado: 'deshabilitado' });
+                this.avisar('Dimos de baja a ' + u.n + '.');
+              },
+            });
+          },
+          activar: () => {
+            this.setState({ abierto: null });
+            this.cambiar(u.id, { estado: 'activo' });
+            this.avisar('Reactivamos a ' + u.n + '.');
+          },
+        };
+      }),
+
+      abrirInvitar: () => this.setState({ dialogo: 'invitar', correo: '', errCorreo: '', rolesOrg: [], emp: null, rolesEmp: [], abierto: null }),
+      dlgInvitar: s.dialogo === 'invitar',
+      cerrarDialogo: () => this.setState({ dialogo: null, abierto: null, enviando: false }),
+      Correo: s.correo,
+      onCorreo: (e) => this.setState({ correo: e.target.value, errCorreo: '' }),
+      malCorreo: s.errCorreo ? 'mal' : '',
+      errCorreo: s.errCorreo,
+      ...this.varios('RolesOrg', 'rolesOrg', rolesDeOrg(), 'Ninguno'),
+      ...this.uno('Emp', 'emp', [{ v: null, n: 'Ninguna' }, ...EMPRESAS.map((e) => ({ v: e.id, n: e.n }))], 'Ninguna', { alElegir: () => ({ rolesEmp: [] }) }),
+      ...this.varios('RolesEmp', 'rolesEmp', s.emp ? rolesDeEmpresa(s.emp) : [], s.emp ? 'Ninguno' : 'Elegí una empresa primero', { bloqueado: !s.emp }),
+      enviando: s.enviando,
+      textoInvitar: 'Invitar',
+      invitar: () => this.invitar(),
     };
   }
 }

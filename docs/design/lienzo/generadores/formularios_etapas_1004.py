@@ -28,12 +28,12 @@ PROJ = pathlib.Path(__file__).resolve().parent.parent
 FILAS = [
     (12, "Etapa 12 · Catálogos", ["FRM-Catalogos", "FRM-Catalogo-Nuevo", "FRM-Catalogo", "FRM-Catalogo-Importar", "FRM-Catalogo-Tipo", "FRM-Catalogo-Filtros",
                                   "FRM-Catalogo-Contactos"],
-     ["M-FRM-Catalogos", "M-FRM-Catalogo", "M-FRM-Catalogo-Filtros"]),
+     ["M-FRM-Catalogos", "M-FRM-Catalogo", "M-FRM-Catalogo-Filtros", "M-FRM-Catalogo-Contactos"]),
     (13, "Etapa 13 · Campos de los catálogos", ["FRM-Catalogo-13"], ["M-FRM-Catalogo-13"]),
     (14, "Etapa 14 · Formularios", ["FRM-Formularios", "FRM-Editor", "FRM-Publicar", "FRM-Publicando", "WA-Chats-Formulario", "WA-Chats-Respuesta",
-                                    "WA-Chats-Formulario-Cliente", "WA-Mensajes-14", "FRM-Catalogos-14"],
+                                    "WA-Chats-Formulario-Cliente", "WA-Mensajes-14", "FRM-Catalogos-14", "FRM-Catalogo-14", "Campana-14"],
      ["M-FRM-Formularios", "M-FRM-Editor", "M-WA-Chats-Formulario", "M-WA-Conversacion-Respuesta", "M-WA-Chats-Formulario-Cliente", "M-WA-Mensaje-14",
-      "M-FRM-Catalogos-14"]),
+      "M-FRM-Catalogos-14", "M-FRM-Catalogo-14", "M-Campana-14"]),
     (15, "Etapa 15 · Respuestas", ["FRM-Formularios-15", "FRM-Respuestas", "FRM-Respuestas-Filtros", "FRM-Respuesta", "FRM-Respuestas-Exportar", "FRM-Tablero"],
      ["M-FRM-Respuestas", "M-FRM-Respuesta", "M-FRM-Tablero"]),
     (17, "Etapa 17 · Ciclo de vida", ["FRM-Formularios-17", "FRM-Editor-Baja", "FRM-Dar-De-Baja", "FRM-Reactivar-Eliminar", "FRM-Copiar"],
@@ -72,7 +72,7 @@ def panel(etapa, activo, condiciones=None, cantidad=None):
 
 
 ACTIVO = {"FRM-Formularios.dc.html": "formularios", "FRM-Catalogos.dc.html": "catalogos", "FRM-Faltan.dc.html": "faltan"}
-LISTAS = {"FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-21", "FRM-Formularios-22", "Campana"}  # arman su panel con los permisos
+LISTAS = {"FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-21", "FRM-Formularios-22", "Campana", "Campana-14"}  # arman su panel con los permisos
 
 
 def con_panel_de_la_etapa(n, t):

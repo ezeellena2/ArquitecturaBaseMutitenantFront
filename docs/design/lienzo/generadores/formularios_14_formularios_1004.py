@@ -11,6 +11,9 @@ etapa): la versión de la 14 queda sin lo que llega después, y lo de la 18 pasa
 - «Mis mensajes» (T16): WA-Mensajes-14 y M-WA-Mensaje-14, con la tarjeta de una respuesta propia de quien vinculó su cuenta.
 - Desde la v142, las fechas completas, con año y hora, en la zona de quien mira (formatos.md, decisión del usuario del 25/10):
   nunca «Hoy», «Ayer», «hace 2 minutos» ni «mañana»; y en Chats, nunca un teléfono como nombre (81).
+- Desde la v147 (14-texto-diseno.md y la §9 de la spec), los títulos de sección (88) en FRM-Editor, M-FRM-Editor y, de fondo, en
+  FRM-Publicar y FRM-Publicando; las versiones de la 18 quedan como estaban. Y FRM-Catalogo-14 y M-FRM-Catalogo-14, nuevos, sobre
+  FRM-Catalogo-13: el catálogo «Productos» con la sección «Lo usan», «Quitar» apagado en un campo en uso y la advertencia al darlo de baja.
 
 Corre después de `formularios_12_catalogos_1004.py` y antes de `formularios_etapas_1004.py`. Se puede volver a correr.
 """
@@ -23,7 +26,10 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import formularios_1004 as F  # noqa: E402
 import formularios_ab_1004 as A  # noqa: E402
+import formularios_ab_catalogos_1004 as C  # noqa: E402
 import formularios_e12_sin_idioma_1004 as E  # noqa: E402
+import formularios_12_catalogos_1004 as K  # noqa: E402
+import formularios_13_campos_1004 as T13  # noqa: E402
 import formularios_lista_y_ficha_1004 as L  # noqa: E402
 
 PROJ = A.PROJ
@@ -90,7 +96,6 @@ def comprobar(n, t, prohibidos):
 HOY, AYER = "25/10/2026", "24/10/2026"
 FECHAS = [
     ('<span class="w-dia">Hoy</span>', f'<span class="w-dia">{HOY}</span>'), ('<span class="ap-dia">Hoy</span>', f'<span class="ap-dia">{HOY}</span>'),
-    ("guardó este formulario hace 2 minutos.", f"guardó este formulario el {HOY} 10:46."), ("Hoy, 15:20", f"{HOY} 15:20"),
     ("Se puede mandar hasta mañana a las 10:48.", "Se puede mandar hasta el 26/10/2026 10:48."), (" · hoy, 11:04", f" · {HOY} 11:04"),
     ("<b>Martín Paz</b><span>Ayer</span>", f"<b>Martín Paz</b><span>{AYER} 18:30</span>"),
     ("<b>Federico Díaz</b><span>Ayer</span>", f"<b>Federico Díaz</b><span>{AYER} 17:20</span>"),
@@ -153,14 +158,116 @@ def mis_mensajes(t, clase):
     return t.replace("</helmet>", f'<style data-e14="mis-mensajes">\n{CSS_MM}</style>\n</helmet>', 1)
 
 
+# ================================================================ FRM-Catalogo-14 y M-FRM-Catalogo-14: «Productos», con lo que suma la 14
+# Sobre FRM-Catalogo-13, con las piezas de formularios_13_campos_1004.py y los datos de la maqueta (demo/seed/forms-catalogs.ts). «Lo usan» es
+# la lista de `GET …/catalogs/{id}/used-by`: solo el nombre del formulario, paginada, sin la cantidad en el encabezado y sin la pregunta,
+# que el contrato no trae. Un campo que usa la presentación propia de una pregunta no se quita (T22): «Quitar» queda grisado, con el motivo.
+CAMPOS_P = [("Precio", "Número con decimales", True, False, None), ("Unidad", "Texto", False, False, None)]
+COLUMNAS_P = ["Texto", "Código", "Detalle"] + [c[0] for c in CAMPOS_P]
+DESCRIPCION_P = ["Unidad"]
+PRODUCTOS = [("Arena fina", "ARE1", "32.000,00", "m³"), ("Cal hidratada x 25 kg", "CAL25", "5.200,00", "bolsa"), ("Caño PVC 110 x 4 m", "PVC110", "15.800,00", "unidad"),
+             ("Cemento x 50 kg", "CEM50", "9.800,00", "bolsa"), ("Hierro del 8 x 12 m", "HIE8", "8.900,00", "barra"), ("Ladrillo hueco", "LAD12", "690,50", "unidad"),
+             ("Membrana 4 mm", "MEM4", "61.500,00", "rollo"), ("Pintura látex 20 l", "PIN20", "48.900,00", "balde"), ("Tarugos del 8 x 100", "TAR8", "3.500,00", "caja"),
+             ("Tornillos 6x40 x 100", "TOR640", "4.100,00", "caja")]
+USAN = ["Entrega de pedido", "Visita a cliente"]
+EN_USO = "Está en uso: Entrega de pedido, pregunta Producto. Sacá ese uso para quitarlo."
+BAJA_TITULO, BAJA_TEXTO = "¿Dar de baja «Productos»?", "Los formularios publicados que lo usan no se van a poder mandar, y no se va a poder elegir en preguntas nuevas. Se puede reactivar desde acá."
+DESC_P = "Lo que vende Grupo Delta, con su precio de lista."
+ESTADOS_CAT = ["Lo usan", "Ningún formulario lo usa", "Un campo en uso", "Dar de baja el catálogo"]
+ESTADOS_TCAT = ["El catálogo", "Lo usan", "Ningún formulario lo usa", "Un campo en uso", "Dar de baja el catálogo"]
+CSS_USAN = """.w-th.ku, .w-tr.ku { grid-template-columns: minmax(0, 1fr); }
+.w-th .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.w-tr.ku { min-height: 40px; }
+.w-tr.ku a { color: var(--t1); font-weight: 500; text-decoration: none; }
+"""
+CSS_TUSAN = """.ap-acciones2 span.off { color: var(--t3); }
+.ap-fila.ku { min-height: 52px; }
+"""
+
+
+def opciones_p():
+    filas = "".join(K.fila_editable(k, n, cod, "", True, tabla="kf", campos=f'<span class="k-tab">{K.entrada(precio)}</span><span class="k-tab">{K.entrada(unidad)}</span>')
+                    for k, (n, cod, precio, unidad) in enumerate(PRODUCTOS, 1))
+    pie = '<div class="w-pie"><span>1–10 de 10</span><span>10 por página · Página 1 de 1</span></div>'
+    return K.caja_opciones(filas, "", pie, tabla="kf", cab=["", "#", "Texto", "Código", "Detalle", "Precio", "Unidad", "Estado", ""], ancho=T13.ANCHO_OPCIONES)
+
+
+def caja_usan(vacia=False):
+    """«Lo usan»: una fila por formulario, que lleva al formulario."""
+    if vacia:
+        cuerpo = '<div class="k-vacio3">Ningún formulario lo usa.</div>'
+    else:
+        filas = "".join(f'<div class="w-tr ku"><a href="FRM-Editor.dc.html">{n}</a></div>' for n in USAN)
+        cuerpo = ('<div class="w-th ku"><span aria-sort="ascending">Formulario<span class="ord" aria-hidden="true">▲</span></span></div>' + filas
+                  + f'<div class="w-pie"><span>1–{len(USAN)} de {len(USAN)}</span><span>10 por página · Página 1 de 1</span></div>')
+    return f'<div class="w-caja"><div class="f-cab"><span>Lo usan</span></div>{cuerpo}</div>'
+
+
+def catalogo():
+    items = [(n, u) for n, _c, _p, u in PRODUCTOS[:6]]
+
+    def cuerpo(modo="normal", vacia=False):
+        return (f'<div class="w-body"><div class="k-cab2">{K.caja_catalogo("Productos", DESC_P)}{K.vista_previa(items, "Producto")}</div>'
+                + T13.caja_campos(modo, CAMPOS_P, 0, EN_USO)
+                + T13.caja_whatsapp(descripcion=DESCRIPCION_P, columnas=COLUMNAS_P) + opciones_p() + caja_usan(vacia) + "</div>")
+    b = C.banda_k("Productos", K.ACTIVO + K.ORIGEN_MANO, K.acc_editor(), "FRM-Catalogos-14.dc.html")
+    V = {"Lo usan": (b, cuerpo()), "Ningún formulario lo usa": (b, cuerpo(vacia=True)), "Un campo en uso": (b, cuerpo("menu")), "Dar de baja el catálogo": (b, cuerpo())}
+    assert list(V) == ESTADOS_CAT
+    js = A.js_estados(ESTADOS_CAT, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, busqueda: 'Buscar opción', busClase: '',\n")
+    t = C.pagina_k("Un catálogo que usan formularios · /org/formularios/catalogos/:id", "Inicio / Formularios / Catálogos / Productos",
+                   A.con_estados([(k, v[0]) for k, v in V.items()]), A.con_estados([(k, v[1]) for k, v in V.items()]),
+                   F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + F.CSS_FILTRO + A.CSS_AB + E.CSS_E12 + K.CSS_EDITOR + T13.CSS + CSS_USAN, ESTADOS_CAT, js, alto=ALTO_CATALOGO)
+    t = t.replace('"$preview":{"width":1440,', '"$preview":{"width":1280,', 1)
+    capas = {"Dar de baja el catálogo": A.confirmar(BAJA_TITULO, BAJA_TEXTO, "Dar de baja")}
+    over = "".join(f'<sc-if value="{{{{s{ESTADOS_CAT.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
+    return F.con_dialogo(t, over)
+
+
+def tel_catalogo():
+    der = (f'<button type="button" class="ap-ib" aria-label="Así lo ve quien lo recibe">{F.OJO}</button>'
+           f'<button type="button" class="ap-ib" aria-label="Más acciones">{F.TKEBAB}</button>')
+    volver = "M-FRM-Catalogos-14.dc.html"
+
+    def detalle(tipo, ob, _un, lim):
+        return " · ".join([tipo] + (["Obligatorio"] if ob else []))
+    campos = "".join(f'<div class="q-row"><span class="tx"><b>{n}</b><span>{detalle(tipo, ob, un, lim)}</span></span>'
+                     f'<button type="button" class="ap-ib" aria-label="Acciones de {n}">{F.TKEBAB}</button></div>' for n, tipo, ob, un, lim in CAMPOS_P)
+    arriba = (C.t_bar("Productos", "Activo", volver, der) + '<div class="ap-cuerpo"><div class="ap-gtit">El catálogo</div><div class="f-campos">'
+              + F.tcampo("Nombre", "Productos", req=True) + K.tel_ro("Tipo de valor", "Texto") + F.tcampo("Descripción", DESC_P) + "</div>"
+              + f'<div class="ap-gtit">Campos<a href="#">Agregar campo</a></div><div class="ap-grupo">{campos}</div><div style="height: 20px;"></div></div>')
+
+    def usan(vacia=False):
+        """La pantalla ya bajada hasta «Lo usan», la última sección, como en M-FRM-Editor."""
+        filas = ('<div class="t-vacia">Ningún formulario lo usa.</div>' if vacia else
+                 "".join(f'<a class="ap-fila ku" href="M-FRM-Editor.dc.html"><div class="tx"><span class="l1">{n}</span></div></a>' for n in USAN))
+        opciones = "".join(f'<div class="q-row"><span class="num">{k}</span><span class="tx"><b>{n}<span class="cod">{cod}</span></b><span>{u}</span></span>'
+                           f'<button type="button" class="ap-ib" aria-label="Acciones de {n}">{F.TKEBAB}</button></div>' for k, (n, cod, _p, u) in enumerate(PRODUCTOS[:4], 1))
+        return (C.t_bar("Productos", "Activo", volver, der) + f'<div class="ap-cuerpo"><div class="ap-gtit">Opciones<a href="#">Agregar opción</a></div><div class="ap-grupo">{opciones}</div>'
+                + f'<div class="ap-gtit">Lo usan</div><div class="ap-grupo">{filas}</div><div style="height: 20px;"></div></div>')
+    Cu = {"El catálogo": arriba, "Lo usan": usan(), "Ningún formulario lo usa": usan(True), "Un campo en uso": arriba, "Dar de baja el catálogo": arriba}
+    capas = {
+        "Un campo en uso": F.thoja("Precio", '<div class="ap-acciones2"><span role="menuitem">Editar</span><span role="menuitem">Subir</span><span role="menuitem">Bajar</span>'
+                                   f'<span class="off" role="menuitem" aria-disabled="true" title="{EN_USO}">Quitar</span></div>', ""),
+        "Dar de baja el catálogo": F.thoja(BAJA_TITULO, f'<p style="margin: 0; font-size: 15px; line-height: 1.45; color: var(--t2);">{BAJA_TEXTO}</p>',
+                                           '<button type="button" class="cb cb-pel lleno">Dar de baja</button><button type="button" class="cb cb-sec">Cancelar</button>'),
+    }
+    return C.tel_pagina(Cu, ESTADOS_TCAT, capas, "Un catálogo que usan formularios · teléfono", E.CSS_E12 + K.CSS_T12 + T13.CSS_TWA + CSS_TUSAN)
+
+
 # ================================================================ canvas.json
+ALTO_CATALOGO = 1800
 NUEVOS = {"FRM-Editor-18": (1440, 1400, "Formularios · un formulario · Diseño · etapa 18"),
           "M-FRM-Editor-18": (390, 844, "Formularios · un formulario · Diseño · teléfono · etapa 18"),
           "FRM-Publicar-18": (1440, 1400, "Formularios · publicar · etapa 18"),
           "WA-Chats-Respuesta-18": (1440, 900, "WhatsApp · Internos · la respuesta · etapa 18"),
           "M-WA-Conversacion-Respuesta-18": (390, 844, "WhatsApp · Internos · la respuesta · teléfono · etapa 18"),
           "WA-Mensajes-14": (1440, 900, "Perfil personal · Mensajes · una respuesta propia · etapa 14"),
-          "M-WA-Mensaje-14": (390, 844, "Mensajes · conversación · teléfono · etapa 14")}
+          "M-WA-Mensaje-14": (390, 844, "Mensajes · conversación · teléfono · etapa 14"),
+          "FRM-Catalogo-14": (1280, ALTO_CATALOGO, "Formularios · catálogo escrito a mano · lo usan · a 1280 · etapa 14"),
+          "M-FRM-Catalogo-14": (390, 844, "Catálogo escrito a mano · lo usan · teléfono · etapa 14"),
+          # Los arma campana_1004.py; se registran acá para que formularios_etapas_1004.py los ubique en su fila
+          "Campana-14": (1440, 900, "Avisos · la campana · etapa 14"),
+          "M-Campana-14": (390, 844, "Avisos · la campana · teléfono · etapa 14")}
 TOCADOS = ["FRM-Editor", "M-FRM-Editor", "FRM-Publicar", "FRM-Publicando", "WA-Chats-Formulario", "WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta",
            "M-WA-Chats-Formulario", "WA-Chats-Formulario-Cliente", "M-WA-Chats-Formulario-Cliente"]
 
@@ -181,23 +288,25 @@ def registrar():
 if __name__ == "__main__":
     panel_e16 = re.search(r'<style data-e16="panel">\n(.*?)</style>', leer("FRM-Catalogos"), re.S)
     E.R.CSS_PANEL_E16 = panel_e16.group(1) if panel_e16 else ""
-    editor = E.post("FRM-Editor", E.editor(), 1400)
-    escribir("FRM-Editor-18", solo(editor, EDITOR_18))
-    escribir("FRM-Editor", sin_kebab(sin(editor, EDITOR_17 + EDITOR_18)))
+    escribir("FRM-Editor-18", solo(E.post("FRM-Editor", E.editor(), 1400), EDITOR_18))
     # El teléfono, sin las reglas que le suma formularios_ab_reglas_1004.py (son de la 21)
-    tel = E.post("M-FRM-Editor", E.tel_editor())
-    escribir("M-FRM-Editor-18", solo(tel, TEL_18))
-    escribir("M-FRM-Editor", sin_kebab(sin(tel, EDITOR_17 + TEL_18)))
-    publicar = E.post("FRM-Publicar", E.publicar(), 1400)
-    escribir("FRM-Publicar-18", solo(publicar, PUBLICAR_18))
-    escribir("FRM-Publicar", sin_kebab(sin(publicar, PUBLICAR_18)))
+    escribir("M-FRM-Editor-18", solo(E.post("M-FRM-Editor", E.tel_editor()), TEL_18))
+    escribir("FRM-Publicar-18", solo(E.post("FRM-Publicar", E.publicar(), 1400), PUBLICAR_18))
+    E.CON_TITULOS = True  # 88: desde acá, los tableros de la 14
+    escribir("FRM-Editor", sin_kebab(sin(E.post("FRM-Editor", E.editor(), 1400), EDITOR_17 + EDITOR_18)))
+    escribir("M-FRM-Editor", sin_kebab(sin(E.post("M-FRM-Editor", E.tel_editor()), EDITOR_17 + TEL_18)))
+    escribir("FRM-Publicar", sin_kebab(sin(E.post("FRM-Publicar", E.publicar(), 1400), PUBLICAR_18)))
     escribir("FRM-Publicando", sin_kebab(E.post("FRM-Publicando", E.publicando(), 1400)))
+    E.CON_TITULOS = False
     for n, t in (("WA-Chats-Respuesta", E.chat_respuesta()), ("M-WA-Conversacion-Respuesta", E.tel_respuesta())):
         t = E.post(n, t)
         escribir(f"{n}-18", solo(t, RESPUESTA_18))
         escribir(n, sin(t, RESPUESTA_18))
-    escribir("WA-Mensajes-14", mis_mensajes(leer("WA-Mensajes"), "w-m"))
-    escribir("M-WA-Mensaje-14", mis_mensajes(leer("M-WA-Mensaje"), "ap-m"))
+    escribir("WA-Mensajes-14", mis_mensajes(F.leer_antes_del_bloque0("WA-Mensajes"), "w-m"))
+    escribir("M-WA-Mensaje-14", mis_mensajes(F.leer_antes_del_bloque0("M-WA-Mensaje"), "ap-m"))
+    # E.post acorta «Número con decimales» en las preguntas; un campo de catálogo conserva su tipo (13-campos.md)
+    escribir("FRM-Catalogo-14", E.post("FRM-Catalogo-14", catalogo()).replace('<span class="k-in sel"><span>Número</span>', '<span class="k-in sel"><span>Número con decimales</span>'))
+    escribir("M-FRM-Catalogo-14", E.post("M-FRM-Catalogo-14", tel_catalogo()))
     # Los chats de la 14 que arma formularios_e12_sin_idioma_1004.py: solo las fechas (se puede volver a correr)
     for n in ("WA-Chats-Formulario", "M-WA-Chats-Formulario", "WA-Chats-Formulario-Cliente", "M-WA-Chats-Formulario-Cliente"):
         escribir(n, leer(n))

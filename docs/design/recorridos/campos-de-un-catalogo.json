@@ -1,0 +1,74 @@
+{
+  "id": "campos-de-un-catalogo",
+  "titulo": "Sumarle campos a un catálogo",
+  "etapa": "Etapa 13 · Campos",
+  "orden": 10,
+  "resumen": "Lucía le suma campos a «Proveedores», como el CUIT y la zona, carga sus valores en cada opción y elige qué se ve en WhatsApp.",
+  "pasos": [
+    {
+      "tablero": "FRM-Catalogo-13",
+      "tweaks": {
+        "estado": "Campos"
+      },
+      "resaltar": "button.cb-sec:has-text(\"Agregar campo\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Abre el catálogo",
+      "texto": "«Proveedores» está escrito a mano y tiene sus campos en una tabla que se edita ahí mismo, sin diálogos.",
+      "avanzar": "Tocá «Agregar campo».",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Toca «Agregar campo»."
+    },
+    {
+      "tablero": "FRM-Catalogo-13",
+      "tweaks": {
+        "estado": "Elegir el tipo"
+      },
+      "resaltar": ".f-mn",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Elige el tipo",
+      "texto": "Cada campo tiene su nombre y su tipo: texto, número, fecha, sí o no, o los valores de otro catálogo. Puede ser obligatorio y único.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Escribe el nombre y elige el tipo."
+    },
+    {
+      "tablero": "FRM-Catalogo-13",
+      "tweaks": {
+        "estado": "Campos"
+      },
+      "resaltar": ".w-caja:has(.f-cab:has-text(\"Opciones\")) .k-desp",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Carga los valores",
+      "texto": "Cada campo es una columna en la tabla de opciones, con el control de su tipo. La columna de un campo nuevo queda grisada hasta guardar el catálogo.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Guarda el catálogo y carga los valores."
+    },
+    {
+      "tablero": "FRM-Catalogo-13",
+      "tweaks": {
+        "estado": "Elegir qué muestra"
+      },
+      "resaltar": ".k-wa .f-mn",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Elige qué se ve en WhatsApp",
+      "texto": "«En WhatsApp» dice qué va en el título y qué en la descripción de cada opción. Al costado, el teléfono muestra cómo queda.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Elige qué va en el título y en la descripción."
+    },
+    {
+      "tablero": "FRM-Catalogo-13",
+      "tweaks": {
+        "estado": "Un título que no entra"
+      },
+      "resaltar": ".k-pv",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Un título que no entra",
+      "texto": "Si un título no entra en WhatsApp, se marca en esa opción y en el teléfono. Se puede guardar igual.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Corrige la opción y guarda."
+    }
+  ]
+}

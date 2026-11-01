@@ -18,6 +18,9 @@ de los miembros y de los contactos con el teléfono al costado y solo el despleg
 - FRM-Catalogo-Tipo (CA3): un catálogo decimal, con la columna «Valor».
 - FRM-Catalogo-Contactos: un catálogo de los contactos de WhatsApp, con filtros por etiqueta.
 - FRM-Catalogo-Filtros: el de los miembros, redibujado.
+- M-FRM-Catalogo-Contactos: un catálogo de los contactos en el teléfono (14-texto-diseno.md), como el de los miembros.
+Desde la v147, el filtro «Estado» de la lista dice «Activos» y «Dados de baja» (12-catalogos.md y 14-texto-diseno.md): «No se puede
+usar» es un estado del catálogo, que sigue en la fila, y cuenta entre los activos. La lista de la 14 suma «Productos», su catálogo de ejemplo.
 
 Corre después de los generadores de catálogos y antes de `formularios_etapas_1004.py`. Se puede volver a correr.
 """
@@ -83,9 +86,17 @@ CATS = [  # nombre, descripción, origen, sub, opciones, lo usan (14), clase, es
      "Un rol de los filtros ya no existe.", "FRM-Catalogo-Filtros"),
     ("Supervisores", "Quienes pueden aprobar una visita.", "De los miembros", "con filtros", "7", "1 formulario", "", "Activo", "", "FRM-Catalogo-Filtros"),
 ]
-ESTADOS_LISTA = ["Todos", "Filtro abierto", "Escritas a mano", "De los miembros", "De los contactos", "Sin coincidencias", "Cargando", "Vacío", "Error"]
+# El catálogo de ejemplo de la 14 (14-texto-diseno.md): está en su lista y lleva a su tablero
+PRODUCTOS = ("Productos", "Lo que vende Grupo Delta, con su precio de lista.", "Escritas a mano", "Texto", "10", "2 formularios", "", "Activo", "", "FRM-Catalogo-14")
+
+
+def cats_de(con_usan):
+    return sorted(CATS + [PRODUCTOS], key=lambda c: c[0]) if con_usan else CATS
+
+
+ESTADOS_LISTA = ["Todos", "Filtro abierto", "Escritas a mano", "De los miembros", "De los contactos", "Sin coincidencias", "Cargando", "Vacío", "Error", "Filtro de estado"]
 CSS_LISTA = """.w-th.k12, .w-tr.k12 { grid-template-columns: minmax(200px, 1.3fr) minmax(220px, 1.3fr) 130px 100px minmax(170px, 1fr); }
-.w-th.k14, .w-tr.k14 { grid-template-columns: minmax(180px, 1.2fr) minmax(210px, 1.2fr) 120px 90px 120px minmax(160px, 1fr); }
+.w-th.k14, .w-tr.k14 { grid-template-columns: minmax(150px, 1fr) 200px 96px 72px 104px 158px; }
 .w-tr.k12, .w-tr.k14 { min-height: 40px; }
 .w-th .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
 .w-tr .k-tc { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -119,11 +130,12 @@ def fila_cat(c, con_usan):
 def lista_catalogos(con_usan=False):
     clase = "k14" if con_usan else "k12"
     cab = ["Catálogo", "De dónde salen", "Tipo de valor", "Opciones"] + (["Lo usan"] if con_usan else []) + ["Estado"]
-    filas = "".join(fila_cat(c, con_usan) for c in CATS)
+    filas = "".join(fila_cat(c, con_usan) for c in cats_de(con_usan))
+    n, mano = len(cats_de(con_usan)), 5 if con_usan else 4
     caja = ('<sc-if value="{{conFiltros}}" hint-placeholder-val="{{si}}"><div class="w-caja o-fb">'
             f'<span class="w-bus {{{{busClase}}}}">{F.BUSCAR} {{{{busqueda}}}}</span>'
-            + F.filtro("Origen", [("t", "Todos los orígenes", 7), ("m", "Escritas a mano", 4), ("b", "De los miembros", 2), ("c", "De los contactos de WhatsApp", 1)], "ori")
-            + F.filtro("Estado", [("t", "Todos los estados", 7), ("a", "Activo", 5), ("n", "No se puede usar", 1), ("d", "Dado de baja", 1)], "est")
+            + F.filtro("Origen", [("t", "Todos los orígenes", n), ("m", "Escritas a mano", mano), ("b", "De los miembros", 2), ("c", "De los contactos de WhatsApp", 1)], "ori")
+            + F.filtro("Estado", [("t", "Todos los estados", n), ("a", "Activos", n - 1), ("d", "Dados de baja", 1)], "est")
             + '<sc-if value="{{hayFiltro}}" hint-placeholder-val="{{no}}"><button type="button" class="cb cb-enl">Limpiar filtros</button></sc-if>'
             '<span class="tot">{{total}}</span></div></sc-if>')
     # La columna por la que está ordenada muestra ▲ (el usuario, 25/10)
@@ -141,24 +153,25 @@ def lista_catalogos(con_usan=False):
     return banda, '<div class="w-body">' + caja + tabla + "</div>"
 
 
-def js_lista(vista):
+def js_lista(vista, con_usan=False):
+    n, mano = len(cats_de(con_usan)), 5 if con_usan else 4
     return f"""    const f = {vista};
     const mano = f === 'Escritas a mano', miembros = f === 'De los miembros', contactos = f === 'De los contactos', elegido = mano || miembros || contactos;
-    const lista = ['Todos', 'Filtro abierto', 'Escritas a mano', 'De los miembros', 'De los contactos'].includes(f);
+    const lista = ['Todos', 'Filtro abierto', 'Filtro de estado', 'Escritas a mano', 'De los miembros', 'De los contactos'].includes(f);
     return {{
       si: true, no: false,
-      resumen: f === 'Vacío' ? 'Sin catálogos' : f === 'Cargando' || f === 'Error' ? '' : '7 catálogos · 5 activos',
+      resumen: f === 'Vacío' ? 'Sin catálogos' : f === 'Cargando' || f === 'Error' ? '' : '{n} catálogos · {n - 1} activos',
       conFiltros: f !== 'Vacío', busqueda: f === 'Sin coincidencias' ? 'herramientas' : 'Buscar por nombre', busClase: f === 'Sin coincidencias' ? 'lleno' : '',
       oriTexto: mano ? 'Origen: Escritas a mano' : miembros ? 'Origen: De los miembros' : contactos ? 'Origen: De los contactos de WhatsApp' : 'Origen',
       oriClase: elegido ? 'con' : '', oriMenu: f === 'Filtro abierto', oriAlternar: () => {{}},
       oriOn_t: elegido ? '' : 'on', oriOn_m: mano ? 'on' : '', oriOn_b: miembros ? 'on' : '', oriOn_c: contactos ? 'on' : '',
-      oriC_t: '7', oriC_m: '4', oriC_b: '2', oriC_c: '1', oriElegir_t: () => {{}}, oriElegir_m: () => {{}}, oriElegir_b: () => {{}}, oriElegir_c: () => {{}},
-      estTexto: 'Estado', estClase: '', estMenu: false, estAlternar: () => {{}}, estOn_t: 'on', estOn_a: '', estOn_n: '', estOn_d: '',
-      estC_t: '7', estC_a: '5', estC_n: '1', estC_d: '1', estElegir_t: () => {{}}, estElegir_a: () => {{}}, estElegir_n: () => {{}}, estElegir_d: () => {{}},
+      oriC_t: '{n}', oriC_m: '{mano}', oriC_b: '2', oriC_c: '1', oriElegir_t: () => {{}}, oriElegir_m: () => {{}}, oriElegir_b: () => {{}}, oriElegir_c: () => {{}},
+      estTexto: 'Estado', estClase: '', estMenu: f === 'Filtro de estado', estAlternar: () => {{}}, estOn_t: 'on', estOn_a: '', estOn_d: '',
+      estC_t: '{n}', estC_a: '{n - 1}', estC_d: '1', estElegir_t: () => {{}}, estElegir_a: () => {{}}, estElegir_d: () => {{}},
       hayFiltro: elegido || f === 'Sin coincidencias',
-      total: mano ? '4 catálogos' : miembros ? '2 catálogos' : contactos ? '1 catálogo' : f === 'Sin coincidencias' ? '0 catálogos' : '7 catálogos',
+      total: mano ? '{mano} catálogos' : miembros ? '2 catálogos' : contactos ? '1 catálogo' : f === 'Sin coincidencias' ? '0 catálogos' : '{n} catálogos',
       conFilas: lista, verMano: !miembros && !contactos, verMiembros: !mano && !contactos, verContactos: !mano && !miembros,
-      rango: mano ? '1–4 de 4' : miembros ? '1–2 de 2' : contactos ? '1 de 1' : '1–7 de 7',
+      rango: mano ? '1–{mano} de {mano}' : miembros ? '1–2 de 2' : contactos ? '1 de 1' : '1–{n} de {n}',
       cargando: f === 'Cargando', vacio: f === 'Vacío', sinCoincidencias: f === 'Sin coincidencias', error: f === 'Error',
 """
 
@@ -167,7 +180,7 @@ def pagina_lista(nombre, estados, vista, capas=None, con_usan=False, css=""):
     banda, cuerpo = lista_catalogos(con_usan)
     flags = "".join(f"      c{i}: e === {json.dumps(k, ensure_ascii=False)},\n" for i, k in enumerate(estados)) if capas else ""
     t = C.pagina_k(nombre, "Inicio / Formularios / Catálogos", banda, cuerpo,
-                   F.CSS_LISTADO + F.CSS_FILTRO + F.CSS_ESTADOS + A.CSS_AB + A.CSS_LISTADO + E.CSS_E12 + CSS_LISTA + css, estados, js_lista(vista) + flags + "    };")
+                   F.CSS_LISTADO + F.CSS_FILTRO + F.CSS_ESTADOS + A.CSS_AB + A.CSS_LISTADO + E.CSS_E12 + CSS_LISTA + css, estados, js_lista(vista, con_usan) + flags + "    };")
     if capas:
         over = "".join(f'<sc-if value="{{{{c{estados.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
         t = F.con_dialogo(t, over, C.CSS_K2 + CSS_NUEVO)
@@ -367,17 +380,18 @@ def fila_editable(k, n, cod, det, activa, valor=None, elegida=False, menu=False,
         v = entrada(valor, ph="Valor", mal="valor" in err, foco=foco == "valor")
         v_extra = f'<span class="err2" role="alert">{err["valor"]}</span>' if "valor" in err else ""
         celdas += f'<span class="k-tab">{v}{v_extra}</span>'
-    celdas += f'<span class="k-tab">{entrada(det, ph="Opcional")}</span>{campos}'
+    d_extra = f'<span class="err2" role="alert">{err["detalle"]}</span>' if "detalle" in err else ""
+    celdas += f'<span class="k-tab">{entrada(det, ph="Opcional", contar="detalle" in err, mal="detalle" in err)}{d_extra}</span>{campos}'
     est = '<span class="w-est">Activa</span>' if activa else '<span class="w-est off">Dada de baja</span>'
     celdas += (f'{est}<span class="fx fx-d"><button type="button" class="ib" aria-label="Acciones de {n or "la opción nueva"}">{KEBAB}</button>'
                f'{k_menu_fila(n, not activa) if menu else ""}</span>')
     return f'<div class="w-tr {tabla or ("kv" if valor is not None else "ke")}{"" if activa else " baja"}">{celdas}</div>'
 
 
-def fila_lectura(k, n, cod, det, activa):
+def fila_lectura(k, n, cod, det, activa, campos="", tabla="kl"):
     est = '<span class="w-est">Activa</span>' if activa else '<span class="w-est off">Dada de baja</span>'
-    return (f'<div class="w-tr kl{"" if activa else " baja"}"><span class="gris fx fx-a">{k}</span><span class="k-lee fx fx-c2">{n}</span><span class="k-lee mono">{cod}</span>'
-            f'<span class="k-lee">{det}</span>{est}</div>')
+    return (f'<div class="w-tr {tabla}{"" if activa else " baja"}"><span class="gris fx fx-a">{k}</span><span class="k-lee fx fx-c2">{n}</span><span class="k-lee mono">{cod}</span>'
+            f'<span class="k-lee">{det}</span>{campos}{est}</div>')
 
 
 def opcion_abierta(n="Venta nueva", cod="VEN", det="Primera visita a un cliente"):
@@ -426,15 +440,16 @@ def caja_opciones(filas, cuenta, pie, modo="normal", seleccion="", tabla="ke", v
                         "kv": ["", "#", "Texto", "Código", "Valor", "Detalle", "Estado", ""],
                         "kl": ["#", "Texto", "Código", "Detalle", "Estado"]}[tabla]
     todas = '<span class="k-chk{{chkTodas}}" role="checkbox" aria-label="Elegir las de esta página"></span>'
-    fijas = ({0: "fx fx-a", 1: "fx fx-c2"} if tabla == "kl" else {0: "fx fx-a", 1: "fx fx-b", 2: "fx fx-c", len(cab_tabla) - 1: "fx fx-d"})
+    lectura = tabla.startswith("kl")
+    fijas = ({0: "fx fx-a", 1: "fx fx-c2"} if lectura else {0: "fx fx-a", 1: "fx fx-b", 2: "fx fx-c", len(cab_tabla) - 1: "fx fx-d"})
 
     def celda(k, c):
         if c.startswith("<span"):
             return c
         clase = fijas.get(k, "")
-        if k == len(cab_tabla) - 1 and tabla != "kl":
+        if k == len(cab_tabla) - 1 and not lectura:
             return f'<span class="{clase}"><span class="sr">Acciones</span></span>'
-        dentro = todas if (k == 0 and tabla != "kl") else c
+        dentro = todas if (k == 0 and not lectura) else c
         return f'<span class="{clase}">{dentro}</span>' if clase else f"<span>{c}</span>"
     th = f'<div class="w-th {tabla}">' + "".join(celda(k, c) for k, c in enumerate(cab_tabla)) + "</div>"
     tabla_html = f'<div class="k-desp"><div class="k-tabla" style="min-width: {ancho or ANCHOS[tabla]}px;">{th}{filas}</div></div>'
@@ -942,7 +957,7 @@ CSS_T12 = """.ap-fila .l2 { white-space: nowrap; overflow: hidden; text-overflow
 .ap-mas { padding: 8px 4px 0; font-size: 13px; color: var(--t3); }
 """
 TEL_DESTINO = {"FRM-Catalogo": "M-FRM-Catalogo", "FRM-Catalogo-Tipo": "M-FRM-Catalogo", "FRM-Catalogo-Filtros": "M-FRM-Catalogo-Filtros",
-               "FRM-Catalogo-Contactos": "M-FRM-Catalogo-Filtros"}
+               "FRM-Catalogo-Contactos": "M-FRM-Catalogo-Contactos", "FRM-Catalogo-14": "M-FRM-Catalogo-14"}
 ESTADOS_TL = ["Todos", "Filtros", "Sin coincidencias", "Cargando", "Vacío", "Error", "Nuevo catálogo"]
 TILDE18 = svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 18, "2.25")
 TILDE14 = svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 14, "3")
@@ -954,7 +969,8 @@ def t_info(motivo):
 
 def tel_lista(con_usan=False):
     filas = ""
-    for n, desc, origen, sub, ops, usan, clase, estado, motivo, destino in CATS:
+    total, mano = len(cats_de(con_usan)), 5 if con_usan else 4
+    for n, desc, origen, sub, ops, usan, clase, estado, motivo, destino in cats_de(con_usan):
         o = origen + ("" if ops == "—" else f" · {ops} opciones") + (f" · {usan}" if con_usan and usan != "—" else "")
         filas += (f'<a class="ap-fila" href="{TEL_DESTINO[destino]}.dc.html"><div class="tx"><span class="l1">{n}</span><span class="l2">{o}</span>'
                   f'<span class="l3"><span class="w-est {clase}">{estado}</span>{t_info(motivo) if motivo else ""}</span></div></a>')
@@ -974,8 +990,8 @@ def tel_lista(con_usan=False):
     def grupo(tit, ops):
         return f'<div class="p-tit2">{tit}</div>' + "".join(f'<span class="t-opc {"on" if k == 0 else ""}">{n}<span class="d">{c}{TILDE18 if k == 0 else ""}</span></span>'
                                                          for k, (n, c) in enumerate(ops))
-    filtros_h = (grupo("Origen", [("Todos los orígenes", 7), ("Escritas a mano", 4), ("De los miembros", 2), ("De los contactos de WhatsApp", 1)])
-                 + grupo("Estado", [("Todos los estados", 7), ("Activo", 5), ("No se puede usar", 1), ("Dado de baja", 1)]))
+    filtros_h = (grupo("Origen", [("Todos los orígenes", total), ("Escritas a mano", mano), ("De los miembros", 2), ("De los contactos de WhatsApp", 1)])
+                 + grupo("Estado", [("Todos los estados", total), ("Activos", total - 1), ("Dados de baja", 1)]))
 
     def op(on, titulo, texto):
         return (f'<div class="k-op{" on" if on else ""}" role="radio" aria-checked="{"true" if on else "false"}"><span class="rd"></span>'
@@ -985,7 +1001,7 @@ def tel_lista(con_usan=False):
                + op(False, "Tomarlas de los miembros, con filtros", "Se arma sola con los miembros que cumplen los filtros.")
                + op(False, "Tomarlas de los contactos de WhatsApp", "Se arma sola con los contactos de Clientes, por etiqueta.")
                + F.tcampo("Tipo de valor", "Texto", select=True))
-    capas = {"Filtros": F.thoja("Filtros", filtros_h, '<button type="button" class="cb cb-pri">Ver 7 catálogos</button>').replace('<div class="hb">', '<div class="hb lst">', 1),
+    capas = {"Filtros": F.thoja("Filtros", filtros_h, f'<button type="button" class="cb cb-pri">Ver {total} catálogos</button>').replace('<div class="hb">', '<div class="hb lst">', 1),
              "Nuevo catálogo": F.thoja("Nuevo catálogo", nuevo_h, '<button type="button" class="cb cb-sec">Cancelar</button><a class="cb cb-pri" href="M-FRM-Catalogo.dc.html">Continuar</a>')}
     return C.tel_pagina(cuerpo, ESTADOS_TL, capas, "Catálogos · teléfono", F.CSS_TFILTRO + CSS_T12)
 
@@ -1119,13 +1135,70 @@ def tel_filtros():
     return C.tel_pagina(Cu, ESTADOS_TF, capas, "Catálogo de los miembros · teléfono", F.CSS_TFILTRO + CSS_T12)
 
 
+ESTADOS_TC = ["Sin cambios", "Con cambios", "Acciones de una condición", "Editar una condición", "Elegir etiquetas", "Así lo ve quien lo recibe", "Elegir a quién",
+              "Actualizando", "Ninguna opción", "Más de 200", "Sin WhatsApp"]
+
+
+def tel_contactos():
+    """Un catálogo de los contactos en el teléfono: M-FRM-Catalogo-Filtros con lo de FRM-Catalogo-Contactos. Las condiciones son por
+    etiqueta, la lista va en la hoja del ojo, con «Persona» opcional arriba, y sin WhatsApp no se puede usar. El teléfono de un
+    contacto nunca se ve (81)."""
+    der = f'<button type="button" class="ap-ib" aria-label="Así lo ve quien lo recibe">{F.OJO}</button>'
+
+    def cuerpo(sub="Activo"):
+        filas = ('<div class="q-row"><span class="tx"><b>Si · Etiqueta</b><span>tiene alguna de Mayorista, Minorista</span></span>'
+                 f'<button type="button" class="ap-ib" aria-label="Acciones de la condición">{F.TKEBAB}</button></div>')
+        otras = ('<div class="ap-dato"><span class="k">Texto de cada opción</span><span class="v">Nombre</span></div>'
+                 '<div class="ap-dato"><span class="k">Detalle</span><span class="v">Etiquetas</span></div>'
+                 '<div class="ap-dato"><span class="k">Orden</span><span class="v">Nombre, A → Z</span></div>')
+        return (C.t_bar("Clientes", sub, derecha=der) + '<div class="ap-cuerpo"><div class="ap-gtit">El catálogo</div><div class="f-campos">'
+                + F.tcampo("Nombre", "Clientes", req=True) + F.tcampo("Descripción", "A quiénes se les entrega o se visita.") + "</div>"
+                + f'<div class="ap-gtit">Qué contactos entran<a href="#">Agregar condición</a></div><div class="ap-grupo">{filas}</div>'
+                + f'<div class="ap-gtit">Otras opciones</div><div class="ap-grupo">{otras}</div><div style="height: 20px;"></div></div>')
+    fijo = '<div class="ap-fijo"><button type="button" class="cb cb-sec full">Descartar</button><button type="button" class="cb cb-pri full">Guardar cambios</button></div>'
+    Cu = {"Sin cambios": cuerpo(), "Con cambios": cuerpo() + fijo, "Acciones de una condición": cuerpo(), "Editar una condición": cuerpo() + fijo,
+          "Elegir etiquetas": cuerpo() + fijo, "Así lo ve quien lo recibe": cuerpo(), "Elegir a quién": cuerpo(), "Actualizando": cuerpo() + fijo,
+          "Ninguna opción": cuerpo() + fijo, "Más de 200": cuerpo() + fijo, "Sin WhatsApp": cuerpo("No se puede usar" + t_info("La organización no tiene WhatsApp."))}
+    pie = '<button type="button" class="cb cb-pri">Listo</button><button type="button" class="cb cb-sec">Cancelar</button>'
+
+    def vista(modo):
+        persona = F.tcampo("Persona", "Ninguna", select=True)
+        if modo == "probando":
+            lista = '<div class="ap-esq"><span style="width: 80%;"></span><span style="width: 60%;"></span></div>'
+        elif modo == "ninguna":
+            lista = '<div class="ap-grupo k-prev" style="margin: 0;"><div class="vacio2">Ninguna opción</div></div>'
+        else:
+            lista = '<div class="ap-grupo k-prev" style="margin: 0;">' + "".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in CONTACTOS_EJ) + "</div>"
+        if modo == "mas200":
+            lista += f'<div class="ap-mas">y {215 - len(CONTACTOS_EJ)} opciones más</div>'
+        return persona + lista
+    etiquetas = "".join(f'<span class="t-opc {"on" if on else ""}">{n}<span class="d">{c}{TILDE18 if on else ""}</span></span>'
+                        for n, c, on in [("Mayorista", 12, True), ("Minorista", 30, True), ("Obra", 8, False), ("VIP", 4, False)])
+    personas = "".join(f'<span class="t-opc {"on" if k == 0 else ""}">{n}<span class="d">{TILDE18 if k == 0 else ""}</span></span>'
+                       for k, n in enumerate(["Ninguna"] + [c[0] for c in CONTACTOS_EJ]))
+    capas = {
+        "Acciones de una condición": F.thoja("Si · Etiqueta", '<div class="ap-acciones2"><span role="menuitem">Editar</span><span class="pel" role="menuitem">Quitar</span></div>', ""),
+        "Editar una condición": F.thoja("Editar condición", F.tcampo("Columna", "Etiqueta", select=True) + F.tcampo("Comparación", "tiene alguna de", select=True)
+                                        + F.tcampo("Valor", "Mayorista, Minorista", select=True), pie),
+        "Elegir etiquetas": F.thoja("Etiquetas", etiquetas, '<button type="button" class="cb cb-pri">Listo</button>').replace('<div class="hb">', '<div class="hb lst">', 1),
+        "Así lo ve quien lo recibe": F.thoja("Así lo ve quien lo recibe", vista("lista"), ""),
+        "Elegir a quién": F.thoja("Persona", '<span class="w-bus" style="width: auto;">' + F.BUSCAR + " Buscar persona</span>" + personas, "").replace(
+            '<div class="hb">', '<div class="hb lst">', 1),
+        "Actualizando": F.thoja("Así lo ve quien lo recibe", vista("probando"), ""),
+        "Ninguna opción": F.thoja("Así lo ve quien lo recibe", vista("ninguna"), ""),
+        "Más de 200": F.thoja("Así lo ve quien lo recibe", vista("mas200"), ""),
+    }
+    return C.tel_pagina(Cu, ESTADOS_TC, capas, "Catálogo de los contactos · teléfono", F.CSS_TFILTRO + CSS_T12)
+
+
 # ================================================================ canvas.json (la fila de cada uno la pone formularios_etapas_1004.py)
 TITULOS = {"FRM-Catalogos": ("Formularios · Catálogos", 900), "FRM-Catalogos-14": ("Formularios · Catálogos · etapa 14", 900),
            "FRM-Catalogo-Nuevo": ("Formularios · nuevo catálogo", 900), "FRM-Catalogo": ("Formularios · catálogo escrito a mano", 1200),
            "FRM-Catalogo-Importar": ("Formularios · importar y pegar opciones", 1200), "FRM-Catalogo-Tipo": ("Formularios · catálogo con tipo de valor", 1000),
            "FRM-Catalogo-Filtros": ("Formularios · catálogo de los miembros", 1000), "FRM-Catalogo-Contactos": ("Formularios · catálogo de los contactos", 1000),
            "M-FRM-Catalogos": ("Catálogos · teléfono", 844), "M-FRM-Catalogos-14": ("Catálogos · teléfono · etapa 14", 844),
-           "M-FRM-Catalogo": ("Catálogo escrito a mano · teléfono", 844), "M-FRM-Catalogo-Filtros": ("Catálogo de los miembros · teléfono", 844)}
+           "M-FRM-Catalogo": ("Catálogo escrito a mano · teléfono", 844), "M-FRM-Catalogo-Filtros": ("Catálogo de los miembros · teléfono", 844),
+           "M-FRM-Catalogo-Contactos": ("Catálogo de los contactos · teléfono", 844)}
 
 
 def registrar():
@@ -1158,6 +1231,7 @@ if __name__ == "__main__":
         "FRM-Catalogo-Nuevo": nuevo(), "FRM-Catalogo": editor(), "FRM-Catalogo-Importar": importar(), "FRM-Catalogo-Tipo": tipo_valor(),
         "FRM-Catalogo-Filtros": miembros(), "FRM-Catalogo-Contactos": contactos(),
         "M-FRM-Catalogos": tel_lista(), "M-FRM-Catalogos-14": tel_lista(con_usan=True), "M-FRM-Catalogo": tel_editor(), "M-FRM-Catalogo-Filtros": tel_filtros(),
+        "M-FRM-Catalogo-Contactos": tel_contactos(),
     }
     for n, t in tableros.items():
         t = L.sin_disenar(n, E.post(n, t))

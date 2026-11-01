@@ -11,12 +11,20 @@ import sys
 sys.stdout.reconfigure(encoding="utf-8")
 PROJ = pathlib.Path(__file__).resolve().parent.parent
 BASES = "f2f8e5bb"  # Los tableros base como estaban antes de la E11: etapa11_1004.py los cambia después y estos generadores no deben seguirlos.
+ANTES_DEL_BLOQUE0 = "b83403a5"
 
 
 def leer_base(nombre):
     """Un tablero base tal como quedó en el commit BASES del front; si git no lo tiene, el de la carpeta."""
     r = subprocess.run(["git", "show", f"{BASES}:docs/design/lienzo/{nombre}.dc.html"], cwd=PROJ, capture_output=True)
     return r.stdout.decode("utf-8") if r.returncode == 0 else (PROJ / f"{nombre}.dc.html").read_text(encoding="utf-8")
+
+
+def leer_antes_del_bloque0(nombre):
+    """Un tablero tal como estaba antes del bloque 0 (b83403a5, el padre de 3ad60859): bloque0_wa_1004.py lo reescribe en el lugar, y lo
+    que se arma con sus piezas no tiene que seguirlo, o la cola deja de reproducir lo commiteado."""
+    r = subprocess.run(["git", "show", f"{ANTES_DEL_BLOQUE0}:docs/design/lienzo/{nombre}.dc.html"], cwd=PROJ, capture_output=True, check=True)
+    return r.stdout.decode("utf-8")
 
 
 BASE = leer_base("WA-Contactos")

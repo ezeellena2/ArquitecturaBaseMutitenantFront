@@ -17,6 +17,11 @@
   y las casillas en la vista previa), más de 20 en varias y la presentación propia, con los catálogos de la E12; «Un
   catálogo demasiado grande» al publicar; al mandar, menos que el mínimo y una opción que no entra. Lo que es de otra
   etapa lo separa `formularios_14_formularios_1004.py`.
+- Desde la v147, la §9 de `14-formularios.md`: los títulos de sección (88), con «Agregar título», su ⋮ y el subtítulo en el teléfono
+  (solo con CON_TITULOS, que prende `formularios_14_formularios_1004.py`: los tableros de otras etapas no los muestran); publicar sin
+  número conectado y con una cuenta sin el formulario (103); «Salió» y «No salió» en «Necesita revisión»; y un formulario que no está
+  publicado para el número del chat (103). Un título sin preguntas debajo frena publicar (T24), y en el teléfono se ven «Sin confirmar» y
+  «Necesita revisión», con su hoja.
 
 Rehace FRM-Editor, M-FRM-Editor, FRM-Publicar, FRM-Publicando y los cuatro tableros del chat con las piezas de
 `formularios_ab_1004.py`, cambiadas acá, y les vuelve a pasar lo que les suman los generadores de después (el panel de
@@ -44,6 +49,22 @@ GIRA = '<span class="girar2" aria-hidden="true"></span>'
 ARRIBA = svg('<path d="m6 15 6-6 6 6"/>', 14, "2")
 FALLAS = ["Frío", "Ruido", "Puerta", "Luz"]
 MOTIVO_GUARDAR = "Primero guardá los cambios."
+MOTIVO_SIN_NUMERO = "Conectá un número de WhatsApp para publicar."
+NO_PUBLICADO = "No está publicado para este número"
+CON_TITULOS = False  # 88: los títulos de sección, solo en los tableros de la 14
+TITULO_EJ = "Resultado de la visita"
+TITULO_SUELTO = "Cierre de la visita"
+SOLO_14 = ["Agregar un título", "Editar un título", "Acciones de un título", "Sin número conectado", "Una cuenta sin el formulario", "Un título sin preguntas",
+           "Sin confirmar", "Necesita revisión"]
+
+
+def de_la_etapa(estados):
+    """Lo nuevo de la 14 no entra en los tableros de la 18, que salen de estas mismas piezas y quedan como estaban."""
+    return estados if CON_TITULOS else [e for e in estados if e not in SOLO_14]
+
+
+def solo_en(diccionario, estados):
+    return {k: v for k, v in diccionario.items() if k in estados}
 
 CSS_E12 = """.cb[aria-disabled="true"] { opacity: 0.55; cursor: default; }
 .cb .girar2 { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; display: inline-block; animation: girar2 0.8s linear infinite; flex-shrink: 0; }
@@ -79,6 +100,21 @@ CSS_E12 = """.cb[aria-disabled="true"] { opacity: 0.55; cursor: default; }
 .f-snack .tx { flex: 1; min-width: 0; }
 .f-snack .ok { color: oklch(0.8 0.13 155); display: inline-flex; }
 """
+CSS_TITULOS = """.q-it.q-tit { min-height: 48px; background: oklch(0.975 0.008 78); }
+.q-it.q-tit .num { visibility: hidden; }
+.q-it.q-tit .dato b { font-weight: 600; }
+.q-cnt { align-self: flex-end; font-size: 12px; color: var(--t3); }
+.tel .pv-sub { margin-top: 3px; font-size: 13.5px; font-weight: 700; color: oklch(0.25 0.01 150); }
+.pv .tel { height: 728px; }
+"""
+CSS_TTITULOS = """.q-row.q-tit { min-height: 52px; background: oklch(0.975 0.008 78); }
+.q-row.q-tit .num { visibility: hidden; }
+.q-row.q-tit .tx b { font-weight: 600; }
+.ap-gtit:has(a + a) { justify-content: flex-start; gap: 14px; }
+.ap-gtit:has(a + a) a:first-of-type { order: 2; }
+.ap-gtit:has(a + a) a:last-of-type { order: 1; margin-left: auto; }
+.t-vp .t-sub { font-size: 16px; font-weight: 700; color: var(--t1); }
+"""
 MAL_OBS = "La ayuda es más larga de lo que admite WhatsApp."
 
 
@@ -109,6 +145,7 @@ A.CATALOGOS_K6 = [
     ("Clientes", "De los contactos de WhatsApp", ""),
     ("Depósitos", "Dado de baja", "off"),
     ("Motivos de visita", "Escritas a mano · 3 opciones activas", "on"),
+    ("Productos", "Escritas a mano · 10 opciones", ""),
     ("Proveedores", "Escritas a mano · 1.097 opciones", ""),
     ("Recargo por zona", "Escritas a mano · 6 opciones", ""),
     ("Responsables de obra", "No se puede usar", "off"),
@@ -253,12 +290,34 @@ def pregunta_fallas():
             "</div></div>")
 
 
-def caja_preguntas(abierta="motivo", vacia=False, menu=False, solo_ver=False, catalogo=None, mal=None, **_):
+def fila_titulo(texto=TITULO_EJ, menu=False, solo_ver=False):
+    """88: un título de sección entre las preguntas, con su ⋮. No es una pregunta: sin número ni «Obligatoria»."""
+    m = ""
+    if menu:
+        m = (f'<div class="f-menu" role="menu" aria-label="Acciones de {texto}"><span class="f-mi" role="menuitem">{A.LAPIZ} Editar</span>'
+             f'<span class="f-mi" role="menuitem">{A.ARRIBA} Subir</span><span class="f-mi" role="menuitem">{A.ABAJO} Bajar</span>'
+             f'<span class="f-sep" role="separator"></span><span class="f-mi pel" role="menuitem">{A.QUITAR} Quitar</span></div>')
+    acc = '<span class="ib" aria-hidden="true"></span>' if solo_ver else f'<button type="button" class="ib" aria-label="Acciones de {texto}">{A.KEBAB}</button>'
+    return (f'<div class="q-it q-tit{" abierta" if menu else ""}"><span class="num"></span><span class="dato"><b>{texto}</b></span>'
+            f'{acc}{m}</div>')
+
+
+def titulo_abierto(texto=""):
+    """«Editar» o «Agregar título»: el título se abre en el lugar, como una pregunta; hasta 80 caracteres (T24)."""
+    ct = f'<div class="ct{"" if texto else " ph"}">{texto or "Título de la sección"}</div>'
+    return ('<div class="q-ab">' + fila_titulo(texto or "Título nuevo") + '<div class="q-ed">'
+            f'<div class="w-cmp ancho"><span class="rt">Título <span class="req">*</span></span>{ct}<span class="q-cnt">{len(texto)}/80</span></div>'
+            f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{ARRIBA} Listo</button></div></div></div>')
+
+
+def caja_preguntas(abierta="motivo", vacia=False, menu=False, solo_ver=False, catalogo=None, mal=None, titulo=None, **_):
     if vacia:
         filas, cuenta = '<div class="e-vacio">Todavía no agregaste preguntas.</div>', "0 preguntas"
     else:
         filas = ""
         for k, (n, tipo, ob, _en) in enumerate(A.PREGUNTAS, 1):
+            if CON_TITULOS and k == 3:
+                filas += titulo_abierto(TITULO_EJ) if titulo == "editar" else fila_titulo(menu=titulo == "menu", solo_ver=solo_ver)
             if k == 5 and catalogo:
                 filas += A.pregunta_catalogo(catalogo)
             elif k == 5 and abierta == "motivo":
@@ -270,8 +329,13 @@ def caja_preguntas(abierta="motivo", vacia=False, menu=False, solo_ver=False, ca
                           .replace('<span class="chips">', '<span class="chips"><span class="ab-chip mal">Corregir</span>' + F.info(MAL_OBS), 1))
             else:
                 filas += A.fila_pregunta(k, n, tipo, ob, None, menu=(menu and k == 4), solo_ver=solo_ver)
+        if titulo == "nuevo":
+            filas += titulo_abierto()
+        if titulo == "suelto":
+            filas += fila_titulo(TITULO_SUELTO)
         cuenta = f"{len(A.PREGUNTAS)} preguntas"
-    boton = "" if solo_ver else f'<button type="button" class="cb cb-sec">{MAS} Agregar pregunta</button>'
+    boton = "" if solo_ver else ((f'<button type="button" class="cb cb-sec">{MAS} Agregar título</button>' if CON_TITULOS else "")
+                                 + f'<button type="button" class="cb cb-sec">{MAS} Agregar pregunta</button>')
     return f'<div class="w-caja"><div class="f-cab"><span>Preguntas</span><span class="der">{cuenta}{boton}</span></div>{filas}</div>'
 
 
@@ -282,18 +346,21 @@ def vista(ingles=False, vacia=False, nombre="Visita a cliente"):
     fallas = ('<div class="pv-c">Fallas<span class="pv-ay">Elegí hasta 3</span><div class="pv-ck">'
               + "".join(f"<span><i></i>{o}</span>" for o in FALLAS) + "</div></div>")
     pv = pv.replace('<div class="pv-c">Observaciones (opcional)', fallas + '<div class="pv-c">Observaciones (opcional)', 1)
+    if CON_TITULOS and not vacia:  # 88: en WhatsApp, un título es un subtítulo de la pantalla
+        pv = pv.replace('<div class="pv-c">¿Se concretó la venta? (opcional)', f'<div class="pv-sub">{TITULO_EJ}</div><div class="pv-c">¿Se concretó la venta? (opcional)', 1)
     if vacia:
         pv = re.sub(r'<div class="pv-hb">.*?</div><div class="pv-pie">', '<div class="pv-hb"></div><div class="pv-pie">', pv, count=1, flags=re.S)
         pv = pv.replace(">Visita a cliente<", f">{nombre}<")
     return pv
 
 
-def cuerpo_editor(sup="", abierta="motivo", vacia=False, nombre="Visita a cliente", prefijo="VIS", modo="normal", menu=False, solo_ver=False, catalogo=None, quien=False, mal=None, **_):
+def cuerpo_editor(sup="", abierta="motivo", vacia=False, nombre="Visita a cliente", prefijo="VIS", modo="normal", menu=False, solo_ver=False, catalogo=None, quien=False, mal=None,
+                  titulo=None, **_):
     if abierta is True:
         abierta = "motivo"
     return ('<div class="w-body">' + sup + '<div class="f-cols"><div class="f-pila">'
             + caja_formulario(nombre=nombre, prefijo=prefijo, modo=modo, quien=quien)
-            + caja_preguntas(abierta=None if vacia else abierta, vacia=vacia, menu=menu, solo_ver=solo_ver, catalogo=catalogo, mal=mal)
+            + caja_preguntas(abierta=None if vacia else abierta, vacia=vacia, menu=menu, solo_ver=solo_ver, catalogo=catalogo, mal=mal, titulo=titulo)
             + "</div>" + vista(vacia=vacia, nombre=nombre) + "</div></div>")
 
 
@@ -313,8 +380,9 @@ def kebab(abierto=False, nombre="Visita a cliente", items=None):
             f'aria-expanded="{"true" if abierto else "false"}">{A.KEBAB}</button>{menu}</span>')
 
 
-def acc(modo="limpio", publicado=True, tip=False, menu=False):
-    """Las acciones de la banda (43): limpio | cambios | guardando | nuevo | nuevo-guardando | solo; y el ⋮ de la E12b."""
+def acc(modo="limpio", publicado=True, tip=False, menu=False, apagado=""):
+    """Las acciones de la banda (43): limpio | cambios | guardando | nuevo | nuevo-guardando | solo; y el ⋮ de la E12b.
+    apagado: «Publicar en WhatsApp» grisado por ese motivo, aunque no haya cambios."""
     oficial = '<a class="cb cb-sec" href="FRM-Publicando.dc.html">Ver vista oficial</a>' if publicado else ""
     if modo == "solo":
         return oficial
@@ -327,11 +395,12 @@ def acc(modo="limpio", publicado=True, tip=False, menu=False):
     d = " disabled" if (limpio or g) else ""
     a = f'<button type="button" class="cb cb-sec"{d}>Descartar</button>'
     a += f'<button type="button" class="cb cb-sec"{d}>{GIRA if g else ""}Guardar cambios</button>'
-    if limpio:
+    if limpio and not apagado:
         a += '<a class="cb cb-pri" href="FRM-Publicar.dc.html">Publicar en WhatsApp</a>'
     else:
-        b = f'<button type="button" class="cb cb-pri" aria-disabled="true" title="{MOTIVO_GUARDAR}">Publicar en WhatsApp</button>'
-        a += f'<span class="e-tipw">{b}<span class="e-tip" role="tooltip">{MOTIVO_GUARDAR}</span></span>' if tip else b
+        motivo = apagado or MOTIVO_GUARDAR
+        b = f'<button type="button" class="cb cb-pri" aria-disabled="true" title="{motivo}">Publicar en WhatsApp</button>'
+        a += f'<span class="e-tipw">{b}<span class="e-tip" role="tooltip">{motivo}</span></span>' if tip else b
     return a + oficial + (kebab(menu) if publicado else "")
 
 
@@ -347,7 +416,7 @@ toast, confirmar = A.toast, A.confirmar
 ESTADOS_EDITOR = ["Sin cambios", "Con cambios", "Guardando", "Guardado", "No se guardó", "Otra persona guardó", "Comparar los cambios",
                   "Nuevo formulario", "Prefijo ocupado", "Para quién es", "Acciones del formulario", "Acciones de una pregunta", "Quitar una pregunta", "Cambiar el tipo", "Elegir varias",
                   "Elegir de un catálogo", "Elegir el catálogo", "Varias de un catálogo", "Más de 20 en varias", "Presentación propia", "Sin catálogos", "Pregunta de foto", "Pregunta de documento", "Sin almacenamiento",
-                  "Descartar cambios", "Solo lectura", "Cargando", "No existe"]
+                  "Descartar cambios", "Solo lectura", "Cargando", "No existe", "Agregar un título", "Editar un título", "Acciones de un título"]
 CONFLICTO = ('<div class="e-sup alerta" role="alert"><div class="fila">' + ALERTA
              + '<span class="tx">Otra persona cambió esto mientras lo editabas.</span><button type="button" class="cb cb-sec">Revisar</button></div></div>')
 
@@ -356,6 +425,10 @@ def archivos(modo, total="5"):
     """Las preguntas de la E14 con «Fallas» en la lista: cuentan una más."""
     c = A.cuerpo_archivos(modo, total)
     return c.replace(" · 8 preguntas", " · 9 preguntas").replace(">7 preguntas<", ">8 preguntas<")
+
+
+def css_titulos():
+    return CSS_TITULOS if CON_TITULOS else ""
 
 
 def editor():
@@ -394,6 +467,9 @@ def editor():
         "Solo lectura": (banda("Visita a cliente", EST_PUB, acc("solo"), VOL), cuerpo_editor(abierta=None, modo="fijo", solo_ver=True)),
         "Cargando": (banda("Visita a cliente", "", "", VOL), cargando),
         "No existe": (banda("Formulario", "", "", VOL), no_existe),
+        "Agregar un título": pub("cambios", cuerpo_editor(abierta=None, modo="fijo", titulo="nuevo")),
+        "Editar un título": pub("cambios", cuerpo_editor(abierta=None, modo="fijo", titulo="editar")),
+        "Acciones de un título": pub("limpio", cuerpo_editor(abierta=None, modo="fijo", titulo="menu")),
     }
     assert list(V) == ESTADOS_EDITOR
     dif = ('<div class="e-dif"><span>Qué cambió</span><span>Guardado actualmente</span><span>Mis cambios</span>'
@@ -405,19 +481,21 @@ def editor():
     capas = {
         "Guardado": toast("Guardamos los cambios de Visita a cliente."),
         "No se guardó": toast("No pudimos guardar los cambios. Lo escrito se conserva.", "mal"),
-        "Comparar los cambios": F.dialogo("Revisar los cambios", '<p class="d-tx">Laura Ríos guardó este formulario hace 2 minutos.</p>' + dif,
+        "Comparar los cambios": F.dialogo("Revisar los cambios", '<p class="d-tx">Laura Ríos guardó este formulario el 27/09/2026 10:43.</p>' + dif,
                                           '<button type="button" class="cb cb-sec">Usar lo guardado</button><button type="button" class="cb cb-pri">Conservar mis cambios</button>', una=False)
         .replace('class="w-dlg"', 'class="w-dlg" style="width: 760px;"', 1),
         "Quitar una pregunta": confirmar("¿Quitar la pregunta?", "Dejará de pedirse en el borrador. Las respuestas anteriores se conservan.", "Quitar pregunta"),
         "Cambiar el tipo": confirmar("¿Cambiar el tipo de respuesta?", "Esta será una pregunta nueva. Las respuestas anteriores conservan el tipo original.", "Cambiar tipo", peligro=False),
         "Descartar cambios": confirmar("¿Descartar los cambios?", "Vas a perder lo que cambiaste sin guardar.", "Descartar", cancelar="Seguir editando"),
     }
-    return A.pagina_editor(V, capas, ESTADOS_EDITOR, "Editor del formulario · /org/formularios/:id", CSS_E12 + CSS_CA4)
+    estados = de_la_etapa(ESTADOS_EDITOR)
+    return A.pagina_editor(solo_en(V, estados), capas, estados, "Editor del formulario · /org/formularios/:id", CSS_E12 + CSS_CA4 + css_titulos())
 
 
 # ================================================================ FRM-Publicar
 ESTADOS_PUBLICAR = ["Versión nueva", "Primera publicación", "Comprobando", "Con cambios sin guardar", "Una pregunta no se puede mostrar", "Un catálogo demasiado grande",
-                    "Más de 10 archivos", "Cambió después de comprobar", "Ya se está publicando"]
+                    "Más de 10 archivos", "Cambió después de comprobar", "Ya se está publicando", "Sin número conectado", "Una cuenta sin el formulario",
+                    "Un título sin preguntas"]
 SIETE = "Cliente, Fecha de la visita, ¿Se concretó la venta?, Monto estimado, Motivo, Fallas y Observaciones"
 
 
@@ -434,6 +512,15 @@ def p_ok(v="4", primera=False):
     return incluye + '<span class="p-cap">Qué queda fijo</span>' + fijo + '<span class="p-cap">Qué va a pasar</span>' + A.pasos()
 
 
+def p_cuenta(v="4"):
+    """103: sin cambios y con una cuenta de WhatsApp conectada que no tiene el formulario, se publica una versión nueva, con el mismo contenido."""
+    return ('<span class="p-cap">Por qué se publica</span>'
+            + A.card(DOC, "Una cuenta de WhatsApp no tiene este formulario", "Las preguntas no cambian. Se publica para poder mandarlo desde todos los números.")
+            + '<span class="p-cap">Qué queda fijo</span>'
+            + A.card(TILDE, f"Las preguntas de la versión {v}", f"Ya no se editan. Lo que cambies después se publica como versión {int(v) + 1}.")
+            + '<span class="p-cap">Qué va a pasar</span>' + A.pasos())
+
+
 def pie_pub(v="4", activo=True, trabajando=False):
     d = "" if activo and not trabajando else " disabled"
     return (f'<button type="button" class="cb cb-sec">Cancelar</button>'
@@ -445,6 +532,8 @@ def publicar():
     cambios = (banda("Visita a cliente", EST_PUB, acc("cambios", tip=True), VOL), cuerpo_editor(modo="fijo"))
     primera = (banda("Visita a cliente", EST_BOR, acc("limpio", publicado=False), VOL), cuerpo_editor(abierta=None))
     V = {e: (primera if e == "Primera publicación" else cambios if e == "Con cambios sin guardar" else base) for e in ESTADOS_PUBLICAR}
+    V["Sin número conectado"] = (banda("Visita a cliente", EST_PUB, acc("limpio", tip=True, apagado=MOTIVO_SIN_NUMERO), VOL), cuerpo_editor(abierta=None, modo="fijo"))
+    V["Un título sin preguntas"] = (banda("Visita a cliente", EST_PUB, acc("limpio"), VOL), cuerpo_editor(abierta=None, modo="fijo", titulo="suelto"))
     dlg = A.dlg_publicar
     prob = ('<div class="p-prob"><span class="mal">' + ALERTA + '</span><span class="tx"><b>Motivo · opción «Seguimiento comercial con visita programada»</b>'
             '<span>Es demasiado larga para WhatsApp.</span></span><a href="FRM-Editor.dc.html">Ir a la pregunta</a></div>')
@@ -463,31 +552,46 @@ def publicar():
                                   '<div class="p-prob"><span class="mal">' + ALERTA + '</span><span class="tx"><b>Archivos: hasta 12 de 10</b>'
                                   '<span>WhatsApp acepta 10 archivos por respuesta.</span></span><a href="FRM-Editor.dc.html">Ir a las preguntas</a></div>',
                                   pie_pub(activo=False)),
-        "Cambió después de comprobar": dlg("Publicar la versión 4 en WhatsApp", A.aviso("Laura Ríos guardó cambios en este formulario hace un momento."),
+        "Cambió después de comprobar": dlg("Publicar la versión 4 en WhatsApp", A.aviso("Laura Ríos guardó cambios en este formulario el 27/09/2026 10:43."),
                                            '<button type="button" class="cb cb-sec">Cerrar</button><button type="button" class="cb cb-pri">Revisar cambios</button>'),
         "Ya se está publicando": dlg("Publicar la versión 4 en WhatsApp", A.aviso("Tomás Acosta está publicando la versión 4.", icono=RELOJ),
                                      '<button type="button" class="cb cb-sec">Cerrar</button>'),
+        "Una cuenta sin el formulario": dlg("Publicar la versión 4 en WhatsApp", p_cuenta(), pie_pub()),
+        "Un título sin preguntas": dlg("Publicar la versión 4 en WhatsApp", '<span class="p-cap">Antes hay que resolver</span>'
+                                       '<div class="p-prob"><span class="mal">' + ALERTA + f'</span><span class="tx"><b>Título «{TITULO_SUELTO}»</b>'
+                                       '<span>No tiene preguntas debajo.</span></span><a href="FRM-Editor.dc.html">Ir al título</a></div>', pie_pub(activo=False)),
     }
-    return A.pagina_editor(V, capas, ESTADOS_PUBLICAR, "Publicar en WhatsApp", CSS_E12)
+    estados = de_la_etapa(ESTADOS_PUBLICAR)
+    return A.pagina_editor(solo_en(V, estados), solo_en(capas, estados), estados, "Publicar en WhatsApp", CSS_E12 + css_titulos())
 
 
 # ================================================================ FRM-Publicando
 ESTADOS_PUBLICANDO = ["Publicando", "Publicando: los pasos", "Publicado", "WhatsApp rechazó una pregunta", "Sin confirmar", "Sin confirmar: el detalle",
-                      "Necesita revisión", "Vista oficial", "Vista oficial cargando", "Vista oficial vencida"]
+                      "Necesita revisión", "Vista oficial", "Vista oficial cargando", "Vista oficial vencida", "Necesita revisión: el detalle"]
 
 
 def dlg_pasos():
     """El ⓘ de «Publicando la versión 4»: los pasos, en el aviso importante."""
-    p = [("hecho", "Aceptada", "Hoy, 15:20"), ("hecho", "Enviada a WhatsApp", "15:21"), ("ahora", "WhatsApp la revisa", ""), ("", "Lista para mandar", "")]
+    p = [("hecho", "Aceptada", "27/09/2026 10:40"), ("hecho", "Enviada a WhatsApp", "27/09/2026 10:41"), ("ahora", "WhatsApp la revisa", ""), ("", "Lista para mandar", "")]
     pasos = "".join(f'<div class="e-paso {c}"><span class="bo">{TILDE if c == "hecho" else ""}</span><span class="tx">{a}<small>{b}</small></span></div>' for c, a, b in p)
     return F.dialogo("Publicando la versión 4", f'<div class="e-pasos vert">{pasos}</div>'
                      '<p class="d-tx">La versión 3 sigue andando. Lo que guardes ahora va a la versión 5.</p>',
                      '<button type="button" class="cb cb-sec">Cerrar</button>')
 
 
+TX_SIN_CONFIRMAR = "Todavía no sabemos si WhatsApp recibió la versión 4. La seguimos consultando: no la mandamos de nuevo."
+TX_REVISION = "No pudimos confirmar qué pasó con la versión 4 en WhatsApp. Revisala en Meta y decinos cómo terminó."
+
+
 def dlg_sin_confirmar():
-    return F.dialogo("La versión 4 en WhatsApp", '<p class="d-tx">Todavía no sabemos si WhatsApp recibió la versión 4. La seguimos consultando: no la mandamos de nuevo.</p>',
+    return F.dialogo("La versión 4 en WhatsApp", f'<p class="d-tx">{TX_SIN_CONFIRMAR}</p>',
                      '<button type="button" class="cb cb-sec">Cerrar</button><button type="button" class="cb cb-pri">Consultar ahora</button>')
+
+
+def dlg_revision():
+    """El ⓘ de «Necesita revisión», como el de «Sin confirmar»: quien publica la mira en Meta y dice cómo terminó."""
+    return F.dialogo("La versión 4 en WhatsApp", f'<p class="d-tx">{TX_REVISION}</p>',
+                     '<button type="button" class="cb cb-sec">Cerrar</button><button type="button" class="cb cb-sec">No salió</button><button type="button" class="cb cb-pri">Salió</button>')
 
 
 def publicando():
@@ -496,8 +600,7 @@ def publicando():
     publicando_e = '<span class="w-est pend">Publicando la versión 4</span>' + info_btn("Ver los pasos")
     rechazo_e = '<span class="w-est mal">No se pudo publicar la versión 4</span>' + F.info("WhatsApp rechazó la versión 4. La versión 3 sigue andando.")
     sin_conf_e = '<span class="w-est pend">Sin confirmar</span>' + info_btn("Todavía no sabemos si WhatsApp recibió la versión 4.")
-    revision_e = ('<span class="w-est mal">Necesita revisión</span>'
-                  + F.info("No pudimos confirmar qué pasó con la versión 4 en WhatsApp. Quien publica formularios la revisa en Meta y la resuelve antes de publicar otra."))
+    revision_e = '<span class="w-est mal">Necesita revisión</span>' + info_btn("No pudimos confirmar qué pasó con la versión 4 en WhatsApp.")
 
     def cuerpo(sup, pv=None, mal=None):
         c = cuerpo_editor(sup=sup, abierta=None, modo="fijo", mal=mal)
@@ -514,10 +617,11 @@ def publicando():
         "Vista oficial": (banda("Visita a cliente", EST_PUB4, ok, VOL), cuerpo("", "vista")),
         "Vista oficial cargando": (banda("Visita a cliente", EST_PUB4, ok, VOL), cuerpo("", "cargando")),
         "Vista oficial vencida": (banda("Visita a cliente", EST_PUB4, ok, VOL), cuerpo("", "vencida")),
+        "Necesita revisión: el detalle": (banda("Visita a cliente", revision_e, acc_off, VOL), cuerpo("")),
     }
     capas = {"Publicando: los pasos": dlg_pasos(), "Publicado": toast("Publicamos la versión 4. Ya la podés mandar desde el chat."),
-             "Sin confirmar: el detalle": dlg_sin_confirmar()}
-    return A.pagina_editor(V, capas, ESTADOS_PUBLICANDO, "Publicar en WhatsApp · cómo termina", CSS_E12)
+             "Sin confirmar: el detalle": dlg_sin_confirmar(), "Necesita revisión: el detalle": dlg_revision()}
+    return A.pagina_editor(V, capas, ESTADOS_PUBLICANDO, "Publicar en WhatsApp · cómo termina", CSS_E12 + css_titulos())
 
 
 # ================================================================ M-FRM-Editor
@@ -525,7 +629,8 @@ T_PREG = [("Cliente", "Texto corto · Obligatoria"), ("Fecha de la visita", "Fec
           ("Monto estimado", "Número · 2 decimales · Opcional"), ("Motivo", "Elegir una · 3 opciones · Opcional"),
           ("Fallas", "Elegir varias · de 1 a 3 · Obligatoria"), ("Observaciones", "Texto largo · Opcional")]
 ESTADOS_TED = ["Sin cambios", "Con cambios", "Guardando", "Acciones del formulario", "Acciones de una pregunta", "Editar una pregunta", "Elegir varias", "Pregunta con catálogo",
-               "Pregunta de foto", "Así lo ve el empleado", "Publicar", "Publicando", "Publicado", "WhatsApp rechazó una pregunta", "Nuevo formulario"]
+               "Pregunta de foto", "Así lo ve el empleado", "Publicar", "Publicando", "Publicado", "WhatsApp rechazó una pregunta", "Nuevo formulario", "Acciones de un título",
+               "Editar un título", "Sin confirmar", "Necesita revisión"]
 CSS_TED_E12 = """.ap-fijo .cb .girar2 { width: 16px; height: 16px; }
 .t-cks { display: flex; flex-wrap: wrap; gap: 0 20px; }
 .t-cks .t-chk { min-height: 36px; }
@@ -540,6 +645,9 @@ def t_preguntas(vacia=False, mal=None):
         return '<div class="t-vacia">Todavía no agregaste preguntas.</div>'
     h = ""
     for k, (n, d) in enumerate(T_PREG, 1):
+        if CON_TITULOS and k == 3:
+            h += (f'<div class="q-row q-tit"><span class="num"></span><span class="tx"><b>{TITULO_EJ}</b></span>'
+                  f'<button type="button" class="ap-ib" aria-label="Acciones de {TITULO_EJ}">{F.TKEBAB}</button></div>')
         chip = '<span class="t-chip mal">Corregir</span>' if mal == k else ""
         d = MAL_OBS if mal == k else d
         h += (f'<div class="q-row{" mal" if mal == k else ""}"><span class="num">{k}</span><span class="tx"><b>{n}{chip}</b><span>{d}</span></span>'
@@ -555,7 +663,8 @@ def t_cuerpo(vacia=False, fijo=True, banda_html="", mal=None, nombre="Visita a c
     cant = "0 preguntas" if vacia else f"{len(T_PREG)} preguntas"
     formulario = "" if desde_preguntas else '<div class="ap-gtit">El formulario</div><div class="f-campos">' + campos + "</div>"
     return (banda_html + '<div class="ap-cuerpo">' + formulario
-            + f'<div class="ap-gtit">Preguntas · {cant}<a href="#">Agregar</a></div><div class="ap-grupo">' + t_preguntas(vacia, mal) + "</div>"
+            + f'<div class="ap-gtit">Preguntas · {cant}<a href="#">Agregar</a>{"<a href=" + chr(34) + "#" + chr(34) + ">Agregar título</a>" if CON_TITULOS else ""}</div>'
+            + '<div class="ap-grupo">' + t_preguntas(vacia, mal) + "</div>"
             + '<div style="height: 20px;"></div></div>')
 
 
@@ -572,8 +681,16 @@ def t_fijo(modo):
     return '<div class="ap-fijo"><a class="cb cb-pri full" href="#">Publicar en WhatsApp</a></div>'
 
 
+def t_detalle(motivo):
+    return f'<button type="button" class="ap-i" aria-label="Ver el detalle" title="{motivo}">{F.TINFO}</button>'
+
+
+def t_tx(texto):
+    return f'<p style="margin: 0; font-size: 15px; line-height: 1.45; color: var(--t2);">{texto}</p>'
+
+
 def tel_editor():
-    E = ESTADOS_TED
+    E = de_la_etapa(ESTADOS_TED)
 
     def bar(titulo, sub):
         return (f'<div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Listado.dc.html">{F.TVOLVER}</a>'
@@ -598,8 +715,13 @@ def tel_editor():
         # la lista ya bajada hasta las preguntas: la que rechazó WhatsApp, marcada en su lugar
         "WhatsApp rechazó una pregunta": (bar("Visita a cliente", "No se pudo publicar la versión 4"), t_cuerpo(mal=7, desde_preguntas=True), t_fijo("limpio")),
         "Nuevo formulario": (bar("Nuevo formulario", "Borrador"), t_cuerpo(vacia=True, fijo=False, nombre="Inspección de obra", prefijo="OBR"), t_fijo("nuevo")),
+        "Acciones de un título": (bar("Visita a cliente", pub), t_cuerpo(desde_preguntas=True), t_fijo("limpio")),
+        "Editar un título": (bar("Visita a cliente", pub), t_cuerpo(desde_preguntas=True), t_fijo("cambios")),
+        "Sin confirmar": (bar("Visita a cliente", "Sin confirmar" + t_detalle(TX_SIN_CONFIRMAR)), t_cuerpo(), t_fijo("off")),
+        "Necesita revisión": (bar("Visita a cliente", "Necesita revisión" + t_detalle(TX_REVISION)), t_cuerpo(), t_fijo("off")),
     }
-    assert list(V) == E
+    assert list(V) == ESTADOS_TED
+    V = solo_en(V, E)
     cuerpo = A.con_estados([(e, v[0] + v[1] + v[2]) for e, v in V.items()])
     tilde = svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 14, "3")
     listo = '<button type="button" class="cb cb-pri">Listo</button><button type="button" class="cb cb-sec">Cancelar</button>'
@@ -617,6 +739,8 @@ def tel_editor():
               + F.tcampo("Ayuda para el empleado", "Opcional", vacio=True))
     vp = '<div class="t-vp">'
     for k, (n, _d) in enumerate(T_PREG):
+        if CON_TITULOS and n == "¿Se concretó la venta?":
+            vp += f'<span class="t-sub">{TITULO_EJ}</span>'
         if n == "Fallas":
             vp += ('<div class="ap-cmp"><span class="rt"><span>Fallas</span></span><span class="ay">Elegí hasta 3</span><div class="t-cks">'
                    + "".join(f'<span class="t-chk"><i class="no"></i>{o}</span>' for o in FALLAS) + "</div></div>")
@@ -651,9 +775,14 @@ def tel_editor():
                                     + F.tcampo("Ayuda para el empleado", "Sacá una foto del frente del local y otra de la góndola.") + origen + cuantas, listo),
         "Así lo ve el empleado": F.thoja("Así lo ve el empleado", vp, '<button type="button" class="cb cb-pri" disabled>Enviar</button>', sub="Visita a cliente · borrador"),
         "Publicar": F.thoja("Publicar la versión 4", publicar_h, '<button type="button" class="cb cb-pri">Publicar versión 4</button><button type="button" class="cb cb-sec">Cancelar</button>'),
+        "Acciones de un título": F.thoja(TITULO_EJ, '<div class="ap-acciones2"><span role="menuitem">Editar</span><span role="menuitem">Subir</span><span role="menuitem">Bajar</span>'
+                                         '<span class="pel" role="menuitem">Quitar</span></div>', ""),
+        "Editar un título": F.thoja("Editar título", F.tcampo("Título", TITULO_EJ, req=True).replace("</div></div>", f'</div><span class="ay" style="align-self: flex-end;">{len(TITULO_EJ)}/80</span></div>', 1), listo),
+        "Sin confirmar": F.thoja("La versión 4 en WhatsApp", t_tx(TX_SIN_CONFIRMAR), '<button type="button" class="cb cb-pri">Consultar ahora</button><button type="button" class="cb cb-sec">Cerrar</button>'),
+        "Necesita revisión": F.thoja("La versión 4 en WhatsApp", t_tx(TX_REVISION), '<button type="button" class="cb cb-pri">Salió</button><button type="button" class="cb cb-sec">No salió</button>'),
     }
-    hojas = "".join(f'<sc-if value="{{{{s{E.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
-    t = F.pagina_tel(None, None, cuerpo, css=F.CSS_TFICHA + F.CSS_TPREGUNTA + F.CSS_TFORM + A.CSS_TED + F.CSS_TFILTRO + CSS_E12 + CSS_TED_E12)
+    hojas = "".join(f'<sc-if value="{{{{s{E.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in solo_en(capas, E).items())
+    t = F.pagina_tel(None, None, cuerpo, css=F.CSS_TFICHA + F.CSS_TPREGUNTA + F.CSS_TFORM + A.CSS_TED + F.CSS_TFILTRO + CSS_E12 + CSS_TED_E12 + (CSS_TTITULOS if CON_TITULOS else ""))
     i = t.index('<nav class="ap-nav"')
     j = t.index("</nav>", i) + len("</nav>")
     t = t[:i] + t[j:]
@@ -684,6 +813,12 @@ SIN_CONFIRMAR = ("No se sabe si se guardó", "Envío sin confirmar", "Confirmar 
 ESTADOS_CHAT = [e for e in A.ESTADOS_CHAT_AB if e not in SIN_CONFIRMAR]
 # E14 (§9): también menos que el mínimo y una opción que no entra
 ESTADOS_CHAT[ESTADOS_CHAT.index("Ninguna opción") + 1:ESTADOS_CHAT.index("Ninguna opción") + 1] = ["Menos que el mínimo", "Una opción que no entra"]
+ESTADOS_CHAT.append(NO_PUBLICADO)  # 103
+
+
+def no_publicado(formulario):
+    """103: el número del chat está en una cuenta de WhatsApp sin el formulario: aparece, con el motivo, y no se puede mandar."""
+    return f"{formulario} no está publicado para este número. Avisale a quien publica los formularios."
 
 
 def chat_enviar():
@@ -718,6 +853,7 @@ def chat_enviar():
         "Menos que el mínimo": dlg_enviar(prob=A.prob_catalogo("Motivo: tiene 1 opción y se piden al menos 2."), pie="off"),
         "Una opción que no entra": dlg_enviar(prob=A.prob_catalogo("Supervisor a cargo: una opción es más larga de lo que admite WhatsApp."), pie="off"),
         "Catálogo que no se puede usar": dlg_enviar(prob=A.prob_catalogo("Supervisor a cargo: el catálogo no se puede usar. Avisale a quien lo administra."), pie="off"),
+        NO_PUBLICADO: dlg_enviar(prob=A.prob_catalogo(no_publicado("Visita a cliente")), pie="off"),
     }
     enviado = {"En cola": "Vos: Formulario · Visita a cliente", "Leído": "Vos: Formulario · Visita a cliente", "No se pudo mandar": "No se pudo mandar un formulario"}
     vp = {e: enviado.get(e, "Vos: Genial, Tomás. Te mando el formulario de la visita.") for e in E}
@@ -746,7 +882,7 @@ def t_menu(motivo=""):
 
 
 A.t_menu = t_menu
-ESTADOS_TCHAT = [e for e in A.ESTADOS_TCHAT_AB if e not in SIN_CONFIRMAR]
+ESTADOS_TCHAT = [e for e in A.ESTADOS_TCHAT_AB if e not in SIN_CONFIRMAR] + [NO_PUBLICADO]
 
 
 def tel_chat_enviar():
@@ -778,6 +914,7 @@ def tel_chat_enviar():
         "Más de 200 opciones": t_hoja_enviar(prob=prob("Supervisor a cargo: supera las 200 opciones que admite WhatsApp. Ajustá el catálogo antes de mandar."), pie="off"),
         "Ninguna opción": t_hoja_enviar(prob=prob("Supervisor a cargo: no tiene opciones y la pregunta es obligatoria."), pie="off"),
         "Catálogo que no se puede usar": t_hoja_enviar(prob=prob("Supervisor a cargo: el catálogo no se puede usar. Avisale a quien lo administra."), pie="off"),
+        NO_PUBLICADO: t_hoja_enviar(prob=prob(no_publicado("Visita a cliente")), pie="off"),
     }
     t = A.pagina_tchat(E, esc, msgs, capas, "WhatsApp · Internos · enviar un formulario · teléfono", CSS_E12)
     return M.css(t, M.CSS_HOJA, "hoja")
@@ -844,8 +981,8 @@ CLIENTE_ANTES = ('<div class="w-m ent"><span class="gl">Hola, Lucía. Ya termin�
 CLIENTE_DESPUES = ('<div class="w-m ent"><span class="gl">Hola, ya me llegó el pedido.</span><span class="pie">10:48</span></div>'
                    '<span class="o-sis">Lucía Fernández tomó la conversación</span>'
                    '<div class="w-m sal"><span class="gl">¡Qué bueno, Martina! Te mando el formulario para confirmar la entrega.</span><span class="pie">Lucía Fernández · 10:50</span></div>')
-E_CLIENTE = ["Con el botón", "Elegir el formulario", "Enviando", "En cola", "Leído", "Sin formularios para clientes"]
-E_TCLIENTE = ["Menú abierto", "Elegir el formulario", "En cola", "Sin formularios para clientes"]
+E_CLIENTE = ["Con el botón", "Elegir el formulario", "Enviando", "En cola", "Leído", "Sin formularios para clientes", NO_PUBLICADO]
+E_TCLIENTE = ["Menú abierto", "Elegir el formulario", "En cola", "Sin formularios para clientes", NO_PUBLICADO]
 SIN_CLIENTES = "No hay formularios publicados para clientes."
 
 
@@ -865,7 +1002,7 @@ def card_cliente():
 
 def otros_clientes():
     """Los demás chats de la bandeja Clientes, tal como están en WA-Chats (5 en total con el de Martina)."""
-    t = (PROJ / "WA-Chats.dc.html").read_text(encoding="utf-8")
+    t = F.leer_antes_del_bloque0("WA-Chats")
     i = t.index('<div class="w-bandeja">')
     j = t.index('<div class="w-hilo">', i)
     items = re.findall(r'<div class="w-conv[^"]*">.*?</span></span></div>', t[i:j], re.S)
@@ -901,7 +1038,8 @@ def chat_cliente():
     def burbuja(pie, icono=""):
         return (f'<div class="w-m sal"><span class="gl">{A.MENSAJE_AB}{card_cliente()}</span><span class="pie">{icono}{pie}</span></div>')
     msgs = {"En cola": burbuja("En cola · 10:51", f'<span class="rel">{RELOJ14}</span>'), "Leído": burbuja("Lucía Fernández · 10:51 · Leído")}
-    capas = {"Elegir el formulario": con_forms_cliente(dlg_enviar), "Enviando": con_forms_cliente(dlg_enviar, pie="enviando")}
+    capas = {"Elegir el formulario": con_forms_cliente(dlg_enviar), "Enviando": con_forms_cliente(dlg_enviar, pie="enviando"),
+             NO_PUBLICADO: con_forms_cliente(dlg_enviar, prob=A.prob_catalogo(no_publicado("Entrega de pedido")), pie="off")}
     vp = {e: "Vos: ¡Qué bueno, Martina! Te mando el formulario para confirmar la entrega." for e in E}
     vp.update({"En cola": "Vos: Formulario · Entrega de pedido", "Leído": "Vos: Formulario · Entrega de pedido"})
     hora = {"En cola": "10:51", "Leído": "10:51"}
@@ -920,8 +1058,10 @@ def tel_chat_cliente():
         return M.hoja("Martina López", '<span role="menuitem">Pasar</span><span role="menuitem">Ver ficha del contacto</span>' + item)
     burbuja = (f'<div class="ap-m sal"><span class="gl">{A.MENSAJE_AB}{card_cliente()}</span>'
                f'<span class="pie"><span class="rel">{F.TRELOJ}</span>En cola · 10:51</span></div>')
+    prob = f'<div class="t-prob2">{ALERTA}<span>{no_publicado("Entrega de pedido")}</span></div>'
     capas = {"Menú abierto": menu(), "Elegir el formulario": con_forms_cliente(t_hoja_enviar).replace("A Tomás Acosta", "A Martina López"),
-             "Sin formularios para clientes": menu(SIN_CLIENTES)}
+             "Sin formularios para clientes": menu(SIN_CLIENTES),
+             NO_PUBLICADO: con_forms_cliente(t_hoja_enviar, prob=prob, pie="off").replace("A Tomás Acosta", "A Martina López")}
     t = A.pagina_tchat(E, esc, {"En cola": burbuja}, capas, "WhatsApp · Clientes · enviar un formulario · teléfono", CSS_E12)
     t = M.css(t, M.CSS_HOJA, "hoja")
     for a, b in [('<span class="w-av">TA</span><span class="tx"><b>Tomás Acosta</b><span>Empleado · Delta S.A.</span></span>',
