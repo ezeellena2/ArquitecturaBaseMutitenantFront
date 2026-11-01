@@ -70,13 +70,13 @@
       "tweaks": {
         "estado": "Con el aviso"
       },
-      "resaltar": "a.cb-sec.ch",
+      "resaltar": "a.cmp-it",
       "actor": "Lucía · persona · web",
       "titulo": "Está en su perfil personal",
-      "texto": "Entró como persona. Como solo entra con el correo de su empresa, el inicio le sugiere sumar un correo propio o su WhatsApp para no perder la cuenta si deja la empresa.",
-      "avanzar": "Fin del recorrido. Para seguir en Mi cuenta, tocá «Agregar».",
+      "texto": "Entró como persona. Como solo entra con el correo de su empresa, la campana le avisa que sume un correo propio o su WhatsApp para no perder la cuenta si deja la empresa.",
+      "avanzar": "Fin del recorrido. Para seguir en Mi cuenta, tocá el aviso.",
       "ruta": "/",
-      "accion": "Ve su perfil personal con el aviso para agregar un correo o su WhatsApp."
+      "accion": "Ve su perfil personal y, en la campana, el aviso para agregar un correo o su WhatsApp."
     }
   ]
 }
