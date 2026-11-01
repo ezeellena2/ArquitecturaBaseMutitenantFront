@@ -652,6 +652,14 @@ textarea.in2 { height: auto; min-height: 84px; }
 .cmp-tx small { font-size: 12.5px; color: var(--t3); }
 .cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }
 </style>
+<style data-b0="plat">
+.tt-h .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
+.o-fila .dos { flex-direction: row; align-items: center; gap: 16px; }
+.o-fila .dos > .c1 { flex: 1 1 auto; min-width: 120px; }
+.o-fila .dos > .n2 { flex: 0 1 auto; font-size: 13px; color: var(--t2); text-align: right; }
+.rev-tx { margin: 0; font-size: 13.5px; color: var(--t2); line-height: 1.55; }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -726,10 +734,10 @@ textarea.in2 { height: auto; min-height: 84px; }
         </div>
 
         <div class="tarjeta">
-          <div class="tt-h" style="grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.5fr) minmax(0, 1.2fr) 190px 28px;"><span>Cuenta</span><span>Perfiles</span><span>Último ingreso</span><span>Estado</span><span class="sr">Acciones</span></div>
+          <div class="tt-h" style="grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) 190px 140px 175px 28px;"><span aria-sort="ascending">Cuenta<span class="ord" aria-hidden="true">▲</span></span><span>Correo o teléfono</span><span>Perfiles</span><span>Último ingreso</span><span>Estado</span><span class="sr">Acciones</span></div>
           <sc-for list="{{filas}}" as="c" hint-placeholder-count="7">
-            <div class="tt-f {{c.clase}} o-alto" style="grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.5fr) minmax(0, 1.2fr) 190px 28px;">
-              <span class="dos"><a class="c1 {{c.claseNombre}}" href="Cuenta-Plat.dc.html">{{c.nombre}}</a><span class="n2">{{c.email2}}</span></span><span class="c1 n">{{c.perfiles}}</span><span class="dos"><span>{{c.ultimo}}</span><span class="n2">{{c.metodo}}</span></span><span><span class="pill {{c.pill}}">{{c.textoEstado}}</span></span>
+            <div class="tt-f {{c.clase}}" style="grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) 190px 140px 175px 28px;">
+              <a class="c1 {{c.claseNombre}}" href="Cuenta-Plat.dc.html">{{c.nombre}}</a><span class="c2b">{{c.contacto}}</span><span class="c1 n">{{c.perfiles}}</span><span class="c1 n">{{c.ultimo}}</span><span><span class="pill {{c.pill}}">{{c.textoEstado}}</span></span>
               <span class="der envoltura">
                 <sc-if value="{{c.conAcciones}}" hint-placeholder-val="{{si}}"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="{{c.exp}}" aria-label="{{c.ariaMenu}}" onClick="{{c.alternar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></sc-if>
                 <sc-if value="{{c.menu}}" hint-placeholder-val="{{no}}">
@@ -832,26 +840,26 @@ textarea.in2 { height: auto; min-height: 84px; }
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
 // GET /api/platform/accounts: identidades globales. Las personas tienen su perfil personal y sus organizaciones; los operadores, ninguno.
 const CUENTAS = [
-  { id: 'i1', n: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', tel: '•••• 4521', tipo: 'persona', orgs: ['Grupo Delta', 'Beta S.R.L.'], ultimo: 'hace 55 minutos', metodo: 'Código por correo', estado: 'activa', unicoDueno: 'Grupo Delta' },
-  { id: 'i2', n: 'Beto Ramírez', email: 'beto.ramirez@beta.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Beta S.R.L.'], ultimo: 'ayer', metodo: 'Google', estado: 'activa' },
-  { id: 'i3', n: 'Ana Gómez', email: 'ana.gomez@gmail.com', tel: '•••• 0987', tipo: 'persona', orgs: [], ultimo: '18/09/2026', metodo: 'WhatsApp', estado: 'suspendida' },
-  { id: 'i4', n: '', email: 'mariana.lopez@gmail.com', tel: '', tipo: 'persona', orgs: [], ultimo: 'hace 8 horas', metodo: 'Código por correo', estado: 'activa' },
-  { id: 'i5', n: 'Julio Pérez', email: 'julio@gamma.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Gamma S.A.'], ultimo: 'hace 9 horas', metodo: 'Código por correo', estado: 'activa' },
+  { id: 'i1', n: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', tel: '•••• 4521', tipo: 'persona', orgs: ['Grupo Delta', 'Beta S.R.L.'], ultimo: '27/09/2026 09:50', metodo: 'Código por correo', estado: 'activa', unicoDueno: 'Grupo Delta' },
+  { id: 'i2', n: 'Beto Ramírez', email: 'beto.ramirez@beta.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Beta S.R.L.'], ultimo: '26/09/2026 18:20', metodo: 'Google', estado: 'activa' },
+  { id: 'i3', n: 'Ana Gómez', email: 'ana.gomez@gmail.com', tel: '•••• 0987', tipo: 'persona', orgs: [], ultimo: '18/09/2026 11:20', metodo: 'WhatsApp', estado: 'suspendida' },
+  { id: 'i4', n: '', email: 'mariana.lopez@gmail.com', tel: '', tipo: 'persona', orgs: [], ultimo: '27/09/2026 02:45', metodo: 'Código por correo', estado: 'activa' },
+  { id: 'i5', n: 'Julio Pérez', email: 'julio@gamma.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Gamma S.A.'], ultimo: '27/09/2026 01:45', metodo: 'Código por correo', estado: 'activa' },
   // Su único método era un correo administrado por Kappa S.R.L. y la membresía terminó: necesita recuperación.
-  { id: 'i6', n: 'Pablo Ortiz', email: 'pablo@kappa.ejemplo.com', tel: '', tipo: 'persona', orgs: [], ultimo: '19/09/2026', metodo: 'Código por correo', estado: 'recuperacion' },
+  { id: 'i6', n: 'Pablo Ortiz', email: 'pablo@kappa.ejemplo.com', tel: '', tipo: 'persona', orgs: [], ultimo: '19/09/2026 08:40', metodo: 'Código por correo', estado: 'recuperacion' },
   // Pidió la baja: tiene 30 días para cancelarla ingresando (multitenancy §3.2).
-  { id: 'i7', n: 'Diego Ríos', email: 'diego.rios@delta.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Grupo Delta'], ultimo: '27/09/2026', metodo: 'Código por correo', estado: 'baja' },
+  { id: 'i7', n: 'Diego Ríos', email: 'diego.rios@delta.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Grupo Delta'], ultimo: '27/09/2026 08:15', metodo: 'Código por correo', estado: 'baja' },
   // Borrada: la identidad queda anonimizada, sin correo ni teléfono.
-  { id: 'i8', n: 'Cuenta borrada', email: '', tel: '', tipo: 'persona', orgs: [], ultimo: '12/08/2026', metodo: 'WhatsApp', estado: 'eliminada' },
-  { id: 'o1', n: 'Martín Sosa', email: 'martin.sosa@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 5, ultimo: 'hace 40 minutos', metodo: 'Código + autenticador', estado: 'activa' },
-  { id: 'o2', n: 'Laura Díaz', email: 'laura.diaz@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 2, ultimo: 'hace 5 días', metodo: 'Código + autenticador', estado: 'activa' },
+  { id: 'i8', n: 'Cuenta borrada', email: '', tel: '', tipo: 'persona', orgs: [], ultimo: '12/08/2026 16:05', metodo: 'WhatsApp', estado: 'eliminada' },
+  { id: 'o1', n: 'Martín Sosa', email: 'martin.sosa@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 5, ultimo: '27/09/2026 10:05', metodo: 'Código + autenticador', estado: 'activa' },
+  { id: 'o2', n: 'Laura Díaz', email: 'laura.diaz@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 2, ultimo: '22/09/2026 15:30', metodo: 'Código + autenticador', estado: 'activa' },
   { id: 'o3', n: '', email: 'julieta.molina@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 3, ultimo: 'Nunca', metodo: 'Vence el 04/10/2026', estado: 'invitado' },
 ];
 const PERMISOS_PLAT = [
   { v: 'platform.tenants.read', n: 'Ver organizaciones', d: 'El listado y la ficha de cada organización.' },
   { v: 'platform.tenants.manage', n: 'Administrar organizaciones', d: 'Aprobar, suspender, reactivar y cerrar; módulos y página pública.' },
   { v: 'platform.accounts.read', n: 'Ver cuentas', d: 'Buscar cuentas y ver su ficha.' },
-  { v: 'platform.accounts.manage', n: 'Administrar cuentas', d: 'Suspender, cerrar sesiones y dar de baja.' },
+  { v: 'platform.accounts.manage', n: 'Administrar cuentas', d: 'Suspender, cerrar sesiones y borrar.' },
   { v: 'platform.recoveries.manage', n: 'Recuperaciones', d: 'Aprobar o rechazar pedidos de «Recuperar mi cuenta».' },
   { v: 'platform.legal.manage', n: 'Documentos legales', d: 'Publicar una versión nueva de términos o privacidad.' },
   { v: 'platform.operators.manage', n: 'Administrar operadores', d: 'Invitar operadores y cambiar sus permisos.' },
@@ -1091,6 +1099,7 @@ class Component extends DCLogic {
           ...this.fila(c.id, nombre, i, pg.items.length),
           nombre: c.n || c.email || '—',
           email2: c.n ? (c.email || '') : '',
+          contacto: c.email || c.tel || '—',
           claseNombre: c.n ? '' : 'nada',
           email: c.email || '—',
           claseEmail: c.email ? '' : 'nada',

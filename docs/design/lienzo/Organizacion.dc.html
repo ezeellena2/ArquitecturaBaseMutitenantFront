@@ -651,6 +651,14 @@ textarea.in2 { height: auto; min-height: 84px; }
 .cmp-tx small { font-size: 12.5px; color: var(--t3); }
 .cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }
 </style>
+<style data-b0="plat">
+.tt-h .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
+.o-fila .dos { flex-direction: row; align-items: center; gap: 16px; }
+.o-fila .dos > .c1 { flex: 1 1 auto; min-width: 120px; }
+.o-fila .dos > .n2 { flex: 0 1 auto; font-size: 13px; color: var(--t2); text-align: right; }
+.rev-tx { margin: 0; font-size: 13.5px; color: var(--t2); line-height: 1.55; }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -699,10 +707,6 @@ textarea.in2 { height: auto; min-height: 84px; }
         <div class="acciones"><sc-if value="{{fallo}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-pri" onClick="{{reintentar}}">Reintentar el alta</button></sc-if><sc-if value="{{pendiente}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-pel" onClick="{{rechazar}}">Rechazar</button><button type="button" class="b b-pri" onClick="{{aprobar}}">Aprobar</button></sc-if><sc-if value="{{activa}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-sec" onClick="{{suspender}}">Suspender</button></sc-if><sc-if value="{{suspendida}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-sec" onClick="{{reactivar}}">Reactivar</button><button type="button" class="b b-pel" onClick="{{cerrar}}">Cerrar</button></sc-if></div>
       </div>
       <div class="pagina">
-        <sc-if value="{{hayBanner}}" hint-placeholder-val="{{no}}">
-          <div class="aviso-linea {{claseBanner}}" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span><strong>{{tituloBanner}}</strong> Motivo: {{motivoBanner}}</span></div>
-        </sc-if>
-
         <div style="display: flex; flex-direction: column;">
           <div class="tabs2" role="tablist" aria-label="Secciones de la organización">
             <sc-for list="{{pestanas}}" as="t" hint-placeholder-count="2">
@@ -724,18 +728,18 @@ textarea.in2 { height: auto; min-height: 84px; }
           </sc-if>
           <sc-if value="{{enAdmins}}" hint-placeholder-val="{{no}}">
             <div class="tarjeta" role="tabpanel" aria-label="Dueños" style="margin-top: 16px;">
-              <div class="tt-h" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) 160px;"><span>Dueño</span><span>Último ingreso</span><span>Estado</span></div>
-              <div class="tt-f o-alto" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) 160px;">
-                <span class="dos"><span class="c1">{{duenoNombre}}</span><span class="n2">lucia.fernandez@delta.ejemplo.com</span></span> <span class="c1 n">{{duenoIngreso}}</span> <span><span class="pill {{duenoPill}}">{{duenoEstado}}</span></span>
+              <div class="tt-h" style="grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.6fr) minmax(0, 1.2fr) 160px;"><span>Dueño</span><span>Correo</span><span>Último ingreso</span><span>Estado</span></div>
+              <div class="tt-f" style="grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.6fr) minmax(0, 1.2fr) 160px;">
+                <span class="c1">{{duenoNombre}}</span><span class="c2b">lucia.fernandez@delta.ejemplo.com</span> <span class="c1 n">{{duenoIngreso}}</span> <span><span class="pill {{duenoPill}}">{{duenoEstado}}</span></span>
               </div>
             </div>
           </sc-if>
           <sc-if value="{{enModulos}}" hint-placeholder-val="{{no}}">
             <div class="tarjeta" role="tabpanel" aria-label="Módulos" style="margin-top: 16px;">
-              <div class="tt-h" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 1fr) 28px;"><span>Módulo</span><span>Estado</span><span>Origen</span><span class="sr">Acciones</span></div>
+              <div class="tt-h" style="grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.6fr) minmax(0, 1.2fr) minmax(0, 1fr) 28px;"><span>Módulo</span><span>Detalle</span><span>Estado</span><span>Origen</span><span class="sr">Acciones</span></div>
               <sc-for list="{{modulos}}" as="m" hint-placeholder-count="2">
-                <div class="tt-f" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 1fr) 28px;">
-                  <span class="dos"><span class="c1">{{m.n}}</span><sc-if value="{{m.conClave}}" hint-placeholder-val="{{no}}"><span class="n2">{{m.textoClave}}</span></sc-if></span>
+                <div class="tt-f" style="grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.6fr) minmax(0, 1.2fr) minmax(0, 1fr) 28px;">
+                  <span class="c1">{{m.n}}</span><span class="c2b">{{m.detalle}}</span>
                   <span><span class="pill {{m.pill}}">{{m.estado}}</span></span>
                   <span class="c1 n">{{m.origen}}</span>
                   <span class="envoltura der"><sc-if value="{{m.editable}}" hint-placeholder-val="{{si}}">
@@ -1095,6 +1099,7 @@ class Component extends DCLogic {
       sepApagar: prueba || (m.id === 'b' && m.estado !== 'apagado'),
       conClave: m.id === 'b',
       textoClave: m.clave ? 'Puede usar su clave' : 'Con la clave de la plataforma',
+          detalle: m.id === 'b' ? (m.clave ? 'Puede usar su clave' : 'Con la clave de la plataforma') : '—',
       puedeClave: m.id === 'b' && m.estado !== 'apagado' && this.state.estadoOrg !== 'cerrada',
       textoBotonClave: m.clave ? 'Solo con la clave de la plataforma' : 'Permitir su propia clave',
       alternarClave: () => this.pedirConfirmacion({ titulo: m.clave ? '¿Dejar a Grupo Delta solo con la clave de la plataforma?' : '¿Permitir que Grupo Delta use su propia clave?', texto: m.clave ? 'Grupo Delta ya no podrá usar su propia clave. Si la está usando, tendrá que elegir la clave de la plataforma en Configuración del asistente para volver a hacer consultas con IA.' : 'Grupo Delta puede cargar su clave de Anthropic y fijar sus topes.', boton: m.clave ? 'Solo la de la plataforma' : 'Permitir', peligro: false, motivo: true, accion: (x) => this.cambiarModulo(m.id, { clave: !m.clave }, m.clave ? 'Quitó la clave propia del Asistente' : 'Permitió la clave propia del Asistente', m.clave ? 'Grupo Delta ya no puede usar su propia clave.' : 'Grupo Delta puede usar su propia clave.', x) }),
@@ -1109,7 +1114,7 @@ class Component extends DCLogic {
 
     return {
       duenoNombre: this.props.duenos === 'Sin Dueño todavía' ? '—' : 'Lucía Fernández',
-      duenoIngreso: this.props.duenos === 'Sin Dueño todavía' ? 'Nunca' : this.props.duenos === 'Con el Dueño suspendido' ? 'hace 3 días' : 'hace 55 minutos',
+      duenoIngreso: this.props.duenos === 'Sin Dueño todavía' ? 'Nunca' : this.props.duenos === 'Con el Dueño suspendido' ? '24/09/2026 14:20' : '27/09/2026 09:50',
       duenoPill: { 'Sin Dueño todavía': 'pend', 'Con el Dueño suspendido': 'alerta' }[this.props.duenos] || 'ok',
       duenoEstado: { 'Sin Dueño todavía': 'Invitación pendiente', 'Con el Dueño suspendido': 'Suspendido' }[this.props.duenos] || 'Activo',
       ...this.comunes(),

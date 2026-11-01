@@ -656,6 +656,14 @@ textarea.in2 { height: auto; min-height: 84px; }
 .cmp-tx small { font-size: 12.5px; color: var(--t3); }
 .cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }
 </style>
+<style data-b0="plat">
+.tt-h .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
+.o-fila .dos { flex-direction: row; align-items: center; gap: 16px; }
+.o-fila .dos > .c1 { flex: 1 1 auto; min-width: 120px; }
+.o-fila .dos > .n2 { flex: 0 1 auto; font-size: 13px; color: var(--t2); text-align: right; }
+.rev-tx { margin: 0; font-size: 13.5px; color: var(--t2); line-height: 1.55; }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -727,7 +735,6 @@ textarea.in2 { height: auto; min-height: 84px; }
         <div class="acciones"><button type="button" class="b b-sec" onClick="{{cancelar}}">Cancelar</button><button type="button" class="b b-pri" onClick="{{publicar}}">Publicar</button></div>
       </div>
       <div class="pagina">
-        <div class="aviso-linea alerta"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span>Al publicarla, todas las cuentas tienen que aceptarla de nuevo para seguir usando el servicio. Una versión publicada no se edita.</span></div>
         <div class="hoja">
           <h2>Versión</h2>
           <div class="campo2 envoltura">

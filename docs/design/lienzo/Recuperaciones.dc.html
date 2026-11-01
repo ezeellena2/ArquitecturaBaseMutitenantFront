@@ -656,6 +656,14 @@ textarea.in2 { height: auto; min-height: 84px; }
 .cmp-tx small { font-size: 12.5px; color: var(--t3); }
 .cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }
 </style>
+<style data-b0="plat">
+.tt-h .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
+.o-fila .dos { flex-direction: row; align-items: center; gap: 16px; }
+.o-fila .dos > .c1 { flex: 1 1 auto; min-width: 120px; }
+.o-fila .dos > .n2 { flex: 0 1 auto; font-size: 13px; color: var(--t2); text-align: right; }
+.rev-tx { margin: 0; font-size: 13.5px; color: var(--t2); line-height: 1.55; }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -720,10 +728,10 @@ textarea.in2 { height: auto; min-height: 84px; }
         </div>
 
         <div class="tarjeta">
-          <div class="tt-h" style="grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.5fr) minmax(0, 1.5fr) 140px 28px;"><span>Cuenta</span><span>Método de antes</span><span>Método nuevo</span><span>Estado</span><span class="sr">Acciones</span></div>
+          <div class="tt-h" style="grid-template-columns: minmax(0, 1.2fr) 150px minmax(0, 1.4fr) minmax(0, 1.4fr) 140px 28px;"><span>Cuenta</span><span>Fecha y hora</span><span>Método de antes</span><span>Método nuevo</span><span>Estado</span><span class="sr">Acciones</span></div>
           <sc-for list="{{filas}}" as="r" hint-placeholder-count="4">
-            <div class="tt-f o-alto" style="grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.5fr) minmax(0, 1.5fr) 140px 28px;">
-              <span class="dos"><sc-if value="{{r.hayCuenta}}" hint-placeholder-val="{{si}}"><a class="c1" href="Cuenta-Plat.dc.html">{{r.cuenta}}</a></sc-if><sc-if value="{{r.sinCuenta}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">Sin cuenta</span></sc-if><span class="n2">{{r.fecha}}</span></span><span class="c1 n">{{r.antes}}</span><span class="c1 n">{{r.nuevo}}</span><span><span class="pill {{r.pill}}">{{r.textoEstado}}</span></span>
+            <div class="tt-f" style="grid-template-columns: minmax(0, 1.2fr) 150px minmax(0, 1.4fr) minmax(0, 1.4fr) 140px 28px;">
+              <span style="min-width: 0;"><sc-if value="{{r.hayCuenta}}" hint-placeholder-val="{{si}}"><a class="c1" href="Cuenta-Plat.dc.html">{{r.cuenta}}</a></sc-if><sc-if value="{{r.sinCuenta}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">Sin cuenta</span></sc-if></span><span class="c1 n">{{r.fecha}}</span><span class="c1 n">{{r.antes}}</span><span class="c1 n">{{r.nuevo}}</span><span><span class="pill {{r.pill}}">{{r.textoEstado}}</span></span>
               <span class="der envoltura">
                 <button type="button" class="kebab" aria-haspopup="menu" aria-expanded="{{r.exp}}" aria-label="{{r.ariaMenu}}" onClick="{{r.alternar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
                 <sc-if value="{{r.menu}}" hint-placeholder-val="{{no}}">
@@ -777,8 +785,8 @@ textarea.in2 { height: auto; min-height: 84px; }
             <sc-if value="{{rev.resuelto}}" hint-placeholder-val="{{no}}"><span class="k">Estado</span><span><span class="pill {{rev.pill}}">{{rev.textoEstado}}</span></span><span class="k">Resolvió</span><span>{{rev.quien}}</span><span class="k">Motivo</span><span>{{rev.motivo}}</span></sc-if>
           </div>
           <sc-if value="{{rev.pendiente}}" hint-placeholder-val="{{si}}">
-            <sc-if value="{{rev.sinCuenta}}" hint-placeholder-val="{{no}}"><div class="aviso-linea alerta"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span>No hay ninguna cuenta con el método de antes. Solo se puede rechazar.</span></div></sc-if>
-            <sc-if value="{{rev.hayCuenta}}" hint-placeholder-val="{{si}}"><div class="aviso-linea info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span>Si lo aprobás, el método nuevo pasa a ser el principal de la cuenta y le avisamos a la persona.</span></div></sc-if>
+            <sc-if value="{{rev.sinCuenta}}" hint-placeholder-val="{{no}}"><p class="rev-tx">No hay ninguna cuenta con el método de antes. Solo se puede rechazar.</p></sc-if>
+            <sc-if value="{{rev.hayCuenta}}" hint-placeholder-val="{{si}}"><p class="rev-tx">Si lo aprobás, el método nuevo pasa a ser el principal de la cuenta y le avisamos a la persona.</p></sc-if>
             <div class="campo2"><label class="et" for="rev-motivo">Motivo<span class="req" aria-hidden="true">*</span></label><textarea class="in2 {{malMotivoRev}}" id="rev-motivo" value="{{motivoRev}}" onChange="{{onMotivoRev}}"></textarea><sc-if value="{{errMotivoRev}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errMotivoRev}}</span></sc-if></div>
           </sc-if>
         </div>

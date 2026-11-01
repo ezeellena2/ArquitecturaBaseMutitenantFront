@@ -644,6 +644,14 @@ textarea.in2 { height: auto; min-height: 84px; }
 .cmp-tx small { font-size: 12.5px; color: var(--t3); }
 .cmp-vacia { padding: 28px 16px; text-align: center; font-size: 14px; color: var(--t2); }
 </style>
+<style data-b0="plat">
+.tt-h .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
+.tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
+.o-fila .dos { flex-direction: row; align-items: center; gap: 16px; }
+.o-fila .dos > .c1 { flex: 1 1 auto; min-width: 120px; }
+.o-fila .dos > .n2 { flex: 0 1 auto; font-size: 13px; color: var(--t2); text-align: right; }
+.rev-tx { margin: 0; font-size: 13.5px; color: var(--t2); line-height: 1.55; }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -718,10 +726,10 @@ textarea.in2 { height: auto; min-height: 84px; }
         </div>
 
         <div class="tarjeta">
-          <div class="tt-h" style="grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.6fr) 90px 90px 180px 28px;"><span>Organización</span><span>Dueño</span><span><span style="display: block; text-align: right;">Empresas</span></span><span><span style="display: block; text-align: right;">Miembros</span></span><span>Estado</span><span class="sr">Acciones</span></div>
+          <div class="tt-h" style="grid-template-columns: minmax(0, 1.4fr) 120px minmax(0, 1.4fr) 90px 90px 180px 28px;"><span aria-sort="ascending">Organización<span class="ord" aria-hidden="true">▲</span></span><span>Alta</span><span>Dueño</span><span><span style="display: block; text-align: right;">Empresas</span></span><span><span style="display: block; text-align: right;">Miembros</span></span><span>Estado</span><span class="sr">Acciones</span></div>
           <sc-for list="{{filas}}" as="o" hint-placeholder-count="7">
-            <div class="tt-f {{o.clase}} o-alto" style="grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.6fr) 90px 90px 180px 28px;">
-              <span class="dos"><a class="c1" href="Organizacion.dc.html">{{o.n}}</a><span class="n2">Alta {{o.alta}} · {{o.origen}}</span></span><span class="dos"><span>{{o.admin}}</span><span class="n2">{{o.email}}</span></span><span class="num">{{o.empresasN}}</span><span class="num">{{o.miembros}}</span><span><span class="pill {{o.pill}}">{{o.textoEstado}}</span></span>
+            <div class="tt-f {{o.clase}}" style="grid-template-columns: minmax(0, 1.4fr) 120px minmax(0, 1.4fr) 90px 90px 180px 28px;">
+              <a class="c1" href="Organizacion.dc.html">{{o.n}}</a><span class="c1 n">{{o.alta}}</span><span class="c1">{{o.dueno}}</span><span class="num">{{o.empresasN}}</span><span class="num">{{o.miembros}}</span><span><span class="pill {{o.pill}}">{{o.textoEstado}}</span></span>
               <span class="der envoltura">
                 <button type="button" class="kebab" aria-haspopup="menu" aria-expanded="{{o.exp}}" aria-label="{{o.ariaMenu}}" onClick="{{o.alternar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
                 <sc-if value="{{o.menu}}" hint-placeholder-val="{{no}}">
@@ -1142,6 +1150,7 @@ class Component extends DCLogic {
           ...o,
           miembros: String(o.miembros),
           empresasN: String(o.empresas),
+          dueno: o.admin !== '—' ? o.admin : o.email,
           pill: est.pill,
           textoEstado: est.n,
           clase: o.nueva ? 'nueva' : '',
