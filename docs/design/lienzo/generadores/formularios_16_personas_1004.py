@@ -280,7 +280,7 @@ CSS_C16 = """.w-th.kc, .w-tr.kc { grid-template-columns: minmax(92px, 1fr) 146px
 .w-th.kcl, .w-tr.kcl { grid-template-columns: 120px 150px 84px 52px 62px 190px; gap: 10px; }
 .w-tr.kc:has(.e-tip), .w-tr.kc > .e-tipw { overflow: visible; }
 .w-tr.kc .e-tipw { position: relative; display: inline-flex; }
-.w-tr.kc .e-tip { position: absolute; z-index: 30; top: auto; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); padding: 6px 10px; border-radius: 8px; background: oklch(0.25 0.012 78); color: #fff; font-size: 12.5px; white-space: nowrap; }
+.w-tr.kc .e-tip { position: absolute; z-index: 30; top: auto; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); padding: 6px 10px; border-radius: 8px; background: oklch(0.25 0.012 78); color: #fff; font-size: 12.5px; white-space: nowrap; width: max-content; max-width: none; }
 .w-body .k-desp:has(.e-tip), .w-body .w-caja:has(.e-tip) { overflow: visible; }
 .w-tr:has(.e-tip) { z-index: 8; }
 """
