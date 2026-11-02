@@ -235,7 +235,7 @@ Lo que manda son los tableros «Criterio · …». Estas son las decisiones que 
   - un botón está habilitado o grisado, sin textos al lado ni debajo; si el motivo no es obvio, va en su tooltip;
   - «Guardar cambios» se habilita cuando hay cambios, y al salir con cambios se pregunta «¿Salir sin guardar?»; la banda no dice «Cambios sin guardar» ni muestra revisiones;
   - lo que necesita algo antes queda grisado, como publicar con cambios sin guardar;
-  - mientras trabaja, el botón queda grisado con su mismo texto: nada de «Guardando…»;
+  - mientras trabaja, el botón pone el aro y su gerundio («Guardando…»), con su color (decisión 115 del 2026-11-02, que reemplaza lo decidido el 24/10);
   - mientras dura un límite de pedidos, también: cuándo se puede volver a probar lo dice el aviso de error («Reenviar en 30 s», al pedir un código, queda hasta que el usuario decida);
   - «Descartar cambios» siempre está habilitado;
   - el único ícono que lleva un botón es el «+».
