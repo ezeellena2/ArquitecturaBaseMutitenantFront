@@ -7,8 +7,8 @@
 - Diálogo: Dialog, título/campos/botonera y useRestoreFocusOnClose; se monta sólo abierto.
 - Pantalla: Page/backTo + useEditPage (409, franja y aviso al salir con cambios; la banda no dice «Cambios sin guardar») + useEditForm (borrador y versión).
 - Una Section por tema, título arena y SectionFields (16 arriba, 20 costados/abajo; relleno móvil según variante). El encabezado de una Section lleva el título y, a la derecha, solo su acción («Agregar opción», «Agregar campo») y un ⋮ con lo demás (pegar desde Excel, importar, exportar, la plantilla); nunca cantidades: lo que hay se ve en la tabla y en el paginado (decisión del usuario del 2026-10-26).
-- Dos columnas iguales por caja; tres sólo para datos cortos; texto largo ocupa todas. Campos simples según tipo y FormField con rótulo/error/aria-describedby.
-- Sin ayudas ni ejemplos; asterisco obligatorio; sólo buscador tiene placeholder. Lo que no se edita va en el mismo campo, apagado, con fondo y texto grises (A11, v113): `ReadOnlyField`, o el control deshabilitado si ya lo dibuja así (`SearchSelect`).
+- Dos columnas iguales por caja; tres sólo para datos cortos; texto largo ocupa todas. Campos simples según tipo y FormField con rótulo/error/aria-describedby. Un select toma el ancho de su opción más larga: sin anchos fijos que corten el texto.
+- Sin leyendas ni ejemplos: la ayuda que sirve va en la (i) (`help`, base de la 12) y el renglón de abajo es sólo para el error o un dato ([pantallas y UI](pantallas-y-ui.md)); asterisco obligatorio; sólo buscador tiene placeholder. Lo que no se edita va en el mismo campo, apagado, con fondo y texto grises (A11, v113): `ReadOnlyField`, o el control deshabilitado si ya lo dibuja así (`SearchSelect`).
 - Listas se leen: editar/agregar abre diálogo; permisos de rol son la única lista de grupos plegables.
 - Editar: Descartar cambios + Guardar cambios; crear: Cancelar + acción. Guardar se apaga sin cambios, incluso si se revierte el orden con orderLike.
 - Crear no se apaga por vacío/invalidez; se valida al enviar. Si falta un dato obligatorio, el botón queda habilitado y al tocarlo se marca el campo con el error de siempre; antes de intentar guardar, nada va en rojo, tampoco una fila recién agregada (decisión del usuario del 2026-10-24). pending bloquea la espera real; sólo condiciones externas bloquean fuera de ella.
@@ -33,7 +33,7 @@
 - Medidas, PhoneBand, FixedActions y hojas móviles: [responsive](responsive.md); coordinación de guardado/publicación: [sitio público](../../../ArquitecturaBaseMutitenant/docs/features/sitio-publico.md).
 
 ## Prohibido
-- Diálogo sobre diálogo, tabla en diálogo o confirmación irreversible con ✕/acción no roja llena.
+- Diálogo sobre diálogo, tabla en diálogo (salvo la revisión y la grilla de importar opciones, E12) o confirmación irreversible con ✕/acción no roja llena.
 - Paneles/filas expandidos salvo permisos; columnas distintas en una caja; controles a medio ancho sin contenido.
 - Casillas sueltas, switch para guardar, ayudas no pedidas o error de formulario pasajero.
 - Input number para montos, input date crudo, opciones/decimales locales o base tomada de un GET ajeno.
