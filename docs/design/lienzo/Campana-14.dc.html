@@ -972,7 +972,7 @@ class Component extends DCLogic {
       aprElegir_t: () => {}, aprElegir_c: () => {}, aprElegir_n: () => {},
       hayFiltro: pub || bor || baja || conAlgo || v === 'Sin coincidencias',
       total: v === 'Sin coincidencias' ? '0 formularios' : filas === 1 ? '1 formulario' : filas + ' formularios',
-      conTabla: v !== 'Sin permiso', conFilas: lista, colsTodas: disena, colsLee: lee, colsAprueba: aprueba,
+      conTabla: v !== 'Sin permiso', conFilas: lista, colsTodas: disena && !(R && lectura), colsLee: lee, colsLectura: R && lectura, colsAprueba: aprueba,
       rango: filas === 1 ? '1 de 1' : '1–' + filas + ' de ' + filas,
       rVis: lista && !baja && !bor, rEnt: lista && !baja && !bor, rCon: lista && !baja && !bor && !conAlgo,
       rRec: lista && !baja && !pub && !conAlgo && !lee && !aprueba, rRel: baja,

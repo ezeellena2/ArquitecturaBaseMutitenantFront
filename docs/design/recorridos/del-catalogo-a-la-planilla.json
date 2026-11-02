@@ -1,0 +1,61 @@
+{
+  "id": "del-catalogo-a-la-planilla",
+  "titulo": "De pegar los proveedores a verlos en la planilla",
+  "etapa": "Etapa 15 · Respuestas",
+  "orden": 20,
+  "resumen": "Lucía pega sus proveedores en un catálogo, alguien pide un repuesto y el proveedor elegido aparece en la planilla y en el Excel.",
+  "pasos": [
+    {
+      "tablero": "FRM-Catalogo-Importar",
+      "tweaks": {
+        "estado": "Pegar: con filas"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Revisar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Pega los proveedores",
+      "texto": "Lo pegado se ve en una grilla con las columnas del catálogo.",
+      "avanzar": "Tocá «Revisar».",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Revisa lo pegado."
+    },
+    {
+      "tablero": "FRM-Catalogo-Importar",
+      "tweaks": {
+        "estado": "Revisión: altas"
+      },
+      "resaltar": ".w-dlg button.cb-pri",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Revisa antes de aplicar",
+      "texto": "La revisión dice qué se agrega, qué cambia y qué se da de baja.",
+      "avanzar": "Tocá «Aplicar».",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Aplica las opciones."
+    },
+    {
+      "tablero": "FRM-Respuestas",
+      "tweaks": {
+        "estado": "Elegir varias y campos"
+      },
+      "resaltar": "a.pl-num:has-text(\"REP-000018\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Los ve en la planilla",
+      "texto": "Cada respuesta guarda el proveedor elegido como estaba ese día.",
+      "avanzar": "Tocá «Exportar».",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Abre exportar."
+    },
+    {
+      "tablero": "FRM-Respuestas-Exportar",
+      "tweaks": {
+        "estado": "Elegir varias y campos"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Exportar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Y en el Excel",
+      "texto": "El proveedor va en su columna, con todos sus campos.",
+      "avanzar": "Terminó el recorrido.",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Exporta a Excel."
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "id": "del-campo-a-la-planilla",
+  "titulo": "De armar los campos a ver el CUIT en la planilla",
+  "etapa": "Etapa 15 · Respuestas",
+  "orden": 30,
+  "resumen": "Lucía le suma el CUIT a sus proveedores, y lo que se elige desde entonces queda sellado en cada respuesta.",
+  "pasos": [
+    {
+      "tablero": "FRM-Catalogo-13",
+      "tweaks": {
+        "estado": "Campos"
+      },
+      "resaltar": "button:has-text(\"Agregar campo\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Suma el campo",
+      "texto": "El CUIT es un campo más del catálogo, en su tabla.",
+      "avanzar": "Tocá «Guardar cambios».",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Guarda el catálogo."
+    },
+    {
+      "tablero": "FRM-Catalogo-Opciones-13",
+      "tweaks": {
+        "estado": "Editar una opción"
+      },
+      "resaltar": ".md-op",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Carga el valor",
+      "texto": "Cada opción suma una fila por campo, con el control de su tipo.",
+      "avanzar": "Tocá «Listo».",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Vuelve al catálogo."
+    },
+    {
+      "tablero": "FRM-Respuestas",
+      "tweaks": {
+        "estado": "Elegir varias y campos"
+      },
+      "resaltar": ".w-th.pl span:has-text(\"Proveedor · CUIT\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Se ve en la planilla",
+      "texto": "Los campos van en subcolumnas después de su pregunta. Una respuesta de antes de los campos dice «—».",
+      "avanzar": "Tocá REP-000018.",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Abre la respuesta."
+    },
+    {
+      "tablero": "FRM-Respuesta",
+      "tweaks": {
+        "estado": "Elegir varias y campos"
+      },
+      "resaltar": ".d2-b",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Y en el detalle",
+      "texto": "Cada opción muestra sus campos, y «Elegir varias» va una opción por renglón.",
+      "avanzar": "Terminó el recorrido.",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Cierra la respuesta."
+    }
+  ]
+}

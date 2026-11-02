@@ -3,7 +3,7 @@
   "titulo": "Revisar las respuestas y exportarlas",
   "etapa": "Etapa 15 · Respuestas",
   "orden": 10,
-  "resumen": "Lucía entra a «Formularios», abre la planilla de Visita a cliente, filtra las ventas nuevas de Delta S.A., revisa una respuesta al costado y exporta lo filtrado a Excel.",
+  "resumen": "Lucía entra a «Formularios», abre la planilla de Visita a cliente, filtra las ventas nuevas de Delta S.A., revisa una respuesta al costado y a pantalla completa, exporta lo filtrado a Excel y mira el tablero.",
   "pasos": [
     {
       "tablero": "FRM-Formularios-15",
@@ -62,13 +62,26 @@
       "tweaks": {
         "estado": "Respuesta"
       },
-      "resaltar": ".d2-h .nv[aria-label=\"Respuesta siguiente\"]",
+      "resaltar": ".d2-h a.nv",
       "actor": "Lucía · Dueña · web",
       "titulo": "La ve al costado",
-      "texto": "La respuesta se abre sin salir de la planilla, con las preguntas de su versión, las fotos y el remito. Con ↑ y ↓ pasa a la anterior o la siguiente.",
-      "avanzar": "Siguiente.",
+      "texto": "La respuesta se abre sin salir de la planilla, con las preguntas de su versión y quién la respondió. Con ↑ y ↓ pasa a la anterior o la siguiente, y el botón de al lado la abre a todo el ancho.",
+      "avanzar": "Tocá el botón de pantalla completa.",
       "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000126",
-      "accion": "Revisa la respuesta."
+      "accion": "Abre la respuesta a todo el ancho."
+    },
+    {
+      "titulo": "La ve a pantalla completa",
+      "tablero": "FRM-Respuesta-Completa",
+      "tweaks": {
+        "estado": "Las dos abiertas"
+      },
+      "resaltar": ".rc-h",
+      "texto": "«Respuesta» y «Actividad», a todo el ancho y plegables. Actividad cuenta quién se la mandó y quién la respondió, con fecha y hora.",
+      "actor": "Lucía · Dueña · web",
+      "avanzar": "Tocá «Exportar» en la planilla.",
+      "ruta": "/org/formularios/:id/respuestas/:recordId/completa",
+      "accion": "Vuelve a la planilla."
     },
     {
       "tablero": "FRM-Respuestas-Exportar",
@@ -78,7 +91,7 @@
       "resaltar": ".w-dlg button.cb-pri:has-text(\"Exportar\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Exporta lo filtrado",
-      "texto": "Un Excel con las 4 respuestas que coinciden con los filtros, con todas las preguntas o solo las columnas visibles.",
+      "texto": "Un Excel con las 4 respuestas que coinciden con los filtros, con todas las preguntas o solo las columnas que se ven.",
       "avanzar": "Tocá «Exportar».",
       "ruta": "/org/formularios/:id/respuestas",
       "accion": "Toca «Exportar»."
@@ -90,10 +103,24 @@
       },
       "actor": "Lucía · Dueña · web",
       "titulo": "Se descarga el archivo",
-      "texto": "El archivo lleva el nombre del formulario y la fecha. Las fotos no van adentro: cada celda dice cuántas hay y sus nombres.",
+      "texto": "El archivo lleva el nombre del formulario y la fecha, y el aviso confirma que se descargó.",
       "avanzar": "Fin del recorrido.",
       "ruta": "/org/formularios/:id/respuestas",
-      "accion": "Descarga el Excel."
+      "accion": "Descarga el Excel.",
+      "resaltar": null
+    },
+    {
+      "titulo": "Mira el tablero",
+      "tablero": "FRM-Tablero",
+      "tweaks": {
+        "estado": "Por día"
+      },
+      "resaltar": null,
+      "texto": "La pestaña «Tablero» se arma sola con las preguntas del formulario, y usa los mismos filtros que la planilla.",
+      "actor": "Lucía · Dueña · web",
+      "avanzar": "Terminó el recorrido.",
+      "ruta": "/org/formularios/:id/tablero",
+      "accion": "Mira el tablero."
     }
   ]
 }

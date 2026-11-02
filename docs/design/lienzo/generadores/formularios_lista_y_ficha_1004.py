@@ -216,6 +216,9 @@ def fila(f, cols, e):
     elif cols == "lee":
         celdas = c_nombre(n, abre) + f'<span class="num">{resp}</span>' + c_ultima(ult, e)
         grilla = "fx3"
+    elif cols == "lectura":  # `forms.read` sin `formrecords.read`: sin las columnas de respuestas
+        celdas = c_nombre(n, "FRM-Editor-Baja.dc.html" if k == "Rel" else "FRM-Editor.dc.html") + f'<span class="num">{preg}</span>' + c_whatsapp(clase, texto, info) + f'<span class="num">{cambio}</span>'
+        grilla = "fx14"
     else:
         celdas = c_nombre(n, abre) + c_aprobar(apr)
         grilla = "fx2"
@@ -230,12 +233,14 @@ def tabla(cols, bandera, e):
         clase = grilla_de(e)
     elif cols == "lee":
         cab, clase = ["Formulario", "Respuestas", "Última respuesta", "Recibida"], "fx3"
+    elif cols == "lectura":
+        cab, clase = ["Formulario", "Preguntas", "En WhatsApp", "Último cambio"], "fx14"
     else:
         cab, clase = ["Formulario", "Por aprobar"], "fx2"
     # La columna por la que está ordenada muestra ▲ (el usuario, 25/10)
     th = f'<div class="w-th {clase}">' + "".join(c if c.startswith("<span") else f'<span aria-sort="ascending">{c}<span class="ord" aria-hidden="true">▲</span></span>'
                                                  if c == "Formulario" else f"<span>{c}</span>" for c in cab) + "</div>"
-    filas = "".join(fila(f, cols, e) for f in FILAS if (cols == "todas" or f[1] != "Rec") and (e.ciclo or f[1] != "Rel"))
+    filas = "".join(fila(f, cols, e) for f in FILAS if (cols in ("todas", "lectura") or f[1] != "Rec") and (e.ciclo or f[1] != "Rel"))
     return f'<sc-if value="{{{{{bandera}}}}}" hint-placeholder-val="{{{{{"si" if cols == "todas" else "no"}}}}}">{th}{filas}</sc-if>'
 
 
@@ -249,7 +254,7 @@ def cuerpo_lista(e):
                                   else [("t", "Todos los estados", 4), ("p", "Publicados", 3), ("b", "Borradores", 1)]), "est") + "</sc-if>" + aprob
             + '<sc-if value="{{hayFiltro}}" hint-placeholder-val="{{no}}"><button type="button" class="cb cb-enl">Limpiar filtros</button></sc-if>'
             '<span class="tot">{{total}}</span></div></sc-if>')
-    tablas = tabla("todas", "colsTodas", e) + (tabla("lee", "colsLee", e) if e.resp else "") + (tabla("aprueba", "colsAprueba", e) if e.aprob else "")
+    tablas = tabla("todas", "colsTodas", e) + (tabla("lee", "colsLee", e) + tabla("lectura", "colsLectura", e) if e.resp else "") + (tabla("aprueba", "colsAprueba", e) if e.aprob else "")
     lista = ('<sc-if value="{{conTabla}}" hint-placeholder-val="{{si}}"><div class="w-caja">'
              '<sc-if value="{{conFilas}}" hint-placeholder-val="{{si}}">' + tablas
              + '<div class="w-pie"><span>{{rango}}</span><span>10 por página · Página 1 de 1</span></div></sc-if>'
@@ -301,7 +306,7 @@ def js_lista(vista, e):
       aprElegir_t: () => {{}}, aprElegir_c: () => {{}}, aprElegir_n: () => {{}},
       hayFiltro: pub || bor || baja || conAlgo || v === 'Sin coincidencias',
       total: v === 'Sin coincidencias' ? '0 formularios' : filas === 1 ? '1 formulario' : filas + ' formularios',
-      conTabla: v !== 'Sin permiso', conFilas: lista, colsTodas: disena, colsLee: lee, colsAprueba: aprueba,
+      conTabla: v !== 'Sin permiso', conFilas: lista, colsTodas: disena && !(R && lectura), colsLee: lee, colsLectura: R && lectura, colsAprueba: aprueba,
       rango: filas === 1 ? '1 de 1' : '1–' + filas + ' de ' + filas,
       rVis: lista && !baja && !bor, rEnt: lista && !baja && !bor, rCon: lista && !baja && !bor && !conAlgo,
       rRec: lista && !baja && !pub && !conAlgo && !lee && !aprueba, rRel: baja,
@@ -345,6 +350,8 @@ LISTAS = {"FRM-Formularios": 14, "FRM-Formularios-15": 15, "FRM-Formularios-17":
 def lista(n):
     e = Etapa(LISTAS[n])
     t = pagina_lista(n, estados_lista(e), "e", e=e)
+    if e.resp:  # desde la 15, la planilla ya tiene respuestas de la versión 4
+        t = t.replace("Publicado · versión 3", "Publicado · versión 4")
     return re.sub(r"<title>[^<]*</title>", f"<title>Formularios · /org/formularios · etapa {e.n}</title>", t)
 
 
@@ -357,7 +364,7 @@ CSS_TLISTA = """.ap-fila.fx { display: flex; align-items: center; gap: 8px; }
 .ap-fila.fx a.tx { flex: 1; min-width: 0; text-decoration: none; color: inherit; display: flex; flex-direction: column; }
 .ap-fila .fm-cnt { min-width: 24px; height: 24px; padding: 0 8px; box-sizing: border-box; border-radius: 999px; background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 """
-TLISTAS = {"M-FRM-Formularios": 14, "M-FRM-Formularios-17": 17}
+TLISTAS = {"M-FRM-Formularios": 14, "M-FRM-Formularios-15": 15, "M-FRM-Formularios-17": 17}
 
 
 def t_fila(f, e, menu=True, cuenta=True):
@@ -420,6 +427,8 @@ def tel_lista(n):
         if e.plantilla:
             capas["Nuevo formulario: elegir"] = M.hoja("Nuevo formulario", '<a role="menuitem" href="M-FRM-Editor.dc.html">Desde cero</a><a role="menuitem" href="M-FRM-Biblioteca.dc.html">Desde una plantilla</a>')
     t = C.tel_pagina(cuerpo, E_T, capas, f"Formularios · teléfono · etapa {e.n}", A.CSS_TCHAT_AB + E.CSS_E12 + B.CSS_E12B + E.CSS_TED_E12 + F.CSS_TFILTRO)
+    if e.resp:
+        t = t.replace("Publicado · versión 3", "Publicado · versión 4")
     t = M.css(t, M.CSS_HOJA, "hoja")
     return con_css(E.post(n, t), "tlista", CSS_TLISTA)
 
@@ -427,7 +436,8 @@ def tel_lista(n):
 # ================================================================ Las pestañas de la ficha (79)
 FICHAS = {"Visita a cliente": ("24", "FRM-Editor.dc.html", "M-FRM-Editor.dc.html"),
           "Relevamiento de obra": ("12", "FRM-Editor-Baja.dc.html", "M-FRM-Editor-Baja.dc.html"),
-          "Control de vehículo": ("31", "FRM-Editor.dc.html", "M-FRM-Editor.dc.html")}
+          "Control de vehículo": ("31", "FRM-Editor.dc.html", "M-FRM-Editor.dc.html"),
+          "Pedir repuesto": ("18", "FRM-Editor.dc.html", "M-FRM-Editor.dc.html")}
 CSS_PESTANAS = """.f-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--borde); flex-shrink: 0; }
 .f-tabs a { padding: 10px 14px; font-size: 13.5px; font-weight: 600; color: var(--t2); border-bottom: 2px solid transparent; margin-bottom: -1px; text-decoration: none; }
 .f-tabs a:hover { color: var(--t1); }
@@ -500,8 +510,7 @@ OPCIONES = {
     "venta": ("¿Se concretó la venta?", "Cuántas veces salió cada opción", [("Sí", 14, 64), ("No", 8, 36)]),
     "motivo": ("Motivo", "Del catálogo Motivos de visita · cuántas veces salió cada opción", [("Venta nueva", 15, 65), ("Reclamo", 4, 17), ("Seguimiento", 4, 17)]),
     "fallas": ("Fallas", "Cada opción elegida, en cada respuesta", [("Luz", 12, 71), ("Frío", 8, 47), ("Ruido", 8, 47), ("Puerta", 5, 29)]),
-    "quien": ("Quién cargó", "Cantidad por persona", [("Paula Méndez", 7, 29), ("Tomás Acosta", 6, 25), ("Lucía Fernández", 5, 21), ("Florencia Fernández de los Santos", 4, 17), ("Martín Paz", 2, 8)]),
-    "estado": ("Por estado", "Aprobación", [("Aprobadas", 17, 71), ("Por aprobar", 3, 13), ("Recibidas", 3, 13), ("Rechazadas", 1, 4)]),
+    "quien": ("Quién cargó", "Cantidad por persona", [("Paula Méndez", 7, 29), ("Tomás Acosta", 6, 25), ("Florencia Fernández de la Fuente", 4, 17), ("Lucía Fernández", 3, 13), ("Martín Paz", 2, 8), ("Otras", 2, 8)]),
 }
 SIGMA = svg('<path d="M17 5H7l5.5 7L7 19h10"/>', 16)
 TABLA_IC = svg('<rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M4 10h16M4 14.5h16M10 10v9"/>', 16)
@@ -596,7 +605,7 @@ def cuerpo_tablero(filtro_caja):
     grilla = ('<div class="tb-grilla">' + '<sc-if value="{{porDia}}" hint-placeholder-val="{{si}}">' + llegaron_dia + "</sc-if>"
               + '<sc-if value="{{porSemana}}" hint-placeholder-val="{{no}}">' + llegaron_sem + "</sc-if>"
               + monto + tarjetas["venta"] + tarjetas["motivo"] + '<sc-if value="{{conFallas}}" hint-placeholder-val="{{si}}">' + tarjetas["fallas"] + "</sc-if>"
-              + tarjetas["quien"] + tarjetas["estado"] + "</div>")
+              + tarjetas["quien"] + "</div>")
     lleno = '<sc-if value="{{conDatos}}" hint-placeholder-val="{{si}}">' + kpis + grilla + "</sc-if>"
     vacio = ('<sc-if value="{{sinRespuestas}}" hint-placeholder-val="{{no}}"><div class="w-caja"><div class="tb-vacio"><b>Todavía no hay respuestas</b></div></div></sc-if>'
              '<sc-if value="{{ningunaCoincide}}" hint-placeholder-val="{{no}}"><div class="w-caja"><div class="tb-vacio"><b>Ninguna respuesta con estos filtros</b>'
@@ -715,7 +724,8 @@ def sin_disenar(n, t):
 # ================================================================ canvas.json (la fila de cada uno la pone formularios_etapas_1004.py)
 NUEVOS = {"FRM-Formularios-15": (1440, 900, "Formularios · la lista · etapa 15"), "FRM-Formularios-17": (1440, 900, "Formularios · la lista · etapa 17"),
           "FRM-Formularios-21": (1440, 900, "Formularios · la lista · etapa 21"), "FRM-Formularios-22": (1440, 900, "Formularios · la lista · etapa 22"),
-          "M-FRM-Formularios": (390, 844, "Formularios · la lista · teléfono"), "M-FRM-Formularios-17": (390, 844, "Formularios · la lista · teléfono · etapa 17"),
+          "M-FRM-Formularios": (390, 844, "Formularios · la lista · teléfono"), "M-FRM-Formularios-15": (390, 844, "Formularios · la lista · teléfono · etapa 15"),
+          "M-FRM-Formularios-17": (390, 844, "Formularios · la lista · teléfono · etapa 17"),
           "FRM-Tablero": (1440, 1500, "Formularios · un formulario · Tablero"), "M-FRM-Tablero": (390, 844, "Formularios · un formulario · Tablero · teléfono")}
 AL_ARCHIVO = {"FRM-Listado": "Formularios · diseñar formularios (hasta la v140)", "M-FRM-Listado": "Diseñar formularios · teléfono (hasta la v140)"}
 TOCADOS = ["FRM-Formularios", "FRM-Copiar", "FRM-Reactivar-Eliminar", "M-FRM-Respuestas", "FRM-Respuesta-Aprobacion"] + RESPUESTAS_TAB + DISENO_TAB + ["M-FRM-Editor-Baja"]

@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 148 · 2 de noviembre de 2026"
+VERSION = "versión 149 · 2 de noviembre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -130,7 +130,7 @@ CAPITULOS = [
          "Los contactos de Clientes, filtrados por etiqueta, con su nombre; el teléfono nunca se ve. Sin WhatsApp, no se puede usar."),
         ("frm-catalogo-campos", "Los campos de un catálogo", "/org/formularios/catalogos/:id", "no", "13 y 14", ["FRM-Catalogo-13", "FRM-Catalogo-14"], ["M-FRM-Catalogo-13", "M-FRM-Catalogo-Opciones-13", "M-FRM-Catalogo-14"], ["FRM-Catalogo-Opciones-13"],
          "Un catálogo escrito a mano suma sus campos, como CUIT o Zona, en una tabla que se edita ahí mismo, y las opciones, una columna por campo. Hasta 20 campos. «En WhatsApp» elige qué va en el título y en la descripción de cada opción. Si una tabla no entra, se desplaza a lo ancho con lo principal fijo. Desde la 14, «Lo usan», y un campo en uso no se quita."),
-        ("frm-formularios", "Formularios", "/org/formularios", "no", "14, 15, 17, 21 y 22", ["FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-21", "FRM-Formularios-22"], ["M-FRM-Formularios", "M-FRM-Formularios-17"], [],
+        ("frm-formularios", "Formularios", "/org/formularios", "no", "14, 15, 17, 21 y 22", ["FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-21", "FRM-Formularios-22"], ["M-FRM-Formularios", "M-FRM-Formularios-15", "M-FRM-Formularios-17"], [],
          "Una sola lista, con los borradores y los publicados, y cómo está cada uno en WhatsApp. Cada etapa le suma lo suyo: las respuestas (15), el ⋮ y los dados de baja (17), lo que espera aprobación (21) y «Nuevo formulario» desde una plantilla (22)."),
         ("frm-editor", "Diseño de un formulario", "/org/formularios/:id", "no", "14 y 18", ["FRM-Editor", "FRM-Editor-18"], ["M-FRM-Editor", "M-FRM-Editor-18"], [],
          "La pestaña Diseño: el formulario, las preguntas que se abren en el lugar (también «elegir varias» y las de catálogo, con «Permitir elegir varias») y cómo lo ve quien lo recibe. Las fotos y los documentos llegan con la 18. Con cambios sin guardar, publicar queda grisado."),
@@ -142,7 +142,7 @@ CAPITULOS = [
          "La pestaña Respuestas: la planilla, una fila por respuesta y una columna por pregunta, con «Empresa ▾», «Más filtros», «Columnas» y exportar a Excel. Desde la 21, arriba, lo que espera aprobación, con «Revisar»."),
         ("frm-tablero", "Tablero de un formulario", "/org/formularios/:id/tablero", "no", "15", ["FRM-Tablero"], ["M-FRM-Tablero"], [],
          "La pestaña Tablero: se arma sola con las preguntas, con cuántas llegaron por día, semana o mes, los totales de los números y cuántas veces salió cada opción. Cada tarjeta se cuenta, se ve como tabla o se quita; «Agregar gráfico» la devuelve."),
-        ("frm-respuesta", "Una respuesta", "/org/formularios/:id/respuestas?respuesta=VIS-000126", "no", "15", ["FRM-Respuesta"], ["M-FRM-Respuesta"], [],
+        ("frm-respuesta", "Una respuesta", "/org/formularios/:id/respuestas?respuesta=VIS-000126", "no", "15", ["FRM-Respuesta", "FRM-Respuesta-Completa"], ["M-FRM-Respuesta"], [],
          "Se abre al costado de la planilla, con ↑ ↓ para pasar a la siguiente: cuándo llegó, quién la respondió y sus respuestas. En el teléfono, a pantalla completa."),
         ("frm-ciclo", "Dar de baja, reactivar, borrar y copiar", "/org/formularios", "no", "17", ["FRM-Editor-Baja"], ["M-FRM-Editor-Baja"], ["FRM-Dar-De-Baja", "FRM-Reactivar-Eliminar", "FRM-Copiar"],
          "Desde el ⋮ de cada formulario: darlo de baja (deja de mandarse y de ofrecerse, y se conserva lo cargado), reactivarlo con una versión nueva, borrarlo si no tiene respuestas o copiarlo en borrador. El editor de un dado de baja dice quién y cuándo, y qué pasa en WhatsApp."),

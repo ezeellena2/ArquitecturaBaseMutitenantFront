@@ -2254,7 +2254,7 @@
       "is_interactive": true
     },
     "FRM-Respuestas-Exportar.dc.html": {
-      "x": 6080,
+      "x": 7600,
       "y": 9472,
       "w": 1440,
       "h": 900,
@@ -2263,7 +2263,7 @@
       "is_interactive": true
     },
     "M-FRM-Respuestas.dc.html": {
-      "x": 0,
+      "x": 470,
       "y": 11092,
       "w": 390,
       "h": 844,
@@ -2272,7 +2272,7 @@
       "is_interactive": true
     },
     "M-FRM-Respuesta.dc.html": {
-      "x": 470,
+      "x": 940,
       "y": 11092,
       "w": 390,
       "h": 844,
@@ -2592,7 +2592,7 @@
       "page": "formularios",
       "title": "Formularios · un formulario · Tablero",
       "w": 1440,
-      "x": 7600,
+      "x": 9120,
       "y": 9472
     },
     "M-FRM-Tablero.dc.html": {
@@ -2601,7 +2601,7 @@
       "page": "formularios",
       "title": "Formularios · un formulario · Tablero · teléfono",
       "w": 390,
-      "x": 940,
+      "x": 1410,
       "y": 11092
     },
     "FRM-Formularios-15.dc.html": {
@@ -2918,6 +2918,24 @@
       "h": 844,
       "page": "formularios",
       "title": "Las opciones, con sus campos · teléfono · etapa 13"
+    },
+    "FRM-Respuesta-Completa.dc.html": {
+      "x": 6080,
+      "y": 9472,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1000,
+      "page": "formularios",
+      "title": "Formularios · una respuesta · pantalla completa"
+    },
+    "M-FRM-Formularios-15.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "formularios",
+      "title": "Formularios · la lista · teléfono · etapa 15",
+      "w": 390,
+      "x": 0,
+      "y": 11092
     }
   },
   "createdOnFiles": {

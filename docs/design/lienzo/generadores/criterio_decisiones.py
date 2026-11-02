@@ -582,6 +582,14 @@ DECISIONES = {
         ("El catálogo de una pregunta", "", "El mismo combo de los campos, sin «Ver el catálogo». Lo dado de baja y lo que no se puede usar van apagados, con su motivo en el tooltip (111).", "Dibujada"),
         ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
+    "Etapa 15 · Respuestas · 02/11": [
+        ("Canal", "", "Va en su columna, después de Cargó, y dice «WhatsApp»: un dato por celda.", "Dibujada"),
+        ("Un cliente en la planilla", "", "Con la marca «Cliente» al lado del nombre y Empresas en «—». Sin datos, «Persona sin información».", "Dibujada"),
+        ("Los campos sellados", "", "Subcolumnas «pregunta · campo» después de su pregunta, con «—» en una respuesta de antes de los campos. «Columnas» las prende o las apaga.", "Dibujada"),
+        ("La pantalla completa", "", "«Respuesta» y «Actividad», plegables y a todo el ancho. Plegada, cada una dice en una línea lo que tiene. El formulario va en las migas.", "Dibujada"),
+        ("La respuesta en el teléfono", "", "Es la pantalla completa, con las dos secciones plegables. No hay vista rápida.", "Dibujada"),
+        ("Solo ver formularios", "", "Quien tiene `forms.read` sin `formrecords.read` ve la lista sin las columnas de respuestas.", "Dibujada"),
+    ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
     ],
