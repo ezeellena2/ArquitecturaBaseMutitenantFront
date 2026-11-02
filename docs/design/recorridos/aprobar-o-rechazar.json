@@ -14,22 +14,9 @@
       "actor": "Lucía · Dueña · web",
       "titulo": "Abre «Formularios»",
       "texto": "Cada formulario publicado con lo que tiene por aprobar. El número del panel dice cuántas esperan su decisión; también aparecen en «Para resolver» del inicio.",
-      "avanzar": "Tocá «Visita a cliente».",
+      "avanzar": "Tocá la respuesta que espera su decisión.",
       "ruta": "/org/formularios/respuestas",
-      "accion": "Abre Visita a cliente."
-    },
-    {
-      "tablero": "FRM-Respuestas",
-      "tweaks": {
-        "estado": "Planilla"
-      },
-      "resaltar": ".fm-pend .w-tr:last-child a.cb-sec",
-      "actor": "Lucía · Dueña · web",
-      "titulo": "Lo que espera, arriba",
-      "texto": "Arriba de la planilla, las respuestas que esperan una decisión, de la más vieja a la más nueva.",
-      "avanzar": "Tocá «Revisar» en VIS-000130.",
-      "ruta": "/org/formularios/:id/respuestas",
-      "accion": "Revisa VIS-000130."
+      "accion": "Abre la respuesta."
     },
     {
       "tablero": "FRM-Respuesta-Aprobacion",
