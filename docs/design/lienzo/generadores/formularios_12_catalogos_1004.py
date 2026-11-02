@@ -599,7 +599,7 @@ def editor():
 
 
 # ================================================================ CA2 · Importar (y pegar)
-ESTADOS_IMPORTAR = ["Elegir un archivo", "Archivo elegido", "Archivo que no sirve", "Pegar: la grilla vacía", "Pegar: con filas", "Pegar: una columna ajena", "Revisando",
+ESTADOS_IMPORTAR = ["Elegir un archivo", "Revisar sin archivo", "Archivo elegido", "Archivo que no sirve", "Pegar: la grilla vacía", "Revisar sin filas", "Pegar: con filas", "Pegar: una columna ajena", "Revisando",
                     "Revisión: errores", "Revisión: altas", "Revisión: cambios", "Revisión: bajas", "Muchas bajas", "Muchas filas con error", "Un valor ambiguo", "Aplicando",
                     "Otra persona guardó", "Otra importación en curso"]
 # 120: un solo diálogo, de arriba abajo, con sus zonas a la vista (IM1-A), las esperas (IM2-A) y la grilla de pegar (IM3-A)
@@ -634,7 +634,7 @@ CSS_IMPORTAR = """.w-dlg.imp { width: 760px; }
 .imp-tabla .mono { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; color: var(--t2); }
 .imp-tabla .tach { color: var(--t3); text-decoration: line-through; }
 .imp-tabla .ajena { color: var(--peligro); }
-.imp-tabla .cursor { height: 26px; display: inline-flex; align-items: center; padding: 0 8px; border: 2px solid var(--marca); border-radius: 4px; color: var(--t3); }
+.imp-tabla .cursor { height: 26px; display: inline-flex; align-items: center; width: max-content; white-space: nowrap; padding: 0 8px; border: 2px solid var(--marca); border-radius: 4px; color: var(--t3); }
 .imp-gp { display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--t2); }
 .imp-gp .err2 { font-size: 12.5px; color: var(--peligro); }
 .imp-conf { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; }
@@ -662,7 +662,7 @@ CAMBIOS = [('<span class="mono">PRV-0002</span>', "Detalle", '<span class="tach"
 BAJAS = [('<span class="mono">PRV-0005</span>', "Aluminios Cuyo"), ('<span class="mono">PRV-0331</span>', "Ferretería Lomas"), ('<span class="mono">PRV-0790</span>', "Pinturas Oeste")]
 
 
-def zona_origen(modo="archivo", archivo="", mal=False, apagado=False):
+def zona_origen(modo="archivo", archivo="", mal=False, apagado=False, falta=False):
     """«Origen»: de dónde vienen las filas. La plantilla va en la banda, y qué hace cada origen, en sus (i) (109 y 116)."""
     on = lambda m: ' class="on"' if m == modo else ""
     seg = (f'<div class="imp-seg{" off" if apagado else ""}" role="radiogroup" aria-label="Desde"><span{on("archivo")} role="radio">Subir un archivo</span>'
@@ -672,13 +672,14 @@ def zona_origen(modo="archivo", archivo="", mal=False, apagado=False):
     if modo == "archivo":
         nombre = f"<b>{archivo}</b>" if archivo else '<span class="gris">Ningún archivo elegido</span>'
         boton = f'<button type="button" class="cb cb-sec"{" disabled" if apagado else ""}>{"Cambiar" if archivo else "Elegir archivo"}</button>'
-        error = '<span class="err2" role="alert">El archivo no es un XLSX ni un CSV en UTF-8.</span>' if mal else ""
+        motivo = "El archivo no es un XLSX ni un CSV en UTF-8." if mal else "Elegí un archivo." if falta else ""
+        error = f'<span class="err2" role="alert">{motivo}</span>' if motivo else ""
         h += (f'<div class="imp-f"><span class="rt">Archivo{F.info("XLSX o CSV en UTF-8, de hasta 10 MiB y 10.000 filas.")}</span>'
               f'<span class="arch">{nombre}{boton}</span>{error}</div>')
     return h
 
 
-def grilla(filas=(), ajena=False):
+def grilla(filas=(), ajena=False, falta=False):
     """Lo pegado, con los encabezados del catálogo en el orden de la plantilla (IM3-A). Una columna ajena queda al final, en rojo, y no se manda."""
     cols = ["Código", "Texto", "Detalle"] + (['<span class="ajena">Rubro</span>'] if ajena else [])
     plantilla = "120px minmax(0, 1fr) minmax(0, 1fr)" + (" 120px" if ajena else "")
@@ -690,6 +691,8 @@ def grilla(filas=(), ajena=False):
     if filas:
         motivo = '<span class="err2">«Rubro» no es una columna del catálogo: no se manda.</span>' if ajena else f"<span>{len(filas)} filas</span>"
         pie = f'<div class="imp-gp">{motivo}<button type="button" class="cb cb-enl">Limpiar</button></div>'
+    elif falta:
+        pie = '<div class="imp-gp"><span class="err2" role="alert">Pegá las filas.</span></div>'
     return f'<div class="imp-z">{tabla_imp(cols, plantilla, cuerpo)}{pie}</div>'
 
 
@@ -720,7 +723,6 @@ def importar():
     tit = "Importar opciones a «Proveedores»"
     cancelar = '<button type="button" class="cb cb-sec">Cancelar</button>'
     revisar = cancelar + '<button type="button" class="cb cb-pri">Revisar</button>'
-    revisar_off = cancelar + tip('<button type="button" class="cb cb-pri" disabled>Revisar</button>', "Elegí un archivo o pegá las filas.")
     aplicar = "Aplicar sin las 2 filas con errores"
     pie_aplicar = cancelar + f'<button type="button" class="cb cb-pri">{aplicar}</button>'
     origen_listo = zona_origen(archivo="proveedores.xlsx", apagado=True)
@@ -733,10 +735,12 @@ def importar():
                  '<span style="width: 100%;"></span><span style="width: 84%;"></span></div></div>')
     cancelar_off = f'<button type="button" class="cb cb-sec" disabled title="{MOTIVO_APLICANDO}">Cancelar</button>'
     capas = {
-        "Elegir un archivo": dlg_importar(tit, zona_origen(), revisar_off),
+        "Elegir un archivo": dlg_importar(tit, zona_origen(), revisar),
+        "Revisar sin archivo": dlg_importar(tit, zona_origen(falta=True), revisar),
         "Archivo elegido": dlg_importar(tit, zona_origen(archivo="proveedores.xlsx"), revisar),
-        "Archivo que no sirve": dlg_importar(tit, zona_origen(archivo="fotos.zip", mal=True), revisar_off),
-        "Pegar: la grilla vacía": dlg_importar(tit, zona_origen("pegar") + grilla(), revisar_off),
+        "Archivo que no sirve": dlg_importar(tit, zona_origen(archivo="fotos.zip", mal=True), revisar),
+        "Pegar: la grilla vacía": dlg_importar(tit, zona_origen("pegar") + grilla(), revisar),
+        "Revisar sin filas": dlg_importar(tit, zona_origen("pegar") + grilla(falta=True), revisar),
         "Pegar: con filas": dlg_importar(tit, zona_origen("pegar") + grilla(GRILLA), revisar),
         "Pegar: una columna ajena": dlg_importar(tit, zona_origen("pegar") + grilla(GRILLA, ajena=True), revisar),
         "Revisando": dlg_importar(tit, origen_listo + esqueleto, cancelar + trabaja("Revisando…")),
