@@ -1,9 +1,9 @@
 {
   "id": "dar-de-baja-y-reactivar",
-  "titulo": "Dar de baja y reactivar un formulario",
+  "titulo": "Dar de baja, reactivar y copiar un formulario",
   "etapa": "Etapa 17 · Ciclo de vida",
   "orden": 10,
-  "resumen": "Lucía da de baja Visita a cliente con dos envíos abiertos, ve cómo queda un formulario dado de baja y reactiva Relevamiento de obra con una versión nueva.",
+  "resumen": "Lucía da de baja Visita a cliente con dos envíos abiertos, ve cómo queda un formulario dado de baja, reactiva Relevamiento de obra con una versión nueva y copia un formulario.",
   "pasos": [
     {
       "tablero": "FRM-Formularios-17",
@@ -26,7 +26,7 @@
       "resaltar": ".w-dlg button.cb-pri:has-text(\"Dar de baja\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Lee qué pasa antes de confirmar",
-      "texto": "Deja de mandarse desde el chat y de ofrecerse; los dos envíos abiertos se pueden responder hasta que vencen. Las respuestas, los PDF y las aprobaciones se conservan.",
+      "texto": "Deja de mandarse desde el chat, y los dos envíos abiertos se pueden responder hasta que vencen. Las respuestas se conservan.",
       "avanzar": "Tocá «Dar de baja».",
       "ruta": "/org/formularios/:id",
       "accion": "Da de baja el formulario."
@@ -39,7 +39,7 @@
       "resaltar": ".w-dlg",
       "actor": "Lucía · Dueña · web",
       "titulo": "Así queda un dado de baja",
-      "texto": "Arriba dice «De baja»; su ⓘ cuenta quién lo dio de baja y cuándo, qué deja de pasar y qué pasa en WhatsApp: los Flows se deprecan cuando vencen los envíos abiertos.",
+      "texto": "Arriba dice «De baja»; su ⓘ cuenta quién lo dio de baja, cuándo y qué pasa en WhatsApp: los Flows se deprecan cuando vencen los envíos abiertos.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/:id",
       "accion": "Ve el formulario dado de baja."
@@ -65,10 +65,23 @@
       "resaltar": ".w-dlg button.cb-pri:has-text(\"Reactivar\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Reactiva con una versión nueva",
-      "texto": "Reactivar es publicar la versión siguiente con el borrador. La numeración sigue donde estaba.",
+      "texto": "Reactivar es publicar: se abre en el formulario, con lo mismo que revisa «Publicar», y dice qué número tendrá la próxima respuesta. La numeración sigue donde estaba.",
+      "avanzar": "Tocá «Reactivar con la versión 3».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Reactiva el formulario."
+    },
+    {
+      "tablero": "FRM-Copiar",
+      "tweaks": {
+        "estado": "Copiar"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Copiar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Copia un formulario",
+      "texto": "Copiar crea uno nuevo en borrador, con nombre y prefijo propios. Sus preguntas de catálogo apuntan a los mismos catálogos, y no se copian versiones ni respuestas.",
       "avanzar": "Fin del recorrido.",
       "ruta": "/org/formularios",
-      "accion": "Reactiva el formulario."
+      "accion": "Copia el formulario."
     }
   ]
 }

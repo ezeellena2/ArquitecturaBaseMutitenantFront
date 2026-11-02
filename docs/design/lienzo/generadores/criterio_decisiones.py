@@ -582,6 +582,11 @@ DECISIONES = {
         ("El catálogo de una pregunta", "", "El mismo combo de los campos, sin «Ver el catálogo». Lo dado de baja y lo que no se puede usar van apagados, con su motivo en el tooltip (111).", "Dibujada"),
         ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
+    "El ciclo de vida · v151 · 02/11": [
+        ("Reactivar", "", "Es publicar: se abre en el formulario, con las zonas de «Publicar», «Próxima respuesta» y el botón «Reactivar con la versión 3» (como ArquitecturaBase).", "Dibujada"),
+        ("Borrar con respuestas", "", "Queda grisado, con el motivo en su tooltip y, en el teléfono, debajo de la acción. Antes no aparecía.", "Dibujada"),
+        ("Un formulario dado de baja", "", "El estado va en la banda y su ⓘ dice quién, cuándo y qué pasa en WhatsApp. Sin cartel en el cuerpo, como dicen los avisos del 25/10; allá va un cartel.", "Dibujada"),
+    ],
     "El armado de ArquitecturaBase · v150 · 02/11": [
         ("Catálogo", "", "«El catálogo» y, desde la 13, «En WhatsApp» a la izquierda; «Así lo ve quien lo recibe» al costado, con «Una opción | Varias»; «Opciones» a todo el ancho. En el encabezado de «Opciones», «Agregar opción», «Agregar campos · N», «Importar», «Exportar» y un ⋮ con la plantilla, el orden y los códigos.", "Dibujada"),
         ("Acciones a la vista", "", "Donde importa el orden (opciones, preguntas y campos) van ↑ ↓ ✎ 🗑; en las demás tablas sigue el ⋮. Una opción dada de baja cambia ✎ por «Reactivar», y su Estado es una casilla.", "Dibujada"),

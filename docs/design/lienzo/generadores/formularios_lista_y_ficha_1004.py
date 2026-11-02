@@ -107,13 +107,14 @@ FILAS = [
      "09/10/2026 16:30", 0, 12, ("REL-000012", "30/09/2026 10:15", "FRM-Respuesta.dc.html")),
 ]
 COPIAR = mi("duplicar", "Copiar", "FRM-Copiar.dc.html")
+BORRAR_NO = SEP + mi("borrar", "Borrar", off=B.CON_RESPUESTAS, tip=True)  # con respuestas queda grisado, con su motivo (43 y 132)
 MENUS = {  # como la maqueta: Editar (o Ver, sin permiso de diseñar), y lo de la 17 según el estado y el permiso
-    "Vis": mi("editar", "Editar", "FRM-Editor.dc.html") + COPIAR + mi("cancelar", "Dar de baja", "FRM-Dar-De-Baja.dc.html"),
-    "VisPub": mi("editar", "Editar", "FRM-Editor.dc.html") + COPIAR + mi("cancelar", "Dar de baja", off=B.NO_PUBLICA, tip=True),
+    "Vis": mi("editar", "Editar", "FRM-Editor.dc.html") + COPIAR + mi("cancelar", "Dar de baja", "FRM-Dar-De-Baja.dc.html") + BORRAR_NO,
+    "VisPub": mi("editar", "Editar", "FRM-Editor.dc.html") + COPIAR + mi("cancelar", "Dar de baja", off=B.NO_PUBLICA, tip=True) + BORRAR_NO,
     "VisSoloPublica": mi("ver", "Ver", "FRM-Editor.dc.html") + mi("cancelar", "Dar de baja", "FRM-Dar-De-Baja.dc.html"),
     "VisLectura": mi("ver", "Ver", "FRM-Editor.dc.html"),
-    "Rec": mi("editar", "Editar", "FRM-Editor.dc.html") + COPIAR + SEP + mi("borrar", "Eliminar", "FRM-Reactivar-Eliminar.dc.html", peligro=True),
-    "Rel": mi("editar", "Editar", "FRM-Editor-Baja.dc.html") + mi("reenviar", "Reactivar", "FRM-Reactivar-Eliminar.dc.html") + COPIAR,
+    "Rec": mi("editar", "Editar", "FRM-Editor.dc.html") + COPIAR + SEP + mi("borrar", "Borrar", "FRM-Reactivar-Eliminar.dc.html", peligro=True),
+    "Rel": mi("editar", "Editar", "FRM-Editor-Baja.dc.html") + mi("reenviar", "Reactivar", "FRM-Reactivar-Eliminar.dc.html") + COPIAR + BORRAR_NO,
 }
 
 
@@ -135,6 +136,8 @@ def estados_lista(e):
     est.append("Solo lectura")
     if e.resp:
         est.append("Quien solo ve respuestas")
+    if e.ciclo:
+        est.append("Quien solo ve respuestas: dados de baja")  # sin el filtro, no llegaría a las respuestas de un dado de baja
     if e.aprob:
         est.append("Quien solo aprueba")
     return est + ["Sin coincidencias", "Cargando", "Todavía no hay formularios", "No se pudo cargar", "Sin permiso"]
@@ -279,8 +282,9 @@ def js_lista(vista, e):
     R, CI, AP = (json.dumps(x) for x in (e.resp, e.ciclo, e.aprob))
     return f"""    const v = {vista};
     const R = {R}, CI = {CI}, AP = {AP};
-    const lee = v === 'Quien solo ve respuestas', aprueba = v === 'Quien solo aprueba', soloPub = v === 'Solo puede publicar', lectura = v === 'Solo lectura';
-    const baja = v === 'Dados de baja' || v === 'Acciones de un dado de baja';
+    const leeBaja = v === 'Quien solo ve respuestas: dados de baja';
+    const lee = v === 'Quien solo ve respuestas' || leeBaja, aprueba = v === 'Quien solo aprueba', soloPub = v === 'Solo puede publicar', lectura = v === 'Solo lectura';
+    const baja = v === 'Dados de baja' || v === 'Acciones de un dado de baja' || leeBaja;
     const pub = v === 'Publicados', bor = v === 'Borradores', conAlgo = v === 'Con algo por aprobar';
     const estMenu = v === 'Estado: menú', aprMenu = v === 'Aprobación: menú', nuevoMenu = v === 'Nuevo formulario: menú';
     const publicando = v === 'Acciones mientras se publica' || v === 'Publicando';
@@ -296,7 +300,7 @@ def js_lista(vista, e):
       resumen: v === 'Cargando' || v === 'No se pudo cargar' ? '' : v === 'Todavía no hay formularios' ? 'Sin formularios'
         : baja ? '1 dado de baja' : lee ? '3 activos' : aprueba ? '4 por aprobar' : !CI ? '4 formularios' : AP ? '4 activos · 4 por aprobar' : '4 activos · 1 dado de baja',
       conNuevo: disena && !soloPub && !lectura, menuNuevo: nuevoMenu, expNuevo: nuevoMenu ? 'true' : 'false',
-      conFiltros: !['Todavía no hay formularios', 'Sin permiso'].includes(v), conEstado: disena, conAprobacion: !lee && v !== 'Sin permiso' && !baja,
+      conFiltros: !['Todavía no hay formularios', 'Sin permiso'].includes(v), conEstado: disena || (CI && lee), conAprobacion: !lee && v !== 'Sin permiso' && !baja,
       busqueda: v === 'Sin coincidencias' ? 'inspección' : 'Buscar formulario', busClase: v === 'Sin coincidencias' ? 'lleno' : '',
       estTexto: pub ? 'Estado: Publicados' : bor ? 'Estado: Borradores' : baja ? 'Estado: Dados de baja' : 'Estado', estClase: pub || bor || baja ? 'con' : '', estMenu, estAlternar: () => {{}},
       estOn_t: pub || bor || baja ? '' : 'on', estOn_p: pub ? 'on' : '', estOn_b: bor ? 'on' : '', estOn_d: baja ? 'on' : '', estC_t: '4', estC_p: '3', estC_b: '1', estC_d: '1',
@@ -401,32 +405,30 @@ def tel_lista(n):
         cuerpo = {"Lista": activos, "Filtros": activos, "Cargando": esq, "No se pudo cargar": error}
     else:
         E_T = ["Activos", "Filtros", "Dados de baja", "Acciones de un publicado", "Acciones de un borrador", "Acciones de un dado de baja",
-               "Copiar", "Dar de baja", "Reactivar", "Eliminar"] + (["Nuevo formulario: elegir"] if e.plantilla else []) + ["Quien solo ve respuestas", "Cargando", "No se pudo cargar"]
+               "Copiar", "Dar de baja", "Reactivar", "Borrar"] + (["Nuevo formulario: elegir"] if e.plantilla else []) + ["Quien solo ve respuestas", "Quien solo ve respuestas: filtros", "Cargando", "No se pudo cargar"]
         bajas = bar + seg(True) + '<div class="ap-cuerpo">' + t_fila(T_BAJA, e) + "</div>" + fab
         lee = bar + seg(False, "3") + '<div class="ap-cuerpo">' + "".join(t_fila(f, e, menu=False, cuenta=False) for f in T_FILAS[:3]) + "</div>"
-        cuerpo = {x: (bajas if x in ("Dados de baja", "Acciones de un dado de baja", "Reactivar") else lee if x == "Quien solo ve respuestas"
+        cuerpo = {x: (bajas if x in ("Dados de baja", "Acciones de un dado de baja", "Reactivar") else lee if x.startswith("Quien solo ve respuestas")
                       else esq if x == "Cargando" else error if x == "No se pudo cargar" else activos) for x in E_T}
         copiar_h = F.tcampo("Nombre", "Visita a cliente (copia)", req=True) + F.tcampo("Prefijo de numeración", "VIS2", req=True)
         baja_h = ('<div class="p-tit2">Qué deja de pasar</div><span class="t-lin">' + B.CHAT + ' No se manda más desde el chat.</span>'
                   '<div class="p-tit2">Envíos abiertos y WhatsApp</div><span class="t-lin">' + B.RELOJ + ' 2 envíos abiertos: el último vence el 25/10/2026 a las 18:40.</span>'
-                  '<div class="t-aviso">' + ALERTA + '<span>En WhatsApp no se deshace: cuando venzan, se deprecan los Flows de sus 3 versiones.</span></div>'
-                  '<div class="p-tit2">Lo que se conserva</div><span class="t-lin">' + TILDE + ' Las 24 respuestas.</span>')
-        reactivar_h = ('<div class="p-tit2">Qué se publica: la versión 3</div><span class="t-lin">' + B.DOC + ' Sin cambios respecto de la versión 2.</span>'
-                       '<span class="t-lin">' + TILDE + ' Vuelve a mandarse desde el chat cuando WhatsApp la apruebe.</span>'
-                       '<span class="t-lin">' + TILDE + ' La próxima respuesta es REL-000013.</span>')
+                  '<div class="t-aviso">' + ALERTA + '<span>En WhatsApp no se deshace. Al vencer los envíos abiertos, se deprecan sus Flows. Para volver a usarlo, se reactiva con una versión nueva.</span></div>'
+                  '<div class="p-tit2">Lo que se conserva</div><span class="t-lin">' + TILDE + ' Se conservan las 24 respuestas.</span>')
         pie2 = lambda b, cls="cb-pri": f'<button type="button" class="cb {cls}">{b}</button><button type="button" class="cb cb-sec">Cancelar</button>'
         capas.update({
-            "Acciones de un publicado": M.hoja("Visita a cliente", '<a role="menuitem" href="M-FRM-Editor.dc.html">Editar</a><span role="menuitem">Copiar</span><span role="menuitem">Dar de baja</span>'),
-            "Acciones de un borrador": M.hoja("Reclamo", '<a role="menuitem" href="M-FRM-Editor.dc.html">Editar</a><span role="menuitem">Copiar</span><span class="sep" role="separator"></span><span role="menuitem" class="pel">Eliminar</span>'),
-            "Acciones de un dado de baja": M.hoja("Relevamiento de obra", '<a role="menuitem" href="M-FRM-Editor-Baja.dc.html">Editar</a><span role="menuitem">Reactivar</span><span role="menuitem">Copiar</span>'),
+            "Acciones de un publicado": M.hoja("Visita a cliente", '<a role="menuitem" href="M-FRM-Editor.dc.html">Editar</a><span role="menuitem">Copiar</span><span role="menuitem">Dar de baja</span><span class="sep" role="separator"></span>' + B.BORRAR_OFF),
+            "Acciones de un borrador": M.hoja("Reclamo", '<a role="menuitem" href="M-FRM-Editor.dc.html">Editar</a><span role="menuitem">Copiar</span><span class="sep" role="separator"></span><span role="menuitem" class="pel">Borrar</span>'),
+            "Acciones de un dado de baja": M.hoja("Relevamiento de obra", '<a role="menuitem" href="M-FRM-Editor-Baja.dc.html">Editar</a><span role="menuitem">Reactivar</span><span role="menuitem">Copiar</span><span class="sep" role="separator"></span>' + B.BORRAR_OFF),
             "Copiar": F.thoja("Copiar «Visita a cliente»", copiar_h, pie2("Copiar")),
             "Dar de baja": F.thoja("Dar de baja «Visita a cliente»", baja_h, pie2("Dar de baja")),
-            "Reactivar": F.thoja("Reactivar «Relevamiento de obra»", reactivar_h, pie2("Reactivar")),
-            "Eliminar": F.thoja("¿Eliminar «Reclamo»?", '<p class="d-tx">Desaparece de Formularios. El prefijo REC queda reservado.</p>', pie2("Eliminar", "cb-pel lleno")),
+            "Reactivar": F.thoja(B.TIT_REACTIVAR, B.REACTIVAR_T, B.PIE_REACTIVAR_T),
+            "Borrar": F.thoja("¿Borrar «Reclamo»?", '<p class="d-tx">Deja de aparecer en la lista y no se puede volver a usar. El prefijo REC queda reservado.</p>', pie2("Borrar", "cb-pel lleno")),
+            "Quien solo ve respuestas: filtros": F.thoja("Filtros", grupo("Estado", [("Activos", 3), ("Dados de baja", 1)]), '<button type="button" class="cb cb-pri">Ver 3 formularios</button>').replace('<div class="hb">', '<div class="hb lst">', 1),
         })
         if e.plantilla:
             capas["Nuevo formulario: elegir"] = M.hoja("Nuevo formulario", '<a role="menuitem" href="M-FRM-Editor.dc.html">Desde cero</a><a role="menuitem" href="M-FRM-Biblioteca.dc.html">Desde una plantilla</a>')
-    t = C.tel_pagina(cuerpo, E_T, capas, f"Formularios · teléfono · etapa {e.n}", A.CSS_TCHAT_AB + E.CSS_E12 + B.CSS_E12B + E.CSS_TED_E12 + F.CSS_TFILTRO)
+    t = C.tel_pagina(cuerpo, E_T, capas, f"Formularios · teléfono · etapa {e.n}", A.CSS_TCHAT_AB + E.CSS_E12 + B.CSS_E12B + E.CSS_TED_E12 + F.CSS_TFILTRO + B.CSS_TDET)
     if e.resp:
         t = t.replace("Publicado · versión 3", "Publicado · versión 4")
     t = M.css(t, M.CSS_HOJA, "hoja")
@@ -437,7 +439,8 @@ def tel_lista(n):
 FICHAS = {"Visita a cliente": ("24", "FRM-Editor.dc.html", "M-FRM-Editor.dc.html"),
           "Relevamiento de obra": ("12", "FRM-Editor-Baja.dc.html", "M-FRM-Editor-Baja.dc.html"),
           "Control de vehículo": ("31", "FRM-Editor.dc.html", "M-FRM-Editor.dc.html"),
-          "Pedir repuesto": ("18", "FRM-Editor.dc.html", "M-FRM-Editor.dc.html")}
+          "Pedir repuesto": ("18", "FRM-Editor.dc.html", "M-FRM-Editor.dc.html"),
+          "Reclamo": ("0", "FRM-Editor.dc.html", "M-FRM-Editor.dc.html"), "Pedido de herramientas": ("0", "FRM-Editor.dc.html", "M-FRM-Editor.dc.html")}
 CSS_PESTANAS = """.f-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--borde); flex-shrink: 0; }
 .f-tabs a { padding: 10px 14px; font-size: 13.5px; font-weight: 600; color: var(--t2); border-bottom: 2px solid transparent; margin-bottom: -1px; text-decoration: none; }
 .f-tabs a:hover { color: var(--t1); }
@@ -451,7 +454,7 @@ CSS_PTABS = """.f-ptabs { display: grid; grid-template-columns: repeat(3, 1fr); 
 """
 RESPUESTAS_TAB = ["FRM-Respuestas", "FRM-Respuestas-Filtros", "FRM-Respuestas-Exportar", "FRM-Respuesta", "FRM-Respuesta-Aprobacion", "FRM-Respuesta-Cadena"]
 # los de la 14 (el editor, publicar y cómo termina) van sin pestañas: en la 14 la ficha tiene solo «Diseño» (78)
-DISENO_TAB = ["FRM-Editor-Baja", "FRM-Dar-De-Baja", "FRM-Editor-Reglas", "FRM-Editor-Sugerencias", "FRM-Editor-Asistente"]
+DISENO_TAB = ["FRM-Editor-Baja", "FRM-Dar-De-Baja", "FRM-Reactivar-Eliminar", "FRM-Editor-Reglas", "FRM-Editor-Sugerencias", "FRM-Editor-Asistente"]
 
 
 def pestanas(titulo, sel, tel=False):
@@ -757,7 +760,6 @@ if __name__ == "__main__":
     for n in LISTAS:
         escribir(n, lista(n))
     escribir("FRM-Copiar", B.copiar())
-    escribir("FRM-Reactivar-Eliminar", B.reactivar_eliminar())
     for n in TLISTAS:
         escribir(n, tel_lista(n))
     escribir("FRM-Tablero", tablero())

@@ -39,6 +39,7 @@ CHAT = svg('<path d="M4 19.5 5.3 16A8 8 0 1 1 8.2 19z"/>', 16)
 ASIST = svg('<path d="M12 3.5 13.6 8l4.4 1.6-4.4 1.6L12 15.7l-1.6-4.5L6 9.6 10.4 8z"/><path d="M18.5 15.5 19 17l1.5.5-1.5.5-.5 1.5-.5-1.5L16.5 17l1.5-.5z"/>', 16)
 SUGIERE = svg('<path d="M5 12h11"/><path d="m12 7 5 5-5 5"/>', 16)
 NO_PUBLICA = "Se está publicando la versión 4."
+CON_RESPUESTAS = "Tiene respuestas y no se puede borrar."
 
 CSS_E12B = """.fm-seg { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); align-self: flex-start; width: 320px; flex-shrink: 0; }
 .fm-seg button { height: 30px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 13px; font-weight: 600; color: var(--t2); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
@@ -59,6 +60,13 @@ CSS_E12B = """.fm-seg { display: inline-grid; grid-template-columns: 1fr 1fr; ga
 .cp-campos { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 14px 16px; }
 .cp-campos .err2 { font-size: 12.5px; color: var(--peligro); }
 .cp-campos .ct.mal { border-color: var(--peligro); }
+.p-sec2 .d-tx { margin: 0; }
+"""
+# el detalle en el teléfono: el rótulo encima del valor (pantallas-y-ui.md), como M-Auditoria-Org
+CSS_TDET = """.ap-det { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-top: 1px solid var(--borde); }
+.ap-det:first-child { border-top: 0; }
+.ap-det span { font-size: 13px; color: var(--t3); }
+.ap-det b { font-size: 15.5px; font-weight: 500; }
 """
 
 
@@ -203,7 +211,7 @@ def dlg_copiar(modo="normal"):
               "</div>")
     g = modo == "copiando"
     d = " disabled" if g else ""
-    pie = f'<button type="button" class="cb cb-sec"{d}>Cancelar</button><button type="button" class="cb cb-pri"{d}>{GIRA if g else ""}Copiar</button>'
+    pie = f'<button type="button" class="cb cb-sec"{d}>Cancelar</button>' + (E.trabaja("Copiando…") if g else '<button type="button" class="cb cb-pri">Copiar</button>')
     t = F.dialogo("Copiar «Visita a cliente»", cuerpo, pie)
     t = t.replace('class="w-dlg"', 'class="w-dlg" style="width: 560px;"', 1)
     return t.replace("<span>Copiar «Visita a cliente»</span>",
@@ -216,79 +224,102 @@ def copiar():
 
 
 # ================================================================ FRM-Reactivar-Eliminar (BA4)
-ESTADOS_RE = ["Reactivar", "Reactivar con cambios", "Reactivar con algo que corregir", "Reactivando", "Eliminar un borrador", "Eliminando"]
+# Reactivar es publicar, así que se abre en el formulario, con las zonas de «Publicar» (131). Borrar se ve sobre el formulario que se borra;
+# el ⋮ de la lista abre el mismo diálogo.
+ESTADOS_RE = ["Reactivar", "Reactivar con cambios", "Comprobando", "Reactivar con algo que corregir", "Reactivando",
+              "Borrar un borrador", "Borrar un publicado", "Borrando", "No se pudo borrar"]
+TIT_REACTIVAR = "Reactivar «Relevamiento de obra»"
+ESQ_ZONA = '<div class="z-esq"><span style="width: 85%;"></span><span style="width: 60%;"></span><span style="width: 75%;"></span></div>'
+
+
+def que_se_reactiva(cambios=False):
+    filas = E.z_dato("Próxima respuesta", "REL-000013") + E.z_dato("Borrador", "Guardado el 09/10/2026 16:30") + E.z_dato("Preguntas", "6")
+    return E.z_zona("Qué se publica", filas + (E.z_dato("Cambiadas", "Motivo de la demora") if cambios else ""))
+
+
+def pie_reactivar(activo=True, trabajando=False, comprobando=False):
+    d = " disabled" if trabajando else ""
+    cancelar = f'<button type="button" class="cb cb-sec"{d}>Cancelar</button>'
+    if trabajando or comprobando:
+        return cancelar + E.trabaja("Reactivando…" if trabajando else "Comprobando…")
+    apagado = "" if activo else ' disabled title="Resolvé los problemas para reactivar."'
+    return cancelar + f'<button type="button" class="cb cb-pri"{apagado}>Reactivar con la versión 3</button>'
 
 
 def dlg_reactivar(modo="normal"):
-    card = A.card
+    if modo == "comprobando":
+        return A.dlg_publicar(TIT_REACTIVAR, E.z_zona("Qué se publica", ESQ_ZONA), pie_reactivar(comprobando=True))
     if modo == "corregir":
-        cuerpo = ('<span class="p-cap">Antes hay que resolver</span><div class="p-prob"><span class="mal">' + ALERTA + '</span><span class="tx">'
-                  '<b>Motivo de la demora · opción «Falta de materiales en el depósito central»</b><span>Es demasiado larga para WhatsApp.</span></span>'
-                  '<a href="FRM-Editor-Baja.dc.html">Ir a la pregunta</a></div>')
+        problema = E.z_problema("Motivo de la demora", "La opción «Falta de materiales en el depósito central»: hasta 30 caracteres; tiene 42.")
+        problema = problema.replace("FRM-Editor.dc.html", "FRM-Editor-Baja.dc.html")
+        return A.dlg_publicar(TIT_REACTIVAR, E.z_zona("Problemas", problema, "Hay que resolverlos para reactivar.") + que_se_reactiva(), pie_reactivar(activo=False))
+    return A.dlg_publicar(TIT_REACTIVAR, que_se_reactiva(modo == "cambios"), pie_reactivar(trabajando=modo == "trabajando"))
+
+
+def dlg_borrar(publicado=False, trabajando=False, error=False):
+    nombre, prefijo = ("Pedido de herramientas", "HER") if publicado else ("Reclamo", "REC")
+    cuerpo = ((A.aviso("Cambió la situación del formulario. Cerrá este diálogo y revisalo antes de borrarlo.", "mal") if error else "")
+              + f'<p class="d-tx">Deja de aparecer en la lista y no se puede volver a usar. El prefijo {prefijo} queda reservado.</p>'
+              + (A.aviso("En WhatsApp no se deshace: sus Flows se deprecan cuando no queden envíos abiertos.") if publicado else ""))
+    if trabajando:
+        boton = E.trabaja("Borrando…", "cb-pel lleno")
     else:
-        cambia = (card(DOC, "Cambiada: Motivo de la demora", "Suma la opción «Lluvia».") if modo == "cambios"
-                  else card(DOC, "Sin cambios respecto de la versión 2", "6 preguntas: Obra, Fecha del relevamiento, ¿Hay demoras?, Avance de la obra, Motivo de la demora y Observaciones"))
-        cuerpo = ('<span class="p-cap">Qué se publica: la versión 3</span>' + cambia + '<span class="p-cap">Qué va a pasar</span>'
-                  + card(TILDE, "Vuelve a mandarse desde el chat", "Cuando WhatsApp apruebe la versión 3; el asistente también lo vuelve a ofrecer.")
-                  + card(TILDE, "La numeración sigue", "La próxima respuesta es REL-000013."))
-    g = modo == "trabajando"
-    d = " disabled" if g or modo == "corregir" else ""
-    pie = (f'<button type="button" class="cb cb-sec"{" disabled" if g else ""}>Cancelar</button>'
-           f'<button type="button" class="cb cb-pri"{d}>{GIRA if g else ""}Reactivar</button>')
-    return A.dlg_publicar("Reactivar «Relevamiento de obra»", cuerpo, pie)
-
-
-def dlg_eliminar(trabajando=False):
+        boton = f'<button type="button" class="cb cb-pel lleno"{" disabled" if error else ""}>Borrar</button>'
     d = " disabled" if trabajando else ""
-    pie = (f'<button type="button" class="cb cb-sec"{d}>Cancelar</button>'
-           f'<button type="button" class="cb cb-pel lleno"{d}>{GIRA if trabajando else ""}Eliminar</button>')
-    return F.dialogo("¿Eliminar «Reclamo»?", '<p class="d-tx">Desaparece de Diseñar formularios. El prefijo REC queda reservado.</p>', pie)
+    return F.dialogo(f"¿Borrar «{nombre}»?", f'<div class="p-sec2">{cuerpo}</div>', f'<button type="button" class="cb cb-sec"{d}>Cancelar</button>{boton}')
 
 
 def reactivar_eliminar():
-    capas = {"Reactivar": dlg_reactivar(), "Reactivar con cambios": dlg_reactivar("cambios"), "Reactivar con algo que corregir": dlg_reactivar("corregir"),
-             "Reactivando": dlg_reactivar("trabajando"), "Eliminar un borrador": dlg_eliminar(), "Eliminando": dlg_eliminar(True)}
-    vista = "(['Eliminar un borrador', 'Eliminando'].includes(e) ? 'Activos' : 'Dados de baja')"
-    return pagina_listado("Reactivar y eliminar", ESTADOS_RE, vista, capas)
+    baja = (banda_baja(), cuerpo_rel(""))
+    borrador = (E.banda("Reclamo", E.EST_BOR, E.acc("limpio", publicado=False), E.VOL),
+                E.cuerpo_editor(abierta=None, nombre="Reclamo", prefijo="REC").replace(">Visita a cliente<", ">Reclamo<"))
+    publicado = (E.banda("Pedido de herramientas", '<span class="w-est">Publicado · versión 1</span>', E.acc("limpio"), E.VOL),
+                 E.cuerpo_editor(abierta=None, nombre="Pedido de herramientas", prefijo="HER", modo="fijo").replace(">Visita a cliente<", ">Pedido de herramientas<"))
+    V = {e: (baja if e.startswith(("Reactiva", "Comprobando")) else publicado if e == "Borrar un publicado" else borrador) for e in ESTADOS_RE}
+    capas = {"Reactivar": dlg_reactivar(), "Reactivar con cambios": dlg_reactivar("cambios"), "Comprobando": dlg_reactivar("comprobando"),
+             "Reactivar con algo que corregir": dlg_reactivar("corregir"), "Reactivando": dlg_reactivar("trabajando"),
+             "Borrar un borrador": dlg_borrar(), "Borrar un publicado": dlg_borrar(publicado=True), "Borrando": dlg_borrar(trabajando=True),
+             "No se pudo borrar": dlg_borrar(error=True)}
+    t = A.pagina_editor(V, capas, ESTADOS_RE, "Reactivar y borrar", E.CSS_E12 + CSS_E12B + E.CSS_ZONAS)
+    return r(t, "Diseñar formularios / Visita a cliente", "Diseñar formularios / Relevamiento de obra")
 
 
 # ================================================================ FRM-Dar-De-Baja (BA3)
-ESTADOS_BAJA = ["Con envíos abiertos", "Sin envíos abiertos", "Mientras se da de baja", "No se pudo"]
+# Solo las consecuencias, en las tres zonas de allá: lo de las etapas siguientes suma lo suyo (78).
+ESTADOS_BAJA = ["Con envíos abiertos", "Sin envíos abiertos", "Consultando", "Mientras se da de baja", "No se pudo"]
 
 
-def dlg_baja(envios=True, trabajando=False, error=False):
+def dlg_baja(envios=True, trabajando=False, error=False, consultando=False):
     card = A.card
-    deja = (card(CHAT, "No se manda más desde el chat", "Sale de «Enviar formulario».")
-            + card(ASIST, "El asistente no lo ofrece", "Si alguien lo pide, se anota en «Formularios que faltan».")
-            + (card(SUGIERE, "Deja de ofrecerse 1 sugerencia", "«Control de vehículo» ya no sugiere Visita a cliente.") if envios else ""))
+    d = " disabled" if trabajando else ""
+    boton = E.trabaja("Dando de baja…") if trabajando else f'<button type="button" class="cb cb-pri"{" disabled" if consultando else ""}>Dar de baja</button>'
+    pie = f'<button type="button" class="cb cb-sec"{d}>Cancelar</button>{boton}'
+    if consultando:
+        return A.dlg_publicar("Dar de baja «Visita a cliente»", f'<div class="z-caja">{ESQ_ZONA}</div>', pie)
+    deja = card(CHAT, "No se manda más desde el chat", "Sale de «Enviar formulario».")
     wa = ((card(RELOJ, "2 envíos abiertos", "Se pueden responder hasta que vencen. El último vence el 25/10/2026 a las 18:40.")
-           + A.aviso("En WhatsApp no se deshace: cuando venzan, se deprecan los Flows de sus 3 versiones."))
-          if envios else A.aviso("En WhatsApp no se deshace: se deprecan ahora los Flows de sus 3 versiones."))
-    conserva = (card(TILDE, "Las 24 respuestas, con sus fotos y documentos", "Siguen en la planilla y en el Excel.")
-                + card(TILDE, "Los PDF y las aprobaciones", "Las 3 que esperan decisión se pueden aprobar o rechazar."))
+           + A.aviso("En WhatsApp no se deshace. Al vencer los envíos abiertos, se deprecan sus Flows. Para volver a usarlo, se reactiva con una versión nueva."))
+          if envios else A.aviso("En WhatsApp no se deshace. No hay envíos abiertos: se deprecan ahora sus Flows. Para volver a usarlo, se reactiva con una versión nueva."))
+    conserva = card(TILDE, "Se conservan las 24 respuestas", "Siguen en la planilla y en el Excel.")
     err = A.aviso("No pudimos darlo de baja. No cambió nada.", "mal") if error else ""
     cuerpo = (err + '<span class="p-cap">Qué deja de pasar</span>' + deja + '<span class="p-cap">Envíos abiertos y WhatsApp</span>' + wa
               + '<span class="p-cap">Lo que se conserva</span>' + conserva)
-    d = " disabled" if trabajando else ""
-    pie = f'<button type="button" class="cb cb-sec"{d}>Cancelar</button><button type="button" class="cb cb-pri"{d}>{GIRA if trabajando else ""}Dar de baja</button>'
     return A.dlg_publicar("Dar de baja «Visita a cliente»", cuerpo, pie)
 
 
 def dar_de_baja():
     base = (E.banda("Visita a cliente", E.EST_PUB, E.acc("limpio"), E.VOL), E.cuerpo_editor(abierta=None, modo="fijo"))
     V = {e: base for e in ESTADOS_BAJA}
-    capas = {"Con envíos abiertos": dlg_baja(), "Sin envíos abiertos": dlg_baja(envios=False), "Mientras se da de baja": dlg_baja(trabajando=True),
-             "No se pudo": dlg_baja(error=True)}
-    return A.pagina_editor(V, capas, ESTADOS_BAJA, "Dar de baja un formulario", E.CSS_E12 + CSS_E12B)
+    capas = {"Con envíos abiertos": dlg_baja(), "Sin envíos abiertos": dlg_baja(envios=False), "Consultando": dlg_baja(consultando=True),
+             "Mientras se da de baja": dlg_baja(trabajando=True), "No se pudo": dlg_baja(error=True)}
+    return A.pagina_editor(V, capas, ESTADOS_BAJA, "Dar de baja un formulario", E.CSS_E12 + CSS_E12B + E.CSS_ZONAS)
 
 
 # ================================================================ FRM-Editor-Baja (BA2)
 PREG_REL = [("Obra", "Texto corto", True, None), ("Fecha del relevamiento", "Fecha", False, None), ("¿Hay demoras?", "Sí o no", False, None),
             ("Avance de la obra", "Número · 0 decimales", False, None), ("Motivo de la demora", "Elegir una · 4 opciones", False, None),
             ("Observaciones", "Texto largo, hasta 600 caracteres", False, None)]
-ESTADOS_EB = ["Dado de baja", "Ya deprecado", "Sin confirmar en WhatsApp", "No se pudo deprecar", "El detalle", "Acciones del formulario", "Con cambios"]
-QUIEN = "Dado de baja por Lucía Fernández el 09/10/2026 a las 10:12."
-QUE_PASA = "No se manda desde el chat ni lo ofrece el asistente. Las respuestas, los PDF y las aprobaciones se conservan."
+ESTADOS_EB = ["Dado de baja", "Ya deprecado", "Sin confirmar en WhatsApp", "No se pudo deprecar", "El detalle", "Acciones del formulario", "Con cambios", "Reactivando"]
 
 
 def vista_rel():
@@ -317,44 +348,54 @@ ABIERTOS = "Se deprecan cuando venzan los 2 envíos abiertos. El último vence e
 
 
 def detalle(whatsapp=ABIERTOS):
-    """Lo que antes iba en el cartel (regla de avisos del 25/10): quién, cuándo, qué deja de pasar y WhatsApp, en el aviso importante del ⓘ."""
-    filas = [("Lo dio de baja", "Lucía Fernández"), ("Cuándo", "09/10/2026, 10:12"), ("Deja de", "Mandarse desde el chat y ofrecerse en el asistente"),
-             ("Se conserva", "Las respuestas, los PDF y las aprobaciones"), ("En WhatsApp", whatsapp)]
-    return "".join(f'<span class="k">{k}</span><span>{v}</span>' for k, v in filas)
+    """El estado va en la banda (avisos, 25/10): quién, cuándo y qué pasa en WhatsApp, en el aviso importante del ⓘ."""
+    return [("Lo dio de baja", "Lucía Fernández"), ("Cuándo", "09/10/2026 10:12"), ("En WhatsApp", whatsapp)]
 
 
-def dlg_detalle():
-    return F.dialogo("Relevamiento de obra · dado de baja", f'<div class="g-det">{detalle()}</div>', '<button type="button" class="cb cb-sec">Cerrar</button>')
+def dlg_detalle(whatsapp=ABIERTOS):
+    filas = "".join(f'<span class="k">{k}</span><span>{v}</span>' for k, v in detalle(whatsapp))
+    return F.dialogo("Relevamiento de obra · dado de baja", f'<div class="g-det">{filas}</div>', '<button type="button" class="cb cb-sec">Cerrar</button>')
 
 
-def acc_baja(cambios=False, menu=False):
+MENU_BAJA = mi("duplicar", "Copiar", "FRM-Copiar.dc.html") + SEP + mi("borrar", "Borrar", off=CON_RESPUESTAS, tip=True)
+
+
+def acc_baja(cambios=False, menu=False, reactivando=False):
     d = "" if cambios else " disabled"
     a = f'<button type="button" class="cb cb-sec"{d}>Descartar</button><button type="button" class="cb cb-sec"{d}>Guardar cambios</button>'
-    if cambios:
+    if reactivando:
+        a += E.trabaja("Reactivando…")
+    elif cambios:
         a += f'<button type="button" class="cb cb-pri" aria-disabled="true" title="{E.MOTIVO_GUARDAR}">Reactivar</button>'
     else:
         a += '<a class="cb cb-pri" href="FRM-Reactivar-Eliminar.dc.html">Reactivar</a>'
-    return a + E.kebab(menu, "Relevamiento de obra", mi("duplicar", "Copiar", "FRM-Copiar.dc.html"))
+    return a + E.kebab(menu, "Relevamiento de obra", MENU_BAJA)
+
+
+EST_BAJA = '<span class="w-est baja">Dado de baja · versión 2</span>'
+
+
+def banda_baja(est=None, **k):
+    return E.banda("Relevamiento de obra", est or EST_BAJA + E.info_btn("Quién lo dio de baja, cuándo y qué pasa en WhatsApp"), acc_baja(**k), E.VOL)
 
 
 def editor_baja():
-    base = '<span class="w-est baja">Dado de baja · versión 2</span>'
-    ver = E.info_btn("Quién lo dio de baja, cuándo y qué pasa en WhatsApp")
-    sin_conf = base + '<span class="w-est pend">Sin confirmar en WhatsApp</span>' + F.info("Lo seguimos consultando, sin pedirlo de nuevo.")
-    fallo = base + '<span class="w-est mal">No se pudo deprecar en WhatsApp</span>' + F.info("WhatsApp lo rechazó después de cuatro intentos. No frena nada del formulario.")
-    b = lambda est=base + ver, **k: E.banda("Relevamiento de obra", est, acc_baja(**k), E.VOL)
+    sin_conf = EST_BAJA + '<span class="w-est pend">Sin confirmar en WhatsApp</span>' + F.info("Lo seguimos consultando, sin pedirlo de nuevo.")
+    fallo = EST_BAJA + '<span class="w-est mal">No se pudo deprecar en WhatsApp</span>' + F.info("WhatsApp lo rechazó después de cuatro intentos. No frena nada del formulario.")
+    reactivando = EST_BAJA + '<span class="w-est pend">Reactivando con la versión 3</span>'
     cuerpo = cuerpo_rel("")
     V = {
-        "Dado de baja": (b(), cuerpo),
-        "Ya deprecado": (b(), cuerpo),
-        "Sin confirmar en WhatsApp": (b(sin_conf), cuerpo),
-        "No se pudo deprecar": (b(fallo), cuerpo),
-        "El detalle": (b(), cuerpo),
-        "Acciones del formulario": (b(menu=True), cuerpo),
-        "Con cambios": (b(cambios=True), cuerpo),
+        "Dado de baja": (banda_baja(), cuerpo),
+        "Ya deprecado": (banda_baja(), cuerpo),
+        "Sin confirmar en WhatsApp": (banda_baja(sin_conf), cuerpo),
+        "No se pudo deprecar": (banda_baja(fallo), cuerpo),
+        "El detalle": (banda_baja(), cuerpo),
+        "Acciones del formulario": (banda_baja(menu=True), cuerpo),
+        "Con cambios": (banda_baja(cambios=True), cuerpo),
+        "Reactivando": (banda_baja(reactivando, reactivando=True), cuerpo),
     }
-    t = A.pagina_editor(V, {"El detalle": dlg_detalle()}, ESTADOS_EB, "Editor de un formulario dado de baja", E.CSS_E12 + CSS_E12B
-                        + ".f-bnd-est .w-est + .w-est { margin-left: 14px; }\n")
+    t = A.pagina_editor(V, {"El detalle": dlg_detalle(), "Ya deprecado": dlg_detalle("Deprecados el 12/10/2026 18:45.")}, ESTADOS_EB, "Editor de un formulario dado de baja",
+                        E.CSS_E12 + CSS_E12B + ".f-bnd-est .w-est + .w-est { margin-left: 14px; }\n")
     return r(t, "Diseñar formularios / Visita a cliente", "Diseñar formularios / Relevamiento de obra")
 
 
@@ -395,8 +436,7 @@ def tel_listado():
                '<span role="menuitemradio" aria-checked="false">Borradores <span class="c">1</span></span></div>')
     copiar_h = (F.tcampo("Nombre", "Visita a cliente (copia)", req=True) + F.tcampo("Prefijo de numeración", "VIS2", req=True))
     baja_h = ('<div class="p-tit2">Qué deja de pasar</div><span class="t-lin">' + CHAT + ' No se manda más desde el chat.</span>'
-              '<span class="t-lin">' + ASIST + ' El asistente no lo ofrece.</span><span class="t-lin">' + SUGIERE + ' «Control de vehículo» ya no lo sugiere.</span>'
-              '<div class="p-tit2">Envíos abiertos y WhatsApp</div><span class="t-lin">' + RELOJ + ' 2 envíos abiertos: el último vence el 25/10/2026 a las 18:40.</span>'
+                            '<div class="p-tit2">Envíos abiertos y WhatsApp</div><span class="t-lin">' + RELOJ + ' 2 envíos abiertos: el último vence el 25/10/2026 a las 18:40.</span>'
               '<div class="t-aviso">' + ALERTA + '<span>En WhatsApp no se deshace: cuando venzan, se deprecan los Flows de sus 3 versiones.</span></div>'
               '<div class="p-tit2">Lo que se conserva</div><span class="t-lin">' + TILDE + ' Las 24 respuestas, con sus fotos y documentos.</span>'
               '<span class="t-lin">' + TILDE + ' Los PDF y las aprobaciones.</span>')
@@ -420,6 +460,15 @@ def tel_listado():
 
 
 E_TEB = ["Dado de baja", "Ya deprecado", "El detalle", "Acciones del formulario", "Reactivar"]
+BORRAR_OFF = f'<span role="menuitem" class="off" aria-disabled="true">Borrar<small>{CON_RESPUESTAS}</small></span>'
+
+
+def t_dets(filas):
+    return '<div class="ap-dets">' + "".join(f'<div class="ap-det"><span>{k}</span><b>{v}</b></div>' for k, v in filas) + "</div>"
+
+
+REACTIVAR_T = t_dets([("Próxima respuesta", "REL-000013"), ("Borrador", "Guardado el 09/10/2026 16:30"), ("Preguntas", "6")])
+PIE_REACTIVAR_T = '<button type="button" class="cb cb-pri">Reactivar con la versión 3</button><button type="button" class="cb cb-sec">Cancelar</button>'
 
 
 def tel_editor_baja():
@@ -435,19 +484,11 @@ def tel_editor_baja():
         E.T_PREG = viejas
     fijo = '<div class="ap-fijo"><a class="cb cb-pri full" href="#">Reactivar</a></div>'
     cuerpo = {e: bar + base + fijo for e in E_TEB}
-    datos = "".join(f'<div class="ap-det"><span>{k}</span><b>{v}</b></div>'
-                    for k, v in [("Lo dio de baja", "Lucía Fernández"), ("Cuándo", "09/10/2026, 10:12"), ("Deja de", "Mandarse desde el chat y ofrecerse en el asistente"),
-                                 ("Se conserva", "Las respuestas, los PDF y las aprobaciones"), ("En WhatsApp", "Se deprecan cuando venzan los 2 envíos abiertos.")])
-    reactivar_h = ('<div class="p-tit2">Qué se publica: la versión 3</div><span class="t-lin">' + DOC + ' Sin cambios respecto de la versión 2.</span>'
-                   '<span class="t-lin">' + TILDE + ' Vuelve a mandarse desde el chat cuando WhatsApp la apruebe.</span>'
-                   '<span class="t-lin">' + TILDE + ' La próxima respuesta es REL-000013.</span>')
-    capas = {"El detalle": F.thoja("Dado de baja", f'<div class="ap-dets">{datos}</div>', "", sub="Relevamiento de obra · versión 2"),
-             "Acciones del formulario": M.hoja("Relevamiento de obra", '<span role="menuitem">Reactivar</span><span role="menuitem">Copiar</span>'),
-             "Reactivar": F.thoja("Reactivar «Relevamiento de obra»", reactivar_h, '<button type="button" class="cb cb-pri">Reactivar</button><button type="button" class="cb cb-sec">Cancelar</button>')}
-    t = C.tel_pagina(cuerpo, E_TEB, capas, "Editor de un formulario dado de baja · teléfono", A.CSS_TED + A.CSS_TCHAT_AB + E.CSS_E12 + CSS_E12B + E.CSS_TED_E12
-                     # el detalle en el teléfono: el rótulo encima del valor (pantallas-y-ui.md), como M-Auditoria-Org
-                     + ".ap-det { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-top: 1px solid var(--borde); }\n"
-                     ".ap-det:first-child { border-top: 0; }\n.ap-det span { font-size: 13px; color: var(--t3); }\n.ap-det b { font-size: 15.5px; font-weight: 500; }\n")
+    capas = {"El detalle": F.thoja("Dado de baja", t_dets(detalle()), "", sub="Relevamiento de obra · versión 2"),
+             "Ya deprecado": F.thoja("Dado de baja", t_dets(detalle("Deprecados el 12/10/2026 18:45.")), "", sub="Relevamiento de obra · versión 2"),
+             "Acciones del formulario": M.hoja("Relevamiento de obra", '<span role="menuitem">Reactivar</span><span role="menuitem">Copiar</span><span class="sep" role="separator"></span>' + BORRAR_OFF),
+             "Reactivar": F.thoja(TIT_REACTIVAR, REACTIVAR_T, PIE_REACTIVAR_T)}
+    t = C.tel_pagina(cuerpo, E_TEB, capas, "Editor de un formulario dado de baja · teléfono", A.CSS_TED + A.CSS_TCHAT_AB + E.CSS_E12 + CSS_E12B + E.CSS_TED_E12 + CSS_TDET)
     return M.css(t, M.CSS_HOJA, "hoja")
 
 

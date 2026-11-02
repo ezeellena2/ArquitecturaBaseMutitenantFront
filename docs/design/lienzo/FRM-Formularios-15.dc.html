@@ -877,6 +877,7 @@ body { margin: 0; }
 .cp-campos { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 14px 16px; }
 .cp-campos .err2 { font-size: 12.5px; color: var(--peligro); }
 .cp-campos .ct.mal { border-color: var(--peligro); }
+.p-sec2 .d-tx { margin: 0; }
 </style>
 <style data-e16="panel">
 .w-panel .w-ln .cnt { margin-left: auto; font-size: 12px; font-weight: 600; min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); display: inline-flex; align-items: center; justify-content: center; }
@@ -949,8 +950,9 @@ class Component extends DCLogic {
     const e = this.props.estado ?? "Lista";
     const v = e;
     const R = true, CI = false, AP = false;
-    const lee = v === 'Quien solo ve respuestas', aprueba = v === 'Quien solo aprueba', soloPub = v === 'Solo puede publicar', lectura = v === 'Solo lectura';
-    const baja = v === 'Dados de baja' || v === 'Acciones de un dado de baja';
+    const leeBaja = v === 'Quien solo ve respuestas: dados de baja';
+    const lee = v === 'Quien solo ve respuestas' || leeBaja, aprueba = v === 'Quien solo aprueba', soloPub = v === 'Solo puede publicar', lectura = v === 'Solo lectura';
+    const baja = v === 'Dados de baja' || v === 'Acciones de un dado de baja' || leeBaja;
     const pub = v === 'Publicados', bor = v === 'Borradores', conAlgo = v === 'Con algo por aprobar';
     const estMenu = v === 'Estado: menú', aprMenu = v === 'Aprobación: menú', nuevoMenu = v === 'Nuevo formulario: menú';
     const publicando = v === 'Acciones mientras se publica' || v === 'Publicando';
@@ -966,7 +968,7 @@ class Component extends DCLogic {
       resumen: v === 'Cargando' || v === 'No se pudo cargar' ? '' : v === 'Todavía no hay formularios' ? 'Sin formularios'
         : baja ? '1 dado de baja' : lee ? '3 activos' : aprueba ? '4 por aprobar' : !CI ? '4 formularios' : AP ? '4 activos · 4 por aprobar' : '4 activos · 1 dado de baja',
       conNuevo: disena && !soloPub && !lectura, menuNuevo: nuevoMenu, expNuevo: nuevoMenu ? 'true' : 'false',
-      conFiltros: !['Todavía no hay formularios', 'Sin permiso'].includes(v), conEstado: disena, conAprobacion: !lee && v !== 'Sin permiso' && !baja,
+      conFiltros: !['Todavía no hay formularios', 'Sin permiso'].includes(v), conEstado: disena || (CI && lee), conAprobacion: !lee && v !== 'Sin permiso' && !baja,
       busqueda: v === 'Sin coincidencias' ? 'inspección' : 'Buscar formulario', busClase: v === 'Sin coincidencias' ? 'lleno' : '',
       estTexto: pub ? 'Estado: Publicados' : bor ? 'Estado: Borradores' : baja ? 'Estado: Dados de baja' : 'Estado', estClase: pub || bor || baja ? 'con' : '', estMenu, estAlternar: () => {},
       estOn_t: pub || bor || baja ? '' : 'on', estOn_p: pub ? 'on' : '', estOn_b: bor ? 'on' : '', estOn_d: baja ? 'on' : '', estC_t: '4', estC_p: '3', estC_b: '1', estC_d: '1',
