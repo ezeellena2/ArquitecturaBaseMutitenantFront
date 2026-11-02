@@ -38,20 +38,20 @@
       },
       "actor": "Lucía · Dueña · web",
       "titulo": "Le pone nombre",
-      "texto": "Todo va en una sola pantalla: el catálogo arriba, con el tipo apagado y de dónde salen en la banda, y las opciones debajo. Pegar e importar esperan a que lo cree.",
+      "texto": "Todo va en una sola pantalla: el catálogo arriba, con el tipo apagado y de dónde salen en la banda, y las opciones debajo. Importar espera a que lo cree.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/catalogos",
       "accion": "Escribe «Motivos de visita» y lo crea."
     },
     {
-      "tablero": "FRM-Catalogo",
+      "tablero": "FRM-Catalogo-Opciones",
       "tweaks": {
         "estado": "Agregar una opción"
       },
-      "resaltar": ".k-in.foco",
+      "resaltar": ".md-op",
       "actor": "Lucía · Dueña · web",
       "titulo": "Carga las opciones",
-      "texto": "Cada fila se escribe en el lugar: el texto, de hasta 30 caracteres, es lo que se ve en WhatsApp; el código no se muestra. Todo se guarda junto con «Guardar cambios».",
+      "texto": "«Agregar opción» abre un modal: la lista a la izquierda y la opción a la derecha. El texto, de hasta 30 caracteres, es lo que se ve en WhatsApp; el código no se muestra. Todo se guarda junto con «Guardar cambios».",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/catalogos",
       "accion": "Agrega las opciones y guarda."
@@ -72,12 +72,12 @@
     {
       "tablero": "FRM-Catalogo-Importar",
       "tweaks": {
-        "estado": "Revisar: errores"
+        "estado": "Revisión: errores"
       },
       "resaltar": ".imp-tabs",
       "actor": "Lucía · Dueña · web",
       "titulo": "Si son muchas, las importa",
-      "texto": "Para muchas opciones, «Pegar desde Excel» o «Importar»: antes de aplicar se revisan los errores, las altas, los cambios y las bajas.",
+      "texto": "Para muchas opciones, «Importar»: desde un archivo o pegando de Excel. Antes de aplicar se revisan los errores, las altas, los cambios y las bajas.",
       "avanzar": "Fin del recorrido.",
       "ruta": "/org/formularios/catalogos",
       "accion": "Importa un archivo y lo revisa."

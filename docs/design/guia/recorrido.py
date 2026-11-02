@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 147 · 1 de noviembre de 2026"
+VERSION = "versión 148 · 2 de noviembre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -122,13 +122,13 @@ CAPITULOS = [
     ("formularios", "Diseña formularios", "Formularios que se completan dentro de WhatsApp, en «Gestión de formularios», en el orden en que se programan: primero los catálogos, las listas de opciones que comparten; después la organización diseña los formularios, los publica, se los manda a sus empleados o clientes desde un chat y revisa lo que responden. Cuando una pantalla cambia en una etapa posterior, cada versión es un tablero aparte.", [
         ("frm-catalogos", "Catálogos", "/org/formularios/catalogos", "no", "12 y 14", ["FRM-Catalogos", "FRM-Catalogos-14"], ["M-FRM-Catalogos", "M-FRM-Catalogos-14"], ["FRM-Catalogo-Nuevo"],
          "Las listas de opciones: escritas a mano, de los miembros con filtros o de los contactos de WhatsApp, cuántas opciones tienen y si se pueden usar. Desde la 14, «Lo usan»."),
-        ("frm-catalogo", "Un catálogo escrito a mano", "/org/formularios/catalogos/:id", "no", "12", ["FRM-Catalogo"], ["M-FRM-Catalogo"], ["FRM-Catalogo-Importar", "FRM-Catalogo-Tipo"],
-         "Todo a la vista: el catálogo, con el origen y el tipo de valor apagados; las opciones en una tabla que se edita en el lugar, con pegar desde Excel, importar y exportar; y cómo lo ve quien lo recibe. Hasta 10.000 opciones; se dan de baja sin borrarse."),
+        ("frm-catalogo", "Un catálogo escrito a mano", "/org/formularios/catalogos/:id", "no", "12", ["FRM-Catalogo"], ["M-FRM-Catalogo", "M-FRM-Catalogo-Opciones"], ["FRM-Catalogo-Opciones", "FRM-Catalogo-Importar", "FRM-Catalogo-Tipo"],
+         "Todo a la vista: el catálogo, con el origen y el tipo de valor apagados; las opciones en una tabla, que también se agregan y editan en un modal, con importar y exportar; y cómo lo ve quien lo recibe. Hasta 10.000 opciones; se dan de baja sin borrarse."),
         ("frm-catalogo-filtros", "Un catálogo de los miembros", "/org/formularios/catalogos/:id", "no", "12", ["FRM-Catalogo-Filtros"], ["M-FRM-Catalogo-Filtros"], [],
          "Las condiciones sobre los miembros y, al costado, el teléfono de la persona que elijas, que se actualiza solo. Con más de 200 se guarda igual: lo frena publicar el formulario."),
         ("frm-catalogo-contactos", "Un catálogo de los contactos", "/org/formularios/catalogos/:id", "no", "12", ["FRM-Catalogo-Contactos"], ["M-FRM-Catalogo-Contactos"], [],
          "Los contactos de Clientes, filtrados por etiqueta, con su nombre; el teléfono nunca se ve. Sin WhatsApp, no se puede usar."),
-        ("frm-catalogo-campos", "Los campos de un catálogo", "/org/formularios/catalogos/:id", "no", "13 y 14", ["FRM-Catalogo-13", "FRM-Catalogo-14"], ["M-FRM-Catalogo-13", "M-FRM-Catalogo-14"], [],
+        ("frm-catalogo-campos", "Los campos de un catálogo", "/org/formularios/catalogos/:id", "no", "13 y 14", ["FRM-Catalogo-13", "FRM-Catalogo-14"], ["M-FRM-Catalogo-13", "M-FRM-Catalogo-Opciones-13", "M-FRM-Catalogo-14"], ["FRM-Catalogo-Opciones-13"],
          "Un catálogo escrito a mano suma sus campos, como CUIT o Zona, en una tabla que se edita ahí mismo, y las opciones, una columna por campo. Hasta 20 campos. «En WhatsApp» elige qué va en el título y en la descripción de cada opción. Si una tabla no entra, se desplaza a lo ancho con lo principal fijo. Desde la 14, «Lo usan», y un campo en uso no se quita."),
         ("frm-formularios", "Formularios", "/org/formularios", "no", "14, 15, 17, 21 y 22", ["FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-21", "FRM-Formularios-22"], ["M-FRM-Formularios", "M-FRM-Formularios-17"], [],
          "Una sola lista, con los borradores y los publicados, y cómo está cada uno en WhatsApp. Cada etapa le suma lo suyo: las respuestas (15), el ⋮ y los dados de baja (17), lo que espera aprobación (21) y «Nuevo formulario» desde una plantilla (22)."),

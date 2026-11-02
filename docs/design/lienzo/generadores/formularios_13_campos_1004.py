@@ -18,6 +18,10 @@ Desde la v147 (13-texto-diseno.md), tres estados más, que la spec pide:
   hoja del ojo.
 Sus piezas tienen parámetros porque `FRM-Catalogo-14` (formularios_14_formularios_1004.py) las usa con «Productos».
 
+Desde la v148 (13-texto-diseno.md y las decisiones 111 y 118): el tipo dice «De un catálogo», y el catálogo se elige en un combo, en la celda de
+«Límite», que ese tipo no usa: al tocarlo muestra los primeros y al escribir los filtra. Sigue la tabla, sin modal ni «Listo». Y nuevos:
+FRM-Catalogo-Opciones-13 y M-FRM-Catalogo-Opciones-13, el modal de opciones de la 12 con una fila por campo.
+
 Corre después de `formularios_12_catalogos_1004.py` y antes de `formularios_etapas_1004.py`. Se puede volver a correr.
 """
 import json
@@ -41,18 +45,18 @@ CHEV, MAS, KEBAB, TILDE = F.CHEV, F.MAS, F.KEBAB, A.TILDE
 MOTIVO_TOPE = "Llegó a 20 campos, el máximo de un catálogo."
 
 # (campo, tipo, obligatorio, único, límite)
-CAMPOS = [("CUIT", "Texto", True, True, ("13", "caracteres")), ("Zona", "De un catálogo: Zonas", True, False, None)]
+CAMPOS = [("CUIT", "Texto", True, True, ("13", "caracteres")), ("Zona", "De un catálogo", True, False, "Zonas · 6 opciones")]
 ZONA_BAJA = "Cuyo"
 LARGO = "Aceros y perfiles laminados para estructuras"  # como Detalle, en el título de WhatsApp no entran sus 44 caracteres
 MAL_TITULO = "No entra en el título de WhatsApp."
 RUBROS = ["Abrasivos", "Aceros", "Aislantes", "Alambres", "Aluminio", "Andamios", "Áridos", "Bulones", "Sanitarios", "Cemento"]
 ZONAS_EJ = ["Capital", "Gran Buenos Aires", "Interior", "Patagonia", "Litoral"]
 MOTIVO_GUARDAR = "Guardá el catálogo para cargar los valores de este campo."
-ANCHO_CAMPOS, ANCHO_OPCIONES, ANCHO_LECTURA = 876, 1044, 960
-TIPOS = ["Texto", "Número entero", "Número con decimales", "Fecha", "Sí/No", "De un catálogo: Motivos de visita", "De un catálogo: Recargo por zona",
-         "De un catálogo: Zonas"]
+ANCHO_CAMPOS, ANCHO_OPCIONES, ANCHO_LECTURA = 764, 1044, 960
+TIPOS = ["Texto", "Número entero", "Número con decimales", "Fecha", "Sí/No", "De un catálogo"]
+CATALOGOS = ["Motivos de visita · 3 opciones", "Productos · 10 opciones", "Recargo por zona · 6 opciones", "Tipos de producto · 12 opciones", "Zonas · 6 opciones"]
 CSS = """.w-app { width: 1280px !important; }
-.w-th.kc, .w-tr.kc { grid-template-columns: minmax(160px, 1.1fr) minmax(200px, 1.35fr) 104px 72px minmax(220px, 1fr) 36px; gap: 12px; }
+.w-th.kc, .w-tr.kc { grid-template-columns: minmax(150px, 1.1fr) minmax(150px, 1.1fr) 96px 72px minmax(180px, 1fr) 36px; gap: 12px; }
 .w-th.kf, .w-tr.kf { grid-template-columns: 28px 30px minmax(192px, 1.25fr) 96px minmax(192px, 1.35fr) 128px 128px 110px 36px; gap: 10px; }
 .w-th.kf3, .w-tr.kf3 { grid-template-columns: 28px 30px minmax(192px, 1.25fr) 96px minmax(192px, 1.35fr) 128px 128px 128px 110px 36px; gap: 10px; }
 .w-tr.kf, .w-tr.kf3 { position: relative; min-height: 50px; }
@@ -69,6 +73,10 @@ CSS = """.w-app { width: 1280px !important; }
 .kc-lim { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t2); }
 .kc-lim .k-in { width: 64px; flex: none; }
 .kc-lim .gris { color: var(--t3); }
+.kc-lim .k-in.sel { flex: 1; min-width: 0; width: auto; justify-content: space-between; cursor: pointer; }
+.kc-lim .f-mn { top: 36px; left: auto; right: 0; width: 280px; }
+.kc-lim .f-mn .vacio { padding: 8px 10px; font-size: 13px; color: var(--t2); }
+.kc-lim { position: relative; }
 .k-wa { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px 16px; align-items: center; padding: 16px; }
 .k-wa .rt2 { font-size: 13px; font-weight: 600; color: var(--t2); }
 .k-wa .sels { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -113,8 +121,21 @@ def gris(valor, sel=False):
     return f'<span class="k-in{" sel" if sel else ""} ro" aria-disabled="true"><span>{valor}</span>{CHEV if sel else ""}</span>'
 
 
-def limite(tipo, lim, mal=False, ro=False):
-    if tipo.startswith("De un catálogo") or tipo in ("Sí/No", "Fecha") or lim is None:
+def combo_catalogo(valor, modo=""):
+    """El catálogo de un campo (111). modo: abierto, con los primeros | buscar, filtrando lo escrito | nada, sin coincidencias."""
+    if not modo:
+        return f'<span class="k-in sel" role="combobox" aria-expanded="false" aria-label="Catálogo"><span>{valor}</span>{CHEV}</span>'
+    escrito = {"abierto": valor, "buscar": "zo", "nada": "zorro"}[modo]
+    lista = {"abierto": CATALOGOS, "buscar": ["Zonas · 6 opciones"], "nada": []}[modo]
+    filas = "".join(f'<span role="option" class="{"on" if x == valor else ""}">{x}</span>' for x in lista) or '<span class="vacio">Ningún catálogo coincide.</span>'
+    return (f'<span class="k-in sel foco" role="combobox" aria-expanded="true" aria-label="Catálogo"><span>{escrito}</span>{CHEV}</span>'
+            f'<span class="f-mn" role="listbox" aria-label="Catálogo">{filas}</span>')
+
+
+def limite(tipo, lim, mal=False, ro=False, combo=""):
+    if tipo == "De un catálogo":
+        return f'<span class="k-tab"><span class="kc-lim">{gris(lim, sel=True) if ro else combo_catalogo(lim, combo)}</span></span>'
+    if tipo in ("Sí/No", "Fecha") or lim is None:
         return '<span class="kc-lim"><span class="gris">—</span></span>'
     if tipo == "Texto":
         return f'<span class="kc-lim">hasta {gris(lim[0]) if ro else K.entrada(lim[0], ph="N")} {lim[1]}</span>'
@@ -133,7 +154,7 @@ def menu_campo(n, en_uso=""):
             f'<span class="f-mi" role="menuitem">{F.ABAJO} Bajar</span><span class="f-sep" role="separator"></span>{quitar}</div>')
 
 
-def fila(n, tipo, ob, un, lim, foco=None, menu=False, abierto=False, err="", en_uso=""):
+def fila(n, tipo, ob, un, lim, foco=None, menu=False, abierto=False, err="", en_uso="", combo=""):
     nombre = K.entrada(n, ph="Nombre del campo", foco=foco == "campo")
     t = f'<span class="k-in sel{" foco" if abierto else ""}{" mal" if err else ""}"><span>{tipo}</span>{CHEV}</span>'
     if abierto:
@@ -141,7 +162,7 @@ def fila(n, tipo, ob, un, lim, foco=None, menu=False, abierto=False, err="", en_
     if err:
         t += f'<span class="err2" role="alert">{err}</span>'
     m = menu_campo(n, en_uso) if menu else ""
-    return (f'<div class="w-tr kc"><span class="k-tab fx fx-campo">{nombre}</span><span class="k-tab">{t}</span>{chk(ob)}{chk(un)}{limite(tipo, lim)}'
+    return (f'<div class="w-tr kc"><span class="k-tab fx fx-campo">{nombre}</span><span class="k-tab">{t}</span>{chk(ob)}{chk(un)}{limite(tipo, lim, combo=combo)}'
             f'<span class="fx fx-d2"><button type="button" class="ib" aria-label="Acciones de {n or "el campo nuevo"}">{KEBAB}</button>{m}</span></div>')
 
 
@@ -163,6 +184,8 @@ def caja_campos(modo="normal", campos=None, fila_menu=1, en_uso=""):
             kw = dict(menu=True, en_uso=en_uso)
         if modo == "error" and k == 0:
             tipo, kw = "Número entero", dict(err="1.097 opciones tienen un valor que no es un número entero.")
+        if modo.startswith("combo-") and tipo == "De un catálogo":
+            kw = dict(combo=modo[6:])
         filas += fila(n, tipo, ob, un, lim, **kw)
     agregar = f'<button type="button" class="cb cb-sec">{MAS} Agregar campo</button>'
     if modo in ("agregar", "tipo"):
@@ -265,7 +288,8 @@ def caja_whatsapp(abierto="", titulo_wa=None, descripcion=None, columnas=None, r
 
 
 ESTADOS = ["Campos", "Agregar un campo", "Elegir el tipo", "Acciones de un campo", "Quitar un campo", "Cambiar el tipo con errores", "20 campos",
-           "En WhatsApp", "Elegir qué muestra", "Nuevo catálogo", "Guardado", "Valor de una opción dada de baja", "Solo lectura", "Un título que no entra"]
+           "En WhatsApp", "Elegir qué muestra", "Nuevo catálogo", "Guardado", "Valor de una opción dada de baja", "Solo lectura", "Un título que no entra",
+           "Elegir el catálogo", "Buscar un catálogo", "Ningún catálogo coincide"]
 
 
 def editor():
@@ -278,7 +302,7 @@ def editor():
 
     def cuerpo(modo, catalogo=cat, it=items, abierto=""):
         valores = (K.caja_opciones("", "0 opciones", "", modo="nuevo", vacia=True) if modo == "vacia" else
-                   caja_valores("normal" if modo in ("menu", "tope") else modo))
+                   caja_valores("normal" if modo in ("menu", "tope") or modo.startswith("combo-") else modo))
         wa = ("" if modo == "vacia" else caja_whatsapp(abierto, ro=modo == "lectura", titulo_wa=["Detalle"] if modo == "titulo" else None))
         return f'<div class="w-body"><div class="k-cab2">{catalogo}{K.vista_previa(it, "Proveedor")}</div>{caja_campos(modo)}{wa}{valores}</div>'
     b = lambda **k: C.banda_k(tit, K.ACTIVO + K.ORIGEN_MANO, K.acc_editor(**k))
@@ -298,6 +322,9 @@ def editor():
         "Solo lectura": (C.banda_k(tit, K.ACTIVO + K.ORIGEN_MANO, K.acc_editor(lectura=True)),
                          cuerpo("lectura", K.caja_catalogo("Proveedores", "A quiénes se les compra.", lectura=True))),
         "Un título que no entra": (b(cambios=True), cuerpo("titulo", it=largos)),
+        "Elegir el catálogo": (b(cambios=True), cuerpo("combo-abierto")),
+        "Buscar un catálogo": (b(cambios=True), cuerpo("combo-buscar")),
+        "Ningún catálogo coincide": (b(cambios=True), cuerpo("combo-nada")),
     }
     assert list(V) == ESTADOS
     capas = {
@@ -315,7 +342,7 @@ def editor():
 
 
 ESTADOS_T = ["Campos", "Editar un campo", "Agregar un campo", "Elegir el tipo", "Acciones de un campo", "Elegir qué muestra", "Un título que no entra",
-             "Un título que no entra: cómo se ve"]
+             "Un título que no entra: cómo se ve", "Un campo de un catálogo", "Elegir el catálogo"]
 CSS_TWA = """.k-wa-t { display: flex; flex-direction: column; gap: 8px; }
 .k-wa-f { display: flex; align-items: center; gap: 6px; }
 .k-wa-f .ct { flex: 1; }
@@ -330,8 +357,10 @@ def tel_editor():
            f'<button type="button" class="ap-ib" aria-label="Más acciones">{F.TKEBAB}</button>')
 
     def detalle(tipo, ob, un, lim):
-        partes = [tipo] + (["Obligatorio"] if ob else []) + (["Único"] if un else [])
-        if lim and tipo == "Texto":
+        partes = [f"De {lim.split(" · ")[0]}" if tipo == "De un catálogo" else tipo] + (["Obligatorio"] if ob else []) + (["Único"] if un else [])
+        if tipo == "De un catálogo":
+            pass
+        elif lim and tipo == "Texto":
             partes.append(f"hasta {lim[0]} caracteres")
         elif lim:
             partes.append(f"de {lim[0]} a {lim[1]}")
@@ -356,16 +385,17 @@ def tel_editor():
               + '</div></div></div><div style="height: 20px;"></div></div>')
     fijo = '<div class="ap-fijo"><button type="button" class="cb cb-sec full">Descartar</button><button type="button" class="cb cb-pri full">Guardar cambios</button></div>'
     Cu = {"Campos": cuerpo, "Editar un campo": cuerpo + fijo, "Agregar un campo": cuerpo + fijo, "Elegir el tipo": cuerpo + fijo, "Acciones de un campo": cuerpo,
-          "Elegir qué muestra": cuerpo + fijo, "Un título que no entra": bajada + fijo, "Un título que no entra: cómo se ve": bajada + fijo}
+          "Elegir qué muestra": cuerpo + fijo, "Un título que no entra": bajada + fijo, "Un título que no entra: cómo se ve": bajada + fijo,
+          "Un campo de un catálogo": cuerpo + fijo, "Elegir el catálogo": cuerpo + fijo}
     vista = ('<div class="ap-grupo k-prev" style="margin: 0;">' + "".join(
         f'<div class="li">{f"""<span class="k-largo">{LARGO}</span>""" if k == 1 else RUBROS[k]}<small>{d.replace("CUIT ", "")} · {ZONAS_EJ[k % len(ZONAS_EJ)]}</small></div>'
         for k, (_n, _c, d, _a) in enumerate(K.PROVEEDORES[:4])) + "</div>")
     tilde = F.svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 14, "3")
+    c_tel = lambda on, txt: f'<span class="t-chk"><i class="{"on" if on else "no"}">{tilde if on else ""}</i>{txt}</span>'
 
     def hoja(n="CUIT", tipo="Texto", ob=True, un=True, lim="13"):
-        c = lambda on, txt: f'<span class="t-chk"><i class="{"on" if on else "no"}">{tilde if on else ""}</i>{txt}</span>'
         return (F.tcampo("Campo", n or "Nombre del campo", req=True, vacio=not n) + F.tcampo("Tipo", tipo, select=True)
-                + c(ob, "Obligatorio") + c(un, "Único") + F.tcampo("Límite", f"hasta {lim} caracteres" if lim else "hasta N caracteres", vacio=not lim))
+                + c_tel(ob, "Obligatorio") + c_tel(un, "Único") + F.tcampo("Límite", f"hasta {lim} caracteres" if lim else "hasta N caracteres", vacio=not lim))
     pie = '<button type="button" class="cb cb-pri">Listo</button><button type="button" class="cb cb-sec">Cancelar</button>'
     tipos = "".join(f'<span class="t-opc {"on" if k == 0 else ""}">{x}<span class="d">{K.TILDE18 if k == 0 else ""}</span></span>' for k, x in enumerate(TIPOS))
     capas = {
@@ -378,12 +408,64 @@ def tel_editor():
         "Acciones de un campo": F.thoja("Zona", '<div class="ap-acciones2"><span role="menuitem">Editar</span><span role="menuitem">Subir</span>'
                                         '<span role="menuitem">Bajar</span><span class="pel" role="menuitem">Quitar</span></div>', ""),
         "Un título que no entra: cómo se ve": F.thoja("Así lo ve quien lo recibe", vista, ""),
+        "Un campo de un catálogo": F.thoja("Editar campo", F.tcampo("Campo", "Zona", req=True) + F.tcampo("Tipo", "De un catálogo", select=True)
+                                           + F.tcampo("Catálogo", "Zonas · 6 opciones", req=True, select=True) + c_tel(True, "Obligatorio") + c_tel(False, "Único"), pie),
+        "Elegir el catálogo": F.thoja("Catálogo", "".join(f'<span class="t-opc {"on" if x.startswith("Zonas") else ""}">{x}<span class="d">{K.TILDE18 if x.startswith("Zonas") else ""}</span></span>'
+                                                          for x in CATALOGOS), "").replace('<div class="hb">', '<div class="hb lst">', 1),
     }
     return C.tel_pagina(Cu, ESTADOS_T, capas, "Campos de un catálogo · teléfono", F.CSS_TFILTRO + K.CSS_T12 + CSS_TWA)
 
 
+# ================================================================ El modal de opciones de la 12, con una fila por campo
+ESTADOS_OPCIONES = ["Editar una opción", "Agregar una opción", "Un campo nuevo", "Un valor de una opción dada de baja"]
+
+
+def campos_opcion(cuit="", zona="", nuevo=False, ayuda_baja=False):
+    zona_c = K.entrada(zona, ph="Elegí una zona") if not ayuda_baja else f'<span class="k-in sel"><span>{ZONA_BAJA}</span>{CHEV}</span>'
+    h = K.md_fila("CUIT", K.entrada(cuit, mono=True, ph="CUIT"), req=True) + K.md_fila("Zona", zona_c if ayuda_baja else f'<span class="k-in sel{"" if zona else " ph"}"><span>{zona or "Elegí una zona"}</span>{CHEV}</span>', req=True)
+    if nuevo:
+        h += K.md_fila("Plazo de pago", f'<span class="k-in off" aria-disabled="true" title="{MOTIVO_GUARDAR}"><span></span></span>')
+    return h
+
+
+def opciones_modal():
+    tit = "Proveedores"
+    nuevas, todas = K.TITULO_NUEVAS.format(tit), K.TITULO_OPCIONES.format(tit)
+    uno = K.md_item("—", "", "Nueva · Sin código", on=True)
+    prov = K.PROVEEDORES[:5]
+
+    def lista(sel):
+        return "".join(K.md_item(k, n, cod, on=k == sel, baja=not a) for k, (n, cod, _d, a) in enumerate(prov, 1))
+    n2, c2, d2, _a = prov[1]
+    cuit = d2.replace("CUIT ", "")
+    capas = {
+        "Editar una opción": K.dlg_opciones(todas, lista(2), K.md_opcion("Opción 2 de 5", n2, c2, RUBROS[1], estado="Activa", campos=campos_opcion(cuit, ZONAS_EJ[1]))),
+        "Agregar una opción": K.dlg_opciones(nuevas, uno, K.md_opcion("Nueva opción", quitar=True, campos=campos_opcion())),
+        "Un campo nuevo": K.dlg_opciones(todas, lista(2), K.md_opcion("Opción 2 de 5", n2, c2, RUBROS[1], estado="Activa", campos=campos_opcion(cuit, ZONAS_EJ[1], nuevo=True))),
+        "Un valor de una opción dada de baja": K.dlg_opciones(todas, lista(2), K.md_opcion("Opción 2 de 5", n2, c2, RUBROS[1], estado="Activa", campos=campos_opcion(cuit, ayuda_baja=True))),
+    }
+    assert list(capas) == ESTADOS_OPCIONES
+    fondo = (C.banda_k(tit, K.ACTIVO + K.ORIGEN_MANO, K.acc_editor(cambios=True)),
+             f'<div class="w-body"><div class="k-cab2">{K.caja_catalogo("Proveedores", "A quiénes se les compra.")}{K.vista_previa([], "Proveedor")}</div>{caja_campos("normal")}{caja_valores("normal")}</div>')
+    js = A.js_estados(ESTADOS_OPCIONES, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, busqueda: 'Buscar opción', busClase: '',\n")
+    t = C.pagina_k("Las opciones de un catálogo, con sus campos · modal", "Inicio / Formularios / Catálogos / Proveedores", fondo[0], fondo[1],
+                   F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + F.CSS_FILTRO + A.CSS_AB + E.CSS_E12 + K.CSS_EDITOR + CSS, ESTADOS_OPCIONES, js, alto=1200)
+    t = t.replace('"$preview":{"width":1440,', '"$preview":{"width":1280,', 1)
+    over = "".join(f'<sc-if value="{{{{s{ESTADOS_OPCIONES.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
+    return F.con_dialogo(t, over, F.CSS_GRILLA + K.CSS_OPCIONES)
+
+
+def tel_opciones():
+    ops = [(n, cod, RUBROS[k], a) for k, (n, cod, _d, a) in enumerate(K.PROVEEDORES[:5])]
+    nueva = F.tcampo("CUIT", "CUIT", req=True, vacio=True) + F.tcampo("Zona", "Elegí una zona", req=True, select=True, vacio=True)
+    guardada = F.tcampo("CUIT", K.PROVEEDORES[1][2].replace("CUIT ", ""), req=True) + F.tcampo("Zona", ZONAS_EJ[1], req=True, select=True)
+    return K.tel_opciones("Proveedores", ops, nueva, guardada, "M-FRM-Catalogo-13.dc.html", "M-FRM-Catalogo-Opciones-13.dc.html")
+
+
 NUEVOS = {"FRM-Catalogo-13": (1280, 1560, "Formularios · catálogo escrito a mano · campos · a 1280 · etapa 13"),
-          "M-FRM-Catalogo-13": (390, 844, "Catálogo escrito a mano · campos · teléfono · etapa 13")}
+          "M-FRM-Catalogo-13": (390, 844, "Catálogo escrito a mano · campos · teléfono · etapa 13"),
+          "FRM-Catalogo-Opciones-13": (1280, 1200, "Formularios · las opciones, con sus campos · a 1280 · etapa 13"),
+          "M-FRM-Catalogo-Opciones-13": (390, 844, "Las opciones, con sus campos · teléfono · etapa 13")}
 
 
 def registrar():
@@ -396,7 +478,7 @@ def registrar():
 
 
 if __name__ == "__main__":
-    for n, t in (("FRM-Catalogo-13", editor()), ("M-FRM-Catalogo-13", tel_editor())):
+    for n, t in (("FRM-Catalogo-13", editor()), ("M-FRM-Catalogo-13", tel_editor()), ("FRM-Catalogo-Opciones-13", opciones_modal()), ("M-FRM-Catalogo-Opciones-13", tel_opciones())):
         (PROJ / f"{n}.dc.html").write_text(L.sin_disenar(n, E.post(n, t)), encoding="utf-8")
     registrar()
     print("listo", list(NUEVOS))

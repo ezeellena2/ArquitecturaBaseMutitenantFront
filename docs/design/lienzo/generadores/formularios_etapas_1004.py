@@ -26,10 +26,10 @@ PROJ = pathlib.Path(__file__).resolve().parent.parent
 
 # (etapa, título, tableros de la compu, teléfonos), en el orden de la fila
 FILAS = [
-    (12, "Etapa 12 · Catálogos", ["FRM-Catalogos", "FRM-Catalogo-Nuevo", "FRM-Catalogo", "FRM-Catalogo-Importar", "FRM-Catalogo-Tipo", "FRM-Catalogo-Filtros",
+    (12, "Etapa 12 · Catálogos", ["FRM-Catalogos", "FRM-Catalogo-Nuevo", "FRM-Catalogo", "FRM-Catalogo-Opciones", "FRM-Catalogo-Importar", "FRM-Catalogo-Tipo", "FRM-Catalogo-Filtros",
                                   "FRM-Catalogo-Contactos"],
-     ["M-FRM-Catalogos", "M-FRM-Catalogo", "M-FRM-Catalogo-Filtros", "M-FRM-Catalogo-Contactos"]),
-    (13, "Etapa 13 · Campos de los catálogos", ["FRM-Catalogo-13"], ["M-FRM-Catalogo-13"]),
+     ["M-FRM-Catalogos", "M-FRM-Catalogo", "M-FRM-Catalogo-Opciones", "M-FRM-Catalogo-Filtros", "M-FRM-Catalogo-Contactos"]),
+    (13, "Etapa 13 · Campos de los catálogos", ["FRM-Catalogo-13", "FRM-Catalogo-Opciones-13"], ["M-FRM-Catalogo-13", "M-FRM-Catalogo-Opciones-13"]),
     (14, "Etapa 14 · Formularios", ["FRM-Formularios", "FRM-Editor", "FRM-Publicar", "FRM-Publicando", "WA-Chats-Formulario", "WA-Chats-Respuesta",
                                     "WA-Chats-Formulario-Cliente", "WA-Mensajes-14", "FRM-Catalogos-14", "FRM-Catalogo-14", "Campana-14"],
      ["M-FRM-Formularios", "M-FRM-Editor", "M-WA-Chats-Formulario", "M-WA-Conversacion-Respuesta", "M-WA-Chats-Formulario-Cliente", "M-WA-Mensaje-14",

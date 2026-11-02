@@ -646,6 +646,10 @@
 .lista .it .dato > .l2.off::before { background: oklch(0.75 0.01 78); }
 .lista .it .dato > .l2.pend::before { background: oklch(0.72 0.15 70); }
 </style>
+<style data-r211="tablas">
+.mini .linea { height: 2px; background: var(--marca); }
+.mini .filas { display: flex; flex-direction: column; gap: 14px; min-height: 140px; padding: 16px; font-size: 14px; color: var(--t2); opacity: 0.5; }
+</style>
 </helmet>
 
 <div class="crit">
@@ -747,6 +751,16 @@
       <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo"><strong>Ningún usuario coincide con los filtros.</strong><button type="button" class="cb cb-enl" style="font-size: 14px;">Limpiar filtros</button></div><div class="rot2">Ninguno coincide</div></div>
       <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo"><strong>No pudimos cargar los usuarios.</strong><button type="button" class="cb cb-sec ch">Reintentar</button></div><div class="rot2">Error</div></div>
     </div>
+  </section>
+
+  <section data-reglas="2-11">
+    <h2>Cuando vuelve a leer</h2>
+    <div class="g4">
+      <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="linea" aria-hidden="true"></div><div class="filas" aria-busy="true"><span>Sofía Herrera · Activo</span><span>Martín Paz · Activo</span><span>Laura Ríos · De baja</span></div><div class="rot2">Vuelve a leer · las filas atenuadas y una línea que corre</div></div>
+    </div>
+    <ul class="reglas2" style="margin-top: 14px;">
+      <li><strong>Lo que estaba queda a la vista,</strong> atenuado y sin poder tocarse, hasta que llega lo nuevo. La primera carga conserva su esqueleto.</li>
+    </ul>
   </section>
 
   <section>

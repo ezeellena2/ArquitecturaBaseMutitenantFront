@@ -103,6 +103,12 @@ REGLAS = [
     ("En el teléfono, las pantallas de edición llevan fijos abajo «Descartar cambios» y «Guardar cambios».", "Marco y pantallas", "03/10/2026"),
     ("Una ficha lleva pestañas aunque alguna tenga un solo dato.", "Marco y pantallas", "03/10/2026"),
     ("El detalle de solo lectura en un diálogo va en una grilla con líneas: rótulo a la izquierda sobre arena clara, valor a la derecha.", "Diálogos", "03/10/2026"),
+    ("Sin leyendas: el renglón de abajo es solo para el error o para un dato, y la ayuda que sirve va en una (i) con tooltip.", "Formularios y campos", "02/11/2026"),
+    ("Toda acción que tarda muestra que trabaja: el botón con el aro y su gerundio, con su color. Nunca alcanza con apagarlo.", "Botones", "02/11/2026"),
+    ("Una confirmación queda abierta hasta la respuesta.", "Diálogos", "02/11/2026"),
+    ("Una tabla que vuelve a leer atenúa sus filas y corre una línea bajo el encabezado.", "Tablas y listas", "02/11/2026"),
+    ("La ⓘ es para lo que no se puede hacer y abre el aviso importante; la (i) es ayuda y no abre nada.", "Avisos y errores", "02/11/2026"),
+    ("En el teléfono, tocar la (i) abre una hoja chica, y tocar algo apagado muestra el motivo en la franja oscura de abajo.", "Avisos y errores", "02/11/2026"),
 ]
 
 # Decisiones por página: (pantalla, opción elegida, qué se eligió, estado en el lienzo).
@@ -566,6 +572,15 @@ DECISIONES = {
         ("La campana, por acceso", "", "Cada uno ve lo suyo: en una organización y como persona, el método de ingreso propio; en Plataforma, las organizaciones pendientes y las recuperaciones (Campana-Plat y M-Campana-Plat, un tablero por marco). Todos, la versión nueva. Cada etapa suma lo suyo en su versión (Campana-14). El número es el de lo que lista: 1 en una organización y 2 en Plataforma y en la 14.", "Dibujada"),
         ("Un título sin preguntas (T24)", "", "Frena publicar: el diálogo lo lista en «Antes hay que resolver», con «Ir al título».", "Dibujada"),
         ("Una publicación trabada, en el teléfono", "", "«Sin confirmar» y «Necesita revisión» bajo el título, con su ⓘ; el detalle va en una hoja, con «Consultar ahora», o «Salió» y «No salió».", "Dibujada"),
+    ],
+    "Traspaso 4 de ArquitecturaBase · El usuario · 02/11": [
+        ("El botón que trabaja", "", "El aro y su gerundio, con su color, en su lugar y sin aceptar otro clic (115). Reemplaza «grisado con su mismo texto». Los tableros de las etapas cerradas cambian en la base de la 12: hasta entonces, manda Criterio · Botones.", "Dibujada"),
+        ("Las opciones de un catálogo", "CO1-B", "«Agregar opción» y «Editar» abren un modal con la lista y la opción (117). Se van la fila vacía y «Opción sin completar». En la compu, la tabla sigue editable. Una opción guardada no se quita: se da de baja.", "Dibujada"),
+        ("Los campos de un catálogo", "", "Siguen en su tabla, sin modal ni «Listo» (118). El tipo dice «De un catálogo», y el catálogo se elige en un combo, en la celda de «Límite» (111).", "Dibujada"),
+        ("Importar opciones", "IM1 a IM3", "Un solo «Importar», sin «Pegar desde Excel» en el ⋮: «Origen» y «Revisión» a la vista, sin pasos numerados, y lo pegado en una grilla con las columnas del catálogo (120).", "Dibujada"),
+        ("Publicar", "PU1", "Por zonas: «Problemas», si hay alguno, y «Qué se publica», siempre. Salen «Qué queda fijo» y «Qué va a pasar». Un texto largo dice «Hasta 20 caracteres; tiene 26.» (112).", "Dibujada"),
+        ("El catálogo de una pregunta", "", "El mismo combo de los campos, sin «Ver el catálogo». Lo dado de baja y lo que no se puede usar van apagados, con su motivo en el tooltip (111).", "Dibujada"),
+        ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

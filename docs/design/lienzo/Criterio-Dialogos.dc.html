@@ -665,9 +665,9 @@
             <div class="seg" role="group" aria-label="Qué querés agregar"><span class="on">Correo</span><span>WhatsApp</span></div>
             <div class="cmp"><label>Correo</label><div class="ctl">lucia.fer@gmail.com</div></div>
           </div>
-          <div class="pie"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri" disabled="{{si}}" style="opacity: 0.85;"><span class="girar2" aria-hidden="true"></span> Enviando…</button></div>
+          <div class="pie"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri" aria-busy="true"><span class="girar2" aria-hidden="true"></span> Enviando…</button></div>
         </div>
-        <p class="pie-rot">Mientras guarda · el botón dice qué hace</p>
+        <p class="pie-rot">Mientras trabaja · queda abierto hasta la respuesta</p>
       </div>
     </div>
     <ul class="reglas2" style="margin-top: 16px;">
@@ -726,7 +726,7 @@
       <li><strong>Se abre centrado</strong>, con la pantalla de atrás oscurecida.</li>
       <li><strong>El cursor arranca en el primer campo.</strong></li>
       <li><strong>Se cierra con ✕, Cancelar o Escape.</strong> Un clic afuera no lo cierra, para no perder lo escrito.</li>
-      <li><strong>Al terminar, se cierra</strong> y un aviso abajo a la derecha confirma lo que pasó.</li>
+      <li><strong>Queda abierto hasta la respuesta.</strong> Al terminar, se cierra y un aviso abajo a la derecha confirma lo que pasó.</li><li><strong>Si lo que corre no se puede cortar,</strong> Cancelar y la ✕ quedan apagados, con el motivo en su tooltip.</li>
       <li><strong>Si lo que se manda se paga</strong> (una plantilla, una difusión), antes del botón se ve el costo estimado.</li>
       <li><strong>Un error de un campo</strong> va debajo de ese campo; un error general, arriba de los botones.</li>
       <li><strong>El detalle de solo lectura</strong> va en una grilla con borde y líneas: el rótulo a la izquierda, sobre arena clara, y el valor a la derecha. Nunca rótulos y valores sueltos sobre blanco.</li>
@@ -738,13 +738,13 @@
     <h2>Prohibido</h2>
     <ul class="prohibido">
       <li>Un diálogo arriba de otro.</li>
-      <li>Una tabla dentro de un diálogo.</li>
+      <li>Una tabla dentro de un diálogo, salvo la revisión y la grilla de importar opciones.</li>
       <li>Bajadas o ayudas debajo del título.</li>
-      <li>Scroll adentro: si no entra, es una pantalla.</li>
+      <li>Scroll adentro: si no entra, es una pantalla. La excepción es importar opciones.</li>
       <li>Más de dos botones en el pie.</li>
       <li>Un diálogo para avisar que algo salió bien: eso es un aviso.</li>
       <li>Paneles que se despliegan o filas que se expanden en vez de un diálogo. La única excepción son los grupos de permisos de un rol.</li>
-      <li>Otros anchos que no sean 420 o 560.</li>
+      <li>Otros anchos que no sean 420 o 560, salvo importar opciones (760) y las opciones de un catálogo (880).</li>
     </ul>
   </section>
 </div>

@@ -21,6 +21,11 @@ de los miembros y de los contactos con el teléfono al costado y solo el despleg
 - M-FRM-Catalogo-Contactos: un catálogo de los contactos en el teléfono (14-texto-diseno.md), como el de los miembros.
 Desde la v147, el filtro «Estado» de la lista dice «Activos» y «Dados de baja» (12-catalogos.md y 14-texto-diseno.md): «No se puede
 usar» es un estado del catálogo, que sigue en la fila, y cuenta entre los activos. La lista de la 14 suma «Productos», su catálogo de ejemplo.
+Desde la v148 (12-texto-diseno.md y la §10 de 12-catalogos.md, con las decisiones 115, 117 y 120), sobre CO1-B e IM1 a IM3 de ArquitecturaBase, adaptados:
+- FRM-Catalogo-Opciones y M-FRM-Catalogo-Opciones, nuevos: las opciones en un modal, con la lista y la opción. Una guardada no se quita: se da de baja.
+- FRM-Catalogo pierde la fila vacía, «Opción sin completar» y «Pegar desde Excel» del ⋮: «Agregar opción» y «Editar» abren el modal.
+- FRM-Catalogo-Importar: un solo diálogo, con «Origen» y «Revisión» a la vista, sin pasos numerados, y lo pegado en una grilla con las columnas del catálogo.
+- Mientras trabaja, el botón pone el aro y su gerundio, con su color (`trabaja`).
 
 Corre después de los generadores de catálogos y antes de `formularios_etapas_1004.py`. Se puede volver a correr.
 """
@@ -43,7 +48,7 @@ PARA_APROBAR = " · para aprobar"
 svg = F.svg
 MAS, X, CHEV, KEBAB, ALERTA, TILDE = F.MAS, F.X, F.CHEV, F.KEBAB, F.ALERTA, A.TILDE
 LAPIZ, ARRIBA, ABAJO, QUITAR, REACTIVAR = F.LAPIZ, F.ARRIBA, F.ABAJO, F.QUITAR, C.REACTIVAR
-GIRA = E.GIRA
+GIRA, trabaja = E.GIRA, E.trabaja
 PEGAR = svg('<rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9.5 4V3h5v1"/><path d="M9 10h6M9 13.5h6M9 17h3.5"/>', 16)
 IMPORTAR = svg('<path d="M12 4v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M5 19.5h14"/>', 16)
 EXPORTAR = svg('<path d="M12 15V4"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/><path d="M5 19.5h14"/>', 16)
@@ -54,8 +59,8 @@ CONTACTOS = svg('<path d="M4 19.5 5.3 16A8 8 0 1 1 8.2 19z"/><circle cx="12" cy=
 GENTE, LAPIZ20 = C.GENTE, C.LAPIZ20
 OJO_TACHADO = svg('<path d="M3 3l18 18"/><path d="M10.6 6.1A9.6 9.6 0 0 1 12 6c5 0 8.5 4.4 9.5 6-.5.8-1.6 2.2-3.1 3.5"/><path d="M6.6 7.6C4.6 8.9 3.2 10.8 2.5 12c1 1.6 4.5 6 9.5 6 1.6 0 3-.4 4.3-1"/>', 16)
 
-MOTIVO_NUEVO = "Guardá el catálogo para pegar o importar."
-MOTIVO_CAMBIOS = "Guardá o descartá los cambios para pegar o importar."
+MOTIVO_NUEVO = "Guardá el catálogo para importar."
+MOTIVO_CAMBIOS = "Guardá o descartá los cambios para importar."
 MOTIVO_TOPE = "Llegó a 10.000 opciones, el máximo de un catálogo."
 
 
@@ -394,15 +399,6 @@ def fila_lectura(k, n, cod, det, activa, campos="", tabla="kl"):
             f'<span class="k-lee">{det}</span>{campos}{est}</div>')
 
 
-def opcion_abierta(n="Venta nueva", cod="VEN", det="Primera visita a un cliente"):
-    """«Editar» del ⋮ abre la opción entera debajo de su fila (el lápiz de CA1-A)."""
-    return ('<div class="k-ab"><div class="k-ed">'
-            f'<div class="w-cmp"><span class="rt">Texto <span class="req">*</span></span><div class="ct">{n}</div><span class="cnt">{len(n)}/30</span></div>'
-            f'<div class="w-cmp"><span class="rt">Código <span class="req">*</span>{F.info("No se muestra en WhatsApp.")}</span><div class="ct">{cod}</div></div>'
-            f'<div class="w-cmp ancho"><span class="rt">Detalle</span><div class="ct">{det}</div></div>'
-            f'<div class="k-pie ancho"><span class="k-act"><i>{TILDE}</i>Activa</span><button type="button" class="cb cb-sec">Listo</button></div></div></div>')
-
-
 def barra(modo):
     """El encabezado de Opciones: solo «+ Agregar opción» y un ⋮ con lo demás, sin cantidades (el usuario, 26/10, front 29451ed6).
     modo: normal | cambios | nuevo | tope | lectura."""
@@ -428,7 +424,7 @@ def menu_mas(modo="normal"):
     if modo == "lectura":
         items = exportar + plantilla
     else:
-        items = (mi(PEGAR, "Pegar desde Excel", motivo) + mi(IMPORTAR, "Importar", motivo if modo != "tope" else "") + exportar
+        items = (mi(IMPORTAR, "Importar", motivo if modo != "tope" else "") + exportar
                  + '<span class="f-sep" role="separator"></span>' + plantilla
                  + mi(AZ, "Ordenar de la A a la Z") + mi(CODIGOS, "Generar los códigos que faltan"))
     return f'<sc-if value="{{{{menuMas}}}}" hint-placeholder-val="{{{{no}}}}"><div class="f-menu" role="menu" aria-label="Más acciones de las opciones">{items}</div></sc-if>'
@@ -477,10 +473,10 @@ def acc_editor(cambios=False, guardando=False, nuevo=False, baja=False, lectura=
     if baja:
         return '<button type="button" class="cb cb-pri">Reactivar</button>'
     d = "" if (cambios and not guardando) else " disabled"
-    g = f'{GIRA if guardando else ""}{"Crear catálogo" if nuevo else "Guardar cambios"}'
+    g = "Crear catálogo" if nuevo else "Guardar cambios"
     desc = "Cancelar" if nuevo else "Descartar"
     primero = f'<button type="button" class="cb cb-sec"{"" if nuevo or (cambios and not guardando) else " disabled"}>{desc}</button>'
-    segundo = f'<button type="button" class="cb cb-pri"{"" if nuevo else d}>{g}</button>'
+    segundo = trabaja("Creando…" if nuevo else "Guardando…") if guardando else f'<button type="button" class="cb cb-pri"{"" if nuevo else d}>{g}</button>'
     if motivo:
         segundo = tip(f'<button type="button" class="cb cb-pri">{g}</button>', motivo, abierto)
     kebab = "" if nuevo else (f'<button type="button" class="ib o-borde" aria-label="Más acciones del catálogo" aria-haspopup="menu" aria-expanded="{"true" if menu else "false"}">{KEBAB}</button>'
@@ -494,7 +490,7 @@ ORIGEN_MANO, ORIGEN_MIEMBROS, ORIGEN_CONTACTOS = ('<span class="k-orig">· Escri
                                                  '<span class="k-orig">· De los contactos de WhatsApp</span>')
 NUEVO_MANO, NUEVO_MIEMBROS, NUEVO_CONTACTOS = ('<span class="w-est off">Escritas a mano</span>', '<span class="w-est off">De los miembros</span>',
                                               '<span class="w-est off">De los contactos de WhatsApp</span>')
-ESTADOS_EDITOR = ["Sin cambios", "Con cambios", "Agregar una opción", "Editar una opción", "Opción sin completar", "Código repetido", "Texto repetido",
+ESTADOS_EDITOR = ["Sin cambios", "Con cambios", "Código repetido", "Texto repetido",
                   "Texto de más de 30", "Acciones de una opción", "Más acciones", "Varias elegidas", "Vista previa abierta",
                   "Guardando", "Guardado", "No se guardó", "Otra persona guardó", "Más acciones del catálogo", "Dar de baja el catálogo", "Dado de baja",
                   "Sin opciones", "1.097 opciones", "10.000 opciones", "Nuevo catálogo", "Falta el nombre", "Solo lectura", "Cargando", "No existe"]
@@ -521,12 +517,6 @@ def filas_motivos(modo=""):
         if modo == "menu" and k == 3:
             kw = dict(menu=True)
         h += fila_editable(k, n, cod, det, activa, **kw)
-        if modo == "editar" and k == 2:
-            h += opcion_abierta()
-    if modo == "agregar":
-        h += fila_editable(5, "", "", "", True, foco="texto")
-    if modo == "sin_completar":
-        h += fila_editable(5, "", "", "", True, err={"texto": "Escribí el texto de la opción.", "codigo": "Escribí el código."})
     return h
 
 
@@ -559,9 +549,6 @@ def editor():
     V = {
         "Sin cambios": (b(), cuerpo_editor(norm)),
         "Con cambios": (b(cambios=True), cuerpo_editor(sucio("cambios"))),
-        "Agregar una opción": (b(cambios=True), cuerpo_editor(caja_opciones(filas_motivos("agregar"), "5 opciones · 4 activas", PIE4, modo="cambios"))),
-        "Editar una opción": (b(cambios=True), cuerpo_editor(sucio("editar"))),
-        "Opción sin completar": (b(cambios=True), cuerpo_editor(caja_opciones(filas_motivos("sin_completar"), "5 opciones · 4 activas", PIE4, modo="cambios"))),
         "Código repetido": (b(cambios=True), cuerpo_editor(sucio("codigo"))),
         "Texto repetido": (b(cambios=True), cuerpo_editor(sucio("repetido"))),
         "Texto de más de 30": (b(cambios=True), cuerpo_editor(sucio("largo"))),
@@ -601,8 +588,8 @@ def editor():
         "Dar de baja el catálogo": A.confirmar("¿Dar de baja «Motivos de visita»?", "Sus opciones dejan de poder elegirse. Se puede reactivar desde acá.", "Dar de baja"),
     }
     js = A.js_estados(ESTADOS_EDITOR, extra=(
-        "      menuMas: k === 9, expMas: k === 9 ? 'true' : 'false', chkTodas: k === 10 ? ' medio' : '',\n"
-        "      pvCerrado: k !== 11, pvAbierto: k === 11,\n"
+        "      menuMas: k === 6, expMas: k === 6 ? 'true' : 'false', chkTodas: k === 7 ? ' medio' : '',\n"
+        "      pvCerrado: k !== 8, pvAbierto: k === 8,\n"
         "      busqueda: 'Buscar opción', busClase: '',\n"))
     t = C.pagina_k("Catálogo escrito a mano · /org/formularios/catalogos/:id", "Inicio / Formularios / Catálogos / Motivos de visita",
                    A.con_estados([(k, v[0]) for k, v in V.items()]), A.con_estados([(k, v[1]) for k, v in V.items()]),
@@ -612,48 +599,54 @@ def editor():
 
 
 # ================================================================ CA2 · Importar (y pegar)
-ESTADOS_IMPORTAR = ["Archivo", "Pegar", "Archivo que no sirve", "Revisar: errores", "Revisar: altas", "Revisar: cambios", "Revisar: bajas",
-                    "Muchas bajas", "Muchas filas con error", "Un valor ambiguo", "Aplicando", "Otra persona guardó", "Otra importación en curso"]
+ESTADOS_IMPORTAR = ["Elegir un archivo", "Archivo elegido", "Archivo que no sirve", "Pegar: la grilla vacía", "Pegar: con filas", "Pegar: una columna ajena", "Revisando",
+                    "Revisión: errores", "Revisión: altas", "Revisión: cambios", "Revisión: bajas", "Muchas bajas", "Muchas filas con error", "Un valor ambiguo", "Aplicando",
+                    "Otra persona guardó", "Otra importación en curso"]
+# 120: un solo diálogo, de arriba abajo, con sus zonas a la vista (IM1-A), las esperas (IM2-A) y la grilla de pegar (IM3-A)
 CSS_IMPORTAR = """.w-dlg.imp { width: 760px; }
-.imp-pasos { display: flex; gap: 6px; grid-column: 1 / -1; }
-.imp-pasos span { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; background: var(--s2); color: var(--t3); font-size: 12.5px; font-weight: 600; }
-.imp-pasos span.on { background: var(--marca-t); color: var(--marca-tx); }
-.imp-pasos span.hecho { color: var(--t2); }
-.imp-seg { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); width: 280px; grid-column: 1 / -1; }
+.w-dlg.imp .db { display: block; max-height: 600px; overflow: auto; padding: 0; }
+.imp-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; padding: 0 20px; background: oklch(0.945 0.018 76); font-size: 13px; font-weight: 600; color: var(--t2); }
+.imp-cab > span { display: inline-flex; align-items: center; gap: 4px; }
+.imp-cab a { color: var(--marca-tx); font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.imp-f { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; align-items: center; min-height: 48px; padding: 6px 20px; border-top: 1px solid var(--borde); font-size: 13.5px; }
+.imp-f .rt { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--t2); }
+.imp-f .arch { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.imp-f .arch b { font-weight: 600; }
+.imp-f .gris { color: var(--t3); }
+.imp-f .err2 { grid-column: 2; margin-top: -2px; font-size: 12.5px; color: var(--peligro); }
+.imp-seg { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); width: 340px; }
 .imp-seg span { height: 30px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--t2); display: inline-flex; align-items: center; justify-content: center; }
 .imp-seg span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
-.imp-zona { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 28px 16px; border: 1.5px dashed var(--borde2); border-radius: 12px; background: var(--s2); text-align: center; font-size: 13.5px; color: var(--t2); }
-.imp-zona.mal { border-color: var(--peligro); }
-.imp-zona b { color: var(--t1); font-size: 14px; }
-.imp-pega { grid-column: 1 / -1; min-height: 150px; padding: 10px 12px; border: 1px solid var(--borde2); border-radius: 10px; background: #fff; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; line-height: 1.7; color: var(--t1); white-space: pre; }
-.imp-lin { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; font-size: 13.5px; color: var(--t2); }
-.imp-lin a { color: var(--marca-tx); font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-.imp-chips { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
-.imp-chips span { height: 26px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--borde); font-size: 12.5px; color: var(--t2); display: inline-flex; align-items: center; }
-.imp-chips span.mal { border-color: oklch(0.85 0.06 25); background: var(--peligro-t); color: oklch(0.45 0.17 25); }
-.imp-tabs { grid-column: 1 / -1; display: flex; gap: 4px; border-bottom: 1px solid var(--borde); }
+.imp-seg.off { opacity: 0.6; }
+.imp-z { display: flex; flex-direction: column; gap: 10px; padding: 12px 20px; border-top: 1px solid var(--borde); }
+.imp-z.aten { opacity: 0.55; pointer-events: none; }
+.imp-lin { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13.5px; color: var(--t2); }
+.imp-lin b { color: var(--t1); font-weight: 600; }
+.imp-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--borde); }
 .imp-tabs span { padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--t2); border-bottom: 2px solid transparent; margin-bottom: -1px; }
 .imp-tabs span.on { color: var(--marca-tx); border-bottom-color: var(--marca); }
 .imp-tabs .c { margin-left: 5px; font-size: 12px; color: var(--t3); }
-.imp-tabla { grid-column: 1 / -1; border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: 13px; }
+.imp-tabla { border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: 13px; }
 .imp-tabla .c, .imp-tabla .f { display: grid; gap: 12px; padding: 0 12px; align-items: center; }
 .imp-tabla .c { min-height: 34px; background: oklch(0.945 0.018 76); font-weight: 600; color: var(--t2); font-size: 12.5px; }
 .imp-tabla .f { min-height: 38px; border-top: 1px solid var(--borde); }
 .imp-tabla .f:nth-child(odd) { background: oklch(0.975 0.008 78); }
 .imp-tabla .mono { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; color: var(--t2); }
 .imp-tabla .tach { color: var(--t3); text-decoration: line-through; }
-.imp-conf { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--borde); border-radius: 10px; font-size: 13.5px; }
+.imp-tabla .ajena { color: var(--peligro); }
+.imp-tabla .cursor { height: 26px; display: inline-flex; align-items: center; padding: 0 8px; border: 2px solid var(--marca); border-radius: 4px; color: var(--t3); }
+.imp-gp { display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--t2); }
+.imp-gp .err2 { font-size: 12.5px; color: var(--peligro); }
+.imp-conf { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; }
 .imp-conf i { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--borde2); box-sizing: border-box; flex-shrink: 0; margin-top: 2px; background: #fff; }
 .imp-conf b { font-weight: 600; }
-.imp-franja { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--peligro-t); color: oklch(0.45 0.17 25); font-size: 13.5px; }
+.imp-franja { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--peligro-t); color: oklch(0.45 0.17 25); font-size: 13.5px; }
 .imp-franja span { flex: 1; }
-.w-dlg.imp .db { max-height: 560px; overflow: auto; }
+.imp-esq { display: flex; flex-direction: column; gap: 8px; }
+.imp-esq span { height: 14px; border-radius: 4px; background: var(--s3); }
 """
-
-
-def pasos_imp(n):
-    nombres = ["1 · Archivo", "2 · Revisar", "3 · Aplicar"]
-    return '<div class="imp-pasos">' + "".join(f'<span class="{"on" if k == n else "hecho" if k < n else ""}">{t}</span>' for k, t in enumerate(nombres)) + "</div>"
+MOTIVO_APLICANDO = "Esperá a que termine de aplicar."
+GRILLA = [("PRV-1098", "Bulones Mar del Plata", "CUIT 30-71567890-2"), ("PRV-1099", "Cerámicos Neuquén", "CUIT 30-70412345-6"), ("PRV-1100", "Clavos del Oeste", "")]
 
 
 def tabla_imp(cols, plantilla, filas):
@@ -669,79 +662,211 @@ CAMBIOS = [('<span class="mono">PRV-0002</span>', "Detalle", '<span class="tach"
 BAJAS = [('<span class="mono">PRV-0005</span>', "Aluminios Cuyo"), ('<span class="mono">PRV-0331</span>', "Ferretería Lomas"), ('<span class="mono">PRV-0790</span>', "Pinturas Oeste")]
 
 
-def dlg_importar(paso, pestana="errores", extra="", pie_modo="normal"):
-    tit = "Importar opciones a «Proveedores»"
-    if paso == "archivo":
-        zona_mal = pie_modo == "mal"
-        cuerpo = (pasos_imp(0) + '<div class="imp-seg" role="radiogroup"><span class="on" role="radio">Archivo</span><span role="radio">Pegar</span></div>'
-                  f'<div class="imp-zona{" mal" if zona_mal else ""}">{IMPORTAR}<b>Elegí un archivo XLSX o CSV</b><button type="button" class="cb cb-sec">Elegir archivo</button></div>'
-                  + ('<span class="err2" role="alert" style="grid-column: 1 / -1; font-size: 12.5px; color: var(--peligro);">El archivo no es un XLSX ni un CSV en UTF-8.</span>' if zona_mal else "")
-                  + f'<div class="imp-lin"><span></span><a href="#">{PLANTILLA} Bajar la plantilla</a></div>')
-        pie = '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Revisar</button>'
-    elif paso == "pegar":
-        cuerpo = (pasos_imp(0) + '<div class="imp-seg" role="radiogroup"><span role="radio">Archivo</span><span class="on" role="radio">Pegar</span></div>'
-                  '<div class="imp-pega">PRV-1098\tBulones Mar del Plata\tCUIT 30-71567890-2\nPRV-1099\tCerámicos Neuquén\tCUIT 30-70412345-6\nPRV-1100\tClavos del Oeste\t</div>'
-                  f'<div class="imp-lin"><span>3 filas pegadas</span><a href="#">{PLANTILLA} Bajar la plantilla</a></div>')
-        pie = '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Revisar</button>'
+def zona_origen(modo="archivo", archivo="", mal=False, apagado=False):
+    """«Origen»: de dónde vienen las filas. La plantilla va en la banda, y qué hace cada origen, en sus (i) (109 y 116)."""
+    on = lambda m: ' class="on"' if m == modo else ""
+    seg = (f'<div class="imp-seg{" off" if apagado else ""}" role="radiogroup" aria-label="Desde"><span{on("archivo")} role="radio">Subir un archivo</span>'
+           f'<span{on("pegar")} role="radio">Pegar desde Excel</span></div>')
+    h = (f'<div class="imp-cab"><span>Origen</span><a href="#">{PLANTILLA} Bajar la plantilla</a></div>'
+         f'<div class="imp-f"><span class="rt">Desde{F.info("Pegar suma filas al catálogo. Un archivo lo reemplaza: lo que no viene se da de baja, no se borra.")}</span>{seg}</div>')
+    if modo == "archivo":
+        nombre = f"<b>{archivo}</b>" if archivo else '<span class="gris">Ningún archivo elegido</span>'
+        boton = f'<button type="button" class="cb cb-sec"{" disabled" if apagado else ""}>{"Cambiar" if archivo else "Elegir archivo"}</button>'
+        error = '<span class="err2" role="alert">El archivo no es un XLSX ni un CSV en UTF-8.</span>' if mal else ""
+        h += (f'<div class="imp-f"><span class="rt">Archivo{F.info("XLSX o CSV en UTF-8, de hasta 10 MiB y 10.000 filas.")}</span>'
+              f'<span class="arch">{nombre}{boton}</span>{error}</div>')
+    return h
+
+
+def grilla(filas=(), ajena=False):
+    """Lo pegado, con los encabezados del catálogo en el orden de la plantilla (IM3-A). Una columna ajena queda al final, en rojo, y no se manda."""
+    cols = ["Código", "Texto", "Detalle"] + (['<span class="ajena">Rubro</span>'] if ajena else [])
+    plantilla = "120px minmax(0, 1fr) minmax(0, 1fr)" + (" 120px" if ajena else "")
+    if filas:
+        cuerpo = [(f'<span class="mono">{c}</span>', x, d) + (('<span class="ajena">Bulones</span>',) if ajena else ()) for c, x, d in filas]
     else:
-        chips = ('<div class="imp-chips"><span>12 altas</span><span>5 cambios</span><span>3 bajas</span><span class="mal">2 filas con errores</span></div>')
-        tabs = ('<div class="imp-tabs" role="tablist">' + "".join(f'<span class="{"on" if k == pestana else ""}" role="tab">{n}<span class="c">{c}</span></span>'
-                                                            for k, n, c in [("errores", "Errores", 2), ("altas", "Altas", 12), ("cambios", "Cambios", 5), ("bajas", "Bajas", 3)]) + "</div>")
-        if pestana == "errores":
-            errores = ERRORES if pie_modo != "ambiguo" else [("3", "Valor", "«1.500» se lee de dos formas. Escribí 1500 o 1,5.")] + ERRORES
-            tabla = tabla_imp(["Fila", "Columna", "Qué pasa"], "70px 120px minmax(0, 1fr)", errores)
-        elif pestana == "altas":
-            tabla = tabla_imp(["Código", "Texto", "Detalle"], "120px minmax(0, 1fr) minmax(0, 1fr)", ALTAS)
-        elif pestana == "cambios":
-            tabla = tabla_imp(["Código", "Columna", "Antes", "Ahora"], "110px 90px minmax(0, 1fr) minmax(0, 1fr)", CAMBIOS)
-        else:
-            tabla = tabla_imp(["Código", "Texto"], "120px minmax(0, 1fr)", BAJAS)
-        archivo = '<div class="imp-lin"><span><b style="color: var(--t1);">proveedores.xlsx</b> · 1.106 filas leídas</span></div>'
-        if pie_modo == "ambiguo":
-            archivo = '<div class="imp-lin"><span><b style="color: var(--t1);">recargos.xlsx</b> · 7 filas leídas</span></div>'
-            tit = "Importar opciones a «Recargo por zona»"
-        # La franja de un 409 o de otra importación va arriba; la casilla que confirma, al pie, junto a «Aplicar»
-        cuerpo = pasos_imp(1) + (extra if "imp-franja" in extra else "") + archivo + chips + tabs + tabla + (extra if "imp-conf" in extra else "")
-        aplicar = "Aplicar sin las 2 filas con errores"
-        if pie_modo == "bajas":
-            pie = (f'<button type="button" class="cb cb-sec">Cancelar</button>'
-                   + tip(f'<button type="button" class="cb cb-pri">{aplicar}</button>', "Confirmá las bajas para aplicar."))
-        elif pie_modo == "errores10":
-            pie = (f'<button type="button" class="cb cb-sec">Cancelar</button>'
-                   + tip('<button type="button" class="cb cb-pri">Aplicar sin las 140 filas con errores</button>', "Confirmá que se aplica sin esas filas."))
-        elif pie_modo == "aplicando":
-            pie = f'<button type="button" class="cb cb-sec" disabled>Cancelar</button><button type="button" class="cb cb-pri" disabled>{GIRA}{aplicar}</button>'
-        elif pie_modo == "409":
-            pie = '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Revisar de nuevo</button>'
-        elif pie_modo == "ocupado":
-            pie = '<button type="button" class="cb cb-sec">Cerrar</button>'
-        else:
-            pie = f'<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">{aplicar}</button>'
-    return F.dialogo(tit, cuerpo, pie, una=False).replace('class="w-dlg"', 'class="w-dlg imp"', 1)
+        cuerpo = [('<span class="cursor">Pegá con Ctrl+V</span>', "", "")]
+    pie = ""
+    if filas:
+        motivo = '<span class="err2">«Rubro» no es una columna del catálogo: no se manda.</span>' if ajena else f"<span>{len(filas)} filas</span>"
+        pie = f'<div class="imp-gp">{motivo}<button type="button" class="cb cb-enl">Limpiar</button></div>'
+    return f'<div class="imp-z">{tabla_imp(cols, plantilla, cuerpo)}{pie}</div>'
+
+
+def zona_revision(pestana="errores", archivo="proveedores.xlsx", hoja="Hoja 1", leidas="1.106", sin_cambio="1.084", errores=ERRORES, franja="", atenuada=False):
+    """«Revisión», debajo: de dónde salió, qué se leyó y una pestaña por tipo de cambio, con su cantidad."""
+    tabs = ('<div class="imp-tabs" role="tablist">' + "".join(f'<span class="{"on" if k == pestana else ""}" role="tab">{n}<span class="c">{c}</span></span>'
+                                                         for k, n, c in [("errores", "Errores", len(errores)), ("altas", "Altas", 12), ("cambios", "Cambios", 5), ("bajas", "Bajas", 3)]) + "</div>")
+    tabla = {"errores": lambda: tabla_imp(["Fila", "Columna", "Qué pasa"], "70px 120px minmax(0, 1fr)", errores),
+             "altas": lambda: tabla_imp(["Código", "Texto", "Detalle"], "120px minmax(0, 1fr) minmax(0, 1fr)", ALTAS),
+             "cambios": lambda: tabla_imp(["Código", "Columna", "Antes", "Ahora"], "110px 90px minmax(0, 1fr) minmax(0, 1fr)", CAMBIOS),
+             "bajas": lambda: tabla_imp(["Código", "Texto"], "120px minmax(0, 1fr)", BAJAS)}[pestana]()
+    lectura = f'<div class="imp-lin"><span><b>{archivo}</b> · {hoja} · {leidas} filas leídas · {sin_cambio} no cambian</span></div>'
+    return f'<div class="imp-cab"><span>Revisión</span></div><div class="imp-z{" aten" if atenuada else ""}">{franja}{lectura}{tabs}{tabla}</div>'
+
+
+def zona_antes(texto):
+    return f'<div class="imp-cab"><span>Antes de aplicar</span></div><div class="imp-z"><div class="imp-conf"><i></i><span>{texto}</span></div></div>'
+
+
+def dlg_importar(tit, cuerpo, pie, cerrar=True):
+    d = F.dialogo(tit, cuerpo, pie, una=False).replace('class="w-dlg"', 'class="w-dlg imp"', 1)
+    if not cerrar:
+        d = d.replace('<button type="button" class="ib" aria-label="Cerrar">', f'<button type="button" class="ib" aria-label="Cerrar" disabled title="{MOTIVO_APLICANDO}">', 1)
+    return d
 
 
 def importar():
-    conf_bajas = ('<div class="imp-conf"><i></i><span><b>Dar de baja 412 opciones</b> (el 38 %). Lo que no viene en el archivo se da de baja, no se borra.</span></div>')
-    conf_err = '<div class="imp-conf"><i></i><span><b>Aplicar sin las 140 filas con errores</b> (el 13 %).</span></div>'
-    franja409 = f'<div class="imp-franja" role="alert">{ALERTA}<span>Otra persona guardó el catálogo. Revisá el archivo de nuevo.</span></div>'
+    tit = "Importar opciones a «Proveedores»"
+    cancelar = '<button type="button" class="cb cb-sec">Cancelar</button>'
+    revisar = cancelar + '<button type="button" class="cb cb-pri">Revisar</button>'
+    revisar_off = cancelar + tip('<button type="button" class="cb cb-pri" disabled>Revisar</button>', "Elegí un archivo o pegá las filas.")
+    aplicar = "Aplicar sin las 2 filas con errores"
+    pie_aplicar = cancelar + f'<button type="button" class="cb cb-pri">{aplicar}</button>'
+    origen_listo = zona_origen(archivo="proveedores.xlsx", apagado=True)
+    conf_bajas = "<b>Dar de baja 412 opciones</b> (el 38 %)."
+    conf_err = "<b>Aplicar sin las 140 filas con errores</b> (el 13 %)."
+    franja409 = f'<div class="imp-franja" role="alert">{ALERTA}<span>Otra persona guardó el catálogo. Revisá de nuevo.</span></div>'
     franja_ocupado = f'<div class="imp-franja" role="alert">{ALERTA}<span>Ya tenés una importación o una exportación en curso. Probá en un momento.</span></div>'
+    errores_amb = [("3", "Valor", "«1.500» se lee de dos formas. Escribí 1500 o 1,5.")] + ERRORES
+    esqueleto = ('<div class="imp-cab"><span>Revisión</span></div><div class="imp-z"><div class="imp-esq"><span style="width: 62%;"></span><span style="width: 100%;"></span>'
+                 '<span style="width: 100%;"></span><span style="width: 84%;"></span></div></div>')
+    cancelar_off = f'<button type="button" class="cb cb-sec" disabled title="{MOTIVO_APLICANDO}">Cancelar</button>'
     capas = {
-        "Archivo": dlg_importar("archivo"), "Pegar": dlg_importar("pegar"), "Archivo que no sirve": dlg_importar("archivo", pie_modo="mal"),
-        "Revisar: errores": dlg_importar("revisar"), "Revisar: altas": dlg_importar("revisar", "altas"), "Revisar: cambios": dlg_importar("revisar", "cambios"),
-        "Revisar: bajas": dlg_importar("revisar", "bajas"),
-        "Muchas bajas": dlg_importar("revisar", "bajas", conf_bajas, "bajas"), "Muchas filas con error": dlg_importar("revisar", "errores", conf_err, "errores10"),
-        "Un valor ambiguo": dlg_importar("revisar", "errores", "", "ambiguo"), "Aplicando": dlg_importar("revisar", "errores", "", "aplicando"),
-        "Otra persona guardó": dlg_importar("revisar", "errores", franja409, "409"), "Otra importación en curso": dlg_importar("revisar", "errores", franja_ocupado, "ocupado"),
+        "Elegir un archivo": dlg_importar(tit, zona_origen(), revisar_off),
+        "Archivo elegido": dlg_importar(tit, zona_origen(archivo="proveedores.xlsx"), revisar),
+        "Archivo que no sirve": dlg_importar(tit, zona_origen(archivo="fotos.zip", mal=True), revisar_off),
+        "Pegar: la grilla vacía": dlg_importar(tit, zona_origen("pegar") + grilla(), revisar_off),
+        "Pegar: con filas": dlg_importar(tit, zona_origen("pegar") + grilla(GRILLA), revisar),
+        "Pegar: una columna ajena": dlg_importar(tit, zona_origen("pegar") + grilla(GRILLA, ajena=True), revisar),
+        "Revisando": dlg_importar(tit, origen_listo + esqueleto, cancelar + trabaja("Revisando…")),
+        "Revisión: errores": dlg_importar(tit, origen_listo + zona_revision(), pie_aplicar),
+        "Revisión: altas": dlg_importar(tit, origen_listo + zona_revision("altas"), pie_aplicar),
+        "Revisión: cambios": dlg_importar(tit, origen_listo + zona_revision("cambios"), pie_aplicar),
+        "Revisión: bajas": dlg_importar(tit, origen_listo + zona_revision("bajas"), pie_aplicar),
+        "Muchas bajas": dlg_importar(tit, origen_listo + zona_revision("bajas") + zona_antes(conf_bajas),
+                                     cancelar + tip(f'<button type="button" class="cb cb-pri">{aplicar}</button>', "Confirmá las bajas para aplicar.")),
+        "Muchas filas con error": dlg_importar(tit, origen_listo + zona_revision() + zona_antes(conf_err),
+                                               cancelar + tip('<button type="button" class="cb cb-pri">Aplicar sin las 140 filas con errores</button>', "Confirmá que se aplica sin esas filas.")),
+        "Un valor ambiguo": dlg_importar("Importar opciones a «Recargo por zona»", zona_origen(archivo="recargos.xlsx", apagado=True)
+                                         + zona_revision(archivo="recargos.xlsx", leidas="7", sin_cambio="4", errores=errores_amb), pie_aplicar),
+        "Aplicando": dlg_importar(tit, origen_listo + zona_revision(atenuada=True), cancelar_off + trabaja("Aplicando…"), cerrar=False),
+        "Otra persona guardó": dlg_importar(tit, origen_listo + zona_revision(franja=franja409), cancelar + '<button type="button" class="cb cb-pri">Revisar de nuevo</button>'),
+        "Otra importación en curso": dlg_importar(tit, origen_listo + zona_revision(franja=franja_ocupado), '<button type="button" class="cb cb-sec">Cerrar</button>'),
     }
+    assert list(capas) == ESTADOS_IMPORTAR
     prov = "".join(fila_editable(k, n, cod, det, a) for k, (n, cod, det, a) in enumerate(PROVEEDORES, 1))
     pie_prov = '<div class="w-pie"><span>1–10 de 1.097</span><span>10 por página · Página 1 de 110</span></div>'
     fondo = (C.banda_k("Proveedores", ACTIVO + ORIGEN_MANO, acc_editor()),
              cuerpo_editor(caja_opciones(prov, "1.097 opciones · 1.090 activas", pie_prov), caja_catalogo("Proveedores", ""), [(n, d) for n, _c, d, a in PROVEEDORES[:6] if a], "Proveedor"))
     js = A.js_estados(ESTADOS_IMPORTAR, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, busqueda: 'Buscar opción', busClase: '',\n")
-    t = C.pagina_k("Importar y pegar opciones", "Inicio / Formularios / Catálogos / Proveedores", fondo[0], fondo[1],
+    t = C.pagina_k("Importar opciones", "Inicio / Formularios / Catálogos / Proveedores", fondo[0], fondo[1],
                    F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + A.CSS_AB + E.CSS_E12 + CSS_EDITOR, ESTADOS_IMPORTAR, js, alto=1200)
     over = "".join(f'<sc-if value="{{{{s{ESTADOS_IMPORTAR.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
     return F.con_dialogo(t, over, F.CSS_GRILLA + CSS_IMPORTAR)
+
+
+# ================================================================ Las opciones en un modal (117), sobre CO1-B de ArquitecturaBase
+# «Agregar opción» lo abre con las agregadas en él, y «Editar» del ⋮, con las de la página. Escribe en el borrador: se guarda con «Guardar cambios».
+# Acá las opciones no se borran: «Quitar opción» va solo en una nueva, y una guardada se da de baja con su Estado. Las piezas tienen parámetros
+# porque la 13 suma una fila por campo (formularios_13_campos_1004.py).
+ESTADOS_OPCIONES = ["Agregar una opción", "Agregar otra", "Editar una opción", "Una opción dada de baja", "Código repetido", "Texto repetido", "Texto de más de 30", "Con un valor"]
+CSS_OPCIONES = """.w-dlg.md { width: 880px; }
+.w-dlg.md .db { padding: 0; gap: 0; grid-template-columns: 270px minmax(0, 1fr); align-items: stretch; height: 450px; }
+.md-lista { display: flex; flex-direction: column; min-height: 0; overflow: auto; border-right: 1px solid var(--borde); background: oklch(0.975 0.008 78); }
+.md-it { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 12px; border-bottom: 1px solid var(--borde); box-sizing: border-box; cursor: pointer; }
+.md-it.on { background: var(--marca-t); }
+.md-it .num { width: 20px; flex: none; text-align: center; font-size: 13px; color: var(--t3); }
+.md-it .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3; }
+.md-it .tx b { font-size: 13.5px; font-weight: 600; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.md-it .tx small { font-size: 12.5px; color: var(--t3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.md-it.baja .tx b { color: var(--t3); }
+.md-it .tri { display: inline-flex; color: var(--peligro); }
+.md-mas { margin-top: auto; padding: 10px 12px; }
+.md-op { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: auto; }
+.md-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 20px; background: oklch(0.945 0.018 76); font-size: 13px; font-weight: 600; color: var(--t2); }
+.md-cab .cb-enl { color: var(--peligro); }
+.md-f { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; padding: 10px 20px; border-top: 1px solid var(--borde); }
+.md-f .rt { display: inline-flex; align-items: center; gap: 4px; min-height: 34px; font-size: 13px; font-weight: 600; color: var(--t2); }
+.md-f .req { color: var(--peligro); }
+.md-f .ctl { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.md-f .lin { display: flex; align-items: center; gap: 12px; }
+.md-f .lin .k-in { flex: 1; min-width: 0; }
+.md-f .err2 { font-size: 12.5px; color: var(--peligro); }
+.md-f .aviso2 { font-size: 12.5px; color: oklch(0.45 0.1 70); }
+.md-seg { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); width: 220px; }
+.md-seg span { height: 28px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--t2); display: inline-flex; align-items: center; justify-content: center; }
+.md-seg span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
+"""
+TITULO_NUEVAS, TITULO_OPCIONES = "Opciones nuevas de «{}»", "Opciones de «{}»"
+
+
+def md_item(num, texto, sub, on=False, baja=False, mal=False):
+    tri = f'<span class="tri" title="Tiene un error">{ALERTA}</span>' if mal else ""
+    return (f'<div class="md-it{" on" if on else ""}{" baja" if baja else ""}" role="option" aria-selected="{"true" if on else "false"}"><span class="num">{num}</span>'
+            f'<span class="tx"><b>{texto or "Sin texto"}</b><small>{sub}</small></span>{tri}</div>')
+
+
+def md_fila(rotulo, control, req=False, ayuda="", err="", aviso=""):
+    rq = ' <span class="req">*</span>' if req else ""
+    extra = f'<span class="err2" role="alert">{err}</span>' if err else (f'<span class="aviso2">{aviso}</span>' if aviso else "")
+    return f'<div class="md-f"><span class="rt">{rotulo}{rq}{F.info(ayuda) if ayuda else ""}</span><span class="ctl">{control}{extra}</span></div>'
+
+
+def md_opcion(posicion, texto="", cod="", det="", valor=None, rotulo_valor="Valor", estado=None, quitar=False, err=None, aviso="", campos=""):
+    """La opción elegida. estado: None en una nueva, porque recién una guardada se puede dar de baja."""
+    err = err or {}
+    filas = md_fila("Texto", entrada(texto, contar=True, ph="Texto", mal="texto" in err, foco=not texto), req=True, ayuda="Es lo que se ve en WhatsApp.", err=err.get("texto", ""), aviso=aviso)
+    filas += md_fila("Código", f'<span class="lin">{entrada(cod, mono=True, ph="Código", mal="codigo" in err)}<button type="button" class="cb cb-enl">Generar desde el texto</button></span>',
+                     req=True, ayuda="No se ve en WhatsApp. Identifica la opción al importar.", err=err.get("codigo", ""))
+    if valor is not None:
+        filas += md_fila(rotulo_valor, entrada(valor, ph="Valor"), req=True)
+    filas += md_fila("Detalle", entrada(det, ph="Opcional"), ayuda="Se ve debajo del texto en WhatsApp.")
+    filas += campos
+    if estado:
+        seg = f'<span class="md-seg" role="radiogroup" aria-label="Estado"><span class="{"on" if estado == "Activa" else ""}" role="radio">Activa</span><span class="{"on" if estado == "De baja" else ""}" role="radio">De baja</span></span>'
+        filas += md_fila("Estado", seg, ayuda="Dada de baja no se ofrece más, y lo ya respondido no cambia.")
+    q = '<button type="button" class="cb cb-enl">Quitar opción</button>' if quitar else ""
+    return f'<div class="md-op"><div class="md-cab"><span>{posicion}</span>{q}</div>{filas}</div>'
+
+
+def dlg_opciones(titulo, items, opcion):
+    mas = f'<div class="md-mas"><button type="button" class="cb cb-sec">{MAS} Agregar opción</button></div>'
+    cuerpo = f'<div class="md-lista" role="listbox" aria-label="Opciones">{items}{mas}</div>{opcion}'
+    pie = '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Listo</button>'
+    return F.dialogo(titulo, cuerpo, pie, una=False).replace('class="w-dlg"', 'class="w-dlg md"', 1)
+
+
+def items_motivos(sel=0, mal=0):
+    return "".join(md_item(k, n, cod, on=k == sel, baja=not a, mal=k == mal) for k, (n, cod, _d, a) in enumerate(OPS, 1))
+
+
+def opciones_modal():
+    tit = "Motivos de visita"
+    nuevas, todas = TITULO_NUEVAS.format(tit), TITULO_OPCIONES.format(tit)
+    uno = md_item("—", "", "Nueva · Sin código", on=True)
+    primera = md_item("—", "Garantía", "Nueva · GAR")
+    n2, c2, d2, _a = OPS[1]
+    n4, c4, d4, _a = OPS[3]
+    capas = {
+        "Agregar una opción": dlg_opciones(nuevas, uno, md_opcion("Nueva opción", quitar=True)),
+        "Agregar otra": dlg_opciones(nuevas, primera + uno, md_opcion("Nueva opción", quitar=True)),
+        "Editar una opción": dlg_opciones(todas, items_motivos(2), md_opcion("Opción 2 de 4", n2, c2, d2, estado="Activa")),
+        "Una opción dada de baja": dlg_opciones(todas, items_motivos(4), md_opcion("Opción 4 de 4", n4, c4, d4, estado="De baja")),
+        "Código repetido": dlg_opciones(todas, items_motivos(2, 2), md_opcion("Opción 2 de 4", n2, "SEG", d2, estado="Activa", err={"codigo": "Ya está en la opción 1."})),
+        "Texto repetido": dlg_opciones(todas, items_motivos(3), md_opcion("Opción 3 de 4", "Venta nueva", "REC", OPS[2][2], estado="Activa", aviso="Otra opción tiene el mismo texto.")),
+        "Texto de más de 30": dlg_opciones(todas, items_motivos(2, 2), md_opcion("Opción 2 de 4", "Venta nueva para clientes del interior", c2, d2, estado="Activa",
+                                                                                 err={"texto": "Puede tener hasta 30 caracteres."})),
+        "Con un valor": dlg_opciones(TITULO_OPCIONES.format("Recargo por zona"), "".join(md_item(k, n, cod, on=k == 2) for k, (n, cod, _d, _v, _a) in enumerate(ZONAS, 1)),
+                                     md_opcion("Opción 2 de 5", ZONAS[1][0], ZONAS[1][1], ZONAS[1][2], valor=ZONAS[1][3], rotulo_valor="Valor (decimal)", estado="Activa")),
+    }
+    assert list(capas) == ESTADOS_OPCIONES
+    fondo = (C.banda_k(tit, ACTIVO + ORIGEN_MANO, acc_editor(cambios=True)), cuerpo_editor(caja_opciones(filas_motivos(), "", PIE4, modo="cambios")))
+    js = A.js_estados(ESTADOS_OPCIONES, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, busqueda: 'Buscar opción', busClase: '',\n")
+    t = C.pagina_k("Opciones de un catálogo · modal", "Inicio / Formularios / Catálogos / Motivos de visita", fondo[0], fondo[1],
+                   F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + A.CSS_AB + E.CSS_E12 + CSS_EDITOR, ESTADOS_OPCIONES, js, alto=1200)
+    over = "".join(f'<sc-if value="{{{{s{ESTADOS_OPCIONES.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
+    return F.con_dialogo(t, over, F.CSS_GRILLA + CSS_OPCIONES)
 
 
 # ================================================================ CA3 · Tipo de valor
@@ -1006,8 +1131,7 @@ def tel_lista(con_usan=False):
     return C.tel_pagina(cuerpo, ESTADOS_TL, capas, "Catálogos · teléfono", F.CSS_TFILTRO + CSS_T12)
 
 
-ESTADOS_TE = ["Sin cambios", "Con cambios", "Acciones de una opción", "Editar una opción", "Agregar una opción", "Código repetido", "Texto repetido",
-              "Más acciones", "Así lo ve quien lo recibe", "Dar de baja el catálogo", "Guardado", "Sin opciones", "Solo lectura"]
+ESTADOS_TE = ["Sin cambios", "Con cambios", "Acciones de una opción", "Más acciones", "Así lo ve quien lo recibe", "Dar de baja el catálogo", "Guardado", "Sin opciones", "Solo lectura"]
 
 
 def tel_ro(rotulo, valor):
@@ -1044,21 +1168,10 @@ def tel_editor():
                 + f'<div class="ap-gtit">Opciones{agregar}</div><div class="ap-grupo">' + opciones(vacia, lectura, cambio) + '</div><div style="height: 20px;"></div></div>' + fijo)
     fijo = '<div class="ap-fijo"><button type="button" class="cb cb-sec full">Descartar</button><button type="button" class="cb cb-pri full">Guardar cambios</button></div>'
     snack = f'<div class="f-snack" role="status"><span class="ok">{F.OK}</span><span class="tx">Guardamos el catálogo.</span></div>'
-    Cu = {"Sin cambios": cuerpo(), "Con cambios": cuerpo(cambio=True, fijo=fijo), "Acciones de una opción": cuerpo(), "Editar una opción": cuerpo(fijo=fijo),
-          "Agregar una opción": cuerpo(fijo=fijo), "Código repetido": cuerpo(fijo=fijo), "Texto repetido": cuerpo(fijo=fijo), "Más acciones": cuerpo(),
+    Cu = {"Sin cambios": cuerpo(), "Con cambios": cuerpo(cambio=True, fijo=fijo), "Acciones de una opción": cuerpo(), "Más acciones": cuerpo(),
           "Así lo ve quien lo recibe": cuerpo(), "Dar de baja el catálogo": cuerpo(), "Guardado": cuerpo() + snack, "Sin opciones": cuerpo("No se puede usar", vacia=True),
           "Solo lectura": cuerpo(lectura=True)}
 
-    def editar(n="Venta nueva", cod="VEN", det="Primera visita a un cliente", err=False, aviso=False):
-        c = F.tcampo("Código", cod or "Código", req=True, vacio=not cod)
-        if err:
-            c = c.replace('<div class="ct">', '<div class="ct mal">', 1).replace("</div></div>", '</div><span class="t-err" role="alert">Ya está en la opción 1.</span></div>', 1)
-        extra = f'<span class="ay" style="align-self: flex-end;">{len(n)}/30</span>'
-        if aviso:
-            extra = '<span class="ay aviso2">Otra opción tiene el mismo texto.</span>' + extra
-        texto = F.tcampo("Texto", n or "Texto", req=True, vacio=not n).replace("</div></div>", f"</div>{extra}</div>", 1)
-        return texto + c + F.tcampo("Detalle", det or "Opcional", vacio=not det) + f'<span class="t-chk"><i class="on">{TILDE14}</i>Activa</span>'
-    pie = '<button type="button" class="cb cb-pri">Listo</button><button type="button" class="cb cb-sec">Cancelar</button>'
     items = [(n, d) for n, _c, d, a in OPS if a]
     vista = ('<div class="ap-grupo k-prev" style="margin: 0;">' + "".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in items) + "</div>")
     mas = ('<div class="ap-acciones2"><span role="menuitem">Exportar</span><span role="menuitem">Descargar la plantilla</span><span role="menuitem">Ordenar de la A a la Z</span>'
@@ -1066,10 +1179,6 @@ def tel_editor():
     capas = {
         "Acciones de una opción": F.thoja("Reclamo", '<div class="ap-acciones2"><span role="menuitem">Editar</span><span role="menuitem">Subir</span><span role="menuitem">Bajar</span>'
                                           '<span class="pel" role="menuitem">Dar de baja</span></div>', ""),
-        "Editar una opción": F.thoja("Editar opción", editar(), pie),
-        "Agregar una opción": F.thoja("Nueva opción", editar("", "", ""), pie),
-        "Código repetido": F.thoja("Editar opción", editar("Venta nueva", "SEG", err=True), pie),
-        "Texto repetido": F.thoja("Editar opción", editar("Venta nueva", "REC", "Hay un problema para resolver", aviso=True), pie),
         "Más acciones": F.thoja("Motivos de visita", mas, ""),
         "Así lo ve quien lo recibe": F.thoja("Así lo ve quien lo recibe", vista, ""),
         "Dar de baja el catálogo": F.thoja("¿Dar de baja «Motivos de visita»?", '<p style="margin: 0; font-size: 15px; line-height: 1.45; color: var(--t2);">Sus opciones dejan de poder '
@@ -1077,6 +1186,50 @@ def tel_editor():
                                            '<button type="button" class="cb cb-pel lleno">Dar de baja</button><button type="button" class="cb cb-sec">Cancelar</button>'),
     }
     return C.tel_pagina(Cu, ESTADOS_TE, capas, "Catálogo escrito a mano · teléfono", E.CSS_E12 + CSS_T12)
+
+
+ESTADOS_TO = ["La lista", "La lista con errores", "Una opción nueva", "Una opción guardada", "Código repetido"]
+CSS_TO = """.ap-cuerpo > .f-campos:first-child { margin-top: 14px; }
+.t-quitar { align-self: flex-start; padding: 4px 0; font-size: 15px; font-weight: 600; color: var(--peligro); text-decoration: none; }
+.q-row .tri { display: inline-flex; color: var(--peligro); flex: none; }
+.q-row.on { background: var(--marca-t); }
+"""
+
+
+def tel_opcion(n, cod, det, estado=None, err=False, aviso=False, quitar=False, campos=""):
+    """La opción, a pantalla completa. Una guardada no se quita: se da de baja con su Estado (117)."""
+    c = F.tcampo("Código", cod or "Código", req=True, vacio=not cod)
+    if err:
+        c = c.replace('<div class="ct">', '<div class="ct mal">', 1).replace("</div></div>", '</div><span class="t-err" role="alert">Ya está en la opción 1.</span></div>', 1)
+    extra = f'<span class="ay" style="align-self: flex-end;">{len(n)}/30</span>'
+    if aviso:
+        extra = '<span class="ay aviso2">Otra opción tiene el mismo texto.</span>' + extra
+    texto = F.tcampo("Texto", n or "Texto", req=True, vacio=not n).replace("</div></div>", f"</div>{extra}</div>", 1)
+    fin = F.tcampo("Estado", estado, select=True) if estado else ""
+    q = '<a class="t-quitar" href="#">Quitar opción</a>' if quitar else ""
+    return f'<div class="f-campos">{texto}{c}{F.tcampo("Detalle", det or "Opcional", vacio=not det)}{campos}{fin}{q}</div>'
+
+
+def tel_opciones(catalogo="Motivos de visita", ops=None, campos_nueva="", campos_guardada="", volver_tel="M-FRM-Catalogo.dc.html", lista_tel="M-FRM-Catalogo-Opciones.dc.html"):
+    """El modal en el teléfono ocupa la pantalla: primero la lista y, al tocar una opción, la opción con «Volver a la lista». «Cancelar» y «Listo» van en la lista."""
+    ops = ops or OPS
+    fijo = '<div class="ap-fijo"><button type="button" class="cb cb-sec full">Cancelar</button><button type="button" class="cb cb-pri full">Listo</button></div>'
+
+    def lista(mal=0):
+        filas = "".join(f'<div class="q-row"><span class="num">{k}</span><span class="tx"><b>{n}<span class="cod">{cod}</span></b><span>{d}</span></span>'
+                        + (f'<span class="tri" title="Tiene un error">{ALERTA}</span>' if k == mal else "") + "</div>" for k, (n, cod, d, _a) in enumerate(ops[:6], 1))
+        return (C.t_bar("Opciones", catalogo, volver_tel) + '<div class="ap-cuerpo"><div class="ap-gtit">Opciones<a href="#">Agregar opción</a></div>'
+                f'<div class="ap-grupo">{filas}</div><div style="height: 20px;"></div></div>' + fijo)
+
+    def opcion(pos, cuerpo):
+        return (C.t_bar(pos, catalogo, lista_tel).replace('aria-label="Volver"', 'aria-label="Volver a la lista"', 1)
+                + f'<div class="ap-cuerpo">{cuerpo}<div style="height: 20px;"></div></div>')
+    n2, c2, d2, _a = ops[1]
+    total = len(ops)
+    Cu = {"La lista": lista(), "La lista con errores": lista(2), "Una opción nueva": opcion("Nueva opción", tel_opcion("", "", "", quitar=True, campos=campos_nueva)),
+          "Una opción guardada": opcion(f"Opción 2 de {total}", tel_opcion(n2, c2, d2, estado="Activa", campos=campos_guardada)),
+          "Código repetido": opcion(f"Opción 2 de {total}", tel_opcion(n2, ops[0][1], d2, estado="Activa", err=True, campos=campos_guardada))}
+    return C.tel_pagina(Cu, ESTADOS_TO, {}, "Opciones de un catálogo · teléfono", E.CSS_E12 + CSS_T12 + CSS_TO)
 
 
 ESTADOS_TF = ["Sin cambios", "Con cambios", "Acciones de una condición", "Editar una condición", "Así lo ve quien lo recibe", "Elegir a quién", "Actualizando",
@@ -1194,10 +1347,10 @@ def tel_contactos():
 # ================================================================ canvas.json (la fila de cada uno la pone formularios_etapas_1004.py)
 TITULOS = {"FRM-Catalogos": ("Formularios · Catálogos", 900), "FRM-Catalogos-14": ("Formularios · Catálogos · etapa 14", 900),
            "FRM-Catalogo-Nuevo": ("Formularios · nuevo catálogo", 900), "FRM-Catalogo": ("Formularios · catálogo escrito a mano", 1200),
-           "FRM-Catalogo-Importar": ("Formularios · importar y pegar opciones", 1200), "FRM-Catalogo-Tipo": ("Formularios · catálogo con tipo de valor", 1000),
+           "FRM-Catalogo-Opciones": ("Formularios · las opciones de un catálogo", 1200), "FRM-Catalogo-Importar": ("Formularios · importar opciones", 1200), "FRM-Catalogo-Tipo": ("Formularios · catálogo con tipo de valor", 1000),
            "FRM-Catalogo-Filtros": ("Formularios · catálogo de los miembros", 1000), "FRM-Catalogo-Contactos": ("Formularios · catálogo de los contactos", 1000),
            "M-FRM-Catalogos": ("Catálogos · teléfono", 844), "M-FRM-Catalogos-14": ("Catálogos · teléfono · etapa 14", 844),
-           "M-FRM-Catalogo": ("Catálogo escrito a mano · teléfono", 844), "M-FRM-Catalogo-Filtros": ("Catálogo de los miembros · teléfono", 844),
+           "M-FRM-Catalogo": ("Catálogo escrito a mano · teléfono", 844), "M-FRM-Catalogo-Opciones": ("Las opciones de un catálogo · teléfono", 844), "M-FRM-Catalogo-Filtros": ("Catálogo de los miembros · teléfono", 844),
            "M-FRM-Catalogo-Contactos": ("Catálogo de los contactos · teléfono", 844)}
 
 
@@ -1214,7 +1367,7 @@ def registrar():
 def comprobar(n, t):
     html = t[:t.index('<script type="text/x-dc"')]  # sin el JS del tablero (el primer <script> es el de support.js)
     html = re.sub(r'\s(?:title|aria-label)="[^"]*"', "", html)  # lo que va en un ⓘ o en un tooltip no cuenta
-    for prohibido in ("Textos en", "Cambios sin guardar", "No se cambia", "Guardando…", "Diseñar formularios", "FRM-Listado", "English", "probado hoy",
+    for prohibido in ("Textos en", "Cambios sin guardar", "No se cambia", "Diseñar formularios", "FRM-Listado", "English", "probado hoy",
                       "Una opción</span>", "De dónde salen</span></span>", "Como si lo recibiera", "probado el", ">Probar<", ">Vista previa<",
                       "Más de 200 opciones"):
         assert prohibido not in html, (n, prohibido)
@@ -1228,9 +1381,9 @@ if __name__ == "__main__":
     tableros = {
         "FRM-Catalogos": pagina_lista("Catálogos · /org/formularios/catalogos", ESTADOS_LISTA, "e"),
         "FRM-Catalogos-14": pagina_lista("Catálogos · /org/formularios/catalogos", ESTADOS_LISTA, "e", con_usan=True),
-        "FRM-Catalogo-Nuevo": nuevo(), "FRM-Catalogo": editor(), "FRM-Catalogo-Importar": importar(), "FRM-Catalogo-Tipo": tipo_valor(),
+        "FRM-Catalogo-Nuevo": nuevo(), "FRM-Catalogo": editor(), "FRM-Catalogo-Opciones": opciones_modal(), "FRM-Catalogo-Importar": importar(), "FRM-Catalogo-Tipo": tipo_valor(),
         "FRM-Catalogo-Filtros": miembros(), "FRM-Catalogo-Contactos": contactos(),
-        "M-FRM-Catalogos": tel_lista(), "M-FRM-Catalogos-14": tel_lista(con_usan=True), "M-FRM-Catalogo": tel_editor(), "M-FRM-Catalogo-Filtros": tel_filtros(),
+        "M-FRM-Catalogos": tel_lista(), "M-FRM-Catalogos-14": tel_lista(con_usan=True), "M-FRM-Catalogo": tel_editor(), "M-FRM-Catalogo-Opciones": tel_opciones(), "M-FRM-Catalogo-Filtros": tel_filtros(),
         "M-FRM-Catalogo-Contactos": tel_contactos(),
     }
     for n, t in tableros.items():

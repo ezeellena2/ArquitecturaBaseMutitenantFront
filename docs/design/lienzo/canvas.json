@@ -1819,7 +1819,7 @@
       "page": "archivo"
     },
     "FRM-Catalogo-Filtros.dc.html": {
-      "x": 7600,
+      "x": 9120,
       "y": 460,
       "w": 1440,
       "h": 1000,
@@ -1854,7 +1854,7 @@
       "page": "archivo"
     },
     "M-FRM-Catalogo-Filtros.dc.html": {
-      "x": 940,
+      "x": 1410,
       "y": 1780,
       "w": 390,
       "h": 844,
@@ -2650,16 +2650,16 @@
       "title": "Formularios · Catálogos · etapa 14"
     },
     "FRM-Catalogo-Importar.dc.html": {
-      "x": 4560,
+      "x": 6080,
       "y": 460,
       "is_interactive": true,
       "w": 1440,
       "h": 1200,
       "page": "formularios",
-      "title": "Formularios · importar y pegar opciones"
+      "title": "Formularios · importar opciones"
     },
     "FRM-Catalogo-Tipo.dc.html": {
-      "x": 6080,
+      "x": 7600,
       "y": 460,
       "is_interactive": true,
       "w": 1440,
@@ -2668,7 +2668,7 @@
       "title": "Formularios · catálogo con tipo de valor"
     },
     "FRM-Catalogo-Contactos.dc.html": {
-      "x": 9120,
+      "x": 10640,
       "y": 460,
       "is_interactive": true,
       "w": 1440,
@@ -2821,7 +2821,7 @@
       "y": 1280
     },
     "M-FRM-Catalogo-Contactos.dc.html": {
-      "x": 1410,
+      "x": 1880,
       "y": 1780,
       "is_interactive": true,
       "w": 390,
@@ -2882,6 +2882,42 @@
       "w": 390,
       "x": 7990,
       "y": 2300
+    },
+    "FRM-Catalogo-Opciones.dc.html": {
+      "x": 4560,
+      "y": 460,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1200,
+      "page": "formularios",
+      "title": "Formularios · las opciones de un catálogo"
+    },
+    "M-FRM-Catalogo-Opciones.dc.html": {
+      "x": 940,
+      "y": 1780,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "formularios",
+      "title": "Las opciones de un catálogo · teléfono"
+    },
+    "FRM-Catalogo-Opciones-13.dc.html": {
+      "x": 1520,
+      "y": 3144,
+      "is_interactive": true,
+      "w": 1280,
+      "h": 1200,
+      "page": "formularios",
+      "title": "Formularios · las opciones, con sus campos · a 1280 · etapa 13"
+    },
+    "M-FRM-Catalogo-Opciones-13.dc.html": {
+      "x": 470,
+      "y": 4824,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "formularios",
+      "title": "Las opciones, con sus campos · teléfono · etapa 13"
     }
   },
   "createdOnFiles": {
