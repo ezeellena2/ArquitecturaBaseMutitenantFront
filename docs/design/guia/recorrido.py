@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 149 · 2 de noviembre de 2026"
+VERSION = "versión 150 · 2 de noviembre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -144,6 +144,9 @@ CAPITULOS = [
          "La pestaña Tablero: se arma sola con las preguntas, con cuántas llegaron por día, semana o mes, los totales de los números y cuántas veces salió cada opción. Cada tarjeta se cuenta, se ve como tabla o se quita; «Agregar gráfico» la devuelve."),
         ("frm-respuesta", "Una respuesta", "/org/formularios/:id/respuestas?respuesta=VIS-000126", "no", "15", ["FRM-Respuesta", "FRM-Respuesta-Completa"], ["M-FRM-Respuesta"], [],
          "Se abre al costado de la planilla, con ↑ ↓ para pasar a la siguiente: cuándo llegó, quién la respondió y sus respuestas. En el teléfono, a pantalla completa."),
+        ("frm-datos-personas", "Datos de las personas", "/org/datos-de-las-personas", "no", "16", ["FRM-Datos-Personas", "FRM-Usuario-Datos"], ["M-FRM-Datos-Personas", "M-FRM-Usuario-Datos"],
+         ["FRM-Catalogo-16", "M-FRM-Catalogo-16", "FRM-Editor-16", "M-FRM-Editor-16", "FRM-Publicar-16", "WA-Chats-Formulario-16", "M-WA-Chats-Formulario-16", "FRM-Respuestas-16", "M-FRM-Respuestas-16"],
+         "Cada organización define datos de sus personas, como «Zona», y los carga en su ficha. Con ellos, cada persona recibe solo las opciones que le corresponden."),
         ("frm-ciclo", "Dar de baja, reactivar, borrar y copiar", "/org/formularios", "no", "17", ["FRM-Editor-Baja"], ["M-FRM-Editor-Baja"], ["FRM-Dar-De-Baja", "FRM-Reactivar-Eliminar", "FRM-Copiar"],
          "Desde el ⋮ de cada formulario: darlo de baja (deja de mandarse y de ofrecerse, y se conserva lo cargado), reactivarlo con una versión nueva, borrarlo si no tiene respuestas o copiarlo en borrador. El editor de un dado de baja dice quién y cuándo, y qué pasa en WhatsApp."),
         ("frm-reglas", "Cuando llega una respuesta", "/org/formularios/:id", "no", "21", ["FRM-Editor-Reglas"], ["M-FRM-Reglas"], ["FRM-Pdf"],

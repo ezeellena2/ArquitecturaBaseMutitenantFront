@@ -36,6 +36,8 @@ FILAS = [
       "M-FRM-Catalogos-14", "M-FRM-Catalogo-14", "M-Campana-14"]),
     (15, "Etapa 15 · Respuestas", ["FRM-Formularios-15", "FRM-Respuestas", "FRM-Respuestas-Filtros", "FRM-Respuesta", "FRM-Respuesta-Completa", "FRM-Respuestas-Exportar", "FRM-Tablero"],
      ["M-FRM-Formularios-15", "M-FRM-Respuestas", "M-FRM-Respuesta", "M-FRM-Tablero"]),
+    (16, "Etapa 16 · Datos de las personas", ["FRM-Datos-Personas", "FRM-Usuario-Datos", "FRM-Catalogo-16", "FRM-Editor-16", "FRM-Publicar-16", "WA-Chats-Formulario-16", "FRM-Respuestas-16"],
+     ["M-FRM-Datos-Personas", "M-FRM-Usuario-Datos", "M-FRM-Catalogo-16", "M-FRM-Editor-16", "M-WA-Chats-Formulario-16", "M-FRM-Respuestas-16"]),
     (17, "Etapa 17 · Ciclo de vida", ["FRM-Formularios-17", "FRM-Editor-Baja", "FRM-Dar-De-Baja", "FRM-Reactivar-Eliminar", "FRM-Copiar"],
      ["M-FRM-Formularios-17", "M-FRM-Editor-Baja"]),
     (18, "Etapa 18 · Fotos y documentos", ["FRM-Editor-18", "FRM-Publicar-18", "WA-Chats-Respuesta-18", "WA-Chats-Visor"],

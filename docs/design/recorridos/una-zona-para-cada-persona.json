@@ -1,0 +1,87 @@
+{
+  "id": "una-zona-para-cada-persona",
+  "titulo": "Que cada persona vea solo sus opciones",
+  "etapa": "Etapa 16 · Datos de las personas",
+  "orden": 10,
+  "resumen": "Lucía define «Zona», se la carga a cada persona, la marca como filtro en «Proveedores», arma el filtro en la pregunta, publica con avisos y ve qué pasa con quien no tiene el dato.",
+  "pasos": [
+    {
+      "tablero": "FRM-Datos-Personas",
+      "tweaks": {
+        "estado": "De un catálogo"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Guardar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Define «Zona»",
+      "texto": "Un dato de la organización, de texto o de un catálogo. El catálogo se elige en el mismo combo de los campos.",
+      "avanzar": "Tocá «Guardar».",
+      "ruta": "/org/datos-de-las-personas",
+      "accion": "Guarda el dato."
+    },
+    {
+      "tablero": "FRM-Usuario-Datos",
+      "tweaks": {
+        "estado": "Datos: con cambios"
+      },
+      "resaltar": ".dp-pie button.cb-pri",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Se la carga a cada persona",
+      "texto": "La ficha suma la pestaña «Datos», que se guarda aparte del acceso.",
+      "avanzar": "Tocá «Guardar cambios».",
+      "ruta": "/org/usuarios/:id",
+      "accion": "Guarda los datos."
+    },
+    {
+      "tablero": "FRM-Catalogo-16",
+      "tweaks": {
+        "estado": "Campos"
+      },
+      "resaltar": ".w-th.kc span:has-text(\"Filtro\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "La marca como filtro",
+      "texto": "En «Proveedores», el campo Zona decide qué opciones ve cada persona.",
+      "avanzar": "Tocá «Guardar cambios».",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Guarda el catálogo."
+    },
+    {
+      "tablero": "FRM-Editor-16",
+      "tweaks": {
+        "estado": "Qué opciones ve cada persona"
+      },
+      "resaltar": ".q-fil .como .res",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Arma el filtro en la pregunta",
+      "texto": "«Zona es la zona de quien lo recibe». «Como si lo recibiera» muestra lo que ve cada uno: Juan Gómez, 14 opciones.",
+      "avanzar": "Tocá «Publicar en WhatsApp».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Abre publicar."
+    },
+    {
+      "tablero": "FRM-Publicar-16",
+      "tweaks": {
+        "estado": "Solo avisos"
+      },
+      "resaltar": ".w-dlg button.cb-pri",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Publica con avisos",
+      "texto": "Los avisos cuentan lo que conviene saber, y no frenan la publicación.",
+      "avanzar": "Tocá «Publicar versión 4».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Publica la versión."
+    },
+    {
+      "tablero": "WA-Chats-Formulario-16",
+      "tweaks": {
+        "estado": "Le falta el dato"
+      },
+      "resaltar": null,
+      "actor": "Lucía · Dueña · web",
+      "titulo": "A quien no tiene el dato no se le manda",
+      "texto": "El motivo dice qué dato falta. Nunca se manda la lista entera.",
+      "avanzar": "Terminó el recorrido.",
+      "ruta": "/org/whatsapp/chats",
+      "accion": "Cierra el diálogo."
+    }
+  ]
+}

@@ -590,6 +590,12 @@ DECISIONES = {
         ("La respuesta en el teléfono", "", "Es la pantalla completa, con las dos secciones plegables. No hay vista rápida.", "Dibujada"),
         ("Solo ver formularios", "", "Quien tiene `forms.read` sin `formrecords.read` ve la lista sin las columnas de respuestas.", "Dibujada"),
     ],
+    "Etapa 16 · Datos de las personas · 02/11": [
+        ("Dónde va", "", "En Administración, dentro de «Gestión de usuarios»: son datos de las personas de la organización.", "Dibujada"),
+        ("La ficha del usuario", "", "Las pestañas «Acceso» y «Datos» aparecen porque el módulo aporta una. Cada pestaña guarda lo suyo, con sus botones.", "Dibujada"),
+        ("Qué opciones ve cada persona", "", "En la pregunta, con un renglón por filtro, «Como si lo recibiera», el máximo por persona y quién no tiene el dato.", "Dibujada"),
+        ("Publicar con avisos", "", "«Avisos» va entre «Problemas» y «Qué se publica», solo si hay alguno, y no apaga «Publicar».", "Dibujada"),
+    ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
     ],
