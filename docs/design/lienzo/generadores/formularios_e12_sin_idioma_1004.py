@@ -65,7 +65,7 @@ NO_PUBLICADO = "No está publicado para este número"
 CON_TITULOS = False  # 88: los títulos de sección, solo en los tableros de la 14
 TITULO_EJ = "Resultado de la visita"
 TITULO_SUELTO = "Cierre de la visita"
-SOLO_14 = ["Agregar un título", "Editar un título", "Acciones de un título", "Sin número conectado", "Una cuenta sin el formulario", "Un título sin preguntas",
+SOLO_14 = ["Agregar un título", "Editar un título", "Sin número conectado", "Una cuenta sin el formulario", "Un título sin preguntas",
            "Sin confirmar", "Necesita revisión"]
 
 
@@ -78,6 +78,12 @@ def solo_en(diccionario, estados):
     return {k: v for k, v in diccionario.items() if k in estados}
 
 CSS_E12 = """.cb[aria-disabled="true"] { opacity: 0.55; cursor: default; }
+.q-it .dato, .q-it.q-tit .dato { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.35; gap: 1px; }
+.q-it .dato b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-it .dato > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-acc2 { display: inline-flex; align-items: center; flex: none; }
+.q-acc2 .ib { width: 30px; height: 30px; flex: none; border: 0; border-radius: 8px; }
+.q-acc2 .ib[aria-disabled="true"] { color: var(--borde2); cursor: default; }
 .cb.k-trabaja[aria-disabled="true"] { opacity: 1; cursor: progress; }
 .cb .girar2 { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; display: inline-block; animation: girar2 0.8s linear infinite; flex-shrink: 0; }
 @keyframes girar2 { to { transform: rotate(360deg); } }
@@ -135,7 +141,39 @@ def info_btn(texto):
     return F.info(texto).replace('class="f-i"', 'class="f-i btn"', 1).replace('role="img"', 'role="button"', 1)
 
 
+def acciones_q(n, primera=False, ultima=False, editar=True):
+    """↑ ↓ ✎ 🗑 a la vista, donde importa el orden (127). Las opciones de una pregunta se escriben en el lugar: sin ✎."""
+    lapiz = f'<button type="button" class="ib" aria-label="Editar {n}">{A.LAPIZ}</button>' if editar else ""
+    return (f'<span class="q-acc2"><button type="button" class="ib" aria-label="Subir {n}" aria-disabled="{"true" if primera else "false"}">{A.ARRIBA}</button>'
+            f'<button type="button" class="ib" aria-label="Bajar {n}" aria-disabled="{"true" if ultima else "false"}">{A.ABAJO}</button>'
+            f'{lapiz}<button type="button" class="ib" aria-label="Quitar {n}">{A.QUITAR}</button></span>')
+
+
+def q_acciones(n, k, total, activa=True, borrar=False, editar=True):
+    """Lo mismo en el teléfono. En una opción dada de baja, «Reactivar» va en lugar de ✎; la que se borra al guardar solo se puede restaurar."""
+    arriba = svg('<path d="m6 15 6-6 6 6"/>', 20, "2")
+    abajo = svg('<path d="m6 9 6 6 6-6"/>', 20, "2")
+    lapiz = svg('<path d="M4 20h4L19 9l-4-4L4 16z"/>', 20)
+    tacho = svg('<path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4l.8-11.1"/>', 20)
+    mover = (f'<button type="button" class="ap-ib" aria-label="Subir {n}" aria-disabled="{"true" if k == 1 else "false"}">{arriba}</button>'
+             f'<button type="button" class="ap-ib" aria-label="Bajar {n}" aria-disabled="{"true" if k == total else "false"}">{abajo}</button>')
+    if borrar:
+        return f'<span class="q-acc"><button type="button" class="cb cb-sec" aria-label="Restaurar {n}">Restaurar</button></span>'
+    medio = ("" if not editar else f'<button type="button" class="ap-ib" aria-label="Editar {n}">{lapiz}</button>' if activa else
+             f'<button type="button" class="cb cb-sec" aria-label="Reactivar {n}">Reactivar</button>')
+    return f'<span class="q-acc">{mover}{medio}<button type="button" class="ap-ib" aria-label="Quitar {n}">{tacho}</button></span>'
+
+
+def fila_pregunta(k, n, tipo, obligatoria, en, ingles=False, menu=False, solo_ver=False):
+    """Como ArquitecturaBase: el número, el nombre y, debajo, el tipo y si es obligatoria; a la vista, ↑ ↓ ✎ 🗑 (127). «chips», para lo que hay que corregir."""
+    acc = (f'<a class="ib" aria-label="Ver pregunta {n}" href="#">{svg("<path d=" + chr(34) + "m9 6 6 6-6 6" + chr(34) + "/>", 16)}</a>' if solo_ver
+           else acciones_q(n, k == 1, k == len(A.PREGUNTAS)))
+    return (f'<div class="q-it"><span class="num">{k}</span><span class="dato"><b>{n}</b><span>{tipo} · {"Obligatoria" if obligatoria else "Opcional"}</span></span>'
+            f'<span class="chips"></span>{acc}</div>')
+
+
 # ================================================================ Las piezas del editor, sin idioma
+A.fila_pregunta = fila_pregunta
 A.caja_textos = lambda ingles=False: ""
 A.PREGUNTAS = [
     ("Cliente", "Texto corto", True, None),
@@ -171,6 +209,22 @@ CSS_CA4 = """.q-cat .rt .q-ver { margin-left: auto; font-weight: 600; color: var
 .q-pres .ab-seg { align-self: flex-start; }
 .q-pres .q-g2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
 .q-ed .err2 { font-size: 12.5px; color: var(--peligro); }
+.q-zona { border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; background: #fff; }
+.q-zona .zc { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 42px; padding: 0 12px; background: oklch(0.945 0.018 76); font-size: 13px; font-weight: 600; color: var(--t2); }
+.q-zona .zc .cb { height: 30px; font-size: 12.5px; }
+.q-zona .zc .der2 { display: inline-flex; align-items: center; gap: 6px; }
+.q-zona .zb { display: flex; flex-direction: column; gap: 12px; padding: 12px; }
+.q-rd { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 8px; font-size: 13.5px; }
+.q-rd.on { border-color: var(--marca); background: var(--marca-t); }
+.q-rd i { width: 16px; height: 16px; flex: none; margin-top: 1px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid var(--borde2); background: #fff; }
+.q-rd.on i { border: 5px solid var(--marca); }
+.q-rd span { display: flex; flex-direction: column; gap: 1px; }
+.q-rd small { font-size: 12.5px; color: var(--t3); }
+.q-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.q-chips .ab-chip { display: inline-flex; align-items: center; gap: 4px; }
+.q-chips .ct { flex: 1; min-width: 160px; }
+.q-ej { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 8px; font-size: 13.5px; }
+.q-ej small { font-size: 12.5px; color: var(--t3); }
 """
 CA4 = {  # modo: (pregunta, catálogo, varias (mín, máx) o None, presentación propia, error en el catálogo)
     "elegido": ("Motivo", "Motivos de visita", None, False, ""),
@@ -206,10 +260,12 @@ def pregunta_catalogo(modo="elegido"):
         cuantas = '<div class="w-cmp ancho"><span class="q-chk"><i class="no"></i>Permitir elegir varias</span></div>'
     pres = ""
     if propia:
-        pres = ('<div class="w-cmp ancho q-pres"><span class="rt">Cómo se muestra cada opción</span>'
-                '<span class="ab-seg" role="radiogroup" aria-label="Cómo se muestra cada opción"><span role="radio">Como el catálogo</span><span class="on" role="radio">Propia</span></span>'
-                f'<div class="q-g2"><div class="w-cmp"><span class="rt">Texto</span><div class="ct sel">Nombre{CHEV}</div></div>'
-                f'<div class="w-cmp"><span class="rt">Detalle</span><div class="ct sel">Rol{CHEV}</div></div></div></div>')
+        chip = lambda v: f'<span class="ab-chip">{v}<span aria-hidden="true">×</span></span>'
+        parte = lambda rot, vs: (f'<div class="w-cmp"><span class="rt">{rot}</span><div class="q-chips">' + "".join(chip(v) for v in vs) + f'<div class="ct sel">Agregar campo{CHEV}</div></div></div>')
+        pres = ('<div class="w-cmp ancho q-zona"><div class="zc"><span>En WhatsApp</span></div><div class="zb" role="radiogroup" aria-label="Qué viaja a WhatsApp">'
+                '<div class="q-rd" role="radio"><i></i><span>Como en el catálogo<small>Nombre · Empresa</small></span></div><div class="q-rd on" role="radio"><i></i><span>Propio de esta pregunta</span></div>'
+                + parte("Título · hasta 30 caracteres", ["Nombre"]) + parte("Descripción · hasta 300", ["Rol"])
+                + '<div class="w-cmp"><span class="rt">Por ejemplo</span><div class="q-ej">Tomás Acosta<small>Vendedor</small></div></div></div></div>')
     e = f'<span class="err2" role="alert">{err}</span>' if err else ""
     return ('<div class="q-ab">' + A.fila_pregunta(5, n, tipo_fila, False, None)
             + '<div class="q-ed">'
@@ -219,7 +275,7 @@ def pregunta_catalogo(modo="elegido"):
             + cuantas + pres
             + '<div class="w-cmp"><span class="rt">Ayuda para el empleado</span><div class="ct ph">Opcional</div></div>'
             '<div class="w-cmp" style="justify-content: flex-end;"><span class="q-chk"><i class="no"></i>Obligatoria</span></div>'
-            f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{ARRIBA} Listo</button></div>'
+            f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">Listo</button></div>'
             "</div></div>")
 
 
@@ -270,9 +326,13 @@ def caja_formulario(nombre="Visita a cliente", boton="Enviar", prefijo="VIS", mo
             + para_quien(quien) + "</div></div>")
 
 
+def q_ops(lista):
+    """Las opciones de una pregunta, que se escriben en el lugar: cada una con ↑ ↓ 🗑 (127)."""
+    return "".join(f'<div class="q-op"><div class="ct">{o}</div>{acciones_q(f"la opción {o}", k == 0, k == len(lista) - 1, editar=False)}</div>' for k, o in enumerate(lista))
+
+
 def pregunta_motivo():
-    ops = "".join(f'<div class="q-op"><div class="ct">{o}</div><button type="button" class="ib" aria-label="Quitar opción {o}">{X}</button></div>'
-                  for o in ["Seguimiento", "Venta nueva", "Reclamo"])
+    ops = q_ops(["Seguimiento", "Venta nueva", "Reclamo"])
     return ('<div class="q-ab">' + A.fila_pregunta(5, "Motivo", "Elegir una · 3 opciones", False, None) + '<div class="q-ed">'
             '<div class="w-cmp"><span class="rt">Pregunta <span class="req">*</span></span><div class="ct">Motivo</div></div>'
             f'<div class="w-cmp"><span class="rt">Tipo de respuesta</span><div class="ct sel">Elegir una{CHEV}</div></div>'
@@ -280,13 +340,13 @@ def pregunta_motivo():
             + f'<button type="button" class="cb cb-sec" style="align-self: flex-start;">{MAS} Agregar opción</button></div></div>'
             '<div class="w-cmp"><span class="rt">Ayuda para el empleado</span><div class="ct ph">Opcional</div></div>'
             '<div class="w-cmp" style="justify-content: flex-end;"><span class="q-chk"><i class="no"></i>Obligatoria</span></div>'
-            f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{ARRIBA} Listo</button></div>'
+            f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">Listo</button></div>'
             "</div></div>")
 
 
 def pregunta_fallas():
     """38 · «Elegir varias»: las opciones, el mínimo y el máximo; obligatoria si el mínimo es mayor que cero (T13)."""
-    ops = "".join(f'<div class="q-op"><div class="ct">{o}</div><button type="button" class="ib" aria-label="Quitar opción {o}">{X}</button></div>' for o in FALLAS)
+    ops = q_ops(FALLAS)
     return ('<div class="q-ab">' + A.fila_pregunta(6, "Fallas", "Elegir varias · 4 opciones · de 1 a 3", True, None) + '<div class="q-ed">'
             '<div class="w-cmp"><span class="rt">Pregunta <span class="req">*</span></span><div class="ct">Fallas</div></div>'
             f'<div class="w-cmp"><span class="rt">Tipo de respuesta</span><div class="ct sel">Elegir varias{CHEV}</div></div>'
@@ -296,20 +356,14 @@ def pregunta_fallas():
             + F.info("Con un mínimo de 1 o más, es obligatoria. WhatsApp muestra hasta 20 opciones.")
             + '</span><div class="q-rango">Mínimo <div class="ct">1</div> Máximo <div class="ct">3</div></div></div>'
             '<div class="w-cmp ancho"><span class="rt">Ayuda para el empleado</span><div class="ct ph">Opcional</div></div>'
-            f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{ARRIBA} Listo</button></div>'
+            f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">Listo</button></div>'
             "</div></div>")
 
 
-def fila_titulo(texto=TITULO_EJ, menu=False, solo_ver=False):
-    """88: un título de sección entre las preguntas, con su ⋮. No es una pregunta: sin número ni «Obligatoria»."""
-    m = ""
-    if menu:
-        m = (f'<div class="f-menu" role="menu" aria-label="Acciones de {texto}"><span class="f-mi" role="menuitem">{A.LAPIZ} Editar</span>'
-             f'<span class="f-mi" role="menuitem">{A.ARRIBA} Subir</span><span class="f-mi" role="menuitem">{A.ABAJO} Bajar</span>'
-             f'<span class="f-sep" role="separator"></span><span class="f-mi pel" role="menuitem">{A.QUITAR} Quitar</span></div>')
-    acc = '<span class="ib" aria-hidden="true"></span>' if solo_ver else f'<button type="button" class="ib" aria-label="Acciones de {texto}">{A.KEBAB}</button>'
-    return (f'<div class="q-it q-tit{" abierta" if menu else ""}"><span class="num"></span><span class="dato"><b>{texto}</b></span>'
-            f'{acc}{m}</div>')
+def fila_titulo(texto=TITULO_EJ, solo_ver=False, primera=False):
+    """88: un título de sección entre las preguntas, con las mismas acciones (127). No es una pregunta: sin número ni «Obligatoria»."""
+    acc = '<span class="ib" aria-hidden="true"></span>' if solo_ver else acciones_q(texto, primera)
+    return f'<div class="q-it q-tit"><span class="num"></span><span class="dato"><b>{texto}</b></span>{acc}</div>'
 
 
 def titulo_abierto(texto=""):
@@ -317,17 +371,17 @@ def titulo_abierto(texto=""):
     ct = f'<div class="ct{"" if texto else " ph"}">{texto or "Título de la sección"}</div>'
     return ('<div class="q-ab">' + fila_titulo(texto or "Título nuevo") + '<div class="q-ed">'
             f'<div class="w-cmp ancho"><span class="rt">Título <span class="req">*</span></span>{ct}<span class="q-cnt">{len(texto)}/80</span></div>'
-            f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{ARRIBA} Listo</button></div></div></div>')
+            f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">Listo</button></div></div></div>')
 
 
-def caja_preguntas(abierta="motivo", vacia=False, menu=False, solo_ver=False, catalogo=None, mal=None, titulo=None, **_):
+def caja_preguntas(abierta="motivo", vacia=False, solo_ver=False, catalogo=None, mal=None, titulo=None, **_):
     if vacia:
         filas, cuenta = '<div class="e-vacio">Todavía no agregaste preguntas.</div>', "0 preguntas"
     else:
         filas = ""
         for k, (n, tipo, ob, _en) in enumerate(A.PREGUNTAS, 1):
             if CON_TITULOS and k == 3:
-                filas += titulo_abierto(TITULO_EJ) if titulo == "editar" else fila_titulo(menu=titulo == "menu", solo_ver=solo_ver)
+                filas += titulo_abierto(TITULO_EJ) if titulo == "editar" else fila_titulo(solo_ver=solo_ver)
             if k == 5 and catalogo:
                 filas += A.pregunta_catalogo(catalogo)
             elif k == 5 and abierta == "motivo":
@@ -338,7 +392,7 @@ def caja_preguntas(abierta="motivo", vacia=False, menu=False, solo_ver=False, ca
                 filas += (A.fila_pregunta(k, n, tipo, ob, None).replace('<div class="q-it">', '<div class="q-it mal">', 1)
                           .replace('<span class="chips">', '<span class="chips"><span class="ab-chip mal">Corregir</span>' + F.info(MAL_OBS), 1))
             else:
-                filas += A.fila_pregunta(k, n, tipo, ob, None, menu=(menu and k == 4), solo_ver=solo_ver)
+                filas += A.fila_pregunta(k, n, tipo, ob, None, solo_ver=solo_ver)
         if titulo == "nuevo":
             filas += titulo_abierto()
         if titulo == "suelto":
@@ -364,13 +418,13 @@ def vista(ingles=False, vacia=False, nombre="Visita a cliente"):
     return pv
 
 
-def cuerpo_editor(sup="", abierta="motivo", vacia=False, nombre="Visita a cliente", prefijo="VIS", modo="normal", menu=False, solo_ver=False, catalogo=None, quien=False, mal=None,
+def cuerpo_editor(sup="", abierta="motivo", vacia=False, nombre="Visita a cliente", prefijo="VIS", modo="normal", solo_ver=False, catalogo=None, quien=False, mal=None,
                   titulo=None, **_):
     if abierta is True:
         abierta = "motivo"
     return ('<div class="w-body">' + sup + '<div class="f-cols"><div class="f-pila">'
             + caja_formulario(nombre=nombre, prefijo=prefijo, modo=modo, quien=quien)
-            + caja_preguntas(abierta=None if vacia else abierta, vacia=vacia, menu=menu, solo_ver=solo_ver, catalogo=catalogo, mal=mal, titulo=titulo)
+            + caja_preguntas(abierta=None if vacia else abierta, vacia=vacia, solo_ver=solo_ver, catalogo=catalogo, mal=mal, titulo=titulo)
             + "</div>" + vista(vacia=vacia, nombre=nombre) + "</div></div>")
 
 
@@ -424,9 +478,9 @@ toast, confirmar = A.toast, A.confirmar
 
 # ================================================================ FRM-Editor
 ESTADOS_EDITOR = ["Sin cambios", "Con cambios", "Guardando", "Guardado", "No se guardó", "Otra persona guardó", "Comparar los cambios",
-                  "Nuevo formulario", "Prefijo ocupado", "Para quién es", "Acciones del formulario", "Acciones de una pregunta", "Quitar una pregunta", "Cambiar el tipo", "Elegir varias",
+                  "Nuevo formulario", "Prefijo ocupado", "Para quién es", "Acciones del formulario", "Quitar una pregunta", "Cambiar el tipo", "Elegir varias",
                   "Elegir de un catálogo", "Elegir el catálogo", "Varias de un catálogo", "Más de 20 en varias", "Presentación propia", "Sin catálogos", "Pregunta de foto", "Pregunta de documento", "Sin almacenamiento",
-                  "Descartar cambios", "Solo lectura", "Cargando", "No existe", "Agregar un título", "Editar un título", "Acciones de un título"]
+                  "Descartar cambios", "Solo lectura", "Cargando", "No existe", "Agregar un título", "Editar un título"]
 CONFLICTO = ('<div class="e-sup alerta" role="alert"><div class="fila">' + ALERTA
              + '<span class="tx">Otra persona cambió esto mientras lo editabas.</span><button type="button" class="cb cb-sec">Revisar</button></div></div>')
 
@@ -460,7 +514,6 @@ def editor():
         "Prefijo ocupado": nuevo("nuevo", cuerpo_editor(abierta=None, nombre="Registro de visita", prefijo="VIS", modo="ocupado")),
         "Para quién es": pub("cambios", cuerpo_editor(abierta=None, modo="fijo", quien=True)),
         "Acciones del formulario": (banda("Visita a cliente", EST_PUB, acc("limpio", menu=True), VOL), cuerpo_editor(abierta=None, modo="fijo")),
-        "Acciones de una pregunta": pub("limpio", cuerpo_editor(abierta=None, menu=True, modo="fijo")),
         "Quitar una pregunta": pub("limpio", cuerpo_editor(abierta=None, modo="fijo")),
         "Cambiar el tipo": pub("cambios", cuerpo_editor(modo="fijo")),
         "Elegir varias": pub("cambios", cuerpo_editor(abierta="fallas", modo="fijo")),
@@ -479,7 +532,6 @@ def editor():
         "No existe": (banda("Formulario", "", "", VOL), no_existe),
         "Agregar un título": pub("cambios", cuerpo_editor(abierta=None, modo="fijo", titulo="nuevo")),
         "Editar un título": pub("cambios", cuerpo_editor(abierta=None, modo="fijo", titulo="editar")),
-        "Acciones de un título": pub("limpio", cuerpo_editor(abierta=None, modo="fijo", titulo="menu")),
     }
     assert list(V) == ESTADOS_EDITOR
     dif = ('<div class="e-dif"><span>Qué cambió</span><span>Guardado actualmente</span><span>Mis cambios</span>'
@@ -509,29 +561,36 @@ ESTADOS_PUBLICAR = ["Versión nueva", "Primera publicación", "Comprobando", "Co
 GUARDADO = "27/09/2026 10:38"
 MOTIVO_PROBLEMAS = "Resolvé los problemas para publicar."
 # T25: zonas con líneas entre filas, sin descripción ni párrafos. «Problemas» aparece solo si hay alguno, y «Qué se publica» va siempre
-CSS_ZONAS = """.w-dlg.pub .db { display: block; padding: 0; max-height: 560px; overflow: auto; }
-.z-cab { display: flex; align-items: center; min-height: 40px; padding: 0 20px; background: oklch(0.945 0.018 76); font-size: 13px; font-weight: 600; color: var(--t2); }
-.z-f { display: flex; align-items: flex-start; gap: 10px; padding: 10px 20px; border-bottom: 1px solid var(--borde); font-size: 13.5px; }
+CSS_ZONAS = """.w-dlg.pub .db { display: flex; flex-direction: column; gap: 14px; padding: 16px 20px; max-height: 560px; overflow: auto; }
+.z-caja { border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; background: #fff; flex: none; }
+.z-cab { display: flex; align-items: center; gap: 4px; min-height: 40px; padding: 0 16px; background: oklch(0.945 0.018 76); font-size: 13px; font-weight: 600; color: var(--t2); }
+.z-f { display: flex; align-items: flex-start; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--borde); font-size: 13.5px; }
 .z-f .ic { display: inline-flex; flex: none; margin-top: 2px; color: var(--peligro); }
 .z-f .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .z-f .tx b { font-weight: 600; }
 .z-f .tx span { font-size: 13px; color: var(--t2); }
-.z-f a { flex: none; color: var(--marca-tx); font-weight: 600; text-decoration: none; }
-.z-d { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 12px; padding: 10px 20px; border-bottom: 1px solid var(--borde); font-size: 13.5px; }
-.z-d:last-child { border-bottom: 0; }
+.z-f .cb { flex: none; height: 32px; font-size: 13px; }
+.z-d { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; min-height: 44px; align-items: center; padding: 6px 16px; box-sizing: border-box; border-top: 1px solid var(--borde); font-size: 13.5px; }
 .z-d .k { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--t2); }
-.z-esq { display: flex; flex-direction: column; gap: 10px; padding: 14px 20px; }
+.z-d .gris { color: var(--t3); }
+.z-esq { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-top: 1px solid var(--borde); }
 .z-esq span { height: 14px; border-radius: 4px; background: var(--s3); }
-.z-pad { padding: 16px 20px; }
+.z-pad { padding: 0; }
 """
+AYUDA_PROBLEMAS = "Hay que resolverlos para publicar."
 
 
-def z_cab(titulo):
-    return f'<div class="z-cab">{titulo}</div>'
+def z_cab(titulo, ayuda=""):
+    return f'<div class="z-cab">{titulo}{F.info(ayuda) if ayuda else ""}</div>'
+
+
+def z_zona(titulo, filas, ayuda=""):
+    """Cada zona en su caja, y solo si tiene algo (PU1-A de ArquitecturaBase)."""
+    return f'<div class="z-caja">{z_cab(titulo, ayuda)}{filas}</div>'
 
 
 def z_problema(que, detalle, ir="Ir a la pregunta"):
-    return f'<div class="z-f"><span class="ic">{ALERTA}</span><span class="tx"><b>{que}</b><span>{detalle}</span></span><a href="FRM-Editor.dc.html">{ir}</a></div>'
+    return f'<div class="z-f"><span class="ic">{ALERTA}</span><span class="tx"><b>{que}</b><span>{detalle}</span></span><a class="cb cb-sec" href="FRM-Editor.dc.html">{ir}</a></div>'
 
 
 def z_dato(rotulo, valor, ayuda=""):
@@ -539,18 +598,19 @@ def z_dato(rotulo, valor, ayuda=""):
 
 
 def que_se_publica(primera=False, sin_cambios=False):
-    filas = z_dato("Borrador", f"Guardado el {GUARDADO}")
+    """El borrador, cuántas preguntas tiene y, desde la segunda versión, qué cambió; la primera vez, el prefijo que queda fijo."""
+    filas = z_dato("Borrador", f"Guardado el {GUARDADO}") + z_dato("Preguntas", "7")
     if primera:
-        filas += z_dato("Preguntas", "7") + z_dato("Prefijo", "VIS", "Se fija con esta publicación. Las respuestas se numeran VIS-000001.")
+        filas += f'<div class="z-d"><span class="k">Prefijo</span><span>VIS <span class="gris">Queda fijo al publicar</span>{F.info("Las respuestas se numeran VIS-000001.")}</span></div>'
     elif sin_cambios:
-        filas += z_dato("Preguntas", "Sin cambios") + z_dato("Por qué", "Una cuenta de WhatsApp conectada no tiene este formulario.")
+        filas += z_dato("Por qué", "Una cuenta de WhatsApp conectada no tiene este formulario.")
     else:
         filas += z_dato("Agregadas", "Observaciones") + z_dato("Cambiadas", "Motivo y Fallas")
-    return z_cab("Qué se publica") + filas
+    return z_zona("Qué se publica", filas)
 
 
 def con_problemas(filas):
-    return z_cab("Problemas") + filas + que_se_publica()
+    return z_zona("Problemas", filas, AYUDA_PROBLEMAS) + que_se_publica()
 
 
 def pie_pub(v="4", activo=True, trabajando=False):
@@ -571,7 +631,7 @@ def publicar():
     V["Un título sin preguntas"] = (banda("Visita a cliente", EST_PUB, acc("limpio"), VOL), cuerpo_editor(abierta=None, modo="fijo", titulo="suelto"))
     dlg = A.dlg_publicar
     tit = "Publicar la versión 4 en WhatsApp"
-    esq = (z_cab("Qué se publica") + '<div class="z-esq"><span style="width: 85%;"></span><span style="width: 60%;"></span><span style="width: 75%;"></span></div>')
+    esq = z_zona("Qué se publica", '<div class="z-esq"><span style="width: 85%;"></span><span style="width: 60%;"></span><span style="width: 75%;"></span></div>')
     capas = {
         "Versión nueva": dlg(tit, que_se_publica(), pie_pub()),
         "Primera publicación": dlg("Publicar la versión 1 en WhatsApp", que_se_publica(primera=True), pie_pub("1")),
@@ -657,10 +717,14 @@ def publicando():
 T_PREG = [("Cliente", "Texto corto · Obligatoria"), ("Fecha de la visita", "Fecha · Opcional"), ("¿Se concretó la venta?", "Sí o no · Opcional"),
           ("Monto estimado", "Número · 2 decimales · Opcional"), ("Motivo", "Elegir una · 3 opciones · Opcional"),
           ("Fallas", "Elegir varias · de 1 a 3 · Obligatoria"), ("Observaciones", "Texto largo · Opcional")]
-ESTADOS_TED = ["Sin cambios", "Con cambios", "Guardando", "Acciones del formulario", "Acciones de una pregunta", "Editar una pregunta", "Elegir varias", "Pregunta con catálogo",
-               "Pregunta de foto", "Así lo ve el empleado", "Publicar", "Publicando", "Publicado", "WhatsApp rechazó una pregunta", "Nuevo formulario", "Acciones de un título",
+ESTADOS_TED = ["Sin cambios", "Con cambios", "Guardando", "Acciones del formulario", "Editar una pregunta", "Elegir varias", "Pregunta con catálogo",
+               "Pregunta de foto", "Así lo ve el empleado", "Publicar", "Publicando", "Publicado", "WhatsApp rechazó una pregunta", "Nuevo formulario",
                "Editar un título", "Sin confirmar", "Necesita revisión"]
 CSS_TED_E12 = """.ap-fijo .cb .girar2 { width: 16px; height: 16px; }
+.q-acc { display: inline-flex; align-items: center; flex: none; margin-right: -6px; }
+.q-acc .ap-ib { width: 34px; height: 40px; }
+.q-acc .ap-ib[aria-disabled="true"] { color: var(--borde2); }
+.q-row .tx > span { white-space: normal; }
 .t-cks { display: flex; flex-wrap: wrap; gap: 0 20px; }
 .t-cks .t-chk { min-height: 36px; }
 .t-chk i.no { background: #fff; border: 1.5px solid var(--borde2); box-sizing: border-box; }
@@ -675,12 +739,10 @@ def t_preguntas(vacia=False, mal=None):
     h = ""
     for k, (n, d) in enumerate(T_PREG, 1):
         if CON_TITULOS and k == 3:
-            h += (f'<div class="q-row q-tit"><span class="num"></span><span class="tx"><b>{TITULO_EJ}</b></span>'
-                  f'<button type="button" class="ap-ib" aria-label="Acciones de {TITULO_EJ}">{F.TKEBAB}</button></div>')
+            h += f'<div class="q-row q-tit"><span class="num"></span><span class="tx"><b>{TITULO_EJ}</b></span>{q_acciones(TITULO_EJ, 2, len(T_PREG))}</div>'
         chip = '<span class="t-chip mal">Corregir</span>' if mal == k else ""
         d = MAL_OBS if mal == k else d
-        h += (f'<div class="q-row{" mal" if mal == k else ""}"><span class="num">{k}</span><span class="tx"><b>{n}{chip}</b><span>{d}</span></span>'
-              f'<button type="button" class="ap-ib" aria-label="Acciones de {n}">{F.TKEBAB}</button></div>')
+        h += f'<div class="q-row{" mal" if mal == k else ""}"><span class="num">{k}</span><span class="tx"><b>{n}{chip}</b><span>{d}</span></span>{q_acciones(n, k, len(T_PREG))}</div>'
     return h
 
 
@@ -732,7 +794,6 @@ def tel_editor():
         "Con cambios": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("cambios")),
         "Guardando": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("guardando")),
         "Acciones del formulario": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("limpio")),
-        "Acciones de una pregunta": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("limpio")),
         "Editar una pregunta": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("cambios")),
         "Elegir varias": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("cambios")),
         "Pregunta con catálogo": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("cambios")),
@@ -744,7 +805,6 @@ def tel_editor():
         # la lista ya bajada hasta las preguntas: la que rechazó WhatsApp, marcada en su lugar
         "WhatsApp rechazó una pregunta": (bar("Visita a cliente", "No se pudo publicar la versión 4"), t_cuerpo(mal=7, desde_preguntas=True), t_fijo("limpio")),
         "Nuevo formulario": (bar("Nuevo formulario", "Borrador"), t_cuerpo(vacia=True, fijo=False, nombre="Inspección de obra", prefijo="OBR"), t_fijo("nuevo")),
-        "Acciones de un título": (bar("Visita a cliente", pub), t_cuerpo(desde_preguntas=True), t_fijo("limpio")),
         "Editar un título": (bar("Visita a cliente", pub), t_cuerpo(desde_preguntas=True), t_fijo("cambios")),
         "Sin confirmar": (bar("Visita a cliente", "Sin confirmar" + t_detalle(TX_SIN_CONFIRMAR)), t_cuerpo(), t_fijo("off")),
         "Necesita revisión": (bar("Visita a cliente", "Necesita revisión" + t_detalle(TX_REVISION)), t_cuerpo(), t_fijo("off")),
@@ -756,8 +816,8 @@ def tel_editor():
     listo = '<button type="button" class="cb cb-pri">Listo</button><button type="button" class="cb cb-sec">Cancelar</button>'
 
     def ops(lista):
-        return "".join(f'<div class="t-op"><div class="ap-cmp" style="flex: 1;"><div class="ct">{o}</div></div>'
-                       f'<button type="button" class="ap-ib" aria-label="Quitar opción {o}">{X}</button></div>' for o in lista)
+        return "".join(f'<div class="t-op"><div class="ap-cmp" style="flex: 1;"><div class="ct">{o}</div></div>{q_acciones(f"la opción {o}", k, len(lista), editar=False)}</div>'
+                       for k, o in enumerate(lista, 1))
     editar = (F.tcampo("Pregunta", "Motivo", req=True) + F.tcampo("Tipo de respuesta", "Elegir una", select=True)
               + '<div class="ap-cmp"><span class="rt"><span>Opciones</span></span></div>' + ops(["Seguimiento", "Venta nueva", "Reclamo"])
               + f'<span class="t-mas">{MAS} Agregar opción</span>' + F.tcampo("Ayuda para el empleado", "Opcional", vacio=True)
@@ -790,8 +850,6 @@ def tel_editor():
                '<span class="t-lin">' + A.CLIP + ' Archivos: hasta 5 de 10 en el formulario.</span>')
     capas = {
         "Acciones del formulario": M.hoja("Visita a cliente", '<a role="menuitem" href="M-FRM-Listado.dc.html">Copiar</a><a role="menuitem" href="M-FRM-Listado.dc.html">Dar de baja</a>'),
-        "Acciones de una pregunta": F.thoja("Monto estimado", '<div class="ap-acciones2"><span role="menuitem">Editar</span><span role="menuitem">Subir</span><span role="menuitem">Bajar</span>'
-                                            '<span class="pel" role="menuitem">Quitar</span></div>', ""),
         "Editar una pregunta": F.thoja("Editar pregunta", editar, listo),
         "Elegir varias": F.thoja("Editar pregunta", varias, listo),
         "Pregunta con catálogo": F.thoja("Editar pregunta", F.tcampo("Pregunta", "Motivo", req=True) + F.tcampo("Tipo de respuesta", "Elegir de un catálogo", select=True)
@@ -804,8 +862,6 @@ def tel_editor():
                                     + F.tcampo("Ayuda para el empleado", "Sacá una foto del frente del local y otra de la góndola.") + origen + cuantas, listo),
         "Así lo ve el empleado": F.thoja("Así lo ve el empleado", vp, '<button type="button" class="cb cb-pri" disabled>Enviar</button>', sub="Visita a cliente · borrador"),
         "Publicar": F.thoja("Publicar la versión 4", publicar_h, '<button type="button" class="cb cb-pri">Publicar versión 4</button><button type="button" class="cb cb-sec">Cancelar</button>'),
-        "Acciones de un título": F.thoja(TITULO_EJ, '<div class="ap-acciones2"><span role="menuitem">Editar</span><span role="menuitem">Subir</span><span role="menuitem">Bajar</span>'
-                                         '<span class="pel" role="menuitem">Quitar</span></div>', ""),
         "Editar un título": F.thoja("Editar título", F.tcampo("Título", TITULO_EJ, req=True).replace("</div></div>", f'</div><span class="ay" style="align-self: flex-end;">{len(TITULO_EJ)}/80</span></div>', 1), listo),
         "Sin confirmar": F.thoja("La versión 4 en WhatsApp", t_tx(TX_SIN_CONFIRMAR), '<button type="button" class="cb cb-pri">Consultar ahora</button><button type="button" class="cb cb-sec">Cerrar</button>'),
         "Necesita revisión": F.thoja("La versión 4 en WhatsApp", t_tx(TX_REVISION), '<button type="button" class="cb cb-pri">Salió</button><button type="button" class="cb cb-sec">No salió</button>'),

@@ -14,6 +14,8 @@ etapa): la versión de la 14 queda sin lo que llega después, y lo de la 18 pasa
 - Desde la v147 (14-texto-diseno.md y la §9 de la spec), los títulos de sección (88) en FRM-Editor, M-FRM-Editor y, de fondo, en
   FRM-Publicar y FRM-Publicando; las versiones de la 18 quedan como estaban. Y FRM-Catalogo-14 y M-FRM-Catalogo-14, nuevos, sobre
   FRM-Catalogo-13: el catálogo «Productos» con la sección «Lo usan», «Quitar» apagado en un campo en uso y la advertencia al darlo de baja.
+- Desde la v150 (125 a 129), con el armado real de ArquitecturaBase: «Usado en 2 formularios» va en la banda; un campo en uso no se quita y el diálogo dice dónde está; una
+  opción que usa un formulario no se borra y se puede dar de baja.
 
 Corre después de `formularios_12_catalogos_1004.py` y antes de `formularios_etapas_1004.py`. Se puede volver a correr.
 """
@@ -47,27 +49,8 @@ KEBAB_BARRA = re.compile(r'<button type="button" class="ap-ib" aria-label="Accio
 
 def leer(n):
     return (PROJ / f"{n}.dc.html").read_text(encoding="utf-8")
-
-
-# Una fila es un renglón, también en las listas cortas de la compu (el usuario, 25/10, v143): en la lista de preguntas, el tipo va a
-# la derecha, como una columna, y no en una segunda línea gris
-CSS_UNA_LINEA = """<style data-e14="una-linea">
-.q-it .dato { flex-direction: row; align-items: center; gap: 16px; }
-.q-it .dato > b { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.q-it .dato > span { flex: 0 0 60%; min-width: 0; font-size: 13px; color: var(--t2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.q-it .chips { flex: none; width: 92px; justify-content: flex-end; }
-</style>
-</helmet>"""
-
-
-def una_linea(n, t):
-    if n.startswith("M-") or 'class="q-it' not in t or 'data-e14="una-linea"' in t:
-        return t
-    return t.replace("</helmet>", CSS_UNA_LINEA, 1)
-
-
 def escribir(n, t):
-    (PROJ / f"{n}.dc.html").write_text(una_linea(n, L.sin_disenar(n, fechas(t))), encoding="utf-8")
+    (PROJ / f"{n}.dc.html").write_text(L.sin_disenar(n, fechas(t)), encoding="utf-8")
 
 
 def solo(t, estados):
@@ -162,7 +145,7 @@ def mis_mensajes(t, clase):
 # Sobre FRM-Catalogo-13, con las piezas de formularios_13_campos_1004.py y los datos de la maqueta (demo/seed/forms-catalogs.ts). «Lo usan» es
 # la lista de `GET …/catalogs/{id}/used-by`: solo el nombre del formulario, paginada, sin la cantidad en el encabezado y sin la pregunta,
 # que el contrato no trae. Un campo que usa la presentación propia de una pregunta no se quita (T22): «Quitar» queda grisado, con el motivo.
-CAMPOS_P = [("Precio", "Número con decimales", True, False, None), ("Unidad", "Texto", False, False, None)]
+CAMPOS_P = [("Precio", "Número con decimales", True, False, None, "precio"), ("Unidad", "Texto", False, False, None, "unidad")]
 COLUMNAS_P = ["Texto", "Código", "Detalle"] + [c[0] for c in CAMPOS_P]
 DESCRIPCION_P = ["Unidad"]
 PRODUCTOS = [("Arena fina", "ARE1", "32.000,00", "m³"), ("Cal hidratada x 25 kg", "CAL25", "5.200,00", "bolsa"), ("Caño PVC 110 x 4 m", "PVC110", "15.800,00", "unidad"),
@@ -170,10 +153,11 @@ PRODUCTOS = [("Arena fina", "ARE1", "32.000,00", "m³"), ("Cal hidratada x 25 kg
              ("Membrana 4 mm", "MEM4", "61.500,00", "rollo"), ("Pintura látex 20 l", "PIN20", "48.900,00", "balde"), ("Tarugos del 8 x 100", "TAR8", "3.500,00", "caja"),
              ("Tornillos 6x40 x 100", "TOR640", "4.100,00", "caja")]
 USAN = ["Entrega de pedido", "Visita a cliente"]
-EN_USO = "Está en uso: Entrega de pedido, pregunta Producto. Sacá ese uso para quitarlo."
+EN_USO = "El campo está en uso. Sacá esos usos para poder quitarlo."
+USO_CAMPO = "«Producto» en Entrega de pedido, en la versión activa"
 BAJA_TITULO, BAJA_TEXTO = "¿Dar de baja «Productos»?", "Los formularios publicados que lo usan no se van a poder mandar, y no se va a poder elegir en preguntas nuevas. Se puede reactivar desde acá."
 DESC_P = "Lo que vende Grupo Delta, con su precio de lista."
-ESTADOS_CAT = ["Lo usan", "Ningún formulario lo usa", "Un campo en uso", "Dar de baja el catálogo"]
+ESTADOS_CAT = ["Lo usan", "Ningún formulario lo usa", "Un campo en uso", "Una opción en uso", "Dar de baja el catálogo"]
 ESTADOS_TCAT = ["El catálogo", "Lo usan", "Ningún formulario lo usa", "Un campo en uso", "Dar de baja el catálogo"]
 CSS_USAN = """.w-th.ku, .w-tr.ku { grid-template-columns: minmax(0, 1fr); }
 .w-th .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
@@ -185,11 +169,14 @@ CSS_TUSAN = """.ap-acciones2 span.off { color: var(--t3); }
 """
 
 
-def opciones_p():
-    filas = "".join(K.fila_editable(k, n, cod, "", True, tabla="kf", campos=f'<span class="k-tab">{K.entrada(precio)}</span><span class="k-tab">{K.entrada(unidad)}</span>')
-                    for k, (n, cod, precio, unidad) in enumerate(PRODUCTOS, 1))
+def opciones_p(uso=False):
+    filas = ""
+    for k, (n, cod, precio, unidad) in enumerate(PRODUCTOS, 1):
+        kw = dict(borrar=True, aviso_f="No se puede borrar: la usa un formulario. Podés darla de baja.") if uso and k == 4 else {}
+        filas += K.fila_editable(k, n, cod, "", True, tabla="kf", total=len(PRODUCTOS), campos=f'<span class="k-tab">{K.entrada(precio)}</span><span class="k-tab">{K.entrada(unidad)}</span>', **kw)
     pie = '<div class="w-pie"><span>1–10 de 10</span><span>10 por página · Página 1 de 1</span></div>'
-    return K.caja_opciones(filas, "", pie, tabla="kf", cab=["", "#", "Texto", "Código", "Detalle", "Precio", "Unidad", "Estado", ""], ancho=T13.ANCHO_OPCIONES)
+    return K.caja_opciones(filas, "", pie, modo="cambios" if uso else "normal", tabla="kf", cab=["", "#", "Texto", "Código", "Precio", "Unidad", "Detalle", "Estado", "Acciones"], ancho=T13.ANCHO_OPCIONES,
+                           boton_campos=T13.boton_campos(2), columnas=True)
 
 
 def caja_usan(vacia=False):
@@ -205,49 +192,49 @@ def caja_usan(vacia=False):
 
 def catalogo():
     items = [(n, u) for n, _c, _p, u in PRODUCTOS[:6]]
+    ejemplo = (PRODUCTOS[0][0], PRODUCTOS[0][3])
 
-    def cuerpo(modo="normal", vacia=False):
-        return (f'<div class="w-body"><div class="k-cab2">{K.caja_catalogo("Productos", DESC_P)}{K.vista_previa(items, "Producto")}</div>'
-                + T13.caja_campos(modo, CAMPOS_P, 0, EN_USO)
-                + T13.caja_whatsapp(descripcion=DESCRIPCION_P, columnas=COLUMNAS_P) + opciones_p() + caja_usan(vacia) + "</div>")
-    b = C.banda_k("Productos", K.ACTIVO + K.ORIGEN_MANO, K.acc_editor(), "FRM-Catalogos-14.dc.html")
-    V = {"Lo usan": (b, cuerpo()), "Ningún formulario lo usa": (b, cuerpo(vacia=True)), "Un campo en uso": (b, cuerpo("menu")), "Dar de baja el catálogo": (b, cuerpo())}
+    def cuerpo(vacia=False, uso=False):
+        wa = T13.caja_whatsapp(descripcion=DESCRIPCION_P, columnas=COLUMNAS_P, ejemplo=ejemplo)
+        return K.cuerpo_editor(opciones_p(uso) + caja_usan(vacia), K.caja_catalogo("Productos", DESC_P), items, "Producto", debajo=wa)
+    usado = '<span class="k-us">Usado en 2 formularios ·</span>'
+    b = C.banda_k("Productos", usado + K.ACTIVO, K.acc_editor(), "FRM-Catalogos-14.dc.html")
+    b2 = C.banda_k("Productos", usado + K.ACTIVO, K.acc_editor(cambios=True), "FRM-Catalogos-14.dc.html")
+    V = {"Lo usan": (b, cuerpo()), "Ningún formulario lo usa": (C.banda_k("Productos", K.ACTIVO, K.acc_editor(), "FRM-Catalogos-14.dc.html"), cuerpo(vacia=True)),
+         "Un campo en uso": (b, cuerpo()), "Una opción en uso": (b2, cuerpo(uso=True)), "Dar de baja el catálogo": (b, cuerpo())}
     assert list(V) == ESTADOS_CAT
-    js = A.js_estados(ESTADOS_CAT, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, busqueda: 'Buscar opción', busClase: '',\n")
+    js = A.js_estados(ESTADOS_CAT, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, pvMuchas: false, pvUna: 'on', pvVarias: '', busqueda: 'Buscar opción', busClase: '',\n")
     t = C.pagina_k("Un catálogo que usan formularios · /org/formularios/catalogos/:id", "Inicio / Formularios / Catálogos / Productos",
                    A.con_estados([(k, v[0]) for k, v in V.items()]), A.con_estados([(k, v[1]) for k, v in V.items()]),
                    F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + F.CSS_FILTRO + A.CSS_AB + E.CSS_E12 + K.CSS_EDITOR + T13.CSS + CSS_USAN, ESTADOS_CAT, js, alto=ALTO_CATALOGO)
     t = t.replace('"$preview":{"width":1440,', '"$preview":{"width":1280,', 1)
-    capas = {"Dar de baja el catálogo": A.confirmar(BAJA_TITULO, BAJA_TEXTO, "Dar de baja")}
+    uso = (f'<p class="d-tx">{EN_USO}</p><div class="md-usos"><span>{USO_CAMPO}</span><a href="FRM-Editor.dc.html">Ir a la pregunta</a></div>')
+    capas = {"Un campo en uso": F.dialogo("Quitar «Precio»", uso, '<button type="button" class="cb cb-sec">Cerrar</button>'),
+             "Dar de baja el catálogo": A.confirmar(BAJA_TITULO, BAJA_TEXTO, "Dar de baja")}
     over = "".join(f'<sc-if value="{{{{s{ESTADOS_CAT.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
-    return F.con_dialogo(t, over)
+    return F.con_dialogo(t, over, T13.CSS_CAMPOS)
 
 
 def tel_catalogo():
     der = (f'<button type="button" class="ap-ib" aria-label="Así lo ve quien lo recibe">{F.OJO}</button>'
            f'<button type="button" class="ap-ib" aria-label="Más acciones">{F.TKEBAB}</button>')
     volver = "M-FRM-Catalogos-14.dc.html"
-
-    def detalle(tipo, ob, _un, lim):
-        return " · ".join([tipo] + (["Obligatorio"] if ob else []))
-    campos = "".join(f'<div class="q-row"><span class="tx"><b>{n}</b><span>{detalle(tipo, ob, un, lim)}</span></span>'
-                     f'<button type="button" class="ap-ib" aria-label="Acciones de {n}">{F.TKEBAB}</button></div>' for n, tipo, ob, un, lim in CAMPOS_P)
-    arriba = (C.t_bar("Productos", "Activo", volver, der) + '<div class="ap-cuerpo"><div class="ap-gtit">El catálogo</div><div class="f-campos">'
-              + F.tcampo("Nombre", "Productos", req=True) + K.tel_ro("Tipo de valor", "Texto") + F.tcampo("Descripción", DESC_P) + "</div>"
-              + f'<div class="ap-gtit">Campos<a href="#">Agregar campo</a></div><div class="ap-grupo">{campos}</div><div style="height: 20px;"></div></div>')
+    botones = f'<div class="k-ops-b"><a class="cb cb-sec" href="#">Agregar opción</a><a class="cb cb-sec" href="{T13.DESTINO_T}">Agregar campos<span class="k-cont">2</span></a></div>'
+    arriba = (C.t_bar("Productos", "Usado en 2 formularios · Activo", volver, der) + '<div class="ap-cuerpo"><div class="ap-gtit">El catálogo</div><div class="f-campos">'
+              + K.tel_de() + F.tcampo("Nombre", "Productos", req=True) + F.tcampo("Descripción", DESC_P) + "</div>"
+              + T13.tel_wa(T13.TITULO_WA, DESCRIPCION_P, (PRODUCTOS[0][0], PRODUCTOS[0][3])) + '<div style="height: 20px;"></div></div>')
 
     def usan(vacia=False):
         """La pantalla ya bajada hasta «Lo usan», la última sección, como en M-FRM-Editor."""
         filas = ('<div class="t-vacia">Ningún formulario lo usa.</div>' if vacia else
                  "".join(f'<a class="ap-fila ku" href="M-FRM-Editor.dc.html"><div class="tx"><span class="l1">{n}</span></div></a>' for n in USAN))
-        opciones = "".join(f'<div class="q-row"><span class="num">{k}</span><span class="tx"><b>{n}<span class="cod">{cod}</span></b><span>{u}</span></span>'
-                           f'<button type="button" class="ap-ib" aria-label="Acciones de {n}">{F.TKEBAB}</button></div>' for k, (n, cod, _p, u) in enumerate(PRODUCTOS[:4], 1))
-        return (C.t_bar("Productos", "Activo", volver, der) + f'<div class="ap-cuerpo"><div class="ap-gtit">Opciones<a href="#">Agregar opción</a></div><div class="ap-grupo">{opciones}</div>'
+        opciones = "".join(K.q_opcion(k, n, cod, "", True, len(PRODUCTOS)) for k, (n, cod, _p, _u) in enumerate(PRODUCTOS[:3], 1))
+        return (C.t_bar("Productos", "Activo" if vacia else "Usado en 2 formularios · Activo", volver, der) + f'<div class="ap-cuerpo"><div class="ap-gtit">Opciones</div>{botones}<div class="ap-grupo">{opciones}</div>'
                 + f'<div class="ap-gtit">Lo usan</div><div class="ap-grupo">{filas}</div><div style="height: 20px;"></div></div>')
     Cu = {"El catálogo": arriba, "Lo usan": usan(), "Ningún formulario lo usa": usan(True), "Un campo en uso": arriba, "Dar de baja el catálogo": arriba}
     capas = {
-        "Un campo en uso": F.thoja("Precio", '<div class="ap-acciones2"><span role="menuitem">Editar</span><span role="menuitem">Subir</span><span role="menuitem">Bajar</span>'
-                                   f'<span class="off" role="menuitem" aria-disabled="true" title="{EN_USO}">Quitar</span></div>', ""),
+        "Un campo en uso": F.thoja("Quitar «Precio»", f'<p style="margin: 0; font-size: 15px; line-height: 1.45; color: var(--t2);">{EN_USO} {USO_CAMPO}.</p>',
+                                   '<a class="cb cb-pri" href="M-FRM-Editor.dc.html">Ir a la pregunta</a><button type="button" class="cb cb-sec">Cerrar</button>'),
         "Dar de baja el catálogo": F.thoja(BAJA_TITULO, f'<p style="margin: 0; font-size: 15px; line-height: 1.45; color: var(--t2);">{BAJA_TEXTO}</p>',
                                            '<button type="button" class="cb cb-pel lleno">Dar de baja</button><button type="button" class="cb cb-sec">Cancelar</button>'),
     }
@@ -255,7 +242,7 @@ def tel_catalogo():
 
 
 # ================================================================ canvas.json
-ALTO_CATALOGO = 1800
+ALTO_CATALOGO = 1700
 NUEVOS = {"FRM-Editor-18": (1440, 1400, "Formularios · un formulario · Diseño · etapa 18"),
           "M-FRM-Editor-18": (390, 844, "Formularios · un formulario · Diseño · teléfono · etapa 18"),
           "FRM-Publicar-18": (1440, 1400, "Formularios · publicar · etapa 18"),

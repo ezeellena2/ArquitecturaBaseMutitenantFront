@@ -819,6 +819,12 @@ body { margin: 0; }
 .w-bnd .ac .f-menu { position: absolute; top: calc(100% + 6px); right: 0; left: auto; z-index: 20; min-width: 220px; }
 .w-bnd .ac .f-mi { text-decoration: none; }
 .cb[aria-disabled="true"] { opacity: 0.55; cursor: default; }
+.q-it .dato, .q-it.q-tit .dato { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.35; gap: 1px; }
+.q-it .dato b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-it .dato > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-acc2 { display: inline-flex; align-items: center; flex: none; }
+.q-acc2 .ib { width: 30px; height: 30px; flex: none; border: 0; border-radius: 8px; }
+.q-acc2 .ib[aria-disabled="true"] { color: var(--borde2); cursor: default; }
 .cb.k-trabaja[aria-disabled="true"] { opacity: 1; cursor: progress; }
 .cb .girar2 { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; display: inline-block; animation: girar2 0.8s linear infinite; flex-shrink: 0; }
 @keyframes girar2 { to { transform: rotate(360deg); } }
@@ -900,6 +906,7 @@ body { margin: 0; }
 .pl-pagina .ic { width: 52px; height: 52px; border-radius: 14px; background: var(--s2); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; }
 .pl-pagina b { font-size: 18px; font-weight: 600; }
 .w-app { --pl-cols: 112px 136px 200px 96px 150px 160px 160px 120px 120px 110px 240px 150px; }
+.pl-fb .w-bus { width: 220px; flex: none; }
 .pl-marca { flex-shrink: 0; padding: 0 7px; border: 1px solid var(--borde2); border-radius: 999px; font-size: 12px; line-height: 18px; color: var(--t2); }
 .pl-linea { height: 2px; background: var(--marca); width: max-content; min-width: 100%; }
 .pl-caja.aten .w-tr.pl { opacity: 0.5; pointer-events: none; }

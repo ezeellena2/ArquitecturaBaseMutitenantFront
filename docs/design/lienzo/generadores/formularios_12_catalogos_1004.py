@@ -26,6 +26,11 @@ Desde la v148 (12-texto-diseno.md y la §10 de 12-catalogos.md, con las decision
 - FRM-Catalogo pierde la fila vacía, «Opción sin completar» y «Pegar desde Excel» del ⋮: «Agregar opción» y «Editar» abren el modal.
 - FRM-Catalogo-Importar: un solo diálogo, con «Origen» y «Revisión» a la vista, sin pasos numerados, y lo pegado en una grilla con las columnas del catálogo.
 - Mientras trabaja, el botón pone el aro y su gerundio, con su color (`trabaja`).
+Desde la v150 (decisiones 125 a 129), el armado real de ArquitecturaBaseFront, con nuestras piezas:
+- FRM-Catalogo: «El catálogo» dice de dónde salen y el tipo, con el nombre y la descripción debajo; al costado, «Así lo ve quien lo recibe», con «Una opción | Varias».
+- El encabezado de Opciones trae a la vista «Agregar opción», «Importar» y «Exportar»; el ⋮, la plantilla, el orden y los códigos.
+- Cada opción muestra ↑ ↓ ✎ 🗑 y su Estado es una casilla. 🗑 borra al guardar la que nada usa; una dada de baja cambia ✎ por «Reactivar».
+- «Dar de baja» va a la vista en la banda, sin ⋮ propio.
 
 Corre después de los generadores de catálogos y antes de `formularios_etapas_1004.py`. Se puede volver a correr.
 """
@@ -59,9 +64,11 @@ CONTACTOS = svg('<path d="M4 19.5 5.3 16A8 8 0 1 1 8.2 19z"/><circle cx="12" cy=
 GENTE, LAPIZ20 = C.GENTE, C.LAPIZ20
 OJO_TACHADO = svg('<path d="M3 3l18 18"/><path d="M10.6 6.1A9.6 9.6 0 0 1 12 6c5 0 8.5 4.4 9.5 6-.5.8-1.6 2.2-3.1 3.5"/><path d="M6.6 7.6C4.6 8.9 3.2 10.8 2.5 12c1 1.6 4.5 6 9.5 6 1.6 0 3-.4 4.3-1"/>', 16)
 
-MOTIVO_NUEVO = "Guardá el catálogo para importar."
-MOTIVO_CAMBIOS = "Guardá o descartá los cambios para importar."
+MOTIVO_NUEVO = "Guardá el catálogo antes."
+MOTIVO_CAMBIOS = "Guardá o descartá los cambios antes de importar."
 MOTIVO_TOPE = "Llegó a 10.000 opciones, el máximo de un catálogo."
+MOTIVO_MOVER = "Guardá la opción para poder moverla."
+MOTIVO_ORDEN = "Guardá o descartá el orden pendiente para borrar opciones."
 
 
 def r(t, a, b, n=1):
@@ -243,10 +250,12 @@ PROVEEDORES = [("Abrasivos del Sur", "PRV-0001", "CUIT 30-71234567-1", True), ("
                ("Caños y Conexiones", "PRV-0009", "CUIT 30-71123987-3", True), ("Cementos del Plata", "PRV-0010", "CUIT 30-69001234-8", True)]
 ZONAS = [("Capital", "CAP", "", "0,00", True), ("Gran Buenos Aires", "GBA", "", "2.500,00", True), ("Interior", "INT", "Más de 100 km", "4.800,50", True),
          ("Patagonia", "PAT", "", "9.200,00", True), ("Litoral", "LIT", "", "3.100,00", True), ("Retiro en depósito", "RET", "Sin envío", "0,00", True)]
-CSS_EDITOR = """.k-cab2 { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; align-items: stretch; }
-.k-g2.t2 { grid-template-columns: minmax(0, 1fr) 192px; }
-.k-g2.t1 { grid-template-columns: minmax(0, 1fr); }
-.f-bnd-est .k-orig { color: var(--t3); margin-left: 6px; }
+CSS_EDITOR = """.k-cab2 { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: stretch; }
+.k-izq { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.k-g1 { display: flex; flex-direction: column; gap: 14px; padding: 16px; }
+.k-g1 .k-de { margin: 0; font-size: 13.5px; color: var(--t3); }
+.k-g1 .w-cmp { max-width: 640px; }
+.k-g1 .ct.area { height: 72px; align-items: flex-start; padding-top: 9px; white-space: normal; }
 .k-g2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; padding: 16px; }
 .k-g2 .ancho { grid-column: 1 / -1; }
 .k-g2 .ct.ro, .k-g3 .ct.ro { background: var(--s2); color: var(--t3); }
@@ -261,9 +270,22 @@ CSS_EDITOR = """.k-cab2 { display: grid; grid-template-columns: minmax(0, 1fr) 2
 .k-fb .w-bus { width: 280px; flex: none; }
 .k-sel { display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: var(--marca-t); color: var(--marca-tx); font-size: 13.5px; font-weight: 600; border-bottom: 1px solid var(--borde); }
 .k-sel .cb { height: 30px; font-size: 13px; }
-.k-sel .cb-enl { margin-left: auto; }
-.w-th.ke, .w-tr.ke { grid-template-columns: 28px 30px minmax(192px, 1.25fr) 96px minmax(192px, 1.35fr) 110px 36px; gap: 10px; }
-.w-th.kv, .w-tr.kv { grid-template-columns: 28px 30px minmax(192px, 1.1fr) 96px 128px minmax(192px, 1fr) 110px 36px; gap: 10px; }
+.k-sel > span { margin-right: auto; }
+.k-aviso-f { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; font-size: 14px; color: var(--t1); }
+.k-aviso-f .cb { flex: none; }
+.w-th.ke, .w-tr.ke { grid-template-columns: 28px 30px minmax(192px, 1.25fr) 96px minmax(192px, 1.35fr) 56px 172px; gap: 10px; }
+.w-th.kv, .w-tr.kv { grid-template-columns: 28px 30px minmax(170px, 1.1fr) 96px 128px minmax(150px, 1fr) 56px 172px; gap: 10px; }
+.w-th .der, .w-tr .der { justify-content: flex-end; text-align: right; }
+.f-bnd-est .k-us { margin-right: 6px; color: var(--t3); }
+.k-acc { display: inline-flex; align-items: center; justify-content: flex-end; gap: 0; width: 100%; }
+.k-acc .ib { width: 30px; height: 30px; flex: none; }
+.k-acc .ib[aria-disabled="true"] { color: var(--borde2); cursor: default; }
+.k-acc .cb { height: 30px; padding: 0 10px; font-size: 13px; flex: none; }
+.k-acc .k-el { margin-right: 6px; font-size: 12px; line-height: 1.15; color: var(--peligro); text-align: right; width: 72px; flex: none; white-space: normal; }
+.w-tr.borrar .k-in, .w-tr.borrar .gris { color: var(--t3); background: var(--s2); }
+.w-tr.borrar .k-chk { opacity: 0.45; }
+.k-err-f { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; padding: 0 0 8px 68px; font-size: 12.5px; color: var(--peligro); }
+.k-err-f svg { width: 14px; height: 14px; flex: none; }
 .w-th.kl, .w-tr.kl { grid-template-columns: 30px minmax(192px, 1.2fr) 96px minmax(192px, 1.4fr) 110px; gap: 10px; }
 .w-tr.ke, .w-tr.kv, .w-tr.kl { position: relative; min-height: 50px; }
 .w-tr.baja .k-in { color: var(--t3); }
@@ -294,12 +316,15 @@ CSS_EDITOR = """.k-cab2 { display: grid; grid-template-columns: minmax(0, 1fr) 2
 .k-pie { display: flex; justify-content: space-between; align-items: center; }
 .k-act { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
 .k-act i { width: 16px; height: 16px; border-radius: 4px; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
-.k-pv { display: flex; flex-direction: column; }
-.k-pv .pv-tit { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 600; color: var(--t2); }
-.k-pv .seg2 { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 2px; border-radius: 8px; background: var(--s3); font-size: 12px; }
-.k-pv .seg2 span { padding: 3px 10px; border-radius: 6px; color: var(--t2); text-align: center; }
+.k-pv { display: flex; flex-direction: column; gap: 10px; }
+.k-pv .pv-tit { font-size: 13px; font-weight: 600; color: var(--t2); }
+.k-pv .seg2 { align-self: center; display: inline-grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 2px; border-radius: 8px; background: var(--s3); font-size: 12.5px; }
+.k-pv .seg2 span { padding: 4px 14px; border-radius: 6px; color: var(--t2); text-align: center; }
 .k-pv .seg2 span.on { background: #fff; color: var(--t1); font-weight: 600; box-shadow: 0 1px 2px oklch(0.24 0.014 78 / 0.12); }
 .k-pv .tel { flex: 1; height: auto; min-height: 236px; width: 100%; box-sizing: border-box; }
+.tel .pv-hoja { display: flex; flex-direction: column; }
+.tel .k-env { margin: auto 14px 14px; height: 34px; border-radius: 8px; background: oklch(0.45 0.12 160 / 0.5); color: #fff; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+.tel .k-hasta { padding: 8px 14px 2px; font-size: 12px; color: oklch(0.4 0.01 150); }
 .tel .k-campo { margin: 4px 14px; display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; color: oklch(0.3 0.01 150); }
 .tel .k-campo .sel { display: flex; justify-content: space-between; align-items: center; height: 34px; box-sizing: border-box; padding: 0 10px; border: 1px solid oklch(0.85 0.006 150); border-radius: 8px; color: oklch(0.5 0.01 150); }
 .tel .k-li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 14px; border-bottom: 1px solid oklch(0.94 0.004 150); }
@@ -340,7 +365,7 @@ CSS_EDITOR = """.k-cab2 { display: grid; grid-template-columns: minmax(0, 1fr) 2
 .tel .k-mas { padding: 10px 14px; font-size: 11.5px; color: oklch(0.5 0.01 150); }
 """
 # El ancho mínimo de cada tabla: las columnas, los espacios entre ellas y los 24 px de los costados
-ANCHOS = {"ke": 768, "kv": 906, "kl": 684}
+ANCHOS = {"ke": 852, "kv": 924, "kl": 684}
 
 
 def campo(rotulo, valor, req=False, ro=False, ph=False, err="", info=""):
@@ -351,18 +376,37 @@ def campo(rotulo, valor, req=False, ro=False, ph=False, err="", info=""):
 
 
 def caja_catalogo(nombre, desc, origen="Escritas a mano", tipo="Texto", err_nombre=False, lectura=False):
-    """El nombre y el tipo de valor en una fila y la descripción debajo; de dónde salen va en la banda (pedido del usuario, 25/10)."""
+    """Como ArquitecturaBase (126): de dónde salen y el tipo, en una línea, y debajo el nombre y la descripción. Ninguno de los dos primeros se cambia después."""
     n = campo("Nombre", nombre or "Nombre del catálogo", req=not lectura, ro=lectura, ph=not nombre, err="Escribí el nombre del catálogo." if err_nombre else "")
-    d = campo("Descripción", desc or "Opcional", ro=lectura, ph=not desc).replace('class="w-cmp"', 'class="w-cmp ancho"', 1)
-    cuerpo = n + (campo("Tipo de valor", tipo, ro=True) if tipo else "") + d
-    return f'<div class="w-caja"><div class="f-cab"><span>El catálogo</span></div><div class="k-g2 {"t2" if tipo else "t1"}">{cuerpo}</div></div>'
+    d = campo("Descripción", desc or "Opcional", ro=lectura, ph=not desc).replace('class="ct', 'class="ct area', 1)
+    linea = " · ".join(x for x in (origen, tipo) if x)
+    return f'<div class="w-caja"><div class="f-cab"><span>El catálogo</span></div><div class="k-g1"><p class="k-de">{linea}</p>{n}{d}</div></div>'
 
 
-def k_menu_fila(n, baja=False):
-    ultimo = (f'<span class="f-mi" role="menuitem">{REACTIVAR} Reactivar</span>' if baja else
-              f'<span class="f-sep" role="separator"></span><span class="f-mi pel" role="menuitem">{QUITAR} Dar de baja</span>')
-    return (f'<div class="f-menu" role="menu" aria-label="Acciones de {n}"><span class="f-mi" role="menuitem">{LAPIZ} Editar</span>'
-            f'<span class="f-mi" role="menuitem">{ARRIBA} Subir</span><span class="f-mi" role="menuitem">{ABAJO} Bajar</span>{ultimo}</div>')
+def casilla(on, n="", ro=False):
+    """El Estado de una opción, como en ArquitecturaBase: una casilla. Sin marcar, dada de baja."""
+    return (f'<span class="k-chk{" on" if on else ""}{" ro" if ro else ""}" role="checkbox" aria-checked="{"true" if on else "false"}" aria-label="Activa: {n}"'
+            f'{" aria-disabled=" + chr(34) + "true" + chr(34) if ro else ""}>{TILDE if on else ""}</span>')
+
+
+def flechas(n, primera=False, ultima=False, nueva=False):
+    """Mover: se aplica al guardar. Una opción nueva todavía no tiene lugar, y el motivo va en su tooltip (43)."""
+    subir, bajar = ("true" if primera or nueva else "false"), ("true" if ultima or nueva else "false")
+    motivo = f' title="{MOTIVO_MOVER}"' if nueva else ""
+    return (f'<button type="button" class="ib" aria-label="Subir {n}" aria-disabled="{subir}"{motivo}>{ARRIBA}</button>'
+            f'<button type="button" class="ib" aria-label="Bajar {n}" aria-disabled="{bajar}"{motivo}>{ABAJO}</button>')
+
+
+def acciones(n, activa=True, primera=False, ultima=False, nueva=False, borrar=False, motivo_borrar=""):
+    """Las acciones a la vista (127). Una dada de baja cambia ✎ por «Reactivar»; 🗑 quita una nueva y borra al guardar una guardada que nada usa."""
+    mover = flechas(n, primera, ultima, nueva)
+    if borrar:
+        return f'<span class="k-acc"><span class="k-el">Se borra al guardar</span><button type="button" class="cb cb-sec" aria-label="Restaurar {n}">Restaurar</button></span>'
+    medio = (f'<button type="button" class="ib" aria-label="Editar {n}">{LAPIZ}</button>' if activa else
+             f'<button type="button" class="cb cb-sec" aria-label="Reactivar {n}">Reactivar</button>')
+    etiqueta = f"Quitar {n}" if nueva else f"Borrar {n}"
+    off = f' aria-disabled="true" title="{motivo_borrar}"' if motivo_borrar else ""
+    return f'<span class="k-acc">{mover}{medio}<button type="button" class="ib" aria-label="{etiqueta}"{off}>{QUITAR}</button></span>'
 
 
 def entrada(valor, mono=False, contar=False, ph="", mal=False, foco=False):
@@ -371,8 +415,9 @@ def entrada(valor, mono=False, contar=False, ph="", mal=False, foco=False):
     return f'<span class="{clases}"><span>{valor or ph}</span>{c}</span>'
 
 
-def fila_editable(k, n, cod, det, activa, valor=None, elegida=False, menu=False, err=None, aviso=None, foco=None, campos="", tabla=""):
-    """Una fila de la tabla que se edita en el lugar. err/aviso: {columna: texto}; campos, las celdas de los campos (la 13)."""
+def fila_editable(k, n, cod, det, activa, valor=None, elegida=False, err=None, aviso=None, foco=None, campos="", tabla="", total=0, nueva=False, borrar=False, motivo_borrar="", aviso_f="", quieta=False):
+    """Una fila de la tabla que se edita en el lugar. err/aviso: {columna: texto}; campos, las celdas de los campos (la 13), que van antes del detalle.
+    aviso_f, el motivo del servidor debajo de la fila, a todo el ancho."""
     err = err or {}
     t = entrada(n, contar=True, ph="Texto", mal="texto" in err, foco=foco == "texto")
     t_extra = (f'<span class="err2" role="alert">{err["texto"]}</span>' if "texto" in err else
@@ -380,94 +425,105 @@ def fila_editable(k, n, cod, det, activa, valor=None, elegida=False, menu=False,
     c = entrada(cod, mono=True, ph="Código", mal="codigo" in err, foco=foco == "codigo")
     c_extra = f'<span class="err2" role="alert">{err["codigo"]}</span>' if "codigo" in err else ""
     celdas = (f'<span class="fx fx-a"><span class="k-chk{" on" if elegida else ""}" role="checkbox" aria-checked="{"true" if elegida else "false"}">{TILDE if elegida else ""}</span></span>'
-              f'<span class="gris fx fx-b">{k}</span><span class="k-tab fx fx-c">{t}{t_extra}</span><span class="k-tab">{c}{c_extra}</span>')
+              f'<span class="gris fx fx-b">{"—" if nueva else k}</span><span class="k-tab fx fx-c">{t}{t_extra}</span><span class="k-tab">{c}{c_extra}</span>{campos}')
     if valor is not None:
         v = entrada(valor, ph="Valor", mal="valor" in err, foco=foco == "valor")
         v_extra = f'<span class="err2" role="alert">{err["valor"]}</span>' if "valor" in err else ""
         celdas += f'<span class="k-tab">{v}{v_extra}</span>'
     d_extra = f'<span class="err2" role="alert">{err["detalle"]}</span>' if "detalle" in err else ""
-    celdas += f'<span class="k-tab">{entrada(det, ph="Opcional", contar="detalle" in err, mal="detalle" in err)}{d_extra}</span>{campos}'
-    est = '<span class="w-est">Activa</span>' if activa else '<span class="w-est off">Dada de baja</span>'
-    celdas += (f'{est}<span class="fx fx-d"><button type="button" class="ib" aria-label="Acciones de {n or "la opción nueva"}">{KEBAB}</button>'
-               f'{k_menu_fila(n, not activa) if menu else ""}</span>')
-    return f'<div class="w-tr {tabla or ("kv" if valor is not None else "ke")}{"" if activa else " baja"}">{celdas}</div>'
+    celdas += f'<span class="k-tab">{entrada(det, ph="Opcional", contar="detalle" in err, mal="detalle" in err)}{d_extra}</span>'
+    celdas += f"<span>{casilla(activa, n or 'la opción nueva', ro=borrar)}</span>"
+    celdas += (f'<span class="fx fx-d der">{acciones(n or "la opción nueva", activa, quieta or k == 1, quieta or (bool(total) and k == total), nueva, borrar, motivo_borrar)}</span>')
+    clases = f'w-tr {tabla or ("kv" if valor is not None else "ke")}{"" if activa else " baja"}{" borrar" if borrar else ""}'
+    fila = f'<div class="{clases}">{celdas}</div>'
+    if aviso_f:
+        fila += f'<div class="w-tr k-sinfila"><span class="k-err-f" role="alert">{ALERTA}{aviso_f}</span></div>'
+    return fila
 
 
 def fila_lectura(k, n, cod, det, activa, campos="", tabla="kl"):
     est = '<span class="w-est">Activa</span>' if activa else '<span class="w-est off">Dada de baja</span>'
     return (f'<div class="w-tr {tabla}{"" if activa else " baja"}"><span class="gris fx fx-a">{k}</span><span class="k-lee fx fx-c2">{n}</span><span class="k-lee mono">{cod}</span>'
-            f'<span class="k-lee">{det}</span>{campos}{est}</div>')
+            f'{campos}<span class="k-lee">{det}</span>{est}</div>')
 
 
-def barra(modo):
-    """El encabezado de Opciones: solo «+ Agregar opción» y un ⋮ con lo demás, sin cantidades (el usuario, 26/10, front 29451ed6).
-    modo: normal | cambios | nuevo | tope | lectura."""
+def barra(modo, campos=""):
+    """El encabezado de Opciones, como en ArquitecturaBase: lo de todos los días a la vista y el resto en el ⋮. Lo que no se puede todavía va grisado, con el
+    motivo en su tooltip (43). modo: normal | cambios | nuevo | tope | lectura. campos: «Agregar campos» de la 13, al lado de «Agregar opción»."""
     agregar = f'<button type="button" class="cb cb-sec">{MAS} Agregar opción</button>'
+    importar_b = '<button type="button" class="cb cb-sec">Importar</button>'
+    exportar_b = '<button type="button" class="cb cb-sec">Exportar</button>'
     mas = f'<button type="button" class="ib" aria-label="Más acciones de las opciones" aria-haspopup="menu" aria-expanded="{{{{expMas}}}}">{KEBAB}</button>'
     if modo == "lectura":
-        return mas
+        return campos + exportar_b + mas
+    motivo_imp = {"nuevo": MOTIVO_NUEVO, "cambios": MOTIVO_CAMBIOS}.get(modo, "")
     if modo == "tope":
-        return tip(agregar, MOTIVO_TOPE, abierto=True) + mas
-    return agregar + mas
+        agregar = tip(agregar, MOTIVO_TOPE, abierto=True)
+        motivo_imp = MOTIVO_TOPE
+    if motivo_imp:
+        importar_b = tip(importar_b, motivo_imp)
+    if modo == "nuevo":
+        exportar_b = tip(exportar_b, MOTIVO_NUEVO)
+    return agregar + campos + importar_b + exportar_b + mas
 
 
 def menu_mas(modo="normal"):
-    """El ⋮ de Opciones. Lo que no se puede todavía va apagado, con el motivo en su tooltip (43)."""
-    motivo = {"nuevo": MOTIVO_NUEVO, "cambios": MOTIVO_CAMBIOS, "tope": MOTIVO_TOPE}.get(modo, "")
-
+    """El ⋮ de Opciones: lo que se usa de vez en cuando. Lo que no se puede todavía va apagado, con el motivo en su tooltip (43)."""
     def mi(icono, texto, apagado=""):
         if apagado:
             return f'<span class="f-mi off" role="menuitem" aria-disabled="true" title="{apagado}">{icono} {texto}</span>'
         return f'<span class="f-mi" role="menuitem">{icono} {texto}</span>'
-    exportar = mi(EXPORTAR, "Exportar", MOTIVO_NUEVO if modo == "nuevo" else "")
     plantilla = mi(PLANTILLA, "Descargar la plantilla")
     if modo == "lectura":
-        items = exportar + plantilla
+        items = plantilla
     else:
-        items = (mi(IMPORTAR, "Importar", motivo if modo != "tope" else "") + exportar
-                 + '<span class="f-sep" role="separator"></span>' + plantilla
-                 + mi(AZ, "Ordenar de la A a la Z") + mi(CODIGOS, "Generar los códigos que faltan"))
+        orden = mi(AZ, "Ordenar de la A a la Z", MOTIVO_NUEVO if modo == "nuevo" else "")
+        items = plantilla + '<span class="f-sep" role="separator"></span>' + orden + mi(CODIGOS, "Generar los códigos que faltan")
     return f'<sc-if value="{{{{menuMas}}}}" hint-placeholder-val="{{{{no}}}}"><div class="f-menu" role="menu" aria-label="Más acciones de las opciones">{items}</div></sc-if>'
 
 
-def caja_opciones(filas, cuenta, pie, modo="normal", seleccion="", tabla="ke", vacia=False, cab=None, ancho=None):
-    """cuenta ya no se muestra: el encabezado de una sección no lleva cantidades (29451ed6); lo que hay, en la tabla y el paginado."""
-    cab_tabla = cab or {"ke": ["", "#", "Texto", "Código", "Detalle", "Estado", ""],
-                        "kv": ["", "#", "Texto", "Código", "Valor", "Detalle", "Estado", ""],
+def caja_opciones(filas, cuenta, pie, modo="normal", seleccion="", tabla="ke", vacia=False, cab=None, ancho=None, boton_campos="", columnas=False, aviso=""):
+    """cuenta ya no se muestra: el encabezado de una sección no lleva cantidades (29451ed6); lo que hay, en la tabla y el paginado.
+    boton_campos y columnas son de la 13; aviso, lo que dijo el servidor, arriba de la tabla."""
+    cab_tabla = cab or {"ke": ["", "#", "Texto", "Código", "Detalle", "Estado", "Acciones"],
+                        "kv": ["", "#", "Texto", "Código", "Valor", "Detalle", "Estado", "Acciones"],
                         "kl": ["#", "Texto", "Código", "Detalle", "Estado"]}[tabla]
     todas = '<span class="k-chk{{chkTodas}}" role="checkbox" aria-label="Elegir las de esta página"></span>'
     lectura = tabla.startswith("kl")
-    fijas = ({0: "fx fx-a", 1: "fx fx-c2"} if lectura else {0: "fx fx-a", 1: "fx fx-b", 2: "fx fx-c", len(cab_tabla) - 1: "fx fx-d"})
+    fijas = ({0: "fx fx-a", 1: "fx fx-c2"} if lectura else {0: "fx fx-a", 1: "fx fx-b", 2: "fx fx-c", len(cab_tabla) - 1: "fx fx-d der"})
 
     def celda(k, c):
         if c.startswith("<span"):
             return c
         clase = fijas.get(k, "")
-        if k == len(cab_tabla) - 1 and not lectura:
-            return f'<span class="{clase}"><span class="sr">Acciones</span></span>'
         dentro = todas if (k == 0 and not lectura) else c
         return f'<span class="{clase}">{dentro}</span>' if clase else f"<span>{c}</span>"
     th = f'<div class="w-th {tabla}">' + "".join(celda(k, c) for k, c in enumerate(cab_tabla)) + "</div>"
     tabla_html = f'<div class="k-desp"><div class="k-tabla" style="min-width: {ancho or ANCHOS[tabla]}px;">{th}{filas}</div></div>'
-    fb = '' if vacia else f'<div class="k-fb"><span class="w-bus {{{{busClase}}}}">{F.BUSCAR} {{{{busqueda}}}}</span><span class="w-pil">Estado {CHEV}</span></div>'
+    col = f'<span class="w-pil">Columnas {CHEV}</span>' if columnas else ""
+    fb = '' if vacia else f'<div class="k-fb"><span class="w-bus {{{{busClase}}}}">{F.BUSCAR} {{{{busqueda}}}}</span>{col}</div>'
     cuerpo = (f'<div class="k-vacio">Todavía no hay opciones.</div>' if vacia else seleccion + tabla_html + pie)
-    return (f'<div class="w-caja"><div class="f-cab"><span>Opciones</span><span class="der">{barra(modo)}{menu_mas(modo)}</span></div>'
-            f"{fb}{cuerpo}</div>")
+    return (f'<div class="w-caja"><div class="f-cab"><span>Opciones</span><span class="der">{barra(modo, boton_campos)}{menu_mas(modo)}</span></div>'
+            f"{aviso}{fb}{cuerpo}</div>")
 
 
 def vista_previa(items, titulo="Motivo"):
-    """El teléfono, sin rótulo: por defecto el campo cerrado; tocado, la lista. Si se elige una o varias lo decide la pregunta del formulario."""
+    """Como ArquitecturaBase: el rótulo, «Una opción | Varias» y el teléfono, que acompaña a las cajas de la izquierda. Por defecto, el campo cerrado; tocado, la lista."""
     lista = "".join(f'<div class="k-li"><span class="t">{n}<small>{d}</small></span><i></i></div>' for n, d in items)
-    return ('<div class="k-pv">'
+    varias = "".join(f'<div class="k-li"><span class="t">{n}<small>{d}</small></span><i class="cua"></i></div>' for n, d in items)
+    return ('<div class="k-pv"><span class="pv-tit">Así lo ve quien lo recibe</span>'
+            '<span class="seg2" role="group" aria-label="Cómo se elige"><span class="{{pvUna}}">Una opción</span><span class="{{pvVarias}}">Varias</span></span>'
             '<div class="tel" aria-label="Así lo ve quien lo recibe"><div class="pv-hoja">'
             f'<sc-if value="{{{{pvCerrado}}}}" hint-placeholder-val="{{{{si}}}}"><div class="pv-hc"><span class="pv-x">×</span>Formulario</div>'
-            f'<div class="k-campo">{titulo}<span class="sel">Elegí una opción{CHEV}</span></div></sc-if>'
+            f'<div class="k-campo">{titulo}<span class="sel">Elegí una opción{CHEV}</span></div><div class="k-env">Enviar</div></sc-if>'
             f'<sc-if value="{{{{pvAbierto}}}}" hint-placeholder-val="{{{{no}}}}"><div class="pv-hc"><span class="pv-x">‹</span>{titulo}</div><div class="pv-hb lst">{lista}</div></sc-if>'
+            f'<sc-if value="{{{{pvMuchas}}}}" hint-placeholder-val="{{{{no}}}}"><div class="pv-hc"><span class="pv-x">×</span>Formulario</div><div class="k-hasta">Elegí hasta 3</div>'
+            f'<div class="pv-hb lst">{varias}</div></sc-if>'
             "</div></div></div>")
 
 
-def acc_editor(cambios=False, guardando=False, nuevo=False, baja=False, lectura=False, menu=False, motivo="", abierto=False):
-    """motivo: «Crear catálogo» grisado con el motivo en su tooltip (43); abierto, el tooltip a la vista."""
+def acc_editor(cambios=False, guardando=False, nuevo=False, baja=False, lectura=False, motivo="", abierto=False):
+    """Como ArquitecturaBase: «Dar de baja» a la vista, «Descartar» y «Guardar cambios». motivo: «Crear catálogo» grisado con el motivo en su tooltip (43); abierto, el tooltip a la vista."""
     if lectura:
         return ""
     if baja:
@@ -479,20 +535,14 @@ def acc_editor(cambios=False, guardando=False, nuevo=False, baja=False, lectura=
     segundo = trabaja("Creando…" if nuevo else "Guardando…") if guardando else f'<button type="button" class="cb cb-pri"{"" if nuevo else d}>{g}</button>'
     if motivo:
         segundo = tip(f'<button type="button" class="cb cb-pri">{g}</button>', motivo, abierto)
-    kebab = "" if nuevo else (f'<button type="button" class="ib o-borde" aria-label="Más acciones del catálogo" aria-haspopup="menu" aria-expanded="{"true" if menu else "false"}">{KEBAB}</button>'
-                             + (f'<div class="f-menu" role="menu" aria-label="Más acciones del catálogo"><span class="f-mi pel" role="menuitem">{QUITAR} Dar de baja</span></div>' if menu else ""))
-    return primero + segundo + kebab
+    dar_baja = "" if nuevo else '<button type="button" class="cb cb-sec">Dar de baja</button>'
+    return dar_baja + primero + segundo
 
 
 ACTIVO = '<span class="w-est">Activo</span>'
-# De dónde salen las opciones va en la banda, al lado del estado (pedido del usuario, 25/10); en uno nuevo, con el punto neutro
-ORIGEN_MANO, ORIGEN_MIEMBROS, ORIGEN_CONTACTOS = ('<span class="k-orig">· Escritas a mano</span>', '<span class="k-orig">· De los miembros</span>',
-                                                 '<span class="k-orig">· De los contactos de WhatsApp</span>')
-NUEVO_MANO, NUEVO_MIEMBROS, NUEVO_CONTACTOS = ('<span class="w-est off">Escritas a mano</span>', '<span class="w-est off">De los miembros</span>',
-                                              '<span class="w-est off">De los contactos de WhatsApp</span>')
 ESTADOS_EDITOR = ["Sin cambios", "Con cambios", "Código repetido", "Texto repetido",
-                  "Texto de más de 30", "Acciones de una opción", "Más acciones", "Varias elegidas", "Vista previa abierta",
-                  "Guardando", "Guardado", "No se guardó", "Otra persona guardó", "Más acciones del catálogo", "Dar de baja el catálogo", "Dado de baja",
+                  "Texto de más de 30", "Una opción nueva", "Borrar una opción", "Se borra al guardar", "Movimientos pendientes", "Orden pendiente", "Más acciones", "Varias elegidas",
+                  "Vista previa abierta", "Vista previa con varias", "Guardando", "Guardado", "No se guardó", "Otra persona guardó", "Dar de baja el catálogo", "Dado de baja",
                   "Sin opciones", "1.097 opciones", "10.000 opciones", "Nuevo catálogo", "Falta el nombre", "Solo lectura", "Cargando", "No existe"]
 
 
@@ -514,9 +564,15 @@ def filas_motivos(modo=""):
             n = "Venta nueva para clientes del interior"
         if modo == "elegidas" and k in (2, 3):
             kw = dict(elegida=True)
-        if modo == "menu" and k == 3:
-            kw = dict(menu=True)
-        h += fila_editable(k, n, cod, det, activa, **kw)
+        if modo == "borrar":
+            kw = dict(borrar=k == 3, quieta=True)
+        if modo == "mover":
+            kw = dict(motivo_borrar=MOTIVO_ORDEN)
+        if modo == "orden":
+            kw = dict(motivo_borrar=MOTIVO_ORDEN, quieta=True)
+        h += fila_editable(k, n, cod, det, activa, total=len(OPS), **kw)
+    if modo == "nueva":
+        h += fila_editable(0, "Garantía", "GAR", "", True, nueva=True)
     return h
 
 
@@ -524,18 +580,24 @@ PIE4 = '<div class="w-pie"><span>1–4 de 4</span><span>10 por página · Págin
 ITEMS_MOTIVOS = [(n, d) for n, _c, d, a in OPS if a]
 
 
-def cuerpo_editor(opciones, catalogo=None, items=ITEMS_MOTIVOS, titulo="Motivo"):
+def cuerpo_editor(opciones, catalogo=None, items=ITEMS_MOTIVOS, titulo="Motivo", debajo="", aviso=""):
+    """Como ArquitecturaBase: las cajas a la izquierda, el teléfono al costado y, a todo el ancho, lo que quedó pendiente y las opciones. debajo: «En WhatsApp», de la 13."""
     catalogo = catalogo or caja_catalogo("Motivos de visita", "Por qué se visita a un cliente.")
-    return f'<div class="w-body"><div class="k-cab2">{catalogo}{vista_previa(items, titulo)}</div>{opciones}</div>'
+    return f'<div class="w-body"><div class="k-cab2"><div class="k-izq">{catalogo}{debajo}</div>{vista_previa(items, titulo)}</div>{aviso}{opciones}</div>'
+
+
+def aviso_orden(texto, boton):
+    """Lo que falta guardar del orden: se ve arriba de las opciones, con cómo descartarlo."""
+    return f'<div class="w-caja k-aviso-f" role="status"><span>{texto}</span><button type="button" class="cb cb-sec">{boton}</button></div>'
 
 
 def editor():
     tit = "Motivos de visita"
-    b = lambda est=ACTIVO, **k: C.banda_k(tit, est + ORIGEN_MANO, acc_editor(**k))
+    b = lambda est=ACTIVO, **k: C.banda_k(tit, est, acc_editor(**k))
     norm = caja_opciones(filas_motivos(), "4 opciones · 3 activas", PIE4)
     sucio = lambda modo: caja_opciones(filas_motivos(modo), "4 opciones · 3 activas", PIE4, modo="cambios")
-    seleccion = ('<div class="k-sel">2 elegidas<button type="button" class="cb cb-sec">Dar de baja</button>'
-                 '<button type="button" class="cb cb-sec" disabled>Reactivar</button><button type="button" class="cb cb-enl">Quitar la selección</button></div>')
+    seleccion = ('<div class="k-sel"><span>2 elegidas</span><button type="button" class="cb cb-sec">Dar de baja</button>'
+                 '<button type="button" class="cb cb-sec">Reactivar</button><button type="button" class="cb cb-enl">Quitar la selección</button></div>')
     prov = "".join(fila_editable(k, n, cod, det, a) for k, (n, cod, det, a) in enumerate(PROVEEDORES, 1))
     pie_prov = '<div class="w-pie"><span>1–10 de 1.097</span><span>10 por página · Página 1 de 110</span></div>'
     cat_prov = caja_catalogo("Proveedores", "")
@@ -552,25 +614,29 @@ def editor():
         "Código repetido": (b(cambios=True), cuerpo_editor(sucio("codigo"))),
         "Texto repetido": (b(cambios=True), cuerpo_editor(sucio("repetido"))),
         "Texto de más de 30": (b(cambios=True), cuerpo_editor(sucio("largo"))),
-        "Acciones de una opción": (b(), cuerpo_editor(caja_opciones(filas_motivos("menu"), "4 opciones · 3 activas", PIE4))),
+        "Una opción nueva": (b(cambios=True), cuerpo_editor(caja_opciones(filas_motivos("nueva"), "", PIE4, modo="cambios"))),
+        "Borrar una opción": (b(), cuerpo_editor(norm)),
+        "Se borra al guardar": (b(cambios=True), cuerpo_editor(sucio("borrar"))),
+        "Movimientos pendientes": (b(cambios=True), cuerpo_editor(sucio("mover"), aviso=aviso_orden("2 movimientos pendientes. Se aplican en este orden al guardar.", "Descartar movimientos"))),
+        "Orden pendiente": (b(cambios=True), cuerpo_editor(sucio("orden"), aviso=aviso_orden("Se ordena de la A a la Z al guardar.", "Cancelar el orden"))),
         "Más acciones": (b(), cuerpo_editor(norm)),
         "Varias elegidas": (b(), cuerpo_editor(caja_opciones(filas_motivos("elegidas"), "4 opciones · 3 activas", PIE4, seleccion=seleccion))),
         "Vista previa abierta": (b(), cuerpo_editor(norm)),
+        "Vista previa con varias": (b(), cuerpo_editor(norm)),
         "Guardando": (b(cambios=True, guardando=True), cuerpo_editor(sucio("cambios"))),
         "Guardado": (b(), cuerpo_editor(norm)),
         "No se guardó": (b(cambios=True), cuerpo_editor(sucio("cambios"))),
         "Otra persona guardó": (b(cambios=True), cuerpo_editor(sucio("cambios"))),
-        "Más acciones del catálogo": (b(menu=True), cuerpo_editor(norm)),
         "Dar de baja el catálogo": (b(), cuerpo_editor(norm)),
-        "Dado de baja": (C.banda_k(tit, '<span class="w-est off">Dado de baja</span>' + ORIGEN_MANO, acc_editor(baja=True)),
+        "Dado de baja": (C.banda_k(tit, '<span class="w-est off">Dado de baja</span>', acc_editor(baja=True)),
                          cuerpo_editor(caja_opciones("".join(fila_lectura(k, n, cod, det, a) for k, (n, cod, det, a) in enumerate(OPS, 1)), "4 opciones · 3 activas", PIE4, modo="lectura", tabla="kl"),
                                        caja_catalogo("Motivos de visita", "Por qué se visita a un cliente.", lectura=True))),
         "Sin opciones": (b(no_se_puede), cuerpo_editor(caja_opciones("", "0 opciones", "", vacia=True), items=[])),
-        "1.097 opciones": (C.banda_k("Proveedores", ACTIVO + ORIGEN_MANO, acc_editor()), cuerpo_editor(caja_opciones(prov, "1.097 opciones · 1.090 activas", pie_prov), cat_prov, items_prov, "Proveedor")),
-        "10.000 opciones": (C.banda_k("Proveedores", ACTIVO + ORIGEN_MANO, acc_editor()), cuerpo_editor(caja_opciones(prov, "10.000 opciones · 9.912 activas", pie_tope, modo="tope"), cat_prov, items_prov, "Proveedor")),
-        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", NUEVO_MANO, acc_editor(nuevo=True)), cuerpo_editor(nuevo_op, caja_catalogo("", ""), items=[], titulo="Pregunta")),
-        "Falta el nombre": (C.banda_k("Nuevo catálogo", NUEVO_MANO, acc_editor(nuevo=True)), cuerpo_editor(nuevo_op, caja_catalogo("", "", err_nombre=True), items=[], titulo="Pregunta")),
-        "Solo lectura": (C.banda_k(tit, ACTIVO + ORIGEN_MANO, acc_editor(lectura=True)), cuerpo_editor(lectura, caja_catalogo("Motivos de visita", "Por qué se visita a un cliente.", lectura=True))),
+        "1.097 opciones": (C.banda_k("Proveedores", ACTIVO, acc_editor()), cuerpo_editor(caja_opciones(prov, "1.097 opciones · 1.090 activas", pie_prov), cat_prov, items_prov, "Proveedor")),
+        "10.000 opciones": (C.banda_k("Proveedores", ACTIVO, acc_editor()), cuerpo_editor(caja_opciones(prov, "10.000 opciones · 9.912 activas", pie_tope, modo="tope"), cat_prov, items_prov, "Proveedor")),
+        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", "", acc_editor(nuevo=True)), cuerpo_editor(nuevo_op, caja_catalogo("", ""), items=[], titulo="Pregunta")),
+        "Falta el nombre": (C.banda_k("Nuevo catálogo", "", acc_editor(nuevo=True)), cuerpo_editor(nuevo_op, caja_catalogo("", "", err_nombre=True), items=[], titulo="Pregunta")),
+        "Solo lectura": (C.banda_k(tit, ACTIVO, acc_editor(lectura=True)), cuerpo_editor(lectura, caja_catalogo("Motivos de visita", "Por qué se visita a un cliente.", lectura=True))),
         "Cargando": (C.banda_k(tit, "", ""), cargando),
         "No existe": (C.banda_k("Catálogo", "", ""), no_existe),
     }
@@ -586,10 +652,13 @@ def editor():
                                          '<button type="button" class="cb cb-sec">Seguir editando</button><button type="button" class="cb cb-pri">Ver lo nuevo</button>', una=False
                                          ).replace('class="w-dlg"', 'class="w-dlg" style="width: 720px;"', 1),
         "Dar de baja el catálogo": A.confirmar("¿Dar de baja «Motivos de visita»?", "Sus opciones dejan de poder elegirse. Se puede reactivar desde acá.", "Dar de baja"),
+        "Borrar una opción": A.confirmar("¿Borrar «Reclamo»?", "Se borra al guardar el catálogo. Hasta entonces se puede restaurar.", "Borrar opción"),
     }
+    i_mas, i_varias, i_abierta, i_vista = (ESTADOS_EDITOR.index(x) for x in ("Más acciones", "Varias elegidas", "Vista previa abierta", "Vista previa con varias"))
     js = A.js_estados(ESTADOS_EDITOR, extra=(
-        "      menuMas: k === 6, expMas: k === 6 ? 'true' : 'false', chkTodas: k === 7 ? ' medio' : '',\n"
-        "      pvCerrado: k !== 8, pvAbierto: k === 8,\n"
+        f"      menuMas: k === {i_mas}, expMas: k === {i_mas} ? 'true' : 'false', chkTodas: k === {i_varias} ? ' medio' : '',\n"
+        f"      pvCerrado: k !== {i_abierta} && k !== {i_vista}, pvAbierto: k === {i_abierta}, pvMuchas: k === {i_vista},\n"
+        f"      pvUna: k === {i_vista} ? '' : 'on', pvVarias: k === {i_vista} ? 'on' : '',\n"
         "      busqueda: 'Buscar opción', busClase: '',\n"))
     t = C.pagina_k("Catálogo escrito a mano · /org/formularios/catalogos/:id", "Inicio / Formularios / Catálogos / Motivos de visita",
                    A.con_estados([(k, v[0]) for k, v in V.items()]), A.con_estados([(k, v[1]) for k, v in V.items()]),
@@ -761,9 +830,9 @@ def importar():
     assert list(capas) == ESTADOS_IMPORTAR
     prov = "".join(fila_editable(k, n, cod, det, a) for k, (n, cod, det, a) in enumerate(PROVEEDORES, 1))
     pie_prov = '<div class="w-pie"><span>1–10 de 1.097</span><span>10 por página · Página 1 de 110</span></div>'
-    fondo = (C.banda_k("Proveedores", ACTIVO + ORIGEN_MANO, acc_editor()),
+    fondo = (C.banda_k("Proveedores", ACTIVO, acc_editor()),
              cuerpo_editor(caja_opciones(prov, "1.097 opciones · 1.090 activas", pie_prov), caja_catalogo("Proveedores", ""), [(n, d) for n, _c, d, a in PROVEEDORES[:6] if a], "Proveedor"))
-    js = A.js_estados(ESTADOS_IMPORTAR, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, busqueda: 'Buscar opción', busClase: '',\n")
+    js = A.js_estados(ESTADOS_IMPORTAR, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, pvMuchas: false, pvUna: 'on', pvVarias: '', busqueda: 'Buscar opción', busClase: '',\n")
     t = C.pagina_k("Importar opciones", "Inicio / Formularios / Catálogos / Proveedores", fondo[0], fondo[1],
                    F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + A.CSS_AB + E.CSS_E12 + CSS_EDITOR, ESTADOS_IMPORTAR, js, alto=1200)
     over = "".join(f'<sc-if value="{{{{s{ESTADOS_IMPORTAR.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
@@ -771,10 +840,10 @@ def importar():
 
 
 # ================================================================ Las opciones en un modal (117), sobre CO1-B de ArquitecturaBase
-# «Agregar opción» lo abre con las agregadas en él, y «Editar» del ⋮, con las de la página. Escribe en el borrador: se guarda con «Guardar cambios».
-# Acá las opciones no se borran: «Quitar opción» va solo en una nueva, y una guardada se da de baja con su Estado. Las piezas tienen parámetros
-# porque la 13 suma una fila por campo (formularios_13_campos_1004.py).
-ESTADOS_OPCIONES = ["Agregar una opción", "Agregar otra", "Editar una opción", "Una opción dada de baja", "Código repetido", "Texto repetido", "Texto de más de 30", "Con un valor"]
+# «Agregar opción» lo abre con las agregadas en él, y ✎, con las de la página. Escribe en el borrador: se guarda con «Guardar cambios».
+# «Quitar opción» saca una nueva sin preguntar, y en una guardada pregunta y la borra al guardar (129). Las piezas tienen parámetros porque la 13
+# suma una fila por campo y su modal de campos es igual (formularios_13_campos_1004.py).
+ESTADOS_OPCIONES = ["Agregar una opción", "Agregar otra", "Editar una opción", "Una opción dada de baja", "Una opción por borrar", "Código repetido", "Texto repetido", "Texto de más de 30", "Con un valor"]
 CSS_OPCIONES = """.w-dlg.md { width: 880px; }
 .w-dlg.md .db { padding: 0; gap: 0; grid-template-columns: 270px minmax(0, 1fr); align-items: stretch; height: 450px; }
 .md-lista { display: flex; flex-direction: column; min-height: 0; overflow: auto; border-right: 1px solid var(--borde); background: oklch(0.975 0.008 78); }
@@ -786,10 +855,21 @@ CSS_OPCIONES = """.w-dlg.md { width: 880px; }
 .md-it .tx small { font-size: 12.5px; color: var(--t3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .md-it.baja .tx b { color: var(--t3); }
 .md-it .tri { display: inline-flex; color: var(--peligro); }
-.md-mas { margin-top: auto; padding: 10px 12px; }
+.md-lista .md-tit { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 12px; box-sizing: border-box; flex: none; background: oklch(0.945 0.018 76); border-bottom: 1px solid var(--borde); font-size: 13px; font-weight: 600; color: var(--t2); }
+.md-lista .md-tit small { font-size: 12.5px; font-weight: 500; color: var(--t3); }
+.md-it .md-nueva { margin-left: 6px; padding: 0 6px; border-radius: 6px; background: oklch(0.95 0.05 85); color: oklch(0.45 0.1 70); font-size: 11.5px; font-weight: 600; }
+.md-it .md-fle { display: inline-flex; flex: none; }
+.md-it .md-fle .ib { width: 28px; height: 28px; }
+.md-it .md-fle .ib[aria-disabled="true"] { color: var(--borde2); }
+.md-it .tx small.borrar { color: var(--peligro); }
+.md-it.baja .tx small { color: var(--t3); }
+.md-it.on { box-shadow: inset 3px 0 0 var(--marca); }
+.md-mas { margin-top: auto; padding: 10px 12px; border-top: 1px solid var(--borde); }
+.md-por { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 20px; font-size: 14px; }
+.md-por .el { color: var(--peligro); font-size: 13.5px; }
 .md-op { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: auto; }
 .md-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 20px; background: oklch(0.945 0.018 76); font-size: 13px; font-weight: 600; color: var(--t2); }
-.md-cab .cb-enl { color: var(--peligro); }
+.md-cab .cb-pel { height: 32px; font-size: 13px; }
 .md-f { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; padding: 10px 20px; border-top: 1px solid var(--borde); }
 .md-f .rt { display: inline-flex; align-items: center; gap: 4px; min-height: 34px; font-size: 13px; font-weight: 600; color: var(--t2); }
 .md-f .req { color: var(--peligro); }
@@ -805,10 +885,12 @@ CSS_OPCIONES = """.w-dlg.md { width: 880px; }
 TITULO_NUEVAS, TITULO_OPCIONES = "Opciones nuevas de «{}»", "Opciones de «{}»"
 
 
-def md_item(num, texto, sub, on=False, baja=False, mal=False):
+def md_item(num, texto, sub, on=False, baja=False, mal=False, nueva="", flechas_md="", borrar=False):
+    """Una fila de la lista de un modal. nueva: «Nueva» o «Nuevo», al lado del nombre. flechas_md: ↑ ↓ en la elegida, en el de campos."""
     tri = f'<span class="tri" title="Tiene un error">{ALERTA}</span>' if mal else ""
+    marca = f'<span class="md-nueva">{nueva}</span>' if nueva else ""
     return (f'<div class="md-it{" on" if on else ""}{" baja" if baja else ""}" role="option" aria-selected="{"true" if on else "false"}"><span class="num">{num}</span>'
-            f'<span class="tx"><b>{texto or "Sin texto"}</b><small>{sub}</small></span>{tri}</div>')
+            f'<span class="tx"><b>{texto or "Sin texto"}{marca}</b><small{" class=" + chr(34) + "borrar" + chr(34) if borrar else ""}>{sub}</small></span>{tri}{flechas_md}</div>')
 
 
 def md_fila(rotulo, control, req=False, ayuda="", err="", aviso=""):
@@ -817,56 +899,68 @@ def md_fila(rotulo, control, req=False, ayuda="", err="", aviso=""):
     return f'<div class="md-f"><span class="rt">{rotulo}{rq}{F.info(ayuda) if ayuda else ""}</span><span class="ctl">{control}{extra}</span></div>'
 
 
-def md_opcion(posicion, texto="", cod="", det="", valor=None, rotulo_valor="Valor", estado=None, quitar=False, err=None, aviso="", campos=""):
-    """La opción elegida. estado: None en una nueva, porque recién una guardada se puede dar de baja."""
+def md_cab(titulo, boton):
+    """La banda de lo elegido: dice cuál es y lleva cómo quitarlo, como en ArquitecturaBase."""
+    return f'<div class="md-cab"><span>{titulo}</span><button type="button" class="cb cb-pel">{QUITAR} {boton}</button></div>'
+
+
+def md_opcion(posicion, texto="", cod="", det="", valor=None, rotulo_valor="Valor", estado=None, err=None, aviso="", campos=""):
+    """La opción elegida. estado: None en una nueva, porque recién una guardada se puede dar de baja. Los campos van antes del valor y del detalle, como en la tabla."""
     err = err or {}
     filas = md_fila("Texto", entrada(texto, contar=True, ph="Texto", mal="texto" in err, foco=not texto), req=True, ayuda="Es lo que se ve en WhatsApp.", err=err.get("texto", ""), aviso=aviso)
     filas += md_fila("Código", f'<span class="lin">{entrada(cod, mono=True, ph="Código", mal="codigo" in err)}<button type="button" class="cb cb-enl">Generar desde el texto</button></span>',
                      req=True, ayuda="No se ve en WhatsApp. Identifica la opción al importar.", err=err.get("codigo", ""))
+    filas += campos
     if valor is not None:
         filas += md_fila(rotulo_valor, entrada(valor, ph="Valor"), req=True)
     filas += md_fila("Detalle", entrada(det, ph="Opcional"), ayuda="Se ve debajo del texto en WhatsApp.")
-    filas += campos
     if estado:
         seg = f'<span class="md-seg" role="radiogroup" aria-label="Estado"><span class="{"on" if estado == "Activa" else ""}" role="radio">Activa</span><span class="{"on" if estado == "De baja" else ""}" role="radio">De baja</span></span>'
         filas += md_fila("Estado", seg, ayuda="Dada de baja no se ofrece más, y lo ya respondido no cambia.")
-    q = '<button type="button" class="cb cb-enl">Quitar opción</button>' if quitar else ""
-    return f'<div class="md-op"><div class="md-cab"><span>{posicion}</span>{q}</div>{filas}</div>'
+    return f'<div class="md-op">{md_cab(posicion, "Quitar opción")}{filas}</div>'
 
 
-def dlg_opciones(titulo, items, opcion):
+def md_por_borrar(posicion, texto):
+    """Una guardada que se borra al guardar: no se edita, y se puede restaurar."""
+    return (f'<div class="md-op"><div class="md-cab"><span>{posicion}</span></div><div class="md-por"><b>{texto}</b><span class="el">Se borra al guardar</span>'
+            '<button type="button" class="cb cb-sec">Restaurar</button></div></div>')
+
+
+def dlg_opciones(titulo, items, opcion, cuenta="", lista="Opciones"):
+    cab = f'<div class="md-tit"><span>{lista}</span><small>{cuenta}</small></div>'
     mas = f'<div class="md-mas"><button type="button" class="cb cb-sec">{MAS} Agregar opción</button></div>'
-    cuerpo = f'<div class="md-lista" role="listbox" aria-label="Opciones">{items}{mas}</div>{opcion}'
+    cuerpo = f'<div class="md-lista" role="listbox" aria-label="{lista}">{cab}{items}{mas}</div>{opcion}'
     pie = '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Listo</button>'
     return F.dialogo(titulo, cuerpo, pie, una=False).replace('class="w-dlg"', 'class="w-dlg md"', 1)
 
 
-def items_motivos(sel=0, mal=0):
-    return "".join(md_item(k, n, cod, on=k == sel, baja=not a, mal=k == mal) for k, (n, cod, _d, a) in enumerate(OPS, 1))
+def items_motivos(sel=0, mal=0, borrar=0):
+    return "".join(md_item(k, n, "Se borra al guardar" if k == borrar else cod, on=k == sel, baja=not a, mal=k == mal, borrar=k == borrar) for k, (n, cod, _d, a) in enumerate(OPS, 1))
 
 
 def opciones_modal():
     tit = "Motivos de visita"
     nuevas, todas = TITULO_NUEVAS.format(tit), TITULO_OPCIONES.format(tit)
-    uno = md_item("—", "", "Nueva · Sin código", on=True)
-    primera = md_item("—", "Garantía", "Nueva · GAR")
+    uno = md_item("—", "", "Sin código", on=True, nueva="Nueva")
+    primera = md_item("—", "Garantía", "GAR", nueva="Nueva")
     n2, c2, d2, _a = OPS[1]
     n4, c4, d4, _a = OPS[3]
     capas = {
-        "Agregar una opción": dlg_opciones(nuevas, uno, md_opcion("Nueva opción", quitar=True)),
-        "Agregar otra": dlg_opciones(nuevas, primera + uno, md_opcion("Nueva opción", quitar=True)),
-        "Editar una opción": dlg_opciones(todas, items_motivos(2), md_opcion("Opción 2 de 4", n2, c2, d2, estado="Activa")),
-        "Una opción dada de baja": dlg_opciones(todas, items_motivos(4), md_opcion("Opción 4 de 4", n4, c4, d4, estado="De baja")),
-        "Código repetido": dlg_opciones(todas, items_motivos(2, 2), md_opcion("Opción 2 de 4", n2, "SEG", d2, estado="Activa", err={"codigo": "Ya está en la opción 1."})),
-        "Texto repetido": dlg_opciones(todas, items_motivos(3), md_opcion("Opción 3 de 4", "Venta nueva", "REC", OPS[2][2], estado="Activa", aviso="Otra opción tiene el mismo texto.")),
+        "Agregar una opción": dlg_opciones(nuevas, uno, md_opcion("Nueva opción"), "1", "Opciones nuevas"),
+        "Agregar otra": dlg_opciones(nuevas, primera + uno, md_opcion("Nueva opción"), "2", "Opciones nuevas"),
+        "Editar una opción": dlg_opciones(todas, items_motivos(2), md_opcion("Opción 2 de 4", n2, c2, d2, estado="Activa"), "1–4 de 4"),
+        "Una opción dada de baja": dlg_opciones(todas, items_motivos(4), md_opcion("Opción 4 de 4", n4, c4, d4, estado="De baja"), "1–4 de 4"),
+        "Una opción por borrar": dlg_opciones(todas, items_motivos(3, borrar=3), md_por_borrar("Opción 3 de 4", OPS[2][0]), "1–4 de 4"),
+        "Código repetido": dlg_opciones(todas, items_motivos(2, 2), md_opcion("Opción 2 de 4", n2, "SEG", d2, estado="Activa", err={"codigo": "Ya está en la opción 1."}), "1–4 de 4"),
+        "Texto repetido": dlg_opciones(todas, items_motivos(3), md_opcion("Opción 3 de 4", "Venta nueva", "REC", OPS[2][2], estado="Activa", aviso="Otra opción tiene el mismo texto."), "1–4 de 4"),
         "Texto de más de 30": dlg_opciones(todas, items_motivos(2, 2), md_opcion("Opción 2 de 4", "Venta nueva para clientes del interior", c2, d2, estado="Activa",
-                                                                                 err={"texto": "Puede tener hasta 30 caracteres."})),
+                                                                                 err={"texto": "Puede tener hasta 30 caracteres."}), "1–4 de 4"),
         "Con un valor": dlg_opciones(TITULO_OPCIONES.format("Recargo por zona"), "".join(md_item(k, n, cod, on=k == 2) for k, (n, cod, _d, _v, _a) in enumerate(ZONAS, 1)),
-                                     md_opcion("Opción 2 de 5", ZONAS[1][0], ZONAS[1][1], ZONAS[1][2], valor=ZONAS[1][3], rotulo_valor="Valor (decimal)", estado="Activa")),
+                                     md_opcion("Opción 2 de 6", ZONAS[1][0], ZONAS[1][1], ZONAS[1][2], valor=ZONAS[1][3], rotulo_valor="Valor (decimal)", estado="Activa"), "1–6 de 6"),
     }
     assert list(capas) == ESTADOS_OPCIONES
-    fondo = (C.banda_k(tit, ACTIVO + ORIGEN_MANO, acc_editor(cambios=True)), cuerpo_editor(caja_opciones(filas_motivos(), "", PIE4, modo="cambios")))
-    js = A.js_estados(ESTADOS_OPCIONES, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, busqueda: 'Buscar opción', busClase: '',\n")
+    fondo = (C.banda_k(tit, ACTIVO, acc_editor(cambios=True)), cuerpo_editor(caja_opciones(filas_motivos(), "", PIE4, modo="cambios")))
+    js = A.js_estados(ESTADOS_OPCIONES, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, pvMuchas: false, pvUna: 'on', pvVarias: '', busqueda: 'Buscar opción', busClase: '',\n")
     t = C.pagina_k("Opciones de un catálogo · modal", "Inicio / Formularios / Catálogos / Motivos de visita", fondo[0], fondo[1],
                    F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + A.CSS_AB + E.CSS_E12 + CSS_EDITOR, ESTADOS_OPCIONES, js, alto=1200)
     over = "".join(f'<sc-if value="{{{{s{ESTADOS_OPCIONES.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
@@ -896,14 +990,14 @@ def tipo_valor():
     pie = '<div class="w-pie"><span>1–6 de 6</span><span>10 por página · Página 1 de 1</span></div>'
     cat = caja_catalogo(tit, "Cuánto se suma según la zona de entrega.", tipo="Decimal")
     items = [(n, d) for n, _c, d, _v, a in ZONAS if a]
-    b = lambda **k: C.banda_k(tit, ACTIVO + ORIGEN_MANO, acc_editor(**k))
+    b = lambda **k: C.banda_k(tit, ACTIVO, acc_editor(**k))
     V = {
         "Con valores": (b(), cuerpo_editor(caja_opciones(filas(), "6 opciones · 6 activas", pie, tabla="kv"), cat, items, "Zona")),
         "Valor de otro tipo": (b(cambios=True), cuerpo_editor(caja_opciones(filas("otro"), "6 opciones · 6 activas", pie, modo="cambios", tabla="kv"), cat, items, "Zona")),
         "Agregar una opción": (b(cambios=True), cuerpo_editor(caja_opciones(filas("agregar"), "7 opciones · 7 activas", pie, modo="cambios", tabla="kv"), cat, items, "Zona")),
         "Falta el valor": (b(cambios=True), cuerpo_editor(caja_opciones(filas("falta"), "7 opciones · 7 activas", pie, modo="cambios", tabla="kv"), cat, items, "Zona")),
     }
-    js = A.js_estados(ESTADOS_TIPO, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, busqueda: 'Buscar opción', busClase: '',\n")
+    js = A.js_estados(ESTADOS_TIPO, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, pvMuchas: false, pvUna: 'on', pvVarias: '', busqueda: 'Buscar opción', busClase: '',\n")
     t = C.pagina_k("Catálogo con tipo de valor · /org/formularios/catalogos/:id", "Inicio / Formularios / Catálogos / Recargo por zona",
                    A.con_estados([(k, v[0]) for k, v in V.items()]), A.con_estados([(k, v[1]) for k, v in V.items()]),
                    F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + A.CSS_AB + E.CSS_E12 + CSS_EDITOR, ESTADOS_TIPO, js, alto=1000)
@@ -1023,7 +1117,7 @@ def miembros():
         return ('<div class="w-body"><div class="f-cols k4"><div class="f-pila">' + caja_catalogo(nombre, desc, origen="De los miembros", tipo="")
                 + seccion_miembros(rol_borrado) + "</div>" + prev(p) + "</div></div>")
     nomas = '<span class="w-est mal">No se puede usar</span>' + F.info("Un rol de los filtros ya no existe.")
-    b = lambda **k: C.banda_k(tit, ACTIVO + ORIGEN_MIEMBROS, acc_editor(**k))
+    b = lambda **k: C.banda_k(tit, ACTIVO, acc_editor(**k))
     V = {
         "Sin cambios": (b(), cuerpo("lista")),
         "Con cambios": (b(cambios=True), cuerpo("sucio")),
@@ -1031,9 +1125,9 @@ def miembros():
         "Actualizando": (b(cambios=True), cuerpo("probando")),
         "Ninguna opción": (b(cambios=True), cuerpo("ninguna")),
         "Más de 200": (b(cambios=True), cuerpo("mas200")),
-        "Rol que ya no existe": (C.banda_k("Responsables de obra", nomas + ORIGEN_MIEMBROS, acc_editor()), cuerpo("lista", True, "Responsables de obra", "Supervisores y jefes de obra.")),
-        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", NUEVO_MIEMBROS, acc_editor(nuevo=True)), cuerpo("sin_persona", nombre="", desc="")),
-        "Crear sin persona": (C.banda_k("Nuevo catálogo", NUEVO_MIEMBROS, acc_editor(nuevo=True)),
+        "Rol que ya no existe": (C.banda_k("Responsables de obra", nomas, acc_editor()), cuerpo("lista", True, "Responsables de obra", "Supervisores y jefes de obra.")),
+        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", "", acc_editor(nuevo=True)), cuerpo("sin_persona", nombre="", desc="")),
+        "Crear sin persona": (C.banda_k("Nuevo catálogo", "", acc_editor(nuevo=True)),
                                    cuerpo("falta", nombre="Responsables de depósito", desc="")),
         "Guardado": (b(), cuerpo("lista")),
     }
@@ -1056,7 +1150,7 @@ def contactos():
         return ('<div class="w-body"><div class="f-cols k4"><div class="f-pila">' + caja_catalogo(nombre, desc, origen="De los contactos de WhatsApp", tipo="")
                 + seccion_contactos(menu) + "</div>" + prev(p, items=CONTACTOS_EJ, titulo="Cliente", contactos=True) + "</div></div>")
     sin_wa = '<span class="w-est mal">No se puede usar</span>' + F.info("La organización no tiene WhatsApp.")
-    b = lambda **k: C.banda_k(tit, ACTIVO + ORIGEN_CONTACTOS, acc_editor(**k))
+    b = lambda **k: C.banda_k(tit, ACTIVO, acc_editor(**k))
     V = {
         "Sin cambios": (b(), cuerpo("lista")),
         "Con cambios": (b(cambios=True), cuerpo("sucio")),
@@ -1065,8 +1159,8 @@ def contactos():
         "Actualizando": (b(cambios=True), cuerpo("probando")),
         "Ninguna opción": (b(cambios=True), cuerpo("ninguna")),
         "Más de 200": (b(cambios=True), cuerpo("mas200")),
-        "Sin WhatsApp": (C.banda_k(tit, sin_wa + ORIGEN_CONTACTOS, acc_editor()), cuerpo("sucio")),
-        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", NUEVO_CONTACTOS, acc_editor(nuevo=True)), cuerpo("sucio", nombre="", desc="")),
+        "Sin WhatsApp": (C.banda_k(tit, sin_wa, acc_editor()), cuerpo("sucio")),
+        "Nuevo catálogo": (C.banda_k("Nuevo catálogo", "", acc_editor(nuevo=True)), cuerpo("sucio", nombre="", desc="")),
         "Guardado": (b(), cuerpo("lista")),
     }
     assert list(V) == ESTADOS_CONTACTOS
@@ -1081,6 +1175,15 @@ def contactos():
 
 # ================================================================ Teléfono: una app; el editor, por opción (§10)
 CSS_T12 = """.ap-fila .l2 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-de { margin: 0; font-size: 14px; color: var(--t3); }
+.q-acc { display: inline-flex; align-items: center; flex: none; margin-right: -6px; }
+.q-acc .ap-ib { width: 34px; height: 40px; }
+.q-acc .ap-ib[aria-disabled="true"] { color: var(--borde2); }
+.q-acc .cb { height: 34px; padding: 0 10px; font-size: 13.5px; }
+.q-acc:has(> .cb:only-child) { margin-right: 6px; }
+.t-op .q-acc { margin-right: -4px; }
+.q-row .tx > .q-el { color: var(--peligro); }
+.q-row.borrar .tx b { color: var(--t3); }
 .ap-cmp .ay.aviso2 { color: oklch(0.45 0.1 70); }
 .k-prev .pie .ap-i, .q-row .tx .ap-i { vertical-align: -4px; }
 .ap-mas { padding: 8px 4px 0; font-size: 13px; color: var(--t3); }
@@ -1135,7 +1238,21 @@ def tel_lista(con_usan=False):
     return C.tel_pagina(cuerpo, ESTADOS_TL, capas, "Catálogos · teléfono", F.CSS_TFILTRO + CSS_T12)
 
 
-ESTADOS_TE = ["Sin cambios", "Con cambios", "Acciones de una opción", "Más acciones", "Así lo ve quien lo recibe", "Dar de baja el catálogo", "Guardado", "Sin opciones", "Solo lectura"]
+ESTADOS_TE = ["Sin cambios", "Con cambios", "Borrar una opción", "Se borra al guardar", "Más acciones", "Así lo ve quien lo recibe", "Dar de baja el catálogo", "Guardado", "Sin opciones", "Solo lectura"]
+
+
+def q_opcion(k, n, cod, det, activa, total, lectura=False, borrar=False, abajo=""):
+    """Una opción en el teléfono: el texto y el código, como en ArquitecturaBase. abajo: lo que va en lugar del código, como un título que no entra."""
+    chip = "" if activa else '<span class="t-chip" style="border-color: var(--borde); background: var(--s2); color: var(--t3);">Dada de baja</span>'
+    linea = '<span class="q-el">Se borra al guardar</span>' if borrar else f"<span>{abajo or cod}</span>"
+    acc = "" if lectura else E.q_acciones(n, k, total, activa, borrar)
+    return (f'<div class="q-row{"" if activa else " baja"}{" borrar" if borrar else ""}"><span class="num">{k}</span>'
+            f'<span class="tx"><b>{n}{chip}</b>{linea}</span>{acc}</div>')
+
+
+def tel_de(origen="Escritas a mano", tipo="Texto"):
+    """De dónde salen y el tipo, en una línea, como en la compu."""
+    return f'<p class="t-de">{origen} · {tipo}</p>'
 
 
 def tel_ro(rotulo, valor):
@@ -1149,30 +1266,21 @@ def tel_editor():
 
     def campos(lectura=False):
         if lectura:
-            return (tel_ro("Nombre", "Motivos de visita") + tel_ro("Tipo de valor", "Texto")
-                    + tel_ro("Descripción", "Por qué se visita a un cliente."))
-        return (F.tcampo("Nombre", "Motivos de visita", req=True) + tel_ro("Tipo de valor", "Texto")
-                + F.tcampo("Descripción", "Por qué se visita a un cliente."))
+            return tel_de() + tel_ro("Nombre", "Motivos de visita") + tel_ro("Descripción", "Por qué se visita a un cliente.")
+        return tel_de() + F.tcampo("Nombre", "Motivos de visita", req=True) + F.tcampo("Descripción", "Por qué se visita a un cliente.")
 
-    def opciones(vacia=False, lectura=False, cambio=False):
+    def opciones(vacia=False, lectura=False, cambio=False, borrar=0):
         if vacia:
             return '<div class="t-vacia">Todavía no hay opciones.</div>'
-        h = ""
-        for k, (n, cod, det, activa) in enumerate(OPS, 1):
-            n = "Seguimiento programado" if cambio and k == 1 else n
-            chip = "" if activa else '<span class="t-chip" style="border-color: var(--borde); background: var(--s2); color: var(--t3);">Dada de baja</span>'
-            kebab = "" if lectura else f'<button type="button" class="ap-ib" aria-label="Acciones de {n}">{F.TKEBAB}</button>'
-            h += (f'<div class="q-row{"" if activa else " baja"}"><span class="num">{k}</span><span class="tx"><b>{n}<span class="cod">{cod}</span>{chip}</b><span>{det}</span></span>'
-                  f"{kebab}</div>")
-        return h
+        return "".join(q_opcion(k, "Seguimiento programado" if cambio and k == 1 else n, cod, det, activa, len(OPS), lectura, borrar == k) for k, (n, cod, det, activa) in enumerate(OPS, 1))
 
-    def cuerpo(sub="Activo", vacia=False, lectura=False, cambio=False, fijo=""):
+    def cuerpo(sub="Activo", vacia=False, lectura=False, cambio=False, fijo="", borrar=0):
         agregar = "" if lectura else '<a href="#">Agregar opción</a>'  # la acción entera, como en la compu (la Guía, 26/10)
         return (C.t_bar("Motivos de visita", sub, derecha=der) + '<div class="ap-cuerpo"><div class="ap-gtit">El catálogo</div><div class="f-campos">' + campos(lectura) + "</div>"
-                + f'<div class="ap-gtit">Opciones{agregar}</div><div class="ap-grupo">' + opciones(vacia, lectura, cambio) + '</div><div style="height: 20px;"></div></div>' + fijo)
+                + f'<div class="ap-gtit">Opciones{agregar}</div><div class="ap-grupo">' + opciones(vacia, lectura, cambio, borrar) + '</div><div style="height: 20px;"></div></div>' + fijo)
     fijo = '<div class="ap-fijo"><button type="button" class="cb cb-sec full">Descartar</button><button type="button" class="cb cb-pri full">Guardar cambios</button></div>'
     snack = f'<div class="f-snack" role="status"><span class="ok">{F.OK}</span><span class="tx">Guardamos el catálogo.</span></div>'
-    Cu = {"Sin cambios": cuerpo(), "Con cambios": cuerpo(cambio=True, fijo=fijo), "Acciones de una opción": cuerpo(), "Más acciones": cuerpo(),
+    Cu = {"Sin cambios": cuerpo(), "Con cambios": cuerpo(cambio=True, fijo=fijo), "Borrar una opción": cuerpo(), "Se borra al guardar": cuerpo(fijo=fijo, borrar=3), "Más acciones": cuerpo(),
           "Así lo ve quien lo recibe": cuerpo(), "Dar de baja el catálogo": cuerpo(), "Guardado": cuerpo() + snack, "Sin opciones": cuerpo("No se puede usar", vacia=True),
           "Solo lectura": cuerpo(lectura=True)}
 
@@ -1181,8 +1289,8 @@ def tel_editor():
     mas = ('<div class="ap-acciones2"><span role="menuitem">Exportar</span><span role="menuitem">Descargar la plantilla</span><span role="menuitem">Ordenar de la A a la Z</span>'
            '<span role="menuitem">Generar los códigos que faltan</span><span class="pel" role="menuitem">Dar de baja el catálogo</span></div>')
     capas = {
-        "Acciones de una opción": F.thoja("Reclamo", '<div class="ap-acciones2"><span role="menuitem">Editar</span><span role="menuitem">Subir</span><span role="menuitem">Bajar</span>'
-                                          '<span class="pel" role="menuitem">Dar de baja</span></div>', ""),
+        "Borrar una opción": F.thoja("¿Borrar «Reclamo»?", '<p style="margin: 0; font-size: 15px; line-height: 1.45; color: var(--t2);">Se borra al guardar el catálogo. Hasta entonces se puede restaurar.</p>',
+                                       '<button type="button" class="cb cb-pel lleno">Borrar opción</button><button type="button" class="cb cb-sec">Cancelar</button>'),
         "Más acciones": F.thoja("Motivos de visita", mas, ""),
         "Así lo ve quien lo recibe": F.thoja("Así lo ve quien lo recibe", vista, ""),
         "Dar de baja el catálogo": F.thoja("¿Dar de baja «Motivos de visita»?", '<p style="margin: 0; font-size: 15px; line-height: 1.45; color: var(--t2);">Sus opciones dejan de poder '
@@ -1200,8 +1308,8 @@ CSS_TO = """.ap-cuerpo > .f-campos:first-child { margin-top: 14px; }
 """
 
 
-def tel_opcion(n, cod, det, estado=None, err=False, aviso=False, quitar=False, campos=""):
-    """La opción, a pantalla completa. Una guardada no se quita: se da de baja con su Estado (117)."""
+def tel_opcion(n, cod, det, estado=None, err=False, aviso=False, campos=""):
+    """La opción, a pantalla completa. Una nueva se quita sin preguntar; una guardada se borra al guardar, si nada la usa (129)."""
     c = F.tcampo("Código", cod or "Código", req=True, vacio=not cod)
     if err:
         c = c.replace('<div class="ct">', '<div class="ct mal">', 1).replace("</div></div>", '</div><span class="t-err" role="alert">Ya está en la opción 1.</span></div>', 1)
@@ -1210,8 +1318,7 @@ def tel_opcion(n, cod, det, estado=None, err=False, aviso=False, quitar=False, c
         extra = '<span class="ay aviso2">Otra opción tiene el mismo texto.</span>' + extra
     texto = F.tcampo("Texto", n or "Texto", req=True, vacio=not n).replace("</div></div>", f"</div>{extra}</div>", 1)
     fin = F.tcampo("Estado", estado, select=True) if estado else ""
-    q = '<a class="t-quitar" href="#">Quitar opción</a>' if quitar else ""
-    return f'<div class="f-campos">{texto}{c}{F.tcampo("Detalle", det or "Opcional", vacio=not det)}{campos}{fin}{q}</div>'
+    return f'<div class="f-campos">{texto}{c}{campos}{F.tcampo("Detalle", det or "Opcional", vacio=not det)}{fin}<a class="t-quitar" href="#">Quitar opción</a></div>'
 
 
 def tel_opciones(catalogo="Motivos de visita", ops=None, campos_nueva="", campos_guardada="", volver_tel="M-FRM-Catalogo.dc.html", lista_tel="M-FRM-Catalogo-Opciones.dc.html"):
@@ -1230,7 +1337,7 @@ def tel_opciones(catalogo="Motivos de visita", ops=None, campos_nueva="", campos
                 + f'<div class="ap-cuerpo">{cuerpo}<div style="height: 20px;"></div></div>')
     n2, c2, d2, _a = ops[1]
     total = len(ops)
-    Cu = {"La lista": lista(), "La lista con errores": lista(2), "Una opción nueva": opcion("Nueva opción", tel_opcion("", "", "", quitar=True, campos=campos_nueva)),
+    Cu = {"La lista": lista(), "La lista con errores": lista(2), "Una opción nueva": opcion("Nueva opción", tel_opcion("", "", "", campos=campos_nueva)),
           "Una opción guardada": opcion(f"Opción 2 de {total}", tel_opcion(n2, c2, d2, estado="Activa", campos=campos_guardada)),
           "Código repetido": opcion(f"Opción 2 de {total}", tel_opcion(n2, ops[0][1], d2, estado="Activa", err=True, campos=campos_guardada))}
     return C.tel_pagina(Cu, ESTADOS_TO, {}, "Opciones de un catálogo · teléfono", E.CSS_E12 + CSS_T12 + CSS_TO)
@@ -1372,7 +1479,7 @@ def comprobar(n, t):
     html = t[:t.index('<script type="text/x-dc"')]  # sin el JS del tablero (el primer <script> es el de support.js)
     html = re.sub(r'\s(?:title|aria-label)="[^"]*"', "", html)  # lo que va en un ⓘ o en un tooltip no cuenta
     for prohibido in ("Textos en", "Cambios sin guardar", "No se cambia", "Diseñar formularios", "FRM-Listado", "English", "probado hoy",
-                      "Una opción</span>", "De dónde salen</span></span>", "Como si lo recibiera", "probado el", ">Probar<", ">Vista previa<",
+                      "De dónde salen</span></span>", "Como si lo recibiera", "probado el", ">Probar<", ">Vista previa<",
                       "Más de 200 opciones"):
         assert prohibido not in html, (n, prohibido)
     if n in ("FRM-Catalogos", "M-FRM-Catalogos"):

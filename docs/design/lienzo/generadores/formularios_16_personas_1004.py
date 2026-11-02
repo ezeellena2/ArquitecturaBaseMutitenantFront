@@ -2,6 +2,9 @@
 Todos los tableros son nuevos y salen de los aprobados: `FRM-Usuario-Datos`, de `Usuario`; `FRM-Catalogo-16`, de los campos de la 13; `FRM-Editor-16`,
 `FRM-Publicar-16` y `WA-Chats-Formulario-16`, de la 14, y `FRM-Respuestas-16`, de la 15. `FRM-Datos-Personas` va en Administración.
 Muestran solo lo que existe hasta la 16 (78): sin fotos, documentos, aprobación ni «Cargar».
+Desde la v150 (125 a 129), con el armado real de ArquitecturaBaseFront: `FRM-Datos-Personas` con «Datos» (Dato, Clave, Tipo, Lo usan y ✎, y «Agregar dato» en su encabezado) y «Personas»
+(el resumen «6 personas · 2 sin Zona», «Buscar personas», un dato por columna y ✎); el diálogo con Clave; `FRM-Catalogo-16`, el modal de campos con «Papel»; y en una pregunta,
+«Qué opciones ve cada persona» en su caja, con una condición por filtro.
 
 Corre después de `formularios_14_formularios_1004.py`, porque toma `M-WA-Chats-Formulario` y `Usuario` como están.
 """
@@ -34,11 +37,25 @@ AYUDA_QUE_VE = "Cada persona recibe solo las opciones que cumplen todos estos fi
 # Seis personas, dos sin zona
 PERSONAS = [("Juan Gómez", "Técnico", "Centro", "Casa central"), ("Lucía Fernández", "Dueña", "Centro", "Casa central"), ("Martín Paz", "Supervisor", "Sur", "Casa central"),
             ("Paula Méndez", "Supervisora", "Norte", "Planta Norte"), ("Sofía Herrera", "Técnica", "—", "—"), ("Tomás Acosta", "Técnico", "—", "Planta Norte")]
-DATOS = [("Sucursal", "Texto", "—", "5 de 6", True), ("Zona", "De un catálogo: Zonas", FORMULARIO, "4 de 6", True)]
-DATO_BAJA = ("Legajo", "Texto", "—", "0 de 6", False)
+DATOS = [("Zona", "zona", "De un catálogo · Zonas", FORMULARIO, True), ("Sucursal", "sucursal", "Texto", "—", True)]
+DATO_BAJA = ("Legajo", "legajo", "Texto", "—", False)
+AYUDA_DATOS = "Los datos que tiene cada persona eligen de un catálogo o son un texto. Los valores se cargan en la ficha del usuario."
+EN_USO_DATO = "Se usa en estos formularios. Mientras se use, no se puede cambiar su tipo o catálogo ni darlo de baja."
 
-CSS_DP = """.dp-d { grid-template-columns: minmax(150px, 1fr) minmax(190px, 1.3fr) minmax(150px, 1fr) 110px 100px 36px; gap: 12px; }
-.dp-p { grid-template-columns: minmax(170px, 1.3fr) minmax(130px, 1fr) 150px minmax(150px, 1fr) 36px; gap: 12px; }
+CSS_DP = """.dp-d { grid-template-columns: minmax(150px, 1fr) 150px minmax(190px, 1.4fr) minmax(150px, 1fr) 72px; gap: 12px; }
+.dp-p { grid-template-columns: minmax(200px, 1.6fr) 170px minmax(170px, 1fr) 72px; gap: 12px; }
+.w-tr.dp-d .sub { display: block; font-size: 12.5px; color: var(--t3); }
+.w-tr.dp-d .mono { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; color: var(--t2); }
+.dp-ac { display: inline-flex; justify-content: flex-end; }
+.dp-res { font-weight: 500; font-size: 13px; color: var(--t3); }
+.dp-fb .w-bus { flex: 1; max-width: none; }
+.dp-nota { margin: 0; font-size: 13.5px; color: var(--t3); }
+.dp-usos { font-size: 13.5px; color: var(--t2); }
+.dp-usos ul { margin: 4px 0 0; padding-left: 18px; }
+.dp-chk { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--t1); }
+.dp-chk .k-chk { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--borde2); box-sizing: border-box; background: #fff; display: inline-flex; align-items: center; justify-content: center; color: #fff; flex: none; }
+.dp-chk .k-chk.on { background: var(--marca); border-color: var(--marca); }
+.dp-chk .k-chk.ro { background: var(--t3); border-color: var(--t3); }
 .w-tr.dp-d, .w-tr.dp-p { position: relative; min-height: 44px; }
 .w-tr.dp-d .f-menu { position: absolute; right: 12px; top: calc(100% - 6px); z-index: 20; min-width: 190px; }
 .w-tr:has(.f-menu) { z-index: 8; }
@@ -49,7 +66,7 @@ CSS_DP = """.dp-d { grid-template-columns: minmax(150px, 1fr) minmax(190px, 1.3f
 .dp-g { color: var(--t3); }
 .w-tr.aten { opacity: 0.5; pointer-events: none; }
 .dp-linea { height: 2px; background: var(--marca); }
-.dp-fb { padding: 12px 16px; border-bottom: 1px solid var(--borde); display: flex; align-items: center; gap: 8px; }
+.dp-fb { padding: 12px 16px; display: flex; align-items: center; gap: 8px; }
 .dp-form { display: flex; flex-direction: column; gap: 14px; }
 .dp-form .w-cmp { position: relative; display: flex; flex-direction: column; gap: 6px; }
 .dp-form .rt, .dp-ficha .rt { font-size: 13px; font-weight: 600; color: var(--t2); }
@@ -68,18 +85,25 @@ CSS_DP = """.dp-d { grid-template-columns: minmax(150px, 1fr) minmax(190px, 1.3f
 .dp-form .k-in { display: flex; align-items: center; justify-content: space-between; padding: 0 12px; border: 1px solid var(--borde2); border-radius: 8px; font-size: 14px; background: #fff; }
 .dp-form .k-in.foco { border-color: var(--marca); box-shadow: 0 0 0 3px var(--marca-t); }
 """
-CSS_FILTROS = """.q-fil { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1px solid var(--borde); border-radius: 10px; background: oklch(0.985 0.005 78); }
-.q-fil .c { font-size: 13.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
-.q-fil .f { display: grid; grid-template-columns: 170px 24px minmax(0, 1fr) 32px; gap: 8px; align-items: center; font-size: 13.5px; }
-.q-fil .f .ct { background: #fff; }
-.q-fil .f.ro .ct { background: var(--s2); color: var(--t3); }
-.q-fil .acs { display: flex; flex-wrap: wrap; gap: 4px 16px; }
-.q-fil .como { display: grid; grid-template-columns: 170px minmax(0, 220px) auto; gap: 10px; align-items: center; font-size: 13.5px; }
-.q-fil .como .rt { font-size: 13px; font-weight: 600; color: var(--t2); }
-.q-fil .como .res { color: var(--marca-tx); font-weight: 600; }
-.q-fil .como .res.mal { color: var(--peligro); }
-.q-fil .dat { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; color: var(--t2); }
-.q-fil .dat a { color: var(--marca-tx); font-weight: 600; text-decoration: none; }
+CSS_FILTROS = """.q-cond { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 34px; gap: 8px 10px; align-items: end; margin: 0; padding: 8px 12px 12px; border: 1px solid var(--borde); border-radius: 8px; min-width: 0; }
+.q-cond legend { padding: 0 4px; font-size: 12.5px; color: var(--t3); }
+.q-cond .ct { background: #fff; }
+.q-cond.ro .ct { background: var(--s2); color: var(--t3); }
+.q-cond .ib { width: 34px; height: 36px; border: 1px solid var(--borde2); border-radius: 8px; background: #fff; }
+.q-res { display: flex; flex-direction: column; gap: 3px; font-size: 13.5px; }
+.q-res b { font-weight: 600; color: var(--t1); }
+.q-res b.mal { color: var(--peligro); }
+.q-res small { font-size: 12.5px; color: var(--t3); }
+.q-max { display: flex; align-items: flex-start; gap: 6px; font-size: 13px; color: var(--marca-tx); }
+.q-max.mal { color: var(--peligro); }
+.q-max svg { width: 15px; height: 15px; flex: none; margin-top: 1px; }
+.q-sin { font-size: 13px; color: var(--t2); }
+.q-sin a { color: var(--marca-tx); font-weight: 600; text-decoration: none; }
+.q-zona .zc .e-tipw .e-tip { top: calc(100% + 8px); right: 0; }
+.q-zona .zc { flex-wrap: wrap; padding: 6px 12px; }
+.q-zona .zc > span:first-child { white-space: nowrap; }
+.q-zona .zc .der2 { flex-wrap: wrap; }
+.q-zona:has(.e-tip) { overflow: visible; }
 """
 CSS_AVISOS = """.z-f.av .ic { color: oklch(0.55 0.11 75); }
 """
@@ -90,8 +114,8 @@ def miga(t, texto):
 
 
 # ================================================================ FRM-Datos-Personas: en Administración
-ESTADOS_DP = ["Los datos", "Filtro de estado", "Nuevo dato", "De un catálogo", "Elegir el catálogo", "Guardando", "Cambiar el tipo con valores", "Acciones de un dato", "Un dato en uso", "Dados de baja",
-              "20 datos", "Sin ver usuarios", "Sin editar los valores", "Vuelve a leer", "Cargando", "Todavía no hay datos", "No se pudo cargar"]
+ESTADOS_DP = ["Los datos", "Agregar un dato", "Un dato de texto", "Elegir el catálogo", "Guardando", "Editar un dato", "Cambiar el tipo con valores", "Un dato en uso", "Un dato dado de baja",
+              "20 datos", "Buscar personas", "Ninguna persona coincide", "Sin ver usuarios", "Sin editar los valores", "Vuelve a leer", "Cargando", "Todavía no hay datos", "No se pudo cargar"]
 
 
 def pagina_admin(nombre, bnd, cuerpo, estados, css=""):
@@ -107,110 +131,112 @@ def pagina_admin(nombre, bnd, cuerpo, estados, css=""):
     return re.sub(r'<aside class="w-panel".*?</aside>', lambda _m: panel, t, count=1, flags=re.S)
 
 
-def fila_dato(d, menu=False, en_uso=False):
-    n, tipo, usa, cant, activo = d
-    est = '<span class="dp-e">Activo</span>' if activo else '<span class="dp-e baja">De baja</span>'
+def fila_dato(d):
+    """Como ArquitecturaBase: un dato por celda, ✎ a la vista, y si está dado de baja lo dice debajo del nombre."""
+    n, clave, tipo, usa, activo = d
+    baja = "" if activo else '<span class="sub">Dado de baja</span>'
     usa_h = f'<span class="dp-g">{usa}</span>' if usa == "—" else f'<a href="FRM-Editor-16.dc.html" class="dp-l">{usa}</a>'
-    m = ""
-    if menu:
-        if activo and en_uso:
-            baja = (f'<span class="f-mi off" role="menuitem" aria-disabled="true" title="{EN_USO}">{F.QUITAR} Dar de baja<span class="e-tip" role="tooltip">{EN_USO}</span></span>')
-        elif activo:
-            baja = f'<span class="f-mi pel" role="menuitem">{F.QUITAR} Dar de baja</span>'
-        else:
-            baja = '<span class="f-mi" role="menuitem">Reactivar</span>'
-        m = f'<div class="f-menu" role="menu" aria-label="Acciones de {n}"><span class="f-mi" role="menuitem">Editar</span><span class="f-sep" role="separator"></span>{baja}</div>'
-    return (f'<div class="w-tr dp-d"><span>{n}</span><span>{tipo}</span><span>{usa_h}</span><span>{cant}</span><span>{est}</span>'
-            f'<span><button type="button" class="ib" aria-label="Acciones de {n}">{KEBAB}</button>{m}</span></div>')
+    return (f'<div class="w-tr dp-d"><span>{n}{baja}</span><span class="mono">{clave}</span><span>{tipo}</span><span>{usa_h}</span>'
+            f'<span class="dp-ac"><button type="button" class="ib" aria-label="Editar {n}">{LAPIZ}</button></span></div>')
 
 
 def fila_persona(p, editar=True, aten=False):
-    n, rol, zona, suc = p
+    n, _rol, zona, suc = p
     v = lambda x: f'<span class="dp-g">{x}</span>' if x == "—" else f"<span>{x}</span>"
-    lapiz = f'<a class="ib" href="FRM-Usuario-Datos.dc.html" aria-label="Editar los datos de {n}">{LAPIZ}</a>' if editar else ""
-    return f'<div class="w-tr dp-p{" aten" if aten else ""}"><span>{n}</span><span>{rol}</span>{v(zona)}{v(suc)}<span>{lapiz}</span></div>'
+    lapiz = f'<a class="ib" href="FRM-Usuario-Datos.dc.html" aria-label="Editar a {n}">{LAPIZ}</a>' if editar else ""
+    return f'<div class="w-tr dp-p{" aten" if aten else ""}"><span>{n}</span>{v(zona)}{v(suc)}<span class="dp-ac">{lapiz}</span></div>'
 
 
-def caja_datos(filas, estado="", aten=False):
-    menu = ""
-    if estado == "menu":
-        menu = '<span class="f-mn" role="listbox" aria-label="Estado"><span role="option" class="on">Activos<span class="cnt">2</span></span><span role="option">Dados de baja<span class="cnt">1</span></span></span>'
-    pil = f'<span class="f-env"><span class="w-pil{" con" if estado == "baja" else ""}" role="button" aria-haspopup="listbox">{"Estado: Dados de baja" if estado == "baja" else "Estado"} {CHEV}</span>{menu}</span>'
-    th = '<div class="w-th dp-d"><span>Nombre</span><span>Tipo</span><span>Lo usa</span><span>Tienen valor</span><span>Estado</span><span><span class="sr">Acciones</span></span></div>'
+def caja_datos(filas, tope=False, aten=False, vacio=False):
+    agregar = f'<button type="button" class="cb cb-sec">{MAS} Agregar dato</button>'
+    if tope:
+        agregar = K.tip(agregar, MOTIVO_TOPE, abierto=True)
+    th = '<div class="w-th dp-d"><span>Dato</span><span>Clave</span><span>Tipo</span><span>Lo usan</span><span class="dp-ac">Acciones</span></div>'
     linea = '<div class="dp-linea" aria-hidden="true"></div>' if aten else ""
-    return f'<div class="w-caja"><div class="f-cab"><span>Los datos</span></div><div class="dp-fb">{pil}</div>{th}{linea}{filas}</div>'
+    cuerpo = '<div class="f-cuerpo"><b>Todavía no hay datos.</b></div>' if vacio else f"{th}{linea}{filas}"
+    return f'<div class="w-caja"><div class="f-cab"><span>Datos{F.info(AYUDA_DATOS)}</span><span class="der">{agregar}</span></div>{cuerpo}</div>'
 
 
-def caja_personas(editar=True, aten=False):
-    th = '<div class="w-th dp-p"><span>Nombre</span><span>Roles</span><span>Zona</span><span>Sucursal</span><span><span class="sr">Acciones</span></span></div>'
-    pie = '<div class="w-pie"><span>1–6 de 6</span><span>10 por página · Página 1 de 1</span></div>'
-    return f'<div class="w-caja"><div class="f-cab"><span>Las personas</span></div>{th}' + "".join(fila_persona(p, editar, aten) for p in PERSONAS) + pie + "</div>"
+def caja_personas(editar=True, aten=False, personas=PERSONAS, busqueda=""):
+    """El resumen cuenta todas y dice a cuántas les falta un dato que usa un filtro. Una columna por dato activo."""
+    acc = '<span class="dp-ac">Acciones</span>' if editar else "<span></span>"
+    th = f'<div class="w-th dp-p"><span>Persona</span><span>Zona</span><span>Sucursal</span>{acc}</div>'
+    bus = f'<span class="w-bus{" lleno" if busqueda else ""}">{F.BUSCAR} {busqueda or "Buscar personas"}</span>'
+    if personas:
+        cuerpo = th + "".join(fila_persona(q, editar, aten) for q in personas) + f'<div class="w-pie"><span>1–{len(personas)} de {len(personas)}</span><span>10 por página · Página 1 de 1</span></div>'
+    else:
+        cuerpo = '<div class="f-cuerpo"><b>No hay personas para mostrar.</b></div>'
+    res = f'{len(personas)} personas · 2 sin Zona' if personas is PERSONAS else f"{len(personas)} personas"
+    return f'<div class="w-caja"><div class="f-cab"><span>Personas</span><span class="dp-res">{res}</span></div><div class="dp-fb">{bus}</div>{cuerpo}</div>'
 
 
-def dlg_dato(tipo="Texto", combo="", nombre="", guardando=False):
-    seg = ('<span class="dp-seg" role="radiogroup" aria-label="Tipo">' + "".join(f'<span role="radio" class="{"on" if x == tipo else ""}">{x}</span>' for x in ("Texto", "De un catálogo")) + "</span>")
+def dlg_dato(tipo="De un catálogo", combo="", nombre="", clave="", guardando=False, editar=False, en_uso=False, confirmar=0):
+    """«Agregar dato» o «Editar dato», como ArquitecturaBase: Nombre, Clave, Tipo y, si elige de un catálogo, Catálogo. Una clave guardada no cambia. Editando va «Dato activo»."""
     nom = f'<div class="ct">{nombre}</div>' if nombre else '<div class="ct" style="color: var(--t3);">Nombre del dato</div>'
+    llave = (f'<div class="ct" style="background: var(--s2); color: var(--t3);">{clave}</div>' if editar else
+             f'<div class="ct">{clave}</div>' if clave else '<div class="ct" style="color: var(--t3);">clave</div>')
+    gris = ' style="background: var(--s2); color: var(--t3);"' if en_uso else ""
     catalogo = ""
     if tipo == "De un catálogo":
-        catalogo = f'<div class="w-cmp"><span class="rt">Catálogo <span class="req">*</span></span><span class="k-tab">{M13.combo_catalogo("Zonas · 6 opciones", combo)}</span></div>'
+        control = f'<div class="ct"{gris}>Zonas · 6 opciones</div>' if en_uso else f'<span class="k-tab">{M13.combo_catalogo("Zonas · 6 opciones", combo)}</span>'
+        catalogo = f'<div class="w-cmp"><span class="rt">Catálogo <span class="req">*</span></span>{control}</div>'
+    extra = ""
+    if confirmar:
+        extra += f'<span class="dp-chk"><span class="k-chk" role="checkbox" aria-checked="false"></span>Sí, cambiar el dato y borrar los valores de {confirmar} personas</span>'
+    if editar:
+        ro = " ro" if en_uso else ""
+        extra += f'<span class="dp-chk"><span class="k-chk on{ro}" role="checkbox" aria-checked="true"{" aria-disabled=" + chr(34) + "true" + chr(34) if en_uso else ""}>{TILDE}</span>Dato activo</span>'
+    if en_uso:
+        extra += f'<div class="dp-usos">{EN_USO_DATO}<ul><li>{FORMULARIO}</li></ul></div>'
     cuerpo = (f'<div class="dp-form"><div class="w-cmp"><span class="rt">Nombre <span class="req">*</span></span>{nom}</div>'
-              f'<div class="w-cmp"><span class="rt">Tipo</span>{seg}</div>{catalogo}</div>')
+              f'<div class="w-cmp"><span class="rt">Clave <span class="req">*</span>{F.info(M13.CLAVE)}</span>{llave}</div>'
+              f'<div class="w-cmp"><span class="rt">Tipo <span class="req">*</span></span><div class="ct sel"{gris}>{tipo}{"" if en_uso else CHEV}</div></div>{catalogo}{extra}</div>')
     boton = trabaja("Guardando…") if guardando else '<button type="button" class="cb cb-pri">Guardar</button>'
-    return F.dialogo("Nuevo dato", cuerpo, f'<button type="button" class="cb cb-sec">Cancelar</button>{boton}')
+    return F.dialogo("Editar dato" if editar else "Agregar dato", cuerpo, f'<button type="button" class="cb cb-sec">Cancelar</button>{boton}')
 
 
 def datos_personas():
-    nuevo = f'<button type="button" class="cb cb-pri">{MAS} Nuevo dato</button>'
-    nuevo_off = K.tip(f'<button type="button" class="cb cb-pri" disabled>{MAS} Nuevo dato</button>', MOTIVO_TOPE)
-
-    def bnd(ac=nuevo, res="2 datos · 6 personas"):
-        return f'<div class="w-bnd"><div class="iz"><span class="ic">{F.ICONO}</span><div><h1>Datos de las personas</h1><p class="res">{res}</p></div></div><div class="ac">{ac}</div></div>'
+    bnd = f'<div class="w-bnd"><div class="iz"><span class="ic">{F.ICONO}</span><div><h1>Datos de las personas</h1></div></div><div class="ac"></div></div>'
     filas = "".join(fila_dato(d) for d in DATOS)
-    con_menu = fila_dato(DATOS[0]) + fila_dato(DATOS[1], menu=True, en_uso=True)
-    cuerpo = lambda *p: '<div class="w-body">' + "".join(p) + "</div>"
+    cuerpo = lambda *q: '<div class="w-body">' + "".join(q) + "</div>"
     normal = cuerpo(caja_datos(filas), caja_personas())
-    vacio = '<div class="w-caja"><div class="f-cuerpo"><b>Todavía no hay datos.</b></div></div>'
     error = '<div class="w-caja"><div class="f-cuerpo"><b>No pudimos cargar los datos.</b><button type="button" class="cb cb-sec">Reintentar</button></div></div>'
+    nota = '<p class="dp-nota">Para ver las personas necesitás «Ver usuarios».</p>'
     V = {
-        "Los datos": normal, "Filtro de estado": cuerpo(caja_datos(filas, "menu"), caja_personas()), "Nuevo dato": normal, "De un catálogo": normal, "Elegir el catálogo": normal, "Guardando": normal,
-        "Cambiar el tipo con valores": normal, "Acciones de un dato": cuerpo(caja_datos(fila_dato(DATOS[0], menu=True) + fila_dato(DATOS[1])), caja_personas()),
-        "Un dato en uso": cuerpo(caja_datos(con_menu), caja_personas()), "Dados de baja": cuerpo(caja_datos(fila_dato(DATO_BAJA, menu=True), "baja"), caja_personas()),
-        "20 datos": normal, "Sin ver usuarios": cuerpo(caja_datos(filas)), "Sin editar los valores": cuerpo(caja_datos(filas), caja_personas(editar=False)),
+        "Los datos": normal, "Agregar un dato": normal, "Un dato de texto": normal, "Elegir el catálogo": normal, "Guardando": normal, "Editar un dato": normal, "Cambiar el tipo con valores": normal, "Un dato en uso": normal,
+        "Un dato dado de baja": cuerpo(caja_datos(filas + fila_dato(DATO_BAJA)), caja_personas()), "20 datos": cuerpo(caja_datos(filas, tope=True), caja_personas()),
+        "Buscar personas": cuerpo(caja_datos(filas), caja_personas(personas=[PERSONAS[1]], busqueda="lucía")), "Ninguna persona coincide": cuerpo(caja_datos(filas), caja_personas(personas=[], busqueda="zzz")),
+        "Sin ver usuarios": cuerpo(caja_datos(filas), nota), "Sin editar los valores": cuerpo(caja_datos(filas), caja_personas(editar=False)),
         "Vuelve a leer": cuerpo(caja_datos(filas.replace('class="w-tr dp-d"', 'class="w-tr dp-d aten"'), aten=True), caja_personas(aten=True)),
-        "Cargando": cuerpo(f'<div class="w-caja">{R.P.ESQ}</div>'), "Todavía no hay datos": cuerpo(vacio), "No se pudo cargar": cuerpo(error),
+        "Cargando": cuerpo(f'<div class="w-caja">{R.P.ESQ}</div>'), "Todavía no hay datos": cuerpo(caja_datos("", vacio=True), caja_personas()), "No se pudo cargar": cuerpo(error),
     }
-    bandas = {e: bnd() for e in ESTADOS_DP}
-    bandas["20 datos"] = bnd(nuevo_off, "20 datos · 6 personas")
-    bandas["Sin editar los valores"] = bnd(nuevo)
-    bandas["Dados de baja"] = bnd(res="1 dado de baja · 6 personas")
-    bandas["Cargando"] = bnd(res="")
-    bandas["No se pudo cargar"] = bnd(res="")
-    bandas["Todavía no hay datos"] = bnd(res="Sin datos")
-    capas = {"Nuevo dato": dlg_dato(), "De un catálogo": dlg_dato("De un catálogo", nombre="Zona"), "Elegir el catálogo": dlg_dato("De un catálogo", "abierto", "Zona"),
-             "Guardando": dlg_dato("De un catálogo", nombre="Zona", guardando=True),
-             "Cambiar el tipo con valores": A.confirmar("¿Cambiar el tipo de «Zona»?", "Se borran los valores de 4 personas.", "Cambiar el tipo", peligro=False)}
-    t = pagina_admin("Datos de las personas · /org/datos-de-las-personas", A.con_estados([(e, bandas[e]) for e in ESTADOS_DP]), A.con_estados([(e, V[e]) for e in ESTADOS_DP]), ESTADOS_DP)
+    assert list(V) == ESTADOS_DP
+    capas = {"Agregar un dato": dlg_dato(), "Un dato de texto": dlg_dato("Texto", nombre="Sucursal", clave="sucursal"), "Elegir el catálogo": dlg_dato(combo="abierto", nombre="Zona", clave="zona"),
+             "Guardando": dlg_dato(nombre="Zona", clave="zona", guardando=True), "Editar un dato": dlg_dato("Texto", nombre="Sucursal", clave="sucursal", editar=True),
+             "Cambiar el tipo con valores": dlg_dato("Texto", nombre="Zona", clave="zona", editar=True, confirmar=4), "Un dato en uso": dlg_dato(nombre="Zona", clave="zona", editar=True, en_uso=True)}
+    t = pagina_admin("Datos de las personas · /org/datos-de-las-personas", bnd, A.con_estados([(e, V[e]) for e in ESTADOS_DP]), ESTADOS_DP)
     over = "".join(f'<sc-if value="{{{{s{ESTADOS_DP.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
     return F.con_dialogo(t, over, K.CSS_OPCIONES)
 
 
-ESTADOS_TDP = ["Los datos", "Las personas", "Nuevo dato", "Cargando", "No se pudo cargar"]
+ESTADOS_TDP = ["Datos", "Personas", "Agregar un dato", "Cargando", "No se pudo cargar"]
 
 
 def tel_datos_personas():
-    barra = C.t_bar("Datos de las personas", "Administración", "M-WA-Menu.dc.html", f'<button type="button" class="ap-ib" aria-label="Nuevo dato">{F.svg(chr(60) + "path d=" + chr(34) + "M12 5v14M5 12h14" + chr(34) + "/>", 22)}</button>')
-    tabs = lambda on: ('<div class="ap-tabs" role="tablist">' + "".join(f'<span class="{"on" if k == on else ""}" role="tab">{k}</span>' for k in ("Los datos", "Las personas")) + "</div>")
-    filas_d = "".join(f'<div class="ap-fila"><div class="tx"><span class="l1">{n}</span><span class="l2">{t}</span><span class="l3">{c} · Activo</span></div>'
-                      f'<button type="button" class="ap-ib" aria-label="Acciones de {n}">{F.TKEBAB}</button></div>' for n, t, _u, c, _a in DATOS)
-    filas_p = "".join(f'<a class="ap-fila" href="M-FRM-Usuario-Datos.dc.html"><div class="tx"><span class="l1">{n}</span><span class="l2">{r}</span><span class="l3">Zona: {z} · Sucursal: {s}</span></div></a>'
-                      for n, r, z, s in PERSONAS)
+    barra = C.t_bar("Datos de las personas", "Administración", "M-WA-Menu.dc.html", f'<button type="button" class="ap-ib" aria-label="Agregar dato">{F.svg(chr(60) + "path d=" + chr(34) + "M12 5v14M5 12h14" + chr(34) + "/>", 22)}</button>')
+    tabs = lambda on: ('<div class="ap-tabs" role="tablist">' + "".join(f'<span class="{"on" if k == on else ""}" role="tab">{k}</span>' for k in ("Datos", "Personas")) + "</div>")
+    filas_d = "".join(f'<div class="ap-fila"><div class="tx"><span class="l1">{n}</span><span class="l2">{tipo}</span><span class="l3">{clave}</span></div>'
+                      f'<button type="button" class="ap-ib" aria-label="Editar {n}">{F.svg(chr(60) + "path d=" + chr(34) + "M4 20h4L19 9l-4-4L4 16z" + chr(34) + "/>", 20)}</button></div>' for n, clave, tipo, _u, _a in DATOS)
+    filas_p = "".join(f'<a class="ap-fila" href="M-FRM-Usuario-Datos.dc.html"><div class="tx"><span class="l1">{n}</span><span class="l2">Zona: {z} · Sucursal: {s}</span></div></a>'
+                      for n, _r, z, s in PERSONAS)
+    bus = f'<div style="padding: 12px 0 4px;"><span class="w-bus" style="width: auto;">{F.BUSCAR} Buscar personas</span></div>'
     esq = '<div class="ap-esq"><span style="width: 80%;"></span><span style="width: 60%;"></span><span style="width: 72%;"></span></div>'
-    cuerpo = {"Los datos": barra + tabs("Los datos") + f'<div class="ap-cuerpo">{filas_d}</div>', "Las personas": barra + tabs("Las personas") + f'<div class="ap-cuerpo">{filas_p}</div>',
-              "Nuevo dato": barra + tabs("Los datos") + f'<div class="ap-cuerpo">{filas_d}</div>', "Cargando": barra + tabs("Los datos") + esq,
+    cuerpo = {"Datos": barra + tabs("Datos") + f'<div class="ap-cuerpo">{filas_d}</div>', "Personas": barra + tabs("Personas") + f'<div class="ap-cuerpo">{bus}{filas_p}</div>',
+              "Agregar un dato": barra + tabs("Datos") + f'<div class="ap-cuerpo">{filas_d}</div>', "Cargando": barra + tabs("Datos") + esq,
               "No se pudo cargar": barra + '<div class="ap-cuerpo"><div class="ap-vacio">No pudimos cargar los datos.<button type="button" class="cb cb-sec">Reintentar</button></div></div>'}
-    hoja = F.thoja("Nuevo dato", F.tcampo("Nombre", "Nombre del dato", req=True, vacio=True) + F.tcampo("Tipo", "De un catálogo", select=True) + F.tcampo("Catálogo", "Zonas · 6 opciones", req=True, select=True),
-                   '<button type="button" class="cb cb-pri">Guardar</button><button type="button" class="cb cb-sec">Cancelar</button>')
-    return C.tel_pagina(cuerpo, ESTADOS_TDP, {"Nuevo dato": hoja}, "Datos de las personas · teléfono", F.CSS_TFILTRO)
+    hoja = F.thoja("Agregar dato", F.tcampo("Nombre", "Nombre del dato", req=True, vacio=True) + F.tcampo("Clave", "clave", req=True, vacio=True) + F.tcampo("Tipo", "De un catálogo", req=True, select=True)
+                   + F.tcampo("Catálogo", "Zonas · 6 opciones", req=True, select=True), '<button type="button" class="cb cb-pri">Guardar</button><button type="button" class="cb cb-sec">Cancelar</button>')
+    return C.tel_pagina(cuerpo, ESTADOS_TDP, {"Agregar un dato": hoja}, "Datos de las personas · teléfono", F.CSS_TFILTRO)
 
 
 # ================================================================ FRM-Usuario-Datos: la ficha con las pestañas «Acceso» y «Datos»
@@ -274,53 +300,32 @@ def tel_usuario_datos():
     return C.tel_pagina(cuerpo, ESTADOS_TUD, {}, "Ficha del usuario · teléfono · etapa 16", E.CSS_E12)
 
 
-# ================================================================ FRM-Catalogo-16: la columna «Filtro» en «Campos»
-ESTADOS_C16 = ["Campos", "Un campo en uso", "Solo lectura"]
-CSS_C16 = """.w-th.kc, .w-tr.kc { grid-template-columns: minmax(92px, 1fr) 146px 84px 52px 62px 186px 36px; gap: 10px; }
-.w-th.kcl, .w-tr.kcl { grid-template-columns: 120px 150px 84px 52px 62px 190px; gap: 10px; }
-.w-tr.kc:has(.e-tip), .w-tr.kc > .e-tipw { overflow: visible; }
-.w-tr.kc .e-tipw { position: relative; display: inline-flex; }
-.w-tr.kc .e-tip { position: absolute; z-index: 30; top: auto; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); padding: 6px 10px; border-radius: 8px; background: oklch(0.25 0.012 78); color: #fff; font-size: 12.5px; white-space: nowrap; width: max-content; max-width: none; }
-.w-body .k-desp:has(.e-tip), .w-body .w-caja:has(.e-tip) { overflow: visible; }
-.w-tr:has(.e-tip) { z-index: 8; }
-"""
-
-
-def con_filtro(html, filtros, en_uso=False, lectura=False):
-    """Suma la casilla «Filtro» en cada fila, después de «Único», y su encabezado con la ayuda en la (i)."""
-    for n, tipo, _ob, _un, lim in M13.CAMPOS:
-        lim_h = M13.limite(tipo, lim, ro=lectura)
-        ini = html.index(f">{n}<") if lectura else html.index(f'value="{n}"') if f'value="{n}"' in html else html.index(n)
-        k = html.index(lim_h, ini)
-        c = M13.chk(n in filtros, ro=lectura)
-        if en_uso and n == "Zona":
-            c = K.tip(M13.chk(True, ro=True), EN_USO_CAMPO, abierto=True)
-        html = html[:k] + c + html[k:]
-    return html.replace("<span>Único</span>", f'<span>Único</span><span>Filtro{F.info(AYUDA_FILTRO)}</span>')
+# ================================================================ FRM-Catalogo-16: el modal de campos de la 13, con «Papel»
+ESTADOS_C16 = ["Un campo de filtro", "Un campo de dato", "Un campo en uso", "Solo lectura"]
+PAPELES = {"CUIT": "Dato", "Zona": "Filtro"}
 
 
 def catalogo_16():
-    tit = CATALOGO
-    items = [(n, f'{d.replace("CUIT ", "")} · {M13.ZONAS_EJ[k % len(M13.ZONAS_EJ)]}') for k, (n, _c, d, a) in enumerate(K.PROVEEDORES[:6]) if a]
-    cat = K.caja_catalogo(tit, "A quiénes se les compra.")
-
-    def cuerpo(modo="normal", en_uso=False):
-        catalogo = K.caja_catalogo(tit, "A quiénes se les compra.", lectura=True) if modo == "lectura" else cat
-        return (f'<div class="w-body"><div class="k-cab2">{catalogo}{K.vista_previa(items, "Proveedor")}</div>{con_filtro(M13.caja_campos(modo), {"Zona"}, en_uso, modo == "lectura")}'
-                f'{M13.caja_whatsapp("", ro=modo == "lectura")}{M13.caja_valores("normal" if modo != "lectura" else "lectura")}</div>')
-    b = lambda **k: C.banda_k(tit, K.ACTIVO + K.ORIGEN_MANO, K.acc_editor(**k))
-    V = {"Campos": (b(), cuerpo()), "Un campo en uso": (b(), cuerpo(en_uso=True)), "Solo lectura": (b(lectura=True), cuerpo("lectura"))}
-    js = A.js_estados(ESTADOS_C16, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, busqueda: 'Buscar opción', busClase: '',\n")
-    t = C.pagina_k("Campos de un catálogo · etapa 16", "Inicio / Formularios / Catálogos / Proveedores", A.con_estados([(k, v[0]) for k, v in V.items()]), A.con_estados([(k, v[1]) for k, v in V.items()]),
-                   F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + F.CSS_FILTRO + A.CSS_AB + E.CSS_E12 + K.CSS_EDITOR + M13.CSS + CSS_C16, ESTADOS_C16, js, alto=1560)
-    return t.replace('"$preview":{"width":1440,', '"$preview":{"width":1280,', 1)
+    c1, z = M13.CAMPOS
+    lista = lambda sel=2, lectura=False: M13.lista_campos(sel, lectura=lectura, papeles=PAPELES)
+    capas = {
+        "Un campo de filtro": M13.dlg_campos(lista(), M13.panel_campo("Campo 2 de 2", *z, papel="Filtro"), "2 de 20"),
+        "Un campo de dato": M13.dlg_campos(lista(1), M13.panel_campo("Campo 1 de 2", *c1, papel="Dato"), "2 de 20"),
+        "Un campo en uso": M13.dlg_campos(lista(), M13.panel_campo("Campo 2 de 2", *z, papel="Dato", err_papel=EN_USO_CAMPO), "2 de 20"),
+        "Solo lectura": M13.dlg_campos(lista(lectura=True), M13.panel_lectura("Campo 2 de 2", *z, papel="Filtro"), "", lectura=True),
+    }
+    assert list(capas) == ESTADOS_C16
+    b, c = M13.fondo_catalogo()
+    js = A.js_estados(ESTADOS_C16, extra="      menuMas: false, expMas: 'false', chkTodas: '', pvCerrado: true, pvAbierto: false, pvMuchas: false, pvUna: 'on', pvVarias: '', busqueda: 'Buscar opción', busClase: '',\n")
+    t = C.pagina_k("Los campos de un catálogo · etapa 16", "Inicio / Formularios / Catálogos / Proveedores", b, c,
+                   F.CSS_FICHA + F.CSS_ESTADOS + F.CSS_LISTADO + F.CSS_FILTRO + A.CSS_AB + E.CSS_E12 + K.CSS_EDITOR + M13.CSS, ESTADOS_C16, js, alto=1200)
+    t = t.replace('"$preview":{"width":1440,', '"$preview":{"width":1280,', 1)
+    over = "".join(f'<sc-if value="{{{{s{ESTADOS_C16.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
+    return F.con_dialogo(t, over, F.CSS_GRILLA + K.CSS_OPCIONES + M13.CSS_CAMPOS)
 
 
 def tel_catalogo_16():
-    t = (PROJ / "M-FRM-Catalogo-13.dc.html").read_text(encoding="utf-8")
-    fila = '<span class="t-chk"><i class="no"></i>Filtro</span>'
-    t = t.replace('Único</span>' + F.tcampo("Límite", "hasta 13 caracteres"), 'Único</span>' + fila + F.tcampo("Límite", "hasta 13 caracteres"))
-    return t.replace("<span>De Zonas · Obligatorio</span>", "<span>De Zonas · Obligatorio · Filtro</span>")
+    return M13.tel_campos(papeles=PAPELES, destino="M-FRM-Catalogo-16.dc.html")
 
 
 # ================================================================ FRM-Editor-16: «Qué opciones ve cada persona»
@@ -328,19 +333,34 @@ ESTADOS_E16 = ["Qué opciones ve cada persona", "Con un filtro fijo", "Le falta 
 
 
 def seccion_filtros(modo="normal"):
+    """«Qué opciones ve cada persona», como ArquitecturaBase: una caja con los dos «Agregar» en su encabezado y una condición por filtro. Debajo, a quién se prueba, cuántas opciones le quedan y el máximo."""
     ro = modo == "lectura"
-    menos = "" if ro else f'<button type="button" class="ib" aria-label="Quitar el filtro">{X}</button>'
-    f = lambda c, v, chev=True: f'<div class="f{" ro" if ro else ""}"><div class="ct sel">{c}{CHEV if not ro else ""}</div><span>es</span><div class="ct sel">{v}{CHEV if chev and not ro else ""}</div>{menos}</div>'
-    filas = f("Zona", "La zona de quien lo recibe")
+    sin = modo == "sin"
+
+    def cond(leyenda, rot, valor, rot2, valor2):
+        x = "" if ro else f'<button type="button" class="ib" aria-label="Quitar el filtro">{X}</button>'
+        ct = lambda v: f'<div class="ct sel">{v}{CHEV if not ro else ""}</div>'
+        return (f'<fieldset class="q-cond{" ro" if ro else ""}"><legend>{leyenda}</legend><div class="w-cmp"><span class="rt">{rot}</span>{ct(valor)}</div>'
+                f'<div class="w-cmp"><span class="rt">{rot2}</span>{ct(valor2)}</div>{x if not ro else "<span></span>"}</fieldset>')
+    conds = "" if sin else cond("Según quien lo recibe", "Campo", "Zona", "Dato de la persona", "Zona")
     if modo == "fijo":
-        filas += f("Rubro", "Frío")
-    acs = "" if ro else '<div class="acs"><button type="button" class="cb cb-enl">Agregar un filtro según quien lo recibe</button><button type="button" class="cb cb-enl">Agregar un filtro fijo</button></div>'
-    persona, res, clase = {"falta": ("Sofía Herrera", "Le falta «Zona»", "mal"), "roto": ("Juan Gómez", "El filtro no funciona", "mal"), "tope": ("Juan Gómez", "→ 240 opciones", "mal")}.get(modo, ("Juan Gómez", "→ 14 opciones", ""))
-    maximo = "Como mucho 240 opciones por persona: el tope es 200" if modo == "tope" else "Como mucho 18 opciones por persona"
+        conds += cond("Filtro fijo", "Campo", "Rubro", "Valor fijo", "Frío")
+    persona = {"falta": "Sofía Herrera", "roto": "Juan Gómez · Centro", "tope": "Juan Gómez · Centro"}.get(modo, "Juan Gómez · Centro")
+    res = {"falta": ("mal", "La persona no tiene el dato necesario; no se le puede mandar el formulario."), "roto": ("mal", "El filtro no está disponible; no se puede preparar el formulario."),
+           "tope": ("mal", "Supera el límite de 200 opciones de esta pregunta.")}.get(modo, ("", "14 opciones"))
+    detalle = "" if modo in ("falta", "roto") else "<small>Zona: Centro</small>"
+    maximo = (f'<span class="q-max mal">{F.ALERTA}Como mucho 240 por persona (Centro, la más grande): no entra en el desplegable (200).</span>' if modo == "tope" else
+              f'<span class="q-max">{TILDE}Como mucho 18 por persona (Centro, la más grande): entra en el desplegable (200).</span>')
     cargar = "" if ro else ' · <a href="FRM-Datos-Personas.dc.html">Cargar los datos</a>'
-    return (f'<div class="w-cmp ancho q-fil"><span class="c">Qué opciones ve cada persona{F.info(AYUDA_QUE_VE)}</span>{filas}{acs}'
-            f'<div class="como"><span class="rt">Como si lo recibiera</span><div class="ct sel">{persona}{CHEV}</div><span class="res {clase}">{res}</span></div>'
-            f'<div class="dat"><span>{maximo}</span><span>2 personas sin Zona{cargar}</span></div></div>')
+    agregar = '<button type="button" class="cb cb-sec">Agregar filtro según quien lo recibe</button><button type="button" class="cb cb-sec">Agregar filtro fijo</button>'
+    if sin:
+        motivo = "Este catálogo no tiene campos de filtro disponibles."
+        agregar = K.tip('<button type="button" class="cb cb-sec">Agregar filtro según quien lo recibe</button>', motivo, abierto=True) + K.tip('<button type="button" class="cb cb-sec">Agregar filtro fijo</button>', motivo)
+    botones = "" if ro else f'<span class="der2">{agregar}</span>'
+    prueba = "" if sin else (f'<div class="w-cmp"><span class="rt">Como si lo recibiera</span><div class="ct sel">{persona}{CHEV}</div></div>'
+                             f'<div class="q-res"><b class="{res[0]}">{res[1]}</b>{detalle}</div>{maximo}<div class="q-sin">2 personas sin Zona{cargar}</div>')
+    cuerpo = f'<div class="zb">{conds}{prueba}</div>' if conds or prueba else ""
+    return f'<div class="w-cmp ancho q-zona"><div class="zc"><span>Qué opciones ve cada persona{F.info(AYUDA_QUE_VE)}</span>{botones}</div>{cuerpo}</div>'
 
 
 def editor_16():
@@ -348,7 +368,7 @@ def editor_16():
 
     def pregunta(modo="elegido", filtros=None):
         h = A_preg(modo).replace("Motivos de visita", CATALOGO)
-        h = h.replace('<div class="ct">Motivo</div>', f'<div class="ct">{PREGUNTA}</div>').replace(">Motivo<", f">{PREGUNTA}<")
+        h = h.replace('<div class="ct">Motivo</div>', f'<div class="ct">{PREGUNTA}</div>').replace(">Motivo<", f">{PREGUNTA}<").replace(' Motivo"', f' {PREGUNTA}"')
         if filtros:
             k = h.index('<div class="w-cmp"><span class="rt">Ayuda para el empleado')
             h = h[:k] + seccion_filtros(filtros) + h[k:]
@@ -362,7 +382,7 @@ def editor_16():
             A.pregunta_catalogo = A_preg
     pub = lambda c, modo="cambios": (E.banda(FORMULARIO, E.EST_PUB, E.acc(modo), E.VOL), c)
     V = {"Qué opciones ve cada persona": pub(cuerpo("normal")), "Con un filtro fijo": pub(cuerpo("fijo")), "Le falta el dato": pub(cuerpo("falta")), "El filtro no funciona": pub(cuerpo("roto")),
-         "Más opciones que el tope": pub(cuerpo("tope")), "Solo lectura": pub(cuerpo("lectura"), "solo"), "Sin campos de filtro": pub(cuerpo(None))}
+         "Más opciones que el tope": pub(cuerpo("tope")), "Solo lectura": pub(cuerpo("lectura"), "solo"), "Sin campos de filtro": pub(cuerpo("sin"))}
     return A.pagina_editor(V, {}, ESTADOS_E16, "Editor del formulario · etapa 16", E.CSS_E12 + E.CSS_CA4 + E.css_titulos() + CSS_FILTROS)
 
 
@@ -373,14 +393,14 @@ def tel_editor_16():
     barra = C.t_bar(PREGUNTA, "Pregunta", "M-FRM-Editor.dc.html")
 
     def fila(c, v):
-        return f'<div class="q-row"><span class="tx"><b>{c} es</b><span>{v}</span></span><button type="button" class="ap-ib" aria-label="Quitar el filtro">{F.svg(chr(60) + "path d=" + chr(34) + "M6 6l12 12M18 6 6 18" + chr(34) + "/>", 20)}</button></div>'
+        return f'<div class="q-row"><span class="tx"><b>{c}</b><span>{v}</span></span><button type="button" class="ap-ib" aria-label="Quitar el filtro">{F.svg(chr(60) + "path d=" + chr(34) + "M6 6l12 12M18 6 6 18" + chr(34) + "/>", 20)}</button></div>'
 
-    def pant(persona="Juan Gómez", res="→ 14 opciones", ro=False):
+    def pant(persona="Juan Gómez · Centro", res="14 opciones", ro=False):
         tit = f'<div class="ap-gtit">Qué opciones ve cada persona{"" if ro else "<a href=" + chr(34) + "#" + chr(34) + ">Agregar un filtro</a>"}</div>'
-        filas = fila("Zona", "La zona de quien lo recibe").replace('<button type="button" class="ap-ib" aria-label="Quitar el filtro">', '<button type="button" class="ap-ib" aria-label="Quitar el filtro" hidden>') if ro else fila("Zona", "La zona de quien lo recibe")
+        filas = fila("Zona", "Según quien lo recibe · Zona").replace('<button type="button" class="ap-ib" aria-label="Quitar el filtro">', '<button type="button" class="ap-ib" aria-label="Quitar el filtro" hidden>') if ro else fila("Zona", "Según quien lo recibe · Zona")
         return (barra + f'<div class="ap-cuerpo">{tit}<div class="ap-grupo">{filas}</div><div class="f-campos">' + F.tcampo("Como si lo recibiera", persona, select=True) + "</div>"
-                f'<div class="ap-txt-l" style="padding: 0 16px;"><b>{res}</b><br>Como mucho 18 opciones por persona<br>2 personas sin Zona</div></div>')
-    cuerpo = {"Qué opciones ve cada persona": pant(), "Le falta el dato": pant("Sofía Herrera", "Le falta «Zona»"), "Solo lectura": pant(ro=True)}
+                f'<div class="ap-txt-l" style="padding: 0 16px;"><b>{res}</b><br>Como mucho 18 por persona<br>2 personas sin Zona</div></div>')
+    cuerpo = {"Qué opciones ve cada persona": pant(), "Le falta el dato": pant("Sofía Herrera", "La persona no tiene el dato necesario"), "Solo lectura": pant(ro=True)}
     return C.tel_pagina(cuerpo, ESTADOS_TE16, {}, "Pregunta · teléfono · etapa 16", E.CSS_E12)
 
 
@@ -388,19 +408,24 @@ def tel_editor_16():
 ESTADOS_P16 = ["Solo avisos", "Problemas y avisos", "Para los dos: un cliente"]
 
 
-def z_aviso(que, detalle):
-    return f'<div class="z-f av"><span class="ic">{F.INFO}</span><span class="tx"><b>{que}</b><span>{detalle}</span></span><a href="FRM-Editor-16.dc.html">Ir a la pregunta</a></div>'
+AYUDA_AVISOS = "No frenan la publicación, pero conviene revisarlos."
+
+
+def z_aviso(que, detalle, ayuda=""):
+    return f'<div class="z-f av"><span class="ic">{F.INFO}</span><span class="tx"><b>{que}</b><span>{detalle}{F.info(ayuda) if ayuda else ""}</span></span></div>'
 
 
 def publicar_16():
     base = (E.banda(FORMULARIO, E.EST_PUB, E.acc("limpio"), E.VOL), E.cuerpo_editor(abierta=None, modo="fijo"))
-    avisos = E.z_cab("Avisos") + z_aviso("Como mucho 18 opciones por persona", f"{PREGUNTA}: entra en lo que muestra WhatsApp.") + z_aviso("2 personas sin Zona", "No se les va a poder mandar hasta que tengan el dato.")
-    problema = E.z_cab("Problemas") + E.z_problema(PREGUNTA, "El filtro «Rubro es Frío» deja 240 opciones, y WhatsApp muestra hasta 200.")
-    cliente = z_aviso("No se le va a poder mandar a un cliente", f"{PREGUNTA} depende de un dato de la persona.")
+    filas = (z_aviso(PREGUNTA, "Como mucho 18 opciones por persona, de un límite de 200.", "Es lo que puede llegar a recibir la persona con más opciones.")
+             + z_aviso(PREGUNTA, "2 personas sin Zona. No se les va a poder mandar hasta que tengan el dato."))
+    avisos = E.z_zona("Avisos", filas, AYUDA_AVISOS)
+    problema = E.z_zona("Problemas", E.z_problema(PREGUNTA, "El filtro «Rubro es Frío» deja 240 opciones, y WhatsApp muestra hasta 200."), E.AYUDA_PROBLEMAS)
+    cliente = E.z_zona("Avisos", filas + z_aviso(PREGUNTA, "No se le va a poder mandar a un cliente: depende de un dato de la persona."), AYUDA_AVISOS)
     tit = "Publicar la versión 4 en WhatsApp"
     dlg = A.dlg_publicar
     capas = {"Solo avisos": dlg(tit, avisos + E.que_se_publica(), E.pie_pub()), "Problemas y avisos": dlg(tit, problema + avisos + E.que_se_publica(), E.pie_pub(activo=False)),
-             "Para los dos: un cliente": dlg(tit, avisos + cliente + E.que_se_publica(), E.pie_pub())}
+             "Para los dos: un cliente": dlg(tit, cliente + E.que_se_publica(), E.pie_pub())}
     return A.pagina_editor({e: base for e in ESTADOS_P16}, capas, ESTADOS_P16, "Publicar en WhatsApp · etapa 16", E.CSS_E12 + E.css_titulos() + E.CSS_ZONAS + CSS_AVISOS)
 
 
@@ -468,7 +493,7 @@ def tel_respuestas_16():
 TITULOS = {"FRM-Datos-Personas": ("Administración · Datos de las personas · etapa 16", 1440, 1000), "M-FRM-Datos-Personas": ("Datos de las personas · teléfono", 390, 844),
            "FRM-Usuario-Datos": ("Administración · la ficha, con «Datos» · etapa 16", 1440, 900), "M-FRM-Usuario-Datos": ("La ficha, con «Datos» · teléfono", 390, 844),
            "FRM-Catalogo-16": ("Formularios · la columna «Filtro» · etapa 16", 1280, 1560), "M-FRM-Catalogo-16": ("La columna «Filtro» · teléfono", 390, 844),
-           "FRM-Editor-16": ("Formularios · qué opciones ve cada persona · etapa 16", 1440, 1400), "M-FRM-Editor-16": ("Qué opciones ve cada persona · teléfono", 390, 844),
+           "FRM-Editor-16": ("Formularios · qué opciones ve cada persona · etapa 16", 1440, 1660), "M-FRM-Editor-16": ("Qué opciones ve cada persona · teléfono", 390, 844),
            "FRM-Publicar-16": ("Formularios · publicar con avisos · etapa 16", 1440, 1400),
            "WA-Chats-Formulario-16": ("WhatsApp · un formulario que no se puede mandar · etapa 16", 1440, 900), "M-WA-Chats-Formulario-16": ("Un formulario que no se puede mandar · teléfono", 390, 844),
            "FRM-Respuestas-16": ("Formularios · la subcolumna de un filtro · etapa 16", 1440, 900), "M-FRM-Respuestas-16": ("La subcolumna de un filtro · teléfono", 390, 844)}
@@ -486,7 +511,7 @@ def registrar():
 if __name__ == "__main__":
     panel_e16 = re.search(r'<style data-e16="panel">\n(.*?)</style>', (PROJ / "FRM-Catalogos.dc.html").read_text(encoding="utf-8"), re.S)
     E.R.CSS_PANEL_E16 = panel_e16.group(1) if panel_e16 else ""
-    con_marco = {"FRM-Catalogo-16": (catalogo_16, 1560), "FRM-Editor-16": (editor_16, 1400), "FRM-Publicar-16": (publicar_16, 1400), "FRM-Respuestas-16": (respuestas_16, None)}
+    con_marco = {"FRM-Catalogo-16": (catalogo_16, 1200), "FRM-Editor-16": (editor_16, 1660), "FRM-Publicar-16": (publicar_16, 1400), "FRM-Respuestas-16": (respuestas_16, None)}
     for n, (f, alto) in con_marco.items():
         t = L.sin_disenar(n, E.post(n, f(), alto))
         if n == "FRM-Respuestas-16":

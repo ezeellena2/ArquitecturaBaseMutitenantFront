@@ -4,6 +4,10 @@ aprobación, estado, PDF, corregir ni «Cargar». Lo general es «Visita a clien
 
 Toma las piezas de `formularios_ab_planilla_1004.py`, que queda como historia. Corre antes de `formularios_lista_y_ficha_1004.py`, que les
 suma las pestañas y arma la lista y el tablero de la etapa.
+
+Desde la v150 (126), el armado real de ArquitecturaBaseFront: «Exportar a Excel» en la banda; en la barra, «Buscar en textos largos» y una pregunta como filtro rápido; «Más filtros» con
+«Recibida desde» y «hasta» y, por pregunta, «Respuesta» y lo que corresponde a su tipo; exportar dice cuántas respuestas, cuántos filtros y cuántas columnas; la vista rápida
+trae «Abrir en pantalla completa» como botón y, al pie, en qué respuesta va.
 """
 import json
 import pathlib
@@ -166,20 +170,21 @@ def barra(modo="normal"):
             menu = (f'<span class="f-mn" role="listbox" aria-label="Filtrar por {nombre.lower()}">'
                     + "".join(f'<span role="option" class="{"on" if k == elegido else ""}">{n}<span class="cnt">{c}</span></span>' for k, n, c in items) + "</span>")
         return f'<span class="f-env"><span class="w-pil{" con" if elegido != "t" else ""}" role="button" aria-haspopup="listbox">{texto} {CHEV}</span>{menu}</span>'
-    bus = (f'<span class="w-bus lleno">{F.BUSCAR} pallet</span>' if modo == "busqueda" else f'<span class="w-bus">{F.BUSCAR} Buscar en Observaciones</span>')
+    bus = (f'<span class="w-bus lleno">{F.BUSCAR} pallet</span>' if modo == "busqueda" else f'<span class="w-bus">{F.BUSCAR} Buscar en textos largos</span>')
     h = bus + pil("Empresa", "Empresa: Delta S.A." if filtrado else "Empresa", emp_items, "a" if filtrado else "t", modo == "empresa")
+    # La primera pregunta de opciones va a mano, como filtro rápido
+    if repuesto:
+        h += pil("Fallas", "Fallas: alguna de 2" if modo == "repuesto-filtro" else "Fallas", [], "a" if modo == "repuesto-filtro" else "t", False)
+    else:
+        h += pil("Motivo", "Motivo: Venta nueva" if filtrado else "Motivo", [], "a" if filtrado else "t", False)
     h += pil("Recibida", "Recibida: últimos 7 días" if filtrado else "Recibida", rec_items, "7" if filtrado else "t", False)
-    if modo == "repuesto-filtro":
-        h += pil("Fallas", "Fallas: alguna de 2", [], "a", False)
-    h += (f'<a class="w-pil con" href="FRM-Respuestas-Filtros.dc.html">{FILTROS} Más filtros · 1</a>' if filtrado
-          else f'<a class="w-pil" href="FRM-Respuestas-Filtros.dc.html">{FILTROS} Más filtros</a>')
+    h += f'<a class="w-pil" href="FRM-Respuestas-Filtros.dc.html">{FILTROS} Más filtros</a>'
     if filtrado or modo in ("busqueda", "repuesto-filtro"):
         h += '<button type="button" class="cb cb-enl">Limpiar filtros</button>'
     total = {"filtrado": "4 respuestas", "busqueda": "0 respuestas", "repuesto": "18 respuestas", "repuesto-columnas": "18 respuestas", "repuesto-filtro": "3 respuestas"}.get(modo, "24 respuestas")
     col_menu = menu_columnas(repuesto) if modo in ("columnas", "repuesto-columnas") else ""
-    texto = "Columnas" if repuesto else "Columnas · 1 oculta"
     h += (f'<span class="pl-der"><span class="tot">{total}</span><span class="pl-env"><span class="w-pil" role="button" aria-haspopup="menu" aria-expanded="{"true" if col_menu else "false"}">'
-          f'{texto} {CHEV}</span>{col_menu}</span></span>')
+          f'Columnas {CHEV}</span>{col_menu}</span></span>')
     return f'<div class="w-caja o-fb pl-fb">{h}</div>'
 
 
@@ -188,9 +193,10 @@ def banda(titulo=FORMULARIO, res="Respuestas · versión 4 publicada", ac=""):
             f'<div><h1>{titulo}</h1><p class="res">{res}</p></div></div><div class="ac">{ac}</div></div>')
 
 
-EXPORTAR = '<a class="cb cb-sec" href="FRM-Respuestas-Exportar.dc.html">Exportar</a>'
-EXPORTAR_OFF = '<button type="button" class="cb cb-sec" disabled title="Todavía no hay respuestas para exportar.">Exportar</button>'
-CSS_15 = """.pl-marca { flex-shrink: 0; padding: 0 7px; border: 1px solid var(--borde2); border-radius: 999px; font-size: 12px; line-height: 18px; color: var(--t2); }
+EXPORTAR = '<a class="cb cb-sec" href="FRM-Respuestas-Exportar.dc.html">Exportar a Excel</a>'
+EXPORTAR_OFF = '<button type="button" class="cb cb-sec" disabled title="Todavía no hay respuestas para exportar.">Exportar a Excel</button>'
+CSS_15 = """.pl-fb .w-bus { width: 220px; flex: none; }
+.pl-marca { flex-shrink: 0; padding: 0 7px; border: 1px solid var(--borde2); border-radius: 999px; font-size: 12px; line-height: 18px; color: var(--t2); }
 .pl-linea { height: 2px; background: var(--marca); width: max-content; min-width: 100%; }
 .pl-caja.aten .w-tr.pl { opacity: 0.5; pointer-events: none; }
 .w-tr.pl > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -254,23 +260,52 @@ def respuestas():
 ESTADOS_MF = ["Más filtros", "Con filtros elegidos", "Contando", "Ninguna coincide"]
 
 
+CSS_MF2 = """.mf-s { gap: 8px; }
+.mf-c { display: flex; flex-direction: column; gap: 4px; }
+.mf-c .r { font-size: 13px; color: var(--t2); }
+.mf-dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.mf-ck.dos { align-items: flex-start; padding: 4px 0; }
+.mf-ck.dos .bx { margin-top: 2px; }
+.mf-ck.dos .tx { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.mf-ck.dos small { font-size: 12.5px; color: var(--t3); }
+.mf-f .der2 { display: inline-flex; align-items: center; gap: 8px; }
+"""
+
+
 def mas_filtros(modo="normal"):
+    """Como ArquitecturaBase: las fechas de recibida y, por pregunta, «Respuesta» y lo que va con su tipo: desde y hasta, «Contiene» o casillas con cuántas respuestas tiene cada una."""
     elegidos, cont = modo in ("elegidos", "ninguna"), modo == "contando"
 
     def sec(titulo, cuerpo):
         return f'<div class="mf-s"><span class="t">{titulo}</span>{cuerpo}</div>'
 
+    def campo(rotulo, control):
+        return f'<div class="mf-c"><span class="r">{rotulo}</span>{control}</div>'
+
+    def caja(texto="", lleno=False):
+        return f'<span class="mf-in{" lleno" if lleno else ""}">{texto}</span>'
+
+    def resp(valor="Todas"):
+        return campo("Respuesta", f'<span class="mf-in sel">{valor} {CHEV}</span>')
+
+    def rango(desde="", hasta="", d="Desde", h="Hasta"):
+        return f'<div class="mf-dos">{campo(d, caja(desde, bool(desde)))}{campo(h, caja(hasta, bool(hasta)))}</div>'
+
     def ck(texto, n, on=False, extra=""):
-        return P.ck(texto, n, on, extra, cont)
-    motivo = sec("Motivo", ck("Seguimiento", 9) + ck("Venta nueva", 7 if elegidos else 11, on=elegidos) + ck("Reclamo", 4) + ck("Visita técnica", 2, extra=' <span class="baja">· dada de baja</span>'))
+        cuenta = '<span class="esq-n" style="margin: 4px 0 0;"></span>' if cont else f'<small>{n} {"respuesta" if n == 1 else "respuestas"}</small>'
+        return (f'<span class="mf-ck dos{" on" if on else ""}" role="checkbox" aria-checked="{"true" if on else "false"}"><span class="bx">{P.CHECK if on else ""}</span>'
+                f'<span class="tx"><span>{texto}{extra}</span>{cuenta}</span></span>')
+    buscar = f'<span class="mf-in">{F.BUSCAR} Buscar opciones</span>'
+    recibida = rango(d="Recibida desde", h="Recibida hasta")
+    motivo = sec("Motivo", resp() + buscar + ck("Seguimiento", 9) + ck("Venta nueva", 7 if elegidos else 11, on=elegidos) + ck("Reclamo", 4) + ck("Visita técnica", 2, extra=' <span class="baja">· dada de baja</span>'))
     # Una respuesta con dos opciones cuenta en las dos
-    fallas = sec("Fallas", ck("Luz", 12) + ck("Frío", 8) + ck("Ruido", 8) + ck("Puerta", 5))
-    venta = sec("¿Se concretó la venta?", ck("Sí", 12) + ck("No", 10) + ck("Sin respuesta", 0))
-    monto = sec("Monto estimado", f'<div class="mf-rg"><span class="mf-in{" lleno" if elegidos else ""}">{"10.000" if elegidos else "Mínimo"}</span>a<span class="mf-in">Máximo</span></div>'
-                + ck("Con respuesta", 19) + ck("Sin respuesta", 3) + ck("No existía en esa versión", 2))
-    fecha = sec("Fecha de la visita", '<div class="mf-rg"><span class="mf-in">Desde</span>a<span class="mf-in">Hasta</span></div>')
-    cliente = sec("Cliente", f'<div class="mf-txt"><span class="mf-in sel">contiene {CHEV}</span><span class="mf-in">Escribí un texto</span></div>')
-    cargo = sec("Cargó", ck("Paula Méndez", 7) + ck("Tomás Acosta", 6) + ck("Florencia Fernández de la Fu…", 4) + ck("Lucía Fernández", 3) + ck("Martín Paz", 2) + ck("Marta Gil", 1) + ck("Persona sin información", 1))
+    fallas = sec("Fallas", resp() + ck("Luz", 12) + ck("Frío", 8) + ck("Ruido", 8) + ck("Puerta", 5))
+    venta = sec("¿Se concretó la venta?", resp() + ck("Sí", 12) + ck("No", 10))
+    monto = sec("Monto estimado", resp() + rango("10.000" if elegidos else ""))
+    fecha = sec("Fecha de la visita", resp() + rango())
+    cliente = sec("Cliente", resp() + campo("Contiene", caja()))
+    obs = sec("Observaciones", resp() + campo("Contiene", caja()))
+    cargo = sec("Cargó", buscar + ck("Paula Méndez", 7) + ck("Tomás Acosta", 6) + ck("Florencia Fernández de la Fu…", 4) + ck("Lucía Fernández", 3) + ck("Martín Paz", 2) + ck("Marta Gil", 1) + ck("Persona sin información", 1))
     version = sec("Versión del formulario", ck("Versión 4", 12) + ck("Versión 3", 8) + ck("Versión 2", 4))
     if modo == "ninguna":
         boton = '<button type="button" class="cb cb-pri" disabled>Ninguna respuesta coincide</button>'
@@ -279,14 +314,14 @@ def mas_filtros(modo="normal"):
     else:
         boton = f'<a class="cb cb-pri" href="FRM-Respuestas.dc.html">Ver {"4" if elegidos else "24"} respuestas</a>'
     return (f'<div class="w-oscuro lado"><aside class="mf" role="dialog" aria-modal="true" aria-label="Más filtros"><div class="mf-h"><span>Más filtros</span>'
-            f'<button type="button" class="ib" aria-label="Cerrar">{X}</button></div><div class="mf-b">{motivo}{fallas}{venta}{monto}{fecha}{cliente}{cargo}{version}</div>'
-            f'<div class="mf-f"><button type="button" class="cb cb-enl">Limpiar filtros</button>{boton}</div></aside></div>')
+            f'<button type="button" class="ib" aria-label="Cerrar">{X}</button></div><div class="mf-b">{sec("Recibida", recibida).replace(chr(60) + "span class=" + chr(34) + "t" + chr(34) + ">Recibida</span>", "")}{motivo}{fallas}{venta}{monto}{fecha}{cliente}{obs}{cargo}{version}</div>'
+            f'<div class="mf-f"><button type="button" class="cb cb-enl">Limpiar todo</button><span class="der2"><button type="button" class="cb cb-sec">Cancelar</button>{boton}</span></div></aside></div>')
 
 
 def filtros_lado():
     capas = A.con_estados([("Más filtros", mas_filtros()), ("Con filtros elegidos", mas_filtros("elegidos")), ("Contando", mas_filtros("contando")),
                            ("Ninguna coincide", mas_filtros("ninguna").replace("10.000", "900.000"))])
-    t = pagina("Respuestas · Más filtros", banda(ac=EXPORTAR), A.con_estados([(e, fondo()) for e in ESTADOS_MF]), ESTADOS_MF, css=P.CSS_MF)
+    t = pagina("Respuestas · Más filtros", banda(ac=EXPORTAR), A.con_estados([(e, fondo()) for e in ESTADOS_MF]), ESTADOS_MF, css=P.CSS_MF + CSS_MF2)
     return F.con_dialogo(t, capas)
 
 
@@ -300,13 +335,18 @@ VALORES_130 = [("Cliente", "Corralón El Puente"), ("Fecha de la visita", "15/10
 VALORES_123 = [("Cliente", "Ferretería Rosales"), ("Fecha de la visita", "13/10/2026"), ("¿Se concretó la venta?", "No"), ("Monto estimado", "0,00"), ("Motivo", "Seguimiento"), ("Observaciones", None)]
 VALORES_R = [("Fallas", FALLAS), ("Proveedor", 'Aceros Rosario<span class="d-cmp">CUIT: 30-70988123-4</span><span class="d-cmp">Plazo de pago: 30 días</span>'),
              ("Observaciones", "Cambiar el compresor.")]
-CSS_DET = ".d-cmp { display: block; color: var(--t2); font-size: 13px; }\n"
+CSS_DET = """.d-cmp { display: block; color: var(--t2); font-size: 13px; }
+.d2-acc { display: flex; align-items: center; gap: 12px; padding: 12px 20px 0; }
+.d2-acc .cb { height: 32px; font-size: 13px; text-decoration: none; }
+.d2-ln { font-size: 13px; font-weight: 600; color: var(--marca-tx); text-decoration: none; }
+.d2-sub { padding-top: 8px; }
+.d2-pie { padding: 10px 20px; border-top: 1px solid var(--borde); font-size: 13px; color: var(--t3); font-variant-numeric: tabular-nums; }
+"""
 
 
-def d2(num="VIS-000126", titulo=FORMULARIO, version=4, valores=VALORES_126, nombre="Tomás Acosta", hora="13/10/2026 15:30", primera=False, modo="normal"):
+def d2(num="VIS-000126", titulo=FORMULARIO, version=4, valores=VALORES_126, nombre="Tomás Acosta", hora="13/10/2026 15:30", primera=False, modo="normal", pos="2 de 4"):
     nav = (f'<button type="button" class="nv" aria-label="Respuesta anterior" title="Anterior (↑)"{" disabled" if primera else ""}>{SUBE}</button>'
-           f'<button type="button" class="nv" aria-label="Respuesta siguiente" title="Siguiente (↓)">{BAJA}</button>'
-           f'<a class="nv" href="FRM-Respuesta-Completa.dc.html" aria-label="Abrir en pantalla completa" title="Abrir en pantalla completa">{EXPANDIR}</a>')
+           f'<button type="button" class="nv" aria-label="Respuesta siguiente" title="Siguiente (↓)">{BAJA}</button>')
     cerrar = f'<button type="button" class="ib" aria-label="Cerrar" title="Cerrar (Esc)">{X}</button>'
     if modo == "cargando":
         return (f'<aside class="d2" role="dialog" aria-label="Respuesta"><div class="d2-h"><b>{num}</b>{nav}{cerrar}</div>'
@@ -314,20 +354,21 @@ def d2(num="VIS-000126", titulo=FORMULARIO, version=4, valores=VALORES_126, nomb
     if modo == "falta":
         return (f'<aside class="d2" role="dialog" aria-label="Respuesta"><div class="d2-h"><b></b>{cerrar}</div>'
                 '<div class="d2-msj"><b>No encontramos esta respuesta.</b><a class="cb cb-sec" href="FRM-Respuestas.dc.html">Volver a la planilla</a></div></aside>')
-    sub = f'<div class="d2-sub"><span>{titulo} · versión {version}</span><a class="cb cb-sec" href="WA-Chats-Respuesta.dc.html">Abrir conversación</a></div>'
+    sub = ('<div class="d2-acc"><a class="cb cb-sec" href="FRM-Respuesta-Completa.dc.html">Abrir en pantalla completa</a><a class="d2-ln" href="WA-Chats-Respuesta.dc.html">Abrir conversación</a></div>'
+           f'<div class="d2-sub"><span>{titulo} · versión {version}</span></div>')
     mom = (f'<div class="d2-mom"><span class="ck">{CHECK}</span><span class="t"><span><b>Recibida</b><span class="h">{hora}</span></span>'
            f'<small>{P.PERSONA} La respondió {nombre} por WhatsApp · se la mandó Lucía Fernández</small></span></div>')
     pest = '<div class="o-tabs" role="tablist"><span role="tab" class="on">Respuesta</span></div>'
     return (f'<aside class="d2" role="dialog" aria-label="Respuesta {num}"><div class="d2-h"><b>{num}</b>{nav}{cerrar}</div>{sub}{mom}{pest}'
-            f'<div class="d2-b">{F.grilla(valores)}</div></aside>')
+            f'<div class="d2-b">{F.grilla(valores)}</div><div class="d2-pie">{pos}</div></aside>')
 
 
 def detalle():
     capas = A.con_estados([
         ("Respuesta", d2()),
-        ("La primera de la lista", d2("VIS-000130", valores=VALORES_130, nombre="Paula Méndez", hora="15/10/2026 16:20", primera=True)),
-        ("De una versión anterior", d2("VIS-000123", version=3, valores=VALORES_123, hora="13/10/2026 11:04")),
-        ("Elegir varias y campos", d2("REP-000018", REPUESTO, 2, VALORES_R, hora="15/10/2026 10:12", primera=True)),
+        ("La primera de la lista", d2("VIS-000130", valores=VALORES_130, nombre="Paula Méndez", hora="15/10/2026 16:20", primera=True, pos="1 de 4")),
+        ("De una versión anterior", d2("VIS-000123", version=3, valores=VALORES_123, hora="13/10/2026 11:04", pos="8 de 24")),
+        ("Elegir varias y campos", d2("REP-000018", REPUESTO, 2, VALORES_R, hora="15/10/2026 10:12", primera=True, pos="1 de 18")),
         ("Cargando", d2(modo="cargando")),
         ("No encontramos esa respuesta", d2(modo="falta")),
     ])
@@ -396,17 +437,27 @@ def completa():
 
 # ================================================================ FRM-Respuestas-Exportar: el diálogo de exportar
 ESTADOS_EX = P.ESTADOS_EX + ["Elegir varias y campos"]
+CSS_EX2 = """.w-dlg.ex { width: 520px; }
+.w-dlg.ex .d-tx { margin: 0; }
+.ex-rds { display: flex; flex-direction: column; gap: 10px; }
+.ex-rd { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--t1); }
+.ex-rd .rd { width: 16px; height: 16px; flex: none; box-sizing: border-box; border-radius: 50%; border: 1.5px solid var(--borde2); background: #fff; }
+.ex-rd.on .rd { border: 5px solid var(--marca); }
+.ex-arch { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t2); }
+"""
 
 
 def dlg_exportar(modo="todas"):
+    """Como ArquitecturaBase: cuántas respuestas, cuántos filtros, «Columnas a exportar» con la cantidad de cada opción y el nombre del archivo."""
     mucho, solo, corre, repuesto = modo == "mucho", modo == "solo", modo == "exportando", modo == "repuesto"
     n = "12.430" if mucho else "18" if repuesto else "4"
-    chips = "" if mucho or repuesto else '<div class="ex-chips"><span class="ab-chip">Empresa: Delta S.A.</span><span class="ab-chip">Recibida: últimos 7 días</span><span class="ab-chip">Motivo: Venta nueva</span></div>'
-    linea = f'<p class="d-tx">Se exportan las <b>{n} respuestas</b> de {REPUESTO if repuesto else FORMULARIO}{"" if mucho or repuesto else " que coinciden con los filtros"}.</p>' + chips
+    filtros = "0 filtros aplicados" if mucho or repuesto else "3 filtros aplicados"
+    linea = f'<p class="d-tx">{n} respuestas</p><p class="d-tx">{filtros}</p>'
+    todas, visibles = (10, 10) if repuesto else (13, 12)
 
-    def op(titulo, ayuda, on):
-        return (f'<div class="k-op{" on" if on else ""}" role="radio" aria-checked="{"true" if on else "false"}"><span class="rd"></span><span class="tx"><b>{titulo}{F.info(ayuda)}</b></span></div>')
-    ops = '<div class="k-ops">' + op("Todas las preguntas", "N°, recibida, quién la cargó, canal, empresas y las preguntas de todas las versiones, con todos los campos.", not solo) + op("Solo las columnas visibles", "Las 12 que se ven ahora en la planilla.", solo) + "</div>"
+    def op(titulo, on):
+        return f'<div class="ex-rd{" on" if on else ""}" role="radio" aria-checked="{"true" if on else "false"}"><span class="rd"></span>{titulo}</div>'
+    ops = f'<div class="ex-rds" role="radiogroup" aria-label="Columnas a exportar">{op(f"Todas las preguntas ({todas} columnas)", not solo)}{op(f"Solo las visibles ({visibles} columnas)", solo)}</div>'
     aviso = ""
     if mucho:
         aviso = f'<div class="ex-av amb" role="alert">{P.TRI}<span>El máximo es 10.000 respuestas. Acotá los filtros de la planilla.</span></div>'
@@ -414,13 +465,11 @@ def dlg_exportar(modo="todas"):
         aviso = f'<div class="ex-av amb" role="alert">{P.TRI}<span>Ya tenés una exportación en curso. Esperá a que termine.</span></div>'
     elif modo == "error":
         aviso = f'<div class="ex-av mal" role="alert">{F.ALERTA}<span>No pudimos armar el archivo. Probá de nuevo.</span></div>'
-    if corre:
-        boton = trabaja("Exportando…")
-    else:
-        boton = f'<button type="button" class="cb cb-pri"{" disabled" if mucho or modo == "otra" else ""}>Exportar</button>'
+    boton = trabaja("Exportando…") if corre else f'<button type="button" class="cb cb-pri"{" disabled" if mucho or modo == "otra" else ""}>Exportar a Excel</button>'
     cancelar = f'<button type="button" class="cb cb-sec" disabled title="{MOTIVO_EXPORTANDO}">Cancelar</button>' if corre else '<button type="button" class="cb cb-sec">Cancelar</button>'
-    pie = f'<div class="ex-pie"><span class="arch">{ARCHIVO} {ARCHIVO_R if repuesto else ARCHIVO_XLSX}</span>{cancelar}{boton}</div>'
-    d = F.dialogo("Exportar a Excel", linea + '<span class="ex-tit">Columnas</span>' + ops + aviso, pie).replace('class="w-dlg"', 'class="w-dlg ex"', 1)
+    ayuda = "N°, recibida, quién la cargó, canal, empresas y las preguntas de todas las versiones, con todos los campos."
+    archivo = f'<span class="ex-arch">{ARCHIVO} {ARCHIVO_R if repuesto else ARCHIVO_XLSX}</span>'
+    d = F.dialogo("Exportar respuestas a Excel", f'{linea}<span class="ex-tit">Columnas a exportar{F.info(ayuda)}</span>{ops}{archivo}{aviso}', cancelar + boton).replace('class="w-dlg"', 'class="w-dlg ex"', 1)
     if corre:
         d = d.replace('<button type="button" class="ib" aria-label="Cerrar">', f'<button type="button" class="ib" aria-label="Cerrar" disabled title="{MOTIVO_EXPORTANDO}">', 1)
     return d
@@ -431,7 +480,7 @@ def exportar():
                            ("Exportado", A.toast(f"Se descargó «{ARCHIVO_XLSX}».")), ("Ya hay una exportación en curso", dlg_exportar("otra")), ("No se pudo exportar", dlg_exportar("error")), ("Elegir varias y campos", dlg_exportar("repuesto"))])
     cuerpo = A.con_estados([(e, fondo("repuesto" if e == "Elegir varias y campos" else "mucho" if e == "Más de 10.000" else "filtrado")) for e in ESTADOS_EX])
     bnd = A.con_estados([(e, banda(REPUESTO, "Respuestas · versión 2 publicada", EXPORTAR) if e == "Elegir varias y campos" else banda(ac=EXPORTAR)) for e in ESTADOS_EX])
-    t = pagina("Respuestas · Exportar a Excel", bnd, cuerpo, ESTADOS_EX, css=C.CSS_K2 + P.CSS_EX)
+    t = pagina("Respuestas · Exportar a Excel", bnd, cuerpo, ESTADOS_EX, css=C.CSS_K2 + P.CSS_EX + CSS_EX2)
     return F.con_dialogo(t, capas)
 
 
@@ -483,7 +532,7 @@ def tel_respuestas():
                  + grupo("Recibida", [("Todas las fechas", ""), ("Hoy", 2), ("Últimos 7 días", 14), ("Octubre 2026", 24)]))
     menu = F.thoja(FORMULARIO, f'<div class="ap-acciones2"><span role="menuitem">{A.DESCARGAR} Exportar a Excel</span></div>', "")
     hoja_ex = F.thoja("Exportar a Excel", f'<p class="ap-txt-l">Se exportan las <b>24 respuestas</b> de {FORMULARIO}, con las preguntas de todas las versiones.</p><span class="ex-arch">{ARCHIVO} {ARCHIVO_XLSX}</span>',
-                      '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Exportar</button>')
+                      '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Exportar a Excel</button>')
     capas = {"Filtros": F.thoja("Filtros", filtros_h, '<button type="button" class="cb cb-sec">Limpiar filtros</button><button type="button" class="cb cb-pri">Ver 24 respuestas</button>').replace('<div class="hb">', '<div class="hb lst">', 1),
              "Más acciones": menu, "Exportar": hoja_ex,
              "Exportado": f'<div class="t-toast" role="status"><span class="ok">{F.OK}</span><span>Se descargó «{ARCHIVO_XLSX}».</span></div>'}

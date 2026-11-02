@@ -10,10 +10,10 @@
       "tweaks": {
         "estado": "Campos"
       },
-      "resaltar": "button:has-text(\"Agregar campo\")",
+      "resaltar": "button.cb-sec:has-text(\"Agregar campos\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Suma el campo",
-      "texto": "El CUIT es un campo más del catálogo, en su tabla.",
+      "texto": "El CUIT es un campo más del catálogo, y se define en «Agregar campos».",
       "avanzar": "Tocá «Guardar cambios».",
       "ruta": "/org/formularios/catalogos/:id",
       "accion": "Guarda el catálogo."

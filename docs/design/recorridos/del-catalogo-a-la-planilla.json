@@ -40,7 +40,7 @@
       "actor": "Lucía · Dueña · web",
       "titulo": "Los ve en la planilla",
       "texto": "Cada respuesta guarda el proveedor elegido como estaba ese día.",
-      "avanzar": "Tocá «Exportar».",
+      "avanzar": "Tocá «Exportar a Excel».",
       "ruta": "/org/formularios/:id/respuestas",
       "accion": "Abre exportar."
     },

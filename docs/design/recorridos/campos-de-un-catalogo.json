@@ -10,23 +10,23 @@
       "tweaks": {
         "estado": "Campos"
       },
-      "resaltar": "button.cb-sec:has-text(\"Agregar campo\")",
+      "resaltar": "button.cb-sec:has-text(\"Agregar campos\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Abre el catálogo",
-      "texto": "«Proveedores» está escrito a mano y tiene sus campos en una tabla que se edita ahí mismo, sin diálogos.",
-      "avanzar": "Tocá «Agregar campo».",
+      "texto": "«Proveedores» está escrito a mano. Sus campos se abren desde «Agregar campos», en el encabezado de «Opciones».",
+      "avanzar": "Tocá «Agregar campos».",
       "ruta": "/org/formularios/catalogos/:id",
-      "accion": "Toca «Agregar campo»."
+      "accion": "Toca «Agregar campos»."
     },
     {
-      "tablero": "FRM-Catalogo-13",
+      "tablero": "FRM-Catalogo-Campos",
       "tweaks": {
         "estado": "Elegir el tipo"
       },
-      "resaltar": ".f-mn",
+      "resaltar": ".md-f .f-mn",
       "actor": "Lucía · Dueña · web",
       "titulo": "Elige el tipo",
-      "texto": "Cada campo tiene su nombre y su tipo: texto, número, fecha, sí o no, o los valores de otro catálogo. Puede ser obligatorio y único.",
+      "texto": "El modal tiene la lista a la izquierda y el campo a la derecha. Cada campo tiene su nombre, su clave y su tipo: texto, número, fecha, sí o no, o los valores de otro catálogo. Puede ser obligatorio y único.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/catalogos/:id",
       "accion": "Escribe el nombre y elige el tipo."
@@ -34,28 +34,28 @@
     {
       "tablero": "FRM-Catalogo-13",
       "tweaks": {
-        "estado": "Campos"
+        "estado": "Un campo recién agregado"
       },
       "resaltar": ".w-caja:has(.f-cab:has-text(\"Opciones\")) .k-desp",
       "actor": "Lucía · Dueña · web",
       "titulo": "Carga los valores",
-      "texto": "Cada campo es una columna en la tabla de opciones, con el control de su tipo. La columna de un campo nuevo queda grisada hasta guardar el catálogo.",
+      "texto": "«Listo» deja el campo en el catálogo. Cada campo es una columna en la tabla de opciones, con el control de su tipo. La columna de un campo nuevo queda grisada hasta guardar el catálogo.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/catalogos/:id",
-      "accion": "Guarda el catálogo y carga los valores."
+      "accion": "Toca «Listo», guarda el catálogo y carga los valores."
     },
     {
       "tablero": "FRM-Catalogo-13",
       "tweaks": {
         "estado": "Elegir qué muestra"
       },
-      "resaltar": ".k-wa .f-mn",
+      "resaltar": ".k-wa2 .f-mn",
       "actor": "Lucía · Dueña · web",
       "titulo": "Elige qué se ve en WhatsApp",
-      "texto": "«En WhatsApp» dice qué va en el título y qué en la descripción de cada opción. Al costado, el teléfono muestra cómo queda.",
+      "texto": "«En WhatsApp» dice qué va en el título y qué en la descripción de cada opción, con un chip por dato. Al costado, el teléfono muestra cómo queda.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/catalogos/:id",
-      "accion": "Elige qué va en el título y en la descripción."
+      "accion": "Elige qué va en la descripción."
     },
     {
       "tablero": "FRM-Catalogo-13",

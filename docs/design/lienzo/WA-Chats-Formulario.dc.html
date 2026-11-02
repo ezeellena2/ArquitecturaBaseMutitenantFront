@@ -927,6 +927,12 @@ body { margin: 0; }
 </style>
 <style data-e12="resolver">
 .cb[aria-disabled="true"] { opacity: 0.55; cursor: default; }
+.q-it .dato, .q-it.q-tit .dato { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.35; gap: 1px; }
+.q-it .dato b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-it .dato > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-acc2 { display: inline-flex; align-items: center; flex: none; }
+.q-acc2 .ib { width: 30px; height: 30px; flex: none; border: 0; border-radius: 8px; }
+.q-acc2 .ib[aria-disabled="true"] { color: var(--borde2); cursor: default; }
 .cb.k-trabaja[aria-disabled="true"] { opacity: 1; cursor: progress; }
 .cb .girar2 { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; display: inline-block; animation: girar2 0.8s linear infinite; flex-shrink: 0; }
 @keyframes girar2 { to { transform: rotate(360deg); } }

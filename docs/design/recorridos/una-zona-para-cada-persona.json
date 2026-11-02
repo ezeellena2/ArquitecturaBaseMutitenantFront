@@ -8,12 +8,12 @@
     {
       "tablero": "FRM-Datos-Personas",
       "tweaks": {
-        "estado": "De un catálogo"
+        "estado": "Elegir el catálogo"
       },
       "resaltar": ".w-dlg button.cb-pri:has-text(\"Guardar\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Define «Zona»",
-      "texto": "Un dato de la organización, de texto o de un catálogo. El catálogo se elige en el mismo combo de los campos.",
+      "texto": "Un dato de la organización, de texto o de un catálogo, con su clave. El catálogo se elige en el mismo combo de los campos.",
       "avanzar": "Tocá «Guardar».",
       "ruta": "/org/datos-de-las-personas",
       "accion": "Guarda el dato."
@@ -34,25 +34,25 @@
     {
       "tablero": "FRM-Catalogo-16",
       "tweaks": {
-        "estado": "Campos"
+        "estado": "Un campo de filtro"
       },
-      "resaltar": ".w-th.kc span:has-text(\"Filtro\")",
+      "resaltar": ".md-seg",
       "actor": "Lucía · Dueña · web",
       "titulo": "La marca como filtro",
-      "texto": "En «Proveedores», el campo Zona decide qué opciones ve cada persona.",
-      "avanzar": "Tocá «Guardar cambios».",
+      "texto": "En «Proveedores», el papel «Filtro» hace que Zona decida qué opciones ve cada persona.",
+      "avanzar": "Tocá «Listo».",
       "ruta": "/org/formularios/catalogos/:id",
-      "accion": "Guarda el catálogo."
+      "accion": "Vuelve al catálogo."
     },
     {
       "tablero": "FRM-Editor-16",
       "tweaks": {
         "estado": "Qué opciones ve cada persona"
       },
-      "resaltar": ".q-fil .como .res",
+      "resaltar": ".q-res b",
       "actor": "Lucía · Dueña · web",
       "titulo": "Arma el filtro en la pregunta",
-      "texto": "«Zona es la zona de quien lo recibe». «Como si lo recibiera» muestra lo que ve cada uno: Juan Gómez, 14 opciones.",
+      "texto": "Según quien lo recibe: el campo Zona con el dato Zona. «Como si lo recibiera» muestra lo que ve cada uno: Juan Gómez, 14 opciones.",
       "avanzar": "Tocá «Publicar en WhatsApp».",
       "ruta": "/org/formularios/:id",
       "accion": "Abre publicar."
