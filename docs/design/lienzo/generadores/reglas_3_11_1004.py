@@ -8,6 +8,8 @@ del traspaso 5 de ArquitecturaBase), en los tableros «Criterio», que mandan so
   (143 y 144);
 - las zonas de una pregunta de catálogo arrancan plegadas, con lo configurado en su banda (145).
 
+Además, lo elegido relleno (142) en todo tablero con botones agrupados, que es solo un estilo: se aplica a todos de una vez.
+
 Los tableros de las etapas lo toman cuando se redibujan con el traspaso 5 (la lista está en el índice de specs del back); los de las
 etapas cerradas cambian en la base de la 12. Corre después de `reglas_2_11_1004.py` y antes de `criterio_decisiones.py`. Se puede
 volver a correr: cada cambio se salta si ya está.
@@ -348,6 +350,33 @@ def cambiar(t, viejo, nuevo):
     return t.replace(viejo, nuevo)
 
 
+# ---------------------------------------------------------------- Lo elegido relleno (142), en todo tablero con botones agrupados
+SEGMENTADOS = ("o-seg", "o-seg3", "ap-seg", "ap-seg2", "seg", "seg2", "seg3", "fm-seg", "p-seg", "cg-tseg", "as-seg", "as-vseg", "pb-seg", "e11-seg", "e11-vseg",
+               "tb-seg", "md-seg", "dp-seg", "imp-seg", "ab-seg")
+USA_SEGMENTADO = re.compile(r'class="[^"]*\b(?:' + "|".join(map(re.escape, SEGMENTADOS)) + r')\b')
+_PISTAS = ", ".join(f".{c}" for c in SEGMENTADOS if c != "ab-seg")  # `ab-seg` ya es blanco y con borde
+_TODOS = ", ".join(f".{c}" for c in SEGMENTADOS)
+ELEGIDO_CSS = f"""<style data-r311="elegido">
+:is({_PISTAS}) {{ background: #fff !important; box-shadow: inset 0 0 0 1px var(--borde2) !important; }}
+:is({_TODOS}) :is(span, button).on, :is(.seg2, .seg3) button[aria-pressed="true"] {{ background: var(--marca) !important; color: #fff !important; box-shadow: none !important; font-weight: 600 !important; }}
+</style>
+</helmet>"""
+
+
+def elegido_en_todos():
+    """Los botones agrupados de todos los tableros rellenan la elegida con la marca (142). Los «Criterio» ya lo dibujan a su manera."""
+    n = 0
+    for ruta in sorted(PROJ.glob("*.dc.html")):
+        if ruta.name.startswith("Criterio-"):
+            continue
+        t = ruta.read_text(encoding="utf-8")
+        if 'data-r311="elegido"' in t or "</helmet>" not in t or not USA_SEGMENTADO.search(t):
+            continue
+        ruta.write_text(t.replace("</helmet>", ELEGIDO_CSS, 1), encoding="utf-8")
+        n += 1
+    return n
+
+
 if __name__ == "__main__":
     ruta = PROJ / "Criterio-Tablas.dc.html"
     t = ruta.read_text(encoding="utf-8")
@@ -373,4 +402,4 @@ if __name__ == "__main__":
     for viejo, nuevo in FORM_CAMBIOS:
         t = cambiar(t, viejo, nuevo)
     ruta.write_text(css(t, "formularios", FORM_CSS), encoding="utf-8")
-    print("listo")
+    print("listo; lo elegido relleno en", elegido_en_todos(), "tableros")
