@@ -522,8 +522,8 @@ CHECK = svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 16, "2")
 VOLVER = F.svg('<path d="M14.5 5.5 8 12l6.5 6.5"/>', 16, "2")
 MAS22 = svg('<path d="M12 5v14M5 12h14"/>', 22)
 ESTADOS_TB = ["Por día", "Por semana", "Una tarjeta: menú", "Agregar gráfico: menú", "Sin respuestas", "Ninguna coincide", "Cargando"]
-CSS_TABLERO = """.tb-fb .w-bus { width: 240px !important; flex: none; }
-.tb-seg { display: inline-grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); width: 240px; flex-shrink: 0; }
+CSS_TABLERO = """.tb-fb .w-bus { width: 220px !important; flex: none; }
+.tb-seg { display: inline-grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); width: 192px; flex-shrink: 0; }
 .tb-seg span { height: 30px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--t2); display: inline-flex; align-items: center; justify-content: center; }
 .tb-seg span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
 .tb-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }

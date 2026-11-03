@@ -582,6 +582,11 @@ DECISIONES = {
         ("El catálogo de una pregunta", "", "El mismo combo de los campos, sin «Ver el catálogo». Lo dado de baja y lo que no se puede usar van apagados, con su motivo en el tooltip (111).", "Dibujada"),
         ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
+    "Condiciones, cálculos y líneas · v153 · 02/11": [
+        ("Mostrar si", "", "En la pregunta abierta, en su caja: Pregunta, Condición, Valor y el tacho, como las condiciones de las reglas de ArquitecturaBase.", "Dibujada"),
+        ("La fórmula", "", "Piezas en una caja, con «Agregar dato» y + − × ÷ ( ). Sin un campo para escribirla. Allá no existe.", "Dibujada"),
+        ("Las columnas de un grupo", "", "Una tabla con Nombre, Tipo y Obligatoria, y ↑ ↓ y el tacho a la vista, como las opciones de un catálogo.", "Dibujada"),
+    ],
     "Fotos y documentos · v152 · 02/11": [
         ("Una pregunta de documento", "", "Acepta siempre PDF, Excel, Word, JPEG y PNG, y lo dice la (i) de «Cuántos documentos» (como ArquitecturaBase). Ya no se eligen por pregunta.", "Dibujada"),
         ("Un documento", "", "Con su nombre, su tamaño y «Descargar», en la tarjeta, el detalle y el chat (como ArquitecturaBase).", "Dibujada"),

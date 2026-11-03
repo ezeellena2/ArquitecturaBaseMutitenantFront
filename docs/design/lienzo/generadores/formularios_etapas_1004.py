@@ -43,6 +43,8 @@ FILAS = [
     (18, "Etapa 18 · Fotos y documentos", ["FRM-Editor-18", "FRM-Publicar-18", "WA-Chats-Respuesta-18", "WA-Chats-Visor", "FRM-Respuestas-18", "FRM-Respuesta-18",
                                            "FRM-Respuesta-Completa-18", "FRM-Dar-De-Baja-18", "WA-Chats-Adjuntos"],
      ["M-FRM-Editor-18", "M-WA-Conversacion-Respuesta-18", "M-WA-Chats-Visor", "M-FRM-Respuestas-18", "M-FRM-Respuesta-18", "M-WA-Chats-Adjuntos"]),
+    (19, "Etapa 19 · Condiciones, cálculos y líneas", ["FRM-Editor-Condiciones", "FRM-Editor-Calculo", "FRM-Editor-Lineas", "FRM-Publicar-19", "FRM-Respuestas-19", "FRM-Respuesta-19", "WA-Chats-Respuesta-19", "FRM-Tablero-19"],
+     ["M-FRM-Editor-Condiciones", "M-FRM-Editor-Calculo", "M-FRM-Editor-Lineas", "M-FRM-Respuestas-19", "M-FRM-Respuesta-19", "M-WA-Conversacion-Respuesta-19", "M-FRM-Tablero-19"]),
     (21, "Etapa 21 · Reglas, aprobación y PDF", ["FRM-Formularios-21", "FRM-Editor-Reglas", "FRM-Pdf", "FRM-Respuesta-Aprobacion", "WA-Chats-Avisos"],
      ["M-FRM-Reglas", "M-FRM-Respuesta-Aprobacion", "M-WA-Conversacion-Avisos"]),
     (22, "Etapa 22 · Biblioteca", ["FRM-Formularios-22", "FRM-Biblioteca", "FRM-Plantilla", "FRM-Plantilla-Usar", "FRM-Editor-Reglas-Plantilla"],

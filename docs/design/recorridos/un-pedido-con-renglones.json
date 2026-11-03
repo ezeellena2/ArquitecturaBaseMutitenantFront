@@ -1,0 +1,100 @@
+{
+  "id": "un-pedido-con-renglones",
+  "titulo": "Un pedido con condiciones, renglones y total",
+  "etapa": "Etapa 19 · Condiciones, cálculos y líneas",
+  "orden": 1,
+  "resumen": "Lucía arma «Pedido de materiales»: un monto que aparece si hubo venta, los productos en renglones y el total calculado, y lo sigue hasta la planilla y el tablero.",
+  "pasos": [
+    {
+      "tablero": "FRM-Editor-Condiciones",
+      "tweaks": {
+        "estado": "Sí o no"
+      },
+      "resaltar": ".lg-cond",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Mostrar si",
+      "texto": "«Monto» aparece solo si «¿Se concretó la venta?» es Sí. Las condiciones usan las preguntas de arriba, y al costado se ve cómo queda.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id",
+      "accion": "Arma la condición."
+    },
+    {
+      "tablero": "FRM-Editor-Lineas",
+      "tweaks": {
+        "estado": "Las columnas"
+      },
+      "resaltar": ".lg-cols",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Un grupo de líneas",
+      "texto": "«Productos» pide renglones, con hasta 6 columnas. En WhatsApp van uno debajo del otro, y los que sobran quedan vacíos.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id",
+      "accion": "Arma el grupo."
+    },
+    {
+      "tablero": "FRM-Editor-Calculo",
+      "tweaks": {
+        "estado": "La fórmula"
+      },
+      "resaltar": ".lg-form",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "El total",
+      "texto": "La fórmula se arma con piezas, sin escribir: la suma de Cantidad × Precio más el Monto. No se ve en WhatsApp: se calcula al llegar la respuesta.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id",
+      "accion": "Arma la fórmula."
+    },
+    {
+      "tablero": "WA-Chats-Respuesta-19",
+      "tweaks": {
+        "estado": "Con renglones y el total"
+      },
+      "resaltar": ".ln-t",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "La respuesta en el chat",
+      "texto": "La tarjeta muestra los renglones y el total, ya calculado con los precios del catálogo.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats",
+      "accion": "Ve la respuesta."
+    },
+    {
+      "tablero": "FRM-Respuestas-19",
+      "tweaks": {
+        "estado": "Planilla"
+      },
+      "resaltar": ".pl-caja",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "En la planilla",
+      "texto": "«No se mostró» es una pregunta oculta por su condición, distinto de «Sin respuesta» y de «—». Los renglones dicen cuántos son, y el total va con su moneda.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Revisa la planilla."
+    },
+    {
+      "tablero": "FRM-Respuesta-19",
+      "tweaks": {
+        "estado": "Respuesta"
+      },
+      "resaltar": ".ln-t",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Los renglones",
+      "texto": "La respuesta muestra la tabla de líneas, con el precio que quedó guardado en cada una.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id/respuestas?respuesta=PED-000045",
+      "accion": "Abre la respuesta."
+    },
+    {
+      "tablero": "FRM-Tablero-19",
+      "tweaks": {
+        "estado": "Por día"
+      },
+      "resaltar": ".tb-kpis",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "En el tablero",
+      "texto": "El total se suma en su moneda, con su gráfico por período.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/:id/tablero",
+      "accion": "Mira el tablero."
+    }
+  ]
+}
