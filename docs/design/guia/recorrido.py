@@ -1,11 +1,15 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 154 · 2 de noviembre de 2026"
+VERSION = "versión 155 · 3 de noviembre de 2026"
 
-# Los capítulos que van en la guía de Formularios; el resto, en la del lienzo. Cada una es un artefacto aparte,
-# porque una versión de un artefacto admite hasta 511 archivos.
-CAPITULOS_FORMULARIOS = {"formularios", "biblioteca-plat"}
+# La guía de Formularios lleva su capítulo y, aparte, las pantallas de la biblioteca de la plataforma (las «plat-frm-»); la del lienzo,
+# el resto. Cada una es un artefacto aparte, porque una versión de un artefacto admite hasta 511 archivos. El índice del lienzo sigue
+# los capítulos de acá, sin partir.
+CAPITULO_FORMULARIOS = "formularios"
+BIBLIOTECA = ("biblioteca-plat", "La biblioteca de la plataforma", "Lo que usan los operadores para ofrecer plantillas de formularios a las organizaciones: la biblioteca, "
+              "cada plantilla con sus reglas y el diseño de su PDF, y las categorías.")
+TEXTO_PLATAFORMA = "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales y el WhatsApp propio."
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -136,16 +140,16 @@ CAPITULOS = [
          "Los contactos de Clientes, filtrados por etiqueta, con su nombre; el teléfono nunca se ve. Sin WhatsApp, no se puede usar."),
         ("frm-catalogo-campos", "Los campos de un catálogo", "/org/formularios/catalogos/:id", "no", "13 y 14", ["FRM-Catalogo-13", "FRM-Catalogo-Campos", "FRM-Catalogo-14"], ["M-FRM-Catalogo-13", "M-FRM-Catalogo-Campos", "M-FRM-Catalogo-Opciones-13", "M-FRM-Catalogo-14"], ["FRM-Catalogo-Opciones-13"],
          "Un catálogo escrito a mano suma sus campos, como CUIT o Zona, en una tabla que se edita ahí mismo, y las opciones, una columna por campo. Hasta 20 campos. «En WhatsApp» elige qué va en el título y en la descripción de cada opción. Si una tabla no entra, se desplaza a lo ancho con lo principal fijo. Desde la 14, «Lo usan», y un campo en uso no se quita."),
-        ("frm-formularios", "Formularios", "/org/formularios", "no", "14, 15, 17, 21 y 22", ["FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-21", "FRM-Formularios-22"], ["M-FRM-Formularios", "M-FRM-Formularios-15", "M-FRM-Formularios-17"], [],
+        ("frm-formularios", "Formularios", "/org/formularios", "no", "14, 15, 17, 21 y 22", ["FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-21", "FRM-Formularios-22"], ["M-FRM-Formularios", "M-FRM-Formularios-15", "M-FRM-Formularios-17", "M-FRM-Formularios-21"], [],
          "Una sola lista, con los borradores y los publicados, y cómo está cada uno en WhatsApp. Cada etapa le suma lo suyo: las respuestas (15), el ⋮ y los dados de baja (17), lo que espera aprobación (21) y «Nuevo formulario» desde una plantilla (22)."),
         ("frm-editor", "Diseño de un formulario", "/org/formularios/:id", "no", "14 y 18", ["FRM-Editor", "FRM-Editor-18"], ["M-FRM-Editor", "M-FRM-Editor-18"], [],
          "La pestaña Diseño: el formulario, las preguntas que se abren en el lugar (también «elegir varias» y las de catálogo, con «Permitir elegir varias») y cómo lo ve quien lo recibe. Las fotos y los documentos llegan con la 18. Con cambios sin guardar, publicar queda grisado."),
         ("frm-publicar", "Publicar en WhatsApp", "/org/formularios/:id", "no", "14 y 18", ["FRM-Publicar", "FRM-Publicar-18"], [], ["FRM-Publicando"],
          "La comprobación antes de publicar (un catálogo demasiado grande; desde la 18, los más de 10 archivos) y cómo termina: los pasos mientras WhatsApp la revisa, el rechazo con la pregunta marcada y la vista oficial."),
-        ("frm-chat", "Enviar un formulario", "WhatsApp › Chats › Internos", "no", "14 y 18", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Formulario-Cliente", "M-WA-Chats-Formulario-Cliente", "WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta", "WA-Chats-Respuesta-18", "M-WA-Conversacion-Respuesta-18", "WA-Chats-Visor", "M-WA-Chats-Visor", "WA-Chats-Avisos", "M-WA-Conversacion-Avisos"],
+        ("frm-chat", "Enviar un formulario", "WhatsApp › Chats › Internos", "no", "14 y 18", ["WA-Chats-Formulario"], ["M-WA-Chats-Formulario"], ["WA-Chats-Formulario-Cliente", "M-WA-Chats-Formulario-Cliente", "WA-Chats-Respuesta", "M-WA-Conversacion-Respuesta", "WA-Chats-Respuesta-18", "M-WA-Conversacion-Respuesta-18", "WA-Chats-Visor", "M-WA-Chats-Visor"],
          "En un chat con un empleado o con un cliente: elegir el formulario y el mensaje, con cuántas opciones tiene cada pregunta de catálogo, y la respuesta que vuelve al chat guardada con su número. Desde la 18, con sus fotos y documentos, que se abren en el visor."),
-        ("frm-respuestas", "Respuestas de un formulario", "/org/formularios/:id/respuestas", "no", "15 y 21", ["FRM-Respuestas"], ["M-FRM-Respuestas"], ["FRM-Respuestas-Filtros", "FRM-Respuestas-Exportar"],
-         "La pestaña Respuestas: la planilla, una fila por respuesta y una columna por pregunta, con «Empresa ▾», «Más filtros», «Columnas» y exportar a Excel. Desde la 21, arriba, lo que espera aprobación, con «Revisar»."),
+        ("frm-respuestas", "Respuestas de un formulario", "/org/formularios/:id/respuestas", "no", "15", ["FRM-Respuestas"], ["M-FRM-Respuestas"], ["FRM-Respuestas-Filtros", "FRM-Respuestas-Exportar"],
+         "La pestaña Respuestas: la planilla, una fila por respuesta y una columna por pregunta, con «Empresa ▾», «Más filtros», «Columnas» y exportar a Excel."),
         ("frm-tablero", "Tablero de un formulario", "/org/formularios/:id/tablero", "no", "15", ["FRM-Tablero"], ["M-FRM-Tablero"], [],
          "La pestaña Tablero: se arma sola con las preguntas, con cuántas llegaron por día, semana o mes, los totales de los números y cuántas veces salió cada opción. Cada tarjeta se cuenta, se ve como tabla o se quita; «Agregar gráfico» la devuelve."),
         ("frm-respuesta", "Una respuesta", "/org/formularios/:id/respuestas?respuesta=VIS-000126", "no", "15", ["FRM-Respuesta", "FRM-Respuesta-Completa"], ["M-FRM-Respuesta"], [],
@@ -163,10 +167,16 @@ CAPITULOS = [
         ("frm-cargar", "Cargar una respuesta desde la web", "/org/formularios/:id/cargar", "no", "20", ["FRM-Formularios-20", "FRM-Cargar-Respuesta", "FRM-Cargar-Lista", "FRM-Cargar-Archivos", "FRM-Cargar-Enviada"], ["M-FRM-Formularios-20", "M-FRM-Cargar-Respuesta", "M-FRM-Cargar-Lista", "M-FRM-Cargar-Archivos", "M-FRM-Cargar-Enviada"],
          ["FRM-Cargar-Panel", "FRM-Respuestas-20", "M-FRM-Respuestas-20", "FRM-Respuesta-20", "M-FRM-Respuesta-20", "FRM-Respuestas-Propias", "M-FRM-Respuestas-Propias", "FRM-Editor-Listas", "M-FRM-Editor-Listas", "FRM-Publicar-20", "M-FRM-Publicar-20"],
          "Un empleado completa un formulario desde la web, a su nombre, con la misma captura que por WhatsApp. La app arma las preguntas en zonas, con hasta tres por renglón. Lo cargado queda con el canal «App», y quien solo carga ve lo suyo."),
-        ("frm-reglas", "Cuando llega una respuesta", "/org/formularios/:id", "no", "21", ["FRM-Editor-Reglas"], ["M-FRM-Reglas"], ["FRM-Pdf"],
-         "Las reglas del formulario, en palabras: cuándo, si y qué hacer en orden. Se guardan aparte, con su historial. «Ver el diseño» abre el PDF que se arma al aprobar."),
-        ("frm-aprobar", "Aprobar o rechazar", "/org/formularios/:id/respuestas?aprobacion=VIS-000130", "no", "21", ["FRM-Respuesta-Aprobacion"], ["M-FRM-Respuesta-Aprobacion"], [],
-         "«Revisar» abre la respuesta al costado de la planilla, con Aprobar y Rechazar, lo que pasó después y el PDF. No hay bandeja aparte."),
+        ("frm-reglas", "Cuando llega una respuesta", "/org/formularios/:id/reglas", "no", "21", ["FRM-Editor-Reglas", "FRM-Pdf"], ["M-FRM-Reglas"], [],
+         "La pestaña «Reglas»: cuándo, si y qué hacer, en orden, con ↑ ↓ 🗑 en cada acción. Se guardan aparte, con su historial, y valen sin publicar. «Adjuntar el PDF» dice en el momento si falta «Armar el PDF» y lo arregla. «Ver el diseño» abre el comprobante, con tres estilos."),
+        ("frm-aprobar", "Aprobar o rechazar", "/org/formularios/:id/respuestas?respuesta=VIS-000130", "no", "21", ["FRM-Respuesta-Aprobacion", "FRM-Respuestas-21"], ["M-FRM-Respuesta-Aprobacion", "M-FRM-Respuestas-21"],
+         ["Campana-21", "M-Campana-21", "WA-Chats-Avisos", "M-WA-Conversacion-Avisos"],
+         "La campana y «Para resolver» abren la más vieja en la vista rápida, y ↑ ↓ recorren la cola. «Aprobar» pide confirmar. La planilla suma «Estado» y la marca del PDF, y quien solo aprueba ve su cola, sin los valores. Los avisos llegan al chat."),
+        ("frm-corregir", "Corregir y anular", "/org/formularios/:id/respuestas/:recordId", "no", "21", ["FRM-Respuesta-Corregir", "FRM-Respuesta-Anular"], ["M-FRM-Respuesta-Corregir", "M-FRM-Respuesta-Anular"],
+         ["FRM-Respuestas-Propias-21", "M-FRM-Respuestas-Propias-21", "FRM-Tablero-21", "M-FRM-Tablero-21"],
+         "Una respuesta no se modifica: se corrige, con lo de antes a la vista y un motivo, o se anula, al final del ⋮. La corregida vuelve a «Por aprobar»; lo anulado sale de la planilla, los conteos y el Excel. Lo propio suma el estado, el PDF y el motivo del rechazo."),
+        ("frm-correo", "La pregunta «Correo»", "/org/formularios/:id", "no", "21", ["FRM-Editor-21", "FRM-Cargar-Respuesta-21"], ["M-FRM-Editor-21", "M-FRM-Cargar-Respuesta-21"], ["FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21"],
+         "Un tipo de respuesta nuevo, validado; en la carga desde la web ocupa dos columnas. Al dar de baja, se conservan el PDF y las aprobaciones, y lo que espera se puede seguir decidiendo."),
         ("frm-biblioteca", "Biblioteca de plantillas", "Formularios › Nuevo formulario › Desde una plantilla", "no", "22", ["FRM-Biblioteca"], ["M-FRM-Biblioteca"], ["FRM-Plantilla", "M-FRM-Plantilla", "FRM-Plantilla-Usar"],
          "Las plantillas que publica la plataforma, por categoría. Usar una crea una copia propia en borrador, con sus catálogos."),
         ("frm-reglas-plantilla", "Las reglas que trae una plantilla", "/org/formularios/:id", "no", "22", ["FRM-Editor-Reglas-Plantilla"], ["M-FRM-Reglas-Plantilla"], [],
@@ -178,7 +188,7 @@ CAPITULOS = [
         ("frm-faltan", "Formularios que faltan", "/org/formularios/faltan", "no", "23", ["FRM-Faltan"], ["M-FRM-Faltan"], [],
          "Lo que alguien quiso registrar y no tenía formulario, agrupado por tema. Se crea el formulario o se descarta el pedido."),
     ]),
-    ("biblioteca-plat", "La biblioteca de la plataforma", "Lo que usan los operadores para ofrecer plantillas de formularios a las organizaciones: la biblioteca, cada plantilla con sus reglas y el diseño de su PDF, y las categorías.", [
+    ("plataforma", "La plataforma", "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales, el WhatsApp propio y la biblioteca de formularios.", [
         ("plat-frm-biblioteca", "Biblioteca de formularios", "Administración › Formularios › Biblioteca", "no", "22", ["Plat-FRM-Biblioteca"], ["M-Plat-FRM-Biblioteca"], ["Plat-FRM-Plantilla-Nueva"],
          "Las plantillas que la plataforma ofrece a las organizaciones: borrador, publicada o retirada, y cuántas organizaciones la usaron."),
         ("plat-frm-plantilla", "Una plantilla", "Administración › Formularios › Biblioteca › una plantilla", "no", "22", ["Plat-FRM-Plantilla"], [], ["Plat-FRM-Publicar", "Plat-FRM-Retirar"],
@@ -187,8 +197,6 @@ CAPITULOS = [
          "Debajo de las preguntas, las reglas que trae la plantilla y el diseño de su PDF. Los roles los elige cada organización: la plantilla solo sugiere uno."),
         ("plat-frm-categorias", "Categorías de formularios", "Administración › Formularios › Categorías", "no", "22", ["Plat-FRM-Categorias"], [], [],
          "La lista corta de categorías, con su orden. Todo pide motivo, y una categoría en uso no se borra."),
-    ]),
-    ("plataforma", "La plataforma", "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales y el WhatsApp propio.", [
         ("organizaciones", "Organizaciones", "/plataforma/organizaciones", "no", "5", ["Organizaciones"], ["M-Organizaciones"], ["M-Mas-Plat"],
          "Todas las organizaciones, con su Dueño, su origen y su estado. Aprobar, rechazar y crear."),
         ("organizacion", "Ficha de una organización", "/plataforma/organizaciones/:id", "no", "5", ["Organizacion"], ["M-Organizacion"], [],

@@ -48,8 +48,11 @@ FILAS = [
     (20, "Etapa 20 · Cargar una respuesta desde la web", ["FRM-Formularios-20", "FRM-Cargar-Respuesta", "FRM-Cargar-Panel", "FRM-Cargar-Lista", "FRM-Cargar-Archivos", "FRM-Cargar-Enviada", "FRM-Respuestas-20", "FRM-Respuesta-20",
                                                           "FRM-Respuestas-Propias", "FRM-Editor-Listas", "FRM-Publicar-20"],
      ["M-FRM-Formularios-20", "M-FRM-Cargar-Respuesta", "M-FRM-Cargar-Lista", "M-FRM-Cargar-Archivos", "M-FRM-Cargar-Enviada", "M-FRM-Respuestas-20", "M-FRM-Respuesta-20", "M-FRM-Respuestas-Propias", "M-FRM-Editor-Listas", "M-FRM-Publicar-20"]),
-    (21, "Etapa 21 · Reglas, aprobación y PDF", ["FRM-Formularios-21", "FRM-Editor-Reglas", "FRM-Pdf", "FRM-Respuesta-Aprobacion", "WA-Chats-Avisos"],
-     ["M-FRM-Reglas", "M-FRM-Respuesta-Aprobacion", "M-WA-Conversacion-Avisos"]),
+    (21, "Etapa 21 · Reglas, aprobación, PDF y avisos", ["FRM-Formularios-21", "FRM-Editor-Reglas", "FRM-Pdf", "FRM-Respuestas-21", "FRM-Respuesta-Aprobacion", "FRM-Tablero-21",
+                                                       "FRM-Respuesta-Corregir", "FRM-Respuesta-Anular", "FRM-Respuestas-Propias-21", "FRM-Editor-21", "FRM-Cargar-Respuesta-21", "Campana-21",
+                                                       "WA-Chats-Avisos", "FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21"],
+     ["M-FRM-Formularios-21", "M-FRM-Reglas", "M-FRM-Respuestas-21", "M-FRM-Respuesta-Aprobacion", "M-FRM-Tablero-21", "M-FRM-Respuesta-Corregir", "M-FRM-Respuesta-Anular",
+      "M-FRM-Respuestas-Propias-21", "M-FRM-Editor-21", "M-FRM-Cargar-Respuesta-21", "M-Campana-21", "M-WA-Conversacion-Avisos"]),
     (22, "Etapa 22 · Biblioteca", ["FRM-Formularios-22", "FRM-Biblioteca", "FRM-Plantilla", "FRM-Plantilla-Usar", "FRM-Editor-Reglas-Plantilla"],
      ["M-FRM-Biblioteca", "M-FRM-Plantilla", "M-FRM-Reglas-Plantilla"]),
     (23, "Etapa 23 · El asistente", ["FRM-Editor-Asistente", "FRM-Editor-Sugerencias", "FRM-Catalogo-Propuesta", "FRM-Respuesta-Cadena", "FRM-Faltan",
@@ -80,7 +83,8 @@ def panel(etapa, activo, condiciones=None, cantidad=None):
 
 
 ACTIVO = {"FRM-Formularios.dc.html": "formularios", "FRM-Catalogos.dc.html": "catalogos", "FRM-Faltan.dc.html": "faltan"}
-LISTAS = {"FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-20", "FRM-Respuestas-Propias", "FRM-Formularios-21", "FRM-Formularios-22", "Campana", "Campana-14"}  # arman su panel con los permisos
+LISTAS = {"FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-20", "FRM-Respuestas-Propias", "FRM-Formularios-21", "FRM-Respuestas-Propias-21", "FRM-Formularios-22",
+          "Campana", "Campana-14", "Campana-21"}  # arman su panel con los permisos
 
 
 def con_panel_de_la_etapa(n, t):

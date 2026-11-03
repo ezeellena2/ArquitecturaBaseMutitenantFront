@@ -52,6 +52,9 @@ METODO_CUANDO = "20/09/2026 10:12"
 # (tipo, ícono, texto, cuándo, destino en la compu, destino en el teléfono), de lo más nuevo a lo más viejo
 AVISOS = [("espera", ESPERA, METODO, METODO_CUANDO, "Cuenta.dc.html", "M-Cuenta.dc.html")]
 AVISOS_14 = [("fallo", FALLO, "WhatsApp rechazó la versión 4 de Visita a cliente", "27/09/2026 10:38", "FRM-Publicando.dc.html", "M-FRM-Editor.dc.html")] + AVISOS
+# La 21 suma lo que espera aprobación y el aviso que no salió (21-reglas-y-aprobacion.md)
+AVISOS_21 = [("espera", ESPERA, "3 respuestas por aprobar en Visita a cliente", "15/10/2026 16:20", "FRM-Respuestas-21.dc.html", "M-FRM-Respuestas-21.dc.html"),
+             ("fallo", FALLO, "No se pudo mandar el aviso de VIS-000126", "13/10/2026 16:05", "FRM-Respuesta-Aprobacion.dc.html", "M-FRM-Respuesta-Aprobacion.dc.html")] + AVISOS
 AVISOS_PLAT = [("espera", ESPERA, "Pablo Ortiz pidió recuperar su cuenta", "27/09/2026 10:20", "Recuperaciones.dc.html", "M-Recuperaciones.dc.html"),
                ("espera", ESPERA, "Gamma S.A. espera aprobación", "27/09/2026 09:05", "Organizacion.dc.html", "M-Organizacion.dc.html")]
 CSS = """.w-cmp-env { position: relative; display: inline-flex; margin-left: auto; margin-right: 6px; }
@@ -176,6 +179,9 @@ NUMERO = '<sc-if value="{{cmpHay}}" hint-placeholder-val="{{si}}"><span class="n
 # Los tableros de la 14 abren su versión, con sus dos avisos
 TABLEROS_14 = ["FRM-Formularios", "FRM-Editor", "FRM-Publicar", "FRM-Publicando", "FRM-Catalogos-14", "FRM-Catalogo-14", "WA-Chats-Formulario", "WA-Chats-Respuesta",
                "WA-Chats-Formulario-Cliente"]
+# Los de la 21 abren la suya, con lo que espera aprobación
+TABLEROS_21 = ["FRM-Formularios-21", "FRM-Respuestas-21", "FRM-Respuesta-Aprobacion", "FRM-Editor-Reglas", "FRM-Pdf", "FRM-Tablero-21", "FRM-Respuesta-Corregir", "FRM-Respuesta-Anular",
+               "FRM-Editor-21", "FRM-Cargar-Respuesta-21", "FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21", "WA-Chats-Avisos"]
 
 
 def la_suya(n, t, pagina):
@@ -186,6 +192,8 @@ def la_suya(n, t, pagina):
         return t
     if n in TABLEROS_14:
         return numero(t.replace('<a class="w-campana" href="Campana.dc.html"', '<a class="w-campana" href="Campana-14.dc.html"'), "2")
+    if n in TABLEROS_21:
+        return numero(t.replace('<a class="w-campana" href="Campana.dc.html"', '<a class="w-campana" href="Campana-21.dc.html"'), str(len(AVISOS_21)))
     return numero(t, "1")
 
 
@@ -211,6 +219,7 @@ def abierta(base, cant, avisos, destino, titulo, estados=ESTADOS):
 def campana():
     abierta("Usuarios", len(AVISOS), AVISOS, "Campana", "Avisos · la campana")
     abierta("FRM-Formularios", len(AVISOS_14), AVISOS_14, "Campana-14", "Avisos · la campana · etapa 14", ["Con avisos"])
+    abierta("FRM-Formularios-21", len(AVISOS_21), AVISOS_21, "Campana-21", "Avisos · la campana · etapa 21", ["Con avisos"])
     abierta("Organizaciones", len(AVISOS_PLAT), AVISOS_PLAT, "Campana-Plat", "Avisos · la campana · Plataforma")
 
 
@@ -237,12 +246,15 @@ def campana_tel():
     bar14 = C.t_bar("Avisos", "Grupo Delta", "M-Inicio-Org.dc.html")
     t = C.tel_pagina({"Con avisos": bar14 + f'<div class="ap-cuerpo">{filas_tel(AVISOS_14)}</div>'}, ["Con avisos"], {}, "Avisos · la campana · teléfono · etapa 14", CSS + CSS_TEL)
     (PROJ / "M-Campana-14.dc.html").write_text(t, encoding="utf-8")
+    t = C.tel_pagina({"Con avisos": bar14 + f'<div class="ap-cuerpo">{filas_tel(AVISOS_21)}</div>'}, ["Con avisos"], {}, "Avisos · la campana · teléfono · etapa 21", CSS + CSS_TEL)
+    (PROJ / "M-Campana-21.dc.html").write_text(t, encoding="utf-8")
 
 
 NUEVOS = {"Campana": (4560, 2300, 1440, 900, "Avisos · la campana"), "M-Campana": (6110, 3320, 390, 844, "Avisos · la campana · teléfono"),
           "Campana-Plat": (4560, 1280, 1440, 900, "Avisos · la campana · Plataforma"),
-          "M-Campana-Plat": (7990, 2300, 390, 844, "Avisos · la campana · Plataforma · teléfono")}
-PAGINA = {"Campana-Plat": "plataforma", "M-Campana-Plat": "plataforma"}
+          "M-Campana-Plat": (7990, 2300, 390, 844, "Avisos · la campana · Plataforma · teléfono"),
+          "Campana-21": (0, 0, 1440, 900, "Avisos · la campana · etapa 21"), "M-Campana-21": (0, 0, 390, 844, "Avisos · la campana · teléfono · etapa 21")}
+PAGINA = {"Campana-Plat": "plataforma", "M-Campana-Plat": "plataforma", "Campana-21": "formularios", "M-Campana-21": "formularios"}
 
 
 def registrar(tocados):
@@ -261,7 +273,7 @@ if __name__ == "__main__":
     hechos = []
     for k, v in c["boards"].items():
         n = k[:-8]
-        if n.startswith("M-") or v.get("page") not in CANT or n in NUEVOS or n == "Campana-14":
+        if n.startswith("M-") or v.get("page") not in CANT or n in NUEVOS or n in ("Campana-14", "Campana-21"):
             continue
         f = PROJ / k
         t = f.read_text(encoding="utf-8")

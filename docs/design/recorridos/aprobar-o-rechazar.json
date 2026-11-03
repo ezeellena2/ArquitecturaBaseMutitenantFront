@@ -1,60 +1,124 @@
 {
   "id": "aprobar-o-rechazar",
-  "titulo": "Aprobar o rechazar una respuesta",
+  "titulo": "Aprobar, el PDF y corregir",
   "etapa": "Etapa 21 · Reglas y aprobación",
-  "orden": 10,
-  "resumen": "Lucía entra a «Formularios», abre Visita a cliente, revisa una visita que espera su decisión y la rechaza con un motivo.",
+  "orden": 20,
+  "resumen": "Lucía abre lo que espera su aprobación desde la campana, aprueba una visita, quien la cargó recibe el PDF y después Lucía corrige una aprobada, que vuelve a «Por aprobar».",
   "pasos": [
     {
-      "tablero": "FRM-Formularios-21",
+      "tablero": "Campana-21",
       "tweaks": {
-        "estado": "Activos"
+        "campana": "Con avisos"
       },
-      "resaltar": ".fx-n a:has-text(\"Visita a cliente\")",
+      "resaltar": ".cmp-it:has-text(\"3 respuestas por aprobar\")",
       "actor": "Lucía · Dueña · web",
-      "titulo": "Abre «Formularios»",
-      "texto": "Cada formulario publicado con lo que tiene por aprobar. El número del panel dice cuántas esperan su decisión; también aparecen en «Para resolver» del inicio.",
-      "avanzar": "Tocá la respuesta que espera su decisión.",
-      "ruta": "/org/formularios/respuestas",
-      "accion": "Abre la respuesta."
+      "titulo": "Lo que espera su aprobación",
+      "texto": "La campana dice cuántas respuestas esperan una decisión que ella puede tomar, sin contar las propias. «Para resolver» del inicio dice lo mismo.",
+      "avanzar": "Tocá «3 respuestas por aprobar».",
+      "ruta": "/org/formularios",
+      "accion": "Toca el aviso de la campana."
+    },
+    {
+      "tablero": "FRM-Respuestas-21",
+      "tweaks": {
+        "estado": "Desde la campana"
+      },
+      "resaltar": ".d2 button.nv[aria-label=\"Respuesta siguiente\"]",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "La cola, de la más vieja a la más nueva",
+      "texto": "Se abre la más vieja en la vista rápida, sin ningún cartel arriba de la planilla. Al pie, en qué lugar de la cola está.",
+      "avanzar": "Tocá ↓ para pasar a la siguiente.",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Pasa a la siguiente con ↓."
     },
     {
       "tablero": "FRM-Respuesta-Aprobacion",
       "tweaks": {
         "estado": "Por aprobar"
       },
-      "resaltar": ".d2-mom.esp a.cb-sec:has-text(\"Rechazar\")",
+      "resaltar": ".d2-mom.esp button.cb-pri:has-text(\"Aprobar\")",
       "actor": "Lucía · Dueña · web",
-      "titulo": "Revisa la respuesta",
-      "texto": "Se abre al costado de la planilla, con sus respuestas y sus fotos. Aprobar y Rechazar van en el momento «Por aprobar».",
-      "avanzar": "Tocá «Rechazar».",
-      "ruta": "/org/formularios/:id/respuestas?aprobacion=VIS-000130",
-      "accion": "Toca «Rechazar»."
-    },
-    {
-      "tablero": "FRM-Respuesta-Aprobacion",
-      "tweaks": {
-        "estado": "Rechazar"
-      },
-      "resaltar": ".w-dlg button.cb-pel:has-text(\"Rechazar\")",
-      "actor": "Lucía · Dueña · web",
-      "titulo": "Rechaza con un motivo",
-      "texto": "El motivo es obligatorio y queda en el historial; la regla de rechazo se lo manda a quien la cargó.",
-      "avanzar": "Tocá «Rechazar».",
+      "titulo": "Revisa y decide",
+      "texto": "Arriba, cuándo llegó, qué hicieron las reglas y lo que espera, con Rechazar y Aprobar. Debajo, la respuesta, las fotos y la actividad.",
+      "avanzar": "Tocá «Aprobar».",
       "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000130",
-      "accion": "Rechaza la respuesta."
+      "accion": "Toca «Aprobar»."
     },
     {
       "tablero": "FRM-Respuesta-Aprobacion",
       "tweaks": {
-        "estado": "Actividad"
+        "estado": "¿Aprobar?"
+      },
+      "resaltar": ".w-dlg.apr button.cb-pri:has-text(\"Aprobar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Confirma con el número",
+      "texto": "Aprobar no se deshace, así que pide confirmar: con quién la cargó y cuándo, y el foco en «Cancelar», para que Enter no apruebe.",
+      "avanzar": "Tocá «Aprobar».",
+      "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000130",
+      "accion": "Confirma con «Aprobar»."
+    },
+    {
+      "tablero": "FRM-Respuesta-Aprobacion",
+      "tweaks": {
+        "estado": "Aprobada"
+      },
+      "actor": "Sistema",
+      "titulo": "Corren las reglas de «Al aprobarla»",
+      "texto": "Se arma el PDF, una copia fija, y salen el mensaje con el PDF y el correo. Lo que no sale queda «No se pudo», a la vista, con «Reintentar».",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000130",
+      "accion": "Espera a que las acciones queden hechas."
+    },
+    {
+      "tablero": "M-WA-Conversacion-Avisos",
+      "tweaks": {
+        "estado": "Al aprobarla"
+      },
+      "resaltar": ".av-card:has-text(\"Comprobante\")",
+      "actor": "Tomás · Empleado · teléfono",
+      "titulo": "El PDF llega al celular",
+      "texto": "Quien la cargó recibe el aviso con el PDF en su WhatsApp, como Tomás con VIS-000126. Pasadas 24 horas, va con la plantilla que eligió la regla.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp",
+      "accion": "Abre el comprobante en WhatsApp."
+    },
+    {
+      "tablero": "FRM-Respuesta-Corregir",
+      "tweaks": {
+        "estado": "Más acciones: menú"
+      },
+      "resaltar": ".f-menu .f-mi:has-text(\"Corregir\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Una aprobada se corrige, no se edita",
+      "texto": "En el ⋮ de la respuesta, «Corregir» y, al final, «Anular». Con permiso para corregir, Lucía puede corregir una aprobada.",
+      "avanzar": "Tocá «Corregir».",
+      "ruta": "/org/formularios/:id/respuestas/:recordId",
+      "accion": "Toca «Corregir»."
+    },
+    {
+      "tablero": "FRM-Respuesta-Corregir",
+      "tweaks": {
+        "estado": "Con el motivo"
+      },
+      "resaltar": ".w-bnd button.cb-pri:has-text(\"Guardar la corrección\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo de antes, a la vista",
+      "texto": "Se abre la carga de la 20 con lo que tenía. Lo que cambia dice lo de antes, y el motivo es obligatorio.",
+      "avanzar": "Tocá «Guardar la corrección».",
+      "ruta": "/org/formularios/:id/respuestas/:recordId/corregir",
+      "accion": "Toca «Guardar la corrección»."
+    },
+    {
+      "tablero": "FRM-Respuesta-Corregir",
+      "tweaks": {
+        "estado": "Corregida"
       },
       "actor": "Lucía · Dueña · web",
-      "titulo": "Lo que pasó después",
-      "texto": "En una respuesta aprobada, «Actividad» cuenta qué hizo cada regla: el aviso, el PDF y el mensaje, cada uno con su estado.",
+      "titulo": "Vuelve a «Por aprobar»",
+      "texto": "Conserva su número y quién la cargó. La anterior queda en Actividad, con su PDF, y la aprueba otra persona con el rol Supervisor.",
       "avanzar": "Fin del recorrido.",
-      "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000126",
-      "accion": "Ve la actividad."
+      "ruta": "/org/formularios/:id/respuestas/:recordId",
+      "accion": "Ve la respuesta corregida."
     }
   ]
 }

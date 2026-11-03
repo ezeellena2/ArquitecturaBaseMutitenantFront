@@ -13,7 +13,7 @@ import tempfile
 
 AQUI = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI))
-from recorrido import CAPITULOS, CAPITULOS_FORMULARIOS, CODIGO, VERSION  # noqa: E402
+from recorrido import BIBLIOTECA, CAPITULO_FORMULARIOS, CAPITULOS, CODIGO, TEXTO_PLATAFORMA, VERSION  # noqa: E402
 
 LIENZO = AQUI.parent / "lienzo"
 SALIDA = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(tempfile.gettempdir()) / "guia-lienzo"
@@ -81,22 +81,35 @@ ETAPAS = ["Ingreso y registro", "Organización", "Página pública y directorio"
           "Etapa 12 · Catálogos", "Etapa 13 · Campos", "Etapa 14 · Formularios", "Etapa 15 · Respuestas", "Etapa 16 · Datos de las personas", "Etapa 17 · Ciclo de vida", "Etapa 18 · Fotos y documentos", "Etapa 19 · Condiciones, cálculos y líneas", "Etapa 20 · Cargar una respuesta desde la web", "Etapa 21 · Reglas y aprobación",
           "Etapa 22 · Biblioteca", "Etapa 23 · El asistente"]
 ETAPAS_FORMULARIOS = set(ETAPAS[ETAPAS.index("Etapa 12 · Catálogos"):])
-ANTES = "Cada pantalla tiene la compu, el teléfono, lo que se abre desde ahí y sus estados. Tocá una captura para verla grande; para usarla con Play, abrí el lienzo."
-# Cada guía: el archivo, el título de la pestaña, el de la página, el texto de arriba, si lleva un capítulo y un recorrido, y la otra guía.
+
+
+def de_la_biblioteca(p):
+    return p[0].startswith("plat-frm")
+
+
+def capitulos(guia):
+    """La de Formularios: su capítulo y la biblioteca de la plataforma; la del lienzo, el resto, con «La plataforma» sin la biblioteca."""
+    if guia == "formularios":
+        return [c for c in CAPITULOS if c[0] == CAPITULO_FORMULARIOS] + [(*BIBLIOTECA, [p for c in CAPITULOS for p in c[3] if de_la_biblioteca(p)])]
+    return [(cid, t, TEXTO_PLATAFORMA if cid == "plataforma" else x, [p for p in ps if not de_la_biblioteca(p)]) for cid, t, x, ps in CAPITULOS if cid != CAPITULO_FORMULARIOS]
+
+
+ANTES ="Cada pantalla tiene la compu, el teléfono, lo que se abre desde ahí y sus estados. Tocá una captura para verla grande; para usarla con Play, abrí el lienzo."
+# Cada guía: el archivo, el título de la pestaña, el de la página, el texto de arriba, si lleva un recorrido y la otra guía.
 GUIAS = {
     "lienzo": {
         "archivo": "Guia-Lienzo.html", "titulo": "Guía del lienzo multitenant", "h1": "Guía del lienzo",
         "texto": "El recorrido completo, en el orden en que una persona usa el sistema: llega al sitio, entra, ve su perfil, registra su empresa, "
                  "arma su equipo, la administra, atiende por WhatsApp, le pregunta al asistente y, aparte, lo que usan los operadores de la plataforma. "
                  "Los formularios tienen su propia guía. " + ANTES,
-        "capitulo": lambda cid: cid not in CAPITULOS_FORMULARIOS, "recorrido": lambda r: r["etapa"] not in ETAPAS_FORMULARIOS,
+        "recorrido": lambda r: r["etapa"] not in ETAPAS_FORMULARIOS,
         "otra": (URL_GUIA_FORMULARIOS, "Abrir la guía de Formularios"),
     },
     "formularios": {
         "archivo": "Guia-Formularios.html", "titulo": "Guía de formularios multitenant", "h1": "Guía de formularios",
         "texto": "El bloque de formularios, de la etapa 12 a la 25, en el orden en que se programa: lo que diseña, publica, manda y revisa cada "
                  "organización, y la biblioteca de plantillas que arma la plataforma. " + ANTES,
-        "capitulo": lambda cid: cid in CAPITULOS_FORMULARIOS, "recorrido": lambda r: r["etapa"] in ETAPAS_FORMULARIOS,
+        "recorrido": lambda r: r["etapa"] in ETAPAS_FORMULARIOS,
         "otra": (URL_GUIA, "Abrir la guía del lienzo"),
     },
 }
@@ -155,7 +168,7 @@ def pagina(guia):
     g = GUIAS[guia]
     nav, secciones = [], []
     total_p = total_t = prog = 0
-    for k, (cid, titulo, texto, ps) in enumerate([c for c in CAPITULOS if g["capitulo"](c[0])], 1):
+    for k, (cid, titulo, texto, ps) in enumerate(capitulos(guia), 1):
         nav.append(f'<a href="#{cid}"><span class="n">{k}</span>{e(titulo)}</a>')
         filas = "".join(pantalla(p, f"{k}.{i}") for i, p in enumerate(ps, 1))
         secciones.append(f'<section class="cap-sec" id="{cid}"><header class="cap-cab"><span class="paso">Paso {k}</span><h2>{e(titulo)}</h2><p>{e(texto)}</p></header>{filas}</section>')

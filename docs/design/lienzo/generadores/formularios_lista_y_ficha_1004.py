@@ -91,7 +91,7 @@ class Etapa:
 
     def __init__(self, n):
         self.n, self.resp, self.ciclo, self.aprob, self.plantilla = n, n >= 15, n >= 17, n >= 21, n >= 22
-        self.carga = n == 20  # las listas de la 21 y la 22 lo suman cuando se alineen
+        self.carga = n in (20, 21)  # la lista de la 22 lo suma cuando se alinee
 
 
 # (nombre, clave, (clase, estado en WhatsApp, ⓘ), preguntas, último cambio, por aprobar, respuestas, última o None)
@@ -152,6 +152,8 @@ CSS_LISTA = """.w-th.fx14, .w-tr.fx14 { grid-template-columns: minmax(200px, 1.4
 .w-th.fx17, .w-tr.fx17 { grid-template-columns: minmax(170px, 1.2fr) minmax(180px, 1.1fr) 96px 130px 146px 40px; }
 .w-th.fx21, .w-tr.fx21 { grid-template-columns: minmax(150px, 1.15fr) minmax(170px, 1.1fr) 88px 92px 122px 140px 40px; }
 .w-th.fx20, .w-tr.fx20 { grid-template-columns: minmax(160px, 1fr) minmax(190px, 1.1fr) 88px 112px 132px 72px 40px; }
+.w-th.fx21c, .w-tr.fx21c { grid-template-columns: minmax(150px, 1.05fr) minmax(176px, 1.05fr) 84px 88px 110px 132px 72px 40px; }
+.w-tr.fx21c { position: relative; min-height: 40px; }
 .w-th.fx1, .w-tr.fx1 { grid-template-columns: minmax(0, 1fr) 72px; }
 .w-tr .cb-ch { height: 30px; padding: 0 10px; font-size: 13px; justify-self: end; }
 .w-tr > .e-tipw { justify-self: end; overflow: visible; }
@@ -209,7 +211,7 @@ def c_ultima(u, e):
 
 
 def grilla_de(e):
-    return "fx21" if e.aprob else "fx20" if e.carga else "fx17" if e.ciclo else "fx15" if e.resp else "fx14"
+    return "fx21c" if e.aprob and e.carga else "fx21" if e.aprob else "fx20" if e.carga else "fx17" if e.ciclo else "fx15" if e.resp else "fx14"
 
 
 SOLO_CLIENTES = "Es solo para clientes: se responde por WhatsApp."
@@ -312,21 +314,32 @@ def acciones_lista(e):
             f'<a class="cb cb-pri" href="FRM-Editor.dc.html">{MAS} Nuevo formulario</a></sc-if>')
 
 
-def js_carga(js):
-    """La 20: suma «Pedido de materiales» y quien solo carga; las demás listas no cambian."""
+def js_carga(js, aprob=False):
+    """La 20 y la 21: suman «Pedido de materiales» y quien solo carga; la 21 conserva lo que espera aprobación."""
+    if aprob:
+        filas = ("const filas = baja || bor ? 1 : conAlgo || aprueba ? 2 : carga ? 3 : pub || lee ? 4 : 5;",
+                 ": baja ? '1 dado de baja' : carga ? '3 activos' : lee ? '4 activos' : aprueba ? '4 por aprobar' : '5 activos · 4 por aprobar',")
+        filas_r = ("rPed: lista && !baja && !bor && !conAlgo && !aprueba, rVis: lista && !baja && !bor, rEnt: lista && !baja && !bor && !carga, rCon: lista && !baja && !bor && !conAlgo && !aprueba,",
+                   "rRec: lista && !baja && !pub && !conAlgo && !lee && !aprueba && !carga, rRel: baja,")
+        for a, b in [("aprC_t: '4', aprC_c: '2', aprC_n: '2',", "aprC_t: '5', aprC_c: '2', aprC_n: '3',")]:
+            assert a in js, a
+            js = js.replace(a, b)
+    else:
+        filas = ("const filas = baja || bor ? 1 : carga ? 3 : pub || lee ? 4 : 5;", ": baja ? '1 dado de baja' : carga ? '3 activos' : lee ? '4 activos' : '5 activos · 1 dado de baja',")
+        filas_r = ("rPed: lista && !baja && !bor, rVis: lista && !baja && !bor, rEnt: lista && !baja && !bor && !carga, rCon: lista && !baja && !bor,",
+                   "rRec: lista && !baja && !pub && !lee && !carga, rRel: baja,")
     for a, b in [("const leeBaja = v === 'Quien solo ve respuestas: dados de baja';",
                   "const leeBaja = v === 'Quien solo ve respuestas: dados de baja', cargaBaja = v === 'Quien solo carga: dados de baja', carga = v === 'Quien solo carga' || cargaBaja;"),
                  ("const baja = v === 'Dados de baja' || v === 'Acciones de un dado de baja' || leeBaja;", "const baja = v === 'Dados de baja' || v === 'Acciones de un dado de baja' || leeBaja || cargaBaja;"),
                  ("const disena = !lee && !aprueba && v !== 'Sin permiso';", "const disena = !lee && !aprueba && !carga && v !== 'Sin permiso';"),
                  ("const quien = lee ? ", "const quien = carga ? ['Tomás Acosta', 'tomas.acosta@delta.ejemplo.com', 'T'] : lee ? "),
-                 ("const filas = baja || bor ? 1 : conAlgo ? 2 : pub || lee || aprueba ? 3 : 4;", "const filas = baja || bor ? 1 : carga ? 3 : pub || lee ? 4 : 5;"),
-                 (": baja ? '1 dado de baja' : lee ? '3 activos' : aprueba ? '4 por aprobar' : !CI ? '4 formularios' : AP ? '4 activos · 4 por aprobar' : '4 activos · 1 dado de baja',",
-                  ": baja ? '1 dado de baja' : carga ? '3 activos' : lee ? '4 activos' : '5 activos · 1 dado de baja',"),
+                 ("const filas = baja || bor ? 1 : conAlgo ? 2 : pub || lee || aprueba ? 3 : 4;", filas[0]),
+                 (": baja ? '1 dado de baja' : lee ? '3 activos' : aprueba ? '4 por aprobar' : !CI ? '4 formularios' : AP ? '4 activos · 4 por aprobar' : '4 activos · 1 dado de baja',", filas[1]),
                  ("conEstado: disena || (CI && lee),", "conEstado: disena || lee || carga,"),
                  ("estC_t: '4', estC_p: '3', estC_b: '1', estC_d: '1',", "estC_t: '5', estC_p: '4', estC_b: '1', estC_d: '1',"),
                  ("colsTodas: disena && !(R && lectura), colsLee: lee, colsLectura: R && lectura,", "colsTodas: disena && !(R && lectura), colsLee: lee, colsLectura: R && lectura, colsCarga: carga, conWa: !carga, tipCliente: v === 'Uno solo para clientes',"),
-                 ("rVis: lista && !baja && !bor, rEnt: lista && !baja && !bor, rCon: lista && !baja && !bor && !conAlgo,", "rPed: lista && !baja && !bor, rVis: lista && !baja && !bor, rEnt: lista && !baja && !bor && !carga, rCon: lista && !baja && !bor,"),
-                 ("rRec: lista && !baja && !pub && !conAlgo && !lee && !aprueba, rRel: baja,", "rRec: lista && !baja && !pub && !lee && !carga, rRel: baja,")]:
+                 ("rVis: lista && !baja && !bor, rEnt: lista && !baja && !bor, rCon: lista && !baja && !bor && !conAlgo,", filas_r[0]),
+                 ("rRec: lista && !baja && !pub && !conAlgo && !lee && !aprueba, rRel: baja,", filas_r[1])]:
         assert a in js, a
         js = js.replace(a, b)
     return js
@@ -334,7 +347,7 @@ def js_carga(js):
 
 def js_lista(vista, e):
     js = js_base(vista, e)
-    return js_carga(js) if e.carga else js
+    return js_carga(js, e.aprob) if e.carga else js
 
 
 def js_base(vista, e):
@@ -432,7 +445,14 @@ CSS_TLISTA = """.ap-fila.fx { display: flex; align-items: center; gap: 8px; }
 .ap-fila .cb-ch[disabled] { opacity: 0.55; }
 .ap-fila .fm-cnt { min-width: 24px; height: 24px; padding: 0 8px; box-sizing: border-box; border-radius: 999px; background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 """
-TLISTAS = {"M-FRM-Formularios": 14, "M-FRM-Formularios-15": 15, "M-FRM-Formularios-17": 17, "M-FRM-Formularios-20": 20}
+TLISTAS = {"M-FRM-Formularios": 14, "M-FRM-Formularios-15": 15, "M-FRM-Formularios-17": 17, "M-FRM-Formularios-20": 20, "M-FRM-Formularios-21": 21}
+
+
+def enlaces_21(t):
+    """La lista de la 21 abre lo de la 21."""
+    for a in ["FRM-Respuestas", "FRM-Cargar-Respuesta", "FRM-Editor", "FRM-Respuestas-Propias", "FRM-Dar-De-Baja"]:
+        t = t.replace(f'"{a}.dc.html"', f'"{a}-21.dc.html"').replace(f'"M-{a}.dc.html"', f'"M-{a}-21.dc.html"')
+    return t.replace('"M-FRM-Dar-De-Baja-21.dc.html"', '"M-FRM-Formularios-21.dc.html"')
 
 
 def t_fila(f, e, menu=True, cuenta=True):
@@ -445,11 +465,12 @@ def t_fila(f, e, menu=True, cuenta=True):
         href = "M-FRM-Respuestas-20.dc.html"
     l3 = f'<span class="l3">{resp} respuestas</span>' if e.carga else ""
     if e.carga and est != "Borrador":
+        cnt = c  # desde la 21, lo que espera aprobación va antes de «Cargar»
         if n == "Entrega de pedido":  # lo apagado dice por qué: en el teléfono, debajo (43)
-            c = '<button type="button" class="cb cb-sec cb-ch" disabled>Cargar</button>'
+            c = cnt + '<button type="button" class="cb cb-sec cb-ch" disabled>Cargar</button>'
             l3 += f'<span class="l3">{SOLO_CLIENTES}</span>'
         else:
-            c = '<a class="cb cb-sec cb-ch" href="M-FRM-Cargar-Respuesta.dc.html">Cargar</a>'
+            c = cnt + '<a class="cb cb-sec cb-ch" href="M-FRM-Cargar-Respuesta.dc.html">Cargar</a>'
     return f'<div class="ap-fila fx"><a class="tx" href="{href}"><span class="l1">{n}</span><span class="l2">{l2}</span>{l3}</a>{c}{k}</div>'
 
 
@@ -486,7 +507,7 @@ def tel_lista(n):
     else:
         E_T = ["Activos", "Filtros", "Dados de baja", "Acciones de un publicado", "Acciones de un borrador", "Acciones de un dado de baja",
                "Copiar", "Dar de baja", "Reactivar", "Borrar"] + (["Nuevo formulario: elegir"] if e.plantilla else []) + ["Quien solo ve respuestas", "Quien solo ve respuestas: filtros"]
-        E_T += (["Quien solo carga", "Quien solo carga: dados de baja"] if e.carga else []) + ["Cargando", "No se pudo cargar"]
+        E_T += (["Quien solo carga", "Quien solo carga: dados de baja"] if e.carga else []) + (["Quien solo aprueba"] if e.aprob else []) + ["Cargando", "No se pudo cargar"]
         bajas = bar + seg(True) + '<div class="ap-cuerpo">' + t_fila(T_BAJA, e) + "</div>" + fab
         lee = bar + seg(False, "3") + '<div class="ap-cuerpo">' + "".join(t_fila(f, e, menu=False, cuenta=False) for f in t_filas[:3]) + "</div>"
         cuerpo = {x: (bajas if x in ("Dados de baja", "Acciones de un dado de baja", "Reactivar") else lee if x.startswith("Quien solo ve respuestas")
@@ -494,6 +515,10 @@ def tel_lista(n):
         if e.carga:
             cuerpo["Quien solo carga"] = bar + '<div class="ap-cuerpo">' + "".join(t_carga(f) for f in [t_filas[0], t_filas[1], t_filas[3]]) + "</div>"
             cuerpo["Quien solo carga: dados de baja"] = bar + '<div class="ap-cuerpo">' + t_carga(T_BAJA, baja=True) + "</div>"
+        if e.aprob:  # quien solo aprueba: los formularios con algo para decidir, sin respuestas (100)
+            cuerpo["Quien solo aprueba"] = bar + '<div class="ap-cuerpo">' + "".join(
+                f'<div class="ap-fila fx"><a class="tx" href="M-FRM-Respuestas.dc.html"><span class="l1">{f[0]}</span><span class="l2">Por aprobar</span></a>'
+                f'<span class="fm-cnt" aria-label="{f[4]} por aprobar">{f[4]}</span></div>' for f in T_FILAS if f[4]) + "</div>"
         copiar_h = F.tcampo("Nombre", "Visita a cliente (copia)", req=True) + F.tcampo("Prefijo de numeración", "VIS2", req=True)
         baja_h = ('<div class="p-tit2">Qué deja de pasar</div><span class="t-lin">' + B.CHAT + ' No se manda más desde el chat.</span>'
                   '<div class="p-tit2">Envíos abiertos y WhatsApp</div><span class="t-lin">' + B.RELOJ + ' 2 envíos abiertos: el último vence el 25/10/2026 a las 18:40.</span>'
@@ -536,9 +561,10 @@ CSS_PTABS = """.f-ptabs { display: grid; grid-template-columns: repeat(3, 1fr); 
 .f-ptabs a.on { color: var(--marca-tx); border-bottom-color: var(--marca); }
 .f-ptabs .c { color: var(--t3); font-weight: 500; }
 """
-RESPUESTAS_TAB = ["FRM-Respuestas", "FRM-Respuestas-Filtros", "FRM-Respuestas-Exportar", "FRM-Respuesta", "FRM-Respuesta-Aprobacion", "FRM-Respuesta-Cadena"]
-# los de la 14 (el editor, publicar y cómo termina) van sin pestañas: en la 14 la ficha tiene solo «Diseño» (78)
-DISENO_TAB = ["FRM-Editor-Baja", "FRM-Dar-De-Baja", "FRM-Reactivar-Eliminar", "FRM-Editor-Reglas", "FRM-Editor-Sugerencias", "FRM-Editor-Asistente"]
+RESPUESTAS_TAB = ["FRM-Respuestas", "FRM-Respuestas-Filtros", "FRM-Respuestas-Exportar", "FRM-Respuesta", "FRM-Respuesta-Cadena"]
+# los de la 14 (el editor, publicar y cómo termina) van sin pestañas: en la 14 la ficha tiene solo «Diseño» (78);
+# los de la 21 (las reglas y la decisión) los arma formularios_21_reglas_1004.py, con su pestaña «Reglas»
+DISENO_TAB = ["FRM-Editor-Baja", "FRM-Dar-De-Baja", "FRM-Reactivar-Eliminar", "FRM-Editor-Sugerencias", "FRM-Editor-Asistente"]
 
 
 def pestanas(titulo, sel, tel=False):
@@ -773,18 +799,6 @@ def tel_respuestas():
     return con_pestanas_tel(t, "respuestas")
 
 
-# ================================================================ 80: la actividad de una respuesta, sin «Sin confirmar»
-def actividad_sin_confirmar():
-    t = leer("FRM-Respuesta-Aprobacion")
-    if "Resolver el envío" in opciones_de(t):
-        t = sin_estados(t, ["Actividad: sin confirmar", "Resolver el envío"])
-    t = t.replace('<small>No sabemos si salió.</small><button type="button" class="cb cb-sec">Consultar</button></span><span class="ac-est amb">Sin confirmar</span>',
-                  '</span><span class="ac-est ok">Entregado</span>')
-    cuerpo = t[:t.index('<script type="text/x-dc"')]  # la lógica sigue buscando en la lista vieja de estados
-    assert "Sin confirmar" not in cuerpo and "Resolver el envío" not in cuerpo, "FRM-Respuesta-Aprobacion"
-    escribir("FRM-Respuesta-Aprobacion", t)
-
-
 # ================================================================ Sin «Diseñar formularios» en los tableros vigentes
 NO_TOCAR = {"Criterio-Decisiones", "Rol", "M-Rol"}
 
@@ -812,10 +826,10 @@ def sin_disenar(n, t):
 NUEVOS = {"FRM-Formularios-15": (1440, 900, "Formularios · la lista · etapa 15"), "FRM-Formularios-17": (1440, 900, "Formularios · la lista · etapa 17"),
           "FRM-Formularios-21": (1440, 900, "Formularios · la lista · etapa 21"), "FRM-Formularios-22": (1440, 900, "Formularios · la lista · etapa 22"),
           "M-FRM-Formularios": (390, 844, "Formularios · la lista · teléfono"), "M-FRM-Formularios-15": (390, 844, "Formularios · la lista · teléfono · etapa 15"),
-          "M-FRM-Formularios-17": (390, 844, "Formularios · la lista · teléfono · etapa 17"),
+          "M-FRM-Formularios-17": (390, 844, "Formularios · la lista · teléfono · etapa 17"), "M-FRM-Formularios-21": (390, 844, "Formularios · la lista · teléfono · etapa 21"),
           "FRM-Tablero": (1440, 1500, "Formularios · un formulario · Tablero"), "M-FRM-Tablero": (390, 844, "Formularios · un formulario · Tablero · teléfono")}
 AL_ARCHIVO = {"FRM-Listado": "Formularios · diseñar formularios (hasta la v140)", "M-FRM-Listado": "Diseñar formularios · teléfono (hasta la v140)"}
-TOCADOS = ["FRM-Formularios", "FRM-Copiar", "FRM-Reactivar-Eliminar", "M-FRM-Respuestas", "FRM-Respuesta-Aprobacion"] + RESPUESTAS_TAB + DISENO_TAB + ["M-FRM-Editor-Baja"]
+TOCADOS = ["FRM-Formularios", "FRM-Copiar", "FRM-Reactivar-Eliminar", "M-FRM-Respuestas"] + RESPUESTAS_TAB + DISENO_TAB + ["M-FRM-Editor-Baja"]
 
 
 def registrar():
@@ -842,14 +856,13 @@ if __name__ == "__main__":
     panel_e16 = re.search(r'<style data-e16="panel">\n(.*?)</style>', leer("FRM-Catalogos"), re.S)
     E.R.CSS_PANEL_E16 = panel_e16.group(1) if panel_e16 else ""
     for n in LISTAS:
-        escribir(n, lista(n))
+        escribir(n, enlaces_21(lista(n)) if n.endswith("-21") else lista(n))
     escribir("FRM-Copiar", B.copiar())
     for n in TLISTAS:
-        escribir(n, tel_lista(n))
+        escribir(n, enlaces_21(tel_lista(n)) if n.endswith("-21") else tel_lista(n))
     escribir("FRM-Tablero", tablero())
     escribir("M-FRM-Tablero", tel_tablero())
     escribir("M-FRM-Respuestas", tel_respuestas())
-    actividad_sin_confirmar()
     for n in RESPUESTAS_TAB:
         escribir(n, con_pestanas(leer(n), "respuestas"))
     for n in DISENO_TAB:

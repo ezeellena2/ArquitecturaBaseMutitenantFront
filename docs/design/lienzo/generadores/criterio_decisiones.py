@@ -582,6 +582,13 @@ DECISIONES = {
         ("El catálogo de una pregunta", "", "El mismo combo de los campos, sin «Ver el catálogo». Lo dado de baja y lo que no se puede usar van apagados, con su motivo en el tooltip (111).", "Dibujada"),
         ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
+    "Reglas, aprobación, PDF y avisos · v155 · 03/11": [
+        ("Las reglas", "", "Una pestaña más del formulario (79), con el armado de ArquitecturaBase: «Agregar regla» y «Guardar reglas» en la cabecera de la caja, el historial al costado, una regla que se edita en el lugar y se cierra con «Listo», y ↑ ↓ 🗑 a la vista en cada acción.", "Dibujada"),
+        ("Adjuntar el PDF", "", "El motivo va debajo de la casilla en el momento, con el botón que lo arregla: «Subir» o «Agregar «Armar el PDF» antes» (113). Nada se desmarca solo.", "Dibujada"),
+        ("El diseño del PDF", "", "«El comprobante» con «Guardar diseño» y la vista previa al costado, como allá; suma tres estilos (Clásico, Moderno y Compacto), el color, el encabezado de la página pública, secciones y firmas (59 y 82).", "Dibujada"),
+        ("Aprobar", "", "En la vista rápida, con los momentos arriba de las pestañas, y con confirmación que arranca en «Cancelar» (114). Sin cartel arriba de la planilla: la cola se abre desde la campana y «Para resolver».", "Dibujada"),
+        ("Corregir y anular", "", "Corregir abre la carga de la 20 con lo de antes a la vista y un motivo; anular va al final del ⋮, con motivo. Allá no existen.", "Dibujada"),
+    ],
     "Cargar una respuesta · v154 · 02/11": [
         ("La página", "", "Cancelar y Enviar en la banda, zonas plegables y hasta tres por renglón, como ArquitecturaBase. El ancho sale del tipo de pregunta, y lo condicional recalcula los renglones.", "Dibujada"),
         ("Enviando", "", "«Enviando…» con su aro y una barra sin palabras, en lugar del porcentaje de allá (95 y 115).", "Dibujada"),
