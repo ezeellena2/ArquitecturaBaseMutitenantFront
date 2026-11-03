@@ -55,6 +55,8 @@ AVISOS_14 = [("fallo", FALLO, "WhatsApp rechazó la versión 4 de Visita a clien
 # La 21 suma lo que espera aprobación y el aviso que no salió (21-reglas-y-aprobacion.md)
 AVISOS_21 = [("espera", ESPERA, "3 respuestas por aprobar en Visita a cliente", "15/10/2026 16:20", "FRM-Respuestas-21.dc.html", "M-FRM-Respuestas-21.dc.html"),
              ("fallo", FALLO, "No se pudo mandar el aviso de VIS-000126", "13/10/2026 16:05", "FRM-Respuesta-Aprobacion.dc.html", "M-FRM-Respuesta-Aprobacion.dc.html")] + AVISOS
+# La 23 suma las preguntas sin respuesta del asistente, para quien administra WhatsApp (23-asistente.md, «La campana»)
+AVISOS_23 = [("espera", ESPERA, "3 preguntas sin respuesta del asistente", "15/10/2026 17:30", "WA-Preguntas-Sin-Respuesta.dc.html", "M-WA-Preguntas-Sin-Respuesta.dc.html")] + AVISOS_21
 AVISOS_PLAT = [("espera", ESPERA, "Pablo Ortiz pidió recuperar su cuenta", "27/09/2026 10:20", "Recuperaciones.dc.html", "M-Recuperaciones.dc.html"),
                ("espera", ESPERA, "Gamma S.A. espera aprobación", "27/09/2026 09:05", "Organizacion.dc.html", "M-Organizacion.dc.html")]
 CSS = """.w-cmp-env { position: relative; display: inline-flex; margin-left: auto; margin-right: 6px; }
@@ -182,6 +184,10 @@ TABLEROS_14 = ["FRM-Formularios", "FRM-Editor", "FRM-Publicar", "FRM-Publicando"
 # Los de la 21 abren la suya, con lo que espera aprobación
 TABLEROS_21 = ["FRM-Formularios-21", "FRM-Respuestas-21", "FRM-Respuesta-Aprobacion", "FRM-Editor-Reglas", "FRM-Pdf", "FRM-Tablero-21", "FRM-Respuesta-Corregir", "FRM-Respuesta-Anular",
                "FRM-Editor-21", "FRM-Cargar-Respuesta-21", "FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21", "WA-Chats-Avisos"]
+# Los de la 23 abren la suya, con las preguntas sin respuesta
+TABLEROS_23 = ["WA-Asistente", "WA-Asistente-Casos", "WA-Asistente-Probar", "WA-Asistente-Limites", "WA-Modo-Atencion", "WA-Chats-Casos", "WA-Preguntas-Sin-Respuesta",
+               "WA-Chats-Asistente", "WA-Chats-Sugerencia", "WA-Chats-Audio", "FRM-Editor-Asistente", "FRM-Editor-Sugerencias", "FRM-Editor-Reglas-23", "FRM-Catalogos-23",
+               "FRM-Catalogo-Propuesta", "FRM-Respuesta-Cadena", "FRM-Faltan", "FRM-Dar-De-Baja-23", "FRM-Editor-Baja-23"]
 
 
 def la_suya(n, t, pagina):
@@ -194,6 +200,8 @@ def la_suya(n, t, pagina):
         return numero(t.replace('<a class="w-campana" href="Campana.dc.html"', '<a class="w-campana" href="Campana-14.dc.html"'), "2")
     if n in TABLEROS_21:
         return numero(t.replace('<a class="w-campana" href="Campana.dc.html"', '<a class="w-campana" href="Campana-21.dc.html"'), str(len(AVISOS_21)))
+    if n in TABLEROS_23:
+        return numero(t.replace('<a class="w-campana" href="Campana.dc.html"', '<a class="w-campana" href="Campana-23.dc.html"'), str(len(AVISOS_23)))
     return numero(t, "1")
 
 
@@ -220,6 +228,7 @@ def campana():
     abierta("Usuarios", len(AVISOS), AVISOS, "Campana", "Avisos · la campana")
     abierta("FRM-Formularios", len(AVISOS_14), AVISOS_14, "Campana-14", "Avisos · la campana · etapa 14", ["Con avisos"])
     abierta("FRM-Formularios-21", len(AVISOS_21), AVISOS_21, "Campana-21", "Avisos · la campana · etapa 21", ["Con avisos"])
+    abierta("WA-Asistente", len(AVISOS_23), AVISOS_23, "Campana-23", "Avisos · la campana · etapa 23", ["Con avisos"])
     abierta("Organizaciones", len(AVISOS_PLAT), AVISOS_PLAT, "Campana-Plat", "Avisos · la campana · Plataforma")
 
 
@@ -248,13 +257,17 @@ def campana_tel():
     (PROJ / "M-Campana-14.dc.html").write_text(t, encoding="utf-8")
     t = C.tel_pagina({"Con avisos": bar14 + f'<div class="ap-cuerpo">{filas_tel(AVISOS_21)}</div>'}, ["Con avisos"], {}, "Avisos · la campana · teléfono · etapa 21", CSS + CSS_TEL)
     (PROJ / "M-Campana-21.dc.html").write_text(t, encoding="utf-8")
+    t = C.tel_pagina({"Con avisos": bar14 + f'<div class="ap-cuerpo">{filas_tel(AVISOS_23)}</div>'}, ["Con avisos"], {}, "Avisos · la campana · teléfono · etapa 23", CSS + CSS_TEL)
+    (PROJ / "M-Campana-23.dc.html").write_text(t, encoding="utf-8")
 
 
 NUEVOS = {"Campana": (4560, 2300, 1440, 900, "Avisos · la campana"), "M-Campana": (6110, 3320, 390, 844, "Avisos · la campana · teléfono"),
           "Campana-Plat": (4560, 1280, 1440, 900, "Avisos · la campana · Plataforma"),
           "M-Campana-Plat": (7990, 2300, 390, 844, "Avisos · la campana · Plataforma · teléfono"),
-          "Campana-21": (0, 0, 1440, 900, "Avisos · la campana · etapa 21"), "M-Campana-21": (0, 0, 390, 844, "Avisos · la campana · teléfono · etapa 21")}
-PAGINA = {"Campana-Plat": "plataforma", "M-Campana-Plat": "plataforma", "Campana-21": "formularios", "M-Campana-21": "formularios"}
+          "Campana-21": (0, 0, 1440, 900, "Avisos · la campana · etapa 21"), "M-Campana-21": (0, 0, 390, 844, "Avisos · la campana · teléfono · etapa 21"),
+          "Campana-23": (0, 0, 1440, 900, "Avisos · la campana · etapa 23"), "M-Campana-23": (0, 0, 390, 844, "Avisos · la campana · teléfono · etapa 23")}
+PAGINA = {"Campana-Plat": "plataforma", "M-Campana-Plat": "plataforma", "Campana-21": "formularios", "M-Campana-21": "formularios", "Campana-23": "formularios",
+          "M-Campana-23": "formularios"}
 
 
 def registrar(tocados):
@@ -273,7 +286,7 @@ if __name__ == "__main__":
     hechos = []
     for k, v in c["boards"].items():
         n = k[:-8]
-        if n.startswith("M-") or v.get("page") not in CANT or n in NUEVOS or n in ("Campana-14", "Campana-21"):
+        if n.startswith("M-") or v.get("page") not in CANT or n in NUEVOS or n in ("Campana-14", "Campana-21", "Campana-23"):
             continue
         f = PROJ / k
         t = f.read_text(encoding="utf-8")

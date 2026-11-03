@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 156 · 3 de noviembre de 2026"
+VERSION = "versión 157 · 3 de noviembre de 2026"
 
 # La guía de Formularios lleva su capítulo y, aparte, las pantallas de la biblioteca de la plataforma (las «plat-frm-»); la del lienzo,
 # el resto. Cada una es un artefacto aparte, porque una versión de un artefacto admite hasta 511 archivos. El índice del lienzo sigue
@@ -125,6 +125,8 @@ CAPITULOS = [
         ("asistente-config", "Configuración del asistente", "Administración › Asistente", "no", "8b", ["Asistente-Config-Org", "Plat-Asistente-Config"],
          ["M-Asistente-Config-Org", "M-Plat-Asistente-Config"], [],
          "Qué clave usa, el modelo con su precio y los topes. En Plataforma, además, el catálogo de modelos con sus datos técnicos, los modelos que pueden elegir las organizaciones, las personas y los días para borrar."),
+        ("plat-asistente-maximos", "Los máximos del asistente de WhatsApp", "Administración › Asistente › Configuración", "no", "23", ["Plat-Asistente-Config-23"], ["M-Plat-Asistente-Config-23"], [],
+         "La plataforma fija un máximo para cada límite que elige una organización: el largo de la respuesta, las respuestas y los formularios que ofrece por conversación y día."),
         ("asistente-uso", "Uso del asistente", "Administración › Asistente › Uso", "no", "8b", ["Asistente-Uso-Org", "Plat-Asistente-Uso"],
          ["M-Asistente-Uso-Org", "M-Plat-Asistente-Uso"], [],
          "El tope del mes y el uso por día y por persona; en Plataforma, el costo por organización. Nunca el texto de las conversaciones."),
@@ -181,10 +183,20 @@ CAPITULOS = [
          "Las plantillas que publica la plataforma, por categoría, y en qué formulario ya usaste cada una. La vista de una dice qué trae: preguntas, catálogos y reglas de ejemplo en palabras. Usarla crea una copia propia en borrador, con el prefijo propuesto."),
         ("frm-reglas-plantilla", "Las reglas que trae una plantilla", "/org/formularios/:id", "no", "22", ["FRM-Editor-Reglas-Plantilla"], ["M-FRM-Reglas-Plantilla"], [],
          "El formulario nuevo abre en borrador. Sus reglas llegan sin guardar: se elige lo que es de cada organización (el rol, la persona, la dirección y la plantilla de WhatsApp) y se guardan; lo que falta se marca al tocar «Guardar reglas». El diseño del PDF llega listo."),
+        ("wa-asistente", "La pantalla del asistente", "WhatsApp › Asistente", "no", "23", ["WA-Asistente", "WA-Asistente-Casos"], ["M-WA-Asistente"],
+         ["WA-Asistente-Probar", "WA-Asistente-Limites", "WA-Modo-Atencion"],
+         "Como el editor de un formulario: Perfil, Conocimiento, Casos, Límites y Atención, con un solo Guardar y «Probar» siempre al costado, que muestra qué haría, en orden, sin mandar nada. Los casos se abren en el lugar, con ↑ ↓ ✎ 🗑; los formularios van en su bloque y «Cualquier otra cosa», al final."),
+        ("wa-casos-chat", "Los casos en el chat", "WhatsApp › Chats › Clientes", "no", "23", ["WA-Chats-Casos"], ["M-WA-Chats-Casos", "M-WA-Modo-Atencion"], [],
+         "Cada respuesta del asistente lleva «Por qué respondió esto». Lo que no está cargado lo consulta y deriva: el chat queda «Necesita una persona», también en la lista y su filtro. Una ráfaga se procesa junta, con hasta tres acciones. En atención manual, el asistente deja un borrador."),
         ("frm-asistente-chat", "El asistente en el chat", "WhatsApp › Chats › Internos", "no", "23", ["WA-Chats-Asistente"], ["M-WA-Conversacion-Asistente"], ["WA-Chats-Sugerencia", "WA-Chats-Audio"],
-         "En modo Asistente reconoce el pedido y manda el formulario prellenado, con por qué lo mandó; «Tomar atención manual» lo corta. En atención manual, sugiere. Los audios se pasan a texto."),
-        ("frm-asistente-editor", "Lo que ofrece el asistente", "/org/formularios/:id", "no", "23", ["FRM-Editor-Asistente"], [], ["FRM-Editor-Sugerencias", "FRM-Respuesta-Cadena", "FRM-Catalogo-Propuesta"],
-         "«Cuándo lo ofrece el asistente» en el editor y qué otro formulario sugerir después de una respuesta, con los datos que pasan. Cada respuesta recuerda de dónde vino."),
+         "En modo Asistente manda el formulario prellenado, con por qué lo mandó; «Tomar atención manual» lo corta. En atención manual, sugiere. Un audio se escucha y se pasa a texto, y sigue la retención del chat."),
+        ("wa-preguntas", "Preguntas sin respuesta", "WhatsApp › Preguntas sin respuesta", "no", "23", ["WA-Preguntas-Sin-Respuesta"], ["M-WA-Preguntas-Sin-Respuesta"], ["Campana-23", "M-Campana-23"],
+         "Lo que preguntaron y no estaba en el conocimiento, agrupado por tema, sin nombres ni mensajes. Se completa el conocimiento o se descarta. La campana avisa a quien administra WhatsApp."),
+        ("frm-asistente-editor", "Lo que ofrece el asistente", "/org/formularios/:id", "no", "23", ["FRM-Editor-Asistente", "FRM-Editor-Sugerencias"], [],
+         ["FRM-Respuesta-Cadena", "FRM-Catalogos-23", "FRM-Catalogo-Propuesta", "FRM-Dar-De-Baja-23", "FRM-Editor-Baja-23"],
+         "«Cuándo lo ofrece el asistente» en el diseño, y la pestaña «Sugerencias», como las reglas, con su historial. Cada respuesta recuerda de dónde vino. Un catálogo que pide el asistente queda «Por aprobar» hasta que una persona lo aprueba o lo descarta."),
+        ("frm-regla-texto", "Armar una regla desde un texto", "/org/formularios/:id/reglas", "no", "23", ["FRM-Editor-Reglas-23"], ["M-FRM-Reglas-23"], [],
+         "La IA convierte lo escrito en una regla normal, que se revisa y se guarda; después corre sin IA. Con el tope de IA agotado, el botón queda grisado, con el motivo en su tooltip."),
         ("frm-faltan", "Formularios que faltan", "/org/formularios/faltan", "no", "23", ["FRM-Faltan"], ["M-FRM-Faltan"], [],
          "Lo que alguien quiso registrar y no tenía formulario, agrupado por tema. Se crea el formulario o se descarta el pedido."),
     ]),

@@ -55,9 +55,12 @@ FILAS = [
       "M-FRM-Respuestas-Propias-21", "M-FRM-Editor-21", "M-FRM-Cargar-Respuesta-21", "M-Campana-21", "M-WA-Conversacion-Avisos"]),
     (22, "Etapa 22 · Biblioteca", ["FRM-Formularios-22", "FRM-Biblioteca", "FRM-Plantilla", "FRM-Plantilla-Usar", "FRM-Editor-Reglas-Plantilla"],
      ["M-FRM-Formularios-22", "M-FRM-Biblioteca", "M-FRM-Plantilla", "M-FRM-Reglas-Plantilla"]),
-    (23, "Etapa 23 · El asistente", ["FRM-Editor-Asistente", "FRM-Editor-Sugerencias", "FRM-Catalogo-Propuesta", "FRM-Respuesta-Cadena", "FRM-Faltan",
-                                     "WA-Chats-Asistente", "WA-Chats-Sugerencia", "WA-Chats-Audio"],
-     ["M-FRM-Faltan", "M-WA-Conversacion-Asistente"]),
+    (23, "Etapa 23 · El asistente, con Casos", ["WA-Asistente", "WA-Asistente-Casos", "WA-Asistente-Probar", "WA-Asistente-Limites", "WA-Modo-Atencion", "WA-Chats-Casos",
+                                                "WA-Preguntas-Sin-Respuesta", "WA-Chats-Asistente", "WA-Chats-Sugerencia", "WA-Chats-Audio", "FRM-Editor-Asistente",
+                                                "FRM-Editor-Sugerencias", "FRM-Editor-Reglas-23", "FRM-Catalogos-23", "FRM-Catalogo-Propuesta", "FRM-Respuesta-Cadena",
+                                                "FRM-Faltan", "FRM-Dar-De-Baja-23", "FRM-Editor-Baja-23", "Campana-23"],
+     ["M-WA-Asistente", "M-WA-Chats-Casos", "M-WA-Modo-Atencion", "M-WA-Preguntas-Sin-Respuesta", "M-WA-Conversacion-Asistente", "M-FRM-Reglas-23", "M-FRM-Faltan",
+      "M-Campana-23"]),
 ]
 ETAPA_DE = {n: etapa for etapa, _t, compu, tel in FILAS for n in compu + tel}
 TODAS = list(G.ENTRADAS)  # sin «Diseñar formularios» cuando corre después de formularios_lista_y_ficha_1004.py

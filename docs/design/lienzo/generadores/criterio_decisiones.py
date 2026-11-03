@@ -582,6 +582,14 @@ DECISIONES = {
         ("El catálogo de una pregunta", "", "El mismo combo de los campos, sin «Ver el catálogo». Lo dado de baja y lo que no se puede usar van apagados, con su motivo en el tooltip (111).", "Dibujada"),
         ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
+    "El asistente, con Casos · v157 · 03/11": [
+        ("La pantalla «Asistente»", "", "Elegida por el usuario: como el editor de un formulario, con Perfil, Conocimiento, Casos, Límites y Atención, un solo Guardar y «Probar» siempre al costado, como el teléfono de la vista previa. En ArquitecturaBase no existe.", "Dibujada"),
+        ("Los casos", "", "Se abren en el lugar, como una pregunta, con ↑ ↓ ✎ 🗑 a la vista (127). Los formularios van en su bloque fijo y «Cualquier otra cosa», al final, solo con ✎.", "Dibujada"),
+        ("Probar", "", "Prueba lo guardado: con cambios sin guardar o con el tope de IA agotado queda grisado, con el motivo en su tooltip (43). Muestra hasta tres acciones, cada una con su caso, su porqué y cómo la vería la persona, y «No se mandó nada».", "Dibujada"),
+        ("El conocimiento", "", "Las secciones de «Información del negocio» de ArquitecturaBase: datos, ubicación y zona, horario y preguntas frecuentes (46). Una sección vacía dice «Vacía · no se usa».", "Dibujada"),
+        ("En el chat", "", "Cada respuesta del asistente lleva «Por qué respondió esto», y derivar deja «Necesita una persona» en la cabecera, la lista y el filtro. Cambiar el modo, fijarlo y «Marcar como resuelta» van en el ⋮ del chat.", "Dibujada"),
+        ("Los audios y las sugerencias", "", "Como allá: «Escuchar audio» con la transcripción debajo, y «Qué sugerir después» con su historial al costado, en una pestaña «Sugerencias», como las reglas (79).", "Dibujada"),
+    ],
     "Biblioteca de plantillas · v156 · 03/11": [
         ("La plantilla en Plataforma", "", "El editor de la 14 con la categoría, el prefijo sugerido y la descripción, y debajo de las preguntas las reglas de la 21 sin «Guardar reglas» ni historial: todo se guarda con «Guardar borrador» (33). En ArquitecturaBase no hay biblioteca.", "Dibujada"),
         ("Lo de cada organización", "", "Con candado, «Lo elige cada organización»: el rol (con un «Rol sugerido» que es solo texto), la persona, la dirección, la plantilla de WhatsApp, y en el PDF el logo, los datos y el color (61, 62 y 82).", "Dibujada"),

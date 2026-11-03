@@ -2362,92 +2362,92 @@
       "is_interactive": true
     },
     "WA-Chats-Asistente.dc.html": {
-      "x": 7600,
-      "y": 34154,
-      "w": 1440,
-      "h": 900,
-      "title": "WhatsApp · Internos · el asistente atiende",
-      "page": "formularios",
-      "is_interactive": true
-    },
-    "WA-Chats-Sugerencia.dc.html": {
-      "x": 9120,
-      "y": 34154,
-      "w": 1440,
-      "h": 900,
-      "title": "WhatsApp · Internos · el asistente sugiere",
-      "page": "formularios",
-      "is_interactive": true
-    },
-    "WA-Chats-Audio.dc.html": {
       "x": 10640,
       "y": 34154,
       "w": 1440,
       "h": 900,
-      "title": "WhatsApp · Internos · audios",
+      "title": "WhatsApp · Internos · el asistente atiende · etapa 23",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "WA-Chats-Sugerencia.dc.html": {
+      "x": 12160,
+      "y": 34154,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · el asistente sugiere · etapa 23",
+      "page": "formularios",
+      "is_interactive": true
+    },
+    "WA-Chats-Audio.dc.html": {
+      "x": 13680,
+      "y": 34154,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Internos · audios · etapa 23",
       "page": "formularios",
       "is_interactive": true
     },
     "FRM-Catalogo-Propuesta.dc.html": {
-      "x": 3040,
+      "x": 21280,
       "y": 34154,
       "w": 1440,
-      "h": 1000,
-      "title": "Formularios · catálogo propuesto por el asistente",
+      "h": 1100,
+      "title": "Formularios · el catálogo propuesto · etapa 23",
       "page": "formularios",
       "is_interactive": true
     },
     "FRM-Faltan.dc.html": {
-      "x": 6080,
+      "x": 24320,
       "y": 34154,
       "w": 1440,
       "h": 900,
-      "title": "Formularios · formularios que faltan",
+      "title": "Formularios · formularios que faltan · etapa 23",
       "page": "formularios",
       "is_interactive": true
     },
     "FRM-Editor-Asistente.dc.html": {
-      "x": 0,
+      "x": 15200,
       "y": 34154,
       "w": 1440,
       "h": 1400,
-      "title": "Formularios · editor · cuándo lo ofrece el asistente",
+      "title": "Formularios · cuándo lo ofrece el asistente · etapa 23",
       "page": "formularios",
       "is_interactive": true
     },
     "FRM-Editor-Sugerencias.dc.html": {
-      "x": 1520,
+      "x": 16720,
       "y": 34154,
       "w": 1440,
-      "h": 1400,
-      "title": "Formularios · editor · qué sugerir después",
+      "h": 1100,
+      "title": "Formularios · las sugerencias · etapa 23",
       "page": "formularios",
       "is_interactive": true
     },
     "FRM-Respuesta-Cadena.dc.html": {
-      "x": 4560,
+      "x": 22800,
       "y": 34154,
       "w": 1440,
       "h": 900,
-      "title": "Formularios · una respuesta · de dónde vino",
+      "title": "Formularios · de dónde vino una respuesta · etapa 23",
       "page": "formularios",
       "is_interactive": true
     },
     "M-WA-Conversacion-Asistente.dc.html": {
-      "x": 470,
+      "x": 1880,
       "y": 35674,
       "w": 390,
       "h": 844,
-      "title": "WhatsApp · el asistente · teléfono",
+      "title": "WhatsApp · el asistente · teléfono · etapa 23",
       "page": "formularios",
       "is_interactive": true
     },
     "M-FRM-Faltan.dc.html": {
-      "x": 0,
+      "x": 2820,
       "y": 35674,
       "w": 390,
       "h": 844,
-      "title": "Formularios · formularios que faltan · teléfono",
+      "title": "Formularios que faltan · teléfono · etapa 23",
       "page": "formularios",
       "is_interactive": true
     },
@@ -3647,6 +3647,186 @@
       "w": 390,
       "x": 0,
       "y": 32790
+    },
+    "WA-Asistente.dc.html": {
+      "x": 0,
+      "y": 34154,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1300,
+      "title": "WhatsApp · el asistente · etapa 23",
+      "page": "formularios"
+    },
+    "WA-Asistente-Casos.dc.html": {
+      "x": 1520,
+      "y": 34154,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1300,
+      "title": "WhatsApp · el asistente · los casos · etapa 23",
+      "page": "formularios"
+    },
+    "WA-Asistente-Probar.dc.html": {
+      "x": 3040,
+      "y": 34154,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1300,
+      "title": "WhatsApp · el asistente · probar · etapa 23",
+      "page": "formularios"
+    },
+    "WA-Asistente-Limites.dc.html": {
+      "x": 4560,
+      "y": 34154,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1300,
+      "title": "WhatsApp · el asistente · límites y conocimiento · etapa 23",
+      "page": "formularios"
+    },
+    "WA-Modo-Atencion.dc.html": {
+      "x": 6080,
+      "y": 34154,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1000,
+      "title": "WhatsApp · el asistente · atención · etapa 23",
+      "page": "formularios"
+    },
+    "WA-Preguntas-Sin-Respuesta.dc.html": {
+      "x": 9120,
+      "y": 34154,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · preguntas sin respuesta · etapa 23",
+      "page": "formularios"
+    },
+    "M-WA-Asistente.dc.html": {
+      "x": 0,
+      "y": 35674,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "title": "El asistente · teléfono · etapa 23",
+      "page": "formularios"
+    },
+    "M-WA-Preguntas-Sin-Respuesta.dc.html": {
+      "x": 1410,
+      "y": 35674,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "title": "Preguntas sin respuesta · teléfono · etapa 23",
+      "page": "formularios"
+    },
+    "WA-Chats-Casos.dc.html": {
+      "x": 7600,
+      "y": 34154,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Clientes · los casos del asistente · etapa 23",
+      "page": "formularios"
+    },
+    "M-WA-Chats-Casos.dc.html": {
+      "x": 470,
+      "y": 35674,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "title": "Los casos · teléfono · etapa 23",
+      "page": "formularios"
+    },
+    "M-WA-Modo-Atencion.dc.html": {
+      "x": 940,
+      "y": 35674,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "title": "El modo de atención · teléfono · etapa 23",
+      "page": "formularios"
+    },
+    "FRM-Editor-Reglas-23.dc.html": {
+      "x": 18240,
+      "y": 34154,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1300,
+      "title": "Formularios · armar una regla desde un texto · etapa 23",
+      "page": "formularios"
+    },
+    "M-FRM-Reglas-23.dc.html": {
+      "x": 2350,
+      "y": 35674,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "title": "Armar una regla · teléfono · etapa 23",
+      "page": "formularios"
+    },
+    "FRM-Catalogos-23.dc.html": {
+      "x": 19760,
+      "y": 34154,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · Catálogos · «Por aprobar» · etapa 23",
+      "page": "formularios"
+    },
+    "FRM-Dar-De-Baja-23.dc.html": {
+      "x": 25840,
+      "y": 34154,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · dar de baja · etapa 23",
+      "page": "formularios"
+    },
+    "FRM-Editor-Baja-23.dc.html": {
+      "x": 27360,
+      "y": 34154,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "title": "Formularios · un dado de baja · etapa 23",
+      "page": "formularios"
+    },
+    "Plat-Asistente-Config-23.dc.html": {
+      "x": 0,
+      "y": 3480,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1100,
+      "title": "Plataforma · el asistente · los máximos · etapa 23",
+      "page": "plat-formularios"
+    },
+    "M-Plat-Asistente-Config-23.dc.html": {
+      "x": 1520,
+      "y": 3480,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "title": "Plataforma · los máximos · teléfono · etapa 23",
+      "page": "plat-formularios"
+    },
+    "Campana-23.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "formularios",
+      "title": "Avisos · la campana · etapa 23",
+      "w": 1440,
+      "x": 28880,
+      "y": 34154
+    },
+    "M-Campana-23.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "formularios",
+      "title": "Avisos · la campana · teléfono · etapa 23",
+      "w": 390,
+      "x": 3290,
+      "y": 35674
     }
   },
   "createdOnFiles": {
@@ -3884,7 +4064,7 @@
       "y": 33954,
       "w": 900,
       "maxW": 8000,
-      "text": "Etapa 23 · El asistente",
+      "text": "Etapa 23 · El asistente, con Casos",
       "page": "formularios"
     },
     "t-formularios-13": {
@@ -4267,7 +4447,25 @@
     "FRM-Cargar-Respuesta-21.dc.html",
     "M-FRM-Cargar-Respuesta-21.dc.html",
     "FRM-Dar-De-Baja-21.dc.html",
-    "FRM-Editor-Baja-21.dc.html"
+    "FRM-Editor-Baja-21.dc.html",
+    "WA-Asistente.dc.html",
+    "WA-Asistente-Casos.dc.html",
+    "WA-Asistente-Probar.dc.html",
+    "WA-Asistente-Limites.dc.html",
+    "WA-Modo-Atencion.dc.html",
+    "WA-Preguntas-Sin-Respuesta.dc.html",
+    "M-WA-Asistente.dc.html",
+    "M-WA-Preguntas-Sin-Respuesta.dc.html",
+    "WA-Chats-Casos.dc.html",
+    "M-WA-Chats-Casos.dc.html",
+    "M-WA-Modo-Atencion.dc.html",
+    "FRM-Editor-Reglas-23.dc.html",
+    "M-FRM-Reglas-23.dc.html",
+    "FRM-Catalogos-23.dc.html",
+    "FRM-Dar-De-Baja-23.dc.html",
+    "FRM-Editor-Baja-23.dc.html",
+    "Plat-Asistente-Config-23.dc.html",
+    "M-Plat-Asistente-Config-23.dc.html"
   ],
   "pages": [
     {

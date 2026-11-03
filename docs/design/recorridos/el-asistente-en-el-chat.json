@@ -13,7 +13,7 @@
       "resaltar": ".f-menu .f-mi:has-text(\"Pasar a modo Asistente\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Pasa la conversación al asistente",
-      "texto": "Desde el ⋮ de la conversación, con el permiso de administrar WhatsApp. Solo en Internos, con empleados.",
+      "texto": "Desde el ⋮ de la conversación, con el permiso de administrar WhatsApp.",
       "avanzar": "Tocá «Pasar a modo Asistente».",
       "ruta": "WhatsApp › Chats › Internos",
       "accion": "Elige el modo Asistente."
@@ -26,7 +26,7 @@
       "resaltar": ".w-dlg button.cb-pri:has-text(\"Pasar a Asistente\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Confirma",
-      "texto": "El asistente reconoce pedidos y manda formularios prellenados. Nunca guarda una respuesta solo.",
+      "texto": "Atiende con los casos de la organización y nunca guarda una respuesta solo.",
       "avanzar": "Tocá «Pasar a Asistente».",
       "ruta": "WhatsApp › Chats › Internos",
       "accion": "Confirma el modo."

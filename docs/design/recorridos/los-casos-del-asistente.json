@@ -1,0 +1,125 @@
+{
+  "id": "los-casos-del-asistente",
+  "titulo": "Los casos del asistente",
+  "etapa": "Etapa 23 · El asistente",
+  "orden": 5,
+  "resumen": "Lucía arma y prueba los casos; Martina escribe por WhatsApp y el asistente contesta lo cargado, deriva lo que falta y atiende una ráfaga con tres acciones.",
+  "pasos": [
+    {
+      "tablero": "WA-Asistente",
+      "tweaks": {
+        "estado": "Casos"
+      },
+      "resaltar": "button.ib[aria-label=\"Editar el caso 1\"]",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Arma los casos",
+      "texto": "Cada caso dice cuándo aplica, para quién y qué hacer. Los formularios van en su bloque, y «Cualquier otra cosa», al final.",
+      "avanzar": "Tocá ✎ en el caso 1.",
+      "ruta": "WhatsApp › Asistente",
+      "accion": "Abre el caso 1."
+    },
+    {
+      "tablero": "WA-Asistente-Casos",
+      "tweaks": {
+        "estado": "Editar un caso"
+      },
+      "resaltar": ".as23-ed .q-pie button",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "El caso se abre en el lugar",
+      "texto": "Como una pregunta del formulario: cuándo, para quién, el tipo de entrada y una de las seis acciones.",
+      "avanzar": "Tocá «Listo».",
+      "ruta": "WhatsApp › Asistente",
+      "accion": "Cierra el caso."
+    },
+    {
+      "tablero": "WA-Asistente-Probar",
+      "tweaks": {
+        "estado": "¿Hacen envíos a Córdoba?"
+      },
+      "resaltar": ".pr-res",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Prueba antes de usarlo",
+      "texto": "Probar muestra qué haría, en orden: cada acción con su caso, su porqué y cómo la vería la persona. No se manda nada.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Asistente",
+      "accion": "Prueba un mensaje."
+    },
+    {
+      "tablero": "WA-Chats-Casos",
+      "tweaks": {
+        "estado": "Responde con el conocimiento"
+      },
+      "actor": "Martina · cliente · WhatsApp",
+      "titulo": "Martina escribe",
+      "texto": "Saluda, pregunta la hora y si atienden los sábados. La IA contesta lo general y lo cargado, y el sistema guarda por qué respondió cada cosa.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats › Clientes",
+      "accion": "Escribe por WhatsApp."
+    },
+    {
+      "tablero": "WA-Chats-Casos",
+      "tweaks": {
+        "estado": "Por qué respondió esto"
+      },
+      "resaltar": ".as-por",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Mira por qué respondió",
+      "texto": "El caso, lo que usó del conocimiento y por qué. El sistema lo guarda con cada acción.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats › Clientes",
+      "accion": "Abre «Por qué respondió esto»."
+    },
+    {
+      "tablero": "WA-Chats-Casos",
+      "tweaks": {
+        "estado": "Sin la información: deriva"
+      },
+      "resaltar": ".hc .acc .as-np",
+      "actor": "Martina · cliente · WhatsApp",
+      "titulo": "Pregunta algo que no está cargado",
+      "texto": "La IA pregunta para entender y dice que lo consulta. El sistema manda el mensaje al derivar y el chat queda «Necesita una persona».",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats › Clientes",
+      "accion": "Pregunta por envíos a Córdoba."
+    },
+    {
+      "tablero": "WA-Chats-Casos",
+      "tweaks": {
+        "estado": "Una ráfaga: tres acciones"
+      },
+      "resaltar": ".as-card",
+      "actor": "Martina · cliente · WhatsApp",
+      "titulo": "Tres mensajes seguidos",
+      "texto": "El sistema los junta y los procesa de una vez. La IA propone hasta tres acciones, y el sistema valida cada una antes de mandarla.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats › Clientes",
+      "accion": "Manda tres mensajes."
+    },
+    {
+      "tablero": "M-WA-Chats-Casos",
+      "tweaks": {
+        "estado": "Una ráfaga: tres acciones"
+      },
+      "resaltar": ".ap-cbar .as-np",
+      "actor": "Lucía · Dueña · teléfono",
+      "titulo": "En el teléfono",
+      "texto": "Las mismas tres acciones, cada una con su porqué, y la marca «Necesita una persona» en la cabecera.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats › Clientes",
+      "accion": "Abre el chat."
+    },
+    {
+      "tablero": "WA-Preguntas-Sin-Respuesta",
+      "tweaks": {
+        "estado": "Acciones de un tema"
+      },
+      "resaltar": ".f-menu .f-mi:has-text(\"Completar el conocimiento\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Completa el conocimiento",
+      "texto": "La pregunta quedó anotada por tema, sin nombres ni mensajes. «Completar el conocimiento» lleva a la pestaña del asistente.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "WhatsApp › Preguntas sin respuesta",
+      "accion": "Completa lo que faltaba."
+    }
+  ]
+}
