@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 155 · 3 de noviembre de 2026"
+VERSION = "versión 156 · 3 de noviembre de 2026"
 
 # La guía de Formularios lleva su capítulo y, aparte, las pantallas de la biblioteca de la plataforma (las «plat-frm-»); la del lienzo,
 # el resto. Cada una es un artefacto aparte, porque una versión de un artefacto admite hasta 511 archivos. El índice del lienzo sigue
@@ -140,7 +140,7 @@ CAPITULOS = [
          "Los contactos de Clientes, filtrados por etiqueta, con su nombre; el teléfono nunca se ve. Sin WhatsApp, no se puede usar."),
         ("frm-catalogo-campos", "Los campos de un catálogo", "/org/formularios/catalogos/:id", "no", "13 y 14", ["FRM-Catalogo-13", "FRM-Catalogo-Campos", "FRM-Catalogo-14"], ["M-FRM-Catalogo-13", "M-FRM-Catalogo-Campos", "M-FRM-Catalogo-Opciones-13", "M-FRM-Catalogo-14"], ["FRM-Catalogo-Opciones-13"],
          "Un catálogo escrito a mano suma sus campos, como CUIT o Zona, en una tabla que se edita ahí mismo, y las opciones, una columna por campo. Hasta 20 campos. «En WhatsApp» elige qué va en el título y en la descripción de cada opción. Si una tabla no entra, se desplaza a lo ancho con lo principal fijo. Desde la 14, «Lo usan», y un campo en uso no se quita."),
-        ("frm-formularios", "Formularios", "/org/formularios", "no", "14, 15, 17, 21 y 22", ["FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-21", "FRM-Formularios-22"], ["M-FRM-Formularios", "M-FRM-Formularios-15", "M-FRM-Formularios-17", "M-FRM-Formularios-21"], [],
+        ("frm-formularios", "Formularios", "/org/formularios", "no", "14, 15, 17, 21 y 22", ["FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-21", "FRM-Formularios-22"], ["M-FRM-Formularios", "M-FRM-Formularios-15", "M-FRM-Formularios-17", "M-FRM-Formularios-21", "M-FRM-Formularios-22"], [],
          "Una sola lista, con los borradores y los publicados, y cómo está cada uno en WhatsApp. Cada etapa le suma lo suyo: las respuestas (15), el ⋮ y los dados de baja (17), lo que espera aprobación (21) y «Nuevo formulario» desde una plantilla (22)."),
         ("frm-editor", "Diseño de un formulario", "/org/formularios/:id", "no", "14 y 18", ["FRM-Editor", "FRM-Editor-18"], ["M-FRM-Editor", "M-FRM-Editor-18"], [],
          "La pestaña Diseño: el formulario, las preguntas que se abren en el lugar (también «elegir varias» y las de catálogo, con «Permitir elegir varias») y cómo lo ve quien lo recibe. Las fotos y los documentos llegan con la 18. Con cambios sin guardar, publicar queda grisado."),
@@ -178,9 +178,9 @@ CAPITULOS = [
         ("frm-correo", "La pregunta «Correo»", "/org/formularios/:id", "no", "21", ["FRM-Editor-21", "FRM-Cargar-Respuesta-21"], ["M-FRM-Editor-21", "M-FRM-Cargar-Respuesta-21"], ["FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21"],
          "Un tipo de respuesta nuevo, validado; en la carga desde la web ocupa dos columnas. Al dar de baja, se conservan el PDF y las aprobaciones, y lo que espera se puede seguir decidiendo."),
         ("frm-biblioteca", "Biblioteca de plantillas", "Formularios › Nuevo formulario › Desde una plantilla", "no", "22", ["FRM-Biblioteca"], ["M-FRM-Biblioteca"], ["FRM-Plantilla", "M-FRM-Plantilla", "FRM-Plantilla-Usar"],
-         "Las plantillas que publica la plataforma, por categoría. Usar una crea una copia propia en borrador, con sus catálogos."),
+         "Las plantillas que publica la plataforma, por categoría, y en qué formulario ya usaste cada una. La vista de una dice qué trae: preguntas, catálogos y reglas de ejemplo en palabras. Usarla crea una copia propia en borrador, con el prefijo propuesto."),
         ("frm-reglas-plantilla", "Las reglas que trae una plantilla", "/org/formularios/:id", "no", "22", ["FRM-Editor-Reglas-Plantilla"], ["M-FRM-Reglas-Plantilla"], [],
-         "Al usar una plantilla, sus reglas llegan sin guardar: se elige el rol de cada acción que lo pide y se guardan. El diseño del PDF llega listo."),
+         "El formulario nuevo abre en borrador. Sus reglas llegan sin guardar: se elige lo que es de cada organización (el rol, la persona, la dirección y la plantilla de WhatsApp) y se guardan; lo que falta se marca al tocar «Guardar reglas». El diseño del PDF llega listo."),
         ("frm-asistente-chat", "El asistente en el chat", "WhatsApp › Chats › Internos", "no", "23", ["WA-Chats-Asistente"], ["M-WA-Conversacion-Asistente"], ["WA-Chats-Sugerencia", "WA-Chats-Audio"],
          "En modo Asistente reconoce el pedido y manda el formulario prellenado, con por qué lo mandó; «Tomar atención manual» lo corta. En atención manual, sugiere. Los audios se pasan a texto."),
         ("frm-asistente-editor", "Lo que ofrece el asistente", "/org/formularios/:id", "no", "23", ["FRM-Editor-Asistente"], [], ["FRM-Editor-Sugerencias", "FRM-Respuesta-Cadena", "FRM-Catalogo-Propuesta"],
@@ -190,13 +190,13 @@ CAPITULOS = [
     ]),
     ("plataforma", "La plataforma", "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales, el WhatsApp propio y la biblioteca de formularios.", [
         ("plat-frm-biblioteca", "Biblioteca de formularios", "Administración › Formularios › Biblioteca", "no", "22", ["Plat-FRM-Biblioteca"], ["M-Plat-FRM-Biblioteca"], ["Plat-FRM-Plantilla-Nueva"],
-         "Las plantillas que la plataforma ofrece a las organizaciones: borrador, publicada o retirada, y cuántas organizaciones la usaron."),
+         "Las plantillas que la plataforma ofrece a las organizaciones: borrador, publicada o retirada, y cuántas organizaciones la usaron. Sin versión ni «Cambios sin publicar»: eso lo dicen «Publicar» habilitado y el historial."),
         ("plat-frm-plantilla", "Una plantilla", "Administración › Formularios › Biblioteca › una plantilla", "no", "22", ["Plat-FRM-Plantilla"], [], ["Plat-FRM-Publicar", "Plat-FRM-Retirar"],
-         "El mismo editor de los formularios, con sus catálogos y la publicación: versiones con motivo, publicar, retirar y volver a publicar."),
+         "El mismo editor de los formularios, con la categoría, el prefijo sugerido y la descripción; sus catálogos, con su origen; y la publicación: versiones con motivo, la comprobación por pregunta, catálogo o regla, retirar desde el ⋮ y volver a publicar."),
         ("plat-frm-reglas", "Reglas de ejemplo de una plantilla", "Administración › Formularios › Biblioteca › una plantilla", "no", "22", ["Plat-FRM-Plantilla-Reglas"], [], ["Plat-FRM-Pdf"],
-         "Debajo de las preguntas, las reglas que trae la plantilla y el diseño de su PDF. Los roles los elige cada organización: la plantilla solo sugiere uno."),
+         "Debajo de las preguntas, las reglas de la 21, que se guardan con el borrador. Lo que es de cada organización va con candado: el rol (la plantilla solo sugiere uno), la persona, la dirección y la plantilla de WhatsApp; en el PDF, el logo, los datos y el color."),
         ("plat-frm-categorias", "Categorías de formularios", "Administración › Formularios › Categorías", "no", "22", ["Plat-FRM-Categorias"], [], [],
-         "La lista corta de categorías, con su orden. Todo pide motivo, y una categoría en uso no se borra."),
+         "La lista corta de categorías, con su orden y ↑ ↓ ✎ 🗑 a la vista. Todo pide motivo, y una categoría en uso no se borra: el motivo va en el tooltip."),
         ("organizaciones", "Organizaciones", "/plataforma/organizaciones", "no", "5", ["Organizaciones"], ["M-Organizaciones"], ["M-Mas-Plat"],
          "Todas las organizaciones, con su Dueño, su origen y su estado. Aprobar, rechazar y crear."),
         ("organizacion", "Ficha de una organización", "/plataforma/organizaciones/:id", "no", "5", ["Organizacion"], ["M-Organizacion"], [],

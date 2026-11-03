@@ -3,7 +3,7 @@
   "titulo": "Armar y publicar una plantilla",
   "etapa": "Etapa 22 · Biblioteca",
   "orden": 10,
-  "resumen": "Martín arma una plantilla de formulario en Plataforma, revisa sus catálogos y la publica con un motivo.",
+  "resumen": "Martín arma una plantilla de formulario en Plataforma, con sus reglas de ejemplo y el diseño del PDF, y la publica con un motivo.",
   "pasos": [
     {
       "tablero": "Plat-FRM-Biblioteca",
@@ -13,7 +13,7 @@
       "resaltar": "a.cb-pri:has-text(\"Nueva plantilla\")",
       "actor": "Martín · Operador · web",
       "titulo": "Abre la biblioteca",
-      "texto": "Las plantillas que la plataforma ofrece a las organizaciones, con su estado y cuántas la usaron.",
+      "texto": "Las plantillas que la plataforma ofrece a las organizaciones: borrador, publicada o retirada, y cuántas organizaciones la usaron.",
       "avanzar": "Tocá «Nueva plantilla».",
       "ruta": "/plataforma/formularios",
       "accion": "Toca «Nueva plantilla»."
@@ -34,27 +34,54 @@
     {
       "tablero": "Plat-FRM-Plantilla",
       "tweaks": {
-        "estado": "Plantilla"
+        "estado": "Con cambios"
       },
+      "resaltar": ".w-bnd button.cb-sec:has-text(\"Guardar borrador\")",
       "actor": "Martín · Operador · web",
       "titulo": "Arma la plantilla",
-      "texto": "Es el mismo editor que usan las organizaciones: la categoría, el prefijo sugerido, la descripción y las preguntas, con cómo lo ve quien lo recibe.",
-      "avanzar": "Siguiente.",
+      "texto": "El editor de los formularios, con la categoría, el prefijo sugerido, para quién es y la descripción. Cada pregunta se abre en el lugar, con ↑ ↓ ✎ 🗑 a la vista.",
+      "avanzar": "Tocá «Guardar borrador».",
       "ruta": "/plataforma/formularios/:id",
-      "accion": "Ve la plantilla."
+      "accion": "Guarda el borrador."
     },
     {
-      "tablero": "Plat-FRM-Plantilla",
+      "tablero": "Plat-FRM-Plantilla-Reglas",
       "tweaks": {
-        "estado": "Catálogos"
+        "estado": "Editar una regla"
       },
-      "resaltar": "a.cb-pri:has-text(\"Publicar\")",
+      "resaltar": "a.lnk:has-text(\"Ver el diseño\")",
       "actor": "Martín · Operador · web",
-      "titulo": "Revisa sus catálogos",
-      "texto": "Los catálogos que trae la plantilla, escritos a mano. Cada uno se abre aparte, con sus opciones.",
-      "avanzar": "Tocá «Publicar».",
+      "titulo": "Las reglas de ejemplo",
+      "texto": "Debajo de las preguntas, las reglas de la 21. Lo que es de cada organización va con candado: el rol, con uno sugerido, la persona, la dirección y la plantilla de WhatsApp.",
+      "avanzar": "Tocá «Ver el diseño» en la regla 2.",
       "ruta": "/plataforma/formularios/:id",
-      "accion": "Toca «Publicar»."
+      "accion": "Abre el diseño del PDF."
+    },
+    {
+      "tablero": "Plat-FRM-Pdf",
+      "tweaks": {
+        "estado": "Diseño"
+      },
+      "resaltar": ".pd-enc",
+      "actor": "Martín · Operador · web",
+      "titulo": "La base del PDF",
+      "texto": "El estilo, las secciones, las firmas y el pie. El logo, los datos y el color los pone cada organización: acá van como marcadores.",
+      "avanzar": "Volvé a la plantilla y tocá «Publicar».",
+      "ruta": "/plataforma/formularios/:id/pdf",
+      "accion": "Vuelve y toca «Publicar»."
+    },
+    {
+      "tablero": "Plat-FRM-Publicar",
+      "tweaks": {
+        "estado": "Con problemas"
+      },
+      "resaltar": ".z-caja:has-text(\"Problemas\")",
+      "actor": "Martín · Operador · web",
+      "titulo": "La comprobación",
+      "texto": "Antes de publicar, revisa cada pregunta, catálogo y regla. Con algo por resolver, «Publicar versión 3» queda grisado.",
+      "avanzar": "Siguiente.",
+      "ruta": "/plataforma/formularios/:id",
+      "accion": "Resuelve lo marcado."
     },
     {
       "tablero": "Plat-FRM-Publicar",
@@ -64,7 +91,7 @@
       "resaltar": ".w-dlg button.cb-pri:has-text(\"Publicar versión 3\")",
       "actor": "Martín · Operador · web",
       "titulo": "Publica con un motivo",
-      "texto": "La comprobación dice qué cambia. Si faltara algo, lo marca por pregunta o por catálogo y no deja publicar.",
+      "texto": "Dice qué cambia respecto de lo publicado: preguntas, catálogos y reglas.",
       "avanzar": "Tocá «Publicar versión 3».",
       "ruta": "/plataforma/formularios/:id",
       "accion": "Publica la versión 3."
@@ -76,7 +103,7 @@
       },
       "actor": "Martín · Operador · web",
       "titulo": "Queda la versión nueva",
-      "texto": "Las versiones, con fecha, operador y motivo. Retirar va en el ⋮: las copias que ya hicieron no cambian.",
+      "texto": "Las versiones, con fecha, operador y motivo. «Retirar» va en el ⋮ de la banda: las copias que ya hicieron no cambian.",
       "avanzar": "Fin del recorrido.",
       "ruta": "/plataforma/formularios/:id",
       "accion": "Ve la publicación."

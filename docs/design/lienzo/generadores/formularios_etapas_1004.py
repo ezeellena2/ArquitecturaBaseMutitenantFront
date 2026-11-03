@@ -54,7 +54,7 @@ FILAS = [
      ["M-FRM-Formularios-21", "M-FRM-Reglas", "M-FRM-Respuestas-21", "M-FRM-Respuesta-Aprobacion", "M-FRM-Tablero-21", "M-FRM-Respuesta-Corregir", "M-FRM-Respuesta-Anular",
       "M-FRM-Respuestas-Propias-21", "M-FRM-Editor-21", "M-FRM-Cargar-Respuesta-21", "M-Campana-21", "M-WA-Conversacion-Avisos"]),
     (22, "Etapa 22 · Biblioteca", ["FRM-Formularios-22", "FRM-Biblioteca", "FRM-Plantilla", "FRM-Plantilla-Usar", "FRM-Editor-Reglas-Plantilla"],
-     ["M-FRM-Biblioteca", "M-FRM-Plantilla", "M-FRM-Reglas-Plantilla"]),
+     ["M-FRM-Formularios-22", "M-FRM-Biblioteca", "M-FRM-Plantilla", "M-FRM-Reglas-Plantilla"]),
     (23, "Etapa 23 · El asistente", ["FRM-Editor-Asistente", "FRM-Editor-Sugerencias", "FRM-Catalogo-Propuesta", "FRM-Respuesta-Cadena", "FRM-Faltan",
                                      "WA-Chats-Asistente", "WA-Chats-Sugerencia", "WA-Chats-Audio"],
      ["M-FRM-Faltan", "M-WA-Conversacion-Asistente"]),

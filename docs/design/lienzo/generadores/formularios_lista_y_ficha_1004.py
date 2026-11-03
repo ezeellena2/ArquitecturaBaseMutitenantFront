@@ -91,7 +91,7 @@ class Etapa:
 
     def __init__(self, n):
         self.n, self.resp, self.ciclo, self.aprob, self.plantilla = n, n >= 15, n >= 17, n >= 21, n >= 22
-        self.carga = n in (20, 21)  # la lista de la 22 lo suma cuando se alinee
+        self.carga = n >= 20
 
 
 # (nombre, clave, (clase, estado en WhatsApp, ⓘ), preguntas, último cambio, por aprobar, respuestas, última o None)
@@ -445,7 +445,7 @@ CSS_TLISTA = """.ap-fila.fx { display: flex; align-items: center; gap: 8px; }
 .ap-fila .cb-ch[disabled] { opacity: 0.55; }
 .ap-fila .fm-cnt { min-width: 24px; height: 24px; padding: 0 8px; box-sizing: border-box; border-radius: 999px; background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 """
-TLISTAS = {"M-FRM-Formularios": 14, "M-FRM-Formularios-15": 15, "M-FRM-Formularios-17": 17, "M-FRM-Formularios-20": 20, "M-FRM-Formularios-21": 21}
+TLISTAS = {"M-FRM-Formularios": 14, "M-FRM-Formularios-15": 15, "M-FRM-Formularios-17": 17, "M-FRM-Formularios-20": 20, "M-FRM-Formularios-21": 21, "M-FRM-Formularios-22": 22}
 
 
 def enlaces_21(t):
@@ -453,6 +453,14 @@ def enlaces_21(t):
     for a in ["FRM-Respuestas", "FRM-Cargar-Respuesta", "FRM-Editor", "FRM-Respuestas-Propias", "FRM-Dar-De-Baja"]:
         t = t.replace(f'"{a}.dc.html"', f'"{a}-21.dc.html"').replace(f'"M-{a}.dc.html"', f'"M-{a}-21.dc.html"')
     return t.replace('"M-FRM-Dar-De-Baja-21.dc.html"', '"M-FRM-Formularios-21.dc.html"')
+
+
+def enlaces_de(n, t):
+    """La lista de la 21 abre lo de la 21; la de la 22 también, y «Desde cero» abre el editor de un formulario nuevo."""
+    if n.endswith("-22"):
+        t = enlaces_21(t).replace('"M-FRM-Formularios-21.dc.html"', '"M-FRM-Formularios-22.dc.html"')
+        return re.sub(r'href="(M-)?FRM-Editor-21\.dc\.html">((?:(?!</a>).)*?Desde cero)', r'href="\1FRM-Editor.dc.html">\2', t, flags=re.S)
+    return enlaces_21(t) if n.endswith("-21") else t
 
 
 def t_fila(f, e, menu=True, cuenta=True):
@@ -827,6 +835,7 @@ NUEVOS = {"FRM-Formularios-15": (1440, 900, "Formularios · la lista · etapa 15
           "FRM-Formularios-21": (1440, 900, "Formularios · la lista · etapa 21"), "FRM-Formularios-22": (1440, 900, "Formularios · la lista · etapa 22"),
           "M-FRM-Formularios": (390, 844, "Formularios · la lista · teléfono"), "M-FRM-Formularios-15": (390, 844, "Formularios · la lista · teléfono · etapa 15"),
           "M-FRM-Formularios-17": (390, 844, "Formularios · la lista · teléfono · etapa 17"), "M-FRM-Formularios-21": (390, 844, "Formularios · la lista · teléfono · etapa 21"),
+          "M-FRM-Formularios-22": (390, 844, "Formularios · la lista · teléfono · etapa 22"),
           "FRM-Tablero": (1440, 1500, "Formularios · un formulario · Tablero"), "M-FRM-Tablero": (390, 844, "Formularios · un formulario · Tablero · teléfono")}
 AL_ARCHIVO = {"FRM-Listado": "Formularios · diseñar formularios (hasta la v140)", "M-FRM-Listado": "Diseñar formularios · teléfono (hasta la v140)"}
 TOCADOS = ["FRM-Formularios", "FRM-Copiar", "FRM-Reactivar-Eliminar", "M-FRM-Respuestas"] + RESPUESTAS_TAB + DISENO_TAB + ["M-FRM-Editor-Baja"]
@@ -856,10 +865,10 @@ if __name__ == "__main__":
     panel_e16 = re.search(r'<style data-e16="panel">\n(.*?)</style>', leer("FRM-Catalogos"), re.S)
     E.R.CSS_PANEL_E16 = panel_e16.group(1) if panel_e16 else ""
     for n in LISTAS:
-        escribir(n, enlaces_21(lista(n)) if n.endswith("-21") else lista(n))
+        escribir(n, enlaces_de(n, lista(n)))
     escribir("FRM-Copiar", B.copiar())
     for n in TLISTAS:
-        escribir(n, enlaces_21(tel_lista(n)) if n.endswith("-21") else tel_lista(n))
+        escribir(n, enlaces_de(n, tel_lista(n)))
     escribir("FRM-Tablero", tablero())
     escribir("M-FRM-Tablero", tel_tablero())
     escribir("M-FRM-Respuestas", tel_respuestas())

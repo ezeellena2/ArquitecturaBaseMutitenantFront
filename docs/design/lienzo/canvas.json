@@ -1879,17 +1879,17 @@
       "page": "plat-formularios"
     },
     "Plat-FRM-Plantilla.dc.html": {
-      "x": 3040,
-      "y": 260,
+      "x": 0,
+      "y": 1280,
       "w": 1440,
-      "h": 1100,
+      "h": 1960,
       "title": "Plataforma · plantilla de formulario",
       "page": "plat-formularios",
       "is_interactive": true
     },
     "Plat-FRM-Publicar.dc.html": {
       "x": 4560,
-      "y": 260,
+      "y": 1280,
       "w": 1440,
       "h": 1100,
       "title": "Plataforma · publicar una plantilla",
@@ -1898,16 +1898,16 @@
     },
     "Plat-FRM-Retirar.dc.html": {
       "x": 6080,
-      "y": 260,
+      "y": 1280,
       "w": 1440,
-      "h": 1100,
+      "h": 1000,
       "title": "Plataforma · retirar una plantilla",
       "page": "plat-formularios",
       "is_interactive": true
     },
     "Plat-FRM-Categorias.dc.html": {
-      "x": 0,
-      "y": 1280,
+      "x": 3040,
+      "y": 260,
       "w": 1440,
       "h": 900,
       "title": "Plataforma · categorías de formularios",
@@ -1918,44 +1918,44 @@
       "y": 30710,
       "w": 1440,
       "h": 900,
-      "title": "Formularios · biblioteca",
+      "title": "Formularios · biblioteca · etapa 22",
       "page": "formularios"
     },
     "FRM-Plantilla.dc.html": {
       "x": 3040,
       "y": 30710,
       "w": 1440,
-      "h": 1480,
-      "title": "Formularios · una plantilla",
+      "h": 1960,
+      "title": "Formularios · una plantilla · etapa 22",
       "page": "formularios"
     },
     "FRM-Plantilla-Usar.dc.html": {
       "x": 4560,
       "y": 30710,
       "w": 1440,
-      "h": 1480,
-      "title": "Formularios · usar una plantilla",
+      "h": 1000,
+      "title": "Formularios · usar una plantilla · etapa 22",
       "page": "formularios"
     },
     "M-FRM-Biblioteca.dc.html": {
-      "x": 0,
-      "y": 32310,
+      "x": 470,
+      "y": 32790,
       "w": 390,
       "h": 844,
-      "title": "Formularios · biblioteca · teléfono",
+      "title": "Formularios · biblioteca · teléfono · etapa 22",
       "page": "formularios"
     },
     "M-FRM-Plantilla.dc.html": {
-      "x": 470,
-      "y": 32310,
+      "x": 940,
+      "y": 32790,
       "w": 390,
       "h": 844,
-      "title": "Formularios · una plantilla · teléfono",
+      "title": "Formularios · una plantilla · teléfono · etapa 22",
       "page": "formularios"
     },
     "M-Plat-FRM-Biblioteca.dc.html": {
-      "x": 0,
-      "y": 2300,
+      "x": 4560,
+      "y": 260,
       "w": 390,
       "h": 844,
       "title": "Plataforma · biblioteca de formularios · teléfono",
@@ -2363,7 +2363,7 @@
     },
     "WA-Chats-Asistente.dc.html": {
       "x": 7600,
-      "y": 33674,
+      "y": 34154,
       "w": 1440,
       "h": 900,
       "title": "WhatsApp · Internos · el asistente atiende",
@@ -2372,7 +2372,7 @@
     },
     "WA-Chats-Sugerencia.dc.html": {
       "x": 9120,
-      "y": 33674,
+      "y": 34154,
       "w": 1440,
       "h": 900,
       "title": "WhatsApp · Internos · el asistente sugiere",
@@ -2381,7 +2381,7 @@
     },
     "WA-Chats-Audio.dc.html": {
       "x": 10640,
-      "y": 33674,
+      "y": 34154,
       "w": 1440,
       "h": 900,
       "title": "WhatsApp · Internos · audios",
@@ -2390,7 +2390,7 @@
     },
     "FRM-Catalogo-Propuesta.dc.html": {
       "x": 3040,
-      "y": 33674,
+      "y": 34154,
       "w": 1440,
       "h": 1000,
       "title": "Formularios · catálogo propuesto por el asistente",
@@ -2399,7 +2399,7 @@
     },
     "FRM-Faltan.dc.html": {
       "x": 6080,
-      "y": 33674,
+      "y": 34154,
       "w": 1440,
       "h": 900,
       "title": "Formularios · formularios que faltan",
@@ -2408,7 +2408,7 @@
     },
     "FRM-Editor-Asistente.dc.html": {
       "x": 0,
-      "y": 33674,
+      "y": 34154,
       "w": 1440,
       "h": 1400,
       "title": "Formularios · editor · cuándo lo ofrece el asistente",
@@ -2417,7 +2417,7 @@
     },
     "FRM-Editor-Sugerencias.dc.html": {
       "x": 1520,
-      "y": 33674,
+      "y": 34154,
       "w": 1440,
       "h": 1400,
       "title": "Formularios · editor · qué sugerir después",
@@ -2426,7 +2426,7 @@
     },
     "FRM-Respuesta-Cadena.dc.html": {
       "x": 4560,
-      "y": 33674,
+      "y": 34154,
       "w": 1440,
       "h": 900,
       "title": "Formularios · una respuesta · de dónde vino",
@@ -2435,7 +2435,7 @@
     },
     "M-WA-Conversacion-Asistente.dc.html": {
       "x": 470,
-      "y": 35194,
+      "y": 35674,
       "w": 390,
       "h": 844,
       "title": "WhatsApp · el asistente · teléfono",
@@ -2444,7 +2444,7 @@
     },
     "M-FRM-Faltan.dc.html": {
       "x": 0,
-      "y": 35194,
+      "y": 35674,
       "w": 390,
       "h": 844,
       "title": "Formularios · formularios que faltan · teléfono",
@@ -2453,18 +2453,18 @@
     },
     "Plat-FRM-Plantilla-Reglas.dc.html": {
       "x": 1520,
-      "y": 1480,
+      "y": 1280,
       "w": 1440,
-      "h": 1400,
+      "h": 1500,
       "title": "Plataforma · plantilla · reglas de ejemplo",
       "page": "plat-formularios",
       "is_interactive": true
     },
     "Plat-FRM-Pdf.dc.html": {
       "x": 3040,
-      "y": 1480,
+      "y": 1280,
       "w": 1440,
-      "h": 900,
+      "h": 1500,
       "title": "Plataforma · plantilla · diseño del PDF",
       "page": "plat-formularios",
       "is_interactive": true
@@ -2473,17 +2473,17 @@
       "x": 6080,
       "y": 30710,
       "w": 1440,
-      "h": 1400,
-      "title": "Formularios · editor · las reglas que trae una plantilla",
+      "h": 1600,
+      "title": "Formularios · las reglas que trae una plantilla · etapa 22",
       "page": "formularios",
       "is_interactive": true
     },
     "M-FRM-Reglas-Plantilla.dc.html": {
-      "x": 940,
-      "y": 32310,
+      "x": 1410,
+      "y": 32790,
       "w": 390,
       "h": 844,
-      "title": "Formularios · las reglas que trae una plantilla · teléfono",
+      "title": "Formularios · las reglas que trae una plantilla · teléfono · etapa 22",
       "page": "formularios",
       "is_interactive": true
     },
@@ -3638,6 +3638,15 @@
       "w": 390,
       "x": 4700,
       "y": 29346
+    },
+    "M-FRM-Formularios-22.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "formularios",
+      "title": "Formularios · la lista · teléfono · etapa 22",
+      "w": 390,
+      "x": 0,
+      "y": 32790
     }
   },
   "createdOnFiles": {
@@ -3872,7 +3881,7 @@
     "t-formularios-23": {
       "kind": "title1",
       "x": 0,
-      "y": 33474,
+      "y": 33954,
       "w": 900,
       "maxW": 8000,
       "text": "Etapa 23 · El asistente",

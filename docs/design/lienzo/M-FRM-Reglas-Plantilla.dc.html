@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Reglas de la plantilla · teléfono</title>
+<title>Las reglas que trae una plantilla · teléfono</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/ab/components/bundle.css">
 <script src="ds/ab/components/bundle.js"></script>
@@ -1047,6 +1047,90 @@ a.w-conv { text-decoration: none; color: inherit; }
 .k-prueba .cb { height: 48px; align-self: flex-end; border-radius: 12px; }
 .ap-dato .v.mal { color: oklch(0.5 0.19 25); }
 .q-row .tx .mal { color: oklch(0.5 0.19 25); }
+.d-tx { grid-column: 1 / -1; margin: 0; font-size: 14px; line-height: 1.5; color: var(--t2); }
+.w-dlg .df .cb[disabled] { opacity: 0.55; cursor: default; }
+.ac .cb[disabled] { opacity: 0.55; cursor: default; }
+.f-toast { position: absolute; z-index: 41; right: 24px; bottom: 24px; }
+.ab-sub { font-size: 12.5px; color: var(--t3); }
+.ab-chip { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 6px; border: 1px solid var(--borde); background: #fff; font-size: 12px; font-weight: 600; color: var(--t2); white-space: nowrap; }
+.ab-chip.falta { border-color: oklch(0.85 0.08 85); background: oklch(0.97 0.04 85); color: oklch(0.45 0.1 70); }
+.ab-seg { display: inline-flex; border: 1px solid var(--borde2); border-radius: 8px; overflow: hidden; background: #fff; }
+.ab-seg > span { padding: 6px 14px; font-size: 13.5px; color: var(--t2); border-left: 1px solid var(--borde2); white-space: nowrap; }
+.ab-seg > span:first-child { border-left: 0; }
+.ab-seg > span.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 600; }
+.ab-seg .falta { color: oklch(0.5 0.12 70); font-weight: 500; }
+.t-seg { display: flex; margin: 0 16px; border: 1px solid var(--borde2); border-radius: 10px; overflow: hidden; background: #fff; flex-shrink: 0; }
+.t-seg > span { flex: 1; text-align: center; padding: 10px 6px; font-size: 14px; color: var(--t2); border-left: 1px solid var(--borde2); }
+.t-seg > span:first-child { border-left: 0; }
+.t-seg > span.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 600; }
+.t-seg .falta { color: oklch(0.5 0.12 70); }
+.t-chip { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-left: 6px; vertical-align: 1px;
+  border: 1px solid oklch(0.85 0.08 85); background: oklch(0.97 0.04 85); color: oklch(0.45 0.1 70); }
+.t-chip.mal { border-color: oklch(0.85 0.06 25); background: var(--peligro-t); color: oklch(0.45 0.17 25); }
+.ap-cmp .ay { font-size: 13px; color: var(--t3); }
+.ap-cmp .ct.ro { display: flex; justify-content: space-between; align-items: center; }
+.t-banda.ok { background: var(--marca-t); color: var(--marca-tx); }
+.t-banda.info { background: var(--marca-t); color: var(--marca-tx); }
+.t-banda small { display: block; font-size: 13px; opacity: 0.85; margin-top: 2px; }
+.q-row.mal { background: oklch(0.985 0.012 25); }
+.t-vp { display: flex; flex-direction: column; gap: 12px; }
+.t-vp .ct { min-height: 44px; }
+.t-vp .ct.area { min-height: 76px; }
+.ap-hoja .hb { display: flex; flex-direction: column; gap: 14px; }
+.ap-hoja .p-tit2 { margin: 2px 0 -6px; }
+.t-lin { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; color: var(--t2); line-height: 1.4; }
+.t-lin svg { flex-shrink: 0; margin-top: 2px; color: var(--t3); }
+.ap-hoja .h-sub { display: block; font-size: 13.5px; color: var(--t3); margin-top: 2px; }
+.cb[aria-disabled="true"] { opacity: 0.55; cursor: default; }
+.q-it .dato, .q-it.q-tit .dato { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.35; gap: 1px; }
+.q-it .dato b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-it .dato > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-acc2 { display: inline-flex; align-items: center; flex: none; }
+.q-acc2 .ib { width: 30px; height: 30px; flex: none; border: 0; border-radius: 8px; }
+.q-acc2 .ib[aria-disabled="true"] { color: var(--borde2); cursor: default; }
+.cb.k-trabaja[aria-disabled="true"] { opacity: 1; cursor: progress; }
+.cb .girar2 { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; display: inline-block; animation: girar2 0.8s linear infinite; flex-shrink: 0; }
+@keyframes girar2 { to { transform: rotate(360deg); } }
+.e-tipw { position: relative; display: inline-flex; }
+.e-tip { position: absolute; z-index: 30; top: calc(100% + 8px); right: 0; padding: 6px 10px; border-radius: 6px; background: oklch(0.27 0.012 78); color: #fff; font-size: 12.5px; font-weight: 500; white-space: nowrap; box-shadow: 0 6px 18px oklch(0.24 0.014 78 / 0.2); }
+.e-tip::before { content: ""; position: absolute; top: -4px; right: 18px; width: 8px; height: 8px; background: inherit; transform: rotate(45deg); }
+.pv .tel { height: 700px; }
+.tel .pv-ck { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
+.tel .pv-ck span { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: oklch(0.3 0.01 150); }
+.tel .pv-ck i { width: 14px; height: 14px; box-sizing: border-box; border-radius: 3px; border: 1.5px solid oklch(0.55 0.01 150); }
+.q-ed .q-rango { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--t2); }
+.q-ed .q-rango .ct { width: 64px; text-align: center; }
+.rt .f-i { margin-left: 4px; }
+.e-kw { position: relative; display: inline-flex; }
+.w-bnd .ac .ib.o-borde { width: 40px; height: 40px; border: 1px solid var(--borde2); border-radius: 10px; box-sizing: border-box; background: #fff; }
+.e-kw .f-menu { position: absolute; top: calc(100% + 6px); right: 0; left: auto; z-index: 30; min-width: 220px; }
+.f-mi.off { color: var(--t3); cursor: default; }
+.f-mi.off svg { color: var(--t3); }
+.f-mi { position: relative; }
+.f-mi .e-tip { top: 50%; right: calc(100% + 12px); transform: translateY(-50%); }
+.f-mi .e-tip::before { top: calc(50% - 4px); right: -4px; }
+.e-dif .no .f-i { margin-left: 4px; }
+.f-bnd-est { white-space: nowrap; }
+.f-bnd-est .f-i { margin-left: 6px; vertical-align: -3px; }
+.f-bnd-est .f-i.btn { cursor: pointer; }
+.q-it.mal { background: oklch(0.985 0.012 25); }
+.ab-chip.mal { border-color: oklch(0.85 0.06 25); background: var(--peligro-t); color: oklch(0.45 0.17 25); }
+.q-it.mal .chips .f-i { color: oklch(0.52 0.19 25); display: inline-flex; align-items: center; }
+.e-pasos.vert { flex-direction: column; gap: 14px; }
+.e-pasos.vert .e-paso { flex: none; }
+.f-snack { position: absolute; z-index: 5; left: 12px; right: 12px; bottom: 110px; display: flex; align-items: center; gap: 10px; padding: 13px 14px 13px 16px; border-radius: 14px; background: oklch(0.27 0.012 60); color: #fff; font-size: 14.5px; line-height: 1.4; box-shadow: 0 8px 24px oklch(0.2 0.01 60 / 0.3); }
+.f-snack .tx { flex: 1; min-width: 0; }
+.f-snack .ok { color: oklch(0.8 0.13 155); display: inline-flex; }
+.ap-fijo .cb .girar2 { width: 16px; height: 16px; }
+.q-acc { display: inline-flex; align-items: center; flex: none; margin-right: -6px; }
+.q-acc .ap-ib { width: 34px; height: 40px; }
+.q-acc .ap-ib[aria-disabled="true"] { color: var(--borde2); }
+.q-row .tx > span { white-space: normal; }
+.t-cks { display: flex; flex-wrap: wrap; gap: 0 20px; }
+.t-cks .t-chk { min-height: 36px; }
+.t-chk i.no { background: #fff; border: 1.5px solid var(--borde2); box-sizing: border-box; }
+.ap-hoja { max-height: calc(100% - 56px); }
+.ap-hoja .hb { overflow-y: auto; min-height: 0; }
 .ap-fila .l1 .hr { float: right; font-size: 13px; font-weight: 400; color: var(--t3); }
 .ap-fila .l3 .ft { display: inline-flex; align-items: center; gap: 4px; }
 .ap-bar .ap-ib.con { position: relative; }
@@ -1074,6 +1158,150 @@ a.w-conv { text-decoration: none; color: inherit; }
 .t-toast { position: absolute; left: 12px; right: 12px; bottom: 34px; z-index: 40; display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #fff; border: 1px solid var(--borde); border-radius: 12px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); font-size: 15px; }
 .t-toast .ok { color: oklch(0.55 0.13 155); display: inline-flex; }
 .ap-hoja .ex-arch { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--t2); }
+.ap-fila .pl-marca { margin-left: 6px; padding: 0 7px; border: 1px solid var(--borde2); border-radius: 999px; font-size: 12px; line-height: 18px; color: var(--t2); }
+.tr-sec { margin: 12px 16px 0; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; background: #fff; }
+.tr-sec:last-child { margin-bottom: 16px; }
+.tr-sec .h { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 0 14px; border: 0; background: oklch(0.945 0.018 76); font: inherit; font-size: 15px; font-weight: 600; color: var(--t1); text-align: left; }
+.tr-sec .h .r { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 400; color: var(--t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tr-sec .h .fl { margin-left: auto; display: inline-flex; color: var(--t2); }
+.tr-sec .h .fl.ab { transform: rotate(180deg); }
+.tr-sec .tr-gr { margin: 0; border: 0; border-radius: 0; }
+.tr-act { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; font-size: 15px; }
+.tr-act small { display: block; color: var(--t3); font-size: 13px; }
+.d-cmp { display: block; color: var(--t2); font-size: 14px; }
+.ap-m .gl .c-card { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 9px 10px; border-radius: 10px; background: #fff; border: 1px solid oklch(0.86 0.04 170); }
+.c-card .ic { color: var(--marca-tx); display: inline-flex; }
+.c-card .t { display: flex; flex-direction: column; line-height: 1.3; }
+.c-card .t b { font-size: 14.5px; font-weight: 600; }
+.c-card .t small { font-size: 12.5px; color: var(--t3); }
+.ap-m .pie.mal { color: oklch(0.5 0.19 25); }
+.ap-m .pie.amb { color: oklch(0.5 0.12 70); }
+.ap-m .pie .lnk2 { font-weight: 600; color: var(--marca-tx); margin-left: 6px; }
+.ap-m .pie .ap-i { width: 22px; height: 22px; vertical-align: middle; }
+.c-ops { display: flex; flex-direction: column; gap: 8px; }
+.c-op { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--borde); border-radius: 12px; background: #fff; }
+.c-op.on { border-color: var(--marca); box-shadow: 0 0 0 1px var(--marca); background: oklch(0.975 0.01 180); }
+.c-op .rd { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--borde2); box-sizing: border-box; flex-shrink: 0; background: #fff; }
+.c-op.on .rd { border: 6px solid var(--marca); }
+.c-op .tx { display: flex; flex-direction: column; gap: 2px; line-height: 1.3; }
+.c-op .tx b { font-size: 16px; font-weight: 500; }
+.c-op .tx small { font-size: 13.5px; color: var(--t3); }
+.c-op.baja { border-color: oklch(0.8 0.08 25); background: var(--peligro-t); box-shadow: none; }
+.c-op.baja .tx b { text-decoration: line-through; color: oklch(0.45 0.17 25); }
+.c-est { padding: 18px 14px; border: 1px dashed var(--borde2); border-radius: 12px; font-size: 15px; color: var(--t2); }
+.c-ay { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--t3); }
+.c-ay.mal { color: oklch(0.5 0.19 25); }
+.c-ay > span:last-child { white-space: nowrap; }
+.ap-hoja .h-sub { display: block; font-size: 13.5px; color: var(--t3); margin-top: 2px; }
+.ap-cmp .ct.area.mal { border-color: oklch(0.6 0.19 25) !important; }
+.ap-escr .ap-24.amb { flex: 1; }
+.ap-hoja .hb { display: flex; flex-direction: column; gap: 14px; }
+.ap-hoja .hp { display: flex; gap: 12px; padding: 12px 20px 34px; }
+.ap-hoja .hp .cb { flex: 1; height: 50px; border-radius: 12px; font-size: 16px; }
+.ap-hoja .hp .cb[disabled] { opacity: 0.6; }
+.t-aviso { display: flex; gap: 10px; padding: 12px 14px; border-radius: 12px; background: oklch(0.96 0.06 85); color: oklch(0.4 0.1 70); font-size: 14.5px; line-height: 1.4; }
+.t-aviso svg { flex-shrink: 0; margin-top: 2px; }
+.t-toast { position: absolute; left: 12px; right: 12px; bottom: 104px; z-index: 40; display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #fff; border: 1px solid var(--borde);
+  border-radius: 14px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); font-size: 14px; line-height: 1.35; }
+.t-toast .mal { color: oklch(0.55 0.2 25); display: inline-flex; }
+.t-toast .cb { flex-shrink: 0; height: 36px; font-size: 14px; }
+.cb[aria-disabled="true"] { opacity: 0.55; cursor: default; }
+.q-it .dato, .q-it.q-tit .dato { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.35; gap: 1px; }
+.q-it .dato b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-it .dato > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-acc2 { display: inline-flex; align-items: center; flex: none; }
+.q-acc2 .ib { width: 30px; height: 30px; flex: none; border: 0; border-radius: 8px; }
+.q-acc2 .ib[aria-disabled="true"] { color: var(--borde2); cursor: default; }
+.cb.k-trabaja[aria-disabled="true"] { opacity: 1; cursor: progress; }
+.cb .girar2 { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; display: inline-block; animation: girar2 0.8s linear infinite; flex-shrink: 0; }
+@keyframes girar2 { to { transform: rotate(360deg); } }
+.e-tipw { position: relative; display: inline-flex; }
+.e-tip { position: absolute; z-index: 30; top: calc(100% + 8px); right: 0; padding: 6px 10px; border-radius: 6px; background: oklch(0.27 0.012 78); color: #fff; font-size: 12.5px; font-weight: 500; white-space: nowrap; box-shadow: 0 6px 18px oklch(0.24 0.014 78 / 0.2); }
+.e-tip::before { content: ""; position: absolute; top: -4px; right: 18px; width: 8px; height: 8px; background: inherit; transform: rotate(45deg); }
+.pv .tel { height: 700px; }
+.tel .pv-ck { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
+.tel .pv-ck span { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: oklch(0.3 0.01 150); }
+.tel .pv-ck i { width: 14px; height: 14px; box-sizing: border-box; border-radius: 3px; border: 1.5px solid oklch(0.55 0.01 150); }
+.q-ed .q-rango { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--t2); }
+.q-ed .q-rango .ct { width: 64px; text-align: center; }
+.rt .f-i { margin-left: 4px; }
+.e-kw { position: relative; display: inline-flex; }
+.w-bnd .ac .ib.o-borde { width: 40px; height: 40px; border: 1px solid var(--borde2); border-radius: 10px; box-sizing: border-box; background: #fff; }
+.e-kw .f-menu { position: absolute; top: calc(100% + 6px); right: 0; left: auto; z-index: 30; min-width: 220px; }
+.f-mi.off { color: var(--t3); cursor: default; }
+.f-mi.off svg { color: var(--t3); }
+.f-mi { position: relative; }
+.f-mi .e-tip { top: 50%; right: calc(100% + 12px); transform: translateY(-50%); }
+.f-mi .e-tip::before { top: calc(50% - 4px); right: -4px; }
+.e-dif .no .f-i { margin-left: 4px; }
+.f-bnd-est { white-space: nowrap; }
+.f-bnd-est .f-i { margin-left: 6px; vertical-align: -3px; }
+.f-bnd-est .f-i.btn { cursor: pointer; }
+.q-it.mal { background: oklch(0.985 0.012 25); }
+.ab-chip.mal { border-color: oklch(0.85 0.06 25); background: var(--peligro-t); color: oklch(0.45 0.17 25); }
+.q-it.mal .chips .f-i { color: oklch(0.52 0.19 25); display: inline-flex; align-items: center; }
+.e-pasos.vert { flex-direction: column; gap: 14px; }
+.e-pasos.vert .e-paso { flex: none; }
+.f-snack { position: absolute; z-index: 5; left: 12px; right: 12px; bottom: 110px; display: flex; align-items: center; gap: 10px; padding: 13px 14px 13px 16px; border-radius: 14px; background: oklch(0.27 0.012 60); color: #fff; font-size: 14.5px; line-height: 1.4; box-shadow: 0 8px 24px oklch(0.2 0.01 60 / 0.3); }
+.f-snack .tx { flex: 1; min-width: 0; }
+.f-snack .ok { color: oklch(0.8 0.13 155); display: inline-flex; }
+.ap-fijo .cb .girar2 { width: 16px; height: 16px; }
+.q-acc { display: inline-flex; align-items: center; flex: none; margin-right: -6px; }
+.q-acc .ap-ib { width: 34px; height: 40px; }
+.q-acc .ap-ib[aria-disabled="true"] { color: var(--borde2); }
+.q-row .tx > span { white-space: normal; }
+.t-cks { display: flex; flex-wrap: wrap; gap: 0 20px; }
+.t-cks .t-chk { min-height: 36px; }
+.t-chk i.no { background: #fff; border: 1.5px solid var(--borde2); box-sizing: border-box; }
+.ap-hoja { max-height: calc(100% - 56px); }
+.ap-hoja .hb { overflow-y: auto; min-height: 0; }
+.ap-ib.con { position: relative; }
+.ap-ib.con::after { content: ""; position: absolute; top: 9px; right: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--marca); box-shadow: 0 0 0 2px #fff; }
+.ap-flt { flex-shrink: 0; display: flex; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--borde); }
+.ap-flt .ch { height: 32px; display: inline-flex; align-items: center; gap: 6px; padding: 0 8px 0 12px; border-radius: 16px; background: var(--marca-t); color: var(--marca-tx); font-size: 14px; font-weight: 500; border: 1px solid oklch(0.51 0.099 195 / 0.35); }
+.ap-flt .ch svg { width: 16px; height: 16px; }
+.t-opc { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; border-top: 1px solid var(--borde); font-size: 16px; }
+.t-opc:first-child { border-top: 0; }
+.t-opc .d { display: inline-flex; align-items: center; gap: 10px; color: var(--t3); font-size: 14px; }
+.t-opc.on { color: var(--marca-tx); font-weight: 600; }
+.ap-hoja .hb.lst { gap: 0; }
+.cg-tz { margin: 12px 16px 0; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; background: #fff; flex-shrink: 0; }
+.cg-tz:last-child { margin-bottom: 16px; }
+.cg-tz .h { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 0 14px; border: 0; background: oklch(0.945 0.018 76); font: inherit; font-size: 15px; font-weight: 600; color: var(--t1); }
+.cg-tz .h .fl { margin-left: auto; display: inline-flex; color: var(--t2); }
+.cg-tz .h .fl.ab { transform: rotate(180deg); }
+.cg-tb { display: flex; flex-direction: column; gap: 14px; padding: 14px; }
+.cg-tb .ap-cmp { margin: 0; }
+.cg-tc { display: flex; flex-direction: column; gap: 6px; font-size: 14.5px; }
+.cg-tc .rt { font-size: 13.5px; font-weight: 600; color: var(--t2); }
+.cg-tc .rq { color: var(--peligro); }
+.cg-tseg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--borde2); border-radius: 12px; overflow: hidden; background: #fff; }
+.cg-tseg span { height: 44px; display: inline-flex; align-items: center; justify-content: center; font-size: 15.5px; color: var(--t1); }
+.cg-tseg span + span { border-left: 1px solid var(--borde2); }
+.cg-tseg span.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 600; }
+.cg-trd { display: flex; flex-direction: column; gap: 2px; }
+.cg-trd span { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; font-size: 15.5px; }
+.cg-trd i { width: 20px; height: 20px; box-sizing: border-box; border: 1.5px solid var(--borde2); border-radius: 50%; background: #fff; }
+.cg-trd span.on i { border: 6px solid var(--marca); }
+.cg-terr { font-size: 13.5px; color: var(--peligro); }
+.cg-tlin { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1px solid var(--borde); border-radius: 12px; }
+.cg-tlin .t { font-size: 13.5px; font-weight: 600; color: var(--t2); }
+.cg-tbus { display: flex; align-items: center; gap: 10px; margin: 12px 16px 6px; padding: 0 14px; height: 48px; border: 1.5px solid var(--marca); border-radius: 12px; background: #fff; font-size: 16px; color: var(--t3); }
+.cg-tcnt { margin: 0 16px 8px; font-size: 13.5px; color: var(--t3); }
+.cg-tmas { display: flex; justify-content: center; padding: 14px; }
+.cg-tfot { display: flex; flex-wrap: wrap; gap: 10px; }
+.cg-tfot .im { position: relative; width: 104px; height: 104px; border-radius: 10px; background: linear-gradient(135deg, oklch(0.84 0.03 170), oklch(0.66 0.05 170)); }
+.cg-tacc { display: flex; flex-direction: column; gap: 8px; }
+.cg-tacc .cb { height: 46px; font-size: 15.5px; border-radius: 12px; justify-content: center; }
+.cg-tbarra { height: 4px; background: var(--s3); flex-shrink: 0; }
+.cg-tbarra i { display: block; height: 100%; background: var(--marca); }
+.cg-tban { display: flex; flex-direction: column; gap: 10px; margin: 12px 16px 0; padding: 12px 14px; border-radius: 12px; border: 1px solid oklch(0.85 0.08 85); background: oklch(0.97 0.04 85); font-size: 15px; line-height: 1.4; color: oklch(0.36 0.08 70); flex-shrink: 0; }
+.cg-tban.mal { border-color: oklch(0.85 0.08 25); background: var(--peligro-t); color: oklch(0.42 0.14 25); }
+.cg-tenv { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--borde); font-size: 15px; font-weight: 600; }
+.cg-tenv .ck { display: inline-flex; color: var(--marca); }
+.ap-fijo.dos { flex-direction: column; align-items: stretch; gap: 8px; }
+.ap-fijo.dos .cb.full { flex: none; }
+.ap-fila .l3 { font-size: 13px; color: var(--t3); }
 .ap-bar .tit .sub.amb { color: oklch(0.55 0.13 70); }
 .tr-moms { margin: 12px 16px 0; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; background: #fff; }
 .tr-moms .tr-mom { margin: 0; border: 0; border-radius: 0; border-top: 1px solid var(--borde); }
@@ -1108,34 +1336,70 @@ a.w-conv { text-decoration: none; color: inherit; }
 .rg-hb .cond { padding: 10px 12px; border: 1px solid var(--borde); border-radius: 12px; font-size: 15px; display: flex; justify-content: space-between; align-items: center; background: #fff; }
 .rg-hb .acc { padding: 12px; border: 1px solid var(--borde); border-radius: 12px; display: flex; flex-direction: column; gap: 10px; background: #fff; }
 .rg-hb .acc b { font-size: 14px; color: var(--t2); font-weight: 600; }
-.rg-sug { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 6px; background: var(--s2); border: 1px dashed var(--borde2); font-size: 12px; color: var(--t2); white-space: nowrap; vertical-align: 1px; }
-.rg-falta { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 6px; background: oklch(0.97 0.04 85); border: 1px solid oklch(0.85 0.08 85); font-size: 12px; font-weight: 600; color: oklch(0.45 0.1 70); white-space: nowrap; vertical-align: 1px; }
-.rg-mal { color: oklch(0.5 0.19 25); text-decoration: line-through; }
-.rg .f-cab .f-apag { display: inline-flex; align-items: center; gap: 6px; }
-.rg-acc .ct.ro { display: flex; justify-content: space-between; align-items: center; background: var(--s2); color: var(--t2); }
-.rg-acc .w-cmp .ay { font-size: 12.5px; color: var(--t3); }
-.rg-acc .q-cat .ct.sel.ph { color: var(--t3); }
-.rg-acc .q-cat .ct.sel.falta { border-color: oklch(0.75 0.12 75); box-shadow: 0 0 0 1px oklch(0.75 0.12 75); }
-.rg-acc .q-catmn > span { flex-direction: row; justify-content: space-between; }
-.k-err { font-size: 12.5px; color: oklch(0.5 0.19 25); display: flex; gap: 6px; align-items: flex-start; }
-.k-err svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; }
-.rg-sec .k-cond .ct.mal { text-decoration: line-through; }
-.rg .w-caja:has(.q-catmn), .rg:has(.q-catmn) { overflow: visible; }
-.rg-t .r .tx small .rg-falta { height: 18px; font-size: 11.5px; }
-.ap-fijo.col { flex-direction: column; align-items: stretch; gap: 0; }
+.w-est.pend { color: oklch(0.5 0.12 70); }
+.w-est.pend::before { background: oklch(0.72 0.15 70); }
+.w-est.off { color: var(--t2); }
+.w-est.off::before { background: oklch(0.72 0.01 78); }
+.rg2-ab .cb, .pd-b .cb, .rg2-av .cb { height: 34px; font-size: 13.5px; }
+.cg-q .q-chk, .w-dlg .q-chk, .rg-hb .q-chk, .ap-cuerpo .q-chk { display: inline-flex; align-items: center; gap: 8px; }
+.cg-q .q-chk i, .w-dlg .q-chk i, .rg-hb .q-chk i, .ap-cuerpo .q-chk i { width: 16px; height: 16px; flex: none; border-radius: 4px; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
+.cg-q .q-chk i.no, .w-dlg .q-chk i.no, .rg-hb .q-chk i.no, .ap-cuerpo .q-chk i.no { background: #fff; border: 1.5px solid var(--borde2); box-sizing: border-box; }
+.cg-q .q-chk i svg, .w-dlg .q-chk i svg, .rg-hb .q-chk i svg, .ap-cuerpo .q-chk i svg { width: 12px; height: 12px; }
+.f-mi.off { flex-direction: column; align-items: flex-start; gap: 2px; white-space: normal; }
+.pl-pdf { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--borde); background: #fff; color: var(--t2); }
+.pl-pdf svg { width: 15px; height: 15px; }
+.d2-acc .der { margin-left: auto; }
+.ac-it .tx .ln { color: var(--marca-tx); font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+.ac-est.gris { color: var(--t2); background: var(--s2); border-color: var(--borde); }
+.pdf-cab { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--t2); margin-bottom: 8px; }
+.pdf-c .ab-chip { margin-right: 4px; }
+.w-dlg.apr { width: 460px; }
+.w-dlg.apr .df .cb-sec.foco { box-shadow: 0 0 0 3px oklch(0.5 0.08 180 / 0.25); border-color: var(--marca); }
+.w-dlg.pdfv { width: 760px; }
+.w-dlg.pdfv .db { background: var(--s2); display: flex; justify-content: center; padding: 20px; }
+.rg-t .r .tx .ad { color: var(--t3); }
+.rg-hb { display: flex; flex-direction: column; gap: 14px; padding: 14px 16px 90px; }
+.rg-hb .t-adj { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-radius: 12px; background: oklch(0.975 0.02 25); }
+.rg-hb .t-adj .mot { font-size: 14px; color: var(--peligro); line-height: 1.4; }
+.rg-hb .t-adj .cb { align-self: flex-start; }
+.rg-hb .q-chk { font-size: 15px; }
+.rg-gtit { display: flex; align-items: center; justify-content: space-between; margin: 16px 16px 0; font-size: 15px; font-weight: 600; }
+.rg-gtit a { font-size: 14px; color: var(--marca-tx); text-decoration: none; }
+.bt-gm { margin: 18px 20px 6px; font-size: 13.5px; font-weight: 600; color: var(--t2); }
+.ap-fila .l2.d { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ap-fila .l3.u { color: var(--marca-tx); font-weight: 600; }
+.ap-fijo.col { flex-direction: column; align-items: stretch; gap: 6px; }
 .ap-fijo.col .cb.full { flex: none; height: 50px; display: flex; align-items: center; justify-content: center; }
-.ap-fijo .mot { display: block; margin-top: 6px; font-size: 13px; color: var(--t3); text-align: center; }
+.ap-fijo .mot { font-size: 13px; color: var(--t3); text-align: center; }
+.ap-fijo .cb.full[disabled] { opacity: 0.55; }
+.q-row.ro { padding-right: 14px; }
+.rg-t .r.mal { background: var(--peligro-t); }
+.rg-t .ab-chip { vertical-align: 1px; }
+.t-dato { display: flex; flex-direction: column; gap: 6px; padding: 12px 16px; font-size: 15px; line-height: 1.45; }
+.t-dato small { font-size: 13.5px; color: var(--t3); }
+.ap-i.neu { color: var(--t3); }
+.rg-t .ab-chip { height: 20px; font-size: 12px; }
+.rg-t .ab-chip.mal { border-color: oklch(0.82 0.08 25); background: #fff; color: var(--peligro); }
+.f-ptabs { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--borde); flex-shrink: 0; background: #fff; }
+.f-ptabs a { height: 48px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 15px; font-weight: 600; color: var(--t2); border-bottom: 2.5px solid transparent; text-decoration: none; }
+.f-ptabs a.on { color: var(--marca-tx); border-bottom-color: var(--marca); }
+.f-ptabs .c { color: var(--t3); font-weight: 500; }
+.f-ptabs { grid-template-columns: repeat(4, 1fr); }
+.f-ptabs a { font-size: 14px; }
+.ap-acciones2 { display: flex; flex-direction: column; }
+.ap-acciones2 span { padding: 14px 4px; font-size: 16px; border-top: 1px solid var(--borde); }
+.ap-acciones2 span:first-child { border-top: 0; }
 </style>
 </helmet>
 
-<div class="ap"><div class="ap-est"><span>9:41</span><span class="ic"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="25" height="12" viewBox="0 0 25 12" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="8" rx="1.8" fill="currentColor"/><path d="M23 4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/></svg></span></div><sc-if value="{{s0}}" hint-placeholder-val="{{si}}"><div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Editor.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></a><div class="tit"><h1>Cuando llega una respuesta</h1><span class="sub amb">De la plantilla · sin guardar</span></div></div><div class="tr-scroll"><div class="rg-t"><div class="r"><span class="n">1</span><span class="tx"><b>Cuando se recibe una respuesta</b><small>1. Mandarle un mensaje a quien la cargó: «Recibimos {número}. Te avisamos cuando la aprueben.»</small><small>2. Pedir aprobación a una persona con el rol <span class="rg-falta">Elegí el rol</span></small><small>Rol sugerido: Supervisor</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 1"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="r"><span class="n">2</span><span class="tx"><b>Cuando se aprueba una respuesta</b><small>1. Armar el PDF «Comprobante de visita»</small><small>2. Mandarle el PDF a quien la cargó: «Aprobaron {número}. Te mandamos el comprobante.»</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 2"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="r"><span class="n">3</span><span class="tx"><b>Cuando se aprueba una respuesta</b><small>Si Monto estimado es mayor o igual a 100.000</small><small>1. Avisar a las personas con el rol <span class="rg-falta">Elegí el rol</span>: «Se aprobó {número}, de {Cliente}, por {Monto estimado}.»</small><small>Rol sugerido: Gerente</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 3"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="r"><span class="n">4</span><span class="tx"><b>Cuando se rechaza una respuesta</b><small>1. Mandarle a quien la cargó el motivo del rechazo</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 4"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div></div><div style="padding: 12px 16px;"><button type="button" class="cb cb-sec"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Agregar regla</button></div></div><div class="ap-fijo col"><button type="button" class="cb cb-pri full" disabled>Guardar reglas</button><span class="mot">Elegí el rol en las reglas 1 y 3.</span></div></sc-if><sc-if value="{{s1}}" hint-placeholder-val="{{no}}"><div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Editor.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></a><div class="tit"><h1>Cuando llega una respuesta</h1><span class="sub amb">De la plantilla · sin guardar</span></div></div><div class="tr-scroll"><div class="rg-t"><div class="r"><span class="n">1</span><span class="tx"><b>Cuando se recibe una respuesta</b><small>1. Mandarle un mensaje a quien la cargó: «Recibimos {número}. Te avisamos cuando la aprueben.»</small><small>2. Pedir aprobación a una persona con el rol <span class="rg-falta">Elegí el rol</span></small><small>Rol sugerido: Supervisor</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 1"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="r"><span class="n">2</span><span class="tx"><b>Cuando se aprueba una respuesta</b><small>1. Armar el PDF «Comprobante de visita»</small><small>2. Mandarle el PDF a quien la cargó: «Aprobaron {número}. Te mandamos el comprobante.»</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 2"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="r"><span class="n">3</span><span class="tx"><b>Cuando se aprueba una respuesta</b><small>Si Monto estimado es mayor o igual a 100.000</small><small>1. Avisar a las personas con el rol <span class="rg-falta">Elegí el rol</span>: «Se aprobó {número}, de {Cliente}, por {Monto estimado}.»</small><small>Rol sugerido: Gerente</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 3"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="r"><span class="n">4</span><span class="tx"><b>Cuando se rechaza una respuesta</b><small>1. Mandarle a quien la cargó el motivo del rechazo</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 4"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div></div><div style="padding: 12px 16px;"><button type="button" class="cb cb-sec"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Agregar regla</button></div></div><div class="ap-fijo col"><button type="button" class="cb cb-pri full" disabled>Guardar reglas</button><span class="mot">Elegí el rol en las reglas 1 y 3.</span></div></sc-if><sc-if value="{{s2}}" hint-placeholder-val="{{no}}"><div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Editor.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></a><div class="tit"><h1>Cuando llega una respuesta</h1><span class="sub">Visita a cliente · revisión 1</span></div></div><div class="tr-scroll"><div class="rg-t"><div class="r"><span class="n">1</span><span class="tx"><b>Cuando se recibe una respuesta</b><small>1. Mandarle un mensaje a quien la cargó: «Recibimos {número}. Te avisamos cuando la aprueben.»</small><small>2. Pedir aprobación a una persona con el rol Supervisor</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 1"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="r"><span class="n">2</span><span class="tx"><b>Cuando se aprueba una respuesta</b><small>1. Armar el PDF «Comprobante de visita»</small><small>2. Mandarle el PDF a quien la cargó: «Aprobaron {número}. Te mandamos el comprobante.»</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 2"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="r"><span class="n">3</span><span class="tx"><b>Cuando se aprueba una respuesta</b><small>Si Monto estimado es mayor o igual a 100.000</small><small>1. Avisar a las personas con el rol Dueño: «Se aprobó {número}, de {Cliente}, por {Monto estimado}.»</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 3"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="r"><span class="n">4</span><span class="tx"><b>Cuando se rechaza una respuesta</b><small>1. Mandarle a quien la cargó el motivo del rechazo</small></span><button type="button" class="ap-ib" aria-label="Acciones de la regla 4"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div></div><div style="padding: 12px 16px;"><button type="button" class="cb cb-sec"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Agregar regla</button></div></div><div class="ap-fijo"><button type="button" class="cb cb-pri full" disabled>Guardar reglas</button></div></sc-if><span class="ap-raya"></span><sc-if value="{{s1}}" hint-placeholder-val="{{no}}"><div class="ap-velo"></div><div class="ap-hoja" role="dialog" aria-label="Rol de la acción 2"><span class="asa"></span><div class="hc"><div><h2>Rol de la acción 2</h2><span class="h-sub">Regla 1 · Rol sugerido: Supervisor</span></div><button type="button" class="ap-ib" aria-label="Cerrar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div><div class="hb lst"><span class="t-opc">Administrador</span><span class="t-opc">Auditor</span><span class="t-opc">Dueño</span><span class="t-opc">Recursos humanos</span><span class="t-opc">Supervisor</span></div><div class="hp"></div></div></sc-if></div>
+<div class="ap"><div class="ap-est"><span>9:41</span><span class="ic"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="25" height="12" viewBox="0 0 25 12" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="8" rx="1.8" fill="currentColor"/><path d="M23 4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/></svg></span></div><sc-if value="{{s0}}" hint-placeholder-val="{{si}}"><div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Formularios-22.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></a><div class="tit"><h1>Visita a cliente</h1><span class="sub">Borrador</span></div><button type="button" class="ap-ib" aria-label="Acciones de Visita a cliente"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="f-ptabs" role="tablist" aria-label="Vistas del formulario"><a class="" role="tab" href="#">Respuestas</a><a class="" role="tab" href="#">Tablero</a><a class="" role="tab" href="#">Diseño</a><a class="on" role="tab" href="#">Reglas</a></div><div class="ap-cuerpo"><div class="rg-gtit">Cuando llega una respuesta<a href="#">Agregar regla</a></div><div class="rg-t"><div class="r"><span class="n">1</span><span class="tx"><b>Cuando se recibe una respuesta</b><span>1. Mandarle un mensaje a quien la cargó: «Recibimos {número}. Te avisamos cuando la aprueben.» <span class="ad">· fuera de las 24 horas, con</span> <span class="ab-chip falta">Elegí la plantilla</span></span><span>2. Pedir aprobación a alguien con el rol <span class="ab-chip falta">Elegí el rol</span> <span class="ad">· sugerido: Supervisor</span></span></span></div><div class="r"><span class="n">2</span><span class="tx"><b>Cuando se aprueba una respuesta</b><span>1. Armar el PDF «Comprobante de visita» · <a class="lnk" href="FRM-Pdf.dc.html">Ver el diseño</a></span><span>2. Mandarle un mensaje a quien la cargó: «Aprobaron {número}. Te mandamos el comprobante.» <span class="ad">· con el PDF</span> <span class="ad">· fuera de las 24 horas, con</span> <span class="ab-chip falta">Elegí la plantilla</span></span><span>3. Mandar por correo a <span class="ab-chip falta">Elegí la dirección</span>: «Se aprobó {número}.» <span class="ad">· con el PDF</span></span></span></div><div class="r"><span class="n">3</span><span class="tx"><b>Cuando se aprueba una respuesta</b><small>Si Monto estimado es mayor o igual a 100.000</small><span>1. Avisar a las personas con el rol <span class="ab-chip falta">Elegí el rol</span> <span class="ad">· sugerido: Gerente</span>: «Se aprobó {número}, de {Cliente}, por {Monto estimado}.» <span class="ad">· fuera de las 24 horas, con</span> <span class="ab-chip falta">Elegí la plantilla</span></span></span></div><div class="r"><span class="n">4</span><span class="tx"><b>Cuando se rechaza una respuesta</b><span>1. Mandarle un mensaje a quien la cargó: «Rechazaron {número}: {motivo}» <span class="ad">· fuera de las 24 horas, con</span> <span class="ab-chip falta">Elegí la plantilla</span></span></span></div></div><div style="height: 96px; flex-shrink: 0;"></div></div><div class="ap-fijo"><button type="button" class="cb cb-pri full">Guardar reglas</button></div></sc-if><sc-if value="{{s1}}" hint-placeholder-val="{{no}}"><div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Reglas-Plantilla.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></a><div class="tit"><h1>Regla 1</h1><span class="sub">Visita a cliente</span></div></div><div class="ap-cuerpo"><div class="rg-hb"><div class="ap-cmp"><span class="rt"><span>Cuándo</span></span><div class="ct">Se recibe una respuesta</div></div><div class="acc"><b>Acción 2 · Pedir aprobación a un rol</b><div class="ap-cmp"><span class="rt"><span>Rol</span></span><div class="ct ph sel">Elegí el rol<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div><span class="ab-sub">Rol sugerido: Supervisor</span></div></div></div><div class="ap-fijo"><button type="button" class="cb cb-pri full">Listo</button></div></sc-if><sc-if value="{{s2}}" hint-placeholder-val="{{no}}"><div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Formularios-22.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></a><div class="tit"><h1>Visita a cliente</h1><span class="sub">Borrador</span></div><button type="button" class="ap-ib" aria-label="Acciones de Visita a cliente"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="f-ptabs" role="tablist" aria-label="Vistas del formulario"><a class="" role="tab" href="#">Respuestas</a><a class="" role="tab" href="#">Tablero</a><a class="" role="tab" href="#">Diseño</a><a class="on" role="tab" href="#">Reglas</a></div><div class="ap-cuerpo"><div class="rg-gtit">Cuando llega una respuesta<a href="#">Agregar regla</a></div><div class="rg-t"><div class="r mal"><span class="n">1</span><span class="tx"><b>Cuando se recibe una respuesta</b><span>1. Mandarle un mensaje a quien la cargó: «Recibimos {número}. Te avisamos cuando la aprueben.» <span class="ad">· fuera de las 24 horas, con</span> <span class="ab-chip mal">Elegí la plantilla</span></span><span>2. Pedir aprobación a alguien con el rol <span class="ab-chip mal">Elegí el rol</span> <span class="ad">· sugerido: Supervisor</span></span></span></div><div class="r mal"><span class="n">2</span><span class="tx"><b>Cuando se aprueba una respuesta</b><span>1. Armar el PDF «Comprobante de visita» · <a class="lnk" href="FRM-Pdf.dc.html">Ver el diseño</a></span><span>2. Mandarle un mensaje a quien la cargó: «Aprobaron {número}. Te mandamos el comprobante.» <span class="ad">· con el PDF</span> <span class="ad">· fuera de las 24 horas, con</span> <span class="ab-chip mal">Elegí la plantilla</span></span><span>3. Mandar por correo a <span class="ab-chip mal">Elegí la dirección</span>: «Se aprobó {número}.» <span class="ad">· con el PDF</span></span></span></div><div class="r mal"><span class="n">3</span><span class="tx"><b>Cuando se aprueba una respuesta</b><small>Si Monto estimado es mayor o igual a 100.000</small><span>1. Avisar a las personas con el rol <span class="ab-chip mal">Elegí el rol</span> <span class="ad">· sugerido: Gerente</span>: «Se aprobó {número}, de {Cliente}, por {Monto estimado}.» <span class="ad">· fuera de las 24 horas, con</span> <span class="ab-chip mal">Elegí la plantilla</span></span></span></div><div class="r mal"><span class="n">4</span><span class="tx"><b>Cuando se rechaza una respuesta</b><span>1. Mandarle un mensaje a quien la cargó: «Rechazaron {número}: {motivo}» <span class="ad">· fuera de las 24 horas, con</span> <span class="ab-chip mal">Elegí la plantilla</span></span></span></div></div><div style="height: 96px; flex-shrink: 0;"></div></div><div class="ap-fijo"><button type="button" class="cb cb-pri full">Guardar reglas</button></div></sc-if><span class="ap-raya"></span><sc-if value="{{s1}}" hint-placeholder-val="{{no}}"><div class="ap-velo"></div><div class="ap-hoja" role="dialog" aria-label="Rol"><span class="asa"></span><div class="hc"><div><h2>Rol</h2></div><button type="button" class="ap-ib" aria-label="Cerrar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div><div class="hb"><div class="ap-acciones2"><span role="option">Administrador</span><span role="option">Dueño</span><span role="option">Supervisor · sugerido</span><span role="option">Vendedor</span></div></div><div class="hp"></div></div></sc-if></div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Reglas de la plantilla","Elegir el rol","Reglas guardadas"],"default":"Reglas de la plantilla","section":"Estado"},"$preview":{"width":390,"height":844}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Las reglas de la plantilla","Elegir el rol","Guardar sin elegir"],"default":"Las reglas de la plantilla","section":"Estado"},"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
   renderVals() {
-    const e = this.props.estado ?? "Reglas de la plantilla";
-    const k = ["Reglas de la plantilla", "Elegir el rol", "Reglas guardadas"].indexOf(e);
+    const e = this.props.estado ?? "Las reglas de la plantilla";
+    const k = ["Las reglas de la plantilla", "Elegir el rol", "Guardar sin elegir"].indexOf(e);
     return {
       si: true, no: false,
       s0: k === 0,

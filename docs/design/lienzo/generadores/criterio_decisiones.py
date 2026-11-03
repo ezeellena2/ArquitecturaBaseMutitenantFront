@@ -582,6 +582,13 @@ DECISIONES = {
         ("El catálogo de una pregunta", "", "El mismo combo de los campos, sin «Ver el catálogo». Lo dado de baja y lo que no se puede usar van apagados, con su motivo en el tooltip (111).", "Dibujada"),
         ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
+    "Biblioteca de plantillas · v156 · 03/11": [
+        ("La plantilla en Plataforma", "", "El editor de la 14 con la categoría, el prefijo sugerido y la descripción, y debajo de las preguntas las reglas de la 21 sin «Guardar reglas» ni historial: todo se guarda con «Guardar borrador» (33). En ArquitecturaBase no hay biblioteca.", "Dibujada"),
+        ("Lo de cada organización", "", "Con candado, «Lo elige cada organización»: el rol (con un «Rol sugerido» que es solo texto), la persona, la dirección, la plantilla de WhatsApp, y en el PDF el logo, los datos y el color (61, 62 y 82).", "Dibujada"),
+        ("El estado de una plantilla", "", "La lista y la banda dicen solo Borrador, Publicada o Retirada; la versión va en el historial de «Publicación», y «Publicar» habilitado dice que hay algo para publicar (43).", "Dibujada"),
+        ("Categorías", "", "Con ↑ ↓ ✎ 🗑 a la vista, como las preguntas (127), en lugar del ⋮; cada cambio pide motivo, y «Borrar» de una en uso queda grisado con el motivo en su tooltip.", "Dibujada"),
+        ("Al usarla", "", "El formulario nuevo abre en borrador; las reglas llegan sin guardar, con «Elegí…» en lo de la organización, y lo que falta se marca al tocar «Guardar reglas» (43).", "Dibujada"),
+    ],
     "Reglas, aprobación, PDF y avisos · v155 · 03/11": [
         ("Las reglas", "", "Una pestaña más del formulario (79), con el armado de ArquitecturaBase: «Agregar regla» y «Guardar reglas» en la cabecera de la caja, el historial al costado, una regla que se edita en el lugar y se cierra con «Listo», y ↑ ↓ 🗑 a la vista en cada acción.", "Dibujada"),
         ("Adjuntar el PDF", "", "El motivo va debajo de la casilla en el momento, con el botón que lo arregla: «Subir» o «Agregar «Armar el PDF» antes» (113). Nada se desmarca solo.", "Dibujada"),
