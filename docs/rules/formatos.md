@@ -11,7 +11,7 @@
 - parseDecimal permite hasta 15 dígitos significativos y exige que Number recomponga el valor canónico. Si pierde precisión, conserva texto, emite null y marca invalidez.
 - DataTable toma tipo, alineación, vacío y tooltip de cada columna; números, montos y porcentajes van a la derecha con tabular-nums, encabezado incluido. Un texto con un número («En 3 formularios»), una fecha o un código («VIS-000024») no es una columna de números. En una celda que baja de renglón, como en una comparación, un código con guiones («30-71458236-9») no se parte, y una zona horaria se corta solo después de sus barras (137).
 - Fuera de tablas se usan los componentes; useFormat sirve fuera de JSX, por ejemplo en aria-label.
-- Un texto con una cantidad («1.000 usuarios»): `countOf(format, n)` de `shared/format/countOf` da `count` para el plural y `n` con la cifra de la cultura; el texto usa `{{n}}`, nunca `{{count}}`. Las cantidades de pestañas (`TabCount`) y filtros (`FilterBar`) pasan por `NumberText` (R21).
+- Un texto con una cantidad («1.000 usuarios»): `countOf(format, n)` de `shared/format/countOf` da `count` para el plural y `n` con la cifra de la cultura; el texto usa `{{n}}`, nunca `{{count}}`. Las cantidades de pestañas (`TabCount`), de los segmentados y de los filtros aplicados pasan por `NumberText` (R21).
 | Dato | Pieza | Presentación y límite |
 |---|---|---|
 | Fecha | DateText, date | es-AR 27/09/2026; en-US 09/27/2026; tooltip absoluto |
