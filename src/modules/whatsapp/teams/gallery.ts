@@ -32,11 +32,10 @@ function teamsApp(scope: Exclude<GalleryScope, "consumer">, options: { actions?:
 }
 
 const dialog = { role: "dialog", name: "Crear equipo" } as const;
-// Elegir en un `MultiSelect`: cada opción es un `menuitemcheckbox` que se nombra con su `aria-labelledby`; Escape cierra
-// el desplegable y deja el diálogo abierto. El rótulo va exacto: en Plataforma, «Menú de Martín Sosa» (la cuenta, arriba)
-// también lo contiene.
+// Elegir en un `MultiSelect`: cada opción es un `menuitemcheckbox`; Escape cierra el desplegable y deja el diálogo abierto.
+// Va por rol y no por rótulo: el menú se nombra con su botón, que con una sola elegida dice lo mismo que la opción.
 const choose = (names: readonly string[], field: string): GalleryAction[] => [click(field, "button", dialog),
-  ...names.map((name): GalleryAction => ({ type: "click", label: name, exact: true })), { type: "press", label: names.at(-1), exact: true, key: "Escape" }];
+  ...names.map((name) => click(name, "menuitemcheckbox")), press(names.at(-1)!, "menuitemcheckbox", "Escape")];
 
 /** WA-Equipos-Crear: «Soporte · Delta Sur», bandeja Clientes, Carolina Vega y Paula Méndez, y el aviso a los 10 minutos. */
 const createOrganization: GalleryAction[] = [click("Crear equipo"), fill("Nombre", "Soporte · Delta Sur", dialog), ...choose(["Carolina Vega", "Paula Méndez"], "Personas")];

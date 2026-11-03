@@ -35426,17 +35426,20 @@
           },
           {
             "type": "click",
-            "label": "Carolina Vega",
+            "role": "menuitemcheckbox",
+            "name": "Carolina Vega",
             "exact": true
           },
           {
             "type": "click",
-            "label": "Paula Méndez",
+            "role": "menuitemcheckbox",
+            "name": "Paula Méndez",
             "exact": true
           },
           {
             "type": "press",
-            "label": "Paula Méndez",
+            "role": "menuitemcheckbox",
+            "name": "Paula Méndez",
             "exact": true,
             "key": "Escape"
           }
@@ -35690,17 +35693,20 @@
           },
           {
             "type": "click",
-            "label": "Carolina Vega",
+            "role": "menuitemcheckbox",
+            "name": "Carolina Vega",
             "exact": true
           },
           {
             "type": "click",
-            "label": "Paula Méndez",
+            "role": "menuitemcheckbox",
+            "name": "Paula Méndez",
             "exact": true
           },
           {
             "type": "press",
-            "label": "Paula Méndez",
+            "role": "menuitemcheckbox",
+            "name": "Paula Méndez",
             "exact": true,
             "key": "Escape"
           },
@@ -35961,17 +35967,20 @@
           },
           {
             "type": "click",
-            "label": "Carolina Vega",
+            "role": "menuitemcheckbox",
+            "name": "Carolina Vega",
             "exact": true
           },
           {
             "type": "click",
-            "label": "Paula Méndez",
+            "role": "menuitemcheckbox",
+            "name": "Paula Méndez",
             "exact": true
           },
           {
             "type": "press",
-            "label": "Paula Méndez",
+            "role": "menuitemcheckbox",
+            "name": "Paula Méndez",
             "exact": true,
             "key": "Escape"
           }
@@ -36225,17 +36234,20 @@
           },
           {
             "type": "click",
-            "label": "Carolina Vega",
+            "role": "menuitemcheckbox",
+            "name": "Carolina Vega",
             "exact": true
           },
           {
             "type": "click",
-            "label": "Paula Méndez",
+            "role": "menuitemcheckbox",
+            "name": "Paula Méndez",
             "exact": true
           },
           {
             "type": "press",
-            "label": "Paula Méndez",
+            "role": "menuitemcheckbox",
+            "name": "Paula Méndez",
             "exact": true,
             "key": "Escape"
           },
@@ -36806,12 +36818,14 @@
           },
           {
             "type": "click",
-            "label": "Martín Sosa",
+            "role": "menuitemcheckbox",
+            "name": "Martín Sosa",
             "exact": true
           },
           {
             "type": "press",
-            "label": "Martín Sosa",
+            "role": "menuitemcheckbox",
+            "name": "Martín Sosa",
             "exact": true,
             "key": "Escape"
           }
@@ -37000,12 +37014,14 @@
           },
           {
             "type": "click",
-            "label": "Martín Sosa",
+            "role": "menuitemcheckbox",
+            "name": "Martín Sosa",
             "exact": true
           },
           {
             "type": "press",
-            "label": "Martín Sosa",
+            "role": "menuitemcheckbox",
+            "name": "Martín Sosa",
             "exact": true,
             "key": "Escape"
           }
@@ -41416,11 +41432,15 @@
           },
           {
             "type": "click",
-            "label": "Solo lectura"
+            "role": "menuitemcheckbox",
+            "name": "Solo lectura",
+            "exact": true
           },
           {
             "type": "press",
-            "label": "Solo lectura",
+            "role": "menuitemcheckbox",
+            "name": "Solo lectura",
+            "exact": true,
             "key": "Escape"
           },
           {
@@ -41706,11 +41726,15 @@
           },
           {
             "type": "click",
-            "label": "Solo lectura"
+            "role": "menuitemcheckbox",
+            "name": "Solo lectura",
+            "exact": true
           },
           {
             "type": "press",
-            "label": "Solo lectura",
+            "role": "menuitemcheckbox",
+            "name": "Solo lectura",
+            "exact": true,
             "key": "Escape"
           },
           {
@@ -42002,11 +42026,15 @@
           },
           {
             "type": "click",
-            "label": "Solo lectura"
+            "role": "menuitemcheckbox",
+            "name": "Solo lectura",
+            "exact": true
           },
           {
             "type": "press",
-            "label": "Solo lectura",
+            "role": "menuitemcheckbox",
+            "name": "Solo lectura",
+            "exact": true,
             "key": "Escape"
           },
           {
@@ -42292,11 +42320,15 @@
           },
           {
             "type": "click",
-            "label": "Solo lectura"
+            "role": "menuitemcheckbox",
+            "name": "Solo lectura",
+            "exact": true
           },
           {
             "type": "press",
-            "label": "Solo lectura",
+            "role": "menuitemcheckbox",
+            "name": "Solo lectura",
+            "exact": true,
             "key": "Escape"
           },
           {

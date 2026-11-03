@@ -9,7 +9,7 @@ export interface GalleryApiResponse {
   method: "GET" | "POST" | "PUT" | "DELETE"; path: string; status: number; body?: unknown;
   rawBody?: string; contentType?: string; query?: Record<string, string>; afterResponse?: { method: "POST" | "PUT" | "DELETE"; path: string };
 }
-export type GalleryAction = { type: "click" | "press" | "fill"; role?: "button" | "radio" | "combobox" | "textbox" | "option" | "menuitem" | "link" | "tab";
+export type GalleryAction = { type: "click" | "press" | "fill"; role?: "button" | "radio" | "combobox" | "textbox" | "option" | "menuitem" | "menuitemcheckbox" | "link" | "tab";
   name?: string; label?: string; exact?: boolean; key?: string; value?: string; within?: { role: "complementary" | "dialog"; name: string } };
 export interface GalleryApp {
   path: string; captureMode: "harness"; site: "main"; userFixture: CurrentUserFixture;

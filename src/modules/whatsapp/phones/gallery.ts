@@ -83,7 +83,7 @@ const phonesApp = (options: { actions: GalleryAction[]; readyText: string }) => 
 /** WA-Telefonos «Pegar o subir»: Delta S.A., «Solo lectura» y los seis teléfonos, uno por renglón. */
 // El desplegable de roles se abre con el teclado: en el teléfono, el clic de jsdom no lo abre (tests.md).
 const paste: GalleryAction[] = [click("Empresa", "combobox"), click("Delta S.A.", "option"), press("Roles en la empresa"),
-  { type: "click", label: "Solo lectura" }, { type: "press", label: "Solo lectura", key: "Escape" },
+  click("Solo lectura", "menuitemcheckbox"), press("Solo lectura", "menuitemcheckbox", "Escape"),
   fill("Uno por renglón, hasta 200", ["11 5555-4521", "11 5555-7310", "11 5555-8812", "11 5555-9934", "11 5555-1200", "11 4444"].join("\n"))];
 const review: GalleryAction[] = [...paste, click("Revisar 6 teléfonos")];
 
