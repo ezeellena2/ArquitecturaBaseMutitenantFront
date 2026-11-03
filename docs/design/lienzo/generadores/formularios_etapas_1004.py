@@ -45,6 +45,9 @@ FILAS = [
      ["M-FRM-Editor-18", "M-WA-Conversacion-Respuesta-18", "M-WA-Chats-Visor", "M-FRM-Respuestas-18", "M-FRM-Respuesta-18", "M-WA-Chats-Adjuntos"]),
     (19, "Etapa 19 · Condiciones, cálculos y líneas", ["FRM-Editor-Condiciones", "FRM-Editor-Calculo", "FRM-Editor-Lineas", "FRM-Publicar-19", "FRM-Respuestas-19", "FRM-Respuesta-19", "WA-Chats-Respuesta-19", "FRM-Tablero-19"],
      ["M-FRM-Editor-Condiciones", "M-FRM-Editor-Calculo", "M-FRM-Editor-Lineas", "M-FRM-Respuestas-19", "M-FRM-Respuesta-19", "M-WA-Conversacion-Respuesta-19", "M-FRM-Tablero-19"]),
+    (20, "Etapa 20 · Cargar una respuesta desde la web", ["FRM-Formularios-20", "FRM-Cargar-Respuesta", "FRM-Cargar-Panel", "FRM-Cargar-Lista", "FRM-Cargar-Archivos", "FRM-Cargar-Enviada", "FRM-Respuestas-20", "FRM-Respuesta-20",
+                                                          "FRM-Respuestas-Propias", "FRM-Editor-Listas", "FRM-Publicar-20"],
+     ["M-FRM-Formularios-20", "M-FRM-Cargar-Respuesta", "M-FRM-Cargar-Lista", "M-FRM-Cargar-Archivos", "M-FRM-Cargar-Enviada", "M-FRM-Respuestas-20", "M-FRM-Respuesta-20", "M-FRM-Respuestas-Propias", "M-FRM-Editor-Listas", "M-FRM-Publicar-20"]),
     (21, "Etapa 21 · Reglas, aprobación y PDF", ["FRM-Formularios-21", "FRM-Editor-Reglas", "FRM-Pdf", "FRM-Respuesta-Aprobacion", "WA-Chats-Avisos"],
      ["M-FRM-Reglas", "M-FRM-Respuesta-Aprobacion", "M-WA-Conversacion-Avisos"]),
     (22, "Etapa 22 · Biblioteca", ["FRM-Formularios-22", "FRM-Biblioteca", "FRM-Plantilla", "FRM-Plantilla-Usar", "FRM-Editor-Reglas-Plantilla"],
@@ -77,7 +80,7 @@ def panel(etapa, activo, condiciones=None, cantidad=None):
 
 
 ACTIVO = {"FRM-Formularios.dc.html": "formularios", "FRM-Catalogos.dc.html": "catalogos", "FRM-Faltan.dc.html": "faltan"}
-LISTAS = {"FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-21", "FRM-Formularios-22", "Campana", "Campana-14"}  # arman su panel con los permisos
+LISTAS = {"FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Formularios-20", "FRM-Respuestas-Propias", "FRM-Formularios-21", "FRM-Formularios-22", "Campana", "Campana-14"}  # arman su panel con los permisos
 
 
 def con_panel_de_la_etapa(n, t):

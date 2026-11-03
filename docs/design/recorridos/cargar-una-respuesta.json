@@ -1,0 +1,100 @@
+{
+  "id": "cargar-una-respuesta",
+  "titulo": "Cargar una respuesta desde la web",
+  "etapa": "Etapa 20 · Cargar una respuesta desde la web",
+  "orden": 1,
+  "resumen": "Tomás, que solo carga, completa «Pedido de materiales» desde la web: elige en las listas, suma fotos, envía y ve lo suyo.",
+  "pasos": [
+    {
+      "tablero": "FRM-Formularios-20",
+      "tweaks": {
+        "estado": "Quien solo carga"
+      },
+      "resaltar": ".cb-ch",
+      "actor": "Tomás Acosta · Empleado · web",
+      "titulo": "Sus formularios",
+      "texto": "Tomás no diseña ni ve respuestas ajenas: ve sus formularios y «Cargar», sin conteos.",
+      "avanzar": "Toca «Cargar».",
+      "ruta": "/org/formularios",
+      "accion": "Toca «Cargar»."
+    },
+    {
+      "tablero": "FRM-Cargar-Respuesta",
+      "tweaks": {
+        "estado": "Aparece una pregunta"
+      },
+      "resaltar": ".cg-z",
+      "actor": "Tomás Acosta · Empleado · web",
+      "titulo": "Nueva respuesta",
+      "texto": "La app arma las preguntas en zonas, con hasta tres por renglón. «Monto» apareció porque eligió «Sí».",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id/cargar",
+      "accion": "Completa las preguntas."
+    },
+    {
+      "tablero": "FRM-Cargar-Lista",
+      "tweaks": {
+        "estado": "La lista"
+      },
+      "resaltar": ".cg-lista",
+      "actor": "Tomás Acosta · Empleado · web",
+      "titulo": "La lista de un catálogo",
+      "texto": "Busca en el servidor, muestra el total y trae de a 50. «Proveedor» espera a «Zona» y se limpia si esa respuesta cambia.",
+      "avanzar": "Elige una opción.",
+      "ruta": "/org/formularios/:id/cargar",
+      "accion": "Elige «Aceros Rosario»."
+    },
+    {
+      "tablero": "FRM-Cargar-Archivos",
+      "tweaks": {
+        "estado": "Con fotos"
+      },
+      "resaltar": ".cg-fotos",
+      "actor": "Tomás Acosta · Empleado · web",
+      "titulo": "Las fotos",
+      "texto": "Se arrastran o se eligen, y viajan con el envío. Tipo, tamaño y cantidad se revisan antes de enviar.",
+      "avanzar": "Toca «Enviar».",
+      "ruta": "/org/formularios/:id/cargar",
+      "accion": "Toca «Enviar»."
+    },
+    {
+      "tablero": "FRM-Cargar-Archivos",
+      "tweaks": {
+        "estado": "Enviando"
+      },
+      "resaltar": ".cg-barra",
+      "actor": "Tomás Acosta · Empleado · web",
+      "titulo": "Enviando",
+      "texto": "El botón dice «Enviando…» con su aro, y la barra muestra cuánto falta. Un corte no pierde lo cargado: al volver a tocar Enviar, devuelve el primer número.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id/cargar",
+      "accion": "Espera."
+    },
+    {
+      "tablero": "FRM-Cargar-Enviada",
+      "tweaks": {
+        "estado": "Enviada"
+      },
+      "resaltar": ".cg-env",
+      "actor": "Tomás Acosta · Empleado · web",
+      "titulo": "Enviada",
+      "texto": "Lo que mandó, el total calculado, el número y la hora, con «Cargar otra» y «Ver en la planilla».",
+      "avanzar": "Toca «Ver en la planilla».",
+      "ruta": "/org/formularios/:id/cargar",
+      "accion": "Toca «Ver en la planilla»."
+    },
+    {
+      "tablero": "FRM-Respuestas-Propias",
+      "tweaks": {
+        "estado": "Lo suyo"
+      },
+      "resaltar": ".pl-caja",
+      "actor": "Tomás Acosta · Empleado · web",
+      "titulo": "Lo suyo",
+      "texto": "Es la misma planilla, solo con sus respuestas, también las que respondió por WhatsApp. Una dirección ajena no se abre.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Revisa lo suyo."
+    }
+  ]
+}

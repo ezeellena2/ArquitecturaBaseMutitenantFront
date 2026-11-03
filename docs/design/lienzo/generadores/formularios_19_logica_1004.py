@@ -269,7 +269,7 @@ def publicar():
 
     def dlg(problema):
         cuerpo = E.con_problemas(problema)
-        for a, b in [(E.z_dato("Preguntas", "7"), E.z_dato("Preguntas", "8")), (E.z_dato("Agregadas", "Observaciones"), E.z_dato("Agregadas", "Productos y Total")), (E.z_dato("Cambiadas", "Motivo y Fallas"), E.z_dato("Cambiadas", "Monto"))]:
+        for a, b in [(E.z_dato("Preguntas", "7"), E.z_dato("Preguntas", "8")), (E.z_dato("Agregadas", "Observaciones"), ""), (E.z_dato("Cambiadas", "Motivo y Fallas"), E.z_dato("Cambiadas", "Productos y Observaciones"))]:
             assert a in cuerpo, a
             cuerpo = cuerpo.replace(a, b)
         return A.dlg_publicar(tit, cuerpo, E.pie_pub(activo=False))

@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 153 · 2 de noviembre de 2026"
+VERSION = "versión 154 · 2 de noviembre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -156,6 +156,9 @@ CAPITULOS = [
         ("frm-logica", "Condiciones, cálculos y líneas", "/org/formularios/:id", "no", "19", ["FRM-Editor-Condiciones", "FRM-Editor-Calculo", "FRM-Editor-Lineas"], ["M-FRM-Editor-Condiciones", "M-FRM-Editor-Calculo", "M-FRM-Editor-Lineas"],
          ["FRM-Publicar-19", "FRM-Respuestas-19", "M-FRM-Respuestas-19", "FRM-Respuesta-19", "M-FRM-Respuesta-19", "WA-Chats-Respuesta-19", "M-WA-Conversacion-Respuesta-19", "FRM-Tablero-19", "M-FRM-Tablero-19"],
          "Una pregunta puede aparecer según otra, un cálculo arma su fórmula con piezas y un grupo de líneas pide renglones. En la planilla, lo oculto dice «No se mostró», distinto de «Sin respuesta» y de «—»; un monto va con su moneda."),
+        ("frm-cargar", "Cargar una respuesta desde la web", "/org/formularios/:id/cargar", "no", "20", ["FRM-Formularios-20", "FRM-Cargar-Respuesta", "FRM-Cargar-Lista", "FRM-Cargar-Archivos", "FRM-Cargar-Enviada"], ["M-FRM-Formularios-20", "M-FRM-Cargar-Respuesta", "M-FRM-Cargar-Lista", "M-FRM-Cargar-Archivos", "M-FRM-Cargar-Enviada"],
+         ["FRM-Cargar-Panel", "FRM-Respuestas-20", "M-FRM-Respuestas-20", "FRM-Respuesta-20", "M-FRM-Respuesta-20", "FRM-Respuestas-Propias", "M-FRM-Respuestas-Propias", "FRM-Editor-Listas", "M-FRM-Editor-Listas", "FRM-Publicar-20", "M-FRM-Publicar-20"],
+         "Un empleado completa un formulario desde la web, a su nombre, con la misma captura que por WhatsApp. La app arma las preguntas en zonas, con hasta tres por renglón. Lo cargado queda con el canal «App», y quien solo carga ve lo suyo."),
         ("frm-reglas", "Cuando llega una respuesta", "/org/formularios/:id", "no", "21", ["FRM-Editor-Reglas"], ["M-FRM-Reglas"], ["FRM-Pdf"],
          "Las reglas del formulario, en palabras: cuándo, si y qué hacer en orden. Se guardan aparte, con su historial. «Ver el diseño» abre el PDF que se arma al aprobar."),
         ("frm-aprobar", "Aprobar o rechazar", "/org/formularios/:id/respuestas?aprobacion=VIS-000130", "no", "21", ["FRM-Respuesta-Aprobacion"], ["M-FRM-Respuesta-Aprobacion"], [],

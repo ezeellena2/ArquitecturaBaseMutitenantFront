@@ -91,6 +91,7 @@ class Etapa:
 
     def __init__(self, n):
         self.n, self.resp, self.ciclo, self.aprob, self.plantilla = n, n >= 15, n >= 17, n >= 21, n >= 22
+        self.carga = n == 20  # las listas de la 21 y la 22 lo suman cuando se alineen
 
 
 # (nombre, clave, (clase, estado en WhatsApp, ⓘ), preguntas, último cambio, por aprobar, respuestas, última o None)
@@ -98,6 +99,7 @@ class Etapa:
 # las fechas, completas y con su hora (formatos.md, 25/10).
 # La última respuesta, como la maqueta (3b9c967): su número en una columna y cuándo llegó en otra («Recibida»).
 FILAS = [
+    ("Pedido de materiales", "Ped", ("", "Solo en la app · versión 4", "Usa una lista dependiente."), 11, "15/10/2026 12:10", 0, 46, ("PED-000046", "15/10/2026 12:32", "FRM-Respuesta-20.dc.html")),
     ("Visita a cliente", "Vis", ("{{estVisClase}}", "{{estVis}}", ""), 7, "08/10/2026 14:20", 3, 24, ("VIS-000130", "15/10/2026 16:20", "FRM-Respuesta-Aprobacion.dc.html")),
     ("Entrega de pedido", "Ent", ("", "Publicado · versión 1", ""), 5, "02/10/2026 09:15", 1, 48, ("ENT-000048", "14/10/2026 10:05", "FRM-Respuesta.dc.html")),
     ("Control de vehículo", "Con", ("mal", "No se pudo publicar", "La versión 2 publicada sigue activa."), 7, "12/10/2026 17:40", 0, 31,
@@ -138,6 +140,8 @@ def estados_lista(e):
         est.append("Quien solo ve respuestas")
     if e.ciclo:
         est.append("Quien solo ve respuestas: dados de baja")  # sin el filtro, no llegaría a las respuestas de un dado de baja
+    if e.carga:
+        est += ["Uno solo para clientes", "Quien solo carga", "Quien solo carga: dados de baja"]
     if e.aprob:
         est.append("Quien solo aprueba")
     return est + ["Sin coincidencias", "Cargando", "Todavía no hay formularios", "No se pudo cargar", "Sin permiso"]
@@ -147,11 +151,17 @@ CSS_LISTA = """.w-th.fx14, .w-tr.fx14 { grid-template-columns: minmax(200px, 1.4
 .w-th.fx15, .w-tr.fx15 { grid-template-columns: minmax(200px, 1.3fr) minmax(190px, 1.1fr) 100px 136px 150px; }
 .w-th.fx17, .w-tr.fx17 { grid-template-columns: minmax(170px, 1.2fr) minmax(180px, 1.1fr) 96px 130px 146px 40px; }
 .w-th.fx21, .w-tr.fx21 { grid-template-columns: minmax(150px, 1.15fr) minmax(170px, 1.1fr) 88px 92px 122px 140px 40px; }
+.w-th.fx20, .w-tr.fx20 { grid-template-columns: minmax(160px, 1fr) minmax(190px, 1.1fr) 88px 112px 132px 72px 40px; }
+.w-th.fx1, .w-tr.fx1 { grid-template-columns: minmax(0, 1fr) 72px; }
+.w-tr .cb-ch { height: 30px; padding: 0 10px; font-size: 13px; justify-self: end; }
+.w-tr > .e-tipw { justify-self: end; overflow: visible; }
+.w-tr .cb-ch[disabled] { opacity: 0.55; cursor: default; }
+.w-body .w-caja:has(.e-tip) { overflow: visible; }
 .w-th.fx3, .w-tr.fx3 { grid-template-columns: minmax(220px, 1.4fr) 110px 136px 150px; }
 .w-th .ord { margin-left: 4px; font-size: 10px; color: var(--t2); }
 .w-tr .fx-num { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; color: var(--t1); text-decoration: none; }
 .w-th.fx2, .w-tr.fx2 { grid-template-columns: minmax(220px, 1fr) 160px; }
-.w-tr.fx14, .w-tr.fx15, .w-tr.fx17, .w-tr.fx21, .w-tr.fx3, .w-tr.fx2 { position: relative; min-height: 40px; }
+.w-tr.fx14, .w-tr.fx15, .w-tr.fx17, .w-tr.fx20, .w-tr.fx1, .w-tr.fx21, .w-tr.fx3, .w-tr.fx2 { position: relative; min-height: 40px; }
 .w-tr .fx-f { color: var(--t1); text-decoration: none; font-variant-numeric: tabular-nums; }
 .fx-n, .fx-u { display: flex; flex-direction: column; gap: 2px; min-width: 0; line-height: 1.35; }
 .fx-n a { color: var(--t1); font-weight: 500; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -195,22 +205,39 @@ def c_ultima(u, e):
     if not u:
         return '<span class="fm-no">—</span><span class="fm-no">—</span>'
     num, cuando, destino = u
-    return f'<span><a class="fx-num" href="{destino if e.aprob else "FRM-Respuesta.dc.html"}">{num}</a></span><span class="num">{cuando}</span>'
+    return f'<span><a class="fx-num" href="{destino if e.aprob or "-20." in destino else "FRM-Respuesta.dc.html"}">{num}</a></span><span class="num">{cuando}</span>'
 
 
 def grilla_de(e):
-    return "fx21" if e.aprob else "fx17" if e.ciclo else "fx15" if e.resp else "fx14"
+    return "fx21" if e.aprob else "fx20" if e.carga else "fx17" if e.ciclo else "fx15" if e.resp else "fx14"
+
+
+SOLO_CLIENTES = "Es solo para clientes: se responde por WhatsApp."
+
+
+def c_cargar(n, k):
+    """«Cargar» al final de la fila (83): no aparece en un borrador ni en un dado de baja, y en uno solo para clientes queda grisado, con su motivo (43)."""
+    if k in ("Rec", "Rel"):
+        return "<span></span>"
+    if k == "Ent":
+        tip = f'<sc-if value="{{{{tipCliente}}}}" hint-placeholder-val="{{{{no}}}}"><span class="e-tip" role="tooltip">{SOLO_CLIENTES}</span></sc-if>'
+        return f'<span class="e-tipw"><button type="button" class="cb cb-sec cb-ch" disabled title="{SOLO_CLIENTES}" aria-label="Cargar {n}">Cargar</button>{tip}</span>'
+    return f'<a class="cb cb-sec cb-ch" href="FRM-Cargar-Respuesta.dc.html" aria-label="Cargar {n}">Cargar</a>'
 
 
 def fila(f, cols, e):
     n, k, (clase, texto, info), preg, cambio, apr, resp, ult = f
     defecto = "no" if k == "Rel" else "si"
     abre = "FRM-Respuestas.dc.html" if e.resp and k != "Rec" else ("FRM-Editor-Baja.dc.html" if k == "Rel" else "FRM-Editor.dc.html")
+    if k == "Ped":
+        abre = "FRM-Respuestas-20.dc.html"
     if cols == "todas":
         if not e.resp:
             celdas = c_nombre(n, abre) + f'<span class="num">{preg}</span>' + c_whatsapp(clase, texto, info) + f'<span class="num">{cambio}</span>'
         else:
             celdas = c_nombre(n, abre) + c_whatsapp(clase, texto, info) + (c_aprobar(apr) if e.aprob else "") + f'<span class="num">{resp}</span>' + c_ultima(ult, e)
+            if e.carga:
+                celdas += c_cargar(n, k)
             if e.ciclo:
                 menus = "".join(f'<sc-if value="{{{{m{clave}}}}}" hint-placeholder-val="{{{{no}}}}"><div class="f-menu" role="menu" aria-label="Acciones de {n}">{h}</div></sc-if>'
                                 for clave, h in MENUS.items() if clave.startswith(k))
@@ -219,6 +246,9 @@ def fila(f, cols, e):
     elif cols == "lee":
         celdas = c_nombre(n, abre) + f'<span class="num">{resp}</span>' + c_ultima(ult, e)
         grilla = "fx3"
+    elif cols == "carga":  # `formrecords.create` sin `formrecords.read`: sus formularios, sin conteos (85)
+        celdas = c_nombre(n, "FRM-Respuestas-Propias.dc.html") + c_cargar(n, k)
+        grilla = "fx1"
     elif cols == "lectura":  # `forms.read` sin `formrecords.read`: sin las columnas de respuestas
         celdas = c_nombre(n, "FRM-Editor-Baja.dc.html" if k == "Rel" else "FRM-Editor.dc.html") + f'<span class="num">{preg}</span>' + c_whatsapp(clase, texto, info) + f'<span class="num">{cambio}</span>'
         grilla = "fx14"
@@ -232,18 +262,20 @@ def tabla(cols, bandera, e):
     if cols == "todas":
         cab = ["Formulario", "Preguntas", "En WhatsApp", "Último cambio"] if not e.resp else (
             ["Formulario", "En WhatsApp"] + (["Por aprobar"] if e.aprob else []) + ["Respuestas", "Última respuesta", "Recibida"]
-            + (['<span class="sr">Acciones</span>'] if e.ciclo else []))
+            + (['<span class="sr">Cargar</span>'] if e.carga else []) + (['<span class="sr">Acciones</span>'] if e.ciclo else []))
         clase = grilla_de(e)
     elif cols == "lee":
         cab, clase = ["Formulario", "Respuestas", "Última respuesta", "Recibida"], "fx3"
     elif cols == "lectura":
         cab, clase = ["Formulario", "Preguntas", "En WhatsApp", "Último cambio"], "fx14"
+    elif cols == "carga":
+        cab, clase = ["Formulario", '<span class="sr">Cargar</span>'], "fx1"
     else:
         cab, clase = ["Formulario", "Por aprobar"], "fx2"
     # La columna por la que está ordenada muestra ▲ (el usuario, 25/10)
     th = f'<div class="w-th {clase}">' + "".join(c if c.startswith("<span") else f'<span aria-sort="ascending">{c}<span class="ord" aria-hidden="true">▲</span></span>'
                                                  if c == "Formulario" else f"<span>{c}</span>" for c in cab) + "</div>"
-    filas = "".join(fila(f, cols, e) for f in FILAS if (cols in ("todas", "lectura") or f[1] != "Rec") and (e.ciclo or f[1] != "Rel"))
+    filas = "".join(fila(f, cols, e) for f in FILAS if (cols in ("todas", "lectura") or f[1] != "Rec") and (e.ciclo or f[1] != "Rel") and (e.carga or f[1] != "Ped"))
     return f'<sc-if value="{{{{{bandera}}}}}" hint-placeholder-val="{{{{{"si" if cols == "todas" else "no"}}}}}">{th}{filas}</sc-if>'
 
 
@@ -258,6 +290,8 @@ def cuerpo_lista(e):
             + '<sc-if value="{{hayFiltro}}" hint-placeholder-val="{{no}}"><button type="button" class="cb cb-enl">Limpiar filtros</button></sc-if>'
             '<span class="tot">{{total}}</span></div></sc-if>')
     tablas = tabla("todas", "colsTodas", e) + (tabla("lee", "colsLee", e) + tabla("lectura", "colsLectura", e) if e.resp else "") + (tabla("aprueba", "colsAprueba", e) if e.aprob else "")
+    if e.carga:
+        tablas += tabla("carga", "colsCarga", e)
     lista = ('<sc-if value="{{conTabla}}" hint-placeholder-val="{{si}}"><div class="w-caja">'
              '<sc-if value="{{conFilas}}" hint-placeholder-val="{{si}}">' + tablas
              + '<div class="w-pie"><span>{{rango}}</span><span>10 por página · Página 1 de 1</span></div></sc-if>'
@@ -278,7 +312,32 @@ def acciones_lista(e):
             f'<a class="cb cb-pri" href="FRM-Editor.dc.html">{MAS} Nuevo formulario</a></sc-if>')
 
 
+def js_carga(js):
+    """La 20: suma «Pedido de materiales» y quien solo carga; las demás listas no cambian."""
+    for a, b in [("const leeBaja = v === 'Quien solo ve respuestas: dados de baja';",
+                  "const leeBaja = v === 'Quien solo ve respuestas: dados de baja', cargaBaja = v === 'Quien solo carga: dados de baja', carga = v === 'Quien solo carga' || cargaBaja;"),
+                 ("const baja = v === 'Dados de baja' || v === 'Acciones de un dado de baja' || leeBaja;", "const baja = v === 'Dados de baja' || v === 'Acciones de un dado de baja' || leeBaja || cargaBaja;"),
+                 ("const disena = !lee && !aprueba && v !== 'Sin permiso';", "const disena = !lee && !aprueba && !carga && v !== 'Sin permiso';"),
+                 ("const quien = lee ? ", "const quien = carga ? ['Tomás Acosta', 'tomas.acosta@delta.ejemplo.com', 'T'] : lee ? "),
+                 ("const filas = baja || bor ? 1 : conAlgo ? 2 : pub || lee || aprueba ? 3 : 4;", "const filas = baja || bor ? 1 : carga ? 3 : pub || lee ? 4 : 5;"),
+                 (": baja ? '1 dado de baja' : lee ? '3 activos' : aprueba ? '4 por aprobar' : !CI ? '4 formularios' : AP ? '4 activos · 4 por aprobar' : '4 activos · 1 dado de baja',",
+                  ": baja ? '1 dado de baja' : carga ? '3 activos' : lee ? '4 activos' : '5 activos · 1 dado de baja',"),
+                 ("conEstado: disena || (CI && lee),", "conEstado: disena || lee || carga,"),
+                 ("estC_t: '4', estC_p: '3', estC_b: '1', estC_d: '1',", "estC_t: '5', estC_p: '4', estC_b: '1', estC_d: '1',"),
+                 ("colsTodas: disena && !(R && lectura), colsLee: lee, colsLectura: R && lectura,", "colsTodas: disena && !(R && lectura), colsLee: lee, colsLectura: R && lectura, colsCarga: carga, conWa: !carga, tipCliente: v === 'Uno solo para clientes',"),
+                 ("rVis: lista && !baja && !bor, rEnt: lista && !baja && !bor, rCon: lista && !baja && !bor && !conAlgo,", "rPed: lista && !baja && !bor, rVis: lista && !baja && !bor, rEnt: lista && !baja && !bor && !carga, rCon: lista && !baja && !bor,"),
+                 ("rRec: lista && !baja && !pub && !conAlgo && !lee && !aprueba, rRel: baja,", "rRec: lista && !baja && !pub && !lee && !carga, rRel: baja,")]:
+        assert a in js, a
+        js = js.replace(a, b)
+    return js
+
+
 def js_lista(vista, e):
+    js = js_base(vista, e)
+    return js_carga(js) if e.carga else js
+
+
+def js_base(vista, e):
     R, CI, AP = (json.dumps(x) for x in (e.resp, e.ciclo, e.aprob))
     return f"""    const v = {vista};
     const R = {R}, CI = {CI}, AP = {AP};
@@ -343,12 +402,14 @@ def pagina_lista(nombre, estados, vista, capas=None, css="", e=None):
                r'\1<span class="w-av">{{yoIni}}</span><span class="tx"><b>{{yo}}</b>', t, count=1)
     t = re.sub(r'(<div class="w-abajo">)(<a class="w-ln" href="WA-Admin\.dc\.html">.*?</a>)',
                lambda m: m.group(1) + '<sc-if value="{{conAdmin}}" hint-placeholder-val="{{si}}">' + m.group(2) + "</sc-if>", t, count=1, flags=re.S)
+    if e.carga:  # quien solo carga no ve WhatsApp
+        t = re.sub(r'<a class="w-ln" href="WA-Chats\.dc\.html">.*?</a>', lambda m: '<sc-if value="{{conWa}}" hint-placeholder-val="{{si}}">' + m.group(0) + "</sc-if>", t, count=1, flags=re.S)
     return con_css(t, "lista", CSS_LISTA)
 
 
 B.pagina_listado = pagina_lista  # FRM-Copiar y FRM-Reactivar-Eliminar, sobre la lista de la 17
 
-LISTAS = {"FRM-Formularios": 14, "FRM-Formularios-15": 15, "FRM-Formularios-17": 17, "FRM-Formularios-21": 21, "FRM-Formularios-22": 22}
+LISTAS = {"FRM-Formularios": 14, "FRM-Formularios-15": 15, "FRM-Formularios-17": 17, "FRM-Formularios-20": 20, "FRM-Formularios-21": 21, "FRM-Formularios-22": 22}
 
 
 def lista(n):
@@ -366,18 +427,36 @@ T_FILAS = [("Visita a cliente", 7, 24, "Publicado · versión 3", "3"), ("Entreg
 T_BAJA = ("Relevamiento de obra", 6, 12, "Dado de baja · versión 2", "")
 CSS_TLISTA = """.ap-fila.fx { display: flex; align-items: center; gap: 8px; }
 .ap-fila.fx a.tx { flex: 1; min-width: 0; text-decoration: none; color: inherit; display: flex; flex-direction: column; }
+.ap-fila .l3 { font-size: 13px; color: var(--t3); }
+.ap-fila .cb-ch { height: 36px; padding: 0 12px; font-size: 14px; flex-shrink: 0; }
+.ap-fila .cb-ch[disabled] { opacity: 0.55; }
 .ap-fila .fm-cnt { min-width: 24px; height: 24px; padding: 0 8px; box-sizing: border-box; border-radius: 999px; background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 """
-TLISTAS = {"M-FRM-Formularios": 14, "M-FRM-Formularios-15": 15, "M-FRM-Formularios-17": 17}
+TLISTAS = {"M-FRM-Formularios": 14, "M-FRM-Formularios-15": 15, "M-FRM-Formularios-17": 17, "M-FRM-Formularios-20": 20}
 
 
 def t_fila(f, e, menu=True, cuenta=True):
     n, preg, resp, est, apr = f
     href = "M-FRM-Respuestas.dc.html" if e.resp and est != "Borrador" else "M-FRM-Editor.dc.html"
-    l2 = f"{resp} respuestas · {est}" if e.resp else f"{preg} preguntas · {est}"
+    l2 = est if e.carga else f"{resp} respuestas · {est}" if e.resp else f"{preg} preguntas · {est}"
     c = f'<span class="fm-cnt" aria-label="{apr} por aprobar">{apr}</span>' if apr and e.aprob and cuenta else ""
     k = f'<button type="button" class="ap-ib" aria-label="Acciones de {n}">{F.TKEBAB}</button>' if menu and e.ciclo else ""
-    return f'<div class="ap-fila fx"><a class="tx" href="{href}"><span class="l1">{n}</span><span class="l2">{l2}</span></a>{c}{k}</div>'
+    if n == "Pedido de materiales":
+        href = "M-FRM-Respuestas-20.dc.html"
+    l3 = f'<span class="l3">{resp} respuestas</span>' if e.carga else ""
+    if e.carga and est != "Borrador":
+        if n == "Entrega de pedido":  # lo apagado dice por qué: en el teléfono, debajo (43)
+            c = '<button type="button" class="cb cb-sec cb-ch" disabled>Cargar</button>'
+            l3 += f'<span class="l3">{SOLO_CLIENTES}</span>'
+        else:
+            c = '<a class="cb cb-sec cb-ch" href="M-FRM-Cargar-Respuesta.dc.html">Cargar</a>'
+    return f'<div class="ap-fila fx"><a class="tx" href="{href}"><span class="l1">{n}</span><span class="l2">{l2}</span>{l3}</a>{c}{k}</div>'
+
+
+def t_carga(f, baja=False):
+    """Quien solo carga: sus formularios y «Cargar», sin conteos (85); en uno dado de baja ve lo suyo, sin «Cargar» (101)."""
+    c = "" if baja else '<a class="cb cb-sec cb-ch" href="M-FRM-Cargar-Respuesta.dc.html">Cargar</a>'
+    return f'<div class="ap-fila fx"><a class="tx" href="M-FRM-Respuestas-Propias.dc.html"><span class="l1">{f[0]}</span></a>{c}</div>'
 
 
 def tel_lista(n):
@@ -388,7 +467,8 @@ def tel_lista(n):
 
     def seg(baja, act="4"):
         return ""
-    activos = bar + seg(False) + '<div class="ap-cuerpo">' + "".join(t_fila(f, e) for f in T_FILAS) + "</div>" + fab
+    t_filas = ([("Pedido de materiales", 11, 46, "Solo en la app · versión 4", "")] + T_FILAS) if e.carga else T_FILAS
+    activos = bar + seg(False) + '<div class="ap-cuerpo">' + "".join(t_fila(f, e) for f in t_filas) + "</div>" + fab
     esq = bar + seg(False) + '<div class="ap-cuerpo"><div class="ap-esq"><span style="width: 80%;"></span><span style="width: 60%;"></span><span style="width: 72%;"></span></div></div>'
     error = bar + seg(False) + '<div class="ap-cuerpo"><div class="ap-vacio">No pudimos cargar los formularios.<button type="button" class="cb cb-sec">Reintentar</button></div></div>'
     tilde = svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 18, "2.25")
@@ -405,11 +485,15 @@ def tel_lista(n):
         cuerpo = {"Lista": activos, "Filtros": activos, "Cargando": esq, "No se pudo cargar": error}
     else:
         E_T = ["Activos", "Filtros", "Dados de baja", "Acciones de un publicado", "Acciones de un borrador", "Acciones de un dado de baja",
-               "Copiar", "Dar de baja", "Reactivar", "Borrar"] + (["Nuevo formulario: elegir"] if e.plantilla else []) + ["Quien solo ve respuestas", "Quien solo ve respuestas: filtros", "Cargando", "No se pudo cargar"]
+               "Copiar", "Dar de baja", "Reactivar", "Borrar"] + (["Nuevo formulario: elegir"] if e.plantilla else []) + ["Quien solo ve respuestas", "Quien solo ve respuestas: filtros"]
+        E_T += (["Quien solo carga", "Quien solo carga: dados de baja"] if e.carga else []) + ["Cargando", "No se pudo cargar"]
         bajas = bar + seg(True) + '<div class="ap-cuerpo">' + t_fila(T_BAJA, e) + "</div>" + fab
-        lee = bar + seg(False, "3") + '<div class="ap-cuerpo">' + "".join(t_fila(f, e, menu=False, cuenta=False) for f in T_FILAS[:3]) + "</div>"
+        lee = bar + seg(False, "3") + '<div class="ap-cuerpo">' + "".join(t_fila(f, e, menu=False, cuenta=False) for f in t_filas[:3]) + "</div>"
         cuerpo = {x: (bajas if x in ("Dados de baja", "Acciones de un dado de baja", "Reactivar") else lee if x.startswith("Quien solo ve respuestas")
                       else esq if x == "Cargando" else error if x == "No se pudo cargar" else activos) for x in E_T}
+        if e.carga:
+            cuerpo["Quien solo carga"] = bar + '<div class="ap-cuerpo">' + "".join(t_carga(f) for f in [t_filas[0], t_filas[1], t_filas[3]]) + "</div>"
+            cuerpo["Quien solo carga: dados de baja"] = bar + '<div class="ap-cuerpo">' + t_carga(T_BAJA, baja=True) + "</div>"
         copiar_h = F.tcampo("Nombre", "Visita a cliente (copia)", req=True) + F.tcampo("Prefijo de numeración", "VIS2", req=True)
         baja_h = ('<div class="p-tit2">Qué deja de pasar</div><span class="t-lin">' + B.CHAT + ' No se manda más desde el chat.</span>'
                   '<div class="p-tit2">Envíos abiertos y WhatsApp</div><span class="t-lin">' + B.RELOJ + ' 2 envíos abiertos: el último vence el 25/10/2026 a las 18:40.</span>'

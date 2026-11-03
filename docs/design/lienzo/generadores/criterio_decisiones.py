@@ -582,6 +582,12 @@ DECISIONES = {
         ("El catálogo de una pregunta", "", "El mismo combo de los campos, sin «Ver el catálogo». Lo dado de baja y lo que no se puede usar van apagados, con su motivo en el tooltip (111).", "Dibujada"),
         ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
+    "Cargar una respuesta · v154 · 02/11": [
+        ("La página", "", "Cancelar y Enviar en la banda, zonas plegables y hasta tres por renglón, como ArquitecturaBase. El ancho sale del tipo de pregunta, y lo condicional recalcula los renglones.", "Dibujada"),
+        ("Enviando", "", "«Enviando…» con su aro y una barra sin palabras, en lugar del porcentaje de allá (95 y 115).", "Dibujada"),
+        ("Publicar solo para la app", "", "En la zona «Avisos», sin un diálogo propio. Uno solo para clientes frena en «Problemas».", "Dibujada"),
+        ("Agregar filtro", "", "Un menú con los tres filtros, porque con «Según otra respuesta» los botones no entran en el encabezado.", "Dibujada"),
+    ],
     "Condiciones, cálculos y líneas · v153 · 02/11": [
         ("Mostrar si", "", "En la pregunta abierta, en su caja: Pregunta, Condición, Valor y el tacho, como las condiciones de las reglas de ArquitecturaBase.", "Dibujada"),
         ("La fórmula", "", "Piezas en una caja, con «Agregar dato» y + − × ÷ ( ). Sin un campo para escribirla. Allá no existe.", "Dibujada"),
