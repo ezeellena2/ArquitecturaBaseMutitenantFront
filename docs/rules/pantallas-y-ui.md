@@ -24,6 +24,7 @@
 - Botones: normal de 36 px, chico de 32, de ícono de 32 y grande de 44 (solo ingreso y registro). El principal, con el degradé de la marca en todas las pantallas, también en el teléfono («Criterio · Botones» y «Criterio · Decisiones», v107). **Toda acción que tarda muestra que trabaja** (decisión del usuario del 2026-11-02, 115 de la hoja de ruta, que reemplaza la del 2026-10-24): `Button` con `pending` pone el aro de 14 y su gerundio (`pendingLabel`: «Guardando…», «Aprobando…»), con su color y sin atenuarse, y un botón de ícono cambia su dibujo por el aro. No se puede tocar y no se achica. Desde la base de la 12, una confirmación queda abierta hasta la respuesta (`ConfirmDialog` con `pending`), y una tabla que vuelve a leer atenúa sus filas, fuera de alcance, y corre una línea bajo el encabezado; la primera carga conserva su aro. Nunca alcanza con apagar el botón. Campos de 36 px (en el teléfono, 48, con radio 12 y letra de 16, como los M-* de la app); en el ingreso y el registro (`FormField variant="auth"`), 44 con radio 10 y letra de 15, también en el teléfono, como M-Ingreso y M-Registro. El texto común de páginas, filas y menús mide 13 px.
 - **Avisos** (decisión del usuario del 2026-10-25), cada uno en un solo lugar. Lo que acabás de hacer va en el aviso de abajo: verde, que se cierra solo, si salió; rojo con ✕ si falló. El error de un formulario va en su franja, y el de un dato, debajo de su campo, al intentar guardar. El estado del objeto va en la banda, con punto y palabra («● No se pudo publicar»), y lo que falló se marca en su lugar. Todo lo demás (lo que llegó, lo que falló en segundo plano, lo que espera a alguien) va en la campana del encabezado, con su número, y cada aviso lleva a donde se resuelve; en el teléfono, la campana va en la barra de arriba. Ningún cartel en el cuerpo de una pantalla, salvo el que la bloquea entera (una organización suspendida, sin conexión). En el teléfono, lo pasajero va en la franja oscura de abajo.
 - La confirmación irreversible no tiene ✕ y su acción usa un botón rojo lleno.
+- **Medidas en `rem`** (decisión del usuario del 2026-11-02): la compu ve la app al 75 % ([tema.md](../architecture/tema.md)), así que las medidas de esta ficha y de los tableros son nominales. Lo dibujado de 220 se escribe `w-55`; de 13 de letra, `text-[0.8125rem]`; un ícono, `size-4`, nunca `size={16}`. En px quedan las líneas de hasta 2, los anillos y los cortes.
 - Colores solo con los tokens de [tema.md](../architecture/tema.md), por nombre (`bg-[var(--fondo)]`, `text-[var(--t2)]`). Las variables de shadcn (`--primary`, `--ring`, `--destructive`…) son solo alias de esos tokens en `index.css`. Si falta un color, se agrega un token en `index.css` y en la tabla de tema.md.
 - shadcn se genera con `npx shadcn@4.21.0 add` y se edita lo mínimo; las piezas propias van en PascalCase.
 - En JSX, ternario en lugar de `&&`. El estado derivado se calcula en el render.
@@ -45,13 +46,14 @@
 - El mismo estado en dos lugares: arriba y otra vez en la fila.
 - La web achicada en el teléfono (la marca arriba, la banda con ícono, cajas con cabecera arena o el ☰ con sesión) o una versión aparte hecha a mano.
 - Colores sueltos (`#fff`, `text-gray-500`).
+- Medidas en px en una clase o un estilo (`w-[220px]`, `text-[13px]`, `size={16}`): la raíz de la compu no las achica.
 - Programar una pantalla nueva sin su tablero aprobado. Si a un tablero vigente le falta un estado, se le pide a Diseño y se sigue con el resto, sin frenar la etapa.
 
 ## Copiá de
 - el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (solo los tableros validados); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` y `RoleEditorPage.tsx` (E4), `src/shared/ui/Page.tsx`, `Section.tsx`, `DetailGrid.tsx` (el detalle de Auditoría), `FilterBar.tsx`, `SegmentedControl.tsx`, `src/layouts/components/AdminPanel.tsx` (el segundo panel) y `docs/architecture/tema.md`
 
 ## Lo verifica
-- `theme-tokens.test.ts` (E0)
+- `theme-tokens.test.ts` (E0): los tokens, y que las medidas estén en `rem`
 - `DetailGrid.test.tsx` (E5): la grilla en la compu y el rótulo encima del valor en el teléfono, con axe
 - `FilterBar.test.tsx` (E1), `SegmentedControl.test.tsx` (E1) y `AdminPanel.test.tsx` (E3): los filtros con «Limpiar», las dos vistas y el segundo panel
 - `harness.test.ts` (E11): solo `src/shared/ui/Page.tsx` importa `shared/ui/tabs`

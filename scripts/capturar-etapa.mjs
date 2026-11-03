@@ -35,6 +35,13 @@ export async function waitForAppFont(page) {
   if (missing) throw new Error("La app pide Inter y no la cargó: la captura saldría con la letra del sistema.");
 }
 
+/// La app en la compu mide el 75 % (index.css) y el tablero, su tamaño nominal: a 1080 de ancho y escala 4/3, la foto de la
+/// app sale de 1440 con la misma geometría que la del tablero.
+export function appContextOptions({ width, height }) {
+  if (width < 1024) return { viewport: { width, height }, deviceScaleFactor: 1 };
+  return { viewport: { width: width * 0.75, height: height * 0.75 }, deviceScaleFactor: 4 / 3 };
+}
+
 export function capturePaths(outputRoot, entry) {
   const stem = `${entry.id}-${entry.viewport.width}x${entry.viewport.height}`;
   const directory = path.join(outputRoot, entry.group);
@@ -349,10 +356,11 @@ export async function main(args) {
   try {
     browser = await chromium.launch({ headless: true, args: ["--no-proxy-server", "--host-resolver-rules=MAP localtest.me 127.0.0.1", "--unsafely-treat-insecure-origin-as-secure=" + manifest.issuer], ...(option(args, "--browser-path") ? { executablePath: option(args, "--browser-path") } : { channel: "chrome" }) });
     for (const entry of selected) {
-      const context = await browser.newContext({ viewport: entry.viewport, deviceScaleFactor: 1, locale: "es-AR" });
+      const context = await browser.newContext({ ...appContextOptions(entry.viewport), locale: "es-AR" });
+      const boardContext = await browser.newContext({ viewport: entry.viewport, deviceScaleFactor: 1, locale: "es-AR" });
       let stream;
       const failures = [];
-      context.on("page", page => page.on("pageerror", () => failures.push("Error JavaScript")));
+      for (const each of [context, boardContext]) each.on("page", page => page.on("pageerror", () => failures.push("Error JavaScript")));
       context.on("response", response => {
         const url = new URL(response.url()), status = response.status();
         if (url.pathname.startsWith("/api/") && status >= 400 && !entry.app.responses.some(r => r.status === status && status !== 501 && r.path === url.pathname && r.method === response.request().method() && Object.entries(r.query ?? {}).every(([key, value]) => url.searchParams.get(key) === value))) failures.push("API inesperada " + status + ": " + url.pathname);
@@ -360,12 +368,12 @@ export async function main(args) {
       const files = capturePaths(target, entry);
       try {
         if (entry.app.responses.some(r => r.openStream)) stream = await startAssistantOpenStream(entry.app.responses, manifest.issuer);
-        const board = await openBoard(context, server.url, entry), app = await openApp(context, appUrl, entry, stream && { url: stream.url, origin: manifest.issuer });
+        const board = await openBoard(boardContext, server.url, entry), app = await openApp(context, appUrl, entry, stream && { url: stream.url, origin: manifest.issuer });
         if (failures.length) throw new Error(entry.id + ": " + failures.join("; "));
         mkdirSync(path.dirname(files.app), { recursive: true });
         await board.screenshot({ path: files.board }); await app.screenshot({ path: files.app });
         if (failures.length) throw new Error(entry.id + ": " + failures.join("; "));
-      } finally { try { await context.close(); } finally { await stream?.close(); } }
+      } finally { try { await boardContext.close(); await context.close(); } finally { await stream?.close(); } }
       const comparison = sideBySideFile(entry, target);
       await composeSideBySide(browser, entry, files, comparison);
       captured.push({ id: entry.id, file: path.relative(target, comparison).replaceAll(path.sep, "/") });

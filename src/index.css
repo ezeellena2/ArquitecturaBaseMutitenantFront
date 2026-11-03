@@ -185,6 +185,15 @@ body,
   height: 100%;
 }
 
+/* Escala de la interfaz en escritorio: todas las medidas están en rem (salvo las líneas de hasta 2 px y los anillos), así
+   que esta raíz achica la app entera como el zoom del navegador al 75 %. Celular y tablet quedan en 16 px, con sus áreas
+   táctiles de 44. Las media queries en rem no cambian: siempre miden contra los 16 px iniciales. */
+@media (min-width: 64rem) and (pointer: fine) {
+  html {
+    font-size: 75%;
+  }
+}
+
 body {
   background-color: var(--fondo);
   color: var(--t1);

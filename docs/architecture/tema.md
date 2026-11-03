@@ -59,6 +59,7 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 | `pending` | `--marca` (invitación pendiente) |
 
 ## Forma
+- **Escala de escritorio al 75 %** (decisión del usuario del 2026-11-02, como en ArquitecturaBase). Las medidas de este documento, de las fichas y de los tableros son nominales, sobre una raíz de 16 px. En la compu (≥ 1024 px y puntero fino) `src/index.css` pone la raíz en 75 % y la app entera se ve como con el zoom del navegador en 75 %: 13 px se leen 9,75 y un botón de 36 mide 27. Teléfono y tablet quedan en 16 px, con sus áreas táctiles de 44. Por eso el código mide en `rem` o en la escala de Tailwind: lo que el tablero dibuja de 220 se escribe `w-55`, y 13 de letra, `text-[0.8125rem]`. En px quedan las líneas de hasta 2, los anillos (`ring-[3px]`, `shadow-[0_0_0_…]`) y los cortes. La escala se cambia solo en esa regla de `index.css`.
 - Tarjetas (filtros y tablas) con radio de 16 px y sombra suave: `0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 8px 24px -12px oklch(0.24 0.012 60 / 0.14)`.
 - **Cajas de un formulario** («Criterio · Formularios», `.caja2`; `Section`): borde `--borde`, radio de 12 px y sin sombra; el encabezado arena de 40 lleva la línea `--borde-cab` y el botón chico a 4 del borde.
 - Botones normales de 36 px y 14 px de texto; los compactos, de 32 px y 13 px. Ambos usan radio de 8 px. El principal es sólido en `--marca` y el botón de una confirmación irreversible es sólido en `--peligro`.

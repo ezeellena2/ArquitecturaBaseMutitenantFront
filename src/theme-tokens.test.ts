@@ -95,6 +95,23 @@ describe("tema aprobado", () => {
     }
   });
 
+  // La raíz de la compu achica lo que mide en rem: una medida en px quedaría grande al lado de todo lo demás.
+  it("mide en rem para que la raíz de la compu achique la app entera", () => {
+    expect(css).toMatch(/@media \(min-width: 64rem\) and \(pointer: fine\) \{\s*html \{\s*font-size: 75%;/);
+    const sourceFiles = filesIn(srcDir).filter((file) => /\.(?:ts|tsx|css)$/.test(file) && !/\.test\.(?:ts|tsx)$/.test(file)
+      && !file.includes(`${path.sep}test${path.sep}`) && !file.endsWith("schema.d.ts"));
+    const comments = /\/\*[\s\S]*?\*\/|(?<![:"'`])\/\/.*$/gm;
+    // Siguen en px los cortes, que no cambian con la raíz, y los anillos, que no se afinan.
+    const allowed = /@media[^\n]*|useMediaQuery\([^)]*\)|ring-\[3px\]|shadow-\[(?:inset_)?0_0_0_[^\]\s]*\]/g;
+
+    for (const file of sourceFiles) {
+      const source = readFileSync(file, "utf8").replace(comments, "").replace(allowed, "");
+      const fixed = [...source.matchAll(/(\d*\.?\d+)px(?![a-z\d])/gi)].filter((match) => Number(match[1]) > 2).map((match) => match[0]);
+      expect(fixed, `Medidas en px en ${path.relative(srcDir, file)}: van en rem o en la escala de Tailwind (w-55)`).toEqual([]);
+      expect(source, `Ícono de tamaño fijo en ${path.relative(srcDir, file)}: va con size-4`).not.toMatch(/\bsize=\{\d/);
+    }
+  });
+
   it("declara todos los tokens referenciados por componentes", () => {
     const declared = new Set([...css.matchAll(/(--[a-z][a-z0-9-]*):/g)].map((match) => match[1]));
     const sourceFiles = filesIn(srcDir).filter((file) => /\.(?:ts|tsx|css)$/.test(file) && !/\.test\.(?:ts|tsx)$/.test(file) && !file.endsWith("index.css"));

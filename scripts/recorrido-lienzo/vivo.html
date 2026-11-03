@@ -127,7 +127,9 @@
     await boardActions(frame.contentDocument, item.boardActions);
   }
 
-  function pane(title, size, src, onLoad) {
+  // `factor`: la app en la compu mide el 75 % (index.css) y el tablero, su tamaño nominal. A 1080 de ancho y el zoom que
+  // falta, la app ocupa lo mismo que el tablero, con su misma geometría.
+  function pane(title, size, src, onLoad, factor = 1) {
     const figure = document.createElement("figure");
     const caption = document.createElement("figcaption");
     caption.textContent = title;
@@ -135,14 +137,15 @@
     box.className = "caja";
     const frame = document.createElement("iframe");
     frame.title = title.startsWith("Tablero") ? "Tablero" : "App";
-    frame.width = String(size.width);
-    frame.height = String(size.height);
+    frame.width = String(size.width * factor);
+    frame.height = String(size.height * factor);
     frame.addEventListener("load", () => onLoad(frame));
     frame.src = src;
     box.append(frame);
     figure.append(caption, box);
     figure.dataset.width = String(size.width);
     figure.dataset.height = String(size.height);
+    figure.dataset.factor = String(factor);
     return figure;
   }
 
@@ -159,7 +162,7 @@
       box.style.height = `${h * scale}px`;
       box.scrollTo(0, 0);
       // Con zoom y no con transform: la app viene de Vite (otro origen) y Chrome no dibuja bien un iframe ajeno escalado.
-      box.querySelector("iframe").style.zoom = String(scale);
+      box.querySelector("iframe").style.zoom = String(scale / Number(figure.dataset.factor));
     }
   }
 
@@ -186,7 +189,7 @@
       frame.style.zoom = "1";
       await window.__vivoAcciones(item.id);
       fit();
-    }));
+    }, item.viewport.width < 1024 ? 1 : 0.75));
     fit();
   }
 
