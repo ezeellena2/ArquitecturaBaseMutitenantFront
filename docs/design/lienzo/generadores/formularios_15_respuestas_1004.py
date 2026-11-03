@@ -8,6 +8,9 @@ suma las pestañas y arma la lista y el tablero de la etapa.
 Desde la v150 (126), el armado real de ArquitecturaBaseFront: «Exportar a Excel» en la banda; en la barra, «Buscar en textos largos» y una pregunta como filtro rápido; «Más filtros» con
 «Recibida desde» y «hasta» y, por pregunta, «Respuesta» y lo que corresponde a su tipo; exportar dice cuántas respuestas, cuántos filtros y cuántas columnas; la vista rápida
 trae «Abrir en pantalla completa» como botón y, al pie, en qué respuesta va.
+
+Desde la v160, el traspaso 5: un solo «Filtros» con chips y sin cantidades (143 y 144), la tabla con líneas entre columnas (137) y el detalle
+alineado, con los momentos y la actividad en columnas (139). Las piezas de antes quedan para las etapas 18 a 21 hasta que se redibujen.
 """
 import json
 import pathlib
@@ -578,6 +581,351 @@ def tel_respuesta():
     return C.tel_pagina(cuerpo, ESTADOS_TR, {}, "Respuesta · teléfono", P.CSS_TPL + CSS_T15)
 
 
+# ================================================================ Traspaso 5: un solo «Filtros» con chips (143 y 144), líneas entre columnas (137) y el detalle alineado (139)
+# Las etapas 18 a 21 siguen usando `barra`, `mas_filtros`, `d2`, `rc_cuerpo` y `actividad` hasta que les toca su tanda.
+CHAT = svg('<path d="M5 5h14v10H9l-4 4z"/>', 16)
+F5_LISTA = [("rec", "Recibida"), ("cli", "Cliente"), ("fec", "Fecha de la visita"), ("ven", "¿Se concretó la venta?"), ("mon", "Monto estimado"),
+            ("mot", "Motivo"), ("fal", "Fallas"), ("obs", "Observaciones"), ("quien", "Cargó"), ("ver", "Versión del formulario")]
+F5_OPC = {"rec": ["Todas las fechas", "Hoy", "Últimos 7 días", "Octubre 2026", "Elegir fechas…"], "mot": ["Todas", "Seguimiento", "Venta nueva", "Reclamo", "Visita técnica"]}
+CSS_T5 = """.w-th.pl, .w-tr.pl { column-gap: 0; }
+.w-th.pl > span, .w-tr.pl > span { padding-left: 12px; padding-right: 12px; box-sizing: border-box; align-self: stretch; }
+.w-th.pl > span { line-height: 40px; }
+.w-tr.pl > span { line-height: 44px; }
+.w-th.pl > span:nth-child(n+3), .w-tr.pl > span:nth-child(n+3) { box-shadow: inset 1px 0 0 oklch(0.915 0.01 80 / 0.8); }
+.w-th.pl > span:nth-child(n+3) { box-shadow: inset 1px 0 0 oklch(0.89 0.02 76); }
+.w-tr.pl.sel > :first-child { box-shadow: inset 3px 0 0 var(--marca), 1px 0 0 var(--borde); }
+.pl-fb { flex-wrap: wrap; }
+.pl-chips { flex-basis: 100%; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pl-chip { height: 28px; box-sizing: border-box; display: inline-flex; align-items: center; gap: 2px; padding: 0 4px 0 12px; border-radius: 999px; background: var(--s2); border: 1px solid var(--borde); font-size: 13px; color: var(--t1); }
+.pl-chip .x { width: 22px; height: 22px; border: 0; background: transparent; border-radius: 50%; color: var(--t2); display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+.pl-chip .x svg { width: 12px; height: 12px; }
+.pl-fil .n { min-width: 18px; height: 18px; box-sizing: border-box; border-radius: 9px; background: var(--marca); color: #fff; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; padding: 0 5px; }
+.f-mn > span.pl-op { justify-content: flex-start; gap: 8px; }
+.f-mn > span.pl-op.sel { font-weight: 600; background: #fff; color: var(--t1); }
+.pl-op .tl, .pl-fmn .tl { width: 16px; flex-shrink: 0; display: inline-flex; color: var(--marca-tx); }
+.pl-fmn { position: absolute; z-index: 30; left: 0; top: calc(100% + 6px); display: grid; grid-template-columns: 220px 300px; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); font-size: 13px; color: var(--t1); font-weight: 400; }
+.pl-fmn .fi { border-right: 1px solid var(--borde); display: flex; flex-direction: column; }
+.pl-fmn .fi > span { min-height: 38px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; border-top: 1px solid var(--borde); white-space: nowrap; }
+.pl-fmn .fi > span:first-child { border-top: 0; border-radius: 10px 0 0 0; }
+.pl-fmn .fi > span.on { background: var(--marca-t); color: var(--marca-tx); box-shadow: inset 3px 0 0 var(--marca); font-weight: 600; }
+.pl-fmn .fi .pt { width: 6px; height: 6px; border-radius: 50%; background: var(--marca); flex-shrink: 0; }
+.pl-fmn .fd { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.pl-fmn .fd .r { font-size: 13px; color: var(--t2); }
+.pl-fmn .cmb { height: 36px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; background: #fff; }
+.pl-fmn .cmb.ab { border-color: var(--marca); box-shadow: 0 0 0 3px oklch(0.51 0.099 195 / 0.15); }
+.pl-fmn .lst2 { border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.pl-fmn .lst2 > span { min-height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-top: 1px solid var(--borde); }
+.pl-fmn .lst2 > span:first-child { border-top: 0; }
+.pl-fmn .lst2 > span.sel { font-weight: 600; }
+.pl-fmn .lst2 .sep2 { min-height: 0; padding: 0; border-top: 1px solid var(--borde2); }
+.pl-fmn .dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.pl-fmn .dos > span { display: flex; flex-direction: column; gap: 4px; }
+.pl-fmn .in { height: 36px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; display: flex; align-items: center; padding: 0 10px; color: var(--t3); }
+.pl-fmn .in.lleno { color: var(--t1); }
+"""
+CSS_D3 = """.d2-h .ib { text-decoration: none; color: var(--t1); }
+.d3-moms { display: flex; flex-direction: column; padding: 6px 20px 2px; }
+.d3-moms .m { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--borde); font-size: 13.5px; }
+.d3-moms .m:last-child { border-bottom: 0; }
+.d3-moms .t { display: flex; flex-direction: column; gap: 1px; }
+.d3-moms .t b { font-weight: 600; }
+.d3-moms small { color: var(--t2); font-size: 12.5px; }
+.d3-moms .h { color: var(--t2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.d-sub { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; margin-top: 6px; padding-left: 10px; border-left: 2px solid var(--borde2); font-size: 13px; }
+.d-sub .k { color: var(--t2); }
+.d-sub > span { white-space: nowrap; }
+.ac4 { border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: 14px; }
+.ac4 .hd, .ac4 .f { display: grid; grid-template-columns: 170px minmax(0, 1fr) 140px 160px; }
+.ac4 .hd { background: oklch(0.945 0.018 76); color: var(--t2); font-weight: 600; font-size: 13px; border-bottom: 1px solid oklch(0.89 0.02 76); }
+.ac4 .hd > span, .ac4 .f > span { padding: 10px 12px; }
+.ac4 .hd > span + span, .ac4 .f > span + span { box-shadow: inset 1px 0 0 oklch(0.915 0.01 80 / 0.8); }
+.ac4 .f + .f { border-top: 1px solid var(--borde); }
+.ac4 .f .q small { display: block; color: var(--t2); font-size: 13px; }
+.ac4 .f .h { color: var(--t2); font-variant-numeric: tabular-nums; }
+.ac4 .f .e { display: inline-flex; align-items: center; gap: 8px; }
+.ac4 .f .e::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }
+"""
+VALORES_R5 = [("Fallas", FALLAS), ("Proveedor", 'Aceros Rosario<span class="d-sub"><span class="k">CUIT</span><span>30-70988123-4</span><span class="k">Plazo de pago</span><span>30 días</span></span>'),
+              ("Observaciones", "Cambiar el compresor.")]
+# (fecha, qué pasó, quién o cómo, estado): la fecha una vez por día y la hora en cada renglón
+ACT4_126 = [("13/10/2026 11:20", "Se la mandó", "Lucía Fernández, desde el chat", "Hecho"), ("15:30", "La respondió", "Tomás Acosta, por WhatsApp", "Hecho")]
+ACT4_123 = [("13/10/2026 09:40", "Se la mandó", "Lucía Fernández, desde el chat", "Hecho"), ("11:04", "La respondió", "Tomás Acosta, por WhatsApp", "Hecho")]
+
+
+def tl(si):
+    return f'<span class="tl">{CHECK if si else ""}</span>'
+
+
+def chips5(items):
+    if not items:
+        return ""
+    return ('<div class="pl-chips">' + "".join(f'<span class="pl-chip">{t}<button type="button" class="x" aria-label="Quitar {t}">{X}</button></span>' for t in items)
+            + '<button type="button" class="cb cb-enl">Limpiar todo</button></div>')
+
+
+def menu_filtros(modo="inicio"):
+    """«Filtros», como «Columnas»: a la izquierda lo que se filtra, con un punto en lo aplicado; a la derecha, lo que se elige en lo marcado.
+    modo: inicio (Recibida, nada aplicado), abierta (Motivo, su combo abierto), aplicado (Motivo con «Venta nueva») y ninguna (Monto desde 900.000)."""
+    aplicado, ninguna = modo == "aplicado", modo == "ninguna"
+    marcados = {"rec", "mot"} if aplicado else {"mot", "mon"} if ninguna else set()
+    sel = {"inicio": "rec", "abierta": "mot", "aplicado": "mot", "ninguna": "mon"}[modo]
+    izq = "".join(f'<span{" class=" + chr(34) + "on" + chr(34) if k == sel else ""}>{n}{"<span class=" + chr(34) + "pt" + chr(34) + "></span>" if k in marcados else ""}</span>' for k, n in F5_LISTA)
+    nombre = dict(F5_LISTA)[sel]
+    if sel == "mon":
+        der = (f'<b>{nombre}</b><span class="dos"><span><span class="r">Desde</span><span class="in lleno">900.000</span></span>'
+               '<span><span class="r">Hasta</span><span class="in"></span></span></span>')
+    else:
+        ops = F5_OPC[sel]
+        elegida = "Venta nueva" if aplicado else ops[0]
+        abierta = modo == "abierta"
+        lista = ""
+        if abierta:
+            lista = ('<span class="lst2" role="listbox">' + f'<span class="sel">{tl(True)}{ops[0]}</span><span class="sep2"></span>'
+                     + "".join(f"<span>{tl(False)}{o}</span>" for o in ops[1:]) + "</span>")
+        der = f'<b>{nombre}</b><span class="cmb{" ab" if abierta else ""}" role="combobox" aria-expanded="{"true" if abierta else "false"}">{elegida} {CHEV}</span>{lista}'
+    return f'<span class="pl-fmn" role="dialog" aria-label="Filtros"><span class="fi">{izq}</span><span class="fd">{der}</span></span>'
+
+
+def barra5(modo="normal"):
+    """La caja de filtros (143 y 144): el buscador, «Empresa» y un solo «Filtros», con lo aplicado en chips debajo. modo: normal, columnas, empresa,
+    filtrado, busqueda, repuesto, repuesto-columnas, repuesto-filtro, y filtros-inicio, filtros-abierta, filtros-aplicado y filtros-ninguna, con «Filtros» abierto."""
+    emp_items = [("t", "Todas las empresas"), ("a", "Delta S.A."), ("s", "Delta Sur S.R.L."), ("n", "Delta Norte S.A."), ("x", "Sin empresa")]
+    repuesto = modo.startswith("repuesto")
+    fmodo = modo[8:] if modo.startswith("filtros-") else ""
+    filtrado = modo == "filtrado" or fmodo in ("aplicado", "ninguna")
+
+    def pil(nombre, texto, items, elegido, abierto):
+        menu = ""
+        if abierto:
+            menu = (f'<span class="f-mn" role="listbox" aria-label="Filtrar por {nombre.lower()}">'
+                    + "".join(f'<span role="option" aria-selected="{"true" if k == elegido else "false"}" class="pl-op{" sel" if k == elegido else ""}">{tl(k == elegido)}{n}</span>' for k, n in items) + "</span>")
+        return f'<span class="f-env"><span class="w-pil{" con" if elegido != "t" else ""}" role="button" aria-haspopup="listbox">{texto} {CHEV}</span>{menu}</span>'
+    bus = (f'<span class="w-bus lleno">{F.BUSCAR} pallet</span>' if modo == "busqueda" else f'<span class="w-bus">{F.BUSCAR} Buscar en textos largos</span>')
+    h = bus + pil("Empresa", "Empresa: Delta S.A." if filtrado else "Empresa", emp_items, "a" if filtrado else "t", modo == "empresa")
+    chips = (["Fallas: Frío"] if modo == "repuesto-filtro" else ["Motivo: Venta nueva", "Monto estimado: desde 900.000"] if fmodo == "ninguna"
+             else ["Recibida: últimos 7 días", "Motivo: Venta nueva"] if filtrado else [])
+    menu = menu_filtros(fmodo) if fmodo else ""
+    n = f' <span class="n">{len(chips)}</span>' if chips else ""
+    h += (f'<span class="pl-env"><span class="w-pil pl-fil" role="button" aria-haspopup="dialog" aria-expanded="{"true" if menu else "false"}">{FILTROS} Filtros{n}</span>{menu}</span>')
+    col_menu = menu_columnas(repuesto) if modo in ("columnas", "repuesto-columnas") else ""
+    h += (f'<span class="pl-der"><span class="pl-env"><span class="w-pil" role="button" aria-haspopup="menu" aria-expanded="{"true" if col_menu else "false"}">'
+          f'Columnas {CHEV}</span>{col_menu}</span></span>')
+    return f'<div class="w-caja o-fb pl-fb">{h}{chips5(chips)}</div>'
+
+
+def respuestas5():
+    vacia = tabla(cuerpo=f'<div class="pl-vacio"><span class="ic">{TABLA}</span><b>Todavía no llegaron respuestas.</b><a class="cb cb-sec" href="WA-Chats-Formulario.dc.html">Ir a los chats</a></div>')
+    sin_c = tabla(cuerpo='<div class="pl-vacio"><b>Ninguna respuesta coincide con la búsqueda.</b><button type="button" class="cb cb-enl">Limpiar la búsqueda</button></div>')
+    error = tabla(cuerpo='<div class="pl-vacio"><b>No pudimos cargar las respuestas.</b><button type="button" class="cb cb-sec">Reintentar</button></div>')
+    sin_permiso = (f'<div class="pl-pagina"><span class="ic">{ESCUDO}</span><b>No tenés permiso para ver esta página.</b><a class="cb cb-sec" href="Inicio-Org.dc.html">Ir al inicio</a></div>')
+    aviso = A.toast("No pudimos actualizar las respuestas. Siguen las de antes.", "mal", '<button type="button" class="cb cb-enl">Reintentar</button>')
+    cuerpos = {
+        "Planilla": barra5() + tabla(), "Columnas": barra5("columnas") + tabla(), "Empresa: menú": barra5("empresa") + tabla(),
+        "Con filtros": barra5("filtrado") + tabla(FILTRADAS, total=4),
+        "Elegir varias y campos": barra5("repuesto") + tabla_r(), "Elegir varias: el filtro": barra5("repuesto-filtro") + tabla_r(FILTRADAS_R),
+        "Elegir varias y campos: columnas": barra5("repuesto-columnas") + tabla_r(),
+        "Vuelve a leer": barra5("filtrado") + tabla(FILTRADAS, total=4, aten=True),
+        "Cargando": barra5() + tabla(cuerpo=P.ESQ), "Todavía no hay respuestas": vacia, "Sin coincidencias": barra5("busqueda") + sin_c, "No se pudo cargar": barra5() + error,
+        "No se pudo actualizar": barra5("filtrado") + tabla(FILTRADAS, total=4) + aviso, "Sin permiso": sin_permiso, "Sin permiso para exportar": barra5() + tabla(),
+    }
+
+    def bnd(e):
+        if e == "Sin permiso":
+            return ""
+        if e.startswith("Elegir varias"):
+            return banda(REPUESTO, "Respuestas · versión 2 publicada", EXPORTAR)
+        return banda(ac={"Todavía no hay respuestas": EXPORTAR_OFF, "Sin permiso para exportar": ""}.get(e, EXPORTAR))
+    return pagina("Respuestas · /org/formularios/:id/respuestas", A.con_estados([(e, bnd(e)) for e in ESTADOS_PL]),
+                  A.con_estados([(e, CUERPO.format(cuerpos[e])) for e in ESTADOS_PL]), ESTADOS_PL, css=CSS_T5)
+
+
+# FRM-Respuestas-Filtros: «Filtros», abierto como «Columnas» (144)
+ESTADOS_F5 = ["Filtros", "Una pregunta con opciones", "Con filtros aplicados", "Ninguna coincide"]
+
+
+def filtros5():
+    nada = tabla(cuerpo='<div class="pl-vacio"><b>Ninguna respuesta coincide con los filtros.</b><button type="button" class="cb cb-enl">Limpiar todo</button></div>')
+    cuerpos = {"Filtros": barra5("filtros-inicio") + tabla(), "Una pregunta con opciones": barra5("filtros-abierta") + tabla(),
+               "Con filtros aplicados": barra5("filtros-aplicado") + tabla(FILTRADAS, total=4), "Ninguna coincide": barra5("filtros-ninguna") + nada}
+    return pagina("Respuestas · Filtros", banda(ac=EXPORTAR), A.con_estados([(e, CUERPO.format(cuerpos[e])) for e in ESTADOS_F5]), ESTADOS_F5, css=CSS_T5)
+
+
+def d3(num="VIS-000126", titulo=FORMULARIO, version=4, valores=VALORES_126, nombre="Tomás Acosta", hora="13/10/2026 15:30", mandada="13/10/2026 11:20",
+       primera=False, modo="normal", pos="2 de 4"):
+    """La vista rápida alineada (139): las acciones como íconos junto a ↑ ↓ ✕, los momentos con la fecha a la derecha y los campos de la opción debajo de su valor."""
+    nav = (f'<button type="button" class="nv" aria-label="Respuesta anterior" title="Anterior (↑)"{" disabled" if primera else ""}>{SUBE}</button>'
+           f'<button type="button" class="nv" aria-label="Respuesta siguiente" title="Siguiente (↓)">{BAJA}</button>')
+    cerrar = f'<button type="button" class="ib" aria-label="Cerrar" title="Cerrar (Esc)">{X}</button>'
+    iconos = (f'<a class="ib" href="FRM-Respuesta-Completa.dc.html" aria-label="Abrir en pantalla completa" title="Abrir en pantalla completa">{EXPANDIR}</a>'
+              f'<a class="ib" href="WA-Chats-Respuesta.dc.html" aria-label="Abrir conversación" title="Abrir conversación">{CHAT}</a>')
+    if modo == "cargando":
+        return (f'<aside class="d2" role="dialog" aria-label="Respuesta"><div class="d2-h"><b>{num}</b>{iconos}{nav}{cerrar}</div>'
+                '<div class="esq"><span style="width: 60%;"></span><span style="width: 85%;"></span><span style="width: 72%;"></span><span style="width: 90%;"></span><span style="width: 66%;"></span></div></aside>')
+    if modo == "falta":
+        return d2(modo="falta")
+    moms = (f'<div class="d3-moms"><div class="m"><span class="t"><b>Mandada</b><small>Lucía Fernández, desde el chat</small></span><span class="h">{mandada}</span></div>'
+            f'<div class="m"><span class="t"><b>Recibida</b><small>Por WhatsApp · {nombre}</small></span><span class="h">{hora}</span></div></div>')
+    pest = '<div class="o-tabs" role="tablist"><span role="tab" class="on">Respuesta</span></div>'
+    return (f'<aside class="d2" role="dialog" aria-label="Respuesta {num}"><div class="d2-h"><b>{num}</b>{iconos}{nav}{cerrar}</div>'
+            f'<div class="d2-sub" style="padding: 10px 20px 0;"><span>{titulo} · versión {version}</span></div>{moms}{pest}'
+            f'<div class="d2-b">{F.grilla(valores)}</div><div class="d2-pie">{pos}</div></aside>')
+
+
+def detalle5():
+    capas = A.con_estados([
+        ("Respuesta", d3()),
+        ("La primera de la lista", d3("VIS-000130", valores=VALORES_130, nombre="Paula Méndez", hora="15/10/2026 16:20", mandada="15/10/2026 09:10", primera=True, pos="1 de 4")),
+        ("De una versión anterior", d3("VIS-000123", version=3, valores=VALORES_123, hora="13/10/2026 11:04", mandada="13/10/2026 09:40", pos="8 de 24")),
+        ("Elegir varias y campos", d3("REP-000018", REPUESTO, 2, VALORES_R5, hora="15/10/2026 10:12", mandada="15/10/2026 08:45", primera=True, pos="1 de 18")),
+        ("Cargando", d3(modo="cargando")),
+        ("No encontramos esa respuesta", d3(modo="falta")),
+    ])
+    sel = {"La primera de la lista": "VIS-000130", "De una versión anterior": "VIS-000123", "No encontramos esa respuesta": None}
+
+    def fondo5(e):
+        if e == "Elegir varias y campos":
+            return CUERPO.format(barra5("repuesto") + tabla_r(sel="REP-000018"))
+        return CUERPO.format(barra5() + tabla(sel=sel.get(e, "VIS-000126")))
+    cuerpo = A.con_estados([(e, fondo5(e)) for e in ESTADOS_D2])
+    bnd = A.con_estados([(e, banda(REPUESTO, "Respuestas · versión 2 publicada", EXPORTAR) if e == "Elegir varias y campos" else banda(ac=EXPORTAR)) for e in ESTADOS_D2])
+    t = pagina("Respuesta · /org/formularios/:id/respuestas?respuesta=VIS-000126", bnd, cuerpo, ESTADOS_D2,
+               css=F.CSS_GRILLA + P.CSS_D2 + CSS_DET + CSS_D3 + CSS_T5 + ".d2-h a.nv { text-decoration: none; }\n")
+    k = t.rindex("</div>\n</x-dc>")
+    return t[:k] + capas + t[k:]
+
+
+def actividad4(filas):
+    """La actividad en cuatro columnas fijas (139): Fecha, Qué pasó, Estado y Acciones."""
+    return ('<div class="ac4"><div class="hd"><span>Fecha</span><span>Qué pasó</span><span>Estado</span><span>Acciones</span></div>'
+            + "".join(f'<div class="f"><span class="h">{h}</span><span class="q">{q}<small>{quien}</small></span><span><span class="e">{e}</span></span><span></span></div>'
+                      for h, q, quien, e in filas) + "</div>")
+
+
+def completa5():
+    def rc_cuerpo5(valores=VALORES_126, act=ACT4_126, abierta=True, resumen="7 preguntas · 7 respondidas", recibida="13/10/2026 15:30"):
+        return (CUERPO.format(rc_seccion("Respuesta", F.grilla(valores), resumen, abierta)
+                              + rc_seccion("Actividad", actividad4(act), f"Recibida el {recibida}", abierta)))
+    bandas = {"Las dos abiertas": rc_banda(), "Las dos plegadas": rc_banda(), "De una versión anterior": rc_banda("VIS-000123", "Versión 3 · recibida el 13/10/2026 11:04", "8 de 24"),
+              "Abierta desde un enlace": rc_banda(pos="5 de 24"), "Cargando": rc_banda(res=""),
+              "No encontramos esa respuesta": ('<div class="w-bnd"><div class="iz"><a class="vol" href="FRM-Respuestas.dc.html" aria-label="Volver a las respuestas">' + L.VOLVER + '</a>'
+                                               f'<div><h1>{FORMULARIO}</h1></div></div></div>')}
+    cuerpos = {"Las dos abiertas": rc_cuerpo5(), "Las dos plegadas": rc_cuerpo5(abierta=False), "De una versión anterior": rc_cuerpo5(VALORES_123, ACT4_123, recibida="13/10/2026 11:04"),
+               "Abierta desde un enlace": rc_cuerpo5(), "Cargando": CUERPO.format('<div class="w-caja">' + P.ESQ + "</div>"),
+               "No encontramos esa respuesta": CUERPO.format('<div class="rc-msj"><b>No encontramos esta respuesta.</b><a class="cb cb-sec" href="FRM-Respuestas.dc.html">Volver a las respuestas</a></div>')}
+    return pagina("Respuesta · /org/formularios/:id/respuestas/:recordId/completa", A.con_estados([(e, bandas[e]) for e in ESTADOS_RC]),
+                  A.con_estados([(e, cuerpos[e]) for e in ESTADOS_RC]), ESTADOS_RC, css=F.CSS_GRILLA + CSS_RC + CSS_D3)
+
+
+# Los teléfonos: «Filtros» ocupa la pantalla, sin cantidades, y lo aplicado va en chips debajo de la barra
+ESTADOS_TPL5 = ["Respuestas", "Filtros", "Filtros: una pregunta", "Con filtros", "Más acciones", "Exportar", "Exportado", "Cargando", "Todavía no hay respuestas", "Sin coincidencias",
+                "No se pudo cargar", "Sin permiso"]
+CSS_T5_TEL = """.t-chips { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 16px; border-bottom: 1px solid var(--borde); background: #fff; }
+.t-chips .pl-chip { height: 32px; font-size: 14px; }
+.t-fl { display: flex; flex-direction: column; background: #fff; }
+.t-fl > span { min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; border-bottom: 1px solid var(--borde); font-size: 16px; }
+.t-fl .v { color: var(--t2); font-size: 15px; display: inline-flex; align-items: center; gap: 6px; }
+.t-fl .v.on { color: var(--marca-tx); font-weight: 600; }
+.t-fl > span.op { justify-content: flex-start; }
+.t-fl > span.op.sel { font-weight: 600; }
+.t-fl .tl { width: 20px; display: inline-flex; color: var(--marca-tx); }
+.t-pie { position: absolute; left: 0; right: 0; bottom: 0; display: flex; gap: 10px; padding: 12px 16px 28px; background: #fff; border-top: 1px solid var(--borde); }
+.t-pie .cb { flex: 1; height: 48px; }
+.tr-moms { margin: 12px 16px 0; border: 1px solid var(--borde); border-radius: 12px; background: #fff; }
+.tr-moms .m { display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; font-size: 15px; }
+.tr-moms .m + .m { border-top: 1px solid var(--borde); }
+.tr-moms small { display: block; color: var(--t2); font-size: 13px; }
+.tr-moms .h { color: var(--t2); font-size: 13.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.d-sub { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; margin-top: 6px; padding-left: 10px; border-left: 2px solid var(--borde2); font-size: 14px; }
+.d-sub .k { color: var(--t2); }
+.d-sub > span { white-space: nowrap; }
+"""
+
+
+def tel_respuestas5():
+    der = lambda con=False: (f'<button type="button" class="ap-ib" aria-label="Buscar">{F.TLUPA}</button><button type="button" class="ap-ib{" con" if con else ""}" aria-label="Filtros">{F.TFILTROS}</button>'
+                             f'<button type="button" class="ap-ib" aria-label="Más acciones">{F.TKEBAB}</button>')
+    volver = "M-FRM-Formularios.dc.html"
+
+    def fila_t(r):
+        (n, rec, nom, tipo, emp, cli, *_resto) = r
+        corto = nom if len(nom) < 26 else nom[:24] + "…"
+        marca = '<span class="pl-marca">Cliente</span>' if tipo == "cliente" else ""
+        return (f'<a class="ap-fila" href="M-FRM-Respuesta.dc.html"><div class="tx"><span class="l1">{n}<span class="hr">{rec}</span></span>'
+                f'<span class="l2">{corto}{marca} · {emp}</span><span class="l3">{cli}</span></div></a>')
+    filas, filtradas = "".join(fila_t(r) for r in RESP), "".join(fila_t(r) for r in RESP if r[0] in FILTRADAS)
+    esq = '<div class="ap-esq"><span style="width: 80%;"></span><span style="width: 60%;"></span><span style="width: 72%;"></span><span style="width: 66%;"></span></div>'
+    chips = ('<div class="t-chips">' + "".join(f'<span class="pl-chip">{t}<button type="button" class="x" aria-label="Quitar {t}">{X}</button></span>'
+                                               for t in ("Empresa: Delta S.A.", "Recibida: últimos 7 días", "Motivo: Venta nueva")) + '<button type="button" class="cb cb-enl">Limpiar todo</button></div>')
+
+    def lista(cuerpo, con=False, sub="24 respuestas", arriba=""):
+        return C.t_bar(FORMULARIO, sub, volver, der(con)) + arriba + f'<div class="ap-cuerpo">{cuerpo}</div>'
+    ir = svg('<path d="m9 6 6 6-6 6"/>', 18, "2")
+    pantalla_f = (C.t_bar("Filtros", FORMULARIO, "M-FRM-Respuestas.dc.html") + '<div class="ap-cuerpo"><div class="t-fl">'
+                  + "".join(f'<span>{n}<span class="v{" on" if v != "Todas" else ""}">{v}{ir}</span></span>' for n, v in
+                            [("Empresa", "Todas"), ("Recibida", "Últimos 7 días"), ("Cliente", "Todas"), ("¿Se concretó la venta?", "Todas"), ("Monto estimado", "Todas"),
+                             ("Motivo", "Todas"), ("Fallas", "Todas"), ("Cargó", "Todas"), ("Versión del formulario", "Todas")])
+                  + '</div></div><div class="t-pie"><button type="button" class="cb cb-sec">Limpiar todo</button><button type="button" class="cb cb-pri">Listo</button></div>')
+    pantalla_m = (C.t_bar("Motivo", "Filtros", "M-FRM-Respuestas.dc.html") + '<div class="ap-cuerpo"><div class="t-fl">'
+                  + "".join(f'<span class="op{" sel" if o == "Venta nueva" else ""}"><span class="tl">{CHECK if o == "Venta nueva" else ""}</span>{o}</span>' for o in F5_OPC["mot"])
+                  + '</div></div><div class="t-pie"><button type="button" class="cb cb-pri">Listo</button></div>')
+    cuerpo = {
+        "Respuestas": lista(filas), "Filtros": pantalla_f, "Filtros: una pregunta": pantalla_m,
+        "Con filtros": lista(filtradas, True, "4 de 24 respuestas", chips), "Más acciones": lista(filas), "Exportar": lista(filas), "Exportado": lista(filas),
+        "Cargando": lista(esq, sub="Respuestas"),
+        "Todavía no hay respuestas": C.t_bar(FORMULARIO, "Sin respuestas", volver) + '<div class="ap-cuerpo"><div class="ap-vacio">Todavía no llegaron respuestas.<a class="cb cb-sec" href="M-WA-Chats-Formulario.dc.html">Ir a los chats</a></div></div>',
+        "Sin coincidencias": lista('<div class="ap-vacio">Ninguna respuesta coincide con los filtros.<button type="button" class="cb cb-sec">Limpiar todo</button></div>', True, "0 de 24 respuestas", chips),
+        "No se pudo cargar": lista('<div class="ap-vacio">No pudimos cargar las respuestas.<button type="button" class="cb cb-sec">Reintentar</button></div>', sub=""),
+        "Sin permiso": C.t_bar("Respuestas", "Gestión de formularios", volver) + '<div class="ap-cuerpo"><div class="ap-vacio">No tenés permiso para ver esta página.<a class="cb cb-sec" href="M-Inicio-Org.dc.html">Ir al inicio</a></div></div>',
+    }
+    menu = F.thoja(FORMULARIO, f'<div class="ap-acciones2"><span role="menuitem">{A.DESCARGAR} Exportar a Excel</span></div>', "")
+    hoja_ex = F.thoja("Exportar a Excel", f'<p class="ap-txt-l">Se exportan las <b>24 respuestas</b> de {FORMULARIO}, con las preguntas de todas las versiones.</p><span class="ex-arch">{ARCHIVO} {ARCHIVO_XLSX}</span>',
+                      '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Exportar a Excel</button>')
+    capas = {"Más acciones": menu, "Exportar": hoja_ex,
+             "Exportado": f'<div class="t-toast" role="status"><span class="ok">{F.OK}</span><span>Se descargó «{ARCHIVO_XLSX}».</span></div>'}
+    return C.tel_pagina(cuerpo, ESTADOS_TPL5, capas, "Respuestas · teléfono", F.CSS_TFILTRO + P.CSS_TPL + CSS_T15 + CSS_T5 + CSS_T5_TEL)
+
+
+def tel_respuesta5():
+    def bar(num="VIS-000126", titulo=FORMULARIO, version=4):
+        return C.t_bar(num, f"{titulo} · versión {version}", "M-FRM-Respuestas.dc.html")
+
+    def nav(pos="5 de 24", primera=False):
+        return (f'<div class="tr-nav"><span>{pos}</span><button type="button" class="ap-ib" aria-label="Respuesta anterior"{" disabled" if primera else ""}>{SUBE}</button>'
+                f'<button type="button" class="ap-ib" aria-label="Respuesta siguiente">{BAJA}</button><a class="cb cb-sec" href="M-WA-Conversacion-Respuesta.dc.html">Abrir conversación</a></div>')
+
+    def moms(act):
+        dia = act[0][0][:10]
+        return '<div class="tr-moms">' + "".join(f'<div class="m"><span><b>{"Mandada" if q == "Se la mandó" else "Recibida"}</b><small>{quien}</small></span><span class="h">{h if len(h) > 5 else dia + " " + h}</span></div>' for h, q, quien, _e in act) + "</div>"
+
+    def grilla(valores):
+        filas = "".join(f'<div class="f"><span class="k">{k}</span>' + (f"<span>{v}</span>" if v is not None else '<span class="vac">Sin respuesta</span>') + "</div>" for k, v in valores)
+        return f'<div class="tr-gr">{filas}</div>'
+
+    def sec(titulo, cuerpo, resumen, abierta):
+        r = f'<span class="r">{resumen}</span>' if not abierta else ""
+        return (f'<div class="tr-sec"><button type="button" class="h" aria-expanded="{"true" if abierta else "false"}">{titulo}{r}<span class="fl{" ab" if abierta else ""}">{CHEV}</span></button>'
+                + (cuerpo if abierta else "") + "</div>")
+
+    def act(filas):
+        return '<div class="tr-act">' + "".join(f"<span><b>{q}</b><small>{quien}</small><small>{h} · {e}</small></span>" for h, q, quien, e in filas) + "</div>"
+
+    def pantalla(num="VIS-000126", titulo=FORMULARIO, version=4, valores=VALORES_126, actv=ACT4_126, pos="5 de 24", primera=False, abierta=True):
+        return bar(num, titulo, version) + nav(pos, primera) + ('<div class="tr-scroll">' + moms(actv) + sec("Respuesta", grilla(valores), "7 preguntas · 7 respondidas", abierta)
+                                                                + sec("Actividad", act(actv), f"Recibida a las {actv[-1][0][-5:]}", abierta) + "</div>")
+    esq = '<div class="ap-esq"><span style="width: 70%;"></span><span style="width: 90%;"></span><span style="width: 60%;"></span><span style="width: 84%;"></span></div>'
+    act130 = [("15/10/2026 09:10", "Se la mandó", "Lucía Fernández, desde el chat", "Hecho"), ("16:20", "La respondió", "Paula Méndez, por WhatsApp", "Hecho")]
+    act_r = [("15/10/2026 08:45", "Se la mandó", "Lucía Fernández, desde el chat", "Hecho"), ("10:12", "La respondió", "Tomás Acosta, por WhatsApp", "Hecho")]
+    cuerpo = {
+        "Respuesta": pantalla(), "Las dos plegadas": pantalla(abierta=False),
+        "La primera de la lista": pantalla("VIS-000130", valores=VALORES_130, actv=act130, pos="1 de 24", primera=True),
+        "De una versión anterior": pantalla("VIS-000123", version=3, valores=VALORES_123, actv=ACT4_123, pos="8 de 24"),
+        "Elegir varias y campos": pantalla("REP-000018", REPUESTO, 2, VALORES_R5, act_r, "1 de 18", True),
+        "Cargando": bar() + nav() + esq,
+        "No encontramos esa respuesta": C.t_bar("Respuesta", FORMULARIO, "M-FRM-Respuestas.dc.html") + '<div class="ap-cuerpo"><div class="ap-vacio">No encontramos esta respuesta.<a class="cb cb-sec" href="M-FRM-Respuestas.dc.html">Volver a las respuestas</a></div></div>',
+    }
+    return C.tel_pagina(cuerpo, ESTADOS_TR, {}, "Respuesta · teléfono", P.CSS_TPL + CSS_T15 + CSS_T5_TEL)
+
+
 # ================================================================ canvas.json (la fila de cada uno la pone formularios_etapas_1004.py)
 TITULOS = {"FRM-Respuesta-Completa": ("Formularios · una respuesta · pantalla completa", 1440, 1000), "FRM-Respuestas": ("Formularios · Respuestas · la planilla", 1440, 900)}
 
@@ -601,8 +949,8 @@ def comprobar(n, t):
 if __name__ == "__main__":
     panel_e16 = re.search(r'<style data-e16="panel">\n(.*?)</style>', (PROJ / "FRM-Catalogos.dc.html").read_text(encoding="utf-8"), re.S)
     E.R.CSS_PANEL_E16 = panel_e16.group(1) if panel_e16 else ""
-    tableros = {"FRM-Respuestas": respuestas(), "FRM-Respuestas-Filtros": filtros_lado(), "FRM-Respuesta": detalle(), "FRM-Respuesta-Completa": completa(), "FRM-Respuestas-Exportar": exportar(),
-                "M-FRM-Respuestas": tel_respuestas(), "M-FRM-Respuesta": tel_respuesta()}
+    tableros = {"FRM-Respuestas": respuestas5(), "FRM-Respuestas-Filtros": filtros5(), "FRM-Respuesta": detalle5(), "FRM-Respuesta-Completa": completa5(), "FRM-Respuestas-Exportar": exportar(),
+                "M-FRM-Respuestas": tel_respuestas5(), "M-FRM-Respuesta": tel_respuesta5()}
     for n, t in tableros.items():
         t = L.sin_disenar(n, E.post(n, t, 1000 if n == "FRM-Respuesta-Completa" else None))
         comprobar(n, t)

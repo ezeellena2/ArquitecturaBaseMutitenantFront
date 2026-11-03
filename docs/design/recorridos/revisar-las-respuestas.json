@@ -23,24 +23,24 @@
       "tweaks": {
         "estado": "Planilla"
       },
-      "resaltar": "a.w-pil:has-text(\"Más filtros\")",
+      "resaltar": ".w-pil.pl-fil",
       "actor": "Lucía · Dueña · web",
       "titulo": "Abre las respuestas",
-      "texto": "Cada formulario tiene su planilla: una fila por respuesta y una columna por pregunta, con quién la cargó y sus empresas. Lo que espera aprobación va arriba.",
-      "avanzar": "Tocá «Más filtros».",
+      "texto": "Cada formulario tiene su planilla: una fila por respuesta y una columna por pregunta, con una línea entre columnas. A la vista, el buscador y la empresa; lo demás va en «Filtros».",
+      "avanzar": "Tocá «Filtros».",
       "ruta": "/org/formularios/:id/respuestas",
       "accion": "Toca «Más filtros»."
     },
     {
       "tablero": "FRM-Respuestas-Filtros",
       "tweaks": {
-        "estado": "Con filtros elegidos"
+        "estado": "Una pregunta con opciones"
       },
-      "resaltar": "a.cb-pri:has-text(\"Ver 4 respuestas\")",
+      "resaltar": ".pl-fmn .lst2",
       "actor": "Lucía · Dueña · web",
       "titulo": "Filtra por pregunta",
-      "texto": "Cada opción dice cuántas respuestas tiene. Elige «Venta nueva» y un monto mínimo, y se aplica todo junto.",
-      "avanzar": "Tocá «Ver 4 respuestas».",
+      "texto": "«Filtros» se abre como «Columnas»: a la izquierda las preguntas, a la derecha lo que se elige. Elige «Venta nueva» en «Motivo», una opción y sin cantidades, y se aplica enseguida.",
+      "avanzar": "Siguiente.",
       "ruta": "/org/formularios/:id/respuestas",
       "accion": "Aplica los filtros."
     },
@@ -52,7 +52,7 @@
       "resaltar": "a.pl-num:has-text(\"VIS-000126\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Quedan las que busca",
-      "texto": "Lo elegido queda escrito en cada filtro, con «Limpiar filtros» al lado.",
+      "texto": "Lo aplicado queda en chips debajo de la barra, cada uno con su ×, y «Limpiar todo». El total va al pie.",
       "avanzar": "Tocá VIS-000126.",
       "ruta": "/org/formularios/:id/respuestas",
       "accion": "Abre VIS-000126."
@@ -62,11 +62,11 @@
       "tweaks": {
         "estado": "Respuesta"
       },
-      "resaltar": ".d2-acc a.cb",
+      "resaltar": "a.ib[aria-label=\"Abrir en pantalla completa\"]",
       "actor": "Lucía · Dueña · web",
       "titulo": "La ve al costado",
-      "texto": "La respuesta se abre sin salir de la planilla, con las preguntas de su versión y quién la respondió. Con ↑ y ↓ pasa a la anterior o la siguiente, y el botón de al lado la abre a todo el ancho.",
-      "avanzar": "Tocá «Abrir en pantalla completa».",
+      "texto": "La respuesta se abre sin salir de la planilla: cuándo se mandó y cuándo llegó, con la fecha a la derecha, y las preguntas de su versión. Con ↑ y ↓ pasa a la siguiente.",
+      "avanzar": "Tocá el ícono «Abrir en pantalla completa».",
       "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000126",
       "accion": "Abre la respuesta a todo el ancho."
     },
@@ -77,7 +77,7 @@
         "estado": "Las dos abiertas"
       },
       "resaltar": ".rc-h",
-      "texto": "«Respuesta» y «Actividad», a todo el ancho y plegables. Actividad cuenta quién se la mandó y quién la respondió, con fecha y hora.",
+      "texto": "«Respuesta» y «Actividad», a todo el ancho y plegables. La actividad va en columnas fijas: la fecha, qué pasó, su estado y sus acciones.",
       "actor": "Lucía · Dueña · web",
       "avanzar": "Tocá «Exportar a Excel» en la planilla.",
       "ruta": "/org/formularios/:id/respuestas/:recordId/completa",
