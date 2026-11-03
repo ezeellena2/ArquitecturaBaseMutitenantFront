@@ -29,7 +29,7 @@ describe("listas en el teléfono", () => {
       lines={["tomas@delta.test", "Activo"]} /></ul></MemoryRouter>);
 
     expect(screen.getByRole("link", { name: /Tomás Acosta/ })).toHaveAttribute("href", "/org/usuarios/1");
-    expect(screen.getByText("1 usuario")).toHaveClass("text-[12.5px]", "text-[var(--t3)]");
+    expect(screen.getByText("1 usuario")).toHaveClass("text-[0.78125rem]", "text-[var(--t3)]");
     // Lienzo v104: el círculo de una persona lleva el degradé de la marca, como en la compu.
     expect(screen.getByText("T")).toHaveAttribute("data-slot", "avatar");
     expect(screen.getByText("T")).toHaveClass("size-11", "rounded-full", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
@@ -70,14 +70,14 @@ describe("listas en el teléfono", () => {
     const person = screen.getByRole("link", { name: /Tomás Acosta/ });
     expect(person).toHaveClass("items-start");
     expect(screen.getByText("tomas@delta.test").parentElement).toHaveClass("leading-[normal]");
-    expect(screen.getByText("tomas@delta.test")).toHaveClass("text-[14px]", "text-[var(--t3)]");
-    expect(screen.getByText("Activo")).toHaveClass("text-[12.5px]", "text-[var(--t3)]");
+    expect(screen.getByText("tomas@delta.test")).toHaveClass("text-[0.875rem]", "text-[var(--t3)]");
+    expect(screen.getByText("Activo")).toHaveClass("text-[0.78125rem]", "text-[var(--t3)]");
     unmount();
 
     render(<MemoryRouter><ul><ListRow to="/org/roles/1" title="Dueño" lines={["De sistema", "12 permisos"]} /></ul></MemoryRouter>);
     expect(screen.getByRole("link", { name: /Dueño/ })).toHaveClass("items-center");
-    expect(screen.getByText("De sistema")).toHaveClass("text-[14px]", "text-[var(--t2)]");
-    expect(screen.getByText("12 permisos")).toHaveClass("text-[13px]", "text-[var(--t3)]");
+    expect(screen.getByText("De sistema")).toHaveClass("text-[0.875rem]", "text-[var(--t2)]");
+    expect(screen.getByText("12 permisos")).toHaveClass("text-[0.8125rem]", "text-[var(--t3)]");
   });
 
   it("la tabla es una lista de filas cuando la pantalla da una fila de teléfono", () => {

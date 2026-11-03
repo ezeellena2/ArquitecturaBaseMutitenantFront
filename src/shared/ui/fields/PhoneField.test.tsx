@@ -63,7 +63,7 @@ describe("PhoneField", () => {
     expect(flag.parentElement).toHaveClass("gap-1.5");
     expect(country).toHaveTextContent(/^\+54$/);
     // 112 en la compu (Pagina-Org) y 124 en el teléfono (M-Pagina-Org y M-Cuenta-Agregar, lienzo v99).
-    expect(country.parentElement).toHaveClass("w-[112px]", "max-md:w-[124px]");
+    expect(country.parentElement).toHaveClass("w-28", "max-md:w-31");
 
     fireEvent.change(input, { target: { value: "1123456789" } });
     expect(input).toHaveValue("11 2345-6789");
@@ -183,7 +183,7 @@ it("la variante auth conserva el rótulo accesible y las medidas del campo públ
   renderField({ variant: "auth" }, { phone: true });
   const input = screen.getByRole("textbox", { name: "Teléfono" });
   await waitFor(() => expect(input).toBeEnabled());
-  expect(input).toHaveClass("h-11", "rounded-[10px]", "text-[15px]", "max-md:h-11");
+  expect(input).toHaveClass("h-11", "rounded-[0.625rem]", "text-[0.9375rem]", "max-md:h-11");
   expect(input).toHaveAccessibleDescription("Para avisos de la cuenta");
   fireEvent.change(input, { target: { value: "1123456789" } });
   expect(screen.getByRole("status")).toHaveTextContent('"number":"11 2345-6789"');

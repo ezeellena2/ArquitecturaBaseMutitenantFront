@@ -109,13 +109,13 @@ describe("SignupPage", () => {
   // del texto, con su casilla de 18 a 10 del texto.
   it("usa las medidas del tablero en el título, Google y la aceptación", async () => {
     show();
-    expect(screen.getByRole("heading", { name: "Creá tu cuenta" })).toHaveClass("text-[24px]", "leading-[1.2]", "tracking-[-0.02em]");
-    expect(await screen.findByRole("button", { name: "Registrarte con Google" })).toHaveClass("text-[14px]!", "gap-2.5!");
+    expect(screen.getByRole("heading", { name: "Creá tu cuenta" })).toHaveClass("text-[1.5rem]", "leading-[1.2]", "tracking-[-0.02em]");
+    expect(await screen.findByRole("button", { name: "Registrarte con Google" })).toHaveClass("text-[0.875rem]!", "gap-2.5!");
     const checkbox = screen.getByRole("checkbox", { name: /Acepto los Términos/ });
-    expect(checkbox).toHaveClass("size-[18px]");
-    expect(checkbox.closest("label")).toHaveClass("items-center", "gap-2.5", "text-[14px]", "text-[var(--t1)]");
+    expect(checkbox).toHaveClass("size-4.5");
+    expect(checkbox.closest("label")).toHaveClass("items-center", "gap-2.5", "text-[0.875rem]", "text-[var(--t1)]");
     // Los dos enlaces de abajo, a 22 entre sí, como el resto de la columna (en el ingreso van a 8).
-    expect(screen.getByRole("link", { name: "Ingresá" }).parentElement?.parentElement).toHaveClass("gap-[22px]");
+    expect(screen.getByRole("link", { name: "Ingresá" }).parentElement?.parentElement).toHaveClass("gap-5.5");
     // Los enlaces de texto, también los de la aceptación, son la variante link de Button, en --marca-tx.
     const acceptance = within(checkbox.closest("label")!);
     for (const link of [acceptance.getByRole("link", { name: "Términos" }), acceptance.getByRole("link", { name: "Política de privacidad" }),

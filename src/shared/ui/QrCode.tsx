@@ -18,7 +18,7 @@ export function QrCode({ value, label, className }: { value: string; label: stri
     return { size: count, path: squares };
   }, [value]);
   return <svg viewBox={`-1 -1 ${size + 2} ${size + 2}`} role="img" aria-label={label} shapeRendering="crispEdges"
-    className={cn("shrink-0 rounded-[14px] border border-[var(--borde)] bg-[var(--lado-activo)] p-2.5 text-[var(--t1)]", className)}>
+    className={cn("shrink-0 rounded-[0.875rem] border border-[var(--borde)] bg-[var(--lado-activo)] p-2.5 text-[var(--t1)]", className)}>
     <path d={path} fill="currentColor" />
   </svg>;
 }

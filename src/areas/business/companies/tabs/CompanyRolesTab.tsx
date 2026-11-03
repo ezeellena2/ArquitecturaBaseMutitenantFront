@@ -32,8 +32,8 @@ export function CompanyRolesTab({ roles }: { roles: CompanyRoles }) {
     { id: "name", header: t("companies:roleColumns.name"), type: "custom", mobile: "primary",
       cell: (role) => <Link to={`/org/roles/${encodeURIComponent(role.id)}`} className="font-medium text-[var(--t1)] hover:underline">{role.name}</Link> },
     // Anchos del tablero Empresa (Roles): el rol se lleva el resto; Usuarios y Permisos, 120 px.
-    { id: "userCount", header: t("companies:roleColumns.users"), type: "integer", className: "w-[132px]", value: (role) => role.userCount },
-    { id: "permissions", header: t("companies:roleColumns.permissions"), type: "integer", className: "w-[132px]", value: (role) => role.permissions.length, mobile: "status" },
+    { id: "userCount", header: t("companies:roleColumns.users"), type: "integer", className: "w-33", value: (role) => role.userCount },
+    { id: "permissions", header: t("companies:roleColumns.permissions"), type: "integer", className: "w-33", value: (role) => role.permissions.length, mobile: "status" },
     { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: (role) => roleActions(role) },
   ];
 

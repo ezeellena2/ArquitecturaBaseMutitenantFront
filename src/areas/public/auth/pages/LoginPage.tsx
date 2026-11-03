@@ -216,12 +216,12 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       : result === "noBusiness" ? <BusinessAccessResult status="noBusiness" />
         : result === "inactive" ? <BusinessAccessResult status="inactive" organizationName={organizationName} />
           : isUnavailableCode(result) ? <BusinessAccessResult status={result} organizationName={organizationName} />
-            : step === null ? <div className="flex flex-col gap-[22px]">
-      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{access === "business" ? t("login.businessTitle") : t("login.personalTitle")}</h1>
+            : step === null ? <div className="flex flex-col gap-5.5">
+      <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{access === "business" ? t("login.businessTitle") : t("login.personalTitle")}</h1>
       {/* Tableros Ingreso y M-Ingreso («Tu sesión venció», .msj.info): la franja de los mensajes, en petróleo y con el reloj. */}
       {sessionExpired ? <FormError tone="info" icon={ClockIcon} message={t("login.sessionExpired")} /> : null}
       <GoogleButton mode="login" access={access} returnUrl={originalReturn ?? loginPathOf(access)} />
-      <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
+      <div className="flex items-center gap-3 text-[0.8125rem] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
       <EmailCodeForm access={access} initialEmail={lastDestination?.type === "email" ? lastDestination.email : initialEmail} initialPhone={lastDestination?.type === "phone" ? lastDestination.phone : lastDestination ? null : initialPhone} signupHref={signupHref} onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? { text: t("login.googleError"), details: [t("login.googleErrorHelp")] } : undefined} />
       <div className="flex flex-col gap-2">
         {access === "consumer" ? <>
@@ -242,8 +242,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       resendSeconds={accountClosed ? 0 : resendTimer.seconds} resendRetryLabel={accountClosed ? null : resendRetry.label}
       resendDisabled={accountClosed} resendPending={resend.isPending}
       footer={<>
-        {step.loginDestination?.type === "phone" ? <p className="text-[12px] leading-normal text-[var(--t3)]">{t("common:code.whatsappNotice")}</p> : null}
-        {accountClosed ? <div className="flex justify-center"><Button type="button" variant="link" className="text-[13px] leading-[normal]" onClick={backToEmail}>{t("login.backToLogin")}</Button></div> : null}
+        {step.loginDestination?.type === "phone" ? <p className="text-[0.75rem] leading-normal text-[var(--t3)]">{t("common:code.whatsappNotice")}</p> : null}
+        {accountClosed ? <div className="flex justify-center"><Button type="button" variant="link" className="text-[0.8125rem] leading-[normal]" onClick={backToEmail}>{t("login.backToLogin")}</Button></div> : null}
       </>} />}
   </AuthLayout>;
 }

@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 // para elegir. Las filas de la hoja (.ap-op) miden 52, con la letra de 16 y una línea fina entre ellas que no llega a
 // los bordes (20 a cada lado, como el cuerpo de la hoja); la elegida va en petróleo. El estado se aplica y cierra al
 // tocarlo; los roles se marcan de a uno y la hoja se cierra con «Listo» o con ✕.
-const rowClass = "flex min-h-[52px] cursor-pointer items-center gap-3 border-b border-[var(--borde)] text-[16px] last:border-b-0 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-[var(--foco)]";
+const rowClass = "flex min-h-13 cursor-pointer items-center gap-3 border-b border-[var(--borde)] text-[1rem] last:border-b-0 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-[var(--foco)]";
 const pickedClass = "font-medium text-[var(--marca-tx)]";
 
 export function ChoiceSheet({ open, onOpenChange, title, done, children }: {
@@ -46,7 +46,7 @@ export function RadioRow({ name, label, checked, onChoose }: { name: string; lab
 export function CheckRow({ label, checked, onCheckedChange }: { label: string; checked: boolean; onCheckedChange: (checked: boolean) => void }) {
   return <label className={cn(rowClass, checked ? pickedClass : "text-[var(--t1)]")}>
     <Checkbox checked={checked} onCheckedChange={(next) => onCheckedChange(next === true)}
-      className="size-[22px] rounded-[6px] border-[1.5px] border-[var(--borde2)] bg-[var(--lado-activo)] shadow-none data-[state=checked]:border-[var(--marca)] data-[state=checked]:bg-[var(--marca)] data-[state=checked]:text-[var(--lado-activo)]" />
+      className="size-5.5 rounded-[0.375rem] border-[1.5px] border-[var(--borde2)] bg-[var(--lado-activo)] shadow-none data-[state=checked]:border-[var(--marca)] data-[state=checked]:bg-[var(--marca)] data-[state=checked]:text-[var(--lado-activo)]" />
     <span className="min-w-0 flex-1 truncate">{label}</span>
   </label>;
 }

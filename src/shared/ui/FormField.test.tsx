@@ -47,12 +47,12 @@ describe("FormField", () => {
 
     const input = screen.getByLabelText("Nombre *");
     expect(input).toHaveAttribute("aria-required", "true");
-    expect(input).toHaveClass("h-9", "text-[13px]", "rounded-[8px]");
-    expect(input).not.toHaveClass("lg:h-11", "lg:text-[15px]");
+    expect(input).toHaveClass("h-9", "text-[0.8125rem]", "rounded-[0.5rem]");
+    expect(input).not.toHaveClass("lg:h-11", "lg:text-[0.9375rem]");
     // «Criterio · Formularios» y tableros Cuenta, Configuración, Rol y Usuario: el rótulo de 12,5 en la compu, a 6 del
     // campo, y el mensaje debajo también de 12,5.
-    expect(screen.getByText("Nombre")).toHaveClass("text-[12.5px]", "font-semibold", "text-[var(--t2)]");
-    expect(screen.getByText("Nombre")).not.toHaveClass("lg:text-[13px]", "text-[12px]");
+    expect(screen.getByText("Nombre")).toHaveClass("text-[0.78125rem]", "font-semibold", "text-[var(--t2)]");
+    expect(screen.getByText("Nombre")).not.toHaveClass("lg:text-[0.8125rem]", "text-[0.75rem]");
     expect(screen.getByText("Nombre").parentElement).toHaveClass("gap-1.5");
     expect(screen.getByText("Nombre").parentElement).not.toHaveClass("lg:gap-2");
   });
@@ -60,15 +60,15 @@ describe("FormField", () => {
   it("escribe el error del campo en 12,5", () => {
     render(<FormField label="Correo" error="Revisá el correo."><Input /></FormField>);
 
-    expect(screen.getByRole("alert")).toHaveClass("text-[12.5px]", "text-[var(--peligro)]");
+    expect(screen.getByRole("alert")).toHaveClass("text-[0.78125rem]", "text-[var(--peligro)]");
   });
 
   // Tableros M-* (.ap-cmp): en el teléfono el campo mide 48, con radio 12 y letra de 16, y el rótulo es de 13,5.
   it("en el teléfono usa campos de 48 y rótulos de 13,5", () => {
     render(<FormField label="Correo"><Input /></FormField>);
 
-    expect(screen.getByLabelText("Correo")).toHaveClass("max-md:h-12", "max-md:rounded-[12px]", "max-md:text-[16px]");
-    expect(screen.getByText("Correo")).toHaveClass("max-md:text-[13.5px]");
+    expect(screen.getByLabelText("Correo")).toHaveClass("max-md:h-12", "max-md:rounded-[0.75rem]", "max-md:text-[1rem]");
+    expect(screen.getByText("Correo")).toHaveClass("max-md:text-[0.84375rem]");
     // M-* (.ap-cmp .rt): el rótulo con el interlineado normal; con el 1.5 de la página cada campo bajaba 4 px.
     expect(screen.getByText("Correo")).toHaveClass("max-md:leading-[normal]");
   });
@@ -118,10 +118,10 @@ describe("FormField", () => {
     );
 
     // Tableros Ingreso, Registro y sus M-*: rótulo de 12,5, a 6 del campo en la compu y en el teléfono.
-    expect(screen.getByText("Correo electrónico")).toHaveClass("text-[12.5px]", "font-semibold", "text-[var(--t2)]");
+    expect(screen.getByText("Correo electrónico")).toHaveClass("text-[0.78125rem]", "font-semibold", "text-[var(--t2)]");
     expect(screen.getByText("Correo electrónico").parentElement).toHaveClass("gap-1.5");
     expect(screen.getByText("Correo electrónico").parentElement).not.toHaveClass("lg:gap-2");
-    expect(screen.getByLabelText("Correo electrónico")).toHaveClass("h-11", "rounded-[10px]", "text-[15px]");
+    expect(screen.getByLabelText("Correo electrónico")).toHaveClass("h-11", "rounded-[0.625rem]", "text-[0.9375rem]");
   });
 
   // M-Ingreso, M-Registro y M-Registro-Empresa (.in2.lg, medido en el lienzo v106): en el teléfono, el campo del ingreso y
@@ -131,7 +131,7 @@ describe("FormField", () => {
     render(<FormField label="Correo electrónico" variant="auth"><Input /></FormField>);
 
     const input = screen.getByLabelText("Correo electrónico");
-    expect(input).toHaveClass("max-md:h-11", "max-md:rounded-[10px]", "max-md:text-[15px]");
-    for (const phoneApp of ["max-md:h-12", "max-md:rounded-[12px]", "max-md:text-[16px]"]) expect(input).not.toHaveClass(phoneApp);
+    expect(input).toHaveClass("max-md:h-11", "max-md:rounded-[0.625rem]", "max-md:text-[0.9375rem]");
+    for (const phoneApp of ["max-md:h-12", "max-md:rounded-[0.75rem]", "max-md:text-[1rem]"]) expect(input).not.toHaveClass(phoneApp);
   });
 });

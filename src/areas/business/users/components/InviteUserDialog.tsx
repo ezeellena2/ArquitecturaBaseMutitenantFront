@@ -122,7 +122,7 @@ export function InviteUserDialog({ onClose, onInvited }: {
             <FormField label={t("users:invite.companyRoles")}>
               {company.field.value
                 ? <MultiSelect remote={companyOptionsQuery.remote} selectedOptions={companyOptionsQuery.knownItems.map((role) => ({ value: role.id, label: role.name }))} options={companyRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={companyRoleIds.field.value} onChange={companyRoleIds.field.onChange} placeholder={t("users:invite.noRoles")} />
-                : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[13px] text-[var(--t3)] max-md:h-12 max-md:rounded-[12px] max-md:text-[16px]">{t("users:invite.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" /></button>}
+                : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[0.8125rem] text-[var(--t3)] max-md:h-12 max-md:rounded-[0.75rem] max-md:text-[1rem]">{t("users:invite.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" /></button>}
             </FormField>
           </div>
           {/* «Criterio · Diálogos»: el error general, en la franja arriba de los botones. */}

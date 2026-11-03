@@ -205,7 +205,7 @@ describe("Confirmá que sos vos", () => {
     await user.click(within(reason).getByRole("button", { name: "Guardar" }));
     const confirm = await screen.findByRole("dialog", { name: "Confirmá que sos vos" });
     expect(confirm).toHaveTextContent("Para guardar la configuración, escribí el código de tu app de autenticación.");
-    expect(confirm).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(confirm).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
     expect(within(confirm).getByRole("button", { name: "Cerrar" })).toBeInTheDocument();
     // Mientras espera la confirmación, «Guardar cambios» de atrás no se ve «Guardando…» (Config-Plat).
     expect(screen.getByRole("button", { name: "Guardar cambios", hidden: true }).closest("[data-slot=fixed-actions]")).not.toBeNull();

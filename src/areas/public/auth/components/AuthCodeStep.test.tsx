@@ -38,7 +38,7 @@ describe("AuthCodeStep", () => {
     const onBack = vi.fn();
     const { container } = render(<Harness onBack={onBack} />);
 
-    expect(screen.getByRole("heading", { level: 1, name: "Revisá tu correo" })).toHaveClass("text-[24px]", "tracking-[-0.02em]");
+    expect(screen.getByRole("heading", { level: 1, name: "Revisá tu correo" })).toHaveClass("text-[1.5rem]", "tracking-[-0.02em]");
     const hint = screen.getByText(/Te mandamos un código a/);
     expect(hint).toHaveTextContent("Te mandamos un código a ana@example.com. Vence en 10 minutos.");
     expect(hint).toHaveClass("mt-1.5", "text-sm", "leading-normal", "text-[var(--t2)]");

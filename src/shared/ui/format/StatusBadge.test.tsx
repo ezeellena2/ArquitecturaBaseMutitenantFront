@@ -25,7 +25,7 @@ describe("StatusBadge", () => {
     render(<StatusBadge tones={tones} value={tone} />);
     const state = screen.getByText("TestStatus " + tone).parentElement!;
     const statusDot = state.querySelector('[data-slot="status-dot"]');
-    expect(state).toHaveClass("inline-flex", "text-[13px]");
+    expect(state).toHaveClass("inline-flex", "text-[0.8125rem]");
     expect(state).not.toHaveClass("rounded-full");
     expect(statusDot).toHaveClass("size-2", "bg-[var(" + dot + ")]");
     expect(statusDot).toHaveAttribute("aria-hidden", "true");

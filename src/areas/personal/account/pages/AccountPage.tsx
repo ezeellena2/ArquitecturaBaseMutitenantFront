@@ -67,7 +67,7 @@ export function AccountPage() {
     }
     const clean = new URLSearchParams(params); clean.delete("google"); clean.delete("error"); setParams(clean, { replace: true });
   });
-  if (isPending) return <p role="status" className="p-4 text-[13px] lg:px-6 lg:py-5">{t("states.loading")}</p>;
+  if (isPending) return <p role="status" className="p-4 text-[0.8125rem] lg:px-6 lg:py-5">{t("states.loading")}</p>;
   // «Criterio · Avisos» (Pantalla de error): sin /api/me no hay nada que mostrar (LegalAcceptanceGate lo ve primero).
   if (!data) return <LoadErrorPage onRetry={() => { void refetch(); }} />;
   return <><AccountProfileForm key={data.id} account={data}>
@@ -75,7 +75,7 @@ export function AccountPage() {
         WhatsApp (tablero Cuenta, «Sin el módulo de WhatsApp»), «Agregar correo». */}
     <Section title={t("account:methods")} action={{ label: t(whatsApp ? "account:add" : "account:addEmail"), onClick: () => setAddOpen(true) }}>
       {methods.data?.needsPersonalLoginMethod ? <div className="border-b border-[var(--borde)] p-3"><PersonalLoginMethodNotice onAdd={() => setAddOpen(true)} /></div> : null}
-      {methods.isPending ? <p className="p-4 text-[13px] text-[var(--t2)]" role="status">{t("states.loading")}</p> : null}
+      {methods.isPending ? <p className="p-4 text-[0.8125rem] text-[var(--t2)]" role="status">{t("states.loading")}</p> : null}
       {methods.error ? <div className="p-4"><FormError message={apiErrorMessage(methods.error, t)} /><Button type="button" onClick={() => { void methods.refetch(); }}>{t("actions.retry")}</Button></div> : null}
       {methods.data ? <LoginMethodsTable methods={methods.data.methods.filter((method) => method.type !== "Phone" || whatsApp)} canLinkGoogle={methods.data.canLinkGoogle} onAction={(action, method, returnFocus) => { if (action === "verify") setVerifyMethod(method); else setChange({ action, method, returnFocus }); }} /> : null}
     </Section>

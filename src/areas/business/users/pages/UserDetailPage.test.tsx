@@ -135,7 +135,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
       const active = within(stateSheet).getByRole("radio", { name: "Activo" });
       expect(active).toBeChecked();
       expect(active).toHaveClass("sr-only");
-      expect(active.closest("label")).toHaveClass("min-h-[52px]", "text-[16px]", "font-medium", "text-[var(--marca-tx)]");
+      expect(active.closest("label")).toHaveClass("min-h-13", "text-[1rem]", "font-medium", "text-[var(--marca-tx)]");
       expect(active.closest("label")!.querySelector("[data-slot='tilde']")).not.toBeNull();
       expect(within(stateSheet).getByRole("radio", { name: "Deshabilitado" }).closest("label")!.querySelector("[data-slot='tilde']")).toBeNull();
       expect(stateSheet).not.toHaveTextContent("Entra a la organización");
@@ -152,7 +152,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
       const rolesSheet = await screen.findByRole("dialog", { name: "Roles de la organización" });
       expect(within(rolesSheet).queryByRole("checkbox", { name: "Todos" })).not.toBeInTheDocument();
       const support = within(rolesSheet).getByRole("checkbox", { name: "Soporte" });
-      expect(support).toHaveClass("size-[22px]", "rounded-[6px]");
+      expect(support).toHaveClass("size-5.5", "rounded-[0.375rem]");
       expect(support.compareDocumentPosition(within(rolesSheet).getByText("Soporte")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       await user.click(support);
       expect(support).toBeChecked();
@@ -677,7 +677,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await user.click(await screen.findByRole("button", { name: "Sumar empresa" }));
     const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
     // «Criterio · Diálogos»: dos campos, el diálogo chico de 420 px.
-    expect(dialog).toHaveClass("md:max-w-[420px]");
+    expect(dialog).toHaveClass("md:max-w-105");
     await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
     await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
     await user.click(within(dialog).getByRole("button", { name: "Sumar" }));

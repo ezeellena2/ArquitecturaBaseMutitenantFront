@@ -8,7 +8,7 @@ describe("Textarea", () => {
   it("mide 84 en la compu y 104 en el teléfono, crece con lo escrito y no tiene tirador", () => {
     render(<Textarea aria-label="Descripción" />);
     const box = screen.getByRole("textbox", { name: "Descripción" });
-    expect(box).toHaveClass("min-h-[84px]", "max-md:min-h-[104px]", "field-sizing-content", "resize-none");
+    expect(box).toHaveClass("min-h-21", "max-md:min-h-26", "field-sizing-content", "resize-none");
     expect(box).not.toHaveClass("min-h-16");
   });
 });

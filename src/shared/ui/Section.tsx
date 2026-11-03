@@ -37,26 +37,26 @@ export function Section({ title, action, meta, phone = "card", children }: Secti
       {body}
     </section>;
     return <section aria-labelledby={id} className="flex flex-col">
-      <div className={cn("mb-2 flex items-center justify-between gap-3 leading-[normal]", phone === "card" ? "mx-5 mt-[18px]" : "mt-1.5")}>
-        <h2 id={id} className="text-[13.5px] font-semibold text-[var(--t2)]">{title}</h2>
-        {meta ? <span className="text-[13.5px] text-[var(--t3)]">{meta}</span> : null}
+      <div className={cn("mb-2 flex items-center justify-between gap-3 leading-[normal]", phone === "card" ? "mx-5 mt-4.5" : "mt-1.5")}>
+        <h2 id={id} className="text-[0.84375rem] font-semibold text-[var(--t2)]">{title}</h2>
+        {meta ? <span className="text-[0.84375rem] text-[var(--t3)]">{meta}</span> : null}
         {action ? <button type="button" onClick={action.onClick} disabled={action.disabled}
-          className="text-[14.5px] font-semibold text-[var(--marca-tx)] disabled:opacity-45">{action.label}</button> : null}
+          className="text-[0.90625rem] font-semibold text-[var(--marca-tx)] disabled:opacity-45">{action.label}</button> : null}
       </div>
-      <div className={cn("overflow-hidden rounded-[14px] bg-[var(--lado-activo)] shadow-[0_0_0_1px_var(--borde)]", phone === "card" ? "mx-4" : "")}>{body}</div>
+      <div className={cn("overflow-hidden rounded-[0.875rem] bg-[var(--lado-activo)] shadow-[0_0_0_1px_var(--borde)]", phone === "card" ? "mx-4" : "")}>{body}</div>
     </section>;
   }
 
   // «Criterio · Formularios» (.caja2) y tableros Configuración y Página pública (.w-caja): la caja de un formulario lleva
   // borde y 12 de radio, sin sombra; la sombra suave es de las tablas (Surface).
-  return <div className="overflow-hidden rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)]">
+  return <div className="overflow-hidden rounded-[0.75rem] border border-[var(--borde)] bg-[var(--lado-activo)]">
     <section aria-labelledby={id}>
       {/* «Criterio · Tablas» (.lista .cab) y tableros Cuenta, Usuario y Configuración (.w-cab): 16 a la izquierda y 4 a la
           derecha, con el botón chico a 4 del borde; lo que cuenta la caja, a 16 (4 y 12 suyos). */}
-      <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde-cab)] bg-[var(--cab)] pr-1 pl-4 text-[13px] font-semibold text-[var(--t1)]">
+      <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde-cab)] bg-[var(--cab)] pr-1 pl-4 text-[0.8125rem] font-semibold text-[var(--t1)]">
         <h2 id={id}>{title}</h2>
         {/* Tablero Rol (.w-cab > span): lo que cuenta la caja, en 13 y peso 500, gris claro. */}
-        {meta ? <span className="pr-3 text-[13px] font-medium text-[var(--t3)]">{meta}</span> : null}
+        {meta ? <span className="pr-3 text-[0.8125rem] font-medium text-[var(--t3)]">{meta}</span> : null}
         {action ? <Button type="button" variant="outline" size="sm" onClick={action.onClick} disabled={action.disabled}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{action.label}</Button> : null}
       </header>
       {body}

@@ -29,7 +29,7 @@ type Open =
 /// El número de la opción (WA-Respuestas, .w-it .num, y M-WA-Respuestas, .ap-it .num): gris en la compu y petróleo en el
 /// teléfono.
 function OptionNumber({ value }: { value: number }) {
-  return <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--s3)] text-[12.5px] font-semibold text-[var(--t2)] tabular-nums max-md:bg-[var(--marca-t)] max-md:text-[13px] max-md:font-bold max-md:text-[var(--marca-tx)]">{value}</span>;
+  return <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--s3)] text-[0.78125rem] font-semibold text-[var(--t2)] tabular-nums max-md:bg-[var(--marca-t)] max-md:text-[0.8125rem] max-md:font-bold max-md:text-[var(--marca-tx)]">{value}</span>;
 }
 
 /// «Configuración» del bot (WA-Respuestas, Plat-WA-Bot y sus M-*): las respuestas automáticas, el menú de hasta 10
@@ -96,7 +96,7 @@ export function BotConfiguration({ bot, variant, teams, onSave }: {
   const extraTitle = t("whatsapp:bot.extra");
   const welcomeTitle = t("whatsapp:bot.welcome.title");
   const outOfHoursTitle = t("whatsapp:bot.outOfHours.title");
-  const system = <span className="text-[13px] text-[var(--t3)] max-md:text-[14px]">{t("whatsapp:bot.option.systemTag")}</span>;
+  const system = <span className="text-[0.8125rem] text-[var(--t3)] max-md:text-[0.875rem]">{t("whatsapp:bot.option.systemTag")}</span>;
 
   return <>
     <Section title={autoTitle}>
@@ -108,7 +108,7 @@ export function BotConfiguration({ bot, variant, teams, onSave }: {
       </>)}
     </Section>
     <Section title={menuTitle} action={{ label: t("whatsapp:bot.option.add"), onClick: addOption }}>
-      {bot.menu.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)] md:px-5">{t("whatsapp:bot.option.empty")}</p>
+      {bot.menu.length === 0 ? <p className="p-4 text-[0.8125rem] text-[var(--t2)] md:px-5">{t("whatsapp:bot.option.empty")}</p>
         : group(menuTitle, bot.menu.map((option, index) => row({
           key: option.id ?? `option-${index}`, title: option.label, detail: optionDetail(option, teams, t), leading: <OptionNumber value={index + 1} />,
           onOpen: option.isSystem ? undefined : () => setOpen({ kind: "option", index }),

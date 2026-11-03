@@ -21,15 +21,15 @@ describe("Dialog mobile layout", () => {
 
     const content = screen.getByRole("dialog", { name: "Editar" });
     expect(document.querySelector('[data-slot="dialog-overlay"]')).toHaveClass("bg-[var(--velo)]");
-    expect(content).toHaveClass("bottom-0", "md:top-1/2", "md:max-w-[560px]");
+    expect(content).toHaveClass("bottom-0", "md:top-1/2", "md:max-w-140");
     expect(content).toHaveClass("max-h-[calc(100dvh-1rem)]");
     // Tablero M-Usuarios-Invitar (.ap-hoja): en el teléfono es una hoja con esquinas de 20 y manija; el título de 18
     // va sin fondo arena, el ✕ mide 44 y los botones de 48 van uno al lado del otro, a lo ancho.
-    expect(content).toHaveClass("rounded-t-[20px]", "shadow-[var(--sombra-hoja)]");
-    expect(content.querySelector("[data-slot='dialog-handle']")).toHaveClass("md:hidden", "h-[5px]", "w-9");
+    expect(content).toHaveClass("rounded-t-[1.25rem]", "shadow-[var(--sombra-hoja)]");
+    expect(content.querySelector("[data-slot='dialog-handle']")).toHaveClass("md:hidden", "h-1.25", "w-9");
     expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("size-11", "md:size-8");
     expect(document.querySelector('[data-slot="dialog-header"]')).toHaveClass("md:bg-[var(--cab)]", "md:min-h-12", "max-md:bg-transparent");
-    expect(screen.getByRole("heading", { name: "Editar" })).toHaveClass("max-md:text-[18px]", "max-md:font-bold", "max-md:leading-[1.3]");
+    expect(screen.getByRole("heading", { name: "Editar" })).toHaveClass("max-md:text-[1.125rem]", "max-md:font-bold", "max-md:leading-[1.3]");
     expect(screen.getByRole("button", { name: "Guardar" }).parentElement).toHaveClass("max-md:[&_button]:h-12", "max-md:[&_button]:flex-1", "max-md:border-0");
   });
 
@@ -44,10 +44,10 @@ describe("Dialog mobile layout", () => {
       </Dialog>,
     );
 
-    expect(document.querySelector('[data-slot="dialog-header"]')).toHaveClass("min-h-[52px]", "py-1", "md:min-h-12", "md:py-2");
+    expect(document.querySelector('[data-slot="dialog-header"]')).toHaveClass("min-h-13", "py-1", "md:min-h-12", "md:py-2");
     const close = screen.getByRole("button", { name: "Cerrar" });
-    expect(close).toHaveClass("top-[21px]", "right-1.5", "size-11", "md:top-2", "md:right-2");
-    expect(close.querySelector("svg")).toHaveClass("size-[22px]", "md:size-4");
+    expect(close).toHaveClass("top-5.25", "right-1.5", "size-11", "md:top-2", "md:right-2");
+    expect(close.querySelector("svg")).toHaveClass("size-5.5", "md:size-4");
   });
 
   // Un diálogo que en el teléfono es la hoja de una confirmación (Cuenta-Baja y M-Cuenta-Baja): la ✕ va solo en la compu.
@@ -63,7 +63,7 @@ describe("Dialog mobile layout", () => {
     expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("max-md:hidden", "md:flex");
     // Sin ✕ en el teléfono, el encabezado no le guarda lugar: mide lo del título, con 20 a la derecha (.hc de M-Cuenta-Baja).
     const header = document.querySelector('[data-slot="dialog-header"]');
-    expect(header).not.toHaveClass("min-h-[52px]");
+    expect(header).not.toHaveClass("min-h-13");
     expect(header).toHaveClass("pr-5", "md:min-h-12");
   });
 
@@ -73,7 +73,7 @@ describe("Dialog mobile layout", () => {
 
     expect(screen.queryByRole("button", { name: "Cerrar" })).not.toBeInTheDocument();
     const header = document.querySelector('[data-slot="dialog-header"]');
-    expect(header).not.toHaveClass("min-h-[52px]");
+    expect(header).not.toHaveClass("min-h-13");
     expect(header).toHaveClass("py-1", "pr-5");
   });
 
@@ -95,6 +95,6 @@ describe("Dialog mobile layout", () => {
     unmount();
 
     render(<ConfirmDialog open onOpenChange={() => {}} title="Eliminar" confirmLabel="Eliminar" onConfirm={() => {}} />);
-    expect(screen.getByRole("dialog", { name: "Eliminar" })).toHaveClass("md:max-w-[420px]");
+    expect(screen.getByRole("dialog", { name: "Eliminar" })).toHaveClass("md:max-w-105");
   });
 });

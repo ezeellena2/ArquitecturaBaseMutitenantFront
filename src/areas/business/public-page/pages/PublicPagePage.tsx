@@ -97,7 +97,7 @@ export function PublicPagePage() {
 
   // «Criterio · Avisos» (Pantalla de error): la página no cargó y no hay nada que mostrar.
   if (page.isError && !page.data) return <LoadErrorPage onRetry={() => { void page.refetch(); }} />;
-  if (!page.data) return <Page icon={GlobeIcon} title={t("publicPage:title")}><p role="status" className="text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (!page.data) return <Page icon={GlobeIcon} title={t("publicPage:title")}><p role="status" className="text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   return <PublicPageEditor page={page.data} loadError={page.error} reload={async () => (await page.refetch()).data} />;
 }
 
@@ -238,7 +238,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
             {/* Pagina-Org (.o-fila-tit, .o-i): la ⓘ va a 6 de la dirección, en su grupo; con los 12 del interruptor, en el
                 teléfono la dirección se cortaba. */}
             <span className="flex min-w-0 items-center gap-1.5">
-              <span id={visibleId} className="min-w-0 truncate text-[13px] font-medium text-[var(--t1)] max-md:text-[15.5px]">{t("publicPage:visibleAt", { host: publicSiteHost(savedSlug) })}</span>
+              <span id={visibleId} className="min-w-0 truncate text-[0.8125rem] font-medium text-[var(--t1)] max-md:text-[0.96875rem]">{t("publicPage:visibleAt", { host: publicSiteHost(savedSlug) })}</span>
               {locked ? <InfoButton label={t("publicPage:blockedInfo")} onClick={() => setBlockedInfoOpen(true)} /> : null}
             </span>
             {/* Trabado, el interruptor se ve apagado pero se puede tocar: abre el aviso, como la ⓘ, y no publica. */}
@@ -252,14 +252,14 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
         <Section title={t("publicPage:pageTitle")}>
           <div className="flex min-h-14 items-center gap-3 border-b border-[var(--borde)] px-4 py-1.5 md:px-5 max-md:min-h-0 max-md:gap-3.5 max-md:border-0 max-md:px-4 max-md:pt-3.5 max-md:pb-0">
             {/* Pagina-Org (.o-logo-chico): el logo de 40, con radio 10 y la sigla en 14. */}
-            {logo.dataUri ? <img src={logo.dataUri} alt={t("publicPage:logoAlt")} className="size-10 rounded-[10px] object-contain max-md:size-14 max-md:rounded-[14px]" />
-              : <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-[10px] bg-[var(--marca-t)] text-[14px] font-bold text-[var(--marca-tx)] max-md:size-14 max-md:rounded-[14px] max-md:bg-[var(--marca)] max-md:text-[18px] max-md:font-bold max-md:text-[var(--lado-activo)]">{initials(name)}</span>}
-            <span className="text-[13px] font-medium text-[var(--t1)] max-md:sr-only">{t("publicPage:logoTitle")}</span>
+            {logo.dataUri ? <img src={logo.dataUri} alt={t("publicPage:logoAlt")} className="size-10 rounded-[0.625rem] object-contain max-md:size-14 max-md:rounded-[0.875rem]" />
+              : <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-[0.625rem] bg-[var(--marca-t)] text-[0.875rem] font-bold text-[var(--marca-tx)] max-md:size-14 max-md:rounded-[0.875rem] max-md:bg-[var(--marca)] max-md:text-[1.125rem] max-md:font-bold max-md:text-[var(--lado-activo)]">{initials(name)}</span>}
+            <span className="text-[0.8125rem] font-medium text-[var(--t1)] max-md:sr-only">{t("publicPage:logoTitle")}</span>
             <span className="ml-auto flex items-center gap-2 max-md:ml-0">
-              {logo.dataUri ? <Button type="button" variant="outline" size="sm" className="max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px]"
+              {logo.dataUri ? <Button type="button" variant="outline" size="sm" className="max-md:h-10 max-md:rounded-[0.625rem] max-md:px-3.5 max-md:text-[0.875rem]"
                 onClick={() => form.setValue("logo", { dataUri: null, base64: null, contentType: null, remove: true }, { shouldDirty: true })}>{t("publicPage:removeLogo")}</Button> : null}
               {/* Tablero Pagina-Org: «Subir imagen» es el botón chico con borde, como «Quitar logo». */}
-              <label className={cn(buttonVariants({ variant: "outline", size: "sm" }), "cursor-pointer max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px]")}>
+              <label className={cn(buttonVariants({ variant: "outline", size: "sm" }), "cursor-pointer max-md:h-10 max-md:rounded-[0.625rem] max-md:px-3.5 max-md:text-[0.875rem]")}>
                 {t("publicPage:uploadLogo")}
                 <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => { void chooseLogo(event.target.files?.[0]); }} />
               </label>
@@ -270,12 +270,12 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
               {/* El sufijo va sobre el borde derecho del campo: FormField ata el rótulo a su único hijo, el Input. */}
               <div className="relative">
                 <FormField label={t("publicPage:fields.slug")} required error={errors.slug?.message}>
-                  <Input name={slugField.field.name} value={slugField.field.value} onBlur={slugField.field.onBlur} maxLength={validationConstraints.UpdatePublicPageHttpRequest.slug.maxLength} autoComplete="off" className="pr-[124px] max-md:pr-[140px]"
+                  <Input name={slugField.field.name} value={slugField.field.value} onBlur={slugField.field.onBlur} maxLength={validationConstraints.UpdatePublicPageHttpRequest.slug.maxLength} autoComplete="off" className="pr-31 max-md:pr-35"
                     onChange={(event) => slugField.field.onChange(event.target.value.toLowerCase())} />
                 </FormField>
-                <span aria-hidden="true" className="absolute bottom-px right-px flex h-[32px] items-center rounded-r-[7px] border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[13px] text-[var(--t2)] lg:h-[34px] max-md:h-[46px] max-md:rounded-r-[11px] max-md:border-[var(--borde2)] max-md:bg-[var(--s3)] max-md:text-[15px]">{publicSiteSuffix}</span>
+                <span aria-hidden="true" className="absolute bottom-px right-px flex h-8 items-center rounded-r-[0.4375rem] border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[0.8125rem] text-[var(--t2)] lg:h-8.5 max-md:h-11.5 max-md:rounded-r-[0.6875rem] max-md:border-[var(--borde2)] max-md:bg-[var(--s3)] max-md:text-[0.9375rem]">{publicSiteSuffix}</span>
               </div>
-              {slugChanged && slugState ? <p className={`text-[13px] ${slugState === "Available" ? "text-[var(--ok)]" : "text-[var(--peligro)]"}`}>{slugStateText(slugState, t)}</p> : null}
+              {slugChanged && slugState ? <p className={`text-[0.8125rem] ${slugState === "Available" ? "text-[var(--ok)]" : "text-[var(--peligro)]"}`}>{slugStateText(slugState, t)}</p> : null}
             </div>
             <FormField label={t("publicPage:fields.name")} required error={errors.name?.message}><Input {...form.register("name")} maxLength={validationConstraints.UpdatePublicPageHttpRequest.name.maxLength} /></FormField>
             <div className="md:col-span-2"><FormField label={t("publicPage:fields.description")} error={errors.description?.message}><Textarea {...form.register("description")} maxLength={validationConstraints.UpdatePublicPageHttpRequest.description.maxLength} /></FormField></div>
@@ -298,7 +298,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
           Diálogos») con la tarjeta de la página pública tal cual, sobre su fondo, y «Cerrar»; en el teléfono, la hoja
           desde abajo. Muestra lo que está escrito, aunque todavía no esté guardado. En el teléfono (v108) la hoja arranca
           debajo de la barra de estado, a 52 de arriba, y se desplaza solo el cuerpo: el título y «Cerrar» quedan quietos. */}
-      <DialogContent size="preview" className="max-md:top-[52px] max-md:flex max-md:flex-col max-md:overflow-hidden">
+      <DialogContent size="preview" className="max-md:top-13 max-md:flex max-md:flex-col max-md:overflow-hidden">
         <DialogHeader><DialogTitle>{t("publicPage:preview")}</DialogTitle><DialogDescription className="sr-only">{t("publicPage:previewDescription")}</DialogDescription></DialogHeader>
         <div data-slot="preview-body" className="max-md:min-h-0 max-md:flex-1 max-md:overflow-y-auto max-md:pt-2 max-md:pb-4">
           <div className={cn(publicPageBackdropClass, "flex justify-center px-10 py-6 max-md:p-4")}>

@@ -17,7 +17,7 @@ describe("ForbiddenPage", () => {
     expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/org");
     // En la compu es el botón principal de siempre (36 y letra de 14), como el tablero Error-Org.
     expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("data-variant", "default");
-    expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveClass("h-9", "text-[14px]");
+    expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveClass("h-9", "text-[0.875rem]");
     // El candado del tablero: el cuerpo y el arco, sin cerradura.
     expect(container.querySelector('path[d="M8 10.5V8a4 4 0 0 1 8 0v2.5"]')).not.toBeNull();
     expect(await axe(container)).toHaveNoViolations();
@@ -32,7 +32,7 @@ describe("ForbiddenPage", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: "Auditoría" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Volver a Más" })).toHaveAttribute("href", "/mas");
-    expect(screen.getByRole("heading", { level: 2, name: "No tenés permiso para ver esta página" })).toHaveClass("text-[22px]");
+    expect(screen.getByRole("heading", { level: 2, name: "No tenés permiso para ver esta página" })).toHaveClass("text-[1.375rem]");
     expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveClass("h-12", "rounded-full");
   });
 

@@ -20,7 +20,7 @@ describe("LoadErrorPage", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("No pudimos abrir esta pantalla");
     expect(screen.getByRole("heading", { level: 1, name: "No pudimos abrir esta pantalla" })).toBeVisible();
     // Tablero Error-Org: el título de 24 con su renglón de 36 (el de la página), así el botón queda donde el tablero.
-    expect(screen.getByRole("heading", { level: 1, name: "No pudimos abrir esta pantalla" })).toHaveClass("text-[24px]", "leading-[1.5]");
+    expect(screen.getByRole("heading", { level: 1, name: "No pudimos abrir esta pantalla" })).toHaveClass("text-[1.5rem]", "leading-[1.5]");
     const retry = screen.getByRole("button", { name: "Reintentar" });
     expect(retry).toHaveAttribute("data-variant", "outline");
     expect(container.querySelector("svg")?.parentElement).toHaveClass("size-16", "rounded-full", "bg-[var(--s3)]");
@@ -41,7 +41,7 @@ describe("LoadErrorPage", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: "Usuario" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Volver a Usuarios" })).toHaveAttribute("href", "/org/usuarios");
-    expect(screen.getByRole("heading", { level: 2, name: "No pudimos abrir esta pantalla" })).toHaveClass("text-[22px]");
+    expect(screen.getByRole("heading", { level: 2, name: "No pudimos abrir esta pantalla" })).toHaveClass("text-[1.375rem]");
     expect(screen.getByRole("button", { name: "Reintentar" })).toHaveClass("h-12", "rounded-full", "border-[var(--borde2)]", "text-[var(--t1)]");
   });
 
@@ -53,7 +53,7 @@ describe("LoadErrorPage", () => {
       render(<MemoryRouter><LoadErrorPage onRetry={vi.fn()} standalone /></MemoryRouter>);
 
       expect(screen.getByRole("main")).toHaveClass("min-h-dvh");
-      expect(screen.getByRole("heading", { level: 1, name: "No pudimos abrir esta pantalla" })).toHaveClass("text-[22px]");
+      expect(screen.getByRole("heading", { level: 1, name: "No pudimos abrir esta pantalla" })).toHaveClass("text-[1.375rem]");
       expect(screen.getByRole("button", { name: "Reintentar" })).toHaveClass("h-12", "rounded-full");
     } finally {
       restore();

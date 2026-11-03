@@ -38,7 +38,7 @@ describe("Tabs · Criterio · Marco", () => {
     expect(strip.nextElementSibling).toContainElement(screen.getByText("Lista de miembros"));
     expect(list).toHaveClass("h-11", "gap-7", "justify-start");
     const members = screen.getByRole("tab", { name: "Miembros 6" });
-    expect(members).toHaveClass("text-[14px]", "data-[state=active]:text-[var(--marca-tx)]", "data-[state=active]:shadow-[inset_0_-2px_0_var(--marca)]");
+    expect(members).toHaveClass("text-[0.875rem]", "data-[state=active]:text-[var(--marca-tx)]", "data-[state=active]:shadow-[inset_0_-2px_0_var(--marca)]");
     expect(members).not.toHaveClass("flex-1");
     expect(screen.getByText("6").closest("[data-slot=tab-count]")).toHaveClass("font-normal", "text-[var(--t3)]");
     await userEvent.click(screen.getByRole("tab", { name: "Roles 3" }));
@@ -51,10 +51,10 @@ describe("Tabs · Criterio · Marco", () => {
     render(<CompanyGroups />);
 
     const list = screen.getByRole("tablist", { name: "Secciones de la empresa" });
-    expect(list).toHaveClass("max-md:h-[50.5px]");
+    expect(list).toHaveClass("max-md:h-[3.15625rem]");
     const roles = screen.getByRole("tab", { name: "Roles 3" });
-    expect(roles).toHaveClass("max-md:h-[50.5px]", "max-md:pb-[2.5px]", "max-md:text-[15px]", "max-md:font-semibold",
-      "max-md:data-[state=active]:shadow-[inset_0_-2.5px_0_var(--marca)]");
+    expect(roles).toHaveClass("max-md:h-[3.15625rem]", "max-md:pb-[0.15625rem]", "max-md:text-[0.9375rem]", "max-md:font-semibold",
+      "max-md:data-[state=active]:shadow-[inset_0_-0.15625rem_0_var(--marca)]");
     expect(screen.getByText("3").closest("[data-slot=tab-count]")).toHaveClass("max-md:font-medium");
   });
 });

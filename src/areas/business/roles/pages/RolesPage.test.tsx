@@ -94,8 +94,8 @@ describe("RolesPage", () => {
     expect(screen.getByRole("link", { name: "Dueño" })).toHaveClass("font-medium", "text-[var(--t1)]");
     expect(screen.getByRole("columnheader", { name: "Rol" })).toHaveClass("w-[39%]");
     expect(screen.getByRole("columnheader", { name: "Vale en" })).not.toHaveClass("text-right");
-    expect(screen.getByRole("columnheader", { name: "Usuarios" })).toHaveClass("w-[112px]", "text-right");
-    expect(screen.getByRole("columnheader", { name: "Permisos" })).toHaveClass("w-[112px]", "text-right");
+    expect(screen.getByRole("columnheader", { name: "Usuarios" })).toHaveClass("w-28", "text-right");
+    expect(screen.getByRole("columnheader", { name: "Permisos" })).toHaveClass("w-28", "text-right");
     expect(screen.queryByRole("columnheader", { name: "Descripción" })).not.toBeInTheDocument();
     expect(screen.queryByRole("columnheader", { name: "Tipo" })).not.toBeInTheDocument();
     expect(screen.getAllByText("De sistema")).toHaveLength(2);

@@ -43,9 +43,9 @@ export function RolesField({ label, allLabel, options, value, onChange, placehol
   return (
     // Tablero Usuario (.o-todos): con la letra del rótulo, en 500 y a 6 de la casilla. Tablero M-Usuario-Empresa
     // (.ap-todos): en el teléfono, en 14 con la casilla de 20, radio 6 y borde de 1,5, a 8 del texto.
-    <FormField label={label} aside={<label className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[var(--t2)] max-md:gap-2 max-md:text-[14px]">
+    <FormField label={label} aside={<label className="inline-flex items-center gap-1.5 text-[0.78125rem] font-medium text-[var(--t2)] max-md:gap-2 max-md:text-[0.875rem]">
       <Checkbox checked={allChecked} disabled={selectingAll || options.length === 0} onCheckedChange={(checked) => { void toggleAll(checked === true); }}
-        className="max-md:size-5 max-md:rounded-[6px] max-md:border-[1.5px] max-md:border-[var(--borde2)]" />
+        className="max-md:size-5 max-md:rounded-[0.375rem] max-md:border-[1.5px] max-md:border-[var(--borde2)]" />
       {allLabel}
     </label>}>
       <MultiSelect disabled={selectingAll} options={options} selectedOptions={selectedOptions} remote={remote} value={value} onChange={onChange} placeholder={placeholder} />

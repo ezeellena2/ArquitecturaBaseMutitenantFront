@@ -170,7 +170,7 @@ function isNumericColumn<TRow>(column: Column<TRow>): boolean {
 // Tablero «Criterio · Tablas»: 16 px a los costados de la fila y 12 entre columnas (6 por celda), iguales en el
 // encabezado y en las filas. El ⋮ va en una columna de 50, a 12 del borde, como en los tableros.
 function edgeClass<TRow>(column: Column<TRow>): string {
-  return column.type === "actions" ? "w-[50px] px-1.5 first:pl-4 last:pr-3" : "px-1.5 first:pl-4 last:pr-4";
+  return column.type === "actions" ? "w-12.5 px-1.5 first:pl-4 last:pr-3" : "px-1.5 first:pl-4 last:pr-4";
 }
 
 // Números y montos a la derecha; el estado, como el resto del texto, a la izquierda.
@@ -220,20 +220,20 @@ export function DataTable<TRow>({
   // «Criterio · Tablas»: las filas miden 40; si alguna lleva segunda línea, todas las de la tabla miden 52.
   const details = notice ? [] : rows.map((row) => columns.map((column) => column.detail?.(row)));
   const twoLines = details.some((cells) => cells.some(hasContent));
-  const renderRow = (row: TRow) => <TableRow key={rowKey(row)} className={twoLines ? "h-[52px]" : "h-10"}>
+  const renderRow = (row: TRow) => <TableRow key={rowKey(row)} className={twoLines ? "h-13" : "h-10"}>
     {columns.map((column) => {
       const detail = column.detail?.(row);
       return <TableCell key={column.id} className={cn("overflow-hidden whitespace-nowrap", column.type === "actions" ? "py-0" : "py-2",
         edgeClass(column), column.className, columnVisibility(column), alignClass(column))}>
         {hasContent(detail) ? <span className="flex min-w-0 flex-col leading-[1.35]">
-          {columnCell(column, row)}<span data-slot="cell-detail" className="block truncate text-[12px] text-[var(--t3)]">{detail}</span>
+          {columnCell(column, row)}<span data-slot="cell-detail" className="block truncate text-[0.75rem] text-[var(--t3)]">{detail}</span>
         </span> : columnCell(column, row)}
       </TableCell>;
     })}
   </TableRow>;
 
   return (
-    <Table aria-busy={isFetching === true} className={cn("table-fixed text-[13px]", isFetching ? "opacity-60" : undefined)}>
+    <Table aria-busy={isFetching === true} className={cn("table-fixed text-[0.8125rem]", isFetching ? "opacity-60" : undefined)}>
       <TableHeader>
         <TableRow className="bg-[var(--s2)] hover:bg-[var(--s2)]">
           {columns.map((column) => (
@@ -242,7 +242,7 @@ export function DataTable<TRow>({
               scope="col"
               aria-sort={ariaSort(column, sort)}
               className={cn(
-                "h-10 bg-[var(--cab)] py-0 text-[13px] font-semibold normal-case text-[var(--t2)] whitespace-normal",
+                "h-10 bg-[var(--cab)] py-0 text-[0.8125rem] font-semibold normal-case text-[var(--t2)] whitespace-normal",
                 edgeClass(column),
                 column.className,
                 columnVisibility(column),
@@ -250,7 +250,7 @@ export function DataTable<TRow>({
               )}
             >
               {column.sortable && onSortChange ? (
-                <button type="button" onClick={() => onSortChange(column.id)} className="-mx-1 rounded-[6px] px-1 text-[13px] font-semibold normal-case hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
+                <button type="button" onClick={() => onSortChange(column.id)} className="-mx-1 rounded-[0.375rem] px-1 text-[0.8125rem] font-semibold normal-case hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
                   {column.header}
                 </button>
               ) : column.type === "actions" ? <span className="sr-only">{column.header}</span> : column.header}

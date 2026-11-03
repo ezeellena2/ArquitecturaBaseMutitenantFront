@@ -148,7 +148,7 @@ export function TemplateDialog({ scope, original, onClose, returnFocusTo }: {
             </FormField>
             <div className="flex flex-col gap-2 md:col-span-2">
               <FormField label={t("whatsapp:templates.form.body")} required error={errors.body?.message}>
-                <Textarea maxLength={limits.body.maxLength} className="min-h-[110px]" {...bodyField}
+                <Textarea maxLength={limits.body.maxLength} className="min-h-27.5" {...bodyField}
                   ref={(element) => { bodyField.ref(element); bodyElement.current = element; }} />
               </FormField>
               <div className="flex flex-wrap gap-2">

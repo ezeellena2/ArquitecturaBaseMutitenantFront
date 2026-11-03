@@ -102,7 +102,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   useBreadcrumbLeaf(mode === "create" ? t("roles:createTitle") : role.data ? role.data.name : undefined);
 
   if (mode === "create") return <RoleEditor />;
-  if (role.isPending) return <Page icon={ShieldIcon} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (role.isPending) return <Page icon={ShieldIcon} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   // «Criterio · Avisos» (Pantalla de error): el rol no cargó y no hay nada que mostrar; si no existe (404),
   // «No encontramos esta página» (errores.md).
   if (!role.data) return isNotFoundError(role.error)
@@ -290,8 +290,8 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
               el teléfono sigue con la franja de sus avisos. */}
           {errors.permissions?.message ? phone ? <FormError className="mx-3.5 mt-3" message={errors.permissions.message} />
             : <Banner tone="danger" className="mx-4 my-3">{errors.permissions.message}</Banner> : null}
-          {!scope ? <p className="p-4 text-[13px] text-[var(--t3)] max-md:px-4 max-md:py-3.5 max-md:text-[14.5px] max-md:text-[var(--t2)]">{t("roles:scope.chooseForPermissions")}</p>
-            : permissionGroups.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
+          {!scope ? <p className="p-4 text-[0.8125rem] text-[var(--t3)] max-md:px-4 max-md:py-3.5 max-md:text-[0.90625rem] max-md:text-[var(--t2)]">{t("roles:scope.chooseForPermissions")}</p>
+            : permissionGroups.isPending ? <p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p>
               : <PermissionPicker key={scope} groups={scopeGroups} value={permissions} onChange={permissionsField.field.onChange} readOnly={!editable} />}
         </Section>
       </form>

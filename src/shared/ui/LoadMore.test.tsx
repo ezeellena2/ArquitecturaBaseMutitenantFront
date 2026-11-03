@@ -20,7 +20,7 @@ describe("LoadMore", () => {
     const loadMore = screen.getByRole("button", { name: "Cargar más" });
     // Tablero Auditoria-Org: el botón normal, de 36 y letra de 14 («Criterio · Botones»), no el chico.
     expect(loadMore).toHaveAttribute("data-size", "default");
-    expect(loadMore).toHaveClass("h-9", "text-[14px]");
+    expect(loadMore).toHaveClass("h-9", "text-[0.875rem]");
     expect(loadMore).not.toHaveClass("h-7", "lg:h-8");
     // Tablero Auditoria-Org: «Cargar más» con borde, no relleno.
     expect(loadMore).toHaveAttribute("data-variant", "outline");

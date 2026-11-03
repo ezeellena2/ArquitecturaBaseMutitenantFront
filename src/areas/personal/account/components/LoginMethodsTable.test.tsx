@@ -41,7 +41,7 @@ describe("métodos de cuenta", () => {
     // 60); es el ⋮ del set, con los puntos rellenos.
     const kebab = screen.getByRole("button", { name: "Acciones de ana@delta.ejemplo.com" });
     expect(kebab).toHaveClass("size-8", "text-[var(--t3)]", "max-md:size-11", "max-md:rounded-full", "max-md:text-[var(--t1)]");
-    expect(kebab.querySelector("svg")).toHaveClass("size-[18px]", "max-md:size-5");
+    expect(kebab.querySelector("svg")).toHaveClass("size-4.5", "max-md:size-5");
     expect(kebab.querySelectorAll("svg circle[fill='currentColor']")).toHaveLength(3);
     await user.click(screen.getByRole("button", { name: "Acciones de ana@delta.ejemplo.com" }));
     expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Hacer principal", "Quitar"]);
@@ -77,7 +77,7 @@ describe("métodos de cuenta", () => {
     // M-Cuenta (.w-est.amb y .acc-t): en el teléfono, «Sin verificar» lleva el punto ámbar y «Verificar» va en 15, como
     // «Vincular»; en la compu (Cuenta), sin punto y en 13.
     expect(screen.getByText("Sin verificar").querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--punto-alerta)]", "hidden", "max-md:block");
-    expect(within(row).getByRole("button", { name: "Verificar" })).toHaveClass("text-[13px]", "max-md:text-[15px]");
+    expect(within(row).getByRole("button", { name: "Verificar" })).toHaveClass("text-[0.8125rem]", "max-md:text-[0.9375rem]");
     await user.click(within(row).getByRole("button", { name: "Verificar" }));
     expect(onAction).toHaveBeenCalledWith("verify", pending);
   });
@@ -92,8 +92,8 @@ describe("métodos de cuenta", () => {
     // Tablero Cuenta: «Vincular» es un botón con borde, no un enlace.
     expect(within(row).getByRole("button", { name: "Vincular Google" })).toHaveAttribute("data-variant", "outline");
     // Es el botón chico de siempre (32 y letra de 13), no uno propio de 28.
-    expect(within(row).getByRole("button", { name: "Vincular Google" })).toHaveClass("h-8", "text-[13px]");
-    expect(within(row).getByRole("button", { name: "Vincular Google" })).not.toHaveClass("h-7", "text-[12.5px]");
+    expect(within(row).getByRole("button", { name: "Vincular Google" })).toHaveClass("h-8", "text-[0.8125rem]");
+    expect(within(row).getByRole("button", { name: "Vincular Google" })).not.toHaveClass("h-7", "text-[0.78125rem]");
   });
 });
 

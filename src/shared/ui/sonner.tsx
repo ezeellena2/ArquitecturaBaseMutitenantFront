@@ -36,7 +36,7 @@ const Toaster = ({ toastOptions, ...props }: ToasterProps) => {
       richColors={false}
       mobileOffset={{ left: 12, right: 12, bottom: 16 }}
       containerAriaLabel={t("notifications.label")}
-      toastOptions={{ duration: 4000, closeButton: false, closeButtonAriaLabel: t("notifications.close"), style: { padding: "13px 14px 13px 16px", gap: "10px", borderRadius: "14px", fontSize: "14.5px", lineHeight: "1.4", boxShadow: "var(--sombra-franja)" }, ...toastOptions }}
+      toastOptions={{ duration: 4000, closeButton: false, closeButtonAriaLabel: t("notifications.close"), style: { padding: "0.8125rem 0.875rem 0.8125rem 1rem", gap: "0.625rem", borderRadius: "0.875rem", fontSize: "0.90625rem", lineHeight: "1.4", boxShadow: "var(--sombra-franja)" }, ...toastOptions }}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-5" />,
@@ -46,7 +46,7 @@ const Toaster = ({ toastOptions, ...props }: ToasterProps) => {
         error: <AlertCircleIcon className="size-7" />,
         loading: <Loader2Icon className="size-5 animate-spin" />,
       }}
-      style={{ "--normal-bg": "var(--franja)", "--normal-text": "var(--lado-activo)", "--normal-border": "transparent", "--border-radius": "14px", fontFamily: "var(--font-sans)" } as React.CSSProperties}
+      style={{ "--normal-bg": "var(--franja)", "--normal-text": "var(--lado-activo)", "--normal-border": "transparent", "--border-radius": "0.875rem", fontFamily: "var(--font-sans)" } as React.CSSProperties}
       {...props}
     />
   )
@@ -57,26 +57,26 @@ const Toaster = ({ toastOptions, ...props }: ToasterProps) => {
     <Sonner
       theme="light"
       position="bottom-right"
-      offset={20}
+      offset="1.25rem"
       richColors={false}
       containerAriaLabel={t("notifications.label")}
-      toastOptions={{ duration: 4000, closeButton: false, closeButtonAriaLabel: t("notifications.close"), style: { padding: "12px 14px", gap: "10px", borderRadius: "10px", fontSize: "13px", boxShadow: "var(--sombra-aviso)" }, ...toastOptions }}
+      toastOptions={{ duration: 4000, closeButton: false, closeButtonAriaLabel: t("notifications.close"), style: { padding: "0.75rem 0.875rem", gap: "0.625rem", borderRadius: "0.625rem", fontSize: "0.8125rem", boxShadow: "var(--sombra-aviso)" }, ...toastOptions }}
       className="toaster group"
       icons={{
         // Avisos (.p-aviso): la tilde y el signo del lienzo (círculo de 8,5), de 18 con trazo 2.
-        success: <CircleCheckIcon className="size-[18px]" strokeWidth={2} />,
-        info: <InfoIcon className="size-[18px]" />,
-        warning: <TriangleAlertIcon className="size-[18px]" />,
-        error: <AlertCircleIcon className="size-[18px]" strokeWidth={2} />,
-        loading: <Loader2Icon className="size-[18px] animate-spin" />,
+        success: <CircleCheckIcon className="size-4.5" strokeWidth={2} />,
+        info: <InfoIcon className="size-4.5" />,
+        warning: <TriangleAlertIcon className="size-4.5" />,
+        error: <AlertCircleIcon className="size-4.5" strokeWidth={2} />,
+        loading: <Loader2Icon className="size-4.5 animate-spin" />,
       }}
       style={
         {
           "--normal-bg": "var(--lado-activo)",
           "--normal-text": "var(--t1)",
           "--normal-border": "var(--borde)",
-          "--width": "340px",
-          "--border-radius": "10px",
+          "--width": "21.25rem",
+          "--border-radius": "0.625rem",
           fontFamily: "var(--font-sans)",
         } as React.CSSProperties
       }

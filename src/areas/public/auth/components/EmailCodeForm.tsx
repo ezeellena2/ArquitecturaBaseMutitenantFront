@@ -72,7 +72,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access =
   }
 
   return (
-    <form noValidate className="flex flex-col gap-[22px]" onSubmit={(event) => {
+    <form noValidate className="flex flex-col gap-5.5" onSubmit={(event) => {
       onSubmitStart?.();
       void handleSubmit(submit)(event);
     }}>
@@ -82,7 +82,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access =
         onEmailChange={(value) => { setValue("email", value); clearErrors("email"); setAccountMissing(false); setFormError(null); }}
         onPhoneChange={(value) => { setValue("phone", value); clearErrors("phone"); setAccountMissing(false); setFormError(null); }}
         error={channel === "phone" && hasWhatsApp ? errors.phone?.message : errors.email?.message} />
-      {accountMissing ? <AuthLink className="self-start text-[14px]!" to={signupHref ?? (access === "business" ? "/registro/empresa" : "/registro")}
+      {accountMissing ? <AuthLink className="self-start text-[0.875rem]!" to={signupHref ?? (access === "business" ? "/registro/empresa" : "/registro")}
         state={destinationNavigationState(destinationFromFields(getValues()))}>{t(access === "business" ? "login.registerBusiness" : "login.createMyAccount")}</AuthLink> : null}
       </div>
       <AuthMessage message={formError ?? notice} />

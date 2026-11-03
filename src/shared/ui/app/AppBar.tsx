@@ -18,14 +18,14 @@ export function AppBar({ title, subtitle, back, actions, leading }: {
   const notices = useHostedNotices();
   return <><header data-slot="app-bar" className={cn("sticky top-0 z-20 box-content flex h-15 shrink-0 items-center gap-1 bg-[var(--lado-activo)] pt-[env(safe-area-inset-top)] pr-1.5", back ? "pl-1" : "pl-4")}>
     {back ? <Link to={back.to} aria-label={back.label} title={back.label} className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
-      <ChevronLeft size={26} strokeWidth={1.9} aria-hidden="true" />
+      <ChevronLeft className="size-6.5" strokeWidth={1.9} aria-hidden="true" />
     </Link> : null}
     {leading}
     <div className="min-w-0 flex-1">
       {/* .ap-bar h1 y .sub: el interlineado va después del tamaño, o tailwind-merge lo borra (y el título tomaba el 1.5 de
           la página: la bajada quedaba 4 a 6 px más abajo). La bajada, con el interlineado normal. */}
-      <h1 className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[20px]" : "text-[24px]", "leading-[1.15]")}>{title}</h1>
-      {subtitle ? <span className="block truncate text-[12.5px] leading-[normal] font-medium text-[var(--t3)]">{subtitle}</span> : null}
+      <h1 className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[1.25rem]" : "text-[1.5rem]", "leading-[1.15]")}>{title}</h1>
+      {subtitle ? <span className="block truncate text-[0.78125rem] leading-[normal] font-medium text-[var(--t3)]">{subtitle}</span> : null}
     </div>
     {actions ? <div className="flex shrink-0 items-center">{actions}</div> : null}
   </header>
@@ -34,7 +34,7 @@ export function AppBar({ title, subtitle, back, actions, leading }: {
 
 /// Los íconos de la barra (buscar, filtrar, ⋮): botones redondos de 44, siempre con nombre.
 export function AppIconButton({ label, className, children, ...props }: ComponentProps<"button"> & { label: string }) {
-  return <button type="button" aria-label={label} title={label} className={cn("relative inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--t1)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] [&_svg:not([class*='size-'])]:size-[22px]", className)} {...props}>
+  return <button type="button" aria-label={label} title={label} className={cn("relative inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--t1)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] [&_svg:not([class*='size-'])]:size-5.5", className)} {...props}>
     {children}
   </button>;
 }

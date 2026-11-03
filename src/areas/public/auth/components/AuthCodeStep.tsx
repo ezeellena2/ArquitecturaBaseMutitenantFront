@@ -59,13 +59,13 @@ export function AuthCodeStep({ destination, phone, code, onCodeChange, onBack, o
     onVerify();
   }
 
-  return <div className="flex flex-col gap-[22px]">
+  return <div className="flex flex-col gap-5.5">
     {/* .lnk del tablero: un enlace de texto con su flecha, a 4, con la altura normal de su letra. */}
     <Button type="button" variant="link" onClick={onBack} className="gap-1 self-start leading-[normal]">
-      <ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t(phone ? "common:code.otherPhone" : "common:code.otherEmail")}
+      <ChevronLeft className="size-4" aria-hidden="true" strokeWidth={2} />{t(phone ? "common:code.otherPhone" : "common:code.otherEmail")}
     </Button>
     <div>
-      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t(phone ? "common:code.checkWhatsApp" : "common:code.checkEmail")}</h1>
+      <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t(phone ? "common:code.checkWhatsApp" : "common:code.checkEmail")}</h1>
       <p id={hintId} className="mt-1.5 text-sm leading-normal text-[var(--t2)] wrap-anywhere">
         {phone ? <Trans i18nKey="common:code.sentToPhone" components={{ phone: <strong className="font-semibold text-[var(--t1)]">{maskPhone(phoneE164FromDraft(phone) ?? phone.number)}</strong> }} />
           : <Trans i18nKey="common:code.sentToEmail" values={{ email: destination }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}

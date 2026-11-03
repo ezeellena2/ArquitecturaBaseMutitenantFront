@@ -31,7 +31,7 @@ import { destinationNavigationState } from "../lib/authDestinationForm";
 // Tablero Invitacion (v106), «Sin cuenta: cargando»: lo que pasa mientras tanto, en una línea centrada y gris, con 48
 // arriba y abajo; en el teléfono, con la letra de 14,5 de M-Invitacion. También al entrar a la organización.
 function StatusText({ children }: { children: ReactNode }) {
-  return <p role="status" aria-busy="true" className="py-12 text-center text-[13px] leading-normal text-[var(--t2)] max-md:text-[14.5px]">{children}</p>;
+  return <p role="status" aria-busy="true" className="py-12 text-center text-[0.8125rem] leading-normal text-[var(--t2)] max-md:text-[0.90625rem]">{children}</p>;
 }
 
 export function InvitationPage() {
@@ -153,7 +153,7 @@ function InvitationFlow() {
   return <AuthLayout access="consumer">
     {loading ? <StatusText>{t("loading")}</StatusText>
       : error ? <div className="flex flex-col gap-5">
-        <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("pageTitle")}</h1>
+        <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t("pageTitle")}</h1>
         <FormError message={apiErrorMessage(error, tErrors)} />
         <Button type="button" variant="outline" size="lg" onClick={retry}>{t("retry")}</Button>
       </div>
@@ -172,22 +172,22 @@ function InvitationFlow() {
               detail={t(`states.${invitation.state}.description`, { organization: organizationName, inviter })}
               actions={<Button asChild variant="outline" size="lg"><Link to="/login">{t("backToSignIn")}</Link></Button>} />
             : <div className="flex flex-col gap-5">
-          <span aria-hidden="true" className="flex size-14 items-center justify-center rounded-[14px] bg-[linear-gradient(135deg,var(--marca),var(--auth-panel-mid))] text-xl font-bold text-[var(--lado-activo)]">{initials(organizationName, "O")}</span>
+          <span aria-hidden="true" className="flex size-14 items-center justify-center rounded-[0.875rem] bg-[linear-gradient(135deg,var(--marca),var(--auth-panel-mid))] text-xl font-bold text-[var(--lado-activo)]">{initials(organizationName, "O")}</span>
           <div>
-            <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("join.title", { organization: organizationName })}</h1>
+            <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t("join.title", { organization: organizationName })}</h1>
             <p className="mt-1.5 break-all text-sm text-[var(--t2)]"><Trans ns="invitations" i18nKey="join.forEmail" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
           </div>
-          <div className="flex items-center gap-3.5 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] px-3 py-2.5">
+          <div className="flex items-center gap-3.5 rounded-[0.625rem] border border-[var(--borde)] bg-[var(--s2)] px-3 py-2.5">
             <Avatar size="large" initials={initials(inviter, "O").charAt(0)} />
             <span className="flex min-w-0 flex-col leading-[1.3]">
-              <span className="truncate text-[15px] font-semibold text-[var(--t1)]">{t("join.invitedBy", { inviter })}</span>
-              <span className="text-[13px] text-[var(--t3)]">
+              <span className="truncate text-[0.9375rem] font-semibold text-[var(--t1)]">{t("join.invitedBy", { inviter })}</span>
+              <span className="text-[0.8125rem] text-[var(--t3)]">
                 {inviterRoles.join(", ")}{inviterRoles.length > 0 && invitation.issuedAtUtc ? " · " : null}
                 {invitation.issuedAtUtc ? <DateText value={invitation.issuedAtUtc} kind="relative" /> : null}
               </span>
             </span>
           </div>
-          <dl className="grid grid-cols-[110px_minmax(0,1fr)] gap-x-4 gap-y-2.5 rounded-[10px] border border-[var(--borde)] px-3.5 py-3 text-[13px]">
+          <dl className="grid grid-cols-[6.875rem_minmax(0,1fr)] gap-x-4 gap-y-2.5 rounded-[0.625rem] border border-[var(--borde)] px-3.5 py-3 text-[0.8125rem]">
             {companies.length > 0 ? <><dt className="text-[var(--t2)]">{t("join.company")}</dt><dd className="font-medium text-[var(--t1)]">{companies.join(", ")}</dd></> : null}
             {roles.length > 0 ? <><dt className="text-[var(--t2)]">{t("join.roles")}</dt><dd className="font-medium text-[var(--t1)]">{roles.join(", ")}</dd></> : null}
             <dt className="text-[var(--t2)]">{t("join.expires")}</dt>

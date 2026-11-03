@@ -38,20 +38,20 @@ export function Sidebar({ navigation, account, context, collapsed, managementOpe
   const anyPanelOpen = administrationOpen || managementOpen || openModulePanel !== null;
   const ManagementIcon = navigation.management?.icon;
 
-  return <aside aria-label={t("layout.sidebar.navigation")} className={`relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] ${collapsed ? "w-16" : "w-[232px]"}`}>
-    <div className="flex h-[52px] shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]">
+  return <aside aria-label={t("layout.sidebar.navigation")} className={`relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] ${collapsed ? "w-16" : "w-58"}`}>
+    <div className="flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]">
       <BrandMark />
       {showLabels ? <span>{t("app.name")}</span> : null}
     </div>
     {/* «Criterio · Marco» y tableros Inicio-Personal y Configuración: el perfil en 14 y negrita, debajo «Organización» o
         «Tu perfil personal» en gris de 12,5, con 12 y 14 de margen. */}
     {context && showLabels ? <div className="flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]">
-      <span className="text-[14px] font-bold text-[var(--t1)]">{context.title}</span>
-      <span className="mt-px text-[12.5px] text-[var(--t3)]">{context.detail}</span>
+      <span className="text-[0.875rem] font-bold text-[var(--t1)]">{context.title}</span>
+      <span className="mt-px text-[0.78125rem] text-[var(--t3)]">{context.detail}</span>
     </div> : null}
     {/* La flecha va en el borde del último panel: acá, solo si Administración está cerrada (lienzo v107). */}
     {!anyPanelOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className={panelEdgeButtonClass}>
-      {collapsed ? <ChevronRight size={18} strokeWidth={1.75} aria-hidden="true" /> : <ChevronLeft size={18} strokeWidth={1.75} aria-hidden="true" />}
+      {collapsed ? <ChevronRight className="size-4.5" strokeWidth={1.75} aria-hidden="true" /> : <ChevronLeft className="size-4.5" strokeWidth={1.75} aria-hidden="true" />}
     </button> : null}
     <nav aria-label={t("navigation.general")} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1">
       <ul className="flex flex-col gap-0.5">
@@ -59,9 +59,9 @@ export function Sidebar({ navigation, account, context, collapsed, managementOpe
         {[...(home ? [home] : []), ...(navigation.management ? ["management" as const] : []), ...others, ...(navigation.panels ?? [])].map((entry, index) => {
           if (entry === "management") return <li key="management" className={menuLineClass(index)}>
             <button type="button" aria-expanded={managementOpen} aria-label={t(navigation.management!.labelKey)} onClick={onToggleManagement} className={`${menuRowClass(managementOpen)} w-full text-left`}>
-              {ManagementIcon ? <ManagementIcon className="size-[18px] shrink-0" /> : null}
+              {ManagementIcon ? <ManagementIcon className="size-4.5 shrink-0" /> : null}
               <span className={showLabels ? "flex-1" : "sr-only"}>{t(navigation.management!.labelKey)}</span>
-              {showLabels ? <ChevronRight size={16} aria-hidden="true" /> : null}
+              {showLabels ? <ChevronRight className="size-4" aria-hidden="true" /> : null}
             </button>
           </li>;
           const Icon = entry.icon;
@@ -70,17 +70,17 @@ export function Sidebar({ navigation, account, context, collapsed, managementOpe
             const open = openModulePanel === key;
             return <li key={key} className={menuLineClass(index)}>
               <button type="button" aria-expanded={open} onClick={() => onToggleModulePanel?.(key)} className={`${menuRowClass(open)} w-full text-left`}>
-                <Icon className="size-[18px] shrink-0" />
+                <Icon className="size-4.5 shrink-0" />
                 <span className={showLabels ? "flex-1" : "sr-only"}>{t(entry.labelKey)}</span>
                 <MenuBadge Badge={entry.Badge} hidden={!showLabels} />
-                {showLabels ? <ChevronRight size={16} aria-hidden="true" /> : null}
+                {showLabels ? <ChevronRight className="size-4" aria-hidden="true" /> : null}
               </button>
             </li>;
           }
           const active = isActive(entry);
           return <li key={entry.labelKey} className={menuLineClass(index)}>
             <Link to={entry.path} aria-current={active ? "page" : undefined} className={menuRowClass(active)}>
-              <Icon className="size-[18px] shrink-0" /><span className={showLabels ? "" : "sr-only"}>{t(entry.labelKey)}</span>
+              <Icon className="size-4.5 shrink-0" /><span className={showLabels ? "" : "sr-only"}>{t(entry.labelKey)}</span>
               <MenuBadge Badge={entry.Badge} hidden={!showLabels} />
             </Link>
           </li>;
@@ -89,16 +89,16 @@ export function Sidebar({ navigation, account, context, collapsed, managementOpe
       {/* Abajo de todo, con una línea a todo el ancho del menú y 8 de aire arriba y abajo. */}
       {navigation.administration ? <div className="-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2">
         <button type="button" aria-expanded={administrationOpen} aria-label={t(navigation.administration.labelKey)} onClick={onToggleAdministration} className={`${menuRowClass(administrationOpen)} w-full text-left`}>
-          <navigation.administration.icon className="size-[18px] shrink-0" />
+          <navigation.administration.icon className="size-4.5 shrink-0" />
           <span className={showLabels ? "flex-1" : "sr-only"}>{t(navigation.administration.labelKey)}</span>
-          {!showLabels ? null : administrationOpen && navigation.management === undefined ? <ChevronLeft size={16} aria-hidden="true" /> : <ChevronRight size={16} aria-hidden="true" />}
+          {!showLabels ? null : administrationOpen && navigation.management === undefined ? <ChevronLeft className="size-4" aria-hidden="true" /> : <ChevronRight className="size-4" aria-hidden="true" />}
         </button>
       </div> : null}
     </nav>
     {/* «Criterio · Menús»: identidad en 13 y negrita, contacto en gris de 12 y avatar de la cuenta global. */}
     {account ? <div className="flex items-center gap-2.5 border-t border-[var(--lado-borde)] px-3.5 py-2.5">
       <Avatar initials={account.avatarInitials} muted={account.avatarMuted} />
-      {showLabels ? <span className="flex min-w-0 flex-col leading-[1.3]"><span className="truncate text-[13px] font-bold text-[var(--t1)]">{account.name || t("format:emptyLabel")}</span>{account.detail ? <span className="truncate text-[12px] text-[var(--t3)]">{account.detail}</span> : null}</span> : null}
+      {showLabels ? <span className="flex min-w-0 flex-col leading-[1.3]"><span className="truncate text-[0.8125rem] font-bold text-[var(--t1)]">{account.name || t("format:emptyLabel")}</span>{account.detail ? <span className="truncate text-[0.75rem] text-[var(--t3)]">{account.detail}</span> : null}</span> : null}
     </div> : null}
   </aside>;
 }

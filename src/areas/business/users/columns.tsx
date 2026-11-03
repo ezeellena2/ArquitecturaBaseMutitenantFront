@@ -40,7 +40,7 @@ export function userPhoneRow(user: OrganizationUserResponse, t: TFunction, trail
     ? (user.invitationExpiresAtUtc ? [<>{t(user.state === "Expired" ? "users:columns.expiredInline" : "users:columns.expiresInline")} <DateText value={user.invitationExpiresAtUtc} kind="shortDate" /></>] : [])
     : [...organizationRoles, ...(company ? [company] : [])];
   const status = <span className="inline-flex max-w-full items-center gap-1">
-    <StatusBadge tones={userStateTones} value={user.state} className="text-[12.5px] text-[var(--t2)]" />
+    <StatusBadge tones={userStateTones} value={user.state} className="text-[0.78125rem] text-[var(--t2)]" />
     {details.map((detail, index) => <span key={index} className="truncate">{" · "}{detail}</span>)}
   </span>;
   const named = Boolean(user.displayName);
@@ -75,7 +75,7 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
       detail: (user) => user.companies[0]?.roles.map((role) => role.name).join(", ") || null,
     },
     {
-      id: "state", header: t("users:columns.state"), type: "status", tones: userStateTones, value: (user) => user.state, mobile: "status", className: "w-[202px] max-md:w-[38%]",
+      id: "state", header: t("users:columns.state"), type: "status", tones: userStateTones, value: (user) => user.state, mobile: "status", className: "w-50.5 max-md:w-[38%]",
       // Una invitación dice hasta cuándo vale, debajo de la palabra del estado.
       detail: (user) => user.invitationExpiresAtUtc && (user.state === "Invited" || user.state === "Expired")
         ? <StatusDetail>{t(user.state === "Expired" ? "users:columns.expiredPrefix" : "users:columns.expiresPrefix")} <DateText value={user.invitationExpiresAtUtc} kind="date" /></StatusDetail>

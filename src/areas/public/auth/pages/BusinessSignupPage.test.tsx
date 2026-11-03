@@ -194,7 +194,7 @@ describe("BusinessSignupPage", () => {
     // Lienzo v104 (.in-pre): el campo mide 44 con radio 10, en la compu y en el teléfono; el texto ocupa todo su alto,
     // sin el alto ni el radio de los campos del teléfono.
     const slugInput = screen.getByRole("textbox", { name: /Dirección de tu página/ });
-    expect(slugInput.parentElement).toHaveClass("h-11", "rounded-[10px]");
+    expect(slugInput.parentElement).toHaveClass("h-11", "rounded-[0.625rem]");
     expect(slugInput.parentElement).not.toHaveClass("max-md:h-12");
     expect(slugInput).toHaveClass("h-full", "max-md:h-full", "rounded-none", "max-md:rounded-none");
     expect(slugInput).not.toHaveClass("h-11");
@@ -273,7 +273,7 @@ describe("BusinessSignupPage", () => {
     const limit = await screen.findByRole("alert");
     expect(limit).toHaveTextContent("Llegaste al límite de 3 organizaciones propias.");
     // Lienzo v104: la franja común de error (FormError), con el círculo en el color del texto y la segunda línea más clara.
-    expect(limit).toHaveClass("bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]", "rounded-[8px]");
+    expect(limit).toHaveClass("bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]", "rounded-[0.5rem]");
     expect(limit.querySelector("svg")).toHaveClass("size-4");
     expect(within(limit).getByText("Si necesitás más, escribinos para ampliar el límite.")).toHaveClass("opacity-85");
   });

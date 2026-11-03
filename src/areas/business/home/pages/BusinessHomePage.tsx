@@ -46,7 +46,7 @@ export function BusinessHomePage() {
       <ToResolve groups={groups} />
     </div> : null}
     {home.data && !organization ? <div className="flex flex-col gap-5">
-      <h2 className="mb-[-6px] mt-1 text-[15px] font-semibold text-[var(--t1)]">{t("home:yourCompanies")}</h2>
+      <h2 className="mb-[-0.375rem] mt-1 text-[0.9375rem] font-semibold text-[var(--t1)]">{t("home:yourCompanies")}</h2>
       <CompanyCards companies={home.data.companies} />
       {groups.length > 0 ? <ToResolve groups={groups} /> : null}
     </div> : null}

@@ -39,7 +39,7 @@ export function FormError({ message, tone = "danger", icon, role, className, ...
         // con una línea). En el teléfono (lienzo v100, .aviso-mal.tel, y v104, .msj de M-Ingreso, M-Registro,
         // M-Registro-Empresa y M-Invitacion), la letra de sus avisos: 14,5 con interlineado 1,4, padding 12/14 y radio 12.
         // Va por el ancho de la pantalla y no por el marco de la app: las páginas públicas no lo tienen.
-        "rounded-[8px] px-3 py-2.5 text-[13px] leading-normal max-md:rounded-xl max-md:px-3.5 max-md:py-3 max-md:text-[14.5px] max-md:leading-[1.4]",
+        "rounded-[0.5rem] px-3 py-2.5 text-[0.8125rem] leading-normal max-md:rounded-xl max-md:px-3.5 max-md:py-3 max-md:text-[0.90625rem] max-md:leading-[1.4]",
         tones[tone].box,
         className,
       )}

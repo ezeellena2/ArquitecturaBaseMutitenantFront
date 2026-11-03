@@ -92,7 +92,7 @@ function OrganizationDetail({ id }: { id: string }) {
   }
   const retry = useIdempotentMutation((data: PlatformTenantDetailResponse, key) => retryTenantProvisioning(data.id, { version: data.version }, key), { sameOperation: (previous, next) => previous.id === next.id && previous.version === next.version });
   const back = { to: moduleHome ? "/plataforma/organizaciones" : homeOf("platform"), label: t("platformTenants:detail.back") };
-  if (organization.isPending) return <Page icon={BuildingIcon} title={t("platformTenants:detail.loading")} backTo={back}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (organization.isPending) return <Page icon={BuildingIcon} title={t("platformTenants:detail.loading")} backTo={back}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   if (!organization.data) return isNotFoundError(organization.error)
     ? <NotFoundPage homePath={homeOf("platform")} screen={t("platformTenants:detail.title")} back={back} />
     : <LoadErrorPage onRetry={() => { void organization.refetch(); }} screen={t("platformTenants:detail.title")} back={back} />;

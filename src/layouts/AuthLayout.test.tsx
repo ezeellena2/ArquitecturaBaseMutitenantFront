@@ -59,7 +59,7 @@ describe("AuthLayout", () => {
       <h1>{"Tu organización"}</h1></AuthLayout></MemoryRouter></QueryClientProvider>);
 
     const kicker = screen.getByText("Para empresas");
-    expect(kicker).toHaveClass("text-[13px]", "font-semibold");
+    expect(kicker).toHaveClass("text-[0.8125rem]", "font-semibold");
     expect(kicker).not.toHaveClass("rounded-full", "px-3");
     expect(screen.getByText("Quedás como Dueño: sumás las empresas.")).toBeInTheDocument();
     expect(screen.queryByText(/Con la misma cuenta/)).not.toBeInTheDocument();

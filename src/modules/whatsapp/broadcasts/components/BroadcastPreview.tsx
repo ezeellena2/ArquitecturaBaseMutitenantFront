@@ -8,7 +8,7 @@ import { countOf } from "../../lib/values";
 /// WA-Difusion-Nueva y su M-*, .o-burb y .ap-burb).
 export function MessageBubble({ text }: { text: string }) {
   const { t } = useTranslation("whatsapp");
-  return <div className="max-w-[420px] justify-self-start rounded-[12px] rounded-tl-[4px] bg-[var(--marca-t)] px-3.5 py-2.5 text-[13.5px] leading-[1.5] whitespace-pre-wrap text-[var(--marca-tx)] max-md:text-[15px]">
+  return <div className="max-w-105 justify-self-start rounded-[0.75rem] rounded-tl-[0.25rem] bg-[var(--marca-t)] px-3.5 py-2.5 text-[0.84375rem] leading-[1.5] whitespace-pre-wrap text-[var(--marca-tx)] max-md:text-[0.9375rem]">
     {text}
     <span className="mt-2 block border-t border-[var(--borde)] pt-2 text-center font-semibold">{t("broadcasts.preview.unsubscribe")}</span>
   </div>;
@@ -22,12 +22,12 @@ export function EstimateSummary({ estimate, kind, tag }: { estimate: WhatsAppBro
   const country = format.isLoading ? undefined : format.referenceData.countries.find((row) => row.code === estimate.country)?.name;
   return <div className="flex flex-col gap-2.5" aria-live="polite">
     <div className="flex flex-col leading-[1.35]">
-      <strong className="text-[15px] font-semibold text-[var(--t1)]">{t("broadcasts.contacts", countOf(format, estimate.recipients))}</strong>
-      <span className="text-[12px] text-[var(--t3)]">{kind === "Tag" ? t("broadcasts.preview.withTag", { tag }) : t("broadcasts.preview.allAccepting")}</span>
+      <strong className="text-[0.9375rem] font-semibold text-[var(--t1)]">{t("broadcasts.contacts", countOf(format, estimate.recipients))}</strong>
+      <span className="text-[0.75rem] text-[var(--t3)]">{kind === "Tag" ? t("broadcasts.preview.withTag", { tag }) : t("broadcasts.preview.allAccepting")}</span>
     </div>
     <div className="flex flex-col leading-[1.35]">
-      <MoneyText value={estimate.estimatedCost} className="text-left text-[15px] font-semibold text-[var(--t1)]" />
-      <span className="text-[12px] text-[var(--t3)]">{country ? t("broadcasts.preview.costIn", { country }) : t("broadcasts.preview.cost")}</span>
+      <MoneyText value={estimate.estimatedCost} className="text-left text-[0.9375rem] font-semibold text-[var(--t1)]" />
+      <span className="text-[0.75rem] text-[var(--t3)]">{country ? t("broadcasts.preview.costIn", { country }) : t("broadcasts.preview.cost")}</span>
     </div>
   </div>;
 }
@@ -37,9 +37,9 @@ export function EstimateLine({ estimate }: { estimate: WhatsAppBroadcastEstimate
   const { t } = useTranslation("whatsapp");
   const format = useFormat();
   return <span className="flex flex-col justify-center leading-[1.3]">
-    {estimate ? <strong className="truncate text-[15px] font-semibold text-[var(--t1)]">
+    {estimate ? <strong className="truncate text-[0.9375rem] font-semibold text-[var(--t1)]">
       {t("broadcasts.contacts", countOf(format, estimate.recipients))}{" · "}<MoneyText value={estimate.estimatedCost} className="text-left" />
     </strong> : null}
-    <span className="text-[12.5px] text-[var(--t3)]">{t("broadcasts.preview.costShort")}</span>
+    <span className="text-[0.78125rem] text-[var(--t3)]">{t("broadcasts.preview.costShort")}</span>
   </span>;
 }

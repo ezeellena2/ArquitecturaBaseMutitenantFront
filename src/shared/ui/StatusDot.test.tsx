@@ -8,7 +8,7 @@ describe("StatusDot · Criterio · Tablas", () => {
     render(<StatusDot tone="warning" label="Vencida" />);
 
     const state = screen.getByText("Vencida").parentElement!;
-    expect(state).toHaveClass("inline-flex", "items-center", "text-[13px]", "text-[var(--t1)]");
+    expect(state).toHaveClass("inline-flex", "items-center", "text-[0.8125rem]", "text-[var(--t1)]");
     expect(state).not.toHaveClass("rounded-full", "px-2", "bg-[var(--alerta-t)]");
     expect(state.querySelector("[data-slot='status-dot']")).toHaveClass("size-2", "shrink-0", "rounded-full", "bg-[var(--punto-alerta)]");
   });

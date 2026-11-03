@@ -62,7 +62,7 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
     );
 
     const title = screen.getByRole("heading", { name: "Verificar tu correo" });
-    expect(title).toHaveClass("md:text-[15px]", "font-semibold", "tracking-[-0.01em]", "md:leading-normal");
+    expect(title).toHaveClass("md:text-[0.9375rem]", "font-semibold", "tracking-[-0.01em]", "md:leading-normal");
     // La línea de abajo del encabezado, la cálida de los encabezados arena (.cab); el diálogo, sin borde: solo su sombra.
     expect(title.parentElement).toHaveClass("md:min-h-12", "md:bg-[var(--cab)]", "md:border-b", "md:border-[var(--borde-cab)]");
     expect(document.querySelector("[data-slot='dialog-content']")?.className).not.toMatch(/(^|\s)md:border(\s|$)/);
@@ -90,7 +90,7 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
       </Dialog>,
     );
 
-    expect(screen.getByText("Cerramos todas tus sesiones.")).toHaveClass("text-[13.5px]", "leading-[1.55]", "text-[var(--t2)]", "max-md:text-[14.5px]", "max-md:leading-normal");
+    expect(screen.getByText("Cerramos todas tus sesiones.")).toHaveClass("text-[0.84375rem]", "leading-[1.55]", "text-[var(--t2)]", "max-md:text-[0.90625rem]", "max-md:leading-normal");
   });
 
   // «Criterio · Diálogos», Los dos anchos: el chico de 420 (uno o dos campos, y confirmaciones) y el normal de 560. Quien
@@ -102,8 +102,8 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
       </Dialog>,
     );
     const small = screen.getByRole("dialog", { name: "Agregar miembro" });
-    expect(small).toHaveClass("md:max-w-[420px]");
-    expect(small).not.toHaveClass("md:max-w-[560px]");
+    expect(small).toHaveClass("md:max-w-105");
+    expect(small).not.toHaveClass("md:max-w-140");
     unmount();
 
     render(
@@ -112,11 +112,11 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
       </Dialog>,
     );
     const normal = screen.getByRole("dialog", { name: "Editar empresa" });
-    expect(normal).toHaveClass("md:max-w-[560px]");
+    expect(normal).toHaveClass("md:max-w-140");
     // «Criterio · Diálogos» (.dlg): la sombra larga del tablero, 0 24px 48px, y no la corta de Tailwind.
     expect(normal).toHaveClass("md:shadow-[var(--sombra-dialogo)]");
     expect(normal).not.toHaveClass("md:shadow-lg");
-    expect(normal).not.toHaveClass("md:max-w-[420px]");
+    expect(normal).not.toHaveClass("md:max-w-105");
   });
 
   // La única excepción a los dos anchos (tablero Pagina-Org, «Borrador: vista previa», v107): la vista previa de la
@@ -128,7 +128,7 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
       </Dialog>,
     );
     const preview = screen.getByRole("dialog", { name: "Vista previa" });
-    expect(preview).toHaveClass("md:max-w-[640px]");
-    expect(preview).not.toHaveClass("md:max-w-[560px]");
+    expect(preview).toHaveClass("md:max-w-160");
+    expect(preview).not.toHaveClass("md:max-w-140");
   });
 });

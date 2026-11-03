@@ -27,14 +27,14 @@ export function EmptyState({
     <div
       className={cn(
         "flex flex-col items-center gap-2 p-8 text-center",
-        framed && "rounded-[12px] border border-dashed border-[var(--borde)]",
+        framed && "rounded-[0.75rem] border border-dashed border-[var(--borde)]",
         className,
       )}
     >
       {/* Tableros de listas (.vacio strong): texto en negrita, no un encabezado; la pantalla ya tiene el suyo (axe). */}
-      <p className="text-[14px] font-semibold">{title}</p>
+      <p className="text-[0.875rem] font-semibold">{title}</p>
       {description ? (
-        <p className={cn("text-[13px] text-[var(--t2)]", descriptionClassName)}>{description}</p>
+        <p className={cn("text-[0.8125rem] text-[var(--t2)]", descriptionClassName)}>{description}</p>
       ) : null}
       {action}
     </div>

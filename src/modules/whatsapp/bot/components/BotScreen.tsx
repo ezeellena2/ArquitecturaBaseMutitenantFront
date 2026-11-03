@@ -41,7 +41,7 @@ export function BotScreen({ variant, bot, teams, picker, empty, onSave }: {
   </div>;
   const summary = bot ? t("whatsapp:bot.summary", { count: bot.menu.length, value: format.formatInteger(bot.menu.length) }) : undefined;
   const content = empty ? <Surface phoneFlush><EmptyState framed={false} title={empty} /></Surface>
-    : !bot ? <p role="status" className="text-[13px] text-[var(--t2)] max-md:px-5">{t("common:states.loading")}</p>
+    : !bot ? <p role="status" className="text-[0.8125rem] text-[var(--t2)] max-md:px-5">{t("common:states.loading")}</p>
       : flow ? <BotFlow bot={bot} variant={variant} teams={teams} />
         : <BotConfiguration bot={bot} variant={variant} teams={teams} onSave={onSave} />;
 

@@ -29,7 +29,7 @@ function MarkdownPart() {
   const role = useAuiState((state) => state.message.role);
   const context = useContext(MessageContext)!;
   const writing = role === "assistant" && context.turnPending && context.turn?.phase === "writing" && context.turn.start?.assistantMessageId === id;
-  return <div data-cursor-state={writing ? "writing" : undefined} className="[&[data-cursor-state=writing]>div>:last-child]:after:ml-[3px] [&[data-cursor-state=writing]>div>:last-child]:after:inline-block [&[data-cursor-state=writing]>div>:last-child]:after:h-[17px] [&[data-cursor-state=writing]>div>:last-child]:after:w-2 [&[data-cursor-state=writing]>div>:last-child]:after:rounded-[2px] [&[data-cursor-state=writing]>div>:last-child]:after:bg-[var(--marca)] [&[data-cursor-state=writing]>div>:last-child]:after:align-[-3px] [&[data-cursor-state=writing]>div>:last-child]:after:content-[''] [&[data-cursor-state=writing]>div>:last-child]:after:animate-pulse motion-reduce:[&[data-cursor-state=writing]>div>:last-child]:after:animate-none"><AssistantMarkdown /></div>;
+  return <div data-cursor-state={writing ? "writing" : undefined} className="[&[data-cursor-state=writing]>div>:last-child]:after:ml-0.75 [&[data-cursor-state=writing]>div>:last-child]:after:inline-block [&[data-cursor-state=writing]>div>:last-child]:after:h-4.25 [&[data-cursor-state=writing]>div>:last-child]:after:w-2 [&[data-cursor-state=writing]>div>:last-child]:after:rounded-[2px] [&[data-cursor-state=writing]>div>:last-child]:after:bg-[var(--marca)] [&[data-cursor-state=writing]>div>:last-child]:after:align-[-0.1875rem] [&[data-cursor-state=writing]>div>:last-child]:after:content-[''] [&[data-cursor-state=writing]>div>:last-child]:after:animate-pulse motion-reduce:[&[data-cursor-state=writing]>div>:last-child]:after:animate-none"><AssistantMarkdown /></div>;
 }
 
 function Message() {
@@ -40,7 +40,7 @@ function Message() {
   const context = useContext(MessageContext)!;
   const durable = context.messages.find((message) => message.id === id);
   const streamError = context.turn?.start?.assistantMessageId === id ? context.turn.error : undefined;
-  return <MessagePrimitive.Root className={`flex gap-3 ${role === "user" ? "ml-auto max-w-[76%] rounded-[16px_16px_4px_16px] bg-[var(--marca-t)] px-3.5 py-2.5" : "w-full"}`}>
+  return <MessagePrimitive.Root className={`flex gap-3 ${role === "user" ? "ml-auto max-w-[76%] rounded-[1rem_1rem_0.25rem_1rem] bg-[var(--marca-t)] px-3.5 py-2.5" : "w-full"}`}>
     {role === "assistant" ? <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-4" aria-hidden="true" /></span> : null}
     <div className="flex min-w-0 flex-1 flex-col gap-1.5">
     {role === "assistant" && context.turn?.start?.assistantMessageId === id ? <ToolStatus turn={context.turn} pending={context.turnPending} /> : null}
@@ -65,7 +65,7 @@ export function AssistantThread(context: MessageContextValue) {
   return <MessageContext.Provider value={context}>
     <ThreadPrimitive.Root className="flex min-h-0 flex-1 flex-col" role="group" aria-label={t("title")}>
       <ThreadPrimitive.Viewport className="flex min-h-0 flex-1 flex-col gap-6 overflow-auto p-5 md:px-8 md:py-6">
-        <div className="mx-auto mt-auto flex w-full max-w-[760px] shrink-0 flex-col gap-6"><ThreadPrimitive.Messages components={{ Message }} />{context.turnPending && !context.turn?.start ? <ToolStatus turn={null} pending /> : null}</div>
+        <div className="mx-auto mt-auto flex w-full max-w-190 shrink-0 flex-col gap-6"><ThreadPrimitive.Messages components={{ Message }} />{context.turnPending && !context.turn?.start ? <ToolStatus turn={null} pending /> : null}</div>
       </ThreadPrimitive.Viewport>
     </ThreadPrimitive.Root>
   </MessageContext.Provider>;

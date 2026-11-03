@@ -41,8 +41,8 @@ export function BotFlow({ bot, variant, teams }: { bot: BotData; variant: "organ
     <Node title={t("bot.flow.welcome")} detail={t("bot.flow.welcomeDetail")} />
     <Line />
     <Node title={t("bot.flow.menu")} detail={options} selected />
-    {branches.length > 0 ? <div className="relative flex max-w-[720px] flex-wrap items-start justify-center gap-3.5 pt-[22px] before:absolute before:top-0 before:right-20 before:left-20 before:h-0.5 before:bg-[var(--borde2)]">
-      {branches.map((item) => <div key={item.key} className="relative flex flex-col items-center before:absolute before:-top-[22px] before:left-1/2 before:h-[22px] before:w-0.5 before:bg-[var(--borde2)]">
+    {branches.length > 0 ? <div className="relative flex max-w-180 flex-wrap items-start justify-center gap-3.5 pt-5.5 before:absolute before:top-0 before:right-20 before:left-20 before:h-0.5 before:bg-[var(--borde2)]">
+      {branches.map((item) => <div key={item.key} className="relative flex flex-col items-center before:absolute before:-top-5.5 before:left-1/2 before:h-5.5 before:w-0.5 before:bg-[var(--borde2)]">
         <Mark>{item.mark}</Mark>
         <Node title={item.title} detail={item.detail} team={item.team} narrow />
       </div>)}
@@ -72,39 +72,39 @@ export function BotFlow({ bot, variant, teams }: { bot: BotData; variant: "organ
 }
 
 function Line() {
-  return <span aria-hidden="true" className="block h-[22px] w-0.5 bg-[var(--borde2)]" />;
+  return <span aria-hidden="true" className="block h-5.5 w-0.5 bg-[var(--borde2)]" />;
 }
 
 function Mark({ children }: { children: ReactNode }) {
-  return <span className="my-1 text-[12px] text-[var(--t3)]">{children}</span>;
+  return <span className="my-1 text-[0.75rem] text-[var(--t3)]">{children}</span>;
 }
 
 /// Un paso del recorrido (.o-nodo): el inicio en gris, la pregunta punteada, un equipo en petróleo claro y el menú marcado.
 function Node({ title, detail, start, question, team, selected, narrow }: {
   title: string; detail?: string; start?: boolean; question?: boolean; team?: boolean; selected?: boolean; narrow?: boolean;
 }) {
-  return <div className={cn("flex flex-col gap-0.5 rounded-[10px] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3.5 py-2.5 text-center text-[13px]",
-    narrow ? "w-40" : question ? "w-[300px]" : "w-[200px]",
+  return <div className={cn("flex flex-col gap-0.5 rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3.5 py-2.5 text-center text-[0.8125rem]",
+    narrow ? "w-40" : question ? "w-75" : "w-50",
     start && "border-[var(--borde)] bg-[var(--s3)]", question && "border-dashed", team && "border-[var(--marca)] bg-[var(--marca-t)]",
     selected && "border-[var(--marca)] shadow-[0_0_0_3px_var(--marca-t)]")}>
     <b className="font-semibold text-[var(--t1)]">{title}</b>
-    {detail ? <span className="text-[12px] text-[var(--t3)]">{detail}</span> : null}
+    {detail ? <span className="text-[0.75rem] text-[var(--t3)]">{detail}</span> : null}
   </div>;
 }
 
 /// Un paso del teléfono (.ap-n): el número en su círculo (el «?» de la pregunta, en ámbar), la caja y sus ramas.
 function PhoneStep({ mark, title, detail, question, branches }: { mark: string; title: string; detail?: string; question?: boolean; branches?: readonly Branch[] }) {
-  return <li className="relative flex gap-3 pb-3.5 before:absolute before:top-6 before:bottom-0 before:left-[11px] before:w-0.5 before:bg-[var(--borde2)] last:before:hidden">
-    <span aria-hidden="true" className={cn("relative z-[1] mt-2.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[12px] font-bold text-[var(--lado-activo)]",
+  return <li className="relative flex gap-3 pb-3.5 before:absolute before:top-6 before:bottom-0 before:left-2.75 before:w-0.5 before:bg-[var(--borde2)] last:before:hidden">
+    <span aria-hidden="true" className={cn("relative z-[1] mt-2.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[0.75rem] font-bold text-[var(--lado-activo)]",
       question ? "bg-[var(--alerta)]" : "bg-[var(--marca)]")}>{mark}</span>
-    <div className="min-w-0 flex-1 rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)] px-3.5 py-2.5">
-      <b className="block text-[15px] font-semibold text-[var(--t1)]">{title}</b>
-      {detail ? <span className="text-[13px] text-[var(--t3)]">{detail}</span> : null}
+    <div className="min-w-0 flex-1 rounded-[0.75rem] border border-[var(--borde)] bg-[var(--lado-activo)] px-3.5 py-2.5">
+      <b className="block text-[0.9375rem] font-semibold text-[var(--t1)]">{title}</b>
+      {detail ? <span className="text-[0.8125rem] text-[var(--t3)]">{detail}</span> : null}
       {branches && branches.length > 0 ? <ul className="m-0 mt-2.5 flex list-none flex-col gap-1.5 p-0">
-        {branches.map((item) => <li key={item.key} className="flex items-center gap-2.5 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] px-3 py-[9px] text-[14.5px] text-[var(--t1)]">
-          <span className="rounded-[6px] bg-[var(--marca-t)] px-[7px] py-0.5 text-[12px] font-bold text-[var(--marca-tx)]">{item.mark}</span>
+        {branches.map((item) => <li key={item.key} className="flex items-center gap-2.5 rounded-[0.625rem] border border-[var(--borde)] bg-[var(--s2)] px-3 py-2.25 text-[0.90625rem] text-[var(--t1)]">
+          <span className="rounded-[0.375rem] bg-[var(--marca-t)] px-1.75 py-0.5 text-[0.75rem] font-bold text-[var(--marca-tx)]">{item.mark}</span>
           <span className="min-w-0 flex-1 truncate">{item.title}</span>
-          <span className="ml-auto shrink-0 text-[12.5px] text-[var(--t3)]">{item.detail}</span>
+          <span className="ml-auto shrink-0 text-[0.78125rem] text-[var(--t3)]">{item.detail}</span>
         </li>)}
       </ul> : null}
     </div>

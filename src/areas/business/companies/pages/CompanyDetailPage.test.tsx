@@ -162,7 +162,7 @@ describe("CompanyDetailPage", () => {
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
     const roles = await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" });
-    expect(roles).toHaveClass("md:max-w-[420px]");
+    expect(roles).toHaveClass("md:max-w-105");
     expect(within(roles).queryByText("Delta S.A.")).not.toBeInTheDocument();
     expect(within(roles).getByRole("button", { name: "Roles en la empresa" })).toHaveTextContent("Sin roles");
     await user.click(within(roles).getByRole("button", { name: "Cancelar" }));
@@ -170,14 +170,14 @@ describe("CompanyDetailPage", () => {
 
     await user.click(screen.getByRole("button", { name: "Agregar miembro" }));
     const add = await screen.findByRole("dialog", { name: "Agregar miembro" });
-    expect(add).toHaveClass("md:max-w-[420px]");
+    expect(add).toHaveClass("md:max-w-105");
     expect(within(add).queryByText("Delta S.A.")).not.toBeInTheDocument();
     expect(within(add).getByRole("button", { name: "Roles en la empresa" })).toHaveTextContent("Sin roles");
     await user.click(within(add).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
 
     await user.click(screen.getByRole("button", { name: "Editar empresa" }));
-    expect(await screen.findByRole("dialog", { name: "Editar empresa" })).toHaveClass("md:max-w-[560px]");
+    expect(await screen.findByRole("dialog", { name: "Editar empresa" })).toHaveClass("md:max-w-140");
   });
 
   // Tablero M-Empresa (v106): en el teléfono, «Roles de …», «Agregar miembro» y «Editar empresa» son hojas que suben
@@ -193,7 +193,7 @@ describe("CompanyDetailPage", () => {
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
     const roles = await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" });
-    expect(roles).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(roles).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
     expect(roles).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
     expect(within(roles).getByRole("button", { name: "Roles en la empresa" }).closest("[data-slot='dialog-body']")).not.toBeNull();
     await user.click(within(roles).getByRole("button", { name: "Cancelar" }));

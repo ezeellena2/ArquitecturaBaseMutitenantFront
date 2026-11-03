@@ -24,15 +24,15 @@ export const publicPageBackdropClass = "bg-[var(--fondo)] bg-[radial-gradient(el
 const filled = (value: string | null | undefined): value is string => Boolean(value?.trim());
 // El sitio web se lee sin «https://» ni la barra del final, como en los tableros («delta.ejemplo.com»).
 const websiteText = (website: string) => website.trim().replace(/^https?:\/\//i, "").replace(/\/$/, "");
-const valueClass = "text-[15px] font-medium [overflow-wrap:anywhere]";
+const valueClass = "text-[0.9375rem] font-medium [overflow-wrap:anywhere]";
 const linkClass = cn(valueClass, "text-[var(--marca-tx)] no-underline");
 
 // Un dato de contacto (.pp-dato): el ícono gris de 16 y, a su lado, el rótulo gris de 12,5 sobre el dato de 15.
 function ContactRow({ icon: Icon, label, children }: { icon: ComponentType<{ className?: string }>; label: string; children: ReactNode }) {
-  return <li className="flex items-start gap-3 border-t border-[var(--borde)] px-[18px] py-3.5 first:border-t-0 max-md:px-3.5 max-md:py-3">
+  return <li className="flex items-start gap-3 border-t border-[var(--borde)] px-4.5 py-3.5 first:border-t-0 max-md:px-3.5 max-md:py-3">
     <Icon className="mt-0.5 size-4 shrink-0 text-[var(--t3)]" />
     <span className="flex min-w-0 flex-col gap-0.5">
-      <span className="text-[12.5px] text-[var(--t3)]">{label}</span>
+      <span className="text-[0.78125rem] text-[var(--t3)]">{label}</span>
       {children}
     </span>
   </li>;
@@ -54,17 +54,17 @@ export function PublicPageCard({ page, links = false, signInHref, onSignIn, show
 }) {
   const { t } = useTranslation();
   const { name, description, logoDataUri, address, contactPhone, contactEmail, website } = page;
-  const signIn = cn(buttonVariants({ size: "lg" }), "mt-[18px] w-full max-md:h-12 max-md:rounded-[12px]");
+  const signIn = cn(buttonVariants({ size: "lg" }), "mt-4.5 w-full max-md:h-12 max-md:rounded-[0.75rem]");
   const hasContact = filled(address) || filled(contactPhone) || filled(contactEmail) || filled(website);
 
-  return <div className="flex w-full max-w-[560px] flex-col items-center gap-1.5 rounded-[20px] border border-[var(--borde)] bg-[var(--lado-activo)] p-8 text-center text-[15px] leading-[1.6] text-[var(--t1)] shadow-[var(--sombra-tarjeta)] max-md:rounded-[18px] max-md:px-[18px] max-md:pt-6 max-md:pb-5 max-md:shadow-[var(--sombra-tarjeta-movil)]">
+  return <div className="flex w-full max-w-140 flex-col items-center gap-1.5 rounded-[1.25rem] border border-[var(--borde)] bg-[var(--lado-activo)] p-8 text-center text-[0.9375rem] leading-[1.6] text-[var(--t1)] shadow-[var(--sombra-tarjeta)] max-md:rounded-[1.125rem] max-md:px-4.5 max-md:pt-6 max-md:pb-5 max-md:shadow-[var(--sombra-tarjeta-movil)]">
     {/* El logo va decorativo: el nombre está debajo. Sin logo, las iniciales en el petróleo claro. */}
     {filled(logoDataUri)
-      ? <img src={logoDataUri} alt="" className="mb-2.5 size-[84px] rounded-[20px] border border-[var(--borde)] object-contain max-md:mb-2 max-md:size-[72px] max-md:rounded-[18px]" />
-      : <span aria-hidden="true" className="mb-2.5 inline-flex size-[84px] items-center justify-center rounded-[20px] border border-[var(--borde)] bg-[var(--marca-t)] text-[28px] font-bold tracking-[-0.02em] text-[var(--marca-tx)] max-md:mb-2 max-md:size-[72px] max-md:rounded-[18px] max-md:text-[24px]">{initials(name)}</span>}
-    <h1 className="m-0 text-[30px] font-bold tracking-[-0.02em] text-[var(--t1)] max-md:text-[26px]">{name}</h1>
-    {filled(description) ? <p className="mt-0.5 mb-3.5 whitespace-pre-line text-[16px] text-[var(--t2)] max-md:mb-3 max-md:text-[15px]">{description}</p> : null}
-    {hasContact ? <ul className="w-full overflow-hidden rounded-[12px] border border-[var(--borde)] text-left">
+      ? <img src={logoDataUri} alt="" className="mb-2.5 size-21 rounded-[1.25rem] border border-[var(--borde)] object-contain max-md:mb-2 max-md:size-18 max-md:rounded-[1.125rem]" />
+      : <span aria-hidden="true" className="mb-2.5 inline-flex size-21 items-center justify-center rounded-[1.25rem] border border-[var(--borde)] bg-[var(--marca-t)] text-[1.75rem] font-bold tracking-[-0.02em] text-[var(--marca-tx)] max-md:mb-2 max-md:size-18 max-md:rounded-[1.125rem] max-md:text-[1.5rem]">{initials(name)}</span>}
+    <h1 className="m-0 text-[1.875rem] font-bold tracking-[-0.02em] text-[var(--t1)] max-md:text-[1.625rem]">{name}</h1>
+    {filled(description) ? <p className="mt-0.5 mb-3.5 whitespace-pre-line text-[1rem] text-[var(--t2)] max-md:mb-3 max-md:text-[0.9375rem]">{description}</p> : null}
+    {hasContact ? <ul className="w-full overflow-hidden rounded-[0.75rem] border border-[var(--borde)] text-left">
       {filled(address) ? <ContactRow icon={MapPinIcon} label={t("publicPageCard.address")}>
         <span className={cn(valueClass, "text-[var(--t1)]")}>{address}</span>
       </ContactRow> : null}

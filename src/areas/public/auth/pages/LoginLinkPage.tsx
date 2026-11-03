@@ -120,22 +120,22 @@ export function LoginLinkPage() {
       : !token || errorState === "invalid" ? <AuthStatus icon={ClockIcon} tone="neutral" title={t("loginLink.invalidTitle")} detail={t("loginLink.invalidDetail")}
       actions={<div className="flex flex-col gap-2.5">{whatsapp ? <Button asChild size="lg"><a href={whatsapp}><WhatsAppIcon className="size-4" />{t("loginLink.whatsapp")}</a></Button> : null}{loginAction}</div>} />
       : errorState === "terminal" ? <AuthStatus icon={LockIcon} tone="danger" title={t("loginLink.suspendedTitle")} detail={apiErrorMessage(failure, t)} actions={loginAction} />
-      : starting ? <div role="status" className="flex flex-col items-center gap-[18px]"><span aria-hidden="true" className="size-8 animate-spin motion-reduce:animate-none rounded-full border-2 border-[var(--borde)] border-t-[var(--marca)]" /><div className="text-center"><h1 className="text-[24px] font-bold">{t("loginLink.startingTitle")}</h1><p className="mt-1.5 text-sm text-[var(--t2)]">{t("loginLink.startingDetail")}</p></div></div>
-      : <div className="flex flex-col gap-[22px]">
-        <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("loginLink.title")}</h1>
+      : starting ? <div role="status" className="flex flex-col items-center gap-4.5"><span aria-hidden="true" className="size-8 animate-spin motion-reduce:animate-none rounded-full border-2 border-[var(--borde)] border-t-[var(--marca)]" /><div className="text-center"><h1 className="text-[1.5rem] font-bold">{t("loginLink.startingTitle")}</h1><p className="mt-1.5 text-sm text-[var(--t2)]">{t("loginLink.startingDetail")}</p></div></div>
+      : <div className="flex flex-col gap-5.5">
+        <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t("loginLink.title")}</h1>
         {preview.data ? <div>
-          <p className="mb-1.5 text-[13px] font-medium">{t("loginLink.as")}</p>
-          <div className="flex items-center gap-3 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] p-3">
+          <p className="mb-1.5 text-[0.8125rem] font-medium">{t("loginLink.as")}</p>
+          <div className="flex items-center gap-3 rounded-[0.625rem] border border-[var(--borde)] bg-[var(--s2)] p-3">
             <Avatar size="large" muted={!displayName} initials={displayName ? initials(displayName) : "—"} />
             <div>
-              <p className="text-[15px] font-semibold">{displayName || maskedPhone || <EmptyValue />}</p>
-              {displayName && maskedPhone ? <p className="text-[13px] text-[var(--t2)]">{maskedPhone}</p> : null}
+              <p className="text-[0.9375rem] font-semibold">{displayName || maskedPhone || <EmptyValue />}</p>
+              {displayName && maskedPhone ? <p className="text-[0.8125rem] text-[var(--t2)]">{maskedPhone}</p> : null}
             </div>
           </div>
         </div> : preview.isPending ? <p role="status">{t("common:states.loading")}</p> : null}
         <AuthMessage message={failure ? { text: failure instanceof ApiError && failure.status === 429 ? t("loginLink.tooManyRequests") : apiErrorMessage(failure, t) } : null} />
         <Button size="lg" disabled={retry.isRunning || preview.isPending} onClick={() => { if (preview.data) void continueLogin(); else void runPreview(); }}>{retry.label ?? t(preview.data ? "loginLink.continue" : "common:actions.retry")}</Button>
-        <p className="text-center text-[12px] leading-normal text-[var(--t3)]">{t("loginLink.notice")}</p>
+        <p className="text-center text-[0.75rem] leading-normal text-[var(--t3)]">{t("loginLink.notice")}</p>
       </div>}
   </AuthLayout>;
 }

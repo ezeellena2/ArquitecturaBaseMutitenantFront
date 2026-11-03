@@ -92,9 +92,9 @@ export function OutOfHoursDialog({ outOfHours, schedule, onSave, onClose, return
             <TimeZoneSelect value={zone.field.value} onChange={(value) => { zone.field.onChange(value); clear(); }} placeholder={t("whatsapp:bot.outOfHours.timeZone")} />
           </FormField>
           <fieldset className="m-0 flex flex-col gap-1.5 border-0 p-0">
-            <legend className="mb-1.5 text-[12.5px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("whatsapp:bot.outOfHours.days")}</legend>
+            <legend className="mb-1.5 text-[0.78125rem] font-semibold text-[var(--t2)] max-md:text-[0.84375rem]">{t("whatsapp:bot.outOfHours.days")}</legend>
             {/* WA-Respuestas (.e11-dias y .e11-dia): una fila por día, alternadas, con la casilla, el día y las dos horas. */}
-            <div className={phone ? "flex flex-col" : "flex flex-col overflow-hidden rounded-[10px] border border-[var(--borde)]"}>
+            <div className={phone ? "flex flex-col" : "flex flex-col overflow-hidden rounded-[0.625rem] border border-[var(--borde)]"}>
               {weekDays.map((weekDay, index) => {
                 const value = days[index];
                 const name = format.formatEnum("DayOfWeek", weekDay);
@@ -102,8 +102,8 @@ export function OutOfHoursDialog({ outOfHours, schedule, onSave, onClose, return
                 const checkId = `${id}-${weekDay}`;
                 return <div key={weekDay} className={phone ? "border-b border-[var(--borde)] py-1.5 last:border-b-0"
                   : "border-t border-[var(--borde)] px-3 py-1.5 first:border-t-0 even:bg-[var(--s2)]"}>
-                  <div className={phone ? "grid min-h-12 grid-cols-[28px_1fr_auto] items-center gap-2.5 text-[16px]" : "grid min-h-10 grid-cols-[26px_1fr_96px_18px_96px] items-center gap-2 text-[13.5px]"}>
-                    <Checkbox id={checkId} checked={value.open} onCheckedChange={(checked) => toggle(index, checked === true)} className="size-[18px]" />
+                  <div className={phone ? "grid min-h-12 grid-cols-[1.75rem_1fr_auto] items-center gap-2.5 text-[1rem]" : "grid min-h-10 grid-cols-[1.625rem_1fr_6rem_1.125rem_6rem] items-center gap-2 text-[0.84375rem]"}>
+                    <Checkbox id={checkId} checked={value.open} onCheckedChange={(checked) => toggle(index, checked === true)} className="size-4.5" />
                     <label htmlFor={checkId} className={value.open ? "text-[var(--t1)]" : "text-[var(--t3)]"}>{name}</label>
                     {value.open ? <>
                       <span className={phone ? "flex items-center gap-2" : "contents"}>
@@ -114,9 +114,9 @@ export function OutOfHoursDialog({ outOfHours, schedule, onSave, onClose, return
                         <span className={phone ? "w-24" : undefined}><TimeField id={`${checkId}-to`} value={value.to} onChange={(to) => setDay(index, { ...value, to })}
                           aria-invalid={rowError ? true : undefined} aria-describedby={rowError ? `${checkId}-error` : undefined} /></span>
                       </span>
-                    </> : <span className={phone ? "text-[15px] text-[var(--t3)]" : "col-span-3 text-[var(--t3)]"}>{t("whatsapp:bot.outOfHours.closed")}</span>}
+                    </> : <span className={phone ? "text-[0.9375rem] text-[var(--t3)]" : "col-span-3 text-[var(--t3)]"}>{t("whatsapp:bot.outOfHours.closed")}</span>}
                   </div>
-                  {rowError ? <p id={`${checkId}-error`} role="alert" className="pb-1 text-[12.5px] text-[var(--peligro)]">{rowError}</p> : null}
+                  {rowError ? <p id={`${checkId}-error`} role="alert" className="pb-1 text-[0.78125rem] text-[var(--peligro)]">{rowError}</p> : null}
                 </div>;
               })}
             </div>

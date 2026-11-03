@@ -130,7 +130,7 @@ describe("Mi cuenta", () => {
       })));
       renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
 
-      expect(await screen.findByRole("heading", { level: 2, name: "Tus datos" })).toHaveClass("text-[13.5px]");
+      expect(await screen.findByRole("heading", { level: 2, name: "Tus datos" })).toHaveClass("text-[0.84375rem]");
       const signIn = screen.getByRole("region", { name: "Cómo entrás" });
       expect(within(signIn).getByRole("button", { name: "Agregar correo" })).toHaveClass("text-[var(--marca-tx)]");
       const privacy = screen.getByRole("region", { name: "Privacidad" });

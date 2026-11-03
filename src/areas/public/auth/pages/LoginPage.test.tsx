@@ -215,8 +215,8 @@ describe("LoginPage", () => {
     const email = within(main).getByRole("textbox", { name: "Correo electrónico" });
     const send = within(main).getByRole("button", { name: "Enviar código" });
     // Tableros Ingreso y M-Ingreso: título de 24 con interletra cerrada y Google de 14.
-    expect(heading).toHaveClass("text-[24px]", "leading-[1.2]", "tracking-[-0.02em]");
-    expect(google).toHaveClass("text-[14px]!", "gap-2.5!");
+    expect(heading).toHaveClass("text-[1.5rem]", "leading-[1.2]", "tracking-[-0.02em]");
+    expect(google).toHaveClass("text-[0.875rem]!", "gap-2.5!");
     expect(heading.compareDocumentPosition(google) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(google.compareDocumentPosition(email) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(email.compareDocumentPosition(send) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
@@ -270,7 +270,7 @@ describe("LoginPage", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Tu sesión venció. Ingresá de nuevo.");
     // Tableros Ingreso y M-Ingreso («Tu sesión venció», .msj.info): la franja de los mensajes del ingreso, en petróleo,
     // con el reloj; no el cartel de los avisos.
-    expect(screen.getByRole("status")).toHaveClass("rounded-[8px]", "px-3", "py-2.5", "max-md:text-[14.5px]", "bg-[var(--marca-t)]", "text-[var(--marca-tx)]");
+    expect(screen.getByRole("status")).toHaveClass("rounded-[0.5rem]", "px-3", "py-2.5", "max-md:text-[0.90625rem]", "bg-[var(--marca-t)]", "text-[var(--marca-tx)]");
     expect(screen.getByRole("status")).not.toHaveClass("min-h-11");
     expect(screen.getByRole("status").querySelector("svg circle")).toHaveAttribute("r", "8.5");
     expect(sessionStorage.getItem("arquitecturabasemt.sessionExpired")).toBeNull();
@@ -312,7 +312,7 @@ describe("LoginPage", () => {
     expect(screen.queryByRole("heading", { name: "Ingresá a tu cuenta" })).not.toBeInTheDocument();
     expect(screen.getByText(/Te mandamos un código a/)).toHaveTextContent("ana@example.com");
     expect(screen.getByText("ana@example.com").tagName).toBe("STRONG");
-    expect(screen.getByRole("heading", { name: "Revisá tu correo" })).toHaveClass("text-[24px]", "tracking-[-0.02em]");
+    expect(screen.getByRole("heading", { name: "Revisá tu correo" })).toHaveClass("text-[1.5rem]", "tracking-[-0.02em]");
     const group = screen.getByRole("group", { name: "Código" });
     expect(within(group).getAllByRole("textbox")).toHaveLength(6);
     expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toBeDisabled();
@@ -399,7 +399,7 @@ describe("LoginPage", () => {
     expect(actions.map((link) => link.textContent)).toEqual(links);
     expect(actions[0]).toHaveAttribute("data-variant", "default");
     expect(actions[1]).toHaveAttribute("data-variant", "outline");
-    for (const action of actions) expect(action).toHaveClass("h-11", "text-[15px]");
+    for (const action of actions) expect(action).toHaveClass("h-11", "text-[0.9375rem]");
     expect(screen.getByRole("link", { name: "Registrá tu empresa" })).toHaveAttribute("href", "/registro/empresa");
     expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("href", "/login");
   });
@@ -467,7 +467,7 @@ describe("LoginPage", () => {
       // normal de su letra (.fila-links .lnk): queda a 22 de «Reenviar código», no 4 más abajo.
       const back = screen.getByRole("button", { name: "Volver a ingresar" });
       expect(back).toHaveAttribute("data-variant", "link");
-      expect(back).toHaveClass("text-[var(--marca-tx)]", "text-[13px]", "leading-[normal]");
+      expect(back).toHaveClass("text-[var(--marca-tx)]", "text-[0.8125rem]", "leading-[normal]");
       expect(back.parentElement).toHaveClass("flex", "justify-center");
     }
   });

@@ -28,14 +28,14 @@ export function AdminPanel({ panel, open, onClose, currentLink }: { panel: Navig
   const renderSection = (section: NavigationSection, index: number) => {
         const here = activeLink != null && section.links.includes(activeLink);
         const expanded = here && (byHand[section.labelKey] ?? true);
-        const label = <><section.icon className="size-[18px] shrink-0" /><span className="flex-1">{t(section.labelKey)}</span>
-          <ChevronDown size={14} aria-hidden="true" className={`text-[var(--t3)] ${expanded ? "" : "-rotate-90"}`} /></>;
+        const label = <><section.icon className="size-4.5 shrink-0" /><span className="flex-1">{t(section.labelKey)}</span>
+          <ChevronDown aria-hidden="true" className={`size-3.5 text-[var(--t3)] ${expanded ? "" : "-rotate-90"}`} /></>;
         const first = section.links.at(0);
         return <li key={section.labelKey} className={menuLineClass(index)}>
           {here ? <button type="button" aria-expanded={expanded} className={`${menuGroupClass} w-full text-left`}
             onClick={() => setToggled({ pathname, sections: { ...byHand, [section.labelKey]: !expanded } })}>{label}</button>
             : first ? <Link to={first.path} className={menuGroupClass}>{label}</Link> : null}
-          {expanded ? <ul className="mt-0.5 ml-[18px] flex flex-col gap-0.5 border-l border-[var(--lado-guia)] pl-2.5">
+          {expanded ? <ul className="mt-0.5 ml-4.5 flex flex-col gap-0.5 border-l border-[var(--lado-guia)] pl-2.5">
             {section.links.map((entry, childIndex) => <li key={entry.labelKey} className={menuLineClass(childIndex)}>
               <Link to={entry.path} aria-current={entry === activeLink ? "page" : undefined} className={menuRowClass(entry === activeLink)}>{t(entry.labelKey)}</Link>
             </li>)}
@@ -43,22 +43,22 @@ export function AdminPanel({ panel, open, onClose, currentLink }: { panel: Navig
         </li>;
       };
 
-  return <nav aria-label={t(panel.labelKey)} className="relative flex h-full w-[232px] shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--panel)]">
-    <div className="flex h-[52px] items-center border-b border-[var(--lado-borde)] px-3.5 text-[14px] font-bold text-[var(--t1)]">{t(panel.labelKey)}</div>
+  return <nav aria-label={t(panel.labelKey)} className="relative flex h-full w-58 shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--panel)]">
+    <div className="flex h-13 items-center border-b border-[var(--lado-borde)] px-3.5 text-[0.875rem] font-bold text-[var(--t1)]">{t(panel.labelKey)}</div>
     <button type="button" aria-label={t("layout.sidebar.closePanel", { name: t(panel.labelKey) })} onClick={onClose} className={panelEdgeButtonClass}>
-      <ChevronLeft size={18} strokeWidth={1.75} aria-hidden="true" />
+      <ChevronLeft className="size-4.5" strokeWidth={1.75} aria-hidden="true" />
     </button>
     <ul className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-2.5">
       {coreSections.map(renderSection)}
       {links.map((entry, index) => <li key={entry.labelKey} className={menuLineClass(coreSections.length + index)}>
         <Link to={entry.path} aria-current={entry === activeLink ? "page" : undefined} className={menuRowClass(entry === activeLink)}>
-          <entry.icon className="size-[18px] shrink-0" />{t(entry.labelKey)}<MenuBadge Badge={entry.Badge} />
+          <entry.icon className="size-4.5 shrink-0" />{t(entry.labelKey)}<MenuBadge Badge={entry.Badge} />
         </Link>
       </li>)}
       {moduleSections.map((section, index) => renderSection(section, coreSections.length + links.length + index))}
       {closingLinks.map((entry, index) => <li key={entry.labelKey} className={menuLineClass(coreSections.length + links.length + moduleSections.length + index)}>
         <Link to={entry.path} aria-current={entry === activeLink ? "page" : undefined} className={menuRowClass(entry === activeLink)}>
-          <entry.icon className="size-[18px] shrink-0" />{t(entry.labelKey)}
+          <entry.icon className="size-4.5 shrink-0" />{t(entry.labelKey)}
         </Link>
       </li>)}
     </ul>

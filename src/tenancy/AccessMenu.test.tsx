@@ -154,13 +154,13 @@ describe("AccessMenu", () => {
     await user.keyboard("{Enter}");
     const menu = await screen.findByRole("menu", { name: "Ana, Empresa A" });
     const active = within(menu).getByRole("menuitemradio", { name: /Empresa A.*Dueño/ });
-    expect(active).toHaveClass("min-h-11", "gap-2.5", "px-2.5", "rounded-[6px]", "text-[var(--marca-tx)]");
+    expect(active).toHaveClass("min-h-11", "gap-2.5", "px-2.5", "rounded-[0.375rem]", "text-[var(--marca-tx)]");
     // Tablero Cuenta (.w-mn-it, .w-mn-ico) y «Criterio · Menús»: la fila activa con esquinas de 6 y el ícono del perfil
     // de 28 con esquinas de 8, no la píldora ni el círculo de --radius-lg; el nombre en 13 y el rol en 12,5.
-    expect(within(active).getByText("Empresa A")).toHaveClass("text-[13px]");
+    expect(within(active).getByText("Empresa A")).toHaveClass("text-[0.8125rem]");
     expect(within(active).getByText("Empresa A")).not.toHaveClass("font-medium");
-    expect(within(active).getByText("Dueño")).toHaveClass("text-[12.5px]");
-    expect(active.querySelector("[aria-hidden='true']")).toHaveClass("size-7", "rounded-[8px]");
+    expect(within(active).getByText("Dueño")).toHaveClass("text-[0.78125rem]");
+    expect(active.querySelector("[aria-hidden='true']")).toHaveClass("size-7", "rounded-[0.5rem]");
     const signOutIcon = within(menu).getByRole("menuitem", { name: "Salir" }).querySelector("svg");
     expect(Array.from(signOutIcon?.querySelectorAll("path") ?? [], (path) => path.getAttribute("d"))).toEqual([
       "M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4",

@@ -34,7 +34,7 @@ function Group({ saved, query, ...props }: ConversationListProps & { saved: bool
   const { t } = useTranslation("assistant");
   const format = useFormat();
   return <section className="flex flex-col gap-1">
-    <h2 className="flex items-center gap-1.5 px-2.5 pt-3.5 pb-1.5 text-[12.5px] font-semibold text-[var(--t3)]">{t(saved ? "history.saved" : "history.recent")}
+    <h2 className="flex items-center gap-1.5 px-2.5 pt-3.5 pb-1.5 text-[0.78125rem] font-semibold text-[var(--t3)]">{t(saved ? "history.saved" : "history.recent")}
       {!saved ? <InfoButton label={t("history.retention", { days: format.formatInteger(props.retentionDays) })} onClick={props.onRetentionInfo} /> : null}
     </h2>
     <ThreadListPrimitive.Items>{({ threadListItem }) => {
@@ -48,7 +48,7 @@ function Group({ saved, query, ...props }: ConversationListProps & { saved: bool
     </ThreadListItemPrimitive.Root>;
     }}</ThreadListPrimitive.Items>
     {query.isError ? <div role="alert"><p>{apiErrorMessage(query.error, t)}</p><Button variant="link" onClick={() => void query.refetch()}>{t("retry")}</Button></div> : null}
-    {!saved && query.isSuccess && query.items.length === 0 ? <p className="px-2.5 py-4 text-[13.5px] text-[var(--t3)]">{t("history.empty")}</p> : null}
+    {!saved && query.isSuccess && query.items.length === 0 ? <p className="px-2.5 py-4 text-[0.84375rem] text-[var(--t3)]">{t("history.empty")}</p> : null}
     {query.hasNextPage ? <Button variant="link" disabled={query.isFetchingNextPage} onClick={() => void query.fetchNextPage()}>{t("history.more")}</Button> : null}
   </section>;
 }
@@ -67,7 +67,7 @@ export function ConversationList(props: ConversationListProps) {
   return <AssistantRuntimeProvider runtime={runtime}><ThreadListPrimitive.Root className="flex min-h-0 flex-col overflow-auto p-3">
     {/* «Criterio · Botones»: el único ícono es el «+» de agregar, crear o invitar (Asistente-Org, -Personal y -Plat). */}
     <ThreadListPrimitive.New asChild><Button variant="outline"><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("history.new")}</Button></ThreadListPrimitive.New>
-    {saved.isSuccess && recent.isSuccess && conversations.length === 0 ? <p className="px-2.5 py-4 text-[13.5px] text-[var(--t3)]">{t("history.empty")}</p>
+    {saved.isSuccess && recent.isSuccess && conversations.length === 0 ? <p className="px-2.5 py-4 text-[0.84375rem] text-[var(--t3)]">{t("history.empty")}</p>
       : <><Group {...props} query={saved} saved /><Group {...props} query={recent} saved={false} /></>}
   </ThreadListPrimitive.Root></AssistantRuntimeProvider>;
 }

@@ -27,7 +27,7 @@ export function NumberPicker({ numbers, selected, onSelect }: {
 
   if (phone) return <>
     <button type="button" disabled={!several} onClick={() => setSheet(true)} aria-label={t("bot.number.label", { value: text(selected) })}
-      className="mx-4 mb-2.5 flex h-[46px] shrink-0 items-center justify-between gap-2 rounded-[12px] bg-[var(--s3)] px-3.5 text-left text-[14.5px] font-medium text-[var(--t1)] disabled:opacity-100">
+      className="mx-4 mb-2.5 flex h-11.5 shrink-0 items-center justify-between gap-2 rounded-[0.75rem] bg-[var(--s3)] px-3.5 text-left text-[0.90625rem] font-medium text-[var(--t1)] disabled:opacity-100">
       <span className="truncate">{text(selected)}</span>
       {several ? <ChevronDownIcon aria-hidden="true" className="size-4 shrink-0 text-[var(--t2)]" /> : null}
     </button>
@@ -37,7 +37,7 @@ export function NumberPicker({ numbers, selected, onSelect }: {
         <ul className="m-0 flex list-none flex-col px-5 pb-4">
           {numbers.map((number) => <li key={number.id} className="border-b border-[var(--borde)] last:border-b-0">
             <button type="button" aria-current={number.id === selected.id ? "true" : undefined} onClick={() => { onSelect(number.id); setSheet(false); }}
-              className="flex min-h-[52px] w-full items-center gap-3 text-left text-[16px] text-[var(--t1)] aria-[current=true]:font-medium aria-[current=true]:text-[var(--marca-tx)]">
+              className="flex min-h-13 w-full items-center gap-3 text-left text-[1rem] text-[var(--t1)] aria-[current=true]:font-medium aria-[current=true]:text-[var(--marca-tx)]">
               <span className="min-w-0 flex-1">{text(number)}</span>
               {number.id === selected.id ? <Check aria-hidden="true" className="size-5 shrink-0" /> : null}
             </button>
@@ -49,18 +49,18 @@ export function NumberPicker({ numbers, selected, onSelect }: {
 
   const label = t("bot.number.pill", { value: text(selected) });
   // WA-Respuestas (.w-caja.o-fb y .w-pil): la píldora de 36 en una caja con 12 y 16 de margen.
-  const pill = "inline-flex h-9 max-w-full items-center gap-1.5 rounded-full border border-[var(--borde)] bg-[var(--lado-activo)] px-3.5 text-[13px] text-[var(--t2)]";
+  const pill = "inline-flex h-9 max-w-full items-center gap-1.5 rounded-full border border-[var(--borde)] bg-[var(--lado-activo)] px-3.5 text-[0.8125rem] text-[var(--t2)]";
   return <Surface className="flex items-center gap-2.5 px-4 py-3">
     {several ? <DropdownMenu>
       <DropdownMenuTrigger className={`${pill} hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] data-[state=open]:border-[var(--marca)] data-[state=open]:shadow-[0_0_0_3px_var(--marca-t)]`}>
         <span className="truncate">{label}</span>
         <ChevronDownIcon aria-hidden="true" strokeWidth={2} className="size-3.5 shrink-0" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" aria-label={t("bot.number.title")} className="min-w-[380px] p-1">
+      <DropdownMenuContent align="start" aria-label={t("bot.number.title")} className="min-w-95 p-1">
         <DropdownMenuRadioGroup value={selected.id} onValueChange={onSelect}>
           {numbers.map((number) => <DropdownMenuRadioItem key={number.id} value={number.id} className="flex-col items-start gap-0">
             <span>{format.formatPhone(number.displayNumber)}</span>
-            <span className="text-[12px] text-[var(--t3)]">{company(number)}</span>
+            <span className="text-[0.75rem] text-[var(--t3)]">{company(number)}</span>
           </DropdownMenuRadioItem>)}
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>

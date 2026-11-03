@@ -42,15 +42,15 @@ describe("CompaniesPage", () => {
     // Tablero Empresas: el nombre en el color del texto y «Miembros» angosta, con el número a la derecha.
     expect(screen.getByRole("link", { name: "Delta S.A." })).toHaveClass("font-medium", "text-[var(--t1)]");
     expect(screen.getByRole("columnheader", { name: "Empresa" })).toHaveClass("w-[35%]");
-    expect(screen.getByRole("columnheader", { name: "Miembros" })).toHaveClass("w-[112px]", "text-right");
-    expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("w-[162px]");
+    expect(screen.getByRole("columnheader", { name: "Miembros" })).toHaveClass("w-28", "text-right");
+    expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("w-40.5");
     expect(screen.queryByRole("columnheader", { name: "CUIT" })).not.toBeInTheDocument();
     expect(screen.getAllByRole("columnheader").map((header) => header.textContent))
       .toEqual(["Empresa", "Zona horaria", "Miembros", "Estado", "Acciones"]);
     expect(screen.getByText("CUIT 30-71234567-1")).toBeVisible();
     // «Criterio · Tablas» (lienzo v92): el CUIT va en la segunda línea gris, debajo del nombre, y la fila mide 52.
     expect(screen.getByText("CUIT 30-71234567-1").closest('[data-slot="cell-detail"]')).not.toBeNull();
-    expect(screen.getAllByRole("row")[1]).toHaveClass("h-[52px]");
+    expect(screen.getAllByRole("row")[1]).toHaveClass("h-13");
     // Tablero Empresas: «1 empresa · 1 activa» y el filtro «Estado: todas».
     expect(screen.getByText("1 empresa · 1 activa")).toBeVisible();
     // Tableros de listas (.pagina, compacto): 14 entre la caja de los filtros y la tabla.
@@ -137,7 +137,7 @@ describe("CompaniesPage", () => {
     const dialog = await screen.findByRole("dialog", { name: "Crear empresa" });
     expect(dialog).not.toHaveTextContent("Completá los datos");
     // Tablero M-Empresas (v106): en el teléfono, una hoja que sube desde abajo con su alto, no a pantalla completa.
-    expect(dialog).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(dialog).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
     expect(dialog).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
     expect(within(dialog).getByRole("textbox", { name: "Nombre" }).closest("[data-slot='dialog-body']")).not.toBeNull();
     expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveAttribute("placeholder", "99-99999999-9");

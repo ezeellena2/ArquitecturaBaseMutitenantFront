@@ -99,16 +99,16 @@ interface PageProps {
 
 const phoneBodyClasses = {
   // M-Configuracion y M-Rol (.ap-cuerpo): 4 arriba, 20 a los costados y 14 entre bloques.
-  padded: "flex flex-1 flex-col gap-3.5 px-5 pt-1 pb-6 text-[15px]",
-  flush: "flex flex-1 flex-col text-[15px]",
-  gray: "flex flex-1 flex-col pb-6 text-[15px]",
+  padded: "flex flex-1 flex-col gap-3.5 px-5 pt-1 pb-6 text-[0.9375rem]",
+  flush: "flex flex-1 flex-col text-[0.9375rem]",
+  gray: "flex flex-1 flex-col pb-6 text-[0.9375rem]",
   // M-Asistente-* (.ap-cuerpo): el alto que deja la barra, sin que lo estire lo que lleva; el hilo se desplaza adentro
   // (.as-tcuerpo) y la caja de escribir queda abajo (.as-tpie).
-  chat: "flex min-h-0 flex-1 flex-col overflow-hidden text-[15px]",
+  chat: "flex min-h-0 flex-1 flex-col overflow-hidden text-[0.9375rem]",
 } as const;
 
 // Tableros M-* (.ap-txt): una acción en texto petróleo a la derecha de la barra.
-const barTextClass = "inline-flex h-10 shrink-0 items-center px-2.5 text-[15.5px] font-semibold text-[var(--marca-tx)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]";
+const barTextClass = "inline-flex h-10 shrink-0 items-center px-2.5 text-[0.96875rem] font-semibold text-[var(--marca-tx)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]";
 
 /// «Criterio · Marco» (.bnd .res y .banda-pag .res, > * + *::before): el «·» que separa los datos de la segunda línea de la
 /// banda (el estado, «Cambios sin guardar» y el resumen), en el gris tenue y a 6 de cada lado. Dentro de un mismo dato
@@ -135,7 +135,7 @@ export function Page({
   banner,
   tabs,
   children,
-  bodyClassName = "flex flex-col gap-3.5 p-4 text-[13px] lg:px-6 lg:py-5",
+  bodyClassName = "flex flex-col gap-3.5 p-4 text-[0.8125rem] lg:px-6 lg:py-5",
   phoneSubtitle,
   fab,
   phoneBody = "padded",
@@ -234,22 +234,22 @@ export function Page({
               to={backTo.to}
               aria-label={backTo.label}
               title={backTo.label}
-              className="inline-flex size-7 shrink-0 items-center justify-center rounded-[7px] border border-[var(--borde)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
+              className="inline-flex size-7 shrink-0 items-center justify-center rounded-[0.4375rem] border border-[var(--borde)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
             >
               <ChevronLeftIcon strokeWidth={2} className="size-4" />
             </Link>
           ) : Icon ? (
-            <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--marca-t)] text-[var(--marca-tx)]">
+            <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[0.625rem] bg-[var(--marca-t)] text-[var(--marca-tx)]">
               <Icon className="size-5" />
             </span>
           ) : null}
           <div className="min-w-0">
-            <h1 className="truncate text-[18px] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>
+            <h1 className="truncate text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>
             {summary === null || summary === undefined ? (
-              status ? <p data-slot="page-subline" className="mt-0.5 truncate text-[13px] text-[var(--t2)]">{status}</p> : null
+              status ? <p data-slot="page-subline" className="mt-0.5 truncate text-[0.8125rem] text-[var(--t2)]">{status}</p> : null
             ) : (
               // Tableros Usuario y Rol: el estado va primero; después, el resumen.
-              <p data-slot="page-subline" className="mt-0.5 flex min-w-0 items-center text-[13px] text-[var(--t2)]">
+              <p data-slot="page-subline" className="mt-0.5 flex min-w-0 items-center text-[0.8125rem] text-[var(--t2)]">
                 {status ? <><span className="shrink-0">{status}</span><SublineSeparator /></> : null}
                 <span className="truncate">{summary}</span>
               </p>
@@ -266,7 +266,7 @@ export function Page({
                     type="button"
                     aria-label={moreActions.label}
                     title={moreActions.label}
-                    className="inline-flex size-[34px] items-center justify-center rounded-[8px] border border-[var(--borde)] bg-[var(--lado-activo)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
+                    className="inline-flex size-8.5 items-center justify-center rounded-[0.5rem] border border-[var(--borde)] bg-[var(--lado-activo)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
                   >
                     <MoreVerticalIcon className="size-4" />
                   </button>

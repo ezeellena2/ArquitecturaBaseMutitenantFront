@@ -57,9 +57,9 @@ describe("Sidebar", () => {
     const { container } = render(<MemoryRouter initialEntries={["/org"]}>
       <Sidebar navigation={businessNavigation} account={accountIdentity({ displayName: "Ana", email: "ana@example.com" })} context={{ title: "Empresa A", detail: "Organización" }} collapsed={false} administrationOpen={false} onToggleAdministration={onToggleAdministration} onToggleCollapsed={onToggleCollapsed} />
     </MemoryRouter>);
-    expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-[232px]");
+    expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-58");
     expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("link", { name: "Inicio" })).toHaveClass("rounded-[8px]", "ring-1", "ring-[var(--borde)]", "shadow-sm");
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveClass("rounded-[0.5rem]", "ring-1", "ring-[var(--borde)]", "shadow-sm");
     expect(screen.getByRole("button", { name: "Contraer menú" })).toHaveClass("top-16", "bg-[var(--lado-activo)]");
     expect(screen.getByText("Ana")).toBeVisible();
     expect(screen.getByText("ana@example.com")).toBeVisible();
@@ -89,7 +89,7 @@ describe("Sidebar", () => {
     expect(closed.querySelector('path[d="M12 3.5 5 6v5.5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6Z"]')).not.toBeNull();
     expect(closed.querySelector(".lucide-chevron-right")).not.toBeNull();
     // Las opciones que no están activas van en el gris del marco (--lado-t2), como en el lienzo.
-    expect(closed).toHaveClass("min-h-[32px]", "text-[var(--lado-t2)]");
+    expect(closed).toHaveClass("min-h-8", "text-[var(--lado-t2)]");
 
     rerender(<MemoryRouter initialEntries={["/org"]}><Sidebar {...props} navigation={businessNavigation} administrationOpen /></MemoryRouter>);
     const open = screen.getByRole("button", { name: "Administración" });

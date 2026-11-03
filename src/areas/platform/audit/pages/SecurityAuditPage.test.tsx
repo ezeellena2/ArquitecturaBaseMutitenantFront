@@ -127,7 +127,7 @@ describe("SecurityAuditPage", () => {
     mount();
     await user.click(await screen.findByRole("button", { name: "Ver el detalle: Suspendió la cuenta" }));
     const dialog = await screen.findByRole("dialog", { name: "Suspendió la cuenta" });
-    expect(dialog).toHaveClass("md:max-w-[560px]");
+    expect(dialog).toHaveClass("md:max-w-140");
     expect(dialog).toHaveTextContent("Fecha y hora26/09/2026 17:30");
     expect(dialog).toHaveTextContent("SobreAna Gómez");
     expect(dialog).toHaveTextContent("QuiénLaura Díaz · Operador");
@@ -231,7 +231,7 @@ describe("SecurityAuditPage", () => {
     expect(await axe(container)).toHaveNoViolations();
     await user.click(title);
     const dialog = await screen.findByRole("dialog", { name: "Suspendió la cuenta" });
-    expect(dialog).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(dialog).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
     expect(dialog).toHaveTextContent("Fecha y hora26/09/2026 17:30");
     expect(within(dialog).getAllByRole("img", { name: "Sin dato" })).toHaveLength(2);
     expect(await axe(dialog)).toHaveNoViolations();

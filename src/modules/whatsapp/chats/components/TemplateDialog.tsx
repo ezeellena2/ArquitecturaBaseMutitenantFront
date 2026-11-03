@@ -102,10 +102,10 @@ export function TemplateDialog({ scope, row, name, onClose, onSent, onConflict }
             <Input maxLength={variableLimit} {...form.register(`variables.${index}`, { onChange: clear })} />
           </FormField>)}
           {selected ? <>
-            <p aria-label={t("chats.template.preview")} className="max-w-[90%] justify-self-end rounded-[12px] rounded-tr-[4px] bg-[var(--marca-t)] px-3.5 py-2.5 text-[13.5px] leading-[1.5] text-[var(--sugerencia-tx)] whitespace-pre-wrap max-md:self-end max-md:text-[15px] md:col-span-2">
+            <p aria-label={t("chats.template.preview")} className="max-w-[90%] justify-self-end rounded-[0.75rem] rounded-tr-[0.25rem] bg-[var(--marca-t)] px-3.5 py-2.5 text-[0.84375rem] leading-[1.5] text-[var(--sugerencia-tx)] whitespace-pre-wrap max-md:self-end max-md:text-[0.9375rem] md:col-span-2">
               {templatePreview(selected.body, values).map((part, index) => part.kind === "variable" ? <b key={index} className="font-bold">{part.text}</b> : <span key={index}>{part.text}</span>)}
             </p>
-            <p className="-mt-1.5 text-right text-[12.5px] text-[var(--t3)] max-md:text-[13.5px] md:col-span-2">
+            <p className="-mt-1.5 text-right text-[0.78125rem] text-[var(--t3)] max-md:text-[0.84375rem] md:col-span-2">
               {t("chats.template.estimatedCost")}{" "}<MoneyText value={selected.estimatedCost} />
             </p>
           </> : null}

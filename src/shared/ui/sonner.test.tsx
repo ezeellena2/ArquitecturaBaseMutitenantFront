@@ -45,19 +45,19 @@ describe("Toaster · Criterio v65", () => {
     expect(toaster).toHaveAttribute("data-y-position", "bottom");
     expect(toaster).toHaveAttribute("data-rich-colors", "false");
     expect(toaster).toHaveAttribute("data-toast-shadow", "var(--sombra-aviso)");
-    expect(toaster).toHaveAttribute("data-toast-padding", "12px 14px");
-    expect(toaster).toHaveAttribute("data-toast-gap", "10px");
-    expect(toaster).toHaveAttribute("data-toast-radius", "10px");
-    expect(toaster).toHaveAttribute("data-toast-font-size", "13px");
-    expect((toaster as HTMLElement).style.getPropertyValue("--width")).toBe("340px");
-    expect((toaster as HTMLElement).style.getPropertyValue("--border-radius")).toBe("10px");
+    expect(toaster).toHaveAttribute("data-toast-padding", "0.75rem 0.875rem");
+    expect(toaster).toHaveAttribute("data-toast-gap", "0.625rem");
+    expect(toaster).toHaveAttribute("data-toast-radius", "0.625rem");
+    expect(toaster).toHaveAttribute("data-toast-font-size", "0.8125rem");
+    expect((toaster as HTMLElement).style.getPropertyValue("--width")).toBe("21.25rem");
+    expect((toaster as HTMLElement).style.getPropertyValue("--border-radius")).toBe("0.625rem");
     expect((toaster as HTMLElement).style.getPropertyValue("--normal-bg")).toBe("var(--lado-activo)");
     expect((toaster as HTMLElement).style.getPropertyValue("--normal-border")).toBe("var(--borde)");
     expect((toaster as HTMLElement).style.getPropertyValue("--normal-text")).toBe("var(--t1)");
     expect((toaster as HTMLElement).style.getPropertyValue("--success-bg")).toBe("");
     // Tablero Avisos (.p-aviso): la tilde y el signo dibujados como el lienzo (círculo de 8,5 en 18, con trazo 2).
     const ok = toaster!.querySelector<SVGElement>("[data-testid='icon-success'] svg")!;
-    expect(ok).toHaveClass("size-[18px]");
+    expect(ok).toHaveClass("size-4.5");
     expect(ok).toHaveAttribute("stroke-width", "2");
     expect(ok.querySelector("circle")).toHaveAttribute("r", "8.5");
     expect(ok.querySelector("path")).toHaveAttribute("d", "m8.5 12 2.4 2.4 4.6-4.8");
@@ -73,9 +73,9 @@ describe("Toaster · Criterio v65", () => {
 
       expect(toaster).toHaveAttribute("data-x-position", "center");
       expect(toaster).toHaveAttribute("data-rich-colors", "false");
-      expect(toaster).toHaveAttribute("data-toast-padding", "13px 14px 13px 16px");
-      expect(toaster).toHaveAttribute("data-toast-radius", "14px");
-      expect(toaster).toHaveAttribute("data-toast-font-size", "14.5px");
+      expect(toaster).toHaveAttribute("data-toast-padding", "0.8125rem 0.875rem 0.8125rem 1rem");
+      expect(toaster).toHaveAttribute("data-toast-radius", "0.875rem");
+      expect(toaster).toHaveAttribute("data-toast-font-size", "0.90625rem");
       expect(toaster.style.getPropertyValue("--normal-bg")).toBe("var(--franja)");
       expect(toaster.style.getPropertyValue("--normal-text")).toBe("var(--lado-activo)");
       // M-Avisos (.f-snack .ok y .mal): la tilde de 20 y el signo de 28, con el círculo de 8,5 del tablero.
@@ -85,10 +85,10 @@ describe("Toaster · Criterio v65", () => {
       expect(toaster.querySelector("[data-testid='icon-error'] svg")).toHaveClass("size-7");
       // index.css: la franja va a 13 de la barra de botones (75 + 13), sin borde, con el renglón de 1,4 y el ícono en su
       // caja, sin márgenes.
-      expect(css).toContain('body:has([data-slot="fixed-actions"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 88px; }');
+      expect(css).toContain('body:has([data-slot="fixed-actions"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 5.5rem; }');
       expect(css).toContain('[data-sonner-toaster] [data-sonner-toast][data-styled="true"] { border-width: 0; }');
       expect(css).toContain('[data-sonner-toast][data-styled="true"] [data-title] { font-weight: 400; line-height: inherit; }');
-      expect(css).toContain('[data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] { width: 28px; height: 28px; }');
+      expect(css).toContain('[data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] { width: 1.75rem; height: 1.75rem; }');
     } finally {
       restore();
     }
@@ -120,7 +120,7 @@ describe("Toaster · Criterio v65", () => {
     const desktop = css.slice(css.indexOf("@media (min-width: 768px)"));
     expect(desktop).toMatch(/\.aviso-codigo \{[^}]*display: grid;[^}]*grid-template-columns: auto minmax\(0, 1fr\) auto;/);
     // Sin `:first-of-type`: la ✕ también es un botón y va antes, así que la acción nunca es la primera.
-    expect(desktop).toMatch(/\.aviso-codigo \[data-button\] \{[^}]*grid-area: 2 \/ 2;[^}]*margin: -4px 0 0;/);
+    expect(desktop).toMatch(/\.aviso-codigo \[data-button\] \{[^}]*grid-area: 2 \/ 2;[^}]*margin: -0.25rem 0 0;/);
     expect(desktop).toMatch(/\.aviso-codigo \[data-close-button\] \{[^}]*grid-area: 1 \/ 3;/);
     expect(css.slice(0, css.indexOf("@media (min-width: 768px)"))).not.toContain("aviso-codigo");
   });

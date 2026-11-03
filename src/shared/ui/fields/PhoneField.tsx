@@ -56,10 +56,10 @@ export function PhoneField({ value, onChange, onValidityChange, allowedCountries
   }
 
   return (
-    <div className={variant === "auth" ? "flex gap-2 [&_[role=combobox]]:h-11 [&_[role=combobox]]:rounded-[10px] [&_[role=combobox]]:text-[15px]" : "flex gap-2"}>
+    <div className={variant === "auth" ? "flex gap-2 [&_[role=combobox]]:h-11 [&_[role=combobox]]:rounded-[0.625rem] [&_[role=combobox]]:text-[0.9375rem]" : "flex gap-2"}>
       {/* El país compacto: la bandera y el prefijo («+54»), decisión del usuario del 2026-10-04, en una caja de 112 en la
           compu y de 124 en el teléfono (lienzo v99); la lista muestra la bandera y el nombre entero. */}
-      <div className="w-[112px] shrink-0 max-md:w-[124px]">
+      <div className="w-28 shrink-0 max-md:w-31">
         <CountrySelect value={country} onChange={changeCountry} allowedCountries={countries.map((item) => item.code)}
           placeholder={t("phone.country", { country: "" })} disabled={unavailable} busy={loading}
           renderValue={(selected) => <span className="inline-flex items-center gap-1.5">
@@ -68,7 +68,7 @@ export function PhoneField({ value, onChange, onValidityChange, allowedCountries
           </span>} />
       </div>
       <Input id={id} name={name} type="tel" autoComplete="tel-national" inputMode="tel"
-        className={variant === "auth" ? "h-11 rounded-[10px] text-[15px] max-md:h-11 max-md:rounded-[10px] max-md:text-[15px]" : undefined}
+        className={variant === "auth" ? "h-11 rounded-[0.625rem] text-[0.9375rem] max-md:h-11 max-md:rounded-[0.625rem] max-md:text-[0.9375rem]" : undefined}
         value={value?.number ?? ""} onChange={(event) => changeNumber(event.target.value)}
         disabled={unavailable} required={required} aria-busy={loading}
         aria-invalid={invalid || liveInvalid || undefined} aria-describedby={describedBy} />

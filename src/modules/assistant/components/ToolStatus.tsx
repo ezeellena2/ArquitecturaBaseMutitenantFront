@@ -42,7 +42,7 @@ export function ToolStatus({ turn, pending }: { turn: AssistantTurnState | null;
     const known = publishedLabels.has(tool.labelKey) && ["running", "complete", "failed"].includes(tool.state);
     rows.push({ key: tool.toolKey, state, label: t(known ? `tools.labels.${tool.labelKey.slice(5)}.${state}` : `tools.${state}`) });
   }
-  return <div className="flex flex-col gap-1 text-[13px] text-[var(--t2)]">
+  return <div className="flex flex-col gap-1 text-[0.8125rem] text-[var(--t2)]">
     {rows.map((row) => <p key={row.key} role="status" className="inline-flex items-center gap-2">
       {row.state === "complete" ? <CheckIcon className="size-3.5 text-[var(--ok)]" /> : row.state === "running" ? <Spinner decorative className="inline-flex shrink-0 [&>span]:size-3 [&>span]:border-[var(--borde2)] [&>span]:border-t-[var(--marca)]" /> : null}
       {row.label}

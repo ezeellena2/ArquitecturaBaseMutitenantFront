@@ -48,9 +48,9 @@ export function RowActions({ label, title, actions }: { label: string; title?: s
     data-slot="row-actions"
     // En el teléfono (tableros M-Usuarios, M-Empresa y M-Configuracion, .ap-ib): el ⋮ de 20, casi negro, en un botón de 44;
     // en una fila sin círculo (M-Roles, M-Empresas), ListRow lo pasa a gris.
-    className="inline-flex size-8 items-center justify-center rounded-[8px] max-md:size-11 max-md:rounded-full max-md:text-[var(--t1)] border border-transparent bg-transparent text-[var(--t3)] hover:border-[var(--borde)] hover:bg-[var(--lado-activo)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
+    className="inline-flex size-8 items-center justify-center rounded-[0.5rem] max-md:size-11 max-md:rounded-full max-md:text-[var(--t1)] border border-transparent bg-transparent text-[var(--t3)] hover:border-[var(--borde)] hover:bg-[var(--lado-activo)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
   >
-    <MoreVerticalIcon className="size-[18px] max-md:size-5" />
+    <MoreVerticalIcon className="size-4.5 max-md:size-5" />
   </button>;
 
   // Apagada, la opción sigue en el recorrido del teclado para que se lea su motivo, pero no hace nada ni cierra el menú.
@@ -63,7 +63,7 @@ export function RowActions({ label, title, actions }: { label: string; title?: s
         className={off ? "flex-col items-start gap-0.5 text-[var(--t3)] focus:bg-transparent focus:text-[var(--t3)] [&_svg:not([class*='text-'])]:text-[var(--t3)]" : undefined}
         onSelect={(event) => { if (off) event.preventDefault(); else action.onSelect(trigger.current); }}>
         <span className="inline-flex items-center gap-2"><Icon className={cn("size-4", danger && !off ? "text-current" : "text-[var(--t3)]")} />{action.label}</span>
-        {off ? <span id={id} className="pl-6 text-[12px] leading-[1.35] whitespace-normal">{action.disabledReason}</span> : null}
+        {off ? <span id={id} className="pl-6 text-[0.75rem] leading-[1.35] whitespace-normal">{action.disabledReason}</span> : null}
       </DropdownMenuItem>
     );
   };
@@ -110,16 +110,16 @@ export function PhoneActionsSheet<T extends PhoneSheetAction>({ open, onOpenChan
     return <button key={action.label} type="button" role="menuitem" aria-label={action.accessibleName}
       aria-disabled={off || undefined} aria-describedby={off ? id : undefined}
       onClick={off ? undefined : () => onSelect(action)}
-      className={cn("flex min-h-[54px] w-full items-center border-t border-[var(--borde)] px-5 text-left text-[16.5px] first:border-t-0 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]",
+      className={cn("flex min-h-13.5 w-full items-center border-t border-[var(--borde)] px-5 text-left text-[1.03125rem] first:border-t-0 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]",
         off ? "cursor-default flex-col items-start justify-center gap-0.5 py-2.5 text-[var(--t3)]" : danger ? "text-[var(--peligro)]" : "text-[var(--t1)]")}>
       {action.label}
-      {off ? <span id={id} className="text-[13px] leading-[1.35]">{action.disabledReason}</span> : null}
+      {off ? <span id={id} className="text-[0.8125rem] leading-[1.35]">{action.disabledReason}</span> : null}
     </button>;
   };
   return <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent size="sm" showCloseButton={false} aria-describedby={undefined} onInteractOutside={() => onOpenChange(false)}>
       <DialogHeader><DialogTitle>{title}</DialogTitle></DialogHeader>
-      <div role="menu" aria-label={label} className="flex flex-col pb-[calc(34px+env(safe-area-inset-bottom))]">
+      <div role="menu" aria-label={label} className="flex flex-col pb-[calc(2.125rem+env(safe-area-inset-bottom))]">
         {regular.map((action, index) => option(action, false, `${reasonId}-r${index}`))}
         {regular.length > 0 && destructive.length > 0 ? <div role="separator" className="h-2 border-t border-[var(--borde)] bg-[var(--s2)]" /> : null}
         {destructive.map((action, index) => option(action, true, `${reasonId}-d${index}`))}

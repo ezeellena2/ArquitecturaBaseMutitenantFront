@@ -17,7 +17,7 @@ describe("FormError", () => {
   it("en la compu tiene las medidas de la franja del criterio", () => {
     render(<FormError message="Tiene que quedar al menos un Dueño activo." />);
     const alert = screen.getByRole("alert");
-    expect(alert).toHaveClass("text-[13px]", "leading-normal", "px-3", "py-2.5", "rounded-[8px]", "bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]");
+    expect(alert).toHaveClass("text-[0.8125rem]", "leading-normal", "px-3", "py-2.5", "rounded-[0.5rem]", "bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]");
     expect(alert.querySelector("svg")).toHaveClass("size-4", "mt-0.5");
     // .aviso-mal y .msj: el ícono con trazo 2, como el de los tableros.
     expect(alert.querySelector("svg")).toHaveAttribute("stroke-width", "2");
@@ -29,7 +29,7 @@ describe("FormError", () => {
   it("en el teléfono usa la letra y las medidas de los avisos del teléfono, también en las páginas públicas", () => {
     render(<FormError message="Tiene que quedar al menos un Dueño activo." />);
     const alert = screen.getByRole("alert");
-    expect(alert).toHaveClass("max-md:text-[14.5px]", "max-md:leading-[1.4]", "max-md:px-3.5", "max-md:py-3", "max-md:rounded-xl", "items-start");
+    expect(alert).toHaveClass("max-md:text-[0.90625rem]", "max-md:leading-[1.4]", "max-md:px-3.5", "max-md:py-3", "max-md:rounded-xl", "items-start");
     expect(alert.querySelector("svg")).toHaveClass("size-4", "max-md:mt-px");
   });
 
@@ -47,7 +47,7 @@ describe("FormError con tono de información", () => {
 
     const notice = screen.getByRole("status");
     expect(notice).toHaveTextContent("Tu sesión venció. Ingresá de nuevo.");
-    expect(notice).toHaveClass("bg-[var(--marca-t)]", "text-[var(--marca-tx)]", "text-[13px]", "max-md:text-[14.5px]");
+    expect(notice).toHaveClass("bg-[var(--marca-t)]", "text-[var(--marca-tx)]", "text-[0.8125rem]", "max-md:text-[0.90625rem]");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(notice.querySelector("svg circle")).toHaveAttribute("r", "8.5");
     expect(notice.querySelector("svg")).toHaveClass("size-4");

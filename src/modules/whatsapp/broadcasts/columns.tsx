@@ -52,7 +52,7 @@ export function createBroadcastColumns(t: TFunction, format: FormatState): Colum
       id: "results", header: t("whatsapp:broadcasts.columns.results"), type: "custom",
       cell: (broadcast) => { const results = resultsLabel(broadcast, t, format); return results ? <span className="block truncate">{results}</span> : <EmptyValue />; },
     },
-    { id: "date", header: t("whatsapp:broadcasts.columns.date"), type: "custom", className: "w-[150px]", cell: (broadcast) => dateCell(broadcast, false) },
+    { id: "date", header: t("whatsapp:broadcasts.columns.date"), type: "custom", className: "w-37.5", cell: (broadcast) => dateCell(broadcast, false) },
   ];
 }
 
@@ -64,7 +64,7 @@ export function broadcastPhoneRow(broadcast: WhatsAppBroadcastResponse, t: TFunc
     lines={[
       [broadcast.template.name, audienceLabel(broadcast.audience, t), t("whatsapp:broadcasts.contacts", countOf(format, broadcast.recipients))].join(" · "),
       <span key="status" className="inline-flex max-w-full items-center gap-1">
-        <StatusBadge tones={broadcastStatusTones} value={broadcast.status} className="text-[13px] text-[var(--t2)]" />
+        <StatusBadge tones={broadcastStatusTones} value={broadcast.status} className="text-[0.8125rem] text-[var(--t2)]" />
         {results ? <span className="truncate">{`· ${results}`}</span> : null}
       </span>,
     ]} trailing={trailing} />;
@@ -79,6 +79,6 @@ export function createRecipientColumns(t: TFunction, status: (recipient: WhatsAp
       detail: (recipient) => recipient.contactName ? <PhoneText value={recipient.displayNumber} /> : null,
     },
     { id: "status", header: t("whatsapp:broadcasts.recipients.columns.status"), type: "custom", mobile: "status", cell: status },
-    { id: "changedAtUtc", header: t("whatsapp:broadcasts.recipients.columns.changed"), type: "custom", className: "w-[160px]", cell: (recipient) => <DateText value={recipient.changedAtUtc} kind="shortDateTime" /> },
+    { id: "changedAtUtc", header: t("whatsapp:broadcasts.recipients.columns.changed"), type: "custom", className: "w-40", cell: (recipient) => <DateText value={recipient.changedAtUtc} kind="shortDateTime" /> },
   ];
 }

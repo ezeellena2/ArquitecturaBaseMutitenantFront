@@ -21,7 +21,7 @@ const tones: Record<StatusTone, string> = {
 
 export function StatusDot({ tone, label, className, ...props }: StatusDotProps) {
   return (
-    <span className={cn("inline-flex w-fit max-w-full items-center gap-1.5 text-[13px] text-[var(--t1)]", className)} {...props}>
+    <span className={cn("inline-flex w-fit max-w-full items-center gap-1.5 text-[0.8125rem] text-[var(--t1)]", className)} {...props}>
       <StatusDotMark tone={tone} />
       <span className="min-w-0 truncate">{label}</span>
     </span>

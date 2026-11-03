@@ -172,7 +172,7 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
           </> : method ? <DialogDescription>{request.isPending ? t("common:code.sending") : phone ? maskPhone(method.value ?? "") : maskEmail(method.value ?? "")}</DialogDescription> : <>
             {whatsApp ? <div role="group" aria-label={t("account:chooseMethod")} className="flex rounded-lg bg-[var(--s3)] p-1">
               {(["email", "phone"] as const).map((choice) => <button key={choice} type="button" disabled={busy} aria-pressed={type === choice}
-                className={`flex-1 rounded-md py-2 text-[13px] font-medium ${type === choice ? "bg-[var(--lado-activo)]" : ""}`}
+                className={`flex-1 rounded-md py-2 text-[0.8125rem] font-medium ${type === choice ? "bg-[var(--lado-activo)]" : ""}`}
                 onClick={() => { edit(); form.reset(choice === "email" ? { type: choice, email: "" } : { type: choice, phone: { country: "", number: "" } }); }}>{t(choice === "phone" ? "account:phone" : "account:email")}</button>)}
             </div> : null}
             {type === "phone" && whatsApp ? <Controller control={form.control} name="phone" render={({ field }) => <FormField label={t("account:phoneNumber")} error={form.getFieldState("phone", form.formState).error?.message}>

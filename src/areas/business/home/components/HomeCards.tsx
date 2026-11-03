@@ -17,11 +17,11 @@ export interface ModuleCardRow { card: ModuleHomeCard; total: number }
 
 function Card({ to, icon, title, detail }: { to: string; icon: ReactNode; title: string; detail: ReactNode }) {
   return <Link to={to} style={{ boxShadow: "var(--shadow-card)" }}
-    className="flex min-w-0 items-center gap-3 rounded-[14px] border border-[var(--borde)] bg-[var(--lado-activo)] p-4 text-[var(--t1)] hover:border-[var(--borde2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
-    <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--marca-t)] text-[12.5px] font-bold text-[var(--marca-tx)]">{icon}</span>
-    <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-      <span className="text-[14px] font-semibold">{title}</span>
-      <span className="truncate text-[12.5px] text-[var(--t3)]">{detail}</span>
+    className="flex min-w-0 items-center gap-3 rounded-[0.875rem] border border-[var(--borde)] bg-[var(--lado-activo)] p-4 text-[var(--t1)] hover:border-[var(--borde2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
+    <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[0.625rem] bg-[var(--marca-t)] text-[0.78125rem] font-bold text-[var(--marca-tx)]">{icon}</span>
+    <span className="flex min-w-0 flex-1 flex-col gap-0.75">
+      <span className="text-[0.875rem] font-semibold">{title}</span>
+      <span className="truncate text-[0.78125rem] text-[var(--t3)]">{detail}</span>
     </span>
     <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)]" />
   </Link>;
@@ -48,10 +48,10 @@ export function AreaCards({ organization, moduleCards = [] }: { organization: Ho
   return <nav aria-label={t("areas")} className={grid}>
     {details.map(([area, detail]) => {
       const Icon = areaIcons[area];
-      return <Card key={area} to={areaPaths[area]} icon={<Icon className="size-[18px]" />} title={t(`cards.${area}.title`)} detail={detail} />;
+      return <Card key={area} to={areaPaths[area]} icon={<Icon className="size-4.5" />} title={t(`cards.${area}.title`)} detail={detail} />;
     })}
     {/* Inicio-Org: después de las del núcleo, las de los módulos («WhatsApp · 2 números»). */}
-    {moduleCards.map(({ card, total }) => <Card key={card.key} to={card.to} icon={<card.icon className="size-[18px]" />} title={t(card.titleKey)}
+    {moduleCards.map(({ card, total }) => <Card key={card.key} to={card.to} icon={<card.icon className="size-4.5" />} title={t(card.titleKey)}
       detail={t(card.detailKey, { count: total })} />)}
   </nav>;
 }

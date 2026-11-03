@@ -36,8 +36,8 @@ export function SegmentedControl({
       role="group"
       aria-label={label}
       className={cn(
-        "grid shrink-0 auto-cols-fr grid-flow-col gap-[3px] rounded-[10px] bg-[var(--s3)] p-[3px] max-md:w-full max-md:rounded-[12px]",
-        fullWidth ? "w-full" : "w-[300px] self-start",
+        "grid shrink-0 auto-cols-fr grid-flow-col gap-0.75 rounded-[0.625rem] bg-[var(--s3)] p-0.75 max-md:w-full max-md:rounded-[0.75rem]",
+        fullWidth ? "w-full" : "w-75 self-start",
       )}
     >
       {options.map((option) => (
@@ -48,7 +48,7 @@ export function SegmentedControl({
           aria-pressed={option.pressed}
           onClick={option.onSelect}
           className={cn(
-            "inline-flex h-[30px] min-w-0 items-center justify-center gap-1.5 rounded-[8px] px-2 text-[13px] font-semibold whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-[var(--foco)] max-md:h-[38px] max-md:rounded-[9px] max-md:text-[14.5px]",
+            "inline-flex h-7.5 min-w-0 items-center justify-center gap-1.5 rounded-[0.5rem] px-2 text-[0.8125rem] font-semibold whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-[var(--foco)] max-md:h-9.5 max-md:rounded-[0.5625rem] max-md:text-[0.90625rem]",
             option.pressed
               ? "bg-[var(--lado-activo)] text-[var(--t1)] shadow-[var(--sombra-segmento)]"
               : "text-[var(--t2)] hover:text-[var(--t1)]",

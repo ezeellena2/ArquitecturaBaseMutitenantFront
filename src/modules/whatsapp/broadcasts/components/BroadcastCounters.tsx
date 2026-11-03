@@ -20,16 +20,16 @@ export function BroadcastCounters({ broadcast }: { broadcast: WhatsAppBroadcastR
   ];
   if (phone) return <ul aria-label={t("broadcasts.counters.title")} className="m-0 flex list-none flex-wrap gap-2 px-4 pt-1 pb-3">
     {[...counters, { key: "failed", value: broadcast.failed }].map((counter) => <li key={counter.key}
-      className="flex h-[58px] min-w-[84px] flex-col justify-center rounded-[14px] border border-[var(--borde)] bg-[var(--lado-activo)] px-3.5 leading-[1.25]">
-      <NumberText value={counter.value} className="text-left text-[17px] font-semibold text-[var(--t1)]" />
-      <span className="text-[12.5px] text-[var(--t3)]">{t(`broadcasts.counters.${counter.key}`)}</span>
+      className="flex h-14.5 min-w-21 flex-col justify-center rounded-[0.875rem] border border-[var(--borde)] bg-[var(--lado-activo)] px-3.5 leading-[1.25]">
+      <NumberText value={counter.value} className="text-left text-[1.0625rem] font-semibold text-[var(--t1)]" />
+      <span className="text-[0.78125rem] text-[var(--t3)]">{t(`broadcasts.counters.${counter.key}`)}</span>
     </li>)}
   </ul>;
   return <Section title={t("broadcasts.counters.title")}>
     <dl className="grid grid-cols-2 md:grid-cols-5">
       {counters.map((counter) => <div key={counter.key} className="flex min-h-14 flex-col-reverse justify-center border-[var(--borde)] py-1.5 pr-2 pl-4 leading-[1.35] md:border-r md:last:border-r-0">
-        <dt className="text-[12px] text-[var(--t3)]">{t(`broadcasts.counters.${counter.key}`)}</dt>
-        <dd><NumberText value={counter.value} className="text-left text-[18px] font-semibold text-[var(--t1)]" /></dd>
+        <dt className="text-[0.75rem] text-[var(--t3)]">{t(`broadcasts.counters.${counter.key}`)}</dt>
+        <dd><NumberText value={counter.value} className="text-left text-[1.125rem] font-semibold text-[var(--t1)]" /></dd>
       </div>)}
     </dl>
   </Section>;

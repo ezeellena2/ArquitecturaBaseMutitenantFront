@@ -52,15 +52,15 @@ describe("SiteLayout", () => {
   it("en el teléfono, la cabecera y el pie de los legales van como el tablero", () => {
     render(<MemoryRouter><SiteLayout variant="legal"><h1>{"Términos y condiciones"}</h1></SiteLayout></MemoryRouter>);
 
-    expect(screen.getByRole("banner")).toHaveClass("h-[61px]", "md:h-[73px]");
+    expect(screen.getByRole("banner")).toHaveClass("h-15.25", "md:h-18.25");
     const business = screen.getByRole("link", { name: "Ingresá como empresa" });
     const login = screen.getByRole("link", { name: "Ingresar" });
     expect(business.parentElement).toHaveClass("gap-2.5");
     expect(business.parentElement).not.toHaveClass("md:gap-2");
     // Tablero Legal (.lp-der .b): en la compu, dos botones de 36, con borde transparente, 14 a los costados y 8 de radio.
     for (const link of [business, login]) {
-      expect(link).toHaveClass("h-8", "rounded-[8px]", "border", "border-transparent", "px-3", "md:h-9", "md:px-3.5");
-      expect(link).not.toHaveClass("md:h-10", "md:border-0", "md:px-[18px]", "md:rounded-[10px]");
+      expect(link).toHaveClass("h-8", "rounded-[0.5rem]", "border", "border-transparent", "px-3", "md:h-9", "md:px-3.5");
+      expect(link).not.toHaveClass("md:h-10", "md:border-0", "md:px-4.5", "md:rounded-[0.625rem]");
     }
     // Tablero Legal (.lp-marca): el logo de la compu mide 28, como en el teléfono.
     expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector(".brand-mark")).not.toHaveClass("md:size-8");

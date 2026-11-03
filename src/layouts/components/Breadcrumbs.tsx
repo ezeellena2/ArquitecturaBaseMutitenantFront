@@ -37,7 +37,7 @@ export function Breadcrumbs({ navigation, permissions }: { navigation: Navigatio
     }
   }
 
-  return <nav aria-label={t("layout.breadcrumbs.label")} className="min-w-0 text-[13px] text-[var(--t2)]">
+  return <nav aria-label={t("layout.breadcrumbs.label")} className="min-w-0 text-[0.8125rem] text-[var(--t2)]">
     {/* «Criterio · Marco» (.tb): «Inicio / Gestión de usuarios / Usuarios», con un espacio a cada lado de la barra. */}
     <ol className="flex min-w-0 items-center gap-[0.28em] truncate">
       <li className="truncate" aria-current={pathname === home.path && crumbs.length === 0 ? "page" : undefined}>

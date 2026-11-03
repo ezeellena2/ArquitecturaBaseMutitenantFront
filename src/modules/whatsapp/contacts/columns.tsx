@@ -40,7 +40,7 @@ export function createContactColumns(t: TFunction): Column<WhatsAppContactRespon
       id: "consent", header: t("whatsapp:contacts.columns.consent"), type: "status", tones: consentTones, mobile: "status",
       value: (contact) => contact.consent, detail: (contact) => contact.consentSource && contact.consentChangedAtUtc ? <ConsentOrigin contact={contact} /> : null,
     },
-    { id: "lastConversationAtUtc", header: t("whatsapp:contacts.columns.lastConversation"), type: "relative", className: "w-[170px]", value: (contact) => contact.lastConversationAtUtc },
+    { id: "lastConversationAtUtc", header: t("whatsapp:contacts.columns.lastConversation"), type: "relative", className: "w-42.5", value: (contact) => contact.lastConversationAtUtc },
   ];
 }
 
@@ -49,7 +49,7 @@ export function createContactColumns(t: TFunction): Column<WhatsAppContactRespon
 export function contactPhoneRow(contact: WhatsAppContactResponse, t: TFunction, trailing?: ReactNode): ReactNode {
   const consent = <span className="inline-flex max-w-full items-center gap-1">
     {contact.tags.length > 0 ? <span className="truncate">{contact.tags.join(", ")}{" ·"}</span> : null}
-    <StatusBadge tones={consentTones} value={contact.consent} className="text-[12.5px] text-[var(--t2)]" />
+    <StatusBadge tones={consentTones} value={contact.consent} className="text-[0.78125rem] text-[var(--t2)]" />
   </span>;
   const number = contact.name ? <><PhoneText value={contact.displayNumber} />{contact.linkedToAccount ? ` · ${t("whatsapp:contacts.linkedShort")}` : null}</> : null;
   return <ListRow key={contact.id} to={contactPath(contact.id)} leading={<ContactAvatar name={contact.name} />}
@@ -65,7 +65,7 @@ export function createContactConversationColumns(t: TFunction): Column<WhatsAppC
       value: (row) => row.startedAtUtc, detail: (row) => row.lastMessagePreview ?? null },
     { id: "team", header: t("whatsapp:contacts.conversations.columns.team"), type: "text", value: (row) => row.team?.name },
     { id: "assignee", header: t("whatsapp:contacts.conversations.columns.assignee"), type: "text", value: (row) => row.assignee?.name },
-    { id: "messageCount", header: t("whatsapp:contacts.conversations.columns.messages"), type: "integer", className: "w-[120px]", value: (row) => row.messageCount },
+    { id: "messageCount", header: t("whatsapp:contacts.conversations.columns.messages"), type: "integer", className: "w-30", value: (row) => row.messageCount },
   ];
 }
 
@@ -82,12 +82,12 @@ export function createContactBroadcastColumns(t: TFunction): Column<WhatsAppCont
       id: "name", header: t("whatsapp:contacts.broadcasts.columns.broadcast"), type: "custom", mobile: "primary",
       cell: (row) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={broadcastPath(row.broadcastId)}>{row.name}</Link>,
     },
-    { id: "sentAtUtc", header: t("whatsapp:contacts.broadcasts.columns.sent"), type: "date", className: "w-[160px]", value: (row) => row.sentAtUtc },
+    { id: "sentAtUtc", header: t("whatsapp:contacts.broadcasts.columns.sent"), type: "date", className: "w-40", value: (row) => row.sentAtUtc },
     { id: "status", header: t("whatsapp:contacts.broadcasts.columns.status"), type: "status", tones: recipientStatusTones, mobile: "status", value: (row) => row.status },
   ];
 }
 
 export function contactBroadcastPhoneRow(row: WhatsAppContactBroadcastResponse): ReactNode {
   return <ListRow key={row.broadcastId} to={broadcastPath(row.broadcastId)} title={row.name} meta={<DateText value={row.sentAtUtc} kind="shortDate" />}
-    lines={[<StatusBadge key="status" tones={recipientStatusTones} value={row.status} className="text-[13px] text-[var(--t2)]" />]} />;
+    lines={[<StatusBadge key="status" tones={recipientStatusTones} value={row.status} className="text-[0.8125rem] text-[var(--t2)]" />]} />;
 }

@@ -37,7 +37,7 @@ export function companyPhoneRow(company: CompanyResponse, t: TFunction, format: 
   return <ListRow key={company.id} to={`/org/empresas/${encodeURIComponent(company.id)}`} title={company.name}
     meta={t("companies:phone.members", countOf(format, company.memberCount))}
     lines={[company.taxId ? <TaxIdText key="taxId" value={company.taxId} withType /> : t("companies:withoutTaxId"),
-      <span key="state" className="inline-flex max-w-full items-center gap-1"><StatusBadge tones={companyStatusTones} value={company.status} className="text-[13px] text-[var(--t2)]" />
+      <span key="state" className="inline-flex max-w-full items-center gap-1"><StatusBadge tones={companyStatusTones} value={company.status} className="text-[0.8125rem] text-[var(--t2)]" />
         <span className="truncate">{" · "}<TimeZoneText value={company.timeZoneId} /></span></span>]}
     trailing={trailing} />;
 }
@@ -73,7 +73,7 @@ export function companyMemberPhoneRow(member: CompanyMember, t: TFunction, trail
   const expiry = invitationExpiry(member, t, true);
   return <ListRow key={member.memberId} leading={<RowAvatar name={member.displayName} />} title={member.displayName} wrapLines
     lines={[member.email ?? "", <span key="state">{roles ? `${roles} · ` : null}
-      <StatusBadge tones={companyMemberStateTones} value={memberState(member)} className="text-[12.5px] text-[var(--t2)]" />
+      <StatusBadge tones={companyMemberStateTones} value={memberState(member)} className="text-[0.78125rem] text-[var(--t2)]" />
       {expiry ? <>{" · "}{expiry}</> : null}</span>]}
     trailing={trailing} />;
 }
@@ -88,8 +88,8 @@ export function createCompanyColumns(t: TFunction): Column<CompanyResponse>[] {
       detail: (company) => company.taxId ? <TaxIdText value={company.taxId} withType /> : t("companies:withoutTaxId"),
     },
     { id: "timeZoneId", header: t("companies:columns.timeZone"), type: "timeZone", value: (company) => company.timeZoneId },
-    { id: "memberCount", header: t("companies:columns.members"), type: "integer", className: "w-[112px]", value: (company) => company.memberCount },
-    { id: "status", header: t("companies:columns.status"), type: "status", tones: companyStatusTones, value: (company) => company.status, mobile: "status", className: "w-[162px] max-md:w-[38%]" },
+    { id: "memberCount", header: t("companies:columns.members"), type: "integer", className: "w-28", value: (company) => company.memberCount },
+    { id: "status", header: t("companies:columns.status"), type: "status", tones: companyStatusTones, value: (company) => company.status, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
   ];
 }
 
@@ -101,7 +101,7 @@ export function createCompanyMemberColumns(t: TFunction): Column<CompanyMember>[
       cell: (member) => <span className="block truncate font-medium text-[var(--t1)]">{member.displayName}</span>,
       detail: (member) => member.email },
     { id: "roles", header: t("companies:memberColumns.roles"), type: "text", value: (member) => member.roles.map((role) => role.name).join(", ") || null },
-    { id: "state", header: t("companies:memberColumns.state"), type: "status", tones: companyMemberStateTones, value: memberState, mobile: "status", className: "w-[162px] max-md:w-[38%]",
+    { id: "state", header: t("companies:memberColumns.state"), type: "status", tones: companyMemberStateTones, value: memberState, mobile: "status", className: "w-40.5 max-md:w-[38%]",
       // Una invitación dice hasta cuándo vale, debajo de la palabra del estado.
       detail: (member) => { const expiry = invitationExpiry(member, t, false); return expiry ? <StatusDetail>{expiry}</StatusDetail> : null; } },
   ];

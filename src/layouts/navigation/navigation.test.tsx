@@ -32,8 +32,8 @@ describe("navegación por acceso en 3a", () => {
     expect(personalNavigation.links.map((entry) => entry.path)).toEqual(["/", "/cuenta"]);
     expect(personalNavigation.administration).toBeNull();
     render(<MemoryRouter><PersonalLayout><h1>{"Inicio personal"}</h1></PersonalLayout></MemoryRouter>);
-    expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-[232px]");
-    expect(screen.getByRole("banner")).toHaveClass("h-[52px]");
+    expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-58");
+    expect(screen.getByRole("banner")).toHaveClass("h-13");
     expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("href", "/");
     expect(screen.getByText("Tu perfil personal")).toBeVisible();
     expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
@@ -83,8 +83,8 @@ describe("los íconos del menú", () => {
     ]);
 
     render(<MemoryRouter initialEntries={["/org/empresas"]}><BusinessLayout><h1>{"Empresas"}</h1></BusinessLayout></MemoryRouter>);
-    expect(within(screen.getByRole("complementary", { name: "Navegación principal" })).getByRole("link", { name: "Inicio" }).querySelector("svg")).toHaveClass("size-[18px]");
-    expect(screen.getByRole("link", { name: "Empresas" }).querySelector("svg")).toHaveClass("size-[18px]");
+    expect(within(screen.getByRole("complementary", { name: "Navegación principal" })).getByRole("link", { name: "Inicio" }).querySelector("svg")).toHaveClass("size-4.5");
+    expect(screen.getByRole("link", { name: "Empresas" }).querySelector("svg")).toHaveClass("size-4.5");
   });
 });
 

@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 // Tablero «Criterio · Botones»: cuatro tipos y tres tamaños, iguales en todas las pantallas. El de ícono (⋮, ✕, ☰)
 // mide 32 × 32 y siempre lleva nombre para el lector de pantalla.
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-[8px] border border-transparent font-semibold whitespace-nowrap transition-[background-color,border-color,filter] outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-[0.5rem] border border-transparent font-semibold whitespace-nowrap transition-[background-color,border-color,filter] outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -21,14 +21,14 @@ const buttonVariants = cva(
         // Peligro relleno: solo en el diálogo que confirma algo que no se deshace.
         destructive: "border-[var(--peligro)] bg-[var(--peligro)] text-[var(--lado-activo)] hover:brightness-95",
         // Enlace: una acción chica dentro de una fila o de un texto; nunca la principal.
-        link: "bg-transparent text-[var(--marca-tx)] underline-offset-[3px] hover:underline",
+        link: "bg-transparent text-[var(--marca-tx)] underline-offset-[0.1875rem] hover:underline",
         // Solo para los botones de ícono.
         icon: "bg-transparent text-[var(--t2)] hover:bg-[var(--s2)] hover:text-[var(--t1)]",
       },
       size: {
-        default: "h-9 px-3.5 text-[14px]",
-        sm: "h-8 px-3 text-[13px] [&_svg:not([class*='size-'])]:size-3.5",
-        lg: "h-11 rounded-[10px] px-[18px] text-[15px]",
+        default: "h-9 px-3.5 text-[0.875rem]",
+        sm: "h-8 px-3 text-[0.8125rem] [&_svg:not([class*='size-'])]:size-3.5",
+        lg: "h-11 rounded-[0.625rem] px-4.5 text-[0.9375rem]",
         icon: "size-8 p-0",
       },
     },

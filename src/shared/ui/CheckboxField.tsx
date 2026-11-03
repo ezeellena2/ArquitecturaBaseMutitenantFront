@@ -39,7 +39,7 @@ export function CheckboxField({
   return (
     <div
       className={cn(
-        "relative flex items-start gap-2.5 rounded-[10px] px-2.5 py-[9px]",
+        "relative flex items-start gap-2.5 rounded-[0.625rem] px-2.5 py-2.25",
         disabled ? "" : "hover:bg-[var(--s2)]",
       )}
     >
@@ -59,19 +59,19 @@ export function CheckboxField({
         <Label
           htmlFor={id}
           className={cn(
-            "text-[13.5px] leading-[1.2]",
+            "text-[0.84375rem] leading-[1.2]",
             disabled ? "text-[var(--t2)]" : "cursor-pointer after:absolute after:inset-0",
           )}
         >
           {label}
         </Label>
         {description ? (
-          <p id={descriptionId} className="text-[12.5px] leading-[1.4] text-[var(--t2)]">
+          <p id={descriptionId} className="text-[0.78125rem] leading-[1.4] text-[var(--t2)]">
             {description}
           </p>
         ) : null}
         {error ? (
-          <p id={errorId} role="alert" className="text-[13px] text-[var(--peligro)]">
+          <p id={errorId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">
             {error}
           </p>
         ) : null}

@@ -175,7 +175,7 @@ describe("ConfirmDialog", () => {
       confirmLabel="Salir sin guardar" destructive onConfirm={vi.fn()} />);
 
     const text = screen.getByText("Se pierde lo que cambiaste acá.");
-    expect(text).toHaveClass("text-[13.5px]", "leading-[1.55]", "text-[var(--t2)]", "max-md:text-[14.5px]", "max-md:leading-normal");
+    expect(text).toHaveClass("text-[0.84375rem]", "leading-[1.55]", "text-[var(--t2)]", "max-md:text-[0.90625rem]", "max-md:leading-normal");
     expect(text).not.toHaveClass("max-md:text-[var(--t1)]");
   });
 });

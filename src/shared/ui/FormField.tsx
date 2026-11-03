@@ -24,7 +24,7 @@ export function FormField({ label, htmlFor, hint, error, required, aside, varian
 
   // «Criterio · Formularios»: rótulo de 12,5 a 6 del campo; en el teléfono de la app (tableros M-*, .ap-cmp .rt), de 13,5
   // con el interlineado normal. En ingreso y registro (tableros Ingreso, Registro y sus M-*), de 12,5 en cualquier tamaño.
-  const labelElement = <Label htmlFor={controlId} className={cn("gap-1! text-[12.5px] font-semibold text-[var(--t2)]", variant === "auth" ? "" : "max-md:text-[13.5px] max-md:leading-[normal]")}>
+  const labelElement = <Label htmlFor={controlId} className={cn("gap-1! text-[0.78125rem] font-semibold text-[var(--t2)]", variant === "auth" ? "" : "max-md:text-[0.84375rem] max-md:leading-[normal]")}>
     {label}
     {/* Tablero «Criterio · Formularios»: el asterisco de obligatorio va en rojo. */}
     {required ? <span aria-hidden="true" className="text-[var(--peligro)]">{" *"}</span> : null}
@@ -37,7 +37,7 @@ export function FormField({ label, htmlFor, hint, error, required, aside, varian
         id: controlId,
         // Ingreso y registro (tableros Ingreso, Registro y sus M-*, .in2.lg): 44 con radio 10 y letra de 15 en cualquier
         // tamaño; en el teléfono no toman los 48, 12 y 16 de los campos de la app.
-        className: variant === "auth" ? cn(children.props.className, "h-11 rounded-[10px] px-3.5 text-[15px] max-md:h-11 max-md:rounded-[10px] max-md:text-[15px]") : children.props.className,
+        className: variant === "auth" ? cn(children.props.className, "h-11 rounded-[0.625rem] px-3.5 text-[0.9375rem] max-md:h-11 max-md:rounded-[0.625rem] max-md:text-[0.9375rem]") : children.props.className,
         "aria-invalid": error ? true : undefined,
         "aria-describedby": message ? messageId : undefined,
         "aria-required": required ? true : undefined,
@@ -46,7 +46,7 @@ export function FormField({ label, htmlFor, hint, error, required, aside, varian
         <p
           id={messageId}
           role={error ? "alert" : undefined}
-          className={error ? "text-[12.5px] text-[var(--peligro)]" : "text-[12.5px] text-[var(--t2)]"}
+          className={error ? "text-[0.78125rem] text-[var(--peligro)]" : "text-[0.78125rem] text-[var(--t2)]"}
         >
           {message}
         </p>

@@ -457,7 +457,7 @@ describe("RoleEditorPage", () => {
     // A11 (Rol, «Ver el rol Dueño»): nombre y descripción en el mismo campo que al editar, apagado.
     expect(screen.getByRole("group", { name: "Nombre" })).toHaveTextContent("Dueño");
     expect(screen.getByRole("group", { name: "Nombre" }).querySelector("[data-slot=read-only-field]")).toHaveClass("bg-[var(--s2)]");
-    expect(screen.getByRole("group", { name: "Descripción" }).querySelector("[data-slot=read-only-field]")).toHaveClass("min-h-[84px]");
+    expect(screen.getByRole("group", { name: "Descripción" }).querySelector("[data-slot=read-only-field]")).toHaveClass("min-h-21");
     expect(screen.getByText("Ver roles")).toBeVisible();
     expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
     expect(screen.getByText("2 de 2 elegidos")).toBeVisible();
@@ -549,10 +549,10 @@ describe("RoleEditorPage", () => {
     // «1 de 2» a la derecha de su banda.
     expect(within(row).getByText("1 de 2")).toHaveClass("ml-auto");
     const permission = screen.getByRole("checkbox", { name: "Ver roles" }).closest("label")!;
-    expect(permission).toHaveClass("min-h-10", "pl-[52px]");
+    expect(permission).toHaveClass("min-h-10", "pl-13");
     // M-Rol (.ap-area y .ap-perm): en el teléfono, la flecha ocupa 18 (la casilla del área queda en 62), el área va sin
     // línea y cada permiso lleva la suya arriba: entre dos áreas cerradas no hay línea.
-    expect(within(row).getByRole("button", { name: "Abrir o cerrar Roles" })).toHaveClass("max-md:w-[18px]");
+    expect(within(row).getByRole("button", { name: "Abrir o cerrar Roles" })).toHaveClass("max-md:w-4.5");
     expect(row).toHaveClass("max-md:border-b-0");
     expect(permission).toHaveClass("max-md:border-b-0", "max-md:border-t");
     expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
@@ -578,7 +578,7 @@ describe("RoleEditorPage", () => {
     expect(screen.getByRole("textbox", { name: "Descripción" }).closest("[data-slot='role-description']")).toHaveClass("lg:col-span-2");
     // Tableros Rol (.o-vacio) y M-Rol (.ap-sin-vale): sin «Vale en», los permisos dicen qué falta, en gris claro de 13 y,
     // en el teléfono, de 14,5.
-    expect(screen.getByText("Elegí dónde vale el rol para ver sus permisos.")).toHaveClass("text-[13px]", "text-[var(--t3)]", "max-md:text-[14.5px]", "max-md:text-[var(--t2)]");
+    expect(screen.getByText("Elegí dónde vale el rol para ver sus permisos.")).toHaveClass("text-[0.8125rem]", "text-[var(--t3)]", "max-md:text-[0.90625rem]", "max-md:text-[var(--t2)]");
     // Tablero Rol: la caja de «Descripción» crece con el texto y no tiene el tirador para cambiarle el tamaño.
     const description = screen.getByRole("textbox", { name: "Descripción" });
     expect(description).toHaveClass("resize-none");
@@ -603,8 +603,8 @@ describe("RoleEditorPage", () => {
       expect(await axe(container)).toHaveNoViolations();
       expect(screen.getByRole("heading", { level: 1, name: "Solo lectura" }).closest("header")).toHaveTextContent("Vale en toda la organización · 0 usuarios lo tienen");
       expect(screen.getByRole("heading", { name: "Datos del rol" })).toHaveClass("sr-only");
-      expect(screen.getByRole("heading", { level: 2, name: "Permisos" })).toHaveClass("text-[13.5px]");
-      expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[13.5px]");
+      expect(screen.getByRole("heading", { level: 2, name: "Permisos" })).toHaveClass("text-[0.84375rem]");
+      expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[0.84375rem]");
       const fixed = screen.getByRole("button", { name: "Guardar cambios" }).parentElement!;
       expect(fixed).toHaveAttribute("data-slot", "fixed-actions");
       expect(screen.getAllByRole("button", { name: "Descartar cambios" })).toHaveLength(1);
@@ -637,8 +637,8 @@ describe("RoleEditorPage", () => {
     // Tablero Rol (.w-cartel.o-prob, con 12 y 16 de margen): en la compu, el error de los permisos va en el cartel de
     // problema, de 44 con el ícono de 18.
     const permissionsError = screen.getByText("Elegí al menos un permiso.").closest("[role=alert]");
-    expect(permissionsError).toHaveClass("min-h-11", "rounded-[10px]", "mx-4", "my-3");
-    expect(permissionsError?.querySelector("svg")).toHaveClass("size-[18px]");
+    expect(permissionsError).toHaveClass("min-h-11", "rounded-[0.625rem]", "mx-4", "my-3");
+    expect(permissionsError?.querySelector("svg")).toHaveClass("size-4.5");
     expect(posts).toBe(0);
     expect(await axe(container)).toHaveNoViolations();
 

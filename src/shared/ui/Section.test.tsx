@@ -29,7 +29,7 @@ describe("Section", () => {
     // con borde, 12 de radio y sin sombra (la sombra suave es de las tablas de Empresas y Auditoría); la línea de abajo de
     // su encabezado es la cálida (.cab2).
     const box = region.parentElement!;
-    expect(box).toHaveClass("rounded-[12px]", "border", "border-[var(--borde)]", "bg-[var(--lado-activo)]");
+    expect(box).toHaveClass("rounded-[0.75rem]", "border", "border-[var(--borde)]", "bg-[var(--lado-activo)]");
     expect(box.style.boxShadow).toBe("");
     expect(box.className).not.toMatch(/shadow/);
     expect(screen.getByRole("heading", { name: "Dominio de correo" }).parentElement).toHaveClass("border-[var(--borde-cab)]");
@@ -39,19 +39,19 @@ describe("Section", () => {
     render(<AppChromeProvider value={phone}><Section title="Empresas" action={{ label: "Sumar empresa", onClick: vi.fn() }}><p>{"Delta S.A."}</p></Section></AppChromeProvider>);
 
     expect(screen.getByRole("region", { name: "Empresas" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Empresas" })).toHaveClass("text-[13.5px]", "font-semibold");
+    expect(screen.getByRole("heading", { name: "Empresas" })).toHaveClass("text-[0.84375rem]", "font-semibold");
     // .ap-gtit: el título y la acción con el interlineado normal (con el 1.5 de la página, la fila medía 4 px más).
     expect(screen.getByRole("heading", { name: "Empresas" }).parentElement).toHaveClass("leading-[normal]");
-    expect(screen.getByRole("button", { name: "Sumar empresa" })).toHaveClass("text-[14.5px]", "text-[var(--marca-tx)]");
-    expect(screen.getByText("Delta S.A.").parentElement).toHaveClass("mx-4", "rounded-[14px]", "bg-[var(--lado-activo)]");
+    expect(screen.getByRole("button", { name: "Sumar empresa" })).toHaveClass("text-[0.90625rem]", "text-[var(--marca-tx)]");
+    expect(screen.getByText("Delta S.A.").parentElement).toHaveClass("mx-4", "rounded-[0.875rem]", "bg-[var(--lado-activo)]");
   });
 
   it("en el teléfono, dentro de una página con margen, la tarjeta y el título van sin margen propio", () => {
     render(<AppChromeProvider value={phone}><Section title="Permisos" meta="1 de 2 elegidos" phone="inset"><p>{"Miembros"}</p></Section></AppChromeProvider>);
 
-    expect(screen.getByText("Miembros").parentElement).toHaveClass("rounded-[14px]");
+    expect(screen.getByText("Miembros").parentElement).toHaveClass("rounded-[0.875rem]");
     expect(screen.getByText("Miembros").parentElement).not.toHaveClass("mx-4");
-    expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[13.5px]", "text-[var(--t3)]");
+    expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[0.84375rem]", "text-[var(--t3)]");
   });
 
   it("en el teléfono, sin título a la vista, deja los campos sueltos sobre blanco", () => {
@@ -59,14 +59,14 @@ describe("Section", () => {
 
     expect(screen.getByRole("region", { name: "Datos" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Datos" })).toHaveClass("sr-only");
-    expect(screen.getByText("Nombre").parentElement).not.toHaveClass("rounded-[14px]");
+    expect(screen.getByText("Nombre").parentElement).not.toHaveClass("rounded-[0.875rem]");
   });
 
   it("en la compu, lo que cuenta la caja va gris a la derecha del título", () => {
     render(<Section title="Permisos" meta="1 de 2 elegidos"><p>{"Miembros"}</p></Section>);
 
     // Tablero Rol (.w-cab > span): en 13 y peso 500, gris claro.
-    expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[13px]", "font-medium", "text-[var(--t3)]");
+    expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[0.8125rem]", "font-medium", "text-[var(--t3)]");
     // Tablero Rol (.w-cab > span): sin botón, lo que cuenta la caja queda a 16 del borde (4 del encabezado y 12 suyos).
     expect(screen.getByText("1 de 2 elegidos")).toHaveClass("pr-3");
   });

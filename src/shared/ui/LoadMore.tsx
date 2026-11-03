@@ -17,7 +17,7 @@ export function LoadMore({ hasMore, isLoading = false, onLoadMore }: LoadMorePro
     // M-Auditoria-Org (.ap-mas): en el teléfono, un botón de 44 centrado, sin línea arriba.
     <div className="flex min-h-12 items-center justify-center px-4 py-2 max-md:pt-3.5 max-md:pb-5 md:border-t md:border-[var(--borde)]">
       <Button type="button" variant="outline" disabled={isLoading} onClick={onLoadMore}
-        className="max-md:h-11 max-md:rounded-[12px] max-md:px-[22px] max-md:text-[15px]">
+        className="max-md:h-11 max-md:rounded-[0.75rem] max-md:px-5.5 max-md:text-[0.9375rem]">
         {isLoading ? t("states.loading") : t("pagination.loadMore")}
       </Button>
     </div>

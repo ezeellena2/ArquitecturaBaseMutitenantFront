@@ -45,7 +45,7 @@ export function MonthField({ value, onChange, onValidityChange, id, disabled, cl
       <Popover.Trigger asChild>
         {/* v115 Uso: botón secundario con mes y chevron. El popup incluye año editable: semántica dialog. */}
         <Button id={id} type="button" role="combobox" variant="outline" disabled={disabled || format.isLoading}
-          className={cn("max-w-full gap-2 max-md:h-12 max-md:rounded-[12px] max-md:text-[16px]", className)}
+          className={cn("max-w-full gap-2 max-md:h-12 max-md:rounded-[0.75rem] max-md:text-[1rem]", className)}
           aria-label={label} aria-busy={format.isLoading} aria-invalid={externalInvalid || invalid}
           aria-describedby={description} aria-required={required}
           onKeyDown={(event) => {
@@ -62,7 +62,7 @@ export function MonthField({ value, onChange, onValidityChange, id, disabled, cl
           onSelect={(next) => { onChange(next); setOpenedFor(null); }} />
       </Popover.Portal> : null}
     </Popover.Root>
-    {showMessage ? <p id={messageId} role="alert" className="text-[13px] text-[var(--peligro)]">{t("fields.invalidMonth")}</p> : null}
+    {showMessage ? <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t("fields.invalidMonth")}</p> : null}
   </>;
 }
 
@@ -102,7 +102,7 @@ function MonthPicker({ value, selectedValue, onSelect }: {
   }
 
   return <Popover.Content role="dialog" aria-label={t("fields.chooseMonth")} sideOffset={4} align="start"
-    className="z-50 w-[min(18rem,calc(100vw-2rem))] max-h-(--radix-popover-content-available-height) overflow-y-auto rounded-[10px] border border-[var(--borde)] bg-[var(--lado-activo)] p-2 text-[var(--t1)] shadow-[var(--sombra-menu)]"
+    className="z-50 w-[min(18rem,calc(100vw-2rem))] max-h-(--radix-popover-content-available-height) overflow-y-auto rounded-[0.625rem] border border-[var(--borde)] bg-[var(--lado-activo)] p-2 text-[var(--t1)] shadow-[var(--sombra-menu)]"
     onOpenAutoFocus={(event) => { event.preventDefault(); optionRefs.current[active]?.focus(); }}>
     <div className="mb-2 flex items-center gap-2">
       <Button type="button" variant="icon" size="icon" aria-label={t("fields.previousYear")}
@@ -121,11 +121,11 @@ function MonthPicker({ value, selectedValue, onSelect }: {
         <ChevronRightIcon />
       </Button>
     </div>
-    {invalid && touched ? <p id={`${yearId}-error`} role="alert" className="text-[13px] text-[var(--peligro)]">{t("fields.invalidYear")}</p> : null}
+    {invalid && touched ? <p id={`${yearId}-error`} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t("fields.invalidYear")}</p> : null}
     <div role="listbox" aria-label={t("fields.month")} className="max-h-72 overflow-y-auto">
       {options.map((option, index) => <Button key={option.value} ref={(node) => { optionRefs.current[index] = node; }}
         type="button" role="option" variant="icon" aria-selected={option.value === selectedValue} tabIndex={active === index ? 0 : -1}
-        className="h-9 w-full justify-start px-2 text-[13px] aria-selected:bg-[var(--s2)] max-md:h-12 max-md:text-[16px]"
+        className="h-9 w-full justify-start px-2 text-[0.8125rem] aria-selected:bg-[var(--s2)] max-md:h-12 max-md:text-[1rem]"
         onFocus={() => setActive(index)} onKeyDown={(event) => navigate(event, index)} onClick={() => onSelect(option.value)}>
         {option.label}
       </Button>)}

@@ -29,11 +29,11 @@ export function AuthDestinationField({ channel, onChannelChange, email, onEmailC
     if (!channels.isPending && !hasWhatsApp && channel === "phone") onChannelChange("email");
   }, [channels.isPending, hasWhatsApp, channel, onChannelChange]);
   const showPhone = hasWhatsApp && channel === "phone";
-  return <div className="flex flex-col gap-[22px]">
-    {hasWhatsApp ? <div role="group" aria-label={t("login.channelLabel")} className="flex gap-1 rounded-[12px] bg-[var(--s3)] p-1 max-md:rounded-[10px] max-md:p-[3px]">
+  return <div className="flex flex-col gap-5.5">
+    {hasWhatsApp ? <div role="group" aria-label={t("login.channelLabel")} className="flex gap-1 rounded-[0.75rem] bg-[var(--s3)] p-1 max-md:rounded-[0.625rem] max-md:p-0.75">
       {(["email", "phone"] as const).map((value) => <button key={value} type="button" aria-pressed={(showPhone ? "phone" : "email") === value}
-        onClick={() => onChannelChange(value)} className={`inline-flex h-[38px] flex-1 items-center justify-center gap-2 rounded-[9px] text-[14px] font-semibold outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] ${((showPhone ? "phone" : "email") === value) ? "bg-[var(--lado-activo)] text-[var(--t1)] shadow-sm" : "text-[var(--t2)]"}`}>
-        {value === "email" ? <MailIcon className="size-4" aria-hidden="true" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z" /><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z" /></svg>}
+        onClick={() => onChannelChange(value)} className={`inline-flex h-9.5 flex-1 items-center justify-center gap-2 rounded-[0.5625rem] text-[0.875rem] font-semibold outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] ${((showPhone ? "phone" : "email") === value) ? "bg-[var(--lado-activo)] text-[var(--t1)] shadow-sm" : "text-[var(--t2)]"}`}>
+        {value === "email" ? <MailIcon className="size-4" aria-hidden="true" /> : <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z" /><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z" /></svg>}
         {t(value === "phone" ? "login.whatsappChannel" : "login.emailChannel")}
       </button>)}
     </div> : null}

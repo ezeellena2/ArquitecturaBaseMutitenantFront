@@ -98,7 +98,7 @@ describe("UsersPage", () => {
     expect(screen.getByRole("link", { name: "Lucía Fernández" })).not.toHaveClass("text-[var(--marca-tx)]");
     expect(screen.getByRole("columnheader", { name: "Usuario" })).toHaveClass("w-[30%]");
     expect(screen.getByRole("columnheader", { name: "Rol en la organización" })).toHaveClass("w-[19%]");
-    expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("w-[202px]");
+    expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("w-50.5");
     expect(screen.getByRole("columnheader", { name: "Usuario" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Rol en la organización" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Empresa" })).toBeVisible();
@@ -161,7 +161,7 @@ describe("UsersPage", () => {
     const expires = detail(/^Vence/);
     expect(expires).toHaveTextContent("Vence 02/10/2026");
     expect(expires?.firstElementChild).toHaveClass("pl-3.5");
-    expect(screen.getAllByRole("row").slice(1).every((row) => row.classList.contains("h-[52px]"))).toBe(true);
+    expect(screen.getAllByRole("row").slice(1).every((row) => row.classList.contains("h-13"))).toBe(true);
 
     screen.getByRole("button", { name: "Estado: todos" }).focus();
     await user.keyboard("{Enter}");

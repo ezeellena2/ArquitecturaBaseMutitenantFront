@@ -79,7 +79,7 @@ describe("ReasonDialog (E5)", () => {
     const action = await screen.findByRole("button", { name: "Suspender" });
     expect(action).toHaveAttribute("data-variant", destructive ? "destructive" : "default");
     expect(screen.queryByRole("button", { name: "Cerrar" })).not.toBeInTheDocument();
-    expect(screen.getByRole("dialog")).toHaveClass("md:max-w-[420px]");
+    expect(screen.getByRole("dialog")).toHaveClass("md:max-w-105");
     await userEvent.click(screen.getByRole("button", { name: "Cancelar" }));
     expect(onClose).toHaveBeenCalledOnce();
     expect(mutationFn).not.toHaveBeenCalled();
@@ -217,7 +217,7 @@ describe("ReasonDialog (E5)", () => {
     try {
       dialog();
       const content = await screen.findByRole("dialog");
-      expect(content).toHaveClass("bottom-0", "rounded-t-[20px]");
+      expect(content).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
       expect(content.querySelector('[data-slot="dialog-handle"]')).toHaveAttribute("aria-hidden", "true");
       expect(await axe(content)).toHaveNoViolations();
     } finally { restore(); }

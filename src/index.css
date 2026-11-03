@@ -60,13 +60,13 @@
   --franja-ok: oklch(0.78 0.14 155);
   --franja-mal: oklch(0.75 0.15 25);
   --franja-accion: oklch(0.82 0.08 195);
-  --sombra-franja: 0 8px 24px oklch(0.2 0.01 60 / 0.3);
+  --sombra-franja: 0 0.5rem 1.5rem oklch(0.2 0.01 60 / 0.3);
   /* Tablero Avisos (.p-aviso) y «Criterio · Avisos» (.toast3, .ic-ok): la tarjeta blanca de los avisos pasajeros de la
      compu, su sombra y el ícono de lo que salió bien. */
-  --sombra-aviso: 0 12px 32px oklch(0.24 0.014 78 / 0.16);
+  --sombra-aviso: 0 0.75rem 2rem oklch(0.24 0.014 78 / 0.16);
   /* «Criterio · Diálogos» (.cd) y los menús y listas que se abren de los tableros (.menu, .o-lst): sus sombras largas. */
-  --sombra-dialogo: 0 24px 48px oklch(0.2 0.014 78 / 0.28);
-  --sombra-menu: 0 12px 32px oklch(0.24 0.014 78 / 0.14);
+  --sombra-dialogo: 0 1.5rem 3rem oklch(0.2 0.014 78 / 0.28);
+  --sombra-menu: 0 0.75rem 2rem oklch(0.24 0.014 78 / 0.14);
   --aviso-ok: oklch(0.55 0.13 155);
   --punto-ok: oklch(0.6 0.13 155);
   --punto-alerta: oklch(0.72 0.15 70);
@@ -74,25 +74,25 @@
   /* La casilla marcada y fija de un rol de sistema en el teléfono (tablero M-Rol, .ap-chk.on.fijo, v108). */
   --casilla-fija: oklch(0.78 0.006 78);
   /* Teléfono (tableros M-*): sombra del «+» flotante y de la hoja que sube desde abajo. */
-  --sombra-fab: 0 6px 16px oklch(0.3 0.06 195 / 0.3), 0 2px 4px oklch(0.3 0.06 195 / 0.2);
-  --sombra-hoja: 0 -8px 24px oklch(0.2 0.014 78 / 0.12);
+  --sombra-fab: 0 0.375rem 1rem oklch(0.3 0.06 195 / 0.3), 0 2px 0.25rem oklch(0.3 0.06 195 / 0.2);
+  --sombra-hoja: 0 -0.5rem 1.5rem oklch(0.2 0.014 78 / 0.12);
   /* Tableros Pagina-Publica y M-Pagina-Publica: el brillo arriba a la derecha del fondo de la página pública y la sombra
      de su tarjeta (en el teléfono, más corta). */
   --fondo-brillo: oklch(0.94 0.028 78);
-  --sombra-tarjeta: 0 16px 40px oklch(0.24 0.014 78 / 0.08);
-  --sombra-tarjeta-movil: 0 10px 28px oklch(0.24 0.014 78 / 0.08);
+  --sombra-tarjeta: 0 1rem 2.5rem oklch(0.24 0.014 78 / 0.08);
+  --sombra-tarjeta-movil: 0 0.625rem 1.75rem oklch(0.24 0.014 78 / 0.08);
   /* Landing y Directorio (lienzo v112): sombra al pasar sobre una tarjeta de empresa. */
-  --sombra-directorio: 0 6px 18px oklch(0.24 0.014 78 / 0.08);
+  --sombra-directorio: 0 0.375rem 1.125rem oklch(0.24 0.014 78 / 0.08);
   /* Lienzo v107 (`.w-plegar`): la sombra de la flecha redonda que achica el menú. */
-  --sombra-flecha: 0 1px 3px oklch(0.24 0.012 60 / 0.15);
+  --sombra-flecha: 0 1px 0.1875rem oklch(0.24 0.012 60 / 0.15);
   /* «Criterio · Menús» (`.o-seg` de los tableros): la opción elegida de dos vistas, en blanco sobre la vía gris. */
-  --sombra-segmento: 0 1px 3px oklch(0.24 0.014 78 / 0.12);
+  --sombra-segmento: 0 1px 0.1875rem oklch(0.24 0.014 78 / 0.12);
   --foco: var(--marca);
   --foco-halo: oklch(0.51 0.099 195 / 0.15);
 
-  --radius-card: 16px;
-  --radius-control: 8px;
-  --shadow-card: 0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 8px 24px -12px oklch(0.24 0.012 60 / 0.14);
+  --radius-card: 1rem;
+  --radius-control: 0.5rem;
+  --shadow-card: 0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 0.5rem 1.5rem -0.75rem oklch(0.24 0.012 60 / 0.14);
   --radius: var(--radius-control);
 
   /* shadcn: los valores son alias del tema aprobado. */
@@ -133,7 +133,7 @@
   position: absolute;
   inset: 0;
   background-image: linear-gradient(var(--auth-panel-grid) 1px, transparent 1px), linear-gradient(90deg, var(--auth-panel-grid) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-size: 2.5rem 2.5rem;
   mask-image: radial-gradient(ellipse at 70% 30%, var(--t1) 20%, transparent 75%);
 }
 
@@ -167,7 +167,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --radius-sm: 8px;
+  --radius-sm: 0.5rem;
   --radius-md: var(--radius-control);
   --radius-lg: var(--radius-card);
   --radius-xl: var(--radius-card);
@@ -192,20 +192,20 @@ body {
 /* En el teléfono, los avisos suben por encima de la acción fija de abajo (tablero M-Avisos). */
 @media (max-width: 767px) {
   /* M-Avisos (.f-snack, a 110 del pie con la barra de 97): la franja queda a 13 de la barra de botones, que acá mide 75. */
-  body:has([data-slot="fixed-actions"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 88px; }
+  body:has([data-slot="fixed-actions"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 5.5rem; }
   /* Con la barra de abajo, la franja va por encima de ella. */
-  body:has([data-slot="bottom-nav"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 84px; }
+  body:has([data-slot="bottom-nav"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 5.25rem; }
   [data-sonner-toast][data-type="success"] [data-icon] { color: var(--franja-ok); }
   [data-sonner-toast][data-type="error"] [data-icon], [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--franja-mal); }
   /* .f-snack: sin borde, con el renglón de 1,4 y el ícono en su caja (20; el del error, 28), sin los márgenes de sonner. */
   [data-sonner-toaster] [data-sonner-toast][data-styled="true"] { border-width: 0; }
-  [data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-icon] { width: 20px; height: 20px; margin: 0; }
-  [data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] { width: 28px; height: 28px; }
+  [data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-icon] { width: 1.25rem; height: 1.25rem; margin: 0; }
+  [data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] { width: 1.75rem; height: 1.75rem; }
   [data-sonner-toast][data-styled="true"] [data-title] { font-weight: 400; line-height: inherit; }
-  [data-sonner-toast][data-styled="true"] [data-close-button] svg { width: 18px; height: 18px; }
-  [data-sonner-toast][data-styled="true"] [data-button] { height: auto; padding: 0; background: transparent; color: var(--franja-accion); font-size: 14.5px; font-weight: 600; }
+  [data-sonner-toast][data-styled="true"] [data-close-button] svg { width: 1.125rem; height: 1.125rem; }
+  [data-sonner-toast][data-styled="true"] [data-button] { height: auto; padding: 0; background: transparent; color: var(--franja-accion); font-size: 0.90625rem; font-weight: 600; }
   /* .f-snack .x: la ✕ de 18, sin caja alrededor. */
-  [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 18px; height: 18px; transform: none; border: 0; background: transparent; color: oklch(1 0 0 / 0.7); }
+  [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 1.125rem; height: 1.125rem; transform: none; border: 0; background: transparent; color: oklch(1 0 0 / 0.7); }
 }
 /* En la compu (tablero Avisos, .p-aviso): sobre la tarjeta blanca solo el ícono lleva color; el error suma el borde rojo
    suave y la ✕ a la derecha; «Reintentar» y «Copiar código» van en texto petróleo. */
@@ -216,16 +216,16 @@ body {
   [data-sonner-toast][data-type="info"] [data-icon] { color: var(--marca-tx); }
   [data-sonner-toast][data-type="error"] { border-color: var(--peligro-borde); align-items: flex-start; }
   /* El ícono en su caja de 18, sin los márgenes de sonner (su regla pesa más que [data-sonner-toast] [data-icon]). */
-  [data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-icon] { width: 18px; height: 18px; margin: 0; }
+  [data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-icon] { width: 1.125rem; height: 1.125rem; margin: 0; }
   [data-sonner-toast][data-styled="true"] [data-title] { font-weight: 400; line-height: normal; }
-  [data-sonner-toast][data-styled="true"] [data-button] { height: auto; padding: 0; background: transparent; color: var(--marca-tx); font-size: 13px; font-weight: 600; }
-  [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 24px; height: 24px; transform: none; border: 0; background: transparent; color: var(--t2); }
-  [data-sonner-toast][data-styled="true"] [data-close-button] svg { width: 16px; height: 16px; }
+  [data-sonner-toast][data-styled="true"] [data-button] { height: auto; padding: 0; background: transparent; color: var(--marca-tx); font-size: 0.8125rem; font-weight: 600; }
+  [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 1.5rem; height: 1.5rem; transform: none; border: 0; background: transparent; color: var(--t2); }
+  [data-sonner-toast][data-styled="true"] [data-close-button] svg { width: 1rem; height: 1rem; }
   /* «Error del servidor» (.p-aviso .o-tt): «Copiar código» va debajo del texto, a 6 (el espacio del aviso, 10, menos 4), y
      la ✕ queda arriba a la derecha. «Reintentar» sigue al lado del texto. */
   [data-sonner-toast][data-styled="true"].aviso-codigo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; }
   [data-sonner-toast][data-styled="true"].aviso-codigo [data-icon] { grid-area: 1 / 1; }
   [data-sonner-toast][data-styled="true"].aviso-codigo [data-content] { grid-area: 1 / 2; }
-  [data-sonner-toast][data-styled="true"].aviso-codigo [data-button] { grid-area: 2 / 2; justify-self: start; margin: -4px 0 0; }
+  [data-sonner-toast][data-styled="true"].aviso-codigo [data-button] { grid-area: 2 / 2; justify-self: start; margin: -0.25rem 0 0; }
   [data-sonner-toast][data-styled="true"].aviso-codigo [data-close-button] { grid-area: 1 / 3; }
 }

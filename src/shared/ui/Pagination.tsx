@@ -44,7 +44,7 @@ export function Pagination({
   return (
     <nav
       aria-label={t("pagination.label")}
-      className={cn("flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--borde)] px-4 py-2 text-[12px] text-[var(--t2)]", web ? "border-0" : "", webPhone ? "min-h-0 px-0 py-1" : "")}
+      className={cn("flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--borde)] px-4 py-2 text-[0.75rem] text-[var(--t2)]", web ? "border-0" : "", webPhone ? "min-h-0 px-0 py-1" : "")}
     >
       <p>
         {from === to
@@ -56,7 +56,7 @@ export function Pagination({
           <SelectTrigger
             size="sm"
             aria-label={t("pagination.rowsPerPage")}
-            className="h-7 rounded-full border-[var(--borde)] bg-[var(--lado-activo)] px-2.5 text-[12px] text-[var(--t2)] shadow-none"
+            className="h-7 rounded-full border-[var(--borde)] bg-[var(--lado-activo)] px-2.5 text-[0.75rem] text-[var(--t2)] shadow-none"
           >
             <SelectValue />
           </SelectTrigger>
@@ -78,7 +78,7 @@ export function Pagination({
           aria-label={t("pagination.previous")}
           disabled={!hasPrevious}
           onClick={() => onPageChange(page - 1)}
-          className={cn("text-[var(--t3)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)] disabled:opacity-40", web ? "size-7 rounded-[7px]" : "")}
+          className={cn("text-[var(--t3)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)] disabled:opacity-40", web ? "size-7 rounded-[0.4375rem]" : "")}
         >
           <ChevronLeftIcon strokeWidth={2} className="size-4" />
         </Button>
@@ -89,7 +89,7 @@ export function Pagination({
           aria-label={t("pagination.next")}
           disabled={!hasNext}
           onClick={() => onPageChange(page + 1)}
-          className={cn("text-[var(--t3)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)] disabled:opacity-40", web ? "size-7 rounded-[7px]" : "")}
+          className={cn("text-[var(--t3)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)] disabled:opacity-40", web ? "size-7 rounded-[0.4375rem]" : "")}
         >
           <ChevronRightIcon strokeWidth={2} className="size-4" />
         </Button>

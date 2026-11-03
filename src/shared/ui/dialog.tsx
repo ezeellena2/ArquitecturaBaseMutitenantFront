@@ -85,8 +85,8 @@ function DialogContent({
         data-concealed={concealed || undefined}
         hidden={concealed || undefined}
         className={cn(
-          "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full gap-0 overflow-y-auto rounded-t-[20px] border-0 bg-[var(--lado-activo)] p-0 text-[15px] shadow-[var(--sombra-hoja)] outline-none md:text-[13px] md:shadow-[var(--sombra-dialogo)] data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[12px] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
-          size === "sm" ? "md:max-w-[420px]" : size === "preview" ? "md:max-w-[640px]" : "md:max-w-[560px]",
+          "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full gap-0 overflow-y-auto rounded-t-[1.25rem] border-0 bg-[var(--lado-activo)] p-0 text-[0.9375rem] shadow-[var(--sombra-hoja)] outline-none md:text-[0.8125rem] md:shadow-[var(--sombra-dialogo)] data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[0.75rem] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
+          size === "sm" ? "md:max-w-105" : size === "preview" ? "md:max-w-160" : "md:max-w-140",
           // Lienzo v106 («Criterio · Decisiones»): en el teléfono toda hoja sube desde abajo con el alto de lo que lleva;
           // ninguna ocupa la pantalla completa.
           className,
@@ -100,7 +100,7 @@ function DialogContent({
         }}
       >
         {/* Tablero M-Usuarios-Invitar (.ap-hoja): en el teléfono la hoja sube desde abajo con su manija. */}
-        <span data-slot="dialog-handle" aria-hidden="true" className="mx-auto mt-2 mb-1 h-[5px] w-9 rounded-full bg-[var(--borde2)] md:hidden" />
+        <span data-slot="dialog-handle" aria-hidden="true" className="mx-auto mt-2 mb-1 h-1.25 w-9 rounded-full bg-[var(--borde2)] md:hidden" />
         <PhoneCloseContext.Provider value={showCloseButton === true || showCloseButton === "phone"}>{children}</PhoneCloseContext.Provider>
         {/* Hojas del teléfono (.ap-hoja .hc .ap-ib): el ✕ de 44, con su cruz de 22, va centrado con el título: debajo de
             la manija (17) y de los 4 de arriba del encabezado, a 6 del borde. En la compu («Criterio · Diálogos», .ib), de
@@ -109,12 +109,12 @@ function DialogContent({
           <DialogPrimitive.Close
             data-slot="dialog-close"
             className={cn(
-              "absolute top-[21px] right-1.5 flex size-11 items-center justify-center rounded-full text-[var(--t1)] md:top-2 md:right-2 md:size-8 md:rounded-[8px] md:text-[var(--t2)] transition-colors hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
+              "absolute top-5.25 right-1.5 flex size-11 items-center justify-center rounded-full text-[var(--t1)] md:top-2 md:right-2 md:size-8 md:rounded-[0.5rem] md:text-[var(--t2)] transition-colors hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
               showCloseButton === "desktop" && "max-md:hidden md:flex",
               showCloseButton === "phone" && "md:hidden"
             )}
           >
-            <CloseIcon strokeWidth={2} className="size-[22px] md:size-4" />
+            <CloseIcon strokeWidth={2} className="size-5.5 md:size-4" />
             <span className="sr-only">{t("actions.close")}</span>
           </DialogPrimitive.Close>
         ) : null}
@@ -132,7 +132,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="dialog-header"
       className={cn(
         "flex flex-col justify-center gap-1 px-5 py-1 text-left max-md:bg-transparent md:min-h-12 md:border-b md:border-[var(--borde-cab)] md:bg-[var(--cab)] md:py-2 md:pr-5",
-        phoneClose ? "min-h-[52px] pr-14" : "pr-5",
+        phoneClose ? "min-h-13 pr-14" : "pr-5",
         className
       )}
       {...props}
@@ -166,7 +166,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "sticky bottom-0 flex flex-row gap-2.5 bg-[var(--lado-activo)] px-5 pt-2 pb-[calc(16px+env(safe-area-inset-bottom))] max-md:border-0 max-md:[&_button]:h-12 max-md:[&_button]:flex-1 max-md:[&_button]:rounded-[12px] max-md:[&_button]:text-[15px] md:static md:justify-end md:border-t md:border-[var(--borde)] md:py-3 md:[&_button]:w-auto",
+        "sticky bottom-0 flex flex-row gap-2.5 bg-[var(--lado-activo)] px-5 pt-2 pb-[calc(1rem+env(safe-area-inset-bottom))] max-md:border-0 max-md:[&_button]:h-12 max-md:[&_button]:flex-1 max-md:[&_button]:rounded-[0.75rem] max-md:[&_button]:text-[0.9375rem] md:static md:justify-end md:border-t md:border-[var(--borde)] md:py-3 md:[&_button]:w-auto",
         className
       )}
       {...props}
@@ -190,7 +190,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("font-semibold tracking-[-0.01em] text-[var(--t1)] max-md:text-[18px] max-md:leading-[1.3] max-md:font-bold md:text-[15px] md:leading-normal", className)}
+      className={cn("font-semibold tracking-[-0.01em] text-[var(--t1)] max-md:text-[1.125rem] max-md:leading-[1.3] max-md:font-bold md:text-[0.9375rem] md:leading-normal", className)}
       {...props}
     />
   )
@@ -205,7 +205,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-[13.5px] leading-[1.55] text-[var(--t2)] max-md:text-[14.5px] max-md:leading-normal", className)}
+      className={cn("text-[0.84375rem] leading-[1.55] text-[var(--t2)] max-md:text-[0.90625rem] max-md:leading-normal", className)}
       {...props}
     />
   )

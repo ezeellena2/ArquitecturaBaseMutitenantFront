@@ -45,7 +45,7 @@ export function ContactPage(_props: ModuleContentProps) {
   const format = useFormat();
   useBreadcrumbLeaf(contact.data ? contact.data.name ?? (format.isLoading ? undefined : format.formatPhone(contact.data.displayNumber)) : undefined);
 
-  if (contact.isPending) return <Page icon={ContactsIcon} title={t("whatsapp:contacts.detail.loading")} backTo={back}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (contact.isPending) return <Page icon={ContactsIcon} title={t("whatsapp:contacts.detail.loading")} backTo={back}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   if (!contact.data) return isNotFoundError(contact.error)
     ? <NotFoundPage homePath={homeOf("business")} screen={t("whatsapp:contacts.detail.title")} back={back} />
     : <LoadErrorPage onRetry={() => { void contact.refetch(); }} screen={t("whatsapp:contacts.detail.title")} back={back} />;

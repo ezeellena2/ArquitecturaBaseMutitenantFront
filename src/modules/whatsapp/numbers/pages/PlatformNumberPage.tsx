@@ -91,7 +91,7 @@ export function PlatformNumberPage() {
     const systemDetail = t("whatsapp:numbers.platform.systemMessages", { count: response.systemMessagesThisMonth, value: format.formatInteger(response.systemMessagesThisMonth) });
     const consultationSwitch = <Switch aria-label={t("whatsapp:numbers.platform.consultationsSwitch")} checked={response.consultationsEnabled}
       disabled={consultations.isPending} onCheckedChange={(enabled) => consultations.mutate({ enabled, number: current })} />;
-    const always = <span className="text-[13px] text-[var(--t3)] max-md:text-[14px]">{t("whatsapp:numbers.platform.always")}</span>;
+    const always = <span className="text-[0.8125rem] text-[var(--t3)] max-md:text-[0.875rem]">{t("whatsapp:numbers.platform.always")}</span>;
     const usage = <NumberUsage number={current} month />;
     return <>
       <Section title={t("whatsapp:numbers.platform.number")}>
@@ -99,7 +99,7 @@ export function PlatformNumberPage() {
           <SettingsItem title={label} detail={<>{format.formatEnum("WhatsAppNumberStatus", current.status)}{" · "}{t("whatsapp:numbers.platform.sinceDate", { date: format.formatDate(current.connectedAtUtc) })}</>}
             trailing={<span className="flex items-center gap-1">{current.status === "PaymentMissing" ? <InfoButton label={t("whatsapp:numbers.platform.whyNoMessages")} onClick={() => setPayment({})} /> : null}{actions}</span>} />
         </ul> : <List label={t("whatsapp:numbers.platform.number")}>
-          <ListItem icon={<PhoneIcon />} title={<span className="text-[15px]">{label}</span>} detail={since}>
+          <ListItem icon={<PhoneIcon />} title={<span className="text-[0.9375rem]">{label}</span>} detail={since}>
             <span className="flex items-center gap-3">{status}{actions}</span>
           </ListItem>
         </List>}
@@ -120,7 +120,7 @@ export function PlatformNumberPage() {
     <Page icon={WhatsAppIcon} title={t("whatsapp:numbers.platform.title")} summary={summary} phoneBody={number ? "gray" : "padded"}
       fab={!number && signup ? { label: t("whatsapp:numbers.actions.connect"), onClick: connect } : undefined}
       actions={number ? undefined : connectButton}>
-      {!data ? <p role="status" className="text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
+      {!data ? <p role="status" className="text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p>
         : number ? body(number, data)
           : <Surface phoneFlush><EmptyState framed={false} title={t("whatsapp:numbers.platform.empty")} /></Surface>}
     </Page>

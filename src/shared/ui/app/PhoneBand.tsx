@@ -18,7 +18,7 @@ export function PhoneBand({ tone, icon, role, label, children }: {
   label?: string;
   children: ReactNode;
 }) {
-  return <div role={role} aria-label={label} className={cn("flex items-start gap-2.5 px-4 py-3 text-[14.5px] leading-[1.4]", tones[tone])}>
+  return <div role={role} aria-label={label} className={cn("flex items-start gap-2.5 px-4 py-3 text-[0.90625rem] leading-[1.4]", tones[tone])}>
     {icon}
     {children}
   </div>;

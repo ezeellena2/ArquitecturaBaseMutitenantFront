@@ -27,8 +27,8 @@ afterEach(() => { viewport.mobile = false; session.permissions = []; session.pla
 describe("PrivateLayoutFrame", () => {
   it("muestra el contexto de empresa sin enlaces de Administración de etapas futuras", () => {
     render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
-    expect(screen.getByRole("banner")).toHaveClass("h-[52px]");
-    expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-[232px]");
+    expect(screen.getByRole("banner")).toHaveClass("h-13");
+    expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-58");
     expect(screen.getByRole("main")).toHaveClass("bg-[var(--fondo)]");
     expect(screen.getByText("Empresa A")).toBeVisible();
     expect(screen.getByText("Organización")).toBeVisible();
@@ -87,7 +87,7 @@ describe("PrivateLayoutFrame", () => {
     expect(arrow.closest("aside, nav")).toHaveAccessibleName(panel);
     expect(arrow).toHaveClass("absolute", "-right-3.5", "top-16", "size-7", "rounded-full", "border-[var(--borde2)]", "bg-[var(--lado-activo)]",
       "text-[var(--t1)]", "hover:text-[var(--marca)]");
-    expect(arrow.querySelector("svg")).toHaveAttribute("width", "18");
+    expect(arrow.querySelector("svg")).toHaveClass("size-4.5");
   });
 
   it("en Inicio arranca con el panel cerrado", () => {
@@ -118,7 +118,7 @@ describe("PrivateLayoutFrame", () => {
       <Page title="Usuarios"><p>{"lista"}</p></Page>
     </PrivateLayoutFrame></MemoryRouter>);
 
-    expect(screen.getByRole("heading", { level: 1, name: "Usuarios" })).toHaveClass("text-[20px]");
+    expect(screen.getByRole("heading", { level: 1, name: "Usuarios" })).toHaveClass("text-[1.25rem]");
     expect(screen.getByRole("link", { name: "Volver a Más" })).toHaveAttribute("href", "/mas");
     expect(screen.getByText("Administración")).toBeInTheDocument();
     expect(within(screen.getByRole("navigation", { name: "Secciones" })).getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
@@ -180,7 +180,7 @@ describe("PrivateLayoutFrame", () => {
     render(<MemoryRouter initialEntries={["/plataforma/cuentas"]}><PrivateLayoutFrame navigation={platformNavigation} scope="platform">
       <Page title="Cuentas"><p>{"lista"}</p></Page>
     </PrivateLayoutFrame></MemoryRouter>);
-    expect(screen.getByRole("heading", { name: "Cuentas" })).toHaveClass("text-[24px]");
+    expect(screen.getByRole("heading", { name: "Cuentas" })).toHaveClass("text-[1.5rem]");
     expect(screen.getByText("Plataforma")).toBeVisible();
     expect(screen.queryByRole("link", { name: "Volver a Más" })).not.toBeInTheDocument();
   });
@@ -191,7 +191,7 @@ describe("PrivateLayoutFrame", () => {
     render(<MemoryRouter initialEntries={["/plataforma/configuracion"]}><PrivateLayoutFrame navigation={platformNavigation} scope="platform">
       <Page title="Configuración"><p>{"ajustes"}</p></Page>
     </PrivateLayoutFrame></MemoryRouter>);
-    expect(screen.getByRole("heading", { name: "Configuración" })).toHaveClass("text-[20px]");
+    expect(screen.getByRole("heading", { name: "Configuración" })).toHaveClass("text-[1.25rem]");
     expect(screen.getByRole("link", { name: "Volver a Más" })).toHaveAttribute("href", "/plataforma/mas");
     expect(screen.getByText("Administración")).toBeVisible();
   });

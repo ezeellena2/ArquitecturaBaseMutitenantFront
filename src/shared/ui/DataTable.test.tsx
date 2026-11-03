@@ -131,9 +131,9 @@ describe("DataTable", () => {
   // costados y 12 entre columnas, iguales en el encabezado y en las filas, y ⋮ en una columna de 50.
   it("usa encabezado arena de 40, filas de 40 y los mismos márgenes que el tablero", () => {
     render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} />);
-    expect(screen.getByRole("table")).toHaveClass("text-[13px]");
+    expect(screen.getByRole("table")).toHaveClass("text-[0.8125rem]");
     const header = screen.getByRole("columnheader", { name: "Nombre" });
-    expect(header).toHaveClass("h-10", "bg-[var(--cab)]", "text-[13px]", "normal-case", "whitespace-normal", "px-1.5", "first:pl-4", "last:pr-4");
+    expect(header).toHaveClass("h-10", "bg-[var(--cab)]", "text-[0.8125rem]", "normal-case", "whitespace-normal", "px-1.5", "first:pl-4", "last:pr-4");
     // La cebra empieza con una fila blanca, como el tablero.
     expect(screen.getAllByRole("row")[1]).toHaveClass("h-10", "even:bg-[var(--fila-alterna)]");
     expect(screen.getAllByRole("row")[1]).not.toHaveClass("odd:bg-[var(--fila-alterna)]");
@@ -141,7 +141,7 @@ describe("DataTable", () => {
     expect(screen.getByRole("button", { name: "Acciones de Ana García" }).closest("td")).toHaveClass("py-0");
     expect(screen.getByRole("button", { name: "Acciones de Ana García" }).closest("td")).not.toHaveClass("py-2");
     expect(screen.getAllByRole("cell")[0]).toHaveClass("px-1.5", "py-2", "first:pl-4", "last:pr-4");
-    expect(screen.getByRole("columnheader", { name: "Acciones" })).toHaveClass("w-[50px]", "last:pr-3", "text-right");
+    expect(screen.getByRole("columnheader", { name: "Acciones" })).toHaveClass("w-12.5", "last:pr-3", "text-right");
   });
 
   // «Criterio · Tablas» (lienzo v92): lo que aclara una celda va debajo, en una segunda línea gris de 12. Si alguna fila
@@ -155,12 +155,12 @@ describe("DataTable", () => {
 
     const detail = screen.getByText("ana@example.com");
     expect(detail).toHaveAttribute("data-slot", "cell-detail");
-    expect(detail).toHaveClass("block", "truncate", "text-[12px]", "text-[var(--t3)]");
+    expect(detail).toHaveClass("block", "truncate", "text-[0.75rem]", "text-[var(--t3)]");
     expect(detail.parentElement).toHaveClass("flex", "flex-col", "leading-[1.35]");
     expect(detail.parentElement).toContainElement(screen.getByText("Ana García"));
     const [, first, second] = screen.getAllByRole("row");
-    expect(first).toHaveClass("h-[52px]");
-    expect(second).toHaveClass("h-[52px]");
+    expect(first).toHaveClass("h-13");
+    expect(second).toHaveClass("h-13");
     expect(within(second).queryByText("ana@example.com")).not.toBeInTheDocument();
     expect(second.querySelector('[data-slot="cell-detail"]')).toBeNull();
   });
@@ -169,7 +169,7 @@ describe("DataTable", () => {
     render(<DataTable columns={[{ ...columns[0], detail: () => null }, columns[2]]} rows={rows} rowKey={(row) => row.id} />);
 
     expect(screen.getAllByRole("row")[1]).toHaveClass("h-10");
-    expect(screen.getAllByRole("row")[1]).not.toHaveClass("h-[52px]");
+    expect(screen.getAllByRole("row")[1]).not.toHaveClass("h-13");
     expect(document.querySelector('[data-slot="cell-detail"]')).toBeNull();
   });
 

@@ -14,10 +14,10 @@ export function PhoneTapRow({ title, detail, leading, onClick }: { title: string
     <button type="button" onClick={onClick} aria-labelledby={`${id}-title`} aria-describedby={`${id}-detail`} className={itemClass}>
       {leading}
       <span className="flex min-w-0 flex-1 flex-col gap-px leading-tight">
-        <span id={`${id}-title`} className="truncate text-[15.5px] font-medium">{title}</span>
-        <span id={`${id}-detail`} className="truncate text-[13px] text-[var(--t3)]">{detail}</span>
+        <span id={`${id}-title`} className="truncate text-[0.96875rem] font-medium">{title}</span>
+        <span id={`${id}-detail`} className="truncate text-[0.8125rem] text-[var(--t3)]">{detail}</span>
       </span>
-      <ChevronRight size={18} aria-hidden="true" className="shrink-0 text-[var(--t3)]" />
+      <ChevronRight aria-hidden="true" className="size-4.5 shrink-0 text-[var(--t3)]" />
     </button>
   </li>;
 }

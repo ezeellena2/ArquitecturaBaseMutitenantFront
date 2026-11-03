@@ -147,7 +147,7 @@ export function SearchSelect({
     }}
     // «Criterio · Formularios» (A11, 07/10): apagado es el mismo campo, con fondo y texto grises (.o-txt.sel de Rol).
     className={cn(
-      "group flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3 text-left text-[13px] outline-none max-md:h-12 max-md:rounded-[12px] max-md:px-3.5 max-md:text-[16px]",
+      "group flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3 text-left text-[0.8125rem] outline-none max-md:h-12 max-md:rounded-[0.75rem] max-md:px-3.5 max-md:text-[1rem]",
       "focus-visible:border-[var(--marca)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] aria-expanded:border-[var(--marca)] aria-expanded:ring-[3px] aria-expanded:ring-[var(--foco-halo)] disabled:cursor-default disabled:border-[var(--borde)] disabled:bg-[var(--s2)] disabled:opacity-100 aria-invalid:border-destructive",
       className,
     )}
@@ -156,7 +156,7 @@ export function SearchSelect({
       {selected?.icon && !renderValue ? selected.icon : null}
       <span className="truncate">{shown ?? placeholder}</span>
     </span>
-    <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)] group-disabled:text-[var(--t3)] max-md:size-[18px] max-md:text-[var(--t1)] max-md:group-disabled:text-[var(--t3)]" />
+    <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)] group-disabled:text-[var(--t3)] max-md:size-4.5 max-md:text-[var(--t1)] max-md:group-disabled:text-[var(--t3)]" />
   </button>;
 
   const search = withSearch ? <div className={phone ? "relative px-5 pt-1 pb-2" : "relative border-b border-[var(--borde)] p-2"}>
@@ -171,12 +171,12 @@ export function SearchSelect({
       onChange={(event) => { if (remote) remote.onSearch(event.target.value); else setQuery(event.target.value); setActive(0); }}
       onKeyDown={navigate}
       className={cn("w-full border border-[var(--borde2)] bg-[var(--s2)] pr-3 text-[var(--t1)] outline-none placeholder:text-[var(--t3)] focus-visible:border-[var(--marca)]",
-        phone ? "h-11 rounded-[12px] pl-11 text-[16px]" : "h-8 rounded-[8px] pl-8 text-[13px]")}
+        phone ? "h-11 rounded-[0.75rem] pl-11 text-[1rem]" : "h-8 rounded-[0.5rem] pl-8 text-[0.8125rem]")}
     />
   </div> : null;
 
   const list = <>
-    {visible.length === 0 && !remote?.loading && !remote?.error ? <p className={cn("text-[var(--t2)]", phone ? "px-5 py-3 text-[15px]" : "px-3.5 py-3 text-[13px]")}>{t("fields.noMatches")}</p> : null}
+    {visible.length === 0 && !remote?.loading && !remote?.error ? <p className={cn("text-[var(--t2)]", phone ? "px-5 py-3 text-[0.9375rem]" : "px-3.5 py-3 text-[0.8125rem]")}>{t("fields.noMatches")}</p> : null}
     <ul
       ref={listRef}
       id={listId}
@@ -185,7 +185,7 @@ export function SearchSelect({
       tabIndex={withSearch ? -1 : 0}
       aria-activedescendant={!withSearch && visible.length > 0 ? optionId(active) : undefined}
       onKeyDown={withSearch ? undefined : navigate}
-      className={cn("outline-none", phone ? "px-5 pt-2 pb-4" : "max-h-[280px] overflow-y-auto p-1", visible.length === 0 ? "hidden" : undefined)}
+      className={cn("outline-none", phone ? "px-5 pt-2 pb-4" : "max-h-70 overflow-y-auto p-1", visible.length === 0 ? "hidden" : undefined)}
     >
       {visible.map((option, index) => {
         const isSelected = option.value === value;
@@ -200,8 +200,8 @@ export function SearchSelect({
           onClick={() => choose(option)}
           className={cn(
             // M-Cuenta-Agregar: en el teléfono, filas de 52 sin fondo; la elegida, en petróleo con el tilde.
-            phone ? "flex min-h-[52px] cursor-pointer items-center gap-3 px-1 text-[16px]"
-              : "flex min-h-9 cursor-pointer items-center gap-2.5 rounded-[6px] px-2.5 py-1.5",
+            phone ? "flex min-h-13 cursor-pointer items-center gap-3 px-1 text-[1rem]"
+              : "flex min-h-9 cursor-pointer items-center gap-2.5 rounded-[0.375rem] px-2.5 py-1.5",
             isSelected ? cn("font-medium text-[var(--marca-tx)]", phone ? undefined : "bg-[var(--marca-t)]") : "text-[var(--t1)]",
             index === active && !isSelected ? "bg-[var(--s2)]" : undefined,
           )}
@@ -209,7 +209,7 @@ export function SearchSelect({
           {option.icon}
           <span className="flex min-w-0 flex-1 flex-col leading-[1.35]">
             <span id={`${optionId(index)}-label`} className="truncate">{option.label}</span>
-            {option.description ? <span id={`${optionId(index)}-description`} className={cn("truncate", option.descriptionClassName ?? "text-[var(--t3)]", phone ? "text-[13px]" : "text-[12px]")}>{option.description}</span> : null}
+            {option.description ? <span id={`${optionId(index)}-description`} className={cn("truncate", option.descriptionClassName ?? "text-[var(--t3)]", phone ? "text-[0.8125rem]" : "text-[0.75rem]")}>{option.description}</span> : null}
           </span>
           {/* El espacio separa el nombre del prefijo también para los lectores de pantalla («Argentina +54»). */}
           {option.trailing ? <>{" "}<span id={`${optionId(index)}-trailing`} className="ml-auto shrink-0 font-normal text-[var(--t2)]">{option.trailing}</span></> : null}
@@ -245,7 +245,7 @@ export function SearchSelect({
             event.preventDefault();
             listRef.current?.focus();
           }}
-          className="z-50 w-(--radix-popover-trigger-width) min-w-0 overflow-hidden rounded-[10px] border border-[var(--borde)] bg-[var(--lado-activo)] text-[13px] shadow-[var(--sombra-menu)]"
+          className="z-50 w-(--radix-popover-trigger-width) min-w-0 overflow-hidden rounded-[0.625rem] border border-[var(--borde)] bg-[var(--lado-activo)] text-[0.8125rem] shadow-[var(--sombra-menu)]"
         >
           {search}
           {list}

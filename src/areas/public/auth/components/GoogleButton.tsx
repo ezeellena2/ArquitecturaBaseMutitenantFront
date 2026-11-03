@@ -13,7 +13,7 @@ export type GoogleButtonProps =
   | { mode: "signup"; acceptedTerms: boolean; onTermsRequired: () => void; returnTo: string; access?: "consumer" | "business"; returnUrl?: never };
 
 function GoogleMark() {
-  return <img src={googleMark} width="18" height="18" alt="" aria-hidden="true" />;
+  return <img src={googleMark} className="size-4.5" alt="" aria-hidden="true" />;
 }
 
 function loginGoogleUrl(props: Extract<GoogleButtonProps, { mode: "login" }>): string {
@@ -39,7 +39,7 @@ export function GoogleButton(props: GoogleButtonProps) {
     : t("login.google");
   // Botón secundario del tablero: letra de 14 (el principal, «Crear cuenta» o «Enviar código», es de 15) y el logo a
   // 10 del texto.
-  const className = "w-full gap-2.5! border-[var(--borde2)] text-[14px]! text-[var(--t1)]";
+  const className = "w-full gap-2.5! border-[var(--borde2)] text-[0.875rem]! text-[var(--t1)]";
   if (props.mode === "signup") {
     const culture = effectiveCulture() ?? navigator.language;
     const timeZoneId = browserTimeZone();

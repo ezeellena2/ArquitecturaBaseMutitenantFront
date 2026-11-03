@@ -35,11 +35,11 @@ interface OtpInputProps {
 const layout = {
   auth: {
     group: "grid grid-cols-6 gap-2",
-    box: "h-11 w-full rounded-[8px] text-[22px] max-md:h-11 max-md:rounded-[8px] max-md:text-[22px] aria-invalid:bg-[var(--peligro-t)] disabled:aria-invalid:bg-[var(--s2)]",
+    box: "h-11 w-full rounded-[0.5rem] text-[1.375rem] max-md:h-11 max-md:rounded-[0.5rem] max-md:text-[1.375rem] aria-invalid:bg-[var(--peligro-t)] disabled:aria-invalid:bg-[var(--s2)]",
   },
   default: {
     group: "flex gap-2 max-md:grid max-md:grid-cols-6",
-    box: "h-11 w-10 rounded-[8px] text-[18px] max-md:h-[52px] max-md:w-full max-md:rounded-[12px] max-md:text-[22px]",
+    box: "h-11 w-10 rounded-[0.5rem] text-[1.125rem] max-md:h-13 max-md:w-full max-md:rounded-[0.75rem] max-md:text-[1.375rem]",
   },
 };
 
@@ -139,6 +139,6 @@ export function OtpInput({
       ))}
     </div>
     {/* Tableros Cuenta-Verificar (.err2) y M-Cuenta-Verificar (.ap-err): debajo de los casilleros, en 13 y 13,5. */}
-    {error ? <p id={errorId} role="alert" className="text-[13px] text-[var(--peligro)] max-md:-mt-0.5 max-md:text-[13.5px]">{error}</p> : null}
+    {error ? <p id={errorId} role="alert" className="text-[0.8125rem] text-[var(--peligro)] max-md:-mt-0.5 max-md:text-[0.84375rem]">{error}</p> : null}
   </>);
 }

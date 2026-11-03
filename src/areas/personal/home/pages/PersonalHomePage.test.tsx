@@ -32,8 +32,8 @@ it("en el teléfono el aviso es una tarjeta con «Agregar» principal", async ()
   try {
     renderRouteWithProviders("/", { as: "consumer-needs-personal-method" });
     const text = await screen.findByText("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.");
-    expect(text.parentElement).toHaveClass("rounded-[16px]", "bg-[var(--marca-t)]");
-    expect(text).toHaveClass("text-[15px]", "text-[var(--sugerencia-tx)]");
+    expect(text.parentElement).toHaveClass("rounded-[1rem]", "bg-[var(--marca-t)]");
+    expect(text).toHaveClass("text-[0.9375rem]", "text-[var(--sugerencia-tx)]");
     expect(screen.getByRole("button", { name: "Agregar" })).toHaveAttribute("data-variant", "default");
   } finally {
     restore();

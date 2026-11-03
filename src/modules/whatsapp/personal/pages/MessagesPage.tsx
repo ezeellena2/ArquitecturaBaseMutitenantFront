@@ -86,14 +86,14 @@ export function MessagesPage() {
     {!data ? <p role="status" className="px-4 py-3 text-[var(--t2)]">{t("common:states.loading")}</p> : null}
     {loadMore}
   </>;
-  const empty = <p className="flex flex-1 items-center justify-center p-12 text-center text-[14px] font-semibold text-[var(--t2)]">{t("personal.empty")}</p>;
+  const empty = <p className="flex flex-1 items-center justify-center p-12 text-center text-[0.875rem] font-semibold text-[var(--t2)]">{t("personal.empty")}</p>;
 
   if (phone) return <Page title={title} phoneBody="flush">{none ? empty : listColumn}</Page>;
   const summary = data ? data.totalCount === 0 ? t("personal.noOrganizations") : t("personal.organizations", countOf(format, data.totalCount)) : undefined;
   return <div className="flex h-full min-h-0 flex-col">
     <Page icon={ChatsIcon} title={title} summary={summary} bodyClassName={none ? undefined : "flex min-h-0 flex-1 flex-col"}>
       {none ? <Surface className="flex overflow-hidden">{empty}</Surface> : <ChatColumns>
-        <aside aria-label={t("personal.list")} className="flex w-[380px] shrink-0 flex-col border-r border-[var(--borde)]">{listColumn}</aside>
+        <aside aria-label={t("personal.list")} className="flex w-95 shrink-0 flex-col border-r border-[var(--borde)]">{listColumn}</aside>
         {selectedId ? <PersonalConversation key={selectedId} id={selectedId} back={back} phone={false} /> : <div className="flex-1 bg-[var(--s2)]" />}
       </ChatColumns>}
     </Page>
@@ -152,11 +152,11 @@ function PersonalConversation({ id, back, phone }: { id: string; back: { to: str
   </Page>;
 
   return <section aria-label={name} className="flex min-w-0 flex-1 flex-col">
-    <header className="flex h-[60px] shrink-0 items-center gap-3 border-b border-[var(--borde)] pr-3 pl-4">
+    <header className="flex h-15 shrink-0 items-center gap-3 border-b border-[var(--borde)] pr-3 pl-4">
       <OrganizationAvatar name={name} />
       <div className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-        <h2 className="truncate text-[14px] font-semibold text-[var(--t1)]">{name}</h2>
-        <span className="truncate text-[12.5px] text-[var(--t3)]">{[phoneLabel(format, conversation.displayNumber), since].filter(Boolean).join(" · ")}</span>
+        <h2 className="truncate text-[0.875rem] font-semibold text-[var(--t1)]">{name}</h2>
+        <span className="truncate text-[0.78125rem] text-[var(--t3)]">{[phoneLabel(format, conversation.displayNumber), since].filter(Boolean).join(" · ")}</span>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild><IconButton ref={menuTrigger} label={t("personal.actionsOf", { name })}><MoreVerticalIcon className="size-4" /></IconButton></DropdownMenuTrigger>

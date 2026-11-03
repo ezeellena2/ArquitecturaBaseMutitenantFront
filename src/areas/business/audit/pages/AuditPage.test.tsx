@@ -90,7 +90,7 @@ describe("AuditPage", () => {
     expect(heading.parentElement!.querySelector("[data-slot='page-subline']")).toBeNull();
     // Columnas del tablero: 140px, 2.4fr, 1.4fr y 1.2fr, más los márgenes de cada celda. «Quién» se lleva el 21 % para que
     // «Dónde» y «Quién» arranquen donde el tablero (1013 y 1227 a 1440).
-    expect(screen.getByRole("columnheader", { name: "Fecha y hora" })).toHaveClass("w-[162px]");
+    expect(screen.getByRole("columnheader", { name: "Fecha y hora" })).toHaveClass("w-40.5");
     expect(screen.getByRole("columnheader", { name: "Fecha y hora" })).not.toHaveClass("text-right");
     expect(screen.getByRole("columnheader", { name: "Dónde" })).toHaveClass("w-[23%]");
     expect(screen.getByRole("columnheader", { name: "Quién" })).toHaveClass("w-[21%]");
@@ -108,8 +108,8 @@ describe("AuditPage", () => {
     // Detalle: Quién (nombre · correo), Dónde, «antes → después» y «Cerrar»; la fecha no se repite bajo el título.
     const detail = await screen.findByRole("dialog", { name: "Cambió los roles de Tomás Acosta" });
     // «Criterio · Diálogos»: uno de los dos anchos de la pieza, el normal de 560 (Auditoria-Org).
-    expect(detail).toHaveClass("md:max-w-[560px]");
-    expect(detail).not.toHaveClass("md:max-w-[640px]");
+    expect(detail).toHaveClass("md:max-w-140");
+    expect(detail).not.toHaveClass("md:max-w-160");
     expect(detail).not.toHaveTextContent("02/10/2026");
     expect(detail).toHaveTextContent("QuiénLucía · lucia@example.com");
     expect(detail).toHaveTextContent("DóndeDelta S.A.");
@@ -261,7 +261,7 @@ describe("AuditPage", () => {
       await user.click(await screen.findByText("Cambió los roles de Tomás Acosta"));
 
       const detail = await screen.findByRole("dialog", { name: "Cambió los roles de Tomás Acosta" });
-      expect(detail).toHaveClass("bottom-0", "rounded-t-[20px]");
+      expect(detail).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
       const terms = within(detail).getAllByRole("term");
       const values = within(detail).getAllByRole("definition");
       expect(terms.map((term) => term.textContent)).toEqual(["Fecha y hora", "Quién", "Dónde", "Roles en la empresa"]);

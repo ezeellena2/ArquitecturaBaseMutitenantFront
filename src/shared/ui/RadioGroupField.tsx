@@ -48,14 +48,14 @@ export function RadioGroupField({ label, options, value, onValueChange, error, v
         value={value ?? ""}
         onValueChange={onValueChange}
         orientation={variant === "segmented" ? "horizontal" : undefined}
-        className={variant === "segmented" ? "flex h-11 gap-0.5 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] p-[3px] max-md:h-12" : "flex flex-col gap-1"}
+        className={variant === "segmented" ? "flex h-11 gap-0.5 rounded-[0.625rem] border border-[var(--borde)] bg-[var(--s2)] p-0.75 max-md:h-12" : "flex flex-col gap-1"}
       >
         {options.map((option) => {
           const optionId = `${id}-${option.value}`;
           const descriptionId = `${optionId}-description`;
 
           if (variant === "segmented") return <RadioGroup.Item key={option.value} value={option.value} disabled={option.disabled}
-            className="relative flex-1 rounded-[7px] text-[14px] font-semibold text-[var(--t2)] outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] data-[state=checked]:bg-[var(--lado-activo)] data-[state=checked]:text-[var(--t1)] data-[state=checked]:shadow-sm disabled:cursor-not-allowed disabled:opacity-50">
+            className="relative flex-1 rounded-[0.4375rem] text-[0.875rem] font-semibold text-[var(--t2)] outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] data-[state=checked]:bg-[var(--lado-activo)] data-[state=checked]:text-[var(--t1)] data-[state=checked]:shadow-sm disabled:cursor-not-allowed disabled:opacity-50">
             {option.label}
           </RadioGroup.Item>;
 
@@ -80,14 +80,14 @@ export function RadioGroupField({ label, options, value, onValueChange, error, v
                 <Label
                   htmlFor={optionId}
                   className={cn(
-                    "text-[13.5px] leading-[1.2]",
+                    "text-[0.84375rem] leading-[1.2]",
                     option.disabled ? "text-[var(--t2)]" : "cursor-pointer",
                   )}
                 >
                   {option.label}
                 </Label>
                 {option.description ? (
-                  <p id={descriptionId} className="text-[12.5px] leading-[1.4] text-[var(--t2)]">
+                  <p id={descriptionId} className="text-[0.78125rem] leading-[1.4] text-[var(--t2)]">
                     {option.description}
                   </p>
                 ) : null}
@@ -97,7 +97,7 @@ export function RadioGroupField({ label, options, value, onValueChange, error, v
         })}
       </RadioGroup.Root>
       {error ? (
-        <p id={errorId} role="alert" className="px-2.5 text-[13px] text-[var(--peligro)]">
+        <p id={errorId} role="alert" className="px-2.5 text-[0.8125rem] text-[var(--peligro)]">
           {error}
         </p>
       ) : null}

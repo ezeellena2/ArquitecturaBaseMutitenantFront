@@ -45,7 +45,7 @@ describe("OrganizationUnavailablePage", () => {
     const heading = screen.getByRole("heading", { name: "Beta S.R.L. está suspendida" });
     expect(heading).toHaveClass("leading-[normal]");
     expect(heading.nextElementSibling).toHaveClass("mt-1.5", "leading-[normal]");
-    expect(heading.parentElement?.previousElementSibling?.parentElement).toHaveClass("gap-[22px]");
+    expect(heading.parentElement?.previousElementSibling?.parentElement).toHaveClass("gap-5.5");
     expect(screen.getByText("Elegí otro perfil")).toHaveClass("pt-1.5", "pb-0.5", "leading-[normal]");
     expect(screen.getByRole("button", { name: /Personal.*Tu perfil personal/ }).querySelector("svg:last-child")).toHaveClass("text-[var(--t3)]");
     expect(screen.queryByRole("button", { name: /Beta S.R.L./ })).not.toBeInTheDocument();
@@ -82,9 +82,9 @@ describe("OrganizationUnavailablePage", () => {
     try {
       const { container, user } = setup("Tenancy.Tenant.Suspended");
       expect(container.querySelector(".brand-mark")).toBeNull();
-      expect(screen.getByRole("heading", { name: "Beta S.R.L. está suspendida" })).toHaveClass("text-[22px]");
+      expect(screen.getByRole("heading", { name: "Beta S.R.L. está suspendida" })).toHaveClass("text-[1.375rem]");
       const group = screen.getByRole("list", { name: "Elegí otro perfil" });
-      expect(group).toHaveClass("rounded-[14px]");
+      expect(group).toHaveClass("rounded-[0.875rem]");
       await user.click(screen.getByRole("button", { name: /Grupo Delta/ }));
       expect(switchAccess).toHaveBeenCalledWith({ access: "business", tenantId: "delta" });
       expect(screen.getByRole("button", { name: "Salir" })).toHaveClass("mt-auto");

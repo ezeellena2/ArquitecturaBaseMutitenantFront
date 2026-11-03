@@ -148,9 +148,9 @@ export function RecoverAccountPage() {
         onCodeChange={(next) => { setCode(next); setError(null); }} onVerify={() => { void verifyAndSubmit(); }} onResend={() => { void sendCode(destination, true); }}
         invalid={wrongCode} locked={busy || request.isPending || codeSpent} message={message} verifyLabel={verifyRetry.label ?? undefined} verifyDisabled={verifyRetry.isRunning || codeSpent || request.isPending} verifyPending={busy}
         resendSeconds={resendTimer.seconds} resendRetryLabel={sendRetry.label} resendDisabled={busy} resendPending={request.isPending} />
-      : <form noValidate className="flex flex-col gap-[22px]" onSubmit={(event) => { void form.handleSubmit((values) => step === "previous" ? nextStep(destinationFromFields(values.previous)) : sendCode(destinationFromFields(values.next)))(event); }}>
-        {step === "new" ? <Button type="button" variant="link" onClick={() => backTo("previous")} className="gap-1 self-start leading-[normal]"><ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t("recovery.back")}</Button> : null}
-        <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t(step === "previous" ? "recovery.title" : "recovery.newEmailTitle")}</h1>
+      : <form noValidate className="flex flex-col gap-5.5" onSubmit={(event) => { void form.handleSubmit((values) => step === "previous" ? nextStep(destinationFromFields(values.previous)) : sendCode(destinationFromFields(values.next)))(event); }}>
+        {step === "new" ? <Button type="button" variant="link" onClick={() => backTo("previous")} className="gap-1 self-start leading-[normal]"><ChevronLeft className="size-4" aria-hidden="true" strokeWidth={2} />{t("recovery.back")}</Button> : null}
+        <div><h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t(step === "previous" ? "recovery.title" : "recovery.newEmailTitle")}</h1>
           <p className="mt-1.5 text-sm leading-normal text-[var(--t2)]">{t(step === "previous" ? (hasWhatsApp ? "recovery.previousPhoneDetail" : "recovery.previousDetail") : (hasWhatsApp ? "recovery.newPhoneDetail" : "recovery.newEmailDetail"))}</p></div>
         <AuthDestinationField key={step} channel={currentFields.channel} email={currentFields.email} phone={currentFields.phone} phoneUsage={step === "previous" ? "mobile" : "whatsapp"}
           onChannelChange={(next) => { revision.current++; form.setValue(`${field}.channel`, next); form.clearErrors(); setError(null); }}

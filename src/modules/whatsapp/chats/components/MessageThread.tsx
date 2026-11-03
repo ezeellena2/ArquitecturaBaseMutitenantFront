@@ -46,7 +46,7 @@ export function MessageThread({ messages, perspective, label, phone, hasEarlier,
     {messages.map((message, index) => {
       const previous = messages[index - 1];
       const separator = !previous || format.formatDate(previous.createdAtUtc) !== format.formatDate(message.createdAtUtc)
-        ? <span className={cn("self-center rounded-full border border-[var(--borde)] bg-[var(--lado-activo)] px-2.5 py-0.5 text-[12px]", phone ? "rounded-[8px] border-0 text-[var(--t2)] shadow-[var(--sombra-flecha)]" : "text-[var(--t3)]")}>
+        ? <span className={cn("self-center rounded-full border border-[var(--borde)] bg-[var(--lado-activo)] px-2.5 py-0.5 text-[0.75rem]", phone ? "rounded-[0.5rem] border-0 text-[var(--t2)] shadow-[var(--sombra-flecha)]" : "text-[var(--t3)]")}>
           {chatDay(format, message.createdAtUtc, calendarWords, dayLabels)}
         </span> : null;
       return <Fragment key={message.id}>{separator}<ThreadItem message={message} perspective={perspective} phone={phone} /></Fragment>;
@@ -64,11 +64,11 @@ function ThreadItem({ message, perspective, phone }: { message: WhatsAppChatMess
   const format = useFormat();
   const time = format.formatTime(message.createdAtUtc);
 
-  if (message.kind === "Event") return <span className={cn("self-center text-center text-[var(--t3)]", phone ? "text-[12.5px]" : "text-[12px]")}>{message.text}</span>;
+  if (message.kind === "Event") return <span className={cn("self-center text-center text-[var(--t3)]", phone ? "text-[0.78125rem]" : "text-[0.75rem]")}>{message.text}</span>;
 
   if (message.kind === "Note") return <div className={cn("flex flex-col gap-0.5 self-center border border-[color-mix(in_oklch,var(--punto-alerta)_45%,transparent)] bg-[var(--alerta-t)] px-3 py-2 leading-[1.45] text-[var(--alerta-tx)]",
-    phone ? "max-w-[88%] rounded-[12px] text-[14px]" : "max-w-[70%] rounded-[10px] text-[13px]")}>
-    <span className={cn("font-semibold", phone ? "text-[12px]" : "text-[11.5px]")}>{[t("chats.thread.note"), message.author, time].filter(Boolean).join(" · ")}</span>
+    phone ? "max-w-[88%] rounded-[0.75rem] text-[0.875rem]" : "max-w-[70%] rounded-[0.625rem] text-[0.8125rem]")}>
+    <span className={cn("font-semibold", phone ? "text-[0.75rem]" : "text-[0.71875rem]")}>{[t("chats.thread.note"), message.author, time].filter(Boolean).join(" · ")}</span>
     <span className="whitespace-pre-wrap">{message.text}</span>
   </div>;
 
@@ -84,14 +84,14 @@ function ThreadItem({ message, perspective, phone }: { message: WhatsAppChatMess
     : [message.status === "Pending" ? t("chats.thread.pending") : sender, time].filter(Boolean).join(" · ");
   const MediaIcon = message.kind === "Media" ? mediaIcons[message.mediaKind ?? "Other"] : null;
 
-  return <div className={cn("flex flex-col gap-[3px]", phone ? "max-w-[80%] gap-0.5" : "max-w-[62%]", own ? "items-end self-end" : "self-start")}>
+  return <div className={cn("flex flex-col gap-0.75", phone ? "max-w-[80%] gap-0.5" : "max-w-[62%]", own ? "items-end self-end" : "self-start")}>
     <span className={cn("px-3 py-2 whitespace-pre-wrap [overflow-wrap:anywhere]",
-      phone ? "rounded-[14px] text-[15px] leading-[1.4]" : "rounded-[12px] text-[13.5px] leading-[1.45]",
-      own ? "rounded-tr-[4px] bg-[var(--marca-t)] text-[var(--sugerencia-tx)]"
-        : cn("rounded-tl-[4px] bg-[var(--lado-activo)]", phone ? "shadow-[var(--sombra-flecha)]" : "border border-[var(--borde)]"),
+      phone ? "rounded-[0.875rem] text-[0.9375rem] leading-[1.4]" : "rounded-[0.75rem] text-[0.84375rem] leading-[1.45]",
+      own ? "rounded-tr-[0.25rem] bg-[var(--marca-t)] text-[var(--sugerencia-tx)]"
+        : cn("rounded-tl-[0.25rem] bg-[var(--lado-activo)]", phone ? "shadow-[var(--sombra-flecha)]" : "border border-[var(--borde)]"),
       MediaIcon ? "inline-flex items-center gap-2 text-[var(--t2)] italic" : null)}>
       {MediaIcon ? <><MediaIcon aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)]" />{t(`chats.thread.media.${message.mediaKind ?? "Other"}`)}</> : message.text}
     </span>
-    <span className={cn("px-1 text-[11.5px]", failed ? "text-[var(--peligro)]" : "text-[var(--t3)]")}>{footer}</span>
+    <span className={cn("px-1 text-[0.71875rem]", failed ? "text-[var(--peligro)]" : "text-[var(--t3)]")}>{footer}</span>
   </div>;
 }

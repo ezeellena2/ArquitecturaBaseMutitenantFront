@@ -39,7 +39,7 @@ describe("SearchSelect en el teléfono", () => {
     const sheet = await screen.findByRole("dialog", { name: "Idioma y región" });
     expect(within(sheet).getByRole("button", { name: "Cerrar" })).toBeVisible();
     const chosen = within(sheet).getByRole("option", { name: /^Español \(Argentina\)/ });
-    expect(chosen).toHaveClass("min-h-[52px]", "gap-3", "text-[16px]", "font-medium", "text-[var(--marca-tx)]");
+    expect(chosen).toHaveClass("min-h-13", "gap-3", "text-[1rem]", "font-medium", "text-[var(--marca-tx)]");
     expect(chosen).not.toHaveClass("bg-[var(--marca-t)]");
     expect(within(sheet).queryByRole("searchbox")).not.toBeInTheDocument();
 
@@ -68,9 +68,9 @@ describe("SearchSelect · Criterio · Formularios", () => {
 
     const control = screen.getByRole("combobox", { name: "Idioma y región" });
     expect(control).toHaveTextContent("Español (Argentina)");
-    expect(control).toHaveClass("h-9", "rounded-[8px]", "border-[var(--borde2)]");
+    expect(control).toHaveClass("h-9", "rounded-[0.5rem]", "border-[var(--borde2)]");
     // En el teléfono (.in2 svg), la flechita de 18 y casi negra.
-    expect(control.querySelector("svg")).toHaveClass("max-md:size-[18px]", "max-md:text-[var(--t1)]");
+    expect(control.querySelector("svg")).toHaveClass("max-md:size-4.5", "max-md:text-[var(--t1)]");
     // Tablero Usuario (.o-dd > button.ct[aria-expanded="true"]): abierto, el campo lleva el borde petróleo y el halo.
     expect(control).toHaveClass("aria-expanded:border-[var(--marca)]", "aria-expanded:ring-[3px]", "aria-expanded:ring-[var(--foco-halo)]");
     control.focus();
@@ -89,7 +89,7 @@ describe("SearchSelect · Criterio · Formularios", () => {
     // Criterio · Formularios: la elegida, además del fondo petróleo claro, va en semi-negrita.
     expect(within(list).getByRole("option", { name: /^Español \(Argentina\)/ })).toHaveClass("font-medium");
     expect(within(list).getByRole("option", { name: /^English/ })).not.toHaveClass("font-medium");
-    expect(within(list).getByText("09/27/2026 2:35 PM · 1,234.50")).toHaveClass("text-[12px]", "text-[var(--t3)]");
+    expect(within(list).getByText("09/27/2026 2:35 PM · 1,234.50")).toHaveClass("text-[0.75rem]", "text-[var(--t3)]");
     await user.keyboard("{ArrowDown}{Enter}");
 
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();

@@ -24,6 +24,6 @@ describe("OfflineBanner", () => {
     render(<I18nextProvider i18n={i18n}><AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}><OfflineBanner /></AppChromeProvider></I18nextProvider>);
 
     // M-Avisos (.f-banda.mal): el rosa de la banda del teléfono.
-    expect(screen.getByRole("status", { name: "Sin conexión" })).toHaveClass("bg-[var(--peligro-banda)]", "text-[var(--peligro-tx)]", "text-[14.5px]");
+    expect(screen.getByRole("status", { name: "Sin conexión" })).toHaveClass("bg-[var(--peligro-banda)]", "text-[var(--peligro-tx)]", "text-[0.90625rem]");
   });
 });

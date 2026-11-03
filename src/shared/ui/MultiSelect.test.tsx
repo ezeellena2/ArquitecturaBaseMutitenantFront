@@ -83,15 +83,15 @@ describe("MultiSelect", () => {
     const trigger = screen.getByRole("button", { name: "Roles", hidden: true });
     expect(trigger).toHaveAttribute("aria-expanded", "true");
     // En el teléfono (.in2 svg), la flechita de 18 y casi negra.
-    expect(trigger.querySelector("svg")).toHaveClass("max-md:size-[18px]", "max-md:text-[var(--t1)]");
+    expect(trigger.querySelector("svg")).toHaveClass("max-md:size-4.5", "max-md:text-[var(--t1)]");
     expect(trigger).toHaveClass("aria-expanded:border-[var(--marca)]", "aria-expanded:ring-[3px]", "aria-expanded:ring-[var(--foco-halo)]");
-    expect(admin).toHaveClass("min-h-9", "gap-2.5", "rounded-[6px]", "px-2.5", "py-1");
+    expect(admin).toHaveClass("min-h-9", "gap-2.5", "rounded-[0.375rem]", "px-2.5", "py-1");
     expect(admin).not.toHaveClass("border-t");
     // La casilla, como la de «Todos»: borde gris y, marcada, petróleo.
     const box = admin.querySelector("[data-slot='dropdown-menu-check']")!;
-    expect(box).toHaveClass("size-4", "rounded-[4px]", "border", "border-input", "group-data-[state=checked]:bg-primary");
+    expect(box).toHaveClass("size-4", "rounded-[0.25rem]", "border", "border-input", "group-data-[state=checked]:bg-primary");
     expect(box.compareDocumentPosition(within(admin).getByText("Admin")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(within(admin).getByText("Puede hacer todo.")).toHaveClass("text-[12px]", "text-[var(--t3)]");
+    expect(within(admin).getByText("Puede hacer todo.")).toHaveClass("text-[0.75rem]", "text-[var(--t3)]");
     expect(screen.getByRole("menuitemcheckbox", { name: /user/i }).querySelector("[data-slot='dropdown-menu-check']")).not.toBeNull();
   });
 

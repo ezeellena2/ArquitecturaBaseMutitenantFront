@@ -49,7 +49,7 @@ export function AuditPage() {
   const { phone } = useAppChrome();
 
   const columns: Column<OrganizationAuditEntryResponse>[] = [
-    { id: "occurredAtUtc", header: t("audit:columns.when"), type: "custom", mobile: "status", className: "w-[162px] max-md:w-[25%]", cell: (row) => <div className="whitespace-normal text-left"><DateText value={row.occurredAtUtc} kind="dateTime" className="whitespace-normal" /></div> },
+    { id: "occurredAtUtc", header: t("audit:columns.when"), type: "custom", mobile: "status", className: "w-40.5 max-md:w-[25%]", cell: (row) => <div className="whitespace-normal text-left"><DateText value={row.occurredAtUtc} kind="dateTime" className="whitespace-normal" /></div> },
     {
       id: "action", header: t("audit:columns.action"), type: "custom", mobile: "primary",
       // Tablero Auditoria-Org: tocar «Qué pasó» abre el detalle; sin el ojo.
@@ -143,7 +143,7 @@ export function AuditPage() {
         {selected ? <DetailGrid phone={phone} items={[
           ...(phone ? [{ key: "when", label: t("audit:columns.when"), value: <DateText value={selected.occurredAtUtc} kind="dateTime" /> }] : []),
           { key: "who", label: t("audit:columns.who"), value: phone
-            ? <>{selected.actorDisplayName ?? selected.actorText}{selected.actorEmail ? <span className="block break-words text-[14px] font-normal text-[var(--t2)]">{selected.actorEmail}</span> : null}</>
+            ? <>{selected.actorDisplayName ?? selected.actorText}{selected.actorEmail ? <span className="block break-words text-[0.875rem] font-normal text-[var(--t2)]">{selected.actorEmail}</span> : null}</>
             : [selected.actorDisplayName ?? selected.actorText, selected.actorEmail].filter(Boolean).join(" · ") },
           { key: "where", label: t("audit:columns.where"), value: selected.whereText },
           ...selected.changes.map((change) => ({ key: `change:${change.field}`, label: change.field,

@@ -57,6 +57,6 @@ export function NumberField({ value, onChange, onValidityChange, digits, id, nam
       onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
       aria-invalid={externalInvalid || showError} aria-describedby={description} aria-label={label} />
-    {showError && <p id={messageId} role="alert" className="text-[13px] text-[var(--peligro)]">{t("fields.invalidNumber")}</p>}
+    {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t("fields.invalidNumber")}</p>}
   </>;
 }

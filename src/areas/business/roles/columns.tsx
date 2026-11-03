@@ -42,8 +42,8 @@ export function createRoleColumns(t: TranslateRole): Column<RoleResponse>[] {
       detail: (role) => role.isSystemRole ? t("roles:system") : null,
     },
     { ...roleColumnDefinitions.scope, header: t("roles:columns.scope"), type: "custom", cell: (role) => <span>{roleScopeLabel(role.scope, t, role.companyName ?? undefined)}</span> },
-    { ...roleColumnDefinitions.userCount, header: t("roles:columns.users"), className: "w-[112px]" },
-    { ...roleColumnDefinitions.permissions, header: t("roles:columns.permissions"), className: "w-[112px]", value: visiblePermissionCount },
+    { ...roleColumnDefinitions.userCount, header: t("roles:columns.users"), className: "w-28" },
+    { ...roleColumnDefinitions.permissions, header: t("roles:columns.permissions"), className: "w-28", value: visiblePermissionCount },
   ];
 }
 

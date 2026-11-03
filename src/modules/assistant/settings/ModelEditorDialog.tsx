@@ -77,7 +77,7 @@ export function ModelEditorDialog({ scope, cancellationSignal, model, currency, 
   const errors = form.formState.errors;
   // Un texto inválido en un campo opcional sigue siendo una edición, aunque su valor parseado sea null.
   const isDirty = form.formState.isDirty || invalidFields.size > 0;
-  return <Dialog open onOpenChange={(open) => { if (!open) close(); }}><DialogContent className="md:max-w-[640px]" onCloseAutoFocus={restoreFocus}>
+  return <Dialog open onOpenChange={(open) => { if (!open) close(); }}><DialogContent className="md:max-w-160" onCloseAutoFocus={restoreFocus}>
     <DialogHeader><DialogTitle>{t(model ? "assistant:settings.editModel" : "assistant:settings.addModel")}</DialogTitle></DialogHeader>
     <form noValidate onSubmit={(event) => { void submit(event); }} onChangeCapture={changed} className="flex min-h-0 flex-col">
       <DialogBody><div className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">

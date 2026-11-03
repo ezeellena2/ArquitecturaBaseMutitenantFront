@@ -99,7 +99,7 @@ function RecentAuthenticationDialog({ purpose }: { purpose: string | null }) {
               <Input autoComplete="off" spellCheck={false} placeholder="XXXX-XXXX" value={recovery} disabled={verify.isPending} autoFocus
                 className="h-11 font-mono tracking-[0.08em]" onChange={(event) => { setRecovery(event.target.value); setIncomplete(false); setError(null); }} />
             </FormField>}
-          <Button type="button" variant="link" className="self-start text-[13.5px] leading-[normal] disabled:text-[var(--t3)] disabled:no-underline disabled:opacity-100" disabled={locked} onClick={toggle}>
+          <Button type="button" variant="link" className="self-start text-[0.84375rem] leading-[normal] disabled:text-[var(--t3)] disabled:no-underline disabled:opacity-100" disabled={locked} onClick={toggle}>
             {t(app ? "recentAuthentication.useRecovery" : "recentAuthentication.useApp")}
           </Button>
           <FormError message={failure} />

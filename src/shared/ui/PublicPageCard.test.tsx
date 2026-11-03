@@ -37,9 +37,9 @@ describe("PublicPageCard (tableros Pagina-Publica y M-Pagina-Publica)", () => {
 
     expect(await screen.findByText("011 4321-5678")).toHaveClass("text-[var(--marca-tx)]");
     expect(screen.getByText("GD")).toHaveAttribute("aria-hidden", "true");
-    expect(screen.getByText("GD")).toHaveClass("size-[84px]", "rounded-[20px]", "max-md:size-[72px]");
-    expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" })).toHaveClass("text-[30px]", "max-md:text-[26px]");
-    expect(screen.getByText("Grupo Delta y sus empresas, en un solo lugar.")).toHaveClass("text-[16px]", "text-[var(--t2)]");
+    expect(screen.getByText("GD")).toHaveClass("size-21", "rounded-[1.25rem]", "max-md:size-18");
+    expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" })).toHaveClass("text-[1.875rem]", "max-md:text-[1.625rem]");
+    expect(screen.getByText("Grupo Delta y sus empresas, en un solo lugar.")).toHaveClass("text-[1rem]", "text-[var(--t2)]");
     const rows = screen.getAllByRole("listitem");
     expect(rows.map((row) => row.textContent)).toEqual([
       "DirecciónAv. Corrientes 1234, piso 5, Buenos Aires",

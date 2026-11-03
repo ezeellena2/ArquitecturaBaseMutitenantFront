@@ -61,7 +61,7 @@ export function BroadcastPage({ me }: ModuleContentProps) {
   useBreadcrumbLeaf(broadcast?.name);
   const back = { to: broadcastsPath, label: t("whatsapp:broadcasts.back") };
 
-  if (detail.isPending) return <Page icon={BroadcastsIcon} title={t("whatsapp:broadcasts.detail.loading")} backTo={back}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (detail.isPending) return <Page icon={BroadcastsIcon} title={t("whatsapp:broadcasts.detail.loading")} backTo={back}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   if (!broadcast) return isNotFoundError(detail.error)
     ? <NotFoundPage homePath={homeOf("business")} screen={t("whatsapp:broadcasts.detail.title")} back={back} />
     : <LoadErrorPage onRetry={() => { void detail.refetch(); }} screen={t("whatsapp:broadcasts.detail.title")} back={back} />;

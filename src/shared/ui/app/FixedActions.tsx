@@ -10,7 +10,7 @@ export function FixedActions({ children, notice }: { children: ReactNode; notice
     return () => hideBottomNav(false);
   }, [hideBottomNav]);
 
-  const bar = <div data-slot="fixed-actions" className="sticky bottom-0 z-20 mt-auto flex items-center gap-3 border-t border-[var(--borde)] bg-[var(--lado-activo)] px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] [&>*]:h-[50px] [&>*]:min-w-0 [&>*]:flex-1 [&>*]:rounded-[12px] [&>*]:text-[16px]">
+  const bar = <div data-slot="fixed-actions" className="sticky bottom-0 z-20 mt-auto flex items-center gap-3 border-t border-[var(--borde)] bg-[var(--lado-activo)] px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] [&>*]:h-12.5 [&>*]:min-w-0 [&>*]:flex-1 [&>*]:rounded-[0.75rem] [&>*]:text-[1rem]">
     {children}
   </div>;
   if (!notice) return bar;

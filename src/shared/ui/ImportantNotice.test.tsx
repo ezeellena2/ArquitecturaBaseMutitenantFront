@@ -18,7 +18,7 @@ describe("ImportantNotice · Criterio · Dialogos", () => {
       detail="Despublicada por la plataforma el 26/09/2026" steps={["Corregí los datos de la página", "Pedí a la plataforma que la habilite"]} />);
 
     const dialog = screen.getByRole("dialog", { name: "Página despublicada" });
-    expect(dialog).toHaveClass("md:max-w-[420px]");
+    expect(dialog).toHaveClass("md:max-w-105");
     expect(within(dialog).getByText("Datos de contacto falsos").closest("[data-slot='notice-reason']")).toHaveClass("bg-[var(--peligro-t)]");
     expect(within(dialog).getByText("Despublicada por la plataforma el 26/09/2026")).toBeVisible();
     expect(within(dialog).getByText("Qué podés hacer")).toBeVisible();
@@ -26,9 +26,9 @@ describe("ImportantNotice · Criterio · Dialogos", () => {
       "1Corregí los datos de la página", "2Pedí a la plataforma que la habilite",
     ]);
     // M-Pagina-Org: en el teléfono, «Qué podés hacer» de 13,5 y los pasos de 15 con su número de 13.
-    expect(within(dialog).getByText("Qué podés hacer")).toHaveClass("max-md:text-[13.5px]");
-    expect(within(dialog).getAllByRole("listitem")[0]).toHaveClass("max-md:text-[15px]");
-    expect(within(dialog).getAllByRole("listitem")[0].querySelector("[data-step-number]")).toHaveClass("max-md:text-[13px]");
+    expect(within(dialog).getByText("Qué podés hacer")).toHaveClass("max-md:text-[0.84375rem]");
+    expect(within(dialog).getAllByRole("listitem")[0]).toHaveClass("max-md:text-[0.9375rem]");
+    expect(within(dialog).getAllByRole("listitem")[0].querySelector("[data-step-number]")).toHaveClass("max-md:text-[0.8125rem]");
     expect(within(dialog).queryByRole("button", { name: "Cancelar" })).not.toBeInTheDocument();
     await userEvent.click(within(dialog).getByRole("button", { name: "Entendido" }));
     expect(onOpenChange).toHaveBeenCalledWith(false);

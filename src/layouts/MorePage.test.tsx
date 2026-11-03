@@ -59,7 +59,7 @@ describe("Más en el teléfono", () => {
   it("en una organización muestra perfiles, Administración según permisos, Mi cuenta y Salir", async () => {
     const { container } = renderRouteWithProviders("/mas", { as: "business-e6-admin" });
 
-    expect(await screen.findByRole("heading", { level: 1, name: "Más" })).toHaveClass("text-[24px]");
+    expect(await screen.findByRole("heading", { level: 1, name: "Más" })).toHaveClass("text-[1.5rem]");
     const profiles = screen.getByRole("list", { name: "Perfiles" });
     expect(within(profiles).getByText("Personal")).toBeInTheDocument();
     expect(within(profiles).getByText("Empresa A")).toBeInTheDocument();
@@ -73,8 +73,8 @@ describe("Más en el teléfono", () => {
     expect(within(screen.getByRole("navigation", { name: "Secciones" })).getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
     // Lienzo v104 (.ap-yo .w-av): tu inicial, de 56, con el degradé de la marca, como en la barra de abajo y en la compu.
     const [you, tab] = container.querySelectorAll("[data-slot='avatar']");
-    expect(you).toHaveClass("size-14", "text-[20px]", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
-    expect(tab).toHaveClass("size-[26px]", "bg-linear-to-br");
+    expect(you).toHaveClass("size-14", "text-[1.25rem]", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
+    expect(tab).toHaveClass("size-6.5", "bg-linear-to-br");
     // .ap-yo: el nombre y el correo con el interlineado normal, como el resto del teléfono.
     expect(you.nextElementSibling).toHaveClass("leading-[normal]");
     expect(await axe(container)).toHaveNoViolations();
@@ -101,7 +101,7 @@ describe("Más en el teléfono", () => {
 
   it("en Plataforma muestra identidad, Administración, Mi cuenta y Salir, sin perfiles ni WhatsApp", async () => {
     const { container } = renderPlatformMore();
-    expect(await screen.findByRole("heading", { name: "Más" })).toHaveClass("text-[24px]");
+    expect(await screen.findByRole("heading", { name: "Más" })).toHaveClass("text-[1.5rem]");
     expect(screen.getByText("Plataforma", { selector: "[data-slot='app-bar'] span" })).toBeVisible();
     expect(screen.getByText("Martín Sosa")).toBeVisible();
     expect(screen.getByText("martin.sosa@arquitecturabase.ejemplo.com")).toBeVisible();

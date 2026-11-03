@@ -12,8 +12,8 @@ describe("OtpInput", () => {
     expect(screen.getByRole("group", { name: "Código" })).toHaveClass("grid", "grid-cols-6", "gap-2");
     expect(screen.getAllByRole("textbox")).toHaveLength(6);
     const box = screen.getByRole("textbox", { name: "Código 1" });
-    expect(box).toHaveClass("h-11", "w-full", "rounded-[8px]", "border-[var(--borde2)]", "text-[22px]", "max-md:h-11", "max-md:rounded-[8px]", "max-md:text-[22px]");
-    expect(box).not.toHaveClass("max-md:h-12", "max-md:rounded-[12px]", "max-md:text-[16px]");
+    expect(box).toHaveClass("h-11", "w-full", "rounded-[0.5rem]", "border-[var(--borde2)]", "text-[1.375rem]", "max-md:h-11", "max-md:rounded-[0.5rem]", "max-md:text-[1.375rem]");
+    expect(box).not.toHaveClass("max-md:h-12", "max-md:rounded-[0.75rem]", "max-md:text-[1rem]");
     expect(box).toHaveAttribute("autocomplete", "one-time-code");
     expect(await axe(container, { rules: { region: { enabled: false } } })).toHaveNoViolations();
   });
@@ -24,8 +24,8 @@ describe("OtpInput", () => {
     render(<OtpInput length={6} value="" onChange={vi.fn()} label="Código" />);
     expect(screen.getByRole("group", { name: "Código" })).toHaveClass("flex", "gap-2", "max-md:grid", "max-md:grid-cols-6");
     const box = screen.getByRole("textbox", { name: "Código 1" });
-    expect(box).toHaveClass("h-11", "w-10", "rounded-[8px]", "text-[18px]", "max-md:h-[52px]", "max-md:w-full", "max-md:rounded-[12px]", "max-md:text-[22px]");
-    expect(box).not.toHaveClass("w-full", "max-md:h-12", "max-md:text-[16px]");
+    expect(box).toHaveClass("h-11", "w-10", "rounded-[0.5rem]", "text-[1.125rem]", "max-md:h-13", "max-md:w-full", "max-md:rounded-[0.75rem]", "max-md:text-[1.375rem]");
+    expect(box).not.toHaveClass("w-full", "max-md:h-12", "max-md:text-[1rem]");
   });
 
   it("avanza al escribir, distribuye al pegar y vuelve con Backspace", async () => {
@@ -107,7 +107,7 @@ describe("OtpInput", () => {
     const message = screen.getByRole("alert");
     expect(message).toHaveTextContent("El código no es válido.");
     expect(group.nextElementSibling).toBe(message);
-    expect(message).toHaveClass("text-[13px]", "text-[var(--peligro)]", "max-md:text-[13.5px]");
+    expect(message).toHaveClass("text-[0.8125rem]", "text-[var(--peligro)]", "max-md:text-[0.84375rem]");
     expect(group).toHaveAccessibleDescription("Te mandamos un código. El código no es válido.");
     for (const box of screen.getAllByRole("textbox")) expect(box).toHaveAttribute("aria-invalid", "true");
   });

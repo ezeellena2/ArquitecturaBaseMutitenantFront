@@ -29,7 +29,7 @@ export function RemoteOptionFooter({ remote }: { remote: RemoteOptions }) {
     action();
   }
   return <div ref={root}>
-    {remote.loading ? <p role="status" className="px-3 py-2 text-[13px] text-[var(--t2)]">{t("states.loading")}</p> : null}
+    {remote.loading ? <p role="status" className="px-3 py-2 text-[0.8125rem] text-[var(--t2)]">{t("states.loading")}</p> : null}
     {remote.error ? <div className="p-2"><FormError message={apiErrorMessage(remote.error, t)} /><Button type="button" variant="outline" onClick={() => act(remote.onRetry)}>{t("actions.retry")}</Button></div> : null}
     <LoadMore hasMore={remote.hasMore} isLoading={remote.loading} onLoadMore={() => act(remote.onLoadMore)} />
   </div>;

@@ -11,8 +11,8 @@ describe("EmptyState · criterio compacto", () => {
     expect(screen.queryByRole("heading")).not.toBeInTheDocument();
     const description = screen.getByText("Probá con otros filtros.");
 
-    expect(container.firstElementChild).toHaveClass("rounded-[12px]", "p-8", "gap-2");
-    expect(title).toHaveClass("text-[14px]");
-    expect(description).toHaveClass("text-[13px]");
+    expect(container.firstElementChild).toHaveClass("rounded-[0.75rem]", "p-8", "gap-2");
+    expect(title).toHaveClass("text-[0.875rem]");
+    expect(description).toHaveClass("text-[0.8125rem]");
   });
 });

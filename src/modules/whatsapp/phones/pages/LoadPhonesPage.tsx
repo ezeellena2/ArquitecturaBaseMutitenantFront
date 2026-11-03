@@ -168,7 +168,7 @@ export function LoadPhonesPage() {
               ? <MultiSelect remote={companyRoles.remote} value={roleIds.field.value} onChange={roleIds.field.onChange} placeholder={t("whatsapp:phones.form.noRoles")}
                 selectedOptions={companyRoles.knownItems.map((role) => ({ value: role.id, label: role.name }))}
                 options={roles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} />
-              : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[13px] text-[var(--t3)] max-md:h-12 max-md:rounded-[12px] max-md:text-[16px]">
+              : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[0.8125rem] text-[var(--t3)] max-md:h-12 max-md:rounded-[0.75rem] max-md:text-[1rem]">
                 {t("whatsapp:phones.form.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" />
               </button>}
           </FormField>
@@ -182,10 +182,10 @@ export function LoadPhonesPage() {
         : <Section title={t("whatsapp:phones.phones")}>
           <SectionFields>
             <FormField label={t("whatsapp:phones.form.phones", { max: maxPhones })} required error={form.formState.errors.text?.message}
-              aside={<button type="button" onClick={() => file.current?.click()} className="text-[12.5px] font-semibold text-[var(--marca-tx)] hover:underline focus-visible:outline-2 focus-visible:outline-[var(--foco)] max-md:text-[13.5px]">
+              aside={<button type="button" onClick={() => file.current?.click()} className="text-[0.78125rem] font-semibold text-[var(--marca-tx)] hover:underline focus-visible:outline-2 focus-visible:outline-[var(--foco)] max-md:text-[0.84375rem]">
                 {t("whatsapp:phones.form.upload")}
               </button>}>
-              <Textarea className="min-h-[190px]" {...form.register("text", { onChange: () => setFailure(undefined) })} />
+              <Textarea className="min-h-47.5" {...form.register("text", { onChange: () => setFailure(undefined) })} />
             </FormField>
             <input ref={file} type="file" accept=".txt,.csv,text/plain,text/csv" className="hidden" aria-hidden="true" tabIndex={-1} onChange={(event) => { void upload(event); }} />
           </SectionFields>

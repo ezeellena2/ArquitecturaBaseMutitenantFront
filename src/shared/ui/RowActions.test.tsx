@@ -29,8 +29,8 @@ describe("RowActions", () => {
     trigger.focus();
     await userEvent.keyboard("{Enter}");
     const menu = await screen.findByRole("menu");
-    expect(menu).toHaveClass("min-w-[220px]");
-    expect(menu).not.toHaveClass("lg:min-w-[220px]");
+    expect(menu).toHaveClass("min-w-55");
+    expect(menu).not.toHaveClass("lg:min-w-55");
     await userEvent.click(await screen.findByRole("menuitem", { name: "Editar los roles de Ana" }));
 
     expect(onSelect).toHaveBeenCalledOnce();
@@ -112,12 +112,12 @@ describe("RowActions", () => {
     expect(trigger.querySelector("svg")).toHaveClass("max-md:size-5");
     await userEvent.click(trigger);
     const sheet = await screen.findByRole("dialog", { name: "Ana Gómez" });
-    expect(sheet).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(sheet).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
     expect(within(sheet).queryByRole("button", { name: "Cerrar" })).not.toBeInTheDocument();
     const menu = within(sheet).getByRole("menu", { name: "Acciones de Ana" });
     const items = within(menu).getAllByRole("menuitem");
     expect(items.map((item) => item.textContent)).toEqual(["Roles", "Eliminar"]);
-    expect(items[0]).toHaveClass("min-h-[54px]", "text-[16.5px]");
+    expect(items[0]).toHaveClass("min-h-13.5", "text-[1.03125rem]");
     expect(items[1]).toHaveClass("text-[var(--peligro)]");
     expect(within(menu).getByRole("separator")).toHaveClass("bg-[var(--s2)]");
 

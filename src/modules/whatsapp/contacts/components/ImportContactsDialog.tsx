@@ -90,7 +90,7 @@ export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () =
         <DialogBody>
           <FormField label={t("whatsapp:contacts.import.file")} required error={fileError}
             aside={<button type="button" onClick={() => sample.mutate()} disabled={sample.isPending}
-              className="inline-flex items-center gap-1.5 rounded-[6px] text-[12.5px] font-semibold text-[var(--marca-tx)] hover:underline focus-visible:outline-2 focus-visible:outline-[var(--foco)] disabled:opacity-60 max-md:text-[13.5px]">
+              className="inline-flex items-center gap-1.5 rounded-[0.375rem] text-[0.78125rem] font-semibold text-[var(--marca-tx)] hover:underline focus-visible:outline-2 focus-visible:outline-[var(--foco)] disabled:opacity-60 max-md:text-[0.84375rem]">
               <Download aria-hidden="true" className="size-3.5" />{t("whatsapp:contacts.import.sample")}
             </button>}>
             <FileInput accept={acceptedFiles} fileName={file?.name ?? null} placeholder={t("whatsapp:contacts.import.noFile")}

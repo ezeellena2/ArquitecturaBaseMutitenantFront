@@ -154,32 +154,32 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
   return <AuthLayout access="consumer">
     {platformOnly ? <PlatformAccessResult access="consumer" onSignedOut={() => { setPlatformOnly(false); setStep(null); setCode(""); setError(null); setValue("channel", "email"); setValue("email", ""); setValue("phone", null); setValue("acceptedTerms", false); }} /> : closed ? <AuthStatus icon={LockIcon} title={t("signup.closedTitle")} detail={t("signup.closedDetail")}
       actions={<Button asChild size="lg"><Link to={loginHref}>{t("signup.backToLogin")}</Link></Button>} />
-      : step === null ? <div className="flex flex-col gap-[22px]">
-      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("signup.title")}</h1>
-      <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
-        <input type="checkbox" {...register("acceptedTerms", { onChange: () => clearErrors("acceptedTerms") })} className="size-[18px] shrink-0 accent-[var(--marca)]" />
+      : step === null ? <div className="flex flex-col gap-5.5">
+      <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t("signup.title")}</h1>
+      <label className="flex items-center gap-2.5 text-[0.875rem] text-[var(--t1)]">
+        <input type="checkbox" {...register("acceptedTerms", { onChange: () => clearErrors("acceptedTerms") })} className="size-4.5 shrink-0 accent-[var(--marca)]" />
         <span>{t("signup.acceptPrefix")} <AuthLink to="/terminos">{t("signup.terms")}</AuthLink> {t("signup.acceptJoin")} <AuthLink to="/privacidad">{t("signup.privacy")}</AuthLink></span>
       </label>
-      {errors.acceptedTerms ? <p role="alert" className="text-[13px] text-[var(--peligro)]">{errors.acceptedTerms.message ?? t("signup.acceptRequired")}</p> : null}
+      {errors.acceptedTerms ? <p role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{errors.acceptedTerms.message ?? t("signup.acceptRequired")}</p> : null}
       <GoogleButton mode="signup" acceptedTerms={acceptedTerms} onTermsRequired={requireTerms} returnTo={authorizeReturn ?? returnTo} />
-      <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
+      <div className="flex items-center gap-3 text-[0.8125rem] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
       <form noValidate onSubmit={(event) => {
         if (!acceptedTerms) { event.preventDefault(); requireTerms(); return; }
         void handleSubmit(begin)(event);
-      }} className="flex flex-col gap-[22px]">
+      }} className="flex flex-col gap-5.5">
         <div className="flex flex-col gap-1.5">
           <AuthDestinationField phoneLabel={t("signup.phoneLabel")} channel={channel} email={email} phone={phone} phoneUsage="whatsapp"
             onChannelChange={(value) => { preferredWhatsApp.current = false; setJourney((previous) => previous + 1); setValue("channel", value); clearErrors(); setEmailTaken(false); setError(null); }}
             onEmailChange={(value) => { preferredWhatsApp.current = false; setValue("email", value); clearErrors("email"); setEmailTaken(false); }}
             onPhoneChange={(value) => { setValue("phone", value); clearErrors("phone"); setEmailTaken(false); }}
             error={channel === "phone" && hasWhatsApp ? errors.phone?.message : errors.email?.message} />
-          {emailTaken ? <AuthLink className="self-start text-[14px]!" to={loginHref} state={destinationNavigationState(destinationFromFields(getValues()))}>{t("signup.enter")}</AuthLink> : null}
+          {emailTaken ? <AuthLink className="self-start text-[0.875rem]!" to={loginHref} state={destinationNavigationState(destinationFromFields(getValues()))}>{t("signup.enter")}</AuthLink> : null}
         </div>
         <FormError message={error ? loginCodeErrorMessage(error, t) : null} />
         <Button type="submit" size="lg" className="w-full" disabled={retry.isRunning} pending={request.isPending} pendingLabel={t("common:code.sending")}>{retry.label ?? t("signup.create")}</Button>
       </form>
       {/* Tablero Registro: los dos enlaces a 22 entre sí, como el resto de la columna (en Ingreso van a 8). */}
-      <div className="flex flex-col gap-[22px]">
+      <div className="flex flex-col gap-5.5">
         <AuthLinkRow>{t("signup.haveAccount")}<AuthLink to={loginHref}>{t("signup.login")}</AuthLink></AuthLinkRow>
         <AuthLinkRow>{t("login.haveBusiness")}<AuthLink to="/registro/empresa">{t("login.registerIt")}</AuthLink></AuthLinkRow>
       </div>

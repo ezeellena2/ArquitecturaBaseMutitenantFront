@@ -18,7 +18,7 @@ function MobilePublicAccessMenu() {
   const [open, setOpen] = useState(false);
   if (!account) return null;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
-  const itemClass = "flex w-full min-h-11 items-center gap-2.5 rounded-[6px] px-2.5 text-left text-[14px] text-[var(--t1)] hover:bg-[var(--s2)]";
+  const itemClass = "flex w-full min-h-11 items-center gap-2.5 rounded-[0.375rem] px-2.5 text-left text-[0.875rem] text-[var(--t1)] hover:bg-[var(--s2)]";
   const separator = <div className="my-1 h-px bg-[var(--borde)]" aria-hidden="true" />;
 
   return <Sheet open={open} onOpenChange={setOpen}>
@@ -29,28 +29,28 @@ function MobilePublicAccessMenu() {
     </SheetTrigger>
     {/* M-Pagina-Publica: la cuenta abre una hoja inferior con la identidad, perfiles, Mi cuenta y Salir, sin ✕. */}
     <SheetContent showCloseButton={false} aria-describedby={undefined} onInteractOutside={() => setOpen(false)}
-      className="rounded-t-[16px] [&_[data-slot=dialog-handle]]:h-1">
+      className="rounded-t-[1rem] [&_[data-slot=dialog-handle]]:h-1">
       <SheetTitle className="sr-only">{t("accessMenu.menuFor", { name: nameLabel })}</SheetTitle>
       <div className="flex items-center gap-3 px-3 py-2.5">
-        <Avatar initials={avatarInitials} muted={avatarMuted} size="medium" className="text-[14px]" />
+        <Avatar initials={avatarInitials} muted={avatarMuted} size="medium" className="text-[0.875rem]" />
         <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-          <span className="truncate text-[14px] font-semibold text-[var(--t1)]">{nameLabel}</span>
-          {detail ? <span className="truncate text-[12.5px] text-[var(--t3)]">{detail}</span> : null}
+          <span className="truncate text-[0.875rem] font-semibold text-[var(--t1)]">{nameLabel}</span>
+          {detail ? <span className="truncate text-[0.78125rem] text-[var(--t3)]">{detail}</span> : null}
         </span>
       </div>
-      <div className="flex flex-col px-2 pt-1.5 pb-[calc(10px+env(safe-area-inset-bottom))]">
+      <div className="flex flex-col px-2 pt-1.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))]">
         {access !== "platform" ? <>
-          <div className="px-2.5 pt-2 pb-1 text-[12.5px] font-semibold text-[var(--t3)]">{t("accessMenu.profiles")}</div>
+          <div className="px-2.5 pt-2 pb-1 text-[0.78125rem] font-semibold text-[var(--t3)]">{t("accessMenu.profiles")}</div>
           <div role="group" aria-label={t("accessMenu.profiles")}>
             {profiles.map((profile) => <button key={profile.key} type="button" aria-pressed={profile.checked} aria-disabled={profile.unavailable || undefined}
               onClick={() => { setOpen(false); if (!profile.checked) profile.select(); }}
               className={cn(itemClass, profile.checked ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : profile.unavailable ? "text-[var(--t3)]" : "")}>
-              <span aria-hidden="true" className={"inline-flex size-7 shrink-0 items-center justify-center rounded-[8px] text-[11.5px] font-bold " + (profile.checked ? "bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]")}>{initials(profile.name)}</span>
+              <span aria-hidden="true" className={"inline-flex size-7 shrink-0 items-center justify-center rounded-[0.5rem] text-[0.71875rem] font-bold " + (profile.checked ? "bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]")}>{initials(profile.name)}</span>
               <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
                 <span className="truncate">{profile.name}</span>
-                {profile.detail ? <span className="text-[12.5px] text-[var(--t3)]">{profile.detail}</span> : null}
+                {profile.detail ? <span className="text-[0.78125rem] text-[var(--t3)]">{profile.detail}</span> : null}
               </span>
-              {profile.checked ? <Check size={16} strokeWidth={2.25} className="text-[var(--t3)]" aria-hidden="true" /> : null}
+              {profile.checked ? <Check strokeWidth={2.25} className="size-4 text-[var(--t3)]" aria-hidden="true" /> : null}
             </button>)}
           </div>
           {separator}

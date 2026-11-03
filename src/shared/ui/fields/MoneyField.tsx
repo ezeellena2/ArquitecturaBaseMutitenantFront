@@ -79,6 +79,6 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
         }}
         disabled={disabled} aria-invalid={externalInvalid || showError} />
     </div> : null}
-    {showError && <p id={messageId} role="alert" className="text-[13px] text-[var(--peligro)]">{t("fields.invalidMoney")}</p>}
+    {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t("fields.invalidMoney")}</p>}
   </div>;
 }

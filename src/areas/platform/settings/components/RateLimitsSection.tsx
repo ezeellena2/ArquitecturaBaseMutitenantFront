@@ -21,13 +21,13 @@ export function RateLimitsSection({ control, errors, onChange }: {
   // Tablero Config-Plat (.lim): la tabla en su recuadro, adentro del margen de la sección; en M-Config-Plat, las filas con
   // el margen de la tarjeta.
   return <Section title={t("rateLimits.title")} phone="inset"><SectionFields>
-    <div role="group" aria-label={t("rateLimits.title")} className={phone ? "flex flex-col gap-3" : "overflow-hidden rounded-[10px] border border-[var(--borde)]"}>
-      {phone ? null : <div aria-hidden="true" className="grid grid-cols-[minmax(0,1fr)_140px_220px] gap-4 border-b border-[var(--borde-cab)] bg-[var(--cab)] px-4 py-2.5 text-[12px] font-semibold text-[var(--t2)]">
+    <div role="group" aria-label={t("rateLimits.title")} className={phone ? "flex flex-col gap-3" : "overflow-hidden rounded-[0.625rem] border border-[var(--borde)]"}>
+      {phone ? null : <div aria-hidden="true" className="grid grid-cols-[minmax(0,1fr)_8.75rem_13.75rem] gap-4 border-b border-[var(--borde-cab)] bg-[var(--cab)] px-4 py-2.5 text-[0.75rem] font-semibold text-[var(--t2)]">
         <span>{t("rateLimits.columns.limit")}</span><span>{t("rateLimits.columns.requests")}</span><span>{t("rateLimits.columns.every")}</span>
       </div>}
       {rateLimitProfiles.map((profile, index) => <Fragment key={profile.key}>
-        {"group" in profile ? <h3 className={phone ? "mt-1.5 text-[13px] font-semibold text-[var(--t2)]"
-          : `px-4 pt-3 pb-1 text-[13px] font-semibold text-[var(--t2)] ${index === 0 ? "" : "mt-1.5 border-t border-[var(--borde)]"}`}>{t(`rateLimits.groups.${profile.group}`)}</h3> : null}
+        {"group" in profile ? <h3 className={phone ? "mt-1.5 text-[0.8125rem] font-semibold text-[var(--t2)]"
+          : `px-4 pt-3 pb-1 text-[0.8125rem] font-semibold text-[var(--t2)] ${index === 0 ? "" : "mt-1.5 border-t border-[var(--borde)]"}`}>{t(`rateLimits.groups.${profile.group}`)}</h3> : null}
         <RateLimitRow control={control} profile={profile.key} errors={errors?.[profile.key]} phone={phone} onChange={() => onChange(profile.key)} />
       </Fragment>)}
     </div>
@@ -55,21 +55,21 @@ function RateLimitRow({ control, profile, errors, phone, onChange }: {
     <SelectTrigger className="w-full" aria-label={t("rateLimits.unitOf", { name })} aria-invalid={Boolean(windowError) || undefined}><SelectValue /></SelectTrigger>
     <SelectContent>{units.map((value) => <SelectItem key={value} value={value}>{t(`rateLimits.units.${value}`, { count })}</SelectItem>)}</SelectContent>
   </Select>;
-  const permitMessage = permitError ? <span id={permitErrorId} role="alert" className="text-[12.5px] text-[var(--peligro)] max-md:text-[13px]">{permitError}</span> : null;
-  const windowMessage = windowError ? <span id={windowErrorId} role="alert" className="text-[12.5px] text-[var(--peligro)] max-md:text-[13px]">{windowError}</span> : null;
+  const permitMessage = permitError ? <span id={permitErrorId} role="alert" className="text-[0.78125rem] text-[var(--peligro)] max-md:text-[0.8125rem]">{permitError}</span> : null;
+  const windowMessage = windowError ? <span id={windowErrorId} role="alert" className="text-[0.78125rem] text-[var(--peligro)] max-md:text-[0.8125rem]">{windowError}</span> : null;
 
   // Tablero M-Config-Plat: el nombre arriba y «N cada M unidad» en una fila; el error, debajo.
   if (phone) return <div className="flex flex-col gap-1.5">
-    <span className="text-[13.5px] font-medium text-[var(--t2)]">{name}</span>
-    <div className="grid grid-cols-[minmax(0,1fr)_auto_64px_minmax(0,1.25fr)] items-center gap-2">
-      {permitsField}<span className="text-[14px] text-[var(--t2)]">{t("rateLimits.every")}</span>{amountField}{unitField}
+    <span className="text-[0.84375rem] font-medium text-[var(--t2)]">{name}</span>
+    <div className="grid grid-cols-[minmax(0,1fr)_auto_4rem_minmax(0,1.25fr)] items-center gap-2">
+      {permitsField}<span className="text-[0.875rem] text-[var(--t2)]">{t("rateLimits.every")}</span>{amountField}{unitField}
     </div>
     {permitMessage}{windowMessage}
   </div>;
   // Tablero Config-Plat (.lim-f): el nombre, los pedidos de 140 y «cada» de 220, con el número de 72 y la unidad.
-  return <div className="grid grid-cols-[minmax(0,1fr)_140px_220px] items-start gap-4 px-4 py-2">
-    <span className="pt-2 text-[14px] text-[var(--t1)]">{name}</span>
+  return <div className="grid grid-cols-[minmax(0,1fr)_8.75rem_13.75rem] items-start gap-4 px-4 py-2">
+    <span className="pt-2 text-[0.875rem] text-[var(--t1)]">{name}</span>
     <div className="flex min-w-0 flex-col gap-1">{permitsField}{permitMessage}</div>
-    <div className="flex min-w-0 flex-col gap-1"><div className="grid grid-cols-[72px_minmax(0,1fr)] gap-2">{amountField}{unitField}</div>{windowMessage}</div>
+    <div className="flex min-w-0 flex-col gap-1"><div className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-2">{amountField}{unitField}</div>{windowMessage}</div>
   </div>;
 }

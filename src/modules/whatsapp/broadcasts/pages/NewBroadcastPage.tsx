@@ -117,7 +117,7 @@ export function NewBroadcastPage(_props: ModuleContentProps) {
 
   if (!sourceId) return <BroadcastEditor initial={emptyForm} />;
   if (source.isPending || (original && sourceTemplate.isPending)) return <Page icon={BroadcastsIcon} title={t("whatsapp:broadcasts.form.title")} backTo={back}>
-    <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
+    <p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p>
   </Page>;
   if (!original) return isNotFoundError(source.error)
     ? <NotFoundPage homePath={homeOf("business")} screen={t("whatsapp:broadcasts.form.title")} back={back} />
@@ -250,7 +250,7 @@ function BroadcastEditor({ initial, initialTemplate }: { initial: BroadcastForm;
         {/* M-WA-Difusion-Nueva (.ap-gtit): en el teléfono, «Vista previa» en gris y la burbuja suelta, sin caja. */}
         {preview ? phone
           ? <section aria-labelledby="new-broadcast-preview" className="flex flex-col gap-2 pt-1.5">
-            <h2 id="new-broadcast-preview" className="text-[13.5px] font-semibold text-[var(--t2)]">{t("whatsapp:broadcasts.preview.title")}</h2>{preview}
+            <h2 id="new-broadcast-preview" className="text-[0.84375rem] font-semibold text-[var(--t2)]">{t("whatsapp:broadcasts.preview.title")}</h2>{preview}
           </section>
           : <Section title={t("whatsapp:broadcasts.preview.title")}>{preview}</Section> : null}
       </form>

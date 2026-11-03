@@ -7,13 +7,13 @@ import { AuthLink, AuthLinkRow } from "./AuthLink";
 // con la letra del renglón que los lleva.
 describe("AuthLink", () => {
   it("es la variante link de Button, con la letra del texto que lo rodea", () => {
-    render(<MemoryRouter><p className="text-[13px]">{"¿No tenés cuenta? "}<AuthLink to="/registro">{"Creá una"}</AuthLink></p></MemoryRouter>);
+    render(<MemoryRouter><p className="text-[0.8125rem]">{"¿No tenés cuenta? "}<AuthLink to="/registro">{"Creá una"}</AuthLink></p></MemoryRouter>);
 
     const link = screen.getByRole("link", { name: "Creá una" });
     expect(link).toHaveAttribute("href", "/registro");
     expect(link).toHaveAttribute("data-variant", "link");
     expect(link).toHaveClass("font-semibold", "text-[var(--marca-tx)]", "hover:underline", "text-[length:inherit]");
-    expect(link).not.toHaveClass("text-[14px]");
+    expect(link).not.toHaveClass("text-[0.875rem]");
   });
 
   // Tableros Ingreso, Registro, Registro-Empresa e Invitacion (.fila-links): el texto y el enlace en un renglón centrado,

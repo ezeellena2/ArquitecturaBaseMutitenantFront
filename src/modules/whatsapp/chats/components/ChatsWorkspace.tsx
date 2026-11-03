@@ -152,7 +152,7 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
   return <div className="flex h-full min-h-0 flex-col">
     <Page icon={platform ? WhatsAppIcon : ChatsIcon} title={title} summary={summary} bodyClassName="flex min-h-0 flex-1 flex-col">
       <ChatColumns>
-        <aside aria-label={t("chats.list.label")} className="flex w-[380px] shrink-0 flex-col border-r border-[var(--borde)]">{inboxColumn}</aside>
+        <aside aria-label={t("chats.list.label")} className="flex w-95 shrink-0 flex-col border-r border-[var(--borde)]">{inboxColumn}</aside>
         {selectedId ? <ConversationView key={selectedId} scope={scope} id={selectedId} links={links} back={back} phone={false} /> : <div className="flex-1 bg-[var(--s2)]" />}
       </ChatColumns>
     </Page>

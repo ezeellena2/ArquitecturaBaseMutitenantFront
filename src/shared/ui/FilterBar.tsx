@@ -83,10 +83,10 @@ export function FilterBar({
       </AppIconButton> : null}
     </AppBarTools>
     {searchOpen && phoneTools === "search-and-filter" ? <div className="px-4 pt-1 pb-2">
-      <label className="flex h-[46px] items-center gap-2.5 rounded-[12px] bg-[var(--s3)] px-3.5 text-[var(--t3)]">
-        <SearchIcon className="size-[18px] shrink-0" />
+      <label className="flex h-11.5 items-center gap-2.5 rounded-[0.75rem] bg-[var(--s3)] px-3.5 text-[var(--t3)]">
+        <SearchIcon className="size-4.5 shrink-0" />
         <input type="search" autoFocus value={searchValue} onChange={(event) => onSearchChange(event.target.value)} aria-label={searchLabel} placeholder={searchLabel}
-          className="min-w-0 flex-1 bg-transparent text-[15.5px] text-[var(--t1)] outline-none placeholder:text-[var(--t3)]" />
+          className="min-w-0 flex-1 bg-transparent text-[0.96875rem] text-[var(--t1)] outline-none placeholder:text-[var(--t3)]" />
       </label>
     </div> : null}
     <Dialog open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -97,11 +97,11 @@ export function FilterBar({
             const selected = filter.options.find((option) => option.value === filter.value);
             const checked = selected ? filter.value : filter.options[0]?.value ?? "";
             return <fieldset key={filter.key} className="m-0 border-0 p-0">
-              <legend className="px-5 pt-2.5 pb-1 text-[13px] font-semibold text-[var(--t3)]">{filter.label.split(":")[0]}</legend>
+              <legend className="px-5 pt-2.5 pb-1 text-[0.8125rem] font-semibold text-[var(--t3)]">{filter.label.split(":")[0]}</legend>
               {filter.remote ? <RemoteOptionSearch remote={filter.remote} label={filter.menuLabel} /> : null}
-              {filter.options.map((option) => <label key={option.value} className="flex min-h-[54px] items-center gap-3 border-t border-[var(--borde)] px-5 text-[16px] text-[var(--t1)] first-of-type:border-t-0">
+              {filter.options.map((option) => <label key={option.value} className="flex min-h-13.5 items-center gap-3 border-t border-[var(--borde)] px-5 text-[1rem] text-[var(--t1)] first-of-type:border-t-0">
                 <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                {option.count === undefined ? null : <span className="text-[13.5px] text-[var(--t3)]">{countText(option.count)}</span>}
+                {option.count === undefined ? null : <span className="text-[0.84375rem] text-[var(--t3)]">{countText(option.count)}</span>}
                 <input type="radio" name={filter.key} value={option.value} checked={checked === option.value} className="size-5 accent-[var(--marca)]"
                   onChange={() => { filter.onChange(option.value); setSheetOpen(false); }} />
               </label>)}
@@ -110,7 +110,7 @@ export function FilterBar({
           })}
         </div>
         {hasFilters ? <DialogFooter><button type="button" onClick={() => { onClear(); setSheetOpen(false); }}
-          className="inline-flex items-center justify-center rounded-[12px] border border-[var(--borde2)] bg-[var(--lado-activo)] font-semibold text-[var(--t1)]">{clearLabel}</button></DialogFooter> : null}
+          className="inline-flex items-center justify-center rounded-[0.75rem] border border-[var(--borde2)] bg-[var(--lado-activo)] font-semibold text-[var(--t1)]">{clearLabel}</button></DialogFooter> : null}
       </DialogContent>
     </Dialog>
   </>;
@@ -124,7 +124,7 @@ export function FilterBar({
       aria-label={label}
       className={cn("flex flex-col items-stretch gap-2 p-2.5 md:flex-row md:flex-wrap md:items-center md:px-3 md:py-2.5", className)}
     >
-      <div className="relative w-full md:w-[360px]">
+      <div className="relative w-full md:w-90">
         <SearchIcon
           className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--t3)]"
         />
@@ -134,7 +134,7 @@ export function FilterBar({
           onChange={(event) => onSearchChange(event.target.value)}
           aria-label={searchLabel}
           placeholder={searchLabel}
-          className="h-9 rounded-[8px] border-[var(--borde)] bg-[var(--s2)] pl-9 text-[13px]"
+          className="h-9 rounded-[0.5rem] border-[var(--borde)] bg-[var(--s2)] pl-9 text-[0.8125rem]"
         />
       </div>
       <div data-slot="filter-pills" className="flex flex-wrap items-center gap-2">
@@ -150,7 +150,7 @@ export function FilterBar({
                 type="button"
                 variant="outline"
                 className={cn(
-                  "h-8 rounded-full px-3 text-[13px] shadow-none",
+                  "h-8 rounded-full px-3 text-[0.8125rem] shadow-none",
                   filter.active
                     ? "border-[var(--marca)] bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]"
                     : "border-[var(--borde)] bg-[var(--lado-activo)] font-normal text-[var(--t2)]",
@@ -165,7 +165,7 @@ export function FilterBar({
             </DropdownMenuTrigger>
             {/* Tablero Usuarios (filtro abierto, .menu): 4 de relleno alrededor de las opciones; el ancho, el de «Criterio ·
                 Menús» (de 220 a 320; los tableros Empresa y Auditoria-Org lo dibujan de 210). */}
-            <DropdownMenuContent align="start" aria-label={filter.menuLabel} className="min-w-[220px] p-1">
+            <DropdownMenuContent align="start" aria-label={filter.menuLabel} className="min-w-55 p-1">
               {filter.remote ? <RemoteOptionSearch remote={filter.remote} label={filter.menuLabel} /> : null}
               <DropdownMenuRadioGroup value={checked} onValueChange={filter.onChange}>
                 {filter.options.map((option) => (
@@ -189,7 +189,7 @@ export function FilterBar({
           type="button"
           onClick={onClear}
           // Tableros de listas (.fb-limpiar): gris de 13 con 6 y 8 de relleno, que se oscurece con el mouse.
-          className="min-h-11 rounded-[8px] px-2 py-1.5 text-[13px] leading-[normal] text-[var(--t3)] hover:bg-[var(--s2)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] md:min-h-7"
+          className="min-h-11 rounded-[0.5rem] px-2 py-1.5 text-[0.8125rem] leading-[normal] text-[var(--t3)] hover:bg-[var(--s2)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] md:min-h-7"
         >
           {clearLabel}
         </button>

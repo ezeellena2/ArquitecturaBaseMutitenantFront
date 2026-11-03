@@ -16,10 +16,10 @@ describe("Button · Criterio · Botones", () => {
     );
 
     const standard = screen.getByRole("button", { name: "Guardar cambios" });
-    expect(standard).toHaveClass("h-9", "text-[14px]", "bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)]", "hover:brightness-105");
+    expect(standard).toHaveClass("h-9", "text-[0.875rem]", "bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)]", "hover:brightness-105");
     expect(standard).toHaveClass("shadow-[0_1px_2px_var(--marca-sombra),inset_0_1px_0_var(--brillo)]");
-    expect(screen.getByRole("button", { name: "Agregar" })).toHaveClass("h-8", "text-[13px]", "border-[var(--borde2)]");
-    expect(screen.getByRole("button", { name: "Continuar" })).toHaveClass("h-11", "text-[15px]");
+    expect(screen.getByRole("button", { name: "Agregar" })).toHaveClass("h-8", "text-[0.8125rem]", "border-[var(--borde2)]");
+    expect(screen.getByRole("button", { name: "Continuar" })).toHaveClass("h-11", "text-[0.9375rem]");
   });
 
   it("peligro con borde en la pantalla y relleno solo en el diálogo que confirma; el enlace sin caja", () => {

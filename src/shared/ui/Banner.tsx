@@ -39,12 +39,12 @@ export function Banner({ tone = "info", action, role, className, children }: Ban
       className={cn(
         // «Criterio · Avisos» (.cartel) y tableros Inicio-Personal y Usuario (.w-cartel): sin borde, 44 de alto como
         // mínimo (el de un botón chico con su margen), padding 6/8/6/14, radio 10 y letra de 13.
-        "flex min-h-11 items-center gap-2.5 rounded-[10px] py-1.5 pr-2 pl-3.5 text-[13px] leading-normal",
+        "flex min-h-11 items-center gap-2.5 rounded-[0.625rem] py-1.5 pr-2 pl-3.5 text-[0.8125rem] leading-normal",
         box,
         className,
       )}
     >
-      <Icon className="size-[18px] shrink-0" strokeWidth={2} />
+      <Icon className="size-4.5 shrink-0" strokeWidth={2} />
       <p className="min-w-0 flex-1">{children}</p>
       {action ? <div className="flex shrink-0 items-center gap-2.5">{action}</div> : null}
     </div>

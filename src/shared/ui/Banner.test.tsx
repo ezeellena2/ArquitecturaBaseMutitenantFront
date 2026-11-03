@@ -20,8 +20,8 @@ describe("Banner", () => {
     render(<Banner tone="warning">{"Pidió la baja de su cuenta."}</Banner>);
 
     const banner = screen.getByRole("status");
-    expect(banner).toHaveClass("min-h-11", "rounded-[10px]", "py-1.5", "pr-2", "pl-3.5", "text-[13px]", "text-[var(--alerta-tx)]");
-    expect(banner.querySelector("svg")).toHaveClass("size-[18px]");
+    expect(banner).toHaveClass("min-h-11", "rounded-[0.625rem]", "py-1.5", "pr-2", "pl-3.5", "text-[0.8125rem]", "text-[var(--alerta-tx)]");
+    expect(banner.querySelector("svg")).toHaveClass("size-4.5");
     // Los carteles del lienzo (.cartel, .w-cartel) dibujan su ícono con trazo 2.
     expect(banner.querySelector("svg")).toHaveAttribute("stroke-width", "2");
   });

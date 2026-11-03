@@ -35,10 +35,10 @@ export function ConcurrencyBanner({ error, isDirty, onSeeNew, onContinueEditing 
     <>
       {/* Tablero M-Avisos («Alguien cambió esto»): en el teléfono, una banda ámbar debajo de la barra, con las dos
           salidas en texto debajo del aviso. */}
-      {phone ? <PhoneBand tone="warning" role="alert" icon={<TriangleAlertIcon aria-hidden="true" className="mt-px size-[18px] shrink-0" />}>
+      {phone ? <PhoneBand tone="warning" role="alert" icon={<TriangleAlertIcon aria-hidden="true" className="mt-px size-4.5 shrink-0" />}>
         <span className="flex min-w-0 flex-1 flex-col gap-2">
           {t("concurrency.banner")}
-          <span className="flex gap-[18px] font-semibold">
+          <span className="flex gap-4.5 font-semibold">
             <button type="button" onClick={onContinueEditing}>{t("concurrency.continueEditing")}</button>
             <button type="button" onClick={seeNew}>{t("concurrency.seeNew")}</button>
           </span>

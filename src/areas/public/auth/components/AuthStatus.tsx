@@ -14,7 +14,7 @@ const tones: Record<Tone, string> = {
 
 /// Un ícono de `shared/ui/icons` (el edificio, el candado, el reloj) o, mientras no esté en el set, uno de lucide, que
 /// toma el tamaño y el trazo que le pasa la pantalla.
-export type AuthStatusIcon = ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
+export type AuthStatusIcon = ComponentType<{ className?: string; strokeWidth?: number }>;
 
 export interface AuthStatusProps {
   icon: AuthStatusIcon;
@@ -32,12 +32,12 @@ export interface AuthStatusProps {
 /// La pantalla de estado del ingreso, los dos registros y la invitación: lo que pasó, en un círculo de 52, el título de
 /// 24 y su bajada centrados, y lo que se puede hacer (tableros Ingreso, Registro, Registro-Empresa e Invitacion).
 export function AuthStatus({ icon: Icon, tone = "neutral", title, detail, children, actions, largeIcon = false }: AuthStatusProps) {
-  return <div className="flex flex-col gap-[22px]">
-    <span aria-hidden="true" className={cn("flex size-[52px] items-center justify-center self-center rounded-full", tones[tone])}>
-      <Icon className={largeIcon ? "size-[22px]" : "size-5"} size={largeIcon ? 22 : 20} strokeWidth={largeIcon ? 2 : 1.75} />
+  return <div className="flex flex-col gap-5.5">
+    <span aria-hidden="true" className={cn("flex size-13 items-center justify-center self-center rounded-full", tones[tone])}>
+      <Icon className={largeIcon ? "size-5.5" : "size-5"} strokeWidth={largeIcon ? 2 : 1.75} />
     </span>
     <div className="text-center">
-      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{title}</h1>
+      <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{title}</h1>
       {/* .sub de los tableros: 14 a 6 del título; un correo largo se corta donde haga falta. */}
       {detail ? <p className="mt-1.5 text-sm leading-normal text-[var(--t2)] wrap-anywhere">{detail}</p> : null}
     </div>

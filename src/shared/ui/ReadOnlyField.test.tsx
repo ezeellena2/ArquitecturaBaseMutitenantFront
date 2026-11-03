@@ -24,7 +24,7 @@ describe("ReadOnlyField", () => {
   it("un texto largo conserva sus renglones; vacío, va en el gris de un campo vacío", () => {
     render(<ReadOnlyField long muted label="Descripción">{"Sin descripción"}</ReadOnlyField>);
     const box = screen.getByRole("group", { name: "Descripción" }).querySelector("[data-slot=read-only-field]");
-    expect(box).toHaveClass("min-h-[84px]", "items-start");
+    expect(box).toHaveClass("min-h-21", "items-start");
     expect(within(box as HTMLElement).getByText("Sin descripción")).toHaveClass("text-[var(--t3)]", "whitespace-pre-wrap");
   });
 

@@ -209,7 +209,7 @@ describe("BusinessHomePage", () => {
     // nombre con interlineado 1,15.
     expect(screen.getByText("Hola, Lucía")).toHaveClass("leading-[normal]");
     expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" })).toHaveClass("leading-[1.15]");
-    expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" }).parentElement).toHaveClass("pt-2.5", "pb-[46px]");
+    expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" }).parentElement).toHaveClass("pt-2.5", "pb-11.5");
     const shortcuts = screen.getByRole("navigation", { name: "Áreas de la organización" });
     // .c-atajos a, .c-tit y .c-p: los rótulos de los atajos, el título y las dos líneas de cada fila con la altura normal
     // de su letra (las filas, de 60).
@@ -245,14 +245,14 @@ describe("BusinessHomePage", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" })).toBeVisible();
     expect(screen.queryByRole("heading", { level: 1, name: "Inicio" })).not.toBeInTheDocument();
     const companies = screen.getByRole("region", { name: "Tus empresas" });
-    expect(within(companies).getByRole("heading", { level: 2, name: "Tus empresas" })).toHaveClass("text-[18px]", "font-bold");
+    expect(within(companies).getByRole("heading", { level: 2, name: "Tus empresas" })).toHaveClass("text-[1.125rem]", "font-bold");
     const company = within(companies).getByRole("link", { name: /Delta Norte S\.A\./ });
     expect(company).toHaveAttribute("href", "/org/empresas/company-dn");
     expect(company).toHaveClass("py-2.5", "pl-5", "pr-4");
     expect(company.closest("li")).not.toBeNull();
-    expect(within(company).getByText("DN")).toHaveClass("size-10", "rounded-[10px]", "text-[14px]", "font-bold");
-    expect(within(company).getByText("Delta Norte S.A.")).toHaveClass("text-[15px]", "font-semibold");
-    expect(within(company).getByText("Solo lectura · 3 miembros")).toHaveClass("text-[13px]", "text-[var(--t3)]");
+    expect(within(company).getByText("DN")).toHaveClass("size-10", "rounded-[0.625rem]", "text-[0.875rem]", "font-bold");
+    expect(within(company).getByText("Delta Norte S.A.")).toHaveClass("text-[0.9375rem]", "font-semibold");
+    expect(within(company).getByText("Solo lectura · 3 miembros")).toHaveClass("text-[0.8125rem]", "text-[var(--t3)]");
     expect(screen.queryByRole("region", { name: "Para resolver" })).not.toBeInTheDocument();
     expect(screen.queryByRole("navigation", { name: "Áreas de la organización" })).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();

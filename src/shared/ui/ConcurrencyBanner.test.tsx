@@ -33,7 +33,7 @@ describe("ConcurrencyBanner", () => {
     );
     expect(screen.getByRole("alert")).toHaveTextContent("Otra persona cambió esto mientras lo editabas.");
     // Tablero «Criterio · Avisos»: un cartel de atención, ámbar, redondeado y sin borde, arriba del contenido.
-    expect(screen.getByRole("alert")).toHaveClass("rounded-[10px]", "bg-[var(--alerta-t)]");
+    expect(screen.getByRole("alert")).toHaveClass("rounded-[0.625rem]", "bg-[var(--alerta-t)]");
     expect(screen.getByRole("alert")).not.toHaveClass("border-b");
     // Tablero Avisos («Alguien cambió esto», .w-cartel): el mismo cartel de atención (Banner), de 44 de alto con su
     // botón chico, y el texto sin negrita en --alerta-tx.
@@ -97,7 +97,7 @@ describe("ConcurrencyBanner", () => {
     </AppChromeProvider></I18nextProvider>);
 
     const banner = screen.getByRole("alert");
-    expect(banner).toHaveClass("bg-[var(--alerta-t)]", "text-[var(--alerta-tx)]", "text-[14.5px]");
+    expect(banner).toHaveClass("bg-[var(--alerta-t)]", "text-[var(--alerta-tx)]", "text-[0.90625rem]");
     const [first, second] = within(banner).getAllByRole("button");
     expect(first).toHaveTextContent("Seguir editando");
     expect(second).toHaveTextContent("Ver lo nuevo");

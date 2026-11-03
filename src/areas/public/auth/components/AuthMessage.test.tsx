@@ -18,7 +18,7 @@ describe("AuthMessage", () => {
   it("la segunda línea va debajo, en 13 y más clara", () => {
     render(<AuthMessage message={{ text: "El código no es válido.", details: ["Te quedan 3 intentos."] }} />);
 
-    expect(screen.getByText("Te quedan 3 intentos.")).toHaveClass("block", "mt-0.5", "text-[13px]", "opacity-85");
+    expect(screen.getByText("Te quedan 3 intentos.")).toHaveClass("block", "mt-0.5", "text-[0.8125rem]", "opacity-85");
     expect(screen.getByText("El código no es válido.")).not.toHaveClass("opacity-85");
   });
 

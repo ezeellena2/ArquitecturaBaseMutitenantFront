@@ -34,31 +34,31 @@ export function ChatComposer({ state, phone, sendPending, notePending, onSend, o
   const [noteMode, setNoteMode] = useState(false);
   const form = useForm<{ text: string }>({ resolver: zodResolver(schema), defaultValues: { text: "" } });
   const bar = (children: ReactNode) => <div data-slot="chat-composer" className={cn("flex shrink-0 items-center gap-2 border-t border-[var(--borde)] bg-[var(--lado-activo)]",
-    phone ? "sticky bottom-0 z-10 px-2.5 pt-2 pb-[calc(8px+env(safe-area-inset-bottom))]" : "px-4 py-3")}>{children}</div>;
+    phone ? "sticky bottom-0 z-10 px-2.5 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]" : "px-4 py-3")}>{children}</div>;
 
-  if (state.kind === "readOnly") return bar(<span className="flex flex-1 items-center gap-2 text-[13px] text-[var(--t2)] max-md:text-[14px]">
+  if (state.kind === "readOnly") return bar(<span className="flex flex-1 items-center gap-2 text-[0.8125rem] text-[var(--t2)] max-md:text-[0.875rem]">
     <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-[var(--punto-apagado)]" />{t("chats.composer.readOnly")}
     <InfoButton tone="inherit" label={t("chats.composer.whatItMeans")} onClick={() => onExplain("readOnly")} />
   </span>);
 
   const noteButton = <button type="button" aria-pressed={noteMode} aria-label={t("chats.composer.note")} title={t("chats.composer.note")} onClick={() => setNoteMode((value) => !value)}
     className={cn("inline-flex shrink-0 items-center justify-center focus-visible:outline-2 focus-visible:outline-[var(--foco)]",
-      phone ? "size-11 rounded-full" : "size-10 rounded-[10px] border",
+      phone ? "size-11 rounded-full" : "size-10 rounded-[0.625rem] border",
       noteMode ? "border-[color-mix(in_oklch,var(--punto-alerta)_60%,transparent)] bg-[var(--alerta-t)] text-[var(--alerta-tx)]" : "border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t2)]")}>
-    <StickyNote aria-hidden="true" className={phone ? "size-[22px]" : "size-[18px]"} />
+    <StickyNote aria-hidden="true" className={phone ? "size-5.5" : "size-4.5"} />
   </button>;
 
   if (!noteMode && state.kind !== "open") {
-    if (state.kind === "takenByOther") return bar(<>{noteButton}<span className="flex-1 text-[13px] text-[var(--t2)] max-md:text-[14px]">{t("chats.composer.takenBy", { name: state.name })}</span></>);
-    if (state.kind === "paymentRequired") return bar(<>{noteButton}<span className="flex flex-1 items-center gap-2 text-[13px] text-[var(--peligro-tx)] max-md:text-[14px]">
+    if (state.kind === "takenByOther") return bar(<>{noteButton}<span className="flex-1 text-[0.8125rem] text-[var(--t2)] max-md:text-[0.875rem]">{t("chats.composer.takenBy", { name: state.name })}</span></>);
+    if (state.kind === "paymentRequired") return bar(<>{noteButton}<span className="flex flex-1 items-center gap-2 text-[0.8125rem] text-[var(--peligro-tx)] max-md:text-[0.875rem]">
       <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-[var(--peligro)]" />{t("chats.composer.paymentMissing")}
       <InfoButton label={t("chats.composer.whatItMeans")} onClick={() => onExplain(state.reason === "template" ? "paymentTemplate" : "payment")} />
     </span></>);
-    return bar(<>{noteButton}<span className={cn("flex min-w-0 flex-1 items-center gap-2 text-[var(--alerta-tx)]", phone ? "text-[14px] font-medium whitespace-nowrap" : "text-[13px]")}>
+    return bar(<>{noteButton}<span className={cn("flex min-w-0 flex-1 items-center gap-2 text-[var(--alerta-tx)]", phone ? "text-[0.875rem] font-medium whitespace-nowrap" : "text-[0.8125rem]")}>
       <Clock aria-hidden="true" className="size-4 shrink-0" />{t("chats.composer.windowClosed")}
       <InfoButton tone="warning" label={t("chats.composer.whatItMeans")} onClick={() => onExplain("window")} />
     </span>
-    <Button type="button" onClick={onChooseTemplate} className={phone ? "h-11 rounded-full px-[18px] text-[14.5px]" : undefined}>{t("chats.composer.chooseTemplate")}</Button></>);
+    <Button type="button" onClick={onChooseTemplate} className={phone ? "h-11 rounded-full px-4.5 text-[0.90625rem]" : undefined}>{t("chats.composer.chooseTemplate")}</Button></>);
   }
 
   const pending = noteMode ? notePending : sendPending;
@@ -81,7 +81,7 @@ export function ChatComposer({ state, phone, sendPending, notePending, onSend, o
         if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); void submit(); }
       }}
       className={cn("max-h-32 min-h-10 flex-1 py-2.5 leading-[1.3]",
-        phone ? "max-md:min-h-11 max-md:rounded-[22px] max-md:px-4 max-md:py-[11px] max-md:text-[15px]" : "h-10",
+        phone ? "max-md:min-h-11 max-md:rounded-[1.375rem] max-md:px-4 max-md:py-2.75 max-md:text-[0.9375rem]" : "h-10",
         noteMode ? "border-[color-mix(in_oklch,var(--punto-alerta)_60%,transparent)] bg-[var(--alerta-t)]" : null)} />
     {phone
       ? <Button type="submit" size="icon" aria-label={label} title={label} pending={pending} pendingLabel={<span className="sr-only">{pendingLabel}</span>}

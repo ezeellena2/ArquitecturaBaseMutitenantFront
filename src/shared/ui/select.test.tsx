@@ -18,14 +18,14 @@ describe("SelectTrigger · Criterio v65", () => {
 
     const regular = screen.getByRole("combobox", { name: "Tipo de dato" });
     const compact = screen.getByRole("combobox", { name: "Filas por página" });
-    expect(regular).toHaveClass("h-9", "text-[13px]");
+    expect(regular).toHaveClass("h-9", "text-[0.8125rem]");
     expect(regular).not.toHaveClass("lg:h-11", "text-sm");
     expect(compact).toHaveClass("h-8");
     expect(compact).not.toHaveClass("lg:h-9");
     // Tablero Usuario (.o-dd > button.ct[aria-expanded="true"]): abierto, el campo lleva el borde petróleo y el halo.
     expect(regular).toHaveClass("aria-expanded:border-[var(--marca)]", "aria-expanded:ring-[3px]", "aria-expanded:ring-[var(--foco-halo)]");
     // Tableros M-Configuracion, M-Cuenta y M-Usuario-Empresa (.in2 svg): en el teléfono, la flechita de 18 y casi negra.
-    expect(regular.querySelector("svg")).toHaveClass("max-md:size-[18px]", "max-md:text-[var(--t1)]", "max-md:opacity-100");
+    expect(regular.querySelector("svg")).toHaveClass("max-md:size-4.5", "max-md:text-[var(--t1)]", "max-md:opacity-100");
   });
 });
 
@@ -54,7 +54,7 @@ describe("SelectContent · Criterio · Formularios, Desplegable", () => {
     // Del mismo ancho que el campo: ni un mínimo propio ni el ancho de la opción más larga.
     expect(list).toHaveClass("w-(--radix-select-trigger-width)", "min-w-0");
     // Como los menús y las listas que se abren (.menu, .o-lst): 10 de radio, el borde de siempre y su sombra larga.
-    expect(list).toHaveClass("rounded-[10px]", "border-[var(--borde)]", "shadow-[var(--sombra-menu)]");
+    expect(list).toHaveClass("rounded-[0.625rem]", "border-[var(--borde)]", "shadow-[var(--sombra-menu)]");
   });
 
   // Tablero Usuario (.o-lst .op .n2 y .d): el nombre y su explicación con interlineado 1,35; la explicación en 12, gris
@@ -73,7 +73,7 @@ describe("SelectContent · Criterio · Formularios, Desplegable", () => {
     screen.getByRole("combobox", { name: "Estado" }).focus();
     await user.keyboard("{Enter}");
     const explanation = await screen.findByText("Entra a la organización y a sus empresas.");
-    expect(explanation).toHaveClass("text-[12px]", "text-[var(--t3)]", "max-w-[300px]", "whitespace-normal");
+    expect(explanation).toHaveClass("text-[0.75rem]", "text-[var(--t3)]", "max-w-75", "whitespace-normal");
     expect(explanation.parentElement).toHaveClass("leading-[1.35]");
   });
 });

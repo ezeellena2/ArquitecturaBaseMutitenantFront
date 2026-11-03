@@ -190,7 +190,7 @@ describe("InvitationPage", () => {
     const loading = await screen.findByRole("status");
     expect(loading).toHaveTextContent("Cargando invitación…");
     expect(loading.tagName).toBe("P");
-    expect(loading).toHaveClass("py-12", "text-center", "text-[13px]", "leading-normal", "text-[var(--t2)]", "max-md:text-[14.5px]");
+    expect(loading).toHaveClass("py-12", "text-center", "text-[0.8125rem]", "leading-normal", "text-[var(--t2)]", "max-md:text-[0.90625rem]");
   });
 
   // Tablero Invitacion (v106), «Sin cuenta: aceptando»: el botón dice qué hace, con el aro, y no se puede volver a tocar
@@ -326,7 +326,7 @@ describe("InvitationPage", () => {
     show({ signedInAs: "business" });
     expect(await screen.findByText("Entraste como lucia@example.test y la invitación es para invitada@example.test.")).toBeVisible();
     // Tablero Invitacion (.msj.alerta): la franja ámbar de siempre (FormError), no un aviso hecho a mano.
-    expect(screen.getByRole("alert")).toHaveClass("rounded-[8px]", "bg-[var(--alerta-t)]", "text-[var(--alerta-tx)]");
+    expect(screen.getByRole("alert")).toHaveClass("rounded-[0.5rem]", "bg-[var(--alerta-t)]", "text-[var(--alerta-tx)]");
     fireEvent.click(screen.getByRole("button", { name: "Salir y seguir como invitada@example.test" }));
     await waitFor(() => expect(signoutRedirect).toHaveBeenCalledOnce());
     const options = signoutRedirect.mock.calls[0][0] as { post_logout_redirect_uri: string; extraQueryParams: { preserveInvitation: string } };

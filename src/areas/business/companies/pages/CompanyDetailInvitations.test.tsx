@@ -289,7 +289,7 @@ describe("CompanyDetailPage en el teléfono: las invitaciones de la empresa (M-E
 
     await user.click(await screen.findByRole("button", { name: "Acciones para Sofía Herrera" }));
     const sheet = await screen.findByRole("dialog", { name: "Sofía Herrera" });
-    expect(sheet).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(sheet).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
     const menu = within(sheet).getByRole("menu", { name: "Acciones para Sofía Herrera" });
     expect(within(menu).getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["Reenviar invitación", "Revocar invitación"]);
     expect(within(menu).getByRole("separator")).toBeInTheDocument();

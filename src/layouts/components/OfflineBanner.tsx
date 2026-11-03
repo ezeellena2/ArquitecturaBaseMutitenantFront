@@ -10,12 +10,12 @@ export function OfflineBanner() {
   const { phone } = useAppChrome();
 
   // Tablero M-Avisos («Sin conexión»): en el teléfono, una banda roja clara debajo de la barra.
-  if (phone) return <PhoneBand tone="danger" role="status" label={label} icon={<WifiOffIcon aria-hidden="true" className="mt-px size-[18px] shrink-0" />}>
+  if (phone) return <PhoneBand tone="danger" role="status" label={label} icon={<WifiOffIcon aria-hidden="true" className="mt-px size-4.5 shrink-0" />}>
     {label}
   </PhoneBand>;
 
   return (
-    <div role="status" aria-label={label} className="flex min-h-9 items-center justify-center gap-2 bg-[var(--t1)] px-6 py-1.5 text-[13px] font-medium text-[var(--lado-activo)]">
+    <div role="status" aria-label={label} className="flex min-h-9 items-center justify-center gap-2 bg-[var(--t1)] px-6 py-1.5 text-[0.8125rem] font-medium text-[var(--lado-activo)]">
       <WifiOffIcon aria-hidden="true" className="size-4 shrink-0" />
       {label}
     </div>

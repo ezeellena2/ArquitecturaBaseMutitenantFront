@@ -39,7 +39,7 @@ describe("AdminPanel", () => {
   it("con un panel configurado abre y cierra con ‹", async () => {
     const onClose = vi.fn();
     render(<MemoryRouter><AdminPanel panel={futurePanel} open onClose={onClose} /></MemoryRouter>);
-    expect(screen.getByRole("navigation", { name: "Administración" })).toHaveClass("w-[232px]", "bg-[var(--panel)]");
+    expect(screen.getByRole("navigation", { name: "Administración" })).toHaveClass("w-58", "bg-[var(--panel)]");
     expect(screen.getByRole("button", { name: "Cerrar Administración" })).toHaveClass("size-7");
     expect(screen.queryByRole("link", { name: "Usuarios" })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Cerrar Administración" }));
@@ -76,7 +76,7 @@ describe("AdminPanel", () => {
     expect(group).toHaveAttribute("aria-expanded", "true");
     expect(group).toHaveClass("font-semibold", "text-[var(--t1)]");
     const children = screen.getByRole("link", { name: "Roles y permisos" }).closest("ul");
-    expect(children).toHaveClass("mt-0.5", "ml-[18px]", "gap-0.5", "pl-2.5");
+    expect(children).toHaveClass("mt-0.5", "ml-4.5", "gap-0.5", "pl-2.5");
     unmount();
 
     render(<MemoryRouter initialEntries={["/org/empresas"]}><AdminPanel panel={businessNavigation.administration} open onClose={vi.fn()} /></MemoryRouter>);

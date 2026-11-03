@@ -27,10 +27,10 @@ describe("DropdownMenu · Criterio · Menús", () => {
     const menu = screen.getByRole("menu", { name: "Más acciones" });
     const edit = screen.getByRole("menuitem", { name: "Editar" });
 
-    expect(menu).toHaveClass("min-w-[220px]", "max-w-[320px]", "rounded-[10px]", "p-0");
+    expect(menu).toHaveClass("min-w-55", "max-w-80", "rounded-[0.625rem]", "p-0");
     // .menu de los tableros: la sombra de 0 12px 32px.
     expect(menu).toHaveClass("shadow-[var(--sombra-menu)]");
-    expect(edit).toHaveClass("min-h-9", "text-[13px]", "border-t", "first:border-t-0");
+    expect(edit).toHaveClass("min-h-9", "text-[0.8125rem]", "border-t", "first:border-t-0");
     expect(screen.getByRole("separator")).toHaveClass("h-1.5", "bg-[var(--s2)]", "border-t");
     expect(screen.getByRole("menuitem", { name: "Eliminar" })).toHaveClass("data-[variant=destructive]:text-[var(--peligro)]");
   });

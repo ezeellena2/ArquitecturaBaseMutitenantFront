@@ -16,13 +16,13 @@ import { GroupTitle, SettingsGroup, SettingsItem } from "./SettingsGroup";
 describe("marco de app del teléfono", () => {
   it("la barra de arriba lleva el título grande, o ‹ y el título de 20 en una pantalla interna", () => {
     const { rerender } = render(<MemoryRouter><AppBar title="Más" subtitle="Grupo Delta" /></MemoryRouter>);
-    expect(screen.getByRole("heading", { level: 1, name: "Más" })).toHaveClass("text-[24px]", "font-bold");
-    expect(screen.getByText("Grupo Delta")).toHaveClass("text-[12.5px]", "text-[var(--t3)]");
+    expect(screen.getByRole("heading", { level: 1, name: "Más" })).toHaveClass("text-[1.5rem]", "font-bold");
+    expect(screen.getByText("Grupo Delta")).toHaveClass("text-[0.78125rem]", "text-[var(--t3)]");
     expect(screen.getByRole("heading", { level: 1 }).closest("header")).toHaveClass("h-15");
 
     rerender(<MemoryRouter><AppBar title="Usuarios" subtitle="Administración" back={{ to: "/org/mas", label: "Volver a Más" }}
       actions={<AppIconButton label="Buscar"><House /></AppIconButton>} /></MemoryRouter>);
-    expect(screen.getByRole("heading", { level: 1, name: "Usuarios" })).toHaveClass("text-[20px]");
+    expect(screen.getByRole("heading", { level: 1, name: "Usuarios" })).toHaveClass("text-[1.25rem]");
     // M-* (.ap-bar h1 y .sub): el título con interlineado 1.15 y la bajada con el normal, pegada al título. tailwind-merge
     // borraba el interlineado del título si iba antes del tamaño.
     expect(screen.getByRole("heading", { level: 1, name: "Usuarios" })).toHaveClass("leading-[1.15]");
@@ -44,7 +44,7 @@ describe("marco de app del teléfono", () => {
     expect(screen.getByRole("link", { name: "Más" })).toHaveClass("text-[var(--marca-tx)]", "font-semibold");
     // Lienzo v104: la inicial va en el círculo con el degradé de la marca, como en la compu.
     expect(screen.getByText("L")).toHaveAttribute("data-slot", "avatar");
-    expect(screen.getByText("L")).toHaveClass("size-[26px]", "rounded-full", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
+    expect(screen.getByText("L")).toHaveClass("size-6.5", "rounded-full", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
     expect(screen.getByRole("link", { name: "Inicio" })).not.toHaveAttribute("aria-current");
   });
 
@@ -55,7 +55,7 @@ describe("marco de app del teléfono", () => {
     expect(fab).toHaveClass("fixed", "size-14", "rounded-2xl", "bg-[var(--marca)]");
     // Tableros M-Usuarios y M-Empresa (.ap-fab): a 25 de la línea de arriba de la barra de abajo (que mide 68 sin la raya
     // de inicio), no a 16.
-    expect(fab).toHaveClass("bottom-[calc(93px+env(safe-area-inset-bottom))]");
+    expect(fab).toHaveClass("bottom-[calc(5.8125rem+env(safe-area-inset-bottom))]");
     await userEvent.click(fab);
     expect(onClick).toHaveBeenCalledOnce();
   });
@@ -65,7 +65,7 @@ describe("marco de app del teléfono", () => {
     const { unmount } = render(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav }}>
       <FixedActions><button type="button">{"Guardar cambios"}</button></FixedActions>
     </AppChromeProvider>);
-    expect(screen.getByRole("button", { name: "Guardar cambios" }).parentElement).toHaveClass("sticky", "bottom-0", "border-t", "[&>*]:h-[50px]");
+    expect(screen.getByRole("button", { name: "Guardar cambios" }).parentElement).toHaveClass("sticky", "bottom-0", "border-t", "[&>*]:h-12.5");
     expect(hideBottomNav).toHaveBeenLastCalledWith(true);
     unmount();
     expect(hideBottomNav).toHaveBeenLastCalledWith(false);
@@ -75,11 +75,11 @@ describe("marco de app del teléfono", () => {
     render(<ul><ListRow leading={<span>{"T"}</span>} title="Tomás Acosta" lines={["tomas@delta.test", "Activo · Delta S.A."]} /></ul>);
     const row = screen.getByRole("listitem");
     expect(row).toHaveClass("relative", "py-3", "pl-4", "after:bg-[var(--borde)]");
-    expect(screen.getByText("Tomás Acosta")).toHaveClass("text-[15.5px]", "font-medium");
+    expect(screen.getByText("Tomás Acosta")).toHaveClass("text-[0.96875rem]", "font-medium");
     // Con un círculo a la izquierda es la fila de una persona (M-Usuarios, .w-conv): el correo en gris claro y la
     // tercera línea en 12,5.
-    expect(screen.getByText("tomas@delta.test")).toHaveClass("text-[14px]", "text-[var(--t3)]");
-    expect(screen.getByText("Activo · Delta S.A.")).toHaveClass("text-[12.5px]", "text-[var(--t3)]");
+    expect(screen.getByText("tomas@delta.test")).toHaveClass("text-[0.875rem]", "text-[var(--t3)]");
+    expect(screen.getByText("Activo · Delta S.A.")).toHaveClass("text-[0.78125rem]", "text-[var(--t3)]");
   });
 
   it("los ajustes van en grupos blancos con su título arriba", () => {
@@ -87,10 +87,10 @@ describe("marco de app del teléfono", () => {
       <GroupTitle action={<a href="/x">{"Sumar empresa"}</a>}>{"Empresas"}</GroupTitle>
       <SettingsGroup label="Empresas"><SettingsItem title="Delta S.A." detail="Solo lectura" to="/org/empresas/1" /></SettingsGroup>
     </MemoryRouter>);
-    expect(screen.getByText("Empresas", { selector: "span" })).toHaveClass("text-[13.5px]", "font-semibold");
+    expect(screen.getByText("Empresas", { selector: "span" })).toHaveClass("text-[0.84375rem]", "font-semibold");
     // .ap-gtit: con el interlineado normal; con el 1.5 de la página, cada grupo bajaba 4 px.
     expect(screen.getByText("Empresas", { selector: "span" }).parentElement).toHaveClass("leading-[normal]");
-    expect(screen.getByRole("list", { name: "Empresas" })).toHaveClass("rounded-[14px]", "bg-[var(--lado-activo)]");
+    expect(screen.getByRole("list", { name: "Empresas" })).toHaveClass("rounded-[0.875rem]", "bg-[var(--lado-activo)]");
     expect(screen.getByRole("link", { name: /Delta S.A./ })).toHaveClass("min-h-14");
   });
 

@@ -57,6 +57,6 @@ export function DateField({ value, onChange, onValidityChange, id, name, disable
       onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
       aria-invalid={externalInvalid || showError} aria-describedby={description} />
-    {showMessage ? <p id={messageId} role="alert" className="text-[13px] text-[var(--peligro)]">{message}</p> : null}
+    {showMessage ? <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{message}</p> : null}
   </>;
 }

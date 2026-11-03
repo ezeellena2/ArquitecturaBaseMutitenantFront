@@ -68,12 +68,12 @@ export function AcceptTermsPage() {
   }
   if (!isPending && data && documents.length === 0) { clearAccessError(); return <Navigate to={returnTo} replace />; }
   return <AuthLayout access={data?.access === "business" ? "business" : "consumer"} brandPanel="blank">
-    <form noValidate className="flex flex-col gap-[22px]" onSubmit={(event) => { void submit(event); }}>
-      <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("legal:accept.title")}</h1>
+    <form noValidate className="flex flex-col gap-5.5" onSubmit={(event) => { void submit(event); }}>
+      <div><h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t("legal:accept.title")}</h1>
         <p className="mt-2 text-sm leading-normal text-[var(--t2)]"><Trans ns="legal" i18nKey={terms && privacy ? "accept.bothChanged" : terms ? "accept.termsChanged" : "accept.privacyChanged"} values={{ termsVersion: terms?.version, privacyVersion: privacy?.version }} components={{ terms: <Link to="/terminos" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" />, privacy: <Link to="/privacidad" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" /> }} /></p>
       </div>
-      <label className="flex items-start gap-2.5 text-[14px] leading-normal"><input type="checkbox" {...form.register("accepted", { onChange: () => form.clearErrors("accepted") })} className="mt-0.5 size-[18px] shrink-0 accent-[var(--marca)]" /><span><Trans ns="legal" i18nKey="accept.agreement" components={{ terms: <Link to="/terminos" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" />, privacy: <Link to="/privacidad" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" /> }} /></span></label>
-      {acceptError ? <p role="alert" className="-mt-4 text-[13px] text-[var(--peligro)]">{acceptError}</p> : null}
+      <label className="flex items-start gap-2.5 text-[0.875rem] leading-normal"><input type="checkbox" {...form.register("accepted", { onChange: () => form.clearErrors("accepted") })} className="mt-0.5 size-4.5 shrink-0 accent-[var(--marca)]" /><span><Trans ns="legal" i18nKey="accept.agreement" components={{ terms: <Link to="/terminos" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" />, privacy: <Link to="/privacidad" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" /> }} /></span></label>
+      {acceptError ? <p role="alert" className="-mt-4 text-[0.8125rem] text-[var(--peligro)]">{acceptError}</p> : null}
       <FormError message={failure} />
       <div className="flex flex-col gap-2.5"><Button type="submit" size="lg" disabled={isPending} pending={request.isPending} pendingLabel={t("legal:accept.accepting")}>{t("legal:accept.continue")}</Button><Button type="button" size="lg" variant="outline" onClick={() => { void leave(); }}>{t("legal:accept.signOut")}</Button></div>
     </form>

@@ -26,7 +26,7 @@ class FlagErrorBoundary extends Component<FlagErrorBoundaryProps, { failed: bool
   render() {
     const named = this.props.decorative ? { "aria-hidden": true } : { role: "img", "aria-label": this.props.title };
     if (this.state.failed) return <span {...named}
-      className={`inline-flex items-center justify-center rounded border text-[9px] ${this.props.className ?? ""}`}>
+      className={`inline-flex items-center justify-center rounded border text-[0.5625rem] ${this.props.className ?? ""}`}>
       {this.props.countryCode}
     </span>;
     return this.props.children;

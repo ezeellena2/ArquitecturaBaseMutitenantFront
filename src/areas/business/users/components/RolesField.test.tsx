@@ -15,7 +15,7 @@ describe("RolesField", () => {
     expect(row).toHaveClass("justify-between");
     expect(row.firstElementChild).toHaveTextContent("Roles en la empresa");
     expect(row.lastElementChild).toBe(label);
-    expect(label).toHaveClass("gap-1.5", "text-[12.5px]", "font-medium", "text-[var(--t2)]", "max-md:gap-2", "max-md:text-[14px]");
-    expect(all).toHaveClass("max-md:size-5", "max-md:rounded-[6px]", "max-md:border-[1.5px]");
+    expect(label).toHaveClass("gap-1.5", "text-[0.78125rem]", "font-medium", "text-[var(--t2)]", "max-md:gap-2", "max-md:text-[0.875rem]");
+    expect(all).toHaveClass("max-md:size-5", "max-md:rounded-[0.375rem]", "max-md:border-[1.5px]");
   });
 });

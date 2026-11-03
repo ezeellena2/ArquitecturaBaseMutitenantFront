@@ -213,7 +213,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
     expect(trigger).toHaveAttribute("aria-haspopup", "dialog");
     await user.click(trigger);
     const sheet = await screen.findByRole("dialog", { name: "Laura Díaz" });
-    expect(sheet).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(sheet).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
     expect(within(sheet).getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["Cambiar permisos", "Restablecer el autenticador", "Quitar operador"]);
     expect(within(sheet).getByRole("separator")).toBeInTheDocument();
     expect(within(sheet).getByRole("menuitem", { name: "Quitar operador" })).toHaveClass("text-[var(--peligro)]");

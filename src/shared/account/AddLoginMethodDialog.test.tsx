@@ -89,7 +89,7 @@ it("suma correo: el título dice el paso, el código incorrecto va debajo de los
   const message = await within(verify).findByText("El código no es válido.");
   expect(message).toHaveAttribute("role", "alert");
   expect(code.nextElementSibling).toBe(message);
-  expect(message).toHaveClass("text-[13px]", "text-[var(--peligro)]", "max-md:text-[13.5px]");
+  expect(message).toHaveClass("text-[0.8125rem]", "text-[var(--peligro)]", "max-md:text-[0.84375rem]");
   expect(code).toHaveAccessibleDescription("Te mandamos un código a nu•••@example.test. El código no es válido.");
   expect(first).toHaveAttribute("aria-invalid", "true");
   expect(screen.getAllByRole("alert")).toEqual([message]);

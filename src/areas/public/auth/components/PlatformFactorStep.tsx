@@ -56,11 +56,11 @@ export function PlatformFactorStep({ onCompleted, onRestart }: { onCompleted: (r
   };
 
   const challengeExpired = expired || challenge.error instanceof ApiError && challenge.error.status === 401;
-  if (challengeExpired) return <div className="flex flex-col gap-[22px]">
+  if (challengeExpired) return <div className="flex flex-col gap-5.5">
     <AuthMessage message={{ text: t("platformFactor.expired") }} />
     <Button type="button" size="lg" onClick={onRestart}>{t("login.backToLogin")}</Button>
   </div>;
-  if (challenge.isError) return <div className="flex flex-col gap-[22px]">
+  if (challenge.isError) return <div className="flex flex-col gap-5.5">
     <AuthMessage message={{ text: apiErrorMessage(challenge.error, t) }} />
     <Button type="button" size="lg" variant="outline" onClick={() => { void challenge.refetch(); }}>{t("common:actions.retry")}</Button>
   </div>;
@@ -119,17 +119,17 @@ function FactorVerify({ onFailure, onVerified }: { onFailure: (error: ApiError) 
   }
 
   const blocked = verification.locked;
-  return <div className="flex flex-col gap-[22px]">
-    <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><LockIcon className="size-5" /></span>
+  return <div className="flex flex-col gap-5.5">
+    <span aria-hidden="true" className="flex size-13 items-center justify-center self-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><LockIcon className="size-5" /></span>
     <div className="text-center">
-      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("platformFactor.verifyTitle")}</h1>
+      <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t("platformFactor.verifyTitle")}</h1>
       <p id={hintId} className="mt-1.5 text-sm leading-normal text-[var(--t2)]">{t(app ? "platformFactor.verifyApp" : "platformFactor.verifyRecovery")}</p>
     </div>
     {/* Tablero Ingreso («Operador: demasiados códigos incorrectos»): con la cuenta bloqueada, las casillas van marcadas. */}
     {app ? <OtpInput length={codeLength} value={code} variant="auth" label={t("common:code.label")} invalid={verification.invalid || blocked} disabled={blocked || verification.pending}
       aria-describedby={hintId} onChange={(next) => { setCode(next); setIncomplete(false); if (verification.invalid) verification.clear(); }} />
       : <div className="flex flex-col gap-1.5">
-        <label htmlFor={recoveryId} className="text-[13px] font-medium text-[var(--t1)]">{t("platformFactor.recoveryLabel")}</label>
+        <label htmlFor={recoveryId} className="text-[0.8125rem] font-medium text-[var(--t1)]">{t("platformFactor.recoveryLabel")}</label>
         <Input id={recoveryId} autoComplete="off" spellCheck={false} placeholder="XXXX-XXXX" value={recovery} disabled={blocked || verification.pending}
           aria-invalid={verification.invalid || undefined} aria-describedby={hintId} className="h-11 font-mono tracking-[0.08em]"
           onChange={(event) => { setRecovery(event.target.value); setIncomplete(false); if (verification.invalid) verification.clear(); }} />
@@ -139,7 +139,7 @@ function FactorVerify({ onFailure, onVerified }: { onFailure: (error: ApiError) 
       {verification.label ?? t("common:code.verify")}
     </Button>
     <div className="flex justify-center">
-      <Button type="button" variant="link" className="text-[13px] leading-[normal]" onClick={toggle}>{t(app ? "platformFactor.useRecovery" : "platformFactor.useApp")}</Button>
+      <Button type="button" variant="link" className="text-[0.8125rem] leading-[normal]" onClick={toggle}>{t(app ? "platformFactor.useRecovery" : "platformFactor.useApp")}</Button>
     </div>
   </div>;
 }
@@ -158,21 +158,21 @@ function FactorSetup({ secret, otpauthUri, onFailure, onVerified }: { secret: st
     void verification.submit({ method: "authenticator", code });
   }
 
-  return <div className="flex flex-col gap-[22px]">
+  return <div className="flex flex-col gap-5.5">
     <div>
-      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("platformFactor.setupTitle")}</h1>
+      <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t("platformFactor.setupTitle")}</h1>
       <p className="mt-1.5 text-sm leading-normal text-[var(--t2)]">{t("platformFactor.setupDetail")}</p>
     </div>
     <div className="flex items-center gap-5">
-      <QrCode value={otpauthUri} label={t("platformFactor.qrLabel")} className="size-[168px] max-md:size-[140px]" />
+      <QrCode value={otpauthUri} label={t("platformFactor.qrLabel")} className="size-42 max-md:size-35" />
       <div className="flex min-w-0 flex-col gap-2.5 text-sm text-[var(--t2)]">
         <span><strong className="text-[var(--t1)]">{"1."}</strong> {t("platformFactor.scan")}</span>
         <span>{t("platformFactor.manual")}</span>
-        <span className="font-mono text-[15px] font-semibold tracking-[0.06em] break-all text-[var(--t1)] select-all">{key}</span>
+        <span className="font-mono text-[0.9375rem] font-semibold tracking-[0.06em] break-all text-[var(--t1)] select-all">{key}</span>
       </div>
     </div>
     <div className="flex flex-col gap-1.5">
-      <span id={stepId} className="text-[13px] font-medium text-[var(--t2)]"><strong className="text-[var(--t1)]">{"2."}</strong> {t("platformFactor.typeCode")}</span>
+      <span id={stepId} className="text-[0.8125rem] font-medium text-[var(--t2)]"><strong className="text-[var(--t1)]">{"2."}</strong> {t("platformFactor.typeCode")}</span>
       <OtpInput length={codeLength} value={code} variant="auth" label={t("common:code.label")} invalid={verification.invalid} disabled={verification.locked || verification.pending}
         aria-describedby={stepId} onChange={(next) => { setCode(next); setIncomplete(false); if (verification.invalid) verification.clear(); }} />
     </div>
@@ -210,12 +210,12 @@ function FactorRecoveryCodes({ codes, onFailure, onCompleted }: { codes: readonl
     }
   }
 
-  return <div className="flex flex-col gap-[22px]">
+  return <div className="flex flex-col gap-5.5">
     <div>
-      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("platformFactor.codesTitle")}</h1>
+      <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t("platformFactor.codesTitle")}</h1>
       <p className="mt-1.5 text-sm leading-normal text-[var(--t2)]">{t("platformFactor.codesDetail")}</p>
     </div>
-    <ul aria-label={t("platformFactor.codesLabel")} className="grid grid-cols-2 gap-x-6 gap-y-2 rounded-[14px] border border-[var(--borde)] bg-[var(--s2)] px-5 py-4 font-mono text-[15px] tracking-[0.04em] max-md:rounded-[10px] max-md:px-4 max-md:py-3 max-md:text-[14px]">
+    <ul aria-label={t("platformFactor.codesLabel")} className="grid grid-cols-2 gap-x-6 gap-y-2 rounded-[0.875rem] border border-[var(--borde)] bg-[var(--s2)] px-5 py-4 font-mono text-[0.9375rem] tracking-[0.04em] max-md:rounded-[0.625rem] max-md:px-4 max-md:py-3 max-md:text-[0.875rem]">
       {codes.map((code) => <li key={code}>{code}</li>)}
     </ul>
     <div className="flex gap-2.5">

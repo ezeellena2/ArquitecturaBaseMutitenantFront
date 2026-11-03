@@ -16,7 +16,7 @@ function Switch({
       className={cn(
         // Tablero Pagina-Org (.w-sw): en la compu, 36 por 20 con la perilla de 16 a 2 del borde; apagado, gris claro
         // (--borde2), como en el teléfono (M-Pagina-Org, 50 por 30).
-        "peer group/switch inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-[size=default]:h-5 data-[size=default]:w-9 data-[size=default]:px-px data-[size=sm]:h-3.5 data-[size=sm]:w-6 max-md:data-[size=default]:h-[30px] max-md:data-[size=default]:w-[50px] max-md:data-[size=default]:px-0.5 data-[state=checked]:bg-primary data-[state=unchecked]:bg-[var(--borde2)]",
+        "peer group/switch inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-[size=default]:h-5 data-[size=default]:w-9 data-[size=default]:px-px data-[size=sm]:h-3.5 data-[size=sm]:w-6 max-md:data-[size=default]:h-7.5 max-md:data-[size=default]:w-12.5 max-md:data-[size=default]:px-0.5 data-[state=checked]:bg-primary data-[state=unchecked]:bg-[var(--borde2)]",
         className
       )}
       {...props}

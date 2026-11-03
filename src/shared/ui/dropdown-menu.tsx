@@ -43,7 +43,7 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[220px] max-w-[320px] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-[10px] border border-[var(--borde)] bg-[var(--lado-activo)] p-0 text-[var(--t1)] shadow-[var(--sombra-menu)] data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+          "z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-55 max-w-80 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-[0.625rem] border border-[var(--borde)] bg-[var(--lado-activo)] p-0 text-[var(--t1)] shadow-[var(--sombra-menu)] data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
           className
         )}
         {...props}
@@ -75,7 +75,7 @@ function DropdownMenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-          "relative flex min-h-9 cursor-default items-center gap-2 border-t border-[var(--borde)] px-3.5 py-1.5 text-[13px] outline-hidden select-none first:border-t-0 focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 data-[variant=destructive]:text-[var(--peligro)] data-[variant=destructive]:focus:bg-[var(--peligro-t)] data-[variant=destructive]:focus:text-[var(--peligro)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-[var(--t2)] data-[variant=destructive]:*:[svg]:text-[var(--peligro)]!",
+          "relative flex min-h-9 cursor-default items-center gap-2 border-t border-[var(--borde)] px-3.5 py-1.5 text-[0.8125rem] outline-hidden select-none first:border-t-0 focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 data-[variant=destructive]:text-[var(--peligro)] data-[variant=destructive]:focus:bg-[var(--peligro-t)] data-[variant=destructive]:focus:text-[var(--peligro)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-[var(--t2)] data-[variant=destructive]:*:[svg]:text-[var(--peligro)]!",
         className
       )}
       {...props}
@@ -95,14 +95,14 @@ function DropdownMenuCheckboxItem({
       className={cn(
         // Tablero Usuario (el desplegable de roles, .o-lst label.op): 36 de alto, 4/10 de relleno y radio 6, con la
         // casilla de 16 a la izquierda y 10 hasta el texto; sin líneas entre opciones y sin fondo al marcarla.
-        "group relative flex min-h-9 cursor-default items-center gap-2.5 rounded-[6px] px-2.5 py-1 text-[13px] text-[var(--t1)] outline-hidden select-none focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "group relative flex min-h-9 cursor-default items-center gap-2.5 rounded-[0.375rem] px-2.5 py-1 text-[0.8125rem] text-[var(--t1)] outline-hidden select-none focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className
       )}
       checked={checked}
       {...props}
     >
       {/* La casilla, como la de «Todos» (Checkbox): borde gris y, marcada, petróleo con el tilde blanco. */}
-      <span data-slot="dropdown-menu-check" aria-hidden="true" className="pointer-events-none flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-input bg-[var(--lado-activo)] text-primary-foreground group-data-[state=checked]:border-primary group-data-[state=checked]:bg-primary">
+      <span data-slot="dropdown-menu-check" aria-hidden="true" className="pointer-events-none flex size-4 shrink-0 items-center justify-center rounded-[0.25rem] border border-input bg-[var(--lado-activo)] text-primary-foreground group-data-[state=checked]:border-primary group-data-[state=checked]:bg-primary">
         <DropdownMenuPrimitive.ItemIndicator>
           <CheckIcon className="size-3.5" />
         </DropdownMenuPrimitive.ItemIndicator>
@@ -134,7 +134,7 @@ function DropdownMenuRadioItem({
       className={cn(
         // Tablero Usuarios (filtro abierto, .menu-it): 34 de alto, 6/10 de relleno y radio 8, sin líneas entre opciones
         // (las líneas son del ⋮); se resalta adentro en gris claro y la elegida va en petróleo claro con 500, sin punto.
-        "relative flex min-h-[34px] cursor-default items-center gap-2 rounded-[8px] px-2.5 py-1.5 text-[13px] outline-hidden select-none focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[state=checked]:bg-[var(--marca-t)] data-[state=checked]:font-medium data-[state=checked]:text-[var(--marca-tx)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[15px]",
+        "relative flex min-h-8.5 cursor-default items-center gap-2 rounded-[0.5rem] px-2.5 py-1.5 text-[0.8125rem] outline-hidden select-none focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[state=checked]:bg-[var(--marca-t)] data-[state=checked]:font-medium data-[state=checked]:text-[var(--marca-tx)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.75",
         className
       )}
       {...props}
@@ -156,7 +156,7 @@ function DropdownMenuLabel({
       data-slot="dropdown-menu-label"
       data-inset={inset}
       className={cn(
-        "px-3.5 py-1.5 text-[12px] font-medium data-[inset]:pl-8 lg:text-[13px]",
+        "px-3.5 py-1.5 text-[0.75rem] font-medium data-[inset]:pl-8 lg:text-[0.8125rem]",
         className
       )}
       {...props}
@@ -212,7 +212,7 @@ function DropdownMenuSubTrigger({
       data-slot="dropdown-menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "flex min-h-[34px] cursor-default items-center gap-2 rounded-[8px] px-2.5 py-1.5 text-[13px] outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[inset]:pl-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[15px] [&_svg:not([class*='text-'])]:text-muted-foreground",
+        "flex min-h-8.5 cursor-default items-center gap-2 rounded-[0.5rem] px-2.5 py-1.5 text-[0.8125rem] outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[inset]:pl-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.75 [&_svg:not([class*='text-'])]:text-muted-foreground",
         className
       )}
       {...props}

@@ -115,7 +115,7 @@ describe("SettingsPage", () => {
       expect(screen.getByRole("heading", { name: "Datos de la organización" })).toHaveClass("sr-only");
       const domains = screen.getByRole("region", { name: "Dominio de correo" });
       expect(within(domains).getByRole("button", { name: "Agregar dominio" })).toHaveClass("text-[var(--marca-tx)]");
-      expect((await within(domains).findByText("delta.example.test")).closest("ul")!.parentElement).toHaveClass("rounded-[14px]");
+      expect((await within(domains).findByText("delta.example.test")).closest("ul")!.parentElement).toHaveClass("rounded-[0.875rem]");
       // Tablero M-Configuracion: «● Verificado · 10 correos administrados por …» sigue en otra línea en lugar de cortarse.
       expect(within(domains).getByText("Verificado").parentElement!.parentElement).toHaveClass("max-md:whitespace-normal");
       expect(screen.getByRole("button", { name: "Guardar cambios" }).parentElement).toHaveAttribute("data-slot", "fixed-actions");
@@ -135,9 +135,9 @@ describe("SettingsPage", () => {
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
     const empty = await screen.findByText("Sin dominio");
-    expect(empty).toHaveClass("px-4", "py-3.5", "text-[13px]", "text-[var(--t3)]");
+    expect(empty).toHaveClass("px-4", "py-3.5", "text-[0.8125rem]", "text-[var(--t3)]");
     expect(empty).toHaveClass("max-md:flex", "max-md:min-h-14", "max-md:items-center", "max-md:py-2", "max-md:pr-3.5", "max-md:pl-4",
-      "max-md:text-[15.5px]", "max-md:font-medium", "max-md:text-[var(--t1)]", "max-md:opacity-55");
+      "max-md:text-[0.96875rem]", "max-md:font-medium", "max-md:text-[var(--t1)]", "max-md:opacity-55");
   });
 
   // Tablero Configuracion: el dominio verificado dice cuántos correos administra la organización («Verificado · 10 correos
@@ -314,9 +314,9 @@ describe("SettingsPage", () => {
     expect(within(verify).getByText("ab-verificacion=7f3c9a2e")).toBeVisible();
     // Tablero Configuracion-Verificar (.rt y .o-codigo): el rótulo en 12,5 y gris medio; el registro en 13 con la altura
     // normal de su letra, en una caja de radio 8 con 10 arriba y abajo y 12 a los lados.
-    expect(within(verify).getByText("Registro TXT a cargar en el DNS de delta.example.test")).toHaveClass("text-[12.5px]", "font-semibold", "text-[var(--t2)]");
-    expect(within(verify).getByText("ab-verificacion=7f3c9a2e")).toHaveClass("text-[13px]", "leading-[normal]");
-    expect(within(verify).getByText("ab-verificacion=7f3c9a2e").parentElement).toHaveClass("rounded-[8px]", "px-3", "py-2.5");
+    expect(within(verify).getByText("Registro TXT a cargar en el DNS de delta.example.test")).toHaveClass("text-[0.78125rem]", "font-semibold", "text-[var(--t2)]");
+    expect(within(verify).getByText("ab-verificacion=7f3c9a2e")).toHaveClass("text-[0.8125rem]", "leading-[normal]");
+    expect(within(verify).getByText("ab-verificacion=7f3c9a2e").parentElement).toHaveClass("rounded-[0.5rem]", "px-3", "py-2.5");
     expect(within(verify).getByText("ab-verificacion=7f3c9a2e").closest("[data-slot='dialog-body']")).not.toBeNull();
     await user.click(within(verify).getByRole("button", { name: "Copiar" }));
     expect(await navigator.clipboard.readText()).toBe("ab-verificacion=7f3c9a2e");
@@ -400,13 +400,13 @@ describe("SettingsPage", () => {
       const verify = await screen.findByRole("dialog", { name: "Verificar delta.example.test" });
       // .ap-cod: el rótulo y el registro con la altura normal de su letra, la caja con radio 12 y el ícono de copiar del
       // tablero (dos hojas chicas).
-      expect(within(verify).getByText("Registro TXT a cargar en el DNS de delta.example.test")).toHaveClass("text-[13.5px]", "font-semibold", "text-[var(--t2)]", "leading-[normal]");
+      expect(within(verify).getByText("Registro TXT a cargar en el DNS de delta.example.test")).toHaveClass("text-[0.84375rem]", "font-semibold", "text-[var(--t2)]", "leading-[normal]");
       const code = within(verify).getByText("ab-verificacion=7f3c9a2e");
-      expect(code).toHaveClass("text-[14px]", "break-all", "leading-[normal]");
-      expect(code.parentElement).toHaveClass("min-h-12", "rounded-[12px]", "bg-[var(--s3)]", "pl-3.5", "pr-1.5");
+      expect(code).toHaveClass("text-[0.875rem]", "break-all", "leading-[normal]");
+      expect(code.parentElement).toHaveClass("min-h-12", "rounded-[0.75rem]", "bg-[var(--s3)]", "pl-3.5", "pr-1.5");
       expect(code.parentElement).not.toHaveClass("border");
       const copy = within(verify).getByRole("button", { name: "Copiar" });
-      expect(copy).toHaveClass("h-10", "px-2.5", "text-[15.5px]", "font-semibold", "text-[var(--marca-tx)]");
+      expect(copy).toHaveClass("h-10", "px-2.5", "text-[0.96875rem]", "font-semibold", "text-[var(--marca-tx)]");
       expect(copy).not.toHaveAttribute("data-variant", "outline");
       expect(copy.querySelector("svg")).not.toBeNull();
       expect(copy.querySelector("svg rect")).toHaveAttribute("width", "11");

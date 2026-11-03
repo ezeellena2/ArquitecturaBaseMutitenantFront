@@ -277,17 +277,17 @@ export function BusinessSignupPage() {
         : step === "approval" ? <AuthStatus icon={ClockIcon} tone="warning" title={t("businessSignup.approvalTitle")}
           detail={<Trans ns="auth" i18nKey={notificationEmail ? "businessSignup.approvalDetail" : "businessSignup.approvalDetailWithoutEmail"} values={{ organization: organizationName.trim(), email: notificationEmail }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}
           actions={<Button asChild variant="outline" size="lg"><Link to="/">{t("businessSignup.backHome")}</Link></Button>} />
-          : step === "email" ? <section className="flex flex-col gap-[22px]">
-            <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.title")}</h1>
-            <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
+          : step === "email" ? <section className="flex flex-col gap-5.5">
+            <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.title")}</h1>
+            <label className="flex items-center gap-2.5 text-[0.875rem] text-[var(--t1)]">
               <input type="checkbox" {...emailForm.register("acceptedTerms", { onChange: () => emailForm.clearErrors("acceptedTerms") })}
-                className="size-[18px] shrink-0 accent-[var(--marca)]" />
+                className="size-4.5 shrink-0 accent-[var(--marca)]" />
               <span>{t("businessSignup.accept")} <AuthLink to="/terminos">{t("businessSignup.terms")}</AuthLink> {t("businessSignup.join")} <AuthLink to="/privacidad">{t("businessSignup.privacy")}</AuthLink></span>
             </label>
-            {termsError ? <p role="alert" className="-mt-4 text-[13px] text-[var(--peligro)]">{termsError}</p> : null}
+            {termsError ? <p role="alert" className="-mt-4 text-[0.8125rem] text-[var(--peligro)]">{termsError}</p> : null}
             <GoogleButton mode="signup" access="business" acceptedTerms={acceptedTerms} onTermsRequired={requireTerms} returnTo="/registro/empresa" />
-            <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("businessSignup.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
-            <form noValidate className="flex flex-col gap-[22px]" onSubmit={(event) => {
+            <div className="flex items-center gap-3 text-[0.8125rem] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("businessSignup.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
+            <form noValidate className="flex flex-col gap-5.5" onSubmit={(event) => {
               if (!acceptedTerms) { event.preventDefault(); requireTerms(); return; }
               void sendCode(event);
             }}>
@@ -305,8 +305,8 @@ export function BusinessSignupPage() {
               onCodeChange={(next) => { setCode(next); setRequestError(null); }} onVerify={confirmCode} onResend={resendCode}
               invalid={requestError?.code === "Auth.LoginCode.Invalid"} locked={verifyCode.isPending} message={codeMessage}
               verifyLabel={retry.label ?? undefined} verifyDisabled={retry.isRunning || requestError?.code === "Auth.LoginCode.TooManyAttempts" || requestError?.code === "Identity.Account.LockedOut"} verifyPending={verifyCode.isPending} resendSeconds={resend.seconds} resendRetryLabel={retry.label} resendPending={requestCode.isPending} />
-              : <form noValidate className="flex flex-col gap-[22px]" onSubmit={(event) => { void submitOrganization(event); }}>
-                <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.organizationTitle")}</h1>
+              : <form noValidate className="flex flex-col gap-5.5" onSubmit={(event) => { void submitOrganization(event); }}>
+                <div><h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.organizationTitle")}</h1>
                   <p className="mt-1.5 text-sm leading-normal text-[var(--t2)]">{t("businessSignup.ownerNote")}</p></div>
                 <AuthMessage message={limitReached ? { text: limitCount === null ? t("businessSignup.limitTitleNoCount") : t("businessSignup.limitTitle", { count: limitCount }),
                   details: [t("businessSignup.limitDetail")] } : null} />
@@ -323,9 +323,9 @@ export function BusinessSignupPage() {
                     autoComplete="off" spellCheck={false} />
                 </FormField>
                 {/* Vacío no deja hueco: compensa los 22 px de la columna, porque el tablero no deja espacio bajo la dirección. */}
-                <div className="-mt-[22px] text-[12px] [&:not(:empty)]:pt-1.5" aria-live="polite">
+                <div className="-mt-5.5 text-[0.75rem] [&:not(:empty)]:pt-1.5" aria-live="polite">
                   {slug !== "" && !slugMatchesInput ? <span className="text-[var(--t3)]">{t("common:states.loading")}</span>
-                    : slugAvailability === "Available" && !slugError ? <span role="status" className="inline-flex items-center gap-1 text-[var(--ok)]"><Check size={14} />{t("businessSignup.slugAvailable")}</span> : null}
+                    : slugAvailability === "Available" && !slugError ? <span role="status" className="inline-flex items-center gap-1 text-[var(--ok)]"><Check className="size-3.5" />{t("businessSignup.slugAvailable")}</span> : null}
                 </div>
                 <FormField label={t("businessSignup.firstCompany")} variant="auth" required error={errors.firstCompanyName?.message}>
                   <Input {...organizationForm.register("firstCompanyName")} autoComplete="organization" maxLength={validationConstraints.BusinessSignupHttpRequest.firstCompanyName.maxLength} />
@@ -348,8 +348,8 @@ export function BusinessSignupPage() {
 // una caja gris aparte, pegada al campo, con la letra del campo (15). El texto ocupa todo el alto de la caja, sin el alto
 // ni el radio que `Input` toma en el teléfono.
 function SlugInput({ suffix, className, ...inputProps }: React.ComponentProps<"input"> & { suffix: string }) {
-  return <div className="flex h-11 items-stretch overflow-hidden rounded-[10px] border border-[var(--borde2)] bg-[var(--lado-activo)] focus-within:border-[var(--marca)] focus-within:ring-[3px] focus-within:ring-[var(--foco-halo)]">
+  return <div className="flex h-11 items-stretch overflow-hidden rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--lado-activo)] focus-within:border-[var(--marca)] focus-within:ring-[3px] focus-within:ring-[var(--foco-halo)]">
     <Input {...inputProps} className={cn(className, "h-full min-w-0 flex-1 rounded-none border-0 shadow-none focus-visible:ring-0 max-md:h-full max-md:rounded-none")} />
-    <span data-slug-suffix className="flex shrink-0 items-center border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[15px] text-[var(--t2)]">{suffix}</span>
+    <span data-slug-suffix className="flex shrink-0 items-center border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[0.9375rem] text-[var(--t2)]">{suffix}</span>
   </div>;
 }

@@ -347,7 +347,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
         <Section title={t("users:detail.companyAccess")} action={editable ? { label: t("users:detail.addCompany"),
           disabled: companies.isPending || (companies.allCount !== undefined && companies.allCount === activeAssignedCount) || save.isPending,
           onClick: () => openCompanyDialog({ mode: "add", assignment: { companyId: "", roleIds: [] }, version: member.version }) } : undefined}>
-            {member.companies.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)] md:px-5">{t("users:detail.noCompanies")}</p> : <List label={t("users:detail.companyAccess")}>
+            {member.companies.length === 0 ? <p className="p-4 text-[0.8125rem] text-[var(--t2)] md:px-5">{t("users:detail.noCompanies")}</p> : <List label={t("users:detail.companyAccess")}>
               {member.companies.map((company) => {
                 const preserved = preservedCompanyIds.has(company.companyId);
                 const assignment = { companyId: company.companyId, roleIds: company.roles.map((role) => role.id) };

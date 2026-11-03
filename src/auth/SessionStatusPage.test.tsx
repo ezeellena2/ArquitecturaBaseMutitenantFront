@@ -35,7 +35,7 @@ describe("SessionStatusPage", () => {
     // Tablero Sesion (.b.b-pri.lg de 280): el botón principal de 44, con el degradé y la sombra; el título y el texto con
     // la altura normal de su letra.
     expect(screen.getByRole("link", { name: "Volver a ingresar" })).toHaveAttribute("data-variant", "default");
-    expect(screen.getByRole("link", { name: "Volver a ingresar" })).toHaveClass("h-11", "w-[280px]");
+    expect(screen.getByRole("link", { name: "Volver a ingresar" })).toHaveClass("h-11", "w-70");
     expect(screen.getByRole("heading", { name: "No pudimos iniciar tu sesión" })).toHaveClass("leading-[normal]");
     expect(screen.getByText("Volvé a ingresar. Si vuelve a pasar, probá en otra ventana.")).toHaveClass("leading-[normal]");
   });
@@ -52,12 +52,12 @@ describe("SessionStatusPage", () => {
     const restore = asPhone();
     try {
       const starting = renderStatus({ status: "starting" });
-      expect(starting.container.querySelector(".brand-mark")).toHaveClass("size-[76px]!");
+      expect(starting.container.querySelector(".brand-mark")).toHaveClass("size-19!");
       expect(starting.container.querySelectorAll(".brand-mark")).toHaveLength(1);
       starting.unmount();
 
       const switching = renderStatus({ status: "switching", targetName: "Grupo Delta" });
-      expect(screen.getByText("GD")).toHaveClass("size-[66px]", "bg-[var(--marca-t)]");
+      expect(screen.getByText("GD")).toHaveClass("size-16.5", "bg-[var(--marca-t)]");
       switching.unmount();
 
       renderStatus({ status: "error", loginPath: "/login" });

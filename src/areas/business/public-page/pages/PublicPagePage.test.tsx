@@ -87,9 +87,9 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
       await screen.findByRole("switch", { name: "Visible en grupo-delta.localtest.me:5174" });
       const bar = screen.getByRole("heading", { level: 1, name: "Página pública" }).closest("header")!;
       expect(bar).toHaveTextContent("Publicada");
-      expect(within(bar).getByRole("link", { name: "Ver página" })).toHaveClass("text-[15.5px]", "text-[var(--marca-tx)]");
-      expect(screen.getByRole("heading", { level: 2, name: "Publicación" })).toHaveClass("text-[13.5px]");
-      expect(screen.getByRole("switch")).toHaveClass("max-md:data-[size=default]:w-[50px]");
+      expect(within(bar).getByRole("link", { name: "Ver página" })).toHaveClass("text-[0.96875rem]", "text-[var(--marca-tx)]");
+      expect(screen.getByRole("heading", { level: 2, name: "Publicación" })).toHaveClass("text-[0.84375rem]");
+      expect(screen.getByRole("switch")).toHaveClass("max-md:data-[size=default]:w-12.5");
       const fixed = screen.getByRole("button", { name: "Guardar cambios" }).parentElement!;
       expect(fixed).toHaveAttribute("data-slot", "fixed-actions");
       expect(within(fixed).getByRole("button", { name: "Descartar cambios" })).toBeVisible();
@@ -111,7 +111,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     // por 20, gris claro si está apagado; el logo, 40 con radio 10 y la sigla en 14.
     expect(visible.parentElement).toHaveClass("min-h-14");
     expect(visible).toHaveClass("data-[size=default]:w-9", "data-[size=default]:h-5", "data-[state=unchecked]:bg-[var(--borde2)]");
-    expect(screen.getByText("GD")).toHaveClass("size-10", "rounded-[10px]", "text-[14px]");
+    expect(screen.getByText("GD")).toHaveClass("size-10", "rounded-[0.625rem]", "text-[0.875rem]");
     expect(subline()).toHaveTextContent(/^Publicada$/);
     expect(screen.getByRole("link", { name: "Ver página" })).toHaveAttribute("href", "https://grupo-delta.localtest.me:5174/");
     expect(screen.queryByRole("button", { name: "Despublicar" })).not.toBeInTheDocument();
@@ -169,7 +169,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     await user.type(description, "Grupo Delta y sus empresas, en un solo lugar.");
     await user.click(screen.getByRole("button", { name: "Vista previa" }));
     const preview = await screen.findByRole("dialog", { name: "Vista previa" });
-    expect(preview).toHaveClass("md:max-w-[640px]");
+    expect(preview).toHaveClass("md:max-w-160");
     expect(await within(preview).findByText("011 4321-5678")).toBeVisible();
     expect(within(preview).getByRole("heading", { level: 1, name: "Grupo Delta" })).toBeVisible();
     expect(within(preview).getByText("Grupo Delta y sus empresas, en un solo lugar.")).toBeVisible();
@@ -199,13 +199,13 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
       const bar = screen.getByRole("heading", { level: 1, name: "Página pública" }).closest("header")!;
       await user.click(within(bar).getByRole("button", { name: "Vista previa" }));
       const sheet = await screen.findByRole("dialog", { name: "Vista previa" });
-      expect(sheet).toHaveClass("bottom-0", "rounded-t-[20px]");
+      expect(sheet).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
       // M-Pagina-Org (v108): la hoja arranca debajo de la barra de estado, a 52 de arriba, y lo que se desplaza es el cuerpo
       // con la tarjeta; el título y «Cerrar» quedan quietos.
-      expect(sheet).toHaveClass("max-md:top-[52px]", "max-md:flex", "max-md:flex-col", "max-md:overflow-hidden");
+      expect(sheet).toHaveClass("max-md:top-13", "max-md:flex", "max-md:flex-col", "max-md:overflow-hidden");
       const body = within(sheet).getByRole("heading", { level: 1, name: "Grupo Delta" }).closest("[data-slot='preview-body']");
       expect(body).toHaveClass("max-md:min-h-0", "max-md:flex-1", "max-md:overflow-y-auto");
-      expect(within(sheet).getByRole("heading", { level: 1, name: "Grupo Delta" })).toHaveClass("max-md:text-[26px]");
+      expect(within(sheet).getByRole("heading", { level: 1, name: "Grupo Delta" })).toHaveClass("max-md:text-[1.625rem]");
       expect(within(sheet).getAllByRole("listitem").map((row) => row.textContent)).toEqual(["Correocontacto@example.test"]);
       const footer = sheet.querySelector<HTMLElement>("[data-slot='dialog-footer']")!;
       expect(footer).toHaveClass("max-md:[&_button]:flex-1");

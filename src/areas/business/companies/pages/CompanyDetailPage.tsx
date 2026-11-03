@@ -73,7 +73,7 @@ export function CompanyDetailPage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  if (company.isPending) return <Page icon={BuildingIcon} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (company.isPending) return <Page icon={BuildingIcon} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar; si no existe (404),
   // «No encontramos esta página» (errores.md).
   if (!company.data) return isNotFoundError(company.error)

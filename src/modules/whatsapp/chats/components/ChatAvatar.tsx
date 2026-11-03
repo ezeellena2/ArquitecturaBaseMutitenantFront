@@ -5,11 +5,11 @@ import { initialsOf } from "../lib/conversation";
 
 const sizes = {
   // WA-Chats (.w-av): 32 en la bandeja y en el encabezado del hilo.
-  default: "size-8 text-[12px]",
+  default: "size-8 text-[0.75rem]",
   // M-WA-Chats (.ap .w-av): 44 en la fila de la lista del teléfono.
-  row: "size-11 text-[15px]",
+  row: "size-11 text-[0.9375rem]",
   // M-WA-Conversacion (.ap-cbar .w-av): 38 en la barra del chat.
-  bar: "size-[38px] text-[14px]",
+  bar: "size-9.5 text-[0.875rem]",
 } as const;
 
 /// El círculo del contacto: sus iniciales con el degradé de la marca o, si no se sabe quién es (solo el número), el gris
@@ -23,6 +23,6 @@ export function ChatAvatar({ name, size = "default" }: { name?: string | null; s
 
 /// El cuadrado de la organización en «Mensajes» de la persona (WA-Mensajes, .o-av): sus iniciales sobre arena.
 export function OrganizationAvatar({ name, size = "default" }: { name: string; size?: keyof typeof sizes }) {
-  return <span aria-hidden="true" className={cn("inline-flex shrink-0 items-center justify-center rounded-[8px] bg-[var(--cab)] font-bold text-[var(--t2)]", sizes[size],
+  return <span aria-hidden="true" className={cn("inline-flex shrink-0 items-center justify-center rounded-[0.5rem] bg-[var(--cab)] font-bold text-[var(--t2)]", sizes[size],
     size === "row" ? "rounded-full" : null)}>{initialsOf(name)}</span>;
 }

@@ -6,5 +6,5 @@ import { NumberText } from "@/shared/ui/format/NumberText";
 /// accesible («Chats 2»); en la fila, que es flex, no ocupa lugar.
 export function MenuBadge({ Badge, hidden = false }: { Badge?: ModuleBadge; hidden?: boolean }) {
   if (!Badge) return null;
-  return <Badge>{(count) => <>{" "}<span className={hidden ? "sr-only" : "ml-auto text-[12px] font-semibold text-[var(--marca-tx)]"}><NumberText value={count} /></span></>}</Badge>;
+  return <Badge>{(count) => <>{" "}<span className={hidden ? "sr-only" : "ml-auto text-[0.75rem] font-semibold text-[var(--marca-tx)]"}><NumberText value={count} /></span></>}</Badge>;
 }

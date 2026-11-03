@@ -15,12 +15,12 @@ describe("List · Criterio · Tablas", () => {
 
     expect(screen.getByRole("list", { name: "Cómo entrás" })).toHaveClass("list-none");
     const [first, second] = screen.getAllByRole("listitem");
-    expect(first).toHaveClass("min-h-14", "border-b", "border-[var(--borde)]", "last:border-b-0", "pl-4", "text-[13px]");
+    expect(first).toHaveClass("min-h-14", "border-b", "border-[var(--borde)]", "last:border-b-0", "pl-4", "text-[0.8125rem]");
     expect(first).not.toHaveClass("odd:bg-[var(--fila-alterna)]");
     expect(second).toHaveClass("min-h-11");
     // Tableros Cuenta, Configuración, Usuario y Página pública: lo que nombra la fila va en 500.
     expect(screen.getByText("lucia.fer@gmail.com")).toHaveClass("truncate", "font-medium", "text-[var(--t1)]");
-    expect(screen.getByText("Principal")).toHaveClass("text-[12px]", "text-[var(--t3)]");
+    expect(screen.getByText("Principal")).toHaveClass("text-[0.75rem]", "text-[var(--t3)]");
     expect(first.querySelector("svg")?.parentElement).toHaveClass("text-[var(--t3)]");
     expect(screen.getByRole("button", { name: "Verificar" })).toBeVisible();
   });
@@ -35,8 +35,8 @@ describe("List · Criterio · Tablas", () => {
     const row = screen.getByRole("listitem");
     expect(row).toHaveClass("max-md:min-h-14", "max-md:pr-3.5", "max-md:border-0");
     expect(row.querySelector("svg")?.parentElement).toHaveClass("max-md:hidden");
-    expect(screen.getByText("011 15-5555-4521")).toHaveClass("max-md:text-[15.5px]", "font-medium");
-    expect(screen.getByText("Sin verificar")).toHaveClass("max-md:text-[13px]");
+    expect(screen.getByText("011 15-5555-4521")).toHaveClass("max-md:text-[0.96875rem]", "font-medium");
+    expect(screen.getByText("Sin verificar")).toHaveClass("max-md:text-[0.8125rem]");
     expect(screen.getByRole("button", { name: "Verificar" }).parentElement).toHaveClass("max-md:[&>[data-variant=outline]]:text-[var(--marca-tx)]");
   });
 });

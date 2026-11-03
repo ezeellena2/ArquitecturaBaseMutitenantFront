@@ -56,8 +56,8 @@ export function MorePage() {
     <div className="flex items-center gap-3.5 px-5 pt-2 pb-1">
       <Avatar size="profile" initials={avatarInitials} muted={avatarMuted} />
       <span className="flex min-w-0 flex-col leading-[normal]">
-        <span className="truncate text-[18px] font-semibold text-[var(--t1)]">{nameLabel}</span>
-        {detail ? <span className="truncate text-[13.5px] text-[var(--t3)]">{detail}</span> : null}
+        <span className="truncate text-[1.125rem] font-semibold text-[var(--t1)]">{nameLabel}</span>
+        {detail ? <span className="truncate text-[0.84375rem] text-[var(--t3)]">{detail}</span> : null}
       </span>
     </div>
 
@@ -66,9 +66,9 @@ export function MorePage() {
       <SettingsGroup label={t("accessMenu.profiles")}>
         {profiles.map((profile) => <SettingsItem key={profile.key} title={profile.name} detail={profile.detail ?? undefined} onClick={profile.select}
           tone={profile.unavailable ? "muted" : undefined}
-          leading={<span aria-hidden="true" className={cn("inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] text-[13px] font-bold",
+          leading={<span aria-hidden="true" className={cn("inline-flex size-9 shrink-0 items-center justify-center rounded-[0.625rem] text-[0.8125rem] font-bold",
             profile.checked ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]")}>{initials(profile.name)}</span>}
-          trailing={profile.checked ? <Check size={18} strokeWidth={2.25} aria-label={t("accessMenu.current")} className="shrink-0 text-[var(--marca)]" /> : <span />} />)}
+          trailing={profile.checked ? <Check strokeWidth={2.25} aria-label={t("accessMenu.current")} className="size-4.5 shrink-0 text-[var(--marca)]" /> : <span />} />)}
       </SettingsGroup>
     </> : null}
 
@@ -103,7 +103,7 @@ export function MorePage() {
     <SettingsGroup label={t("accessMenu.myAccount")} className="mt-4">
       <SettingsItem title={t("accessMenu.myAccount")} to="/cuenta" />
       <SettingsItem title={t("accessMenu.signOut")} tone="danger" onClick={() => { void signOut(); }} trailing={<span />}
-        leading={<LogOutIcon className="size-[18px] shrink-0 text-[var(--peligro)]" />} />
+        leading={<LogOutIcon className="size-4.5 shrink-0 text-[var(--peligro)]" />} />
     </SettingsGroup>
   </div>;
 }

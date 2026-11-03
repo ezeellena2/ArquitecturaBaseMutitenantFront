@@ -34,7 +34,7 @@ export function ModelTechnicalFields({ form, currency, changed, validity }: {
                 field.onChange((["low", "medium", "high"] as const).filter((item) => item === effort ? checked : field.value.includes(item)));
               }} />)}
         </div>
-        {errors?.efforts?.message ? <p id={effortsErrorId} role="alert" className="text-[13px] text-[var(--peligro)]">{errors.efforts.message}</p> : null}
+        {errors?.efforts?.message ? <p id={effortsErrorId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{errors.efforts.message}</p> : null}
       </fieldset>} />
     <fieldset className="min-w-0"><legend className="mb-3 font-semibold">{t("assistant:settings.technical.limits")}</legend>
       <div className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">

@@ -15,12 +15,12 @@ export interface AvatarProps extends Omit<ComponentProps<"span">, "children"> {
 // inicial arriba de «Más», 56 con 20.
 const sizes = {
   small: "size-7 text-xs",
-  default: "size-8 text-[12px]",
-  medium: "size-9 text-[15px]",
+  default: "size-8 text-[0.75rem]",
+  medium: "size-9 text-[0.9375rem]",
   large: "size-10 text-base",
-  nav: "size-[26px] text-[12px]",
-  row: "size-11 text-[15px]",
-  profile: "size-14 text-[20px]",
+  nav: "size-6.5 text-[0.75rem]",
+  row: "size-11 text-[0.9375rem]",
+  profile: "size-14 text-[1.25rem]",
 } as const;
 
 export function Avatar({

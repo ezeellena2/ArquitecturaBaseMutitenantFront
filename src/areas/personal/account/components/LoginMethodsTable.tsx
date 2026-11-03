@@ -19,7 +19,7 @@ interface Props {
 }
 
 function MethodIcon({ method }: { method: AccountLoginMethod }) {
-  return method.type === "Google" ? <img src={googleMark} width="16" height="16" alt="" aria-hidden="true" /> : method.type === "Phone" ? <WhatsAppIcon className="size-4" /> : <MailIcon className="size-4" />;
+  return method.type === "Google" ? <img src={googleMark} className="size-4" alt="" aria-hidden="true" /> : method.type === "Phone" ? <WhatsAppIcon className="size-4" /> : <MailIcon className="size-4" />;
 }
 
 /// Tableros Cuenta y Cuenta-Metodo: debajo del dato, «Principal» y «Administrado por…» (las dos, si son las dos), «Sin
@@ -52,10 +52,10 @@ export function LoginMethodsTable({ methods, canLinkGoogle = false, onAction }: 
   return <List label={t("methods")}>
     {methods.map((method) => <ListItem key={method.id} className="min-h-14" icon={<MethodIcon method={method} />} title={method.type === "Google" ? t("google") : method.type === "Phone" ? <PhoneText value={method.value} /> : method.value} detail={methodDetail(method, t)}>
       {/* Cuenta (.cb-enl de 13) y M-Cuenta (.acc-t de 15, como «Vincular»). */}
-      {!method.isVerified ? <Button type="button" variant="link" size="sm" className="px-1 text-[13px] max-md:text-[15px]" onClick={() => onAction("verify", method)}>{t("verify")}</Button> : null}
+      {!method.isVerified ? <Button type="button" variant="link" size="sm" className="px-1 text-[0.8125rem] max-md:text-[0.9375rem]" onClick={() => onAction("verify", method)}>{t("verify")}</Button> : null}
       {method.canMakePrimary || method.canRemove ? <MethodMenu method={method} onAction={onAction} /> : null}
     </ListItem>)}
-    {canLinkGoogle ? <ListItem icon={<img src={googleMark} width="16" height="16" alt="" aria-hidden="true" />} title={t("google")} detail={t("unlinked")}>
+    {canLinkGoogle ? <ListItem icon={<img src={googleMark} className="size-4" alt="" aria-hidden="true" />} title={t("google")} detail={t("unlinked")}>
       <AccountGoogleButton compact />
     </ListItem> : null}
   </List>;

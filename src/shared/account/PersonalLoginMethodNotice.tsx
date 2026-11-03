@@ -25,9 +25,9 @@ export function PersonalLoginMethodNotice({ onAdd, className }: { onAdd?: () => 
 
   const dialog = open ? <AddLoginMethodDialog open onOpenChange={setOpen} onComplete={refresh} /> : null;
   if (phone) return <>
-    <div role="status" className={cn("flex flex-col gap-3 rounded-[16px] bg-[var(--marca-t)] p-4", className)}>
-      <p className="text-[15px] leading-normal text-[var(--sugerencia-tx)]">{t("noOwn")}</p>
-      <Button type="button" className="h-10 self-start rounded-[10px] px-[18px] text-[15px]" onClick={onAdd ?? (() => setOpen(true))}>{t("addShort")}</Button>
+    <div role="status" className={cn("flex flex-col gap-3 rounded-[1rem] bg-[var(--marca-t)] p-4", className)}>
+      <p className="text-[0.9375rem] leading-normal text-[var(--sugerencia-tx)]">{t("noOwn")}</p>
+      <Button type="button" className="h-10 self-start rounded-[0.625rem] px-4.5 text-[0.9375rem]" onClick={onAdd ?? (() => setOpen(true))}>{t("addShort")}</Button>
     </div>
     {dialog}
   </>;

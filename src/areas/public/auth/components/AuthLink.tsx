@@ -12,5 +12,5 @@ export function AuthLink({ className, ...props }: LinkProps) {
 /// Un renglón de enlaces del ingreso y los registros (.fila-links de los tableros): el texto y el enlace, centrados y a 6
 /// entre sí, en 13 y el gris del texto secundario. «¿No tenés cuenta? Creá una».
 export function AuthLinkRow({ children }: { children: ReactNode }) {
-  return <div className="flex justify-center gap-1.5 text-[13px] text-[var(--t2)]">{children}</div>;
+  return <div className="flex justify-center gap-1.5 text-[0.8125rem] text-[var(--t2)]">{children}</div>;
 }

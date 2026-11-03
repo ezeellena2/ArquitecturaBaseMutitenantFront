@@ -27,11 +27,11 @@ export function ListRow({ leading, title, meta, lines = [], trailing, to, onClic
     {leading}
     <span className="flex min-w-0 flex-1 flex-col gap-0.5 pr-2.5 leading-[normal]">
       <span className="flex items-start justify-between gap-2">
-        <span className={cn("min-w-0 flex-1 text-[15.5px] font-medium text-[var(--t1)]", wrapTitle ? "[overflow-wrap:anywhere]" : "truncate")}>{title}</span>
-        {meta ? <span className="shrink-0 pt-0.5 text-[12.5px] text-[var(--t3)]">{meta}</span> : null}
+        <span className={cn("min-w-0 flex-1 text-[0.96875rem] font-medium text-[var(--t1)]", wrapTitle ? "[overflow-wrap:anywhere]" : "truncate")}>{title}</span>
+        {meta ? <span className="shrink-0 pt-0.5 text-[0.78125rem] text-[var(--t3)]">{meta}</span> : null}
       </span>
-      {lines[0] ? <span className={cn("truncate text-[14px]", person ? "text-[var(--t3)]" : "text-[var(--t2)]")}>{lines[0]}</span> : null}
-      {lines[1] ? <span className={cn(wrapLines ? "min-w-0" : "truncate", "text-[var(--t3)]", person ? "text-[12.5px]" : "text-[13px]")}>{lines[1]}</span> : null}
+      {lines[0] ? <span className={cn("truncate text-[0.875rem]", person ? "text-[var(--t3)]" : "text-[var(--t2)]")}>{lines[0]}</span> : null}
+      {lines[1] ? <span className={cn(wrapLines ? "min-w-0" : "truncate", "text-[var(--t3)]", person ? "text-[0.78125rem]" : "text-[0.8125rem]")}>{lines[1]}</span> : null}
     </span>
   </>;
   const bodyClass = cn("flex min-w-0 flex-1 gap-3.5 text-left", person ? "items-start" : "items-center");
@@ -39,7 +39,7 @@ export function ListRow({ leading, title, meta, lines = [], trailing, to, onClic
   // (que guarda 10 más suyos: «1 usuario» queda a 24 del ⋮). En la de una persona (.w-conv) el texto llega a 14 del ⋮ con
   // esos 10 suyos.
   return <li className={cn("relative flex items-center gap-1 py-3 pr-1.5 pl-4 after:absolute after:right-0 after:bottom-0 after:h-px after:bg-[var(--borde)]",
-    leading ? "after:left-[74px]" : "gap-3.5 after:left-4 [&>[data-slot=row-actions]]:-mr-1 [&>[data-slot=row-actions]]:text-[var(--t2)]", className)}>
+    leading ? "after:left-18.5" : "gap-3.5 after:left-4 [&>[data-slot=row-actions]]:-mr-1 [&>[data-slot=row-actions]]:text-[var(--t2)]", className)}>
     {to ? <Link to={to} className={bodyClass}>{body}</Link>
       : onClick ? <button type="button" onClick={onClick} className={bodyClass}>{body}</button>
         : <span className={bodyClass}>{body}</span>}

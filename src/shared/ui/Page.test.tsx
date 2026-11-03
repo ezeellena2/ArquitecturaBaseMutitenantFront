@@ -36,7 +36,7 @@ describe("Page", () => {
     expect(band).toHaveClass("min-h-16", "py-2.5");
     expect(band).not.toHaveClass("py-3");
     expect(band).not.toHaveClass("sticky");
-    expect(body).toHaveClass("p-4", "lg:px-6", "lg:py-5", "text-[13px]", "flex", "flex-col", "gap-3.5");
+    expect(body).toHaveClass("p-4", "lg:px-6", "lg:py-5", "text-[0.8125rem]", "flex", "flex-col", "gap-3.5");
   });
 
   it("hides the section icon from the screen reader", () => {
@@ -109,7 +109,7 @@ describe("Page", () => {
     );
 
     const trigger = screen.getByRole("button", { name: "Más acciones" });
-    expect(trigger).toHaveClass("size-[34px]");
+    expect(trigger).toHaveClass("size-8.5");
     expect(trigger.compareDocumentPosition(screen.getByRole("button", { name: "Invitar usuario" })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     trigger.focus();
     await userEvent.keyboard("{Enter}");

@@ -15,6 +15,6 @@ export function AuthMessage({ message }: { message?: AuthMessageContent | null }
   return <FormError tone={message?.tone} message={message ? <>
     {message.text}
     {/* .sub2 de los tableros: la línea de abajo, a 2 del texto, en 13 y más clara. */}
-    {message.details?.map((detail, index) => <span key={index} className="mt-0.5 block text-[13px] opacity-85">{detail}</span>)}
+    {message.details?.map((detail, index) => <span key={index} className="mt-0.5 block text-[0.8125rem] opacity-85">{detail}</span>)}
   </> : null} />;
 }

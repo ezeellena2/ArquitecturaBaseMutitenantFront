@@ -44,24 +44,24 @@ export function TransferDropdown({ scope, row, pending, onTransfer }: {
   const { teams, people, peopleTitle, empty } = useTransferOptions(scope, row, open);
   return <DropdownMenu open={open} onOpenChange={(next) => { if (next) setVersion(row.version); setOpen(next); }}>
     <DropdownMenuTrigger asChild><Button type="button" variant="outline" size="sm" pending={pending}>{t("chats.header.transfer")}</Button></DropdownMenuTrigger>
-    <DropdownMenuContent align="end" aria-label={t("chats.transfer.title")} className="w-[260px]">
+    <DropdownMenuContent align="end" aria-label={t("chats.transfer.title")} className="w-65">
       {teams.items.length > 0 ? <DropdownMenuGroup>
-        <DropdownMenuLabel className="pt-2 pb-1 text-[12px] font-semibold text-[var(--t3)] lg:text-[12px]">{t("chats.transfer.teams")}</DropdownMenuLabel>
-        {teams.items.map((team) => <DropdownMenuItem key={team.id} onSelect={() => onTransfer({ teamId: team.id }, version)} className="flex-col items-start gap-0 py-[7px] text-[13.5px] leading-[1.35]">
-          {team.name}<span className="text-[12px] text-[var(--t3)]">{t("chats.transfer.memberCount", countOf(format, team.memberCount))}</span>
+        <DropdownMenuLabel className="pt-2 pb-1 text-[0.75rem] font-semibold text-[var(--t3)] lg:text-[0.75rem]">{t("chats.transfer.teams")}</DropdownMenuLabel>
+        {teams.items.map((team) => <DropdownMenuItem key={team.id} onSelect={() => onTransfer({ teamId: team.id }, version)} className="flex-col items-start gap-0 py-1.75 text-[0.84375rem] leading-[1.35]">
+          {team.name}<span className="text-[0.75rem] text-[var(--t3)]">{t("chats.transfer.memberCount", countOf(format, team.memberCount))}</span>
         </DropdownMenuItem>)}
         <RemoteOptionFooter remote={teams.remote} />
       </DropdownMenuGroup> : null}
       {teams.items.length > 0 && people.items.length > 0 ? <DropdownMenuSeparator className="my-1 h-px border-0 bg-[var(--borde)]" /> : null}
       {people.items.length > 0 ? <DropdownMenuGroup>
-        <DropdownMenuLabel className="pt-2 pb-1 text-[12px] font-semibold text-[var(--t3)] lg:text-[12px]">{peopleTitle}</DropdownMenuLabel>
-        {people.items.map((person) => <DropdownMenuItem key={person.id} onSelect={() => onTransfer({ memberId: person.id }, version)} className="flex-col items-start gap-0 py-[7px] text-[13.5px] leading-[1.35]">
-          {person.name}<span className="text-[12px] text-[var(--t3)]">{t("chats.transfer.takenCount", countOf(format, person.takenCount))}</span>
+        <DropdownMenuLabel className="pt-2 pb-1 text-[0.75rem] font-semibold text-[var(--t3)] lg:text-[0.75rem]">{peopleTitle}</DropdownMenuLabel>
+        {people.items.map((person) => <DropdownMenuItem key={person.id} onSelect={() => onTransfer({ memberId: person.id }, version)} className="flex-col items-start gap-0 py-1.75 text-[0.84375rem] leading-[1.35]">
+          {person.name}<span className="text-[0.75rem] text-[var(--t3)]">{t("chats.transfer.takenCount", countOf(format, person.takenCount))}</span>
         </DropdownMenuItem>)}
         <RemoteOptionFooter remote={people.remote} />
       </DropdownMenuGroup> : null}
-      {teams.isPending || people.isPending ? <p role="status" className="px-3.5 py-2 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : null}
-      {empty ? <p className="px-3.5 py-2 text-[13px] text-[var(--t2)]">{t("chats.transfer.empty")}</p> : null}
+      {teams.isPending || people.isPending ? <p role="status" className="px-3.5 py-2 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p> : null}
+      {empty ? <p className="px-3.5 py-2 text-[0.8125rem] text-[var(--t2)]">{t("chats.transfer.empty")}</p> : null}
     </DropdownMenuContent>
   </DropdownMenu>;
 }
@@ -81,28 +81,28 @@ export function TransferSheet({ scope, row, onTransfer, onClose, returnFocusTo }
   const [version] = useState(row.version);
   const { teams, people, peopleTitle, empty } = useTransferOptions(scope, row, true);
   const choose = (target: TransferTarget) => { onTransfer(target, version); onClose(); };
-  const item = "flex min-h-[54px] w-full flex-col items-start justify-center border-t border-[var(--borde)] px-5 py-2 text-left text-[15.5px] first-of-type:border-t-0 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]";
-  const title = "px-5 pt-2.5 pb-1 text-[13px] font-semibold text-[var(--t3)]";
+  const item = "flex min-h-13.5 w-full flex-col items-start justify-center border-t border-[var(--borde)] px-5 py-2 text-left text-[0.96875rem] first-of-type:border-t-0 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]";
+  const title = "px-5 pt-2.5 pb-1 text-[0.8125rem] font-semibold text-[var(--t3)]";
   return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
     <DialogContent onCloseAutoFocus={restoreFocus}>
       <DialogHeader><DialogTitle>{t("chats.transfer.title")}</DialogTitle></DialogHeader>
-      <div className="flex flex-col pt-1 pb-[calc(8px+env(safe-area-inset-bottom))]">
+      <div className="flex flex-col pt-1 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
         {teams.items.length > 0 ? <section aria-label={t("chats.transfer.teams")}>
           <h3 className={title}>{t("chats.transfer.teams")}</h3>
           {teams.items.map((team) => <button key={team.id} type="button" className={item} onClick={() => choose({ teamId: team.id })}>
-            {team.name}<span className="text-[13px] text-[var(--t3)]">{t("chats.transfer.memberCount", countOf(format, team.memberCount))}</span>
+            {team.name}<span className="text-[0.8125rem] text-[var(--t3)]">{t("chats.transfer.memberCount", countOf(format, team.memberCount))}</span>
           </button>)}
           <RemoteOptionFooter remote={teams.remote} />
         </section> : null}
         {people.items.length > 0 ? <section aria-label={peopleTitle}>
           <h3 className={title}>{peopleTitle}</h3>
           {people.items.map((person) => <button key={person.id} type="button" className={item} onClick={() => choose({ memberId: person.id })}>
-            {person.name}<span className="text-[13px] text-[var(--t3)]">{t("chats.transfer.takenCount", countOf(format, person.takenCount))}</span>
+            {person.name}<span className="text-[0.8125rem] text-[var(--t3)]">{t("chats.transfer.takenCount", countOf(format, person.takenCount))}</span>
           </button>)}
           <RemoteOptionFooter remote={people.remote} />
         </section> : null}
-        {teams.isPending || people.isPending ? <p role="status" className="px-5 py-3 text-[15px] text-[var(--t2)]">{t("common:states.loading")}</p> : null}
-        {empty ? <p className="px-5 py-3 text-[15px] text-[var(--t2)]">{t("chats.transfer.empty")}</p> : null}
+        {teams.isPending || people.isPending ? <p role="status" className="px-5 py-3 text-[0.9375rem] text-[var(--t2)]">{t("common:states.loading")}</p> : null}
+        {empty ? <p className="px-5 py-3 text-[0.9375rem] text-[var(--t2)]">{t("chats.transfer.empty")}</p> : null}
       </div>
     </DialogContent>
   </Dialog>;

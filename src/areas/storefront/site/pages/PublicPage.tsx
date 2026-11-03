@@ -21,7 +21,7 @@ export function PublicPage() {
   const page = site.data;
   return <SiteLayout variant="storefront" publicSiteName={page?.name}>
     <section className={cn("flex flex-1 flex-col items-center justify-center gap-4 px-6 py-12 max-md:px-4 max-md:py-5", publicPageBackdropClass)}>
-      {site.isError ? <div className="flex w-full max-w-[560px] flex-col items-start gap-4">
+      {site.isError ? <div className="flex w-full max-w-140 flex-col items-start gap-4">
         <FormError message={apiErrorMessage(site.error, t)} className="w-full" />
         <Button type="button" className="max-md:h-12" onClick={() => { void site.refetch(); }}>{t("actions.retry")}</Button>
       </div> : null}
@@ -32,7 +32,7 @@ export function PublicPage() {
         void auth.signinRedirect({ extraQueryParams: { access: "consumer" },
           state: { returnTo: `${location.pathname}${location.search}${location.hash}` } });
       }} />
-        : site.isError ? null : <p role="status" className="text-[13px] text-[var(--t2)]">{t("states.loading")}</p>}
+        : site.isError ? null : <p role="status" className="text-[0.8125rem] text-[var(--t2)]">{t("states.loading")}</p>}
     </section>
   </SiteLayout>;
 }
