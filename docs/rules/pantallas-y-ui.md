@@ -26,8 +26,7 @@
 - La confirmación irreversible no tiene ✕ y su acción usa un botón rojo lleno.
 - **Medidas en `rem`** (decisión del usuario del 2026-11-02): la compu ve la app al 75 % ([tema.md](../architecture/tema.md)), así que las medidas de esta ficha y de los tableros son nominales. Lo dibujado de 220 se escribe `w-55`; de 13 de letra, `text-[0.8125rem]`; un ícono, `size-4`, nunca `size={16}`. En px quedan las líneas de hasta 2, los anillos y los cortes.
 - Colores solo con los tokens de [tema.md](../architecture/tema.md), por nombre (`bg-[var(--fondo)]`, `text-[var(--t2)]`). Las variables de shadcn (`--primary`, `--ring`, `--destructive`…) son solo alias de esos tokens en `index.css`. Si falta un color, se agrega un token en `index.css` y en la tabla de tema.md.
-- shadcn se genera con `npx shadcn@4.21.0 add` y se edita lo mínimo; las piezas propias van en PascalCase.
-- En JSX, ternario en lugar de `&&`. El estado derivado se calcula en el render.
+- shadcn se genera con `npx shadcn@4.21.0 add` y se edita lo mínimo; las piezas propias van en PascalCase. En JSX, ternario en lugar de `&&`. El estado derivado se calcula en el render.
 - **Una sola forma de armar secciones, pestañas y filtros** en todas las pantallas (decisión del usuario del 2026-10-13, en «Criterio · Menús»):
   - **Secciones de un área:** un segundo panel junto al menú lateral (`AdminPanel`, token `--panel`), con la flechita en el ítem del menú y un solo panel abierto a la vez; en el teléfono, un grupo de «Más». Así van Administración, WhatsApp y Gestión de formularios («Formularios», «Catálogos» y «Formularios que faltan»; «Diseñar formularios» pasó a ser la pestaña «Diseño» de cada formulario, decisiones del usuario del 2026-10-24 y 2026-10-25). No se agregan enlaces del área hasta que su tablero esté aprobado.
   - **Pestañas:** solo para los grupos de datos de una ficha, como Empresa, Organización o la ficha de un formulario (ver «Ficha»).
@@ -41,8 +40,7 @@
 - Una pestaña «Resumen» con rótulos y valores: los datos van en la banda.
 - Rótulos y valores sueltos sobre blanco, o en viñetas, en un detalle de solo lectura.
 - Pestañas para filtrar un listado, para ir a otra sección o para mostrar dos vistas de lo mismo; dos filas de pestañas; o armar secciones, vistas o filtros de otra forma que la de arriba.
-- Párrafos o líneas que explican en la pantalla: la ayuda que sirve va en la (i).
-- Textos al lado o debajo de un botón, «Cambios sin guardar», números de revisión fuera del historial o una acción que tarda sin mostrar que trabaja.
+- Párrafos o líneas que explican en la pantalla (la ayuda que sirve va en la (i)), textos al lado o debajo de un botón, «Cambios sin guardar», números de revisión fuera del historial o una acción que tarda sin mostrar que trabaja.
 - El mismo estado en dos lugares: arriba y otra vez en la fila.
 - La web achicada en el teléfono (la marca arriba, la banda con ícono, cajas con cabecera arena o el ☰ con sesión) o una versión aparte hecha a mano.
 - Colores sueltos (`#fff`, `text-gray-500`).
