@@ -1,0 +1,48 @@
+{
+  "id": "archivos-en-el-chat",
+  "titulo": "Archivos en el chat",
+  "etapa": "Etapa 18 · Fotos y documentos",
+  "orden": 2,
+  "resumen": "Lucía ve lo que mandó una clienta en el chat y le manda un PDF.",
+  "pasos": [
+    {
+      "tablero": "WA-Chats-Adjuntos",
+      "tweaks": {
+        "estado": "Lo que llega"
+      },
+      "resaltar": ".ad-aud",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo que manda la clienta",
+      "texto": "Las fotos, los audios, los videos y los documentos se ven y se descargan desde el chat. Un documento de un tipo que no se guarda sigue diciendo «Mandó un documento».",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats",
+      "accion": "Ve lo que llegó."
+    },
+    {
+      "tablero": "WA-Chats-Adjuntos",
+      "tweaks": {
+        "estado": "Antes de mandar"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Enviar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Le manda un PDF",
+      "texto": "El clip abre el archivo antes de mandarlo, con un texto opcional. Un archivo por mensaje, como en WhatsApp.",
+      "avanzar": "Tocá «Enviar».",
+      "ruta": "WhatsApp › Chats",
+      "accion": "Manda el archivo."
+    },
+    {
+      "tablero": "WA-Chats-Adjuntos",
+      "tweaks": {
+        "estado": "Enviado"
+      },
+      "resaltar": ".w-m.sal .r-doc",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Queda en el chat",
+      "texto": "Si WhatsApp no lo acepta, dice «No se pudo mandar», sin reintento. Fuera de las 24 horas, el clip queda grisado, con el motivo.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "WhatsApp › Chats",
+      "accion": "Ve el archivo en el chat."
+    }
+  ]
+}

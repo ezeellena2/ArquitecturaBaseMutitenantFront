@@ -186,7 +186,7 @@ A.PREGUNTAS = [
 ]
 A.PREGUNTAS_ARCHIVOS = A.PREGUNTAS[:5] + [
     ("Fotos de la visita", "Foto · solo cámara · de 1 a 4", True, None),
-    ("Remito firmado", "Documento · PDF, Excel, Word o imagen · hasta 1", False, None),
+    ("Remito firmado", "Documento · hasta 1", False, None),
 ] + A.PREGUNTAS[5:]
 
 
@@ -273,7 +273,7 @@ def pregunta_catalogo(modo="elegido"):
             f'<div class="w-cmp"><span class="rt">Tipo de respuesta</span><div class="ct sel">Elegir de un catálogo{CHEV}</div></div>'
             f'<div class="w-cmp ancho q-cat"><span class="rt">Catálogo <span class="req">*</span>{F.info("Las opciones se preparan al mandar el formulario.")}</span>{sel}{menu}{e}</div>'
             + cuantas + pres
-            + '<div class="w-cmp"><span class="rt">Ayuda para el empleado</span><div class="ct ph">Opcional</div></div>'
+            + '<div class="w-cmp"><span class="rt">Ayuda para quien lo recibe</span><div class="ct ph">Opcional</div></div>'
             '<div class="w-cmp" style="justify-content: flex-end;"><span class="q-chk"><i class="no"></i>Obligatoria</span></div>'
             f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">Listo</button></div>'
             "</div></div>")
@@ -338,7 +338,7 @@ def pregunta_motivo():
             f'<div class="w-cmp"><span class="rt">Tipo de respuesta</span><div class="ct sel">Elegir una{CHEV}</div></div>'
             '<div class="w-cmp ancho"><span class="rt">Opciones</span><div class="q-ops">' + ops
             + f'<button type="button" class="cb cb-sec" style="align-self: flex-start;">{MAS} Agregar opción</button></div></div>'
-            '<div class="w-cmp"><span class="rt">Ayuda para el empleado</span><div class="ct ph">Opcional</div></div>'
+            '<div class="w-cmp"><span class="rt">Ayuda para quien lo recibe</span><div class="ct ph">Opcional</div></div>'
             '<div class="w-cmp" style="justify-content: flex-end;"><span class="q-chk"><i class="no"></i>Obligatoria</span></div>'
             f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">Listo</button></div>'
             "</div></div>")
@@ -355,7 +355,7 @@ def pregunta_fallas():
             '<div class="w-cmp ancho"><span class="rt">Cuántas puede elegir'
             + F.info("Con un mínimo de 1 o más, es obligatoria. WhatsApp muestra hasta 20 opciones.")
             + '</span><div class="q-rango">Mínimo <div class="ct">1</div> Máximo <div class="ct">3</div></div></div>'
-            '<div class="w-cmp ancho"><span class="rt">Ayuda para el empleado</span><div class="ct ph">Opcional</div></div>'
+            '<div class="w-cmp ancho"><span class="rt">Ayuda para quien lo recibe</span><div class="ct ph">Opcional</div></div>'
             f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">Listo</button></div>'
             "</div></div>")
 
@@ -820,12 +820,12 @@ def tel_editor():
                        for k, o in enumerate(lista, 1))
     editar = (F.tcampo("Pregunta", "Motivo", req=True) + F.tcampo("Tipo de respuesta", "Elegir una", select=True)
               + '<div class="ap-cmp"><span class="rt"><span>Opciones</span></span></div>' + ops(["Seguimiento", "Venta nueva", "Reclamo"])
-              + f'<span class="t-mas">{MAS} Agregar opción</span>' + F.tcampo("Ayuda para el empleado", "Opcional", vacio=True)
+              + f'<span class="t-mas">{MAS} Agregar opción</span>' + F.tcampo("Ayuda para quien lo recibe", "Opcional", vacio=True)
               + '<span class="t-chk"><i class="no"></i>Obligatoria</span>')
     varias = (F.tcampo("Pregunta", "Fallas", req=True) + F.tcampo("Tipo de respuesta", "Elegir varias", select=True)
               + '<div class="ap-cmp"><span class="rt"><span>Opciones</span></span></div>' + ops(FALLAS) + f'<span class="t-mas">{MAS} Agregar opción</span>'
               + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' + F.tcampo("Mínimo", "1") + F.tcampo("Máximo", "3") + "</div>"
-              + F.tcampo("Ayuda para el empleado", "Opcional", vacio=True))
+              + F.tcampo("Ayuda para quien lo recibe", "Opcional", vacio=True))
     vp = '<div class="t-vp">'
     for k, (n, _d) in enumerate(T_PREG):
         if CON_TITULOS and n == "¿Se concretó la venta?":
@@ -857,9 +857,9 @@ def tel_editor():
                                          + '<a class="t-mas" href="M-FRM-Catalogo.dc.html" style="text-decoration: none;">Ver el catálogo</a>'
                                          + f'<span class="t-chk"><i class="on">{tilde}</i>Permitir elegir varias</span>'
                                          + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' + F.tcampo("Mínimo", "1") + F.tcampo("Máximo", "2") + "</div>"
-                                         + F.tcampo("Ayuda para el empleado", "Opcional", vacio=True) + f'<span class="t-chk"><i>{tilde}</i>Obligatoria</span>', listo),
+                                         + F.tcampo("Ayuda para quien lo recibe", "Opcional", vacio=True) + f'<span class="t-chk"><i>{tilde}</i>Obligatoria</span>', listo),
         "Pregunta de foto": F.thoja("Editar pregunta", F.tcampo("Pregunta", "Fotos de la visita", req=True) + F.tcampo("Tipo de respuesta", "Foto", select=True)
-                                    + F.tcampo("Ayuda para el empleado", "Sacá una foto del frente del local y otra de la góndola.") + origen + cuantas, listo),
+                                    + F.tcampo("Ayuda para quien lo recibe", "Sacá una foto del frente del local y otra de la góndola.") + origen + cuantas, listo),
         "Así lo ve el empleado": F.thoja("Así lo ve el empleado", vp, '<button type="button" class="cb cb-pri" disabled>Enviar</button>', sub="Visita a cliente · borrador"),
         "Publicar": F.thoja("Publicar la versión 4", publicar_h, '<button type="button" class="cb cb-pri">Publicar versión 4</button><button type="button" class="cb cb-sec">Cancelar</button>'),
         "Editar un título": F.thoja("Editar título", F.tcampo("Título", TITULO_EJ, req=True).replace("</div></div>", f'</div><span class="ay" style="align-self: flex-end;">{len(TITULO_EJ)}/80</span></div>', 1), listo),

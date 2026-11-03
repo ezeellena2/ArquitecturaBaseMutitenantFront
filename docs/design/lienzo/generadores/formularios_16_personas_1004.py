@@ -370,7 +370,7 @@ def editor_16():
         h = A_preg(modo).replace("Motivos de visita", CATALOGO)
         h = h.replace('<div class="ct">Motivo</div>', f'<div class="ct">{PREGUNTA}</div>').replace(">Motivo<", f">{PREGUNTA}<").replace(' Motivo"', f' {PREGUNTA}"')
         if filtros:
-            k = h.index('<div class="w-cmp"><span class="rt">Ayuda para el empleado')
+            k = h.index('<div class="w-cmp"><span class="rt">Ayuda para quien lo recibe')
             h = h[:k] + seccion_filtros(filtros) + h[k:]
         return h
 

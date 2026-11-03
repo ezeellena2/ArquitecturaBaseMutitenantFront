@@ -3071,6 +3071,78 @@
       "h": 844,
       "page": "formularios",
       "title": "Los campos de un catálogo · teléfono · etapa 13"
+    },
+    "FRM-Respuestas-18.dc.html": {
+      "x": 6080,
+      "y": 18334,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "page": "formularios",
+      "title": "Formularios · la planilla con archivos · etapa 18"
+    },
+    "M-FRM-Respuestas-18.dc.html": {
+      "x": 1410,
+      "y": 19854,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "formularios",
+      "title": "La planilla con archivos · teléfono · etapa 18"
+    },
+    "FRM-Respuesta-18.dc.html": {
+      "x": 7600,
+      "y": 18334,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "page": "formularios",
+      "title": "Formularios · una respuesta con archivos · etapa 18"
+    },
+    "M-FRM-Respuesta-18.dc.html": {
+      "x": 1880,
+      "y": 19854,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "formularios",
+      "title": "Una respuesta con archivos · teléfono · etapa 18"
+    },
+    "FRM-Respuesta-Completa-18.dc.html": {
+      "x": 9120,
+      "y": 18334,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "page": "formularios",
+      "title": "Formularios · pantalla completa con archivos · etapa 18"
+    },
+    "FRM-Dar-De-Baja-18.dc.html": {
+      "x": 10640,
+      "y": 18334,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1100,
+      "page": "formularios",
+      "title": "Formularios · dar de baja · etapa 18"
+    },
+    "WA-Chats-Adjuntos.dc.html": {
+      "x": 12160,
+      "y": 18334,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "page": "formularios",
+      "title": "WhatsApp · los archivos del chat · etapa 18"
+    },
+    "M-WA-Chats-Adjuntos.dc.html": {
+      "x": 2350,
+      "y": 19854,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "formularios",
+      "title": "WhatsApp · los archivos del chat · teléfono · etapa 18"
     }
   },
   "createdOnFiles": {
@@ -3613,7 +3685,15 @@
     "Plat-FRM-Plantilla-Reglas.dc.html",
     "Plat-FRM-Pdf.dc.html",
     "FRM-Editor-Reglas-Plantilla.dc.html",
-    "M-FRM-Reglas-Plantilla.dc.html"
+    "M-FRM-Reglas-Plantilla.dc.html",
+    "FRM-Respuestas-18.dc.html",
+    "M-FRM-Respuestas-18.dc.html",
+    "FRM-Respuesta-18.dc.html",
+    "M-FRM-Respuesta-18.dc.html",
+    "FRM-Respuesta-Completa-18.dc.html",
+    "FRM-Dar-De-Baja-18.dc.html",
+    "WA-Chats-Adjuntos.dc.html",
+    "M-WA-Chats-Adjuntos.dc.html"
   ],
   "pages": [
     {

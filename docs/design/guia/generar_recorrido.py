@@ -2,6 +2,7 @@
 pantalla muestra la compu, el teléfono, lo que se abre desde ahí, sus estados y si ya está programada.
 Uso (ver README.md): `python generar_recorrido.py <carpeta de salida>`. Escribe `capturar.json` con los tableros que usa; si ya
 están las capturas en `<salida>/png`, las pasa a JPG en `<salida>/img` y arma `<salida>/Guia-Lienzo.html`."""
+import hashlib
 import html
 import json
 import pathlib
@@ -17,6 +18,7 @@ LIENZO = AQUI.parent / "lienzo"
 SALIDA = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(tempfile.gettempdir()) / "guia-lienzo"
 URL_LIENZO = "https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK"
 CANVAS = json.loads((LIENZO / "canvas.json").read_text(encoding="utf-8"))["boards"]
+REPETIDAS = {}  # captura de un recorrido idéntica a otra → la que queda (el artefacto admite hasta 512 archivos)
 
 
 def e(s):
@@ -73,7 +75,7 @@ def pantalla(p, n):
 
 RECORRIDOS = AQUI.parent / "recorridos"
 ETAPAS = ["Ingreso y registro", "Organización", "Página pública y directorio", "Plataforma", "Mi cuenta", "Etapa 8 · WhatsApp", "Etapa 8b · Asistente",
-          "Etapa 12 · Catálogos", "Etapa 13 · Campos", "Etapa 14 · Formularios", "Etapa 15 · Respuestas", "Etapa 16 · Datos de las personas", "Etapa 17 · Ciclo de vida", "Etapa 21 · Reglas y aprobación",
+          "Etapa 12 · Catálogos", "Etapa 13 · Campos", "Etapa 14 · Formularios", "Etapa 15 · Respuestas", "Etapa 16 · Datos de las personas", "Etapa 17 · Ciclo de vida", "Etapa 18 · Fotos y documentos", "Etapa 21 · Reglas y aprobación",
           "Etapa 22 · Biblioteca", "Etapa 23 · El asistente"]
 
 
@@ -83,6 +85,11 @@ def recorridos():
     for r in lista:
         assert r["etapa"] in ETAPAS, (r["id"], r["etapa"])
     return sorted(lista, key=lambda r: (ETAPAS.index(r["etapa"]), r.get("orden", 0)))
+
+
+def captura_paso(id_recorrido, n):
+    ruta = f"img/rec/{id_recorrido}-{n}.jpg"
+    return REPETIDAS.get(ruta, ruta)
 
 
 def datos_recorridos(lista, cajas):
@@ -96,7 +103,7 @@ def datos_recorridos(lista, cajas):
                 x, y, w, h, pad = c["caja"]["x"], c["caja"]["y"], c["caja"]["w"], c["caja"]["h"], 8
                 caja = [round(max(0, x - pad) / c["w"] * 100, 2), round(max(0, y - pad) / c["h"] * 100, 2),
                         round(min(c["w"], w + 2 * pad) / c["w"] * 100, 2), round(min(c["h"], h + 2 * pad) / c["h"] * 100, 2)]
-            pasos.append({"img": f"img/rec/{r['id']}-{n}.jpg", "tel": c["w"] < 600, "caja": caja,
+            pasos.append({"img": captura_paso(r["id"], n), "tel": c["w"] < 600, "caja": caja,
                           "actor": p["actor"], "titulo": p["titulo"], "texto": p["texto"], "avanzar": p["avanzar"]})
         salida.append({"id": r["id"], "titulo": r["titulo"], "etapa": r["etapa"], "resumen": r["resumen"], "pasos": pasos})
     return salida
@@ -111,7 +118,7 @@ def seccion_recorridos(lista):
         if not rs:
             continue
         tarjetas = "".join(
-            f'<button type="button" class="rec-card" data-rec="{e(r["id"])}"><img src="img/rec/{e(r["id"])}-1.jpg" alt="" loading="lazy">'
+            f'<button type="button" class="rec-card" data-rec="{e(r["id"])}"><img src="{e(captura_paso(r["id"], 1))}" alt="" loading="lazy">'
             f'<span class="t">{e(r["titulo"])}</span><span class="d">{len(r["pasos"])} pasos · {e(r["pasos"][0]["actor"])}</span>'
             f'<span class="r">{e(r["resumen"])}</span></button>' for r in rs)
         bloques.append(f'<div class="rec-et"><h3>{e(et)}</h3><div class="rec-cards">{tarjetas}</div></div>')
@@ -513,6 +520,18 @@ def pasar_a_jpg():
         im.save(destino / (f.stem + ".jpg"), "JPEG", quality=calidad, optimize=True, progressive=True)
 
 
+def sacar_repetidas():
+    """Un paso que muestra lo mismo que un tablero, o que otro paso, usa esa captura."""
+    vistas = {hashlib.sha256(f.read_bytes()).hexdigest(): f"img/{f.name}" for f in sorted((SALIDA / "img").glob("*.jpg"))}
+    for f in sorted((SALIDA / "img" / "rec").glob("*.jpg")):
+        huella = hashlib.sha256(f.read_bytes()).hexdigest()
+        if huella in vistas:
+            REPETIDAS[f"img/rec/{f.name}"] = vistas[huella]
+            f.unlink()
+        else:
+            vistas[huella] = f"img/rec/{f.name}"
+
+
 if __name__ == "__main__":
     SALIDA.mkdir(parents=True, exist_ok=True)
     usados = tableros_usados()
@@ -524,6 +543,7 @@ if __name__ == "__main__":
         print(f"capturar.json listo en {SALIDA}: ahora corré capturar.mjs y volvé a correr este script.")
         sys.exit(0)
     pasar_a_jpg()
+    sacar_repetidas()
     (SALIDA / "Guia-Lienzo.html").write_text(pagina(), encoding="utf-8")
     hay = {f.stem for f in (SALIDA / "img").glob("*.jpg")}
     print("guía en", SALIDA / "Guia-Lienzo.html", "· faltan imágenes:", sorted(set(usados) - hay))

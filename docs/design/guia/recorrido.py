@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 151 · 2 de noviembre de 2026"
+VERSION = "versión 152 · 2 de noviembre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -93,6 +93,8 @@ CAPITULOS = [
         ("wa-chats", "Chats", "WhatsApp › Chats", "no", "11", ["WA-Chats"], ["M-WA-Chats"],
          ["WA-Chats-SinTomar", "WA-Chats-Nota", "WA-Chats-Pasar", "WA-Chats-24h", "WA-Chats-Plantilla", "M-WA-Conversacion", "M-WA-Chats-SinTomar", "M-WA-Chats-Nota", "M-WA-24h", "M-WA-Chats-Pasar", "M-WA-Chats-Plantilla", "M-WA-Menu"],
          "Las bandejas Clientes | Internos, tomar un chat (y si lo tomó otra persona), pasarlo, la nota interna, la ventana de 24 horas, las fotos, audios y documentos como «Mandó…», el número desconectado y sin medio de pago."),
+        ("wa-adjuntos", "Archivos en el chat", "WhatsApp › Chats", "no", "18", ["WA-Chats-Adjuntos"], ["M-WA-Chats-Adjuntos"], [],
+         "Las fotos, los audios, los videos y los documentos que llegan se ven y se descargan desde el chat, y quien atiende adjunta un archivo con un texto opcional. Fuera de las 24 horas, adjuntar queda grisado."),
         ("wa-contactos", "Contactos", "WhatsApp › Contactos", "no", "11", ["WA-Contactos"], ["M-WA-Contactos"], ["WA-Contacto", "WA-Contactos-Importar", "M-WA-Contacto", "M-WA-Contactos-Importar"],
          "Quién escribió, con sus etiquetas y si acepta promociones; la ficha de cada contacto e importar."),
         ("wa-difusiones", "Difusiones", "WhatsApp › Difusiones", "no", "11", ["WA-Difusiones"], ["M-WA-Difusiones"], ["WA-Difusion-Nueva", "WA-Difusion-Resultados", "M-WA-Difusion-Nueva", "M-WA-Difusion-Resultados"],
@@ -149,6 +151,8 @@ CAPITULOS = [
          "Cada organización define datos de sus personas, como «Zona», y los carga en su ficha. Con ellos, cada persona recibe solo las opciones que le corresponden."),
         ("frm-ciclo", "Dar de baja, reactivar, borrar y copiar", "/org/formularios", "no", "17", ["FRM-Editor-Baja"], ["M-FRM-Editor-Baja"], ["FRM-Dar-De-Baja", "FRM-Reactivar-Eliminar", "FRM-Copiar"],
          "Desde el ⋮ de cada formulario: darlo de baja (deja de mandarse y de ofrecerse, y se conserva lo cargado), reactivarlo con una versión nueva, borrarlo si no tiene respuestas o copiarlo en borrador. El editor de un dado de baja dice quién y cuándo, y qué pasa en WhatsApp."),
+        ("frm-archivos", "Fotos y documentos en las respuestas", "/org/formularios/:id/respuestas", "no", "18", ["FRM-Respuestas-18", "FRM-Respuesta-18"], ["M-FRM-Respuestas-18", "M-FRM-Respuesta-18"], ["FRM-Respuesta-Completa-18", "FRM-Dar-De-Baja-18"],
+         "La planilla suma una columna por pregunta de foto o documento, con su sección en «Más filtros»; la vista rápida, la pestaña «Fotos», y la pantalla completa, «Descargar». El Excel lleva la cantidad y los nombres, sin los archivos."),
         ("frm-reglas", "Cuando llega una respuesta", "/org/formularios/:id", "no", "21", ["FRM-Editor-Reglas"], ["M-FRM-Reglas"], ["FRM-Pdf"],
          "Las reglas del formulario, en palabras: cuándo, si y qué hacer en orden. Se guardan aparte, con su historial. «Ver el diseño» abre el PDF que se arma al aprobar."),
         ("frm-aprobar", "Aprobar o rechazar", "/org/formularios/:id/respuestas?aprobacion=VIS-000130", "no", "21", ["FRM-Respuesta-Aprobacion"], ["M-FRM-Respuesta-Aprobacion"], [],

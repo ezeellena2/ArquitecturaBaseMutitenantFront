@@ -271,7 +271,7 @@ def pregunta_abierta(ingles=False):
             f'<div class="w-cmp"><span class="rt">Tipo de respuesta</span><div class="ct sel">Elegir de una lista{CHEV}</div></div>'
             '<div class="w-cmp ancho"><span class="rt">Opciones</span><div class="q-ops">' + ops
             + f'<button type="button" class="cb cb-sec" style="align-self: flex-start;">{MAS} Agregar opción</button></div></div>'
-            f'<div class="w-cmp"><span class="rt">Ayuda para el empleado</span><div class="ct ph">Opcional</div></div>'
+            f'<div class="w-cmp"><span class="rt">Ayuda para quien lo recibe</span><div class="ct ph">Opcional</div></div>'
             '<div class="w-cmp" style="justify-content: flex-end;"><span class="q-chk"><i class="no"></i>Obligatoria</span></div>'
             f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{svg("<path d=\"m6 15 6-6 6 6\"/>", 14, "2")} Listo</button></div>'
             "</div></div>")
@@ -320,7 +320,7 @@ def pregunta_catalogo(modo="elegido"):
             f'<div class="w-cmp"><span class="rt">Tipo de respuesta</span><div class="ct sel">Elegir de un catálogo{CHEV}</div></div>'
             f'<div class="w-cmp ancho q-cat"><span class="rt">Catálogo <span class="req">*</span></span>{sel}{menu}'
             '<span class="ay">El empleado ve el texto y el detalle de cada opción. <a href="FRM-Catalogo.dc.html">Ver el catálogo</a></span></div>'
-            '<div class="w-cmp"><span class="rt">Ayuda para el empleado</span><div class="ct ph">Opcional</div></div>'
+            '<div class="w-cmp"><span class="rt">Ayuda para quien lo recibe</span><div class="ct ph">Opcional</div></div>'
             '<div class="w-cmp" style="justify-content: flex-end;"><span class="q-chk"><i class="no"></i>Obligatoria</span></div>'
             f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{svg("<path d=\"m6 15 6-6 6 6\"/>", 14, "2")} Listo</button></div>'
             "</div></div>")
@@ -329,7 +329,7 @@ def pregunta_catalogo(modo="elegido"):
 # ---------------------------------------------------------------- E14 · F1 · Fotos y documentos en el editor (copiado de ArquitecturaBase)
 PREGUNTAS_ARCHIVOS = PREGUNTAS[:5] + [
     ("Fotos de la visita", "Foto · solo cámara · de 1 a 4", True, "Visit photos"),
-    ("Remito firmado", "Documento · PDF, Excel, Word o imagen · hasta 1", False, "Signed delivery note"),
+    ("Remito firmado", "Documento · hasta 1", False, "Signed delivery note"),
 ] + PREGUNTAS[5:]
 CAMARA = svg('<path d="M4 8.5h3l1.5-2h7l1.5 2h3v10.5H4z"/><circle cx="12" cy="13.5" r="3.2"/>', 16)
 CLIP = svg('<path d="M15.5 7.5 9 14a2 2 0 0 0 2.8 2.8l7-7a4 4 0 0 0-5.6-5.6l-7 7a6 6 0 0 0 8.4 8.4l5.4-5.4"/>', 16)
@@ -362,6 +362,9 @@ CSS_E14 = """.q-src { display: grid; grid-template-columns: repeat(2, minmax(0, 
 """
 
 
+AYUDA_CUANTAS = "Con mínimo 1, la pregunta es obligatoria. Con 0, es opcional. Cada archivo, hasta 25 MB, y hasta 10 archivos por respuesta."
+
+
 def pregunta_foto(tipo_abierto=False):
     """F1: «Fotos de la visita» desplegada: de dónde sale la foto y cuántas."""
     if tipo_abierto:
@@ -375,13 +378,12 @@ def pregunta_foto(tipo_abierto=False):
         tipo = f'<div class="w-cmp"><span class="rt">Tipo de respuesta</span><div class="ct sel">Foto{CHEV}</div></div>'
         cab = fila_pregunta(6, "Fotos de la visita", "Foto · solo cámara · de 1 a 4", True, "Visit photos")
         resto = ('<div class="w-cmp ancho"><span class="rt">De dónde sale la foto</span><div class="q-src" role="radiogroup">'
-                 '<div class="op" role="radio" aria-checked="false"><span class="rd"></span><span class="tx">Cámara o galería<span>La saca en el momento o elige una que ya tiene.</span></span></div>'
-                 '<div class="op on" role="radio" aria-checked="true"><span class="rd"></span><span class="tx">Solo cámara<span>La saca en el momento: sirve como evidencia.</span></span></div></div></div>'
-                 '<div class="w-cmp ancho"><span class="rt">Cuántas fotos</span><div class="q-cnt">Mínimo <div class="ct">1</div> Máximo <div class="ct">4</div>'
-                 + F.info("Con mínimo 1 es obligatoria; con 0, opcional. Cada archivo, hasta 25 MB.") + "</div></div>")
+                 '<div class="op" role="radio" aria-checked="false"><span class="rd"></span><span class="tx">Cámara o galería</span></div>'
+                 '<div class="op on" role="radio" aria-checked="true"><span class="rd"></span><span class="tx">Solo cámara</span></div></div></div>'
+                 '<div class="w-cmp ancho"><span class="rt">Cuántas fotos' + F.info(AYUDA_CUANTAS) + '</span><div class="q-cnt">Mínimo <div class="ct">1</div> Máximo <div class="ct">4</div></div></div>')
     return ('<div class="q-ab">' + cab + '<div class="q-ed">'
             '<div class="w-cmp"><span class="rt">Pregunta <span class="req">*</span></span><div class="ct">Fotos de la visita</div></div>' + tipo
-            + '<div class="w-cmp ancho"><span class="rt">Ayuda para el empleado</span><div class="ct">Sacá una foto del frente del local y otra de la góndola.</div></div>'
+            + '<div class="w-cmp ancho"><span class="rt">Ayuda para quien lo recibe</span><div class="ct">Sacá una foto del frente del local y otra de la góndola.</div></div>'
             + resto
             + f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{svg("<path d=" + chr(34) + "m6 15 6-6 6 6" + chr(34) + "/>", 14, "2")} Listo</button></div>'
             "</div></div>")
@@ -389,14 +391,12 @@ def pregunta_foto(tipo_abierto=False):
 
 def pregunta_documento():
     """F1: «Remito firmado» desplegada: los tipos que se aceptan y cuántos."""
-    return ('<div class="q-ab">' + fila_pregunta(7, "Remito firmado", "Documento · PDF, Excel, Word o imagen · hasta 1", False, "Signed delivery note")
+    return ('<div class="q-ab">' + fila_pregunta(7, "Remito firmado", "Documento · hasta 1", False, "Signed delivery note")
             + '<div class="q-ed">'
             '<div class="w-cmp"><span class="rt">Pregunta <span class="req">*</span></span><div class="ct">Remito firmado</div></div>'
             f'<div class="w-cmp"><span class="rt">Tipo de respuesta</span><div class="ct sel">Documento{CHEV}</div></div>'
-            '<div class="w-cmp ancho"><span class="rt">Ayuda para el empleado</span><div class="ct">Si el cliente firmó el remito, adjuntalo.</div></div>'
-            '<div class="w-cmp ancho"><span class="rt">Se aceptan</span><div class="q-tipos"><span>PDF</span><span>Excel</span><span>Word</span><span>JPEG</span><span>PNG</span></div></div>'
-            '<div class="w-cmp ancho"><span class="rt">Cuántos</span><div class="q-cnt">Mínimo <div class="ct">0</div> Máximo <div class="ct">1</div>'
-            + F.info("Con mínimo 0 es opcional. Cada archivo, hasta 25 MB.") + "</div></div>"
+            '<div class="w-cmp ancho"><span class="rt">Ayuda para quien lo recibe</span><div class="ct">Si el cliente firmó el remito, adjuntalo.</div></div>'
+            '<div class="w-cmp ancho"><span class="rt">Cuántos documentos' + F.info("PDF, Excel, Word o imágenes JPEG y PNG. Sin CSV. " + AYUDA_CUANTAS) + '</span><div class="q-cnt">Mínimo <div class="ct">0</div> Máximo <div class="ct">1</div></div></div>'
             f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">{svg("<path d=" + chr(34) + "m6 15 6-6 6 6" + chr(34) + "/>", 14, "2")} Listo</button></div>'
             "</div></div>")
 
@@ -437,7 +437,7 @@ def vista_archivos(modo="foto"):
     pv = vista()
     if modo == "documento":
         cuerpo = ('<div class="pv-arch"><b>Remito firmado</b><span class="ay2">Si el cliente firmó el remito, adjuntalo.</span>'
-                  f'<span class="bt2">{CLIP} Elegir documento</span><span class="cnt2">Hasta 1</span></div>')
+                  f'<span class="bt2">{CLIP} Adjuntar documento</span><span class="cnt2">Hasta 1</span></div>')
         pant = "pantalla 3 de 3"
     else:
         cuerpo = ('<div class="pv-arch"><b>Fotos de la visita</b><span class="ay2">Sacá una foto del frente del local y otra de la góndola.</span>'
@@ -445,7 +445,7 @@ def vista_archivos(modo="foto"):
         pant = "pantalla 2 de 3"
     pv = re.sub(r'<div class="pv-hb">.*?</div><div class="pv-pie">', f'<div class="pv-hb">{cuerpo}</div><div class="pv-pie">', pv, count=1, flags=re.S)
     pv = pv.replace(">Enviar<", ">Continuar<", 1) if modo != "documento" else pv
-    return pv.replace('<span class="pv-tit2">Así lo ve el empleado</span>', f'<span class="pv-tit2">Así lo ve el empleado</span><span class="pv-pant">· {pant}</span>', 1)
+    return pv.replace('<span class="pv-tit2">Así lo ve el empleado</span>', f'<span class="pv-tit2">Así lo ve el empleado <span class="pv-pant">· {pant}</span>' + F.info("Cada pregunta de foto o documento abre su propia pantalla. Las preguntas siguientes pueden compartirla.") + "</span>", 1)
 
 
 def cuerpo_archivos(modo="foto", total="5"):
@@ -995,7 +995,8 @@ CSS_ARCH = """.r-ths { display: flex; flex-wrap: wrap; gap: 6px; }
 .r-doc .pdf { width: 28px; height: 32px; border-radius: 4px; background: oklch(0.55 0.18 25); color: #fff; font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .r-doc .t { flex: 1; display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
 .r-doc .t small { font-size: 12px; color: var(--t3); }
-.r-doc .ib { width: 30px; height: 30px; border: 1px solid var(--borde); border-radius: 7px; }
+.r-doc .cb { flex: none; height: 30px; padding: 0 10px; font-size: 13px; }
+.r-doc.sin { padding: 0; border: 0; background: none; }
 """
 DESCARGAR = svg('<path d="M12 4.5v11M7.5 11l4.5 4.5 4.5-4.5"/><path d="M5 19.5h14"/>', 15)
 
@@ -1010,7 +1011,11 @@ def thumbs(n=2, mas=0):
 
 def doc_chip(nombre="remito-0810.pdf", peso="1,2 MB"):
     return (f'<span class="r-doc"><span class="pdf">PDF</span><span class="t">{nombre}<small>{peso}</small></span>'
-            f'<button type="button" class="ib" aria-label="Descargar {nombre}">{DESCARGAR}</button></span>')
+            f'<button type="button" class="cb cb-sec" aria-label="Descargar {nombre}">Descargar</button></span>')
+
+
+def doc_chip_icono():
+    return '<span class="r-doc sin"><span class="pdf">PDF</span></span>'
 
 
 VALORES_ARCH = [("Cliente", "Ferretería Rosales"), ("Fecha de la visita", "13/10/2026"), ("Fotos de la visita", thumbs(2)), ("Remito firmado", doc_chip())]
@@ -1079,6 +1084,8 @@ CSS_VISOR = """.w-dlg.visor { width: 1000px; overflow: hidden; }
 .vz-pie .t { display: flex; flex-direction: column; font-size: 14px; line-height: 1.35; }
 .vz-pie .t small { font-size: 12.5px; color: var(--t3); }
 .vz-esq { width: 640px; height: 400px; border-radius: 4px; background: oklch(0.32 0.02 150); }
+.vz-tit { display: flex; flex-direction: column; gap: 1px; }
+.vz-tit small { font-size: 13px; font-weight: 400; color: var(--t2); }
 """
 IZQ = svg('<path d="m14.5 5.5-6.5 6.5 6.5 6.5"/>', 18, "2")
 DER = svg('<path d="m9.5 5.5 6.5 6.5-6.5 6.5"/>', 18, "2")
@@ -1091,9 +1098,10 @@ def dlg_visor(k=0, cargando=False):
     cuerpo = (f'<div class="vz-img"><button type="button" class="vz-nav izq" aria-label="Foto anterior"{" disabled" if k == 0 else ""}>{IZQ}</button>{foto}'
               f'<button type="button" class="vz-nav der" aria-label="Foto siguiente"{" disabled" if k == 1 else ""}>{DER}</button></div>'
               f'<div class="vz-tira">{tira}</div>'
-              f'<div class="vz-pie"><span class="t">{nombre}<small>{peso} · sacada con la cámara · Tomás Acosta, 13/10/2026 11:03</small></span>'
+              f'<div class="vz-pie"><span class="t">{nombre}<small>{peso}</small></span>'
               f'<button type="button" class="cb cb-sec">{DESCARGAR} Descargar</button></div>')
-    t = F.dialogo(f"Fotos de la visita · Foto {k + 1} de 2 · VIS-000126", cuerpo, "")
+    t = F.dialogo("Fotos de la visita", cuerpo, "")
+    t = t.replace("<span>Fotos de la visita</span>", f'<span class="vz-tit"><b>Fotos de la visita</b><small>Foto {k + 1} de 2 · VIS-000126</small></span>', 1)
     return t.replace('class="w-dlg"', 'class="w-dlg visor"', 1).replace('<div class="df"></div>', "", 1)
 
 
@@ -1246,7 +1254,7 @@ def tel_editor():
                   f'<button type="button" class="ap-ib" aria-label="Quitar opción {o}">{X}</button></div>' for o in ["Seguimiento", "Venta nueva", "Reclamo"])
     editar = (F.tcampo("Pregunta", "Motivo", req=True) + F.tcampo("Tipo de respuesta", "Elegir de una lista", select=True)
               + '<div class="ap-cmp"><span class="rt"><span>Opciones</span></span></div>' + ops + f'<span class="t-mas">{MAS} Agregar opción</span>'
-              + F.tcampo("Ayuda para el empleado", "Opcional", vacio=True)
+              + F.tcampo("Ayuda para quien lo recibe", "Opcional", vacio=True)
               + f'<span class="t-chk"><i>{tilde}</i>Obligatoria</span>')
     vp = '<div class="t-vp">' + "".join(
         f'<div class="ap-cmp"><span class="rt"><span>{n}{"" if k == 0 else " (opcional)"}</span></span><div class="ct ph{" area" if k == 5 else ""}">{"Elegí una opción" if k == 4 else "Elegí una fecha" if k == 1 else ""}</div></div>'
@@ -1264,7 +1272,7 @@ def tel_editor():
         "Pregunta con catálogo": F.thoja("Editar pregunta", F.tcampo("Pregunta", "Motivo", req=True) + F.tcampo("Tipo de respuesta", "Elegir de un catálogo", select=True)
                                          + F.tcampo("Catálogo", "Motivos de visita", req=True, select=True).replace("</div></div>", '</div><span class="ay">El empleado ve el texto y el detalle de cada opción.</span></div>', 1)
                                          + '<a class="t-mas" href="M-FRM-Catalogo.dc.html" style="text-decoration: none;">Ver el catálogo</a>'
-                                         + F.tcampo("Ayuda para el empleado", "Opcional", vacio=True) + f'<span class="t-chk"><i>{tilde}</i>Obligatoria</span>',
+                                         + F.tcampo("Ayuda para quien lo recibe", "Opcional", vacio=True) + f'<span class="t-chk"><i>{tilde}</i>Obligatoria</span>',
                                          '<button type="button" class="cb cb-pri">Listo</button><button type="button" class="cb cb-sec">Cancelar</button>'),
         "Así lo ve el empleado": F.thoja("Así lo ve el empleado", vp, '<button type="button" class="cb cb-pri" disabled>Enviar</button>', sub="Visita a cliente · borrador"),
         "Publicar": F.thoja("Publicar la versión 4", publicar_h, '<button type="button" class="cb cb-pri">Publicar versión 4</button><button type="button" class="cb cb-sec">Cancelar</button>',
@@ -1276,7 +1284,7 @@ def tel_editor():
     cuantas = ('<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' + F.tcampo("Mínimo", "1") + F.tcampo("Máximo", "4") + "</div>"
                '<span class="t-lin">' + CLIP + ' Archivos: hasta 5 de 10 en el formulario.</span>')
     capas["Pregunta de foto"] = F.thoja("Editar pregunta", F.tcampo("Pregunta", "Fotos de la visita", req=True) + F.tcampo("Tipo de respuesta", "Foto", select=True)
-                                        + F.tcampo("Ayuda para el empleado", "Sacá una foto del frente del local y otra de la góndola.") + origen + cuantas,
+                                        + F.tcampo("Ayuda para quien lo recibe", "Sacá una foto del frente del local y otra de la góndola.") + origen + cuantas,
                                         '<button type="button" class="cb cb-pri">Listo</button><button type="button" class="cb cb-sec">Cancelar</button>')
     hojas = "".join(f'<sc-if value="{{{{s{E.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
     t = F.pagina_tel(None, None, cuerpo, css=F.CSS_TFICHA + F.CSS_TPREGUNTA + F.CSS_TFORM + CSS_TED + F.CSS_TFILTRO)
@@ -1528,7 +1536,7 @@ def tel_visor():
              f'<button type="button" class="ap-ib" aria-label="Cerrar">{X}</button><span class="tit"><b>Fotos de la visita</b><span>Foto 1 de 2 · VIS-000126</span></span></div>'
              '<div class="tv-img"><div class="tv-foto" role="img" aria-label="Foto 1 de 2"></div></div>'
              '<div class="tv-tira"><span class="r-th on"></span><span class="r-th b"></span></div>'
-             f'<div class="tv-pie"><span class="t">frente-local.jpg<small>3,4 MB · sacada con la cámara</small></span><button type="button" class="cb cb-sec">{DESCARGAR} Descargar</button></div></div>')
+             f'<div class="tv-pie"><span class="t">frente-local.jpg<small>3,4 MB</small></span><button type="button" class="cb cb-sec">{DESCARGAR} Descargar</button></div></div>')
     capas = {"Foto 1 de 2": visor,
              "Sin permiso": '<div class="t-toast" role="alert"><span class="mal">' + ALERTA + '</span><span>Ya no tenés permiso para ver estas respuestas.</span></div>'}
     esc = {e: t_escr() for e in E}

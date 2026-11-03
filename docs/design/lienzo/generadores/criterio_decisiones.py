@@ -582,6 +582,11 @@ DECISIONES = {
         ("El catálogo de una pregunta", "", "El mismo combo de los campos, sin «Ver el catálogo». Lo dado de baja y lo que no se puede usar van apagados, con su motivo en el tooltip (111).", "Dibujada"),
         ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
+    "Fotos y documentos · v152 · 02/11": [
+        ("Una pregunta de documento", "", "Acepta siempre PDF, Excel, Word, JPEG y PNG, y lo dice la (i) de «Cuántos documentos» (como ArquitecturaBase). Ya no se eligen por pregunta.", "Dibujada"),
+        ("Un documento", "", "Con su nombre, su tamaño y «Descargar», en la tarjeta, el detalle y el chat (como ArquitecturaBase).", "Dibujada"),
+        ("Los archivos del chat", "", "El clip, al lado de la nota interna, abre el archivo antes de mandarlo, con un texto opcional. Allá no existe.", "Dibujada"),
+    ],
     "El ciclo de vida · v151 · 02/11": [
         ("Reactivar", "", "Es publicar: se abre en el formulario, con las zonas de «Publicar», «Próxima respuesta» y el botón «Reactivar con la versión 3» (como ArquitecturaBase).", "Dibujada"),
         ("Borrar con respuestas", "", "Queda grisado, con el motivo en su tooltip y, en el teléfono, debajo de la acción. Antes no aparecía.", "Dibujada"),

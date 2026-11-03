@@ -1,0 +1,87 @@
+{
+  "id": "fotos-y-documentos",
+  "titulo": "Fotos y documentos en un formulario",
+  "etapa": "Etapa 18 · Fotos y documentos",
+  "orden": 1,
+  "resumen": "Lucía suma una pregunta de foto, Tomás la responde con la cámara y las fotos se ven en el chat, en la planilla y en el visor.",
+  "pasos": [
+    {
+      "tablero": "FRM-Editor-18",
+      "tweaks": {
+        "estado": "Pregunta de foto"
+      },
+      "resaltar": ".q-src",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Suma una pregunta de foto",
+      "texto": "«Fotos de la visita» sale solo de la cámara, y pide entre una y cuatro. La (i) de «Cuántas fotos» dice los topes.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id",
+      "accion": "Arma la pregunta."
+    },
+    {
+      "tablero": "WA-Chats-Respuesta-18",
+      "tweaks": {
+        "estado": "Bajando los archivos"
+      },
+      "resaltar": ".r-st",
+      "actor": "Sistema",
+      "titulo": "Tomás responde con la cámara",
+      "texto": "Mientras se bajan los archivos de WhatsApp, la tarjeta lo dice. Si algo falla, no hay respuesta a medias: se puede mandar de nuevo.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats",
+      "accion": "Baja los archivos."
+    },
+    {
+      "tablero": "WA-Chats-Respuesta-18",
+      "tweaks": {
+        "estado": "Con fotos y un documento"
+      },
+      "resaltar": ".r-ths",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "La respuesta llega al chat",
+      "texto": "La tarjeta muestra las miniaturas y el documento, con su nombre, su tamaño y «Descargar».",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats",
+      "accion": "Ve la respuesta."
+    },
+    {
+      "tablero": "FRM-Respuestas-18",
+      "tweaks": {
+        "estado": "Planilla"
+      },
+      "resaltar": ".pl-arch",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Y en la planilla",
+      "texto": "Cada pregunta de archivo es una columna: la miniatura y cuántas fotos, o cuántos documentos y de qué tipo. «—» quiere decir que la pregunta no existía en esa versión.",
+      "avanzar": "Tocá la foto.",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Abre las fotos."
+    },
+    {
+      "tablero": "FRM-Respuestas-18",
+      "tweaks": {
+        "estado": "Ver las fotos"
+      },
+      "resaltar": ".w-dlg.visor",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "El visor",
+      "texto": "Anterior, siguiente, la tira de miniaturas y «Descargar». Si pierde el permiso, se cierra.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/formularios/:id/respuestas",
+      "accion": "Mira las fotos."
+    },
+    {
+      "tablero": "FRM-Respuesta-18",
+      "tweaks": {
+        "estado": "Fotos"
+      },
+      "resaltar": ".d2-fotos",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "En la respuesta",
+      "texto": "La vista rápida suma la pestaña «Fotos», y la pantalla completa, «Descargar», con los documentos.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000126",
+      "accion": "Revisa la respuesta."
+    }
+  ]
+}
