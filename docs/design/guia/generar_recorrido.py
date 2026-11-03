@@ -1,7 +1,8 @@
 """Arma la guía del lienzo como un recorrido de punta a punta: cada capítulo es un paso de quien usa el sistema y cada
 pantalla muestra la compu, el teléfono, lo que se abre desde ahí, sus estados y si ya está programada.
 Uso (ver README.md): `python generar_recorrido.py <carpeta de salida>`. Escribe `capturar.json` con los tableros que usa; si ya
-están las capturas en `<salida>/png`, las pasa a JPG en `<salida>/img` y arma `<salida>/Guia-Lienzo.html`."""
+están las capturas en `<salida>/png`, las pasa a JPG en `<salida>/img` y arma las dos guías, `<salida>/Guia-Lienzo.html` y
+`<salida>/Guia-Formularios.html`, que comparten las imágenes."""
 import hashlib
 import html
 import json
@@ -12,11 +13,13 @@ import tempfile
 
 AQUI = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI))
-from recorrido import CAPITULOS, CODIGO, VERSION  # noqa: E402
+from recorrido import CAPITULOS, CAPITULOS_FORMULARIOS, CODIGO, VERSION  # noqa: E402
 
 LIENZO = AQUI.parent / "lienzo"
 SALIDA = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(tempfile.gettempdir()) / "guia-lienzo"
 URL_LIENZO = "https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK"
+URL_GUIA = "https://claude.ai/artifact/3afhCQaqwMx6kLxY4B6gpZ"
+URL_GUIA_FORMULARIOS = "https://claude.ai/artifact/K78KMJcoq8dw6YmMjuRvEu"
 CANVAS = json.loads((LIENZO / "canvas.json").read_text(encoding="utf-8"))["boards"]
 REPETIDAS = {}  # captura de un recorrido idéntica a otra → la que queda (el artefacto admite hasta 512 archivos)
 
@@ -77,6 +80,26 @@ RECORRIDOS = AQUI.parent / "recorridos"
 ETAPAS = ["Ingreso y registro", "Organización", "Página pública y directorio", "Plataforma", "Mi cuenta", "Etapa 8 · WhatsApp", "Etapa 8b · Asistente",
           "Etapa 12 · Catálogos", "Etapa 13 · Campos", "Etapa 14 · Formularios", "Etapa 15 · Respuestas", "Etapa 16 · Datos de las personas", "Etapa 17 · Ciclo de vida", "Etapa 18 · Fotos y documentos", "Etapa 19 · Condiciones, cálculos y líneas", "Etapa 20 · Cargar una respuesta desde la web", "Etapa 21 · Reglas y aprobación",
           "Etapa 22 · Biblioteca", "Etapa 23 · El asistente"]
+ETAPAS_FORMULARIOS = set(ETAPAS[ETAPAS.index("Etapa 12 · Catálogos"):])
+ANTES = "Cada pantalla tiene la compu, el teléfono, lo que se abre desde ahí y sus estados. Tocá una captura para verla grande; para usarla con Play, abrí el lienzo."
+# Cada guía: el archivo, el título de la pestaña, el de la página, el texto de arriba, si lleva un capítulo y un recorrido, y la otra guía.
+GUIAS = {
+    "lienzo": {
+        "archivo": "Guia-Lienzo.html", "titulo": "Guía del lienzo multitenant", "h1": "Guía del lienzo",
+        "texto": "El recorrido completo, en el orden en que una persona usa el sistema: llega al sitio, entra, ve su perfil, registra su empresa, "
+                 "arma su equipo, la administra, atiende por WhatsApp, le pregunta al asistente y, aparte, lo que usan los operadores de la plataforma. "
+                 "Los formularios tienen su propia guía. " + ANTES,
+        "capitulo": lambda cid: cid not in CAPITULOS_FORMULARIOS, "recorrido": lambda r: r["etapa"] not in ETAPAS_FORMULARIOS,
+        "otra": (URL_GUIA_FORMULARIOS, "Abrir la guía de Formularios"),
+    },
+    "formularios": {
+        "archivo": "Guia-Formularios.html", "titulo": "Guía de formularios multitenant", "h1": "Guía de formularios",
+        "texto": "El bloque de formularios, de la etapa 12 a la 25, en el orden en que se programa: lo que diseña, publica, manda y revisa cada "
+                 "organización, y la biblioteca de plantillas que arma la plataforma. " + ANTES,
+        "capitulo": lambda cid: cid in CAPITULOS_FORMULARIOS, "recorrido": lambda r: r["etapa"] in ETAPAS_FORMULARIOS,
+        "otra": (URL_GUIA, "Abrir la guía del lienzo"),
+    },
+}
 
 
 def recorridos():
@@ -128,10 +151,11 @@ def seccion_recorridos(lista):
             + "".join(bloques) + "</section>")
 
 
-def pagina():
+def pagina(guia):
+    g = GUIAS[guia]
     nav, secciones = [], []
     total_p = total_t = prog = 0
-    for k, (cid, titulo, texto, ps) in enumerate(CAPITULOS, 1):
+    for k, (cid, titulo, texto, ps) in enumerate([c for c in CAPITULOS if g["capitulo"](c[0])], 1):
         nav.append(f'<a href="#{cid}"><span class="n">{k}</span>{e(titulo)}</a>')
         filas = "".join(pantalla(p, f"{k}.{i}") for i, p in enumerate(ps, 1))
         secciones.append(f'<section class="cap-sec" id="{cid}"><header class="cap-cab"><span class="paso">Paso {k}</span><h2>{e(titulo)}</h2><p>{e(texto)}</p></header>{filas}</section>')
@@ -141,18 +165,21 @@ def pagina():
     recs = recorridos()
     cajas_f = SALIDA / "rec" / "cajas.json"
     cajas = json.loads(cajas_f.read_text(encoding="utf-8")) if cajas_f.exists() else {}
-    recs = [r for r in recs if r["id"] in cajas]
+    recs = [r for r in recs if r["id"] in cajas and g["recorrido"](r)]
     datos = datos_recorridos(recs, cajas)
     if recs:
         nav.insert(0, '<a href="#recorridos"><span class="n">▶</span>Recorridos guiados</a>')
     datos_js = json.dumps({"etapas": [et for et in ETAPAS if any(r["etapa"] == et for r in datos)], "recorridos": datos},
                           ensure_ascii=False).replace("</", "<\\/")
-    return (PLANTILLA.replace("@NAV@", "".join(nav)).replace("@SECCIONES@", seccion_recorridos(recs) + "".join(secciones)).replace("@URL@", URL_LIENZO)
+    url_otra, texto_otra = g["otra"]
+    otra = f'<a class="boton sec" href="{e(url_otra)}" target="_blank" rel="noopener">{e(texto_otra)}</a>' if url_otra else ""
+    return (PLANTILLA.replace("@TITULO@", e(g["titulo"])).replace("@H1@", e(g["h1"])).replace("@TEXTO@", e(g["texto"])).replace("@OTRA@", otra)
+            .replace("@NAV@", "".join(nav)).replace("@SECCIONES@", seccion_recorridos(recs) + "".join(secciones)).replace("@URL@", URL_LIENZO)
             .replace("@DATOS_REC@", datos_js).replace("@BOTON_REC@", '<a class="boton sec" href="#recorridos">Ver los recorridos guiados</a>' if recs else "")
             .replace("@PANTALLAS@", str(total_p)).replace("@TABLEROS@", str(total_t)).replace("@PROGRAMADAS@", str(prog)).replace("@VERSION@", e(VERSION)))
 
 
-PLANTILLA = r"""<title>Guía del lienzo multitenant</title>
+PLANTILLA = r"""<title>@TITULO@</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
@@ -343,11 +370,11 @@ dialog.rp[open] { display: grid; grid-template-columns: minmax(0, 1fr); grid-tem
 <div class="envoltura">
   <header class="cab">
     <span class="eyebrow">Sistema visual · Multitenant</span>
-    <h1>Guía del lienzo</h1>
-    <p>El recorrido completo, en el orden en que una persona usa el sistema: llega al sitio, entra, ve su perfil, registra su empresa, arma su equipo, la administra, atiende por WhatsApp y, aparte, lo que usan los operadores de la plataforma. Cada pantalla tiene la compu, el teléfono, lo que se abre desde ahí y sus estados. Tocá una captura para verla grande; para usarla con Play, abrí el lienzo.</p>
+    <h1>@H1@</h1>
+    <p>@TEXTO@</p>
     <div class="datos"><span><b>@PANTALLAS@</b> pantallas</span><span><b>@TABLEROS@</b> tableros</span><span><b>@PROGRAMADAS@</b> pantallas ya programadas</span><span>Lienzo @VERSION@</span></div>
     <div class="leyenda"><span class="cod ok">Programada</span><span class="cod parte">Programada en parte</span><span class="cod no">Falta programar</span><span class="cod ref">De referencia</span></div>
-    <div class="botones"><a class="boton" href="@URL@" target="_blank" rel="noopener">Abrir el lienzo</a>@BOTON_REC@</div>
+    <div class="botones"><a class="boton" href="@URL@" target="_blank" rel="noopener">Abrir el lienzo</a>@BOTON_REC@@OTRA@</div>
   </header>
 </div>
 <nav class="nav" aria-label="Pasos del recorrido"><div class="fila">@NAV@</div></nav>
@@ -544,6 +571,7 @@ if __name__ == "__main__":
         sys.exit(0)
     pasar_a_jpg()
     sacar_repetidas()
-    (SALIDA / "Guia-Lienzo.html").write_text(pagina(), encoding="utf-8")
+    for guia, g in GUIAS.items():
+        (SALIDA / g["archivo"]).write_text(pagina(guia), encoding="utf-8")
     hay = {f.stem for f in (SALIDA / "img").glob("*.jpg")}
-    print("guía en", SALIDA / "Guia-Lienzo.html", "· faltan imágenes:", sorted(set(usados) - hay))
+    print("guías en", SALIDA, "· faltan imágenes:", sorted(set(usados) - hay))

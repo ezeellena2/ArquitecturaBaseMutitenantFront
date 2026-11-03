@@ -3,6 +3,10 @@ pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí.
 
 VERSION = "versión 154 · 2 de noviembre de 2026"
 
+# Los capítulos que van en la guía de Formularios; el resto, en la del lienzo. Cada una es un artefacto aparte,
+# porque una versión de un artefacto admite hasta 511 archivos.
+CAPITULOS_FORMULARIOS = {"formularios", "biblioteca-plat"}
+
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
     "si": ("Programada", "ok"),
@@ -174,7 +178,7 @@ CAPITULOS = [
         ("frm-faltan", "Formularios que faltan", "/org/formularios/faltan", "no", "23", ["FRM-Faltan"], ["M-FRM-Faltan"], [],
          "Lo que alguien quiso registrar y no tenía formulario, agrupado por tema. Se crea el formulario o se descarta el pedido."),
     ]),
-    ("plataforma", "La plataforma", "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales, el WhatsApp propio y la biblioteca de formularios.", [
+    ("biblioteca-plat", "La biblioteca de la plataforma", "Lo que usan los operadores para ofrecer plantillas de formularios a las organizaciones: la biblioteca, cada plantilla con sus reglas y el diseño de su PDF, y las categorías.", [
         ("plat-frm-biblioteca", "Biblioteca de formularios", "Administración › Formularios › Biblioteca", "no", "22", ["Plat-FRM-Biblioteca"], ["M-Plat-FRM-Biblioteca"], ["Plat-FRM-Plantilla-Nueva"],
          "Las plantillas que la plataforma ofrece a las organizaciones: borrador, publicada o retirada, y cuántas organizaciones la usaron."),
         ("plat-frm-plantilla", "Una plantilla", "Administración › Formularios › Biblioteca › una plantilla", "no", "22", ["Plat-FRM-Plantilla"], [], ["Plat-FRM-Publicar", "Plat-FRM-Retirar"],
@@ -183,6 +187,8 @@ CAPITULOS = [
          "Debajo de las preguntas, las reglas que trae la plantilla y el diseño de su PDF. Los roles los elige cada organización: la plantilla solo sugiere uno."),
         ("plat-frm-categorias", "Categorías de formularios", "Administración › Formularios › Categorías", "no", "22", ["Plat-FRM-Categorias"], [], [],
          "La lista corta de categorías, con su orden. Todo pide motivo, y una categoría en uso no se borra."),
+    ]),
+    ("plataforma", "La plataforma", "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales y el WhatsApp propio.", [
         ("organizaciones", "Organizaciones", "/plataforma/organizaciones", "no", "5", ["Organizaciones"], ["M-Organizaciones"], ["M-Mas-Plat"],
          "Todas las organizaciones, con su Dueño, su origen y su estado. Aprobar, rechazar y crear."),
         ("organizacion", "Ficha de una organización", "/plataforma/organizaciones/:id", "no", "5", ["Organizacion"], ["M-Organizacion"], [],
