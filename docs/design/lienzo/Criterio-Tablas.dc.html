@@ -650,6 +650,63 @@
 .mini .linea { height: 2px; background: var(--marca); }
 .mini .filas { display: flex; flex-direction: column; gap: 14px; min-height: 140px; padding: 16px; font-size: 14px; color: var(--t2); opacity: 0.5; }
 </style>
+<style data-r311="tablas">
+.tb .th, .tb .tr { column-gap: 0; padding-left: 8px; padding-right: 0; }
+.tb .th > *, .tb .tr > * { align-self: stretch; padding: 0 8px; box-sizing: border-box; }
+.tb .th > * { display: flex; align-items: center; }
+.tb .tr > * { line-height: 40px; }
+.tb .tr.d2 > * { line-height: 52px; }
+.tb .tr .dos { line-height: 1.35; justify-content: center; }
+.tb .tr .der { align-items: center; line-height: normal; }
+.tb .tr .num { text-align: left; }
+.tb .th > * + *, .tb .tr > * + * { box-shadow: inset 1px 0 0 oklch(0.915 0.01 80 / 0.8); }
+.tb .th > * + * { box-shadow: inset 1px 0 0 oklch(0.89 0.02 76); }
+.r311-tb { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+.r311-tb .th, .r311-tb .tr { display: grid; grid-template-columns: 124px minmax(0, 1.4fr) 132px 100px 150px; min-height: 40px; font-size: 13px; }
+.r311-tb .th { background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-weight: 600; color: var(--t2); }
+.r311-tb .tr { border-bottom: 1px solid var(--borde); }
+.r311-tb .tr:nth-child(even) { background: oklch(0.975 0.008 78); }
+.r311-tb .th > span, .r311-tb .tr > span { display: flex; align-items: center; padding: 6px 12px; min-width: 0; line-height: 1.35; }
+.r311-tb .th > span + span, .r311-tb .tr > span + span { box-shadow: inset 1px 0 0 oklch(0.915 0.01 80 / 0.8); }
+.r311-tb .th > span + span { box-shadow: inset 1px 0 0 oklch(0.89 0.02 76); }
+.r311-tb .num { justify-content: flex-end; text-align: right; font-variant-numeric: tabular-nums; }
+.r311-tb .cod { white-space: nowrap; }
+.r311-tb .tr.abierta { background: oklch(0.955 0.025 185); box-shadow: inset 3px 0 0 var(--marca); }
+.r311-tb .pie { min-height: 44px; display: flex; align-items: center; padding: 0 12px; font-size: 12px; color: var(--t2); }
+.r311-lec { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.r311-caja { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.r311-caja .rot { font-size: 13px; font-weight: 600; color: var(--t2); }
+.r311-caja .g { color: var(--t3); }
+.r311-pasos { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; }
+.r311-pasos li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; position: relative; padding-bottom: 14px; font-size: 13.5px; }
+.r311-pasos li:not(:last-child)::before { content: ""; position: absolute; left: 13.5px; top: 28px; bottom: 0; width: 1px; background: var(--borde2); }
+.r311-pasos .pi { width: 28px; height: 28px; border-radius: 50%; background: var(--marca-t); color: var(--marca-tx); display: inline-flex; align-items: center; justify-content: center; }
+.r311-pasos .tx { display: flex; flex-direction: column; gap: 6px; padding-top: 4px; min-width: 0; }
+.r311-pasos .tag { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; margin-left: 6px; border-radius: 6px; background: var(--s3); font-size: 12px; font-weight: 600; color: var(--t2); }
+.r311-pasos .msg { border: 1px solid var(--borde); border-radius: 8px; background: var(--s2); padding: 8px 10px; line-height: 1.55; }
+.r311-pasos .dato { display: inline-flex; align-items: center; height: 20px; padding: 0 6px; border-radius: 5px; background: var(--marca-t); color: var(--marca-tx); font-size: 12px; font-weight: 600; }
+.r311-dg { border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: 13px; }
+.r311-dg .f { display: grid; grid-template-columns: 170px minmax(0, 1fr); border-top: 1px solid var(--borde); }
+.r311-dg .f:first-child { border-top: 0; }
+.r311-dg .k { background: oklch(0.975 0.008 78); color: var(--t2); padding: 9px 12px; }
+.r311-dg .v { padding: 9px 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.r311-dg .sub2 { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 4px 12px; border-left: 2px solid var(--borde2); padding: 2px 0 2px 10px; font-size: 12.5px; }
+.r311-cmp { border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: 13px; }
+.r311-cmp .h, .r311-cmp .f { display: grid; grid-template-columns: minmax(0, 1.2fr) 120px minmax(0, 1fr) minmax(0, 1fr); }
+.r311-cmp .h { background: oklch(0.945 0.018 76); font-weight: 600; color: var(--t2); border-bottom: 1px solid oklch(0.89 0.02 76); }
+.r311-cmp .f { border-top: 1px solid var(--borde); }
+.r311-cmp .h + .f { border-top: 0; }
+.r311-cmp .h > span, .r311-cmp .f > span { padding: 9px 12px; min-width: 0; }
+.r311-cmp .h > span + span, .r311-cmp .f > span + span { box-shadow: inset 1px 0 0 oklch(0.915 0.01 80 / 0.8); }
+.r311-cards { display: flex; flex-direction: column; gap: 8px; }
+.r311-card { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 10px; font-size: 13px; }
+.r311-card .s { display: block; color: var(--t3); font-size: 12px; }
+.r311-card .pt { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--borde2); box-sizing: border-box; }
+.r311-card.on { border: 2px solid var(--marca); padding: 9px 11px; background: var(--marca-t); }
+.r311-card.on .pt { border: 5px solid var(--marca); }
+.r311-card + .r311-sep { margin-top: 4px; }
+.r311-pag { font-size: 12px; color: var(--t2); }
+</style>
 </helmet>
 
 <div class="crit">
@@ -763,9 +820,80 @@
     </ul>
   </section>
 
+  <section data-reglas="3-11">
+    <h2>Columnas, números y la fila abierta</h2>
+    <div class="lado">
+      <div class="r311-tb">
+        <div class="th"><span>N°</span><span>Proveedor</span><span>Proveedor · CUIT</span><span class="num">Cantidad</span><span>Recibida</span></div>
+        <div class="tr"><span>REC-000041</span><span>Aceros Rosario</span><span class="cod">30-70988123-4</span><span class="num">1.250</span><span>02/11/2026 10:12</span></div>
+        <div class="tr abierta"><span>REC-000040</span><span>Agroinsumos del Litoral S.A.</span><span class="cod">30-71458236-9</span><span class="num">500</span><span>01/11/2026 16:40</span></div>
+        <div class="tr"><span>REC-000039</span><span>Frío Sur</span><span class="cod">30-69874512-3</span><span class="num">75,5</span><span>31/10/2026 09:05</span></div>
+        <div class="pie">1–3 de 41</div>
+      </div>
+      <ul class="reglas2">
+        <li><strong>Una línea fina entre columnas,</strong> en el encabezado y en el cuerpo, del tono de la que separa las filas. Una columna fija se la lleva al desplazar.</li>
+        <li><strong>Los números, a la derecha,</strong> encabezado incluido: cantidades, medidas e importes. Una fecha, un código («REC-000041») o un texto con un número no son columnas de números.</li>
+        <li><strong>La tabla cierra abajo</strong> con la línea de su última fila, sobre el paginado.</li>
+        <li><strong>Un código no se parte</strong> en sus guiones: si la celda baja de renglón, baja entero.</li>
+        <li><strong>La fila abierta</strong>, la de la vista rápida o la que espera una decisión, lleva el tinte de la marca y una barra de 3 px al inicio.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section data-reglas="3-11-lecturas">
+    <h2>Lecturas</h2>
+    <div class="r311-lec">
+      <div class="r311-caja">
+        <span class="rot">En pasos · una regla guardada</span>
+        <ol class="r311-pasos">
+          <li><span class="pi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg></span><span class="tx"><span><span class="g">Cuando</span> <b>se recibe una respuesta</b></span></span></li>
+          <li><span class="pi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M7 12h10"/><path d="M10 18h4"/></svg></span><span class="tx"><span><span class="g">Si</span> <b>¿Llegó en buen estado?</b> <span class="g">es</span> <b>No</b></span><span><span class="g">y</span> <b>Cantidad recibida</b> <span class="g">desde</span> <b>500</b></span></span></li>
+          <li><span class="pi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6z"/></svg></span><span class="tx"><span>Pedir aprobación<span class="tag">Supervisor</span></span></span></li>
+          <li><span class="pi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg></span><span class="tx"><span>Armar el PDF</span></span></li>
+          <li><span class="pi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14v10H9l-4 4z"/></svg></span><span class="tx"><span>Mandarle un mensaje a quien la cargó<span class="tag">con el PDF</span></span><span class="msg">Llegó con problemas el remito <span class="dato">N° de remito</span> de <span class="dato">Proveedor</span>. Revisá la recepción <span class="dato">Número</span>.</span></span></li>
+        </ol>
+      </div>
+      <div class="r311-caja">
+        <span class="rot">En dos columnas · los datos de un registro</span>
+        <div class="r311-dg">
+          <div class="f"><span class="k">Cliente</span><span class="v">Ferretería Rosales</span></div>
+          <div class="f"><span class="k">Fecha de la visita</span><span class="v">26/09/2026</span></div>
+          <div class="f"><span class="k">Proveedor</span><span class="v"><span>Aceros Rosario</span><span class="sub2"><span class="g">CUIT</span><span>30-70988123-4</span><span class="g">Plazo de pago</span><span>30 días</span></span></span></div>
+          <div class="f"><span class="k">Observaciones</span><span class="v">Pide visita el martes.</span></div>
+        </div>
+        <span class="rot" style="margin-top: 6px;">Lo elegido de otra página, primero</span>
+        <div class="r311-cards">
+          <div class="r311-card on"><span class="pt"></span><span><b>Visita a cliente</b><span class="s">Versión 3 · 7 preguntas</span></span></div>
+          <div class="r311-card"><span class="pt"></span><span><b>Pedido de materiales</b><span class="s">Versión 4 · 9 preguntas</span></span></div>
+          <div class="r311-card"><span class="pt"></span><span><b>Recepción de insumos</b><span class="s">Versión 1 · 8 preguntas</span></span></div>
+          <span class="r311-pag">Página 2 de 3</span>
+        </div>
+      </div>
+      <div class="r311-caja" style="grid-column: 1 / -1;">
+        <span class="rot">Lado a lado · lo que guardó otra persona y lo tuyo</span>
+        <div class="r311-cmp">
+          <div class="h"><span>Qué cambió</span><span>Dato</span><span>Guardado actualmente</span><span>Mis cambios</span></div>
+          <div class="f"><span>Cantidad recibida</span><span class="g">Obligatoria</span><span>Sí</span><span>No</span></div>
+          <div class="f"><span>Unidad · la opción «Kilos»</span><span class="g">Texto</span><span>Kilos</span><span>Kilogramos</span></div>
+          <div class="f"><span>Observaciones</span><span class="g">Pregunta</span><span>Texto largo · Opcional</span><span class="g">Quitada</span></div>
+          <div class="f"><span>El orden de las preguntas</span><span class="g">Orden</span><span>1. Proveedor · 2. Artículo · 3. Cantidad</span><span>1. <b>Artículo</b> · 2. Proveedor · 3. Cantidad</span></div>
+        </div>
+      </div>
+    </div>
+    <ul class="reglas2" style="margin-top: 14px;">
+      <li><strong>Ningún rótulo suelto con texto al lado,</strong> ni «Rótulo: valor» corrido en un renglón («Zona: Norte · Rubro: Frío»).</li>
+      <li><strong>Lo que pasa en orden, en pasos,</strong> con su ícono en una columna fija: las palabras que unen en gris y los datos en negrita; lo que va aparte de una acción, en una etiqueta, y el mensaje, entero en su recuadro.</li>
+      <li><strong>Los datos de un registro, en dos columnas:</strong> el dato sobre arena clara y el valor a su derecha. Lo que depende de un valor, como los campos de la opción elegida, va alineado debajo, con una línea a la izquierda.</li>
+      <li><strong>Dos versiones, lado a lado:</strong> el dato una vez y cada versión en su columna, solo lo distinto; lo que una no tiene dice «Quitada» o «—». En el teléfono, el dato arriba y las dos debajo.</li>
+      <li><strong>Lo elegido en otra página va primero,</strong> marcado, en la lista para elegir; nunca un renglón «Elegido: …».</li>
+    </ul>
+  </section>
+
   <section>
     <h2>Prohibido</h2>
     <ul class="prohibido">
+      <li>Una tabla sin líneas entre columnas, o los números a la izquierda.</li>
+      <li>Un rótulo chico pegado a una frase, o «Rótulo: valor» corrido en un renglón.</li>
       <li>Encabezados en mayúsculas o sin color.</li>
       <li>Etiquetas o textos sueltos que cuentan un estado al lado de un dato: «Principal», «Suspendida», roles.</li>
       <li>Dos datos en la misma celda, también en una segunda línea gris: el correo debajo del nombre, «Vence…» debajo del estado.</li>

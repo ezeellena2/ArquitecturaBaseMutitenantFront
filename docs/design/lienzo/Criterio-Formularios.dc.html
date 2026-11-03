@@ -635,6 +635,29 @@
 .i-ay { display: inline-flex; color: var(--t3); margin-left: -2px; }
 .g4c { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
 </style>
+<style data-r311="formularios">
+.seg { background: #fff; border: 1px solid var(--borde2); padding: 2px; }
+.seg span.on { background: var(--marca); color: #fff; box-shadow: none; }
+.r311-cards2 { display: flex; flex-direction: column; gap: 8px; }
+.r311-cards2 .card { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 10px; font-size: 13px; background: #fff; }
+.r311-cards2 .pt { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--borde2); box-sizing: border-box; }
+.r311-cards2 .card.on { border: 2px solid var(--marca); padding: 9px 11px; background: var(--marca-t); }
+.r311-cards2 .card.on .pt { border: 5px solid var(--marca); }
+.lst .op.r311t { justify-content: flex-start; }
+.lst .op.r311t.sel { font-weight: 600; }
+.lst .op .tl { width: 16px; display: inline-flex; color: var(--marca-tx); }
+.r311-lado { display: grid; grid-template-columns: 860px minmax(0, 1fr); gap: 32px; align-items: start; }
+.r311-q { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; font-size: 13px; }
+.r311-q .qcab { display: flex; align-items: baseline; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--borde); }
+.r311-q .qcab .s { color: var(--t3); }
+.r311-q .zona { display: grid; grid-template-columns: 18px auto minmax(0, 1fr) auto; gap: 8px; align-items: center; min-height: 44px; padding: 0 16px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); }
+.r311-q .zona .res { color: var(--t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.r311-q .zona .i { color: var(--t3); display: inline-flex; }
+.r311-q .zona .err { color: oklch(0.45 0.17 25); font-weight: 600; }
+.r311-q .cuerpo { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.r311-q .cuerpo .ctl { border-color: oklch(0.57 0.2 25); }
+.r311-q .cuerpo .mal { color: oklch(0.45 0.17 25); font-size: 12.5px; }
+</style>
 </helmet>
 
 <div class="crit">
@@ -678,7 +701,7 @@
           <div class="lst"><div class="op"><span class="chk"><span class="cas si"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span> Administrador</span></div><div class="op"><span class="chk"><span class="cas si"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span> Auditor</span></div><div class="op"><span class="chk"><span class="cas">&nbsp;</span> Solo lectura</span></div></div></div>
         <strong>Varios a la vez</strong><p>Un desplegable con casillas. Si son muchos, muestra «3 elegidos». Nunca una lista de casillas suelta.</p>
       </div>
-      <div class="ctrl"><div class="dib"><div class="cmp"><span class="rot">Qué querés agregar</span><div class="seg"><span class="on">Correo</span><span>WhatsApp</span></div></div></div><strong>Segmentado</strong><p>Dos o tres opciones fijas que cambian lo que se pide abajo.</p></div>
+      <div class="ctrl"><div class="dib"><div class="cmp"><span class="rot">Qué querés agregar</span><div class="seg"><span class="on">Correo</span><span>WhatsApp</span></div></div></div><strong>Segmentado</strong><p>Dos o tres opciones fijas que cambian lo que se pide abajo. La elegida va rellena.</p></div>
       <div class="ctrl"><div class="dib"><span class="chk"><span class="cas si"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span> Acepto los términos y la política de privacidad</span></div><strong>Casilla</strong><p>Un sí o no, dentro de un formulario que se guarda.</p></div>
       <div class="ctrl"><div class="dib"><span class="chk" style="justify-content: space-between;"><span>WhatsApp</span><span class="sw" aria-hidden="true"></span></span></div><strong>Interruptor</strong><p>Prender o apagar algo que se aplica en el momento, sin Guardar.</p></div>
       <div class="ctrl"><div class="dib"><div class="cmp"><span class="rot">Código</span><div class="otp"><span>4</span><span>8</span><span class="foco"></span><span></span><span></span><span></span></div></div></div><strong>Código</strong><p>Seis casillas. Se puede pegar el código entero.</p></div>
@@ -733,9 +756,41 @@
     <div class="tel-franja"><div class="tf-hoja"><b>Sumar empresa</b><div class="cmp"><span class="rot">Empresa <span class="req">*</span></span><div class="ctl">Delta Sur S.R.L.</div></div><div class="aviso-mal tel" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg> No pudimos sumar la empresa. Revisá tu conexión y probá de nuevo.</div><div class="tf-bt"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Sumar</button></div></div><span class="tf-pie">En el teléfono: la franja con la letra de los avisos del teléfono.</span></div>
   </section>
 
+  <section data-reglas="3-11">
+    <h2>Lo elegido, sin dudas</h2>
+    <div class="g3c">
+      <div class="ctrl"><div class="dib"><div class="cmp"><span class="rot">¿Llegó en buen estado? <span class="req">*</span></span><div class="seg"><span class="on">Sí</span><span>No</span></div></div></div><strong>Segmentado</strong><p>La elegida, rellena con la marca y la letra blanca; las otras, blancas. En el teléfono, cada opción mide 44 × 44.</p></div>
+      <div class="ctrl"><div class="dib"><div class="cmp"><span class="rot">De dónde salen las opciones</span><div class="r311-cards2"><span class="card on"><span class="pt"></span><b>Escritas a mano</b></span><span class="card"><span class="pt"></span><b>De los miembros</b></span><span class="card"><span class="pt"></span><b>De los contactos de WhatsApp</b></span></div></div></div><strong>Tarjetas de opción</strong><p>La elegida suma un borde de 2 px y el tinte de la marca, además del punto, sin moverse.</p></div>
+      <div class="ctrl"><div class="dib"><div class="cmp"><span class="rot">Zona</span><div class="ctl foco">Norte <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div><div class="lst"><div class="op r311t"><span class="tl"></span>Todas</div><div class="op r311t sel"><span class="tl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>Norte</div><div class="op r311t"><span class="tl"></span>Centro</div><div class="op r311t"><span class="tl"></span>Sur</div></div></div><strong>Desplegable de un filtro</strong><p>La elegida lleva la tilde a la izquierda, sin la cantidad ni opciones apagadas.</p></div>
+    </div>
+    <ul class="reglas2" style="margin-top: 14px;">
+      <li><strong>Lo elegido nunca es solo un tinte:</strong> lleva un relleno, una tilde, un punto, un subrayado o una barra, y se distingue de lo demás en cualquier paleta.</li>
+      <li><strong>No se arman botones sueltos</strong> que se rellenan para hacer de segmentado.</li>
+    </ul>
+  </section>
+
+  <section data-reglas="3-11-zonas">
+    <h2>Zonas que se pliegan</h2>
+    <div class="r311-lado">
+      <div class="r311-q">
+        <div class="qcab"><b>3 · Proveedor</b><span class="s">De un catálogo · Proveedores · Obligatoria</span></div>
+        <div class="zona"><span class="i"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 7 5 5-5 5"/></svg></span><b>Qué opciones ve cada persona</b><span class="res">Rubro: Agroquímicos · Zona según quien lo recibe</span><span></span></div>
+        <div class="zona"><span class="i"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></span><b>En WhatsApp</b><span class="i"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg></span><span></span></div>
+        <div class="cuerpo"><span class="rot">Título</span><div class="ctl">Nombre · Rubro</div><span class="mal">Hasta 30 caracteres; «Agroinsumos del Litoral S.A. · Herbicidas» tiene 41.</span></div>
+      </div>
+      <ul class="reglas2">
+        <li><strong>En una pregunta de catálogo,</strong> «Qué opciones ve cada persona» y «En WhatsApp» arrancan plegadas cada vez que se abre la pregunta.</li>
+        <li><strong>La banda dice lo configurado,</strong> en una línea: los filtros en orden, «sin valor» si falta uno, «Sin filtros» si no hay.</li>
+        <li><strong>La que tiene un error o un aviso se abre sola;</strong> se puede volver a plegar, y solo un problema nuevo la abre otra vez.</li>
+        <li><strong>Es una excepción</strong> a «sin paneles plegables», como las zonas de la carga y «Respuesta» y «Actividad» del detalle.</li>
+      </ul>
+    </div>
+  </section>
+
   <section>
     <h2>Prohibido</h2>
     <ul class="prohibido">
+      <li>Lo elegido marcado solo con un tinte.</li>
       <li>Rótulos adentro del campo en vez de arriba.</li>
       <li>Ayudas o ejemplos debajo de cada campo.</li>
       <li>Campos a medio ancho con el resto de la caja vacío, o filas con columnas distintas en la misma caja.</li>

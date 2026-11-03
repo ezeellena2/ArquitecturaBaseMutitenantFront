@@ -109,6 +109,11 @@ REGLAS = [
     ("Una tabla que vuelve a leer atenúa sus filas y corre una línea bajo el encabezado.", "Tablas y listas", "02/11/2026"),
     ("La ⓘ es para lo que no se puede hacer y abre el aviso importante; la (i) es ayuda y no abre nada.", "Avisos y errores", "02/11/2026"),
     ("En el teléfono, tocar la (i) abre una hoja chica, y tocar algo apagado muestra el motivo en la franja oscura de abajo.", "Avisos y errores", "02/11/2026"),
+    ("Toda tabla lleva una línea fina entre columnas y los números a la derecha, y cierra abajo.", "Tablas y listas", "03/11/2026"),
+    ("Una lectura no deja rótulos sueltos: lo que pasa en orden va en pasos, los datos en dos columnas y dos versiones lado a lado.", "Tablas y listas", "03/11/2026"),
+    ("Lo elegido se distingue sin dudas: nunca solo con un tinte.", "Formularios y campos", "03/11/2026"),
+    ("Un filtro de opciones es un desplegable simple, sin cantidades, y lo que no entra a la vista va en un solo «Filtros», con chips.", "Menús y desplegables", "03/11/2026"),
+    ("Las zonas de una pregunta de catálogo arrancan plegadas, con lo configurado en su banda.", "Formularios y campos", "03/11/2026"),
 ]
 
 # Decisiones por página: (pantalla, opción elegida, qué se eligió, estado en el lienzo).
@@ -582,6 +587,22 @@ DECISIONES = {
         ("El catálogo de una pregunta", "", "El mismo combo de los campos, sin «Ver el catálogo». Lo dado de baja y lo que no se puede usar van apagados, con su motivo en el tooltip (111).", "Dibujada"),
         ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
+    "Traspaso 5 de ArquitecturaBase · v159 · 03/11": [
+        ("Toda la app", "", "Un cambio de diseño pedido sobre una pantalla se busca en todas las que usan la misma pieza, y queda como regla en su «Criterio» (136).", "Decidido"),
+        ("Tablas", "", "Una línea fina entre columnas, los números a la derecha y la tabla que cierra abajo; un código no se parte (137).", "Dibujada"),
+        ("Lecturas", "LR1-A y LR2-A", "Lo que pasa en orden, en pasos; los datos, en dos columnas; dos versiones, lado a lado, y lo elegido de otra página, primero (138).", "Dibujada"),
+        ("Lo elegido", "OE1-A", "Elegido por el usuario: el segmentado rellena la elegida, la tarjeta suma un borde de 2 px, el desplegable de un filtro la tilda, y la fila y la conversación abiertas llevan una barra (142).", "Dibujada"),
+        ("Filtros de opciones", "PL2-A y FO1-A", "Elegido por el usuario: un desplegable simple, de una opción y sin cantidades, en toda la app; los segmentados conservan su número (143).", "Dibujada"),
+        ("Un solo «Filtros»", "PL1-A", "Elegido por el usuario: lo que no entra a la vista va en un solo «Filtros», que se despliega como «Columnas» y aplica cada cambio; lo aplicado, en chips con «Limpiar todo» (144).", "Dibujada"),
+        ("Zonas de una pregunta de catálogo", "ZP1-A", "Elegido por el usuario: arrancan plegadas, con lo configurado en su banda, y se abren solas con un error o un aviso (145).", "Dibujada"),
+        ("El detalle de una respuesta", "TL1-A y TL3-A", "El valor primero y los datos del catálogo debajo; los momentos con la fecha a la derecha; la actividad en cuatro columnas fijas, por momento (139).", "Falta dibujar"),
+        ("Los historiales", "HI1-A", "Detrás de un botón «Historial», apagado sin revisiones, que abre un panel al costado (140).", "Falta dibujar"),
+        ("La carga", "AR1-A", "Dos anchos, las casillas en columnas y el panel con sus zonas (141).", "Falta dibujar"),
+        ("Renglones", "RG1-A a RG6-A", "Elegido por el usuario: «Se carga varias veces», mínimo y máximo, una pantalla por renglón en WhatsApp y «Algún renglón con…» (146). Reemplaza el grupo de líneas.", "Falta dibujar"),
+        ("Mantener lo cargado", "AR2-A", "Elegido por el usuario: también en la página, antes de Cancelar y Enviar (147).", "Falta dibujar"),
+        ("«Por aprobar»", "PL1-A", "Elegido por el usuario: «Por aprobar (N) | Todas» arriba de la planilla, con el segmentado y no con pestañas (148).", "Falta dibujar"),
+        ("El mensaje con datos", "MD1-A", "Elegido por el usuario: «Agregar dato» pone etiquetas que siguen a la pregunta, con «Así llega» debajo (149).", "Falta dibujar"),
+    ],
     "Varios asistentes · v158 · 03/11": [
         ("La lista", "", "Como las listas de WhatsApp: el asistente, sus equipos y su estado, con el ⋮ (Editar y Dar de baja o Reactivar). «Dar de baja» del principal queda grisado, con el motivo en su tooltip. En ArquitecturaBase no existe.", "Dibujada"),
         ("El asistente de un equipo", "", "Un desplegable más en «Editar equipo» de la 11. Sin elegir, contesta el principal; uno de baja no se elige.", "Dibujada"),
@@ -654,7 +675,7 @@ DECISIONES = {
         ("Publicar con avisos", "", "«Avisos» va entre «Problemas» y «Qué se publica», solo si hay alguno, y no apaga «Publicar».", "Dibujada"),
     ],
     "Lo que sigue": [
-        ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
+        ("Las etapas, con el traspaso 5", "", "Se redibujan en tandas: primero los «Criterio» y después cada etapa, con la lista del índice de specs.", "Falta dibujar"),
     ],
 }
 
