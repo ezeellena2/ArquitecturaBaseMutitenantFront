@@ -61,10 +61,10 @@
       "tweaks": {
         "estado": "Por qué respondió esto"
       },
-      "resaltar": ".as-por",
+      "resaltar": ".as-pop",
       "actor": "Lucía · Dueña · web",
       "titulo": "Mira por qué respondió",
-      "texto": "El caso, lo que usó del conocimiento y por qué. El sistema lo guarda con cada acción.",
+      "texto": "Al tocar «Por qué respondió esto», un globo con el caso, lo que usó del conocimiento y por qué, sin correr el chat. El sistema lo guarda con cada acción.",
       "avanzar": "Siguiente.",
       "ruta": "WhatsApp › Chats › Clientes",
       "accion": "Abre «Por qué respondió esto»."

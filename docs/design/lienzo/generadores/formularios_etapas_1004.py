@@ -61,6 +61,7 @@ FILAS = [
                                                 "FRM-Faltan", "FRM-Dar-De-Baja-23", "FRM-Editor-Baja-23", "Campana-23"],
      ["M-WA-Asistente", "M-WA-Chats-Casos", "M-WA-Modo-Atencion", "M-WA-Preguntas-Sin-Respuesta", "M-WA-Conversacion-Asistente", "M-FRM-Reglas-23", "M-FRM-Faltan",
       "M-Campana-23"]),
+    (24, "Etapa 24 · Varios asistentes", ["WA-Asistentes", "WA-Equipo-Asistente", "WA-Chats-Casos-24"], ["M-WA-Asistentes", "M-WA-Equipo-Asistente", "M-WA-Chats-Casos-24"]),
 ]
 ETAPA_DE = {n: etapa for etapa, _t, compu, tel in FILAS for n in compu + tel}
 TODAS = list(G.ENTRADAS)  # sin «Diseñar formularios» cuando corre después de formularios_lista_y_ficha_1004.py

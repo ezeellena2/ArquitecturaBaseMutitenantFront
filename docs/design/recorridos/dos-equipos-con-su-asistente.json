@@ -1,0 +1,87 @@
+{
+  "id": "dos-equipos-con-su-asistente",
+  "titulo": "Dos equipos con su asistente",
+  "etapa": "Etapa 24 · Varios asistentes",
+  "orden": 10,
+  "resumen": "Soporte y Ventas tienen su asistente: Martina elige «Consultar un pedido» y le contesta el de Soporte; Lucía pasa el chat a Ventas, y un equipo sin asistente lo atiende el principal.",
+  "pasos": [
+    {
+      "tablero": "WA-Asistentes",
+      "tweaks": {
+        "estado": "Varios"
+      },
+      "resaltar": ".w-tr.as24:has-text(\"Delta Soporte\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Mira los asistentes",
+      "texto": "Uno por equipo, cada uno con su perfil, sus casos y sus límites. El principal contesta lo demás y no se da de baja.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Asistentes",
+      "accion": "Revisa la lista."
+    },
+    {
+      "tablero": "WA-Equipo-Asistente",
+      "tweaks": {
+        "estado": "Elegir el asistente"
+      },
+      "resaltar": ".eq-mn span.on",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Le asigna su asistente",
+      "texto": "Al editar el equipo, un desplegable. Sin elegir, contesta el principal.",
+      "avanzar": "Tocá «Delta Ventas».",
+      "ruta": "Administración › WhatsApp › Equipos",
+      "accion": "Elige el asistente de Ventas."
+    },
+    {
+      "tablero": "WA-Chats-Casos-24",
+      "tweaks": {
+        "estado": "Un chat nuevo: el menú"
+      },
+      "resaltar": ".as-quick",
+      "actor": "Martina · cliente · WhatsApp",
+      "titulo": "Escribe por primera vez",
+      "texto": "Con varios asistentes, el chat arranca con el menú del bot, aunque la bandeja esté en modo Asistente.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats › Clientes",
+      "accion": "Recibe el menú."
+    },
+    {
+      "tablero": "WA-Chats-Casos-24",
+      "tweaks": {
+        "estado": "Eligió Soporte"
+      },
+      "resaltar": ".hc .as-modo.on",
+      "actor": "Martina · cliente · WhatsApp",
+      "titulo": "Elige «Consultar un pedido»",
+      "texto": "El chat pasa a Soporte y le contesta Delta Soporte. La cabecera dice quién contesta.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats › Clientes",
+      "accion": "Pregunta por su pedido."
+    },
+    {
+      "tablero": "WA-Chats-Casos-24",
+      "tweaks": {
+        "estado": "Pasó a Ventas"
+      },
+      "resaltar": ".hc .as-modo.on",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo pasa a Ventas",
+      "texto": "Desde el mensaje siguiente contesta Delta Ventas, con el mismo historial.",
+      "avanzar": "Siguiente.",
+      "ruta": "WhatsApp › Chats › Clientes",
+      "accion": "Pasa el chat a Ventas."
+    },
+    {
+      "tablero": "WA-Chats-Casos-24",
+      "tweaks": {
+        "estado": "Un equipo sin asistente: el principal"
+      },
+      "resaltar": ".hc .as-modo.on",
+      "actor": "Martina · cliente · WhatsApp",
+      "titulo": "Un equipo sin asistente",
+      "texto": "Atención general no tiene asistente: contesta el principal.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "WhatsApp › Chats › Clientes",
+      "accion": "Elige «Otra consulta»."
+    }
+  ]
+}

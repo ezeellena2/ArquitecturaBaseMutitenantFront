@@ -42,8 +42,14 @@ CSS_CH = """.as-np { display: inline-flex; align-items: center; height: 22px; pa
 .w-conv .l3 .as-np { height: 18px; font-size: 11px; padding: 0 6px; }
 .hc .acc .as-np { height: 26px; font-size: 12.5px; }
 .as-pq { border: 0; padding: 0; background: none; font: inherit; color: var(--marca-tx); text-decoration: underline; cursor: pointer; }
-.as-por .g { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 4px 10px; margin-top: 6px; }
-.as-por .g .k { color: var(--t3); }
+.as-pqw { position: relative; display: inline-block; }
+.as-pop { position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; width: 330px; box-sizing: border-box; padding: 12px 14px; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 28px oklch(0.24 0.014 78 / 0.18); font-size: 13px; line-height: 1.45; color: var(--t1); text-align: left; white-space: normal; }
+.as-pop > b { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 13px; font-weight: 600; }
+.as-pop .g { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 4px 10px; }
+.as-pop .g .k { color: var(--t3); }
+.t-pq { display: flex; flex-direction: column; gap: 12px; }
+.t-pq .f { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 8px; font-size: 15px; line-height: 1.4; }
+.t-pq .k { color: var(--t3); }
 .as-sug.borr .t span { color: var(--t1); }
 .w-msjs .w-m.ent + .w-m.ent { margin-top: -4px; }
 .au-bt { height: 30px; font-size: 13px; gap: 6px; }
@@ -79,8 +85,15 @@ def menu_chat(nombre="Tomás Acosta", manual=True, top=112):
 # ---------------------------------------------------------------- WA-Chats-Asistente: el modo Asistente con Tomás (Internos)
 VALORES_132 = [("Cliente", "Ferretería Rosales"), ("Fecha de la visita", HOY), ("¿Se concretó la venta?", "Sí"), ("Monto estimado", "128.000,00")]
 NO_DISPONIBLE = "El asistente no está disponible: se agotó el tope de IA del mes. La conversación sigue en atención manual."
-E_H1 = ["Modo Asistente", "Menú del chat", "Pasar a modo Asistente", "Tomar atención a mitad de un envío", "El asistente no está disponible",
+E_H1 = ["Modo Asistente", "Por qué respondió esto", "Menú del chat", "Pasar a modo Asistente", "Tomar atención a mitad de un envío", "El asistente no está disponible",
         "Pregunta si duda", "Después de un «ahora no»", "No hay formulario", "Fuera de las 24 horas"]
+POR_132 = ("Formularios · Visita a cliente", "«Cuándo lo ofrece» de Visita a cliente",
+           "Reconoció una visita a un cliente. Propuso Cliente, ¿Se concretó la venta? y Monto estimado, del mensaje de Tomás.")
+
+
+def con_enlaces(h):
+    """Cada respuesta del asistente lleva «Por qué respondió esto» en su pie, cerrado: nunca aparece abierto solo."""
+    return re.sub(r'(<span class="pie">Asistente · \d{2}:\d{2} · [^<]+)</span>', lambda m: m[1] + enlace_pq() + "</span>", h)
 
 
 def chat_asistente():
@@ -88,7 +101,8 @@ def chat_asistente():
     auto = R.automatico("Recibimos VIS-000132. Te avisamos cuando la aprueben.", "Regla de Visita a cliente · 11:34 · Entregado", R.card_aviso())
     te = "Te preparé el formulario de la visita con lo que me contaste. Revisalo y confirmalo."
     msgs = {
-        "Modo Asistente": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja(te, V.card_form()) + V.por_que(V.POR_QUE_132) + resp + auto,
+        "Modo Asistente": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja(te, V.card_form()) + resp + auto,
+        "Por qué respondió esto": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja(te, V.card_form(), "Asistente · 11:21 · Leído" + enlace_pq(por_que(*POR_132))) + resp + auto,
         "Menú del chat": V.MSJ_TOMAS, "Pasar a modo Asistente": V.MSJ_TOMAS,
         "Tomar atención a mitad de un envío": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja(te, V.card_form(), "Asistente · 11:21 · Enviando")
         + V.sis("Lucía Fernández tomó la atención manual")
@@ -101,6 +115,7 @@ def chat_asistente():
         + V.asistente_burbuja("Todavía no hay un formulario para registrar reclamos. Ya anoté el pedido para que lo armen.", pie="Asistente · 11:21 · Leído"),
         "Fuera de las 24 horas": V.PASO + V.sis(f"Último mensaje de Tomás: {AYER} 09:10") + V.sis("El asistente espera a que Tomás escriba"),
     }
+    msgs = {k: con_enlaces(v) for k, v in msgs.items()}
     man = {"Menú del chat", "Pasar a modo Asistente", "Tomar atención a mitad de un envío", "El asistente no está disponible"}
     esc = {e: (A.escr() if e in man else V.esc_asistente()) for e in E_H1}
     capas = {"Menú del chat": menu_chat(), "Pasar a modo Asistente": dlg_pasar()}
@@ -156,10 +171,11 @@ E_H6 = ["Pasando a texto", "Transcripto", "Escuchar el audio", "En modo Asistent
 def chat_audio():
     te = "Te preparé el formulario de la visita con lo que me contaste."
     msgs = {"Pasando a texto": audio("pasando"), "Transcripto": audio(), "Escuchar el audio": audio("escuchando"),
-            "En modo Asistente": V.PASO + audio() + V.asistente_burbuja(te, V.card_form()) + V.por_que("Del audio de Tomás: Cliente, ¿Se concretó la venta? y Monto estimado."),
+            "En modo Asistente": V.PASO + audio() + V.asistente_burbuja(te, V.card_form()),
             "En atención manual, sugiere": audio() + V.sugerencia(True),
             "No se pudo pasar a texto": V.PASO + audio("error") + V.sis("El asistente no pudo leer el audio · Necesita una persona"),
             "Ya no está": audio("vencido")}
+    msgs = {k: con_enlaces(v) for k, v in msgs.items()}
     flags = {e: ("as" if e in ("En modo Asistente", "No se pudo pasar a texto") else "man") for e in E_H6}
     esc = {e: (V.esc_asistente() if flags[e] == "as" else A.escr()) for e in E_H6}
     vp = {e: "Audio · 0:24" for e in E_H6}
@@ -176,6 +192,9 @@ def tel_chat_asistente():
     assert viejo in t
     t = t.replace(viejo, audio(clase="ap-m"))
     t = t.replace(V.dlg_pasar().split('<p class="d-tx">')[1].split("</p>")[0], dlg_pasar().split('<p class="d-tx">')[1].split("</p>")[0])
+    t, k = re.subn(r'<div class="t-por">.*?</div>', "", t, flags=re.S)
+    assert k, "el porqué abierto del teléfono"
+    t = con_enlaces(t)
     return a_wa(t, chats=False).replace("</helmet>", f'<style data-wa23="audio">\n{CSS_CH}</style>\n</helmet>', 1)
 
 
@@ -223,22 +242,37 @@ def ent(texto, hora):
     return f'<div class="w-m ent"><span class="gl">{texto}</span><span class="pie">{hora}</span></div>'
 
 
-def asis(texto, hora, card="", quick=None, estado="Leído", pq=True, clase="w-m"):
+def enlace_pq(pop=""):
+    """«Por qué respondió esto» en el pie: se abre al tocarlo, en un globo que no corre el chat (elegido por el usuario el 03/11)."""
+    return f' · <span class="as-pqw"><button type="button" class="as-pq" aria-expanded="{"true" if pop else "false"}">Por qué respondió esto</button>{pop}</span>'
+
+
+def asis(texto, hora, card="", quick=None, estado="Leído", pq=True, clase="w-m", pop=""):
     q = '<span class="as-quick">' + "".join(f"<span>{b}</span>" for b in quick) + "</span>" if quick else ""
-    p = ' · <button type="button" class="as-pq">Por qué respondió esto</button>' if pq else ""
+    p = enlace_pq(pop) if pq else ""
     return (f'<div class="{clase} sal asis"><span class="gl"><span class="aut">{BOT} Asistente</span><span>{texto}</span>{card}{q}</span>'
             f'<span class="pie">Asistente · {hora} · {estado}{p}</span></div>')
 
 
-def por_que(caso, uso, por, clase="as-por"):
-    g = f'<span class="g"><span class="k">Caso</span><span>{caso}</span><span class="k">Usó</span><span>{uso}</span><span class="k">Por qué</span><span>{por}</span></span>'
-    return f'<div class="{clase}"><b>{INFO} Por qué respondió esto</b>{g}</div>'
+def filas_pq(caso, uso, por):
+    return [("Caso", caso), ("Usó", uso), ("Por qué", por)]
+
+
+def por_que(caso, uso, por, clase="as-pop"):
+    """El globo, abierto: el caso, lo que usó y por qué. En el teléfono es una hoja (hoja_pq)."""
+    g = '<span class="g">' + "".join(f'<span class="k">{k}</span><span>{v}</span>' for k, v in filas_pq(caso, uso, por)) + "</span>"
+    return f'<span class="{clase}" role="dialog" aria-label="Por qué respondió esto"><b>{INFO} Por qué respondió esto</b>{g}</span>'
+
+
+def hoja_pq(filas):
+    return F.thoja("Por qué respondió esto", '<div class="t-pq">' + "".join(f'<div class="f"><span class="k">{k}</span><span>{v}</span></div>' for k, v in filas) + "</div>", "")
 
 
 CARD_SERVICE = (f'<span class="as-card"><span>{F.ICONO}</span><span class="t"><b>Pedido de service</b><small>Formulario · versión 2 · botón «Abrir formulario»</small>'
                 '<small>Prellenado: Sucursal</small></span></span>')
 DERIVA = "Ya le paso tu consulta a una persona del equipo. Te responde por acá."
 NECESITA = "Pasó a atención manual · Necesita una persona"
+POR_SAB = ("Caso 1 · Pregunta por envíos, precios, horarios o garantías", "Horario de atención", "Pregunta si atienden los sábados: está cargado.")
 E_CS = ["Responde con el conocimiento", "Por qué respondió esto", "Sin la información: deriva", "Manda un formulario", "Pregunta con botones", "El texto exacto",
         "Quiere hablar con alguien", "Una ráfaga: tres acciones", "El tope del día", "Atención manual: el borrador", "Cambiar el modo", "Fijada", "Resuelta",
         "Filtro: necesita una persona"]
@@ -264,8 +298,9 @@ def msgs_casos(e_=ent, a_=asis, s_=V.sis, pq_=por_que):
     tomada = envios + s_("Lucía Fernández tomó la conversación") + f'<div class="w-m sal"><span class="gl">Hola, Martina. Hacemos envíos a todo el país con un transporte. ¿A qué ciudad sería?</span><span class="pie">Lucía Fernández · 10:42</span></div>'
     fijada = tomada + s_("Lucía Fernández fijó la atención manual")
     resuelta = tomada + s_("Lucía Fernández la marcó como resuelta · volvió al asistente")
-    pq = sabado.replace('</span></div>', '</span></div>', 1) + pq_("Caso 1 · Pregunta por envíos, precios, horarios o garantías", "Horario de atención",
-                                                              "Pregunta si atienden los sábados: está cargado.")
+    sab = "Sí, los sábados de 9 a 13. De lunes a viernes, de 9 a 18."
+    pq = (e_("¿Atienden los sábados?", "10:22") + (a_(sab, "10:22", pop=pq_(*POR_SAB)) if pq_ else a_(sab, "10:22"))
+          + e_("Gracias, paso el sábado.", "10:23") + a_("¡Te esperamos, Martina!", "10:23"))
     return {"Responde con el conocimiento": hola + sabado, "Por qué respondió esto": hola + pq, "Sin la información: deriva": envios, "Manda un formulario": heladera,
             "Pregunta con botones": botones, "El texto exacto": texto, "Quiere hablar con alguien": persona, "Una ráfaga: tres acciones": rafaga,
             "El tope del día": tope, "Atención manual: el borrador": borrador, "Cambiar el modo": tomada, "Fijada": fijada, "Resuelta": resuelta,
@@ -278,12 +313,12 @@ def chat_casos():
     necesita = {"Sin la información: deriva", "Quiere hablar con alguien", "Una ráfaga: tres acciones", "El tope del día", "Filtro: necesita una persona"}
     tomada = {"Atención manual: el borrador", "Cambiar el modo", "Fijada"}
     esc = {e: (V.esc_asistente() if e in asistente else A.escr()) for e in E_CS}
-    vp = {"Responde con el conocimiento": "Asistente: Sí, los sábados de 9 a 13…", "Por qué respondió esto": "Asistente: Sí, los sábados de 9 a 13…",
+    vp = {"Responde con el conocimiento": "Asistente: Sí, los sábados de 9 a 13…", "Por qué respondió esto": "Asistente: ¡Te esperamos, Martina!",
           "Sin la información: deriva": f"Asistente: {DERIVA}", "Manda un formulario": "Asistente: Pedido de service", "Pregunta con botones": f"Asistente: {AS.PREG_BOTONES}",
           "El texto exacto": f"Asistente: {AS.TEXTO_PEDIDO}", "Quiere hablar con alguien": f"Asistente: {DERIVA}", "Una ráfaga: tres acciones": f"Asistente: {DERIVA}",
           "El tope del día": "¿Y los domingos?", "Atención manual: el borrador": "¿Hacen service a domicilio?", "Cambiar el modo": "Vos: Hola, Martina. Hacemos envíos…",
           "Fijada": "Vos: Hola, Martina. Hacemos envíos…", "Resuelta": "Vos: Hola, Martina. Hacemos envíos…", "Filtro: necesita una persona": f"Asistente: {DERIVA}"}
-    hora = {"Responde con el conocimiento": "10:22", "Por qué respondió esto": "10:22", "Sin la información: deriva": "10:30", "Manda un formulario": "10:32",
+    hora = {"Responde con el conocimiento": "10:22", "Por qué respondió esto": "10:23", "Sin la información: deriva": "10:30", "Manda un formulario": "10:32",
             "Pregunta con botones": "10:34", "El texto exacto": "10:35", "Quiere hablar con alguien": "10:36", "Una ráfaga: tres acciones": "10:38", "El tope del día": "10:39",
             "Atención manual: el borrador": "10:41", "Cambiar el modo": "10:42", "Fijada": "10:42", "Resuelta": "10:42", "Filtro: necesita una persona": "10:30"}
     capas = {"Cambiar el modo": menu_chat("Martina López")}
@@ -342,26 +377,23 @@ def t_sis(texto):
     return f'<span class="ap-sis">{texto}</span>'
 
 
-def t_por_que(caso, uso, por):
-    return por_que(caso, uso, por, clase="t-por")
-
-
 T_FR = f'<div class="t-fr"><span>{BOT} El asistente atiende esta conversación.</span><button type="button" class="cb cb-pri">Tomar atención manual</button></div>'
 
 
 def tel_casos():
-    est = ["Responde con el conocimiento", "Sin la información: deriva", "Manda un formulario", "Una ráfaga: tres acciones", "Atención manual: el borrador"]
-    m = msgs_casos(t_ent, t_asis, t_sis, t_por_que)
+    est = ["Responde con el conocimiento", "Por qué respondió esto", "Sin la información: deriva", "Manda un formulario", "Una ráfaga: tres acciones", "Atención manual: el borrador"]
+    m = msgs_casos(t_ent, t_asis, t_sis, None)
     m["Atención manual: el borrador"] = m["Atención manual: el borrador"].replace('class="as-sug borr"', 'class="t-sug borr"')
-    esc = {e: (T_FR if e in ("Responde con el conocimiento", "Manda un formulario") else A.t_escr()) for e in est}
+    esc = {e: (T_FR if e in ("Responde con el conocimiento", "Por qué respondió esto", "Manda un formulario") else A.t_escr()) for e in est}
     marca = si("necesita", '<span class="as-np">Necesita una persona</span>')
-    t = tel_chat_martina(est, esc, m, {}, "WhatsApp · Clientes · los casos · teléfono · etapa 23", A.CSS_AB + A.CSS_TRESP_AB + F.CSS_TFILTRO + CSS_TCH, marca)
+    capas = {"Por qué respondió esto": hoja_pq(filas_pq(*POR_SAB))}
+    t = tel_chat_martina(est, esc, m, capas, "WhatsApp · Clientes · los casos · teléfono · etapa 23", F.CSS_TFICHA + A.CSS_AB + A.CSS_TRESP_AB + F.CSS_TFILTRO + CSS_TCH, marca)
     return t.replace("      si: true, no: false,\n", "      si: true, no: false, necesita: ['Sin la información: deriva', 'Una ráfaga: tres acciones'].includes(e),\n", 1)
 
 
 def tel_modo():
     est = ["Asistente", "Cambiar el modo", "Atención manual", "Fijada", "Resuelta"]
-    m = msgs_casos(t_ent, t_asis, t_sis, t_por_que)
+    m = msgs_casos(t_ent, t_asis, t_sis, None)
     msgs = {"Asistente": m["Responde con el conocimiento"], "Cambiar el modo": m["Cambiar el modo"], "Atención manual": m["Cambiar el modo"], "Fijada": m["Fijada"],
             "Resuelta": m["Resuelta"]}
     esc = {e: (T_FR if e in ("Asistente", "Resuelta") else A.t_escr()) for e in est}

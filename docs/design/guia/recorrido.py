@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 157 · 3 de noviembre de 2026"
+VERSION = "versión 158 · 3 de noviembre de 2026"
 
 # La guía de Formularios lleva su capítulo y, aparte, las pantallas de la biblioteca de la plataforma (las «plat-frm-»); la del lienzo,
 # el resto. Cada una es un artefacto aparte, porque una versión de un artefacto admite hasta 511 archivos. El índice del lienzo sigue
@@ -195,6 +195,10 @@ CAPITULOS = [
         ("frm-asistente-editor", "Lo que ofrece el asistente", "/org/formularios/:id", "no", "23", ["FRM-Editor-Asistente", "FRM-Editor-Sugerencias"], [],
          ["FRM-Respuesta-Cadena", "FRM-Catalogos-23", "FRM-Catalogo-Propuesta", "FRM-Dar-De-Baja-23", "FRM-Editor-Baja-23"],
          "«Cuándo lo ofrece el asistente» en el diseño, y la pestaña «Sugerencias», como las reglas, con su historial. Cada respuesta recuerda de dónde vino. Un catálogo que pide el asistente queda «Por aprobar» hasta que una persona lo aprueba o lo descarta."),
+        ("wa-asistentes", "Varios asistentes", "WhatsApp › Asistentes", "no", "24", ["WA-Asistentes"], ["M-WA-Asistentes"], ["WA-Equipo-Asistente", "M-WA-Equipo-Asistente"],
+         "Cada equipo puede tener su asistente, con su perfil, sus casos y sus límites; el conocimiento lo comparten. El principal contesta los chats sin equipo y no se da de baja. El asistente de un equipo se elige al editar el equipo."),
+        ("wa-quien-contesta", "Quién contesta cada chat", "WhatsApp › Chats › Clientes", "no", "24", ["WA-Chats-Casos-24"], ["M-WA-Chats-Casos-24"], [],
+         "Con varios asistentes, un chat nuevo arranca con el menú del bot: la persona elige el equipo y le contesta su asistente. Si alguien lo pasa a otro equipo, contesta el del equipo nuevo, con el mismo historial. La cabecera y «Por qué respondió esto» dicen quién contestó."),
         ("frm-regla-texto", "Armar una regla desde un texto", "/org/formularios/:id/reglas", "no", "23", ["FRM-Editor-Reglas-23"], ["M-FRM-Reglas-23"], [],
          "La IA convierte lo escrito en una regla normal, que se revisa y se guarda; después corre sin IA. Con el tope de IA agotado, el botón queda grisado, con el motivo en su tooltip."),
         ("frm-faltan", "Formularios que faltan", "/org/formularios/faltan", "no", "23", ["FRM-Faltan"], ["M-FRM-Faltan"], [],

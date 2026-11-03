@@ -39,7 +39,7 @@
       "resaltar": ".w-escr button.cb-pri:has-text(\"Tomar atención manual\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "El asistente manda la visita",
-      "texto": "Reconoce la visita en el mensaje de Tomás y le manda el formulario prellenado, con por qué lo mandó. Tomás revisa y confirma.",
+      "texto": "Reconoce la visita en el mensaje de Tomás y le manda el formulario prellenado; «Por qué respondió esto» dice por qué. Tomás revisa y confirma.",
       "avanzar": "Tocá «Tomar atención manual».",
       "ruta": "WhatsApp › Chats › Internos",
       "accion": "Toma la atención manual."

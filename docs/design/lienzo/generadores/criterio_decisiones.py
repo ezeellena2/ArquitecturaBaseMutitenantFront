@@ -582,6 +582,12 @@ DECISIONES = {
         ("El catálogo de una pregunta", "", "El mismo combo de los campos, sin «Ver el catálogo». Lo dado de baja y lo que no se puede usar van apagados, con su motivo en el tooltip (111).", "Dibujada"),
         ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
+    "Varios asistentes · v158 · 03/11": [
+        ("La lista", "", "Como las listas de WhatsApp: el asistente, sus equipos y su estado, con el ⋮ (Editar y Dar de baja o Reactivar). «Dar de baja» del principal queda grisado, con el motivo en su tooltip. En ArquitecturaBase no existe.", "Dibujada"),
+        ("El asistente de un equipo", "", "Un desplegable más en «Editar equipo» de la 11. Sin elegir, contesta el principal; uno de baja no se elige.", "Dibujada"),
+        ("Quién contesta", "", "El nombre del asistente en la cabecera del chat, en la lista, en cada respuesta y en «Por qué respondió esto». Un chat nuevo arranca con el menú del bot cuando hay más de uno (77).", "Dibujada"),
+        ("Por qué respondió esto", "", "Elegido por el usuario: un globo junto al mensaje, que se abre al tocar el enlace y no corre el chat; en el teléfono, una hoja. Nunca aparece abierto solo, tampoco en los chats con Tomás de la 23.", "Dibujada"),
+    ],
     "El asistente, con Casos · v157 · 03/11": [
         ("La pantalla «Asistente»", "", "Elegida por el usuario: como el editor de un formulario, con Perfil, Conocimiento, Casos, Límites y Atención, un solo Guardar y «Probar» siempre al costado, como el teléfono de la vista previa. En ArquitecturaBase no existe.", "Dibujada"),
         ("Los casos", "", "Se abren en el lugar, como una pregunta, con ↑ ↓ ✎ 🗑 a la vista (127). Los formularios van en su bloque fijo y «Cualquier otra cosa», al final, solo con ✎.", "Dibujada"),

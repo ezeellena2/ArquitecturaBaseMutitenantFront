@@ -3827,6 +3827,60 @@
       "w": 390,
       "x": 3290,
       "y": 35674
+    },
+    "WA-Asistentes.dc.html": {
+      "x": 0,
+      "y": 37038,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · los asistentes · etapa 24",
+      "page": "formularios"
+    },
+    "M-WA-Asistentes.dc.html": {
+      "x": 0,
+      "y": 38058,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "title": "Los asistentes · teléfono · etapa 24",
+      "page": "formularios"
+    },
+    "WA-Equipo-Asistente.dc.html": {
+      "x": 1520,
+      "y": 37038,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · el asistente de un equipo · etapa 24",
+      "page": "formularios"
+    },
+    "M-WA-Equipo-Asistente.dc.html": {
+      "x": 470,
+      "y": 38058,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "title": "El asistente de un equipo · teléfono · etapa 24",
+      "page": "formularios"
+    },
+    "WA-Chats-Casos-24.dc.html": {
+      "x": 3040,
+      "y": 37038,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp · Clientes · quién contesta · etapa 24",
+      "page": "formularios"
+    },
+    "M-WA-Chats-Casos-24.dc.html": {
+      "x": 940,
+      "y": 38058,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "title": "Quién contesta · teléfono · etapa 24",
+      "page": "formularios"
     }
   },
   "createdOnFiles": {
@@ -4101,6 +4155,15 @@
       "w": 900,
       "maxW": 8000,
       "text": "Etapa 20 · Cargar una respuesta desde la web",
+      "page": "formularios"
+    },
+    "t-formularios-24": {
+      "kind": "title1",
+      "x": 0,
+      "y": 36838,
+      "w": 900,
+      "maxW": 8000,
+      "text": "Etapa 24 · Varios asistentes",
       "page": "formularios"
     }
   },
@@ -4465,7 +4528,13 @@
     "FRM-Dar-De-Baja-23.dc.html",
     "FRM-Editor-Baja-23.dc.html",
     "Plat-Asistente-Config-23.dc.html",
-    "M-Plat-Asistente-Config-23.dc.html"
+    "M-Plat-Asistente-Config-23.dc.html",
+    "WA-Asistentes.dc.html",
+    "M-WA-Asistentes.dc.html",
+    "WA-Equipo-Asistente.dc.html",
+    "M-WA-Equipo-Asistente.dc.html",
+    "WA-Chats-Casos-24.dc.html",
+    "M-WA-Chats-Casos-24.dc.html"
   ],
   "pages": [
     {

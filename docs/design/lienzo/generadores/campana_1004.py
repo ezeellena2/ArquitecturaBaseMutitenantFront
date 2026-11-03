@@ -187,7 +187,8 @@ TABLEROS_21 = ["FRM-Formularios-21", "FRM-Respuestas-21", "FRM-Respuesta-Aprobac
 # Los de la 23 abren la suya, con las preguntas sin respuesta
 TABLEROS_23 = ["WA-Asistente", "WA-Asistente-Casos", "WA-Asistente-Probar", "WA-Asistente-Limites", "WA-Modo-Atencion", "WA-Chats-Casos", "WA-Preguntas-Sin-Respuesta",
                "WA-Chats-Asistente", "WA-Chats-Sugerencia", "WA-Chats-Audio", "FRM-Editor-Asistente", "FRM-Editor-Sugerencias", "FRM-Editor-Reglas-23", "FRM-Catalogos-23",
-               "FRM-Catalogo-Propuesta", "FRM-Respuesta-Cadena", "FRM-Faltan", "FRM-Dar-De-Baja-23", "FRM-Editor-Baja-23"]
+               "FRM-Catalogo-Propuesta", "FRM-Respuesta-Cadena", "FRM-Faltan", "FRM-Dar-De-Baja-23", "FRM-Editor-Baja-23",
+               "WA-Asistentes", "WA-Equipo-Asistente", "WA-Chats-Casos-24"]  # la 24 no suma avisos: abre la de la 23
 
 
 def la_suya(n, t, pagina):
