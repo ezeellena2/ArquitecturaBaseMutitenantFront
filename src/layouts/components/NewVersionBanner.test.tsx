@@ -35,7 +35,7 @@ describe("NewVersionBanner", () => {
     }
   });
 
-  // Tablero M-Avisos («Versión nueva»): en el teléfono es una banda petróleo clara con «Actualizar» blanco a la derecha.
+  // Tablero M-Avisos («Versión nueva»): en el teléfono es una banda verde clara con «Actualizar» blanco a la derecha.
   it("en el teléfono es una banda con «Actualizar» blanco", () => {
     render(<I18nextProvider i18n={i18n}><AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}><NewVersionBanner onUpdate={vi.fn()} /></AppChromeProvider></I18nextProvider>);
 

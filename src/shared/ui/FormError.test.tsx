@@ -39,10 +39,10 @@ describe("FormError", () => {
   });
 });
 
-// Tableros Ingreso y M-Ingreso («Tu sesión venció», .msj.info): la misma franja en el petróleo de la información. Es algo
+// Tableros Ingreso y M-Ingreso («Tu sesión venció», .msj.info): la misma franja en el verde de la información. Es algo
 // que pasó y no algo para corregir: el lector de pantalla lo anuncia sin interrumpir. La pantalla elige el ícono.
 describe("FormError con tono de información", () => {
-  it("usa el petróleo de la información, se anuncia sin interrumpir y lleva el ícono que le pasan", () => {
+  it("usa el verde de la información, se anuncia sin interrumpir y lleva el ícono que le pasan", () => {
     render(<FormError tone="info" icon={ClockIcon} message="Tu sesión venció. Ingresá de nuevo." />);
 
     const notice = screen.getByRole("status");

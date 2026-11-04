@@ -79,7 +79,7 @@ describe("MultiSelect", () => {
     expect(screen.getByRole("menu")).toHaveClass("w-(--radix-dropdown-menu-trigger-width)", "max-w-none", "min-w-0", "p-1");
     expect(screen.getByRole("menu")).toHaveAttribute("data-side", "bottom");
     expect(screen.getByRole("menu")).toHaveAttribute("data-align", "start");
-    // Abierto, el campo lleva el borde petróleo y el halo (.o-dd > button.ct[aria-expanded="true"]).
+    // Abierto, el campo lleva el borde verde y el halo (.o-dd > button.ct[aria-expanded="true"]).
     const trigger = screen.getByRole("button", { name: "Roles", hidden: true });
     expect(trigger).toHaveAttribute("aria-expanded", "true");
     // En el teléfono (.in2 svg), la flechita de 18 y casi negra.
@@ -87,7 +87,7 @@ describe("MultiSelect", () => {
     expect(trigger).toHaveClass("aria-expanded:border-[var(--marca)]", "aria-expanded:ring-[3px]", "aria-expanded:ring-[var(--foco-halo)]");
     expect(admin).toHaveClass("min-h-9", "gap-2.5", "rounded-[0.375rem]", "px-2.5", "py-1");
     expect(admin).not.toHaveClass("border-t");
-    // La casilla, como la de «Todos»: borde gris y, marcada, petróleo.
+    // La casilla, como la de «Todos»: borde gris y, marcada, verde.
     const box = admin.querySelector("[data-slot='dropdown-menu-check']")!;
     expect(box).toHaveClass("size-4", "rounded-[0.25rem]", "border", "border-input", "group-data-[state=checked]:bg-primary");
     expect(box.compareDocumentPosition(within(admin).getByText("Admin")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

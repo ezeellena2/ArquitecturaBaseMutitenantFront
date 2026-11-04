@@ -6,7 +6,7 @@ type Tone = "danger" | "warning" | "info";
 
 export interface FormErrorProps extends Omit<ComponentProps<"div">, "children"> {
   message: ReactNode;
-  /** La de error (por defecto) es roja; la de atención, ámbar; la de información, petróleo («Tu sesión venció»). */
+  /** La de error (por defecto) es roja; la de atención, ámbar; la de información, verde («Tu sesión venció»). */
   tone?: Tone;
   /** Otro ícono que el del tono: el reloj de «Tu sesión venció» (tableros Ingreso y M-Ingreso). */
   icon?: ComponentType<{ className?: string; strokeWidth?: number }>;

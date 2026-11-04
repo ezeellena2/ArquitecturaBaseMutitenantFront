@@ -9,14 +9,14 @@ export interface StatusDotProps extends Omit<ComponentProps<"span">, "children">
   label: ReactNode;
 }
 
-// Tablero «Criterio · Tablas»: punto de color y la palabra, sin fondo: verde activo, petróleo pendiente, ámbar
+// Tablero «Criterio · Tablas»: punto de color y la palabra, sin fondo: verde activo, celeste pendiente, ámbar
 // atención, rojo error y gris apagado.
 const tones: Record<StatusTone, string> = {
   success: "bg-[var(--punto-ok)]",
   warning: "bg-[var(--punto-alerta)]",
   danger: "bg-[var(--peligro)]",
   neutral: "bg-[var(--punto-apagado)]",
-  pending: "bg-[var(--marca)]",
+  pending: "bg-[var(--punto-pendiente)]",
 };
 
 export function StatusDot({ tone, label, className, ...props }: StatusDotProps) {

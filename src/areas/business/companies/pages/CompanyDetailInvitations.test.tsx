@@ -96,14 +96,14 @@ describe("CompanyDetailPage: las invitaciones de la empresa (6e)", () => {
     expect(await screen.findByText("Sofía Herrera")).toBeVisible();
     expect(states.at(-1)).toBeNull();
   });
-  // Tablero Empresa (v108): la invitación pendiente en petróleo y la vencida en ámbar, con la fecha debajo de la palabra.
+  // Tablero Empresa (v108): la invitación pendiente en celeste y la vencida en ámbar, con la fecha debajo de la palabra.
   // El estado del back sigue siendo «Invitado» (B8): «vencida» sale de comparar la fecha con la hora actual (decisión 98).
   it.each([[companyAdmin], [owner]])("%s: Miembros muestra «Invitación pendiente» o «Invitación vencida» y, debajo, hasta cuándo vale", async (as) => {
     companyApi([valentina, sofia, martin]);
     const { container } = renderRouteWithProviders("/org/empresas/company-1", { as });
 
     const pending = (await screen.findByText("Sofía Herrera")).closest("tr")!;
-    expect(within(pending).getByText("Invitación pendiente").parentElement!.querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--marca)]");
+    expect(within(pending).getByText("Invitación pendiente").parentElement!.querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--punto-pendiente)]");
     expect(pending).toHaveTextContent("Vence 02/10/2026");
     const expired = screen.getByText("Martín Paz").closest("tr")!;
     expect(within(expired).getByText("Invitación vencida").parentElement!.querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--punto-alerta)]");

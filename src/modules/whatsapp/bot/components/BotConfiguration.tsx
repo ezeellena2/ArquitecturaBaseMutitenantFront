@@ -26,7 +26,7 @@ type Open =
   | { kind: "option"; index: number | null; trigger?: HTMLElement | null }
   | { kind: "welcome" | "outOfHours" | "employees"; trigger?: HTMLElement | null };
 
-/// El número de la opción (WA-Respuestas, .w-it .num, y M-WA-Respuestas, .ap-it .num): gris en la compu y petróleo en el
+/// El número de la opción (WA-Respuestas, .w-it .num, y M-WA-Respuestas, .ap-it .num): gris en la compu y verde en el
 /// teléfono.
 function OptionNumber({ value }: { value: number }) {
   return <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--s3)] text-[0.78125rem] font-semibold text-[var(--t2)] tabular-nums max-md:bg-[var(--marca-t)] max-md:text-[0.8125rem] max-md:font-bold max-md:text-[var(--marca-tx)]">{value}</span>;

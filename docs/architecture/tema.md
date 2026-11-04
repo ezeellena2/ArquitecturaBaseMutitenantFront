@@ -3,48 +3,48 @@
 La fuente de cada pantalla es el [lienzo vigente "Sistema visual · Multitenant"](../design/lienzo/README.md): mandan los ocho tableros «Criterio» y, para cada pantalla, su tablero validado, sobre cualquier descripción textual. Estos tokens van en `src/index.css` como variables CSS, y los componentes los usan siempre por nombre, nunca con el valor. Reemplaza los colores, la marca y el menú lateral de `../ArquitecturaBaseFront/docs/design/visual-baseline.md`. La densidad compacta, la banda de título, los listados y las migas siguen como dice la sección "UI y pantallas" de [`frontend.md`](frontend.md).
 
 ## Colores
-Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena** (menú lateral y barra superior) un tono más marcado que el centro, para que se despegue.
+Tonos cálidos para el contenido, verde pasto como marca y un **marco arena** en tono paja (menú lateral y barra superior), un tono más marcado que el centro para que se despegue. Es la paleta «Pradera» (decisión del usuario del 2026-11-04, elegida sobre la app real), que reemplaza al verde petróleo; por eso «pendiente» tiene su propio celeste, que no se confunde con el verde de la marca ni con el de «activo».
 
 | Token | Valor | Uso |
 |---|---|---|
-| `--marca` | `oklch(0.5 0.1 195)` | botón principal, enlaces fuertes, activo |
-| `--marca-2` | `oklch(0.58 0.11 170)` | segundo color del degradado del logo y del avatar |
-| `--marca-sombra` | `oklch(0.5 0.1 195 / 0.3)` | sombra corta de la marca |
-| `--marca-h` | `oklch(0.45 0.1 195)` | hover del botón principal |
-| `--auth-panel-start` / `--auth-panel-mid` / `--auth-panel-end` | `oklch(0.48 0.099 195)` / `oklch(0.36 0.087 195)` / `oklch(0.26 0.062 195)` | degradado del panel de Ingreso y Registro, copiado del lienzo |
+| `--marca` | `oklch(0.48 0.115 140)` | botón principal, enlaces fuertes, activo |
+| `--marca-2` | `oklch(0.66 0.15 128)` | segundo color del degradado del logo y del avatar |
+| `--marca-sombra` | `oklch(0.48 0.115 140 / 0.3)` | sombra corta de la marca |
+| `--marca-h` | `oklch(0.43 0.115 140)` | hover del botón principal |
+| `--auth-panel-start` / `--auth-panel-mid` / `--auth-panel-end` | `oklch(0.47 0.11 140)` / `oklch(0.35 0.09 145)` / `oklch(0.25 0.06 150)` | degradado del panel de Ingreso y Registro, copiado del lienzo |
 | `--auth-panel-grid` | `oklch(1 0 0 / 0.06)` | cuadrícula tenue del mismo panel |
-| `--marca-t` | `oklch(0.955 0.025 185)` | fondo tenue: ícono de la banda, cartel de información, sugerencia del teléfono |
-| `--sugerencia-tx` | `oklch(0.3 0.05 195)` | texto de la tarjeta de sugerencia del teléfono (M-Inicio-Personal) |
-| `--marca-tx` | `oklch(0.43 0.09 195)` | texto sobre `--marca-t` y el ítem activo del menú |
-| `--fondo` | `oklch(0.985 0.004 80)` | fondo de la pantalla |
-| `--cab` | `oklch(0.945 0.018 76)` | encabezados arena de tablas, cajas y diálogos |
-| `--s2` / `--s3` | `oklch(0.97 0.007 80)` / `oklch(0.945 0.009 80)` | superficies tenues (buscador, controles segmentados) |
-| `--borde` / `--borde2` | `oklch(0.915 0.01 80)` / `oklch(0.84 0.014 80)` | bordes normal y fuerte |
-| `--borde-cab` | `oklch(0.89 0.02 76)` | línea de abajo del encabezado arena de un diálogo o de una caja («Criterio · Diálogos», «Criterio · Formularios») |
+| `--marca-t` | `oklch(0.955 0.035 130)` | fondo tenue: ícono de la banda, cartel de información, sugerencia del teléfono |
+| `--sugerencia-tx` | `oklch(0.3 0.06 140)` | texto de la tarjeta de sugerencia del teléfono (M-Inicio-Personal) |
+| `--marca-tx` | `oklch(0.41 0.1 140)` | texto sobre `--marca-t` y el ítem activo del menú |
+| `--fondo` | `oklch(0.985 0.005 95)` | fondo de la pantalla |
+| `--cab` | `oklch(0.945 0.027 95)` | encabezados arena de tablas, cajas y diálogos |
+| `--s2` / `--s3` | `oklch(0.97 0.009 95)` / `oklch(0.945 0.011 95)` | superficies tenues (buscador, controles segmentados) |
+| `--borde` / `--borde2` | `oklch(0.915 0.013 95)` / `oklch(0.84 0.018 95)` | bordes normal y fuerte |
+| `--borde-cab` | `oklch(0.89 0.031 95)` | línea de abajo del encabezado arena de un diálogo o de una caja («Criterio · Diálogos», «Criterio · Formularios») |
 | `--borde-bandera` | `oklch(0.24 0.014 78 / 0.12)` | borde suave de una bandera (selector de país) |
 | `--t1` / `--t2` / `--t3` | `oklch(0.24 0.012 60)` / `oklch(0.47 0.012 60)` / `oklch(0.62 0.01 60)` | texto principal, secundario y tenue |
 | `--velo` | `oklch(0.2 0.014 78 / 0.42)` | velo detrás de diálogos y hojas móviles, igual al lienzo |
-| `--lado` | `oklch(0.925 0.02 75)` | **marco arena:** menú lateral y barra superior |
-| `--lado-borde` | `oklch(0.87 0.022 75)` | bordes del marco |
-| `--lado-hover` | `oklch(0.895 0.022 75)` | hover en el marco |
-| `--lado-t2` | `oklch(0.42 0.018 60)` | texto de las opciones del menú lateral y del panel que no están activas |
-| `--lado-guia` | `oklch(0.82 0.03 75)` | línea a la izquierda de las opciones de un grupo abierto del panel («Gestión de usuarios») |
+| `--lado` | `oklch(0.922 0.036 95)` | **marco arena:** menú lateral y barra superior |
+| `--lado-borde` | `oklch(0.865 0.04 95)` | bordes del marco |
+| `--lado-hover` | `oklch(0.892 0.04 95)` | hover en el marco |
+| `--lado-t2` | `oklch(0.42 0.02 80)` | texto de las opciones del menú lateral y del panel que no están activas |
+| `--lado-guia` | `oklch(0.815 0.052 95)` | línea a la izquierda de las opciones de un grupo abierto del panel («Gestión de usuarios») |
 | `--lado-activo` | `#fff` | ítem activo del menú (pastilla blanca, con `--marca-tx`) |
-| `--panel` | `oklch(0.905 0.022 75)` | segundo panel de Administración, un tono más oscuro que el marco |
-| `--fila-alterna` | `oklch(0.968 0.012 78)` | filas alternadas de las tablas |
-| `--fila-hover` | `oklch(0.95 0.025 185)` | fila al pasar el mouse |
+| `--panel` | `oklch(0.902 0.04 95)` | segundo panel de Administración, un tono más oscuro que el marco |
+| `--fila-alterna` | `oklch(0.968 0.015 95)` | filas alternadas de las tablas |
+| `--fila-hover` | `oklch(0.955 0.03 130)` | fila al pasar el mouse |
 | `--ok` / `--ok-t` | `oklch(0.44 0.12 155)` / `oklch(0.95 0.05 155)` | estado correcto: texto y fondo tenue |
 | `--alerta` / `--alerta-t` | `oklch(0.5 0.12 70)` / `oklch(0.96 0.06 85)` | alerta: texto y fondo tenue |
 | `--alerta-tx` | `oklch(0.4 0.1 70)` | texto de la banda ámbar del teléfono («Otra persona cambió esto») |
 | `--peligro` / `--peligro-t` | `oklch(0.568 0.2 25)` / `oklch(0.97 0.02 25)` | peligro (errores, acciones destructivas): texto y fondo tenue |
 | `--peligro-banda` | `oklch(0.96 0.03 25)` | fondo de la banda roja del teléfono, debajo de la barra («Sin conexión» y el error de guardado de una ficha) |
 | `--peligro-tx` / `--peligro-borde` | `oklch(0.45 0.17 25)` / `oklch(0.57 0.2 25 / 0.4)` | texto rojo de los avisos sobre fondo tenue (la franja de error, el cartel de problema, la banda «Sin conexión» del teléfono y el motivo del aviso importante) y borde del botón de peligro |
-| `--punto-ok` / `--punto-alerta` / `--punto-apagado` | `oklch(0.6 0.13 155)` / `oklch(0.72 0.15 70)` / `oklch(0.75 0.01 78)` | punto de estado: activo, atención y apagado |
+| `--punto-ok` / `--punto-alerta` / `--punto-apagado` / `--punto-pendiente` | `oklch(0.6 0.13 155)` / `oklch(0.72 0.15 70)` / `oklch(0.75 0.01 78)` / `oklch(0.62 0.12 240)` | punto de estado: activo, atención, apagado y pendiente |
 | `--casilla-fija` | `oklch(0.78 0.006 78)` | casilla marcada y fija de un rol de sistema en el teléfono (M-Rol, v108) |
-| `--franja` / `--franja-ok` / `--franja-mal` / `--franja-accion` | `oklch(0.27 0.012 60)` / `oklch(0.78 0.14 155)` / `oklch(0.75 0.15 25)` / `oklch(0.82 0.08 195)` | franja oscura de los avisos pasajeros del teléfono: fondo, ícono de lo que salió bien, ícono de lo que falló y acción («Copiar código») |
+| `--franja` / `--franja-ok` / `--franja-mal` / `--franja-accion` | `oklch(0.27 0.012 60)` / `oklch(0.78 0.14 155)` / `oklch(0.75 0.15 25)` / `oklch(0.84 0.12 130)` | franja oscura de los avisos pasajeros del teléfono: fondo, ícono de lo que salió bien, ícono de lo que falló y acción («Copiar código») |
 | `--aviso-ok` | `oklch(0.55 0.13 155)` | ícono de lo que salió bien en el aviso pasajero de la compu (tarjeta blanca, abajo a la derecha) |
 | `--foco` | `var(--marca)` | anillo de foco |
-| `--foco-halo` | `oklch(0.51 0.099 195 / 0.15)` | halo de 3 px alrededor del foco |
+| `--foco-halo` | `oklch(0.48 0.115 140 / 0.15)` | halo de 3 px alrededor del foco |
 
 Los nombres de esta tabla son los **únicos** que usan los componentes. Los `--color-*` de ArquitecturaBaseFront no se heredan. Las variables de shadcn (`--primary`, `--ring`, `--destructive`, `--border`, `--input`, `--background`…) existen en `index.css` solo como **alias** de estos tokens: `--primary: var(--marca)`, `--ring: var(--foco)`, `--destructive: var(--peligro)`, `--border: var(--borde)`, `--input: var(--t3)`, `--background: var(--fondo)`. El borde de control alcanza al menos 3:1 sobre `--fondo` y `--peligro` sobre `--peligro-t` alcanza al menos 4,5:1.
 
@@ -56,7 +56,7 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 | `warning` | `--punto-alerta` (vencida, baja pedida, sin verificar) |
 | `danger` | `--peligro` (despublicada por la plataforma) |
 | `neutral` | `--punto-apagado` (deshabilitado, borrador) |
-| `pending` | `--marca` (invitación pendiente) |
+| `pending` | `--punto-pendiente` (invitación pendiente, difusión programada) |
 
 ## Forma
 - **Escala de escritorio al 75 %** (decisión del usuario del 2026-11-02, como en ArquitecturaBase). Las medidas de este documento, de las fichas y de los tableros son nominales, sobre una raíz de 16 px. En la compu (≥ 1024 px y puntero fino) `src/index.css` pone la raíz en 75 % y la app entera se ve como con el zoom del navegador en 75 %: 13 px se leen 9,75 y un botón de 36 mide 27. Teléfono y tablet quedan en 16 px, con sus áreas táctiles de 44. Por eso el código mide en `rem` o en la escala de Tailwind: lo que el tablero dibuja de 220 se escribe `w-55`, y 13 de letra, `text-[0.8125rem]`. En px quedan las líneas de hasta 2, los anillos (`ring-[3px]`, `shadow-[0_0_0_…]`) y los cortes. La escala se cambia solo en esa regla de `index.css`.
@@ -66,7 +66,7 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 - **Tablas:** encabezado sobre `--cab`, filas alternadas (`--fila-alterna` desde la primera) y encabezados que bajan de línea en lugar de pisarse. **Entre columnas va una línea fina** del tono de la que separa las filas, en el encabezado y en el cuerpo. Es una sombra interior de la celda y no un borde, así una columna fija se la lleva al desplazar. La última fila conserva su línea, salvo que la tabla toque el borde de su caja (137).
 - **Marca:** un cuadrado con degradado de `--marca` a `--marca-2`, sombra `0 2px 6px -1px var(--marca-sombra)` y un cuadrado blanco abierto del lado derecho, rotado −45° como en el lienzo. Lleva el nombre del producto al lado. Lo mismo en el menú lateral y en las pantallas públicas.
 - Los rótulos de grupo del menú van sin mayúsculas ("Administración", no "ADMINISTRACIÓN").
-- **Teléfono:** el «+» flotante lleva `--sombra-fab` (`0 6px 16px oklch(0.3 0.06 195 / 0.3), 0 2px 4px oklch(0.3 0.06 195 / 0.2)`); la hoja que sube desde abajo, `--sombra-hoja` (`0 -8px 24px oklch(0.2 0.014 78 / 0.12)`), y la franja de los avisos, `--sombra-franja` (`0 8px 24px oklch(0.2 0.01 60 / 0.3)`). Los grupos son blancos sobre `--s2`, con radio de 14 px y un borde de 1 px en `--borde`.
+- **Teléfono:** el «+» flotante lleva `--sombra-fab` (`0 6px 16px oklch(0.3 0.07 140 / 0.3), 0 2px 4px oklch(0.3 0.07 140 / 0.2)`); la hoja que sube desde abajo, `--sombra-hoja` (`0 -8px 24px oklch(0.2 0.014 78 / 0.12)`), y la franja de los avisos, `--sombra-franja` (`0 8px 24px oklch(0.2 0.01 60 / 0.3)`). Los grupos son blancos sobre `--s2`, con radio de 14 px y un borde de 1 px en `--borde`.
 - **Página pública** (tableros Pagina-Publica y M-Pagina-Publica, `shared/ui/PublicPageCard`): la tarjeta blanca de 560 como máximo, con radio de 20 (18 en el teléfono) y `--sombra-tarjeta` (`--sombra-tarjeta-movil` en el teléfono), sobre `--fondo` con el brillo `--fondo-brillo` arriba a la derecha.
 - **Tarjetas del directorio** (Landing, Landing-Movil, Directorio y M-Directorio, lienzo v112, `.lp-emp a:hover`): `--sombra-directorio` (`0 6px 18px oklch(0.24 0.014 78 / 0.08)`), junto con el borde `--borde2` al pasar sobre una empresa. Su logo o iniciales mide 44 y su radio es 12; la tarjeta tiene radio de 16.
 - **Diálogos y menús de la compu** («Criterio · Diálogos», `.cd`; los menús y listas que se abren, `.menu` y `.o-lst`): el diálogo lleva `--sombra-dialogo` (`0 24px 48px oklch(0.2 0.014 78 / 0.28)`) y el menú o la lista, `--sombra-menu` (`0 12px 32px oklch(0.24 0.014 78 / 0.14)`).

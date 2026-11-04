@@ -26,7 +26,7 @@ const contractMemberStateTones = defineStatusTones("CompanyMemberState", {
 });
 
 /// Tablero Empresa (miembros, v108): activo en verde, la baja pedida en ámbar e inactivo en gris; la invitación pendiente,
-/// en petróleo, y la vencida, en ámbar, como en Usuarios. La palabra sale de `enums.CompanyMemberState`.
+/// en celeste, y la vencida, en ámbar, como en Usuarios. La palabra sale de `enums.CompanyMemberState`.
 export const companyMemberStateTones: StatusTones<CompanyMemberDisplayState> = {
   enum: contractMemberStateTones.enum, tones: { ...contractMemberStateTones.tones, Expired: "warning" },
 };

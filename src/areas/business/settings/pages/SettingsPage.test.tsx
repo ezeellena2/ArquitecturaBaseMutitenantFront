@@ -385,7 +385,7 @@ describe("SettingsPage", () => {
   });
 
   // Tablero M-Configuracion-Verificar: en el teléfono, el rótulo del TXT en 13,5 y gris, el registro en una caja gris de
-  // 48 sin borde, con radio 12, y «Copiar» en texto petróleo con su ícono, como las acciones en texto del teléfono.
+  // 48 sin borde, con radio 12, y «Copiar» en texto verde con su ícono, como las acciones en texto del teléfono.
   it("en el teléfono, «Verificar» lleva el rótulo del TXT y «Copiar» del tablero", async () => {
     const restore = asPhone();
     try {

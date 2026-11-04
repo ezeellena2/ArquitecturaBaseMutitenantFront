@@ -27,7 +27,7 @@ function Harness({ options, initial = "" }: { options: SearchSelectOption[]; ini
 }
 
 // Tablero M-Cuenta-Agregar («País»): en el teléfono la lista es una hoja desde abajo con el rótulo del campo como título,
-// la ✕ y filas de 52 con letra de 16; la elegida, en petróleo con el tilde, sin fondo.
+// la ✕ y filas de 52 con letra de 16; la elegida, en verde con el tilde, sin fondo.
 describe("SearchSelect en el teléfono", () => {
   const phone = { phone: true, parent: null, subtitle: null, hideBottomNav: () => {} };
 
@@ -71,7 +71,7 @@ describe("SearchSelect · Criterio · Formularios", () => {
     expect(control).toHaveClass("h-9", "rounded-[0.5rem]", "border-[var(--borde2)]");
     // En el teléfono (.in2 svg), la flechita de 18 y casi negra.
     expect(control.querySelector("svg")).toHaveClass("max-md:size-4.5", "max-md:text-[var(--t1)]");
-    // Tablero Usuario (.o-dd > button.ct[aria-expanded="true"]): abierto, el campo lleva el borde petróleo y el halo.
+    // Tablero Usuario (.o-dd > button.ct[aria-expanded="true"]): abierto, el campo lleva el borde verde y el halo.
     expect(control).toHaveClass("aria-expanded:border-[var(--marca)]", "aria-expanded:ring-[3px]", "aria-expanded:ring-[var(--foco-halo)]");
     control.focus();
     await user.keyboard("{ArrowDown}");
@@ -86,7 +86,7 @@ describe("SearchSelect · Criterio · Formularios", () => {
     expect(within(list).getByRole("option", { name: /^Español \(Argentina\)/ })).toHaveAttribute("aria-selected", "true");
     // Tableros (.op): 10 px entre el ícono, el nombre y lo que va a la derecha.
     expect(within(list).getByRole("option", { name: /^Español \(Argentina\)/ })).toHaveClass("gap-2.5");
-    // Criterio · Formularios: la elegida, además del fondo petróleo claro, va en semi-negrita.
+    // Criterio · Formularios: la elegida, además del fondo verde claro, va en semi-negrita.
     expect(within(list).getByRole("option", { name: /^Español \(Argentina\)/ })).toHaveClass("font-medium");
     expect(within(list).getByRole("option", { name: /^English/ })).not.toHaveClass("font-medium");
     expect(within(list).getByText("09/27/2026 2:35 PM · 1,234.50")).toHaveClass("text-[0.75rem]", "text-[var(--t3)]");

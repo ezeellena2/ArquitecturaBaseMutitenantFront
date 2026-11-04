@@ -1,5 +1,5 @@
 // «Criterio · Menús y desplegables»: el menú lateral y el panel de Administración usan las mismas opciones, de 32 con
-// ícono de 18; la opción en la que estás, en blanco con letra petróleo, y las demás, en el gris del marco.
+// ícono de 18; la opción en la que estás, en blanco con letra verde, y las demás, en el gris del marco.
 const rowBase = "flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem]";
 
 export const menuRowClass = (active: boolean) => `${rowBase} ${active

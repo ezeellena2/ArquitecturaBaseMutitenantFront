@@ -12,7 +12,7 @@ import { Avatar } from "@/shared/ui/Avatar";
 import { ChevronDownIcon, LogOutIcon, UserIcon } from "@/shared/ui/icons";
 
 // «Criterio · Menús» y tableros Inicio-Personal y Cuenta (.w-mn): filas de 44 con el ícono del perfil de 28, el nombre
-// en 13 y el rol o el estado en gris de 12,5; el perfil activo, en petróleo sobre petróleo claro y con tilde.
+// en 13 y el rol o el estado en gris de 12,5; el perfil activo, en verde sobre verde claro y con tilde.
 function ProfileRow({ profile, onClose }: { profile: ProfileEntry; onClose: () => void }) {
   const rowClass = `flex w-full min-h-11 items-center gap-2.5 rounded-[0.375rem] px-2.5 py-0 text-left text-[0.8125rem] ${profile.checked ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : profile.unavailable ? "cursor-pointer text-[var(--t3)]" : "cursor-pointer text-[var(--t1)] hover:bg-[var(--s2)]"}`;
 

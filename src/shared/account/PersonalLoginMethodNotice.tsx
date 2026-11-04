@@ -11,7 +11,7 @@ import { accountMethodsQueryKey } from "./api/loginMethods";
 
 /// Avisa que falta un método de ingreso propio. «Agregar» abre «Agregar correo o teléfono» ahí mismo, como el
 /// tablero Inicio-Personal; Mi cuenta pasa `onAdd` para abrir su propio diálogo. En el teléfono (tablero
-/// M-Inicio-Personal, .ap-sug) es una tarjeta petróleo clara con «Agregar» como botón principal.
+/// M-Inicio-Personal, .ap-sug) es una tarjeta verde clara con «Agregar» como botón principal.
 export function PersonalLoginMethodNotice({ onAdd, className }: { onAdd?: () => void; className?: string }) {
   const { t } = useTranslation("account");
   const { phone } = useAppChrome();

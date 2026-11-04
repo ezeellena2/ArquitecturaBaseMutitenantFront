@@ -19,7 +19,7 @@ function CompanyGroups() {
 
 // Tableros Empresa, Organizacion y Cuenta-Plat: las pestañas abren el contenido de la página, dentro de su margen, con la
 // línea a lo ancho del contenido y 16 hasta lo de abajo; alineadas a la izquierda con 28 de separación y 44 de alto; la
-// elegida en petróleo y subrayada; la cantidad, en gris al lado del nombre, sin etiqueta («Criterio · Marco»).
+// elegida en verde y subrayada; la cantidad, en gris al lado del nombre, sin etiqueta («Criterio · Marco»).
 describe("Tabs · Criterio · Marco", () => {
   it("abren el contenido, debajo de la banda, subrayadas y con la cantidad en gris", async () => {
     render(<CompanyGroups />);

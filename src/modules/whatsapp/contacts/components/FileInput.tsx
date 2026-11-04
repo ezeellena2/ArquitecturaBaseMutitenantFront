@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
 
-/// Tableros WA-Contactos-Importar y su M-* (.w-cmp .ct): el archivo elegido con «Cambiar» en petróleo, con la altura de un
+/// Tableros WA-Contactos-Importar y su M-* (.w-cmp .ct): el archivo elegido con «Cambiar» en verde, con la altura de un
 /// campo. El control es el `input` de archivo, invisible y encima de la caja: lo nombra el rótulo de `FormField`, recibe
 /// el foco con Tab y se abre con un clic en cualquier parte de la caja.
 export function FileInput({ id, accept, fileName, placeholder, action, onFile, className, disabled,

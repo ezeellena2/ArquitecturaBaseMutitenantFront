@@ -13,7 +13,7 @@ export function NewVersionBanner({ onUpdate }: NewVersionBannerProps) {
   const label = t("newVersion");
   const { phone } = useAppChrome();
 
-  // Tablero M-Avisos («Versión nueva»): en el teléfono, una banda petróleo clara con «Actualizar» blanco a la derecha.
+  // Tablero M-Avisos («Versión nueva»): en el teléfono, una banda verde clara con «Actualizar» blanco a la derecha.
   if (phone) return <div role="status" aria-label={label} className="flex items-center justify-start gap-2.5 bg-[var(--marca-t)] py-2 pr-4 pl-4 text-[0.90625rem] leading-[1.4] text-[var(--marca-tx)]">
     <InfoIcon aria-hidden="true" className="size-4.5 shrink-0" />
     <span className="min-w-0 flex-1">{label}</span>

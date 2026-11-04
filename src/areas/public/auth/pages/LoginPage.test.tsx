@@ -268,7 +268,7 @@ describe("LoginPage", () => {
     sessionStorage.setItem("arquitecturabasemt.sessionExpired", "1");
     show("consumer", loginUrl);
     expect(screen.getByRole("status")).toHaveTextContent("Tu sesión venció. Ingresá de nuevo.");
-    // Tableros Ingreso y M-Ingreso («Tu sesión venció», .msj.info): la franja de los mensajes del ingreso, en petróleo,
+    // Tableros Ingreso y M-Ingreso («Tu sesión venció», .msj.info): la franja de los mensajes del ingreso, en verde,
     // con el reloj; no el cartel de los avisos.
     expect(screen.getByRole("status")).toHaveClass("rounded-[0.5rem]", "px-3", "py-2.5", "max-md:text-[0.90625rem]", "bg-[var(--marca-t)]", "text-[var(--marca-tx)]");
     expect(screen.getByRole("status")).not.toHaveClass("min-h-11");

@@ -107,7 +107,7 @@ const phoneBodyClasses = {
   chat: "flex min-h-0 flex-1 flex-col overflow-hidden text-[0.9375rem]",
 } as const;
 
-// Tableros M-* (.ap-txt): una acción en texto petróleo a la derecha de la barra.
+// Tableros M-* (.ap-txt): una acción en texto verde a la derecha de la barra.
 const barTextClass = "inline-flex h-10 shrink-0 items-center px-2.5 text-[0.96875rem] font-semibold text-[var(--marca-tx)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]";
 
 /// «Criterio · Marco» (.bnd .res y .banda-pag .res, > * + *::before): el «·» que separa los datos de la segunda línea de la

@@ -13,6 +13,6 @@ describe("BrandMark", () => {
       "absolute", "inset-2", "rounded-[0.1875rem]", "border-[0.15625rem]",
       "border-[var(--lado-activo)]", "border-r-transparent", "-rotate-45",
     );
-    expect(readFileSync("src/index.css", "utf8")).toContain("--marca-sombra: oklch(0.5 0.1 195 / 0.3)");
+    expect(readFileSync("src/index.css", "utf8")).toContain("--marca-sombra: oklch(0.48 0.115 140 / 0.3)");
   });
 });

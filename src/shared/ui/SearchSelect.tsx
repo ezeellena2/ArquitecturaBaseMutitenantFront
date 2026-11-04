@@ -199,7 +199,7 @@ export function SearchSelect({
           onMouseMove={() => setActive(index)}
           onClick={() => choose(option)}
           className={cn(
-            // M-Cuenta-Agregar: en el teléfono, filas de 52 sin fondo; la elegida, en petróleo con el tilde.
+            // M-Cuenta-Agregar: en el teléfono, filas de 52 sin fondo; la elegida, en verde con el tilde.
             phone ? "flex min-h-13 cursor-pointer items-center gap-3 px-1 text-[1rem]"
               : "flex min-h-9 cursor-pointer items-center gap-2.5 rounded-[0.375rem] px-2.5 py-1.5",
             isSelected ? cn("font-medium text-[var(--marca-tx)]", phone ? undefined : "bg-[var(--marca-t)]") : "text-[var(--t1)]",

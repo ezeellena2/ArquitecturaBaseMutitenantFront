@@ -18,14 +18,14 @@ export interface BottomNavItem {
   active: boolean;
 }
 
-/// El contador de una sección de la barra (`.ap-nav .b` de los tableros): petróleo, blanco, de 18, arriba a la derecha del ícono.
+/// El contador de una sección de la barra (`.ap-nav .b` de los tableros): verde, blanco, de 18, arriba a la derecha del ícono.
 export function BottomNavBadge({ count }: { count: number }) {
   return <span data-slot="bottom-nav-badge" className="absolute -top-0.75 right-1 inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-[0.5625rem] bg-[var(--marca)] px-1.25 text-[0.6875rem] leading-none font-bold text-[var(--lado-activo)]">
     <NumberText value={count} />
   </span>;
 }
 
-// Tableros M-* (.ap-nav): hasta cuatro secciones y «Más». La elegida, en petróleo sobre una píldora clara.
+// Tableros M-* (.ap-nav): hasta cuatro secciones y «Más». La elegida, en verde sobre una píldora clara.
 export function BottomNav({ label, items }: { label: string; items: readonly BottomNavItem[] }) {
   return <nav aria-label={label} data-slot="bottom-nav" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
     className="grid shrink-0 border-t border-[var(--borde)] bg-[var(--lado-activo)] px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">

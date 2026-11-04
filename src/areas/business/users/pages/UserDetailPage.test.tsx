@@ -128,7 +128,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
       const rolesRow = await within(access).findByRole("button", { name: /Roles de la organización/ });
       expect(rolesRow).toHaveTextContent("Ninguno");
 
-      // Tablero M-Usuario (v99, «Elegir el estado»): cada estado en una fila, sin descripción; el elegido va en petróleo
+      // Tablero M-Usuario (v99, «Elegir el estado»): cada estado en una fila, sin descripción; el elegido va en verde
       // y con tilde, sin el círculo de la opción, y elegir otro cierra la hoja.
       await user.click(within(access).getByRole("button", { name: /Estado/ }));
       const stateSheet = await screen.findByRole("dialog", { name: "Estado" });

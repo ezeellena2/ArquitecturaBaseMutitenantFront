@@ -22,7 +22,7 @@ export function userContactText(user: OrganizationUserResponse, format: FormatSt
   return user.email ?? (user.phone && !format.isLoading ? format.formatPhone(user.phone) : "");
 }
 
-/// Tablero Usuarios (ESTADOS_USUARIO): activo en verde, la invitación pendiente en petróleo, la vencida y la baja pedida
+/// Tablero Usuarios (ESTADOS_USUARIO): activo en verde, la invitación pendiente en celeste, la vencida y la baja pedida
 /// en ámbar, deshabilitado en gris. También los usa la ficha de Usuario.
 export const userStateTones = defineStatusTones("OrganizationUserState", {
   Active: "success", PendingDeletion: "warning", Inactive: "neutral", Invited: "pending", Expired: "warning",

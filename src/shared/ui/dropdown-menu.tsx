@@ -101,7 +101,7 @@ function DropdownMenuCheckboxItem({
       checked={checked}
       {...props}
     >
-      {/* La casilla, como la de «Todos» (Checkbox): borde gris y, marcada, petróleo con el tilde blanco. */}
+      {/* La casilla, como la de «Todos» (Checkbox): borde gris y, marcada, verde con el tilde blanco. */}
       <span data-slot="dropdown-menu-check" aria-hidden="true" className="pointer-events-none flex size-4 shrink-0 items-center justify-center rounded-[0.25rem] border border-input bg-[var(--lado-activo)] text-primary-foreground group-data-[state=checked]:border-primary group-data-[state=checked]:bg-primary">
         <DropdownMenuPrimitive.ItemIndicator>
           <CheckIcon className="size-3.5" />
@@ -133,7 +133,7 @@ function DropdownMenuRadioItem({
       data-slot="dropdown-menu-radio-item"
       className={cn(
         // Tablero Usuarios (filtro abierto, .menu-it): 34 de alto, 6/10 de relleno y radio 8, sin líneas entre opciones
-        // (las líneas son del ⋮); se resalta adentro en gris claro y la elegida va en petróleo claro con 500, sin punto.
+        // (las líneas son del ⋮); se resalta adentro en gris claro y la elegida va en verde claro con 500, sin punto.
         "relative flex min-h-8.5 cursor-default items-center gap-2 rounded-[0.5rem] px-2.5 py-1.5 text-[0.8125rem] outline-hidden select-none focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[state=checked]:bg-[var(--marca-t)] data-[state=checked]:font-medium data-[state=checked]:text-[var(--marca-tx)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.75",
         className
       )}

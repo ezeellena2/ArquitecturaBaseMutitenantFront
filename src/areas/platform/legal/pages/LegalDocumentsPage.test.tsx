@@ -31,7 +31,7 @@ describe("Documentos legales", () => {
     expect(screen.getByText("Versión 2 · vigente desde 01/06/2026")).toBeVisible();
     expect(screen.getByText("Versión 1 · vigente desde 12/01/2026")).toBeVisible();
     const future = screen.getByText("Versión 2 desde 01/11/2026"); expect(future).toBeVisible();
-    expect(future.parentElement?.querySelector("[data-slot=status-dot]")).toHaveClass("bg-[var(--marca)]");
+    expect(future.parentElement?.querySelector("[data-slot=status-dot]")).toHaveClass("bg-[var(--punto-pendiente)]");
     expect(screen.queryByText("Versión 1 desde 12/01/2026")).not.toBeInTheDocument();
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument(); expect(screen.queryByRole("table")).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();

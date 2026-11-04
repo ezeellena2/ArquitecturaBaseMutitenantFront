@@ -22,7 +22,7 @@ describe("SelectTrigger · Criterio v65", () => {
     expect(regular).not.toHaveClass("lg:h-11", "text-sm");
     expect(compact).toHaveClass("h-8");
     expect(compact).not.toHaveClass("lg:h-9");
-    // Tablero Usuario (.o-dd > button.ct[aria-expanded="true"]): abierto, el campo lleva el borde petróleo y el halo.
+    // Tablero Usuario (.o-dd > button.ct[aria-expanded="true"]): abierto, el campo lleva el borde verde y el halo.
     expect(regular).toHaveClass("aria-expanded:border-[var(--marca)]", "aria-expanded:ring-[3px]", "aria-expanded:ring-[var(--foco-halo)]");
     // Tableros M-Configuracion, M-Cuenta y M-Usuario-Empresa (.in2 svg): en el teléfono, la flechita de 18 y casi negra.
     expect(regular.querySelector("svg")).toHaveClass("max-md:size-4.5", "max-md:text-[var(--t1)]", "max-md:opacity-100");

@@ -79,7 +79,7 @@ function Mark({ children }: { children: ReactNode }) {
   return <span className="my-1 text-[0.75rem] text-[var(--t3)]">{children}</span>;
 }
 
-/// Un paso del recorrido (.o-nodo): el inicio en gris, la pregunta punteada, un equipo en petróleo claro y el menú marcado.
+/// Un paso del recorrido (.o-nodo): el inicio en gris, la pregunta punteada, un equipo en verde claro y el menú marcado.
 function Node({ title, detail, start, question, team, selected, narrow }: {
   title: string; detail?: string; start?: boolean; question?: boolean; team?: boolean; selected?: boolean; narrow?: boolean;
 }) {

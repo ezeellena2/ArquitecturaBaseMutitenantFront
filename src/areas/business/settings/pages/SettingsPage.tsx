@@ -251,7 +251,7 @@ function SettingsEditor({ settings, loadError, reload }: {
         <DialogBody>
           <DialogDescription>{t("settings:domains.verifyDescription")}</DialogDescription>
           {/* Tablero M-Configuracion-Verificar: en el teléfono, el rótulo como el de los campos (13,5 y gris), el registro en
-              la caja gris de 48 sin borde y «Copiar» en texto petróleo con su ícono, como las acciones en texto (.ap-txt).
+              la caja gris de 48 sin borde y «Copiar» en texto verde con su ícono, como las acciones en texto (.ap-txt).
               Configuracion-Verificar (.rt y .o-codigo): el rótulo en 12,5 y gris medio, el registro en 13 en una caja de
               radio 8 con 10 y 12 de relleno. Los dos, con la altura normal de su letra. */}
           <div className="flex flex-col gap-1.5">

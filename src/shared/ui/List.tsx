@@ -20,7 +20,7 @@ interface ListItemProps extends Omit<ComponentProps<"li">, "title"> {
 // Filas de 44, o de 56 con segunda línea; 16 a la izquierda y 8 a la derecha, para que el ⋮ quede cerca del borde. Lo que
 // nombra la fila va en 500 (tableros Cuenta, Configuración, Usuario y Página pública).
 // En el teléfono (tableros M-Configuracion y M-Cuenta, .ap-it), la fila de la app: 56, sin ícono, la línea fina desde
-// el texto y la acción de la fila en texto petróleo (roja si es de peligro).
+// el texto y la acción de la fila en texto verde (roja si es de peligro).
 export function ListItem({ icon, title, detail, children, className, ...props }: ListItemProps) {
   return <li className={cn("flex items-center gap-3 border-b border-[var(--borde)] py-1.5 pr-2 pl-4 text-[0.8125rem] last:border-b-0",
     "max-md:relative max-md:min-h-14 max-md:border-0 max-md:py-2 max-md:pr-3.5 max-md:after:absolute max-md:after:right-0 max-md:after:bottom-0 max-md:after:left-4 max-md:after:h-px max-md:after:bg-[var(--borde)] max-md:last:after:hidden",

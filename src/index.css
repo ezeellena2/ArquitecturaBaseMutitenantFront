@@ -3,42 +3,42 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --marca: oklch(0.5 0.1 195);
-  --marca-2: oklch(0.58 0.11 170);
-  --marca-sombra: oklch(0.5 0.1 195 / 0.3);
-  --marca-h: oklch(0.45 0.1 195);
-  --auth-panel-start: oklch(0.48 0.099 195);
-  --auth-panel-mid: oklch(0.36 0.087 195);
-  --auth-panel-end: oklch(0.26 0.062 195);
+  --marca: oklch(0.48 0.115 140);
+  --marca-2: oklch(0.66 0.15 128);
+  --marca-sombra: oklch(0.48 0.115 140 / 0.3);
+  --marca-h: oklch(0.43 0.115 140);
+  --auth-panel-start: oklch(0.47 0.11 140);
+  --auth-panel-mid: oklch(0.35 0.09 145);
+  --auth-panel-end: oklch(0.25 0.06 150);
   --auth-panel-grid: oklch(1 0 0 / 0.06);
-  --marca-t: oklch(0.955 0.025 185);
-  --marca-tx: oklch(0.43 0.09 195);
-  --fondo: oklch(0.985 0.004 80);
-  --cab: oklch(0.945 0.018 76);
-  --s2: oklch(0.97 0.007 80);
-  --s3: oklch(0.945 0.009 80);
-  --borde: oklch(0.915 0.01 80);
-  --borde2: oklch(0.84 0.014 80);
+  --marca-t: oklch(0.955 0.035 130);
+  --marca-tx: oklch(0.41 0.1 140);
+  --fondo: oklch(0.985 0.005 95);
+  --cab: oklch(0.945 0.027 95);
+  --s2: oklch(0.97 0.009 95);
+  --s3: oklch(0.945 0.011 95);
+  --borde: oklch(0.915 0.013 95);
+  --borde2: oklch(0.84 0.018 95);
   /* «Criterio · Diálogos» (.cab), «Criterio · Formularios» (.cab2) y «Criterio · Tablas» (.lista .cab): la línea de
      abajo del encabezado arena de un diálogo o de una caja, un tono más cálido que --borde. */
-  --borde-cab: oklch(0.89 0.02 76);
+  --borde-cab: oklch(0.89 0.031 95);
   /* Lienzo v98: el borde gris suave de una bandera, para que la blanca no se pierda sobre el blanco. */
   --borde-bandera: oklch(0.24 0.014 78 / 0.12);
   --t1: oklch(0.24 0.012 60);
   --t2: oklch(0.47 0.012 60);
   --t3: oklch(0.62 0.01 60);
   --velo: oklch(0.2 0.014 78 / 0.42);
-  --lado: oklch(0.925 0.02 75);
-  --lado-borde: oklch(0.87 0.022 75);
-  --lado-hover: oklch(0.895 0.022 75);
+  --lado: oklch(0.922 0.036 95);
+  --lado-borde: oklch(0.865 0.04 95);
+  --lado-hover: oklch(0.892 0.04 95);
   /* Lienzo (tema C2, --lado-t2): el texto de las opciones del menú lateral y del panel, un gris más firme sobre el arena. */
-  --lado-t2: oklch(0.42 0.018 60);
+  --lado-t2: oklch(0.42 0.02 80);
   /* Lienzo v102 (.w-hijos): la línea a la izquierda de las opciones de un grupo abierto del menú. */
-  --lado-guia: oklch(0.82 0.03 75);
+  --lado-guia: oklch(0.815 0.052 95);
   --lado-activo: #fff;
-  --panel: oklch(0.905 0.022 75);
-  --fila-alterna: oklch(0.968 0.012 78);
-  --fila-hover: oklch(0.95 0.025 185);
+  --panel: oklch(0.902 0.04 95);
+  --fila-alterna: oklch(0.968 0.015 95);
+  --fila-hover: oklch(0.955 0.03 130);
   --ok: oklch(0.44 0.12 155);
   --ok-t: oklch(0.95 0.05 155);
   --alerta: oklch(0.5 0.12 70);
@@ -52,14 +52,14 @@
   --peligro-borde: oklch(0.57 0.2 25 / 0.4);
   --brillo: oklch(1 0 0 / 0.15);
   /* El punto de un estado tiene su propio tono, más claro que el texto (tableros Usuarios y M-Usuarios, .w-est). */
-  /* Tablero M-Inicio-Personal (.ap-sug): el texto de la tarjeta de sugerencia, petróleo oscuro sobre --marca-t. */
-  --sugerencia-tx: oklch(0.3 0.05 195);
+  /* Tablero M-Inicio-Personal (.ap-sug): el texto de la tarjeta de sugerencia, verde oscuro sobre --marca-t. */
+  --sugerencia-tx: oklch(0.3 0.06 140);
   /* Tablero M-Avisos: el texto de la banda ámbar, la franja oscura de los avisos pasajeros y sus colores. */
   --alerta-tx: oklch(0.4 0.1 70);
   --franja: oklch(0.27 0.012 60);
   --franja-ok: oklch(0.78 0.14 155);
   --franja-mal: oklch(0.75 0.15 25);
-  --franja-accion: oklch(0.82 0.08 195);
+  --franja-accion: oklch(0.84 0.12 130);
   --sombra-franja: 0 0.5rem 1.5rem oklch(0.2 0.01 60 / 0.3);
   /* Tablero Avisos (.p-aviso) y «Criterio · Avisos» (.toast3, .ic-ok): la tarjeta blanca de los avisos pasajeros de la
      compu, su sombra y el ícono de lo que salió bien. */
@@ -71,14 +71,17 @@
   --punto-ok: oklch(0.6 0.13 155);
   --punto-alerta: oklch(0.72 0.15 70);
   --punto-apagado: oklch(0.75 0.01 78);
+  /* El punto de «pendiente» (una invitación, una difusión programada): celeste, para no confundirse con el verde
+     de la marca ni con el de «activo» (paleta Pradera, 2026-11-04). */
+  --punto-pendiente: oklch(0.62 0.12 240);
   /* La casilla marcada y fija de un rol de sistema en el teléfono (tablero M-Rol, .ap-chk.on.fijo, v108). */
   --casilla-fija: oklch(0.78 0.006 78);
   /* Teléfono (tableros M-*): sombra del «+» flotante y de la hoja que sube desde abajo. */
-  --sombra-fab: 0 0.375rem 1rem oklch(0.3 0.06 195 / 0.3), 0 2px 0.25rem oklch(0.3 0.06 195 / 0.2);
+  --sombra-fab: 0 0.375rem 1rem oklch(0.3 0.07 140 / 0.3), 0 2px 0.25rem oklch(0.3 0.07 140 / 0.2);
   --sombra-hoja: 0 -0.5rem 1.5rem oklch(0.2 0.014 78 / 0.12);
   /* Tableros Pagina-Publica y M-Pagina-Publica: el brillo arriba a la derecha del fondo de la página pública y la sombra
      de su tarjeta (en el teléfono, más corta). */
-  --fondo-brillo: oklch(0.94 0.028 78);
+  --fondo-brillo: oklch(0.94 0.04 95);
   --sombra-tarjeta: 0 1rem 2.5rem oklch(0.24 0.014 78 / 0.08);
   --sombra-tarjeta-movil: 0 0.625rem 1.75rem oklch(0.24 0.014 78 / 0.08);
   /* Landing y Directorio (lienzo v112): sombra al pasar sobre una tarjeta de empresa. */
@@ -88,7 +91,7 @@
   /* «Criterio · Menús» (`.o-seg` de los tableros): la opción elegida de dos vistas, en blanco sobre la vía gris. */
   --sombra-segmento: 0 1px 0.1875rem oklch(0.24 0.014 78 / 0.12);
   --foco: var(--marca);
-  --foco-halo: oklch(0.51 0.099 195 / 0.15);
+  --foco-halo: oklch(0.48 0.115 140 / 0.15);
 
   --radius-card: 1rem;
   --radius-control: 0.5rem;
@@ -217,7 +220,7 @@ body {
   [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 1.125rem; height: 1.125rem; transform: none; border: 0; background: transparent; color: oklch(1 0 0 / 0.7); }
 }
 /* En la compu (tablero Avisos, .p-aviso): sobre la tarjeta blanca solo el ícono lleva color; el error suma el borde rojo
-   suave y la ✕ a la derecha; «Reintentar» y «Copiar código» van en texto petróleo. */
+   suave y la ✕ a la derecha; «Reintentar» y «Copiar código» van en texto verde. */
 @media (min-width: 768px) {
   [data-sonner-toast][data-type="success"] [data-icon] { color: var(--aviso-ok); }
   [data-sonner-toast][data-type="error"] [data-icon] { color: var(--peligro); }

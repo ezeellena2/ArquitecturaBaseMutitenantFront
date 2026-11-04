@@ -26,7 +26,7 @@ describe("List · Criterio · Tablas", () => {
   });
 
   // Tableros M-Configuracion y M-Cuenta (.ap-it): en el teléfono la fila mide 56, sin ícono, con el nombre de 15,5 y
-  // lo que aclara de 13; la acción de la fila es texto petróleo y el ⋮ es redondo de 44.
+  // lo que aclara de 13; la acción de la fila es texto verde y el ⋮ es redondo de 44.
   it("en el teléfono es la fila de la app, con la acción en texto", () => {
     render(<List label="Cómo entrás">
       <ListItem icon={<Mail />} title="011 15-5555-4521" detail="Sin verificar"><Button type="button" variant="outline" size="sm">{"Verificar"}</Button></ListItem>

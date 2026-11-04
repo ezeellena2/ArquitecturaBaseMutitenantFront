@@ -3,8 +3,8 @@ import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 
 /// Una conversación de la bandeja (WA-Chats y M-WA-Chats, .w-conv): el círculo, el nombre con la hora, el último mensaje
-/// con el punto de «Sin leer» y, debajo, el equipo y quién lo atiende. La abierta va sobre petróleo claro; una sin leer,
-/// en negrita con la hora en petróleo. Toda la fila lleva a la conversación. Sirve también para «Mensajes» de la persona.
+/// con el punto de «Sin leer» y, debajo, el equipo y quién lo atiende. La abierta va sobre verde claro; una sin leer,
+/// en negrita con la hora en verde. Toda la fila lleva a la conversación. Sirve también para «Mensajes» de la persona.
 export function ConversationItem({ to, avatar, title, time, preview, assignment, assignmentTone, unread, unreadLabel, selected, phone }: {
   to: string;
   avatar: ReactNode;

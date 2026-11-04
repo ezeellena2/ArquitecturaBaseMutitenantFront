@@ -13,7 +13,7 @@ import type { WhatsAppBroadcastResponse, WhatsAppRecipientResponse } from "../ap
 import { countOf } from "../lib/values";
 import { audienceLabel, broadcastDate, resultsLabel } from "./lib/broadcastText";
 
-/// Tableros WA-Difusiones y su M-* (.w-est): enviada en verde, programada en petróleo y cancelada en gris.
+/// Tableros WA-Difusiones y su M-* (.w-est): enviada en verde, programada en celeste y cancelada en gris.
 export const broadcastStatusTones = defineStatusTones("WhatsAppBroadcastStatus", { Scheduled: "pending", Sending: "pending", Sent: "success", Cancelled: "neutral" });
 
 /// Tablero WA-Difusion-Resultados: leído y respondió en verde, entregado en gris, se dio de baja en ámbar y no llegó en rojo.

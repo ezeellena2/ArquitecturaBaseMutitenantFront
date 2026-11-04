@@ -18,7 +18,7 @@ interface BannerProps {
   children: ReactNode;
 }
 
-// «Criterio · Avisos»: cartel de información (petróleo), de atención (ámbar) y de problema (rojo). El ícono y el texto
+// «Criterio · Avisos»: cartel de información (verde), de atención (ámbar) y de problema (rojo). El ícono y el texto
 // van en el color del aviso; el ícono, con el trazo 2 de los carteles del lienzo.
 const tones: Record<Tone, { icon: ComponentType<{ className?: string; strokeWidth?: number }>; box: string }> = {
   info: { icon: InfoIcon, box: "bg-[var(--marca-t)] text-[var(--marca-tx)]" },

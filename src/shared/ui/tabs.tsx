@@ -7,7 +7,7 @@ import { NumberText } from "./format/NumberText"
 // un solo grupo, no hay barra. `Page` las arma con los grupos de `tabs`, para toda ficha.
 // En la compu abren el contenido de la página, debajo de la banda (tablero Empresa);
 // en el teléfono, en su banda blanca. Alineadas a la izquierda con 28 de separación y 44 de alto; la elegida, en
-// petróleo y subrayada; la cantidad, en gris al lado.
+// verde y subrayada; la cantidad, en gris al lado.
 
 function Tabs({
   className,

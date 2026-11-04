@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 
 // Tablero M-Usuario (v99): en el teléfono el estado y los roles de la organización son filas con › que abren una hoja
 // para elegir. Las filas de la hoja (.ap-op) miden 52, con la letra de 16 y una línea fina entre ellas que no llega a
-// los bordes (20 a cada lado, como el cuerpo de la hoja); la elegida va en petróleo. El estado se aplica y cierra al
+// los bordes (20 a cada lado, como el cuerpo de la hoja); la elegida va en verde. El estado se aplica y cierra al
 // tocarlo; los roles se marcan de a uno y la hoja se cierra con «Listo» o con ✕.
 const rowClass = "flex min-h-13 cursor-pointer items-center gap-3 border-b border-[var(--borde)] text-[1rem] last:border-b-0 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-[var(--foco)]";
 const pickedClass = "font-medium text-[var(--marca-tx)]";

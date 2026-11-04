@@ -50,7 +50,7 @@ describe("FilterBar", () => {
   });
 
   // Tableros de listas (.fb-limpiar: Usuarios, Roles, Empresas, Auditoría y «Criterio · Tablas»): «Limpiar» va en gris de
-  // 13, con 6 y 8 de relleno (la regla que sigue a la de 14), y se oscurece con el mouse, sin el petróleo de un enlace.
+  // 13, con 6 y 8 de relleno (la regla que sigue a la de 14), y se oscurece con el mouse, sin el verde de un enlace.
   // Tableros Usuarios, Roles y Empresas (.fb-bus, .fb-sel): la lupa y la flecha del filtro son las del lienzo.
   it("dibuja la lupa y la flecha del tablero", () => {
     render(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}
@@ -85,7 +85,7 @@ describe("FilterBar", () => {
     await userEvent.keyboard("{Enter}");
     const all = await screen.findByRole("menuitemradio", { name: "Todos" });
     expect(all).toHaveAttribute("aria-checked", "true");
-    // Tablero Usuarios (filtro abierto): la opción elegida va en petróleo claro, sin el punto de radio.
+    // Tablero Usuarios (filtro abierto): la opción elegida va en verde claro, sin el punto de radio.
     expect(all).toHaveClass("data-[state=checked]:bg-[var(--marca-t)]", "data-[state=checked]:text-[var(--marca-tx)]");
     expect(all.querySelector("svg")).toBeNull();
     expect(screen.getByRole("menuitemradio", { name: "Toda la organización" })).toHaveAttribute("aria-checked", "false");
@@ -93,7 +93,7 @@ describe("FilterBar", () => {
 
   // Tablero Usuarios (filtro abierto, lienzo v107): el menú del filtro no lleva líneas entre opciones (esas son del ⋮,
   // «Criterio · Menús»); tiene 4 de relleno y cada opción, de 34 con radio 8, se resalta adentro en gris claro; la elegida
-  // va en petróleo claro con 500 y el conteo, en 12 gris a 16 del texto.
+  // va en verde claro con 500 y el conteo, en 12 gris a 16 del texto.
   it("el menú del filtro va sin líneas entre opciones y con el resaltado del tablero", async () => {
     render(
       <FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}

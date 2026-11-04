@@ -26,7 +26,7 @@ it("avisa que falta método propio y «Agregar» abre el diálogo en el Inicio",
   expect(router.state.location.pathname).toBe("/");
 });
 
-// Tablero M-Inicio-Personal: en el teléfono el aviso es una tarjeta petróleo clara con «Agregar» como botón principal.
+// Tablero M-Inicio-Personal: en el teléfono el aviso es una tarjeta verde clara con «Agregar» como botón principal.
 it("en el teléfono el aviso es una tarjeta con «Agregar» principal", async () => {
   const restore = asPhone();
   try {

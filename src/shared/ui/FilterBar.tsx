@@ -117,7 +117,7 @@ export function FilterBar({
 
   // Tableros Usuarios, Roles, Empresas, Empresa y Auditoría (lienzo v104): el buscador de 36 × 360 sobre gris claro con
   // el borde fino, la lupa de 16 a 12 del borde y el texto a 36, con letra de 13; los filtros en píldoras de 32 sin
-  // negrita; el elegido, en petróleo.
+  // negrita; el elegido, en verde.
   return (
     <Surface
       role="search"
