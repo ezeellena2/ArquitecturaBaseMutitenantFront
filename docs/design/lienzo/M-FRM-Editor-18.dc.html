@@ -1085,6 +1085,26 @@ a.w-conv { text-decoration: none; color: inherit; }
 .t-chk i.no { background: #fff; border: 1.5px solid var(--borde2); box-sizing: border-box; }
 .ap-hoja { max-height: calc(100% - 56px); }
 .ap-hoja .hb { overflow-y: auto; min-height: 0; }
+.t-zona { flex-shrink: 0; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; background: #fff; }
+.t-zona .tzc { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; background: oklch(0.945 0.018 76); font-size: 14px; font-weight: 600; color: var(--t2); }
+.t-zona .tzc .tit { display: inline-flex; align-items: center; gap: 6px; }
+.t-zona .tzc .der { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.t-zona .tzc .res { font-weight: 400; font-size: 13.5px; text-align: right; }
+.t-zona .tzc .der a { font-weight: 600; color: var(--marca-tx); text-decoration: none; margin-right: auto; }
+.t-zona .q-pl { width: 44px; height: 44px; flex: none; padding: 0; border: 1px solid var(--borde2); border-radius: 10px; background: #fff; color: var(--t1); display: inline-flex; align-items: center; justify-content: center; }
+.t-zona .tzb { display: flex; flex-direction: column; gap: 12px; padding: 12px; }
+.t-zona .tzc .ap-i { color: var(--t3); }
+.t-cmp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; font-size: 14px; }
+.t-cmp > span { min-width: 0; overflow-wrap: break-word; }
+.t-cmp > .h { padding: 8px 12px; background: oklch(0.945 0.018 76); font-weight: 600; font-size: 12.5px; color: var(--t2); }
+.t-cmp > .h + .h, .t-cmp > .v2 { box-shadow: inset 1px 0 0 oklch(0.915 0.01 80 / 0.8); }
+.t-cmp > .q { grid-column: 1 / -1; padding: 10px 12px 2px; border-top: 1px solid var(--borde); font-weight: 600; }
+.t-cmp > .d { grid-column: 1 / -1; padding: 0 12px 2px; color: var(--t2); font-size: 13px; }
+.t-cmp > .v1, .t-cmp > .v2 { padding: 4px 12px 10px; }
+.t-cmp .g { color: var(--t2); }
+.t-cmp small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--t3); }
+.ap-hoja .hp.apilado { flex-direction: column; }
+.ap-hoja .hp.apilado .cb { flex: none; }
 </style>
 <style data-c9="hoja">
 .ap-velo { position: absolute; inset: 0; z-index: 6; background: oklch(0.2 0.014 78 / 0.45); }

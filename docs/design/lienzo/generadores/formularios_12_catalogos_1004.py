@@ -696,7 +696,19 @@ CSS_IMPORTAR = """.w-dlg.imp { width: 760px; }
 .imp-tabs span.on { color: var(--marca-tx); border-bottom-color: var(--marca); }
 .imp-tabs .c { margin-left: 5px; font-size: 12px; color: var(--t3); }
 .imp-tabla { border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: 13px; }
-.imp-tabla .c, .imp-tabla .f { display: grid; gap: 12px; padding: 0 12px; align-items: center; }
+.imp-tabla .c, .imp-tabla .f { display: grid; column-gap: 0; padding: 0; align-items: stretch; }
+.imp-tabla .c > span, .imp-tabla .f > span { display: flex; align-items: center; min-width: 0; padding: 0 12px; }
+.imp-tabla .c > span + span, .imp-tabla .f > span + span { box-shadow: inset 1px 0 0 oklch(0.915 0.01 80 / 0.8); }
+.imp-tabla .c > span + span { box-shadow: inset 1px 0 0 oklch(0.89 0.02 76); }
+.imp-tabla .c > .n, .imp-tabla .f > .n { justify-content: flex-end; font-variant-numeric: tabular-nums; }
+.imp-cmp { display: grid; grid-template-columns: 64px 110px 100px minmax(0, 1fr) minmax(0, 1fr); border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: 13px; }
+.imp-cmp > span { padding: 9px 12px; border-top: 1px solid var(--borde); box-shadow: inset 1px 0 0 oklch(0.915 0.01 80 / 0.8); min-width: 0; overflow-wrap: break-word; }
+.imp-cmp > .h { display: flex; align-items: center; min-height: 34px; box-sizing: border-box; padding: 0 12px; border-top: 0; background: oklch(0.945 0.018 76); font-weight: 600; color: var(--t2); font-size: 12.5px; box-shadow: inset 1px 0 0 oklch(0.89 0.02 76); }
+.imp-cmp > .n { text-align: right; justify-content: flex-end; font-variant-numeric: tabular-nums; }
+.imp-cmp > .h:first-child, .imp-cmp > .p.n { box-shadow: none; }
+.imp-cmp > .g { color: var(--t2); }
+.imp-cmp .nw { white-space: nowrap; }
+.imp-cmp .mono { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; color: var(--t2); }
 .imp-tabla .c { min-height: 34px; background: oklch(0.945 0.018 76); font-weight: 600; color: var(--t2); font-size: 12.5px; }
 .imp-tabla .f { min-height: 38px; border-top: 1px solid var(--borde); }
 .imp-tabla .f:nth-child(odd) { background: oklch(0.975 0.008 78); }
@@ -718,16 +730,38 @@ MOTIVO_APLICANDO = "Esperá a que termine de aplicar."
 GRILLA = [("PRV-1098", "Bulones Mar del Plata", "CUIT 30-71567890-2"), ("PRV-1099", "Cerámicos Neuquén", "CUIT 30-70412345-6"), ("PRV-1100", "Clavos del Oeste", "")]
 
 
-def tabla_imp(cols, plantilla, filas):
-    c = f'<div class="c" style="grid-template-columns: {plantilla};">' + "".join(f"<span>{x}</span>" for x in cols) + "</div>"
-    return '<div class="imp-tabla">' + c + "".join(f'<div class="f" style="grid-template-columns: {plantilla};">' + "".join(f"<span>{x}</span>" for x in f) + "</div>" for f in filas) + "</div>"
+def tabla_imp(cols, plantilla, filas, der=()):
+    """Una línea entre columnas y los números a la derecha, encabezado incluido (137): `der` son esas columnas."""
+    sp = lambda k, x: f'<span class="n">{x}</span>' if k in der else f"<span>{x}</span>"  # noqa: E731
+    c = f'<div class="c" style="grid-template-columns: {plantilla};">' + "".join(sp(k, x) for k, x in enumerate(cols)) + "</div>"
+    return '<div class="imp-tabla">' + c + "".join(f'<div class="f" style="grid-template-columns: {plantilla};">' + "".join(sp(k, x) for k, x in enumerate(f)) + "</div>" for f in filas) + "</div>"
+
+
+def nw(texto):
+    """Un código con guiones no se parte (137): «CUIT 30-70988123-4» baja de renglón, si hace falta, antes del número."""
+    return re.sub(r"(\d+(?:-\d+)+)", r'<span class="nw">\1</span>', texto)
+
+
+# «Cambios», lado a lado (138, LR2-A): la fila y el código una vez, la columna en gris y cada versión en su columna, solo lo que cambió
+CAMBIOS_LADO = [("3", "PRV-0002", [("Detalle", "CUIT 30-70988123-4", "CUIT 30-70988123-5")]),
+                ("11", "PRV-0010", [("Texto", "Cementos del Plata", "Cementos del Plata S.A."), ("Detalle", "CUIT 30-69001234-8", "CUIT 30-69001234-9")]),
+                ("37", "PRV-0036", [("Texto", "Hierros Sur", "Hierros del Sur")])]
+
+
+def tabla_cambios(grupos=CAMBIOS_LADO):
+    h = '<span class="h n">Fila</span><span class="h">Código</span><span class="h">Columna</span><span class="h">Antes</span><span class="h">Después</span>'
+    for fila, cod, lineas in grupos:
+        span = f' style="grid-row: span {len(lineas)};"' if len(lineas) > 1 else ""
+        for k, (col, antes, despues) in enumerate(lineas):
+            if k == 0:
+                h += f'<span class="p n"{span}>{fila}</span><span class="p"{span}><span class="mono">{cod}</span></span>'
+            h += f'<span class="g">{col}</span><span>{nw(antes)}</span><span>{nw(despues)}</span>'
+    return f'<div class="imp-cmp" role="table" aria-label="Cambios">{h}</div>'
 
 
 ERRORES = [("37", "Código", "Está repetido en la fila 52."), ("88", "Texto", "Tiene más de 30 caracteres.")]
 ALTAS = [('<span class="mono">PRV-1098</span>', "Bulones Mar del Plata", "CUIT 30-71567890-2"), ('<span class="mono">PRV-1099</span>', "Cerámicos Neuquén", "CUIT 30-70412345-6"),
          ('<span class="mono">PRV-1100</span>', "Clavos del Oeste", "")]
-CAMBIOS = [('<span class="mono">PRV-0002</span>', "Detalle", '<span class="tach">CUIT 30-70988123-4</span>', "CUIT 30-70988123-5"),
-           ('<span class="mono">PRV-0010</span>', "Texto", '<span class="tach">Cementos del Plata</span>', "Cementos del Plata S.A.")]
 BAJAS = [('<span class="mono">PRV-0005</span>', "Aluminios Cuyo"), ('<span class="mono">PRV-0331</span>', "Ferretería Lomas"), ('<span class="mono">PRV-0790</span>', "Pinturas Oeste")]
 
 
@@ -769,9 +803,9 @@ def zona_revision(pestana="errores", archivo="proveedores.xlsx", hoja="Hoja 1", 
     """«Revisión», debajo: de dónde salió, qué se leyó y una pestaña por tipo de cambio, con su cantidad."""
     tabs = ('<div class="imp-tabs" role="tablist">' + "".join(f'<span class="{"on" if k == pestana else ""}" role="tab">{n}<span class="c">{c}</span></span>'
                                                          for k, n, c in [("errores", "Errores", len(errores)), ("altas", "Altas", 12), ("cambios", "Cambios", 5), ("bajas", "Bajas", 3)]) + "</div>")
-    tabla = {"errores": lambda: tabla_imp(["Fila", "Columna", "Qué pasa"], "70px 120px minmax(0, 1fr)", errores),
+    tabla = {"errores": lambda: tabla_imp(["Fila", "Columna", "Qué pasa"], "70px 120px minmax(0, 1fr)", errores, der=(0,)),
              "altas": lambda: tabla_imp(["Código", "Texto", "Detalle"], "120px minmax(0, 1fr) minmax(0, 1fr)", ALTAS),
-             "cambios": lambda: tabla_imp(["Código", "Columna", "Antes", "Ahora"], "110px 90px minmax(0, 1fr) minmax(0, 1fr)", CAMBIOS),
+             "cambios": tabla_cambios,
              "bajas": lambda: tabla_imp(["Código", "Texto"], "120px minmax(0, 1fr)", BAJAS)}[pestana]()
     lectura = f'<div class="imp-lin"><span><b>{archivo}</b> · {hoja} · {leidas} filas leídas · {sin_cambio} no cambian</span></div>'
     return f'<div class="imp-cab"><span>Revisión</span></div><div class="imp-z{" aten" if atenuada else ""}">{franja}{lectura}{tabs}{tabla}</div>'

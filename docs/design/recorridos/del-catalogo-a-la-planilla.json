@@ -21,12 +21,12 @@
     {
       "tablero": "FRM-Catalogo-Importar",
       "tweaks": {
-        "estado": "Revisión: altas"
+        "estado": "Revisión: cambios"
       },
       "resaltar": ".w-dlg button.cb-pri",
       "actor": "Lucía · Dueña · web",
       "titulo": "Revisa antes de aplicar",
-      "texto": "La revisión dice qué se agrega, qué cambia y qué se da de baja.",
+      "texto": "La revisión dice qué se agrega, qué cambia y qué se da de baja. «Cambios» se lee lado a lado: la fila y el código una vez, y lo de antes y lo de después cada uno en su columna.",
       "avanzar": "Tocá «Aplicar».",
       "ruta": "/org/formularios/catalogos/:id",
       "accion": "Aplica las opciones."

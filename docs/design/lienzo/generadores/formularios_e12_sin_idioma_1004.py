@@ -66,7 +66,7 @@ CON_TITULOS = False  # 88: los títulos de sección, solo en los tableros de la 
 TITULO_EJ = "Resultado de la visita"
 TITULO_SUELTO = "Cierre de la visita"
 SOLO_14 = ["Agregar un título", "Editar un título", "Sin número conectado", "Una cuenta sin el formulario", "Un título sin preguntas",
-           "Sin confirmar", "Necesita revisión"]
+           "Sin confirmar", "Necesita revisión", "Revisar los cambios"]
 
 
 def de_la_etapa(estados):
@@ -226,6 +226,73 @@ CSS_CA4 = """.q-cat .rt .q-ver { margin-left: auto; font-weight: 600; color: var
 .q-ej { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 8px; font-size: 13.5px; }
 .q-ej small { font-size: 12.5px; color: var(--t3); }
 """
+# 145 (ZP1-A): las zonas de una pregunta de catálogo arrancan plegadas, con lo configurado en una línea de la banda, y se abren solas
+# con un error o un aviso. Abierta, lo que se agrega vuelve a la banda y la (i) va junto al título. La tarjeta elegida, con 2 px (142).
+ABAJO_Z = svg('<path d="m6 9 6 6 6-6"/>', 16, "2")
+ARRIBA_Z = svg('<path d="m6 15 6-6 6 6"/>', 16, "2")
+CSS_CA4 += """.q-zona .zc .tit { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.q-zona .zc .der2 { margin-left: auto; }
+.q-zona .zc .res { font-weight: 400; color: var(--t2); text-align: right; }
+.q-zona .zc .q-pl { width: 30px; height: 30px; flex: none; padding: 0; border: 1px solid var(--borde2); border-radius: 8px; background: #fff; color: var(--t1); display: inline-flex; align-items: center; justify-content: center; }
+.q-rd.on { box-shadow: inset 0 0 0 1px var(--marca); }
+"""
+RESUMEN_WA = {"elegido": "Como en el catálogo · Texto · Detalle", "abierto": "Como en el catálogo · Texto · Detalle", "varias": "Como en el catálogo · Texto · Detalle",
+              "mas20": "Como en el catálogo · Texto · CUIT"}
+
+
+def zona_cab(titulo, ayuda="", derecha="", abierta=False):
+    accion = "Contraer" if abierta else "Expandir"
+    boton = f'<button type="button" class="q-pl" aria-label="{accion} «{titulo}»" aria-expanded="{str(abierta).lower()}">{ARRIBA_Z if abierta else ABAJO_Z}</button>'
+    return f'<div class="zc"><span class="tit">{titulo}{F.info(ayuda) if ayuda else ""}</span><span class="der2">{derecha}{boton}</span></div>'
+
+
+def zona_plegada(titulo, resumen, ayuda="", clase=""):
+    return f'<div class="w-cmp ancho q-zona pleg {clase}">' + zona_cab(titulo, ayuda, f'<span class="res">{resumen}</span>') + "</div>"
+
+
+# En el teléfono, la banda plegada lleva el título arriba y lo configurado con la flecha debajo; la flecha mide 44 × 44.
+# Una comparación pone el dato arriba y las dos versiones debajo, en dos columnas (138).
+CSS_TZONA = """.t-zona { flex-shrink: 0; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; background: #fff; }
+.t-zona .tzc { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; background: oklch(0.945 0.018 76); font-size: 14px; font-weight: 600; color: var(--t2); }
+.t-zona .tzc .tit { display: inline-flex; align-items: center; gap: 6px; }
+.t-zona .tzc .der { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.t-zona .tzc .res { font-weight: 400; font-size: 13.5px; text-align: right; }
+.t-zona .tzc .der a { font-weight: 600; color: var(--marca-tx); text-decoration: none; margin-right: auto; }
+.t-zona .q-pl { width: 44px; height: 44px; flex: none; padding: 0; border: 1px solid var(--borde2); border-radius: 10px; background: #fff; color: var(--t1); display: inline-flex; align-items: center; justify-content: center; }
+.t-zona .tzb { display: flex; flex-direction: column; gap: 12px; padding: 12px; }
+.t-zona .tzc .ap-i { color: var(--t3); }
+.t-cmp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; font-size: 14px; }
+.t-cmp > span { min-width: 0; overflow-wrap: break-word; }
+.t-cmp > .h { padding: 8px 12px; background: oklch(0.945 0.018 76); font-weight: 600; font-size: 12.5px; color: var(--t2); }
+.t-cmp > .h + .h, .t-cmp > .v2 { box-shadow: inset 1px 0 0 oklch(0.915 0.01 80 / 0.8); }
+.t-cmp > .q { grid-column: 1 / -1; padding: 10px 12px 2px; border-top: 1px solid var(--borde); font-weight: 600; }
+.t-cmp > .d { grid-column: 1 / -1; padding: 0 12px 2px; color: var(--t2); font-size: 13px; }
+.t-cmp > .v1, .t-cmp > .v2 { padding: 4px 12px 10px; }
+.t-cmp .g { color: var(--t2); }
+.t-cmp small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--t3); }
+.ap-hoja .hp.apilado { flex-direction: column; }
+.ap-hoja .hp.apilado .cb { flex: none; }
+"""
+
+
+def t_zona_cab(titulo, ayuda="", derecha="", abierta=False):
+    accion = "Contraer" if abierta else "Expandir"
+    boton = f'<button type="button" class="q-pl" aria-label="{accion} «{titulo}»" aria-expanded="{str(abierta).lower()}">{ARRIBA_Z if abierta else ABAJO_Z}</button>'
+    return f'<div class="tzc"><span class="tit">{titulo}{A.t_info(ayuda) if ayuda else ""}</span><span class="der">{derecha}{boton}</span></div>'
+
+
+def t_zona_plegada(titulo, resumen, ayuda=""):
+    return '<div class="t-zona pleg">' + t_zona_cab(titulo, ayuda, f'<span class="res">{resumen}</span>') + "</div>"
+
+
+def t_comparacion(filas=None):
+    h = '<span class="h">Guardado actualmente</span><span class="h">Mis cambios</span>'
+    for q, dato, antes, ahora, nota in filas or CAMBIOS_EDITOR:
+        h += f'<span class="q">{q}</span>' + (f'<span class="d">{dato}</span>' if dato else "")
+        h += f'<span class="v1">{antes}</span><span class="v2">{ahora}' + (f"<small>{nota}</small>" if nota else "") + "</span>"
+    return f'<div class="t-cmp" role="table" aria-label="Qué cambió">{h}</div>'
+
+
 CA4 = {  # modo: (pregunta, catálogo, varias (mín, máx) o None, presentación propia, error en el catálogo)
     "elegido": ("Motivo", "Motivos de visita", None, False, ""),
     "abierto": ("Motivo", "Motivos de visita", None, False, ""),
@@ -262,10 +329,12 @@ def pregunta_catalogo(modo="elegido"):
     if propia:
         chip = lambda v: f'<span class="ab-chip">{v}<span aria-hidden="true">×</span></span>'
         parte = lambda rot, vs: (f'<div class="w-cmp"><span class="rt">{rot}</span><div class="q-chips">' + "".join(chip(v) for v in vs) + f'<div class="ct sel">Agregar campo{CHEV}</div></div></div>')
-        pres = ('<div class="w-cmp ancho q-zona"><div class="zc"><span>En WhatsApp</span></div><div class="zb" role="radiogroup" aria-label="Qué viaja a WhatsApp">'
+        pres = ('<div class="w-cmp ancho q-zona wa">' + zona_cab("En WhatsApp", abierta=True) + '<div class="zb" role="radiogroup" aria-label="Qué viaja a WhatsApp">'
                 '<div class="q-rd" role="radio"><i></i><span>Como en el catálogo<small>Nombre · Empresa</small></span></div><div class="q-rd on" role="radio"><i></i><span>Propio de esta pregunta</span></div>'
                 + parte("Título · hasta 30 caracteres", ["Nombre"]) + parte("Descripción · hasta 300", ["Rol"])
                 + '<div class="w-cmp"><span class="rt">Por ejemplo</span><div class="q-ej">Tomás Acosta<small>Vendedor</small></div></div></div></div>')
+    elif modo in RESUMEN_WA:
+        pres = zona_plegada("En WhatsApp", RESUMEN_WA[modo], clase="wa")
     e = f'<span class="err2" role="alert">{err}</span>' if err else ""
     return ('<div class="q-ab">' + A.fila_pregunta(5, n, tipo_fila, False, None)
             + '<div class="q-ed">'
@@ -485,6 +554,33 @@ CONFLICTO = ('<div class="e-sup alerta" role="alert"><div class="fila">' + ALERT
              + '<span class="tx">Otra persona cambió esto mientras lo editabas.</span><button type="button" class="cb cb-sec">Revisar</button></div></div>')
 
 
+# 138 (LR2-A): lo que guardó otra persona y lo propio, lado a lado: qué cambió, el dato una vez (con el nombre del editor) y cada
+# versión en su columna, solo lo distinto. Lo que una versión no tiene muestra sus datos del otro lado y «Quitada».
+QUIEN_GUARDO = "Laura Ríos guardó este formulario el 27/09/2026 10:43."
+CAMBIOS_EDITOR = [("Texto del botón final", None, "Confirmar visita", "Enviar", ""),
+                  ("Observaciones", "Largo máximo", "300", "600", ""),
+                  ("Fallas", "Máximo", "2", "3", ""),
+                  ("Motivo · la opción «Reclamo»", None, '<span class="g">Quitada</span>', "Reclamo de un cliente", "No se puede conservar: la opción ya no está en lo guardado."),
+                  ("Monto estimado", None, "Número · 2 decimales · Opcional", '<span class="g">Quitada</span>', "")]
+CSS_CMP = """.e-cmp { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1.15fr) 150px minmax(0, 1fr) minmax(0, 1fr); border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: 13.5px; }
+.e-cmp > span { padding: 9px 12px; border-top: 1px solid var(--borde); box-shadow: inset 1px 0 0 oklch(0.915 0.01 80 / 0.8); min-width: 0; overflow-wrap: break-word; }
+.e-cmp > .h { border-top: 0; background: oklch(0.945 0.018 76); font-weight: 600; color: var(--t2); font-size: 12.5px; box-shadow: inset 1px 0 0 oklch(0.89 0.02 76); }
+.e-cmp > .h:first-child, .e-cmp > .q { box-shadow: none; }
+.e-cmp > .q { font-weight: 500; }
+.e-cmp > .q.dos { grid-column: span 2; }
+.e-cmp > .d, .e-cmp .g { color: var(--t2); }
+.e-cmp small { display: block; margin-top: 2px; font-size: 12px; color: var(--t3); }
+"""
+
+
+def comparacion(filas=CAMBIOS_EDITOR):
+    h = '<span class="h">Qué cambió</span><span class="h">Dato</span><span class="h">Guardado actualmente</span><span class="h">Mis cambios</span>'
+    for q, dato, antes, ahora, nota in filas:
+        h += f'<span class="q dos">{q}</span>' if dato is None else f'<span class="q">{q}</span><span class="d">{dato}</span>'
+        h += f'<span>{antes}</span><span>{ahora}' + (f"<small>{nota}</small>" if nota else "") + "</span>"
+    return f'<div class="e-cmp" role="table" aria-label="Qué cambió">{h}</div>'
+
+
 def archivos(modo, total="5"):
     """Las preguntas de la E14 con «Fallas» en la lista: cuentan una más."""
     c = A.cuerpo_archivos(modo, total)
@@ -534,16 +630,10 @@ def editor():
         "Editar un título": pub("cambios", cuerpo_editor(abierta=None, modo="fijo", titulo="editar")),
     }
     assert list(V) == ESTADOS_EDITOR
-    dif = ('<div class="e-dif"><span>Qué cambió</span><span>Guardado actualmente</span><span>Mis cambios</span>'
-           '<span class="k">Texto del botón final</span><span>Confirmar visita</span><span>Enviar</span>'
-           '<span class="k">Observaciones</span><span>Hasta 300 caracteres</span><span>Hasta 600 caracteres</span>'
-           '<span class="k">Fallas</span><span>De 1 a 2</span><span>De 1 a 3</span>'
-           '<span class="k no">Motivo · opciones</span><span class="no">Quitó «Reclamo»</span><span class="no">Le cambiaste el texto'
-           + F.info("No se puede conservar: la opción ya no está en lo guardado.") + "</span></div>")
     capas = {
         "Guardado": toast("Guardamos los cambios de Visita a cliente."),
         "No se guardó": toast("No pudimos guardar los cambios. Lo escrito se conserva.", "mal"),
-        "Comparar los cambios": F.dialogo("Revisar los cambios", '<p class="d-tx">Laura Ríos guardó este formulario el 27/09/2026 10:43.</p>' + dif,
+        "Comparar los cambios": F.dialogo("Revisar los cambios", f'<p class="d-tx">{QUIEN_GUARDO}</p>' + comparacion(),
                                           '<button type="button" class="cb cb-sec">Usar lo guardado</button><button type="button" class="cb cb-pri">Conservar mis cambios</button>', una=False)
         .replace('class="w-dlg"', 'class="w-dlg" style="width: 760px;"', 1),
         "Quitar una pregunta": confirmar("¿Quitar la pregunta?", "Dejará de pedirse en el borrador. Las respuestas anteriores se conservan.", "Quitar pregunta"),
@@ -551,7 +641,7 @@ def editor():
         "Descartar cambios": confirmar("¿Descartar los cambios?", "Vas a perder lo que cambiaste sin guardar.", "Descartar", cancelar="Seguir editando"),
     }
     estados = de_la_etapa(ESTADOS_EDITOR)
-    return A.pagina_editor(solo_en(V, estados), capas, estados, "Editor del formulario · /org/formularios/:id", CSS_E12 + CSS_CA4 + css_titulos())
+    return A.pagina_editor(solo_en(V, estados), capas, estados, "Editor del formulario · /org/formularios/:id", CSS_E12 + CSS_CA4 + CSS_CMP + css_titulos())
 
 
 # ================================================================ FRM-Publicar
@@ -719,7 +809,7 @@ T_PREG = [("Cliente", "Texto corto · Obligatoria"), ("Fecha de la visita", "Fec
           ("Fallas", "Elegir varias · de 1 a 3 · Obligatoria"), ("Observaciones", "Texto largo · Opcional")]
 ESTADOS_TED = ["Sin cambios", "Con cambios", "Guardando", "Acciones del formulario", "Editar una pregunta", "Elegir varias", "Pregunta con catálogo",
                "Pregunta de foto", "Así lo ve el empleado", "Publicar", "Publicando", "Publicado", "WhatsApp rechazó una pregunta", "Nuevo formulario",
-               "Editar un título", "Sin confirmar", "Necesita revisión"]
+               "Editar un título", "Sin confirmar", "Necesita revisión", "Revisar los cambios"]
 CSS_TED_E12 = """.ap-fijo .cb .girar2 { width: 16px; height: 16px; }
 .q-acc { display: inline-flex; align-items: center; flex: none; margin-right: -6px; }
 .q-acc .ap-ib { width: 34px; height: 40px; }
@@ -808,6 +898,7 @@ def tel_editor():
         "Editar un título": (bar("Visita a cliente", pub), t_cuerpo(desde_preguntas=True), t_fijo("cambios")),
         "Sin confirmar": (bar("Visita a cliente", "Sin confirmar" + t_detalle(TX_SIN_CONFIRMAR)), t_cuerpo(), t_fijo("off")),
         "Necesita revisión": (bar("Visita a cliente", "Necesita revisión" + t_detalle(TX_REVISION)), t_cuerpo(), t_fijo("off")),
+        "Revisar los cambios": (bar("Visita a cliente", pub), t_cuerpo(), t_fijo("cambios")),
     }
     assert list(V) == ESTADOS_TED
     V = solo_en(V, E)
@@ -857,7 +948,12 @@ def tel_editor():
                                          + '<a class="t-mas" href="M-FRM-Catalogo.dc.html" style="text-decoration: none;">Ver el catálogo</a>'
                                          + f'<span class="t-chk"><i class="on">{tilde}</i>Permitir elegir varias</span>'
                                          + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' + F.tcampo("Mínimo", "1") + F.tcampo("Máximo", "2") + "</div>"
+                                         + t_zona_plegada("En WhatsApp", RESUMEN_WA["varias"])
                                          + F.tcampo("Ayuda para quien lo recibe", "Opcional", vacio=True) + f'<span class="t-chk"><i>{tilde}</i>Obligatoria</span>', listo),
+        # Los dos botones no entran en un renglón: van uno debajo del otro, como allá
+        "Revisar los cambios": F.thoja("Revisar los cambios", f'<span class="t-lin">{QUIEN_GUARDO}</span>' + t_comparacion(),
+                                       '<button type="button" class="cb cb-pri">Conservar mis cambios</button><button type="button" class="cb cb-sec">Usar lo guardado</button>')
+        .replace('<div class="hp">', '<div class="hp apilado">', 1),
         "Pregunta de foto": F.thoja("Editar pregunta", F.tcampo("Pregunta", "Fotos de la visita", req=True) + F.tcampo("Tipo de respuesta", "Foto", select=True)
                                     + F.tcampo("Ayuda para quien lo recibe", "Sacá una foto del frente del local y otra de la góndola.") + origen + cuantas, listo),
         "Así lo ve el empleado": F.thoja("Así lo ve el empleado", vp, '<button type="button" class="cb cb-pri" disabled>Enviar</button>', sub="Visita a cliente · borrador"),
@@ -867,7 +963,8 @@ def tel_editor():
         "Necesita revisión": F.thoja("La versión 4 en WhatsApp", t_tx(TX_REVISION), '<button type="button" class="cb cb-pri">Salió</button><button type="button" class="cb cb-sec">No salió</button>'),
     }
     hojas = "".join(f'<sc-if value="{{{{s{E.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in solo_en(capas, E).items())
-    t = F.pagina_tel(None, None, cuerpo, css=F.CSS_TFICHA + F.CSS_TPREGUNTA + F.CSS_TFORM + A.CSS_TED + F.CSS_TFILTRO + CSS_E12 + CSS_TED_E12 + (CSS_TTITULOS if CON_TITULOS else ""))
+    t = F.pagina_tel(None, None, cuerpo, css=F.CSS_TFICHA + F.CSS_TPREGUNTA + F.CSS_TFORM + A.CSS_TED + F.CSS_TFILTRO + CSS_E12 + CSS_TED_E12 + CSS_TZONA
+                     + (CSS_TTITULOS if CON_TITULOS else ""))
     i = t.index('<nav class="ap-nav"')
     j = t.index("</nav>", i) + len("</nav>")
     t = t[:i] + t[j:]
@@ -880,9 +977,32 @@ def tel_editor():
 
 
 # ================================================================ El chat: enviar y la respuesta
+# 138 (LR3-A): en una lista paginada para elegir, lo elegido que no está en la página va primero, marcado; nunca «Elegido: …»
+ELEGIDO_OTRA = "Elegido en otra página"
+OTRA_PAGINA = [("Reclamo de cliente", "Versión 2 · 4 preguntas"), ("Relevamiento de góndola", "Versión 1 · 8 preguntas"),
+               ("Pedido de repuesto", "Versión 2 · 5 preguntas"), ("Alta de cliente", "Versión 1 · 6 preguntas")]
+CSS_TELEGIDO = """.t-bus { display: flex; align-items: center; gap: 8px; height: 44px; box-sizing: border-box; padding: 0 12px; border: 1px solid var(--borde2); border-radius: 10px; background: #fff; color: var(--t3); font-size: 15px; }
+.t-pag { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13.5px; color: var(--t2); }
+.t-pag .pg { display: inline-flex; align-items: center; gap: 2px; color: var(--t1); }
+.t-pag .pg .ap-ib { width: 44px; height: 44px; }
+"""
+
+
+def con_otra(a, k, en_su_lugar):
+    """La lista «otra» se arma sobre otra de las listas del original: devuelve si lo era y los argumentos para el original."""
+    otra = (a[0] if a else k.get("lista")) == "otra"
+    if otra:
+        a, k = ((en_su_lugar,) + tuple(a[1:]), k) if a else (a, {**k, "lista": en_su_lugar})
+    return otra, a, k
+
+
 def dlg_enviar(*a, **k):
     """El diálogo de enviar sin el idioma en que le llega, sin la ayuda debajo del mensaje y sin «Enviando…»."""
+    otra, a, k = con_otra(a, k, "muchos")
     d = A._dlg_enviar_original(*a, **k)
+    if otra:
+        d = (d.replace(A.cards(A.FORMS_MUCHOS, 0), A.cards(A.FORMS_CHAT[:1] + OTRA_PAGINA, 0))
+             .replace("1–4 de 9 formularios", "5–8 de 9 formularios").replace("Página 1 de 3", "Página 2 de 3"))
     d = d.replace(f'<span class="c-lin">{A.GLOBO} Le llega en español, el idioma de su cuenta.</span>', "")
     d = d.replace("<span>Es lo que lee arriba del botón «Abrir formulario».</span>", "<span></span>")
     return d.replace('<button type="button" class="cb cb-pri" disabled>Enviando…</button>', f'<button type="button" class="cb cb-pri" disabled>{GIRA}Enviar formulario</button>')
@@ -899,6 +1019,7 @@ ESTADOS_CHAT = [e for e in A.ESTADOS_CHAT_AB if e not in SIN_CONFIRMAR]
 # E14 (§9): también menos que el mínimo y una opción que no entra
 ESTADOS_CHAT[ESTADOS_CHAT.index("Ninguna opción") + 1:ESTADOS_CHAT.index("Ninguna opción") + 1] = ["Menos que el mínimo", "Una opción que no entra"]
 ESTADOS_CHAT.append(NO_PUBLICADO)  # 103
+ESTADOS_CHAT.insert(ESTADOS_CHAT.index("Muchos formularios") + 1, ELEGIDO_OTRA)
 
 
 def no_publicado(formulario):
@@ -923,6 +1044,7 @@ def chat_enviar():
     capas = {
         "Elegir el formulario": dlg_enviar(),
         "Muchos formularios": dlg_enviar("muchos", buscar=""),
+        ELEGIDO_OTRA: dlg_enviar("otra", buscar=""),
         "Sin coincidencias": dlg_enviar("vacia", buscar="Inspección de planta", pie="off"),
         "Cargando formularios": dlg_enviar("cargando", pie="off"),
         "La lista no carga": dlg_enviar("error", pie="off"),
@@ -948,7 +1070,13 @@ def chat_enviar():
 
 
 def t_hoja_enviar(*a, **k):
+    otra, a, k = con_otra(a, k, "pocos")
     h = A._t_hoja_enviar_original(*a, **k)
+    if otra:  # en el teléfono, tres por página, para que la hoja entre con su título
+        rotulo = '<div class="ap-cmp"><span class="rt"><span>Formulario <span class="rq">*</span></span></span></div>'
+        pag = (f'<div class="t-pag"><span>4–6 de 9</span><span class="pg"><button type="button" class="ap-ib" aria-label="Página anterior">{svg("<path d=" + chr(34) + "m15 6-6 6 6 6" + chr(34) + "/>", 18)}</button>'
+               f'Página 2 de 3<button type="button" class="ap-ib" aria-label="Página siguiente">{svg("<path d=" + chr(34) + "m9 6 6 6-6 6" + chr(34) + "/>", 18)}</button></span></div>')
+        h = h.replace(rotulo + A.cards(A.FORMS_CHAT), f'<span class="t-bus">{F.BUSCAR} Buscar por nombre</span>' + rotulo + A.cards(A.FORMS_CHAT[:1] + OTRA_PAGINA[:3], 0) + pag)
     h = h.replace(f'<span class="t-lin">{A.GLOBO} Le llega en español, el idioma de su cuenta.</span>', "")
     h = h.replace("<span>Es lo que lee arriba del botón «Abrir formulario».</span>", "<span></span>")
     return h.replace('<button type="button" class="cb cb-pri" disabled>Enviando…</button>', f'<button type="button" class="cb cb-pri" disabled>{GIRA}Enviar formulario</button>')
@@ -968,6 +1096,7 @@ def t_menu(motivo=""):
 
 A.t_menu = t_menu
 ESTADOS_TCHAT = [e for e in A.ESTADOS_TCHAT_AB if e not in SIN_CONFIRMAR] + [NO_PUBLICADO]
+ESTADOS_TCHAT.insert(ESTADOS_TCHAT.index("Elegir el formulario") + 1, ELEGIDO_OTRA)
 
 
 def tel_chat_enviar():
@@ -987,6 +1116,7 @@ def tel_chat_enviar():
     capas = {
         "Menú abierto": t_menu(),
         "Elegir el formulario": t_hoja_enviar(),
+        ELEGIDO_OTRA: t_hoja_enviar("otra"),
         "Cargando formularios": t_hoja_enviar("cargando", pie="off"),
         "Falta el mensaje": t_hoja_enviar(err="vacio"),
         "Enviando": t_hoja_enviar(pie="enviando"),
@@ -1001,7 +1131,7 @@ def tel_chat_enviar():
         "Catálogo que no se puede usar": t_hoja_enviar(prob=prob("Supervisor a cargo: el catálogo no se puede usar. Avisale a quien lo administra."), pie="off"),
         NO_PUBLICADO: t_hoja_enviar(prob=prob(no_publicado("Visita a cliente")), pie="off"),
     }
-    t = A.pagina_tchat(E, esc, msgs, capas, "WhatsApp · Internos · enviar un formulario · teléfono", CSS_E12)
+    t = A.pagina_tchat(E, esc, msgs, capas, "WhatsApp · Internos · enviar un formulario · teléfono", CSS_E12 + CSS_TELEGIDO)
     return M.css(t, M.CSS_HOJA, "hoja")
 
 

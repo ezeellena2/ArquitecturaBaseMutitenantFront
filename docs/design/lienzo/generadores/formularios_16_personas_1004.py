@@ -329,11 +329,24 @@ def tel_catalogo_16():
 
 
 # ================================================================ FRM-Editor-16: «Qué opciones ve cada persona»
-ESTADOS_E16 = ["Qué opciones ve cada persona", "Con un filtro fijo", "Le falta el dato", "El filtro no funciona", "Más opciones que el tope", "Solo lectura", "Sin campos de filtro"]
+ESTADOS_E16 = ["Zonas plegadas", "Qué opciones ve cada persona", "Con un filtro fijo", "Le falta el dato", "El filtro no funciona", "Más opciones que el tope", "Solo lectura",
+               "Sin campos de filtro"]
+# 145: plegada, la banda dice los filtros en orden; abierta, los dos «Agregar» vuelven a la banda. Una zona con un error o un aviso se abre sola.
+RESUMEN_FILTROS = "Zona según quien lo recibe"
+RESUMEN_WA16 = "Como en el catálogo · Texto · CUIT · Zona"
+CSS_FILTROS_T5 = """.q-dg { display: grid; grid-template-columns: 160px minmax(0, 1fr); border: 1px solid var(--borde); border-radius: 8px; overflow: hidden; font-size: 13px; }
+.q-dg > .k { background: oklch(0.975 0.008 78); color: var(--t2); padding: 7px 12px; }
+.q-dg > .v { padding: 7px 12px; }
+.q-dg .g { color: var(--t3); }
+"""
 
 
 def seccion_filtros(modo="normal"):
-    """«Qué opciones ve cada persona», como ArquitecturaBase: una caja con los dos «Agregar» en su encabezado y una condición por filtro. Debajo, a quién se prueba, cuántas opciones le quedan y el máximo."""
+    """«Qué opciones ve cada persona», como ArquitecturaBase: una zona plegada con sus filtros en la banda (modo «plegada»); abierta, los dos
+    «Agregar» en la banda y una condición por filtro. Debajo, a quién se prueba, lo que tiene en dos columnas (138), cuántas opciones le
+    quedan y el máximo."""
+    if modo == "plegada":
+        return E.zona_plegada("Qué opciones ve cada persona", RESUMEN_FILTROS, AYUDA_QUE_VE, "fil")
     ro = modo == "lectura"
     sin = modo == "sin"
 
@@ -348,7 +361,7 @@ def seccion_filtros(modo="normal"):
     persona = {"falta": "Sofía Herrera", "roto": "Juan Gómez · Centro", "tope": "Juan Gómez · Centro"}.get(modo, "Juan Gómez · Centro")
     res = {"falta": ("mal", "La persona no tiene el dato necesario; no se le puede mandar el formulario."), "roto": ("mal", "El filtro no está disponible; no se puede preparar el formulario."),
            "tope": ("mal", "Supera el límite de 200 opciones de esta pregunta.")}.get(modo, ("", "14 opciones"))
-    detalle = "" if modo in ("falta", "roto") else "<small>Zona: Centro</small>"
+    detalle = f'<div class="q-dg"><span class="k">Zona</span><span class="v">{"<span class=" + chr(34) + "g" + chr(34) + ">—</span>" if modo == "falta" else "Centro"}</span></div>'
     maximo = (f'<span class="q-max mal">{F.ALERTA}Como mucho 240 por persona (Centro, la más grande): no entra en el desplegable (200).</span>' if modo == "tope" else
               f'<span class="q-max">{TILDE}Como mucho 18 por persona (Centro, la más grande): entra en el desplegable (200).</span>')
     cargar = "" if ro else ' · <a href="FRM-Datos-Personas.dc.html">Cargar los datos</a>'
@@ -356,21 +369,22 @@ def seccion_filtros(modo="normal"):
     if sin:
         motivo = "Este catálogo no tiene campos de filtro disponibles."
         agregar = K.tip('<button type="button" class="cb cb-sec">Agregar filtro según quien lo recibe</button>', motivo, abierto=True) + K.tip('<button type="button" class="cb cb-sec">Agregar filtro fijo</button>', motivo)
-    botones = "" if ro else f'<span class="der2">{agregar}</span>'
+    botones = "" if ro else agregar
     prueba = "" if sin else (f'<div class="w-cmp"><span class="rt">Como si lo recibiera</span><div class="ct sel">{persona}{CHEV}</div></div>'
-                             f'<div class="q-res"><b class="{res[0]}">{res[1]}</b>{detalle}</div>{maximo}<div class="q-sin">2 personas sin Zona{cargar}</div>')
+                             f'<div class="q-res"><b class="{res[0]}">{res[1]}</b></div>{detalle}{maximo}<div class="q-sin">2 personas sin Zona{cargar}</div>')
     cuerpo = f'<div class="zb">{conds}{prueba}</div>' if conds or prueba else ""
-    return f'<div class="w-cmp ancho q-zona"><div class="zc"><span>Qué opciones ve cada persona{F.info(AYUDA_QUE_VE)}</span>{botones}</div>{cuerpo}</div>'
+    return '<div class="w-cmp ancho q-zona fil">' + E.zona_cab("Qué opciones ve cada persona", AYUDA_QUE_VE, botones, abierta=True) + cuerpo + "</div>"
 
 
 def editor_16():
     A_preg = A.pregunta_catalogo
 
     def pregunta(modo="elegido", filtros=None):
-        h = A_preg(modo).replace("Motivos de visita", CATALOGO)
+        h = A_preg(modo).replace("Motivos de visita", CATALOGO).replace(E.RESUMEN_WA["elegido"], RESUMEN_WA16)
         h = h.replace('<div class="ct">Motivo</div>', f'<div class="ct">{PREGUNTA}</div>').replace(">Motivo<", f">{PREGUNTA}<").replace(' Motivo"', f' {PREGUNTA}"')
-        if filtros:
-            k = h.index('<div class="w-cmp"><span class="rt">Ayuda para quien lo recibe')
+        if filtros:  # antes de «En WhatsApp», como allá
+            wa = '<div class="w-cmp ancho q-zona pleg wa">'
+            k = h.index(wa) if wa in h else h.index('<div class="w-cmp"><span class="rt">Ayuda para quien lo recibe')
             h = h[:k] + seccion_filtros(filtros) + h[k:]
         return h
 
@@ -381,27 +395,47 @@ def editor_16():
         finally:
             A.pregunta_catalogo = A_preg
     pub = lambda c, modo="cambios": (E.banda(FORMULARIO, E.EST_PUB, E.acc(modo), E.VOL), c)
-    V = {"Qué opciones ve cada persona": pub(cuerpo("normal")), "Con un filtro fijo": pub(cuerpo("fijo")), "Le falta el dato": pub(cuerpo("falta")), "El filtro no funciona": pub(cuerpo("roto")),
-         "Más opciones que el tope": pub(cuerpo("tope")), "Solo lectura": pub(cuerpo("lectura"), "solo"), "Sin campos de filtro": pub(cuerpo("sin"))}
-    return A.pagina_editor(V, {}, ESTADOS_E16, "Editor del formulario · etapa 16", E.CSS_E12 + E.CSS_CA4 + E.css_titulos() + CSS_FILTROS)
+    V = {"Zonas plegadas": pub(cuerpo("plegada")), "Qué opciones ve cada persona": pub(cuerpo("normal")), "Con un filtro fijo": pub(cuerpo("fijo")),
+         "Le falta el dato": pub(cuerpo("falta")), "El filtro no funciona": pub(cuerpo("roto")), "Más opciones que el tope": pub(cuerpo("tope")),
+         "Solo lectura": pub(cuerpo("lectura"), "solo"), "Sin campos de filtro": pub(cuerpo("sin"))}
+    # El tablero mide 1660: la app también, para que la pregunta abierta entre entera
+    return A.pagina_editor(V, {}, ESTADOS_E16, "Editor del formulario · etapa 16", E.CSS_E12 + E.CSS_CA4 + E.css_titulos() + CSS_FILTROS + CSS_FILTROS_T5
+                           + ".w-app { height: 1660px !important; }\n")
 
 
-ESTADOS_TE16 = ["Qué opciones ve cada persona", "Le falta el dato", "Solo lectura"]
+ESTADOS_TE16 = ["Zonas plegadas", "Qué opciones ve cada persona", "Le falta el dato", "Solo lectura"]
+CSS_TE16 = """.t16 { display: flex; flex-direction: column; gap: 12px; padding: 12px 16px 24px; }
+.t16 .ap-grupo { margin: 0; }
+.t16 .q-res { font-size: 15px; }
+.t16 .q-res b { font-weight: 600; }
+.t16 .q-res b.mal { color: var(--peligro); }
+.t16 .t-lin2 { font-size: 14px; color: var(--t2); }
+"""
 
 
 def tel_editor_16():
     barra = C.t_bar(PREGUNTA, "Pregunta", "M-FRM-Editor.dc.html")
 
-    def fila(c, v):
-        return f'<div class="q-row"><span class="tx"><b>{c}</b><span>{v}</span></span><button type="button" class="ap-ib" aria-label="Quitar el filtro">{F.svg(chr(60) + "path d=" + chr(34) + "M6 6l12 12M18 6 6 18" + chr(34) + "/>", 20)}</button></div>'
+    def fila(c, v, ro=False):
+        x = F.svg(chr(60) + "path d=" + chr(34) + "M6 6l12 12M18 6 6 18" + chr(34) + "/>", 20)
+        return f'<div class="q-row"><span class="tx"><b>{c}</b><span>{v}</span></span><button type="button" class="ap-ib" aria-label="Quitar el filtro"{" hidden" if ro else ""}>{x}</button></div>'
 
-    def pant(persona="Juan Gómez · Centro", res="14 opciones", ro=False):
-        tit = f'<div class="ap-gtit">Qué opciones ve cada persona{"" if ro else "<a href=" + chr(34) + "#" + chr(34) + ">Agregar un filtro</a>"}</div>'
-        filas = fila("Zona", "Según quien lo recibe · Zona").replace('<button type="button" class="ap-ib" aria-label="Quitar el filtro">', '<button type="button" class="ap-ib" aria-label="Quitar el filtro" hidden>') if ro else fila("Zona", "Según quien lo recibe · Zona")
-        return (barra + f'<div class="ap-cuerpo">{tit}<div class="ap-grupo">{filas}</div><div class="f-campos">' + F.tcampo("Como si lo recibiera", persona, select=True) + "</div>"
-                f'<div class="ap-txt-l" style="padding: 0 16px;"><b>{res}</b><br>Como mucho 18 por persona<br>2 personas sin Zona</div></div>')
-    cuerpo = {"Qué opciones ve cada persona": pant(), "Le falta el dato": pant("Sofía Herrera", "La persona no tiene el dato necesario"), "Solo lectura": pant(ro=True)}
-    return C.tel_pagina(cuerpo, ESTADOS_TE16, {}, "Pregunta · teléfono · etapa 16", E.CSS_E12)
+    def pant(abierta=True, persona="Juan Gómez · Centro", res="14 opciones", ro=False, falta=False):
+        """Las dos zonas de la pregunta, como en la compu (145): plegadas, cada una con lo configurado debajo de su título."""
+        wa = E.t_zona_plegada("En WhatsApp", RESUMEN_WA16)
+        if not abierta:
+            return barra + f'<div class="t16">{E.t_zona_plegada("Qué opciones ve cada persona", RESUMEN_FILTROS, AYUDA_QUE_VE)}{wa}</div>'
+        agregar = "" if ro else '<a href="#">Agregar un filtro</a>'
+        dato = '<span class="g">—</span>' if falta else "Centro"
+        cuerpo = (f'<div class="ap-grupo">{fila("Zona", "Según quien lo recibe · Zona", ro)}</div>' + F.tcampo("Como si lo recibiera", persona, select=True)
+                  + f'<div class="q-res"><b{" class=" + chr(34) + "mal" + chr(34) if falta else ""}>{res}</b></div>'
+                  + f'<div class="q-dg"><span class="k">Zona</span><span class="v">{dato}</span></div>'
+                  + '<span class="t-lin2">Como mucho 18 por persona</span><span class="t-lin2">2 personas sin Zona</span>')
+        zona = '<div class="t-zona fil">' + E.t_zona_cab("Qué opciones ve cada persona", AYUDA_QUE_VE, agregar, abierta=True) + f'<div class="tzb">{cuerpo}</div></div>'
+        return barra + f'<div class="t16">{zona}{wa}</div>'
+    cuerpo = {"Zonas plegadas": pant(False), "Qué opciones ve cada persona": pant(),
+              "Le falta el dato": pant(persona="Sofía Herrera", res="La persona no tiene el dato necesario", falta=True), "Solo lectura": pant(ro=True)}
+    return C.tel_pagina(cuerpo, ESTADOS_TE16, {}, "Pregunta · teléfono · etapa 16", E.CSS_E12 + E.CSS_TZONA + CSS_FILTROS_T5 + CSS_TE16)
 
 
 # ================================================================ FRM-Publicar-16: la zona «Avisos», entre «Problemas» y «Qué se publica» (112)
@@ -475,11 +509,12 @@ def respuestas_16():
     apagada = R.casilla("Proveedor · Zona", False)
     prendida = R.casilla("Proveedor · Zona", True)
     plazo = R.casilla("Proveedor · Plazo de pago")
-    barra = R.barra("repuesto-columnas")
+    barra = R.barra5("repuesto-columnas")  # 144: el buscador, «Empresa» y un solo «Filtros»; las líneas entre columnas van con CSS_T5 (137)
     cuerpos = {"Columnas": barra.replace(plazo, plazo + apagada) + R.tabla_r(), "Prendida": barra.replace(plazo, plazo + prendida) + tabla_zona()}
     bnd = R.banda(R.REPUESTO, "Respuestas · versión 2 publicada", R.EXPORTAR)
     estados = ["Elegir varias: " + e for e in ESTADOS_R16]  # el prefijo pone sus migas
-    t = R.pagina("Respuestas · etapa 16", A.con_estados([(e, bnd) for e in estados]), A.con_estados([(e, R.CUERPO.format(cuerpos[e.split(": ")[1]])) for e in estados]), estados)
+    t = R.pagina("Respuestas · etapa 16", A.con_estados([(e, bnd) for e in estados]), A.con_estados([(e, R.CUERPO.format(cuerpos[e.split(": ")[1]])) for e in estados]), estados,
+                 css=R.CSS_T5)
     return t.replace("Elegir varias: Columnas", "Columnas").replace("Elegir varias: Prendida", "Prendida")
 
 

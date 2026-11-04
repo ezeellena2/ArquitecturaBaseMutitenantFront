@@ -52,7 +52,7 @@
       "resaltar": ".q-res b",
       "actor": "Lucía · Dueña · web",
       "titulo": "Arma el filtro en la pregunta",
-      "texto": "Según quien lo recibe: el campo Zona con el dato Zona. «Como si lo recibiera» muestra lo que ve cada uno: Juan Gómez, 14 opciones.",
+      "texto": "La zona arranca plegada, con el filtro en su banda. Abierta: el campo Zona con el dato Zona. «Como si lo recibiera» muestra lo que ve cada uno: Juan Gómez, de Centro, 14 opciones.",
       "avanzar": "Tocá «Publicar en WhatsApp».",
       "ruta": "/org/formularios/:id",
       "accion": "Abre publicar."
