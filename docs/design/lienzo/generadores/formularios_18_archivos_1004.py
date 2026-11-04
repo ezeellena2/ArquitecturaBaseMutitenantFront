@@ -1,6 +1,8 @@
 """La etapa 18, fotos y documentos (18-fotos-y-documentos.md del back), con el armado real de ArquitecturaBaseFront: lo que suma a la planilla, la vista rápida,
 la pantalla completa y dar de baja, y los archivos del chat, que allá no existen. Salen de los tableros aprobados de la 15 y la 17, y muestran solo lo que existe
 hasta la 18 (78): sin aprobación, estado, PDF, «Cargar» ni asistente. El editor, publicar, la tarjeta y el visor siguen en `formularios_ab_1004.py`.
+Desde la v163 (traspaso 5), la planilla, el detalle y los teléfonos usan las piezas nuevas de la 15: un solo «Filtros», en el que las fotos y los documentos
+no entran (143), el detalle alineado (139) y la actividad en columnas.
 
 Corre después de `formularios_16_personas_1004.py` y antes de `formularios_etapas_1004.py`. Se puede volver a correr.
 """
@@ -37,10 +39,6 @@ AYUDA_EXCEL = "De las fotos y los documentos va la cantidad y los nombres, sin l
 CSS_18 = """.pl-arch { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .pl-arch .r-th { width: 30px; height: 30px; border-radius: 5px; }
 .pl-arch svg { flex: none; color: var(--t3); }
-.mf-ops { display: flex; flex-direction: column; margin-top: 4px; padding: 4px; border: 1px solid var(--borde); border-radius: 8px; background: #fff; }
-.mf-ops > span { display: flex; justify-content: space-between; gap: 12px; padding: 7px 10px; border-radius: 6px; font-size: 13.5px; }
-.mf-ops > span.on { background: var(--s2); font-weight: 600; }
-.mf-ops .cnt { color: var(--t3); font-weight: 400; font-variant-numeric: tabular-nums; }
 .ex-tit { position: relative; display: inline-flex; align-items: center; width: fit-content; }
 .ex-tip { top: 50%; left: calc(100% + 10px); right: auto; transform: translateY(-50%); width: 270px; white-space: normal; line-height: 1.35; }
 .ex-tip::before { top: calc(50% - 4px); left: -4px; right: auto; }
@@ -75,22 +73,9 @@ def tabla(sel=None):
             '<div class="w-pie"><span>1–10 de 24</span><span>10 por página · Página 1 de 3</span></div></div>')
 
 
-def fondo(sel=None):
-    return R.CUERPO.format(R.barra() + tabla(sel))
-
-
-def mas_filtros(abierta=False):
-    """La sección de cada pregunta de archivo: solo «Respuesta», con «Con respuesta», «Sin respuesta» y «La pregunta no existía» (facets)."""
-    def sec(titulo, abre=False):
-        ops = ""
-        if abre:
-            ops = ('<span class="mf-ops" role="listbox" aria-label="Respuesta"><span class="on" role="option">Todas</span><span role="option">Con respuesta<span class="cnt">14</span></span>'
-                   '<span role="option">Sin respuesta<span class="cnt">2</span></span><span role="option">La pregunta no existía<span class="cnt">8</span></span></span>')
-        return f'<div class="mf-s"><span class="t">{titulo}</span><div class="mf-c"><span class="r">Respuesta</span><span class="mf-in sel">Todas {CHEV}</span>{ops}</div></div>'
-    t = R.mas_filtros()
-    marca = '<div class="mf-s"><span class="t">Fallas</span>'
-    assert t.count(marca) == 1
-    return t.replace(marca, sec(FOTOS_F, abierta) + sec("Remito firmado") + marca)
+def fondo(sel=None, modo="normal"):
+    """La barra de la 15 (143 y 144): las preguntas de archivo no entran en «Filtros»."""
+    return R.CUERPO.format(R.barra5(modo) + tabla(sel))
 
 
 def dlg_exportar():
@@ -100,15 +85,15 @@ def dlg_exportar():
 
 
 # ================================================================ FRM-Respuestas-18
-ESTADOS_PL = ["Planilla", "Ver las fotos", "Más filtros", "Más filtros: la respuesta", "Exportar"]
+ESTADOS_PL = ["Planilla", "Ver las fotos", "Filtros", "Exportar"]
 
 
 def respuestas():
-    capas = A.con_estados([("Planilla", ""), ("Ver las fotos", A.dlg_visor(0)), ("Más filtros", mas_filtros()), ("Más filtros: la respuesta", mas_filtros(True)), ("Exportar", dlg_exportar())])
-    cuerpo = A.con_estados([(e, fondo()) for e in ESTADOS_PL])
+    capas = A.con_estados([("Planilla", ""), ("Ver las fotos", A.dlg_visor(0)), ("Filtros", ""), ("Exportar", dlg_exportar())])
+    cuerpo = A.con_estados([(e, fondo(modo="filtros-inicio" if e == "Filtros" else "normal")) for e in ESTADOS_PL])
     bnd = A.con_estados([(e, R.banda(ac=R.EXPORTAR)) for e in ESTADOS_PL])
     t = R.pagina("Respuestas · /org/formularios/:id/respuestas · etapa 18", bnd, cuerpo, ESTADOS_PL,
-                 css=P.CSS_MF + R.CSS_MF2 + C.CSS_K2 + P.CSS_EX + R.CSS_EX2 + A.CSS_ARCH + A.CSS_VISOR + CSS_18)
+                 css=C.CSS_K2 + P.CSS_EX + R.CSS_EX2 + A.CSS_ARCH + A.CSS_VISOR + R.CSS_T5 + CSS_18)
     t = F.con_dialogo(t, capas)
     return enlaces(t)
 
@@ -129,7 +114,7 @@ TAB = '<span role="tab" class="on">Respuesta</span>'
 
 
 def d2(fotos=False):
-    t = R.d2(valores=VALORES)
+    t = R.d3(valores=VALORES)  # el detalle alineado de la 15 (139)
     assert t.count(TAB) == 1
     if not fotos:
         return t.replace(TAB, TAB + '<span role="tab">Fotos <span class="c">2</span></span>')
@@ -144,7 +129,8 @@ def detalle():
     cuerpo = A.con_estados([(e, fondo("VIS-000126")) for e in ESTADOS_D])
     bnd = A.con_estados([(e, R.banda(ac=R.EXPORTAR)) for e in ESTADOS_D])
     t = R.pagina("Respuesta · /org/formularios/:id/respuestas?respuesta=VIS-000126 · etapa 18", bnd, cuerpo, ESTADOS_D,
-                 css=F.CSS_GRILLA + P.CSS_D2 + R.CSS_DET + ".d2-h a.nv { text-decoration: none; }\n.o-tabs .c { margin-left: 4px; font-size: 12px; color: var(--t3); }\n" + A.CSS_ARCH + A.CSS_VISOR + CSS_18)
+                 css=F.CSS_GRILLA + P.CSS_D2 + R.CSS_DET + R.CSS_D3 + R.CSS_T5 + ".d2-h a.nv { text-decoration: none; }\n.o-tabs .c { margin-left: 4px; font-size: 12px; color: var(--t3); }\n"
+                 + A.CSS_ARCH + A.CSS_VISOR + CSS_18)
     return enlaces(F.con_dialogo(t, capas))
 
 
@@ -161,9 +147,11 @@ def completa():
     def banda(abierto):
         t = R.rc_banda(pos="2 de 4")
         return t.replace("Abrir conversación</a>", "Abrir conversación</a>" + boton_descargar(abierto), 1)
-    cuerpo = R.rc_cuerpo(VALORES, resumen="9 preguntas · 9 respondidas")
+    # la actividad en columnas fijas, como la 15 (139)
+    cuerpo = R.CUERPO.format(R.rc_seccion("Respuesta", F.grilla(VALORES), "9 preguntas · 9 respondidas", True)
+                             + R.rc_seccion("Actividad", R.actividad4(R.ACT4_126), "Recibida el 13/10/2026 15:30", True))
     t = R.pagina("Respuesta · /org/formularios/:id/respuestas/:recordId/completa · etapa 18", A.con_estados([(e, banda(e != "Respuesta")) for e in ESTADOS_C]),
-                 A.con_estados([(e, cuerpo) for e in ESTADOS_C]), ESTADOS_C, css=F.CSS_GRILLA + R.CSS_RC + A.CSS_ARCH + CSS_18)
+                 A.con_estados([(e, cuerpo) for e in ESTADOS_C]), ESTADOS_C, css=F.CSS_GRILLA + R.CSS_RC + R.CSS_D3 + A.CSS_ARCH + CSS_18)
     return enlaces(t)
 
 
@@ -177,13 +165,13 @@ def dar_de_baja():
 
 # ================================================================ Los teléfonos de la planilla y la respuesta
 def tel_respuestas():
-    t = R.tel_respuestas()
+    t = R.tel_respuestas5()
     for n, (f, d) in ARCHIVOS.items():
         texto = " · ".join(x for x in [f"{f} {'foto' if f == 1 else 'fotos'}", d] if x)
         t, cuantas = re.subn(rf'({n}<span class="hr">.*?<span class="l3">[^<]*)(</span>)', lambda m: m.group(1) + " · " + texto + m.group(2), t, count=1, flags=re.S)
         assert cuantas == 1, n
     t = t.replace("con las preguntas de todas las versiones.</p>", f"con las preguntas de todas las versiones. {AYUDA_EXCEL}</p>")
-    t = L.sin_estados(t, [e for e in R.ESTADOS_TPL if e not in ("Respuestas", "Filtros", "Exportar")])
+    t = L.sin_estados(t, [e for e in R.ESTADOS_TPL5 if e not in ("Respuestas", "Filtros", "Exportar")])
     return enlaces(re.sub(r"<title>[^<]*</title>", "<title>Respuestas · teléfono · etapa 18</title>", t))
 
 
@@ -191,7 +179,7 @@ def tel_respuesta():
     viejos = R.VALORES_126
     R.VALORES_126 = VALORES
     try:
-        t = R.tel_respuesta()
+        t = R.tel_respuesta5()
     finally:
         R.VALORES_126 = viejos
     t = t.replace("7 preguntas · 7 respondidas", "9 preguntas · 9 respondidas")
