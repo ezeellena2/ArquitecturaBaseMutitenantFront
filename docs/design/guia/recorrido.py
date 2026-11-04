@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 163 · 3 de noviembre de 2026"
+VERSION = "versión 164 · 4 de noviembre de 2026"
 
 # La guía de Formularios lleva su capítulo y, aparte, las pantallas de la biblioteca de la plataforma (las «plat-frm-»); la del lienzo,
 # el resto. Cada una es un artefacto aparte, porque una versión de un artefacto admite hasta 511 archivos. El índice del lienzo sigue
