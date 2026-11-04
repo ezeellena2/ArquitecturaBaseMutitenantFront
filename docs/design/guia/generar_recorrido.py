@@ -196,19 +196,19 @@ PLANTILLA = r"""<title>@TITULO@</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* El recorrido de una persona por el sistema, paso a paso: los colores y la letra del propio producto (fondo cálido, marco arena, petróleo). Cada pantalla es una fila: el texto a la izquierda y las capturas a la derecha. */
+/* El recorrido de una persona por el sistema, paso a paso: los colores y la letra del propio producto (fondo cálido, marco paja, verde pasto; paleta «Pradera», 2026-11-04). Cada pantalla es una fila: el texto a la izquierda y las capturas a la derecha. */
 :root {
-  --fondo: oklch(0.982 0.006 80);
+  --fondo: oklch(0.982 0.008 95);
   --hoja: oklch(1 0 0);
-  --arena: oklch(0.935 0.018 76);
-  --arena-b: oklch(0.88 0.022 76);
-  --borde: oklch(0.9 0.008 78);
+  --arena: oklch(0.935 0.027 95);
+  --arena-b: oklch(0.88 0.034 95);
+  --borde: oklch(0.9 0.01 95);
   --t1: oklch(0.24 0.014 78);
   --t2: oklch(0.45 0.014 78);
   --t3: oklch(0.58 0.01 78);
-  --marca: oklch(0.5 0.099 195);
-  --marca-tx: oklch(0.42 0.09 195);
-  --marca-t: oklch(0.95 0.03 195);
+  --marca: oklch(0.48 0.115 140);
+  --marca-tx: oklch(0.41 0.1 140);
+  --marca-t: oklch(0.955 0.035 130);
   --ok: oklch(0.6 0.13 155);
   --parte: oklch(0.72 0.15 70);
   --no: oklch(0.7 0.01 78);
@@ -222,14 +222,14 @@ PLANTILLA = r"""<title>@TITULO@</title>
   --foco: oklch(0.2 0.01 78 / 0.3);
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --fondo: oklch(0.2 0.008 78); --hoja: oklch(0.245 0.01 78); --arena: oklch(0.3 0.02 76); --arena-b: oklch(0.36 0.022 76); --borde: oklch(0.34 0.01 78);
-  --t1: oklch(0.94 0.006 78); --t2: oklch(0.78 0.01 78); --t3: oklch(0.66 0.01 78); --marca: oklch(0.7 0.1 195); --marca-tx: oklch(0.78 0.09 195);
-  --marca-t: oklch(0.3 0.04 195); --no: oklch(0.55 0.01 78); --sombra: oklch(0 0 0 / 0.4); --velo: oklch(0 0 0 / 0.7);
+  --fondo: oklch(0.2 0.008 78); --hoja: oklch(0.245 0.01 78); --arena: oklch(0.3 0.026 95); --arena-b: oklch(0.36 0.029 95); --borde: oklch(0.34 0.01 78);
+  --t1: oklch(0.94 0.006 78); --t2: oklch(0.78 0.01 78); --t3: oklch(0.66 0.01 78); --marca: oklch(0.7 0.12 138); --marca-tx: oklch(0.78 0.11 135);
+  --marca-t: oklch(0.3 0.05 140); --no: oklch(0.55 0.01 78); --sombra: oklch(0 0 0 / 0.4); --velo: oklch(0 0 0 / 0.7);
   --naranja: oklch(0.74 0.17 55); --naranja-f: oklch(0.62 0.16 48); --naranja-t: oklch(0.32 0.06 55); --foco: oklch(0 0 0 / 0.45); color-scheme: dark; } }
 :root[data-theme="dark"] {
-  --fondo: oklch(0.2 0.008 78); --hoja: oklch(0.245 0.01 78); --arena: oklch(0.3 0.02 76); --arena-b: oklch(0.36 0.022 76); --borde: oklch(0.34 0.01 78);
-  --t1: oklch(0.94 0.006 78); --t2: oklch(0.78 0.01 78); --t3: oklch(0.66 0.01 78); --marca: oklch(0.7 0.1 195); --marca-tx: oklch(0.78 0.09 195);
-  --marca-t: oklch(0.3 0.04 195); --no: oklch(0.55 0.01 78); --sombra: oklch(0 0 0 / 0.4); --velo: oklch(0 0 0 / 0.7);
+  --fondo: oklch(0.2 0.008 78); --hoja: oklch(0.245 0.01 78); --arena: oklch(0.3 0.026 95); --arena-b: oklch(0.36 0.029 95); --borde: oklch(0.34 0.01 78);
+  --t1: oklch(0.94 0.006 78); --t2: oklch(0.78 0.01 78); --t3: oklch(0.66 0.01 78); --marca: oklch(0.7 0.12 138); --marca-tx: oklch(0.78 0.11 135);
+  --marca-t: oklch(0.3 0.05 140); --no: oklch(0.55 0.01 78); --sombra: oklch(0 0 0 / 0.4); --velo: oklch(0 0 0 / 0.7);
   --naranja: oklch(0.74 0.17 55); --naranja-f: oklch(0.62 0.16 48); --naranja-t: oklch(0.32 0.06 55); --foco: oklch(0 0 0 / 0.45); color-scheme: dark; }
 * { box-sizing: border-box; }
 body { background: var(--fondo); color: var(--t1); font-family: var(--sans); font-size: 14px; line-height: 1.5; padding-inline: 16px; padding-block: 0 72px; }
