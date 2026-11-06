@@ -34,7 +34,7 @@
 
 ## Prohibido
 - Diálogo sobre diálogo, tabla en diálogo (salvo la revisión y la grilla de importar opciones, E12) o confirmación irreversible con ✕/acción no roja llena.
-- Paneles/filas expandidos salvo permisos y las zonas que escribe una etapa, como las de la carga (88) y las de una pregunta de catálogo, que arrancan plegadas con su resumen (145); columnas distintas en una caja; controles a medio ancho sin contenido.
+- Paneles/filas expandidos salvo permisos y las zonas que escribe una etapa, como las de la carga (88), las de una pregunta de catálogo, que arrancan plegadas con su resumen (145), y los pasos del alta de ARCA, con los hechos plegados y los siguientes apagados (152); columnas distintas en una caja; controles a medio ancho sin contenido.
 - Casillas sueltas, switch para guardar, ayudas no pedidas o error de formulario pasajero.
 - Input number para montos, input date crudo, opciones/decimales locales o base tomada de un GET ajeno.
 - Límites numéricos a mano en `maxLength={número}` o `.max(número)`: salen de `validationConstraints`; los rangos int32 también se generan del formato del contrato.
