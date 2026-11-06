@@ -13,6 +13,7 @@
 - Los archivos de idioma empaquetados inicializan i18n antes de pedir `GET /api/reference-data`, para que los errores de arranque y sus acciones siempre tengan texto. Al recibir `Cultures`, su selección habilitada y `FallbackCulture` gobiernan el idioma efectivo.
 - La cultura efectiva sale de `resolveCulture`: la de la cuenta (`/api/me`); si no, la elegida en este navegador (`arquitecturabasemt.culture`); si no, la predeterminada del catálogo. La aplica i18n y la leen con `useEffectiveCulture` los formatos, el catálogo y el `Accept-Language` de `httpClient`. Para un texto que falta, la caída es cultura pedida → `FallbackCulture` → cultura por defecto.
 - Los errores del backend llegan traducidos; en el front solo se traducen los `code` que llevan un texto propio.
+- **El idioma, solo cuando es el otro** (traspaso 9): un texto del sistema nombra un idioma solo cuando no es el del menú, como «Le llega en inglés» al mandar un formulario. El contenido no tiene idioma (35): no hay pares ni avisos de traducción.
 
 ## Prohibido
 - Literales en JSX (`<Button>Guardar</Button>`).

@@ -31,6 +31,8 @@
 - useEditPage.onNavigationAttempt avisa sincrónicamente ruta/searchKeys aunque se bloquee; cancelar AbortSignal antes de decidir salida, crear otro dueño sólo al quedarse/cambiar grupo.
 - Operaciones privadas retiran cuerpos/claves/callbacks al abandonar, revocar o limpiar caché, sin contextos UNSAFE_ ni inspección del router.
 - Medidas, PhoneBand, FixedActions y hojas móviles: [responsive](responsive.md); coordinación de guardado/publicación: [sitio público](../../../ArquitecturaBaseMutitenant/docs/features/sitio-publico.md).
+- **Una pantalla de ajustes se arma como Configuración** (traspaso 9): zonas a todo el ancho, una debajo de la otra, y «Guardar» en la banda, apagado sin cambios. Lo que se lee de una cuenta va en renglones de columnas fijas (el dato, el valor, su estado y su acción), la misma pieza en «Mi cuenta» y en la administración.
+- **Un dato que sirve para dos cosas dice el estado de cada una:** «Verificado» es entrar con el número, y el chat y los avisos van aparte, con la acción que los arregla (159). Quitar va en rojo antes de confirmar, también un medio de ingreso, y las altas dicen «Agregar …».
 
 ## Prohibido
 - Diálogo sobre diálogo, tabla en diálogo (salvo la revisión y la grilla de importar opciones, E12) o confirmación irreversible con ✕/acción no roja llena.

@@ -29,6 +29,7 @@
 - **Módulos:** una query de un módulo apagado no se dispara; `usePermissions().hasFeature("reportes")` lo dice ([accesos-y-permisos](accesos-y-permisos.md)).
 - **El front no calcula dinero ni reglas de negocio:** muestra lo que llega y los totales vienen del back.
 - Al cambiar de acceso u organización, `queryClient.clear()` (lo hace `useSwitchAccess`).
+- **Mientras carga** (traspaso 9): lo que carga no mueve lo que ya se ve. Un bloque de carga ocupa el lugar y la medida de lo que reemplaza, un dato que se suma a algo visible carga en su mismo renglón, y el bloque se distingue de su superficie con un tinte del color del texto. Una escena visual compara la geometría mientras carga.
 
 ## Prohibido
 - `fetch` o `axios` directo.
