@@ -428,3 +428,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Salidas locales de verificación (AGENTS.md): no se versionan.
+.local/
