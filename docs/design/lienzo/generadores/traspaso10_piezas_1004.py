@@ -6,7 +6,15 @@
 - la línea fina entre columnas (137), en las tablas de las piezas comunes (`tt-*` y `w-t*`) que no la tenían;
 - los filtros (143 y 144): las opciones sin su cantidad, la barra sin el total y «Filtros» en lugar de «Más filtros»;
 - la primera carga de un listado (160): el encabezado y el aro en el alto de ocho filas, en lugar de las filas esqueleto;
-- el texto largo entero (174): las celdas, las filas del teléfono y las opciones del menú bajan de renglón en lugar de cortar con «…».
+- el texto largo entero (174): las celdas, las filas del teléfono y las opciones del menú bajan de renglón en lugar de cortar con «…»;
+- la escala de ArquitecturaBase (180), en los tableros de la compu: la letra × 0,82 (sin bajar de 10,5 px), los altos y el interlineado
+  de 18 a 72 px × 0,74 (y el ancho de lo que es cuadrado), los rellenos, márgenes y separaciones de 4 px o más × 0,72, y las esquinas
+  de 3 px como mucho. Los factores están en `ESCALA`, en un solo lugar. Cada px que cambia guarda el de antes al lado
+  (`29.6px/*40px*/`), así otra corrida, o una escala distinta, parte siempre del original. Los teléfonos (los tableros de menos de
+  768 de ancho) y lo que dibuja un teléfono adentro de un tablero de la compu conservan sus medidas táctiles.
+
+Uso: `python traspaso10_piezas_1004.py` pasa por todos los tableros vivos; `python traspaso10_piezas_1004.py --tableros FRM-Editor,M-FRM-Editor`
+pasa solo por esos (con o sin `.dc.html`), por ejemplo después de que el generador de una etapa los rehace.
 
 Cada tablero lleva un bloque `<style data-t10="piezas">` antes de `</helmet>`. Sus reglas van con `:root` delante, para pisar las de
 las piezas aunque vengan después o con `!important`. Las sombras se calculan por tablero: cada regla con una sombra desenfocada que no
@@ -78,11 +86,15 @@ PIEZAS = """
 :root .tt-f > *, :root .tt-f .dos > *, :root .tt-f > .c2b, :root .c1, :root .c2, :root .w-tr > span, :root .w-tr .dos span, :root .w-tr .k-tc small, :root .w-tr.pl > span, :root .w-th.pl > span,
 :root .tb .tr > *, :root .tb .tr .dos > *, :root .ap-fila .l2, :root .q-it .dato b, :root .q-it .dato > span, :root .w-it .dato > b, :root .w-it .dato > span, :root .fx-n a, :root .tb-hor .h .l, :root .k-lee, :root .pl-quien .tx, :root .tr-sec .h .r, :root .ini-t .d, :root .c-p b, :root .c-p .tx > span, :root .w-tr.t .dos span, :root .lista .it .dato, :root .cg-fot .nm, :root .as-adj .n, :root .md-it .tx b, :root .md-it .tx small, :root .o-fila .dos > *, :root .o-res .dos > *, :root .dir-desc, :root .dir-emp a {
   white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+/* Las celdas que se centraban con un interlineado del alto de la fila (la planilla, la tabla de los Criterio): al bajar de renglón,
+   cada renglón ocupaba una fila entera. Se centran con su relleno, que da el mismo alto con un renglón. */
+:root .w-tr.pl > span, :root .tb .tr > * { line-height: 1.35 !important; padding-top: 13.2px !important; padding-bottom: 13.2px !important; }
+:root .w-th.pl > span, :root .tb .th > * { line-height: 1.35 !important; padding-top: 11.2px !important; padding-bottom: 11.2px !important; }
 :root .ab-sidebar__link-label, :root .w-ln { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
 :root .ab-sidebar .ab-sidebar__link, :root .ab-sidebar__link, :root .w-ln { height: auto !important; min-height: 32px; box-sizing: border-box; padding-top: 6px !important; padding-bottom: 6px !important; line-height: 20px; }
 
 /* 160 · La primera carga de un listado: el encabezado y el aro en el alto de ocho filas, sin filas esqueleto. */
-.t10-carga { height: 320px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--borde); }
+.t10-carga { height: @CARGA@px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--borde); }
 .t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
 .t10-aro { width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
 @keyframes t10-gira { to { transform: rotate(360deg); } }
@@ -247,8 +259,113 @@ def textos(t, nombre, cuenta):
     return primera_carga(t, nombre, cuenta)
 
 
+# ---------------------------------------------------------------------------------------------------------------- la escala (180)
+# La de ArquitecturaBase, que el usuario eligió el 2026-11-07 viendo la misma planilla en tres escalas. Para cambiarla, se cambia acá
+# y se vuelve a correr: cada px guarda su original.
+ESCALA = {
+    "letra": 0.82, "letra_min": 10.5,            # font-size
+    "alto": 0.74, "alto_de": 18, "alto_a": 72,   # height, min-height, max-height y line-height de 18 a 72 px, y el ancho igual de lo cuadrado
+    "espacio": 0.72, "espacio_min": 4,           # padding, margin, gap, row-gap y column-gap de 4 px o más
+    "radio": 3,                                  # border-radius de 3 px como mucho; un círculo (50 %) sigue siendo un círculo
+}
+TELEFONO = 768  # un tablero más angosto es un teléfono: conserva sus medidas táctiles (44 × 44) y la escala no lo toca
+# Lo que dibuja un teléfono adentro de un tablero de la compu (la app del teléfono en los Criterio, la vista previa de WhatsApp).
+DE_TELEFONO = re.compile(r"(^|[\s,>+~(])\.(ap|tel)\b|\.ap-|\.pv-|\.tel-|\.f-snack|\.t-toast")
+PX = re.compile(r"(\d+(?:\.\d+)?)px(?:/\*(\d+(?:\.\d+)?)px\*/)?")
+DECLARACION = re.compile(r"([a-z-]+)(\s*:\s*)([^;{}]+)")
+ALTOS = {"height", "min-height", "max-height", "line-height"}
+ESPACIOS = re.compile(r"^(?:padding|margin)(?:-[a-z-]+)?$|^(?:gap|row-gap|column-gap)$")
+SCRIPT = re.compile(r"(<script\b.*?</script>)", re.S)
+ESTILO_EN_LINEA = re.compile(r'(\sstyle=")([^"]*)(")')
+
+
+def numero(n):
+    return f"{n:.2f}".rstrip("0").rstrip(".")
+
+
+def original(m):
+    return float(m.group(2) or m.group(1))
+
+
+def con_regla(valor, regla):
+    """Los px de un valor según la regla (del original al nuevo); el original queda al lado. Sin regla, vuelve el original."""
+    def uno(m):
+        antes = original(m)
+        nuevo = regla(antes)
+        if nuevo is None or abs(nuevo - antes) < 0.01:
+            return f"{numero(antes)}px"
+        return f"{numero(nuevo)}px/*{numero(antes)}px*/"
+    return PX.sub(uno, valor)
+
+
+def letra(n):
+    return max(ESCALA["letra_min"], round(n * ESCALA["letra"], 1))
+
+
+def alto(n):
+    return round(n * ESCALA["alto"], 1) if ESCALA["alto_de"] <= n <= ESCALA["alto_a"] else None
+
+
+def espacio(n):
+    return round(n * ESCALA["espacio"], 1) if n >= ESCALA["espacio_min"] else None
+
+
+def radio(n):
+    return min(n, ESCALA["radio"])
+
+
+def escalar_cuerpo(cuerpo):
+    """Las declaraciones de una regla (o de un `style=`): letra, altos, espacios, esquinas y el ancho de lo cuadrado."""
+    altos = {original(m) for d in DECLARACION.finditer(cuerpo) if d.group(1) in ("height", "min-height") for m in PX.finditer(d.group(3))}
+
+    def declaracion(d):
+        prop, sep, valor = d.group(1), d.group(2), d.group(3)
+        if prop == "font-size":
+            valor = con_regla(valor, letra)
+        elif prop in ALTOS:
+            valor = con_regla(valor, alto)
+        elif prop in ("width", "min-width"):
+            valor = con_regla(valor, lambda n: alto(n) if n in altos else None)
+        elif ESPACIOS.match(prop):
+            valor = con_regla(valor, espacio)
+        elif prop == "border-radius":
+            valor = con_regla(valor, radio)
+        elif prop in ("top", "bottom"):
+            # Lo que se apoya en algo que se achicó (la flecha del menú sobre la banda, un menú abierto) baja con los altos.
+            valor = con_regla(valor, lambda n: round(n * ESCALA["alto"], 1) if n >= ESCALA["espacio_min"] else None)
+        elif prop in ("left", "right"):
+            # El ícono adentro de un campo se corre con su relleno; lo que va lejos queda, porque los anchos no cambian.
+            valor = con_regla(valor, lambda n: espacio(n) if n <= 48 else None)
+        return prop + sep + valor
+
+    return DECLARACION.sub(declaracion, cuerpo)
+
+
+def escalar(t):
+    """La escala en el CSS del tablero y en sus `style=` (afuera de los scripts), salvo en lo que dibuja un teléfono."""
+    def bloque_css(m):
+        def regla(r):
+            # Se salta solo si todos sus selectores son de un teléfono; una lista mezclada es de la compu.
+            selectores = [s for s in con_root(r.group(1)).split(", ") if s.strip()]
+            if selectores and all(DE_TELEFONO.search(s.removeprefix(":root ")) for s in selectores):
+                return r.group(0)
+            return r.group(1) + "{" + escalar_cuerpo(r.group(2)) + "}"
+        return m.group(1) + REGLA.sub(regla, m.group(2)) + m.group(3)
+
+    partes = SCRIPT.split(t)
+    for i in range(0, len(partes), 2):  # las impares son scripts: no se tocan
+        p = re.sub(r"(<style\b[^>]*>)(.*?)(</style>)", bloque_css, partes[i], flags=re.S)
+        partes[i] = ESTILO_EN_LINEA.sub(lambda m: m.group(1) + escalar_cuerpo(m.group(2)) + m.group(3), p)
+    return "".join(partes)
+
+
 # ---------------------------------------------------------------------------------------------------------------- el pase
-def pasar(t, nombre, cuenta):
+def pasar(t, nombre, cuenta, telefono=False):
+    t = poner_piezas(t, nombre, cuenta)
+    return t if telefono else escalar(t)
+
+
+def poner_piezas(t, nombre, cuenta):
     t = textos(BLOQUE.sub("", t), nombre, cuenta)
     # Ni lo que se abre adentro de una fila (un menú, un tooltip), que también es su hijo.
     excluir = sin_after(t) + ':not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])'
@@ -257,6 +374,7 @@ def pasar(t, nombre, cuenta):
     # Y su columna fija pierde la raya corta que la separaba: la línea entre columnas ya lo hace.
     fija = "" if pl else ":root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }"
     css = PIEZAS.replace("@SIN@", excluir).replace("@TT@", "-6.5px").replace("@PL@", pl).replace("@FIJA@", fija)
+    css = css.replace("@CARGA@", numero(8 * 40 * ESCALA["alto"]))  # ocho filas de 40, con la escala de la compu
     propias = sombras(t)
     cuenta["sombras"] = cuenta.get("sombras", 0) + len(propias)
     bloque = (f'<style {MARCA_BLOQUE}>{css}/* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */\n'
@@ -265,15 +383,34 @@ def pasar(t, nombre, cuenta):
     return t.replace("</helmet>", bloque + "</helmet>", 1)
 
 
+def es_telefono(nombre, canvas):
+    """Por su ancho en el lienzo; un tablero que todavía no está en `canvas.json`, por su nombre (`M-…`)."""
+    b = canvas["boards"].get(nombre)
+    return b["w"] < TELEFONO if b else nombre.startswith("M-")
+
+
+def tableros(canvas, argumentos):
+    """Todos los vivos, o los de `--tableros A,B` (con o sin `.dc.html`, también uno que todavía no está en `canvas.json`)."""
+    if "--tableros" not in argumentos:
+        return sorted(n for n, b in canvas["boards"].items() if b.get("page") != "archivo")
+    pedidos = argumentos[argumentos.index("--tableros") + 1].split(",")
+    lista = [n.strip() if n.strip().endswith(".dc.html") else n.strip() + ".dc.html" for n in pedidos if n.strip()]
+    faltan = [n for n in lista if not (PROJ / n).exists()]
+    assert not faltan, f"no están en el lienzo: {faltan}"
+    archivo = [n for n in lista if canvas["boards"].get(n, {}).get("page") == "archivo"]
+    assert not archivo, f"son del Archivo, que no se pasa: {archivo}"
+    return lista
+
+
 if __name__ == "__main__":
     canvas = json.loads((PROJ / "canvas.json").read_text(encoding="utf-8"))
-    vivos = sorted(n for n, b in canvas["boards"].items() if b.get("page") != "archivo")
+    lista = tableros(canvas, sys.argv[1:])
     cuenta, cambiados = {}, 0
-    for nombre in vivos:
+    for nombre in lista:
         ruta = PROJ / nombre
         t = ruta.read_text(encoding="utf-8")
-        nuevo = pasar(t, nombre.removesuffix(".dc.html"), cuenta)
+        nuevo = pasar(t, nombre.removesuffix(".dc.html"), cuenta, es_telefono(nombre, canvas))
         if nuevo != t:
             ruta.write_text(nuevo, encoding="utf-8")
             cambiados += 1
-    print("ok", len(vivos), "tableros vivos,", cambiados, "cambiados;", cuenta)
+    print("ok", len(lista), "tableros,", cambiados, "cambiados;", cuenta)

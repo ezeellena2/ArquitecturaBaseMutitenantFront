@@ -1266,11 +1266,15 @@ a.w-conv { text-decoration: none; color: inherit; }
 :root .tt-f > *, :root .tt-f .dos > *, :root .tt-f > .c2b, :root .c1, :root .c2, :root .w-tr > span, :root .w-tr .dos span, :root .w-tr .k-tc small, :root .w-tr.pl > span, :root .w-th.pl > span,
 :root .tb .tr > *, :root .tb .tr .dos > *, :root .ap-fila .l2, :root .q-it .dato b, :root .q-it .dato > span, :root .w-it .dato > b, :root .w-it .dato > span, :root .fx-n a, :root .tb-hor .h .l, :root .k-lee, :root .pl-quien .tx, :root .tr-sec .h .r, :root .ini-t .d, :root .c-p b, :root .c-p .tx > span, :root .w-tr.t .dos span, :root .lista .it .dato, :root .cg-fot .nm, :root .as-adj .n, :root .md-it .tx b, :root .md-it .tx small, :root .o-fila .dos > *, :root .o-res .dos > *, :root .dir-desc, :root .dir-emp a {
   white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+/* Las celdas que se centraban con un interlineado del alto de la fila (la planilla, la tabla de los Criterio): al bajar de renglón,
+   cada renglón ocupaba una fila entera. Se centran con su relleno, que da el mismo alto con un renglón. */
+:root .w-tr.pl > span, :root .tb .tr > * { line-height: 1.35 !important; padding-top: 13.2px !important; padding-bottom: 13.2px !important; }
+:root .w-th.pl > span, :root .tb .th > * { line-height: 1.35 !important; padding-top: 11.2px !important; padding-bottom: 11.2px !important; }
 :root .ab-sidebar__link-label, :root .w-ln { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
 :root .ab-sidebar .ab-sidebar__link, :root .ab-sidebar__link, :root .w-ln { height: auto !important; min-height: 32px; box-sizing: border-box; padding-top: 6px !important; padding-bottom: 6px !important; line-height: 20px; }
 
 /* 160 · La primera carga de un listado: el encabezado y el aro en el alto de ocho filas, sin filas esqueleto. */
-.t10-carga { height: 320px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--borde); }
+.t10-carga { height: 236.8px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--borde); }
 .t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
 .t10-aro { width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
 @keyframes t10-gira { to { transform: rotate(360deg); } }
