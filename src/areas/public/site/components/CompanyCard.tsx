@@ -8,7 +8,7 @@ export function CompanyCard({ company }: { company: DirectoryEntryRow }) {
     className="flex min-w-0 flex-col gap-2 rounded-[16px] border border-[var(--borde)] bg-[var(--lado-activo)] p-4 text-[var(--t1)] no-underline hover:border-[var(--borde2)] hover:shadow-[var(--sombra-directorio)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)] md:gap-2.5 md:p-[22px]">
     <span className="flex min-w-0 items-center gap-3">
       <span aria-hidden="true" className="inline-flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[var(--marca-t)] font-bold text-[var(--marca-tx)]">
-        {company.logoUrl ? <img src={company.logoUrl} alt="" className="size-full object-contain" /> : initials(company.name)}
+        {company.logoUrl ? <img src={company.logoUrl} alt="" loading="lazy" decoding="async" width={44} height={44} className="size-full object-contain" /> : initials(company.name)}
       </span>
       <b className="min-w-0 break-words text-[16px] font-semibold md:text-[17px]">{company.name}</b>
     </span>
