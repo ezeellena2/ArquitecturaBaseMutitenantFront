@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 3000px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 4960px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -658,6 +658,100 @@
 .r311-q .cuerpo .ctl { border-color: oklch(0.57 0.2 25); }
 .r311-q .cuerpo .mal { color: oklch(0.45 0.17 25); font-size: 12.5px; }
 </style>
+<style data-r711="Criterio-Formularios">
+.r711-aro { width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); }
+.r711-blq { display: block; height: 12px; border-radius: 4px; background: oklch(0.24 0.012 60 / 0.08); }
+
+.r711-dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }
+.r711-aj { background: var(--fondo); border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+.r711-aj .bd { height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 20px; background: #fff; border-bottom: 1px solid var(--borde); font-size: 16px; font-weight: 700; }
+.r711-aj .cu { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+.r711-aj .zn { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+.r711-aj .zn .t { height: 40px; display: flex; align-items: center; padding: 0 16px; background: oklch(0.945 0.027 95); border-bottom: 1px solid oklch(0.89 0.031 95); font-size: 13px; font-weight: 600; }
+.r711-aj .zn .c { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; padding: 16px 20px 20px; }
+.r711-aj .cmp { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.r711-aj .cmp .r { font-weight: 600; color: var(--t2); }
+.r711-aj .cmp .v { height: 36px; box-sizing: border-box; display: flex; align-items: center; padding: 0 12px; border: 1px solid var(--borde2); border-radius: 8px; background: #fff; }
+.r711-aj.carga .zn .t .r711-blq { width: 120px; }
+.r711-aj.carga .cmp .r711-blq.b-r { width: 90px; height: 10px; }
+.r711-aj.carga .cmp .r711-blq.b-v { height: 36px; border-radius: 8px; }
+.r711-cf { width: 420px; background: #fff; border: 1px solid var(--borde2); border-radius: 12px; overflow: hidden; }
+.r711-cf .t { padding: 16px 20px 6px; font-size: 15px; font-weight: 600; }
+.r711-cf .x { padding: 4px 20px 18px; font-size: 13.5px; color: var(--t2); }
+.r711-cf .p { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--borde); }
+.r711-cf .foco { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--marca); }
+</style>
+<style data-t10="piezas">
+/* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
+:root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
+:root .ab-sidebar__head { gap: 0 !important; }
+:root .banda-pag .ico, :root .w-bnd .ic, :root .bnd .ic, :root .carril .quien .ico { display: none !important; }
+:root .ini-ico, :root .lp-ico { background: transparent !important; width: auto !important; height: auto !important; }
+
+/* 173 · El avatar, un cuadrado con la inicial, sin degradé: chico (24) en la barra de arriba y en el pie del menú. */
+:root .avatar, :root .w-av, :root .ap-nav .yo, :root .av, :root .org-av, :root .mail-de .logo { background: var(--marca) !important; color: #fff; border-radius: 6px !important; }
+:root .avatar.gris { background: var(--s3) !important; color: var(--t2) !important; }
+:root .w-av.g { background: oklch(0.9 0.015 95) !important; color: var(--t2) !important; }
+:root .ab-topbar .um-btn .avatar, :root .ab-sidebar__user .avatar, :root .ab-sidebar__footer .avatar, :root .w-us .w-av, :root .w-umd .um .w-av { width: 24px !important; height: 24px !important; font-size: 12px !important; border-radius: 5px !important; }
+:root .menu-cab .avatar, :root .w-mn-cab .w-av, :root .ap .w-av, :root .ap-cbar .w-av { border-radius: 8px !important; }
+:root .ap-yo .w-av, :root .ap-perfil .w-av, :root .org-av { border-radius: 12px !important; }
+
+/* 173 · El activo del menú: una barra de 2 px de la marca, sin pastilla blanca ni sombra. */
+:root .ab-sidebar__link--active, :root .ab-sidebar__link--active:hover, :root .ab-root.adm-abierto .adm-btn, :root .ab-root.wa-abierto .wa-btn, :root .w-ln.on, :root .app .sb .ln.on, :root .lat .sb .ln.on {
+  background: var(--lado-hover) !important; color: var(--marca-tx) !important; font-weight: 600 !important; box-shadow: inset 2px 0 0 var(--marca) !important; border-radius: 0 8px 8px 0 !important; }
+:root .adm-panel .ab-sidebar__link--active, :root .adm-panel .ab-sidebar__link--active:hover, :root .w-panel .w-ln.on, :root .lat .panel .ln.on {
+  background: oklch(0.872 0.043 95) !important; color: var(--marca-tx) !important; font-weight: 600 !important; box-shadow: inset 2px 0 0 var(--marca) !important; border-radius: 0 8px 8px 0 !important; }
+
+/* 173 · El principal, sólido: sin degradé ni sombra. */
+:root .b-pri, :root .cb-pri { background: var(--marca) !important; box-shadow: none !important; filter: none !important; }
+:root .b-pri:hover, :root .cb-pri:hover, :root .cb-pri.h { background: var(--marca-h) !important; filter: none !important; }
+:root .ab-btn.ab-btn--outline:not(:focus-visible) { box-shadow: none !important; }
+
+/* 173 · Los filtros y las etiquetas, con el radio de un control; los contadores, como texto. */
+:root .pill-sel, :root .filtros .pil, :root .w-pil, :root .caja.fil .pi, :root .flt .pil, :root .fb2 .pil, :root .tb .pie .pil, :root .tel .pills span, :root .ap-chips2 span, :root .ap-flt .ch, :root .pl-chip, :root .flt.r311 .chip, :root .as-chip, :root .ap-pill { border-radius: 8px !important; }
+:root .pill, :root .rol, :root .pl-marca, :root .ap-fila .pl-marca, :root .auth-marca .kicker, :root .lp-kicker { border-radius: 6px !important; }
+:root .tab2 .cnt, :root .ini .t-cab .cnt { background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: var(--t3) !important; }
+:root .w-panel .w-ln .cnt, :root .fm-cnt, :root .ap-fila .fm-cnt, :root .ap-it .ap-cnt { background: transparent !important; padding: 0 !important; min-width: 0 !important; height: auto !important; border-radius: 0 !important; color: var(--marca-tx) !important; font-weight: 600 !important; }
+:root .w-campana .n, :root .ap-campana .n, :root .c-campana .n, :root .cmp .n, :root .c-bad, :root .pl-fil .n, :root .flt.r311 .pil .n { border-radius: 5px !important; }
+
+/* 143 y 144 · Las opciones de un filtro no dicen cuántas filas traen, y la barra no lleva el total: va al pie. */
+:root .menu-cnt, :root .f-mn .cnt, :root .mf-ck small, :root .mf .esq-n, :root .tot { display: none !important; }
+
+/* 137 · Una línea fina entre columnas, del tono de la que separa las filas, en el encabezado y en el cuerpo. */
+:root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
+:root .tt-f > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
+:root .tt-h > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
+:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
+:root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }
+
+/* 174 · El texto largo se ve entero: la celda baja de renglón en lugar de cortar con «…». */
+:root .tt-f > *, :root .tt-f .dos > *, :root .tt-f > .c2b, :root .c1, :root .c2, :root .w-tr > span, :root .w-tr .dos span, :root .w-tr .k-tc small, :root .w-tr.pl > span, :root .w-th.pl > span,
+:root .tb .tr > *, :root .tb .tr .dos > *, :root .ap-fila .l2, :root .q-it .dato b, :root .q-it .dato > span, :root .w-it .dato > b, :root .w-it .dato > span, :root .fx-n a, :root .tb-hor .h .l, :root .k-lee, :root .pl-quien .tx, :root .tr-sec .h .r, :root .ini-t .d, :root .c-p b, :root .c-p .tx > span, :root .w-tr.t .dos span, :root .lista .it .dato, :root .cg-fot .nm, :root .as-adj .n, :root .md-it .tx b, :root .md-it .tx small, :root .o-fila .dos > *, :root .o-res .dos > *, :root .dir-desc, :root .dir-emp a {
+  white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+:root .ab-sidebar__link-label, :root .w-ln { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+:root .ab-sidebar .ab-sidebar__link, :root .ab-sidebar__link, :root .w-ln { height: auto !important; min-height: 32px; box-sizing: border-box; padding-top: 6px !important; padding-bottom: 6px !important; line-height: 20px; }
+
+/* 160 · La primera carga de un listado: el encabezado y el aro en el alto de ocho filas, sin filas esqueleto. */
+.t10-carga { height: 320px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--borde); }
+.t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
+.t10-aro { width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
+@keyframes t10-gira { to { transform: rotate(360deg); } }
+/* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */
+:root .tarjeta { box-shadow: none !important; }
+:root a.kpi:hover { box-shadow: none !important; }
+:root .dlg { box-shadow: none !important; }
+:root .toast2 { box-shadow: none !important; }
+:root .marco { box-shadow: none !important; }
+:root .brand { box-shadow: none !important; }
+:root .tarjeta, :root .fb { box-shadow: none !important; }
+:root .b-pri { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15) !important; }
+:root .adm-cerrar { box-shadow: none !important; }
+:root .adm-panel .ab-sidebar__link--active, :root .adm-panel .ab-sidebar__link--active:hover { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .ab-root.adm-abierto .adm-btn { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .ab-sidebar__link--active { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .seg span.on { box-shadow: none !important; }
+:root .cb-pri { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15) !important; }
+</style>
 </helmet>
 
 <div class="crit">
@@ -753,7 +847,7 @@
       <li><strong>Error general:</strong> una franja roja clara arriba de los botones. Nunca un aviso que se va solo.</li>
       <li><strong>En el teléfono,</strong> la franja usa la letra de los avisos del teléfono: 14,5 con interlineado 1,4. En la compu, 13.</li>
     </ul>
-    <div class="tel-franja"><div class="tf-hoja"><b>Sumar empresa</b><div class="cmp"><span class="rot">Empresa <span class="req">*</span></span><div class="ctl">Delta Sur S.R.L.</div></div><div class="aviso-mal tel" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg> No pudimos sumar la empresa. Revisá tu conexión y probá de nuevo.</div><div class="tf-bt"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Sumar</button></div></div><span class="tf-pie">En el teléfono: la franja con la letra de los avisos del teléfono.</span></div>
+    <div class="tel-franja"><div class="tf-hoja"><b>Agregar empresa</b><div class="cmp"><span class="rot">Empresa <span class="req">*</span></span><div class="ctl">Delta Sur S.R.L.</div></div><div class="aviso-mal tel" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg> No pudimos agregar la empresa. Revisá tu conexión y probá de nuevo.</div><div class="tf-bt"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Agregar</button></div></div><span class="tf-pie">En el teléfono: la franja con la letra de los avisos del teléfono.</span></div>
   </section>
 
   <section data-reglas="3-11">
@@ -787,9 +881,51 @@
     </div>
   </section>
 
+  <section data-reglas="7-11">
+    <h2>Un ajuste</h2>
+    <div class="r711-dos">
+      <div class="r711-aj">
+        <div class="bd"><span>Configuración</span><button type="button" class="cb cb-pri" disabled style="opacity: 0.45;">Guardar cambios</button></div>
+        <div class="cu">
+          <div class="zn"><div class="t">Datos de la organización</div><div class="c"><div class="cmp"><span class="r">Nombre</span><span class="v">Grupo Delta</span></div><div class="cmp"><span class="r">Moneda predeterminada</span><span class="v">Peso argentino (ARS)</span></div></div></div>
+          <div class="zn"><div class="t">Correo</div><div class="c"><div class="cmp"><span class="r">Correo de ventas</span><span class="v">ventas@delta.ejemplo.com</span></div><div class="cmp"><span class="r">Zona horaria</span><span class="v">Buenos Aires (GMT−3)</span></div></div></div>
+        </div>
+      </div>
+      <div class="r711-aj carga" role="status" aria-label="Cargando">
+        <div class="bd"><span class="r711-blq" style="width: 150px; height: 16px;"></span></div>
+        <div class="cu">
+          <div class="zn"><div class="t"><span class="r711-blq"></span></div><div class="c"><div class="cmp"><span class="r711-blq b-r"></span><span class="r711-blq b-v"></span></div><div class="cmp"><span class="r711-blq b-r"></span><span class="r711-blq b-v"></span></div></div></div>
+          <div class="zn"><div class="t"><span class="r711-blq"></span></div><div class="c"><div class="cmp"><span class="r711-blq b-r"></span><span class="r711-blq b-v"></span></div><div class="cmp"><span class="r711-blq b-r"></span><span class="r711-blq b-v"></span></div></div></div>
+        </div>
+      </div>
+    </div>
+    <ul class="reglas2" style="margin-top: 14px;">
+      <li><strong>Un ajuste se arma como Configuración:</strong> zonas a todo el ancho, una debajo de la otra, y «Guardar cambios» en la banda, apagado sin cambios.</li>
+      <li><strong>Sus campos van en columnas iguales,</strong> como en cualquier caja, no del ancho de lo que llevan (163).</li>
+      <li><strong>Mientras carga,</strong> dibuja sus zonas, con el título, el rótulo y el control de cada campo, sin los botones de la banda (160).</li>
+    </ul>
+  </section>
+
+  <section data-reglas="7-11-silencio">
+    <h2>Ninguna elección se descarta en silencio</h2>
+    <div class="r711-dos">
+      <div class="r711-cf" role="dialog" aria-label="¿Cambiar a «Número»?">
+        <div class="t">¿Cambiar a «Número»?</div>
+        <div class="x">Se quitan las 4 opciones de «Motivo». El nombre y la ayuda quedan.</div>
+        <div class="p"><button type="button" class="cb cb-sec foco">Cancelar</button><button type="button" class="cb cb-pri">Cambiar</button></div>
+      </div>
+      <ul class="reglas2">
+        <li><strong>Cambiar un tipo, una acción o una opción</strong> conserva lo escrito que sigue sirviendo: el nombre, la ayuda, el mensaje (162).</li>
+        <li><strong>Lo que se pierde se avisa antes,</strong> con lo que se va. Sin nada que perder, cambia sin preguntar.</li>
+      </ul>
+    </div>
+  </section>
+
   <section>
     <h2>Prohibido</h2>
     <ul class="prohibido">
+      <li data-r711>Perder lo escrito al cambiar un tipo, una acción o una opción, sin avisar (162).</li>
+      <li data-r711>Los campos de un ajuste del ancho de lo que llevan: van en columnas iguales (163).</li>
       <li>Lo elegido marcado solo con un tinte.</li>
       <li>Rótulos adentro del campo en vez de arriba.</li>
       <li>Ayudas o ejemplos debajo de cada campo.</li>
@@ -804,7 +940,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2650}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4960}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

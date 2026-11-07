@@ -60,12 +60,12 @@
       "x": 6080,
       "y": 260,
       "w": 1440,
-      "h": 2920,
+      "h": 3510,
       "title": "Criterio · Avisos y errores",
       "page": "criterio"
     },
     "Criterio-Botones.dc.html": {
-      "h": 2540,
+      "h": 2580,
       "page": "criterio",
       "title": "Criterio · Botones",
       "w": 1440,
@@ -73,7 +73,7 @@
       "y": 260
     },
     "Criterio-Dialogos.dc.html": {
-      "h": 2870,
+      "h": 3250,
       "page": "criterio",
       "title": "Criterio · Diálogos",
       "w": 1440,
@@ -81,7 +81,7 @@
       "y": 260
     },
     "Criterio-Formularios.dc.html": {
-      "h": 3000,
+      "h": 4960,
       "page": "criterio",
       "title": "Criterio · Formularios y campos",
       "w": 1440,
@@ -89,7 +89,7 @@
       "y": 260
     },
     "Criterio-Marco.dc.html": {
-      "h": 3500,
+      "h": 4290,
       "page": "criterio",
       "title": "Criterio · Marco y pantallas",
       "w": 1440,
@@ -97,7 +97,7 @@
       "y": 260
     },
     "Criterio-Menus.dc.html": {
-      "h": 3380,
+      "h": 4070,
       "page": "criterio",
       "title": "Criterio · Menús y desplegables",
       "w": 1440,
@@ -105,7 +105,7 @@
       "y": 260
     },
     "Criterio-Tablas.dc.html": {
-      "h": 2720,
+      "h": 4960,
       "page": "criterio",
       "title": "Criterio · Tablas y listas",
       "w": 1440,
@@ -848,8 +848,8 @@
     "Criterio-Decisiones.dc.html": {
       "x": 10640,
       "y": 260,
-      "w": 7400,
-      "h": 6900,
+      "w": 8880,
+      "h": 7350,
       "title": "Criterio · Decisiones por pantalla",
       "page": "criterio"
     },

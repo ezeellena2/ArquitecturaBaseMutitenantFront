@@ -1,15 +1,15 @@
 """Tablero «Criterio · Decisiones por pantalla»: lo que el usuario eligió en cada pantalla y las reglas que dejó.
 Cada decisión nueva suma una fila en DECISIONES; si deja una regla, va también a REGLAS y al tablero de esa pieza.
-Va en cinco columnas (7400 de ancho): el lienzo recorta un tablero a 8000 de alto; en dos columnas ya no entraba (v120), en tres tampoco (v130) y en cuatro
-tampoco (v141)."""
+Va en seis columnas (8880 de ancho): el lienzo recorta un tablero a 8000 de alto; en dos columnas ya no entraba (v120), en tres tampoco (v130), en cuatro
+tampoco (v141) y en cinco tampoco, con la sección del traspaso 10 (07/11)."""
 import json
 import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 6900  # v144: la columna más alta mide 6763
-ANCHO = 7400
-COLUMNAS = 5
+ALTO = 7350  # 07/11: en cinco columnas, la más alta medía 9158; en seis, llega a 7231
+ANCHO = 8880
+COLUMNAS = 6
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -36,7 +36,7 @@ CSS = """  <style data-criterio="decisiones">
 .est.alerta::before { background: oklch(0.72 0.15 70); }
 .est.off { color: var(--t2); }
 .est.off::before { background: oklch(0.75 0.01 78); }
-.cols { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 48px; align-items: start; }
+.cols { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 48px; align-items: start; }
 .cols > div { display: flex; flex-direction: column; gap: 36px; }
   </style>"""
 
@@ -50,6 +50,7 @@ ESTADOS = {
     "Falta decidir": "off",
     "Para repensar": "pend",
     "Decidido": "ok",
+    "Reemplazada": "off",
 }
 
 # Reglas generales que salieron de las decisiones: (regla, tablero donde quedó, fecha).
@@ -67,7 +68,7 @@ REGLAS = [
     ("La vista previa de la página pública va en un diálogo de 640, con la tarjeta del público tal cual.", "Diálogos", "05/10/2026"),
     ("Las pestañas de una ficha van abajo de la banda, sobre el fondo, alineadas con el contenido.", "Marco y pantallas", "04/10/2026"),
     ("El pie del paginado va con letra de 12.", "Tablas y listas", "04/10/2026"),
-    ("El botón principal lleva el degradé de la marca en todas las pantallas, también en el teléfono.", "Botones", "04/10/2026"),
+    ('<span class="gris"><s>El botón principal lleva el degradé de la marca en todas las pantallas, también en el teléfono.</s></span> Reemplazada por la 173 (07/11).', "Botones", "04/10/2026"),
     ("Dentro de una caja, dos columnas iguales que ocupan todo el ancho; tres solo si todos los datos son cortos, como en «Tus datos».", "Formularios y campos", "04/10/2026"),
     ("El selector de país de un teléfono lleva la bandera, como imagen y no emoji, en la lista y en el control cerrado: «[bandera] +54».", "Formularios y campos", "04/10/2026"),
     ("Sin textos que explican: el estado se dice una vez arriba y un ⓘ abre el aviso importante.", "Avisos y errores · Diálogos", "02/10/2026"),
@@ -78,7 +79,7 @@ REGLAS = [
     ("Filas de 40; si alguna fila de la tabla tiene segunda línea, todas son de 52, para que la tabla quede pareja.", "Tablas y listas", "04/10/2026"),
     ("En las listas del teléfono, una fecha del año en curso va sin el año («27/09» o «27/09 10:42»); de otro año, completa. En la compu, siempre con el año.", "Tablas y listas", "04/10/2026"),
     ("En el panel de Administración, un grupo arranca abierto solo si estás en una de sus pantallas; los demás, cerrados.", "Menús y desplegables", "04/10/2026"),
-    ("El círculo con la inicial de una persona lleva el degradé de la marca, en la compu y en el teléfono.", "Marco y pantallas", "04/10/2026"),
+    ('<span class="gris"><s>El círculo con la inicial de una persona lleva el degradé de la marca, en la compu y en el teléfono.</s></span> Reemplazada por la 173 (07/11).', "Marco y pantallas", "04/10/2026"),
     ("Sin ☰ en las pantallas con sesión: el menú lateral se achica con la flecha redonda de su borde.", "Menús y desplegables", "04/10/2026"),
     ("Un dato personal tapado muestra lo mínimo: el teléfono, «•••• 4521»; el correo, «lu•••@gmail.com».", "Tablas y listas", "04/10/2026"),
     ("Una lista se lee; cambiar una fila o sumar otra abre un diálogo chico.", "Tablas y listas", "02/10/2026"),
@@ -114,6 +115,14 @@ REGLAS = [
     ("Lo elegido se distingue sin dudas: nunca solo con un tinte.", "Formularios y campos", "03/11/2026"),
     ("Un filtro de opciones es un desplegable simple, sin cantidades, y lo que no entra a la vista va en un solo «Filtros», con chips.", "Menús y desplegables", "03/11/2026"),
     ("Las zonas de una pregunta de catálogo arrancan plegadas, con lo configurado en su banda.", "Formularios y campos", "03/11/2026"),
+    ("Lo que carga no salta: un listado dibuja su encabezado y el aro en el alto de ocho filas, sin filas esqueleto; una página, su banda con el título como bloque de carga, y un ajuste, sus zonas.", "Tablas y listas · Marco · Formularios", "07/11/2026"),
+    ("Lo que no se deshace y dispara avisos pide confirmar con el número, con la principal y el foco en «Cancelar»; el rojo lleno queda para lo que destruye.", "Diálogos", "07/11/2026"),
+    ("Cambiar un tipo, una acción o una opción no pierde lo escrito sin avisar.", "Formularios y campos", "07/11/2026"),
+    ("Mucho texto, con jerarquía: todo a la vista, las fechas a la derecha y lo poco consultado detrás de un botón. Los campos de un ajuste, en columnas iguales.", "Formularios y campos", "07/11/2026"),
+    ("Una regla nueva vale también para lo que ya existe: los tableros viejos y la app ya programada.", "Decisiones por pantalla", "07/11/2026"),
+    ("Que no parezca plantilla: la marca sin cuadrado, la banda sin ícono, el avatar cuadrado, el activo con una barra, sin pastillas y sin sombras salvo en menús; el principal, sólido.", "Marco · Botones · Menús", "07/11/2026"),
+    ("El texto largo se ve entero: una celda baja de renglón en lugar de cortar con «…».", "Tablas y listas", "07/11/2026"),
+    ("El estado, una vez: lo que dice el encabezado no se repite debajo; la acción que lo destraba va en la banda y el porqué de un botón apagado, en su tooltip.", "Avisos y errores", "07/11/2026"),
 ]
 
 # Decisiones por página: (pantalla, opción elegida, qué se eligió, estado en el lienzo).
@@ -255,7 +264,7 @@ DECISIONES = {
     ],
     "Alineación con la app · 04/10": [
         ("Marco", "", "Las 8 pantallas de Organización y las 8 de Plataforma con el marco viejo pasan al del criterio: perfil en 14/700, opciones de 32 en 400, pie con el avatar de 32 y migas en 13. Plataforma › Administración: WhatsApp como grupo.", "Dibujada"),
-        ("Avatar y ☰", "A", "El círculo con la inicial, con el degradé en todos lados; sin ☰ arriba.", "Dibujada"),
+        ("Avatar y ☰", "A", "El círculo con la inicial, con el degradé en todos lados; sin ☰ arriba. Reemplazada por la 173: el avatar es un cuadrado chico, sin degradé; sigue sin ☰.", "Reemplazada"),
         ("Buscador de las listas", "", "36 de alto y 360 de ancho en las nueve listas que lo tenían de 32.", "Dibujada"),
         ("Rótulos de los campos", "", "12,5 con interlineado 1,5 en los 24 tableros de la compu.", "Dibujada"),
         ("Registro · Dirección de la página", "", "44 de alto y radio 10, como los demás campos de ingreso y registro.", "Dibujada"),
@@ -289,7 +298,7 @@ DECISIONES = {
         ("Auditoría", "", "Los textos del back: «Cambió la invitación de …» (aceptada o revocada), «Reactivó a …» y «Cambió el acceso de …». El correo de la invitación vencida, tapado; la zona, con su nombre. De la plataforma, solo la aprobación. El detalle queda como el tablero: cambia la app.", "Dibujada"),
         ("Empresas", "", "Toda empresa tiene su zona; «La de la organización», en gris, solo al crear. Al editar, el CUIT sin guiones y «Guardar cambios» activo. En el teléfono, la hoja de roles sin bajada ni «Todos», con «Sin roles».", "Dibujada"),
         ("Usuario · teléfono", "", "El error al guardar con el caso de la app: Lucía se quita el rol de Dueña y la franja dice «Tiene que quedar al menos un Dueño…».", "Dibujada"),
-        ("Botón principal", "", "Con el degradé en todas las pantallas, como la app.", "Dibujada"),
+        ("Botón principal", "", "Con el degradé en todas las pantallas, como la app. Reemplazada por la 173: es sólido.", "Reemplazada"),
     ],
     "La Guía y el usuario · 05/10": [
         ("Administrador de una empresa", "A", "Sin roles de la organización: suma a su empresa personas de la organización (con el correo tapado), reenvía y revoca las invitaciones de su empresa desde la ficha y ve la ficha sin pestañas.", "Dibujada"),
@@ -407,7 +416,7 @@ DECISIONES = {
         ("Idioma", "", "Desde el 24/10, el contenido no tiene idioma: un solo texto por campo, como lo escribe la persona, y una sola vista previa (decisión 35; reemplaza la 17).", "Dibujada"),
         ("Guardar", "", "Guardado, no se guardó (lo escrito se conserva) y, si otra persona guardó, la banda ⚠ con «Revisar» y la revisión «Qué cambió | Guardado actualmente | Mis cambios». Desde el 24/10, sin «Guardado sin confirmar» ni «Consultar guardado»: la pantalla vuelve a leer sola.", "Dibujada"),
         ("Publicar", "", "«Publicar la versión N en WhatsApp»: qué cambia, qué queda fijo y qué va a pasar. Comprobando, una pregunta que no se puede mostrar (con el botón grisado), cambió después de comprobar y ya se está publicando. Desde el 24/10, sin el idioma, sin la hora del borrador al lado de los botones y sin «venció».", "Dibujada"),
-        ("Cómo termina", "", "Desde el 25/10, sin carteles (regla de avisos): el estado va en la banda con su ⓘ, que abre los pasos (Aceptada, Enviada a WhatsApp, WhatsApp la revisa y Lista para mandar) o, sin confirmar, «Consultar ahora», nunca «Reintentar». Rechazada: la pregunta, marcada en su lugar con «Corregir». La vista oficial va al costado, con «Borrador | Versión N en WhatsApp».", "Dibujada"),
+        ("Cómo termina", "", "Desde el 25/10, sin carteles (regla de avisos): el estado va en la banda con su ⓘ, que abre los pasos (Aceptada, Enviada a WhatsApp, WhatsApp la revisa y Lista para mandar) o, sin confirmar, «Consultar ahora», nunca «Reintentar». Rechazada: la pregunta, marcada en su lugar con «Corregir». La vista oficial va al costado, con «Borrador | Versión N en WhatsApp». Reemplazada por la 175: sin pasos detrás de la ⓘ.", "Reemplazada"),
         ("Enviar desde el chat", "", "«Enviar formulario» al lado de «Enviar» en Internos. El diálogo: tarjetas con «Versión N · K preguntas» (buscador y paginado si son muchos), el mensaje prellenado (hasta 1024) y hasta cuándo se puede mandar. Reglas del lienzo: el motivo de un botón apagado va en su ⓘ y el diálogo va sin descripción arriba. Desde el 24/10, sin el idioma en que le llega.", "Dibujada"),
         ("Después de enviar", "", "La burbuja lleva la tarjeta del formulario; abajo, En cola, Leído, No se pudo mandar (con ⓘ, sin reintento) o Envío sin confirmar con «Ya lo revisé», que abre «Resolver el envío»: Salió o No salió, como en la E16. Desde el 24/10, sin «Consultar envío». Con el diálogo abierto: ventana cerrada y formulario que ya no está.", "Dibujada"),
         ("La respuesta", "", "Tarjeta con las primeras 3 en grilla, «Ver las N respuestas» y «Guardada como VIS-000123»; guardando, no se pudo guardar, no reconocida, sin permiso, una de «elegir varias» y el mensaje que ya no está. El encabezado del chat sigue el de la E11 (teléfono · Empleado · empresa).", "Dibujada"),
@@ -441,7 +450,7 @@ DECISIONES = {
     "E15 · La planilla, el detalle y el Excel · La Guía · 18/10": [
         ("Respuestas en el panel", "", "Desde el 24/10 no es un grupo del panel: «Formularios» lleva a la lista de formularios (MF1) y, desde ahí, a la planilla de cada uno (decisión 34).", "Dibujada"),
         ("La planilla", "", "Columnas fijas N°, Recibida, Cargó (con el canal) y Empresas; después una por pregunta, con las retiradas al final. «Sin respuesta» y «—» (no existía en esa versión) en gris. Se desplaza a lo ancho con el N° fijo.", "Dibujada"),
-        ("Filtros", "", "«Buscar en Observaciones» (solo los textos largos), «Empresa ▾» (decisión 24), «Recibida ▾» y «Más filtros» en un panel al costado, con cuántas respuestas hay en cada opción. Lo elegido va en el filtro, sin fila de chips (Criterio · Menús).", "Dibujada"),
+        ("Filtros", "", "«Buscar en Observaciones» (solo los textos largos), «Empresa ▾» (decisión 24), «Recibida ▾» y «Más filtros» en un panel al costado, con cuántas respuestas hay en cada opción. Lo elegido va en el filtro, sin fila de chips (Criterio · Menús). Reemplazada por la 143 y la 144: sin cantidades y un solo «Filtros».", "Reemplazada"),
         ("Columnas", "", "«Columnas · 1 oculta ▾» con casillas: lo de la respuesta, las preguntas y las retiradas. Vive en la dirección.", "Dibujada"),
         ("Una respuesta (D2)", "", "Al costado de la planilla: el número, ↑ ↓ y ✕, con los atajos en el tooltip y sin línea de ayuda; «Abrir conversación»; Recibida con quién la respondió; pestañas Respuesta y Fotos. En el teléfono, a pantalla completa con «5 de 24».", "Dibujada"),
         ("Exportar", "", "Botón en la banda, solo con el permiso. El diálogo dice cuántas y con qué filtros; Todas las preguntas o Solo las columnas visibles; lo de los archivos en ⓘ. Con más de 10.000, Exportar se apaga y pide acotar.", "Dibujada"),
@@ -508,7 +517,7 @@ DECISIONES = {
         ("Diseñar formularios", "A", "«Activos | Dados de baja» arriba de la lista, como en Formularios (MF1), y «Estado ▾» dentro de Activos; suma la columna Respuestas. Las acciones van en un ⋮ por fila, como en Usuarios, no en los íconos de ArquitecturaBase (Criterio · Menús).", "Dibujada"),
         ("El ⋮ de una fila", "A", "Publicado: Copiar y Dar de baja. Borrador: Copiar y Borrar. De baja: Reactivar y Copiar. Con respuestas, Borrar no aparece; mientras se publica, Dar de baja queda grisado con el motivo en su tooltip; sin el permiso, la opción no se dibuja (con solo publicar: Dar de baja y Reactivar).", "Dibujada"),
         ("Dar de baja", "A", "El diálogo dice qué deja de pasar (el chat, el asistente y las sugerencias hacia él), los envíos abiertos y que en WhatsApp no se deshace, y lo que se conserva. Si falla, el aviso rojo y el diálogo sigue abierto.", "Dibujada"),
-        ("Un dado de baja", "A", "«De baja» en la banda; su ⓘ dice quién, cuándo, qué deja de pasar y qué pasa en WhatsApp (desde el 25/10, sin cartel). Sin confirmar o no se pudo deprecar, al lado del estado. «Reactivar» va en el lugar de Publicar y queda grisado con cambios sin guardar.", "Dibujada"),
+        ("Un dado de baja", "A", "«De baja» en la banda; su ⓘ dice quién, cuándo, qué deja de pasar y qué pasa en WhatsApp (desde el 25/10, sin cartel). Sin confirmar o no se pudo deprecar, al lado del estado. «Reactivar» va en el lugar de Publicar y queda grisado con cambios sin guardar. Reemplazada por la 175: la baja se dice en una frase.", "Reemplazada"),
         ("Reactivar y borrar", "", "Reactivar es publicar la versión siguiente con el borrador: qué se publica, qué va a pasar y que la numeración sigue; con algo que corregir, Reactivar grisado. Borrar, solo sin respuestas: desaparece y el prefijo queda reservado.", "Dibujada"),
         ("Copiar", "A", "Desde el ⋮ de la lista y del editor: nombre y prefijo propuesto (letras del nombre y un número si ya está tomado), y la copia queda en borrador con el borrador del original (decisión 74). El PDF y las reglas se suman con la E16.", "Dibujada"),
         ("El circuito", "", "Va como recorrido de la guía: dar de baja con envíos abiertos, el editor del dado de baja, deprecados al vencer y reactivar (BA5). La sugerencia hacia un dado de baja (BA6) va con la E18.", "Dibujada"),
@@ -588,7 +597,7 @@ DECISIONES = {
         ("El límite mientras se escribe", "", "No: se ve al publicar. Es algo nuevo, y se puede sumar después (121).", "Decidido"),
     ],
     "Traspaso 5 de ArquitecturaBase · v159 · 03/11": [
-        ("Toda la app", "", "Un cambio de diseño pedido sobre una pantalla se busca en todas las que usan la misma pieza, y queda como regla en su «Criterio» (136).", "Decidido"),
+        ("Toda la app", "", "Un cambio de diseño pedido sobre una pantalla se busca en todas las que usan la misma pieza, y queda como regla en su «Criterio» (136). Reemplazada por la 164: también lo que ya existe.", "Reemplazada"),
         ("Tablas", "", "Una línea fina entre columnas, los números a la derecha y la tabla que cierra abajo; un código no se parte (137).", "Dibujada"),
         ("Lecturas", "LR1-A y LR2-A", "Lo que pasa en orden, en pasos; los datos, en dos columnas; dos versiones, lado a lado, y lo elegido de otra página, primero (138).", "Dibujada"),
         ("Lo elegido", "OE1-A", "Elegido por el usuario: el segmentado rellena la elegida, la tarjeta suma un borde de 2 px, el desplegable de un filtro la tilda, y la fila y la conversación abiertas llevan una barra (142).", "Dibujada"),
@@ -603,6 +612,24 @@ DECISIONES = {
         ("«Por aprobar»", "PL1-A", "Elegido por el usuario: «Por aprobar (N) | Todas» arriba de la planilla, con el segmentado y no con pestañas (148).", "Falta dibujar"),
         ("El mensaje con datos", "MD1-A", "Elegido por el usuario: «Agregar dato» pone etiquetas que siguen a la pregunta, con «Así llega» debajo (149).", "Falta dibujar"),
     ],
+    "Traspaso 10 · 07/11": [
+        ("Lo que carga", "ES1-A a ES3", "Un listado dibuja su encabezado y el aro en el alto de ocho filas, sin filas esqueleto; una página, su banda con el título como bloque de carga y tres barras, y un ajuste, sus zonas (160).", "Dibujada"),
+        ("Decidir a propósito", "", "Lo que no se deshace y dispara avisos, como aprobar, pide confirmar con el número, con la principal y el foco en «Cancelar»; el rojo lleno queda para lo que destruye (161). Generaliza la 114.", "Dibujada"),
+        ("Ninguna elección en silencio", "", "Cambiar un tipo, una acción o una opción no pierde lo escrito sin avisar (162). Generaliza la 113.", "Dibujada"),
+        ("Mucho texto, con jerarquía", "", "Todo a la vista y sin plegar; las fechas a la derecha, una vez por momento; lo poco consultado, detrás de un botón. Los campos de un ajuste siguen en columnas iguales (163).", "Decidido"),
+        ("Lo que ya existe", "", "Una regla nueva vale también para los tableros viejos y la app ya programada: la 137, la 143, la 144 y la 160 pasan con esta tanda y, en la app, con la base de la 12 (164). Cambia la 136.", "Dibujada"),
+        ("El envío nombra el formulario", "", "«Completá el formulario «Visita a cliente».», propuesto al elegirlo y sin pisar lo escrito; la oferta del asistente lo nombra igual (165).", "Falta dibujar"),
+        ("Corregir, anular y la carga", "", "«Corregir» en la fila del título y «Anular» solo en el ⋮, en rojo; el motivo del rechazo, en los momentos; «N de M respondidas»; «Volver a Formularios»; «Elegí primero «Zona»» (166).", "Falta dibujar"),
+        ("El catálogo que propone el asistente", "", "Pasa a la E25: nace con «Crear catálogo», se edita como cualquiera y lleva «Descartar propuesta» y «Aprobar y activar» (167).", "Falta dibujar"),
+        ("Un catálogo dentro del bloque", "", "Filtra por quien lo recibe, como fuera del bloque (168).", "Decidido"),
+        ("La información del negocio", "", "Varias franjas por día, «24 horas», productos y servicios, políticas y condiciones, y «Aplicar de lunes a viernes» (169).", "Falta dibujar"),
+        ("Los avisos en «Mi cuenta»", "", "«Llegan hasta el …» y, pasadas las 24 horas, «Solo con plantilla», con su (i) (170).", "Falta dibujar"),
+        ("El micrófono y armar por WhatsApp", "", "El micrófono, solo en el Inicio de la organización; pedir por WhatsApp que arme algo se atiende antes de los casos (171).", "Decidido"),
+        ("La CUIT con ARCA", "", "No cambia con ARCA conectado: primero se desconecta (172).", "Decidido"),
+        ("Que no parezca plantilla", "A", "Elegido por el usuario: la marca sin cuadrado, la banda sin ícono, el avatar cuadrado, el activo con una barra, sin pastillas y sin sombras salvo en menús; el principal, sólido. Quedan la paleta Pradera y la densidad (173).", "Dibujada"),
+        ("El texto largo", "A", "Elegido por el usuario: entero; la celda baja de renglón en lugar de cortar con «…», y un código no se parte (174).", "Dibujada"),
+        ("El estado, una vez", "A", "Elegido por el usuario: lo que dice el encabezado no se repite debajo; en la publicación, sin pasos ni zona «Problemas», con «Consultar publicación» cuando hace falta; la baja, en una frase (175).", "Dibujada"),
+    ],
     "Varios asistentes · v158 · 03/11": [
         ("La lista", "", "Como las listas de WhatsApp: el asistente, sus equipos y su estado, con el ⋮ (Editar y Dar de baja o Reactivar). «Dar de baja» del principal queda grisado, con el motivo en su tooltip. En ArquitecturaBase no existe.", "Dibujada"),
         ("El asistente de un equipo", "", "Un desplegable más en «Editar equipo» de la 11. Sin elegir, contesta el principal; uno de baja no se elige.", "Dibujada"),
@@ -613,7 +640,7 @@ DECISIONES = {
         ("La pantalla «Asistente»", "", "Elegida por el usuario: como el editor de un formulario, con Perfil, Conocimiento, Casos, Límites y Atención, un solo Guardar y «Probar» siempre al costado, como el teléfono de la vista previa. En ArquitecturaBase no existe.", "Dibujada"),
         ("Los casos", "", "Se abren en el lugar, como una pregunta, con ↑ ↓ ✎ 🗑 a la vista (127). Los formularios van en su bloque fijo y «Cualquier otra cosa», al final, solo con ✎.", "Dibujada"),
         ("Probar", "", "Prueba lo guardado: con cambios sin guardar o con el tope de IA agotado queda grisado, con el motivo en su tooltip (43). Muestra hasta tres acciones, cada una con su caso, su porqué y cómo la vería la persona, y «No se mandó nada».", "Dibujada"),
-        ("El conocimiento", "", "Las secciones de «Información del negocio» de ArquitecturaBase: datos, ubicación y zona, horario y preguntas frecuentes (46). Una sección vacía dice «Vacía · no se usa».", "Dibujada"),
+        ("El conocimiento", "", "Las secciones de «Información del negocio» de ArquitecturaBase: datos, ubicación y zona, horario y preguntas frecuentes (46). Una sección vacía dice «Vacía · no se usa». Reemplazada por la 169.", "Reemplazada"),
         ("En el chat", "", "Cada respuesta del asistente lleva «Por qué respondió esto», y derivar deja «Necesita una persona» en la cabecera, la lista y el filtro. Cambiar el modo, fijarlo y «Marcar como resuelta» van en el ⋮ del chat.", "Dibujada"),
         ("Los audios y las sugerencias", "", "Como allá: «Escuchar audio» con la transcripción debajo, y «Qué sugerir después» con su historial al costado, en una pestaña «Sugerencias», como las reglas (79).", "Dibujada"),
     ],
@@ -629,7 +656,7 @@ DECISIONES = {
         ("Adjuntar el PDF", "", "El motivo va debajo de la casilla en el momento, con el botón que lo arregla: «Subir» o «Agregar «Armar el PDF» antes» (113). Nada se desmarca solo.", "Dibujada"),
         ("El diseño del PDF", "", "«El comprobante» con «Guardar diseño» y la vista previa al costado, como allá; suma tres estilos (Clásico, Moderno y Compacto), el color, el encabezado de la página pública, secciones y firmas (59 y 82).", "Dibujada"),
         ("Aprobar", "", "En la vista rápida, con los momentos arriba de las pestañas, y con confirmación que arranca en «Cancelar» (114). Sin cartel arriba de la planilla: la cola se abre desde la campana y «Para resolver».", "Dibujada"),
-        ("Corregir y anular", "", "Corregir abre la carga de la 20 con lo de antes a la vista y un motivo; anular va al final del ⋮, con motivo. Allá no existen.", "Dibujada"),
+        ("Corregir y anular", "", "Corregir abre la carga de la 20 con lo de antes a la vista y un motivo; anular va al final del ⋮, con motivo. Allá no existen. Reemplazada por la 166.", "Reemplazada"),
     ],
     "Cargar una respuesta · v154 · 02/11": [
         ("La página", "", "Cancelar y Enviar en la banda, zonas plegables y hasta tres por renglón, como ArquitecturaBase. El ancho sale del tipo de pregunta, y lo condicional recalcula los renglones.", "Dibujada"),
@@ -650,14 +677,14 @@ DECISIONES = {
     "El ciclo de vida · v151 · 02/11": [
         ("Reactivar", "", "Es publicar: se abre en el formulario, con las zonas de «Publicar», «Próxima respuesta» y el botón «Reactivar con la versión 3» (como ArquitecturaBase).", "Dibujada"),
         ("Borrar con respuestas", "", "Queda grisado, con el motivo en su tooltip y, en el teléfono, debajo de la acción. Antes no aparecía.", "Dibujada"),
-        ("Un formulario dado de baja", "", "El estado va en la banda y su ⓘ dice quién, cuándo y qué pasa en WhatsApp. Sin cartel en el cuerpo, como dicen los avisos del 25/10; allá va un cartel.", "Dibujada"),
+        ("Un formulario dado de baja", "", "El estado va en la banda y su ⓘ dice quién, cuándo y qué pasa en WhatsApp. Sin cartel en el cuerpo, como dicen los avisos del 25/10; allá va un cartel. Reemplazada por la 175.", "Reemplazada"),
     ],
     "El armado de ArquitecturaBase · v150 · 02/11": [
         ("Catálogo", "", "«El catálogo» y, desde la 13, «En WhatsApp» a la izquierda; «Así lo ve quien lo recibe» al costado, con «Una opción | Varias»; «Opciones» a todo el ancho. En el encabezado de «Opciones», «Agregar opción», «Agregar campos · N», «Importar», «Exportar» y un ⋮ con la plantilla, el orden y los códigos.", "Dibujada"),
         ("Acciones a la vista", "", "Donde importa el orden (opciones, preguntas y campos) van ↑ ↓ ✎ 🗑; en las demás tablas sigue el ⋮. Una opción dada de baja cambia ✎ por «Reactivar», y su Estado es una casilla.", "Dibujada"),
         ("Borrar una opción", "", "🗑 pregunta y la marca «Se borra al guardar», con «Restaurar». Si algo la usa, no se borra: se dice qué y se puede dar de baja.", "Dibujada"),
         ("Publicar", "", "Cada zona en su caja, con la explicación en su (i); «Ir a la pregunta» es un botón. «Qué se publica»: Borrador, Preguntas, lo agregado y lo cambiado y, la primera vez, el Prefijo.", "Dibujada"),
-        ("Planilla", "", "«Exportar a Excel»; «Buscar en textos largos»; la primera pregunta de opciones como filtro rápido. «Más filtros», con «Respuesta» por pregunta y lo que va con su tipo. Exportar dice respuestas, filtros y columnas.", "Dibujada"),
+        ("Planilla", "", "«Exportar a Excel»; «Buscar en textos largos»; la primera pregunta de opciones como filtro rápido. «Más filtros», con «Respuesta» por pregunta y lo que va con su tipo. Exportar dice respuestas, filtros y columnas. Reemplazada por la 144: un solo «Filtros».", "Reemplazada"),
         ("Datos de las personas", "", "«Datos» con Clave y «Agregar dato» en su encabezado; «Personas» con el resumen y «Buscar personas». El papel de un campo va en el modal de campos.", "Dibujada"),
     ],
     "Etapa 15 · Respuestas · 02/11": [
@@ -676,6 +703,7 @@ DECISIONES = {
     ],
     "Lo que sigue": [
         ("Las etapas, con el traspaso 5", "", "Se redibujan en tandas: primero los «Criterio» y después cada etapa, con la lista del índice de specs.", "Falta dibujar"),
+        ("Las tandas b a e del traspaso 10", "", "El núcleo; de la E12 a la E18; de la E19 a la E21, y de la E22 a la E25, cada una con su visto bueno (§4.3 de la evaluación del traspaso 10).", "Falta dibujar"),
     ],
 }
 

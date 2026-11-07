@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 2720px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 4960px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -707,6 +707,93 @@
 .r311-card + .r311-sep { margin-top: 4px; }
 .r311-pag { font-size: 12px; color: var(--t2); }
 </style>
+<style data-r711="Criterio-Tablas">
+.r711-aro { width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); }
+.r711-blq { display: block; height: 12px; border-radius: 4px; background: oklch(0.24 0.012 60 / 0.08); }
+
+.r711-carga { height: 160px; display: flex !important; align-items: center; justify-content: center; padding: 0 !important; }
+.r711-lg { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 28px; align-items: start; }
+.r711-tb { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+.r711-tb .th, .r711-tb .tr { display: grid; grid-template-columns: 112px 150px 132px minmax(0, 1fr); font-size: 13px; }
+.r711-tb .th { min-height: 40px; background: oklch(0.945 0.027 95); border-bottom: 1px solid oklch(0.89 0.031 95); font-weight: 600; color: var(--t2); }
+.r711-tb .tr { min-height: 40px; border-bottom: 1px solid var(--borde); }
+.r711-tb .tr:last-child { border-bottom: 0; }
+.r711-tb .tr:nth-child(odd) { background: oklch(0.968 0.015 95); }
+.r711-tb .th > span, .r711-tb .tr > span { display: flex; align-items: center; padding: 9px 12px; line-height: 1.4; min-width: 0; overflow-wrap: break-word; }
+.r711-tb .th > span + span, .r711-tb .tr > span + span { box-shadow: inset 1px 0 0 oklch(0.915 0.013 95 / 0.8); }
+.r711-tb .th > span + span { box-shadow: inset 1px 0 0 oklch(0.89 0.031 95); }
+.r711-tb .cod { white-space: nowrap; }
+</style>
+<style data-t10="piezas">
+/* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
+:root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
+:root .ab-sidebar__head { gap: 0 !important; }
+:root .banda-pag .ico, :root .w-bnd .ic, :root .bnd .ic, :root .carril .quien .ico { display: none !important; }
+:root .ini-ico, :root .lp-ico { background: transparent !important; width: auto !important; height: auto !important; }
+
+/* 173 · El avatar, un cuadrado con la inicial, sin degradé: chico (24) en la barra de arriba y en el pie del menú. */
+:root .avatar, :root .w-av, :root .ap-nav .yo, :root .av, :root .org-av, :root .mail-de .logo { background: var(--marca) !important; color: #fff; border-radius: 6px !important; }
+:root .avatar.gris { background: var(--s3) !important; color: var(--t2) !important; }
+:root .w-av.g { background: oklch(0.9 0.015 95) !important; color: var(--t2) !important; }
+:root .ab-topbar .um-btn .avatar, :root .ab-sidebar__user .avatar, :root .ab-sidebar__footer .avatar, :root .w-us .w-av, :root .w-umd .um .w-av { width: 24px !important; height: 24px !important; font-size: 12px !important; border-radius: 5px !important; }
+:root .menu-cab .avatar, :root .w-mn-cab .w-av, :root .ap .w-av, :root .ap-cbar .w-av { border-radius: 8px !important; }
+:root .ap-yo .w-av, :root .ap-perfil .w-av, :root .org-av { border-radius: 12px !important; }
+
+/* 173 · El activo del menú: una barra de 2 px de la marca, sin pastilla blanca ni sombra. */
+:root .ab-sidebar__link--active, :root .ab-sidebar__link--active:hover, :root .ab-root.adm-abierto .adm-btn, :root .ab-root.wa-abierto .wa-btn, :root .w-ln.on, :root .app .sb .ln.on, :root .lat .sb .ln.on {
+  background: var(--lado-hover) !important; color: var(--marca-tx) !important; font-weight: 600 !important; box-shadow: inset 2px 0 0 var(--marca) !important; border-radius: 0 8px 8px 0 !important; }
+:root .adm-panel .ab-sidebar__link--active, :root .adm-panel .ab-sidebar__link--active:hover, :root .w-panel .w-ln.on, :root .lat .panel .ln.on {
+  background: oklch(0.872 0.043 95) !important; color: var(--marca-tx) !important; font-weight: 600 !important; box-shadow: inset 2px 0 0 var(--marca) !important; border-radius: 0 8px 8px 0 !important; }
+
+/* 173 · El principal, sólido: sin degradé ni sombra. */
+:root .b-pri, :root .cb-pri { background: var(--marca) !important; box-shadow: none !important; filter: none !important; }
+:root .b-pri:hover, :root .cb-pri:hover, :root .cb-pri.h { background: var(--marca-h) !important; filter: none !important; }
+:root .ab-btn.ab-btn--outline:not(:focus-visible) { box-shadow: none !important; }
+
+/* 173 · Los filtros y las etiquetas, con el radio de un control; los contadores, como texto. */
+:root .pill-sel, :root .filtros .pil, :root .w-pil, :root .caja.fil .pi, :root .flt .pil, :root .fb2 .pil, :root .tb .pie .pil, :root .tel .pills span, :root .ap-chips2 span, :root .ap-flt .ch, :root .pl-chip, :root .flt.r311 .chip, :root .as-chip, :root .ap-pill { border-radius: 8px !important; }
+:root .pill, :root .rol, :root .pl-marca, :root .ap-fila .pl-marca, :root .auth-marca .kicker, :root .lp-kicker { border-radius: 6px !important; }
+:root .tab2 .cnt, :root .ini .t-cab .cnt { background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: var(--t3) !important; }
+:root .w-panel .w-ln .cnt, :root .fm-cnt, :root .ap-fila .fm-cnt, :root .ap-it .ap-cnt { background: transparent !important; padding: 0 !important; min-width: 0 !important; height: auto !important; border-radius: 0 !important; color: var(--marca-tx) !important; font-weight: 600 !important; }
+:root .w-campana .n, :root .ap-campana .n, :root .c-campana .n, :root .cmp .n, :root .c-bad, :root .pl-fil .n, :root .flt.r311 .pil .n { border-radius: 5px !important; }
+
+/* 143 y 144 · Las opciones de un filtro no dicen cuántas filas traen, y la barra no lleva el total: va al pie. */
+:root .menu-cnt, :root .f-mn .cnt, :root .mf-ck small, :root .mf .esq-n, :root .tot { display: none !important; }
+
+/* 137 · Una línea fina entre columnas, del tono de la que separa las filas, en el encabezado y en el cuerpo. */
+:root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
+:root .tt-f > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
+:root .tt-h > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
+:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
+:root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }
+
+/* 174 · El texto largo se ve entero: la celda baja de renglón en lugar de cortar con «…». */
+:root .tt-f > *, :root .tt-f .dos > *, :root .tt-f > .c2b, :root .c1, :root .c2, :root .w-tr > span, :root .w-tr .dos span, :root .w-tr .k-tc small, :root .w-tr.pl > span, :root .w-th.pl > span,
+:root .tb .tr > *, :root .tb .tr .dos > *, :root .ap-fila .l2, :root .q-it .dato b, :root .q-it .dato > span, :root .w-it .dato > b, :root .w-it .dato > span, :root .fx-n a, :root .tb-hor .h .l, :root .k-lee, :root .pl-quien .tx, :root .tr-sec .h .r, :root .ini-t .d, :root .c-p b, :root .c-p .tx > span, :root .w-tr.t .dos span, :root .lista .it .dato, :root .cg-fot .nm, :root .as-adj .n, :root .md-it .tx b, :root .md-it .tx small, :root .o-fila .dos > *, :root .o-res .dos > *, :root .dir-desc, :root .dir-emp a {
+  white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+:root .ab-sidebar__link-label, :root .w-ln { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+:root .ab-sidebar .ab-sidebar__link, :root .ab-sidebar__link, :root .w-ln { height: auto !important; min-height: 32px; box-sizing: border-box; padding-top: 6px !important; padding-bottom: 6px !important; line-height: 20px; }
+
+/* 160 · La primera carga de un listado: el encabezado y el aro en el alto de ocho filas, sin filas esqueleto. */
+.t10-carga { height: 320px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--borde); }
+.t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
+.t10-aro { width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
+@keyframes t10-gira { to { transform: rotate(360deg); } }
+/* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */
+:root .tarjeta { box-shadow: none !important; }
+:root a.kpi:hover { box-shadow: none !important; }
+:root .dlg { box-shadow: none !important; }
+:root .toast2 { box-shadow: none !important; }
+:root .marco { box-shadow: none !important; }
+:root .brand { box-shadow: none !important; }
+:root .tarjeta, :root .fb { box-shadow: none !important; }
+:root .b-pri { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15) !important; }
+:root .adm-cerrar { box-shadow: none !important; }
+:root .adm-panel .ab-sidebar__link--active, :root .adm-panel .ab-sidebar__link--active:hover { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .ab-root.adm-abierto .adm-btn { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .ab-sidebar__link--active { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .cb-pri { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15) !important; }
+</style>
 </helmet>
 
 <div class="crit">
@@ -734,7 +821,7 @@
         <li><strong>Filtros en su propia tarjeta</strong>, arriba de la tabla. Sin botones.</li>
         <li><strong>Encabezado con color:</strong> 40 px, fondo arena, sin mayúsculas.</li>
         <li><strong>Filas de 40 px</strong>, alternadas, con letra de 13. Al pasar el mouse, verde claro.</li>
-        <li><strong>Un dato por celda, en un renglón.</strong> Lo que lo aclara va en su propia columna si la persona lo necesita (Correo, Vencimiento), o no va. Sin dato, una sola raya.</li>
+        <li><strong>Un dato por celda.</strong> Lo que lo aclara va en su propia columna si la persona lo necesita (Correo, Vencimiento), o no va. Sin dato, una sola raya. Un texto largo baja de renglón, sin «…» (174).</li>
         <li><strong>La columna ordenada</strong> muestra ▲ o ▼ en su encabezado; tocarla invierte el orden. Las demás, sin flecha.</li>
         <li><strong>Las fechas, completas:</strong> 25/10/2026 18:07, con año y hora, en la zona de quien mira. Nunca «hoy», «ayer» ni «hace 2 horas».</li>
         <li><strong>Un dato personal tapado</strong> muestra lo mínimo: el teléfono, «•••• 4521»; el correo, «lu•••@gmail.com».</li>
@@ -792,7 +879,7 @@
     <div class="medidas">
       <div class="cab" style="grid-template-columns: 220px 150px minmax(0, 1fr);"><span>Pieza</span><span>Medida</span><span>Cómo es</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Encabezado</strong><span>40 px</span><span>Fondo arena, letra de 13 en semibold, gris oscuro, sin mayúsculas. Igual en tablas, listas y cajas.</span></div>
-      <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Fila de tabla</strong><span>40 px</span><span>Un dato por celda, en un renglón, con letra de 13. Una fila sí y otra no, arena muy suave. Al pasar el mouse, verde claro.</span></div>
+      <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Fila de tabla</strong><span>40 px como mínimo</span><span>Un dato por celda, con letra de 13; si no entra, baja de renglón y la fila crece. Una fila sí y otra no, arena muy suave. Al pasar el mouse, verde claro.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Fila de lista</strong><span>44 px</span><span>Un renglón con letra de 13: el dato, su estado a la derecha y el ⋮.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Estado</strong><span>Punto de 8 px</span><span>Punto de color y la palabra, sin fondo: verde activo, celeste pendiente, ámbar atención, gris apagado.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Columna de acciones</strong><span>48 px</span><span>Solo el ⋮, botón de ícono de 32 × 32.</span></div>
@@ -803,7 +890,7 @@
   <section>
     <h2>Cuando no hay filas</h2>
     <div class="g4">
-      <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo"><div class="esq"><span style="width: 80%;"></span><span style="width: 65%;"></span><span style="width: 72%;"></span><span style="width: 55%;"></span></div></div><div class="rot2">Cargando</div></div>
+      <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo r711-carga" role="status" aria-label="Cargando"><span class="r711-aro"></span></div><div class="rot2">La primera carga · el encabezado y el aro en el alto de ocho filas</div></div>
       <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo"><strong>Todavía no hay usuarios.</strong></div><div class="rot2">Todavía no hay nada · se crea desde la banda</div></div>
       <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo"><strong>Ningún usuario coincide con los filtros.</strong><button type="button" class="cb cb-enl" style="font-size: 14px;">Limpiar filtros</button></div><div class="rot2">Ninguno coincide</div></div>
       <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo"><strong>No pudimos cargar los usuarios.</strong><button type="button" class="cb cb-sec ch">Reintentar</button></div><div class="rot2">Error</div></div>
@@ -816,7 +903,7 @@
       <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="linea" aria-hidden="true"></div><div class="filas" aria-busy="true"><span>Sofía Herrera · Activo</span><span>Martín Paz · Activo</span><span>Laura Ríos · De baja</span></div><div class="rot2">Vuelve a leer · las filas atenuadas y una línea que corre</div></div>
     </div>
     <ul class="reglas2" style="margin-top: 14px;">
-      <li><strong>Lo que estaba queda a la vista,</strong> atenuado y sin poder tocarse, hasta que llega lo nuevo. La primera carga conserva su esqueleto.</li>
+      <li><strong>Lo que estaba queda a la vista,</strong> atenuado y sin poder tocarse, hasta que llega lo nuevo. La primera carga dibuja el encabezado y el aro en el alto de ocho filas, sin filas esqueleto: al llegar las filas, la tabla no cambia de alto (160).</li>
     </ul>
   </section>
 
@@ -889,9 +976,28 @@
     </ul>
   </section>
 
+  <section data-reglas="7-11">
+    <h2>El texto largo, entero</h2>
+    <div class="r711-lg">
+      <div class="r711-tb">
+        <div class="th"><span>N°</span><span>Cliente</span><span>CUIT</span><span>Observaciones</span></div>
+        <div class="tr"><span>VIS-000126</span><span>Ferretería Rosales</span><span class="cod">30-71458236-9</span><span>Cerramos el pedido de octubre; la entrega queda para el lunes 9, después de las 14.</span></div>
+        <div class="tr"><span>VIS-000125</span><span>Distribuidora del Litoral Norte S.A.</span><span class="cod">30-70988123-4</span><span>Pide visita el martes.</span></div>
+        <div class="tr"><span>VIS-000124</span><span>Obra Centro</span><span class="cod">30-69874512-3</span><span>—</span></div>
+      </div>
+      <ul class="reglas2">
+        <li><strong>Un texto largo baja de renglón</strong> y la fila crece: se ve entero, sin «…» ni tooltip. Vale en las celdas, en las filas del teléfono y en las opciones del menú (174).</li>
+        <li><strong>Un dato por celda</strong> sigue valiendo: lo que baja de renglón es el mismo dato.</li>
+        <li><strong>Un código con guiones no se parte</strong> (<span style="white-space: nowrap;">«30-71458236-9»</span>): si no entra, baja entero. Una zona horaria se corta solo en sus barras.</li>
+      </ul>
+    </div>
+  </section>
+
   <section>
     <h2>Prohibido</h2>
     <ul class="prohibido">
+      <li data-r711>Cortar un texto con «…»: baja de renglón y la fila crece (174).</li>
+      <li data-r711>Filas esqueleto en la primera carga: van el encabezado y el aro en el alto de ocho filas (160).</li>
       <li>Una tabla sin líneas entre columnas, o los números a la izquierda.</li>
       <li>Un rótulo chico pegado a una frase, o «Rótulo: valor» corrido en un renglón.</li>
       <li>Encabezados en mayúsculas o sin color.</li>
@@ -909,7 +1015,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2670}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4960}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

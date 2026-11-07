@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 2920px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 3510px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -650,6 +650,96 @@
 .banda-mini { display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border: 1px solid var(--borde); border-radius: 10px; }
 .banda-mini strong { font-size: 15px; }
   </style>
+<style data-r711="Criterio-Avisos">
+.r711-casos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 28px; }
+.r711-caso { display: flex; flex-direction: column; gap: 8px; }
+.r711-bd { background: #fff; border: 1px solid var(--borde); border-radius: 12px; }
+.r711-bd .b { min-height: 64px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 18px; border-bottom: 1px solid var(--borde); }
+.r711-bd .b h3 { margin: 0; font-size: 16px; font-weight: 700; }
+.r711-bd .b .s { display: inline-flex; align-items: center; gap: 6px; margin-top: 2px; font-size: 13px; color: var(--t2); }
+.r711-bd .b .s::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--punto, oklch(0.72 0.15 70)); }
+.r711-bd .b .s.ok { --punto: oklch(0.6 0.13 155); }
+.r711-bd .b .s.pend { --punto: oklch(0.62 0.12 240); }
+.r711-bd .b .s.off { --punto: oklch(0.75 0.01 78); }
+.r711-bd .b .ac { display: flex; gap: 8px; flex-shrink: 0; }
+.r711-bd .cu { padding: 12px 18px; font-size: 13px; color: var(--t2); min-height: 20px; }
+.r711-bd .cu .nada { color: var(--t3); }
+.r711-caso .r { font-size: 12.5px; color: var(--t3); }
+.r711-tip { position: relative; display: inline-flex; }
+.r711-tip .tooltip { position: absolute; z-index: 2; right: 0; bottom: calc(100% + 8px); width: 240px; white-space: normal; text-align: left; font-weight: 400; padding: 8px 10px; border-radius: 8px; background: oklch(0.27 0.012 60); color: #fff; font-size: 12px; line-height: 1.4; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
+</style>
+<style data-t10="piezas">
+/* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
+:root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
+:root .ab-sidebar__head { gap: 0 !important; }
+:root .banda-pag .ico, :root .w-bnd .ic, :root .bnd .ic, :root .carril .quien .ico { display: none !important; }
+:root .ini-ico, :root .lp-ico { background: transparent !important; width: auto !important; height: auto !important; }
+
+/* 173 · El avatar, un cuadrado con la inicial, sin degradé: chico (24) en la barra de arriba y en el pie del menú. */
+:root .avatar, :root .w-av, :root .ap-nav .yo, :root .av, :root .org-av, :root .mail-de .logo { background: var(--marca) !important; color: #fff; border-radius: 6px !important; }
+:root .avatar.gris { background: var(--s3) !important; color: var(--t2) !important; }
+:root .w-av.g { background: oklch(0.9 0.015 95) !important; color: var(--t2) !important; }
+:root .ab-topbar .um-btn .avatar, :root .ab-sidebar__user .avatar, :root .ab-sidebar__footer .avatar, :root .w-us .w-av, :root .w-umd .um .w-av { width: 24px !important; height: 24px !important; font-size: 12px !important; border-radius: 5px !important; }
+:root .menu-cab .avatar, :root .w-mn-cab .w-av, :root .ap .w-av, :root .ap-cbar .w-av { border-radius: 8px !important; }
+:root .ap-yo .w-av, :root .ap-perfil .w-av, :root .org-av { border-radius: 12px !important; }
+
+/* 173 · El activo del menú: una barra de 2 px de la marca, sin pastilla blanca ni sombra. */
+:root .ab-sidebar__link--active, :root .ab-sidebar__link--active:hover, :root .ab-root.adm-abierto .adm-btn, :root .ab-root.wa-abierto .wa-btn, :root .w-ln.on, :root .app .sb .ln.on, :root .lat .sb .ln.on {
+  background: var(--lado-hover) !important; color: var(--marca-tx) !important; font-weight: 600 !important; box-shadow: inset 2px 0 0 var(--marca) !important; border-radius: 0 8px 8px 0 !important; }
+:root .adm-panel .ab-sidebar__link--active, :root .adm-panel .ab-sidebar__link--active:hover, :root .w-panel .w-ln.on, :root .lat .panel .ln.on {
+  background: oklch(0.872 0.043 95) !important; color: var(--marca-tx) !important; font-weight: 600 !important; box-shadow: inset 2px 0 0 var(--marca) !important; border-radius: 0 8px 8px 0 !important; }
+
+/* 173 · El principal, sólido: sin degradé ni sombra. */
+:root .b-pri, :root .cb-pri { background: var(--marca) !important; box-shadow: none !important; filter: none !important; }
+:root .b-pri:hover, :root .cb-pri:hover, :root .cb-pri.h { background: var(--marca-h) !important; filter: none !important; }
+:root .ab-btn.ab-btn--outline:not(:focus-visible) { box-shadow: none !important; }
+
+/* 173 · Los filtros y las etiquetas, con el radio de un control; los contadores, como texto. */
+:root .pill-sel, :root .filtros .pil, :root .w-pil, :root .caja.fil .pi, :root .flt .pil, :root .fb2 .pil, :root .tb .pie .pil, :root .tel .pills span, :root .ap-chips2 span, :root .ap-flt .ch, :root .pl-chip, :root .flt.r311 .chip, :root .as-chip, :root .ap-pill { border-radius: 8px !important; }
+:root .pill, :root .rol, :root .pl-marca, :root .ap-fila .pl-marca, :root .auth-marca .kicker, :root .lp-kicker { border-radius: 6px !important; }
+:root .tab2 .cnt, :root .ini .t-cab .cnt { background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: var(--t3) !important; }
+:root .w-panel .w-ln .cnt, :root .fm-cnt, :root .ap-fila .fm-cnt, :root .ap-it .ap-cnt { background: transparent !important; padding: 0 !important; min-width: 0 !important; height: auto !important; border-radius: 0 !important; color: var(--marca-tx) !important; font-weight: 600 !important; }
+:root .w-campana .n, :root .ap-campana .n, :root .c-campana .n, :root .cmp .n, :root .c-bad, :root .pl-fil .n, :root .flt.r311 .pil .n { border-radius: 5px !important; }
+
+/* 143 y 144 · Las opciones de un filtro no dicen cuántas filas traen, y la barra no lleva el total: va al pie. */
+:root .menu-cnt, :root .f-mn .cnt, :root .mf-ck small, :root .mf .esq-n, :root .tot { display: none !important; }
+
+/* 137 · Una línea fina entre columnas, del tono de la que separa las filas, en el encabezado y en el cuerpo. */
+:root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
+:root .tt-f > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
+:root .tt-h > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
+:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
+:root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }
+
+/* 174 · El texto largo se ve entero: la celda baja de renglón en lugar de cortar con «…». */
+:root .tt-f > *, :root .tt-f .dos > *, :root .tt-f > .c2b, :root .c1, :root .c2, :root .w-tr > span, :root .w-tr .dos span, :root .w-tr .k-tc small, :root .w-tr.pl > span, :root .w-th.pl > span,
+:root .tb .tr > *, :root .tb .tr .dos > *, :root .ap-fila .l2, :root .q-it .dato b, :root .q-it .dato > span, :root .w-it .dato > b, :root .w-it .dato > span, :root .fx-n a, :root .tb-hor .h .l, :root .k-lee, :root .pl-quien .tx, :root .tr-sec .h .r, :root .ini-t .d, :root .c-p b, :root .c-p .tx > span, :root .w-tr.t .dos span, :root .lista .it .dato, :root .cg-fot .nm, :root .as-adj .n, :root .md-it .tx b, :root .md-it .tx small, :root .o-fila .dos > *, :root .o-res .dos > *, :root .dir-desc, :root .dir-emp a {
+  white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+:root .ab-sidebar__link-label, :root .w-ln { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+:root .ab-sidebar .ab-sidebar__link, :root .ab-sidebar__link, :root .w-ln { height: auto !important; min-height: 32px; box-sizing: border-box; padding-top: 6px !important; padding-bottom: 6px !important; line-height: 20px; }
+
+/* 160 · La primera carga de un listado: el encabezado y el aro en el alto de ocho filas, sin filas esqueleto. */
+.t10-carga { height: 320px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--borde); }
+.t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
+.t10-aro { width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
+@keyframes t10-gira { to { transform: rotate(360deg); } }
+/* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */
+:root .tarjeta { box-shadow: none !important; }
+:root a.kpi:hover { box-shadow: none !important; }
+:root .dlg { box-shadow: none !important; }
+:root .toast2 { box-shadow: none !important; }
+:root .marco { box-shadow: none !important; }
+:root .brand { box-shadow: none !important; }
+:root .tarjeta, :root .fb { box-shadow: none !important; }
+:root .b-pri { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15) !important; }
+:root .adm-cerrar { box-shadow: none !important; }
+:root .adm-panel .ab-sidebar__link--active, :root .adm-panel .ab-sidebar__link--active:hover { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .ab-root.adm-abierto .adm-btn { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .ab-sidebar__link--active { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .cb-pri { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15) !important; }
+:root .toast3 { box-shadow: none !important; }
+:root .cmp-l { box-shadow: none !important; }
+</style>
 </helmet>
 
 <div class="crit">
@@ -743,9 +833,37 @@
     </div>
   </section>
 
+  <section data-reglas="7-11">
+    <h2>El estado, una vez</h2>
+    <div class="r711-casos">
+      <div class="r711-caso">
+        <div class="r711-bd"><div class="b"><div><h3>Visita a cliente</h3><span class="s">Sin confirmar · versión 4</span></div><div class="ac"><button type="button" class="cb cb-sec">Consultar publicación</button><span class="r711-tip"><button type="button" class="cb cb-pri" disabled style="opacity: 0.45;">Publicar en WhatsApp</button><span class="tooltip" role="tooltip">Esperá a que WhatsApp confirme la versión 4.</span></span></div></div><div class="cu"><span class="nada">Nada debajo: ni zona ni pasos.</span></div></div>
+        <span class="r">La publicación · «Consultar publicación» y «Repetir el mismo intento» solo cuando hacen falta; con «Necesita revisión», «Salió» y «No salió»</span>
+      </div>
+      <div class="r711-caso">
+        <div class="r711-bd"><div class="b"><div><h3>Información del negocio</h3><span class="s">Guardado por revisar</span></div><div class="ac"><button type="button" class="cb cb-sec">Revisar guardado</button><button type="button" class="cb cb-sec">Reintentar el mismo guardado</button></div></div><div class="cu"><span class="nada">Nada debajo: por qué «Guardar» está apagado va en su tooltip.</span></div></div>
+        <span class="r">Un guardado por revisar · la acción que lo destraba, en la banda</span>
+      </div>
+      <div class="r711-caso">
+        <div class="r711-bd"><div class="b"><div><h3>Motivos de visita</h3><span class="s pend">Propuesta del asistente</span></div><div class="ac"><button type="button" class="cb cb-sec">Descartar propuesta</button><button type="button" class="cb cb-pri">Aprobar y activar</button></div></div><div class="cu">La pidió Ana Gómez por WhatsApp el 05/11/2026 10:20.</div></div>
+        <span class="r">Una propuesta del asistente · debajo, solo lo que la etiqueta no dice: quién y cuándo</span>
+      </div>
+      <div class="r711-caso">
+        <div class="r711-bd"><div class="b"><div><h3>Control de vehículo</h3><span class="s off">De baja · versión 3</span></div><div class="ac"><button type="button" class="cb cb-pri">Reactivar</button></div></div><div class="cu">Lo dio de baja Ana Gómez el 05/11/2026 10:20.</div></div>
+        <span class="r">La baja · una frase; al reactivar, la etiqueta dice el estado de la publicación</span>
+      </div>
+    </div>
+    <ul class="reglas2" style="margin-top: 14px;">
+      <li><strong>Lo que dice el encabezado no se repite debajo,</strong> ni en una zona ni en una frase: debajo va solo lo que la etiqueta no dice, como quién y cuándo (175).</li>
+      <li><strong>La acción que destraba el estado va en la banda,</strong> solo cuando hace falta, y el porqué de un botón apagado, en su tooltip.</li>
+      <li><strong>En la publicación no hay pasos,</strong> ni detrás de la ⓘ: la etiqueta dice el estado, y lo rechazado sigue marcado en su pregunta, sin una zona «Problemas».</li>
+    </ul>
+  </section>
+
   <section>
     <h2>Prohibido</h2>
     <ul class="prohibido">
+      <li data-r711>Los pasos de un estado detrás de la ⓘ, o una zona que cuenta lo que ya dice la etiqueta (175).</li>
       <li>Un error en un aviso que se va solo.</li>
       <li>El mismo error en dos lugares: en el formulario y abajo.</li>
       <li>Un diálogo para contar que algo salió bien.</li>
@@ -755,13 +873,13 @@
       <li>Textos como «Error», «Ups», «Operación exitosa» o con signos de exclamación.</li>
       <li>Códigos técnicos o textos en inglés.</li>
       <li>Párrafos o líneas que explican en la pantalla: la ayuda que sirve va en la (i).</li>
-      <li>El mismo estado en dos lugares: arriba y otra vez en la fila.</li>
+      <li>El mismo estado en dos lugares: arriba y otra vez en la fila, o debajo del encabezado, en una zona o una frase que lo repite (175).</li>
     </ul>
   </section>
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2920}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3510}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };
