@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 4290px; box-sizing: border-box; padding: 28.8px/*40px*/ 34.6px/*48px*/ 40.3px/*56px*/; background: var(--fondo); color: var(--t1); font-size: 11.5px/*14px*/; line-height: 1.5; display: flex; flex-direction: column; gap: 25.9px/*36px*/; }
+.crit { width: 1440px; min-height: 4120px; box-sizing: border-box; padding: 28.8px/*40px*/ 34.6px/*48px*/ 40.3px/*56px*/; background: var(--fondo); color: var(--t1); font-size: 11.5px/*14px*/; line-height: 1.5; display: flex; flex-direction: column; gap: 25.9px/*36px*/; }
 .crit h1 { margin: 0; font-size: 21.3px/*26px*/; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 2.9px/*4px*/ 0 0; font-size: 12.3px/*15px*/; color: var(--t2); }
 .crit h2 { margin: 0 0 10.1px/*14px*/; font-size: 13.9px/*17px*/; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 7.2px/*10px*/; border-bottom: 1px solid var(--borde); }
@@ -886,6 +886,15 @@
 .r711-lista li { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 8.6px/*12px*/; padding: 7.2px/*10px*/ 0; border-top: 1px solid var(--borde); }
 .r711-lista li b { font-weight: 600; }
 .r711-lista .no { color: var(--t3); text-decoration: line-through; }
+.r711-esc { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; overflow: hidden; font-size: 11.1px/*13.5px*/; }
+.r711-esc .c, .r711-esc .f { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1.4fr); }
+.r711-esc .c { min-height: 29.6px/*40px*/; background: oklch(0.945 0.027 95); border-bottom: 1px solid oklch(0.89 0.031 95); font-size: 10.7px/*13px*/; font-weight: 600; color: var(--t2); }
+.r711-esc .f { min-height: 29.6px/*40px*/; border-bottom: 1px solid var(--borde); }
+.r711-esc .f:last-child { border-bottom: 0; }
+.r711-esc .f:nth-child(odd) { background: oklch(0.968 0.015 95); }
+.r711-esc .c > *, .r711-esc .f > * { display: flex; align-items: center; padding: 5.8px/*8px*/ 10.1px/*14px*/; line-height: 1.4; }
+.r711-esc .c > * + *, .r711-esc .f > * + * { box-shadow: inset 1px 0 0 oklch(0.915 0.013 95 / 0.8); }
+.r711-esc .f b { font-weight: 600; }
 </style>
 <style data-t10="piezas">
 /* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
@@ -925,6 +934,8 @@
 
 /* 137 · Una línea fina entre columnas, del tono de la que separa las filas, en el encabezado y en el cuerpo. */
 :root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
+/* Las filas de una tabla con columnas fijas conservan su relleno, del que sale dónde queda cada columna fija (ver TABLA_FIJA). */
+:root .k-desp .w-th, :root .k-desp .w-tr { padding-left: 16px !important; padding-right: 8px !important; }
 :root .tt-f > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.ap-fab):not(.ap-fila):not(.ap-i):not(.ap-ib):not(.ap-red):not(.ap-sw):not(.atras):not(.av):not(.avatar):not(.b):not(.bd):not(.brand):not(.cb):not(.centro):not(.ck):not(.d):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.i):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.ini):not(.kebab):not(.mas):not(.menu-cnt):not(.num):not(.pie):not(.pt):not(.quitar):not(.tachado):not(.tels):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-conv):not(.yo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.ap-fab):not(.ap-fila):not(.ap-i):not(.ap-ib):not(.ap-red):not(.ap-sw):not(.atras):not(.av):not(.avatar):not(.b):not(.bd):not(.brand):not(.cb):not(.centro):not(.ck):not(.d):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.i):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.ini):not(.kebab):not(.mas):not(.menu-cnt):not(.num):not(.pie):not(.pt):not(.quitar):not(.tachado):not(.tels):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-conv):not(.yo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
 :root .tt-h > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.ap-fab):not(.ap-fila):not(.ap-i):not(.ap-ib):not(.ap-red):not(.ap-sw):not(.atras):not(.av):not(.avatar):not(.b):not(.bd):not(.brand):not(.cb):not(.centro):not(.ck):not(.d):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.i):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.ini):not(.kebab):not(.mas):not(.menu-cnt):not(.num):not(.pie):not(.pt):not(.quitar):not(.tachado):not(.tels):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-conv):not(.yo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.ap-fab):not(.ap-fila):not(.ap-i):not(.ap-ib):not(.ap-red):not(.ap-sw):not(.atras):not(.av):not(.avatar):not(.b):not(.bd):not(.brand):not(.cb):not(.centro):not(.ck):not(.d):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.i):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.ini):not(.kebab):not(.mas):not(.menu-cnt):not(.num):not(.pie):not(.pt):not(.quitar):not(.tachado):not(.tels):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-conv):not(.yo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
 :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.ap-fab):not(.ap-fila):not(.ap-i):not(.ap-ib):not(.ap-red):not(.ap-sw):not(.atras):not(.av):not(.avatar):not(.b):not(.bd):not(.brand):not(.cb):not(.centro):not(.ck):not(.d):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.i):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.ini):not(.kebab):not(.mas):not(.menu-cnt):not(.num):not(.pie):not(.pt):not(.quitar):not(.tachado):not(.tels):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-conv):not(.yo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.ap-fab):not(.ap-fila):not(.ap-i):not(.ap-ib):not(.ap-red):not(.ap-sw):not(.atras):not(.av):not(.avatar):not(.b):not(.bd):not(.brand):not(.cb):not(.centro):not(.ck):not(.d):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.i):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.ini):not(.kebab):not(.mas):not(.menu-cnt):not(.num):not(.pie):not(.pt):not(.quitar):not(.tachado):not(.tels):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-conv):not(.yo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
@@ -1003,7 +1014,7 @@
       <li><strong>1 · Menú lateral:</strong> arena, igual en los tres perfiles. Ver «Menús y desplegables».</li>
       <li><strong>2 · Barra de arriba:</strong> arena. Las migas a la izquierda y tu menú a la derecha, con tu inicial en un cuadrado chico del color de la marca, igual que en el pie del menú y en el teléfono. Nada más: sin ☰.</li>
       <li><strong>3 · Banda de la página:</strong> blanca. Título, resumen y las acciones de la página, sin ícono.</li>
-      <li><strong>4 · Contenido:</strong> a todo el ancho, con 24 px de margen. Cada cosa en su caja: filtros por un lado, tabla por otro.</li>
+      <li><strong>4 · Contenido:</strong> a todo el ancho, con 17 px de margen. Cada cosa en su caja: filtros por un lado, tabla por otro.</li>
     </ul>
   </section>
 
@@ -1076,6 +1087,30 @@
     </ul>
   </section>
 
+  <section data-reglas="7-11-escala">
+    <h2>La escala</h2>
+    <div class="r711-esc">
+      <div class="c"><span>Pieza</span><span>Antes</span><span>Con la escala</span></div>
+      <div class="f"><b>Letra del cuerpo, de las filas y de los menús</b><span>13</span><span>10,7 (unos 11)</span></div>
+      <div class="f"><b>Letra de un botón</b><span>14</span><span>11,5</span></div>
+      <div class="f"><b>Título de la banda</b><span>18</span><span>14,8</span></div>
+      <div class="f"><b>Botón normal, chico y grande</b><span>36, 32 y 44</span><span>27, 24 y 33</span></div>
+      <div class="f"><b>Campo</b><span>36 (44 en el ingreso)</span><span>27 (33)</span></div>
+      <div class="f"><b>Fila y encabezado de una tabla</b><span>40 (la planilla, 44)</span><span>30 (33)</span></div>
+      <div class="f"><b>Banda de la página</b><span>64</span><span>47</span></div>
+      <div class="f"><b>Barra de arriba</b><span>52</span><span>38,5 (unos 39)</span></div>
+      <div class="f"><b>Opción del menú lateral</b><span>32</span><span>24</span></div>
+      <div class="f"><b>Relleno del cuerpo y de una caja</b><span>24; 16 y 20</span><span>17; 12 y 14</span></div>
+      <div class="f"><b>Esquinas</b><span>de 6 a 16; pastillas</span><span>3 como mucho, también pastillas y avatares</span></div>
+      <div class="f"><b>Teléfono</b><span>controles de 44 a 50, letra de 16</span><span>igual: conserva sus medidas para el dedo</span></div>
+    </div>
+    <ul class="reglas2" style="margin-top: 10.1px/*14px*/;">
+      <li><strong>La de ArquitecturaBase, elegida por el usuario</strong> viendo la misma planilla en tres escalas (180): la letra × 0,82, sin bajar de 10,5; los altos de 18 a 72 × 0,74; los rellenos y las separaciones × 0,72, y las esquinas de 3 como mucho. Sin sombras, salvo en menús, desplegables y tooltips (173).</li>
+      <li><strong>Los anchos no cambian:</strong> el menú lateral y su panel siguen en 232; los diálogos, en 420, 560 y 640, y las columnas de una tabla, en lo suyo. Lo cuadrado (un avatar, un botón de ícono) sigue cuadrado.</li>
+      <li><strong>Los colores siguen siendo los de Pradera.</strong> El lienzo dibuja lo que se ve; en la app entra con la base de la 12 (ver el tema del front).</li>
+    </ul>
+  </section>
+
   <section data-reglas="7-11">
     <h2>Que no parezca plantilla</h2>
     <ul class="r711-lista">
@@ -1126,7 +1161,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4290}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4120}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

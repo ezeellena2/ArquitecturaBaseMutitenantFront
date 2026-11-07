@@ -7,7 +7,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 7350  # 07/11: en cinco columnas, la más alta medía 9158; en seis, llega a 7231
+ALTO = 5300  # 07/11: en cinco columnas, la más alta medía 9158; en seis y con la escala de la 180, llega a 5234
 ANCHO = 8880
 COLUMNAS = 6
 ARCHIVO = "Criterio-Decisiones.dc.html"
@@ -123,6 +123,7 @@ REGLAS = [
     ("Que no parezca plantilla: la marca sin cuadrado, la banda sin ícono, el avatar cuadrado, el activo con una barra, sin pastillas y sin sombras salvo en menús; el principal, sólido.", "Marco · Botones · Menús", "07/11/2026"),
     ("El texto largo se ve entero: una celda baja de renglón en lugar de cortar con «…».", "Tablas y listas", "07/11/2026"),
     ("El estado, una vez: lo que dice el encabezado no se repite debajo; la acción que lo destraba va en la banda y el porqué de un botón apagado, en su tooltip.", "Avisos y errores", "07/11/2026"),
+    ("La escala, como ArquitecturaBase: la letra × 0,82, los altos × 0,74, los rellenos × 0,72 y las esquinas de 3 px como mucho, en la compu; el teléfono conserva sus medidas táctiles.", "Marco y pantallas · Tablas y listas", "07/11/2026"),
 ]
 
 # Decisiones por página: (pantalla, opción elegida, qué se eligió, estado en el lienzo).
@@ -339,7 +340,7 @@ DECISIONES = {
         ("Segundo factor de los operadores", "", "En el ingreso, además del código y del alta del autenticador: el bloqueo por demasiados códigos (el mismo de la cuenta), el código de recuperación que no sirve y el código que no activa el autenticador (Etapa 9).", "Dibujada"),
         ("Confirmá que sos vos", "", "Antes de una acción sensible de Plataforma, si el último código no es reciente: el código del autenticador en un diálogo (una hoja en el teléfono), con el error debajo y «Usar un código de recuperación». Dibujado al guardar permisos (Etapa 9).", "Dibujada"),
         ("Restablecer el autenticador", "", "En el ⋮ de un operador, con motivo: cierra sus sesiones y anula sus códigos de recuperación; al volver a entrar, lo configura de nuevo (Etapa 9).", "Dibujada"),
-        ("WhatsApp de atención, al día", "", "Plantillas del sistema: las 16 del catálogo (0049), de a 10; el bot de Plataforma manda el enlace para entrar o registrarse; «Mis mensajes con empresas» muestra las conversaciones; Cargar teléfonos con el panel de Administración vigente (Etapa 11).", "Dibujada"),
+        ("WhatsApp de atención, al día", "", "Plantillas del sistema: las 16 del catálogo (0049), de a 10; el bot de Plataforma manda el enlace para entrar o registrarse (reemplazado por la 179: ningún mensaje lleva un enlace secreto); «Mis mensajes con empresas» muestra las conversaciones; Cargar teléfonos con el panel de Administración vigente (Etapa 11).", "Dibujada"),
         ("Catálogo de modelos: datos técnicos completos", "", "«Avanzado» suma Texto y Pensamiento adaptativo, los esfuerzos permitidos, la caché (lectura y escritura de 5 minutos y de 1 hora) y el contexto largo con su caché; editar muestra Claude Haiku 5.5, el único con tramo largo (contrato del back 853b5aed).", "Dibujada"),
     ],
     "El usuario · 11/10": [
@@ -416,7 +417,7 @@ DECISIONES = {
         ("Idioma", "", "Desde el 24/10, el contenido no tiene idioma: un solo texto por campo, como lo escribe la persona, y una sola vista previa (decisión 35; reemplaza la 17).", "Dibujada"),
         ("Guardar", "", "Guardado, no se guardó (lo escrito se conserva) y, si otra persona guardó, la banda ⚠ con «Revisar» y la revisión «Qué cambió | Guardado actualmente | Mis cambios». Desde el 24/10, sin «Guardado sin confirmar» ni «Consultar guardado»: la pantalla vuelve a leer sola.", "Dibujada"),
         ("Publicar", "", "«Publicar la versión N en WhatsApp»: qué cambia, qué queda fijo y qué va a pasar. Comprobando, una pregunta que no se puede mostrar (con el botón grisado), cambió después de comprobar y ya se está publicando. Desde el 24/10, sin el idioma, sin la hora del borrador al lado de los botones y sin «venció».", "Dibujada"),
-        ("Cómo termina", "", "Desde el 25/10, sin carteles (regla de avisos): el estado va en la banda con su ⓘ, que abre los pasos (Aceptada, Enviada a WhatsApp, WhatsApp la revisa y Lista para mandar) o, sin confirmar, «Consultar ahora», nunca «Reintentar». Rechazada: la pregunta, marcada en su lugar con «Corregir». La vista oficial va al costado, con «Borrador | Versión N en WhatsApp». Reemplazada por la 175: sin pasos detrás de la ⓘ.", "Reemplazada"),
+        ("Cómo termina", "", "Desde el 25/10, sin carteles (regla de avisos): el estado va en la banda con su ⓘ, que abre los pasos (Aceptada, Enviada a WhatsApp, WhatsApp la revisa y Lista para mandar) o, sin confirmar, «Consultar ahora», nunca «Reintentar». Rechazada: la pregunta, marcada en su lugar con «Corregir». La vista oficial va al costado, con «Borrador | Versión N en WhatsApp». Reemplazada por la 175 y la 176: sin pasos detrás de la ⓘ, y la vista oficial se recorre en un diálogo.", "Reemplazada"),
         ("Enviar desde el chat", "", "«Enviar formulario» al lado de «Enviar» en Internos. El diálogo: tarjetas con «Versión N · K preguntas» (buscador y paginado si son muchos), el mensaje prellenado (hasta 1024) y hasta cuándo se puede mandar. Reglas del lienzo: el motivo de un botón apagado va en su ⓘ y el diálogo va sin descripción arriba. Desde el 24/10, sin el idioma en que le llega.", "Dibujada"),
         ("Después de enviar", "", "La burbuja lleva la tarjeta del formulario; abajo, En cola, Leído, No se pudo mandar (con ⓘ, sin reintento) o Envío sin confirmar con «Ya lo revisé», que abre «Resolver el envío»: Salió o No salió, como en la E16. Desde el 24/10, sin «Consultar envío». Con el diálogo abierto: ventana cerrada y formulario que ya no está.", "Dibujada"),
         ("La respuesta", "", "Tarjeta con las primeras 3 en grilla, «Ver las N respuestas» y «Guardada como VIS-000123»; guardando, no se pudo guardar, no reconocida, sin permiso, una de «elegir varias» y el mensaje que ya no está. El encabezado del chat sigue el de la E11 (teléfono · Empleado · empresa).", "Dibujada"),
@@ -607,7 +608,7 @@ DECISIONES = {
         ("El detalle de una respuesta", "TL1-A y TL3-A", "El valor primero y los datos del catálogo debajo; los momentos con la fecha a la derecha; la actividad en cuatro columnas fijas, por momento (139).", "Falta dibujar"),
         ("Los historiales", "HI1-A", "Detrás de un botón «Historial», apagado sin revisiones, que abre un panel al costado (140).", "Falta dibujar"),
         ("La carga", "AR1-A", "Dos anchos, las casillas en columnas y el panel con sus zonas (141).", "Falta dibujar"),
-        ("Renglones", "RG1-A a RG6-A", "Elegido por el usuario: «Se carga varias veces», mínimo y máximo, una pantalla por renglón en WhatsApp y «Algún renglón con…» (146). Reemplaza el grupo de líneas.", "Falta dibujar"),
+        ("Renglones", "RG1-A a RG6-A", "Elegido por el usuario: «Se carga varias veces», mínimo y máximo, una pantalla por renglón en WhatsApp y «Algún renglón con…» (146). Reemplaza el grupo de líneas. Reemplazada en parte por la 177: se agrega con «Agregar bloque» y lo que se repite se llama «ítem».", "Reemplazada"),
         ("Mantener lo cargado", "AR2-A", "Elegido por el usuario: también en la página, antes de Cancelar y Enviar (147).", "Falta dibujar"),
         ("«Por aprobar»", "PL1-A", "Elegido por el usuario: «Por aprobar (N) | Todas» arriba de la planilla, con el segmentado y no con pestañas (148).", "Falta dibujar"),
         ("El mensaje con datos", "MD1-A", "Elegido por el usuario: «Agregar dato» pone etiquetas que siguen a la pregunta, con «Así llega» debajo (149).", "Falta dibujar"),
@@ -629,6 +630,11 @@ DECISIONES = {
         ("Que no parezca plantilla", "A", "Elegido por el usuario: la marca sin cuadrado, la banda sin ícono, el avatar cuadrado, el activo con una barra, sin pastillas y sin sombras salvo en menús; el principal, sólido. Quedan la paleta Pradera y la densidad (173).", "Dibujada"),
         ("El texto largo", "A", "Elegido por el usuario: entero; la celda baja de renglón en lugar de cortar con «…», y un código no se parte (174).", "Dibujada"),
         ("El estado, una vez", "A", "Elegido por el usuario: lo que dice el encabezado no se repite debajo; en la publicación, sin pasos ni zona «Problemas», con «Consultar publicación» cuando hace falta; la baja, en una frase (175).", "Dibujada"),
+        ("La vista oficial", "VO1-A", "Elegido por el usuario: «Ver vista oficial» abre un diálogo de 480 × 840 que se recorre como en el celular, con las primeras 20 opciones de cada catálogo; al costado queda solo «Así lo ve quien lo recibe», y sale «Borrador | Versión N en WhatsApp» (176).", "Falta dibujar"),
+        ("El bloque y el «ítem»", "RG10-D y RG12-A", "Elegido por el usuario: «Agregar bloque» al lado de «Agregar pregunta», que arranca abierto y con «Bloque» de nombre; donde se leía «renglón», dice «ítem»: «¿Agregás otro ítem?», «Agregar ítem», «Productos · ítem 2» (177). Cambia la 146.", "Falta dibujar"),
+        ("Un mínimo de más de 10 ítems", "RG13-A", "Elegido por el usuario: con WhatsApp, en la E19 publicar frena («En WhatsApp se cargan hasta 10 ítems; el mínimo es 15.»); desde la E20, un formulario para empleados se publica solo para la app, con su aviso, y uno solo para clientes frena (178).", "Falta dibujar"),
+        ("El ingreso y el consentimiento por WhatsApp", "", "Elegido por el usuario: ningún mensaje lleva un enlace secreto: el bot lleva al ingreso con «Entrar a mi cuenta», y el código se pide desde la web; invitar desde «Cargar teléfonos» pide marcar «La persona aceptó recibir mensajes por WhatsApp» (179).", "Falta dibujar"),
+        ("La escala", "", "Elegida por el usuario viendo la misma planilla en tres escalas: la de ArquitecturaBase. La letra × 0,82 (el cuerpo, unos 11 px), las filas, los controles y las bandas × 0,74 (una fila de tabla, unos 30 px; un botón, de 24 a 27), los rellenos × 0,72 y las esquinas de 3 px como mucho, con la paleta Pradera. Los teléfonos conservan sus medidas táctiles (180).", "Dibujada"),
     ],
     "Varios asistentes · v158 · 03/11": [
         ("La lista", "", "Como las listas de WhatsApp: el asistente, sus equipos y su estado, con el ⋮ (Editar y Dar de baja o Reactivar). «Dar de baja» del principal queda grisado, con el motivo en su tooltip. En ArquitecturaBase no existe.", "Dibujada"),

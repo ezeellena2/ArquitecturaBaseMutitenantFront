@@ -77,6 +77,8 @@ PIEZAS = """
 
 /* 137 · Una línea fina entre columnas, del tono de la que separa las filas, en el encabezado y en el cuerpo. */
 :root .tt-h, :root .tt-f, :root .w-th@PL@:not(.k-desp *), :root .w-tr@PL@:not(.k-desp *) { position: relative; }
+/* Las filas de una tabla con columnas fijas conservan su relleno, del que sale dónde queda cada columna fija (ver TABLA_FIJA). */
+:root .k-desp .w-th, :root .k-desp .w-tr { padding-left: 16px !important; padding-right: 8px !important; }
 :root .tt-f > * + *@SIN@::after, :root .w-tr@PL@:not(.k-desp *) > * + *@SIN@::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: @TT@; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
 :root .tt-h > * + *@SIN@::after, :root .w-th@PL@:not(.k-desp *) > * + *@SIN@::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: @TT@; background: oklch(0.89 0.031 95); pointer-events: none; }
 :root .w-tr@PL@:not(.k-desp *) > * + *@SIN@::after, :root .w-th@PL@:not(.k-desp *) > * + *@SIN@::after { margin-left: -8.5px; }
@@ -314,7 +316,12 @@ def radio(n):
     return min(n, ESCALA["radio"])
 
 
-def escalar_cuerpo(cuerpo):
+# Las tablas con columnas fijas (las opciones y los campos de un catálogo): cada columna fija se ubica sumando los anchos, las
+# separaciones y el relleno de las de antes, así que ahí se achican la letra y los altos, pero no las separaciones ni las posiciones.
+TABLA_FIJA = re.compile(r"\.k-desp\b|\.w-t[hr]\.k(?:e|v|l|f|f3|l2)\b|\.fx\b|\.fx-")
+
+
+def escalar_cuerpo(cuerpo, fija=False):
     """Las declaraciones de una regla (o de un `style=`): letra, altos, espacios, esquinas y el ancho de lo cuadrado."""
     altos = {original(m) for d in DECLARACION.finditer(cuerpo) if d.group(1) in ("height", "min-height") for m in PX.finditer(d.group(3))}
 
@@ -327,9 +334,11 @@ def escalar_cuerpo(cuerpo):
         elif prop in ("width", "min-width"):
             valor = con_regla(valor, lambda n: alto(n) if n in altos else None)
         elif ESPACIOS.match(prop):
-            valor = con_regla(valor, espacio)
+            valor = con_regla(valor, (lambda n: None) if fija else espacio)
         elif prop == "border-radius":
             valor = con_regla(valor, radio)
+        elif fija and prop in ("top", "bottom", "left", "right"):
+            valor = con_regla(valor, lambda n: None)
         elif prop in ("top", "bottom"):
             # Lo que se apoya en algo que se achicó (la flecha del menú sobre la banda, un menú abierto) baja con los altos.
             valor = con_regla(valor, lambda n: round(n * ESCALA["alto"], 1) if n >= ESCALA["espacio_min"] else None)
@@ -349,7 +358,7 @@ def escalar(t):
             selectores = [s for s in con_root(r.group(1)).split(", ") if s.strip()]
             if selectores and all(DE_TELEFONO.search(s.removeprefix(":root ")) for s in selectores):
                 return r.group(0)
-            return r.group(1) + "{" + escalar_cuerpo(r.group(2)) + "}"
+            return r.group(1) + "{" + escalar_cuerpo(r.group(2), bool(TABLA_FIJA.search(r.group(1)))) + "}"
         return m.group(1) + REGLA.sub(regla, m.group(2)) + m.group(3)
 
     partes = SCRIPT.split(t)

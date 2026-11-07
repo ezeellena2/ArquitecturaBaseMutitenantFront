@@ -902,8 +902,8 @@ body { margin: 0; }
 .k-sel > span { margin-right: auto; }
 .k-aviso-f { display: flex; align-items: center; justify-content: space-between; gap: 8.6px/*12px*/; padding: 8.6px/*12px*/ 11.5px/*16px*/; font-size: 11.5px/*14px*/; color: var(--t1); }
 .k-aviso-f .cb { flex: none; }
-.w-th.ke, .w-tr.ke { grid-template-columns: 28px 30px minmax(192px, 1.25fr) 96px minmax(192px, 1.35fr) 56px 172px; gap: 7.2px/*10px*/; }
-.w-th.kv, .w-tr.kv { grid-template-columns: 28px 30px minmax(170px, 1.1fr) 96px 128px minmax(150px, 1fr) 56px 172px; gap: 7.2px/*10px*/; }
+.w-th.ke, .w-tr.ke { grid-template-columns: 28px 30px minmax(192px, 1.25fr) 96px minmax(192px, 1.35fr) 56px 172px; gap: 10px; }
+.w-th.kv, .w-tr.kv { grid-template-columns: 28px 30px minmax(170px, 1.1fr) 96px 128px minmax(150px, 1fr) 56px 172px; gap: 10px; }
 .w-th .der, .w-tr .der { justify-content: flex-end; text-align: right; }
 .f-bnd-est .k-us { margin-right: 4.3px/*6px*/; color: var(--t3); }
 .k-acc { display: inline-flex; align-items: center; justify-content: flex-end; gap: 0; width: 100%; }
@@ -915,7 +915,7 @@ body { margin: 0; }
 .w-tr.borrar .k-chk { opacity: 0.45; }
 .k-err-f { grid-column: 1 / -1; display: flex; align-items: center; gap: 4.3px/*6px*/; padding: 0 0 5.8px/*8px*/ 49px/*68px*/; font-size: 10.5px/*12.5px*/; color: var(--peligro); }
 .k-err-f svg { width: 14px; height: 14px; flex: none; }
-.w-th.kl, .w-tr.kl { grid-template-columns: 30px minmax(192px, 1.2fr) 96px minmax(192px, 1.4fr) 110px; gap: 7.2px/*10px*/; }
+.w-th.kl, .w-tr.kl { grid-template-columns: 30px minmax(192px, 1.2fr) 96px minmax(192px, 1.4fr) 110px; gap: 10px; }
 .w-tr.ke, .w-tr.kv, .w-tr.kl { position: relative; min-height: 37px/*50px*/; }
 .w-tr.baja .k-in { color: var(--t3); }
 .k-chk { width: 16px; height: 16px; border-radius: 3px/*4px*/; border: 1.5px solid var(--borde2); box-sizing: border-box; background: #fff; display: inline-flex; align-items: center; justify-content: center; color: #fff; }
@@ -973,7 +973,7 @@ body { margin: 0; }
 /* Las tablas de un catálogo no se aplastan (maqueta a1303a5 y af5eceb, el usuario, 25/10): cada columna con su ancho mínimo y, si
    no entran, se desplazan a lo ancho dentro de su caja, con lo de la izquierda y el ⋮ fijos, con el fondo de su fila y una línea. */
 .k-desp { overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--borde2) transparent; }
-.k-desp:has(.f-menu), .k-desp:has(.f-mn) { padding-bottom: 244.8px/*340px*/; margin-bottom: -244.8px/*340px*/; scrollbar-width: none; }
+.k-desp:has(.f-menu), .k-desp:has(.f-mn) { padding-bottom: 340px; margin-bottom: -340px; scrollbar-width: none; }
 .k-desp .w-th, .k-desp .w-tr { overflow: visible; --fxbg: #fff; }
 .k-desp .w-tr:nth-child(odd) { --fxbg: oklch(0.975 0.01 95); }
 .k-desp .w-th { --fxbg: oklch(0.945 0.027 95); }
@@ -981,14 +981,14 @@ body { margin: 0; }
 .k-desp .w-th > .fx { z-index: 3; }
 .k-desp .w-tr > .fx.k-tab { flex-direction: column; align-items: stretch; justify-content: center; }
 .k-desp .w-tr > .fx-d, .k-desp .w-tr > .fx-d2 { overflow: visible; }
-.k-desp .fx-a { left: 11.5px/*16px*/; box-shadow: -16px 0 0 var(--fxbg); }
+.k-desp .fx-a { left: 16px; box-shadow: -16px 0 0 var(--fxbg); }
 .k-desp .fx-b { left: 54px; box-shadow: -10px 0 0 var(--fxbg); }
 .k-desp .fx-c { left: 94px; box-shadow: -10px 0 0 var(--fxbg), 5px 0 0 var(--fxbg), 6px 0 0 var(--borde); }
 .k-desp .fx-c2 { left: 56px; box-shadow: -10px 0 0 var(--fxbg), 5px 0 0 var(--fxbg), 6px 0 0 var(--borde); }
-.k-desp .fx-campo { left: 11.5px/*16px*/; box-shadow: -16px 0 0 var(--fxbg), 6px 0 0 var(--fxbg), 7px 0 0 var(--borde); }
-.k-desp .fx-d { right: 5.8px/*8px*/; box-shadow: 8px 0 0 var(--fxbg), -5px 0 0 var(--fxbg), -6px 0 0 var(--borde); }
-.k-desp .fx-d2 { right: 5.8px/*8px*/; box-shadow: 8px 0 0 var(--fxbg), -6px 0 0 var(--fxbg), -7px 0 0 var(--borde); }
-.k-desp .fx-d .f-menu, .k-desp .fx-d2 .f-menu { right: 0; top: calc(100% - 4.4px/*6px*/); }
+.k-desp .fx-campo { left: 16px; box-shadow: -16px 0 0 var(--fxbg), 6px 0 0 var(--fxbg), 7px 0 0 var(--borde); }
+.k-desp .fx-d { right: 8px; box-shadow: 8px 0 0 var(--fxbg), -5px 0 0 var(--fxbg), -6px 0 0 var(--borde); }
+.k-desp .fx-d2 { right: 8px; box-shadow: 8px 0 0 var(--fxbg), -6px 0 0 var(--fxbg), -7px 0 0 var(--borde); }
+.k-desp .fx-d .f-menu, .k-desp .fx-d2 .f-menu { right: 0; top: calc(100% - 6px); }
 .k-desp .w-tr > .fx:has(.f-menu), .k-desp .w-tr > .fx:has(.f-mn) { z-index: 6; }
 .k-desp .w-th > span:has(.e-tipw) { position: relative; z-index: 6; overflow: visible; }
 .tel .k-mas { padding: 10px 14px; font-size: 11.5px; color: oklch(0.5 0.01 150); }
@@ -1131,6 +1131,8 @@ body { margin: 0; }
 
 /* 137 · Una línea fina entre columnas, del tono de la que separa las filas, en el encabezado y en el cuerpo. */
 :root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
+/* Las filas de una tabla con columnas fijas conservan su relleno, del que sale dónde queda cada columna fija (ver TABLA_FIJA). */
+:root .k-desp .w-th, :root .k-desp .w-tr { padding-left: 16px !important; padding-right: 8px !important; }
 :root .tt-f > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.cmp-punto):not(.cnt):not(.der):not(.df):not(.dlg-f):not(.dlg-x):not(.f-cuerpo):not(.fb-der):not(.fl):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.k-acc):not(.k-chk):not(.k-env):not(.k-tab):not(.kebab):not(.mas):not(.medio):not(.menu-cnt):not(.n):not(.num):not(.o-cas):not(.pie):not(.pv-bt):not(.quitar):not(.tachado):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-campana):not(.w-cmp-env):not(.w-mn-ico):not(.w-mn-on):not(.w-oscuro):not(.w-plegar):not(.w-sw):not(.w-vacio):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.cmp-punto):not(.cnt):not(.der):not(.df):not(.dlg-f):not(.dlg-x):not(.f-cuerpo):not(.fb-der):not(.fl):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.k-acc):not(.k-chk):not(.k-env):not(.k-tab):not(.kebab):not(.mas):not(.medio):not(.menu-cnt):not(.n):not(.num):not(.o-cas):not(.pie):not(.pv-bt):not(.quitar):not(.tachado):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-campana):not(.w-cmp-env):not(.w-mn-ico):not(.w-mn-on):not(.w-oscuro):not(.w-plegar):not(.w-sw):not(.w-vacio):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
 :root .tt-h > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.cmp-punto):not(.cnt):not(.der):not(.df):not(.dlg-f):not(.dlg-x):not(.f-cuerpo):not(.fb-der):not(.fl):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.k-acc):not(.k-chk):not(.k-env):not(.k-tab):not(.kebab):not(.mas):not(.medio):not(.menu-cnt):not(.n):not(.num):not(.o-cas):not(.pie):not(.pv-bt):not(.quitar):not(.tachado):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-campana):not(.w-cmp-env):not(.w-mn-ico):not(.w-mn-on):not(.w-oscuro):not(.w-plegar):not(.w-sw):not(.w-vacio):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.cmp-punto):not(.cnt):not(.der):not(.df):not(.dlg-f):not(.dlg-x):not(.f-cuerpo):not(.fb-der):not(.fl):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.k-acc):not(.k-chk):not(.k-env):not(.k-tab):not(.kebab):not(.mas):not(.medio):not(.menu-cnt):not(.n):not(.num):not(.o-cas):not(.pie):not(.pv-bt):not(.quitar):not(.tachado):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-campana):not(.w-cmp-env):not(.w-mn-ico):not(.w-mn-on):not(.w-oscuro):not(.w-plegar):not(.w-sw):not(.w-vacio):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
 :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.cmp-punto):not(.cnt):not(.der):not(.df):not(.dlg-f):not(.dlg-x):not(.f-cuerpo):not(.fb-der):not(.fl):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.k-acc):not(.k-chk):not(.k-env):not(.k-tab):not(.kebab):not(.mas):not(.medio):not(.menu-cnt):not(.n):not(.num):not(.o-cas):not(.pie):not(.pv-bt):not(.quitar):not(.tachado):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-campana):not(.w-cmp-env):not(.w-mn-ico):not(.w-mn-on):not(.w-oscuro):not(.w-plegar):not(.w-sw):not(.w-vacio):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.cmp-punto):not(.cnt):not(.der):not(.df):not(.dlg-f):not(.dlg-x):not(.f-cuerpo):not(.fb-der):not(.fl):not(.ib):not(.ic):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.k-acc):not(.k-chk):not(.k-env):not(.k-tab):not(.kebab):not(.mas):not(.medio):not(.menu-cnt):not(.n):not(.num):not(.o-cas):not(.pie):not(.pv-bt):not(.quitar):not(.tachado):not(.todos):not(.velo):not(.vol):not(.w-av):not(.w-campana):not(.w-cmp-env):not(.w-mn-ico):not(.w-mn-on):not(.w-oscuro):not(.w-plegar):not(.w-sw):not(.w-vacio):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }

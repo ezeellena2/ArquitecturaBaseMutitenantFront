@@ -25,11 +25,14 @@ MARCA = 'data-reglas="7-11"'
 
 
 def cambiar(t, viejo, nuevo):
-    """Cambia todas las apariciones; si ya está el texto nuevo, no hace nada."""
+    """Cambia todas las apariciones; si ya está el texto nuevo, no hace nada. `viejo` puede ser una tupla con lo que había en
+    cada versión (el tablero de base y el de una corrida anterior de este script)."""
     if nuevo in t:
         return t
-    assert viejo in t, viejo[:90]
-    return t.replace(viejo, nuevo)
+    for v in viejo if isinstance(viejo, tuple) else (viejo,):
+        if v in t:
+            return t.replace(v, nuevo)
+    raise AssertionError(str(viejo)[:90])
 
 
 SECCIONES = re.compile(r'  <section data-reglas="7-11[^"]*">.*?\n  </section>\n\n', re.S)
@@ -97,6 +100,16 @@ TABLAS_SECCION = """  <section data-reglas="7-11">
     </div>
   </section>
 
+  <section data-reglas="7-11-escala">
+    <h2>La escala de una tabla</h2>
+    <ul class="reglas2">
+      <li><strong>Encabezado de 30 y filas de 30 como mínimo</strong> (en la planilla, 33), con letra de 11 y el encabezado en semibold: la escala de ArquitecturaBase, como se ve en la compu (180).</li>
+      <li><strong>Las celdas llevan 9 de relleno a los costados</strong> y la línea entre columnas de siempre; la caja de la tabla, esquinas de 3.</li>
+      <li><strong>Cuando una celda baja de renglón,</strong> la fila crece: nada se corta ni se encima.</li>
+      <li>En el teléfono, la fila de una lista conserva su medida para el dedo. Las demás medidas, en «Marco y pantallas» › «La escala».</li>
+    </ul>
+  </section>
+
 """
 TABLAS_CAMBIOS = [
     ('<div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo"><div class="esq"><span style="width: 80%;"></span><span style="width: 65%;"></span><span style="width: 72%;"></span><span style="width: 55%;"></span></div></div><div class="rot2">Cargando</div></div>',
@@ -105,8 +118,22 @@ TABLAS_CAMBIOS = [
      "La primera carga dibuja el encabezado y el aro en el alto de ocho filas, sin filas esqueleto: al llegar las filas, la tabla no cambia de alto (160).</li>"),
     ("<li><strong>Un dato por celda, en un renglón.</strong> Lo que lo aclara va en su propia columna si la persona lo necesita (Correo, Vencimiento), o no va. Sin dato, una sola raya.</li>",
      "<li><strong>Un dato por celda.</strong> Lo que lo aclara va en su propia columna si la persona lo necesita (Correo, Vencimiento), o no va. Sin dato, una sola raya. Un texto largo baja de renglón, sin «…» (174).</li>"),
-    ("<span>40 px</span><span>Un dato por celda, en un renglón, con letra de 13.",
-     "<span>40 px como mínimo</span><span>Un dato por celda, con letra de 13; si no entra, baja de renglón y la fila crece."),
+    (("<span>40 px</span><span>Un dato por celda, en un renglón, con letra de 13.",
+      "<span>40 px como mínimo</span><span>Un dato por celda, con letra de 13; si no entra, baja de renglón y la fila crece."),
+     "<span>30 px como mínimo</span><span>Un dato por celda, con letra de 11; si no entra, baja de renglón y la fila crece."),
+    # La escala (180): las medidas que ve quien mira la compu.
+    ("<strong>Encabezado</strong><span>40 px</span><span>Fondo arena, letra de 13 en semibold,",
+     "<strong>Encabezado</strong><span>30 px</span><span>Fondo arena, letra de 11 en semibold,"),
+    ("<strong>Fila de lista</strong><span>44 px</span><span>Un renglón con letra de 13:",
+     "<strong>Fila de lista</strong><span>33 px</span><span>Un renglón con letra de 11:"),
+    ("<span>Solo el ⋮, botón de ícono de 32 × 32.</span>", "<span>Solo el ⋮, botón de ícono de 24 × 24.</span>"),
+    ("<strong>Pie con paginado</strong><span>48 px</span><span>Letra de 12:",
+     "<strong>Pie con paginado</strong><span>36 px</span><span>Letra de 10,5:"),
+    ("<li><strong>Encabezado con color:</strong> 40 px, fondo arena, sin mayúsculas.</li>",
+     "<li><strong>Encabezado con color:</strong> 30 px, fondo arena, sin mayúsculas.</li>"),
+    ("<li><strong>Filas de 40 px</strong>, alternadas, con letra de 13.", "<li><strong>Filas de 30 px</strong>, alternadas, con letra de 11."),
+    ("<li><strong>Sin encabezado de columnas.</strong> Filas de 44 px, de un renglón.</li>",
+     "<li><strong>Sin encabezado de columnas.</strong> Filas de 33 px, de un renglón.</li>"),
 ]
 TABLAS_PROHIBIDO = ["Cortar un texto con «…»: baja de renglón y la fila crece (174).",
                     "Filas esqueleto en la primera carga: van el encabezado y el aro en el alto de ocho filas (160)."]
@@ -122,8 +149,41 @@ MARCO_CSS = ARO_CSS + """
 .r711-lista li { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid var(--borde); }
 .r711-lista li b { font-weight: 600; }
 .r711-lista .no { color: var(--t3); text-decoration: line-through; }
+.r711-esc { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; font-size: 13.5px; }
+.r711-esc .c, .r711-esc .f { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1.4fr); }
+.r711-esc .c { min-height: 40px; background: oklch(0.945 0.027 95); border-bottom: 1px solid oklch(0.89 0.031 95); font-size: 13px; font-weight: 600; color: var(--t2); }
+.r711-esc .f { min-height: 40px; border-bottom: 1px solid var(--borde); }
+.r711-esc .f:last-child { border-bottom: 0; }
+.r711-esc .f:nth-child(odd) { background: oklch(0.968 0.015 95); }
+.r711-esc .c > *, .r711-esc .f > * { display: flex; align-items: center; padding: 8px 14px; line-height: 1.4; }
+.r711-esc .c > * + *, .r711-esc .f > * + * { box-shadow: inset 1px 0 0 oklch(0.915 0.013 95 / 0.8); }
+.r711-esc .f b { font-weight: 600; }
 """
-MARCO_SECCIONES = """  <section data-reglas="7-11">
+MARCO_SECCIONES = """  <section data-reglas="7-11-escala">
+    <h2>La escala</h2>
+    <div class="r711-esc">
+      <div class="c"><span>Pieza</span><span>Antes</span><span>Con la escala</span></div>
+      <div class="f"><b>Letra del cuerpo, de las filas y de los menús</b><span>13</span><span>10,7 (unos 11)</span></div>
+      <div class="f"><b>Letra de un botón</b><span>14</span><span>11,5</span></div>
+      <div class="f"><b>Título de la banda</b><span>18</span><span>14,8</span></div>
+      <div class="f"><b>Botón normal, chico y grande</b><span>36, 32 y 44</span><span>27, 24 y 33</span></div>
+      <div class="f"><b>Campo</b><span>36 (44 en el ingreso)</span><span>27 (33)</span></div>
+      <div class="f"><b>Fila y encabezado de una tabla</b><span>40 (la planilla, 44)</span><span>30 (33)</span></div>
+      <div class="f"><b>Banda de la página</b><span>64</span><span>47</span></div>
+      <div class="f"><b>Barra de arriba</b><span>52</span><span>38,5 (unos 39)</span></div>
+      <div class="f"><b>Opción del menú lateral</b><span>32</span><span>24</span></div>
+      <div class="f"><b>Relleno del cuerpo y de una caja</b><span>24; 16 y 20</span><span>17; 12 y 14</span></div>
+      <div class="f"><b>Esquinas</b><span>de 6 a 16; pastillas</span><span>3 como mucho, también pastillas y avatares</span></div>
+      <div class="f"><b>Teléfono</b><span>controles de 44 a 50, letra de 16</span><span>igual: conserva sus medidas para el dedo</span></div>
+    </div>
+    <ul class="reglas2" style="margin-top: 14px;">
+      <li><strong>La de ArquitecturaBase, elegida por el usuario</strong> viendo la misma planilla en tres escalas (180): la letra × 0,82, sin bajar de 10,5; los altos de 18 a 72 × 0,74; los rellenos y las separaciones × 0,72, y las esquinas de 3 como mucho. Sin sombras, salvo en menús, desplegables y tooltips (173).</li>
+      <li><strong>Los anchos no cambian:</strong> el menú lateral y su panel siguen en 232; los diálogos, en 420, 560 y 640, y las columnas de una tabla, en lo suyo. Lo cuadrado (un avatar, un botón de ícono) sigue cuadrado.</li>
+      <li><strong>Los colores siguen siendo los de Pradera.</strong> El lienzo dibuja lo que se ve; en la app entra con la base de la 12 (ver el tema del front).</li>
+    </ul>
+  </section>
+
+  <section data-reglas="7-11">
     <h2>Que no parezca plantilla</h2>
     <ul class="r711-lista">
       <li><b>La marca</b><span>El nombre, en negrita, sin cuadrado ni degradé. <span class="no">El logo en un cuadrado</span></span></li>
@@ -164,6 +224,7 @@ MARCO_CAMBIOS = [
      "<li><strong>En una pantalla interna,</strong> el ‹ para volver va antes del título.</li>"),
     ("Secciones con título, campos de su medida y listas en su caja.",
      "Secciones con título, campos en columnas iguales y listas en su caja."),
+    ("<li><strong>4 · Contenido:</strong> a todo el ancho, con 24 px de margen.", "<li><strong>4 · Contenido:</strong> a todo el ancho, con 17 px de margen."),
 ]
 MARCO_PROHIBIDO = ["Las formas de plantilla: el logo en un cuadrado o con degradé, el ícono de la sección en la banda, el avatar redondo, el activo del menú en una pastilla y las sombras fuera de menús, desplegables y tooltips (173).",
                    "Una página que espera en blanco o con un aro suelto: va su banda con el título como bloque de carga (160)."]
@@ -234,6 +295,14 @@ FORM_CAMBIOS = [
     ("<b>Sumar empresa</b>", "<b>Agregar empresa</b>"),
     ("No pudimos sumar la empresa.", "No pudimos agregar la empresa."),
     ('<button type="button" class="cb cb-pri">Sumar</button>', '<button type="button" class="cb cb-pri">Agregar</button>'),
+    # La escala (180).
+    ("<span>16 px entre una y otra. Tres solo si", "<span>12 px entre una y otra. Tres solo si"),
+    ("<strong>Encabezado de la caja</strong><span>40 px</span><span>Fondo arena, igual que el de una tabla. Título de 13 en semibold.</span>",
+     "<strong>Encabezado de la caja</strong><span>30 px</span><span>Fondo arena, igual que el de una tabla. Título de 11 en semibold.</span>"),
+    ("<strong>Adentro de la caja</strong><span>16 y 20 px</span><span>16 arriba y entre filas; 20 a los costados y abajo.</span>",
+     "<strong>Adentro de la caja</strong><span>12 y 14 px</span><span>12 arriba y entre filas; 14 a los costados y abajo.</span>"),
+    ("<strong>Alto de todo campo</strong><span>36 px</span><span>Igual que un botón normal. El código, 44 px.</span>",
+     "<strong>Alto de todo campo</strong><span>27 px</span><span>Igual que un botón normal. El código, 33 px.</span>"),
 ]
 FORM_PROHIBIDO = ["Perder lo escrito al cambiar un tipo, una acción o una opción, sin avisar (162).",
                   "Los campos de un ajuste del ancho de lo que llevan: van en columnas iguales (163)."]
@@ -271,8 +340,15 @@ DIALOGOS_SECCION = """  <section data-reglas="7-11">
 DIALOGOS_CAMBIOS = [
     ("<li><strong>El botón repite la acción</strong>, en rojo relleno. Es el único lugar con rojo relleno.</li>",
      "<li><strong>El botón repite la acción</strong>, en rojo relleno si destruye: es el único lugar con rojo relleno. Si no destruye, como aprobar, va la principal (161).</li>"),
-    ("<span>Sombra suave. Atrás, la pantalla oscurecida, sin difuminar.</span>",
-     "<span>Borde fino y sin sombra (173). Atrás, la pantalla oscurecida, sin difuminar.</span>"),
+    (("<strong>Esquinas y fondo</strong><span>12 px</span><span>Sombra suave. Atrás, la pantalla oscurecida, sin difuminar.</span>",
+      "<strong>Esquinas y fondo</strong><span>12 px</span><span>Borde fino y sin sombra (173). Atrás, la pantalla oscurecida, sin difuminar.</span>"),
+     "<strong>Esquinas y fondo</strong><span>3 px</span><span>Borde fino y sin sombra (173). Atrás, la pantalla oscurecida, sin difuminar.</span>"),
+    # La escala (180).
+    ("<strong>Encabezado</strong><span>48 px</span><span>Fondo arena, como los encabezados de tabla. Título de 15 en semibold",
+     "<strong>Encabezado</strong><span>36 px</span><span>Fondo arena, como los encabezados de tabla. Título de 12 en semibold"),
+    ("<strong>Cuerpo</strong><span>20 px de margen</span><span>Campos de 36 px, con 14 px entre uno y otro.",
+     "<strong>Cuerpo</strong><span>14 px de margen</span><span>Campos de 27 px, con 10 px entre uno y otro."),
+    ("<strong>Pie</strong><span>60 px</span>", "<strong>Pie</strong><span>44 px</span>"),
 ]
 DIALOGOS_PROHIBIDO = ["Rojo relleno en lo que no destruye, como aprobar: va la principal, con el foco en «Cancelar» (161).",
                       "Sombra en el diálogo: lo separan su borde y la pantalla oscurecida (173)."]
@@ -339,6 +415,13 @@ MENUS_CAMBIOS = [
      "<li><strong>Un segmentado conserva su número,</strong> como «Activos (8) · Dados de baja (2)».</li>\n          <li><strong>Los filtros y sus chips, con el radio de un control,</strong> como los campos: nunca en pastilla. Un contador va como texto (173).</li>"),
     ("<span>Blanco, con borde arena, sobre el borde del menú lateral.",
      "<span>Blanco, con borde arena y sin sombra, sobre el borde del menú lateral."),
+    # La escala (180).
+    ("<strong>Opción de un menú</strong><span>36 px</span><span>Letra de 13 e ícono gris de 16 a la izquierda.</span>",
+     "<strong>Opción de un menú</strong><span>27 px</span><span>Letra de 11 e ícono gris de 16 a la izquierda.</span>"),
+    ("<strong>Caja del menú</strong><span>Esquinas de 10 px</span><span>Fondo blanco, borde fino y sombra suave.</span>",
+     "<strong>Caja del menú</strong><span>Esquinas de 3 px</span><span>Fondo blanco, borde fino y sombra suave: la única sombra, con los desplegables y los tooltips.</span>"),
+    ("<span>Arena. Opciones de 32 px con ícono de 18.</span>", "<span>Arena. Opciones de 24 px con ícono de 18.</span>"),
+    ("<strong>Botón para contraer el menú</strong><span>28 px, redondo</span>", "<strong>Botón para contraer el menú</strong><span>21 px, redondo</span>"),
 ]
 MENUS_PROHIBIDO = ["El activo del menú en una pastilla blanca o con sombra; filtros, chips o contadores en pastilla (173)."]
 
@@ -350,14 +433,19 @@ BOTONES_CAMBIOS = [
      "<p>Un tono más oscuro, también el de peligro.</p>"),
     ("<p>El único ícono es el «+» de agregar, crear o invitar. El texto es un verbo y qué cosa, de una a tres palabras. La confirmación repite la acción.</p>",
      "<p>El único ícono es el «+» de agregar, crear o invitar. El texto es un verbo y qué cosa, de una a tres palabras. La confirmación repite la acción. Las altas dicen «Agregar …», como «Agregar empresa» o «Agregar opción».</p>"),
+    # La escala (180).
+    ("<strong>Normal</strong><span>36 px · texto 14</span>", "<strong>Normal</strong><span>27 px · texto 11,5</span>"),
+    ("<strong>Chico</strong><span>32 px · texto 13</span>", "<strong>Chico</strong><span>24 px · texto 11</span>"),
+    ("<strong>Grande</strong><span>44 px · texto 15</span>", "<strong>Grande</strong><span>33 px · texto 12</span>"),
 ]
 BOTONES_PROHIBIDO = ["El principal con degradé o sombra: es sólido (173).",
                      "«Sumar …» en un alta: dice «Agregar …»."]
 
 
-# El alto de cada tablero con lo que suma esta pasada (medido el 07/11 con el tablero servido): el lienzo muestra solo ese alto.
-ALTOS = {"Criterio-Tablas": 4960, "Criterio-Marco": 4290, "Criterio-Formularios": 4960, "Criterio-Dialogos": 3250,
-         "Criterio-Avisos": 3510, "Criterio-Menus": 4070, "Criterio-Botones": 2580}
+# El alto de cada tablero con lo que suma esta pasada y la escala de la 180 (medido el 07/11 con el tablero servido): el lienzo
+# muestra solo ese alto.
+ALTOS = {"Criterio-Tablas": 3890, "Criterio-Marco": 4120, "Criterio-Formularios": 3750, "Criterio-Dialogos": 2420,
+         "Criterio-Avisos": 2670, "Criterio-Menus": 3210, "Criterio-Botones": 1890}
 
 
 def altos():
