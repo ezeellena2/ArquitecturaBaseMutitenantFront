@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => ({
           groups: [
             { name: "react", test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/ },
             { name: "query", test: /node_modules[\\/]@tanstack[\\/]/ },
-            { name: "i18n", test: /node_modules[\\/](i18next|react-i18next|i18next-resources-to-backend)[\\/]/ },
+            { name: "i18n", test: /node_modules[\\/](i18next|react-i18next)[\\/]/ },
             { name: "oidc", test: /node_modules[\\/](oidc-client-ts|react-oidc-context)[\\/]/ },
           ],
         },

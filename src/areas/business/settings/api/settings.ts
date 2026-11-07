@@ -19,10 +19,6 @@ export function fetchOrganizationDomainsPage(query: OrganizationDomainsQuery): P
   return api.get(`/api/organization/settings/domains/paged?${toSearch(query)}`);
 }
 
-export function fetchOrganizationDomains(): Promise<OrganizationDomainResponse[]> {
-  return api.get<OrganizationDomainResponse[]>("/api/organization/settings/domains");
-}
-
 export function registerOrganizationDomain(request: RegisterOrganizationDomainRequest, idempotencyKey: string): Promise<OrganizationDomainResponse> {
   return api.post<OrganizationDomainResponse>("/api/organization/settings/domains", request, { headers: { "Idempotency-Key": idempotencyKey } });
 }

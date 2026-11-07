@@ -1,7 +1,7 @@
 import type { PagedResultOfPlatformTenantResponse } from "@/shared/api/types";
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
-import type { OrganizationDomainPageResponse, CreatePlatformTenantRequest, CreatedPlatformTenantResponse, OrganizationDomainResponse, PagedRequest, PlatformFeatureResponse, PlatformPublicSiteResponse, PlatformTenantDetailResponse, PlatformTenantFilterCounts, PlatformTenantHistoryCursorResponse, PlatformTenantRetryRequest, PlatformTenantStateRequest, TenantRegistrationSource, TenantStatus, UpdatePlatformFeatureRequest, VersionResponse } from "@/shared/api/types";
+import type { OrganizationDomainPageResponse, CreatePlatformTenantRequest, CreatedPlatformTenantResponse, PagedRequest, PlatformFeatureResponse, PlatformPublicSiteResponse, PlatformTenantDetailResponse, PlatformTenantFilterCounts, PlatformTenantHistoryCursorResponse, PlatformTenantRetryRequest, PlatformTenantStateRequest, TenantRegistrationSource, TenantStatus, UpdatePlatformFeatureRequest, VersionResponse } from "@/shared/api/types";
 
 export interface TenantsQuery extends PagedRequest { status?: TenantStatus; source?: TenantRegistrationSource }
 export type TenantCountsQuery = Pick<TenantsQuery, "search" | "status" | "source">;
@@ -26,9 +26,6 @@ export function fetchTenantDomainsPage(id: string, query: PagedRequest): Promise
   return api.get(`/api/platform/tenants/${encodeURIComponent(id)}/domains/paged?${toSearch(query)}`);
 }
 
-export function fetchTenantDomains(id: string): Promise<OrganizationDomainResponse[]> {
-  return api.get(`/api/platform/tenants/${encodeURIComponent(id)}/domains`);
-}
 export function verifyTenantDomain(id: string, domain: string, request: PlatformTenantStateRequest, key: string): Promise<VersionResponse> {
   return api.post(`/api/platform/tenants/${encodeURIComponent(id)}/domains/${encodeURIComponent(domain)}/verify`, request, { headers: { "Idempotency-Key": key } });
 }

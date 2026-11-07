@@ -1,12 +1,12 @@
 import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { server } from "@/test/mocks/server";
-import { changeTenantPublicPage, changeTenantState, createTenant, fetchTenant, fetchTenantCounts, fetchTenantDomains, fetchTenantFeatures, fetchTenantHistory, fetchTenantPublicPage, fetchTenants, removeTenantDomain, retryTenantProvisioning, tenantDomainsQueryKey, tenantFeaturesQueryKey, tenantHistoryQueryKey, tenantPublicPageQueryKey, tenantQueryKey, tenantsQueryRoot, updateTenantFeature, verifyTenantDomain } from "./tenants";
+import { changeTenantPublicPage, changeTenantState, createTenant, fetchTenant, fetchTenantCounts, fetchTenantFeatures, fetchTenantHistory, fetchTenantPublicPage, fetchTenants, removeTenantDomain, retryTenantProvisioning, tenantDomainsQueryKey, tenantFeaturesQueryKey, tenantHistoryQueryKey, tenantPublicPageQueryKey, tenantQueryKey, tenantsQueryRoot, updateTenantFeature, verifyTenantDomain } from "./tenants";
 
 describe("API de Organizaciones", () => {
   it("subrecursos usan ids/claves opacos escapados y raíz de Query", async () => {
-    server.use(http.get("/api/platform/tenants/org%2F1/features", () => HttpResponse.json([])), http.get("/api/platform/tenants/org%2F1/domains", () => HttpResponse.json([])), http.get("/api/platform/tenants/org%2F1/public-site", () => HttpResponse.json({ slug: null, name: "Organización", isPublished: false, version: 0 })));
-    expect(await fetchTenantFeatures("org/1")).toEqual([]); expect(await fetchTenantDomains("org/1")).toEqual([]); expect(await fetchTenantPublicPage("org/1")).toMatchObject({ version: 0 });
+    server.use(http.get("/api/platform/tenants/org%2F1/features", () => HttpResponse.json([])), http.get("/api/platform/tenants/org%2F1/public-site", () => HttpResponse.json({ slug: null, name: "Organización", isPublished: false, version: 0 })));
+    expect(await fetchTenantFeatures("org/1")).toEqual([]); expect(await fetchTenantPublicPage("org/1")).toMatchObject({ version: 0 });
     expect(tenantFeaturesQueryKey("org/1")).toEqual([...tenantsQueryRoot, "features", "org/1"]); expect(tenantDomainsQueryKey("org/1")).toEqual([...tenantsQueryRoot, "domains", "org/1"]); expect(tenantPublicPageQueryKey("org/1")).toEqual([...tenantsQueryRoot, "public-site", "org/1"]);
   });
   it("PUT y DELETE mandan el cuerpo/version, sin Idempotency-Key", async () => {
