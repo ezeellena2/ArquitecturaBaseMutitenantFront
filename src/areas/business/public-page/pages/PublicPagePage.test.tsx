@@ -1,7 +1,7 @@
 import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -63,6 +63,8 @@ beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures);
   await changeCulture("es-AR");
 });
+
+afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
 describe("PublicPagePage (tablero Pagina-Org)", () => {
   it("la descripción limita el pegado al máximo que acepta el servidor", async () => {
@@ -385,6 +387,37 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     await waitFor(() => expect(updateBody).toMatchObject({ slug: "grupo-nuevo", version: 8, removeLogo: false,
       contactPhone: { country: "AR", number: "011 4321-5679" } }));
     expect(await screen.findByText("Guardamos la página.")).toBeVisible();
+  });
+
+  it("el logo elegido se envía achicado: un WebP sale como PNG de 256 px como máximo", async () => {
+    const user = userEvent.setup({ applyAccept: false });
+    let updateBody: { logoBase64?: string; logoContentType?: string } | undefined;
+    api(page);
+    server.use(http.put("/api/organization/public-page", async ({ request }) => { updateBody = await request.json() as typeof updateBody; return HttpResponse.json({ version: 9 }); }));
+    // jsdom no decodifica ni dibuja: un bitmap de 1024 × 512 y un canvas que devuelve lo que se le pidió.
+    vi.stubGlobal("createImageBitmap", vi.fn(async () => ({ width: 1024, height: 512, close: () => {} })));
+    const sizes: Array<[number, number]> = [];
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(function (this: HTMLCanvasElement) {
+      return { drawImage: () => { sizes.push([this.width, this.height]); } } as unknown as CanvasRenderingContext2D;
+    } as unknown as HTMLCanvasElement["getContext"]);
+    vi.spyOn(HTMLCanvasElement.prototype, "toDataURL").mockImplementation((type?: string) => `data:${type};base64,QUJD`);
+    const { container } = renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+    await screen.findByRole("region", { name: "Página" });
+
+    await user.upload(container.querySelector<HTMLInputElement>('input[type="file"]')!, new File(["x"], "logo.webp", { type: "image/webp" }));
+    await user.click(await screen.findByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(updateBody).toMatchObject({ logoBase64: "QUJD", logoContentType: "image/png" }));
+    expect(sizes).toEqual([[256, 128]]);
+  });
+
+  it("una imagen que no se puede leer avisa igual que una inválida", async () => {
+    const user = userEvent.setup({ applyAccept: false });
+    api(page);
+    vi.stubGlobal("createImageBitmap", vi.fn(async () => { throw new DOMException("bad", "InvalidStateError"); }));
+    const { container } = renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+    await screen.findByRole("region", { name: "Página" });
+    await user.upload(container.querySelector<HTMLInputElement>('input[type="file"]')!, new File(["x"], "logo.png", { type: "image/png" }));
+    expect(await screen.findByText("Elegí una imagen PNG, JPEG o WebP de hasta 512 KiB.")).toBeVisible();
   });
 
   // concurrencia.md (E7): la relectura de fondo trae la descripción que cambió otra persona, pero la ficha sigue con lo

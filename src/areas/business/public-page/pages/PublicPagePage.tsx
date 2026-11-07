@@ -38,6 +38,7 @@ import { cn } from "@/shared/lib/utils";
 import { toastError } from "@/shared/ui/sonner";
 import { publicSiteHost, publicSiteSuffix, publicSiteUrl } from "@/tenancy/publicSite";
 import { checkOrganizationSlug, fetchPublicPage, publicPageQueryKey, setPublicPagePublished, slugAvailabilityQueryKey, updatePublicPage } from "../api/publicPage";
+import { shrinkLogo } from "../lib/shrinkLogo";
 
 /// La página pública no tiene reglas propias en la pantalla: lo que el back rechaza de un dato va debajo de ese dato, y
 /// lo demás (la dirección tomada, el logo), en la franja. El logo es lo que se ve, la imagen nueva o el pedido de quitarlo.
@@ -74,16 +75,6 @@ function pageRequest(values: PageForm, version: number): UpdatePublicPageRequest
     address: values.address, website: values.website,
     logoBase64: values.logo.base64, logoContentType: values.logo.contentType, removeLogo: values.logo.remove, version,
   };
-}
-
-async function readImage(file: File): Promise<{ dataUri: string; base64: string }> {
-  const dataUri = await new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("No se pudo leer la imagen"));
-    reader.onerror = () => reject(new Error("No se pudo leer la imagen"));
-    reader.readAsDataURL(file);
-  });
-  return { dataUri, base64: dataUri.slice(dataUri.indexOf(",") + 1) };
 }
 
 function slugStateText(state: TenantSlugAvailability | undefined, t: (key: string) => string): string | undefined {
@@ -171,8 +162,9 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
       return;
     }
     try {
-      const image = await readImage(file);
-      form.setValue("logo", { dataUri: image.dataUri, base64: image.base64, contentType: file.type, remove: false }, { shouldDirty: true });
+      // Se envía achicado a 256 px: se muestra entre 40 y 84 (lib/shrinkLogo.ts).
+      const image = await shrinkLogo(file);
+      form.setValue("logo", { dataUri: image.dataUri, base64: image.base64, contentType: image.contentType, remove: false }, { shouldDirty: true });
     } catch {
       toastError(t("publicPage:invalidLogo"));
     }
