@@ -4,7 +4,9 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const resources = import.meta.glob<Record<string, unknown>>("./*/*.json", { eager: true, import: "default" });
-for (const module of moduleComposition) for (const [language, namespaces] of Object.entries(module.resources ?? {})) {
+for (const module of moduleComposition) for (const [language, texts] of Object.entries(module.resources ?? {})) {
+  // Un idioma que no es el de arranque llega como función: se baja igual que en configureI18n.
+  const namespaces = typeof texts === "function" ? await texts() : texts;
   for (const [namespace, content] of Object.entries(namespaces)) {
     const file = './' + language + '/' + namespace + '.json';
     resources[file] = { ...resources[file], ...content };

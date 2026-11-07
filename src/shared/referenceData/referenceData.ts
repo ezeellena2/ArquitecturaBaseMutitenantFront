@@ -1,74 +1,75 @@
-import { z } from "zod";
+// zod/mini valida igual con menos peso: el catálogo se lee al abrir cualquier pantalla, también la portada.
+import { z } from "zod/mini";
 import { api } from "@/shared/api/httpClient";
 import type { components } from "@/shared/api/generated/schema";
 
 const referenceRow = {
   isEnabled: z.boolean(),
-  sortOrder: z.number().int().nullable(),
+  sortOrder: z.nullable(z.int()),
 };
 
 const currencySchema = z.object({
-  code: z.string().min(1),
-  numericCode: z.string().min(1),
-  minorUnits: z.number().int().nonnegative().nullable(),
+  code: z.string().check(z.minLength(1)),
+  numericCode: z.string().check(z.minLength(1)),
+  minorUnits: z.nullable(z.int().check(z.nonnegative())),
   symbol: z.string(),
   displaySymbol: z.string(),
-  name: z.string().min(1),
-  namePlural: z.string().min(1),
+  name: z.string().check(z.minLength(1)),
+  namePlural: z.string().check(z.minLength(1)),
   ...referenceRow,
 });
 
 const countrySchema = z.object({
-  code: z.string().min(1),
-  alpha3: z.string().min(1),
-  numericCode: z.string().min(1),
-  callingCode: z.string().nullable(),
-  defaultCurrencyCode: z.string().nullable(),
-  defaultTimeZoneId: z.string().nullable(),
-  name: z.string().min(1),
+  code: z.string().check(z.minLength(1)),
+  alpha3: z.string().check(z.minLength(1)),
+  numericCode: z.string().check(z.minLength(1)),
+  callingCode: z.nullable(z.string()),
+  defaultCurrencyCode: z.nullable(z.string()),
+  defaultTimeZoneId: z.nullable(z.string()),
+  name: z.string().check(z.minLength(1)),
   ...referenceRow,
 });
 
 const timeZoneSchema = z.object({
-  id: z.string().min(1),
-  countryCodes: z.array(z.string().min(1)),
-  city: z.string().min(1),
+  id: z.string().check(z.minLength(1)),
+  countryCodes: z.array(z.string().check(z.minLength(1))),
+  city: z.string().check(z.minLength(1)),
   ...referenceRow,
 });
 
 const cultureSchema = z.object({
-  code: z.string().min(1),
-  languageCode: z.string().min(1),
-  countryCode: z.string().min(1),
-  datePattern: z.string().min(1),
-  timePattern: z.string().min(1),
-  dateTimePattern: z.string().min(1),
-  longDatePattern: z.string().min(1),
-  amDesignator: z.string().min(1),
-  pmDesignator: z.string().min(1),
-  decimalSeparator: z.string().min(1),
-  groupSeparator: z.string().min(1),
-  currencyPattern: z.string().min(1),
-  percentPattern: z.string().min(1),
-  fallbackCulture: z.string().nullable(),
+  code: z.string().check(z.minLength(1)),
+  languageCode: z.string().check(z.minLength(1)),
+  countryCode: z.string().check(z.minLength(1)),
+  datePattern: z.string().check(z.minLength(1)),
+  timePattern: z.string().check(z.minLength(1)),
+  dateTimePattern: z.string().check(z.minLength(1)),
+  longDatePattern: z.string().check(z.minLength(1)),
+  amDesignator: z.string().check(z.minLength(1)),
+  pmDesignator: z.string().check(z.minLength(1)),
+  decimalSeparator: z.string().check(z.minLength(1)),
+  groupSeparator: z.string().check(z.minLength(1)),
+  currencyPattern: z.string().check(z.minLength(1)),
+  percentPattern: z.string().check(z.minLength(1)),
+  fallbackCulture: z.nullable(z.string()),
   isDefault: z.boolean(),
-  name: z.string().min(1),
+  name: z.string().check(z.minLength(1)),
   ...referenceRow,
 });
 
 const taxIdTypeSchema = z.object({
-  code: z.string().min(1),
-  countryCode: z.string().min(1),
-  label: z.string().min(1),
-  mask: z.string().min(1),
-  validatorKey: z.string().min(1),
-  appliesTo: z.string().min(1),
-  name: z.string().min(1),
+  code: z.string().check(z.minLength(1)),
+  countryCode: z.string().check(z.minLength(1)),
+  label: z.string().check(z.minLength(1)),
+  mask: z.string().check(z.minLength(1)),
+  validatorKey: z.string().check(z.minLength(1)),
+  appliesTo: z.string().check(z.minLength(1)),
+  name: z.string().check(z.minLength(1)),
   ...referenceRow,
 });
 
 const referenceDataSchema = z.object({
-  culture: z.string().min(1),
+  culture: z.string().check(z.minLength(1)),
   currencies: z.array(currencySchema),
   countries: z.array(countrySchema),
   timeZones: z.array(timeZoneSchema),

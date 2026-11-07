@@ -1,7 +1,5 @@
 import es from "./locales/es/assistant.json";
-import en from "./locales/en/assistant.json";
 import esEnums from "./locales/es/enums.json";
-import enEnums from "./locales/en/enums.json";
 import { lazy } from "react";
 import { Sparkles } from "lucide-react";
 import type { MeResponse } from "@/shared/api/types";
@@ -48,7 +46,7 @@ const loadFixtures = async () => {
 
 export const assistantRegistration: ModuleRegistration = {
   id: "assistant",
-  resources: { es: { assistant: es, enums: esEnums }, en: { assistant: en, enums: enEnums } },
+  resources: { es: { assistant: es, enums: esEnums }, en: () => import("./locales/en").then((module) => module.default) },
   fixtures: import.meta.env.DEV ? loadFixtures : undefined,
   permissions: {
     organization: ["assistant.use", "assistant.configure"],

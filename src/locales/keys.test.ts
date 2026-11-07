@@ -8,8 +8,12 @@ import { describe, expect, it } from "vitest";
 const resources = import.meta.glob<Record<string, unknown>>("./es/*.json", { eager: true, import: "default" });
 const sourceRoot = path.resolve(import.meta.dirname, "..");
 const namespaces = new Map(Object.entries(resources).map(([file, content]) => [file.slice("./es/".length, -".json".length), content]));
-for (const module of moduleComposition) for (const [namespace, content] of Object.entries(module.resources?.es ?? {})) {
-  namespaces.set(namespace, { ...namespaces.get(namespace), ...content });
+for (const module of moduleComposition) {
+  const texts = module.resources?.es;
+  if (typeof texts === "function") throw new Error("Los textos es de un módulo van cargados.");
+  for (const [namespace, content] of Object.entries(texts ?? {})) {
+    namespaces.set(namespace, { ...namespaces.get(namespace), ...content });
+  }
 }
 const pluralSuffixes = ["_zero", "_one", "_two", "_few", "_many", "_other"];
 

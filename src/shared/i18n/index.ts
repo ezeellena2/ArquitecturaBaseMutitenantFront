@@ -36,24 +36,73 @@ export function chosenCulture(): string | null {
 
 // Los archivos de interfaz son la fuente de idiomas disponibles. Las culturas y su fallback
 // llegan por Cultures desde shared/referenceData; ninguna lista de culturas vive acá.
-const localeFiles = import.meta.glob<Record<string, unknown>>("../../locales/*/*.json", {
+// Solo el idioma de arranque (el `lang` de index.html) viaja en la carga inicial; los demás se bajan en
+// configureI18n, cuando el catálogo dice qué culturas están habilitadas.
+const initialLanguage = "es";
+const initialFiles = import.meta.glob<Record<string, unknown>>("../../locales/es/*.json", {
   import: "default", eager: true,
 });
-const packagedResources: Resource = {};
-for (const [path, content] of Object.entries(localeFiles)) {
-  const match = /\/([^/]+)\/([^/]+)\.json$/.exec(path);
-  if (match) (packagedResources[match[1]] ??= {})[match[2]] = content;
-}
-for (const module of moduleComposition) {
-  for (const [language, namespaces] of Object.entries(module.resources ?? {})) {
-    const resources = packagedResources[language] ??= {};
-    for (const [namespace, content] of Object.entries(namespaces)) resources[namespace] = { ...(typeof resources[namespace] === "object" ? resources[namespace] : {}), ...content };
+const laterFiles = import.meta.glob<Record<string, unknown>>(["../../locales/*/*.json", "!../../locales/es/*.json"], {
+  import: "default",
+});
+const localeFileOf = (path: string) => /\/([^/]+)\/([^/]+)\.json$/.exec(path);
+
+type Namespaces = Record<string, Record<string, unknown>>;
+
+/// Suma los textos de los módulos a los del núcleo, en el orden de moduleComposition.
+function withModuleTexts(core: Namespaces, modules: readonly (Readonly<Record<string, Readonly<Record<string, unknown>>>> | undefined)[]): Namespaces {
+  const resources = { ...core };
+  for (const namespaces of modules) {
+    for (const [namespace, content] of Object.entries(namespaces ?? {})) resources[namespace] = { ...(resources[namespace] ?? {}), ...content };
   }
+  return resources;
 }
-const documentLanguage = typeof document === "undefined" ? "es" : document.documentElement.lang.split("-")[0];
-const initialLanguage = packagedResources[documentLanguage] ? documentLanguage : "es";
+
+const initialCore: Namespaces = {};
+for (const [path, content] of Object.entries(initialFiles)) {
+  const match = localeFileOf(path);
+  if (match) initialCore[match[2]] = content;
+}
+const packagedResources: Record<string, Namespaces> = {
+  [initialLanguage]: withModuleTexts(initialCore, moduleComposition.map((module) => {
+    const texts = module.resources?.[initialLanguage];
+    if (typeof texts === "function") throw new Error(`Los textos ${initialLanguage} del módulo ${module.id} van cargados.`);
+    return texts;
+  })),
+};
+
+/// Los idiomas que la app sabe mostrar: los que tienen el namespace común.
+const packagedLanguages = new Set([initialLanguage, ...Object.keys(laterFiles).flatMap((path) => {
+  const match = localeFileOf(path);
+  return match && match[2] === "common" ? [match[1]] : [];
+})]);
+
+const loadingLanguages = new Map<string, Promise<void>>();
+
+/// Baja una sola vez los textos de un idioma, del núcleo y de cada módulo.
+export function loadLanguage(language: string): Promise<void> {
+  if (packagedResources[language]) return Promise.resolve();
+  let loading = loadingLanguages.get(language);
+  if (!loading) {
+    loading = (async () => {
+      const files = Object.entries(laterFiles).filter(([path]) => localeFileOf(path)?.[1] === language);
+      const core: Namespaces = {};
+      await Promise.all(files.map(async ([path, load]) => { core[localeFileOf(path)![2]] = await load(); }));
+      const modules = await Promise.all(moduleComposition.map(async (module) => {
+        const texts = module.resources?.[language];
+        return typeof texts === "function" ? texts() : texts;
+      }));
+      packagedResources[language] = withModuleTexts(core, modules);
+    })();
+    loadingLanguages.set(language, loading);
+    // Un fallo de red no queda guardado: la próxima configuración vuelve a intentarlo.
+    loading.catch(() => loadingLanguages.delete(language));
+  }
+  return loading;
+}
+
 void i18n.use(initReactI18next).init({
-  resources: packagedResources,
+  resources: { [initialLanguage]: packagedResources[initialLanguage] },
   lng: initialLanguage,
   fallbackLng: initialLanguage,
   ns: Object.keys(packagedResources[initialLanguage]),
@@ -101,10 +150,13 @@ export async function configureI18n(cultures: readonly CultureLocale[], culture?
   if (defaults.length !== 1) throw new Error("Cultures debe tener una sola cultura predeterminada habilitada");
 
   for (const culture of enabled) {
-    if (packagedResources[culture.languageCode]?.common === undefined) {
+    if (!packagedLanguages.has(culture.languageCode)) {
       throw new Error(`Faltan traducciones para ${culture.code}`);
     }
   }
+  // Con los idiomas ya bajados no se espera: la configuración sigue siendo inmediata, como antes.
+  const missing = enabled.filter((culture) => !packagedResources[culture.languageCode]);
+  if (missing.length > 0) await Promise.all(missing.map((culture) => loadLanguage(culture.languageCode)));
 
   enabledCultures = new Map(enabled.map((culture) => [culture.code, culture]));
   defaultCulture = defaults[0].code;

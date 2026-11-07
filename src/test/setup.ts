@@ -4,7 +4,7 @@ import * as axeMatchers from "vitest-axe/matchers";
 import type { AxeMatchers } from "vitest-axe";
 import { configure } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, beforeEach, expect } from "vitest";
-import i18n from "@/shared/i18n";
+import i18n, { loadLanguage } from "@/shared/i18n";
 import { server } from "./mocks/server";
 import { resetBetweenTests } from "./utils/isolation";
 
@@ -25,6 +25,12 @@ document.addEventListener("focusin", (event) => {
 
 // Cada llamada HTTP debe tener un handler explícito. Los handlers de sesión llegan en E3.
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+// Fuera del español de arranque, los textos se bajan en configureI18n; los tests los encuentran ya bajados, así
+// un test con timers falsos no espera una importación que esos timers no avanzan.
+beforeAll(async () => {
+  const languages = new Set(Object.keys(import.meta.glob("../locales/*/common.json")).map((path) => path.split("/").at(-2) ?? "es"));
+  await Promise.all([...languages].map(loadLanguage));
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 

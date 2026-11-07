@@ -20,6 +20,12 @@ Las carpetas que la feature no necesita no se crean (`audit/` tiene solo `api/` 
 - Si dos features necesitan lo mismo, se mueve a `shared/` (por ejemplo `shared/account/`, que usan Mi cuenta y el Inicio personal); no se importa de la otra feature.
 - Imports con alias `@/`. `import type` para los tipos.
 
+### Peso inicial (2026-11)
+- La entrada y los `modulepreload` de `dist/index.html` son lo que baja cualquier pantalla al abrirse, también la portada, el directorio, el ingreso y el subdominio. Lo que solo usa un área privada se importa con lazy en el punto justo: las pantallas con `lazyPage`; los marcos privados, desde `layouts/lazyLayouts.ts`; los Inicios, desde `app/lazyHomes.ts`. Un import estático de un marco o un Inicio desde `routes.tsx`, `RouteViews.tsx` o `AppShell.tsx` los vuelve a meter en la carga inicial.
+- Solo el español (el `lang` de `index.html`) viaja de entrada. Los demás idiomas del núcleo y de cada módulo se bajan en `configureI18n`; un módulo los aporta como función (`en: () => import("./locales/en")`).
+- El catálogo se valida con `zod/mini`; las formas y los diálogos siguen con `zod`, que se baja con su pantalla.
+- `npm run build` termina con `scripts/initial-load-budget.mjs`: si la suma gzip de la entrada y los `modulepreload` pasa el tope (325 KiB), falla. El tope se sube solo con un motivo escrito en el commit.
+
 ### Módulos opcionales (E8b)
 - Cada módulo en `src/modules/<nombre>/` aporta un `registration.ts` con rutas, navegación e inicio mediante el contrato neutral `shared/modules/types.ts`. Sólo `app/moduleComposition.ts` importa registros concretos; el núcleo, las áreas y los layouts no importan páginas ni APIs de módulos. Quitar esa entrada y su carpeta deja los inicios del núcleo operativos. El registro aporta también los recursos de idioma y el cargador de fixtures; alias, textos y datos de prueba exclusivos permanecen dentro de esa carpeta.
 - `ModuleRoutePage` decide desde `/api/me` antes de montar React.lazy: espera la sesión, muestra 404 si no está instalado/habilitado y 403 sin permiso. No usar `route.lazy` para páginas de módulos: React Router lo carga antes de renderizar las guardas padre. AccessRoute y los términos siguen por encima.
@@ -43,6 +49,7 @@ Las carpetas que la feature no necesita no se crean (`audit/` tiene solo `api/` 
 
 ## Lo verifica
 - `structure.test.ts` (E0)
+- `npm run build`, con `scripts/initial-load-budget.mjs` (su prueba: `node --test scripts/initial-load-budget.test.mjs`)
 
 ## Detalle
 [frontend.md §2](../architecture/frontend.md#2-estructura) · [arbol.md](../architecture/arbol.md)

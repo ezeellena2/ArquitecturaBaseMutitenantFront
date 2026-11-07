@@ -8,7 +8,7 @@ import { AppErrorBoundary } from "./AppErrorBoundary";
 import { NewVersionBanner } from "./components/NewVersionBanner";
 import { OfflineBanner } from "./components/OfflineBanner";
 import { AppNoticesProvider } from "@/shared/ui/app/AppNotices";
-import { BusinessLayout } from "./BusinessLayout";
+import { BusinessLayout } from "./lazyLayouts";
 import { useDeletionRequestedDate } from "@/auth/deletionRequestStatus";
 import { DeletionRequestedPage } from "@/areas/personal/account/components/DeletionRequestedPage";
 import { homeOf, isUnavailableCode, parseAccess } from "@/tenancy/access";

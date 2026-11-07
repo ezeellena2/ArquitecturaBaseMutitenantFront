@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
 import { useAccess } from "@/tenancy/useAccess";
-import { PersonalLayout } from "./PersonalLayout";
-import { BusinessLayout } from "./BusinessLayout";
-import { PlatformLayout } from "./PlatformLayout";
+import { BusinessLayout, PersonalLayout, PlatformLayout } from "./lazyLayouts";
 
 export function AccountLayout({ children }: { children: ReactNode }) {
   const { access } = useAccess();

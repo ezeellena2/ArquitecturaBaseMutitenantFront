@@ -94,10 +94,16 @@ export interface ModulePendingKind {
   /** La fila: lo que dice y adónde lleva su acción. */
   describe: (item: PendingItem) => { title: string; detail?: string; to: string };
 }
+/** Los namespaces de un idioma: cada uno, con sus textos. */
+export type ModuleNamespaces = Readonly<Record<string, Readonly<Record<string, unknown>>>>;
+
 export interface ModuleRegistration {
   id: string;
-  /** Textos propios, también enums aportados al namespace compartido. */
-  resources?: Readonly<Record<string, Readonly<Record<string, Readonly<Record<string, unknown>>>>>>;
+  /**
+   * Textos propios por idioma, también enums aportados al namespace compartido. El de arranque (`es`, el `lang` de
+   * index.html) va cargado; los demás pueden ser una función que los baja cuando i18n configura las culturas.
+   */
+  resources?: Readonly<Record<string, ModuleNamespaces | (() => Promise<ModuleNamespaces>)>>;
   /** Datos exclusivos del arnés, cargados sólo por sus consumidores de prueba. */
   fixtures?: () => Promise<{ scenario: (board: string, state: string) => unknown }>;
   /** Códigos propios para la paridad del catálogo completo, sin ampliar las uniones del núcleo. */

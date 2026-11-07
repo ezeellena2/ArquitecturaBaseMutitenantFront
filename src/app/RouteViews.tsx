@@ -6,7 +6,7 @@ import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { ForbiddenPage } from "@/areas/public/errors/pages/ForbiddenPage";
 import { NotFoundPage } from "@/areas/public/errors/pages/NotFoundPage";
 import { LandingPage } from "@/areas/public/site/pages/LandingPage";
-import { BusinessLayout } from "@/layouts/BusinessLayout";
+import { BusinessLayout } from "@/layouts/lazyLayouts";
 import { SiteLayout } from "@/layouts/SiteLayout";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
@@ -14,7 +14,7 @@ import type { AppRoute } from "@/layouts/navigation/types";
 import { canOpen } from "@/layouts/navigation/visible";
 import { activeOrganization, homeOf, parseAccess } from "@/tenancy/access";
 import { useModuleHome } from "@/shared/modules/useModules";
-import { PlatformHomePage } from "@/areas/platform/home/pages/PlatformHomePage";
+import { PlatformHomePage } from "./lazyHomes";
 import { useNavigation } from "@/layouts/navigation/useNavigation";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 
