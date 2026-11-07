@@ -30,6 +30,8 @@
 - **El front no calcula dinero ni reglas de negocio:** muestra lo que llega y los totales vienen del back.
 - Al cambiar de acceso u organización, `queryClient.clear()` (lo hace `useSwitchAccess`).
 - **Mientras carga** (traspaso 9): lo que carga no mueve lo que ya se ve. Un bloque de carga ocupa el lugar y la medida de lo que reemplaza, un dato que se suma a algo visible carga en su mismo renglón, y el bloque se distingue de su superficie con un tinte del color del texto. Una escena visual compara la geometría mientras carga.
+  - **La primera carga** (160, ES1-A a ES3 de ArquitecturaBase): un listado que carga por primera vez dibuja su encabezado de siempre y el aro en el alto de ocho filas, sin filas esqueleto, así al llegar las filas no cambia de alto. Una página que espera su ruta o sus permisos muestra su banda con su alto y su borde, el título como bloque de carga y tres barras en el cuerpo. Un ajuste dibuja sus zonas (el título, el rótulo y el control de cada campo), sin los botones de la banda. Cambia «la primera carga conserva su aro».
+  - No cambian el aro dentro de un botón (`pending`), una tabla que vuelve a leer (115), el menú ni los chats.
 
 ## Prohibido
 - `fetch` o `axios` directo.

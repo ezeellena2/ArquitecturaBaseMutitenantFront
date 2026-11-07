@@ -31,11 +31,13 @@
 - useEditPage.onNavigationAttempt avisa sincrónicamente ruta/searchKeys aunque se bloquee; cancelar AbortSignal antes de decidir salida, crear otro dueño sólo al quedarse/cambiar grupo.
 - Operaciones privadas retiran cuerpos/claves/callbacks al abandonar, revocar o limpiar caché, sin contextos UNSAFE_ ni inspección del router.
 - Medidas, PhoneBand, FixedActions y hojas móviles: [responsive](responsive.md); coordinación de guardado/publicación: [sitio público](../../../ArquitecturaBaseMutitenant/docs/features/sitio-publico.md).
-- **Una pantalla de ajustes se arma como Configuración** (traspaso 9): zonas a todo el ancho, una debajo de la otra, y «Guardar» en la banda, apagado sin cambios. Lo que se lee de una cuenta va en renglones de columnas fijas (el dato, el valor, su estado y su acción), la misma pieza en «Mi cuenta» y en la administración.
+- **Una pantalla de ajustes se arma como Configuración** (traspaso 9): zonas a todo el ancho, una debajo de la otra, y «Guardar» en la banda, apagado sin cambios. Sus campos siguen en columnas iguales por caja, no del ancho de lo que llevan (163; allá, PF1-A los mide por su contenido). Lo que se lee de una cuenta va en renglones de columnas fijas (el dato, el valor, su estado y su acción), la misma pieza en «Mi cuenta» y en la administración. Mientras carga, dibuja sus zonas, sin los botones de la banda (160, [datos y API](datos-y-api.md)).
+- **Ninguna elección se descarta en silencio** (162, que generaliza la 113): cambiar un tipo, una acción o una opción conserva lo escrito que sigue sirviendo (el nombre, la ayuda, el mensaje), y lo que se pierde se avisa antes de cambiar, con lo que se va: «¿Cambiar a Número? Se quitan las 4 opciones.».
 - **Un dato que sirve para dos cosas dice el estado de cada una:** «Verificado» es entrar con el número, y el chat y los avisos van aparte, con la acción que los arregla (159). Quitar va en rojo antes de confirmar, también un medio de ingreso, y las altas dicen «Agregar …».
 
 ## Prohibido
-- Diálogo sobre diálogo, tabla en diálogo (salvo la revisión y la grilla de importar opciones, E12) o confirmación irreversible con ✕/acción no roja llena.
+- Diálogo sobre diálogo, tabla en diálogo (salvo la revisión y la grilla de importar opciones, E12), confirmación irreversible con ✕, la de algo que destruye sin su acción en rojo lleno, o rojo lleno en algo que no destruye, como aprobar (161).
+- Cambiar un tipo, una acción o una opción y perder lo escrito sin avisar (162).
 - Paneles/filas expandidos salvo permisos y las zonas que escribe una etapa, como las de la carga (88), las de una pregunta de catálogo, que arrancan plegadas con su resumen (145), y los pasos del alta de ARCA, con los hechos plegados y los siguientes apagados (152); columnas distintas en una caja; controles a medio ancho sin contenido.
 - Casillas sueltas, switch para guardar, ayudas no pedidas o error de formulario pasajero.
 - Input number para montos, input date crudo, opciones/decimales locales o base tomada de un GET ajeno.

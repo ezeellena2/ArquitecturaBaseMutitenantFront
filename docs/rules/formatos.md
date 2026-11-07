@@ -9,7 +9,7 @@
 - Cultures aporta patrones, separadores y AmDesignator/PmDesignator; cultureProfiles adapta sin perfiles fijos. Currencies aporta MinorUnits; CurrencyTranslations, DisplaySymbol. Símbolos alfabéticos pegados al número reciben espacio CLDR.
 - El signo se decide tras redondear: un negativo presentado como cero no lleva menos. Compactos/tamaños promueven unidad al llegar a mil.
 - parseDecimal permite hasta 15 dígitos significativos y exige que Number recomponga el valor canónico. Si pierde precisión, conserva texto, emite null y marca invalidez.
-- DataTable toma tipo, alineación, vacío y tooltip de cada columna; números, montos y porcentajes van a la derecha con tabular-nums, encabezado incluido. Un texto con un número («En 3 formularios»), una fecha o un código («VIS-000024») no es una columna de números. En una celda que baja de renglón, como en una comparación, un código con guiones («30-71458236-9») no se parte, y una zona horaria se corta solo después de sus barras (137).
+- DataTable toma tipo, alineación, vacío y tooltip de cada columna; números, montos y porcentajes van a la derecha con tabular-nums, encabezado incluido. Un texto con un número («En 3 formularios»), una fecha o un código («VIS-000024») no es una columna de números. **El texto largo se ve entero, en todo el sistema** (174): una celda baja de renglón en lugar de cortar con «…», y «un dato por celda» sigue valiendo; un código con guiones («30-71458236-9») no se parte, y una zona horaria se corta solo después de sus barras (137).
 - Fuera de tablas se usan los componentes; useFormat sirve fuera de JSX, por ejemplo en aria-label.
 - Un texto con una cantidad («1.000 usuarios»): `countOf(format, n)` de `shared/format/countOf` da `count` para el plural y `n` con la cifra de la cultura; el texto usa `{{n}}`, nunca `{{count}}`. Las cantidades de pestañas (`TabCount`), de los segmentados y de los filtros aplicados pasan por `NumberText` (R21).
 | Dato | Pieza | Presentación y límite |
@@ -35,7 +35,7 @@
 | Estado / enum | EnumText / StatusBadge | enums.<Enum>.<Valor>; tono registrado una vez por feature o en shared si se comparte |
 | Booleano | BooleanText | Sí/No o Yes/No; en tabla de estado se puede usar StatusDot |
 | Vacío | EmptyValue | null → raya larga tenue, aria-label Sin dato |
-| Texto | texto | Tal cual; largo truncado con elipsis y tooltip |
+| Texto | texto | Tal cual y entero: el largo baja de renglón, sin «…» ni tooltip (174) |
 - DateField emite DateOnly sin zona; DateTimeField convierte desde zona efectiva a UTC; PercentField devuelve fracción. Los fields leen opciones del catálogo y muestran carga; TaxIdNumberField normaliza separadores antes de limitar dígitos.
 - MonthField usa YYYY-MM, años 0001–9999, popup único accesible, sin limitar historia ni elegir por la persona.
 - parseMonth distingue vacío e inválido; useFormat localiza meses y obtiene mes actual con reloj central y zona efectiva, sin definir facturación.
@@ -51,7 +51,7 @@
 - Date.now y Date.parse fuera de shared/time.
 - libphonenumber-js fuera de shared/phone y shared/format; nombres de países con Intl.DisplayNames.
 - Arrays/switch de monedas, culturas, países, zonas o tipos fiscales; calcular dinero/reglas de negocio en el front.
-- Sustituir null por N/A, guion corto, cadena vacía o cero; enums sin traducir; formatos sueltos en JSX.
+- Sustituir null por N/A, guion corto, cadena vacía o cero; enums sin traducir; formatos sueltos en JSX; cortar un texto con «…» (`truncate`, `text-ellipsis`, `line-clamp`) o partir un código en sus guiones (174).
 ## Copiá de
 - `src/areas/business/roles/columns.tsx` (E4), `src/shared/ui/format/` y `src/shared/ui/fields/` (E1).
 ## Lo verifica

@@ -5,15 +5,17 @@ La fuente de cada pantalla es el [lienzo vigente "Sistema visual · Multitenant"
 ## Colores
 Tonos cálidos para el contenido, verde pasto como marca y un **marco arena** en tono paja (menú lateral y barra superior), un tono más marcado que el centro para que se despegue. Es la paleta «Pradera» (decisión del usuario del 2026-11-04, elegida sobre la app real), que reemplaza al verde petróleo; por eso «pendiente» tiene su propio celeste, que no se confunde con el verde de la marca ni con el de «activo».
 
+**Que no parezca plantilla** (decisión 173 del 2026-11-07, que cambia el tema del 04/10): quedan la paleta y la densidad, y salen el degradé de la marca y del avatar, la pastilla del activo y las sombras fuera de los menús. En la app entra con la base de la 12: hasta entonces `src/index.css` conserva `--marca-2`, `--marca-sombra` y `--lado-activo`, marcados abajo como «sale».
+
 | Token | Valor | Uso |
 |---|---|---|
-| `--marca` | `oklch(0.48 0.115 140)` | botón principal, enlaces fuertes, activo |
-| `--marca-2` | `oklch(0.66 0.15 128)` | segundo color del degradado del logo y del avatar |
-| `--marca-sombra` | `oklch(0.48 0.115 140 / 0.3)` | sombra corta de la marca |
+| `--marca` | `oklch(0.48 0.115 140)` | botón principal (sólido), enlaces fuertes, la barra del activo del menú y el avatar |
+| `--marca-2` | `oklch(0.66 0.15 128)` | sale con la base de la 12: era el segundo color del degradado del logo y del avatar (173) |
+| `--marca-sombra` | `oklch(0.48 0.115 140 / 0.3)` | sale con la base de la 12: era la sombra corta de la marca (173) |
 | `--marca-h` | `oklch(0.43 0.115 140)` | hover del botón principal |
 | `--auth-panel-start` / `--auth-panel-mid` / `--auth-panel-end` | `oklch(0.47 0.11 140)` / `oklch(0.35 0.09 145)` / `oklch(0.25 0.06 150)` | degradado del panel de Ingreso y Registro, copiado del lienzo |
 | `--auth-panel-grid` | `oklch(1 0 0 / 0.06)` | cuadrícula tenue del mismo panel |
-| `--marca-t` | `oklch(0.955 0.035 130)` | fondo tenue: ícono de la banda, cartel de información, sugerencia del teléfono |
+| `--marca-t` | `oklch(0.955 0.035 130)` | fondo tenue: cartel de información, sugerencia del teléfono, lo elegido (la banda ya no lleva ícono, 173) |
 | `--sugerencia-tx` | `oklch(0.3 0.06 140)` | texto de la tarjeta de sugerencia del teléfono (M-Inicio-Personal) |
 | `--marca-tx` | `oklch(0.41 0.1 140)` | texto sobre `--marca-t` y el ítem activo del menú |
 | `--fondo` | `oklch(0.985 0.005 95)` | fondo de la pantalla |
@@ -29,7 +31,7 @@ Tonos cálidos para el contenido, verde pasto como marca y un **marco arena** en
 | `--lado-hover` | `oklch(0.892 0.04 95)` | hover en el marco |
 | `--lado-t2` | `oklch(0.42 0.02 80)` | texto de las opciones del menú lateral y del panel que no están activas |
 | `--lado-guia` | `oklch(0.815 0.052 95)` | línea a la izquierda de las opciones de un grupo abierto del panel («Gestión de usuarios») |
-| `--lado-activo` | `#fff` | ítem activo del menú (pastilla blanca, con `--marca-tx`) |
+| `--lado-activo` | `#fff` | sale con la base de la 12: era la pastilla blanca del ítem activo, que pasa a una barra de 2 px en `--marca` (173) |
 | `--panel` | `oklch(0.902 0.04 95)` | segundo panel de Administración, un tono más oscuro que el marco |
 | `--fila-alterna` | `oklch(0.968 0.015 95)` | filas alternadas de las tablas |
 | `--fila-hover` | `oklch(0.955 0.03 130)` | fila al pasar el mouse |
@@ -60,30 +62,36 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 
 ## Forma
 - **Escala de escritorio al 75 %** (decisión del usuario del 2026-11-02, como en ArquitecturaBase). Las medidas de este documento, de las fichas y de los tableros son nominales, sobre una raíz de 16 px. En la compu (≥ 1024 px y puntero fino) `src/index.css` pone la raíz en 75 % y la app entera se ve como con el zoom del navegador en 75 %: 13 px se leen 9,75 y un botón de 36 mide 27. Teléfono y tablet quedan en 16 px, con sus áreas táctiles de 44. Por eso el código mide en `rem` o en la escala de Tailwind: lo que el tablero dibuja de 220 se escribe `w-55`, y 13 de letra, `text-[0.8125rem]`. En px quedan las líneas de hasta 2, los anillos (`ring-[3px]`, `shadow-[0_0_0_…]`) y los cortes. La escala se cambia solo en esa regla de `index.css`.
-- Tarjetas (filtros y tablas) con radio de 16 px y sombra suave: `0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 8px 24px -12px oklch(0.24 0.012 60 / 0.14)`.
+- **Sin sombras, salvo en menús, desplegables y tooltips** (173): la profundidad la dan el borde de 1 px y el escalón de luz entre el fondo y la superficie. Quedan `--sombra-menu` y la de un tooltip; salen las de las tarjetas, los botones, los diálogos, el aviso de abajo, la flecha del menú lateral, las hojas, la franja y el «+» del teléfono, la tarjeta de la página pública y la del directorio. Un anillo de foco o un borde dibujado con `box-shadow` (`0 0 0 1px`, `inset`) no es una sombra y queda.
+- Tarjetas (filtros y tablas) con radio de 16 px, borde `--borde` y sin sombra.
 - **Cajas de un formulario** («Criterio · Formularios», `.caja2`; `Section`): borde `--borde`, radio de 12 px y sin sombra; el encabezado arena de 40 lleva la línea `--borde-cab` y el botón chico a 4 del borde.
-- Botones normales de 36 px y 14 px de texto; los compactos, de 32 px y 13 px. Ambos usan radio de 8 px. El principal es sólido en `--marca` y el botón de una confirmación irreversible es sólido en `--peligro`.
+- Botones normales de 36 px y 14 px de texto; los compactos, de 32 px y 13 px. Ambos usan radio de 8 px, que es **el radio de un control**. El principal es sólido en `--marca`, sin degradé ni sombra, y `--marca-h` al pasar el mouse (173); el botón que confirma algo que destruye es sólido en `--peligro` (161).
+- **Filtros, etiquetas y contadores** (173): los filtros y las etiquetas, con el radio de un control, nunca en pastilla; un contador (el de una pestaña, el de una opción del menú) va como texto, sin fondo. El número de la campana es un cuadrado chico con el mismo radio.
 - **Tablas:** encabezado sobre `--cab`, filas alternadas (`--fila-alterna` desde la primera) y encabezados que bajan de línea en lugar de pisarse. **Entre columnas va una línea fina** del tono de la que separa las filas, en el encabezado y en el cuerpo. Es una sombra interior de la celda y no un borde, así una columna fija se la lleva al desplazar. La última fila conserva su línea, salvo que la tabla toque el borde de su caja (137).
-- **Marca:** un cuadrado con degradado de `--marca` a `--marca-2`, sombra `0 2px 6px -1px var(--marca-sombra)` y un cuadrado blanco abierto del lado derecho, rotado −45° como en el lienzo. Lleva el nombre del producto al lado. Lo mismo en el menú lateral y en las pantallas públicas.
+- **Marca:** el nombre del producto, en 700 y `--t1`, sin cuadrado ni degradé (173). Lo mismo en el menú lateral y en las pantallas públicas. Reemplaza el cuadrado con degradé de `--marca` a `--marca-2` y su sombra.
+- **Banda de la página:** el título y su segunda línea, sin ícono de la sección; una pantalla interna lleva «‹» antes del título (173).
+- **Avatar:** un cuadrado chico con la inicial, relleno de `--marca` y la letra blanca en 600, con radio de 6: 24 en la barra de arriba y en el pie del menú (173). Sin círculo ni degradé. En la cabecera de tu menú y en las filas del teléfono conserva su medida, también cuadrado (radio de 8 hasta 44 y de 12 más grande); el de una invitación sin cuenta, gris.
 - Los rótulos de grupo del menú van sin mayúsculas ("Administración", no "ADMINISTRACIÓN").
-- **Teléfono:** el «+» flotante lleva `--sombra-fab` (`0 6px 16px oklch(0.3 0.07 140 / 0.3), 0 2px 4px oklch(0.3 0.07 140 / 0.2)`); la hoja que sube desde abajo, `--sombra-hoja` (`0 -8px 24px oklch(0.2 0.014 78 / 0.12)`), y la franja de los avisos, `--sombra-franja` (`0 8px 24px oklch(0.2 0.01 60 / 0.3)`). Los grupos son blancos sobre `--s2`, con radio de 14 px y un borde de 1 px en `--borde`.
-- **Página pública** (tableros Pagina-Publica y M-Pagina-Publica, `shared/ui/PublicPageCard`): la tarjeta blanca de 560 como máximo, con radio de 20 (18 en el teléfono) y `--sombra-tarjeta` (`--sombra-tarjeta-movil` en el teléfono), sobre `--fondo` con el brillo `--fondo-brillo` arriba a la derecha.
-- **Tarjetas del directorio** (Landing, Landing-Movil, Directorio y M-Directorio, lienzo v112, `.lp-emp a:hover`): `--sombra-directorio` (`0 6px 18px oklch(0.24 0.014 78 / 0.08)`), junto con el borde `--borde2` al pasar sobre una empresa. Su logo o iniciales mide 44 y su radio es 12; la tarjeta tiene radio de 16.
-- **Diálogos y menús de la compu** («Criterio · Diálogos», `.cd`; los menús y listas que se abren, `.menu` y `.o-lst`): el diálogo lleva `--sombra-dialogo` (`0 24px 48px oklch(0.2 0.014 78 / 0.28)`) y el menú o la lista, `--sombra-menu` (`0 12px 32px oklch(0.24 0.014 78 / 0.14)`).
+- **Teléfono:** el «+» flotante, la hoja que sube desde abajo y la franja oscura de los avisos van sin sombra (173): `--sombra-fab`, `--sombra-hoja` y `--sombra-franja` salen con la base de la 12. La hoja se separa con el velo; el «+» y la franja, por su color. Los grupos son blancos sobre `--s2`, con radio de 14 px y un borde de 1 px en `--borde`.
+- **Página pública** (tableros Pagina-Publica y M-Pagina-Publica, `shared/ui/PublicPageCard`): la tarjeta blanca de 560 como máximo, con radio de 20 (18 en el teléfono) y borde `--borde`, sin sombra (173: `--sombra-tarjeta` y `--sombra-tarjeta-movil` salen con la base de la 12), sobre `--fondo` con el brillo `--fondo-brillo` arriba a la derecha.
+- **Tarjetas del directorio** (Landing, Landing-Movil, Directorio y M-Directorio, lienzo v112, `.lp-emp a:hover`): al pasar sobre una empresa, solo el borde `--borde2`, sin `--sombra-directorio` (173). Su logo o iniciales mide 44 y su radio es 12; la tarjeta tiene radio de 16.
+- **Diálogos y menús de la compu** («Criterio · Diálogos», `.cd`; los menús y listas que se abren, `.menu` y `.o-lst`): el diálogo, con borde y sin sombra, sobre el velo (`--sombra-dialogo` sale con la base de la 12); el menú, el desplegable o la lista que se abre y el tooltip conservan `--sombra-menu` (`0 12px 32px oklch(0.24 0.014 78 / 0.14)`).
 - **Dos vistas de lo mismo** («Criterio · Menús», `.o-seg`; `SegmentedControl`): las opciones en partes iguales, de 30 (44 × 44 en el teléfono); **la elegida va rellena en `--marca`, con la letra blanca, y las otras, blancas, con su texto entero** (142). Reemplaza la vía `--s3` con la elegida en `--lado-activo` y `--sombra-segmento`, que no se distinguía. El foco es un anillo de 2 px por fuera, separado 2 px.
-- **Lo elegido, en todo el sistema** (142): nunca solo un tinte, con 3:1 contra lo no elegido y el texto a 4,5:1. La tarjeta elegida suma un borde de 2 px en `--marca` y el fondo `--marca-t`; en un desplegable de un filtro, la elegida lleva la tilde a la izquierda, y la fila abierta de una tabla y la conversación abierta del chat, `--marca-t` y una barra de 3 px en `--marca` al inicio. El ítem activo del menú lateral, una pastilla blanca, se revisa con esta regla al redibujar «Criterio · Menús».
-- **Avisos pasajeros en la compu** (tablero Avisos): abajo a la derecha, una tarjeta blanca de 340 con borde, radio de 10 y `--sombra-aviso` (`0 12px 32px oklch(0.24 0.014 78 / 0.16)`); solo el ícono lleva color (`--aviso-ok`, `--peligro`).
+- **Lo elegido, en todo el sistema** (142): nunca solo un tinte, con 3:1 contra lo no elegido y el texto a 4,5:1. La tarjeta elegida suma un borde de 2 px en `--marca` y el fondo `--marca-t`; en un desplegable de un filtro, la elegida lleva la tilde a la izquierda, y la fila abierta de una tabla y la conversación abierta del chat, `--marca-t` y una barra de 3 px en `--marca` al inicio.
+- **El ítem activo del menú** (173): una barra de 2 px en `--marca` a la izquierda, sobre `--lado-hover`, y la letra en `--marca-tx` y 600; sin pastilla blanca ni sombra. Igual en el menú lateral, en su panel y en «Administración» abierta.
+- **Avisos pasajeros en la compu** (tablero Avisos): abajo a la derecha, una tarjeta blanca de 340 con borde `--borde2` y radio de 10, sin sombra (173: `--sombra-aviso` sale con la base de la 12); solo el ícono lleva color (`--aviso-ok`, `--peligro`).
 
 ## Menú lateral y panel de Administración
 - **Arriba:** Inicio y los módulos de uso diario del producto. **Abajo de todo**, después de una línea en `--lado-borde`: "Administración". Un módulo de uso diario (como WhatsApp, en la E11) abre su propio panel al lado del menú, como Administración, y se abre uno a la vez («Criterio · Menús», R10).
 - **Las opciones** («Criterio · Menús», `layouts/components/menuRow.ts`, igual en el menú y en el panel): miden 32, con 2 px
   entre una y otra y la línea fina adentro de ese espacio (34 de una a otra, lienzo v92). Las que no están activas van en
-  `--lado-t2`; la activa, en blanco con `--marca-tx`; el grupo que se despliega, en 600 y `--t1`.
+  `--lado-t2`; la activa, con la barra de 2 px en `--marca` y `--marca-tx` en 600 (173); el grupo que se despliega, en 600 y
+  `--t1`. Un nombre largo baja de renglón en lugar de cortarse con «…» (174).
 - **La barra de arriba** lleva las migas a la izquierda, todas en `--t2`, y tu menú a la derecha («Criterio · Marco»). Nada
   más: sin ☰ con sesión, también en la organización (lienzo v104). El menú lateral se contrae solo con la flecha redonda de
   28 sobre su borde («Criterio · Menús»); con el panel de Administración abierto se ve solo la flecha del panel, que lo cierra.
-  Es la misma en los dos (`panelEdgeButtonClass`, lienzo v107): blanca, con borde `--borde2`, `--sombra-flecha`, a 64 de
-  arriba y la flecha de 18.
+  Es la misma en los dos (`panelEdgeButtonClass`, lienzo v107): blanca, con borde `--borde2` y sin sombra (173:
+  `--sombra-flecha` sale con la base de la 12), a 64 de arriba y la flecha de 18.
 - **En escritorio**, "Administración" abre un **segundo panel** al lado del menú (`AdminPanel`, 232 px, fondo `--panel`):
   - arriba lleva el título y, sobre su borde derecho, un botón redondo «‹» para cerrarlo;
   - adentro va la misma lista de siempre, con el mismo estilo del menú: el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Configuración, Página pública y Auditoría;
