@@ -7,8 +7,11 @@ Muestran solo lo que existe hasta la 20 (78): sin estado, aprobación, PDF, corr
 Desde el traspaso 10 (2026-11-07), la carga es la de ArquitecturaBase (166 y 177, `carga-desde-la-app.md` y `renglones-en-formularios.md` de allá): la zona plegada
 dice «3 de 5 respondidas»; el bloque es una tabla con ↑ ↓ 🗑 y «Agregar ítem», sin contador, y en el panel y el teléfono, un recuadro por ítem; «Enviada» tiene
 «Volver a Formularios» y el bloque en una línea; la lista dependiente dice «Elegí primero «Zona»». Con un mínimo de más de 10 ítems se publica solo para la app (178),
-«Formularios» suma «Mis cargas» y «Mi última carga» para quien solo carga (153), y la planilla tiene un solo «Filtros» (144) y el detalle alineado (139). Lo pendiente
-del traspaso 5 también: los dos anchos (141) y «Mantener las respuestas para la siguiente» en la banda de la página (147).
+«Formularios» suma «Mis cargas» y «Mi última carga» para quien solo carga (153, en `formularios_lista_y_ficha_1004.py`), y la planilla tiene un solo «Filtros» (144)
+y el detalle alineado (139). Lo pendiente del traspaso 5 también: los dos anchos (141) y «Mantener las respuestas para la siguiente» en la banda de la página (147).
+
+En la v169 (revisión de las specs del 2026-11-08): «Agregar filtro ▾» ofrece «Filtro fijo» (134) y el tipo se llama «Elegir de un catálogo»; lo propio
+tiene «Empresa» (24); el editor de atrás de publicar, en el teléfono, lleva «Agregar título» y «Agregar bloque», y el chat, el clip al lado de «Nota interna» (78).
 
 Corre después de `formularios_19_logica_1004.py` y antes de `formularios_etapas_1004.py`. Se puede volver a correr. No escribe `canvas.json`: los títulos de
 `TITULOS` los pone quien coordina el lienzo. La 21 usa `barra`, `pil`, `zona`, `banda` y las piezas de las preguntas: quedan como estaban, y lo nuevo va aparte.
@@ -602,13 +605,13 @@ def barra(canal="normal", propia=False):
 
 def barra_f(canal="normal", propia=False):
     """La barra de la 15 (143 y 144): el buscador, «Empresa» y «Canal» como filtros rápidos, un solo «Filtros» y «Columnas», sin cantidades.
-    Lo aplicado va en chips, con «Limpiar todo» (CW6-A). Lo propio no tiene «Empresa»."""
+    Lo aplicado va en chips, con «Limpiar todo» (CW6-A). Lo propio es la planilla de siempre, también con «Empresa» (24): `propia` queda por compatibilidad."""
     menu = ""
     if canal == "menu":
         ops = [("Todos los canales", True), ("App", False), ("WhatsApp", False)]
         menu = ('<span class="f-mn" role="listbox" aria-label="Filtrar por canal">'
                 + "".join(f'<span role="option" aria-selected="{"true" if s else "false"}" class="pl-op{" sel" if s else ""}">{R.tl(s)}{o}</span>' for o, s in ops) + "</span>")
-    h = f'<span class="w-bus">{F.BUSCAR} Buscar en textos largos</span>' + ("" if propia else pil("Empresa"))
+    h = f'<span class="w-bus">{F.BUSCAR} Buscar en textos largos</span>' + pil("Empresa")
     h += pil("Canal: App", True) if canal == "app" else pil("Canal", menu=menu)
     h += (f'<span class="pl-env"><span class="w-pil pl-fil" role="button" aria-haspopup="dialog" aria-expanded="false">{R.FILTROS} Filtros</span></span>'
           f'<span class="pl-der"><span class="pl-env"><span class="w-pil" role="button" aria-haspopup="menu" aria-expanded="false">Columnas {CHEV}</span></span></span>')
@@ -738,8 +741,8 @@ def propias():
 
 # ================================================================ FRM-Editor-Listas: «Según otra respuesta» (94)
 PREG = [("Cliente", "Texto corto · hasta 60 caracteres · Obligatoria"), ("¿Se concretó la venta?", "Sí o no · Obligatoria"), ("Motivo", "Elegir una · 3 opciones · Opcional"),
-        ("Monto", "Número · 2 decimales · 1 condición · Opcional"), ("Zona", "De un catálogo · Zonas · Obligatoria"), ("Fecha de entrega", "Fecha · Obligatoria"),
-        ("Proveedor", "De un catálogo · Proveedores · 1 filtro · Obligatoria"), (BLOQUE, X.resumen_bloque()), ("Total", "Cálculo · Pesos"),
+        ("Monto", "Número · 2 decimales · 1 condición · Opcional"), ("Zona", "Elegir de un catálogo · Zonas · Obligatoria"), ("Fecha de entrega", "Fecha · Obligatoria"),
+        ("Proveedor", "Elegir de un catálogo · Proveedores · 1 filtro · Obligatoria"), (BLOQUE, X.resumen_bloque()), ("Total", "Cálculo · Pesos"),
         ("Observaciones", "Texto largo · Opcional"), ("Foto del remito", "Foto · hasta 3 · Opcional")]
 TITULO_ANTES = 5  # «Entrega» va antes de la quinta pregunta
 K_BLOQUE = 8  # el bloque «Productos», con su recuadro «Preguntas de cada ítem» (177)
@@ -766,10 +769,13 @@ def cond_lista(pregunta="Zona", mal=None):
             f'<div class="w-cmp"><span class="rt">Pregunta</span>{v}{e}</div>{x}</fieldset>')
 
 
+FILTROS_MENU = ["Según quien lo recibe", "Filtro fijo", "Según otra respuesta"]  # «Agregar filtro ▾», el de la 16, suma «Según otra respuesta» (134)
+
+
 def zona_filtros(conds="", menu=False, apagado=None):
     m = ""
     if menu:
-        m = ('<div class="f-menu" role="menu" aria-label="Agregar filtro">' + "".join(f'<span class="f-mi" role="menuitem">{x}</span>' for x in ["Según quien lo recibe", "Fijo", "Según otra respuesta"]) + "</div>")
+        m = ('<div class="f-menu" role="menu" aria-label="Agregar filtro">' + "".join(f'<span class="f-mi" role="menuitem">{x}</span>' for x in FILTROS_MENU) + "</div>")
     if apagado:
         b = f'<span class="e-tipw"><button type="button" class="cb cb-sec" disabled>{MAS} Agregar filtro {CHEV}</button><span class="e-tip" role="tooltip">{apagado}</span></span>'
     else:
@@ -793,7 +799,7 @@ def cuerpo_ed(html, k=7, pv=None):
 
 def editor_listas():
     def prov(z, oblig=True):
-        return X.abierta(7, "De un catálogo", '<div class="w-cmp ancho"><span class="rt">Catálogo</span><div class="ct sel">Proveedores' + CHEV + "</div></div>" + z, oblig=oblig)
+        return X.abierta(7, "Elegir de un catálogo", '<div class="w-cmp ancho"><span class="rt">Catálogo</span><div class="ct sel">Proveedores' + CHEV + "</div></div>" + z, oblig=oblig)
     banda_e = X.BANDA()
     conds = cond_lista()
     V = {"Según otra respuesta": cuerpo_ed(prov(zona_filtros(conds))), "Agregar filtro: menú": cuerpo_ed(prov(zona_filtros(conds, menu=True))),
@@ -826,7 +832,7 @@ def publicar():
              E_PU[5]: A.dlg_publicar(tit, frena_min + que().replace(E.z_dato("En WhatsApp", "No"), ""), E.pie_pub(activo=False))}
     acciones = ('<button type="button" class="cb cb-sec" disabled>Descartar</button><button type="button" class="cb cb-sec" disabled>Guardar cambios</button>'
                 '<a class="cb cb-pri" href="FRM-Publicar-20.dc.html">Publicar</a>' + E.kebab(False))
-    base = (E.banda(FORM, E.EST_PUB, acciones, E.VOL), cuerpo_ed(""))
+    base = (E.banda(FORM, E.EST_PUB, acciones, E.VOL), cuerpo_ed("", k=None))  # sin pregunta abierta: las 11 en la lista, también «Proveedor»
     t = A.pagina_editor({e: base for e in E_PU}, capas, E_PU, "Publicar · etapa 20", E.CSS_E12 + E.CSS_CA4 + E.CSS_TITULOS + E.CSS_ZONAS + H.CSS_AVISOS + X.CSS_AVISO + X.CSS_19)
     return X.sin_av(t)  # las filas de «Avisos», sin la clase que la tanda «a» pinta como avatar
 
@@ -999,20 +1005,23 @@ def tel_propias():
 
 
 def tel_editor():
-    est = ["Según otra respuesta", "Agregar un filtro"]
+    """«Agregar filtro», como en la compu (134), con sus tres filtros en una hoja."""
+    est = ["Según otra respuesta", "Agregar filtro"]
 
     def fila(c, v):
         return f'<div class="q-row"><span class="tx"><b>{c}</b><span>{v}</span></span><button type="button" class="ap-ib" aria-label="Quitar el filtro">{F.svg(chr(60) + "path d=" + chr(34) + "M6 6l12 12M18 6 6 18" + chr(34) + "/>", 20)}</button></div>'
-    t = (C.t_bar("Proveedor", "Pregunta", "M-FRM-Editor.dc.html") + '<div class="ap-cuerpo"><div class="ap-gtit">Qué opciones ve cada persona<a href="#">Agregar un filtro</a></div><div class="ap-grupo">' + fila("Zona", "Según otra respuesta · Zona") + "</div>"
+    t = (C.t_bar("Proveedor", "Pregunta", "M-FRM-Editor.dc.html") + '<div class="ap-cuerpo"><div class="ap-gtit">Qué opciones ve cada persona<a href="#">Agregar filtro</a></div><div class="ap-grupo">' + fila("Zona", "Según otra respuesta · Zona") + "</div>"
          '<div class="ap-txt-l" style="padding: 12px 16px;"><b>Con «Centro», 58 opciones</b></div></div>')
-    h = M.hoja("Agregar un filtro", '<span role="menuitem">Según quien lo recibe</span><span role="menuitem">Fijo</span><span role="menuitem">Según otra respuesta</span>')
-    return M.css(C.tel_pagina({e: t for e in est}, est, {"Agregar un filtro": h}, "Según otra respuesta · teléfono · etapa 20", E.CSS_E12 + CSS_TP), M.CSS_HOJA, "hoja")
+    h = M.hoja("Agregar filtro", "".join(f'<span role="menuitem">{x}</span>' for x in FILTROS_MENU))
+    return M.css(C.tel_pagina({e: t for e in est}, est, {"Agregar filtro": h}, "Según otra respuesta · teléfono · etapa 20", E.CSS_E12 + CSS_TP), M.CSS_HOJA, "hoja")
 
 
 def tel_publicar():
     est = ["Sin número conectado", "Con una lista dependiente", "Con un catálogo grande", "Con un mínimo de más de 10", "Solo para clientes"]
     tit = "Publicar la versión 4"
-    base = X.t_bar() + E.t_cuerpo(nombre=FORM, prefijo="PED") + E.t_fijo("cambios")
+    # El editor de atrás es el de FRM-Editor-Listas: sus preguntas, el título «Entrega», el bloque y la banda con «Agregar título», «Agregar bloque» y
+    # «Agregar pregunta» (88 y 177)
+    base = X.t_base(PREG, K_BLOQUE, (TITULO_ANTES, "Entrega"))
 
     def hoja(motivo, btn=True):
         pie = f'<button type="button" class="cb cb-pri"{"" if btn else " disabled"}>Publicar versión 4</button><button type="button" class="cb cb-sec">Cancelar</button>'
@@ -1021,7 +1030,8 @@ def tel_publicar():
              est[1]: hoja("Queda solo para la app: «Proveedor» usa una lista dependiente, y WhatsApp no las muestra."), est[2]: hoja("Queda solo para la app: «Repuesto» tiene 240 opciones, y WhatsApp admite hasta 200 al elegir una."),
              est[3]: hoja(f"Queda solo para la app: {MOTIVO_MINIMO}"),
              est[4]: hoja("No se puede publicar: este formulario es solo para clientes, y ellos responden por WhatsApp.", False)}
-    return C.tel_pagina({e: base for e in est}, est, capas, "Publicar · teléfono · etapa 20", A.CSS_TED + A.CSS_TCHAT_AB + E.CSS_E12 + E.CSS_TED_E12 + CSS_TP)
+    return C.tel_pagina({e: base for e in est}, est, capas, "Publicar · teléfono · etapa 20",
+                        A.CSS_TED + A.CSS_TCHAT_AB + E.CSS_E12 + E.CSS_TED_E12 + CSS_TP + X.CSS_T19 + E.CSS_TTITULOS)
 
 
 # ================================================================ WA-Chats-Formulario-20: en «Enviar formulario», los que se cargan solo desde la app, apagados con su motivo (166 y 184)
@@ -1073,9 +1083,10 @@ def chat_formulario():
            f'{F.svg(chr(60) + "path d=" + chr(34) + "m9 6 6 6-6 6" + chr(34) + "/>", 14)}</span></div>')
     capas = {E_CF[0]: dlg_app(FORMS_UNO), E_CF[1]: dlg_app(FORMS_TRES, pagina=pag), E_CF[2]: dlg_app([(FORM, "")], buscar="materiales"),
              E_CF[3]: dlg_app(FORMS_UNO, sel=VISITA[0])}
-    t = A.pagina_chat(E_CF, {e: A.escr() for e in E_CF}, {}, capas, {e: "Hola, Tomás" for e in E_CF}, {e: "10:50" for e in E_CF},
+    # El clip «Adjuntar un archivo», al lado de «Nota interna» (78), como en la 19
+    t = A.pagina_chat(E_CF, {e: X.con_clip(A.escr()) for e in E_CF}, {}, capas, {e: "Hola, Tomás" for e in E_CF}, {e: "10:50" for e in E_CF},
                       "WhatsApp · Internos · un formulario solo para la app · etapa 20")
-    return L.con_css(t, "e20-chat", CSS_CHAT20)
+    return L.con_css(t, "e20-chat", CSS_CHAT20 + X.CSS_CLIP)
 
 
 def tel_chat_formulario():
@@ -1089,7 +1100,7 @@ def tel_chat_formulario():
         h = re.sub(r"<span>\d+ / 1024</span>", f"<span>{len(m)} / 1024</span>", h, count=1)
         return h if sel else h.replace('<button type="button" class="cb cb-pri">Enviar formulario</button>', '<button type="button" class="cb cb-pri" disabled>Enviar formulario</button>', 1)
     capas = {E_TCF[0]: hoja(FORMS_UNO), E_TCF[1]: hoja(FORMS_TRES), E_TCF[2]: hoja(FORMS_UNO, VISITA[0])}
-    return A.pagina_tchat(E_TCF, {e: A.t_escr() for e in E_TCF}, {}, capas, "WhatsApp · un formulario solo para la app · teléfono · etapa 20",
+    return A.pagina_tchat(E_TCF, {e: X.t_con_clip(A.t_escr()) for e in E_TCF}, {}, capas, "WhatsApp · un formulario solo para la app · teléfono · etapa 20",
                           A.CSS_AB + A.CSS_TCHAT_AB + CSS_CHAT20)
 
 
