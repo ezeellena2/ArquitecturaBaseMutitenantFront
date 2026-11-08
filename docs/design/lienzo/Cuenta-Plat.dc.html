@@ -680,6 +680,16 @@ textarea.in2 { height: auto; min-height: 84px; }
 .o-fila .dos > .n2 { flex: 0 1 auto; font-size: 10.7px/*13px*/; color: var(--t2); text-align: right; }
 .rev-tx { margin: 0; font-size: 11.1px/*13.5px*/; color: var(--t2); line-height: 1.55; }
 </style>
+<style data-t10="nucleo">
+/* 175 · El estado, una vez: la etiqueta lo dice, y cuándo y por qué van en la frase de su ⓘ. */
+:root .banda-pag .res { overflow: visible !important; }
+.banda-pag .res .pill .t10n-i { margin-left: 2px; }
+.t10n-i { position: relative; display: inline-flex; align-items: center; color: var(--t3); cursor: help; outline: none; }
+.t10n-i:focus-visible { border-radius: 50%; box-shadow: 0 0 0 2px var(--marca); }
+.t10n-tip { display: none; position: absolute; z-index: 40; top: calc(100% + 5.9px/*8px*/); left: -7.2px/*10px*/; width: 280px; padding: 5.8px/*8px*/ 7.2px/*10px*/; border-radius: 3px/*6px*/; background: oklch(0.27 0.012 60); color: #fff; font-size: 10.5px/*12.5px*/; font-weight: 400; line-height: 1.4; white-space: normal; text-align: left; }
+.t10n-tip::before { content: ""; position: absolute; left: 10.1px/*14px*/; top: -3px/*4px*/; width: 8px; height: 8px; background: inherit; transform: rotate(45deg); }
+.t10n-i:hover .t10n-tip, .t10n-i:focus .t10n-tip, .t10n-i.abierta .t10n-tip { display: block; }
+</style>
 <style data-t10="piezas">
 /* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
 :root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
@@ -801,7 +811,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 
     <sc-if value="{{esPersona}}" hint-placeholder-val="{{si}}"><main class="ab-app-shell__main">
       <div class="banda-pag">
-        <div class="izq"><a class="atras" href="Cuentas.dc.html" aria-label="Volver a Cuentas"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></a><div style="min-width: 0;"><div class="tit"><h1>{{nombre}}</h1></div><p class="res"><span class="pill {{pill}}">{{textoEstado}}</span><span>{{resumen}}</span></p></div></div>
+        <div class="izq"><a class="atras" href="Cuentas.dc.html" aria-label="Volver a Cuentas"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></a><div style="min-width: 0;"><div class="tit"><h1>{{nombre}}</h1></div><p class="res"><span class="pill {{pill}}">{{textoEstado}}<sc-if value="{{t10nPorQue}}" hint-placeholder-val="{{no}}"><span class="t10n-i" tabindex="0" role="img" aria-label="{{t10nPorQue}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg><span class="t10n-tip" role="tooltip">{{t10nPorQue}}</span></span></sc-if></span><span>{{resumen}}</span></p></div></div>
         <div class="acciones"><sc-if value="{{puedeDarDeBaja}}" hint-placeholder-val="{{si}}"><span class="envoltura"><button type="button" class="mas" aria-label="Más acciones" aria-haspopup="menu" aria-expanded="{{expMas}}" onClick="{{alternarMas}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><sc-if value="{{abiertoMas}}" hint-placeholder-val="{{no}}"><div class="menu der" role="menu"><button type="button" class="menu-it pel" role="menuitem" onClick="{{darDeBaja}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4L17.2 7"/></svg> Borrar</button></div></sc-if></span></sc-if><sc-if value="{{puedeCerrarSesiones}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-sec" onClick="{{cerrarSesiones}}">Cerrar sesiones</button></sc-if><sc-if value="{{suspendida}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-sec" onClick="{{reactivar}}">Reactivar</button></sc-if><sc-if value="{{puedeSuspender}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-sec" onClick="{{suspender}}">Suspender</button></sc-if></div>
       </div>
       <div class="pagina">
@@ -882,6 +892,14 @@ textarea.in2 { height: auto; min-height: 84px; }
 </x-dc>
 
 <script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Activa","Suspendida","Necesita recuperación","Por borrar","Baja iniciada por la plataforma","Borrada"],"default":"Activa","section":"Estado"},"pestana":{"editor":"enum","options":["Métodos de ingreso","Organizaciones","Historial de seguridad"],"default":"Métodos de ingreso","section":"Estado"},"cuenta":{"editor":"enum","options":["Persona","Operador","Operador: acciones","Operador: cambiar permisos","Operador: quitar operador","Operador: restablecer el autenticador","Operador: confirmar que sos vos","Operador: confirmar que sos vos · código incorrecto","Operador: confirmar con un código de recuperación","Operador: confirmar · código de recuperación incorrecto","Operador: confirmar · demasiados intentos","Operador: cancelar la confirmación","Invitación de operador pendiente","Invitación de operador vencida"],"default":"Persona","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+// 175: cuándo y por qué de un estado, en la frase de su ⓘ: la última vez que pasó en el historial (traspaso10_nucleo_1004.py).
+const t10nPunto = (x) => (/[.!?]$/.test(x) ? x : x + '.');
+const t10nFecha = (f) => f.replace(' ', '\u00a0');
+const t10nPorQue = (historial, frases) => {
+  const h = frases ? historial.find((x) => frases[x.que]) : null;
+  return h ? frases[h.que](h) : '';
+};
+
 // GET /api/platform/accounts/{id}: la identidad y sus metadatos. Nunca los datos del perfil personal ni los de sus organizaciones.
 // Los métodos de ingreso salen de identity.LoginMethods, enmascarados.
 const CUENTAS = {
@@ -966,7 +984,7 @@ class Component extends DCLogic {
     const c = CUENTAS[{ recuperacion: 'pablo', baja: 'diego', eliminada: 'eliminada' }[estado] || 'lucia'];
 
     return {
-      claveEstado: props.estado, estado, cuenta: c, suspendidaEl: '27/09/2026', motivoSuspension: SUSPENSION.motivo, bajaPedidaEl: '27/09/2026 09:15', seElimina: '27/10/2026 09:15',
+      claveEstado: props.estado, estado, cuenta: c, suspendidaEl: '27/09/2026', motivoSuspension: SUSPENSION.motivo, bajaPedidaEl: '27/09/2026 09:15', seElimina: props.estado === 'Baja iniciada por la plataforma' ? '27/10/2026 10:30' : '27/10/2026 09:15',
       bajaPor: props.estado === 'Baja iniciada por la plataforma' ? 'plataforma' : 'persona',
       historial: estado === 'suspendida' ? [SUSPENSION, ...c.historial] : props.estado === 'Baja iniciada por la plataforma' ? [BAJA_PLATAFORMA, ...c.historial.filter((h) => h.que !== 'Pidió borrar su cuenta')] : c.historial,
       clavePestana: props.pestana, pestana: PESTANAS[props.pestana ?? 'Métodos de ingreso'],
@@ -1214,6 +1232,17 @@ class Component extends DCLogic {
       nombre: c.n,
       pill: { activa: 'ok', suspendida: 'alerta', recuperacion: 'mal', baja: 'alerta', eliminada: 'off' }[s.estado],
       textoEstado: { activa: 'Activa', suspendida: 'Suspendida', recuperacion: 'Necesita recuperación', baja: 'Por borrar', eliminada: 'Borrada' }[s.estado],
+      // 175: la etiqueta dice el estado; cuándo y por qué, en la frase de su ⓘ.
+      t10nPorQue: t10nPorQue(s.historial, {
+        suspendida: { 'Suspendió la cuenta': (h) => 'El ' + t10nFecha(h.fecha) + '. Motivo: ' + t10nPunto(h.motivo) },
+        baja: {
+          'Pidió borrar su cuenta': (h) => 'Pidió borrar su cuenta el ' + t10nFecha(h.fecha) + '.',
+          'Pidió borrar la cuenta': (h) => 'La plataforma pidió borrar la cuenta el ' + t10nFecha(h.fecha) + '. Motivo: ' + t10nPunto(h.motivo),
+        },
+        recuperacion: {
+          'Terminó la membresía en Kappa S.R.L.': (h) => 'El ' + t10nFecha(h.fecha) + ' terminó su membresía en Kappa S.R.L., que administraba su único método de ingreso.',
+        },
+      }[s.estado]),
       resumen: 'Alta el ' + c.alta + (s.estado === 'eliminada' ? ' · Borrada el ' + c.eliminadaEl : s.estado === 'baja' ? ' · Se borra el ' + s.seElimina : ' · Último ingreso ' + c.ultimo),
       suspendida: s.estado === 'suspendida',
       noSuspendida: s.estado !== 'suspendida',
@@ -1227,7 +1256,7 @@ class Component extends DCLogic {
       sinMetodos: nm === 0,
       sinOrgs: c.orgs.length === 0,
       // POST /api/platform/accounts/{id}/deletion: lleva motivo y no pide reautenticar a la persona. Mismo camino: 30 días, avisos y eliminación.
-      darDeBaja: () => this.pedirConfirmacion({ titulo: '¿Borrar la cuenta de ' + c.n + '?', error: c.unicoDueno ? 'Es el único Dueño de ' + c.unicoDueno + '. Primero la organización tiene que sumar otro Dueño, o la plataforma tiene que cerrarla.' : '', texto: 'Se cierran sus sesiones y le avisamos por todos sus métodos de ingreso. Tiene 30 días para cancelar el borrado ingresando; después se borra la cuenta. La plataforma no puede cancelarlo.', boton: 'Borrar', motivo: true, accion: (m) => { this.setState({ estado: 'baja', bajaPor: 'plataforma', bajaPedidaEl: '27/09/2026 09:15', seElimina: '27/10/2026 09:15' }); this.anotar('Pidió borrar la cuenta', m); this.avisar('La cuenta de ' + c.n + ' se borra el 27/10/2026 09:15.'); } }),
+      darDeBaja: () => this.pedirConfirmacion({ titulo: '¿Borrar la cuenta de ' + c.n + '?', error: c.unicoDueno ? 'Es el único Dueño de ' + c.unicoDueno + '. Primero la organización tiene que sumar otro Dueño, o la plataforma tiene que cerrarla.' : '', texto: 'Se cierran sus sesiones y le avisamos por todos sus métodos de ingreso. Tiene 30 días para cancelar el borrado ingresando; después se borra la cuenta. La plataforma no puede cancelarlo.', boton: 'Borrar', motivo: true, accion: (m) => { this.setState({ estado: 'baja', bajaPor: 'plataforma', bajaPedidaEl: '27/09/2026 09:15', seElimina: '27/10/2026 17:35' }); this.anotar('Pidió borrar la cuenta', m); this.avisar('La cuenta de ' + c.n + ' se borra el 27/10/2026 17:35.'); } }),
       recuperacion: s.estado === 'recuperacion',
       puedeCerrarSesiones: s.estado === 'activa',
       suspendidaEl: s.suspendidaEl,

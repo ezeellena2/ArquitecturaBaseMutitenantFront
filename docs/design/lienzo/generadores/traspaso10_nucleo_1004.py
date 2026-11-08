@@ -5,19 +5,22 @@ de la 12 trae a la app (decisiones 143, 144, 161, 164, 174, 175 y 179 de la hoja
   Usuarios, Roles, Cuentas, Organizaciones, Empresas, Empresa, Recuperaciones y las dos campanas, que se abren sobre Usuarios y
   Organizaciones. Con `TILDE`, la elegida lleva su tilde a la izquierda (142).
 - Las altas dicen «Agregar …»: «Agregar empresa» y, en su diálogo, «Agregar», en Usuario, M-Usuario y M-Usuario-Empresa.
-- El estado, una vez (175): en Usuario sale el cartel de «Por borrar», y cuándo se borra va en una frase en la ⓘ de la etiqueta; el
-  campo «Estado» que no se edita (una invitación, «Por borrar») sale, porque la banda ya lo dice, y una invitación sin nombre no
-  repite su número debajo del título, en la compu ni en el teléfono.
+- El estado, una vez (175 y 190): en Usuario sale el cartel de «Por borrar», y cuándo se borra va en una frase en la ⓘ de la
+  etiqueta; el campo «Estado» que no se edita (una invitación, «Por borrar») sale, porque la banda ya lo dice, también el renglón
+  del teléfono, cuyo encabezado pasa a decirlo, y una invitación sin nombre no repite su número debajo del título. En la Cuenta y la
+  Organización de Plataforma, cuándo y por qué («El 25/09/2026 10:15. Motivo: Dos meses sin pago.») van en la ⓘ de la etiqueta.
 - Decidir a propósito (161): el rojo lleno queda para borrar, quitar, revocar y cerrar; dar de baja, suspender, rechazar y cerrar
   sesiones van con la principal, y el foco arranca en «Cancelar». En Empresa, dar de baja a un miembro dice «Dar de baja».
 - El texto entero (174): un correo de una tabla baja de renglón después de la «@», nunca a mitad de palabra.
 - `Cuenta-21` y `M-Cuenta-21`, nuevos (E21, 159 y 170): «Mi cuenta» con la zona «Chat de WhatsApp» debajo de «Cómo entrás»: cada
   organización de la persona, si su chat está vinculado, «Vincular» o «Abrir el chat», y hasta cuándo le llegan los avisos,
-  «Llegan hasta el …» y, pasadas las 24 horas, «Solo con plantilla», con su (i). Salen de `Cuenta` y `M-Cuenta`, que no cambian.
+  «Llegan hasta el …» y, pasadas las 24 horas, «Solo con plantilla», con su (i). Beta S.R.L., suspendida como en el resto del
+  lienzo, no recibe avisos. Salen de `Cuenta` y `M-Cuenta`, que no cambian.
 - El WhatsApp de la cuenta (179): el bot de Plataforma ya no manda un enlace para entrar, sino el botón «Entrar a mi cuenta», que
-  lleva al ingreso (Plat-WA-Bot, Plat-WA-Bot-Recorrido y M-Plat-WA-Bot), y «Cargar teléfonos» pide marcar «La persona aceptó
-  recibir mensajes por WhatsApp» para invitar, con los estados «Revisar: falta la casilla» y «Revisar: con la casilla»
-  (WA-Telefonos y M-WA-Telefonos). Enlace y M-Enlace se retiran: los pasa al Archivo quien publica.
+  lleva al ingreso (Plat-WA-Bot, Plat-WA-Bot-Recorrido, M-Plat-WA-Bot y su mensaje en Mensajes), y «Cargar teléfonos» pide marcar
+  «La persona aceptó recibir mensajes por WhatsApp» para invitar, con los estados «Revisar: falta la casilla» y «Revisar: con la
+  casilla» (WA-Telefonos y M-WA-Telefonos). Enlace y M-Enlace se retiran (los pasa al Archivo quien publica): ya no los nombran
+  Mapa-Ingreso, Indice-entra ni Palabras.
 
 Corre después de `traspaso10_piezas_1004.py`; al terminar imprime la lista de tableros para volver a pasarles la pasada
 (`python traspaso10_piezas_1004.py --tableros …`), que les rehace su bloque y les pone la escala a lo que suma este script. No toca
@@ -253,11 +256,21 @@ def _usuario_decidir(t):
                    '<button type="button" class="cb cb-sec t10n-foco" onClick="{{cancelarConfirmacion}}">Cancelar</button>', 1)
 
 
+EST_TEL_INV = ('<div class="ap-it "><span class="tx"><b>Estado</b><span><span class="w-est e11b-pet">Invitación pendiente</span></span>'
+               '</span></div>')
+CAB_TEL_INV = ('<h1>011 15-5555-8812</h1><span class="sub"><span class="w-est e11b-pet">Invitación pendiente</span> · vence el 20/10/2026'
+               '</span>')
+
+
 def m_usuario():
     t = leer("M-Usuario")
     t = cambiar(t, "Sumar empresa", "Agregar empresa")
     # 175: la invitación por teléfono se nombra por su número; debajo del título no se repite.
     t = cambiar(t, '<h1>011 15-5555-8812</h1><span class="sub">011 15-5555-8812</span>', "<h1>011 15-5555-8812</h1>", 1)
+    # 190: sale el renglón gris «Estado», que no se edita. Lo dice el encabezado, como la banda de la compu y M-Cuenta-Plat.
+    t = cambiar(t, EST_TEL_INV, "", 1)
+    assert EST_TEL_INV not in t
+    t = cambiar(t, "<h1>011 15-5555-8812</h1></div>", CAB_TEL_INV + "</div>", 1)
     escribir("M-Usuario", t)
 
 
@@ -269,7 +282,7 @@ def m_usuario_empresa():
 
 
 # ================================================================================================================ Cuenta-21
-CHAT = ["Con el chat vinculado", "Pasadas las 24 horas", "Sin chat todavía", "Sin el módulo de WhatsApp"]
+CHAT = ["Con el chat vinculado", "Pasadas las 24 horas", "Sin vincular", "Sin chat todavía", "Sin el módulo de WhatsApp"]
 LLEGAN = "Llegan hasta el 16/10/2026 09:40"
 TIP_LLEGAN = "Te llegan hasta 24 horas después de tu último mensaje a Grupo Delta."
 TIP_PLANTILLA = ("Pasaron 24 horas desde tu último mensaje a Grupo Delta: te llegan solo los avisos con una plantilla aprobada. "
@@ -295,13 +308,16 @@ def fila_chat(org, clase, estado, avisos, accion=""):
 
 
 def zona_chat():
+    """Beta S.R.L. está suspendida en todo el lienzo (el menú de perfiles, Organizaciones): su fila lo dice y no le llegan avisos.
+    Los casos sin vincular y sin chat todavía los muestra Grupo Delta, cada uno en su estado."""
     def si(var, html, por_defecto):
         return f'<sc-if value="{{{{{var}}}}}" hint-placeholder-val="{{{{{"si" if por_defecto else "no"}}}}}">{html}</sc-if>'
     return ('<sc-if value="{{conModulo}}" hint-placeholder-val="{{si}}"><div class="w-caja t10n-chat"><div class="w-cab"><span>Chat de WhatsApp</span></div>'
             + si("chatLlegan", fila_chat("Grupo Delta", "", "Vinculado", LLEGAN + info(TIP_LLEGAN)), True)
             + si("chatPlantilla", fila_chat("Grupo Delta", "", "Vinculado", "Solo con plantilla" + info(TIP_PLANTILLA, True)), False)
-            + si("chatSinVincular", fila_chat("Beta S.R.L.", " off", "Sin vincular", "No llegan", VINCULAR), True)
-            + si("chatSinChat", fila_chat("Beta S.R.L.", " off", "Sin chat todavía", "No llegan", ABRIR), False)
+            + si("chatSinVincular", fila_chat("Grupo Delta", " off", "Sin vincular", "No llegan", VINCULAR), False)
+            + si("chatSinChat", fila_chat("Grupo Delta", " off", "Sin chat todavía", "No llegan", ABRIR), False)
+            + fila_chat("Beta S.R.L.", " pend", "Suspendida", "No llegan")
             + "</div></sc-if>")
 
 
@@ -319,10 +335,10 @@ def cuenta_21():
     t = t.replace("this.props.whatsapp", "this.props.chat")
     t = cambiar(t, "      si: true, no: false,\n      conModulo:",
                 "      si: true, no: false,\n"
-                "      // Tweak «chat»: Grupo Delta, vinculado; Beta S.R.L., sin vincular o sin chat todavía (GET /api/me/whatsapp-chats).\n"
-                "      chatLlegan: this.props.chat !== 'Pasadas las 24 horas',\n"
+                "      // Tweak «chat»: Grupo Delta, vinculado, sin vincular o sin chat todavía; Beta S.R.L., suspendida (GET /api/me/whatsapp-chats).\n"
+                "      chatLlegan: !['Pasadas las 24 horas', 'Sin vincular', 'Sin chat todavía'].includes(this.props.chat),\n"
                 "      chatPlantilla: this.props.chat === 'Pasadas las 24 horas',\n"
-                "      chatSinVincular: this.props.chat !== 'Sin chat todavía',\n"
+                "      chatSinVincular: this.props.chat === 'Sin vincular',\n"
                 "      chatSinChat: this.props.chat === 'Sin chat todavía',\n"
                 "      conModulo:", 1)
     t = re.sub(r"<title>[^<]*</title>", "<title>Mi cuenta · el chat de WhatsApp · etapa 21</title>", t, count=1)
@@ -330,7 +346,7 @@ def cuenta_21():
 
 
 # ---------------------------------------------------------------------------------------------------------------- M-Cuenta-21
-ESTADOS_TEL = ["Con el chat vinculado", "Pasadas las 24 horas", "La (i) de «Solo con plantilla»", "Sin chat todavía"]
+ESTADOS_TEL = ["Con el chat vinculado", "Pasadas las 24 horas", "La (i) de «Solo con plantilla»", "Sin vincular", "Sin chat todavía"]
 ESTADOS_M_CUENTA = ["e0", "eX0", "eX1", "eX2", "eX3", "eX4", "eX5", "eX6", "eX7", "eX8", "eX9", "eX10", "eAv4", "eAv3", "eAv2", "eAv1",
                     "eAv0", "eSuc", "e1"]
 TEL_SIN_VERIFICAR = ('<span class="tx"><b>011 15-5555-4521</b><span><span class="w-est amb">Sin verificar</span></span></span>'
@@ -351,11 +367,15 @@ def i_tel(aria):
     return f'<button type="button" class="ap-ib" aria-label="{aria}">{INFO_TEL}</button>'
 
 
-def grupo_tel(plantilla, sin_chat):
-    delta = (it_tel("Grupo Delta", "", "Vinculado", "Solo con plantilla", i_tel("Por qué llegan solo con plantilla")) if plantilla
-             else it_tel("Grupo Delta", "", "Vinculado", LLEGAN, i_tel("Hasta cuándo llegan los avisos")))
-    beta = (it_tel("Beta S.R.L.", " off", "Sin chat todavía", "No llegan", '<span class="acc-t">Abrir el chat</span>') if sin_chat
-            else it_tel("Beta S.R.L.", " off", "Sin vincular", "No llegan", '<span class="acc-t">Vincular</span>'))
+def grupo_tel(caso):
+    """Como en la compu: Grupo Delta en cada caso y Beta S.R.L., suspendida, sin avisos."""
+    delta = {
+        "llegan": it_tel("Grupo Delta", "", "Vinculado", LLEGAN, i_tel("Hasta cuándo llegan los avisos")),
+        "plantilla": it_tel("Grupo Delta", "", "Vinculado", "Solo con plantilla", i_tel("Por qué llegan solo con plantilla")),
+        "sin_vincular": it_tel("Grupo Delta", " off", "Sin vincular", "No llegan", '<span class="acc-t">Vincular</span>'),
+        "sin_chat": it_tel("Grupo Delta", " off", "Sin chat todavía", "No llegan", '<span class="acc-t">Abrir el chat</span>'),
+    }[caso]
+    beta = it_tel("Beta S.R.L.", " amb", "Suspendida", "No llegan")
     return f'<span class="ap-gtit">Chat de WhatsApp</span><div class="ap-grupo">{delta}{beta}</div>'
 
 
@@ -371,15 +391,16 @@ def m_cuenta_21():
     assert base.count('<span class="ap-gtit">Privacidad</span>') == 1 and base.count('<div class="ap-fijo">') == 1
     hoja = U.hoja("Solo con plantilla", f'<p class="t10n-hoja">{TIP_PLANTILLA}</p>', "")
 
-    def estado(k, plantilla=False, sin_chat=False, con_hoja=False):
-        b = base.replace('<span class="ap-gtit">Privacidad</span>', grupo_tel(plantilla, sin_chat) + '<span class="ap-gtit">Privacidad</span>')
+    def estado(k, caso, con_hoja=False):
+        b = base.replace('<span class="ap-gtit">Privacidad</span>', grupo_tel(caso) + '<span class="ap-gtit">Privacidad</span>')
         if con_hoja:
             i = b.index("</div>", b.index('<div class="ap-fijo">')) + len("</div>")
             b = b[:i] + hoja + b[i:]
         return re.sub(r'^<sc-if value="\{\{e0\}\}" hint-placeholder-val="\{\{si\}\}">',
                       f'<sc-if value="{{{{c{k}}}}}" hint-placeholder-val="{{{{{"si" if k == 0 else "no"}}}}}">', b, count=1)
 
-    bloques = estado(0) + estado(1, plantilla=True) + estado(2, plantilla=True, con_hoja=True) + estado(3, sin_chat=True)
+    bloques = (estado(0, "llegan") + estado(1, "plantilla") + estado(2, "plantilla", con_hoja=True) + estado(3, "sin_vincular")
+               + estado(4, "sin_chat"))
     t = t[:ini] + bloques + t[fin:]
     props = {"estado": {"editor": "enum", "options": ESTADOS_TEL, "default": ESTADOS_TEL[0], "section": "Estado"},
              "$preview": {"width": 390, "height": 844}}
@@ -461,6 +482,124 @@ def consentimiento(nombre, telefono):
     escribir(nombre, con_css(t, CSS_CONS_TEL if telefono else CSS_CONS))
 
 
+# ================================================================================================================ sin enlace para entrar (179)
+# Ningún mensaje lleva un enlace secreto: el bot manda «Entrar a mi cuenta», que abre el ingreso (/login), y el código se pide desde
+# la web. La página /login/enlace se retira, y Enlace y M-Enlace pasan al Archivo: no la nombran Mensajes, el mapa ni el índice del
+# ingreso, ni Palabras.
+MENSAJE_BOT = [
+    ("Enlace para entrar (bot)", "Entrar a mi cuenta (bot)", 2),  # la opción del Tweak y su `n`
+    ("    // backend.md §15: un mensaje entrante nunca abre una sesión; solo produce un enlace de un solo uso.\n",
+     "    // 179: un mensaje entrante nunca abre una sesión ni lleva un enlace secreto. El botón abre el ingreso (/login), y el código\n"
+     "    // se pide desde la web.\n", 1),
+    ("texto: [N('Hola, Lucía. Para entrar a ArquitecturaBase, tocá Entrar. El enlace sirve una vez y vence en 10 minutos.')], "
+     "botones: [{ t: 'Entrar', url: true }]",
+     "texto: [N('Hola, Lucía. Para entrar a ArquitecturaBase, tocá «Entrar a mi cuenta» y pedí el código en la página.')], "
+     "botones: [{ t: 'Entrar a mi cuenta', url: true }]", 1),
+]
+NODO_ENLACE = ('<a class="nodo " href="Enlace.dc.html"><span class="t">Enlace del bot de WhatsApp</span><span class="d">Sirve una vez y '
+               'vence a los 10 minutos.</span><span class="r">/login/enlace</span></a>')
+NODO_BOT = ('<a class="nodo " href="Ingreso.dc.html"><span class="t">Desde el bot de WhatsApp</span><span class="d">«Entrar a mi cuenta» '
+            'abre el ingreso, y el código se pide desde la web.</span><span class="r">/login</span></a>')
+# Los dos casos que abrían Enlace: el límite por red de su canje y el enlace vencido o usado.
+CASO_ENLACE = re.compile(r'<a class="caso" href="Enlace\.dc\.html">(?:(?!</a>).)*</a>\s*', re.S)
+TARJETA_ENLACE = re.compile(r'<div class="ix-card"><div class="cab"><div><h3>Enlace del bot de WhatsApp</h3>(?:(?!<div class="ix-card">).)*?'
+                            r'href="M-Enlace\.dc\.html">(?:(?!</a>).)*</a></div></div>', re.S)
+PALABRA_ENLACE = re.compile(r'\s*<div class="tt-f"[^>]*><span class="c1 n"[^>]*>LoginLink</span>(?:(?!</div>).)*</div>')
+SIN_ENLACE = ["Mensajes", "Mapa-Ingreso", "Indice-entra", "Palabras"]
+
+
+def sin_enlace():
+    t = leer("Mensajes")
+    for viejo, nuevo, veces in MENSAJE_BOT:
+        t = cambiar(t, viejo, nuevo, veces)
+    escribir("Mensajes", t)
+
+    t = cambiar(leer("Mapa-Ingreso"), NODO_ENLACE, NODO_BOT, 1)
+    t, k = CASO_ENLACE.subn("", t)
+    assert k in (0, 2), ("los casos del enlace", k)
+    escribir("Mapa-Ingreso", t)
+
+    t, k = TARJETA_ENLACE.subn("", leer("Indice-entra"))
+    assert k in (0, 1), ("la tarjeta del enlace", k)
+    escribir("Indice-entra", t)
+
+    t, k = PALABRA_ENLACE.subn("", leer("Palabras"))
+    assert k in (0, 1), ("LoginLink en Palabras", k)
+    escribir("Palabras", t)
+
+    for nombre in SIN_ENLACE:
+        t = leer(nombre)
+        for resto in ("Enlace.dc.html", "/login/enlace", "LoginLink", "un solo uso", "El enlace sirve una vez"):
+            assert resto not in t, (nombre, resto)
+
+
+# ================================================================================================================ Plataforma (175)
+# La etiqueta del encabezado dice el estado una vez, y cuándo y por qué van en una frase en su ⓘ («El 25/09/2026 10:15. Motivo: Dos
+# meses sin pago.»). Los carteles que lo repetían ya los había sacado bloque0_plat_1004.py, pero con ellos se habían ido la fecha y
+# el motivo. La frase sale de la última vez que pasó en el historial del tablero: dice lo mismo que la pestaña «Historial».
+PILL_BANDA = '<span class="pill {{pill}}">{{textoEstado}}</span>'
+I_PORQUE = ('<sc-if value="{{t10nPorQue}}" hint-placeholder-val="{{no}}"><span class="t10n-i" tabindex="0" role="img" '
+            f'aria-label="{{{{t10nPorQue}}}}">{INFO}<span class="t10n-tip" role="tooltip">{{{{t10nPorQue}}}}</span></span></sc-if>')
+# La fecha y la hora van juntas (un espacio duro): al bajar de renglón, «27/09/2026» no queda separada de su «10:30».
+POR_QUE_JS = ("\n// 175: cuándo y por qué de un estado, en la frase de su ⓘ: la última vez que pasó en el historial (traspaso10_nucleo_1004.py).\n"
+              "const t10nPunto = (x) => (/[.!?]$/.test(x) ? x : x + '.');\n"
+              "const t10nFecha = (f) => f.replace(' ', '\\u00a0');\n"
+              "const t10nPorQue = (historial, frases) => {\n"
+              "  const h = frases ? historial.find((x) => frases[x.que]) : null;\n"
+              "  return h ? frases[h.que](h) : '';\n"
+              "};\n")
+POR_QUE_PREVIO = re.compile(r"\n// 175: cuándo y por qué de un estado[^\n]*\n.*?\n\};\n", re.S)
+FRASES = {
+    "Cuenta-Plat": ("s.estado", """{
+        suspendida: { 'Suspendió la cuenta': (h) => 'El ' + t10nFecha(h.fecha) + '. Motivo: ' + t10nPunto(h.motivo) },
+        baja: {
+          'Pidió borrar su cuenta': (h) => 'Pidió borrar su cuenta el ' + t10nFecha(h.fecha) + '.',
+          'Pidió borrar la cuenta': (h) => 'La plataforma pidió borrar la cuenta el ' + t10nFecha(h.fecha) + '. Motivo: ' + t10nPunto(h.motivo),
+        },
+        recuperacion: {
+          'Terminó la membresía en Kappa S.R.L.': (h) => 'El ' + t10nFecha(h.fecha) + ' terminó su membresía en Kappa S.R.L., que administraba su único método de ingreso.',
+        },
+      }"""),
+    "Organizacion": ("s.estadoOrg", """{
+        suspendida: { 'Suspendió la organización': (h) => 'El ' + t10nFecha(h.fecha) + '. Motivo: ' + t10nPunto(h.motivo) },
+        cerrada: { 'Cerró la organización': (h) => 'El ' + t10nFecha(h.fecha) + '. Motivo: ' + t10nPunto(h.motivo) + ' Queda de solo lectura.' },
+      }"""),
+}
+INICIO_FRASE = "      // 175: la etiqueta dice el estado; cuándo y por qué, en la frase de su ⓘ.\n"
+FRASE_PREVIA = re.compile(re.escape(INICIO_FRASE) + r".*?\]\),\n", re.S)
+# La fecha en que se borra una cuenta coincide con la del pedido que dice la ⓘ (30 días después), también si lo pidió la plataforma.
+FECHAS_CUENTA = [
+    ("bajaPedidaEl: '27/09/2026 09:15', seElimina: '27/10/2026 09:15',\n",
+     "bajaPedidaEl: '27/09/2026 09:15', seElimina: props.estado === 'Baja iniciada por la plataforma' ? '27/10/2026 10:30' : '27/10/2026 09:15',\n"),
+    ("seElimina: '27/10/2026 09:15' }); this.anotar('Pidió borrar la cuenta', m); this.avisar('La cuenta de ' + c.n + ' se borra el 27/10/2026 09:15.');",
+     "seElimina: '27/10/2026 17:35' }); this.anotar('Pidió borrar la cuenta', m); this.avisar('La cuenta de ' + c.n + ' se borra el 27/10/2026 17:35.');"),
+]
+CSS_PLAT = """/* 175 · El estado, una vez: la etiqueta lo dice, y cuándo y por qué van en la frase de su ⓘ. */
+:root .banda-pag .res { overflow: visible !important; }
+.banda-pag .res .pill .t10n-i { margin-left: 2px; }
+""" + tooltip_css()
+PLATAFORMA = list(FRASES)
+
+
+def plataforma():
+    for nombre, (clave, frases) in FRASES.items():
+        t = leer(nombre)
+        if "t10n-i" not in t:
+            t = cambiar(t, PILL_BANDA, PILL_BANDA.replace("</span>", I_PORQUE + "</span>"), 1)
+        m = re.search(r"<script type=\"text/x-dc\" data-dc-script data-props='[^']*'>", t)
+        assert m, nombre
+        t = POR_QUE_PREVIO.sub("", t)
+        t = t[:m.end()] + POR_QUE_JS + t[m.end():]
+        t = FRASE_PREVIA.sub("", t)
+        t, k = re.subn(r"(\n *textoEstado: \{[^\n]*\}\[" + re.escape(clave) + r"\],\n)",
+                       lambda x: x.group(1) + INICIO_FRASE + f"      t10nPorQue: t10nPorQue(s.historial, {frases}[{clave}]),\n", t, count=1)
+        assert k == 1, nombre
+        if nombre == "Cuenta-Plat":
+            for viejo, nuevo in FECHAS_CUENTA:
+                t = cambiar(t, viejo, nuevo, 1)
+        escribir(nombre, con_css(t, CSS_PLAT))
+
+
 NUEVOS = {  # para canvas.json, lo suma quien publica: al lado de la campana de la 21, en la fila de la E21
     "Cuenta-21": {"page": "formularios", "title": "Mi cuenta · el chat de WhatsApp · etapa 21", "w": 1440, "h": 900,
                   "al lado de": "Campana-21"},
@@ -468,7 +607,7 @@ NUEVOS = {  # para canvas.json, lo suma quien publica: al lado de la campana de 
                     "al lado de": "M-Campana-21"},
 }
 TOCADOS = (list(LISTAS) + ["Usuario", "M-Usuario", "M-Usuario-Empresa"] + list(NUEVOS) + list(BOT)
-           + ["WA-Telefonos", "M-WA-Telefonos"])
+           + ["WA-Telefonos", "M-WA-Telefonos"] + PLATAFORMA + SIN_ENLACE)
 
 
 if __name__ == "__main__":
@@ -481,5 +620,7 @@ if __name__ == "__main__":
     bot()
     consentimiento("WA-Telefonos", telefono=False)
     consentimiento("M-WA-Telefonos", telefono=True)
+    sin_enlace()
+    plataforma()
     print("listo:", len(TOCADOS), "tableros")
     print("después: python traspaso10_piezas_1004.py --tableros " + ",".join(TOCADOS))

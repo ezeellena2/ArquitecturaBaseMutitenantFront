@@ -751,7 +751,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Consultas esperando","Código para verificar un método","Enlace para entrar (bot)","Bot: número sin cuenta","Bot: número sin cuenta y registro cerrado","Bot: cuenta de operador","Bot: ofrecer vincular","Bot: conversación vinculada","Invitación a una organización","Invitación como operador","Invitación como operador: sin nombre","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Por borrar","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta borrada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: aprobada","Recuperación: rechazada","Organización aprobada","Organización rechazada","Página pública: la despublicó la plataforma","Página pública: se puede volver a publicar","Asistente: 80 % del tope (su clave)","Asistente: tope alcanzado (su clave)","Asistente: 80 % del tope (plataforma)","Asistente: tope alcanzado (plataforma)"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Consultas esperando","Código para verificar un método","Entrar a mi cuenta (bot)","Bot: número sin cuenta","Bot: número sin cuenta y registro cerrado","Bot: cuenta de operador","Bot: ofrecer vincular","Bot: conversación vinculada","Invitación a una organización","Invitación como operador","Invitación como operador: sin nombre","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Por borrar","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta borrada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: aprobada","Recuperación: rechazada","Organización aprobada","Organización rechazada","Página pública: la despublicó la plataforma","Página pública: se puede volver a publicar","Asistente: 80 % del tope (su clave)","Asistente: tope alcanzado (su clave)","Asistente: 80 % del tope (plataforma)","Asistente: tope alcanzado (plataforma)"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
 // Mensajes que manda el sistema en los flujos de la plantilla. Salen por el outbox, con textos de Notifications.resx
 // (y los del módulo WhatsApp), en la cultura de la persona y con fechas de DisplayFormatter (es-AR, Buenos Aires).
 // Correo: la estructura de _Layout.html, LoginCode.html e Invitation.html de ArquitecturaBase.
@@ -791,10 +791,11 @@ const MENSAJES = [
     wa: { plantilla: 'codigo_ingreso', texto: [B('715204'), N(' es tu código de verificación. Por tu seguridad, no lo compartas.')], pie: 'Este código caduca en 10 minutos.', botones: [{ t: 'Copiar código', copiar: true }] },
   },
   {
-    n: 'Enlace para entrar (bot)',
-    // backend.md §15: un mensaje entrante nunca abre una sesión; solo produce un enlace de un solo uso.
+    n: 'Entrar a mi cuenta (bot)',
+    // 179: un mensaje entrante nunca abre una sesión ni lleva un enlace secreto. El botón abre el ingreso (/login), y el código
+    // se pide desde la web.
     // Mensaje libre: la persona acaba de escribir, así que no hace falta plantilla (ventana de 24 horas).
-    wa: { mio: 'Hola', texto: [N('Hola, Lucía. Para entrar a ArquitecturaBase, tocá Entrar. El enlace sirve una vez y vence en 10 minutos.')], botones: [{ t: 'Entrar', url: true }] },
+    wa: { mio: 'Hola', texto: [N('Hola, Lucía. Para entrar a ArquitecturaBase, tocá «Entrar a mi cuenta» y pedí el código en la página.')], botones: [{ t: 'Entrar a mi cuenta', url: true }] },
   },
   {
     n: 'Bot: número sin cuenta',

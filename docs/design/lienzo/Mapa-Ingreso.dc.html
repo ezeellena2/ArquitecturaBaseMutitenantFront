@@ -610,7 +610,7 @@
       <a class="nodo " href="Registro.dc.html"><span class="t">Crear cuenta</span><span class="d">Una persona, para el lado personal.</span><span class="r">/registro</span></a>
       <a class="nodo " href="Registro-Empresa.dc.html"><span class="t">Registrá tu empresa</span><span class="d">El Dueño, para dar de alta su organización.</span><span class="r">/registro/empresa</span></a>
       <a class="nodo " href="Invitacion.dc.html"><span class="t">Enlace de una invitación</span><span class="d">Le llega por correo a quien invitaron.</span><span class="r">/invitacion</span></a>
-      <a class="nodo " href="Enlace.dc.html"><span class="t">Enlace del bot de WhatsApp</span><span class="d">Sirve una vez y vence a los 10 minutos.</span><span class="r">/login/enlace</span></a>
+      <a class="nodo " href="Ingreso.dc.html"><span class="t">Desde el bot de WhatsApp</span><span class="d">«Entrar a mi cuenta» abre el ingreso, y el código se pide desde la web.</span><span class="r">/login</span></a>
     </div>
     <div class="col">
       <h3>DEMUESTRA QUE ES ÉL</h3>
@@ -644,7 +644,6 @@
     <a class="caso" href="Ingreso.dc.html"><span class="t">Correo o número inválido</span><span class="d">Lo marca el campo.</span><span class="c">400 Validation.Failed</span></a>
     <a class="caso" href="Ingreso.dc.html"><span class="t">Esperá para pedir otro código</span><span class="d">El botón cuenta hasta poder de nuevo.</span><span class="c">429 Auth.LoginCode.ResendTooSoon</span></a>
     <a class="caso" href="Ingreso.dc.html"><span class="t">Demasiados pedidos</span><span class="d">5 códigos cada 15 minutos por destino.</span><span class="c">429 Auth.LoginCode.TooManyRequests</span></a>
-    <a class="caso" href="Enlace.dc.html"><span class="t">Demasiadas solicitudes desde esta red</span><span class="d">Límite por IP; trae Retry-After.</span><span class="c">429 Http.TooManyRequests</span></a>
     <a class="caso" href="Ingreso.dc.html"><span class="t">Código incorrecto</span><span class="d">Muestra los intentos que quedan.</span><span class="c">400 Auth.LoginCode.Invalid</span></a>
     <a class="caso" href="Ingreso.dc.html"><span class="t">Código vencido o ya usado</span><span class="d">Pide uno nuevo.</span><span class="c">400 Auth.LoginCode.Expired · AlreadyUsed</span></a>
     <a class="caso" href="Ingreso.dc.html"><span class="t">Sin intentos</span><span class="d">Verificar queda apagado; se pide otro código.</span><span class="c">400 Auth.LoginCode.TooManyAttempts</span></a>
@@ -654,7 +653,6 @@
     <a class="caso" href="Registro-Empresa.dc.html"><span class="t">Alta de empresas cerrada o con aprobación</span><span class="d">Según la configuración de la plataforma.</span><span class="c">BusinessSignup</span></a>
     <a class="caso" href="Registro-Empresa.dc.html"><span class="t">Límite de organizaciones</span><span class="d">Las organizaciones propias por persona.</span><span class="c">409 Tenancy.Organization.LimitReached</span></a>
     <a class="caso" href="Ingreso.dc.html"><span class="t">No pudimos entrar con Google</span><span class="d">O la cuenta de Google no tiene el correo verificado.</span><span class="c">Auth.ExternalLogin.Failed · EmailNotVerified</span></a>
-    <a class="caso" href="Enlace.dc.html"><span class="t">Enlace de WhatsApp vencido o usado</span><span class="d">Mismo mensaje en todos los casos, a propósito.</span><span class="c">400 Auth.LoginLink.Invalid</span></a>
     <a class="caso" href="Invitacion.dc.html"><span class="t">Invitación vencida</span><span class="d">Hay que pedir otra.</span><span class="c">410 Invitations.Invitation.Expired</span></a>
     <a class="caso" href="Invitacion.dc.html"><span class="t">Invitación que ya no sirve</span><span class="d">Aceptada, revocada o inventada.</span><span class="c">400 Invitations.Invitation.Invalid</span></a>
     <a class="caso" href="Invitacion.dc.html"><span class="t">Invitación para otra persona</span><span class="d">Con la sesión abierta de otra cuenta.</span><span class="c">Invitations.Invitation.WrongAccount</span></a>
