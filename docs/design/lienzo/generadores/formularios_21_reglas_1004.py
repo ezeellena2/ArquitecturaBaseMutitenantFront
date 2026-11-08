@@ -759,7 +759,8 @@ def caja_vista(contenido, armando=False):
             f'<div class="pv-b">{contenido}<small>Con {NUM_A} de ejemplo · Español</small></div></div>')
 
 
-E_PDF = ["Diseño", "Estilo moderno", "Estilo compacto", "Sin página pública", "Armando la vista previa", "Sin las fotos", "Guardando", "Diseño guardado", "Salir sin guardar"]
+E_PDF = ["Diseño", "Estilo moderno", "Estilo compacto", "Sin página pública", "Armando la vista previa", "Sin las fotos", "Guardando", "Diseño guardado", "Salir sin guardar",
+         "Con el bloque"]
 
 
 def pdf():
@@ -769,12 +770,14 @@ def pdf():
     esp = caja_vista(f'<div class="pv-esp">{E.GIRA} Armando la vista previa…</div>', armando=True)
     V = {"Diseño": cu(guardar="limpio"), "Estilo moderno": cu("moderno"), "Estilo compacto": cu("compacto"), "Sin página pública": cu(logo=False, guardar="limpio"),
          "Armando la vista previa": cu("moderno", vista=esp), "Sin las fotos": cu(fotos=False), "Guardando": cu("moderno", guardar="guardando"),
-         "Diseño guardado": cu("moderno", guardar="limpio"), "Salir sin guardar": cu("moderno")}
+         "Diseño guardado": cu("moderno", guardar="limpio"), "Salir sin guardar": cu("moderno"), "Con el bloque": cuerpo_pdf_ped()}
     capas = {"Diseño guardado": A.toast("Diseño guardado."), "Salir sin guardar": A.confirmar("¿Salir sin guardar el diseño?", "Los cambios en el diseño del PDF se pierden.", "Salir sin guardar", cancelar="Seguir editando")}
     descartar = lambda on: f'<button type="button" class="cb cb-sec"{"" if on else " disabled"}>Descartar</button>'
     bnd = {e: A.banda("Comprobante de visita", f"Diseño del PDF · {FORM}", descartar(e not in ("Diseño", "Sin página pública", "Diseño guardado")), "FRM-Editor-Reglas.dc.html")
            .replace("Volver a Diseñar formularios", "Volver a las reglas") for e in E_PDF}
-    return A.pagina_editor({e: (bnd[e], V[e]) for e in E_PDF}, capas, E_PDF, "Diseño del PDF · /org/formularios/:id/pdf", E.CSS_E12 + CSS_RG + CSS_PDF + CSS_HOJA + CSS_21)
+    bnd["Con el bloque"] = (A.banda(PDF_PED, f"Diseño del PDF · {PED}", descartar(False), "FRM-Editor-Reglas-Bloque.dc.html")
+                            .replace("Volver a Diseñar formularios", "Volver a las reglas"))
+    return A.pagina_editor({e: (bnd[e], V[e]) for e in E_PDF}, capas, E_PDF, "Diseño del PDF · /org/formularios/:id/pdf", E.CSS_E12 + CSS_RG + CSS_PDF + CSS_HOJA + CSS_21 + CSS_PDF_PED)
 
 
 # ================================================================ WA-Chats-Avisos: los avisos automáticos (AB: «Acción del formulario»)
@@ -1537,8 +1540,11 @@ def llega5(texto, ejemplos=EJEMPLOS):
 
 
 def plantilla24_5(abierta=False, doc=False):
-    """La de arriba, con las variables de WhatsApp a la vista: «{{1}}» lleva un espacio de ancho cero para que el motor de los tableros no la tome."""
-    t = plantilla24(abierta, doc)
+    """La de arriba, con las variables de WhatsApp a la vista: «{{1}}» lleva un espacio de ancho cero para que el motor de los tableros no la tome.
+    Cada variable se llena con la lista de «Agregar dato» (149): el número o una pregunta, nunca el nombre del formulario ni el bloque, porque una
+    variable no admite saltos de línea (197)."""
+    t = plantilla24(abierta, doc).replace('<span class="v">Número de la respuesta</span>', '<span class="v">Número</span>')
+    t = t.replace('<span class="v">Nombre del formulario</span>', '<span class="v">Cliente</span>')
     return t.replace("&#123;&#123;1&#125;&#125;", "{​{1}​}").replace("&#123;&#123;2&#125;&#125;", "{​{2}​}")
 
 
@@ -1916,6 +1922,88 @@ def con_tabs_tel_ped(t):
     return L.con_css(t, "ptabs", L.CSS_PTABS + ".f-ptabs { grid-template-columns: repeat(4, 1fr); }\n.f-ptabs a { font-size: 14px; }\n")
 
 
+# ================================================================ FRM-Pdf, «Con el bloque» (177): «Pedido de materiales» elige su bloque con su nombre
+# El diseño lista «Productos» como una pieza más, sin sus preguntas, y la vista previa lo pone como título de una tabla: el número del ítem, una
+# columna por pregunta, la línea entre columnas y los números a la derecha, con dos ítems de ejemplo, como FormPdfPreviewIssuer y SkiaFormPdfRenderer
+# de ArquitecturaBase. Si la tabla no entra en la página, sigue en la siguiente con su encabezado: lo dice la (i) de «Productos».
+PDF_PED = "Comprobante de pedido"
+SECCIONES_PED = [("El pedido", [("Cliente", True), ("¿Se concretó la venta?", False), ("Motivo", False), ("Monto", False), ("Zona", True), ("Fecha de entrega", True),
+                                ("Proveedor", True)]),
+                 ("Lo pedido", [(BLOQUE, True), ("Total", True), ("Observaciones", True)]), ("Archivos", [("Foto del remito", True)])]
+VAL_PED = {"Cliente": "Ferretería Sur", "Zona": "Centro", "Fecha de entrega": "22/10/2026", "Proveedor": "Aceros Rosario", "Total": "$ 68.000,00",
+           "Observaciones": "Retira el cliente."}
+PREGS_BLQ = [("Producto", False), ("Cantidad", True), ("¿Urgente?", False)]  # (pregunta del bloque, va a la derecha porque es un número)
+ITEMS_PDF = [("Caño de 1/2 pulgada", "10", "Sí"), ("Codo de 90°", "25", "No")]  # los dos ítems de ejemplo, los de «Así llega»
+AY_BLOQUE_PDF = "Va entero, en una tabla con el número del ítem y una columna por pregunta. Si no entra en la página, sigue en la siguiente con su encabezado."
+MIGA_PDF = "Inicio / Gestión de formularios / Formularios / {} / Diseño del PDF"
+CSS_PDF_PED = """.pd-sec .q-chk .pd-blq { font-size: 12px; color: var(--t3); }
+.pdf-blq { padding: 4px 6px 6px; border-bottom: 0.5px solid #ddd; }
+.pdf-blq > span { display: block; color: #555; padding-bottom: 3px; }
+.pdf-tb { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.pdf-tb th { font-weight: 400; font-size: 7px; color: #666; text-align: left; padding: 2px 4px; border-top: 0.5px solid #bbb; border-bottom: 0.5px solid #bbb; }
+.pdf-tb td { padding: 3px 4px; border-bottom: 0.5px solid #ddd; overflow-wrap: anywhere; }
+.pdf-tb th + th, .pdf-tb td + td { border-left: 0.5px solid #ccc; }
+.pdf-tb .n { width: 18px; }
+.pdf-tb .r { text-align: right; font-variant-numeric: tabular-nums; }
+"""
+
+
+def secciones_ped():
+    """Las secciones de «Pedido de materiales»: el bloque es una pieza más, con su nombre y sin sus preguntas."""
+    out = ""
+    for i, (t, ps) in enumerate(SECCIONES_PED):
+        acc = E.acciones_q(f"la sección {t}", i == 0, i == len(SECCIONES_PED) - 1)
+        qs = "".join(chk(f'{p}<small class="pd-blq">Bloque</small>', v, AY_BLOQUE_PDF) if p == BLOQUE else chk(p, v) for p, v in ps)
+        out += f'<div class="pd-sec"><div class="h"><span>{t}</span>{acc}</div><div class="qs">{qs}</div></div>'
+    return f'<div class="pd-secs">{out}<span><button type="button" class="cb cb-sec">{MAS} Agregar sección</button></span></div>'
+
+
+def hoja_ped():
+    """La vista previa de «Comprobante de pedido», en el estilo clásico: «Productos» como título de una tabla, con sus dos ítems de ejemplo."""
+    r = lambda num: ' class="r"' if num else ""
+    cab = '<th class="n"></th>' + "".join(f"<th{r(num)}>{p}</th>" for p, num in PREGS_BLQ)
+    filas = "".join(f'<tr><td class="n r">{k}</td>' + "".join(f"<td{r(num)}>{v}</td>" for (_, num), v in zip(PREGS_BLQ, item)) + "</tr>"
+                    for k, item in enumerate(ITEMS_PDF, 1))
+    tabla = f'<div class="pdf-blq"><span>{BLOQUE}</span><table class="pdf-tb"><thead><tr>{cab}</tr></thead><tbody>{filas}</tbody></table></div>'
+    secs = ""
+    for titulo, preguntas in SECCIONES_PED:
+        h = ""
+        for p, ver in preguntas:
+            if not ver:
+                continue
+            if p == BLOQUE:
+                h += tabla
+            elif p == "Foto del remito":
+                h += '<div class="fts"><i></i></div>'
+            else:
+                h += f'<div class="rw"><span>{p}</span><span>{VAL_PED[p]}</span></div>'
+        secs += f'<div class="pdf-sec"><div class="st">{titulo}</div>{h}</div>'
+    org = '<span class="org"><b>Grupo Delta</b><small>Av. Corrientes 1234, CABA · ventas@delta.ejemplo.com · 011 4321-0000</small></span>'
+    firmas = "".join(f"<span>{f}</span>" for f in FIRMAS)
+    return (f'<div class="pdf-a4 clasico" role="img" aria-label="Vista previa del PDF"><div class="pdf-hd"><span class="lg">D</span>{org}</div>'
+            f'<div class="pdf-tt"><b>{PDF_PED}</b><span>PED-000001 · 16/10/2026 10:00</span></div>{secs}'
+            f'<div class="pdf-ap">Aprobada por Lucía Fernández el 16/10/2026 10:30</div><div class="pdf-fi">{firmas}</div>'
+            f'<div class="pdf-pie"><span>{PIE_PDF}</span><span>Página 1 de 1</span></div></div>')
+
+
+def cuerpo_pdf_ped():
+    caja = caja_pdf("clasico", True, True, "limpio")
+    assert secciones() in caja and '<div class="ct">Comprobante de visita</div>' in caja
+    caja = caja.replace(secciones(), secciones_ped()).replace('<div class="ct">Comprobante de visita</div>', f'<div class="ct">{PDF_PED}</div>')
+    vista = caja_vista(hoja_ped()).replace(f"Con {NUM_A} de ejemplo", "Con datos de ejemplo")
+    return f'<div class="w-body"><div class="pd-cols">{caja}{vista}</div></div>'
+
+
+def con_miga_pdf(t):
+    """La ruta de arriba sigue al formulario del estado: «Con el bloque» es el diseño de «Pedido de materiales»."""
+    viejo = f"<span>{MIGA_PDF.format(FORM)}</span>"
+    assert t.count(viejo) == 1, "la ruta del diseño del PDF"
+    gancho = "      si: true, no: false,\n"
+    assert gancho in t
+    t = t.replace(viejo, "<span>{{miga}}</span>", 1)
+    return t.replace(gancho, gancho + f"      miga: e === 'Con el bloque' ? '{MIGA_PDF.format(PED)}' : '{MIGA_PDF.format(FORM)}',\n", 1)
+
+
 # ================================================================ canvas.json (la fila de cada uno la pone formularios_etapas_1004.py)
 TITULOS = {"FRM-Editor-Reglas": ("Formularios · las reglas · etapa 21", 1440, 1600), "M-FRM-Reglas": ("Las reglas · teléfono · etapa 21", 390, 844),
            "FRM-Pdf": ("Formularios · el diseño del PDF · etapa 21", 1440, 1500),
@@ -1978,6 +2066,8 @@ if __name__ == "__main__":
         if n == "FRM-Pdf":
             t = t.replace(f"Formularios / {FORM}</span>", f"Formularios / {FORM} / Diseño del PDF</span>", 1)
         t = enlaces(migas(t))
+        if n == "FRM-Pdf":
+            t = con_miga_pdf(t)
         if n == "FRM-Editor-Reglas-Bloque":
             t = t.replace(f"Formularios / {FORM}", f"Formularios / {PED}")
         escribir(n, t)
