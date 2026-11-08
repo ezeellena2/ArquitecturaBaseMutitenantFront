@@ -1275,7 +1275,7 @@ CSS_CAT25 = """.d25-pl { display: flex; align-items: center; gap: 10px; }
 
 
 def banda_cat(nombre=CAT, modo="pendiente", quien=PIDIO25):
-    pend = modo in ("pendiente", "aprobando", "sin_permiso")
+    pend = modo in ("pendiente", "aprobando", "sin_permiso", "sucio")  # guardar no lo activa (167): sigue «Por aprobar»
     titulo = f'<span class="d25-pl"><h1>{nombre}</h1>{"<span class=" + chr(34) + "d25-etq" + chr(34) + ">Propuesta del asistente</span>" if pend else ""}</span>'
     estado = '<span class="w-est pend">Por aprobar</span> · Escritas a mano' if pend else '<span class="w-est">Activo</span> · Escritas a mano'
     if modo == "aprobando":
@@ -1347,7 +1347,7 @@ def dlg_importar():
     return F.dialogo("Importar opciones", cuerpo, '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Importar</button>').replace('class="w-dlg"', 'class="w-dlg imp"', 1)
 
 
-E_CAT = ["A mano, sin opciones", "Con un Excel: importar", "Importado, sin guardar", "De los miembros", "Pedido por WhatsApp", "Descartar la propuesta", "Aprobando",
+E_CAT = ["A mano, sin opciones", "Con un Excel: importar", "Importado, sin guardar", "Guardado", "De los miembros", "Pedido por WhatsApp", "Descartar la propuesta", "Aprobando",
          "Aprobado", "Sin permiso para aprobar"]
 
 
@@ -1355,11 +1355,12 @@ def catalogo_propuesta25():
     filas = FILAS_CAT
     V_ = {"A mano, sin opciones": (banda_cat(), cuerpo_cat()), "Con un Excel: importar": (banda_cat(), cuerpo_cat()),
           "Importado, sin guardar": (banda_cat(modo="sucio"), cuerpo_cat(filas, 86)),
+          "Guardado": (banda_cat(), cuerpo_cat(filas, 86)),
           "De los miembros": (banda_cat("Supervisores de Delta Norte"), cuerpo_cat(miembros=True)),
           "Pedido por WhatsApp": (banda_cat(), cuerpo_cat(quien=f"La pidió {LUCIA} por WhatsApp el {HOY} 09:40.")),
           "Descartar la propuesta": (banda_cat(), cuerpo_cat()), "Aprobando": (banda_cat(modo="aprobando"), cuerpo_cat(filas, 86)),
           "Aprobado": (banda_cat(modo="aprobado"), cuerpo_cat(filas, 86, quien="")), "Sin permiso para aprobar": (banda_cat(modo="sin_permiso"), cuerpo_cat(filas, 86, ro=True))}
-    capas = {"Con un Excel: importar": dlg_importar(),
+    capas = {"Con un Excel: importar": dlg_importar(), "Guardado": A.toast("Guardamos el catálogo."),
              "Descartar la propuesta": F.dialogo(f"¿Descartar la propuesta «{CAT}»?", '<p class="d-tx">El catálogo se borra y no se puede deshacer.</p>',
                                                  '<button type="button" class="cb cb-sec" autofocus>Cancelar</button><button type="button" class="cb cb-pel lleno">Descartar propuesta</button>'),
              "Aprobado": A.toast(f"Aprobamos {CAT}. Ya se puede usar en los formularios.")}

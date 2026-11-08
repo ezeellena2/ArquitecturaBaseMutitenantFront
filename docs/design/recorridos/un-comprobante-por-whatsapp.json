@@ -1,0 +1,61 @@
+{
+  "id": "un-comprobante-por-whatsapp",
+  "titulo": "Un comprobante que llega por WhatsApp",
+  "etapa": "Etapa 25 · Documentos por WhatsApp",
+  "orden": 10,
+  "resumen": "Tomás manda la foto de una transferencia: el asistente la reconoce y le propone «Cobro a cliente» ya completo, Tomás lo revisa y lo confirma, y queda en la planilla con lo que se leyó.",
+  "pasos": [
+    {
+      "tablero": "WA-Chats-Documento",
+      "tweaks": {
+        "estado": "Seguro"
+      },
+      "resaltar": ".as-card:has-text(\"Cobro a cliente\")",
+      "actor": "Sistema",
+      "titulo": "Llega y se reconoce",
+      "texto": "Tomás manda por WhatsApp la foto de una transferencia. El asistente reconoce un comprobante de Banco Galicia por $ 150.000,00 y le propone «Cobro a cliente», ya completo con lo que leyó.",
+      "avanzar": "Tocá «Por qué lo propuso».",
+      "ruta": "/org/whatsapp/chats",
+      "accion": "Ve el comprobante y la propuesta en el chat de Tomás."
+    },
+    {
+      "tablero": "WA-Chats-Documento",
+      "tweaks": {
+        "estado": "Por qué lo propuso"
+      },
+      "resaltar": ".as-pop",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Por qué lo propuso",
+      "texto": "Debajo del documento, qué reconoció y con qué seguridad: «Cobro a cliente», seguro; 14 de 16 datos, con uno dudoso, el número de operación, y lo que se validó sin IA: las cuentas, el CUIT y que no está repetido.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/whatsapp/chats",
+      "accion": "Abre «Por qué lo propuso»."
+    },
+    {
+      "tablero": "M-WA-Flow-Prellenado",
+      "tweaks": {
+        "estado": "Lo leído"
+      },
+      "resaltar": ".wa-c:has-text(\"Número de operación\")",
+      "actor": "Tomás · Empleado · teléfono",
+      "titulo": "Lo revisa y lo confirma",
+      "texto": "En su WhatsApp, el formulario llega completo con el comprobante: lo dudoso dice «Revisá» y lo que no se leyó queda vacío. Tomás corrige el número de operación, escribe el concepto y confirma.",
+      "avanzar": "Tocá «Continuar».",
+      "ruta": "WhatsApp",
+      "accion": "Corrige lo marcado y confirma."
+    },
+    {
+      "tablero": "FRM-Respuesta-25",
+      "tweaks": {
+        "estado": "La confirmó quien la mandó"
+      },
+      "resaltar": ".d25-lect",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Queda en la planilla",
+      "texto": "COB-000125 llega a la planilla de «Cobro a cliente», confirmada por Tomás desde su documento. «Lectura del documento» dice qué se reconoció, qué corrigió y qué completó Tomás, y qué se validó sin IA.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/:id/respuestas?respuesta=COB-000125",
+      "accion": "Abre COB-000125 en la planilla."
+    }
+  ]
+}

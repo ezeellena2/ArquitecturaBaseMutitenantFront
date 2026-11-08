@@ -1,0 +1,86 @@
+{
+  "id": "un-catalogo-desde-un-excel",
+  "titulo": "Un catálogo desde un Excel",
+  "etapa": "Etapa 25 · Documentos por WhatsApp",
+  "orden": 30,
+  "resumen": "Lucía pide en el Inicio el catálogo de sus proveedores de obra con un Excel: lo crea como propuesta, le importa las 86 filas y lo aprueba.",
+  "pasos": [
+    {
+      "tablero": "Asistente-Org-25",
+      "tweaks": {
+        "estado": "Pedido con un Excel"
+      },
+      "resaltar": ".d25-card button.cb-pri:has-text(\"Crear catálogo\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo pide con un Excel",
+      "texto": "En el chat del Inicio, Lucía adjunta un Excel y pide el catálogo de sus proveedores de obra. La IA lo propone: el código es el CUIT, cada opción la razón social y los campos son Rubro y Zona, con tres de las 86 filas de muestra.",
+      "avanzar": "Tocá «Crear catálogo».",
+      "ruta": "/org",
+      "accion": "Adjunta el Excel, pide el catálogo y toca «Crear catálogo»."
+    },
+    {
+      "tablero": "Asistente-Org-25",
+      "tweaks": {
+        "estado": "Catálogo creado"
+      },
+      "resaltar": ".d25-card.pleg a.lnk:has-text(\"Abrir el catálogo\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo crea como propuesta",
+      "texto": "La tarjeta se pliega con «Catálogo creado». El catálogo nace como propuesta: no se usa hasta que alguien lo apruebe.",
+      "avanzar": "Tocá «Abrir el catálogo».",
+      "ruta": "/org",
+      "accion": "Toca «Abrir el catálogo»."
+    },
+    {
+      "tablero": "FRM-Catalogo-Propuesta-25",
+      "tweaks": {
+        "estado": "Con un Excel: importar"
+      },
+      "resaltar": ".w-dlg button.cb-pri:has-text(\"Importar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo completa con el Excel",
+      "texto": "Se abre en el editor de siempre, con «Propuesta del asistente» junto al nombre y quién lo pidió. «Importar» trae las filas del Excel, ya revisadas: 86 altas, sin errores.",
+      "avanzar": "Tocá «Importar».",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Importa las filas del Excel."
+    },
+    {
+      "tablero": "FRM-Catalogo-Propuesta-25",
+      "tweaks": {
+        "estado": "Importado, sin guardar"
+      },
+      "resaltar": "button:text-is(\"Guardar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Guarda las opciones",
+      "texto": "Las opciones quedan en la tabla y en la vista previa. «Aprobar y activar» espera a que se guarden, y guardar no lo activa: sigue por aprobar.",
+      "avanzar": "Tocá «Guardar».",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Toca «Guardar»."
+    },
+    {
+      "tablero": "FRM-Catalogo-Propuesta-25",
+      "tweaks": {
+        "estado": "Guardado"
+      },
+      "resaltar": "button.cb-pri:has-text(\"Aprobar y activar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo aprueba",
+      "texto": "Con las 86 opciones guardadas, Lucía revisa lo que trajo el Excel y lo aprueba.",
+      "avanzar": "Tocá «Aprobar y activar».",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Toca «Aprobar y activar»."
+    },
+    {
+      "tablero": "FRM-Catalogo-Propuesta-25",
+      "tweaks": {
+        "estado": "Aprobado"
+      },
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Queda activo",
+      "texto": "El catálogo queda activo, sin la etiqueta de propuesta, y ya se puede usar en los formularios.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/catalogos/:id",
+      "accion": "Ve el catálogo activo."
+    }
+  ]
+}

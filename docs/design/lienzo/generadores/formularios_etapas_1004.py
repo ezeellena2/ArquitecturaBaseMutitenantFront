@@ -65,7 +65,7 @@ FILAS = [
       "M-Campana-23"]),
     (24, "Etapa 24 · Varios asistentes", ["WA-Asistentes", "WA-Equipo-Asistente", "WA-Chats-Casos-24"], ["M-WA-Asistentes", "M-WA-Equipo-Asistente", "M-WA-Chats-Casos-24"]),
     # La 25, en el orden de TITULOS de formularios_25_documentos_1004.py; su plantilla de Plataforma va en «Plataforma · Formularios».
-    (25, "Etapa 25 · Documentos", ["FRM-Documentos", "Campana-25", "WA-Chats-Documento", "FRM-Armar-Con-IA", "FRM-Respuesta-25", "FRM-Editor-Lectura", "FRM-Plantilla-25",
+    (25, "Etapa 25 · Documentos por WhatsApp", ["FRM-Documentos", "Campana-25", "WA-Chats-Documento", "FRM-Armar-Con-IA", "FRM-Respuesta-25", "FRM-Editor-Lectura", "FRM-Plantilla-25",
                                   "WA-Asistente-Casos-25", "Asistente-Org-25", "FRM-Catalogo-Propuesta-25", "FRM-Formularios-25", "FRM-Catalogos-25", "FRM-Faltan-25"],
      ["M-FRM-Documentos", "M-Campana-25", "M-WA-Chats-Documento", "M-WA-Flow-Prellenado", "M-FRM-Armar-Con-IA", "M-FRM-Respuesta-25", "M-FRM-Editor-Lectura",
       "M-FRM-Plantilla-25", "M-Asistente-Org-25", "M-WA-Armar-Con-IA"]),

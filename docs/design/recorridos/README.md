@@ -8,7 +8,7 @@ Cada archivo `<id>.json` es un recorrido: los pasos de un flujo, en orden, sobre
 |---|---|
 | `id` | El nombre del archivo, sin `.json`. |
 | `titulo` | El nombre del recorrido, como lo ve quien lo mira. |
-| `etapa` | Una de las etapas de la guía: «Ingreso y registro», «Organización», «Página pública y directorio», «Plataforma», «Mi cuenta», «Etapa 8 · WhatsApp», «Etapa 8b · Asistente», «Etapa 12 · Catálogos», «Etapa 13 · Campos», «Etapa 14 · Formularios», «Etapa 15 · Respuestas», «Etapa 16 · Datos de las personas», «Etapa 17 · Ciclo de vida», «Etapa 21 · Reglas y aprobación», «Etapa 22 · Biblioteca» o «Etapa 23 · El asistente». |
+| `etapa` | Una de las etapas de la guía: «Ingreso y registro», «Organización», «Página pública y directorio», «Plataforma», «Mi cuenta», «Etapa 8 · WhatsApp», «Etapa 8b · Asistente», «Etapa 12 · Catálogos», «Etapa 13 · Campos», «Etapa 14 · Formularios», «Etapa 15 · Respuestas», «Etapa 16 · Datos de las personas», «Etapa 17 · Ciclo de vida», «Etapa 18 · Fotos y documentos», «Etapa 19 · Condiciones, cálculos y líneas», «Etapa 20 · Cargar una respuesta desde la web», «Etapa 21 · Reglas y aprobación», «Etapa 22 · Biblioteca», «Etapa 23 · El asistente», «Etapa 24 · Varios asistentes» o «Etapa 25 · Documentos por WhatsApp». |
 | `orden` | El orden dentro de la etapa. |
 | `resumen` | Una línea: quién hace qué y cómo termina. |
 | `pasos` | La lista de pasos. |

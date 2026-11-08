@@ -1,0 +1,60 @@
+{
+  "id": "un-documento-sin-reconocer",
+  "titulo": "Un documento que no se reconoce",
+  "etapa": "Etapa 25 · Documentos por WhatsApp",
+  "orden": 20,
+  "resumen": "Tomás manda un remito que no coincide con ningún formulario: queda sin clasificar, y Lucía arma con la IA «Remito de entrega» desde el documento.",
+  "pasos": [
+    {
+      "tablero": "WA-Chats-Documento",
+      "tweaks": {
+        "estado": "Sin reconocer"
+      },
+      "resaltar": ".o-sis:has-text(\"Sin clasificar\")",
+      "actor": "Sistema",
+      "titulo": "No lo reconoce",
+      "texto": "Tomás manda la foto de un remito en papel. No coincide con ningún formulario: el asistente le pregunta qué quiere cargar y, como elige «Otro», lo deja para el equipo. Queda en Documentos recibidos como «Sin clasificar».",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/whatsapp/chats",
+      "accion": "Ve el remito en el chat de Tomás."
+    },
+    {
+      "tablero": "FRM-Documentos",
+      "tweaks": {
+        "estado": "Un sin clasificar"
+      },
+      "resaltar": "a.cb:has-text(\"Armar formulario con la IA\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Lo arma desde el documento",
+      "texto": "En «Documentos recibidos», remito-0412.jpg espera su formulario. Como ninguno sirve, Lucía pide armarlo con la IA desde el documento.",
+      "avanzar": "Tocá «Armar formulario con la IA».",
+      "ruta": "/org/formularios/documentos",
+      "accion": "Toca «Armar formulario con la IA»."
+    },
+    {
+      "tablero": "FRM-Armar-Con-IA",
+      "tweaks": {
+        "estado": "La propuesta"
+      },
+      "resaltar": "a.cb-pri:has-text(\"Crear borrador\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "La propuesta",
+      "texto": "La IA propone «Remito de entrega», con el prefijo REM y los tres remitos parecidos a la vista. Cada pregunta dice lo que leyó en el primero, y lo que se repite, los productos, va en un bloque. Se ajusta antes de crearlo.",
+      "avanzar": "Tocá «Crear borrador».",
+      "ruta": "Documentos recibidos › Armar formulario con la IA",
+      "accion": "Toca «Crear borrador»."
+    },
+    {
+      "tablero": "FRM-Armar-Con-IA",
+      "tweaks": {
+        "estado": "Creando"
+      },
+      "actor": "Sistema",
+      "titulo": "Se crea el borrador",
+      "texto": "Se crea el borrador de «Remito de entrega». Al publicarlo, los remitos parecidos quedan propuestos en Documentos recibidos.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "Documentos recibidos › Armar formulario con la IA",
+      "accion": "Espera a que se cree el borrador."
+    }
+  ]
+}
