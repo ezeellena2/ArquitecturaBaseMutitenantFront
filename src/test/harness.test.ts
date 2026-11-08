@@ -133,7 +133,7 @@ describe("arnés de reglas", () => {
       if (existsSync(agent)) {
         const lines = readFileSync(agent, "utf8").trimEnd().split(/\r?\n/);
         expect(lines.length, `${path.relative(root, agent)} debe tener de 1 a 3 líneas`).toBeGreaterThanOrEqual(1);
-        expect(lines.length, `${path.relative(root, agent)} debe tener de 3 a 8 líneas`).toBeLessThanOrEqual(3);
+        expect(lines.length, `${path.relative(root, agent)} debe tener de 1 a 3 líneas`).toBeLessThanOrEqual(3);
       }
       if (existsSync(claude)) expect(readFileSync(claude, "utf8").trim()).toBe("@AGENTS.md");
     }

@@ -20,7 +20,7 @@ describe("StatusBadge", () => {
     ["warning", "--punto-alerta"],
     ["danger", "--peligro"],
     ["neutral", "--punto-apagado"],
-    ["pending", "--marca"],
+    ["pending", "--punto-pendiente"],
   ] as const)("traduce el estado con su enum y pinta el punto del tono %s, sin badge", (tone, dot) => {
     render(<StatusBadge tones={tones} value={tone} />);
     const state = screen.getByText("TestStatus " + tone).parentElement!;
