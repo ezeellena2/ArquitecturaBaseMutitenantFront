@@ -6,6 +6,9 @@ Desde la v150 (125 a 129), con el armado real de ArquitecturaBaseFront: `FRM-Dat
 (el resumen «6 personas · 2 sin Zona», «Buscar personas», un dato por columna y ✎); el diálogo con Clave; `FRM-Catalogo-16`, el modal de campos con «Papel»; y en una pregunta,
 «Qué opciones ve cada persona» en su caja, con una condición por filtro.
 
+Con el traspaso 10: publicar avisa el máximo por persona solo cuando no entra o da cero (157); el editor tiene «Agregar título» y su título (88) y un
+solo «Agregar filtro ▾» (134), con la opción apagada y su motivo; la ficha del usuario dice «Agregar empresa», como las demás altas.
+
 Corre después de `formularios_14_formularios_1004.py`, porque toma `M-WA-Chats-Formulario` y `Usuario` como están.
 """
 import json
@@ -22,6 +25,7 @@ import formularios_13_campos_1004 as M13  # noqa: E402
 import formularios_15_respuestas_1004 as R  # noqa: E402
 import formularios_e12_sin_idioma_1004 as E  # noqa: E402
 import formularios_lista_y_ficha_1004 as L  # noqa: E402
+import menus_y_solo_lectura_1004 as MS  # noqa: E402
 
 PROJ = F.PROJ
 X, CHEV, KEBAB, MAS, TILDE = F.X, F.CHEV, A.KEBAB, M13.MAS, A.TILDE
@@ -33,6 +37,7 @@ EN_USO = f"Lo usa «{PREGUNTA}», de {FORMULARIO}. Sacá el filtro para darlo de
 EN_USO_CAMPO = f"Lo usa un filtro de «{PREGUNTA}», de {FORMULARIO}."
 AYUDA_FILTRO = "Un campo de filtro decide qué opciones ve cada persona. En la planilla sale apagado."
 AYUDA_QUE_VE = "Cada persona recibe solo las opciones que cumplen todos estos filtros."
+SIN_DATO_ZONAS = "Ningún dato de las personas elige de «Zonas»."
 
 # Seis personas, dos sin zona
 PERSONAS = [("Juan Gómez", "Técnico", "Centro", "Casa central"), ("Lucía Fernández", "Dueña", "Centro", "Casa central"), ("Martín Paz", "Supervisor", "Sur", "Casa central"),
@@ -243,8 +248,14 @@ def tel_datos_personas():
 ESTADOS_UD = ["Acceso", "Datos", "Datos: con cambios", "Datos: guardando", "Datos: no se guardó", "Datos: una opción dada de baja"]
 
 
+AGREGAR_EMPRESA = [("Sumar empresa", "Agregar empresa"), ("? 'Sumar' : 'Guardar'", "? 'Agregar' : 'Guardar'"), ("'Sumamos a '", "'Agregamos a '")]
+
+
 def usuario_datos():
     t = (PROJ / "Usuario.dc.html").read_text(encoding="utf-8")
+    # Las altas dicen «Agregar …», como en ArquitecturaBase (§3.2 del traspaso 10): el botón, el diálogo, su botón y el aviso
+    for a, b in AGREGAR_EMPRESA:
+        t = t.replace(a, b)
     # El Tweak de la pestaña, al lado de los de la ficha
     props = json.loads(re.search(r"data-props='([^']*)'", t).group(1))
     nuevos = {"estado": {"editor": "enum", "options": ESTADOS_UD, "default": "Datos", "section": "Estado"}, **props}
@@ -285,7 +296,20 @@ def usuario_datos():
     return re.sub(r"<title>[^<]*</title>", "<title>Ficha del usuario · /org/usuarios/:id · etapa 16</title>", t)
 
 
-ESTADOS_TUD = ["Datos", "Con cambios", "Guardando", "Una opción dada de baja"]
+ESTADOS_TUD = ["Datos", "Con cambios", "Guardando", "Una opción dada de baja", "Acceso"]
+CHEV_T = F.svg('<path d="m9 6 6 6-6 6"/>', 18, "2")
+
+
+def t_acceso():
+    """La pestaña «Acceso», como la de M-Usuario: el estado, los roles y sus empresas, con «Agregar empresa» (las altas dicen «Agregar …»).
+    Los datos son los de Tomás en `Usuario`: sin roles en la organización y «Solo lectura» en Delta S.A."""
+    it = lambda b, s, der: f'<div class="ap-it"><span class="tx"><b>{b}</b><span>{s}</span></span>{der}</div>'  # noqa: E731
+    chev = f'<span class="chev">{CHEV_T}</span>'
+    kebab = f'<button type="button" class="ap-ib" aria-label="Acciones de Delta S.A.">{F.TKEBAB}</button>'
+    return ('<div class="ap-cuerpo ap-gris"><span class="ap-gtit">Acceso a la organización</span><div class="ap-grupo">'
+            + it("Estado", '<span class="w-est">Activo</span>', chev) + it("Roles de la organización", "Ninguno", chev) + "</div>"
+            + '<span class="ap-gtit">Empresas<a href="M-Usuario-Empresa.dc.html">Agregar empresa</a></span><div class="ap-grupo">'
+            + it("Delta S.A.", "Solo lectura", kebab) + "</div></div>")
 
 
 def tel_usuario_datos():
@@ -296,7 +320,9 @@ def tel_usuario_datos():
     guardar = '<button type="button" class="cb cb-pri full">Guardar cambios</button>'
     cuerpo = {"Datos": barra + tabs + campos("Centro") + fijo('<button type="button" class="cb cb-pri full" disabled>Guardar cambios</button>', False),
               "Con cambios": barra + tabs + campos("Norte") + fijo(guardar), "Guardando": barra + tabs + campos("Norte") + fijo(trabaja("Guardando…").replace('class="cb cb-pri', 'class="cb cb-pri full')),
-              "Una opción dada de baja": barra + tabs + campos("Cuyo · De baja") + fijo('<button type="button" class="cb cb-pri full" disabled>Guardar cambios</button>', False)}
+              "Una opción dada de baja": barra + tabs + campos("Cuyo · De baja") + fijo('<button type="button" class="cb cb-pri full" disabled>Guardar cambios</button>', False),
+              "Acceso": barra + '<div class="ap-tabs" role="tablist"><span class="on" role="tab">Acceso</span><a role="tab" href="#">Datos</a></div>' + t_acceso()
+              + fijo('<button type="button" class="cb cb-pri full" disabled>Guardar cambios</button>', False)}
     return C.tel_pagina(cuerpo, ESTADOS_TUD, {}, "Ficha del usuario · teléfono · etapa 16", E.CSS_E12)
 
 
@@ -329,8 +355,12 @@ def tel_catalogo_16():
 
 
 # ================================================================ FRM-Editor-16: «Qué opciones ve cada persona»
-ESTADOS_E16 = ["Zonas plegadas", "Qué opciones ve cada persona", "Con un filtro fijo", "Le falta el dato", "El filtro no funciona", "Más opciones que el tope", "Solo lectura",
-               "Sin campos de filtro"]
+ESTADOS_E16 = ["Zonas plegadas", "Qué opciones ve cada persona", "Agregar filtro", "Con un filtro fijo", "Le falta el dato", "El filtro no funciona", "Más opciones que el tope",
+               "Solo lectura", "Sin campos de filtro", "Una opción apagada"]
+CSS_MENU_FILTRO = """.q-zona.con-menu { overflow: visible; }
+.q-zona .e-kw .f-menu { top: calc(100% + 6px); right: 0; min-width: 220px; font-weight: 400; }
+.q-zona .zc .e-tipw .e-tip { z-index: 31; }
+"""
 # 145: plegada, la banda dice los filtros en orden; abierta, los dos «Agregar» vuelven a la banda. Una zona con un error o un aviso se abre sola.
 RESUMEN_FILTROS = "Zona según quien lo recibe"
 RESUMEN_WA16 = "Como en el catálogo · Texto · CUIT · Zona"
@@ -365,15 +395,25 @@ def seccion_filtros(modo="normal"):
     maximo = (f'<span class="q-max mal">{F.ALERTA}Como mucho 240 por persona (Centro, la más grande): no entra en el desplegable (200).</span>' if modo == "tope" else
               f'<span class="q-max">{TILDE}Como mucho 18 por persona (Centro, la más grande): entra en el desplegable (200).</span>')
     cargar = "" if ro else ' · <a href="FRM-Datos-Personas.dc.html">Cargar los datos</a>'
-    agregar = '<button type="button" class="cb cb-sec">Agregar filtro según quien lo recibe</button><button type="button" class="cb cb-sec">Agregar filtro fijo</button>'
+    # 134 (la spec 16): un solo «Agregar filtro ▾», con «Según quien lo recibe» y «Filtro fijo»; sin campos de filtro, apagado con su motivo
+    menu = modo in ("menu", "opcion_off")
+    boton = (f'<button type="button" class="cb cb-sec" aria-haspopup="menu" aria-expanded="{"true" if menu else "false"}">{MAS} Agregar filtro {CHEV}</button>')
     if sin:
-        motivo = "Este catálogo no tiene campos de filtro disponibles."
-        agregar = K.tip('<button type="button" class="cb cb-sec">Agregar filtro según quien lo recibe</button>', motivo, abierto=True) + K.tip('<button type="button" class="cb cb-sec">Agregar filtro fijo</button>', motivo)
+        agregar = K.tip(boton, "Este catálogo no tiene campos de filtro.", abierto=True)
+    elif menu:
+        segun = (f'<span class="f-mi off" role="menuitem" aria-disabled="true">Según quien lo recibe<span class="e-tip" role="tooltip">{SIN_DATO_ZONAS}</span></span>'
+                 if modo == "opcion_off" else '<a class="f-mi" role="menuitem" href="#">Según quien lo recibe</a>')
+        agregar = f'<span class="e-kw">{boton}<div class="f-menu" role="menu" aria-label="Agregar filtro">{segun}<a class="f-mi" role="menuitem" href="#">Filtro fijo</a></div></span>'
+    else:
+        agregar = boton
     botones = "" if ro else agregar
+    if modo == "opcion_off":  # todavía sin filtros: ningún dato de las personas elige de «Zonas»
+        return '<div class="w-cmp ancho q-zona fil con-menu">' + E.zona_cab("Qué opciones ve cada persona", AYUDA_QUE_VE, botones, abierta=True) + "</div>"
     prueba = "" if sin else (f'<div class="w-cmp"><span class="rt">Como si lo recibiera</span><div class="ct sel">{persona}{CHEV}</div></div>'
                              f'<div class="q-res"><b class="{res[0]}">{res[1]}</b></div>{detalle}{maximo}<div class="q-sin">2 personas sin Zona{cargar}</div>')
     cuerpo = f'<div class="zb">{conds}{prueba}</div>' if conds or prueba else ""
-    return '<div class="w-cmp ancho q-zona fil">' + E.zona_cab("Qué opciones ve cada persona", AYUDA_QUE_VE, botones, abierta=True) + cuerpo + "</div>"
+    return (f'<div class="w-cmp ancho q-zona fil{" con-menu" if menu or sin else ""}">' + E.zona_cab("Qué opciones ve cada persona", AYUDA_QUE_VE, botones, abierta=True)
+            + cuerpo + "</div>")
 
 
 def editor_16():
@@ -395,15 +435,20 @@ def editor_16():
         finally:
             A.pregunta_catalogo = A_preg
     pub = lambda c, modo="cambios": (E.banda(FORMULARIO, E.EST_PUB, E.acc(modo), E.VOL), c)
-    V = {"Zonas plegadas": pub(cuerpo("plegada")), "Qué opciones ve cada persona": pub(cuerpo("normal")), "Con un filtro fijo": pub(cuerpo("fijo")),
-         "Le falta el dato": pub(cuerpo("falta")), "El filtro no funciona": pub(cuerpo("roto")), "Más opciones que el tope": pub(cuerpo("tope")),
-         "Solo lectura": pub(cuerpo("lectura"), "solo"), "Sin campos de filtro": pub(cuerpo("sin"))}
+    V = {"Zonas plegadas": pub(cuerpo("plegada")), "Qué opciones ve cada persona": pub(cuerpo("normal")), "Agregar filtro": pub(cuerpo("menu")),
+         "Con un filtro fijo": pub(cuerpo("fijo")), "Le falta el dato": pub(cuerpo("falta")), "El filtro no funciona": pub(cuerpo("roto")),
+         "Más opciones que el tope": pub(cuerpo("tope")), "Solo lectura": pub(cuerpo("lectura"), "solo"), "Sin campos de filtro": pub(cuerpo("sin")),
+         "Una opción apagada": pub(cuerpo("opcion_off"))}
     # El tablero mide 1660: la app también, para que la pregunta abierta entre entera
     return A.pagina_editor(V, {}, ESTADOS_E16, "Editor del formulario · etapa 16", E.CSS_E12 + E.CSS_CA4 + E.css_titulos() + CSS_FILTROS + CSS_FILTROS_T5
-                           + ".w-app { height: 1660px !important; }\n")
+                           + CSS_MENU_FILTRO + ".w-app { height: 1660px !important; }\n")
 
 
-ESTADOS_TE16 = ["Zonas plegadas", "Qué opciones ve cada persona", "Le falta el dato", "Solo lectura"]
+ESTADOS_TE16 = ["Zonas plegadas", "Qué opciones ve cada persona", "Agregar filtro", "Le falta el dato", "Solo lectura", "Las preguntas"]
+# 134: «Agregar filtro» abre una hoja con los dos tipos, como el ▾ de la compu
+HOJA_FILTRO = ('<div class="ap-velo"></div><div class="ap-hoja" role="menu" aria-label="Agregar filtro"><span class="asa"></span>'
+               '<div class="hc" style="padding-right: 20px;"><h2>Agregar filtro</h2></div><div class="hb" style="padding-bottom: 34px;">'
+               '<div class="ap-acciones"><span role="menuitem">Según quien lo recibe</span><span role="menuitem">Filtro fijo</span></div></div></div>')
 CSS_TE16 = """.t16 { display: flex; flex-direction: column; gap: 12px; padding: 12px 16px 24px; }
 .t16 .ap-grupo { margin: 0; }
 .t16 .q-res { font-size: 15px; }
@@ -425,7 +470,7 @@ def tel_editor_16():
         wa = E.t_zona_plegada("En WhatsApp", RESUMEN_WA16)
         if not abierta:
             return barra + f'<div class="t16">{E.t_zona_plegada("Qué opciones ve cada persona", RESUMEN_FILTROS, AYUDA_QUE_VE)}{wa}</div>'
-        agregar = "" if ro else '<a href="#">Agregar un filtro</a>'
+        agregar = "" if ro else '<a href="#">Agregar filtro</a>'
         dato = '<span class="g">—</span>' if falta else "Centro"
         cuerpo = (f'<div class="ap-grupo">{fila("Zona", "Según quien lo recibe · Zona", ro)}</div>' + F.tcampo("Como si lo recibiera", persona, select=True)
                   + f'<div class="q-res"><b{" class=" + chr(34) + "mal" + chr(34) if falta else ""}>{res}</b></div>'
@@ -433,13 +478,25 @@ def tel_editor_16():
                   + '<span class="t-lin2">Como mucho 18 por persona</span><span class="t-lin2">2 personas sin Zona</span>')
         zona = '<div class="t-zona fil">' + E.t_zona_cab("Qué opciones ve cada persona", AYUDA_QUE_VE, agregar, abierta=True) + f'<div class="tzb">{cuerpo}</div></div>'
         return barra + f'<div class="t16">{zona}{wa}</div>'
-    cuerpo = {"Zonas plegadas": pant(False), "Qué opciones ve cada persona": pant(),
-              "Le falta el dato": pant(persona="Sofía Herrera", res="La persona no tiene el dato necesario", falta=True), "Solo lectura": pant(ro=True)}
-    return C.tel_pagina(cuerpo, ESTADOS_TE16, {}, "Pregunta · teléfono · etapa 16", E.CSS_E12 + E.CSS_TZONA + CSS_FILTROS_T5 + CSS_TE16)
+    def preguntas():
+        """El formulario, bajado hasta sus preguntas: la de catálogo es «Proveedores a consultar», y el título de sección va entre las preguntas (88)."""
+        viejas = E.T_PREG
+        E.T_PREG = [(PREGUNTA, "De un catálogo · Proveedores · Opcional") if n == "Motivo" else (n, d) for n, d in viejas]
+        try:
+            lista = E.t_cuerpo(desde_preguntas=True)
+        finally:
+            E.T_PREG = viejas
+        return C.t_bar(FORMULARIO, "Publicado · versión 3", "M-FRM-Formularios.dc.html") + lista + E.t_fijo("limpio")
+    cuerpo = {"Zonas plegadas": pant(False), "Qué opciones ve cada persona": pant(), "Agregar filtro": pant(),
+              "Le falta el dato": pant(persona="Sofía Herrera", res="La persona no tiene el dato necesario", falta=True), "Solo lectura": pant(ro=True),
+              "Las preguntas": preguntas()}
+    t = C.tel_pagina(cuerpo, ESTADOS_TE16, {"Agregar filtro": HOJA_FILTRO}, "Pregunta · teléfono · etapa 16",
+                     E.CSS_E12 + E.CSS_TZONA + CSS_FILTROS_T5 + CSS_TE16 + E.CSS_TED_E12 + E.CSS_TTITULOS)
+    return MS.css(t, MS.CSS_HOJA, "hoja")
 
 
 # ================================================================ FRM-Publicar-16: la zona «Avisos», entre «Problemas» y «Qué se publica» (112)
-ESTADOS_P16 = ["Solo avisos", "Problemas y avisos", "Para los dos: un cliente"]
+ESTADOS_P16 = ["Solo avisos", "Problemas y avisos", "Para los dos: un cliente", "El máximo no entra", "Nadie ve ninguna opción"]
 
 
 AYUDA_AVISOS = "No frenan la publicación, pero conviene revisarlos."
@@ -451,15 +508,20 @@ def z_aviso(que, detalle, ayuda=""):
 
 def publicar_16():
     base = (E.banda(FORMULARIO, E.EST_PUB, E.acc("limpio"), E.VOL), E.cuerpo_editor(abierta=None, modo="fijo"))
-    filas = (z_aviso(PREGUNTA, "Como mucho 18 opciones por persona, de un límite de 200.", "Es lo que puede llegar a recibir la persona con más opciones.")
-             + z_aviso(PREGUNTA, "2 personas sin Zona. No se les va a poder mandar hasta que tengan el dato."))
-    avisos = E.z_zona("Avisos", filas, AYUDA_AVISOS)
+    # 157 (NI3-B): el máximo por persona se avisa solo cuando no entra en WhatsApp (200 en una elección) o da cero; si entra, no dice nada
+    sin_zona = z_aviso(PREGUNTA, "2 personas sin Zona. No se les va a poder mandar hasta que tengan el dato.")
+    no_entra = z_aviso(PREGUNTA, "Como mucho 240 opciones por persona (Centro), de un límite de 200.", "Es lo que puede llegar a recibir la persona con más opciones.")
+    cero = z_aviso(PREGUNTA, "Con estos filtros nadie ve ninguna opción.")
+    cliente = z_aviso(PREGUNTA, "No se le va a poder mandar a un cliente: depende de un dato de la persona.")
+    avisos = lambda filas: E.z_zona("Avisos", filas, AYUDA_AVISOS)  # noqa: E731
     problema = E.z_zona("Problemas", E.z_problema(PREGUNTA, "El filtro «Rubro es Frío» deja 240 opciones, y WhatsApp muestra hasta 200."), E.AYUDA_PROBLEMAS)
-    cliente = E.z_zona("Avisos", filas + z_aviso(PREGUNTA, "No se le va a poder mandar a un cliente: depende de un dato de la persona."), AYUDA_AVISOS)
     tit = "Publicar la versión 4 en WhatsApp"
     dlg = A.dlg_publicar
-    capas = {"Solo avisos": dlg(tit, avisos + E.que_se_publica(), E.pie_pub()), "Problemas y avisos": dlg(tit, problema + avisos + E.que_se_publica(), E.pie_pub(activo=False)),
-             "Para los dos: un cliente": dlg(tit, cliente + E.que_se_publica(), E.pie_pub())}
+    capas = {"Solo avisos": dlg(tit, avisos(sin_zona) + E.que_se_publica(), E.pie_pub()),
+             "Problemas y avisos": dlg(tit, problema + avisos(sin_zona) + E.que_se_publica(), E.pie_pub(activo=False)),
+             "Para los dos: un cliente": dlg(tit, avisos(sin_zona + cliente) + E.que_se_publica(), E.pie_pub()),
+             "El máximo no entra": dlg(tit, avisos(no_entra + sin_zona) + E.que_se_publica(), E.pie_pub()),
+             "Nadie ve ninguna opción": dlg(tit, avisos(cero) + E.que_se_publica(), E.pie_pub())}
     return A.pagina_editor({e: base for e in ESTADOS_P16}, capas, ESTADOS_P16, "Publicar en WhatsApp · etapa 16", E.CSS_E12 + E.css_titulos() + E.CSS_ZONAS + CSS_AVISOS)
 
 
@@ -546,9 +608,12 @@ def registrar():
 if __name__ == "__main__":
     panel_e16 = re.search(r'<style data-e16="panel">\n(.*?)</style>', (PROJ / "FRM-Catalogos.dc.html").read_text(encoding="utf-8"), re.S)
     E.R.CSS_PANEL_E16 = panel_e16.group(1) if panel_e16 else ""
+    E.CON_TITULOS = True  # 88: los títulos de sección existen desde la 14 (traspaso 10)
     con_marco = {"FRM-Catalogo-16": (catalogo_16, 1200), "FRM-Editor-16": (editor_16, 1660), "FRM-Publicar-16": (publicar_16, 1400), "FRM-Respuestas-16": (respuestas_16, None)}
     for n, (f, alto) in con_marco.items():
         t = L.sin_disenar(n, E.post(n, f(), alto))
+        # 176: «Ver vista oficial» abre su diálogo (FRM-Vista-Oficial)
+        t = t.replace('href="FRM-Publicando.dc.html">Ver vista oficial', 'href="FRM-Vista-Oficial.dc.html">Ver vista oficial')
         if n == "FRM-Respuestas-16":
             t = L.con_pestanas(t, "respuestas")
         (PROJ / f"{n}.dc.html").write_text(t, encoding="utf-8")
@@ -558,5 +623,6 @@ if __name__ == "__main__":
         (PROJ / f"{n}.dc.html").write_text(f(), encoding="utf-8")
     (PROJ / "WA-Chats-Formulario-16.dc.html").write_text(chat_16("WA-Chats-Formulario", "WhatsApp · Internos · etapa 16"), encoding="utf-8")
     (PROJ / "M-WA-Chats-Formulario-16.dc.html").write_text(chat_16("M-WA-Chats-Formulario", "WhatsApp · teléfono · etapa 16"), encoding="utf-8")
-    registrar()
+    if "--sin-canvas" not in sys.argv:  # para correrlo sobre el lienzo sin tocar canvas.json
+        registrar()
     print("tableros", list(TITULOS))

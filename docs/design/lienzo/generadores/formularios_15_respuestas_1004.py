@@ -11,6 +11,8 @@ trae «Abrir en pantalla completa» como botón y, al pie, en qué respuesta va.
 
 Desde la v160, el traspaso 5: un solo «Filtros» con chips y sin cantidades (143 y 144), la tabla con líneas entre columnas (137) y el detalle
 alineado, con los momentos y la actividad en columnas (139). Las piezas de antes quedan para las etapas 18 a 21 hasta que se redibujen.
+
+Con el traspaso 10, exportar también: la planilla de fondo tiene un solo «Filtros», con sus chips y el total al pie (`fondo5`).
 """
 import json
 import pathlib
@@ -385,6 +387,11 @@ def detalle():
 
 # ================================================================ FRM-Respuesta-Completa: la pantalla completa, a todo el ancho (nueva)
 ESTADOS_RC = ["Las dos abiertas", "Las dos plegadas", "De una versión anterior", "Abierta desde un enlace", "Cargando", "No encontramos esa respuesta"]
+# 163 y 164 (traspaso 10): la pantalla completa va sin plegar, así que no hay «Las dos plegadas» ni «abiertas»
+ESTADOS_RC5 = ["Respuesta", "De una versión anterior", "Abierta desde un enlace", "Cargando", "No encontramos esa respuesta"]
+# sin plegar (163 y 164): solo en las pantallas completas que lo usan, para no tocar las de otras etapas
+CSS_RC_FIJA = """.rc-h.fija { cursor: default; }
+"""
 CSS_RC = """.rc { padding: 0; overflow: hidden; }
 .rc-h { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 0 16px; border: 0; background: oklch(0.945 0.018 76); font: inherit; color: var(--t1); cursor: pointer; text-align: left; }
 .rc-h .t { font-size: 14px; font-weight: 600; }
@@ -404,7 +411,10 @@ ACT_126 = [("13/10/2026 15:30", "La respondió Tomás Acosta por WhatsApp"), ("1
 ACT_123 = [("13/10/2026 11:04", "La respondió Tomás Acosta por WhatsApp"), ("13/10/2026 09:40", "Se la mandó Lucía Fernández")]
 
 
-def rc_seccion(titulo, cuerpo, resumen, abierta):
+def rc_seccion(titulo, cuerpo, resumen, abierta, plegable=True):
+    """Una sección de la pantalla completa. Sin `plegable` (163 y 164, traspaso 10), el título queda fijo y el contenido, siempre a la vista."""
+    if not plegable:
+        return f'<div class="w-caja rc"><div class="rc-h fija"><span class="t">{titulo}</span></div><div class="rc-b">{cuerpo}</div></div>'
     r = f'<span class="r">{resumen}</span>' if not abierta else ""
     b = f'<div class="rc-b">{cuerpo}</div>' if abierta else ""
     return f'<div class="w-caja rc"><button type="button" class="rc-h" aria-expanded="{"true" if abierta else "false"}"><span class="t">{titulo}</span>{r}<span class="fl{" ab" if abierta else ""}">{CHEV}</span></button>{b}</div>'
@@ -478,12 +488,21 @@ def dlg_exportar(modo="todas"):
     return d
 
 
+def fondo5(modo="filtrado"):
+    """La planilla de fondo con un solo «Filtros» (143 y 144, traspaso 10): lo aplicado en chips y el total al pie, sin «Más filtros» ni cantidades."""
+    if modo == "mucho":
+        return CUERPO.format(barra5() + tabla(mucho=True))
+    if modo == "repuesto":
+        return CUERPO.format(barra5("repuesto") + tabla_r())
+    return CUERPO.format(barra5("filtrado") + tabla(FILTRADAS, total=4))
+
+
 def exportar():
     capas = A.con_estados([("Exportar", dlg_exportar()), ("Solo las columnas visibles", dlg_exportar("solo")), ("Más de 10.000", dlg_exportar("mucho")), ("Exportando", dlg_exportar("exportando")),
                            ("Exportado", A.toast(f"Se descargó «{ARCHIVO_XLSX}».")), ("Ya hay una exportación en curso", dlg_exportar("otra")), ("No se pudo exportar", dlg_exportar("error")), ("Elegir varias y campos", dlg_exportar("repuesto"))])
-    cuerpo = A.con_estados([(e, fondo("repuesto" if e == "Elegir varias y campos" else "mucho" if e == "Más de 10.000" else "filtrado")) for e in ESTADOS_EX])
+    cuerpo = A.con_estados([(e, fondo5("repuesto" if e == "Elegir varias y campos" else "mucho" if e == "Más de 10.000" else "filtrado")) for e in ESTADOS_EX])
     bnd = A.con_estados([(e, banda(REPUESTO, "Respuestas · versión 2 publicada", EXPORTAR) if e == "Elegir varias y campos" else banda(ac=EXPORTAR)) for e in ESTADOS_EX])
-    t = pagina("Respuestas · Exportar a Excel", bnd, cuerpo, ESTADOS_EX, css=C.CSS_K2 + P.CSS_EX + CSS_EX2)
+    t = pagina("Respuestas · Exportar a Excel", bnd, cuerpo, ESTADOS_EX, css=C.CSS_K2 + P.CSS_EX + CSS_EX2 + CSS_T5)
     return F.con_dialogo(t, capas)
 
 
@@ -544,6 +563,7 @@ def tel_respuestas():
 
 # ================================================================ M-FRM-Respuesta: la pantalla completa en el teléfono, con sus dos secciones plegables
 ESTADOS_TR = ["Respuesta", "Las dos plegadas", "La primera de la lista", "De una versión anterior", "Elegir varias y campos", "Cargando", "No encontramos esa respuesta"]
+ESTADOS_TR5 = [e for e in ESTADOS_TR if e != "Las dos plegadas"]  # 163 y 164 (traspaso 10): sin plegar
 
 
 def tel_respuesta():
@@ -802,18 +822,18 @@ def actividad4(filas):
 
 
 def completa5():
-    def rc_cuerpo5(valores=VALORES_126, act=ACT4_126, abierta=True, resumen="7 preguntas · 7 respondidas", recibida="13/10/2026 15:30"):
-        return (CUERPO.format(rc_seccion("Respuesta", F.grilla(valores), resumen, abierta)
-                              + rc_seccion("Actividad", actividad4(act), f"Recibida el {recibida}", abierta)))
-    bandas = {"Las dos abiertas": rc_banda(), "Las dos plegadas": rc_banda(), "De una versión anterior": rc_banda("VIS-000123", "Versión 3 · recibida el 13/10/2026 11:04", "8 de 24"),
+    def rc_cuerpo5(valores=VALORES_126, act=ACT4_126, resumen="7 preguntas · 7 respondidas", recibida="13/10/2026 15:30"):
+        return (CUERPO.format(rc_seccion("Respuesta", F.grilla(valores), resumen, True, plegable=False)
+                              + rc_seccion("Actividad", actividad4(act), f"Recibida el {recibida}", True, plegable=False)))
+    bandas = {"Respuesta": rc_banda(), "De una versión anterior": rc_banda("VIS-000123", "Versión 3 · recibida el 13/10/2026 11:04", "8 de 24"),
               "Abierta desde un enlace": rc_banda(pos="5 de 24"), "Cargando": rc_banda(res=""),
               "No encontramos esa respuesta": ('<div class="w-bnd"><div class="iz"><a class="vol" href="FRM-Respuestas.dc.html" aria-label="Volver a las respuestas">' + L.VOLVER + '</a>'
                                                f'<div><h1>{FORMULARIO}</h1></div></div></div>')}
-    cuerpos = {"Las dos abiertas": rc_cuerpo5(), "Las dos plegadas": rc_cuerpo5(abierta=False), "De una versión anterior": rc_cuerpo5(VALORES_123, ACT4_123, recibida="13/10/2026 11:04"),
+    cuerpos = {"Respuesta": rc_cuerpo5(), "De una versión anterior": rc_cuerpo5(VALORES_123, ACT4_123, recibida="13/10/2026 11:04"),
                "Abierta desde un enlace": rc_cuerpo5(), "Cargando": CUERPO.format('<div class="w-caja">' + P.ESQ + "</div>"),
                "No encontramos esa respuesta": CUERPO.format('<div class="rc-msj"><b>No encontramos esta respuesta.</b><a class="cb cb-sec" href="FRM-Respuestas.dc.html">Volver a las respuestas</a></div>')}
-    return pagina("Respuesta · /org/formularios/:id/respuestas/:recordId/completa", A.con_estados([(e, bandas[e]) for e in ESTADOS_RC]),
-                  A.con_estados([(e, cuerpos[e]) for e in ESTADOS_RC]), ESTADOS_RC, css=F.CSS_GRILLA + CSS_RC + CSS_D3)
+    return pagina("Respuesta · /org/formularios/:id/respuestas/:recordId/completa", A.con_estados([(e, bandas[e]) for e in ESTADOS_RC5]),
+                  A.con_estados([(e, cuerpos[e]) for e in ESTADOS_RC5]), ESTADOS_RC5, css=F.CSS_GRILLA + CSS_RC + CSS_RC_FIJA + CSS_D3)
 
 
 # Los teléfonos: «Filtros» ocupa la pantalla, sin cantidades, y lo aplicado va en chips debajo de la barra
@@ -901,29 +921,28 @@ def tel_respuesta5():
         filas = "".join(f'<div class="f"><span class="k">{k}</span>' + (f"<span>{v}</span>" if v is not None else '<span class="vac">Sin respuesta</span>') + "</div>" for k, v in valores)
         return f'<div class="tr-gr">{filas}</div>'
 
-    def sec(titulo, cuerpo, resumen, abierta):
-        r = f'<span class="r">{resumen}</span>' if not abierta else ""
-        return (f'<div class="tr-sec"><button type="button" class="h" aria-expanded="{"true" if abierta else "false"}">{titulo}{r}<span class="fl{" ab" if abierta else ""}">{CHEV}</span></button>'
-                + (cuerpo if abierta else "") + "</div>")
+    def sec(titulo, cuerpo, _resumen):
+        """Sin plegar (163 y 164, traspaso 10): el título fijo y el contenido, siempre."""
+        return f'<div class="tr-sec"><div class="h">{titulo}</div>{cuerpo}</div>'
 
     def act(filas):
         return '<div class="tr-act">' + "".join(f"<span><b>{q}</b><small>{quien}</small><small>{h} · {e}</small></span>" for h, q, quien, e in filas) + "</div>"
 
-    def pantalla(num="VIS-000126", titulo=FORMULARIO, version=4, valores=VALORES_126, actv=ACT4_126, pos="5 de 24", primera=False, abierta=True):
-        return bar(num, titulo, version) + nav(pos, primera) + ('<div class="tr-scroll">' + moms(actv) + sec("Respuesta", grilla(valores), "7 preguntas · 7 respondidas", abierta)
-                                                                + sec("Actividad", act(actv), f"Recibida a las {actv[-1][0][-5:]}", abierta) + "</div>")
+    def pantalla(num="VIS-000126", titulo=FORMULARIO, version=4, valores=VALORES_126, actv=ACT4_126, pos="5 de 24", primera=False):
+        return bar(num, titulo, version) + nav(pos, primera) + ('<div class="tr-scroll">' + moms(actv) + sec("Respuesta", grilla(valores), "7 preguntas · 7 respondidas")
+                                                                + sec("Actividad", act(actv), f"Recibida a las {actv[-1][0][-5:]}") + "</div>")
     esq = '<div class="ap-esq"><span style="width: 70%;"></span><span style="width: 90%;"></span><span style="width: 60%;"></span><span style="width: 84%;"></span></div>'
     act130 = [("15/10/2026 09:10", "Se la mandó", "Lucía Fernández, desde el chat", "Hecho"), ("16:20", "La respondió", "Paula Méndez, por WhatsApp", "Hecho")]
     act_r = [("15/10/2026 08:45", "Se la mandó", "Lucía Fernández, desde el chat", "Hecho"), ("10:12", "La respondió", "Tomás Acosta, por WhatsApp", "Hecho")]
     cuerpo = {
-        "Respuesta": pantalla(), "Las dos plegadas": pantalla(abierta=False),
+        "Respuesta": pantalla(),
         "La primera de la lista": pantalla("VIS-000130", valores=VALORES_130, actv=act130, pos="1 de 24", primera=True),
         "De una versión anterior": pantalla("VIS-000123", version=3, valores=VALORES_123, actv=ACT4_123, pos="8 de 24"),
         "Elegir varias y campos": pantalla("REP-000018", REPUESTO, 2, VALORES_R5, act_r, "1 de 18", True),
         "Cargando": bar() + nav() + esq,
         "No encontramos esa respuesta": C.t_bar("Respuesta", FORMULARIO, "M-FRM-Respuestas.dc.html") + '<div class="ap-cuerpo"><div class="ap-vacio">No encontramos esta respuesta.<a class="cb cb-sec" href="M-FRM-Respuestas.dc.html">Volver a las respuestas</a></div></div>',
     }
-    return C.tel_pagina(cuerpo, ESTADOS_TR, {}, "Respuesta · teléfono", P.CSS_TPL + CSS_T15 + CSS_T5_TEL)
+    return C.tel_pagina(cuerpo, ESTADOS_TR5, {}, "Respuesta · teléfono", P.CSS_TPL + CSS_T15 + CSS_T5_TEL)
 
 
 # ================================================================ canvas.json (la fila de cada uno la pone formularios_etapas_1004.py)
@@ -955,5 +974,6 @@ if __name__ == "__main__":
         t = L.sin_disenar(n, E.post(n, t, 1000 if n == "FRM-Respuesta-Completa" else None))
         comprobar(n, t)
         (PROJ / f"{n}.dc.html").write_text(t, encoding="utf-8")
-    registrar()
+    if "--sin-canvas" not in sys.argv:  # para correrlo sobre el lienzo sin tocar canvas.json
+        registrar()
     print("tableros", list(tableros))

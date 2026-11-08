@@ -741,7 +741,12 @@ def publicando():
 
 
 # ---------------------------------------------------------------- E12 · C1–C5 · Enviar un formulario desde el chat (Internos, número de la organización)
-MENSAJE_AB = "Completá este formulario, por favor."
+def mensaje_de(nombre=None):
+    """165 (traspaso 10): sin texto del operador, el mensaje nombra el formulario elegido; antes de elegir, «Completá este formulario.»."""
+    return f"Completá el formulario «{nombre}»." if nombre else "Completá este formulario."
+
+
+MENSAJE_AB = mensaje_de("Visita a cliente")
 RELOJ14 = svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', 14)
 FORMS_CHAT = [("Visita a cliente", "Versión 3 · 6 preguntas"), ("Entrega de pedido", "Versión 1 · 5 preguntas"), ("Control de vehículo", "Versión 2 · 7 preguntas")]
 FORMS_MUCHOS = FORMS_CHAT + [("Inspección de obra", "Versión 1 · 9 preguntas")]
@@ -802,8 +807,8 @@ def escr(form="on", motivo="", area="Escribí un mensaje", aviso=False, enviar=T
     return nota + a + b_form(form, motivo) + fin
 
 
-def burbuja(pie, clase="", extra="", icono=""):
-    return (f'<div class="w-m sal"><span class="gl">{MENSAJE_AB}<span class="c-card"><span class="ic">{F.ICONO}</span><span class="t"><b>Visita a cliente</b>'
+def burbuja(pie, clase="", extra="", icono="", form="Visita a cliente"):
+    return (f'<div class="w-m sal"><span class="gl">{mensaje_de(form)}<span class="c-card"><span class="ic">{F.ICONO}</span><span class="t"><b>{form}</b>'
             f'<small>Formulario · versión 3 · botón «Abrir formulario»</small></span></span></span><span class="pie {clase}">{icono}{pie}{extra}</span></div>')
 
 
@@ -815,7 +820,11 @@ def cards(lista, sel=0, baja=False):
     return f'<div class="c-ops" role="radiogroup" aria-label="Formulario">{h}</div>'
 
 
-def dlg_enviar(lista="pocos", sel=0, mensaje=MENSAJE_AB, err="", aviso="", prob="", pie="normal", buscar=None, hasta=True):
+def dlg_enviar(lista="pocos", sel=0, mensaje=None, err="", aviso="", prob="", pie="normal", buscar=None, hasta=True):
+    """165: sin `mensaje` (lo que escribió el operador), el campo propone el del formulario elegido; sin uno elegido, «Completá este formulario.»."""
+    if mensaje is None:
+        elegido = FORMS_MUCHOS[sel][0] if lista == "muchos" else FORMS_CHAT[sel][0] if lista in ("pocos", "baja") else None
+        mensaje = mensaje_de(elegido)
     bus = "" if buscar is None else f'<span class="w-bus c-bus{" lleno" if buscar else ""}">{F.BUSCAR} {buscar or "Buscar por nombre"}</span>'
     if lista == "pocos":
         cuerpo_lista = cards(FORMS_CHAT, sel)
@@ -1338,8 +1347,8 @@ CSS_TCHAT_AB = """.ap-m .gl .c-card { display: flex; align-items: center; gap: 1
 """
 
 
-def t_burbuja(pie, clase="", extra="", icono=""):
-    return (f'<div class="ap-m sal"><span class="gl">{MENSAJE_AB}<span class="c-card"><span class="ic">{F.ICONO}</span><span class="t"><b>Visita a cliente</b>'
+def t_burbuja(pie, clase="", extra="", icono="", form="Visita a cliente"):
+    return (f'<div class="ap-m sal"><span class="gl">{mensaje_de(form)}<span class="c-card"><span class="ic">{F.ICONO}</span><span class="t"><b>{form}</b>'
             f'<small>Formulario · versión 3 · botón «Abrir formulario»</small></span></span></span><span class="pie {clase}">{icono}{pie}{extra}</span></div>')
 
 
@@ -1347,9 +1356,9 @@ def t_info(texto):
     return f'<button type="button" class="ap-i" aria-label="Qué significa" title="{texto}">{F.TINFO}</button>'
 
 
-def t_hoja_enviar(lista="pocos", err="", aviso="", prob="", pie="normal", hasta=True):
+def t_hoja_enviar(lista="pocos", err="", aviso="", prob="", pie="normal", hasta=True, sel=0, mensaje=None):
     if lista == "pocos":
-        lst = cards(FORMS_CHAT)
+        lst = cards(FORMS_CHAT, sel)
     elif lista == "baja":
         lst = cards(FORMS_CHAT, 0, baja=True)
     else:
@@ -1358,8 +1367,10 @@ def t_hoja_enviar(lista="pocos", err="", aviso="", prob="", pie="normal", hasta=
         msg = ('<div class="ap-cmp"><span class="rt"><span>Mensaje que lo acompaña <span class="rq">*</span></span></span><div class="ct area mal ph">Escribí el mensaje…</div>'
                '<span class="c-ay mal"><span role="alert">Escribí el mensaje que acompaña al formulario.</span><span>0 / 1024</span></span></div>')
     else:
-        msg = (f'<div class="ap-cmp"><span class="rt"><span>Mensaje que lo acompaña <span class="rq">*</span></span></span><div class="ct area">{MENSAJE_AB}</div>'
-               '<span class="c-ay"><span>Es lo que lee arriba del botón «Abrir formulario».</span><span>36 / 1024</span></span></div>')
+        # 165: el que escribió el operador, o el que propone el formulario elegido
+        texto = mensaje or mensaje_de(FORMS_CHAT[sel][0] if lista in ("pocos", "baja") else None)
+        msg = (f'<div class="ap-cmp"><span class="rt"><span>Mensaje que lo acompaña <span class="rq">*</span></span></span><div class="ct area">{texto}</div>'
+               f'<span class="c-ay"><span>Es lo que lee arriba del botón «Abrir formulario».</span><span>{len(texto)} / 1024</span></span></div>')
     cuerpo = ('<div class="ap-cmp"><span class="rt"><span>Formulario <span class="rq">*</span></span></span></div>' + lst
               + f'<span class="t-lin">{GLOBO} Le llega en español, el idioma de su cuenta.</span>' + prob + msg
               + (f'<span class="t-lin">{RELOJ14} Se puede mandar hasta mañana a las 10:48.</span>' if hasta else "") + aviso)

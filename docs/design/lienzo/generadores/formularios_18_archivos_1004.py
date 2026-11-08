@@ -3,6 +3,8 @@ la pantalla completa y dar de baja, y los archivos del chat, que allá no existe
 hasta la 18 (78): sin aprobación, estado, PDF, «Cargar» ni asistente. El editor, publicar, la tarjeta y el visor siguen en `formularios_ab_1004.py`.
 Desde la v163 (traspaso 5), la planilla, el detalle y los teléfonos usan las piezas nuevas de la 15: un solo «Filtros», en el que las fotos y los documentos
 no entran (143), el detalle alineado (139) y la actividad en columnas.
+Con el traspaso 10, el visor del chat (`WA-Chats-Visor` y su teléfono) toma el mensaje que nombra el formulario (165); el editor, publicar y la tarjeta
+de la 18 los arma `formularios_14_formularios_1004.py`, con «Agregar título» (88).
 
 Corre después de `formularios_16_personas_1004.py` y antes de `formularios_etapas_1004.py`. Se puede volver a correr.
 """
@@ -147,11 +149,11 @@ def completa():
     def banda(abierto):
         t = R.rc_banda(pos="2 de 4")
         return t.replace("Abrir conversación</a>", "Abrir conversación</a>" + boton_descargar(abierto), 1)
-    # la actividad en columnas fijas, como la 15 (139)
-    cuerpo = R.CUERPO.format(R.rc_seccion("Respuesta", F.grilla(VALORES), "9 preguntas · 9 respondidas", True)
-                             + R.rc_seccion("Actividad", R.actividad4(R.ACT4_126), "Recibida el 13/10/2026 15:30", True))
+    # la actividad en columnas fijas, como la 15 (139); las dos secciones abiertas, sin plegar (163 y 164, traspaso 10)
+    cuerpo = R.CUERPO.format(R.rc_seccion("Respuesta", F.grilla(VALORES), "9 preguntas · 9 respondidas", True, plegable=False)
+                             + R.rc_seccion("Actividad", R.actividad4(R.ACT4_126), "Recibida el 13/10/2026 15:30", True, plegable=False))
     t = R.pagina("Respuesta · /org/formularios/:id/respuestas/:recordId/completa · etapa 18", A.con_estados([(e, banda(e != "Respuesta")) for e in ESTADOS_C]),
-                 A.con_estados([(e, cuerpo) for e in ESTADOS_C]), ESTADOS_C, css=F.CSS_GRILLA + R.CSS_RC + R.CSS_D3 + A.CSS_ARCH + CSS_18)
+                 A.con_estados([(e, cuerpo) for e in ESTADOS_C]), ESTADOS_C, css=F.CSS_GRILLA + R.CSS_RC + R.CSS_RC_FIJA + R.CSS_D3 + A.CSS_ARCH + CSS_18)
     return enlaces(t)
 
 
@@ -183,7 +185,7 @@ def tel_respuesta():
     finally:
         R.VALORES_126 = viejos
     t = t.replace("7 preguntas · 7 respondidas", "9 preguntas · 9 respondidas")
-    t = L.sin_estados(t, [e for e in R.ESTADOS_TR if e not in ("Respuesta", "Las dos plegadas")])
+    t = L.sin_estados(t, [e for e in R.ESTADOS_TR5 if e != "Respuesta"])  # sin «Las dos plegadas» (163 y 164)
     t = L.con_css(t, "e18", A.CSS_ARCH + ".tr-gr .r-doc { display: grid; grid-template-columns: auto minmax(0, 1fr); }\n.tr-gr .r-doc .cb { grid-column: 1 / -1; height: 36px; }\n.tr-gr .r-doc .t { overflow-wrap: anywhere; }\n")
     return enlaces(re.sub(r"<title>[^<]*</title>", "<title>Respuesta · teléfono · etapa 18</title>", t))
 
@@ -383,5 +385,13 @@ if __name__ == "__main__":
         (PROJ / f"{n}.dc.html").write_text(t, encoding="utf-8")
     for n, f in [("M-FRM-Respuestas-18", tel_respuestas), ("M-FRM-Respuesta-18", tel_respuesta), ("WA-Chats-Adjuntos", chat_adjuntos), ("M-WA-Chats-Adjuntos", tel_adjuntos)]:
         (PROJ / f"{n}.dc.html").write_text(E.post(n, f()), encoding="utf-8")
-    registrar()
+    # 165 (traspaso 10): el visor, que armó formularios_ab_archivos_1004.py, sobre el chat con el mensaje que nombra el formulario
+    for n in ("WA-Chats-Visor", "M-WA-Chats-Visor"):
+        f = PROJ / f"{n}.dc.html"
+        t = f.read_text(encoding="utf-8")
+        nuevo = t.replace("Completá este formulario, por favor.", A.mensaje_de("Visita a cliente"))
+        if nuevo != t:
+            f.write_text(nuevo, encoding="utf-8")
+    if "--sin-canvas" not in sys.argv:  # para correrlo sobre el lienzo sin tocar canvas.json
+        registrar()
     print("tableros", list(TITULOS))
