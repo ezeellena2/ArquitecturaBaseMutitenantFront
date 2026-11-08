@@ -47,7 +47,7 @@ PIEZAS = """
 :root .ini-ico, :root .lp-ico { background: transparent !important; width: auto !important; height: auto !important; }
 
 /* 173 · El avatar, un cuadrado con la inicial, sin degradé: chico (24) en la barra de arriba y en el pie del menú. */
-:root .avatar, :root .w-av, :root .ap-nav .yo, :root .av, :root .org-av, :root .mail-de .logo { background: var(--marca) !important; color: #fff; border-radius: 6px !important; }
+:root .avatar, :root .w-av, :root .ap-nav .yo, :root .av:not(.z-f), :root .org-av, :root .mail-de .logo { background: var(--marca) !important; color: #fff; border-radius: 6px !important; }
 :root .avatar.gris { background: var(--s3) !important; color: var(--t2) !important; }
 :root .w-av.g { background: oklch(0.9 0.015 95) !important; color: var(--t2) !important; }
 :root .ab-topbar .um-btn .avatar, :root .ab-sidebar__user .avatar, :root .ab-sidebar__footer .avatar, :root .w-us .w-av, :root .w-umd .um .w-av { width: 24px !important; height: 24px !important; font-size: 12px !important; border-radius: 5px !important; }
