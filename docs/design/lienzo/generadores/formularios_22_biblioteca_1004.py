@@ -313,11 +313,12 @@ def motivo_abierta():
 
 
 def caja_preguntas(abierta=False, solo_ver=False):
-    """Las preguntas con ↑ ↓ ✎ 🗑; en la franja, «Agregar bloque» al lado de «Agregar pregunta» (177): la plantilla no tiene bloque, así que va habilitado."""
+    """Las preguntas con ↑ ↓ ✎ 🗑; en la franja, «Agregar título · Agregar bloque · Agregar pregunta», como los editores de la 19 a la 21 (177):
+    la plantilla no tiene bloque, así que «Agregar bloque» va habilitado."""
     filas = "".join(motivo_abierta() if (abierta and k == 5) else fila_q(k, n, d, solo_ver) for k, (n, d) in enumerate(PREG, 1))
     botones = "" if solo_ver else (f'<button type="button" class="cb cb-sec">{MAS} Agregar título</button>'
-                                   f'<button type="button" class="cb cb-sec">{MAS} Agregar pregunta</button>'
-                                   f'<button type="button" class="cb cb-sec">{MAS} Agregar bloque</button>')
+                                   f'<button type="button" class="cb cb-sec">{MAS} Agregar bloque</button>'
+                                   f'<button type="button" class="cb cb-sec">{MAS} Agregar pregunta</button>')
     return f'<div class="w-caja"><div class="f-cab"><span>Preguntas</span><span class="der">{botones or "8 preguntas"}</span></div>{filas}</div>'
 
 
