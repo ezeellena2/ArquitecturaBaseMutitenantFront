@@ -216,7 +216,7 @@ CSS_DOCUMENTO = """.d25-doc { box-sizing: border-box; width: 280px; padding: 14p
 """
 
 
-def documento(tipo="img", clase=""):
+def documento(tipo="img", clase="", numero="0001-00000412"):
     """El documento que llegó, dibujado como la foto o la primera página: un comprobante, una captura, un remito en papel o un ticket."""
     c = f"d25-doc {tipo} {clase}".strip()
     if tipo == "mp":
@@ -224,7 +224,7 @@ def documento(tipo="img", clase=""):
                 f'<div class="m">$ 32.000,00</div><span class="s">{HOY} · 09:38</span><span class="k">De</span>Sanitarios del Sur S.A.<br>CVU {CVU_MP}'
                 f'<span class="k">Para</span>Grupo Delta S.A.<span class="k">Número de operación</span>88412 03317</div>')
     if tipo == "remito":
-        return (f'<div class="{c} papel" role="img" aria-label="Foto de un remito en papel"><div class="fila"><span class="b">REMITO</span><span>N° 0001-00000412</span></div>'
+        return (f'<div class="{c} papel" role="img" aria-label="Foto de un remito en papel"><div class="fila"><span class="b">REMITO</span><span>N° {numero}</span></div>'
                 f'<span class="s">Corralón El Puente S.R.L. · CUIT 30-70912345-5</span><div class="sep"></div>Fecha: {HOY}<br>Entregar a: Grupo Delta S.A. · Av. Rivadavia 4520'
                 '<table><tr><td class="c">12</td><td>Bolsas de cemento de 50 kg</td></tr><tr><td class="c">4</td><td>Caños de PVC de 110 mm</td></tr>'
                 '<tr><td class="c">30</td><td>Ladrillos huecos de 12 × 18 × 33</td></tr></table><div class="sep"></div><span class="s">Recibí conforme: ____________</span></div>')
@@ -393,7 +393,7 @@ def visor(doc_html, paginas="Página 1 de 1"):
 
 
 def sel_form(valor=COBRO, abierto=False, rec="Reconocido por la IA · seguro", apagado=False):
-    ops = [COBRO, PAGO, GASTOS]
+    ops = [COBRO, PAGO, GASTOS] + ([REMITO] if valor == REMITO else [])
     menu = ""
     if abierto:
         menu = ('<div class="q-catmn" role="listbox" aria-label="Formulario" style="top: 58px; left: 0; right: auto; width: 100%;">'
@@ -454,6 +454,17 @@ def panel_sin_clasificar():
                      pos="3 de 27", primera=False)
 
 
+def panel_remito():
+    """Un remito de «Remito de entrega», ya publicado: los ítems del bloque no se leen (181), y «Pasar al formulario» abre la carga de la E20 con lo leído."""
+    d = ("d11", "remito-0420.jpg", "remito", f"{HOY} 11:20", TOMAS, "", REMITO, "Remito de Corralón El Puente", "Propuesto", "", "", "Delta S.A.")
+    datos = ('<div class="d25-datos">' + dato("Número de remito", "0001-00000420") + dato("Fecha de entrega", HOY) + dato("Proveedor", "Corralón El Puente S.R.L.")
+             + dato("Zona de entrega", None, "no") + "</div>"
+             + '<div class="w-cmp"><span class="rt">Productos</span><div class="ct vacio" style="position: relative;"><span class="d25-marca no">No se leyó</span></div></div>')
+    rev = sel_form(REMITO, rec="Reconocido por la IA · seguro").replace(f">{REMITO}<", f">{REMITO}<") + datos
+    pie = boton("Descartar") + '<a class="cb cb-pri" href="FRM-Cargar-Respuesta.dc.html">Pasar al formulario</a>'
+    return panel_doc(d, visor(documento("remito", numero="0001-00000420")) + f'<div class="d25-rev">{rev}</div>', pie, pos="2 de 28", primera=False)
+
+
 def panel_auto():
     d = DOC["d4"]
     porque = info("Reconocido sin duda, con las validaciones bien y sin duplicado, y sus últimas 20 cargas se confirmaron sin correcciones.")
@@ -475,7 +486,8 @@ def dlg_pasar():
 
 
 E_DOCS = ["Documentos", "Un propuesto", "Cambiar el formulario", "Volviendo a leer", "Un dato que no pasa", "Pasar al formulario", "Pasando", "Confirmado",
-          "Descartar", "Un sin clasificar", "Cargada automáticamente", "Filtros", "Con filtros", "Buscando un monto", "Solo ver", "Cargando", "Sin documentos"]
+          "Descartar", "Un sin clasificar", "Cargada automáticamente", "Un remito, con su bloque", "Filtros", "Con filtros", "Buscando un monto", "Solo ver", "Cargando",
+          "Sin documentos"]
 CSS_PAGINA_DOCS = (F.CSS_LISTADO + F.CSS_FILTRO + F.CSS_ESTADOS + A.CSS_AB + A.CSS_LISTADO + E.CSS_E12 + P.CSS_PANEL + P.CSS_PL + R.CSS_15 + R.CSS_T5 + F.CSS_GRILLA
                    + P.CSS_D2 + R.CSS_D3 + CSS_25 + CSS_DOCUMENTO + CSS_BANDEJA + CSS_ARO + ".w-bnd h1 .f-i { vertical-align: middle; margin-left: 6px; }\n")
 
@@ -497,6 +509,7 @@ def documentos():
     paneles = {"Un propuesto": panel_propuesto(), "Cambiar el formulario": panel_propuesto("menu"), "Volviendo a leer": panel_propuesto("leyendo"),
                "Un dato que no pasa": panel_propuesto("mal"), "Pasar al formulario": panel_propuesto("corregido"), "Pasando": panel_propuesto("pasando"),
                "Confirmado": panel_confirmado(), "Descartar": panel_propuesto(), "Un sin clasificar": panel_sin_clasificar(), "Cargada automáticamente": panel_auto(),
+               "Un remito, con su bloque": panel_remito(),
                "Solo ver": panel_propuesto("ver")}
     dialogos = {"Descartar": dlg_descartar(), "Pasar al formulario": dlg_pasar(), "Confirmado": A.toast("Guardamos COB-000125.")}
     t = A.pagina_ab("Documentos recibidos · /org/formularios/documentos", "Inicio / Gestión de formularios / Documentos recibidos",
@@ -1155,7 +1168,7 @@ def editor_lectura():
           "Un formulario propio": (E.banda("Pago de servicios", E.EST_PUB4, E.acc("limpio"), vol), cuerpo("propio", nombre="Pago de servicios", prefijo="SER"))}
     t = A.pagina_editor(V_, {"Ver los ejemplos": dlg_ejemplos()}, E_EDL, "Editor · lectura de documentos · etapa 25", E.CSS_E12 + E.CSS_CA4 + CSS_EDITOR25)
     t = marco25("FRM-Editor-Lectura", t, "formularios", f"Inicio / Gestión de formularios / Formularios / {COBRO}", 2350)
-    t = CH.con_tabs23(t, "diseno").replace('"FRM-Formularios-22.dc.html"', '"FRM-Formularios-25.dc.html"')
+    t = CH.con_tabs23(t, "diseno").replace('"FRM-Formularios-22.dc.html"', '"FRM-Formularios-25.dc.html"').replace("Volver a Diseñar formularios", "Volver a Formularios")
     return con_titulo(con_campana25(t), "Formularios · la lectura de documentos · etapa 25")
 
 
@@ -1417,33 +1430,47 @@ def ent(texto, hora="10:36"):
     return f'<div class="w-m ent"><span class="gl">{texto}</span><span class="pie">{hora}</span></div>'
 
 
+def oferta(form=COBRO):
+    """La oferta fija de la 23 (165): el mensaje que lleva el formulario lo nombra. Lo que explica la lectura va aparte, con las palabras de la IA (192)."""
+    return f"Te preparé el formulario «{form}» para que lo completes."
+
+
+def sugerencia_doc():
+    """En atención manual el documento se lee igual (199): al operador le aparece la sugerencia, con «Revisar y enviar», como en la 23."""
+    return (f'<div class="as-sug" role="status"><span style="color: var(--marca-tx); margin-top: 1px;">{BOT}</span><span class="t"><b>El asistente sugiere mandarle {COBRO}</b>'
+            '<span>Prellenado con el comprobante: 14 de 16 datos, 1 dudoso.</span></span><span class="acc"><button type="button" class="cb cb-sec">No, gracias</button>'
+            '<button type="button" class="cb cb-pri">Revisar y enviar</button></span></div>')
+
+
 def msgs_doc():
-    seguro_t = "Recibí un comprobante de transferencia de $ 150.000,00 del Banco Galicia. ¿Lo cargo?"
+    seguro_t = oferta()
     seguro = msg_doc("img", "comprobante.jpg", "412 KB", "Te paso la transferencia de Ferretería Rosales") + asis(seguro_t, card=card_doc())
     lista_forms = "Lista «Elegir formulario»: Visita a cliente · Entrega de pedido · Control de vehículo · Cobro a cliente · Pago a proveedor · Otro"
     return {
         "Seguro": seguro,
         "Por qué lo propuso": msg_doc("img", "comprobante.jpg", "412 KB", "Te paso la transferencia de Ferretería Rosales", pop=pop_doc(POR_SEGURO)) + asis(seguro_t, card=card_doc()),
         "Con duda: botones": (msg_doc("mp", "captura.jpg", "96 KB", hora="10:20", pq="Por qué preguntó") + asis("¿Qué es este documento?", "10:20", quick=[COBRO, PAGO, "Otro"])
-                              + ent(COBRO, "10:21") + asis("Listo: te preparé el formulario con el comprobante. Revisalo y confirmalo.", "10:21", card_doc())),
+                              + ent(COBRO, "10:21") + asis(oferta(), "10:21", card_doc())),
         "Con duda: lista": (msg_doc("ticket", "ticket.jpg", "88 KB", hora="10:22", pq="Por qué preguntó")
                             + asis("¿Qué es este documento?", "10:22", lista=f"Lista «Elegir formulario»: {GASTOS} · {PAGO} · Otro")),
         "Sin reconocer": (msg_doc("remito", "remito-0412.jpg", "640 KB", hora="09:58", pq="") + asis("No reconocí este documento. ¿Qué querés cargar con él?", "09:58", lista=lista_forms)
                           + ent("Otro", "09:59") + asis("Listo, lo dejé para que lo revise el equipo. Si hace falta, te escriben por acá.", "09:59")
                           + V.sis("Quedó en Documentos recibidos como «Sin clasificar» y se anotó en Formularios que faltan")),
         "Un PDF": msg_doc("pdf", "comprobante-nacion.pdf", "2 páginas · 180 KB", dibujo=False, hora="10:20")
-        + asis("Recibí un comprobante de transferencia de $ 86.500,00 del Banco Nación. ¿Lo cargo?", "10:20", card_doc()),
+        + asis(oferta(), "10:20", card_doc()),
         "Un Word": msg_doc("docx", "orden-de-pago.docx", "36 KB", dibujo=False, hora="11:47")
-        + asis("Recibí una orden de pago de $ 412.000,00 a Corralón El Puente. ¿La cargo?", "11:47", card_doc(PAGO, "Prellenado · con el documento")),
+        + asis(oferta(PAGO), "11:47", card_doc(PAGO, "Prellenado · con el documento")),
         "Un Excel con varias filas": (msg_doc("xlsx", "pagos-semana.xlsx", "7 filas · 18 KB", dibujo=False, hora="17:20")
                                       + asis("La planilla tiene 7 pagos. Te propongo los 3 primeros; los otros 4 quedan para que los revise el equipo.", "17:20")
-                                      + "".join(asis(f"Fila {k}: $ {m} de {c}.", "17:20", card_doc(COBRO, f"Prellenado · fila {k} de la planilla")) for k, m, c in
+                                      + "".join(asis(oferta(), "17:20", card_doc(COBRO, f"Prellenado · fila {k} de la planilla: $ {m} de {c}")) for k, m, c in
                                                 [(1, "21.300,00", "Pinturerías Oeste"), (2, "18.900,00", "Corralón El Puente"), (3, "75.000,00", "Ferretería Rosales")])),
-        "La ubicación y un contacto": (asis("Te preparé el formulario de la entrega.", "11:02", card_doc("Entrega de pedido", "Prellenado · Cliente"))
+        "La ubicación y un contacto": (asis(oferta("Entrega de pedido"), "11:02", card_doc("Entrega de pedido", "Prellenado · Cliente"))
                                        + f'<div class="w-m ent"><span class="gl d25-gl"><span class="d25-ub"><span class="mapa">{UBICACION}</span><b>Ubicación</b><span>Av. Rivadavia 4520, CABA</span></span></span><span class="pie">11:05</span></div>'
-                                       + asis("Completé «Dirección de entrega» con la ubicación.", "11:05", card_doc("Entrega de pedido", "Prellenado · Cliente y Dirección de entrega"))
+                                       + asis("Completé «Dirección de entrega» con la ubicación.", "11:05")
+                                       + asis(oferta("Entrega de pedido"), "11:05", card_doc("Entrega de pedido", "Prellenado · Cliente y Dirección de entrega"))
                                        + f'<div class="w-m ent"><span class="gl d25-gl"><span class="d25-fn">{CONTACTO} <b>Carlos Ibáñez</b> · 011 15-5555-7788</span></span><span class="pie">11:06</span></div>'
-                                       + asis("Completé «Recibió» y «Teléfono de quien recibe» con el contacto.", "11:06",
+                                       + asis("Completé «Recibió» y «Teléfono de quien recibe» con el contacto.", "11:06")
+                                       + asis(oferta("Entrega de pedido"), "11:06",
                                               card_doc("Entrega de pedido", "Prellenado · Cliente, Dirección de entrega, Recibió y Teléfono de quien recibe"))),
         "Foto movida": msg_doc("img", "comprobante.jpg", "380 KB", hora="10:40", movida=True, pq="")
         + asis("No se lee bien el número de operación ni la cuenta de origen. ¿Me mandás otra foto, con el comprobante entero y con buena luz?", "10:40"),
@@ -1451,12 +1478,15 @@ def msgs_doc():
         + asis("El PDF tiene contraseña y no lo puedo abrir. Mandame uno sin contraseña o una captura del comprobante.", "10:41"),
         "Repetido": msg_doc("img", "comprobante.jpg", "412 KB", hora="10:43", pq="") + asis(f"Ese comprobante ya se cargó el {AYER} 16:05, en COB-000118.", "10:43"),
         "La cuenta no da": msg_doc("img", "comprobante.jpg", "412 KB", hora="10:44", pop=pop_doc(POR_CBU))
-        + asis("Recibí un comprobante de transferencia de $ 150.000,00 del Banco Galicia. ¿Lo cargo?", "10:44", card_doc(COBRO, "Prellenado · la cuenta de origen va marcada")),
+        + asis(oferta(), "10:44", card_doc(COBRO, "Prellenado · la cuenta de origen va marcada")),
         "No se le puede mandar": (msg_doc("img", "comprobante.jpg", "402 KB", hora="10:46", pq="Por qué lo derivó")
                                   + asis("Gracias, recibí tu comprobante de $ 412.000,00. No lo puedo cargar desde acá: se lo pasé a una persona del equipo para que lo revise.", "10:46")
                                   + V.sis("Pasó a atención manual · Necesita una persona")),
         "Un formato viejo": msg_doc("xlsx", "pagos.xls", "44 KB", dibujo=False, hora="10:48", pq="")
         + asis("No puedo abrir planillas de Excel viejas (.xls). Mandame un PDF o guardala como .xlsx.", "10:48"),
+        "Cargada automáticamente": msg_doc("mp", "captura.jpg", "96 KB", hora="09:40", pq="Por qué la cargó")
+        + asis(f"Cargué la respuesta COB-000123 de «{COBRO}».", "09:41"),
+        "En atención manual": msg_doc("img", "comprobante.jpg", "412 KB", "Te paso la transferencia de Ferretería Rosales", hora="10:50") + sugerencia_doc(),
     }
 
 
@@ -1466,13 +1496,14 @@ E_CHDOC = list(msgs_doc())
 def chat_documento():
     msgs = msgs_doc()
     msgs = {k: f'<span class="w-dia">{HOY}</span>' + v for k, v in msgs.items()}
-    flags = {e: ("man" if e == "No se le puede mandar" else "as") for e in E_CHDOC}
+    flags = {e: ("man" if e in ("No se le puede mandar", "En atención manual") else "as") for e in E_CHDOC}
     esc = {e: (A.escr() if flags[e] == "man" else V.esc_asistente()) for e in E_CHDOC}
-    vp = {e: "Asistente: " + re.sub(r"<[^>]+>", "", re.findall(r'<span class="aut">.*?</span><span>(.*?)</span>', msgs[e], re.S)[-1])[:46] + "…" for e in E_CHDOC}
+    vp = {e: ("Asistente: " + re.sub(r"<[^>]+>", "", re.findall(r'<span class="aut">.*?</span><span>(.*?)</span>', msgs[e], re.S)[-1])[:46] + "…"
+              if '<span class="aut">' in msgs[e] else "Te paso la transferencia de Ferretería Rosales") for e in E_CHDOC}
     hora = {e: f"{HOY} 10:48" for e in E_CHDOC}
     t = V.pagina_chat_as(E_CHDOC, esc, msgs, {}, vp, hora, "WhatsApp · Internos · documentos · etapa 25", flags)
     t = CH.a_wa(t)
-    t = L.con_css(t, "e25", CSS_25 + CSS_DOCUMENTO + CSS_CHDOC + CH.CSS_CH)
+    t = L.con_css(t, "e25", CSS_25 + CSS_DOCUMENTO + CSS_CHDOC + CH.CSS_CH + V.CSS_AS)
     t = AS.en_whatsapp(E.post("WA-Chats-Documento", t), "chats", "Inicio / WhatsApp / Chats")
     return con_titulo(con_campana25(t), "WhatsApp · Internos · documentos · etapa 25")
 
@@ -1627,7 +1658,10 @@ def resumen(con_recibio=False):
     return f"Te propongo este formulario:<br><b>{REMITO}</b> · REM<br>{lista}<br>¿Lo armo?"
 
 
-ENLACE = "https://delta.ejemplo.com/org/formularios/borradores/remito-de-entrega"
+APP = "https://arquitecturabase.ejemplo.com"  # el dominio de la app, no el subdominio público de la organización
+ENLACE = f"{APP}/org/formularios/4b7e2d91"
+ENLACE_CAT = f"{APP}/org/formularios/catalogos/9c1f5a3e"
+ENLACE_SERVICE = f"{APP}/org/formularios/2d8a6f14"
 
 
 def tel_wa_armar():
@@ -1637,14 +1671,13 @@ def tel_wa_armar():
               + wm(resumen(True), "10:02") + wbts("Crear borrador", "Cambiar algo"))
     crear = (pedido + wm(resumen(), "10:00") + wm("Crear borrador", "10:01", True)
              + wm(f'Listo: armé el borrador <b>{REMITO}</b>. Revisalo y publicalo desde la app:<br><span class="lnk2">{ENLACE}</span>', "10:01"))
-    cat = (f'<div class="wa-m yo"><span class="wa-doc">{mini("xlsx")}<span>proveedores-de-obra.xlsx<br><small>86 filas · 24 KB</small></span></span>'
-           f'<span class="h">09:40 ✓✓</span></div>' + wm("Armame un catálogo con esta planilla", "09:40", True)
-           + wm(f"Te propongo el catálogo <b>{CAT}</b>: el código es el CUIT, cada opción la razón social y los campos Rubro y Zona. Son 86 filas. ¿Lo armo?", "09:40")
+    cat = (wm("Armame un catálogo de proveedores de obra, con el CUIT, la razón social, el rubro y la zona", "09:40", True)
+           + wm(f"Te propongo el catálogo <b>{CAT}</b>: el código es el CUIT, cada opción la razón social y los campos Rubro y Zona. ¿Lo armo?", "09:40")
            + wbts("Crear catálogo", "Cambiar algo"))
-    cat_creado = cat + wm("Crear catálogo", "09:41", True) + wm(f'Listo: armé el catálogo <b>{CAT}</b>. Revisalo y aprobalo desde la app:<br><span class="lnk2">https://delta.ejemplo.com/org/catalogos/proveedores-de-obra</span>', "09:41")
+    cat_creado = cat + wm("Crear catálogo", "09:41", True) + wm(f'Listo: armé el catálogo <b>{CAT}</b>. Revisalo y aprobalo desde la app:<br><span class="lnk2">{ENLACE_CAT}</span>', "09:41")
     sin = wm("Armame un formulario para los pedidos de repuestos", "11:10", True) + wm(f"No tenés permiso para diseñar formularios. Pedíselo a quien administra los roles de {ORG}.", "11:10")
     existe = (wm("Cambiá el formulario Pedido de service para que pida la foto de la heladera", "11:12", True)
-              + wm('Por ahora no cambio formularios que ya existen. Lo podés cambiar desde la app:<br><span class="lnk2">https://delta.ejemplo.com/org/formularios/pedido-de-service</span>', "11:12"))
+              + wm(f'Por ahora no cambio formularios que ya existen. Lo podés cambiar desde la app:<br><span class="lnk2">{ENLACE_SERVICE}</span>', "11:12"))
     viejo = cambio + wm("Crear borrador", "10:03", True) + wm("Esa propuesta ya cambió. Usá los botones de la última.", "10:03")
     est = ["Pedido con un audio", "Cambiar algo", "Crear el borrador", "Un catálogo", "Catálogo creado", "Sin permiso", "Ya existe", "Un botón viejo"]
     cu = {"Pedido con un audio": wa_chat(uno), "Cambiar algo": wa_chat(cambio), "Crear el borrador": wa_chat(crear), "Un catálogo": wa_chat(cat),
