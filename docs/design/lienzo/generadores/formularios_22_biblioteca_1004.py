@@ -12,6 +12,10 @@ Con los traspasos 5 y 10 (2026-11-07): las reglas se leen en pasos (138), con la
 `K.msj5` con «Agregar dato» y `K.CSS_RG5`); en la organización, «Historial» va primero en la cabecera, apagado hasta que se guardan
 (140). La pestaña «Publicación» ya no repite el estado de la banda (175), y las preguntas suman «Agregar bloque» (177).
 
+Con la revisión del 2026-11-08 (lienzo v169): la franja de las preguntas dice «Agregar título · Agregar bloque · Agregar pregunta», como los
+editores de la 19 a la 21; la vista de una plantilla lee sus reglas de ejemplo en pasos, con los datos como etiquetas y sin llaves (138 y 149);
+y la tarjeta de una plantilla usada en dos formularios dice «La usaste en «Visita a cliente» y 1 más» (198).
+
 Corre después de `formularios_21_reglas_1004.py` y `formularios_21_respuestas_1004.py`, y antes de los bloques; la fila de la etapa la
 pone `formularios_etapas_1004.py`. Se puede volver a correr; con `--sin-canvas` no escribe `canvas.json`.
 """
@@ -338,8 +342,7 @@ def vista_pl():
 
 
 # ---------------------------------------------------------------- Las reglas de ejemplo (E21), en pasos (138), con candado en lo de cada organización
-SUGERIDO = lambda rol: f' <span class="ad">(sugerido: <b>{rol}</b>)</span>'  # noqa: E731
-VER_PDF = '<a class="lnk" href="Plat-FRM-Pdf.dc.html">Ver el diseño</a>'
+VER_PDF ='<a class="lnk" href="Plat-FRM-Pdf.dc.html">Ver el diseño</a>'
 COND_MONTO = '<b>Monto estimado</b> <span class="g">desde</span> <b>100.000</b>'
 CSS_PASOS_22 = """.ab-chip.bloq { display: inline-flex; align-items: center; gap: 4px; color: var(--t2); }
 .ab-chip.bloq svg { flex: none; width: 13px; height: 13px; color: var(--t3); }
@@ -755,34 +758,34 @@ def biblioteca_org():
     return pagina_org(V, {}, E_BIB_ORG, "Biblioteca de formularios · /org/formularios/biblioteca")
 
 
-# ---------------------------------------------------------------- FRM-Plantilla: la vista de una plantilla, con sus reglas en palabras
-QUE_ELEGIS = lambda que: f'{que} que elegís al usarla'  # noqa: E731
+# ---------------------------------------------------------------- FRM-Plantilla: la vista de una plantilla, con sus reglas de ejemplo en pasos
+# Las reglas se leen como en la 21 (138), sin ✎ 🗑 porque es una vista: el mensaje entero en su recuadro, con los datos como etiquetas y sin
+# llaves (149). Lo que elige la organización al usarla va en una etiqueta, «el rol que elegís al usarla», con el sugerido en gris al lado.
+def elegis(que, sug=""):
+    s = f'<span class="sug">sugerido: {sug}</span>' if sug else ""
+    return K.chip5(f"{que} que elegís al usarla") + s
+
+
 REGLAS_VISTA = [
-    (1, "se recibe una respuesta", None, [f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_REC}»", f"Pedir aprobación a alguien con el rol que elegís al usarla{SUGERIDO(SUP)}"]),
-    (2, "se aprueba una respuesta", None, ["Armar el PDF «Comprobante de visita»", f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_APR}»{K.CON_PDF}",
-                                          "Mandar por correo a la dirección que elegís al usarla: «Se aprobó {número}.»" + K.CON_PDF]),
-    (3, "se aprueba una respuesta", "Monto estimado es mayor o igual a 100.000", [f"Avisar a las personas con el rol que elegís al usarla{SUGERIDO(GER)}: «{K.MENSAJE_DUENO}»"]),
-    (4, "se rechaza una respuesta", None, [f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_RCH}»"]),
+    ("Se recibe una respuesta", [], [("Mandarle un mensaje a quien la cargó", [], K.M_REC, ""), ("Pedir aprobación a un rol", [], None, elegis("el rol", SUP))]),
+    ("Se aprueba una respuesta", [], [("Armar el PDF", ["Comprobante de visita"], None, ""), ("Mandarle un mensaje a quien la cargó", ["con el PDF"], K.M_APR, ""),
+                                      ("Mandar por correo", [], K.M_CORREO, elegis("la dirección") + K.chip5("con el PDF"))]),
+    ("Se aprueba una respuesta", [COND_MONTO], [("Avisar a un rol", [], K.M_DUENO, elegis("el rol", GER))]),
+    ("Se rechaza una respuesta", [], [("Mandarle un mensaje a quien la cargó", [], K.M_RCH, "")]),
 ]
 AY_CATS_ORG = "Al usarla, se suman a tus catálogos y los podés cambiar. Los de los contactos llegan sin filtros."
 AY_REGLAS_ORG = "Llegan al formulario sin guardar: elegís el rol, la dirección y la plantilla de WhatsApp, y las guardás."
-
-
-def resumen_ro(n, cuando, si, acciones):
-    s = f'<div class="l"><span class="ab-chip">Si</span><span>{si}</span></div>' if si else ""
-    ol = "".join(f"<li>{a}</li>" for a in acciones)
-    return (f'<div class="rg2-r"><span class="n">{n}</span><div class="tx"><div class="l"><span class="ab-chip">Cuando</span><span>{cuando}</span></div>{s}'
-            f'<div class="l"><span class="ab-chip">Hacer</span><ol>{ol}</ol></div></div><span></span></div>')
+CSS_VISTA = K.CSS_RG5 + CSS_PASOS_22  # las reglas en pasos de la vista, en FRM-Plantilla y detrás del diálogo de FRM-Plantilla-Usar
 
 
 def cuerpo_vista_org():
-    datos = F.grilla([("Categoría", "Ventas"), ("Para quién es", "Empleados"), ("Preguntas", "8"), ("La usaste en", FORM)])
+    datos = F.grilla([("Categoría", "Ventas"), ("Para quién es", "Empleados"), ("Preguntas", "8"), ("La usaste en", USADA_VIS)])
     caja_d = f'<div class="w-caja"><div class="f-cab"><span>La plantilla</span></div><div class="pt-d"><p>{DESC}</p>{datos}</div></div>'
     cats = ('<div class="pt-it"><b>Clientes</b><span>De los contactos de WhatsApp, sin filtros</span></div>'
             '<div class="pt-it"><b>Motivos de visita</b><span>3 opciones: Seguimiento, Venta nueva y Reclamo</span></div>')
     caja_c = f'<div class="w-caja"><div class="f-cab"><span class="tt">Catálogos que trae{info(AY_CATS_ORG)}</span></div>{cats}</div>'
-    caja_r = (f'<div class="w-caja rg2"><div class="f-cab"><span class="tt">Reglas de ejemplo{info(AY_REGLAS_ORG)}</span></div>'
-              + "".join(resumen_ro(*r) for r in REGLAS_VISTA) + "</div>")
+    caja_r = (f'<div class="w-caja rg2 rg5"><div class="f-cab"><span class="tt">Reglas de ejemplo{info(AY_REGLAS_ORG)}</span></div>'
+              + "".join(f'<div class="rg5-r"><span class="n">{n}</span>{K.pasos(*r)}</div>' for n, r in enumerate(REGLAS_VISTA, 1)) + "</div>")
     return f'<div class="w-body"><div class="f-cols"><div class="f-pila">{caja_d}{caja_preguntas(solo_ver=True)}{caja_c}{caja_r}</div>{vista_pl()}</div></div>'
 
 
@@ -805,7 +808,7 @@ def vista_org(estados=E_PLO):
 
 
 def plantilla_org():
-    return pagina_org(vista_org(), {}, E_PLO, "Plantilla de formulario · /org/formularios/biblioteca/:id")
+    return pagina_org(vista_org(), {}, E_PLO, "Plantilla de formulario · /org/formularios/biblioteca/:id", CSS_VISTA)
 
 
 # ---------------------------------------------------------------- FRM-Plantilla-Usar: el nombre y el prefijo propuesto; abre el formulario nuevo
@@ -828,7 +831,7 @@ def plantilla_usar():
              "Creando": dlg(texto + campo("Nombre", FORM) + pref, cancelar(True) + E.trabaja("Creando…")),
              "Se retiró": dlg('<div class="z-pad" style="grid-column: 1 / -1;">' + A.aviso("Esta plantilla ya no está en la biblioteca.", "mal") + "</div>",
                               '<a class="cb cb-pri" href="FRM-Biblioteca.dc.html">Volver a la biblioteca</a>')}
-    return pagina_org(V, capas, E_USAR, "Usar una plantilla de formulario")
+    return pagina_org(V, capas, E_USAR, "Usar una plantilla de formulario", CSS_VISTA)
 
 
 # ================================================================ FRM-Editor-Reglas-Plantilla: el formulario nuevo y sus reglas precargadas (B9)
@@ -993,23 +996,22 @@ def tel_biblioteca_org():
     return C.tel_pagina(cu, est, {}, "Biblioteca de formularios · teléfono", CSS_TEL)
 
 
-def t_regla_ro(n, cuando, si, acciones, mal=False):
-    s = f"<small>Si {si}</small>" if si else ""
-    ac = "".join(f"<span>{k}. {a}</span>" for k, a in enumerate(acciones, 1))
-    return f'<div class="r{" mal" if mal else ""}"><span class="n">{n}</span><span class="tx"><b>Cuando {cuando}</b>{s}{ac}</span></div>'
-
-
 def tel_plantilla_org():
-    est = ["Con permiso", "Sin permiso de catálogos", "Usar: prefijo tomado", "Usar: se retiró"]
+    est = ["Con permiso", "Reglas de ejemplo", "Sin permiso de catálogos", "Usar: prefijo tomado", "Usar: se retiró"]
     der = f'<button type="button" class="ap-ib" aria-label="Vista previa">{F.OJO}</button>'
     bar = C.t_bar(FORM, "Ventas · 8 preguntas", "M-FRM-Biblioteca.dc.html", der)
     preg = "".join(f'<div class="q-row ro"><span class="num">{k}</span><span class="tx"><b>{n}</b><span>{d}</span></span></div>' for k, (n, d) in enumerate(PREG, 1))
     cats = ('<div class="q-row ro"><span class="tx"><b>Clientes</b><span>De los contactos de WhatsApp, sin filtros</span></span></div>'
             '<div class="q-row ro"><span class="tx"><b>Motivos de visita</b><span>3 opciones: Seguimiento, Venta nueva y Reclamo</span></span></div>')
-    reglas = "".join(t_regla_ro(*r) for r in REGLAS_VISTA)
-    cuerpo = (bar + f'<div class="ap-cuerpo"><div class="ap-gtit">La plantilla</div><div class="ap-grupo"><div class="t-dato">{DESC}<small>Para empleados · la usaste en «{FORM}»</small></div></div>'
-              f'<div class="ap-gtit">Preguntas</div><div class="ap-grupo">{preg}</div><div class="ap-gtit">Catálogos que trae</div><div class="ap-grupo">{cats}</div>'
-              f'<div class="rg-gtit">Reglas de ejemplo</div><div class="rg-t">{reglas}</div><div style="height: 96px; flex-shrink: 0;"></div></div>')
+    # Las reglas en pasos, como la lista de la 21 en el teléfono (138), sin el lápiz: es una vista. Quedan debajo de las preguntas y los
+    # catálogos: el estado «Reglas de ejemplo» es la pantalla bajada hasta ellas, sin un corrimiento en píxeles (como en Plat-FRM-Plantilla-Reglas)
+    caja_r = '<div class="rg-gtit">Reglas de ejemplo</div><div class="rg-t5">' + "".join(f'<div class="r"><span class="n">{n}</span>{K.pasos(*r)}</div>'
+                                                                                       for n, r in enumerate(REGLAS_VISTA, 1)) + "</div>"
+    # Para quién es y dónde se usó, en dos renglones: «… y 1 más» no entra al lado de «Para empleados» (198)
+    cuerpo = (bar + f'<div class="ap-cuerpo"><div class="ap-gtit">La plantilla</div><div class="ap-grupo"><div class="t-dato">{DESC}<small>Para empleados</small>'
+              f'<small>La usaste en {USADA_VIS}</small></div></div>'
+              f'<div class="ap-gtit">Preguntas</div><div class="ap-grupo">{preg}</div><div class="ap-gtit">Catálogos que trae</div><div class="ap-grupo">{cats}</div>{caja_r}</div>')
+    bajada = bar + f'<div class="ap-cuerpo">{caja_r}</div>'
     fijo = '<div class="ap-fijo"><a class="cb cb-pri full" href="#">Usar esta plantilla</a></div>'
     fijo_no = f'<div class="ap-fijo col"><button type="button" class="cb cb-pri full" disabled>Usar esta plantilla</button><span class="mot">{SIN_PERMISO}</span></div>'
     usar = F.thoja(f"Usar «{FORM}»", F.tcampo("Nombre", FORM, req=True) + '<div class="ap-cmp"><span class="rt"><span>Prefijo de numeración <span class="rq">*</span></span>'
@@ -1017,8 +1019,11 @@ def tel_plantilla_org():
                    '<a class="cb cb-pri lleno" href="M-FRM-Reglas-Plantilla.dc.html">Crear el formulario</a><button type="button" class="cb cb-sec">Cancelar</button>')
     retiro = F.thoja(f"Usar «{FORM}»", '<div class="t-banda mal" style="border-radius: 12px;">' + F.ALERTA + '<span class="tx">Esta plantilla ya no está en la biblioteca.</span></div>',
                      '<a class="cb cb-pri lleno" href="M-FRM-Biblioteca.dc.html">Volver a la biblioteca</a>')
-    cu = {"Con permiso": cuerpo + fijo, "Sin permiso de catálogos": cuerpo + fijo_no, "Usar: prefijo tomado": cuerpo + fijo, "Usar: se retiró": cuerpo + fijo}
-    return C.tel_pagina(cu, est, {"Usar: prefijo tomado": usar, "Usar: se retiró": retiro}, "Plantilla de formulario · teléfono", A.CSS_AB + CSS_TEL + K.CSS_TRG)
+    cu = {"Con permiso": cuerpo + fijo, "Reglas de ejemplo": bajada + fijo, "Sin permiso de catálogos": cuerpo + fijo_no, "Usar: prefijo tomado": cuerpo + fijo,
+          "Usar: se retiró": cuerpo + fijo}
+    # La lista de reglas no se achica (como `.ap-grupo`): lo que no entra en la pantalla queda debajo, y no se aplasta a 0 de alto
+    return C.tel_pagina(cu, est, {"Usar: prefijo tomado": usar, "Usar: se retiró": retiro}, "Plantilla de formulario · teléfono",
+                        A.CSS_AB + CSS_TEL + K.CSS_TRG + K.CSS_RG5 + K.CSS_TRG5 + CSS_PASOS_22 + ".rg-t5 { flex-shrink: 0; }\n")
 
 
 def tel_reglas_org():
