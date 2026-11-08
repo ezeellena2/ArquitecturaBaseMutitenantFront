@@ -4187,6 +4187,24 @@
       "h": 2300,
       "page": "plat-formularios",
       "title": "Plataforma · plantilla · lectura de documentos · etapa 25"
+    },
+    "WA-Plantilla-Nueva-21.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "formularios",
+      "title": "WhatsApp · nueva plantilla con «Encabezado» · etapa 21",
+      "w": 1440,
+      "x": 27360,
+      "y": 27626
+    },
+    "M-WA-Plantilla-Nueva-21.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "formularios",
+      "title": "Nueva plantilla con «Encabezado» · teléfono · etapa 21",
+      "w": 390,
+      "x": 7050,
+      "y": 29346
     }
   },
   "createdOnFiles": {
@@ -4752,12 +4770,14 @@
     "FRM-Respuesta-Aprobacion.dc.html",
     "WA-Chats-Avisos.dc.html",
     "WA-Chats-Respuesta-21.dc.html",
+    "WA-Plantilla-Nueva-21.dc.html",
     "M-FRM-Reglas.dc.html",
     "M-FRM-Reglas-Bloque.dc.html",
     "M-FRM-Por-Aprobar.dc.html",
     "M-FRM-Respuesta-Aprobacion.dc.html",
     "M-WA-Conversacion-Avisos.dc.html",
     "M-WA-Conversacion-Respuesta-21.dc.html",
+    "M-WA-Plantilla-Nueva-21.dc.html",
     "WA-Chats-Asistente.dc.html",
     "WA-Chats-Sugerencia.dc.html",
     "WA-Chats-Audio.dc.html",
