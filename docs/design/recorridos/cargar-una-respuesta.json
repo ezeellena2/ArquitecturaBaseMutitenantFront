@@ -3,8 +3,21 @@
   "titulo": "Cargar una respuesta desde la web",
   "etapa": "Etapa 20 · Cargar una respuesta desde la web",
   "orden": 1,
-  "resumen": "Tomás, que solo carga, completa «Pedido de materiales» desde la web: elige en las listas, suma fotos, envía y ve lo suyo.",
+  "resumen": "Lucía ve que «Pedido de materiales» no se manda por WhatsApp, y Tomás, que solo carga, lo completa desde la web: elige en las listas, suma fotos, envía y ve lo suyo.",
   "pasos": [
+    {
+      "tablero": "WA-Chats-Formulario-20",
+      "tweaks": {
+        "estado": "Uno apagado"
+      },
+      "resaltar": ".c-op.off:has-text(\"Pedido de materiales\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Solo desde la app",
+      "texto": "«Pedido de materiales» se publicó solo para la app. En el chat de Tomás, «Enviar formulario» lo muestra apagado, en su lugar y con su motivo: ««Proveedor» depende de otra respuesta: se carga desde la app.».",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/whatsapp/chats",
+      "accion": "Abre «Enviar formulario» en el chat de Tomás y ve «Pedido de materiales» apagado."
+    },
     {
       "tablero": "FRM-Formularios-20",
       "tweaks": {
@@ -13,7 +26,7 @@
       "resaltar": ".cb-ch",
       "actor": "Tomás Acosta · Empleado · web",
       "titulo": "Sus formularios",
-      "texto": "Tomás no diseña ni ve respuestas ajenas: ve sus formularios y «Cargar», sin conteos.",
+      "texto": "Tomás no diseña ni ve respuestas ajenas: ve sus formularios con lo suyo, «Mis cargas», «Mi última carga» y cuándo se recibió, y «Cargar».",
       "avanzar": "Toca «Cargar».",
       "ruta": "/org/formularios",
       "accion": "Toca «Cargar»."
@@ -78,7 +91,7 @@
       "resaltar": ".cg-env",
       "actor": "Tomás Acosta · Empleado · web",
       "titulo": "Enviada",
-      "texto": "Lo que mandó, el total calculado, el número y la hora, con «Cargar otra» y «Ver en la planilla».",
+      "texto": "Lo que mandó, el total calculado, el número y la hora, con «Cargar otra», «Volver a Formularios» y «Ver en la planilla».",
       "avanzar": "Toca «Ver en la planilla».",
       "ruta": "/org/formularios/:id/cargar",
       "accion": "Toca «Ver en la planilla»."

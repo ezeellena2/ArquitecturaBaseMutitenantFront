@@ -1,45 +1,64 @@
 {
   "id": "el-bot-y-su-enlace",
-  "titulo": "El bot y su enlace",
+  "titulo": "El bot lleva al ingreso",
   "etapa": "Etapa 8 · WhatsApp",
   "orden": 20,
-  "resumen": "Lucía le escribe al número de la plataforma y entra con el enlace que le manda el bot.",
+  "resumen": "Lucía le escribe al número de la plataforma, el bot le contesta con «Entrar a mi cuenta» y entra pidiendo el código en la web.",
   "pasos": [
     {
       "tablero": "Mensajes",
-      "tweaks": { "mensaje": "Enlace para entrar (bot)", "canal": "WhatsApp" },
-      "resaltar": ".wa-boton:has-text(\"Entrar\")",
+      "tweaks": {
+        "mensaje": "Entrar a mi cuenta (bot)",
+        "canal": "WhatsApp"
+      },
+      "resaltar": ".wa-boton:has-text(\"Entrar a mi cuenta\")",
       "actor": "Lucía · WhatsApp",
       "titulo": "Le escribe al bot",
-      "texto": "Le escribe «Hola» al número de la plataforma. El bot le contesta con un enlace de un solo uso, que vence en 10 minutos.",
-      "avanzar": "Tocá «Entrar».",
+      "texto": "Le escribe «Hola» al número de la plataforma. El bot le contesta con «Entrar a mi cuenta», que abre el ingreso: ningún mensaje lleva un enlace para entrar.",
+      "avanzar": "Tocá «Entrar a mi cuenta».",
       "ruta": "—",
-      "accion": "Escribe «Hola» y toca «Entrar»."
+      "accion": "Escribe «Hola» y toca «Entrar a mi cuenta»."
     },
     {
-      "tablero": "Enlace",
-      "tweaks": { "estado": "Vista previa" },
-      "resaltar": "a.b-pri.lg:has-text(\"Continuar\")",
+      "tablero": "Ingreso",
+      "tweaks": {
+        "estado": "WhatsApp",
+        "puerta": "Persona"
+      },
+      "antes": [
+        [
+          "llenar",
+          "#f-tel",
+          "11 5555-4521"
+        ]
+      ],
+      "resaltar": "button.b-pri.lg",
       "actor": "Lucía · Dueña · web",
-      "titulo": "Confirma que es ella",
-      "texto": "El enlace entra como persona; después puede ir a su organización desde Perfiles. Si no pidió entrar, cierra la página.",
-      "avanzar": "Tocá «Continuar».",
-      "ruta": "/login/enlace",
-      "accion": "Toca «Continuar»."
+      "titulo": "Pide el código en la web",
+      "texto": "El botón abre el ingreso. Elige WhatsApp y escribe su número: el código se pide desde acá, nunca desde el chat.",
+      "avanzar": "Tocá «Enviar código».",
+      "ruta": "/login",
+      "accion": "Elige WhatsApp, escribe su número y toca «Enviar código»."
     },
     {
-      "tablero": "Enlace",
-      "tweaks": { "estado": "Iniciando sesión" },
-      "actor": "Sistema",
-      "titulo": "Se abre la sesión",
-      "texto": "Un mensaje nunca abre la sesión solo: hace falta tocar «Continuar».",
-      "avanzar": "Sigue solo: tocá «Siguiente».",
-      "ruta": "/login/enlace",
-      "accion": "Espera a que se abra la sesión."
+      "tablero": "Ingreso",
+      "tweaks": {
+        "estado": "Código enviado por WhatsApp",
+        "puerta": "Persona"
+      },
+      "resaltar": "button.b-pri.lg:has-text(\"Verificar\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Pone el código",
+      "texto": "Le llega por WhatsApp un código de seis números, de un solo uso.",
+      "avanzar": "Escribí el código y tocá «Verificar».",
+      "ruta": "/login",
+      "accion": "Escribe el código y toca «Verificar»."
     },
     {
       "tablero": "Inicio-Personal",
-      "tweaks": { "estado": "Con el aviso" },
+      "tweaks": {
+        "estado": "Con el aviso"
+      },
       "actor": "Lucía · Dueña · web",
       "titulo": "Está adentro",
       "texto": "Entró a su perfil personal. Si el número no tuviera cuenta, el bot le ofrecería crearla en la web; a un operador le contesta «Para entrar, usá la web.».",

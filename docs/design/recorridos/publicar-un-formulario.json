@@ -3,7 +3,7 @@
   "titulo": "Publicar un formulario",
   "etapa": "Etapa 14 · Formularios",
   "orden": 10,
-  "resumen": "Lucía cambia una pregunta, guarda los cambios y publica la versión 4; WhatsApp la revisa y queda publicada.",
+  "resumen": "Lucía cambia una pregunta, guarda los cambios y publica la versión 4; WhatsApp la revisa, queda publicada y la mira en la vista oficial.",
   "pasos": [
     {
       "tablero": "FRM-Formularios",
@@ -60,12 +60,12 @@
     {
       "tablero": "FRM-Publicando",
       "tweaks": {
-        "estado": "Publicando: los pasos"
+        "estado": "Publicando"
       },
-      "resaltar": ".w-dlg",
+      "resaltar": ".f-bnd-est .w-est",
       "actor": "Sistema",
       "titulo": "WhatsApp la revisa",
-      "texto": "El estado va arriba, en la banda; su ⓘ muestra los pasos: aceptada, enviada a WhatsApp, en revisión y lista para mandar. Mientras tanto sigue andando la 3.",
+      "texto": "El estado se dice una vez, en la banda: «Publicando la versión 4», sin pasos. Mientras tanto sigue andando la 3.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/:id",
       "accion": "Ve «Publicando la versión 4»."
@@ -73,15 +73,28 @@
     {
       "tablero": "FRM-Publicando",
       "tweaks": {
-        "estado": "Vista oficial"
+        "estado": "Publicado"
       },
-      "resaltar": ".ab-seg",
+      "resaltar": "a.cb-sec:has-text(\"Ver vista oficial\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Queda publicada",
-      "texto": "La versión 4 es la que anda. Al costado se puede ver cómo la muestra WhatsApp, al lado del borrador.",
+      "texto": "La banda dice «Publicado · versión 4»: es la que anda. «Ver vista oficial» muestra cómo la arma WhatsApp.",
+      "avanzar": "Tocá «Ver vista oficial».",
+      "ruta": "/org/formularios/:id",
+      "accion": "Ve «Publicado · versión 4» y toca «Ver vista oficial»."
+    },
+    {
+      "tablero": "FRM-Vista-Oficial",
+      "tweaks": {
+        "estado": "Lista"
+      },
+      "resaltar": ".vo-marco",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "La ve como en WhatsApp",
+      "texto": "«Vista oficial · versión 4» muestra el formulario como lo arma Meta, más chico, y se puede recorrer.",
       "avanzar": "Fin del recorrido.",
       "ruta": "/org/formularios/:id",
-      "accion": "Ve «Publicado · versión 4»."
+      "accion": "Mira la vista oficial."
     }
   ]
 }

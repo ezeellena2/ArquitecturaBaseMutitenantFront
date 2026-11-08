@@ -74,10 +74,10 @@
       "titulo": "La ve a pantalla completa",
       "tablero": "FRM-Respuesta-Completa",
       "tweaks": {
-        "estado": "Las dos abiertas"
+        "estado": "Respuesta"
       },
       "resaltar": ".rc-h",
-      "texto": "«Respuesta» y «Actividad», a todo el ancho y plegables. La actividad va en columnas fijas: la fecha, qué pasó, su estado y sus acciones.",
+      "texto": "«Respuesta» y «Actividad», abiertas y a todo el ancho. La actividad va en columnas fijas: la fecha, qué pasó, su estado y sus acciones.",
       "actor": "Lucía · Dueña · web",
       "avanzar": "Tocá «Exportar a Excel» en la planilla.",
       "ruta": "/org/formularios/:id/respuestas/:recordId/completa",

@@ -3,7 +3,7 @@
   "titulo": "Aprobar, el PDF y corregir",
   "etapa": "Etapa 21 · Reglas y aprobación",
   "orden": 20,
-  "resumen": "Lucía abre lo que espera su aprobación desde la campana, aprueba una visita, quien la cargó recibe el PDF y después Lucía corrige una aprobada, que vuelve a «Por aprobar».",
+  "resumen": "Lucía abre lo que espera su aprobación desde la campana, aprueba una visita, quien la cargó recibe el PDF y después corrige una aprobada, que vuelve a «Por aprobar»; el chat lo dice, y en «Mi cuenta» ve hasta cuándo le llegan los avisos.",
   "pasos": [
     {
       "tablero": "Campana-21",
@@ -36,7 +36,7 @@
       "tweaks": {
         "estado": "Por aprobar"
       },
-      "resaltar": ".d2-mom.esp button.cb-pri:has-text(\"Aprobar\")",
+      "resaltar": ".d4-dec button.cb-pri:has-text(\"Aprobar\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Revisa y decide",
       "texto": "Arriba, cuándo llegó, qué hicieron las reglas y lo que espera, con Rechazar y Aprobar. Debajo, la respuesta, las fotos y la actividad.",
@@ -49,10 +49,10 @@
       "tweaks": {
         "estado": "¿Aprobar?"
       },
-      "resaltar": ".w-dlg.apr button.cb-pri:has-text(\"Aprobar\")",
+      "resaltar": ".w-dlg.dec button.cb-pri:has-text(\"Aprobar\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Confirma con el número",
-      "texto": "Aprobar no se deshace, así que pide confirmar: con quién la cargó y cuándo, y el foco en «Cancelar», para que Enter no apruebe.",
+      "texto": "Aprobar no se deshace, así que pide confirmar nombrándola, «¿Aprobar VIS-000130?», con quién la cargó y cuándo, y el foco en «Cancelar», para que Enter no apruebe.",
       "avanzar": "Tocá «Aprobar».",
       "ruta": "/org/formularios/:id/respuestas?respuesta=VIS-000130",
       "accion": "Confirma con «Aprobar»."
@@ -85,12 +85,12 @@
     {
       "tablero": "FRM-Respuesta-Corregir",
       "tweaks": {
-        "estado": "Más acciones: menú"
+        "estado": "Respuesta"
       },
-      "resaltar": ".f-menu .f-mi:has-text(\"Corregir\")",
+      "resaltar": "a.d4-co:has-text(\"Corregir\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Una aprobada se corrige, no se edita",
-      "texto": "En el ⋮ de la respuesta, «Corregir» y, al final, «Anular». Con permiso para corregir, Lucía puede corregir una aprobada.",
+      "texto": "«Corregir» está en la fila del título, y el ⋮ queda solo para «Anular». Con permiso para corregir, Lucía puede corregir una aprobada.",
       "avanzar": "Tocá «Corregir».",
       "ruta": "/org/formularios/:id/respuestas/:recordId",
       "accion": "Toca «Corregir»."
@@ -100,13 +100,13 @@
       "tweaks": {
         "estado": "Con el motivo"
       },
-      "resaltar": ".w-bnd button.cb-pri:has-text(\"Guardar la corrección\")",
+      "resaltar": ".w-bnd button.cb-pri:has-text(\"Guardar corrección\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Lo de antes, a la vista",
-      "texto": "Se abre la carga de la 20 con lo que tenía. Lo que cambia dice lo de antes, y el motivo es obligatorio.",
-      "avanzar": "Tocá «Guardar la corrección».",
+      "texto": "Se abre la carga de la 20 con lo que tenía. Lo que cambia dice lo de antes, como «Antes: 125.500,00», y el motivo es obligatorio.",
+      "avanzar": "Tocá «Guardar corrección».",
       "ruta": "/org/formularios/:id/respuestas/:recordId/corregir",
-      "accion": "Toca «Guardar la corrección»."
+      "accion": "Toca «Guardar corrección»."
     },
     {
       "tablero": "FRM-Respuesta-Corregir",
@@ -116,9 +116,35 @@
       "actor": "Lucía · Dueña · web",
       "titulo": "Vuelve a «Por aprobar»",
       "texto": "Conserva su número y quién la cargó. La anterior queda en Actividad, con su PDF, y la aprueba otra persona con el rol Supervisor.",
-      "avanzar": "Fin del recorrido.",
+      "avanzar": "Siguiente.",
       "ruta": "/org/formularios/:id/respuestas/:recordId",
       "accion": "Ve la respuesta corregida."
+    },
+    {
+      "tablero": "WA-Chats-Respuesta-21",
+      "tweaks": {
+        "estado": "Después se corrigió"
+      },
+      "resaltar": ".r-st.desp",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "El chat lo dice",
+      "texto": "En el chat de Tomás, la tarjeta de VIS-000126 conserva lo que llegó y suma al pie «Después se corrigió: VIS-000126 quedó reemplazada por su corrección.». El número abre la respuesta.",
+      "avanzar": "Siguiente.",
+      "ruta": "/org/whatsapp/chats",
+      "accion": "Ve la tarjeta de VIS-000126 en el chat de Tomás."
+    },
+    {
+      "tablero": "Cuenta-21",
+      "tweaks": {
+        "chat": "Con el chat vinculado"
+      },
+      "resaltar": ".t10n-chat .t10n-av",
+      "actor": "Lucía · persona · web",
+      "titulo": "Hasta cuándo le llegan los avisos",
+      "texto": "En «Mi cuenta», «Chat de WhatsApp» dice, por organización, si el chat está vinculado y hasta cuándo le llegan los avisos: «Llegan hasta el 16/10/2026 09:40». Pasadas 24 horas de su último mensaje, solo los que van con una plantilla.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/cuenta",
+      "accion": "Revisa hasta cuándo le llegan los avisos de Grupo Delta."
     }
   ]
 }

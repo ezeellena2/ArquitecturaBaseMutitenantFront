@@ -1,9 +1,9 @@
 {
   "id": "un-pedido-con-renglones",
-  "titulo": "Un pedido con condiciones, renglones y total",
+  "titulo": "Un pedido con condiciones, un bloque y el total",
   "etapa": "Etapa 19 · Condiciones, cálculos y líneas",
   "orden": 1,
-  "resumen": "Lucía arma «Pedido de materiales»: un monto que aparece si hubo venta, los productos en renglones y el total calculado, y lo sigue hasta la planilla y el tablero.",
+  "resumen": "Lucía arma «Pedido de materiales»: un monto que aparece si hubo venta, los productos en un bloque que se carga varias veces y el total calculado, y lo sigue hasta la planilla y el tablero.",
   "pasos": [
     {
       "tablero": "FRM-Editor-Condiciones",
@@ -21,15 +21,15 @@
     {
       "tablero": "FRM-Editor-Lineas",
       "tweaks": {
-        "estado": "Las columnas"
+        "estado": "El bloque"
       },
-      "resaltar": ".lg-cols",
+      "resaltar": ".q-blq",
       "actor": "Lucía · Dueña · web",
-      "titulo": "Un grupo de líneas",
-      "texto": "«Productos» pide renglones, con hasta 6 columnas. En WhatsApp van uno debajo del otro, y los que sobran quedan vacíos.",
+      "titulo": "Un bloque",
+      "texto": "«Productos» es un bloque: Producto y Cantidad se cargan una vez por ítem, de 1 a 10. En WhatsApp va un ítem por pantalla, con «¿Agregás otro ítem?».",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/:id",
-      "accion": "Arma el grupo."
+      "accion": "Arma el bloque."
     },
     {
       "tablero": "FRM-Editor-Calculo",
@@ -47,12 +47,12 @@
     {
       "tablero": "WA-Chats-Respuesta-19",
       "tweaks": {
-        "estado": "Con renglones y el total"
+        "estado": "Con ítems y el total"
       },
-      "resaltar": ".ln-t",
+      "resaltar": ".it-ln",
       "actor": "Lucía · Dueña · web",
       "titulo": "La respuesta en el chat",
-      "texto": "La tarjeta muestra los renglones y el total, ya calculado con los precios del catálogo.",
+      "texto": "La tarjeta muestra un ítem por línea, como «1. Caño de 1/2 pulgada · 10», y el total, ya calculado con los precios del catálogo.",
       "avanzar": "Siguiente.",
       "ruta": "WhatsApp › Chats",
       "accion": "Ve la respuesta."
@@ -65,7 +65,7 @@
       "resaltar": ".pl-caja",
       "actor": "Lucía · Dueña · web",
       "titulo": "En la planilla",
-      "texto": "«No se mostró» es una pregunta oculta por su condición, distinto de «Sin respuesta» y de «—». Los renglones dicen cuántos son, y el total va con su moneda.",
+      "texto": "«No se mostró» es una pregunta oculta por su condición, distinto de «Sin respuesta» y de «—». La columna del bloque dice cuántos ítems son y los nombra todos, y el total va con su moneda.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/:id/respuestas",
       "accion": "Revisa la planilla."
@@ -75,10 +75,10 @@
       "tweaks": {
         "estado": "Respuesta"
       },
-      "resaltar": ".ln-t",
+      "resaltar": ".d-its",
       "actor": "Lucía · Dueña · web",
-      "titulo": "Los renglones",
-      "texto": "La respuesta muestra la tabla de líneas, con el precio que quedó guardado en cada una.",
+      "titulo": "Los ítems",
+      "texto": "La respuesta muestra cada ítem con su número, y debajo su precio y su cantidad: el precio que quedó guardado en cada uno.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/:id/respuestas?respuesta=PED-000045",
       "accion": "Abre la respuesta."

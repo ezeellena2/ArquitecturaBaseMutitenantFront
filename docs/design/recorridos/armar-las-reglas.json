@@ -3,7 +3,7 @@
   "titulo": "Armar las reglas y el PDF",
   "etapa": "Etapa 21 · Reglas y aprobación",
   "orden": 10,
-  "resumen": "Lucía cambia la regla de «Visita a cliente» que avisa al aprobar, adjunta el PDF, guarda las reglas y elige el estilo del comprobante.",
+  "resumen": "Lucía cambia la regla de «Visita a cliente» que avisa al aprobar, adjunta el PDF, guarda las reglas y elige el estilo del comprobante; en «Pedido de materiales», una regla pregunta por algún ítem del bloque.",
   "pasos": [
     {
       "tablero": "FRM-Editor-Reglas",
@@ -82,6 +82,19 @@
       "avanzar": "Tocá «Guardar diseño».",
       "ruta": "/org/formularios/:id/pdf",
       "accion": "Toca «Guardar diseño»."
+    },
+    {
+      "tablero": "FRM-Editor-Reglas-Bloque",
+      "tweaks": {
+        "estado": "Las reglas"
+      },
+      "resaltar": ".rg5-p:has-text(\"¿Urgente?\")",
+      "actor": "Lucía · Dueña · web",
+      "titulo": "Una regla con el bloque",
+      "texto": "En «Pedido de materiales», una regla pregunta por los ítems del bloque: «Si algún ítem de Productos con ¿Urgente? es Sí», avisa al rol Compras con los productos, uno por línea.",
+      "avanzar": "Fin del recorrido.",
+      "ruta": "/org/formularios/:id/reglas",
+      "accion": "Revisa la regla con «Algún ítem de Productos»."
     }
   ]
 }
