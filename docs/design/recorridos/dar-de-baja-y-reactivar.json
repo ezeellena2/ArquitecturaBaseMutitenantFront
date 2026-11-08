@@ -52,7 +52,7 @@
       "resaltar": ".f-bnd-est",
       "actor": "Sistema",
       "titulo": "Si WhatsApp no los deprecia",
-      "texto": "Cuando vencen los envíos abiertos, el sistema deprecia los Flows. Si WhatsApp no lo acepta, se marca al lado del estado y llega a la campana; no frena nada del formulario.",
+      "texto": "Cuando vencen los envíos abiertos, el sistema deprecia los Flows. Si WhatsApp no lo acepta después de cuatro intentos, se marca al lado del estado; no frena nada del formulario.",
       "avanzar": "Siguiente.",
       "ruta": "/org/formularios/:id",
       "accion": "Ve «No se pudo deprecar en WhatsApp»."
