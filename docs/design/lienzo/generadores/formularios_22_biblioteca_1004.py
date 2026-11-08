@@ -340,8 +340,7 @@ def vista_pl():
 SUGERIDO = lambda rol: f' <span class="ad">(sugerido: <b>{rol}</b>)</span>'  # noqa: E731
 VER_PDF = '<a class="lnk" href="Plat-FRM-Pdf.dc.html">Ver el diseño</a>'
 COND_MONTO = '<b>Monto estimado</b> <span class="g">desde</span> <b>100.000</b>'
-CSS_PASOS_22 = """.q-it .dato { align-items: stretch; padding: 0; border-radius: 0; background: none; color: inherit; font-weight: inherit; font-size: inherit; white-space: normal; }
-.ab-chip.bloq { display: inline-flex; align-items: center; gap: 4px; color: var(--t2); }
+CSS_PASOS_22 = """.ab-chip.bloq { display: inline-flex; align-items: center; gap: 4px; color: var(--t2); }
 .ab-chip.bloq svg { flex: none; width: 13px; height: 13px; color: var(--t3); }
 .rg5-p .sug { color: var(--t2); }
 """
@@ -836,7 +835,7 @@ ELEGI = lambda que, mal=False: f'<span class="ab-chip {"mal" if mal else "falta"
 P24_ORG = lambda mal=False: f'<span class="g">fuera de las 24 horas, con</span>{ELEGI("Elegí la plantilla", mal)}'  # noqa: E731
 SUG_ORG = lambda rol: f'<span class="sug">sugerido: {rol}</span>'  # noqa: E731
 HIST_PLANTILLA = "Todavía no se guardaron: vienen de la plantilla."
-NO_DISPONIBLE = '<span class="dato mal">Pregunta no disponible</span>'
+NO_DISPONIBLE = K.datos5("[!Monto estimado]")  # la etiqueta en rojo de la 21 (149), con su clase
 CSS_ERP = """.rg5-r.mal { background: var(--peligro-t); }
 .rg5-cond .ct.sel.mal { border-color: var(--peligro); color: var(--peligro); }
 .rg5 > .f-cab .e-tipw .e-tip { left: auto; right: 0; top: calc(100% + 6px); width: 260px; white-space: normal; z-index: 40; }

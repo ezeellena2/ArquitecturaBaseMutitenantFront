@@ -1239,6 +1239,10 @@ a.w-conv { text-decoration: none; color: inherit; }
 :root .ab-sidebar__link-label, :root .w-ln { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
 :root .ab-sidebar .ab-sidebar__link, :root .ab-sidebar__link, :root .w-ln { height: auto !important; min-height: 32px; box-sizing: border-box; padding-top: 6px !important; padding-bottom: 6px !important; line-height: 20px; }
 
+/* 180 · Un ícono dentro de un botón conserva su tamaño. Con la escala, un botón de ícono queda de 21 a 24 px, y el relleno que el
+   navegador le pone a todo botón (6 px por lado) aplastaba el dibujo a la mitad de su ancho. */
+:root button > svg { flex-shrink: 0; }
+
 /* 160 · La primera carga de un listado: el encabezado y el aro en el alto de ocho filas, sin filas esqueleto. */
 .t10-carga { height: 236.8px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--borde); }
 .t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
