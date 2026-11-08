@@ -199,7 +199,7 @@ La versión 168, del 8/11, es el armado final del traspaso 10: las cinco tandas 
 
 Se armó con una sola corrida: `indices_1004.py`, `criterio_decisiones.py`, las pasadas de la cola sobre los tableros nuevos y los índices, y `traspaso10_piezas_1004.py` sobre los 440 vivos, que una segunda vez no cambia nada.
 
-La versión 166, del 7/11, pasa el lienzo a la escala de ArquitecturaBase (decisión 180), a la espera del OK, con la misma `generadores/traspaso10_piezas_1004.py`. La 167, el mismo día, deja los íconos de los botones en su tamaño (con la escala, el relleno que el navegador le pone a un botón los aplastaba) y saca el color de avatar de los avisos de «Publicar»:
+La versión 166, del 7/11, pasa el lienzo a la escala de ArquitecturaBase (decisión 180), con la misma `generadores/traspaso10_piezas_1004.py`. La 167, el mismo día, deja los íconos de los botones en su tamaño (con la escala, el relleno que el navegador le pone a un botón los aplastaba) y saca el color de avatar de los avisos de «Publicar»:
 - en los tableros de la compu, la letra × 0,82 (sin bajar de 10,5 px); los altos y el interlineado de 18 a 72 px × 0,74, y el ancho de lo cuadrado; los rellenos, márgenes y separaciones de 4 px o más × 0,72, y las esquinas de 3 px como mucho, también en pastillas y avatares. Las medidas que salen están en `docs/architecture/tema.md` («Forma») y en `Criterio-Marco` y `Criterio-Tablas`;
 - cada px que cambia guarda el de antes al lado (`29.6px/*40px*/`): otra corrida, o una escala distinta, parte siempre del original;
 - los teléfonos (los tableros de menos de 768 de ancho y los que se dibujan adentro de una pantalla) conservan sus medidas táctiles, y las tablas de un catálogo con columnas fijas, sus posiciones;
@@ -207,7 +207,7 @@ La versión 166, del 7/11, pasa el lienzo a la escala de ArquitecturaBase (decis
 
 En los 37 tableros que otras sesiones estaban rehaciendo ese día (la E22, la E23 y los del núcleo), la 167 publica lo de la 166 con esos dos arreglos; lo nuevo de cada uno llega con su tanda.
 
-La versión 165, del 7/11, es la tanda «a» del traspaso 10 (§4.3 de su [evaluación](../../../../ArquitecturaBaseMutitenant/docs/plans/2026-11-07-traspaso-10-evaluacion.md)), a la espera del OK: las reglas visuales de toda la app, en las piezas compartidas de los 410 tableros vivos, con `generadores/traspaso10_piezas_1004.py`, que corre al final de todo:
+La versión 165, del 7/11, es la tanda «a» del traspaso 10 (§4.3 de su evaluación, retirada el 2026-11-08 en el back): las reglas visuales de toda la app, en las piezas compartidas de los 410 tableros vivos, con `generadores/traspaso10_piezas_1004.py`, que corre al final de todo:
 - que no parezca plantilla (173): la marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono; el avatar, un cuadrado chico con la inicial; el activo del menú, una barra de 2 px; los filtros y las etiquetas, con el radio de un control, y los contadores, como texto; el principal, sólido, y sin sombras salvo en menús, desplegables y tooltips;
 - la línea entre columnas (137) en las tablas que no la tenían; los filtros sin cantidades ni el total en la barra, y «Filtros» en lugar de «Más filtros» (143 y 144); la primera carga de un listado con su encabezado y el aro en el alto de ocho filas (160), y el texto largo entero, que baja de renglón (174);
 - los ocho «Criterio», con `generadores/reglas_7_11_1004.py` (la 160 a la 164 y la 173 a la 175) y la sección «Traspaso 10 · 07/11» de `criterio_decisiones.py`, que marca lo que esas decisiones reemplazan y pasa a seis columnas.
