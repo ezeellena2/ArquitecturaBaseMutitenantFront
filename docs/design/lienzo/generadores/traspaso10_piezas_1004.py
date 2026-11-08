@@ -4,7 +4,9 @@
   con la inicial; el activo del menú, una barra de 2 px; los filtros y las etiquetas, con el radio de un control, y los contadores,
   como texto; el principal, sólido, y sin sombras salvo en menús, desplegables y tooltips;
 - la línea fina entre columnas (137), en las tablas de las piezas comunes (`tt-*` y `w-t*`) que no la tenían;
-- los filtros (143 y 144): las opciones sin su cantidad, la barra sin el total y «Filtros» en lugar de «Más filtros»;
+- los filtros (143 y 144): las opciones sin su cantidad, la barra sin el total y «Filtros» en lugar de «Más filtros». En el teléfono
+  (v169), «Filtros» de las listas de Formularios y Catálogos va a pantalla completa, con «Limpiar todo» y «Listo» (`filtros_tel`), y
+  «Filtrar por estado» de la biblioteca de Plataforma, sin cantidades y con la tilde a la izquierda;
 - la primera carga de un listado (160): el encabezado y el aro en el alto de ocho filas, en lugar de las filas esqueleto;
 - el texto largo entero (174): las celdas, las filas del teléfono, las opciones del menú y quién sos (el pie del menú y la cabecera
   de tu menú) bajan de renglón en lugar de cortar con «…», y un correo se corta después de la «@» (`CORREO_JS`). La excepción es la
@@ -346,6 +348,91 @@ def textos(t, nombre, cuenta):
     return primera_carga(t, nombre, cuenta)
 
 
+# ---------------------------------------------------------------------------------------------------------------- «Filtros» en el teléfono
+# 144 y 164 (revisión del 2026-11-08, lienzo v169) · En el teléfono, el botón de filtros de una lista de Formularios o de Catálogos
+# abre «Filtros» a pantalla completa, como la de `M-FRM-Respuestas`, y no una hoja desde abajo con cantidades y «Ver 4 formularios».
+# Cada filtro va con su nombre y sus opciones, una por renglón, sin cantidades y con la elegida tildada a la izquierda (142 y 143);
+# cada cambio se aplica enseguida, y al pie van «Limpiar todo» y «Listo». Son uno o dos filtros de pocas opciones, así que las
+# opciones van en la misma pantalla; la planilla de respuestas, con muchos filtros, abre cada uno en la suya. Lo dibuja una sola
+# pieza (`pantalla_filtros`), con lo que dice la hoja que reemplaza: así un generador de etapa que rehace la hoja vieja no la
+# vuelve atrás, porque este pase corre después.
+TEL_FILTROS = {"M-FRM-Catalogos", "M-FRM-Catalogos-14", "M-FRM-Formularios", "M-FRM-Formularios-15", "M-FRM-Formularios-17",
+               "M-FRM-Formularios-20", "M-FRM-Formularios-21", "M-FRM-Formularios-22"}
+HOJA_FILTROS = re.compile(r'<sc-if value="\{\{(s\d+)\}\}" hint-placeholder-val="\{\{no\}\}"><div class="ap-velo"></div>'
+                          r'<div class="ap-hoja" role="dialog" aria-label="Filtros">(.*?)</sc-if>', re.S)
+FILTRO_U_OPCION = re.compile(r'<div class="p-tit2"[^>]*>(?P<grupo>[^<]+)</div>'
+                             r'|<span class="t-opc(?P<on> on)?\s*"[^>]*>(?P<opcion>[^<]+)<span class="d">[^<]*(?:<svg\b.*?</svg>)?</span></span>',
+                             re.S)
+VOLVER_TEL = re.compile(r'<a class="ap-ib" aria-label="Volver" href="[^"]*">(<svg\b.*?</svg>)</a>', re.S)
+# La tilde de la elegida en el teléfono, la de «Filtros: una pregunta» de `M-FRM-Respuestas`.
+TILDE_TEL = ('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" '
+             'stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>')
+CSS_FILTROS_TEL = """
+/* 144 y 164 · «Filtros» de una lista en el teléfono, a pantalla completa, como la de M-FRM-Respuestas: cada filtro con sus opciones,
+   una por renglón, sin cantidades y con la elegida tildada a la izquierda (142 y 143); al pie, «Limpiar todo» y «Listo». */
+.t10-fl { display: flex; flex-direction: column; background: #fff; padding-bottom: 96px; }
+.t10-fl .gr { display: block; padding: 20px 16px 8px; font-size: 13px; font-weight: 600; color: var(--t3); }
+.t10-fl .op { min-height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 16px; border-bottom: 1px solid var(--borde); font-size: 16px; color: var(--t1); }
+.t10-fl .op.sel { font-weight: 600; }
+.t10-fl .tl { width: 20px; flex: none; display: inline-flex; color: var(--marca-tx); }
+.t10-pie { position: absolute; left: 0; right: 0; bottom: 0; display: flex; gap: 10px; padding: 12px 16px 28px; background: #fff; border-top: 1px solid var(--borde); }
+.t10-pie .cb { flex: 1; height: 48px; }
+"""
+# El desplegable «Filtrar por estado» de la biblioteca de Plataforma en el teléfono: sin la cantidad y con la tilde a la izquierda.
+OPCION_PLAT = re.compile(r'<span class="t-opc (\{\{estOn_\w\}\})">([^<]+)<span class="d">[\d.]+'
+                         r'(<sc-if value="\{\{estSel_\w\}\}" hint-placeholder-val="\{\{no\}\}">)<svg\b.*?</svg>(</sc-if>)</span></span>', re.S)
+CSS_TILDE_IZQ = """
+/* 142 y 143 · «Filtrar por estado» en el teléfono: sin cantidades, y la elegida con su tilde a la izquierda y en 600, sin el tinte. */
+:root .t-opc.t10-izq { justify-content: flex-start; color: var(--t1); }
+:root .t-opc.t10-izq.on { color: var(--t1); font-weight: 600; }
+:root .t-opc.t10-izq .tl { width: 20px; flex: none; display: inline-flex; color: var(--marca-tx); }
+"""
+
+
+def pantalla_filtros(nombre, lista, volver, filtros):
+    """La pantalla «Filtros» del teléfono: la barra con «‹», cada filtro con sus opciones y el pie con «Limpiar todo» y «Listo»."""
+    grupos = []
+    for filtro, opciones in filtros:
+        filas = "".join(f'<span class="op{" sel" if on else ""}" role="radio" aria-checked="{"true" if on else "false"}">'
+                        f'<span class="tl">{TILDE_TEL if on else ""}</span>{opcion}</span>' for opcion, on in opciones)
+        grupos.append(f'<div role="radiogroup" aria-label="{filtro}"><span class="gr" aria-hidden="true">{filtro}</span>{filas}</div>')
+    return (f'<div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="{nombre}.dc.html">{volver}</a>'
+            f'<div class="tit"><h1>Filtros</h1><span class="sub">{lista}</span></div></div>'
+            f'<div class="ap-cuerpo"><div class="t10-fl">{"".join(grupos)}</div></div>'
+            '<div class="t10-pie"><button type="button" class="cb cb-sec">Limpiar todo</button>'
+            '<button type="button" class="cb cb-pri">Listo</button></div>')
+
+
+def filtros_tel(t, nombre, cuenta):
+    """Cada hoja «Filtros» de las listas de `TEL_FILTROS` pasa a la pantalla de `pantalla_filtros`, en el mismo estado; y
+    «Filtrar por estado» de `M-Plat-FRM-Biblioteca` pierde las cantidades y lleva la tilde a la izquierda."""
+    if nombre == "M-Plat-FRM-Biblioteca":
+        t, n = OPCION_PLAT.subn(lambda m: f'<span class="t-opc t10-izq {m.group(1)}"><span class="tl">{m.group(3)}{TILDE_TEL}{m.group(4)}'
+                                          f'</span>{m.group(2)}</span>', t)
+        cuenta["filtros del teléfono"] = cuenta.get("filtros del teléfono", 0) + n
+        return t
+    if nombre not in TEL_FILTROS:
+        return t
+    while m := HOJA_FILTROS.search(t):
+        estado, filtros = m.group(1), []
+        for x in FILTRO_U_OPCION.finditer(m.group(2)):
+            if x.group("grupo"):
+                filtros.append((x.group("grupo").strip(), []))
+            else:
+                filtros[-1][1].append((x.group("opcion").strip(), bool(x.group("on"))))
+        assert filtros and all(len(o) > 1 and sum(on for _, on in o) == 1 for _, o in filtros), (nombre, estado, filtros)
+        t = t[:m.start()] + t[m.end():]  # la hoja desde abajo sale
+        inicio = f'<sc-if value="{{{{{estado}}}}}" hint-placeholder-val="{{{{no}}}}">'
+        a = t.find(inicio)
+        b = t.find("</sc-if>", a)
+        assert a >= 0 and "<sc-if" not in t[a + len(inicio):b], (nombre, estado)
+        lista = re.search(r"<h1>([^<]+)</h1>", t[a:b]).group(1)
+        volver = VOLVER_TEL.search(t[a:b]).group(1)
+        t = t[:a + len(inicio)] + pantalla_filtros(nombre, lista, volver, filtros) + t[b:]
+        cuenta["filtros del teléfono"] = cuenta.get("filtros del teléfono", 0) + 1
+    return t
+
+
 # ---------------------------------------------------------------------------------------------------------------- la escala (180)
 # La de ArquitecturaBase, que el usuario eligió el 2026-11-07 viendo la misma planilla en tres escalas. Para cambiarla, se cambia acá
 # y se vuelve a correr: cada px guarda su original.
@@ -460,7 +547,7 @@ def pasar(t, nombre, cuenta, telefono=False):
 
 
 def poner_piezas(t, nombre, cuenta):
-    t = textos(BLOQUE.sub("", t), nombre, cuenta)
+    t = filtros_tel(textos(BLOQUE.sub("", t), nombre, cuenta), nombre, cuenta)
     # Ni lo que se abre adentro de una fila (un menú, un tooltip), que también es su hijo.
     excluir = sin_after(t) + ':not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])'
     # La planilla de la 15 en adelante ya dibuja sus líneas (`.w-th.pl > span:nth-child(n+3)`); la de antes las toma acá.
@@ -470,6 +557,8 @@ def poner_piezas(t, nombre, cuenta):
     css = PIEZAS.replace("@SIN@", excluir).replace("@TT@", "-6.5px").replace("@PL@", pl).replace("@FIJA@", fija)
     css = css.replace("@CARGA@", numero(8 * 40 * ESCALA["alto"]))  # ocho filas de 40, con la escala de la compu
     css = css.replace("@TILDE@", TILDE)
+    # Lo de «Filtros» en el teléfono va solo en los tableros que lo dibujan, así los demás no cambian.
+    css += (CSS_FILTROS_TEL if 'class="t10-fl"' in t else "") + (CSS_TILDE_IZQ if "t-opc t10-izq" in t else "")
     propias = sombras(t)
     cuenta["sombras"] = cuenta.get("sombras", 0) + len(propias)
     bloque = (f'<style {MARCA_BLOQUE}>{css}/* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */\n'
