@@ -9,6 +9,10 @@ Desde el traspaso 10 (2026-11-07), el bloque es el de ArquitecturaBase (`docs/de
 publicar frena con un mínimo de más de 10; un catálogo del bloque filtra por quien lo recibe, y la planilla, el detalle y el chat muestran los ítems con «Filtros»
 (144) y el detalle alineado (139). Sale el «Grupo de líneas», también del cálculo y de las condiciones.
 
+En la v169 (revisión de las specs del 2026-11-08): en un bloque, lo que no entra en «Tipo de respuesta» queda solo grisado, con su motivo en el tooltip
+(Criterio-Menus); la banda del teléfono suma «Agregar título» (88); el chat suma el clip al lado de «Nota interna» (78), y marcar «Se carga varias veces»
+en una pregunta con condiciones pide confirmar (195).
+
 Corre después de `formularios_18_archivos_1004.py` y antes de `formularios_etapas_1004.py`. Se puede volver a correr. No escribe `canvas.json`: los títulos de
 `TITULOS` los pone quien coordina el lienzo. La 21, la 22 y la 23 usan `cuerpo`, `abierta`, `cond`, `PREG` y `CSS_19`: sin bloque en `PREG`, no hay recuadro.
 """
@@ -42,7 +46,7 @@ AY_MAX = "En WhatsApp se cargan hasta 10 ítems."
 AY_VARIAS = "Se carga una vez por ítem."
 YA_HAY = "Ya hay un bloque."
 UNA_SOLA = "En un bloque se elige una sola opción."
-NO_VARIAS = "No se carga varias veces"
+NO_VARIAS = "No se carga varias veces."
 
 
 def resumen_bloque(minimo=1, maximo=10, preguntas=2):
@@ -268,7 +272,7 @@ BANDA = lambda: E.banda(FORM, E.EST_PUB, E.acc("cambios"), E.VOL)
 
 
 # ================================================================ FRM-Editor-Condiciones
-E_COND = ["Sí o no", "Elegir una", "Número y fecha", "Respondida o no", "Una referencia rota", "Sin preguntas que sirvan"]
+E_COND = ["Sí o no", "Elegir una", "Número y fecha", "Respondida o no", "Una referencia rota", "Sin preguntas que sirvan", "Pasar al bloque"]
 
 
 def sel(rot, valor, mal=False):
@@ -304,8 +308,12 @@ def condiciones():
         "Respondida o no": monto(cond("Cliente", "tiene respuesta")),
         "Una referencia rota": cuerpo(4, abierta(4, "Número", mostrar_si(cond("Pregunta quitada", "es", "Sí", mal=True), '<span class="err2" role="alert">Esa pregunta ya no está en el formulario. Elegí otra.</span>'), mal="La condición usa una pregunta que ya no está.", varias="no"), pv=PV_BASE),
         "Sin preguntas que sirvan": cuerpo(1, abierta(1, "Texto corto", mostrar_si("", apagado="No hay preguntas anteriores que sirvan."), oblig=True, varias="no"), pv=PV_BASE),
+        "Pasar al bloque": monto(cond("¿Se concretó la venta?", "es", "Sí")),
     }
-    return A.pagina_editor({e: (BANDA(), V[e]) for e in E_COND}, {}, E_COND, "Editor · mostrar si", E.CSS_E12 + E.CSS_CA4 + CSS_19)
+    # 195 (y 162): marcar «Se carga varias veces» en una pregunta con «Mostrar si» pregunta antes, porque se pierden sus condiciones. Con «Permitir
+    # elegir varias», el texto es «Pasa a elegir una sola opción.». No destruye la pregunta: va la principal, como «Cambiar tipo» en la 14.
+    capas = {"Pasar al bloque": A.confirmar("¿Pasar «Monto» al bloque?", "Se quitan sus condiciones.", "Pasar al bloque", peligro=False)}
+    return A.pagina_editor({e: (BANDA(), V[e]) for e in E_COND}, capas, E_COND, "Editor · mostrar si", E.CSS_E12 + E.CSS_CA4 + CSS_19)
 
 
 # ================================================================ FRM-Editor-Calculo
@@ -379,13 +387,22 @@ def hija_catalogo():
 
 
 def hija_tipos():
-    """Cantidad, con «Tipo de respuesta» abierto: lo que no entra en un bloque se apaga, con su motivo después de «·» (RG9-A)."""
-    off = lambda t, m=NO_VARIAS: f'<span class="off" aria-disabled="true">{t} · {m}</span>'
+    """Cantidad, con «Tipo de respuesta» abierto: lo que no entra en un bloque queda grisado, sin texto al lado, y su motivo va en el tooltip
+    (Criterio-Menus y 43); a la vista, el de «Foto»."""
+    def off(t, m=NO_VARIAS, tip=False):
+        return f'<span class="off" aria-disabled="true" title="{m}">{t}' + (f'<span class="e-tip" role="tooltip">{m}</span>' if tip else "") + "</span>"
     items = ("<span>Texto corto</span><span>Texto largo</span><span class=\"on\">Número</span><span>Fecha</span><span>Sí o no</span><span>Elegir una</span>"
-             + off("Elegir varias", UNA_SOLA.rstrip(".")) + "<span>Elegir de un catálogo</span>" + off("Foto") + off("Documento") + off("Cálculo"))
+             + off("Elegir varias", UNA_SOLA) + "<span>Elegir de un catálogo</span>" + off("Foto", tip=True) + off("Documento") + off("Cálculo"))
     tipo = (f'<div class="w-cmp q-cat"><span class="rt">Tipo de respuesta</span><div class="ct sel abierto">Número{CHEV}</div>'
             f'<div class="q-tipomn" role="listbox" aria-label="Tipo de respuesta">{items}</div></div>')
     return hija_abierta(2, tipo, "")
+
+
+# El tooltip de lo apagado en «Tipo de respuesta», a la derecha de la lista, como el de Foto y Documento sin almacenamiento en FRM-Editor-18
+CSS_TIPOS_OFF = """.q-tipomn > span.off { position: relative; }
+.q-tipomn > span.off .e-tip { top: 50%; left: calc(100% + 12px); right: auto; transform: translateY(-50%); width: max-content; }
+.q-tipomn > span.off .e-tip::before { top: calc(50% - 4px); left: -4px; right: auto; }
+"""
 
 
 def recien_agregado():
@@ -413,7 +430,7 @@ def lineas():
          "Quitar el bloque": cuerpo()}
     capas = {"Quitar el bloque": A.confirmar("¿Quitar el bloque?", f"Se quitan el bloque «{BLOQUE}» y sus 2 preguntas.", "Quitar el bloque")}
     return A.pagina_editor({e: (BANDA(), V[e]) for e in E_LIN}, capas, E_LIN, "Editor · el bloque",
-                           E.CSS_E12 + E.CSS_CA4 + H.CSS_FILTROS + H.CSS_FILTROS_T5 + CSS_19)
+                           E.CSS_E12 + E.CSS_CA4 + H.CSS_FILTROS + H.CSS_FILTROS_T5 + CSS_19 + CSS_TIPOS_OFF)
 
 
 # ================================================================ FRM-Publicar-19
@@ -718,6 +735,20 @@ VAL_CH = [("Cliente", "Corralón El Puente"), ("¿Se concretó la venta?", "Sí"
 VAL_NS = [("Cliente", "Obra Centro"), ("¿Se concretó la venta?", "No"), ("Motivo", "Seguimiento"), ("Monto", '<span class="vac">No se mostró</span>'), ("Fecha de entrega", "22/10/2026"),
           (BLOQUE, items_chat(ITEMS["PED-000044"])), ("Total", '<span class="vac">Sin respuesta</span>'), ("Observaciones", "Falta confirmar el flete.")]
 HORAS = {E_CH[0]: "11:47", E_CH[1]: "11:04"}
+# 78: el clip «Adjuntar un archivo», al lado de «Nota interna», como en WA-Chats-Adjuntos (formularios_18_archivos_1004.py). La 20 lo usa en su chat.
+CLIP_BTN = f'<button type="button" class="o-nt ad-clip" aria-label="Adjuntar un archivo" title="Adjuntar un archivo">{A.CLIP}</button>'
+CSS_CLIP = ".ad-clip { flex: none; }\n"
+
+
+def con_clip(escr):
+    t, n = re.subn(r'(<span class="area[^"]*">)', lambda m: CLIP_BTN + m.group(1), escr, count=1)
+    assert n == 1, "el área de la compu"
+    return t
+
+
+def t_con_clip(escr):
+    assert '<span class="campo">' in escr, "el campo del teléfono"
+    return escr.replace('<span class="campo">', f'<button type="button" class="ap-red nt" aria-label="Adjuntar un archivo">{A.CLIP}</button><span class="campo">', 1)
 
 
 def lista_chat(renglones):
@@ -734,12 +765,14 @@ def tarjetas(fn_t, burbuja):
 
 
 def chat():
-    t = A.pagina_chat(E_CH, {e: A.escr() for e in E_CH}, tarjetas(A.tarjeta, A.burbuja), {}, {e: f"Respondió {FORM}" for e in E_CH}, HORAS, "WhatsApp · la respuesta · etapa 19")
-    return L.con_css(t.replace("el formulario de la visita", "el pedido de materiales"), "e19", CSS_19 + CSS_ITEMS)
+    # El mensaje que acompaña al formulario lo nombra, «Completá el formulario «Pedido de materiales».» (165): sale de A.burbuja
+    t = A.pagina_chat(E_CH, {e: con_clip(A.escr()) for e in E_CH}, tarjetas(A.tarjeta, A.burbuja), {}, {e: f"Respondió {FORM}" for e in E_CH}, HORAS,
+                      "WhatsApp · la respuesta · etapa 19")
+    return L.con_css(t.replace("el formulario de la visita", "el pedido de materiales"), "e19", CSS_19 + CSS_ITEMS + CSS_CLIP)
 
 
 def tel_chat():
-    t = A.pagina_tchat(E_CH, {e: A.t_escr() for e in E_CH}, tarjetas(A.t_tarjeta, A.t_burbuja), {}, "WhatsApp · la respuesta · teléfono · etapa 19",
+    t = A.pagina_tchat(E_CH, {e: t_con_clip(A.t_escr()) for e in E_CH}, tarjetas(A.t_tarjeta, A.t_burbuja), {}, "WhatsApp · la respuesta · teléfono · etapa 19",
                        A.CSS_AB + A.CSS_TRESP_AB + A.CSS_ARCH + CSS_19 + CSS_ITEMS)
     return t.replace("el formulario de la visita", "el pedido de materiales")
 
@@ -780,26 +813,38 @@ def t_bar():
             f'<button type="button" class="ap-ib" aria-label="Acciones de {FORM}">{F.TKEBAB}</button></div>')
 
 
-def t_bloque(t):
-    """En la lista del teléfono, el recuadro «Preguntas de cada ítem» va debajo de la fila del bloque, a lo ancho, con las mismas acciones;
-    «Agregar bloque» va al lado de «Agregar pregunta», apagado porque ya hay uno."""
-    hijas = "".join(f'<div class="q-row"><span class="num">{K_BLOQUE}.{j}</span><span class="tx"><b>{n}</b><span>{d}</span></span>{E.q_acciones(n, j, len(HIJAS))}</div>'
+def t_banda():
+    """La banda «Preguntas» del teléfono: «Agregar título», «Agregar bloque» (apagado, porque ya hay uno) y «Agregar pregunta», como en la compu
+    (88 y 177). Los tres no entran al lado de «Preguntas»: van en su renglón, debajo."""
+    return (f'<div class="ap-gtit t-gacc"><span>Preguntas</span><span class="acc"><a href="#">Agregar título</a>'
+            f'<span class="off" aria-disabled="true" title="{YA_HAY}">Agregar bloque</span><a href="#">Agregar pregunta</a></span>')
+
+
+def t_bloque(t, k=K_BLOQUE, titulo=None):
+    """En la lista del teléfono, el recuadro «Preguntas de cada ítem» va debajo de la fila del bloque, a lo ancho, con las mismas acciones,
+    y la banda lleva los tres botones de la compu. `titulo` = (pregunta, texto): un título de sección antes de esa pregunta, como en el editor."""
+    hijas = "".join(f'<div class="q-row"><span class="num">{k}.{j}</span><span class="tx"><b>{n}</b><span>{d}</span></span>{E.q_acciones(n, j, len(HIJAS))}</div>'
                     for j, (n, d) in enumerate(HIJAS, 1))
     caja = f'<div class="t-blq-caja"><div class="t-blq-cab">Preguntas de cada ítem<a href="#">Agregar pregunta</a></div>{hijas}</div>'
-    m = re.search(rf'<div class="q-row"><span class="num">{K_BLOQUE}</span>.*?</span></span>(?:<span class="q-acc">.*?</span>)</div>', t, re.S)
+    m = re.search(rf'<div class="q-row"><span class="num">{k}</span>.*?</span></span>(?:<span class="q-acc">.*?</span>)</div>', t, re.S)
     assert m, "la fila del bloque"
     t = t[:m.end()] + caja + t[m.end():]
-    t, n = re.subn(r'<div class="ap-gtit">Preguntas · \d+ preguntas<a href="#">Agregar</a>',
-                   f'<div class="ap-gtit">Preguntas<span class="off" aria-disabled="true" title="{YA_HAY}">Agregar bloque</span><a href="#">Agregar pregunta</a>', t, count=1)
+    if titulo:
+        antes, texto = titulo
+        fila_t = f'<div class="q-row q-tit"><span class="num"></span><span class="tx"><b>{texto}</b></span>{E.q_acciones(texto, 2, 3)}</div>'
+        t, n = re.subn(rf'(?=<div class="q-row"><span class="num">{antes}</span>)', fila_t, t, count=1)
+        assert n == 1, "el título de sección"
+    t, n = re.subn(r'<div class="ap-gtit">Preguntas · \d+ preguntas<a href="#">Agregar</a>', t_banda(), t, count=1)
     assert n == 1, "la banda de preguntas"
     return t
 
 
-def t_base():
+def t_base(preg=None, k=K_BLOQUE, titulo=None, bar=None):
+    """El editor del teléfono con el bloque; la 20 lo usa con sus preguntas, su bloque y su título «Entrega»."""
     viejas = E.T_PREG
-    E.T_PREG = list(PREG)
+    E.T_PREG = list(preg or PREG)
     try:
-        return t_bloque(t_bar() + E.t_cuerpo(nombre=FORM, prefijo=PREFIJO) + E.t_fijo("cambios"))
+        return t_bloque((bar or t_bar()) + E.t_cuerpo(nombre=FORM, prefijo=PREFIJO) + E.t_fijo("cambios"), k, titulo)
     finally:
         E.T_PREG = viejas
 
@@ -815,8 +860,9 @@ CSS_T19 = """.t-cond { display: flex; flex-direction: column; gap: 8px; padding:
 .lg-tcol { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-top: 1px solid var(--borde); font-size: 15.5px; }
 .lg-tcol:first-of-type { border-top: 0; }
 .lg-tcol small { font-size: 13.5px; color: var(--t3); }
-.ap-gtit .off { margin-left: auto; margin-right: 16px; font-weight: 600; color: var(--t3); }
-.ap-gtit .off + a { margin-left: 0; }
+.ap-gtit.t-gacc { flex-direction: column; align-items: stretch; gap: 8px; }
+.ap-gtit.t-gacc .acc { display: flex; justify-content: space-between; gap: 8px; }
+.ap-gtit .off { font-size: 14.5px; font-weight: 600; color: var(--t3); }
 .t-blq-caja { margin: 0 12px 10px; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; background: #fff; }
 .t-blq-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: oklch(0.945 0.018 76); font-size: 13.5px; font-weight: 600; color: var(--t2); }
 .t-blq-cab a { color: var(--marca-tx); text-decoration: none; }
@@ -854,7 +900,8 @@ def tel_lineas():
     capas = {"Editar el bloque": F.thoja(BLOQUE, h, LISTO), "Quitar el bloque": quitar}
     t = t_base()
     # El bloque, a la vista: sin el formulario de arriba
-    t = re.sub(r'<div class="ap-gtit">El formulario</div><div class="f-campos">.*?</div>(?=<div class="ap-gtit">Preguntas)', "", t, count=1, flags=re.S)
+    t, n = re.subn(r'<div class="ap-gtit">El formulario</div><div class="f-campos">.*?</div>(?=<div class="ap-gtit t-gacc">)', "", t, count=1, flags=re.S)
+    assert n == 1, "el formulario de arriba"
     return C.tel_pagina({e: t for e in est}, est, capas, "El bloque · teléfono", CSS_TEDITOR)
 
 
