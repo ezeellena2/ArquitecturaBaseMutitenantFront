@@ -196,7 +196,7 @@ La versión 170, del 8/11, dibuja la decisión 201 para la E21 con `generadores/
 - «Nueva plantilla» suma «Encabezado» debajo de «Tipo»: un segmentado con «Sin encabezado», el de entrada, y «Documento (el PDF)», con una (i) que dice que el PDF de ejemplo que pide Meta lo arma la app. «Tipo» no ofrece Autenticación, así que no hay opción apagada;
 - debajo del texto va «Así llega» (149), con los ejemplos y, con el PDF, el documento arriba y el cuerpo después. El ejemplo es «Comprobante», de Utilidad: «Aprobaron {{1}}. Te mandamos el comprobante.», con VIS-000130 y VIS-000130.pdf.
 
-Espera la aprobación del usuario, así que todavía no está en los índices ni en la guía. Se publicó solo lo nuevo y `canvas.json`, en la versión 195 del artefacto.
+El usuario los aprobó el mismo día: están en el índice y en la guía de Formularios, como «Una plantilla de WhatsApp con el PDF» de la E21, en la fila 21 de `formularios_etapas_1004.py` y en `TABLEROS_21` de `campana_1004.py`. `Indice-formularios` pasa a 2121 de alto, lo que mide su contenido: con 1460 se cortaban sus últimas tarjetas. Se publicó solo lo que cambió: los dos tableros y `canvas.json`, en la versión 195 del artefacto, y los dos índices y `canvas.json`, en la 196.
 
 La versión 169, del 8/11, corrige 78 tableros con la revisión de las specs de la E12 a la E25 (en el back, `d248c499`): lo que contradecía una decisión o un `Criterio-*`, y lo que el usuario decidió en esa revisión (193 a 199). No suma tableros:
 - el núcleo y los catálogos de la E12 y la E13 (`generadores/revision_v169_nucleo_1004.py`, que corre después de la pasada), la E14 a la E18, la E19 y la E20, la E21, la E22 y la E25, cada una con sus generadores;

@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 169 · 8 de noviembre de 2026"
+VERSION = "versión 170 · 8 de noviembre de 2026"
 
 # La guía de Formularios lleva su capítulo y, aparte, las pantallas de la biblioteca de la plataforma (las «plat-frm-»); la del lienzo,
 # el resto. Cada una es un artefacto aparte, porque una versión de un artefacto admite hasta 511 archivos. El índice del lienzo sigue
@@ -171,6 +171,8 @@ CAPITULOS = [
          "La pestaña «Reglas»: cuándo, si y qué hacer, en orden, con ↑ ↓ 🗑 en cada acción. Se guardan aparte, con su historial, y valen sin publicar. «Adjuntar el PDF» dice en el momento si falta «Armar el PDF» y lo arregla. «Ver el diseño» abre el comprobante, con tres estilos."),
         ("frm-reglas-bloque", "Las reglas con un bloque", "/org/formularios/:id/reglas", "no", "21", ["FRM-Editor-Reglas-Bloque"], ["M-FRM-Reglas-Bloque"], [],
          "Con un bloque, la condición pregunta por algún ítem: «Si algún ítem de Productos con ¿Urgente? es Sí». «Agregar dato» suma el bloque entero, y «Así llega» lo muestra un ítem por línea."),
+        ("frm-plantilla-pdf", "Una plantilla de WhatsApp con el PDF", "Administración › WhatsApp › Plantillas", "no", "21", ["WA-Plantilla-Nueva-21"], ["M-WA-Plantilla-Nueva-21"], [],
+         "Para mandar el PDF pasadas las 24 horas, «Nueva plantilla» suma «Encabezado»: «Sin encabezado» o «Documento (el PDF)». El PDF de ejemplo que pide Meta lo arma la app, y «Así llega» muestra el documento arriba del texto."),
         ("frm-aprobar", "Aprobar o rechazar", "/org/formularios/:id/respuestas?respuesta=VIS-000130", "no", "21", ["FRM-Respuesta-Aprobacion", "FRM-Respuestas-21"], ["M-FRM-Respuesta-Aprobacion", "M-FRM-Respuestas-21"],
          ["Campana-21", "M-Campana-21", "WA-Chats-Avisos", "M-WA-Conversacion-Avisos"],
          "La campana y «Para resolver» abren la más vieja en la vista rápida, y ↑ ↓ recorren la cola. «Aprobar» pide confirmar. La planilla suma «Estado» y la marca del PDF, y quien solo aprueba ve su cola, sin los valores. Los avisos llegan al chat."),

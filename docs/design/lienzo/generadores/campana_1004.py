@@ -184,7 +184,8 @@ TABLEROS_14 = ["FRM-Formularios", "FRM-Editor", "FRM-Publicar", "FRM-Publicando"
                "WA-Chats-Formulario-Cliente"]
 # Los de la 21 abren la suya, con lo que espera aprobación
 TABLEROS_21 = ["FRM-Formularios-21", "FRM-Respuestas-21", "FRM-Respuesta-Aprobacion", "FRM-Editor-Reglas", "FRM-Editor-Reglas-Bloque", "FRM-Pdf", "FRM-Tablero-21", "FRM-Respuesta-Corregir", "FRM-Respuesta-Anular",
-               "FRM-Editor-21", "FRM-Cargar-Respuesta-21", "FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21", "WA-Chats-Avisos", "WA-Chats-Respuesta-21"]
+               "FRM-Editor-21", "FRM-Cargar-Respuesta-21", "FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21", "WA-Chats-Avisos", "WA-Chats-Respuesta-21",
+               "WA-Plantilla-Nueva-21"]
 # Los de la 23 abren la suya, con las preguntas sin respuesta
 TABLEROS_23 = ["WA-Asistente", "WA-Asistente-Casos", "WA-Asistente-Probar", "WA-Asistente-Limites", "WA-Modo-Atencion", "WA-Chats-Casos", "WA-Preguntas-Sin-Respuesta",
                "WA-Chats-Asistente", "WA-Chats-Sugerencia", "WA-Chats-Audio", "FRM-Editor-Asistente", "FRM-Editor-Sugerencias", "FRM-Editor-Reglas-23",
