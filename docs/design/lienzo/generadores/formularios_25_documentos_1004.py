@@ -1537,6 +1537,7 @@ CSS_WA = """.wa-tel { position: absolute; inset: 0; display: flex; flex-directio
 .wa-fcab span { width: 24px; color: #54656f; font-weight: 400; font-size: 20px; text-align: center; }
 .wa-fcu { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; }
 .wa-aviso { display: flex; gap: 8px; padding: 10px 12px; border-radius: 8px; background: #fff8e1; color: #6b5300; font-size: 13.5px; line-height: 1.4; }
+.wa-aviso svg { flex-shrink: 0; }  /* el ícono del aviso conserva su tamaño, aunque el texto ocupe dos renglones */
 .wa-c { position: relative; border: 1px solid #c4cbd0; border-radius: 8px; padding: 7px 12px 8px; min-height: 30px; }
 .wa-c small { display: block; font-size: 12px; color: #667781; }
 .wa-c .v { font-size: 15.5px; color: #111b21; overflow-wrap: anywhere; }

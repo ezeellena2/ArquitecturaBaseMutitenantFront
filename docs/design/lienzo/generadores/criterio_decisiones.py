@@ -7,7 +7,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 5300  # 07/11: en cinco columnas, la más alta medía 9158; en seis y con la escala de la 180, llega a 5234
+ALTO = 6000  # 08/11: en seis columnas y con la escala de la 180, con la 181 a la 190, la más alta llega a 5871
 ANCHO = 8880
 COLUMNAS = 6
 ARCHIVO = "Criterio-Decisiones.dc.html"
@@ -120,8 +120,8 @@ REGLAS = [
     ("Cambiar un tipo, una acción o una opción no pierde lo escrito sin avisar.", "Formularios y campos", "07/11/2026"),
     ("Mucho texto, con jerarquía: todo a la vista, las fechas a la derecha y lo poco consultado detrás de un botón. Los campos de un ajuste, en columnas iguales.", "Formularios y campos", "07/11/2026"),
     ("Una regla nueva vale también para lo que ya existe: los tableros viejos y la app ya programada.", "Decisiones por pantalla", "07/11/2026"),
-    ("Que no parezca plantilla: la marca sin cuadrado, la banda sin ícono, el avatar cuadrado, el activo con una barra, sin pastillas y sin sombras salvo en menús; el principal, sólido.", "Marco · Botones · Menús", "07/11/2026"),
-    ("El texto largo se ve entero: una celda baja de renglón en lugar de cortar con «…».", "Tablas y listas", "07/11/2026"),
+    ("Que no parezca plantilla: la marca sin cuadrado, la banda sin ícono, el avatar cuadrado, el activo con una barra, sin pastillas y sin sombras salvo en menús; el principal, sólido, y el panel del ingreso, liso.", "Marco · Botones · Menús", "07/11/2026"),
+    ("El texto largo se ve entero: una celda baja de renglón en lugar de cortar con «…». Solo la vista previa del último mensaje, en la lista de chats, va en un renglón con «…».", "Tablas y listas", "07/11/2026"),
     ("El estado, una vez: lo que dice el encabezado no se repite debajo; la acción que lo destraba va en la banda y el porqué de un botón apagado, en su tooltip.", "Avisos y errores", "07/11/2026"),
     ("La escala, como ArquitecturaBase: la letra × 0,82, los altos × 0,74, los rellenos × 0,72 y las esquinas de 3 px como mucho, en la compu; el teléfono conserva sus medidas táctiles.", "Marco y pantallas · Tablas y listas", "07/11/2026"),
 ]
@@ -613,28 +613,40 @@ DECISIONES = {
         ("«Por aprobar»", "PL1-A", "Elegido por el usuario: «Por aprobar (N) | Todas» arriba de la planilla, con el segmentado y no con pestañas (148).", "Falta dibujar"),
         ("El mensaje con datos", "MD1-A", "Elegido por el usuario: «Agregar dato» pone etiquetas que siguen a la pregunta, con «Así llega» debajo (149).", "Falta dibujar"),
     ],
+    "Traspaso 10 · 08/11": [
+        ("El teléfono", "A", "Elegido por el usuario: no se achica; debajo de 768 px, todo lo que se toca sigue midiendo 44 × 44, porque el dedo lo necesita (187; la 180).", "Dibujada"),
+        ("La vista previa de los chats", "A", "Elegido por el usuario: el último mensaje va en un renglón, cortado con «…», como en WhatsApp, para que las filas tengan la misma altura; entero, al abrir el chat. Es la única excepción a la 174 (188).", "Dibujada"),
+        ("El panel del ingreso", "A", "Elegido por el usuario: liso, sin degradé ni cuadrícula, porque era lo que más parecía plantilla; también el cierre de la portada y la cabecera del Inicio del teléfono (189; la 173).", "Dibujada"),
+        ("La ficha de un usuario", "A", "Elegido por el usuario: sin el campo gris «Estado», que no se podía editar: la banda ya lo dice (190; la 175).", "Dibujada"),
+    ],
     "Traspaso 10 · 07/11": [
         ("Lo que carga", "ES1-A a ES3", "Un listado dibuja su encabezado y el aro en el alto de ocho filas, sin filas esqueleto; una página, su banda con el título como bloque de carga y tres barras, y un ajuste, sus zonas (160).", "Dibujada"),
         ("Decidir a propósito", "", "Lo que no se deshace y dispara avisos, como aprobar, pide confirmar con el número, con la principal y el foco en «Cancelar»; el rojo lleno queda para lo que destruye (161). Generaliza la 114.", "Dibujada"),
         ("Ninguna elección en silencio", "", "Cambiar un tipo, una acción o una opción no pierde lo escrito sin avisar (162). Generaliza la 113.", "Dibujada"),
         ("Mucho texto, con jerarquía", "", "Todo a la vista y sin plegar; las fechas a la derecha, una vez por momento; lo poco consultado, detrás de un botón. Los campos de un ajuste siguen en columnas iguales (163).", "Decidido"),
         ("Lo que ya existe", "", "Una regla nueva vale también para los tableros viejos y la app ya programada: la 137, la 143, la 144 y la 160 pasan con esta tanda y, en la app, con la base de la 12 (164). Cambia la 136.", "Dibujada"),
-        ("El envío nombra el formulario", "", "«Completá el formulario «Visita a cliente».», propuesto al elegirlo y sin pisar lo escrito; la oferta del asistente lo nombra igual (165).", "Falta dibujar"),
-        ("Corregir, anular y la carga", "", "«Corregir» en la fila del título y «Anular» solo en el ⋮, en rojo; el motivo del rechazo, en los momentos; «N de M respondidas»; «Volver a Formularios»; «Elegí primero «Zona»» (166).", "Falta dibujar"),
-        ("El catálogo que propone el asistente", "", "Pasa a la E25: nace con «Crear catálogo», se edita como cualquiera y lleva «Descartar propuesta» y «Aprobar y activar» (167).", "Falta dibujar"),
-        ("Un catálogo dentro del bloque", "", "Filtra por quien lo recibe, como fuera del bloque (168).", "Decidido"),
-        ("La información del negocio", "", "Varias franjas por día, «24 horas», productos y servicios, políticas y condiciones, y «Aplicar de lunes a viernes» (169).", "Falta dibujar"),
-        ("Los avisos en «Mi cuenta»", "", "«Llegan hasta el …» y, pasadas las 24 horas, «Solo con plantilla», con su (i) (170).", "Falta dibujar"),
-        ("El micrófono y armar por WhatsApp", "", "El micrófono, solo en el Inicio de la organización; pedir por WhatsApp que arme algo se atiende antes de los casos (171).", "Decidido"),
+        ("El envío nombra el formulario", "", "«Completá el formulario «Visita a cliente».», propuesto al elegirlo y sin pisar lo escrito; la oferta del asistente lo nombra igual (165).", "Dibujada"),
+        ("Corregir, anular y la carga", "", "«Corregir» en la fila del título y «Anular» solo en el ⋮, en rojo; el motivo del rechazo, en los momentos; «N de M respondidas»; «Volver a Formularios»; «Elegí primero «Zona»» (166).", "Dibujada"),
+        ("El catálogo que propone el asistente", "", "Pasa a la E25: nace con «Crear catálogo», se edita como cualquiera y lleva «Descartar propuesta» y «Aprobar y activar» (167).", "Dibujada"),
+        ("Un catálogo dentro del bloque", "", "Filtra por quien lo recibe, como fuera del bloque (168).", "Dibujada"),
+        ("La información del negocio", "", "Varias franjas por día, «24 horas», productos y servicios, políticas y condiciones, y «Aplicar de lunes a viernes» (169).", "Dibujada"),
+        ("Los avisos en «Mi cuenta»", "", "«Llegan hasta el …» y, pasadas las 24 horas, «Solo con plantilla», con su (i) (170).", "Dibujada"),
+        ("El micrófono y armar por WhatsApp", "", "El micrófono, solo en el Inicio de la organización; pedir por WhatsApp que arme algo se atiende antes de los casos (171).", "Dibujada"),
         ("La CUIT con ARCA", "", "No cambia con ARCA conectado: primero se desconecta (172).", "Decidido"),
         ("Que no parezca plantilla", "A", "Elegido por el usuario: la marca sin cuadrado, la banda sin ícono, el avatar cuadrado, el activo con una barra, sin pastillas y sin sombras salvo en menús; el principal, sólido. Quedan la paleta Pradera y la densidad (173).", "Dibujada"),
         ("El texto largo", "A", "Elegido por el usuario: entero; la celda baja de renglón en lugar de cortar con «…», y un código no se parte (174).", "Dibujada"),
         ("El estado, una vez", "A", "Elegido por el usuario: lo que dice el encabezado no se repite debajo; en la publicación, sin pasos ni zona «Problemas», con «Consultar publicación» cuando hace falta; la baja, en una frase (175).", "Dibujada"),
-        ("La vista oficial", "VO1-A", "Elegido por el usuario: «Ver vista oficial» abre un diálogo de 480 × 840 que se recorre como en el celular, con las primeras 20 opciones de cada catálogo; al costado queda solo «Así lo ve quien lo recibe», y sale «Borrador | Versión N en WhatsApp» (176).", "Falta dibujar"),
-        ("El bloque y el «ítem»", "RG10-D y RG12-A", "Elegido por el usuario: «Agregar bloque» al lado de «Agregar pregunta», que arranca abierto y con «Bloque» de nombre; donde se leía «renglón», dice «ítem»: «¿Agregás otro ítem?», «Agregar ítem», «Productos · ítem 2» (177). Cambia la 146.", "Falta dibujar"),
-        ("Un mínimo de más de 10 ítems", "RG13-A", "Elegido por el usuario: con WhatsApp, en la E19 publicar frena («En WhatsApp se cargan hasta 10 ítems; el mínimo es 15.»); desde la E20, un formulario para empleados se publica solo para la app, con su aviso, y uno solo para clientes frena (178).", "Falta dibujar"),
-        ("El ingreso y el consentimiento por WhatsApp", "", "Elegido por el usuario: ningún mensaje lleva un enlace secreto: el bot lleva al ingreso con «Entrar a mi cuenta», y el código se pide desde la web; invitar desde «Cargar teléfonos» pide marcar «La persona aceptó recibir mensajes por WhatsApp» (179).", "Falta dibujar"),
+        ("La vista oficial", "VO1-A", "Elegido por el usuario: «Ver vista oficial» abre un diálogo de 480 × 840 que se recorre como en el celular, con las primeras 20 opciones de cada catálogo; al costado queda solo «Así lo ve quien lo recibe», y sale «Borrador | Versión N en WhatsApp» (176).", "Dibujada"),
+        ("El bloque y el «ítem»", "RG10-D y RG12-A", "Elegido por el usuario: «Agregar bloque» al lado de «Agregar pregunta», que arranca abierto y con «Bloque» de nombre; donde se leía «renglón», dice «ítem»: «¿Agregás otro ítem?», «Agregar ítem», «Productos · ítem 2» (177). Cambia la 146.", "Dibujada"),
+        ("Un mínimo de más de 10 ítems", "RG13-A", "Elegido por el usuario: con WhatsApp, en la E19 publicar frena («En WhatsApp se cargan hasta 10 ítems; el mínimo es 15.»); desde la E20, un formulario para empleados se publica solo para la app, con su aviso, y uno solo para clientes frena (178).", "Dibujada"),
+        ("El ingreso y el consentimiento por WhatsApp", "", "Elegido por el usuario: ningún mensaje lleva un enlace secreto: el bot lleva al ingreso con «Entrar a mi cuenta», y el código se pide desde la web; invitar desde «Cargar teléfonos» pide marcar «La persona aceptó recibir mensajes por WhatsApp» (179).", "Dibujada"),
         ("La escala", "", "Elegida por el usuario viendo la misma planilla en tres escalas: la de ArquitecturaBase. La letra × 0,82 (el cuerpo, unos 11 px), las filas, los controles y las bandas × 0,74 (una fila de tabla, unos 30 px; un botón, de 24 a 27), los rellenos × 0,72 y las esquinas de 3 px como mucho, con la paleta Pradera. Los teléfonos conservan sus medidas táctiles (180).", "Dibujada"),
+        ("Un documento con ítems", "", "La lectura completa el número, la fecha y el proveedor, y deja el bloque vacío, para cargar los ítems a mano en el Flow, como el prellenado de la 23 (181).", "Dibujada"),
+        ("«Casos» con «Armar formularios y catálogos»", "", "Un bloque fijo arriba de los casos, sin editar, como el de los formularios: un pedido de armar se atiende antes (182; la 171).", "Dibujada"),
+        ("La banda de cada ítem", "", "Dice «Ítem 2»: el nombre del bloque ya va arriba, como etiqueta, y la banda entra en 320 (183).", "Dibujada"),
+        ("Lo que se carga solo desde la app", "", "En «Enviar formulario» aparece apagado, en su lugar y con su motivo: ««Proveedor» depende de otra respuesta: se carga desde la app.» (184).", "Dibujada"),
+        ("La columna del bloque", "", "Entera en la planilla, bajando de renglón como todo texto largo: «12 · Caño de 1/2 pulgada, Codo de 90°, …», con todos los nombres (185).", "Dibujada"),
+        ("«Salió» y «No salió»", "", "Piden confirmar, «¿La versión 4 salió en WhatsApp?», con la principal y el foco en «Cancelar», porque ninguno de los dos se deshace (186).", "Dibujada"),
     ],
     "Varios asistentes · v158 · 03/11": [
         ("La lista", "", "Como las listas de WhatsApp: el asistente, sus equipos y su estado, con el ⋮ (Editar y Dar de baja o Reactivar). «Dar de baja» del principal queda grisado, con el motivo en su tooltip. En ArquitecturaBase no existe.", "Dibujada"),
@@ -709,7 +721,6 @@ DECISIONES = {
     ],
     "Lo que sigue": [
         ("Las etapas, con el traspaso 5", "", "Se redibujan en tandas: primero los «Criterio» y después cada etapa, con la lista del índice de specs.", "Falta dibujar"),
-        ("Las tandas b a e del traspaso 10", "", "El núcleo; de la E12 a la E18; de la E19 a la E21, y de la E22 a la E25, cada una con su visto bueno (§4.3 de la evaluación del traspaso 10).", "Falta dibujar"),
     ],
 }
 

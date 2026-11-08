@@ -1411,6 +1411,32 @@ body { margin: 0; }
 :root .w-th.pl > span, :root .tb .th > * { line-height: 1.35 !important; padding-top: 8.1px/*11.2px*/ !important; padding-bottom: 8.1px/*11.2px*/ !important; }
 :root .ab-sidebar__link-label, :root .w-ln { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
 :root .ab-sidebar .ab-sidebar__link, :root .ab-sidebar__link, :root .w-ln { height: auto !important; min-height: 23.7px/*32px*/; box-sizing: border-box; padding-top: 4.3px/*6px*/ !important; padding-bottom: 4.3px/*6px*/ !important; line-height: 14.8px/*20px*/; }
+/* 174 · Quién sos, entero: el nombre y el correo del pie del menú y de la cabecera de tu menú bajan de renglón (el correo, después
+   de la «@», con `CORREO_JS`). */
+:root .ab-sidebar__name, :root .ab-sidebar__email, :root .perfil-t .n1, :root .perfil-t .n2, :root .w-us .tx b, :root .w-us .tx span, :root .w-mn-perf b, :root .w-mn-perf .s {
+  white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+/* 174 y 188 · En las filas de dos o tres renglones (`.w-conv`), el texto se ve entero: el nombre y, en las listas de personas del
+   teléfono, el correo. La vista previa del último mensaje en la lista de chats sigue en un renglón con «…», como en WhatsApp: es la
+   única excepción a la 174 (188). */
+:root .w-conv .l1 b, :root .w-conv > a .l2 > span { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+
+/* 142 y 164 · En el desplegable de un filtro, la elegida lleva la tilde a la izquierda y va en 600, sin el tinte, como en
+   «Criterio · Formularios» y «Criterio · Menús»; las demás dejan el lugar de la tilde, así los nombres quedan alineados. La planilla
+   (`.pl-op`) ya la dibuja, y la lista de personas (`.k-pers`, de dos renglones) no es un filtro. */
+:root .menu .menu-it[role="option"], :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op) { justify-content: flex-start !important; }
+:root .menu .menu-it[role="option"]::before, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op)::before {
+  content: ""; flex: none; width: 16px; height: 14px; background: transparent; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") no-repeat left center / 14px 14px; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") no-repeat left center / 14px 14px; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"]), :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"]) {
+  background: transparent !important; color: var(--t1) !important; font-weight: 600 !important; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"]):hover, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"]):hover { background: var(--s2) !important; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"])::before, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"])::before { background: var(--marca-tx); }
+/* 142 · La conversación abierta del chat y el ítem abierto de una lista con su detalle: el tinte y una barra de 3 px al inicio. */
+:root .w-conv.on, :root .md-it.on { box-shadow: inset 3px 0 0 var(--marca) !important; }
+
+/* 189 · El panel verde del ingreso, liso: sin el degradé ni la cuadrícula. Lo mismo en los otros dos paneles verdes, el cierre de
+   la página de inicio y la cabecera del Inicio del teléfono (136). La paleta Pradera no cambia. */
+:root .auth-marca, :root .lp-final, :root .c-top { background: var(--marca) !important; }
+:root .auth-marca::before { display: none !important; }
 
 /* 180 · Un ícono dentro de un botón conserva su tamaño. Con la escala, un botón de ícono queda de 21 a 24 px, y el relleno que el
    navegador le pone a todo botón (6 px por lado) aplastaba el dibujo a la mitad de su ancho. */
@@ -1451,6 +1477,32 @@ body { margin: 0; }
 </x-dc>
 
 <script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Sugerencias","Editar una sugerencia","Preguntar siempre","Un dato de otro tipo","Hacia un dado de baja","Guardando","Sugerencias guardadas","Historial","Una revisión","Sin sugerencias","Sin el asistente"],"default":"Sugerencias","section":"Estado"},"$preview":{"width":1440,"height":1100}}'>
+// t10-correos · 174: un correo baja de renglón después de la «@», nunca a mitad de palabra (traspaso10_piezas_1004.py).
+if (typeof document !== 'undefined' && !window.__t10Correos) {
+  window.__t10Correos = true;
+  const t10Arroba = /([^\s@])@(?=[\w-]+\.[\w-])/g;
+  const t10Saltar = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'TITLE', 'OPTION']);
+  const t10Cortar = (n) => {
+    if (n.nodeType === 3) {
+      if (n.parentNode && !t10Saltar.has(n.parentNode.nodeName) && n.data.indexOf('@') >= 0) {
+        const nuevo = n.data.replace(t10Arroba, '$1@​');
+        if (nuevo !== n.data) n.data = nuevo;
+      }
+      return;
+    }
+    if (n.nodeType !== 1 || t10Saltar.has(n.nodeName)) return;
+    const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT);
+    for (let x = w.nextNode(); x; x = w.nextNode()) t10Cortar(x);
+  };
+  const t10Mirar = () => {
+    t10Cortar(document.body);
+    new MutationObserver((ms) => ms.forEach((m) => (m.type === 'characterData' ? t10Cortar(m.target) : m.addedNodes.forEach(t10Cortar))))
+      .observe(document.body, { childList: true, subtree: true, characterData: true });
+  };
+  if (document.body) t10Mirar(); else document.addEventListener('DOMContentLoaded', t10Mirar);
+}
+// t10-correos · fin
+
 class Component extends DCLogic {
   renderVals() {
     const e = this.props.estado ?? "Sugerencias";
