@@ -25,6 +25,10 @@
     "phonesRequired": "Pegá o subí al menos un teléfono.",
     "tooMany": "Son {{count}} teléfonos: cargá hasta {{max}} por vez."
   },
+  "consent": {
+    "label": "La persona aceptó recibir mensajes por WhatsApp",
+    "required": "Confirmá que la persona aceptó recibir mensajes por WhatsApp."
+  },
   "columns": {
     "phone": "Teléfono",
     "person": "Persona",

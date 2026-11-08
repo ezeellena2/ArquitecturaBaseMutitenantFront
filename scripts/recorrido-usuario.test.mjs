@@ -161,7 +161,7 @@ test("sin control publicado el recorrido no ejecuta UI ni se declara aprobado", 
 });
 
 test("el fallo E8 sólo publica el tipo y conserva privados todos los mensajes del error", () => {
-  const privateText = "123456 +5491134567880 privado@example.test https://localtest.me:5174/login/enlace#ticket-secreto";
+  const privateText = "123456 +5491134567880 privado@example.test https://localtest.me:5174/invitacion#token-secreto";
   const result = journeyFailure("E8-04 a 390", [new TypeError(privateText), new Error(privateText)]);
   assert.ok(result.includes("TypeError; Error"));
   assert.ok(result.includes("pendientes no cuentan como aprobados"));

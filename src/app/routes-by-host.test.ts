@@ -32,7 +32,8 @@ describe("rutas por host (docs/rules/accesos-y-permisos.md)", () => {
 
   it("en el dominio principal conserva el árbol exportado y suma /empresas", () => {
     expect(routesForHost(mainSiteHost)).toBe(routes);
-    expect(paths(routes).filter((path) => path === "/login/enlace")).toHaveLength(1);
+    // La página del enlace de un solo uso salió con la base de la 12 (179): el bot lleva al ingreso.
+    expect(paths(routes)).not.toContain("/login/enlace");
     expect(paths(routes)).toEqual(expect.arrayContaining(["/", "/org", "/cuenta", "/plataforma", "/login", "/empresas"]));
   });
 

@@ -67,12 +67,57 @@ describe("Cargar teléfonos", () => {
     }));
     const { user } = mountWhatsApp(whatsappOwner, path);
     await review(user);
-    await user.click(await screen.findByRole("button", { name: "Vincular y mandar 1 invitación" }));
+    await user.click(await screen.findByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp" }));
+    await user.click(screen.getByRole("button", { name: "Vincular y mandar 1 invitación" }));
     expect(await screen.findByText("WhatsApp no está disponible para invitar.")).toBeVisible();
     expect(screen.queryByText("Algo salió mal. Probá de nuevo en un rato.")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Vincular y mandar 1 invitación" }));
     await waitFor(() => expect(keys).toHaveLength(2));
     expect(keys[1]).toBe(keys[0]);
+  });
+
+  // Decisión 179 (tableros WA-Telefonos y M-WA-Telefonos): para invitar, quien carga confirma el consentimiento.
+  it("sin la casilla, «Vincular y mandar» marca el campo y no manda nada; con ella, manda la confirmación", async () => {
+    const bodies: unknown[] = [];
+    server.use(http.post("/api/organization/whatsapp/phone-imports", async ({ request }) => {
+      bodies.push(await request.json());
+      return HttpResponse.json({ linked: 1, invited: 1, rows: [] });
+    }));
+    const { user, container } = mountWhatsApp(whatsappOwner, path);
+    expect(await screen.findByRole("heading", { name: "Cargar teléfonos de empleados" })).toBeVisible();
+    expect(screen.queryByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp" })).not.toBeInTheDocument();
+    const previews = await review(user);
+    const consent = await screen.findByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp" });
+    expect(consent).not.toBeChecked();
+    const send = screen.getByRole("button", { name: "Vincular y mandar 1 invitación" });
+    expect(send).toBeEnabled();
+    await user.click(send);
+    expect(await screen.findByText("Confirmá que la persona aceptó recibir mensajes por WhatsApp.")).toBeVisible();
+    expect(consent).toHaveAttribute("aria-invalid", "true");
+    expect(bodies).toEqual([]);
+    expect(await axe(container)).toHaveNoViolations();
+
+    await user.click(consent);
+    expect(screen.queryByText("Confirmá que la persona aceptó recibir mensajes por WhatsApp.")).not.toBeInTheDocument();
+    await user.click(send);
+    await waitFor(() => expect(bodies).toHaveLength(1));
+    expect(bodies[0]).toEqual({ phones: [{ country: "AR", number: "11 5555-4521" }, { country: "AR", number: "011 15-5555-8812" }, { country: "AR", number: "11 4444" }], companyId: null, roleIds: [], consentConfirmed: true });
+    // La vista previa no lo pide.
+    expect(previews[0]).not.toHaveProperty("consentConfirmed");
+  });
+
+  it("si el back pide la confirmación (400 ConsentRequired), la marca en la casilla y no en la franja", async () => {
+    server.use(http.post("/api/organization/whatsapp/phone-imports", () => HttpResponse.json(
+      { code: "WhatsApp.PhoneImport.ConsentRequired", detail: "Confirmá que la persona aceptó recibir mensajes por WhatsApp.", errors: { consentConfirmed: ["Confirmá que la persona aceptó recibir mensajes por WhatsApp."] } },
+      { status: 400 })));
+    const { user } = mountWhatsApp(whatsappOwner, path);
+    await review(user);
+    const consent = await screen.findByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp" });
+    await user.click(consent);
+    await user.click(screen.getByRole("button", { name: "Vincular y mandar 1 invitación" }));
+    expect(await screen.findByText("Confirmá que la persona aceptó recibir mensajes por WhatsApp.")).toBeVisible();
+    expect(consent).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getAllByText("Confirmá que la persona aceptó recibir mensajes por WhatsApp.")).toHaveLength(1);
   });
 
   it("pide «Invitar usuarios» y el módulo prendido", async () => {

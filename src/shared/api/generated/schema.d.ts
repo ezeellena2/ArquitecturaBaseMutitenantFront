@@ -6041,9 +6041,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["WhatsAppPhoneImportHttpRequest"];
-                    "text/json": components["schemas"]["WhatsAppPhoneImportHttpRequest"];
-                    "application/*+json": components["schemas"]["WhatsAppPhoneImportHttpRequest"];
+                    "application/json": components["schemas"]["WhatsAppPhoneImportPreviewHttpRequest"];
+                    "text/json": components["schemas"]["WhatsAppPhoneImportPreviewHttpRequest"];
+                    "application/*+json": components["schemas"]["WhatsAppPhoneImportPreviewHttpRequest"];
                 };
             };
             responses: {
@@ -6161,7 +6161,7 @@ export interface paths {
                         "text/json": components["schemas"]["WhatsAppPhoneImportResponse"];
                     };
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; WhatsApp.PhoneImport.ConsentRequired */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -26432,193 +26432,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/login-link/preview": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Invalid reúne enlace inexistente, usado, vencido, invalidado, método retirado y cuenta operadora. Preview hace dos lecturas coherentes del enlace y su cuenta, sin UoW ni lock; revalida dueño, método, canal, estado, operador y vigencia antes de responder. No consume ni crea cookie. displayName y maskedPhone nullable. Una baja pendiente permite preview mientras el enlace sea vigente; no emite cancelTicket. */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["PreviewLoginLinkHttpRequest"];
-                    "text/json": components["schemas"]["PreviewLoginLinkHttpRequest"];
-                    "application/*+json": components["schemas"]["PreviewLoginLinkHttpRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["LoginLinkPreviewResponse"];
-                        "application/json": components["schemas"]["LoginLinkPreviewResponse"];
-                        "text/json": components["schemas"]["LoginLinkPreviewResponse"];
-                    };
-                };
-                /** @description Bad Request; Validation.Failed; Auth.LoginLink.Invalid */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Forbidden; Identity.Account.Suspended */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Too Many Requests; Identity.Account.LockedOut; Security.RateLimit.Exceeded */
-                429: {
-                    headers: {
-                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
-                        "Retry-After"?: number;
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Internal Server Error; General.Unexpected */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/login-link/redeem": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Invalid reúne enlace inexistente, usado, vencido, invalidado, método retirado y cuenta operadora. Revalida dueño, método, canal, estado y operador bajo lock dentro de la UoW. Solo access=consumer. 200 {access:consumer} y cookie pública, sin tokens OIDC. Replay misma key no crea otra sesión; otra key devuelve Invalid si ya fue usado. Baja pendiente: prueba válida y gracia vigente emiten cancelTicket con retorno fijo /login/enlace; gracia vencida devuelve Legal.AccountDeletion.GraceExpired sin ticket. Front ejecuta después signinRedirect con su state y PKCE. Un operador nunca recibe sesión por enlace: sigue devolviendo Invalid (E9). */
-        post: {
-            parameters: {
-                query?: never;
-                header: {
-                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
-                    "Idempotency-Key": string;
-                };
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["RedeemLoginLinkHttpRequest"];
-                    "text/json": components["schemas"]["RedeemLoginLinkHttpRequest"];
-                    "application/*+json": components["schemas"]["RedeemLoginLinkHttpRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        /** @description Cookie HttpOnly tras prueba válida; nunca se emite desde webhook ni desde preview. */
-                        "Set-Cookie"?: string;
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["LoginLinkRedeemResponse"];
-                        "application/json": components["schemas"]["LoginLinkRedeemResponse"];
-                        "text/json": components["schemas"]["LoginLinkRedeemResponse"];
-                    };
-                };
-                /** @description Bad Request; Validation.Failed; Auth.LoginLink.Invalid; Request.IdempotencyKeyRequired */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Forbidden; Identity.Account.Suspended; Identity.Account.PendingDeletion */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Legal.AccountDeletion.GraceExpired; Request.InProgress */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Request.IdempotencyKeyReused */
-                422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Too Many Requests; Identity.Account.LockedOut; Security.RateLimit.Exceeded */
-                429: {
-                    headers: {
-                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
-                        "Retry-After"?: number;
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Internal Server Error; General.Unexpected */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/auth/methods": {
         parameters: {
             query?: never;
@@ -28354,6 +28167,165 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Los avisos de quien mira, hasta 50 y del más nuevo al más viejo, con cuántos están sin leer. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["NotificationListResponse"];
+                        "application/json": components["schemas"]["NotificationListResponse"];
+                        "text/json": components["schemas"]["NotificationListResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marca leído un aviso visible de quien mira, sin cuerpo. Un id que no corresponde a uno se ignora y responde 204 igual. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -29480,14 +29452,6 @@ export interface components {
          * @enum {string}
          */
         LoginCodeNextStep: "authorize" | "platformFactor";
-        LoginLinkPreviewResponse: {
-            displayName?: null | string;
-            maskedPhone?: null | string;
-        };
-        LoginLinkRedeemResponse: {
-            /** @enum {string} */
-            access: "consumer";
-        };
         /**
          * @description Devuelve el método al que se envió un código y cuánto hay que esperar para reenviarlo. Permite
          *     identificar el destino y controlar el botón de reenvío.
@@ -29560,6 +29524,33 @@ export interface components {
             /** Format: decimal */
             amount: number;
             currency: string;
+        };
+        /**
+         * @description Un aviso. `Id` es estable y sale de la fuente: si el aviso cambia («3 por aprobar» pasa a 4), cambia de id y vuelve a
+         *     contar. `Kind` es una clave abierta que suma cada área; el front arma el texto con `Kind` y `Params`, en el
+         *     idioma de quien mira. `Link` es la ruta del front donde se resuelve. La fuente lo entrega sin leer; el servicio marca
+         *     `Read`.
+         */
+        NotificationItem: {
+            id: string;
+            kind: string;
+            params: {
+                [key: string]: string;
+            };
+            /** Format: date-time */
+            occurredAtUtc: string;
+            link: string;
+            read: boolean;
+        };
+        /**
+         * @description La campana de quien mira, en los tres accesos: hasta 50 avisos, del más nuevo al más viejo. Los avisos se arman al leer,
+         *     desde las fuentes de cada área; solo se guarda cuáles abrió cada persona. `Unread` es el número de la campana:
+         *     cuántos de `Items` están sin leer.
+         */
+        NotificationListResponse: {
+            items: components["schemas"]["NotificationItem"][];
+            /** Format: int32 */
+            unread: number;
         };
         OrganizationAssistantSettingsResponse: {
             mode: components["schemas"]["AssistantMode"];
@@ -30769,10 +30760,6 @@ export interface components {
         PreviewInvitationHttpRequest: {
             token?: null | string;
         };
-        PreviewLoginLinkHttpRequest: {
-            /** @description Secreto de 32 bytes, base64url sin padding. Solo cuerpo/memoria; sin logs. */
-            token?: null | string;
-        };
         ProblemDetails: {
             type?: null | string;
             title?: null | string;
@@ -30858,12 +30845,6 @@ export interface components {
              * @description Duración de la ventana fija UTC, en segundos.
              */
             windowSeconds: number;
-        };
-        RedeemLoginLinkHttpRequest: {
-            /** @description Secreto de 32 bytes, base64url sin padding. Solo cuerpo/memoria; sin logs. */
-            token?: null | string;
-            /** @enum {null|string} */
-            access?: "consumer" | null;
         };
         /**
          * @description Adapta los cinco catálogos de referencia al contrato JSON de la API. Cada FromModel copia explícitamente
@@ -31649,15 +31630,27 @@ export interface components {
         };
         /** @enum {string} */
         WhatsAppNumberStatus: "Connected" | "PaymentMissing" | "Disconnected";
-        /** @description Cada teléfono con el país elegido; el back lo interpreta y no revela si tiene cuenta. */
+        /**
+         * @description «Vincular y mandar»: cada teléfono con el país elegido, y la casilla «La persona aceptó recibir mensajes por WhatsApp»
+         *     (decisión 179). El back interpreta cada número y no revela si tiene cuenta.
+         */
         WhatsAppPhoneImportHttpRequest: {
             phones?: null | components["schemas"]["PhoneInputHttpRequest"][];
             /** Format: uuid */
             companyId?: null | string;
             roleIds?: null | string[];
+            /** @description Obligatorio en true: quien carga confirma que la persona aceptó recibir mensajes por WhatsApp (decisión 179). Si falta o es false responde 400 WhatsApp.PhoneImport.ConsentRequired en consentConfirmed y no manda nada. La vista previa no lo pide. */
+            consentConfirmed?: null | boolean;
         };
         /** @enum {string} */
         WhatsAppPhoneImportOutcome: "AlreadyMember" | "Invite" | "Invalid";
+        /** @description La vista previa: cada teléfono con el país elegido. No guarda ni manda nada, así que no pide la casilla. */
+        WhatsAppPhoneImportPreviewHttpRequest: {
+            phones?: null | components["schemas"]["PhoneInputHttpRequest"][];
+            /** Format: uuid */
+            companyId?: null | string;
+            roleIds?: null | string[];
+        };
         WhatsAppPhoneImportPreviewResponse: {
             rows: components["schemas"]["WhatsAppPhoneImportRowResponse"][];
             /** Format: int32 */

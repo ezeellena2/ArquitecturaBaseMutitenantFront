@@ -496,6 +496,20 @@ export const validationConstraints = {
       "maxLength": 3
     }
   },
+  "NotificationItem": {
+    "id": {
+      "maxLength": 160
+    }
+  },
+  "NotificationListResponse": {
+    "items": {
+      "maxItems": 50
+    },
+    "unread": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "OrganizationAssistantSettingsResponse": {
     "dailyMessageLimit": {
       "minimum": -2147483648,
@@ -1803,6 +1817,11 @@ export const validationConstraints = {
       "maxItems": 200
     }
   },
+  "WhatsAppPhoneImportPreviewHttpRequest": {
+    "phones": {
+      "maxItems": 200
+    }
+  },
   "WhatsAppPhoneImportPreviewResponse": {
     "rows": {
       "maxItems": 200
@@ -1973,11 +1992,6 @@ export const schemaEnumValues = {
       true
     ]
   },
-  "LoginLinkRedeemResponse": {
-    "access": [
-      "consumer"
-    ]
-  },
   "PagedRequest": {
     "pageSize": [
       10,
@@ -1999,11 +2013,6 @@ export const schemaEnumValues = {
   "PlatformFactorVerifyChallenge": {
     "state": [
       "verify"
-    ]
-  },
-  "RedeemLoginLinkHttpRequest": {
-    "access": [
-      "consumer"
     ]
   },
   "VerifyPlatformFactorAuthorizeResponse": {

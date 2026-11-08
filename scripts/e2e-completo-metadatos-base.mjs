@@ -44,7 +44,7 @@ whatsapp("E8-06", "Persona con Phone principal y operador de Plataforma con sesi
 whatsapp("E8-07 E8-08 E8-09 E8-10 E8-11 E8-12", phonePerson, "/cuenta");
 whatsapp("E8-13", "Persona con cuenta Phone existente que vuelve de registro a ingreso personal", "/registro", { relatedRoute: "/login" });
 whatsapp("E8-14", "Persona con Phone verificado que escribe Hola por el transporte controlado", "/webhooks/whatsapp", controlledWebhook);
-whatsapp("E8-15 E8-16 E8-17", "Persona con Phone verificado que abre el enlace de ingreso del bot", "/login/enlace");
+whatsapp("E8-15 E8-16 E8-17", "Persona con Phone verificado que toca «Entrar a mi cuenta» del bot y pide el código en la web", "/login");
 whatsapp("E8-18", "Persona con Phone principal y correo de respaldo que visita la página pública", "/", { hostScope: "Subdominio de la organización publicada" });
 whatsapp("E8-19", "Operador de Plataforma que consulta la cuenta Phone y sus métodos de ingreso", "/plataforma/cuentas/:accountId");
 whatsapp("E8-20", "Titular de la cuenta Phone que solicita recuperación con un teléfono nuevo", "/recuperar");

@@ -17,10 +17,6 @@ export type LoginDestination = { type: "email"; email: string } | { type: "phone
 export type LoginDestinationRequest = { email: string; phone?: never; channel?: "email" }
   | { phone: PhoneDraft; email?: never; channel: "whatsapp" };
 export type RequestLoginCodeRequest = ApiSchemas["RequestLoginCodeHttpRequest"];
-export type PreviewLoginLinkRequest = ApiSchemas["PreviewLoginLinkHttpRequest"];
-export type LoginLinkPreviewResponse = ApiSchemas["LoginLinkPreviewResponse"];
-export type RedeemLoginLinkRequest = ApiSchemas["RedeemLoginLinkHttpRequest"];
-export type LoginLinkRedeemResponse = ApiSchemas["LoginLinkRedeemResponse"];
 export type GoogleSignupAntiforgeryResponse = ApiSchemas["GoogleSignupAntiforgeryHttpResponse"];
 export type RequestLoginCodeResponse = ApiSchemas["RequestLoginCodeResponse"];
 export type PlatformFactorChallengeResponse = ApiSchemas["PlatformFactorChallengeResponse"];

@@ -5,7 +5,7 @@ import { randomUUID } from "node:crypto";
 import { createServer } from "vite";
 import { chromium } from "playwright";
 import { fillOtp, openAccountEmailDialog, openPhoneMore, openPlatformAccountSearch, waitForPrivateHeading } from "./test-e2e-real-ui.mjs";
-import { caseDelay, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
+import { newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { decideAfterRecoveryNotice, newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
@@ -329,24 +329,23 @@ async function requestDeletion(page) {
   await page.goto(`${base}/cuenta`);
   await page.getByRole("button", { name: "Dar de baja", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "¿Dar de baja tu cuenta?", exact: true });
-  await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Prueba aislada de cancelación por enlace.");
+  await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Prueba aislada de cancelación desde el ingreso.");
   await clickHttp(page, dialog.getByRole("button", { name: "Dar de baja", exact: true }), "/api/me/deletion", 200);
   await page.getByRole("heading", { name: "Cerramos tu sesión", exact: true }).waitFor();
 }
-async function pendingLink(page, phone, width, scenario, observed) {
-  // LoginLinkIssuer limita por cuenta durante 60 s, incluso si la recuperación cambió su Phone.
-  // Respetamos el cooldown real de la fixture sin modificar opciones ni adelantar su reloj.
-  detail("esperar ventana real de emisión de enlace");
-  await caseDelay(60_000);
-  detail("generar enlace del bot para baja pendiente");
-  const fixture = await begin(scenario, phone); // Cursor anterior al ticket emitido por redeem.
-  const link = await botLink(phone, `${scenario}-bot`);
+async function pendingLogin(page, phone, width, scenario, observed) {
+  // Sin enlace del bot (decisión 179): la cuenta por borrar entra por el código de la web y ofrece cancelar la baja.
+  detail("ingresar con código a una cuenta por borrar");
+  const fixture = await begin(scenario, phone); // Cursor anterior al ticket que devuelve la verificación.
   const since = observed.oidc.length;
-  await page.goto(link); await page.getByRole("button", { name: "Continuar", exact: true }).waitFor();
-  const redeemed = await clickHttp(page, page.getByRole("button", { name: "Continuar", exact: true }), "/api/auth/login-link/redeem", 403);
-  const problem = await redeemed.json(); assert.equal(problem.code, "Identity.Account.PendingDeletion");
+  await page.goto(`${base}/login`); await whatsapp(page, phone);
+  await clickHttp(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 202);
+  await page.getByRole("heading", { name: "Revisá tu WhatsApp", exact: true }).waitFor();
+  await fillOtp(page, (await fixture("code")).proof);
+  const verified = await clickHttp(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 403);
+  const problem = await verified.json(); assert.equal(problem.code, "Identity.Account.PendingDeletion");
   assert.equal(typeof problem.cancelTicket, "string");
-  await page.getByRole("heading", { name: "Tu cuenta tiene la baja pedida", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Cancelar la baja y entrar", exact: true }).waitFor();
   assert.equal(observed.oidc.length, since); assert.equal(new URL(page.url()).hash, "");
   return { fixture, ticket: problem.cancelTicket, since, width };
 }
@@ -395,18 +394,11 @@ async function journey(width, index) {
   await signout(page, width);
 
   start(`registro ocupado hacia ingreso Persona ${width}`); await loginFromRegistration(page, phone, "consumer", width, "Personal", observed); await signout(page, width);
-  start(`bot webhook y enlace ${width}`); const link = await botLink(phone, `bot-${width}`);
-  const since = observed.oidc.length; const redeemStart = observed.calls.filter((call) => call.path === "/api/auth/login-link/redeem").length;
-  await page.goto(link); await page.getByRole("button", { name: "Continuar", exact: true }).waitFor();
-  assert.equal(new URL(page.url()).hash, ""); assert.equal(observed.oidc.length, since);
-  assert.equal(observed.calls.filter((call) => call.path === "/api/auth/login-link/redeem").length, redeemStart);
-  await clickHttp(page, page.getByRole("button", { name: "Continuar", exact: true }), "/api/auth/login-link/redeem", 200);
-  await authenticated(page, width); accessOidc(observed, since); await page.reload(); await authenticated(page, width);
-  pass(`webhook HMAC/dedupe persistente/bot/preview/redeem/OIDC state PKCE/F5 ${width}`); await signout(page, width);
-  start(`enlace usado ${width}`); const replayOidc = observed.oidc.length;
-  await page.goto(link); await page.getByRole("heading", { name: "Este enlace ya no sirve", exact: true }).waitFor();
-  await page.reload(); await page.getByRole("heading", { name: "Este enlace ya no sirve", exact: true }).waitFor();
-  assert.equal(observed.oidc.length, replayOidc); pass(`rechazo de enlace usado/F5 sin OIDC ${width}`);
+  start(`bot webhook y «Entrar a mi cuenta» ${width}`); const entry = new URL(await botLink(phone, `bot-${width}`));
+  // Decisión 179: ningún mensaje lleva un enlace secreto; el botón abre el ingreso y el código se pide desde la web.
+  assert.equal(entry.pathname, "/login"); assert.equal(entry.search, ""); assert.equal(entry.hash, "");
+  await login(page, phone, "consumer", `bot-login-${width}`); await authenticated(page, width); await page.reload(); await authenticated(page, width);
+  pass(`webhook HMAC/dedupe persistente/bot con «Entrar a mi cuenta» a /login sin token/ingreso por código/F5 ${width}`); await signout(page, width);
 
   start(`CTA registro WhatsApp ${width}`); const registration = new URL(await botLink(unknown, `unknown-${width}`));
   assert.equal(registration.pathname, "/registro"); assert.deepEqual([...registration.searchParams], [["channel", "whatsapp"]]); assert.equal(registration.hash, "");
@@ -494,19 +486,17 @@ async function journey(width, index) {
     },
   });
 
-  start(`baja pendiente por enlace ${width}`); await login(page, recovered, "consumer", `deletion-login-${width}`); await authenticated(page, width);
-  await begin(`deletion-${width}`, recovered); await requestDeletion(page); const pending = await pendingLink(page, recovered, width, `pending-${width}`, observed);
-  const redeemCount = observed.calls.filter((call) => call.path === "/api/auth/login-link/redeem").length;
+  start(`baja pendiente por ingreso ${width}`); await login(page, recovered, "consumer", `deletion-login-${width}`); await authenticated(page, width);
+  await begin(`deletion-${width}`, recovered); await requestDeletion(page); const pending = await pendingLogin(page, recovered, width, `pending-${width}`, observed);
   await clickHttp(page, page.getByRole("button", { name: "Cancelar la baja y entrar", exact: true }), "/api/auth/deletion/cancel", 200);
   await authenticated(page, width); accessOidc(observed, pending.since);
-  assert.equal(observed.calls.filter((call) => call.path === "/api/auth/login-link/redeem").length, redeemCount);
-  await page.reload(); await authenticated(page, width); pass(`cancelación de baja por enlace/OIDC nuevo sin otro redeem/F5 ${width}`);
+  await page.reload(); await authenticated(page, width); pass(`cancelación de baja desde el ingreso/OIDC nuevo/F5 ${width}`);
   start(`ticket cancelación vencido ${width}`); await begin(`deletion-again-${width}`, recovered); await requestDeletion(page);
-  const expired = await pendingLink(page, recovered, width, `expired-${width}`, observed); assert.equal((await expired.fixture("expireTicket", { ticket: expired.ticket })).ok, true);
+  const expired = await pendingLogin(page, recovered, width, `expired-${width}`, observed); assert.equal((await expired.fixture("expireTicket", { ticket: expired.ticket })).ok, true);
   await clickHttp(page, page.getByRole("button", { name: "Cancelar la baja y entrar", exact: true }), "/api/auth/deletion/cancel", 403);
-  await page.getByRole("heading", { name: "Este enlace ya no sirve", exact: true }).waitFor(); assert.equal(observed.oidc.length, expired.since);
-  await page.reload(); await page.getByRole("heading", { name: "Este enlace ya no sirve", exact: true }).waitFor(); assert.equal(observed.oidc.length, expired.since);
-  pass(`ticket vencido/inválido/F5 sin OIDC ${width}`);
+  // Con el ticket vencido, el ingreso vuelve a su primer paso: hay que pedir otro código.
+  await page.getByRole("button", { name: "Enviar código", exact: true }).waitFor(); assert.equal(observed.oidc.length, expired.since);
+  pass(`ticket vencido/inválido vuelve al ingreso sin OIDC ${width}`);
 }
 
 try {

@@ -21,9 +21,7 @@ const anonymous = {
   signinSilent: async () => null, signinRedirect: async () => {}, signoutRedirect: async () => {}, removeUser: async () => {},
 } as unknown as AuthContextProps;
 const authContext = fixture === "anonymous" ? anonymous : { ...fixtureAuth(fixture as CurrentUserFixture), removeUser: async () => {} };
-// El enlace de prueba conserva su fragmento real, nunca lo coloca en la query del arnés.
-const initialRoute = route === "/login/enlace" ? `${route}${globalThis.location.hash}` : route;
-const router = createMemoryRouter(routes, { initialEntries: [initialRoute] });
+const router = createMemoryRouter(routes, { initialEntries: [route] });
 const root = document.getElementById("root");
 if (!root) throw new Error("Falta raíz visual");
 createRoot(root).render(<StrictMode><AppProviders client={createQueryClient()} authContext={authContext}><RouterProvider router={router} /></AppProviders></StrictMode>);

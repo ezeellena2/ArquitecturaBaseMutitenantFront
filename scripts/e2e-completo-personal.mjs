@@ -10,7 +10,7 @@ export const personalDefinitions = [
   definition("01", "Leer los términos vigentes sin sesión", "/terminos", "Visitante sin sesión", "El documento coincide con GET /api/legal/terms, muestra versión y fecha y entra en el ancho del dispositivo.", ["legal"]),
   definition("02", "Leer la privacidad vigente sin sesión", "/privacidad", "Visitante sin sesión", "El documento coincide con GET /api/legal/privacy y entra en el ancho del dispositivo.", ["legal"]),
   definition("03", "Abrir una invitación inválida", "/invitacion", "Visitante sin sesión", "Un fragmento sintético inválido se retira de la URL, muestra «Esta invitación ya no sirve» y permite volver al ingreso.", ["invitacion"]),
-  definition("04", "Abrir un enlace de ingreso inválido", "/login/enlace", "Visitante sin sesión", "El enlace sin ticket válido muestra «Este enlace ya no sirve» y ofrece ir al ingreso.", ["enlace"]),
+  definition("04", "Abrir la página retirada del enlace de ingreso", "/login/enlace", "Visitante sin sesión", "El bot ya no manda enlaces (179): /login/enlace no existe, muestra «No encontramos esta página» y no ofrece Continuar.", ["enlace"]),
   definition("05", "Abrir una ruta inexistente", "/no-existe-e2e-completo", "Visitante sin sesión", "Muestra «No encontramos esta página» y una salida al inicio, sin desborde.", []),
   definition("06", "Validar el correo en recuperación", "/recuperar", "Visitante sin sesión", "Un correo mal escrito queda en el campo con su error accesible y no envía una solicitud ni un código.", ["recuperar"]),
   definition("07", "Preparar una persona nueva por UI", "/registro", "Persona con correo sintético", "El registro real crea una persona sin organizaciones. Se usa sólo como preparación de los casos nuevos.", [], { setup: true }),
@@ -171,11 +171,10 @@ export async function runPersonalCases(h) {
     });
     await record("04", publicPage, async () => {
       await publicPage.goto(new URL("/login/enlace", h.base).href);
-      await heading(publicPage, "Este enlace ya no sirve");
-      await publicPage.getByRole("link", { name: "Ir al ingreso", exact: true }).waitFor();
+      await heading(publicPage, "No encontramos esta página");
       assert.equal(await publicPage.getByRole("button", { name: "Continuar", exact: true }).count(), 0);
       await assertViewport(publicPage);
-      return "Sin ticket válido no se pudo iniciar sesión ni apareció Continuar.";
+      return "La página del enlace de un solo uso ya no existe: mostró el 404 sin ofrecer Continuar.";
     });
     await record("05", publicPage, async () => {
       await publicPage.goto(new URL("/no-existe-e2e-completo", h.base).href);

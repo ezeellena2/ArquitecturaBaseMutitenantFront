@@ -25,6 +25,10 @@
     "phonesRequired": "Paste or upload at least one phone.",
     "tooMany": "There are {{count}} phones: load up to {{max}} at a time."
   },
+  "consent": {
+    "label": "The person agreed to receive WhatsApp messages",
+    "required": "Confirm that the person agreed to receive WhatsApp messages."
+  },
   "columns": {
     "phone": "Phone",
     "person": "Person",

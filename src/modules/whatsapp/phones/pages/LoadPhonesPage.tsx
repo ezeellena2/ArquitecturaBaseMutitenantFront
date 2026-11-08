@@ -18,6 +18,7 @@ import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { phoneCountryOptions } from "@/shared/phone/countries";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
+import { CheckboxField } from "@/shared/ui/CheckboxField";
 import { DataTable } from "@/shared/ui/DataTable";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
@@ -27,10 +28,10 @@ import { SearchSelect } from "@/shared/ui/SearchSelect";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { Surface } from "@/shared/ui/Surface";
 import { Textarea } from "@/shared/ui/textarea";
-import type { WhatsAppPhoneImportPreviewResponse, WhatsAppPhoneImportRequest } from "../../api/types";
+import type { WhatsAppPhoneImportPreviewRequest, WhatsAppPhoneImportPreviewResponse, WhatsAppPhoneImportRequest } from "../../api/types";
 import { importPhones, previewPhoneImport } from "../api/phoneImports";
 import { createPhoneImportColumns, phoneImportPhoneRow } from "../columns";
-import { phoneImportErrorMessage } from "../errors";
+import { isConsentRequired, phoneImportErrorMessage } from "../errors";
 import { phoneInputs, phoneLines, phoneLinesFromFile } from "../lib/phoneLines";
 
 const usersPath = "/org/usuarios";
@@ -57,7 +58,7 @@ type LoadPhonesForm = z.input<ReturnType<typeof loadPhonesSchema>>;
 function sameImport(previous: WhatsAppPhoneImportRequest, next: WhatsAppPhoneImportRequest): boolean {
   const phones = (request: WhatsAppPhoneImportRequest) => request.phones ?? [];
   const roles = (request: WhatsAppPhoneImportRequest) => request.roleIds ?? [];
-  return previous.companyId === next.companyId
+  return previous.companyId === next.companyId && previous.consentConfirmed === next.consentConfirmed
     && roles(previous).length === roles(next).length && roles(previous).every((id, index) => id === roles(next)[index])
     && phones(previous).length === phones(next).length
     && phones(previous).every((phone, index) => phone.country === phones(next)[index]?.country && phone.number === phones(next)[index]?.number);
@@ -94,13 +95,17 @@ export function LoadPhonesPage() {
   const companyRoles = useResourceOptions(roleOptions("Company", company.field.value || undefined), Boolean(company.field.value));
   const roles = companyRoles.items.filter((role) => role.scope === "AnyCompany" || role.companyId === company.field.value);
   const file = useRef<HTMLInputElement>(null);
-  const preview = useMutation({ mutationFn: (request: WhatsAppPhoneImportRequest) => previewPhoneImport(request) });
+  const preview = useMutation({ mutationFn: (request: WhatsAppPhoneImportPreviewRequest) => previewPhoneImport(request) });
   const confirm = useIdempotentMutation((request: WhatsAppPhoneImportRequest, key) => importPhones(request, key), { meta: { handlesError: true }, sameOperation: sameImport });
   const [failure, setFailure] = useState<unknown>();
+  // Decisión 179: para invitar, quien carga confirma que cada persona aceptó recibir mensajes por WhatsApp. Sin la casilla,
+  // el botón sigue habilitado y al tocarlo se marca el campo, sin mandar nada.
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState(false);
   const reviewed = preview.data;
 
   // Los teléfonos con el país de la cultura (telefonos.md, «País por defecto»); los que traen «+», con el suyo.
-  function request(values: LoadPhonesForm, from: readonly string[]): WhatsAppPhoneImportRequest {
+  function request(values: LoadPhonesForm, from: readonly string[]): WhatsAppPhoneImportPreviewRequest {
     const data = format.referenceData;
     const countries = phoneCountryOptions(data?.countries ?? []);
     const cultureCountry = data?.cultures.find((item) => item.code === format.culture)?.countryCode;
@@ -115,13 +120,14 @@ export function LoadPhonesPage() {
 
   function send() {
     setFailure(undefined);
+    if (!consent) { setConsentError(true); return; }
     // Mientras se revisa, los teléfonos no se editan: son los mismos renglones que se revisaron.
-    confirm.mutate(request(form.getValues(), lines), {
+    confirm.mutate({ ...request(form.getValues(), lines), consentConfirmed: true }, {
       onSuccess: (result) => {
         toast.success(t("whatsapp:phones.messages.done", { count: result.invited, linked: result.linked }));
         void navigate(usersPath);
       },
-      onError: setFailure,
+      onError: (error) => { if (isConsentRequired(error)) setConsentError(true); else setFailure(error); },
     });
   }
 
@@ -133,7 +139,7 @@ export function LoadPhonesPage() {
   }
 
   function back() {
-    if (reviewed) { preview.reset(); setFailure(undefined); }
+    if (reviewed) { preview.reset(); setFailure(undefined); setConsent(false); setConsentError(false); }
     else void navigate(usersPath);
   }
 
@@ -172,6 +178,11 @@ export function LoadPhonesPage() {
                 {t("whatsapp:phones.form.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" />
               </button>}
           </FormField>
+          {reviewed ? <div className="md:col-span-2">
+            <CheckboxField label={t("whatsapp:phones.consent.label")} checked={consent}
+              onCheckedChange={(checked) => { setConsent(checked); if (checked) setConsentError(false); }}
+              error={consentError ? t("whatsapp:phones.consent.required") : undefined} />
+          </div> : null}
         </SectionFields>
       </Section>
       {reviewed

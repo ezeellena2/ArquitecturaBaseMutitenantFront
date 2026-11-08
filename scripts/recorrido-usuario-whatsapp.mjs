@@ -5,11 +5,11 @@ import { fillOtp, openPlatformAccountSearch } from "./test-e2e-real-ui.mjs";
 import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
 import { decideAfterRecoveryNotice, recoveryRow, selectRecovery } from "./test-e2e-real-whatsapp-recovery.mjs";
 
-export const e8SourceRevision = "a306c35fd27294eacf2c967e41121e91d2ffdce0";
+export const e8SourceRevision = "8a3ac6a57c6bb411bff13967ab74f4501b38b45e";
 export const e8ManualChecks = [
   "Google: completar el ingreso con una cuenta del proveedor; el recorrido sólo verifica el destino OAuth.",
   "WhatsApp real: recibir y copiar el OTP de ingreso y de Agregar WhatsApp en el teléfono.",
-  "WhatsApp real: escribir Hola y tocar Entrar en la respuesta del bot; el webhook y el outbox de prueba no certifican Meta.",
+  "WhatsApp real: escribir Hola y tocar «Entrar a mi cuenta» en la respuesta del bot; el webhook y el outbox de prueba no certifican Meta.",
   "WhatsApp real: recibir el aviso de recuperación aprobada en el método nuevo y verificar delivered en Meta.",
 ];
 
@@ -29,10 +29,10 @@ export const e8Definitions = [
   definition("11", "Principal y quitar sin otro OTP", "Hacer principal y Quitar confirman sin pedir ni enviar código adicional, según ADR0045."),
   definition("12", "Phone con correo de respaldo", "Email verificado de respaldo no desplaza Phone principal: Me, menú/lateral o Más/barra usan la máscara literal y avatar con raya.", { milestones: ["N3"], controlled: true }),
   definition("13", "Registro existente → ingreso Persona", "Registro ocupado conserva Phone en memoria al ir a Ingresar; OTP fijo abre consumer en / sin teléfono en URL/storage.", { milestones: ["A1"], controlled: true }),
-  definition("14", "Bot · respuesta controlada", "Webhook firmado y deduplicado procesa Hola y devuelve el enlace del outbox real; Meta queda manual.", source("el-bot-y-su-enlace", 1, "—", true)),
-  definition("15", "Bot · vista previa", "La vista previa limpia el fragmento y ofrece Continuar sin iniciar OIDC ni canjear el ticket.", source("el-bot-y-su-enlace", 2, "/login/enlace")),
-  definition("16", "Bot · sesión", "Sólo Continuar canjea el ticket e inicia OIDC con state/PKCE actuales.", source("el-bot-y-su-enlace", 3, "/login/enlace")),
-  definition("17", "Bot · Personal", "Personal y F5 conservan la sesión; el enlace usado se rechaza al volver a abrirlo.", source("el-bot-y-su-enlace", 4, "/")),
+  definition("14", "Bot · respuesta controlada", "Webhook firmado y deduplicado procesa Hola y responde «Entrar a mi cuenta», que abre /login sin token ni ticket; Meta queda manual.", source("el-bot-y-su-enlace", 1, "—", true)),
+  definition("15", "Bot · pide el código en la web", "El botón abre el ingreso, que pide el código por WhatsApp desde la web sin iniciar otra autorización.", source("el-bot-y-su-enlace", 2, "/login")),
+  definition("16", "Bot · pone el código", "El OTP verifica posesión e inicia OIDC con state/PKCE actuales.", source("el-bot-y-su-enlace", 3, "/login")),
+  definition("17", "Bot · Personal", "Personal y F5 conservan la sesión.", source("el-bot-y-su-enlace", 4, "/")),
   definition("18", "Menú público con Phone principal", "La publicación E7 conserva la sesión Personal tras F5 y muestra la máscara recibida sin usar el correo de respaldo.", { milestones: ["N3"] }),
   definition("19", "Cuentas y ficha con Phone principal", "Plataforma ya abierta identifica lista, acciones y ficha por la máscara principal; F5 conserva Phone y Email de respaldo verificado.", { milestones: ["N2"] }),
   definition("20", "Pedir recuperación Phone", "Recuperar verifica el método nuevo por OTP controlado y registra un pedido Pending por UI.", { controlled: true }),
@@ -298,25 +298,27 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
       fixture = await begin(`walkthrough-bot-${width}`, phone);
       for (let repeat = 0; repeat < 2; repeat++) assert.equal((await fixture("inbound")).status, 200);
       assert.equal((await fixture("events")).events.filter((item) => item.direction === "Inbound").length, 1);
-      link = (await fixture("bot")).proof;
+      link = new URL((await fixture("bot")).proof);
+      // Decisión 179: el botón lleva al ingreso, sin un enlace secreto.
+      assert.equal(link.pathname, "/login"); assert.equal(link.search, ""); assert.equal(link.hash, "");
       assert.deepEqual((await fixture("events")).events.filter((item) => item.direction === "Inbound"), [{ kind: "Text", direction: "Inbound", status: "Processed", processed: true }]);
-      return "Hola firmado/deduplicado y bot reales; enlace leído en privado. Respuesta en WhatsApp real pendiente.";
+      return "Hola firmado/deduplicado y bot reales; «Entrar a mi cuenta» abre /login sin token. Respuesta en WhatsApp real pendiente.";
     });
     await step("15", async () => {
-      since = authorizations.length; const start = calls.length; await page.goto(link);
-      await page.getByRole("button", { name: "Continuar", exact: true }).waitFor();
-      assert.equal(new URL(page.url()).hash, ""); assert.equal(authorizations.length, since);
-      assert.equal(calls.slice(start).filter((call) => call.path === "/api/auth/login-link/redeem").length, 0);
-      return "Vista previa limpió fragmento y esperó Continuar sin canje ni OIDC.";
+      fixture = await begin(`walkthrough-bot-login-${width}`, phone); since = authorizations.length;
+      await page.goto(link.href); await channel(page, phone);
+      loginReadyCount = canonicalLoginBaseline(authorizations, since);
+      await click(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 202);
+      await heading("Revisá tu WhatsApp"); assertNoAuthorizationBeforeProof(authorizations, loginReadyCount);
+      return "El botón abrió el ingreso; pidió el código desde la web sin abrir otra autorización.";
     });
     await step("16", async () => {
-      await click(page, page.getByRole("button", { name: "Continuar", exact: true }), "/api/auth/login-link/redeem", 200);
-      await awaitApp(page); assertOidc(since); return "Continuar canjeó el ticket e inició OIDC consumer actual.";
+      await fillOtp(page, (await fixture("code")).proof);
+      await click(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 200);
+      await awaitApp(page); assertOidc(since); return "El código verificó la posesión e inició OIDC consumer actual.";
     });
     await step("17", async () => {
-      await page.reload(); await awaitApp(page); await signOut(); const start = authorizations.length;
-      await page.goto(link); await heading("Este enlace ya no sirve"); assert.equal(authorizations.length, start);
-      await login(phone, `walkthrough-site-login-${width}`); return "F5 conservó Personal; reutilizar el enlace falló sin OIDC; volvió a entrar por UI.";
+      await page.reload(); await awaitApp(page); return "F5 conservó Personal.";
     });
     await step("18", async () => {
       await page.goto(site.href); await page.reload();

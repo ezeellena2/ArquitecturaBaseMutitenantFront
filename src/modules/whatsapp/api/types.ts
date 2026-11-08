@@ -81,6 +81,7 @@ export type WhatsAppNumberListResponse = ApiSchemas["WhatsAppNumberListResponse"
 export type WhatsAppNumberResponse = ApiSchemas["WhatsAppNumberResponse"];
 export type WhatsAppNumberStatus = ApiSchemas["WhatsAppNumberStatus"];
 export type WhatsAppPhoneImportRequest = ApiSchemas["WhatsAppPhoneImportHttpRequest"];
+export type WhatsAppPhoneImportPreviewRequest = ApiSchemas["WhatsAppPhoneImportPreviewHttpRequest"];
 export type WhatsAppPhoneImportOutcome = ApiSchemas["WhatsAppPhoneImportOutcome"];
 export type WhatsAppPhoneImportPreviewResponse = ApiSchemas["WhatsAppPhoneImportPreviewResponse"];
 export type WhatsAppPhoneImportResponse = ApiSchemas["WhatsAppPhoneImportResponse"];
