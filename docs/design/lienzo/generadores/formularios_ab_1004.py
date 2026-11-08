@@ -363,14 +363,26 @@ CSS_E14 = """.q-src { display: grid; grid-template-columns: repeat(2, minmax(0, 
 
 
 AYUDA_CUANTAS = "Con mínimo 1, la pregunta es obligatoria. Con 0, es opcional. Cada archivo, hasta 25 MB, y hasta 10 archivos por respuesta."
+SIN_ALMACEN = "Falta configurar dónde se guardan los archivos."
+# El tooltip de un tipo apagado, a la derecha de la lista (lo suma solo el tablero que lo muestra, FRM-Editor-18)
+CSS_TIPO_APAGADO = """.q-tipomn > span.off { position: relative; }
+.q-tipomn > span .e-tip { top: 50%; left: calc(100% + 12px); right: auto; transform: translateY(-50%); }
+.q-tipomn > span .e-tip::before { top: calc(50% - 4px); left: -4px; right: auto; }
+"""
+
+
+def tipo_apagado(n, abierto=False):
+    """43 y Criterio-Menus (v169): un tipo que no se puede usar queda solo grisado, sin texto debajo, con el motivo en su tooltip;
+    `abierto` lo dibuja, como al pasar el mouse."""
+    tip = f'<span class="e-tip" role="tooltip">{SIN_ALMACEN}</span>' if abierto else ""
+    return f'<span class="off" aria-disabled="true" title="{SIN_ALMACEN}">{n}{tip}</span>'
 
 
 def pregunta_foto(tipo_abierto=False):
     """F1: «Fotos de la visita» desplegada: de dónde sale la foto y cuántas."""
     if tipo_abierto:
         items = ('<span>Texto corto</span><span>Elegir de una lista</span><span>Elegir de un catálogo</span>'
-                 '<span class="off" aria-disabled="true">Foto<small>Falta configurar dónde se guardan los archivos</small></span>'
-                 '<span class="off" aria-disabled="true">Documento<small>Falta configurar dónde se guardan los archivos</small></span>')
+                 + tipo_apagado("Foto", True) + tipo_apagado("Documento"))
         tipo = f'<div class="w-cmp q-cat"><span class="rt">Tipo de respuesta</span><div class="ct sel abierto">Texto corto{CHEV}</div><div class="q-tipomn" role="listbox">{items}</div></div>'
         cab = fila_pregunta(6, "Fotos de la visita", "Texto corto", True, "Visit photos")
         resto = ""
@@ -405,9 +417,8 @@ def pregunta_nueva_tipos():
     """Una pregunta nueva con el tipo abierto: sin almacenamiento, Foto y Documento se ven apagados con su motivo."""
     items = ('<span class="on">Texto corto</span><span>Texto largo</span><span>Número con decimales</span><span>Fecha</span><span>Sí o no</span>'
              '<span>Elegir de una lista</span><span>Elegir de un catálogo</span>'
-             '<span class="off" aria-disabled="true">Foto<small>Falta configurar dónde se guardan los archivos</small></span>'
-             '<span class="off" aria-disabled="true">Documento<small>Falta configurar dónde se guardan los archivos</small></span>')
-    return ('<div class="q-ab">' + fila_pregunta(7, "Nueva pregunta", "Texto corto", False, None) + '<div class="q-ed">'
+             + tipo_apagado("Foto", True) + tipo_apagado("Documento"))
+    return ('<div class="q-ab">' + fila_pregunta(len(PREGUNTAS) + 1, "Nueva pregunta", "Texto corto", False, None) + '<div class="q-ed">'  # la que sigue a las de arriba
             '<div class="w-cmp"><span class="rt">Pregunta <span class="req">*</span></span><div class="ct ph">Escribí la pregunta</div></div>'
             f'<div class="w-cmp q-cat"><span class="rt">Tipo de respuesta</span><div class="ct sel abierto">Texto corto{CHEV}</div><div class="q-tipomn" role="listbox">{items}</div></div>'
             '<div class="w-cmp ancho" style="min-height: 330px;"></div>'

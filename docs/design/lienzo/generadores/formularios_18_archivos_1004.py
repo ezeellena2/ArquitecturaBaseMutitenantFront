@@ -159,7 +159,12 @@ def completa():
 
 # ================================================================ FRM-Dar-De-Baja-18
 def dar_de_baja():
-    t = B.dar_de_baja()
+    antes = E.CON_TITULOS
+    E.CON_TITULOS = True  # 88 (v169): el editor de atrás, con «Agregar título» y su título, como desde la 14
+    try:
+        t = B.dar_de_baja()
+    finally:
+        E.CON_TITULOS = antes
     assert "Se conservan las 24 respuestas" in t
     t = t.replace("Se conservan las 24 respuestas", CONSERVA)
     return L.sin_estados(t, [e for e in B.ESTADOS_BAJA if e != "Con envíos abiertos"])
@@ -170,9 +175,13 @@ def tel_respuestas():
     t = R.tel_respuestas5()
     for n, (f, d) in ARCHIVOS.items():
         texto = " · ".join(x for x in [f"{f} {'foto' if f == 1 else 'fotos'}", d] if x)
-        t, cuantas = re.subn(rf'({n}<span class="hr">.*?<span class="l3">[^<]*)(</span>)', lambda m: m.group(1) + " · " + texto + m.group(2), t, count=1, flags=re.S)
-        assert cuantas == 1, n
-    t = t.replace("con las preguntas de todas las versiones.</p>", f"con las preguntas de todas las versiones. {AYUDA_EXCEL}</p>")
+        # en cada estado que muestra la lista (también detrás de «Exportar»)
+        t, cuantas = re.subn(rf'({n}<span class="hr">.*?<span class="l3">[^<]*)(</span>)', lambda m: m.group(1) + " · " + texto + m.group(2), t, flags=re.S)
+        assert cuantas >= 1, n
+    # Exportar, con los datos de la compu (109, v169): lo que va de las fotos y los documentos, en la (i) de las columnas
+    todas = '<span class="t-lin">Todas las preguntas (13 columnas)</span>'
+    assert t.count(todas) == 1
+    t = t.replace(todas, todas.replace("</span>", A.t_info(AYUDA_EXCEL) + "</span>"))
     t = L.sin_estados(t, [e for e in R.ESTADOS_TPL5 if e not in ("Respuestas", "Filtros", "Exportar")])
     return enlaces(re.sub(r"<title>[^<]*</title>", "<title>Respuestas · teléfono · etapa 18</title>", t))
 
@@ -257,6 +266,18 @@ def boton_clip(apagado=False, tip=False):
 def escritura(apagado=False):
     t = A.escr("off", FUERA, "Pasaron 24 horas", cerrada=True) if apagado else A.escr()
     return re.sub(r'(<span class="area[^"]*">)', lambda m: boton_clip(apagado, apagado) + m.group(1), t, count=1)
+
+
+NOTA_RE = re.compile(r'<button type="button" class="o-nt" aria-label="Nota interna"[^>]*>.*?</button>', re.S)
+NOTA_TEL_RE = re.compile(r'<button type="button" class="ap-red nt" aria-label="Nota interna"[^>]*>.*?</button>', re.S)
+
+
+def con_clip(t, tel=False):
+    """78 (v169): un chat de la 18 con el clip al lado de «Nota interna», en cada estado, como WA-Chats-Adjuntos y su teléfono."""
+    clip = f'<button type="button" class="ap-red nt" aria-label="Adjuntar un archivo">{CLIP}</button>' if tel else boton_clip()
+    t, n = (NOTA_TEL_RE if tel else NOTA_RE).subn(lambda m: m.group(0) + clip, t)
+    assert n, "sin «Nota interna»"
+    return t if tel else L.con_css(t, "clip", ".ad-clip { flex: none; }\n")
 
 
 def dlg_mandar(modo="documento"):
@@ -385,13 +406,21 @@ if __name__ == "__main__":
         (PROJ / f"{n}.dc.html").write_text(t, encoding="utf-8")
     for n, f in [("M-FRM-Respuestas-18", tel_respuestas), ("M-FRM-Respuesta-18", tel_respuesta), ("WA-Chats-Adjuntos", chat_adjuntos), ("M-WA-Chats-Adjuntos", tel_adjuntos)]:
         (PROJ / f"{n}.dc.html").write_text(E.post(n, f()), encoding="utf-8")
-    # 165 (traspaso 10): el visor, que armó formularios_ab_archivos_1004.py, sobre el chat con el mensaje que nombra el formulario
+    # 165 (traspaso 10): el visor, que armó formularios_ab_archivos_1004.py, sobre el chat con el mensaje que nombra el formulario.
+    # 194 (v169): al pie del visor, el nombre, el tamaño y «Descargar», igual que en la planilla; quién la mandó y cuándo ya están en la tarjeta.
     for n in ("WA-Chats-Visor", "M-WA-Chats-Visor"):
         f = PROJ / f"{n}.dc.html"
         t = f.read_text(encoding="utf-8")
         nuevo = t.replace("Completá este formulario, por favor.", A.mensaje_de("Visita a cliente"))
+        nuevo = re.sub(r"<small>([\d,]+ MB) · sacada con la cámara[^<]*</small>", r"<small>\1</small>", nuevo)
         if nuevo != t:
             f.write_text(nuevo, encoding="utf-8")
+    # 78 (v169): el clip para adjuntar va al lado de «Nota interna», como en WA-Chats-Adjuntos, en los chats que muestran la 18
+    for n in ("WA-Chats-Respuesta-18", "M-WA-Conversacion-Respuesta-18", "WA-Chats-Visor", "M-WA-Chats-Visor"):
+        f = PROJ / f"{n}.dc.html"
+        t = f.read_text(encoding="utf-8")
+        if 'aria-label="Adjuntar un archivo"' not in t:
+            f.write_text(con_clip(t, n.startswith("M-")), encoding="utf-8")
     if "--sin-canvas" not in sys.argv:  # para correrlo sobre el lienzo sin tocar canvas.json
         registrar()
     print("tableros", list(TITULOS))

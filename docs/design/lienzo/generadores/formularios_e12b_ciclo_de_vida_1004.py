@@ -316,7 +316,7 @@ def dar_de_baja():
     V = {e: base for e in ESTADOS_BAJA}
     capas = {"Con envíos abiertos": dlg_baja(), "Sin envíos abiertos": dlg_baja(envios=False), "Consultando": dlg_baja(consultando=True),
              "Mientras se da de baja": dlg_baja(trabajando=True), "No se pudo": dlg_baja(error=True)}
-    return A.pagina_editor(V, capas, ESTADOS_BAJA, "Dar de baja un formulario", E.CSS_E12 + CSS_E12B + E.CSS_ZONAS)
+    return A.pagina_editor(V, capas, ESTADOS_BAJA, "Dar de baja un formulario", E.CSS_E12 + CSS_E12B + E.css_titulos() + E.CSS_ZONAS)
 
 
 # ================================================================ FRM-Editor-Baja (BA2)
@@ -504,19 +504,42 @@ REACTIVAR_T = t_dets([("Próxima respuesta", "REL-000013"), ("Borrador", "Guarda
 PIE_REACTIVAR_T = '<button type="button" class="cb cb-pri">Reactivar con la versión 3</button><button type="button" class="cb cb-sec">Cancelar</button>'
 
 
-def tel_editor_baja():
-    def bar(sub):
-        return (f'<div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-FRM-Listado.dc.html">{F.TVOLVER}</a>'
-                f'<div class="tit"><h1>Relevamiento de obra</h1><span class="sub">{sub}</span></div>'
-                f'<button type="button" class="ap-ib" aria-label="{INFO_BAJA}">{F.TINFO}</button>'
-                f'<button type="button" class="ap-ib" aria-label="Acciones de Relevamiento de obra">{F.TKEBAB}</button></div>')
+def t_bar_baja(sub, volver="M-FRM-Listado.dc.html"):
+    return (f'<div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="{volver}">{F.TVOLVER}</a>'
+            f'<div class="tit"><h1>Relevamiento de obra</h1><span class="sub">{sub}</span></div>'
+            f'<button type="button" class="ap-ib" aria-label="{INFO_BAJA}">{F.TINFO}</button>'
+            f'<button type="button" class="ap-ib" aria-label="Acciones de Relevamiento de obra">{F.TKEBAB}</button></div>')
+
+
+def t_base_baja():
     viejas = E.T_PREG
     E.T_PREG = [(n, d.replace("Texto corto", "Texto corto · Obligatoria") if n == "Obra" else d + " · Opcional") for n, d, _o, _x in PREG_REL]
     try:
-        base = con_titulo_rel(E.t_cuerpo(nombre="Relevamiento de obra", prefijo="REL"))
+        return con_titulo_rel(E.t_cuerpo(nombre="Relevamiento de obra", prefijo="REL"))
     finally:
         E.T_PREG = viejas
-    fijo = '<div class="ap-fijo"><a class="cb cb-pri full" href="#">Reactivar</a></div>'
+
+
+T_FIJO_BAJA = '<div class="ap-fijo"><a class="cb cb-pri full" href="#">Reactivar</a></div>'
+# Lo que suma la pantalla del formulario a un tablero que la muestra (la lista del teléfono de la 17, 131): solo lo que usa, para no tocar
+# las hojas de la lista (A.CSS_TED trae reglas de `.ap-hoja`)
+CSS_TBAJA = ".ap-cmp .ct.ro { display: flex; justify-content: space-between; align-items: center; }\n" + E.CSS_TTITULOS
+
+
+def t_pantalla_baja(volver):
+    """131 (v169): «Reactivar» se abre en el formulario. La pantalla de M-FRM-Editor-Baja, con sus títulos (88), para la lista del teléfono."""
+    antes = E.CON_TITULOS
+    E.CON_TITULOS = True
+    try:
+        return t_bar_baja("Dado de baja · versión 2", volver) + t_base_baja() + T_FIJO_BAJA
+    finally:
+        E.CON_TITULOS = antes
+
+
+def tel_editor_baja():
+    bar = t_bar_baja
+    base = t_base_baja()
+    fijo = T_FIJO_BAJA
     # 175: mientras se reactiva, la barra dice el estado de la publicación y «Reactivar» queda apagado (su motivo, en la franja oscura al tocarlo)
     apagado = '<div class="ap-fijo"><button type="button" class="cb cb-pri full" aria-disabled="true">Reactivar</button></div>'
     cuerpo = {e: bar("Dado de baja · versión 2") + base + fijo for e in E_TEB}
@@ -564,8 +587,8 @@ if __name__ == "__main__":
     # la lista y su teléfono, desde la 79: FRM-Formularios y M-FRM-Formularios (formularios_lista_y_ficha_1004.py)
     escribir("FRM-Copiar", copiar())
     escribir("FRM-Reactivar-Eliminar", reactivar_eliminar())
+    E.CON_TITULOS = True  # 88: el editor de un dado de baja y el de atrás de «Dar de baja», con «Agregar título» y su título (traspaso 10 y v169)
     escribir("FRM-Dar-De-Baja", dar_de_baja(), 1400)
-    E.CON_TITULOS = True  # 88: el editor de un dado de baja, con «Agregar título» y su título (traspaso 10)
     escribir("FRM-Editor-Baja", editor_baja(), 1400)
     escribir("M-FRM-Editor-Baja", tel_editor_baja())
     E.CON_TITULOS = False

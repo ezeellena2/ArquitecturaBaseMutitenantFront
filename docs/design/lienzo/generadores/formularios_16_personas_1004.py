@@ -46,6 +46,11 @@ DATOS = [("Zona", "zona", "De un catálogo · Zonas", FORMULARIO, True), ("Sucur
 DATO_BAJA = ("Legajo", "legajo", "Texto", "—", False)
 AYUDA_DATOS = "Los datos que tiene cada persona eligen de un catálogo o son un texto. Los valores se cargan en la ficha del usuario."
 EN_USO_DATO = "Se usa en estos formularios. Mientras se use, no se puede cambiar su tipo o catálogo ni darlo de baja."
+# 130 (v169): la clave de un dato no la usan una plantilla ni una importación, como la de un campo; queda solo lo que importa
+AYUDA_CLAVE = "No cambia después de guardar."
+# v169: la (i) de «Papel» del modal de campos (solo la usa FRM-Catalogo-16): los dos papeles se guardan con la respuesta
+M13.AYUDA_PAPEL = ("Filtro: decide qué opciones ve cada persona, o arma un filtro fijo de una pregunta. Dato: se muestra con la opción elegida. "
+                   "Los dos se guardan con la respuesta.")
 
 CSS_DP = """.dp-d { grid-template-columns: minmax(150px, 1fr) 150px minmax(190px, 1.4fr) minmax(150px, 1fr) 72px; gap: 12px; }
 .dp-p { grid-template-columns: minmax(200px, 1.6fr) 170px minmax(170px, 1fr) 72px; gap: 12px; }
@@ -194,7 +199,7 @@ def dlg_dato(tipo="De un catálogo", combo="", nombre="", clave="", guardando=Fa
     if en_uso:
         extra += f'<div class="dp-usos">{EN_USO_DATO}<ul><li>{FORMULARIO}</li></ul></div>'
     cuerpo = (f'<div class="dp-form"><div class="w-cmp"><span class="rt">Nombre <span class="req">*</span></span>{nom}</div>'
-              f'<div class="w-cmp"><span class="rt">Clave <span class="req">*</span>{F.info(M13.CLAVE)}</span>{llave}</div>'
+              f'<div class="w-cmp"><span class="rt">Clave <span class="req">*</span>{F.info(AYUDA_CLAVE)}</span>{llave}</div>'
               f'<div class="w-cmp"><span class="rt">Tipo <span class="req">*</span></span><div class="ct sel"{gris}>{tipo}{"" if en_uso else CHEV}</div></div>{catalogo}{extra}</div>')
     boton = trabaja("Guardando…") if guardando else '<button type="button" class="cb cb-pri">Guardar</button>'
     return F.dialogo("Editar dato" if editar else "Agregar dato", cuerpo, f'<button type="button" class="cb cb-sec">Cancelar</button>{boton}')
@@ -232,7 +237,8 @@ def tel_datos_personas():
     tabs = lambda on: ('<div class="ap-tabs" role="tablist">' + "".join(f'<span class="{"on" if k == on else ""}" role="tab">{k}</span>' for k in ("Datos", "Personas")) + "</div>")
     filas_d = "".join(f'<div class="ap-fila"><div class="tx"><span class="l1">{n}</span><span class="l2">{tipo}</span><span class="l3">{clave}</span></div>'
                       f'<button type="button" class="ap-ib" aria-label="Editar {n}">{F.svg(chr(60) + "path d=" + chr(34) + "M4 20h4L19 9l-4-4L4 16z" + chr(34) + "/>", 20)}</button></div>' for n, clave, tipo, _u, _a in DATOS)
-    filas_p = "".join(f'<a class="ap-fila" href="M-FRM-Usuario-Datos.dc.html"><div class="tx"><span class="l1">{n}</span><span class="l2">Zona: {z} · Sucursal: {s}</span></div></a>'
+    # 138 (v169): los valores sin rótulos, en el orden de las columnas de la compu (Zona y Sucursal); «—» si no tiene
+    filas_p = "".join(f'<a class="ap-fila" href="M-FRM-Usuario-Datos.dc.html"><div class="tx"><span class="l1">{n}</span><span class="l2">{z} · {s}</span></div></a>'
                       for n, _r, z, s in PERSONAS)
     bus = f'<div style="padding: 12px 0 4px;"><span class="w-bus" style="width: auto;">{F.BUSCAR} Buscar personas</span></div>'
     esq = '<div class="ap-esq"><span style="width: 80%;"></span><span style="width: 60%;"></span><span style="width: 72%;"></span></div>'
@@ -506,8 +512,22 @@ def z_aviso(que, detalle, ayuda=""):
     return f'<div class="z-f av"><span class="ic">{F.INFO}</span><span class="tx"><b>{que}</b><span>{detalle}{F.info(ayuda) if ayuda else ""}</span></span></div>'
 
 
+def cuerpo_16(**k):
+    """v169: el editor de atrás es el de la 16, con «Proveedores a consultar» de 5.ª pregunta, que es la de los avisos (como FRM-Editor-16)."""
+    viejas = A.PREGUNTAS
+    A.PREGUNTAS = [(PREGUNTA, f"Elegir de un catálogo · {CATALOGO}", ob, en) if n == "Motivo" else (n, tipo, ob, en) for n, tipo, ob, en in viejas]
+    try:
+        return E.cuerpo_editor(**k).replace("Motivo (opcional)", f"{PREGUNTA} (opcional)")
+    finally:
+        A.PREGUNTAS = viejas
+
+
 def publicar_16():
-    base = (E.banda(FORMULARIO, E.EST_PUB, E.acc("limpio"), E.VOL), E.cuerpo_editor(abierta=None, modo="fijo"))
+    cuerpo = cuerpo_16(abierta=None, modo="fijo")
+    base = (E.banda(FORMULARIO, E.EST_PUB, E.acc("limpio"), E.VOL), cuerpo)
+    # «Para los dos: un cliente»: el formulario es para empleados y clientes, y el aviso dice por qué no le llega a un cliente
+    assert cuerpo.count(E.para_quien()) == 1
+    para_los_dos = (base[0], cuerpo.replace(E.para_quien(), E.para_quien(valor="Empleados y clientes")))
     # 157 (NI3-B): el máximo por persona se avisa solo cuando no entra en WhatsApp (200 en una elección) o da cero; si entra, no dice nada
     sin_zona = z_aviso(PREGUNTA, "2 personas sin Zona. No se les va a poder mandar hasta que tengan el dato.")
     no_entra = z_aviso(PREGUNTA, "Como mucho 240 opciones por persona (Centro), de un límite de 200.", "Es lo que puede llegar a recibir la persona con más opciones.")
@@ -517,12 +537,18 @@ def publicar_16():
     problema = E.z_zona("Problemas", E.z_problema(PREGUNTA, "El filtro «Rubro es Frío» deja 240 opciones, y WhatsApp muestra hasta 200."), E.AYUDA_PROBLEMAS)
     tit = "Publicar la versión 4 en WhatsApp"
     dlg = A.dlg_publicar
-    capas = {"Solo avisos": dlg(tit, avisos(sin_zona) + E.que_se_publica(), E.pie_pub()),
-             "Problemas y avisos": dlg(tit, problema + avisos(sin_zona) + E.que_se_publica(), E.pie_pub(activo=False)),
-             "Para los dos: un cliente": dlg(tit, avisos(sin_zona + cliente) + E.que_se_publica(), E.pie_pub()),
-             "El máximo no entra": dlg(tit, avisos(no_entra + sin_zona) + E.que_se_publica(), E.pie_pub()),
-             "Nadie ve ninguna opción": dlg(tit, avisos(cero) + E.que_se_publica(), E.pie_pub())}
-    return A.pagina_editor({e: base for e in ESTADOS_P16}, capas, ESTADOS_P16, "Publicar en WhatsApp · etapa 16", E.CSS_E12 + E.css_titulos() + E.CSS_ZONAS + CSS_AVISOS)
+    # «Qué se publica», con las preguntas de este editor: la que cambió es «Proveedores a consultar», que acá ocupa el lugar de «Motivo»
+    cambiadas = E.z_dato("Cambiadas", "Motivo y Fallas")
+    que = E.que_se_publica()
+    assert que.count(cambiadas) == 1
+    que = que.replace(cambiadas, E.z_dato("Cambiadas", f"{PREGUNTA} y Fallas"))
+    capas = {"Solo avisos": dlg(tit, avisos(sin_zona) + que, E.pie_pub()),
+             "Problemas y avisos": dlg(tit, problema + avisos(sin_zona) + que, E.pie_pub(activo=False)),
+             "Para los dos: un cliente": dlg(tit, avisos(sin_zona + cliente) + que, E.pie_pub()),
+             "El máximo no entra": dlg(tit, avisos(no_entra + sin_zona) + que, E.pie_pub()),
+             "Nadie ve ninguna opción": dlg(tit, avisos(cero) + que, E.pie_pub())}
+    V = {e: para_los_dos if e == "Para los dos: un cliente" else base for e in ESTADOS_P16}
+    return A.pagina_editor(V, capas, ESTADOS_P16, "Publicar en WhatsApp · etapa 16", E.CSS_E12 + E.css_titulos() + E.CSS_ZONAS + CSS_AVISOS)
 
 
 # ================================================================ WA-Chats-Formulario-16: lo que no se puede mandar, con el motivo
@@ -548,7 +574,80 @@ def chat_16(nombre, destino):
     quedan = ["Le falta el dato", "El filtro no funciona", "A un cliente"]
     quitar = [e for e in opciones if e not in quedan]
     t = L.sin_estados(t, quitar, "Le falta el dato")
+    t = en_clientes(t, movil=nombre.startswith("M-"))
     return re.sub(r"<title>[^<]*</title>", f"<title>{destino}</title>", t)
+
+
+# v169: «A un cliente» pasa en la bandeja Clientes, con Martina López (la clienta de WA-Chats-Formulario-Cliente), y no en Internos con Tomás,
+# que es empleado. Lo que cambia del fondo va en dos bloques: el de Internos en los otros estados y el de Clientes solo en este.
+CLIENTE = "A un cliente"
+VP_CLIENTE = "Vos: ¡Qué bueno, Martina! Te mando el formulario para confirmar la entrega."
+
+
+def bloque_sc(t, inicio):
+    """Dónde empieza y termina el <sc-if> que arranca con `inicio`, con lo que tenga adentro."""
+    i = t.index(inicio)
+    nivel = 0
+    for m in re.finditer(r"<sc-if\b|</sc-if>", t[i:]):
+        nivel += 1 if m.group(0) == "<sc-if" else -1
+        if nivel == 0:
+            return i, i + m.end()
+    raise ValueError(inicio)
+
+
+def segun_cliente(t, a, b):
+    assert t.count(a) == 1, (t.count(a), a[:90])
+    return t.replace(a, f'<sc-if value="{{{{noCli}}}}" hint-placeholder-val="{{{{si}}}}">{a}</sc-if>'
+                        f'<sc-if value="{{{{cli}}}}" hint-placeholder-val="{{{{no}}}}">{b}</sc-if>')
+
+
+def en_clientes(t, movil=False):
+    lista = json.loads(re.search(r"const k = (\[.*?\])\.indexOf\(e\);", t).group(1))
+    s = lista.index(CLIENTE)
+    # La lógica: dos banderas más, y la vista previa de Martina en la lista de chats
+    si_no = "      si: true, no: false,\n"
+    assert t.count(si_no) == 1
+    t = t.replace(si_no, si_no + f"      cli: e === {json.dumps(CLIENTE)}, noCli: e !== {json.dumps(CLIENTE)},\n")
+    if not movil:
+        vp = f'"{CLIENTE}": "Vos: Genial, Tomás. Te mando el formulario de la visita."'
+        assert t.count(vp) == 1
+        t = t.replace(vp, f'"{CLIENTE}": {json.dumps(VP_CLIENTE, ensure_ascii=False)}')
+        # La bandeja, la lista de chats (Martina y los otros cuatro de Clientes, como en WA-Chats) y el encabezado del chat
+        seg = '<span role="radio" aria-checked="false">Clientes <span class="c">5</span></span><span class="on" role="radio" aria-checked="true">Internos <span class="c">2</span></span>'
+        t = segun_cliente(t, seg, '<span class="on" role="radio" aria-checked="true">Clientes <span class="c">5</span></span><span role="radio" aria-checked="false">Internos <span class="c">2</span></span>')
+        i = t.index('<div class="w-conv on">')
+        j = t.index('</div><div class="w-hilo">', i)
+        convs = t[i:j]
+        k = convs.index('<div class="w-conv ', 1)
+        martina = (convs[:k].replace('<span class="w-av">TA</span>', '<span class="w-av">ML</span>').replace("<b>Tomás Acosta</b>", "<b>Martina López</b>")
+                   .replace("Carga de pedidos · Lucía Fernández", "Ventas · Lucía Fernández"))
+        t = segun_cliente(t, convs, martina + E.otros_clientes())
+        i = t.index('<div class="hc">', t.index('<div class="w-hilo">'))
+        j = t.index('<div class="w-msjs">', i)
+        hc = t[i:j]
+        t = segun_cliente(t, hc, hc.replace('<span class="w-av">TA</span>', '<span class="w-av">ML</span>').replace("<b>Tomás Acosta</b>", "<b>Martina López</b>")
+                          .replace("011 15-5555-4521 · Empleado · Delta S.A.", "011 15-5555-6203 · Vinculada a su cuenta · Mayorista")
+                          .replace("Acciones de Tomás Acosta", "Acciones de Martina López"))
+        t = segun_cliente(t, E.CLIENTE_ANTES, E.CLIENTE_DESPUES)
+        inicio = f'<sc-if value="{{{{s{s}}}}}" hint-placeholder-val="{{{{no}}}}"><div class="w-oscuro">'
+    else:
+        i = t.index('<span class="w-av">TA</span>', t.index('<div class="ap-cbar">'))
+        j = t.index("</button>", i) + len("</button>")
+        cab = t[i:j]
+        t = segun_cliente(t, cab, cab.replace('<span class="w-av">TA</span>', '<span class="w-av">ML</span>').replace("<b>Tomás Acosta</b>", "<b>Martina López</b>")
+                          .replace("<span>Empleado · Delta S.A.</span>", "<span>Vinculada a su cuenta · Mayorista</span>").replace("Acciones de Tomás Acosta", "Acciones de Martina López"))
+        tel = lambda h: h.replace("w-m", "ap-m").replace("o-sis", "ap-sis")  # noqa: E731
+        t = segun_cliente(t, tel(E.CLIENTE_ANTES), tel(E.CLIENTE_DESPUES))
+        inicio = f'<sc-if value="{{{{s{s}}}}}" hint-placeholder-val="{{{{no}}}}"><div class="ap-velo"></div><div class="ap-hoja"'
+    # El diálogo del estado: a Martina, con los formularios para clientes; «Visita a cliente», que desde la 16 es para los dos, elegido y con su motivo
+    i, j = bloque_sc(t, inicio)
+    d = t[i:j]
+    ops = re.search(r'<div class="c-ops" role="radiogroup" aria-label="Formulario">(?:<div class="c-op[^"]*"[^>]*>.*?</div>)*</div>', d, re.S).group(0)
+    version = re.search(r"<b>Visita a cliente</b><small>([^<]*)</small>", ops).group(1)
+    d = (d.replace(ops, A.cards([("Entrega de pedido", "Versión 1 · 5 preguntas"), ("Visita a cliente", version)], 1))
+         .replace("Enviar un formulario a Tomás Acosta", "Enviar un formulario a Martina López").replace('<span class="h-sub">A Tomás Acosta</span>', '<span class="h-sub">A Martina López</span>'))
+    assert "Tomás" not in d, d[:200]
+    return t[:i] + d + t[j:]
 
 
 # ================================================================ FRM-Respuestas-16: los campos de papel «Filtro» salen apagados
@@ -581,8 +680,10 @@ def respuestas_16():
 
 
 def tel_respuestas_16():
+    """La planilla del teléfono, como la de la 15: sin «Columnas» en «Más acciones», porque el teléfono no tiene columnas (v169, `responsive.md`),
+    y con el nombre entero (174), que ya trae M-FRM-Respuestas."""
     t = (PROJ / "M-FRM-Respuestas.dc.html").read_text(encoding="utf-8")
-    t = t.replace(f"{A.DESCARGAR} Exportar a Excel</span>", f'{A.DESCARGAR} Exportar a Excel</span><span role="menuitem">Columnas</span>')
+    assert '<span role="menuitem">Columnas</span>' not in t
     return re.sub(r"<title>[^<]*</title>", "<title>Respuestas · teléfono · etapa 16</title>", t)
 
 

@@ -436,10 +436,10 @@ def fila_titulo(texto=TITULO_EJ, solo_ver=False, primera=False):
 
 
 def titulo_abierto(texto=""):
-    """«Editar» o «Agregar título»: el título se abre en el lugar, como una pregunta; hasta 80 caracteres (T24)."""
+    """«Editar» o «Agregar título»: el título se abre en el lugar, como una pregunta; hasta 80 caracteres (T24), sin contador: el límite se avisa al publicar (121)."""
     ct = f'<div class="ct{"" if texto else " ph"}">{texto or "Título de la sección"}</div>'
     return ('<div class="q-ab">' + fila_titulo(texto or "Título nuevo") + '<div class="q-ed">'
-            f'<div class="w-cmp ancho"><span class="rt">Título <span class="req">*</span></span>{ct}<span class="q-cnt">{len(texto)}/80</span></div>'
+            f'<div class="w-cmp ancho"><span class="rt">Título <span class="req">*</span></span>{ct}</div>'
             f'<div class="q-pie ancho"><button type="button" class="cb cb-sec">Listo</button></div></div></div>')
 
 

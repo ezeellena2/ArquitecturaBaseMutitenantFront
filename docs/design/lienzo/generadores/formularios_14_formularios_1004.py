@@ -372,11 +372,11 @@ def tel_editor():
         ph = "Elegí una opción" if n == "Motivo" else "Elegí una fecha" if n == "Fecha de la visita" else ""
         vp += f'<div class="ap-cmp"><span class="rt"><span>{n}{opcional}</span></span><div class="ct ph{" area" if n == "Observaciones" else ""}">{ph}</div></div>'
     vp += "</div>"
-    publicar_h = ('<div class="p-tit2">Qué cambia respecto de la versión 3</div><div class="ap-grupo" style="margin: 0;">'
-                  '<div class="ap-dato"><span class="k">Cambiada</span><span class="v">Motivo (las opciones)</span></div>'
-                  '<div class="ap-dato"><span class="k">Cambiada</span><span class="v">Fallas (hasta 3)</span></div></div>'
-                  f'<span class="t-lin">{E.TILDE} Las preguntas de la versión 4 ya no se editan; lo que cambies después va a la versión 5.</span>'
-                  f'<span class="t-lin">{E.RELOJ} WhatsApp la revisa unos minutos. Recién ahí se puede mandar desde el chat.</span>')
+    # 112 (v169): la hoja dice lo mismo que FRM-Publicar, la zona «Qué se publica», sin párrafos de lo que va a pasar
+    publicar_h = ('<div class="p-tit2">Qué se publica</div><div class="ap-grupo" style="margin: 0;">'
+                  + "".join(f'<div class="ap-dato"><span class="k">{k}</span><span class="v">{v}</span></div>'
+                            for k, v in (("Borrador", f"Guardado el {E.GUARDADO}"), ("Preguntas", "7"), ("Agregadas", "Observaciones"), ("Cambiadas", "Motivo y Fallas")))
+                  + "</div>")
     capas = {
         "Acciones del formulario": M.hoja("Visita a cliente", '<a role="menuitem" href="M-FRM-Vista-Oficial.dc.html">Ver vista oficial</a>'),
         "Editar una pregunta": F.thoja("Editar pregunta", editar, listo),
@@ -390,7 +390,7 @@ def tel_editor():
                                          + F.tcampo("Ayuda para quien lo recibe", "Opcional", vacio=True) + f'<span class="t-chk"><i>{tilde}</i>Obligatoria</span>', listo),
         "Así lo ve el empleado": F.thoja("Así lo ve el empleado", vp, '<button type="button" class="cb cb-pri" disabled>Enviar</button>', sub="Visita a cliente · borrador"),
         "Publicar": F.thoja("Publicar la versión 4", publicar_h, '<button type="button" class="cb cb-pri">Publicar versión 4</button><button type="button" class="cb cb-sec">Cancelar</button>'),
-        "Editar un título": F.thoja("Editar título", F.tcampo("Título", E.TITULO_EJ, req=True).replace("</div></div>", f'</div><span class="ay" style="align-self: flex-end;">{len(E.TITULO_EJ)}/80</span></div>', 1), listo),
+        "Editar un título": F.thoja("Editar título", F.tcampo("Título", E.TITULO_EJ, req=True), listo),  # 121: sin contador; el límite se avisa al publicar
         "Necesita revisión: qué hacer": t_aviso_importante(*AVISO_REVISION),
         "Salió: confirmar": t_hoja_decidir(*SALIO),
         "No salió: confirmar": t_hoja_decidir(*NO_SALIO_CONF),
@@ -693,7 +693,7 @@ CSS_TUSAN = """.ap-acciones2 span.off { color: var(--t3); }
 def opciones_p(uso=False):
     filas = ""
     for k, (n, cod, precio, unidad) in enumerate(PRODUCTOS, 1):
-        kw = dict(borrar=True, aviso_f="No se puede borrar: la usa un formulario. Podés darla de baja.") if uso and k == 4 else {}
+        kw = dict(borrar=True, aviso_f="No se puede borrar: la eligió una respuesta. Podés darla de baja.") if uso and k == 4 else {}  # 129
         filas += K.fila_editable(k, n, cod, "", True, tabla="kf", total=len(PRODUCTOS), campos=f'<span class="k-tab">{K.entrada(precio)}</span><span class="k-tab">{K.entrada(unidad)}</span>', **kw)
     pie = '<div class="w-pie"><span>1–10 de 10</span><span>10 por página · Página 1 de 1</span></div>'
     return K.caja_opciones(filas, "", pie, modo="cambios" if uso else "normal", tabla="kf", cab=["", "#", "Texto", "Código", "Precio", "Unidad", "Detalle", "Estado", "Acciones"], ancho=T13.ANCHO_OPCIONES,
@@ -797,7 +797,8 @@ if __name__ == "__main__":
     panel_e16 = re.search(r'<style data-e16="panel">\n(.*?)</style>', leer("FRM-Catalogos"), re.S)
     E.R.CSS_PANEL_E16 = panel_e16.group(1) if panel_e16 else ""
     E.CON_TITULOS = True  # 88: desde acá, los tableros de la 14, y también los de la 18 (traspaso 10)
-    escribir("FRM-Editor-18", solo(E.post("FRM-Editor", E.editor(), 1400), EDITOR_18))
+    # «Sin almacenamiento»: Foto y Documento grisados, con el motivo en su tooltip (43 y Criterio-Menus, v169)
+    escribir("FRM-Editor-18", L.con_css(solo(E.post("FRM-Editor", E.editor(), 1400), EDITOR_18), "tipo-apagado", A.CSS_TIPO_APAGADO))
     # El teléfono, sin las reglas que le suma formularios_ab_reglas_1004.py (son de la 21)
     escribir("M-FRM-Editor-18", solo(E.post("M-FRM-Editor", E.tel_editor()), TEL_18))
     escribir("FRM-Publicar-18", solo(E.post("FRM-Publicar", E.publicar(), 1400), PUBLICAR_18))

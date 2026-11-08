@@ -867,11 +867,11 @@ def tel_respuestas5():
     volver = "M-FRM-Formularios.dc.html"
 
     def fila_t(r):
+        """174 (v169): el nombre entero; si no entra, el renglón baja."""
         (n, rec, nom, tipo, emp, cli, *_resto) = r
-        corto = nom if len(nom) < 26 else nom[:24] + "…"
         marca = '<span class="pl-marca">Cliente</span>' if tipo == "cliente" else ""
         return (f'<a class="ap-fila" href="M-FRM-Respuesta.dc.html"><div class="tx"><span class="l1">{n}<span class="hr">{rec}</span></span>'
-                f'<span class="l2">{corto}{marca} · {emp}</span><span class="l3">{cli}</span></div></a>')
+                f'<span class="l2">{nom}{marca} · {emp}</span><span class="l3">{cli}</span></div></a>')
     filas, filtradas = "".join(fila_t(r) for r in RESP), "".join(fila_t(r) for r in RESP if r[0] in FILTRADAS)
     esq = '<div class="ap-esq"><span style="width: 80%;"></span><span style="width: 60%;"></span><span style="width: 72%;"></span><span style="width: 66%;"></span></div>'
     chips = ('<div class="t-chips">' + "".join(f'<span class="pl-chip">{t}<button type="button" class="x" aria-label="Quitar {t}">{X}</button></span>'
@@ -898,7 +898,9 @@ def tel_respuestas5():
         "Sin permiso": C.t_bar("Respuestas", "Gestión de formularios", volver) + '<div class="ap-cuerpo"><div class="ap-vacio">No tenés permiso para ver esta página.<a class="cb cb-sec" href="M-Inicio-Org.dc.html">Ir al inicio</a></div></div>',
     }
     menu = F.thoja(FORMULARIO, f'<div class="ap-acciones2"><span role="menuitem">{A.DESCARGAR} Exportar a Excel</span></div>', "")
-    hoja_ex = F.thoja("Exportar a Excel", f'<p class="ap-txt-l">Se exportan las <b>24 respuestas</b> de {FORMULARIO}, con las preguntas de todas las versiones.</p><span class="ex-arch">{ARCHIVO} {ARCHIVO_XLSX}</span>',
+    # 109 (v169): los datos del diálogo de la compu, sin la frase; el teléfono no tiene «Columnas», así que exporta todas las preguntas
+    datos_ex = "".join(f'<span class="t-lin">{x}</span>' for x in ("24 respuestas", "0 filtros aplicados", "Todas las preguntas (13 columnas)"))
+    hoja_ex = F.thoja("Exportar respuestas a Excel", f'<div style="display: flex; flex-direction: column; gap: 6px;">{datos_ex}</div><span class="ex-arch">{ARCHIVO} {ARCHIVO_XLSX}</span>',
                       '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Exportar a Excel</button>')
     capas = {"Más acciones": menu, "Exportar": hoja_ex,
              "Exportado": f'<div class="t-toast" role="status"><span class="ok">{F.OK}</span><span>Se descargó «{ARCHIVO_XLSX}».</span></div>'}
