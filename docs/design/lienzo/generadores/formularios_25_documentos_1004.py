@@ -1380,6 +1380,7 @@ CSS_CHDOC = """.w-m .gl.d25-gl, .ap-m .gl.d25-gl { display: flex; flex-direction
 .as-card small + small { margin-top: 1px; }
 .d25-lst { display: block; margin-top: 6px; font-size: 12.5px; color: var(--t2); }
 .d25-gl .movida { filter: blur(1.6px); }
+.w-m.ent .as-pop { right: auto; left: 0; }  /* el documento llega a la izquierda: «Por qué lo propuso» abre hacia adentro del chat */
 """
 
 
