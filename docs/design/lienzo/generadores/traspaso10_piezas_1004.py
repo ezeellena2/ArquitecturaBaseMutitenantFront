@@ -9,7 +9,7 @@
 - el texto largo entero (174): las celdas, las filas del teléfono y las opciones del menú bajan de renglón en lugar de cortar con «…»;
 - la escala de ArquitecturaBase (180), en los tableros de la compu: la letra × 0,82 (sin bajar de 10,5 px), los altos y el interlineado
   de 18 a 72 px × 0,74 (y el ancho de lo que es cuadrado), los rellenos, márgenes y separaciones de 4 px o más × 0,72, y las esquinas
-  de 3 px como mucho. Los factores están en `ESCALA`, en un solo lugar. Cada px que cambia guarda el de antes al lado
+  de 3 px como mucho; el ícono de un botón conserva su tamaño. Los factores están en `ESCALA`, en un solo lugar. Cada px que cambia guarda el de antes al lado
   (`29.6px/*40px*/`), así otra corrida, o una escala distinta, parte siempre del original. Los teléfonos (los tableros de menos de
   768 de ancho) y lo que dibuja un teléfono adentro de un tablero de la compu conservan sus medidas táctiles.
 
@@ -94,6 +94,10 @@ PIEZAS = """
 :root .w-th.pl > span, :root .tb .th > * { line-height: 1.35 !important; padding-top: 11.2px !important; padding-bottom: 11.2px !important; }
 :root .ab-sidebar__link-label, :root .w-ln { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
 :root .ab-sidebar .ab-sidebar__link, :root .ab-sidebar__link, :root .w-ln { height: auto !important; min-height: 32px; box-sizing: border-box; padding-top: 6px !important; padding-bottom: 6px !important; line-height: 20px; }
+
+/* 180 · Un ícono dentro de un botón conserva su tamaño. Con la escala, un botón de ícono queda de 21 a 24 px, y el relleno que el
+   navegador le pone a todo botón (6 px por lado) aplastaba el dibujo a la mitad de su ancho. */
+:root button > svg { flex-shrink: 0; }
 
 /* 160 · La primera carga de un listado: el encabezado y el aro en el alto de ocho filas, sin filas esqueleto. */
 .t10-carga { height: @CARGA@px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--borde); }
