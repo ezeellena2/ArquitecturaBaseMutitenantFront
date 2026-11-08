@@ -733,11 +733,13 @@ def pagina_org(V, capas, estados, nombre, css=""):
 
 
 def tarjeta(n, desc, meta, usada=""):
-    u = f'<span class="u">{K.CHECK} La usaste en «{usada}»</span>' if usada else ""
+    u = f'<span class="u">{K.CHECK} La usaste en {usada}</span>' if usada else ""
     return f'<a class="bt-card" href="FRM-Plantilla.dc.html"><b>{n}</b><span class="d">{desc}</span><span class="p">{meta}</span>{u}</a>'
 
 
-TARJETAS = [("Comprobante de transferencia", DESC_TRF, "5 preguntas · Para clientes", ""), (FORM, DESC, "8 preguntas · 2 catálogos · Para empleados", FORM)]
+# Dónde se usó: el primer formulario y cuántos más (198); «Visita a cliente» se usó en dos formularios de la organización
+USADA_VIS = f"«{FORM}» y 1 más"
+TARJETAS = [("Comprobante de transferencia", DESC_TRF, "5 preguntas · Para clientes", ""), (FORM, DESC, "8 preguntas · 2 catálogos · Para empleados", USADA_VIS)]
 E_BIB_ORG = ["Con plantillas", "Sin resultados", "Sin plantillas", "Cargando", "Error"]
 
 
@@ -981,7 +983,7 @@ def tel_biblioteca_org():
     der = f'<button type="button" class="ap-ib" aria-label="Buscar">{F.TLUPA}</button>'
     bar = C.t_bar("Biblioteca", "Gestión de formularios", "M-FRM-Formularios-22.dc.html", der)
     filas = "".join(f'<a class="ap-fila" href="M-FRM-Plantilla.dc.html"><div class="tx"><span class="l1">{n}</span><span class="l2 d">{d}</span><span class="l3">{m}</span>'
-                    + (f'<span class="l3 u">La usaste en «{u}»</span>' if u else "") + "</div></a>" for n, d, m, u in TARJETAS)
+                    + (f'<span class="l3 u">La usaste en {u}</span>' if u else "") + "</div></a>" for n, d, m, u in TARJETAS)
     vacio = lambda tx: f'<div class="ap-cuerpo"><div class="ap-vacio">{tx}</div></div>'  # noqa: E731
     cu = {"Con plantillas": bar + '<div class="ap-cuerpo"><div class="bt-gm">Ventas</div>' + filas + "</div>",
           "Sin resultados": bar + vacio('Ninguna plantilla coincide con «inspección».<button type="button" class="cb cb-sec">Limpiar la búsqueda</button>'),
