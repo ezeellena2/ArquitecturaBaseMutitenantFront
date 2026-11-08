@@ -402,6 +402,7 @@ def editor_baja():
     t = t.replace(viejo, viejo + '<span class="k">Por aprobar</span><span>2 respuestas: se pueden seguir aprobando o rechazando.</span>'
                   '<span class="k">Lo que se conserva</span><span>Las 12 respuestas, con sus fotos, documentos, PDF y aprobaciones.</span>')
     t = re.sub(r'<div class="f-tabs" role="tablist"[^>]*>.*?</div>', "", t, flags=re.S)
+    t = con_bloque(t)  # «Agregar título · Agregar bloque · Agregar pregunta», como los editores de la E19 a la E21 (177)
     return re.sub(r"<title>[^<]*</title>", "<title>Un formulario dado de baja · etapa 21</title>", t)
 
 
@@ -759,6 +760,14 @@ def respuestas5():
     return K.quien_mira(t, ("e.startsWith('Quien solo aprueba')", MARTIN, "martin.paz@delta.ejemplo.com"), ("e === 'Quien solo ve respuestas'", "Ana Gómez", "ana.gomez@delta.ejemplo.com"))
 
 
+def sin_pestanas_solo(t):
+    """Quien solo aprueba ve solo «Por aprobar»: sin el total de respuestas ni las pestañas que su permiso no abre, y con una sola pestaña no hay
+    barra (79, 100, 148 y 193). Sus tres estados son los únicos que empiezan con la cola, sin el segmentado."""
+    viejo = K.tabs("respuestas") + '<div class="w-caja pl-caja pa-cola"'
+    assert t.count(viejo) == 3, "las pestañas de quien solo aprueba"
+    return t.replace(viejo, '<div class="w-caja pl-caja pa-cola"')
+
+
 # ================================================================ FRM-Respuestas-Propias-21: lo propio, con el motivo del rechazo en los momentos (166)
 COLS_PR5 = [c for c in COLS_PR if c[0] != "rch"]
 E_PR5 = ["Lo suyo", "Una rechazada", "Una por aprobar", "Ya aprobada", "Su PDF"]
@@ -913,8 +922,11 @@ def tel_respuestas5():
           "Todas": bar + seg("Todas") + '<div class="ap-cuerpo">' + "".join(fila(r) for r in K.FILAS) + "</div>" + fab,
           "Quien solo aprueba": C.t_bar(FORM, "Por aprobar · 3", "M-FRM-Formularios-21.dc.html") + '<div class="ap-cuerpo">' + "".join(fila_cola(r, False) for r in cola) + "</div>"}
     css = W.CSS_TP + K.CSS_21 + K.CSS_V5 + ".t-vis { padding: 10px 16px; border-bottom: 1px solid var(--borde); background: #fff; }\n.t-vis .pa-vis, .t-vis .ab-seg { width: 100%; }\n.t-vis .ab-seg > span { flex: 1; text-align: center; padding: 8px 10px; font-size: 14px; }\n"
-    t = C.tel_pagina(cu, est, {}, "Respuestas · teléfono · etapa 21", css)
-    return K.con_tabs_tel(t, "respuestas")
+    t = K.con_tabs_tel(C.tel_pagina(cu, est, {}, "Respuestas · teléfono · etapa 21", css), "respuestas")
+    # Quien solo aprueba, sin el total ni las pestañas que no abre: con una sola, no hay barra (79, 100, 148 y 193)
+    solo = '<span class="sub">Por aprobar · 3</span></div></div>'
+    assert t.count(solo + K.tabs("respuestas", True)) == 1, "las pestañas de quien solo aprueba en el teléfono"
+    return t.replace(solo + K.tabs("respuestas", True), solo)
 
 
 def tel_corregir5():
@@ -1037,6 +1049,8 @@ if __name__ == "__main__":
         t = W.css_y_alto(t, alto)
         if pestana:
             t = K.con_tabs(t, pestana)
+        if n == "FRM-Respuestas-21":
+            t = sin_pestanas_solo(t)
         if n == "FRM-Cargar-Respuesta-21":
             t = t.replace(f"Formularios / {FORM}</span>", f"Formularios / {FORM} / Nueva respuesta</span>", 1)
         if n == "FRM-Respuestas-Propias-21":
