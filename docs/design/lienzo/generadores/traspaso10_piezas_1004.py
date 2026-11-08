@@ -6,7 +6,13 @@
 - la línea fina entre columnas (137), en las tablas de las piezas comunes (`tt-*` y `w-t*`) que no la tenían;
 - los filtros (143 y 144): las opciones sin su cantidad, la barra sin el total y «Filtros» en lugar de «Más filtros»;
 - la primera carga de un listado (160): el encabezado y el aro en el alto de ocho filas, en lugar de las filas esqueleto;
-- el texto largo entero (174): las celdas, las filas del teléfono y las opciones del menú bajan de renglón en lugar de cortar con «…»;
+- el texto largo entero (174): las celdas, las filas del teléfono, las opciones del menú y quién sos (el pie del menú y la cabecera
+  de tu menú) bajan de renglón en lugar de cortar con «…», y un correo se corta después de la «@» (`CORREO_JS`). La excepción es la
+  vista previa del último mensaje en la lista de chats, que sigue en un renglón con «…» (188);
+- lo elegido (142 y 164): en el desplegable de un filtro, la elegida con su tilde a la izquierda; la conversación abierta y el ítem
+  abierto de una lista con su detalle, con la barra de 3 px;
+- el panel verde del ingreso, liso (189), y los otros dos paneles verdes, el cierre de la página de inicio y la cabecera del Inicio
+  del teléfono;
 - la escala de ArquitecturaBase (180), en los tableros de la compu: la letra × 0,82 (sin bajar de 10,5 px), los altos y el interlineado
   de 18 a 72 px × 0,74 (y el ancho de lo que es cuadrado), los rellenos, márgenes y separaciones de 4 px o más × 0,72, y las esquinas
   de 3 px como mucho; el ícono de un botón conserva su tamaño. Los factores están en `ESCALA`, en un solo lugar. Cada px que cambia guarda el de antes al lado
@@ -94,6 +100,32 @@ PIEZAS = """
 :root .w-th.pl > span, :root .tb .th > * { line-height: 1.35 !important; padding-top: 11.2px !important; padding-bottom: 11.2px !important; }
 :root .ab-sidebar__link-label, :root .w-ln { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
 :root .ab-sidebar .ab-sidebar__link, :root .ab-sidebar__link, :root .w-ln { height: auto !important; min-height: 32px; box-sizing: border-box; padding-top: 6px !important; padding-bottom: 6px !important; line-height: 20px; }
+/* 174 · Quién sos, entero: el nombre y el correo del pie del menú y de la cabecera de tu menú bajan de renglón (el correo, después
+   de la «@», con `CORREO_JS`). */
+:root .ab-sidebar__name, :root .ab-sidebar__email, :root .perfil-t .n1, :root .perfil-t .n2, :root .w-us .tx b, :root .w-us .tx span, :root .w-mn-perf b, :root .w-mn-perf .s {
+  white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+/* 174 y 188 · En las filas de dos o tres renglones (`.w-conv`), el texto se ve entero: el nombre y, en las listas de personas del
+   teléfono, el correo. La vista previa del último mensaje en la lista de chats sigue en un renglón con «…», como en WhatsApp: es la
+   única excepción a la 174 (188). */
+:root .w-conv .l1 b, :root .w-conv > a .l2 > span { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+
+/* 142 y 164 · En el desplegable de un filtro, la elegida lleva la tilde a la izquierda y va en 600, sin el tinte, como en
+   «Criterio · Formularios» y «Criterio · Menús»; las demás dejan el lugar de la tilde, así los nombres quedan alineados. La planilla
+   (`.pl-op`) ya la dibuja, y la lista de personas (`.k-pers`, de dos renglones) no es un filtro. */
+:root .menu .menu-it[role="option"], :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op) { justify-content: flex-start !important; }
+:root .menu .menu-it[role="option"]::before, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op)::before {
+  content: ""; flex: none; width: 16px; height: 14px; background: transparent; -webkit-mask: @TILDE@; mask: @TILDE@; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"]), :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"]) {
+  background: transparent !important; color: var(--t1) !important; font-weight: 600 !important; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"]):hover, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"]):hover { background: var(--s2) !important; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"])::before, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"])::before { background: var(--marca-tx); }
+/* 142 · La conversación abierta del chat y el ítem abierto de una lista con su detalle: el tinte y una barra de 3 px al inicio. */
+:root .w-conv.on, :root .md-it.on { box-shadow: inset 3px 0 0 var(--marca) !important; }
+
+/* 189 · El panel verde del ingreso, liso: sin el degradé ni la cuadrícula. Lo mismo en los otros dos paneles verdes, el cierre de
+   la página de inicio y la cabecera del Inicio del teléfono (136). La paleta Pradera no cambia. */
+:root .auth-marca, :root .lp-final, :root .c-top { background: var(--marca) !important; }
+:root .auth-marca::before { display: none !important; }
 
 /* 180 · Un ícono dentro de un botón conserva su tamaño. Con la escala, un botón de ícono queda de 21 a 24 px, y el relleno que el
    navegador le pone a todo botón (6 px por lado) aplastaba el dibujo a la mitad de su ancho. */
@@ -105,6 +137,55 @@ PIEZAS = """
 .t10-aro { width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
 @keyframes t10-gira { to { transform: rotate(360deg); } }
 """
+
+# La tilde de la elegida (142), la de «Criterio · Formularios»: el mismo dibujo de 14 px, como máscara del color del texto.
+TILDE = ("url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' "
+         "stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E\") "
+         "no-repeat left center / 14px 14px")
+
+# ---------------------------------------------------------------------------------------------------------------- los correos
+# 174 · Un correo baja de renglón después de la «@», nunca a mitad de palabra («lucia.fernandez@» y abajo «delta.ejemplo.com»). Se
+# corta al dibujar, con un espacio de ancho cero después de la «@» en cada texto del tablero, también en lo que arma su script: el
+# HTML guardado no cambia, porque los generadores buscan correos exactos en los tableros, y el dato tampoco.
+CORREO_JS = r"""
+// t10-correos · 174: un correo baja de renglón después de la «@», nunca a mitad de palabra (traspaso10_piezas_1004.py).
+if (typeof document !== 'undefined' && !window.__t10Correos) {
+  window.__t10Correos = true;
+  const t10Arroba = /([^\s@])@(?=[\w-]+\.[\w-])/g;
+  const t10Saltar = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'TITLE', 'OPTION']);
+  const t10Cortar = (n) => {
+    if (n.nodeType === 3) {
+      if (n.parentNode && !t10Saltar.has(n.parentNode.nodeName) && n.data.indexOf('@') >= 0) {
+        const nuevo = n.data.replace(t10Arroba, '$1@​');
+        if (nuevo !== n.data) n.data = nuevo;
+      }
+      return;
+    }
+    if (n.nodeType !== 1 || t10Saltar.has(n.nodeName)) return;
+    const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT);
+    for (let x = w.nextNode(); x; x = w.nextNode()) t10Cortar(x);
+  };
+  const t10Mirar = () => {
+    t10Cortar(document.body);
+    new MutationObserver((ms) => ms.forEach((m) => (m.type === 'characterData' ? t10Cortar(m.target) : m.addedNodes.forEach(t10Cortar))))
+      .observe(document.body, { childList: true, subtree: true, characterData: true });
+  };
+  if (document.body) t10Mirar(); else document.addEventListener('DOMContentLoaded', t10Mirar);
+}
+// t10-correos · fin
+"""
+CORREO_PREVIO = re.compile(r"\n// t10-correos · 174:.*?// t10-correos · fin\n", re.S)
+SCRIPT_DC = re.compile(r"<script type=\"text/x-dc\" data-dc-script(?: data-props='[^']*')?>")
+
+
+def con_correos(t, nombre, cuenta):
+    """`CORREO_JS` al principio del script del tablero (el de una corrida anterior sale antes)."""
+    t = CORREO_PREVIO.sub("", t, count=1)
+    m = SCRIPT_DC.search(t)
+    assert m, ("sin script", nombre)
+    cuenta["correos"] = cuenta.get("correos", 0) + 1
+    return t[:m.end()] + CORREO_JS + t[m.end():]
+
 
 # ---------------------------------------------------------------------------------------------------------------- las sombras
 ESTILO = re.compile(r"<style\b[^>]*>(.*?)</style>", re.S)
@@ -388,12 +469,13 @@ def poner_piezas(t, nombre, cuenta):
     fija = "" if pl else ":root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }"
     css = PIEZAS.replace("@SIN@", excluir).replace("@TT@", "-6.5px").replace("@PL@", pl).replace("@FIJA@", fija)
     css = css.replace("@CARGA@", numero(8 * 40 * ESCALA["alto"]))  # ocho filas de 40, con la escala de la compu
+    css = css.replace("@TILDE@", TILDE)
     propias = sombras(t)
     cuenta["sombras"] = cuenta.get("sombras", 0) + len(propias)
     bloque = (f'<style {MARCA_BLOQUE}>{css}/* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */\n'
               + "\n".join(propias) + "\n</style>\n")
     assert "</helmet>" in t, nombre
-    return t.replace("</helmet>", bloque + "</helmet>", 1)
+    return con_correos(t.replace("</helmet>", bloque + "</helmet>", 1), nombre, cuenta)
 
 
 def es_telefono(nombre, canvas):
