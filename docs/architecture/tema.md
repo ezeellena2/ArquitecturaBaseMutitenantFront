@@ -5,7 +5,7 @@ La fuente de cada pantalla es el [lienzo vigente "Sistema visual · Multitenant"
 ## Colores
 Tonos cálidos para el contenido, verde pasto como marca y un **marco arena** en tono paja (menú lateral y barra superior), un tono más marcado que el centro para que se despegue. Es la paleta «Pradera» (decisión del usuario del 2026-11-04, elegida sobre la app real), que reemplaza al verde petróleo; por eso «pendiente» tiene su propio celeste, que no se confunde con el verde de la marca ni con el de «activo».
 
-**Que no parezca plantilla** (decisión 173 del 2026-11-07, que cambia el tema del 04/10): quedan la paleta y la densidad, y salen el degradé de la marca y del avatar, la pastilla del activo y las sombras fuera de los menús. En la app entra con la base de la 12: hasta entonces `src/index.css` conserva `--marca-2`, `--marca-sombra` y `--lado-activo`, marcados abajo como «sale».
+**Que no parezca plantilla** (decisión 173 del 2026-11-07, que cambia el tema del 04/10): quedan la paleta y la densidad, y salen el degradé de la marca y del avatar, la pastilla del activo y las sombras fuera de los menús; el panel del ingreso queda liso (189, del 2026-11-08). En la app entra con la base de la 12: hasta entonces `src/index.css` conserva `--marca-2`, `--marca-sombra`, `--lado-activo` y los `--auth-panel-*`, marcados abajo como «sale».
 
 | Token | Valor | Uso |
 |---|---|---|
@@ -13,8 +13,8 @@ Tonos cálidos para el contenido, verde pasto como marca y un **marco arena** en
 | `--marca-2` | `oklch(0.66 0.15 128)` | sale con la base de la 12: era el segundo color del degradado del logo y del avatar (173) |
 | `--marca-sombra` | `oklch(0.48 0.115 140 / 0.3)` | sale con la base de la 12: era la sombra corta de la marca (173) |
 | `--marca-h` | `oklch(0.43 0.115 140)` | hover del botón principal |
-| `--auth-panel-start` / `--auth-panel-mid` / `--auth-panel-end` | `oklch(0.47 0.11 140)` / `oklch(0.35 0.09 145)` / `oklch(0.25 0.06 150)` | degradado del panel de Ingreso y Registro, copiado del lienzo |
-| `--auth-panel-grid` | `oklch(1 0 0 / 0.06)` | cuadrícula tenue del mismo panel |
+| `--auth-panel-start` / `--auth-panel-mid` / `--auth-panel-end` | `oklch(0.47 0.11 140)` / `oklch(0.35 0.09 145)` / `oklch(0.25 0.06 150)` | salen con la base de la 12: el panel de Ingreso y Registro queda liso, en `--marca`, sin degradé (189) |
+| `--auth-panel-grid` | `oklch(1 0 0 / 0.06)` | sale con la base de la 12: era la cuadrícula tenue del mismo panel (189) |
 | `--marca-t` | `oklch(0.955 0.035 130)` | fondo tenue: cartel de información, sugerencia del teléfono, lo elegido (la banda ya no lleva ícono, 173) |
 | `--sugerencia-tx` | `oklch(0.3 0.06 140)` | texto de la tarjeta de sugerencia del teléfono (M-Inicio-Personal) |
 | `--marca-tx` | `oklch(0.41 0.1 140)` | texto sobre `--marca-t` y el ítem activo del menú |
