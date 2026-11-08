@@ -8,8 +8,12 @@ versión va en el historial de «Publicación» (43 y el ajuste de la Guía). Lo
 dirección, la plantilla de WhatsApp, el logo y el color) va con candado: «Lo elige cada organización» (61, 62 y 82). Las reglas de
 ejemplo siguen debajo de las preguntas (33), sin botón propio ni historial: se guardan con el borrador.
 
-Corre después de `formularios_21_respuestas_1004.py` y antes de los bloques; la fila de la etapa la pone `formularios_etapas_1004.py`.
-Se puede volver a correr.
+Con los traspasos 5 y 10 (2026-11-07): las reglas se leen en pasos (138), con las piezas nuevas de la 21 (`K.pasos`, `K.regla5`,
+`K.msj5` con «Agregar dato» y `K.CSS_RG5`); en la organización, «Historial» va primero en la cabecera, apagado hasta que se guardan
+(140). La pestaña «Publicación» ya no repite el estado de la banda (175), y las preguntas suman «Agregar bloque» (177).
+
+Corre después de `formularios_21_reglas_1004.py` y `formularios_21_respuestas_1004.py`, y antes de los bloques; la fila de la etapa la
+pone `formularios_etapas_1004.py`. Se puede volver a correr; con `--sin-canvas` no escribe `canvas.json`.
 """
 import json
 import pathlib
@@ -108,9 +112,6 @@ CSS_22 = """.e-g2 .ancho, .w-dlg .ancho { grid-column: 1 / -1; }
 .bt-card .u svg { width: 14px; height: 14px; }
 .bt-esq { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .bt-esq span { height: 132px; border-radius: 12px; background: oklch(0.95 0.008 78); }
-.w-body.sc { overflow: hidden; }
-.pl-sc { display: flex; flex-direction: column; gap: 20px; margin-top: calc(-1 * var(--sc)); }
-.pl-sc > .f-cols > .pv { margin-top: var(--sc); }
 .w-dlg.cat { width: 640px; }
 .w-dlg .w-th.op2, .w-dlg .w-tr.op2 { grid-template-columns: 40px minmax(0, 1fr) 90px 132px; }
 .w-dlg .k-ops { border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; }
@@ -163,7 +164,7 @@ def toast(texto):
 
 
 # ================================================================ El marco de Plataforma: el de la biblioteca, con un estado por variante
-CSS_PLAT = (F.CSS_FICHA + F.CSS_ESTADOS + A.CSS_AB + A.CSS_EDITOR + A.CSS_K6 + A.CSS_E14 + E.CSS_E12 + E.CSS_CA4 + X.CSS_19 + K.CSS_RG + K.CSS_21
+CSS_PLAT = (F.CSS_FICHA + F.CSS_ESTADOS + A.CSS_AB + A.CSS_EDITOR + A.CSS_K6 + A.CSS_E14 + E.CSS_E12 + E.CSS_CA4 + X.CSS_19 + K.CSS_RG + K.CSS_21 + K.CSS_RG5
             + L.CSS_PESTANAS + K.CSS_PDF + K.CSS_HOJA + F.CSS_PUBLICACION + F.CSS_GRILLA)
 
 
@@ -172,7 +173,7 @@ def pagina_plat(V, capas, estados, nombre, miga, css="", activo="biblioteca", al
     assert list(V) == estados, (list(V), estados)
     bandas = A.con_estados([(k, v[0]) for k, v in V.items()])
     cuerpos = A.con_estados([(k, v[1]) for k, v in V.items()])
-    t = B17.pagina_plat(nombre, miga, bandas, cuerpos, activo=activo, css=CSS_PLAT + CSS_22 + css, estados=("estado", estados), js=A.js_estados(estados, extra))
+    t = B17.pagina_plat(nombre, miga, bandas, cuerpos, activo=activo, css=CSS_PLAT + CSS_22 + CSS_PASOS_22 + css, estados=("estado", estados), js=A.js_estados(estados, extra))
     over = "".join(f'<sc-if value="{{{{s{estados.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
     t = F.con_dialogo(t, over, A.CSS_PUB + E.CSS_ZONAS)
     t = t.replace('"$preview":{"width":1440,"height":900}', f'"$preview":{{"width":1440,"height":{alto}}}', 1)
@@ -312,9 +313,11 @@ def motivo_abierta():
 
 
 def caja_preguntas(abierta=False, solo_ver=False):
+    """Las preguntas con ↑ ↓ ✎ 🗑; en la franja, «Agregar bloque» al lado de «Agregar pregunta» (177): la plantilla no tiene bloque, así que va habilitado."""
     filas = "".join(motivo_abierta() if (abierta and k == 5) else fila_q(k, n, d, solo_ver) for k, (n, d) in enumerate(PREG, 1))
     botones = "" if solo_ver else (f'<button type="button" class="cb cb-sec">{MAS} Agregar título</button>'
-                                   f'<button type="button" class="cb cb-sec">{MAS} Agregar pregunta</button>')
+                                   f'<button type="button" class="cb cb-sec">{MAS} Agregar pregunta</button>'
+                                   f'<button type="button" class="cb cb-sec">{MAS} Agregar bloque</button>')
     return f'<div class="w-caja"><div class="f-cab"><span>Preguntas</span><span class="der">{botones or "8 preguntas"}</span></div>{filas}</div>'
 
 
@@ -333,15 +336,30 @@ def vista_pl():
     return pv.replace(">Enviar<", ">Continuar<", 1)
 
 
-# ---------------------------------------------------------------- Las reglas de ejemplo (E21), con candado en lo de cada organización
+# ---------------------------------------------------------------- Las reglas de ejemplo (E21), en pasos (138), con candado en lo de cada organización
 SUGERIDO = lambda rol: f' <span class="ad">(sugerido: <b>{rol}</b>)</span>'  # noqa: E731
 VER_PDF = '<a class="lnk" href="Plat-FRM-Pdf.dc.html">Ver el diseño</a>'
+COND_MONTO = '<b>Monto estimado</b> <span class="g">desde</span> <b>100.000</b>'
+CSS_PASOS_22 = """.q-it .dato { align-items: stretch; padding: 0; border-radius: 0; background: none; color: inherit; font-weight: inherit; font-size: inherit; white-space: normal; }
+.ab-chip.bloq { display: inline-flex; align-items: center; gap: 4px; color: var(--t2); }
+.ab-chip.bloq svg { flex: none; width: 13px; height: 13px; color: var(--t3); }
+.rg5-p .sug { color: var(--t2); }
+"""
+
+
+def eligen(sug=""):
+    """Lo que elige cada organización al usar la plantilla, en una etiqueta con candado (61 y 62); el rol sugerido, en gris al lado."""
+    s = f'<span class="sug">sugerido: {sug}</span>' if sug else ""
+    return f'<span class="ab-chip bloq">{CAND}{ELIGE}</span>{s}'
+
+
+# Las reglas de ejemplo de «Visita a cliente», como las lee la 21 (`K.pasos`): (cuándo, condiciones, [(acción, etiquetas, mensaje, lo demás)])
 REGLAS_PL = [
-    (1, "se recibe una respuesta", None, [f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_REC}»", f"Pedir aprobación a alguien con el rol que elige cada organización{SUGERIDO(SUP)}"]),
-    (2, "se aprueba una respuesta", None, [f"Armar el PDF «Comprobante de visita» · {VER_PDF}", f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_APR}»{K.CON_PDF}",
-                                          "Mandar por correo a la dirección que elige cada organización: «Se aprobó {número}.»" + K.CON_PDF]),
-    (3, "se aprueba una respuesta", "Monto estimado es mayor o igual a 100.000", [f"Avisar a las personas con el rol que elige cada organización{SUGERIDO(GER)}: «{K.MENSAJE_DUENO}»"]),
-    (4, "se rechaza una respuesta", None, [f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_RCH}»"]),
+    ("Se recibe una respuesta", [], [("Mandarle un mensaje a quien la cargó", [], K.M_REC, ""), ("Pedir aprobación a un rol", [], None, eligen(SUP))]),
+    ("Se aprueba una respuesta", [], [("Armar el PDF", ["Comprobante de visita"], None, VER_PDF), ("Mandarle un mensaje a quien la cargó", ["con el PDF"], K.M_APR, ""),
+                                      ("Mandar por correo", [], K.M_CORREO, eligen() + K.chip5("con el PDF"))]),
+    ("Se aprueba una respuesta", [COND_MONTO], [("Avisar a un rol", [], K.M_DUENO, eligen(GER))]),
+    ("Se rechaza una respuesta", [], [("Mandarle un mensaje a quien la cargó", [], K.M_RCH, "")]),
 ]
 AY_SUG = "Un texto que cada organización ve como sugerencia: el rol lo elige ella al usar la plantilla."
 AY_P24 = K.AY_PLANTILLA + " Cada organización elige la suya."
@@ -355,8 +373,8 @@ def sugerido_pl(rol):
     return campo("Rol sugerido (opcional)", rol, req=False, ayuda=AY_SUG)
 
 
-def a_msj_pl(k, texto=K.MENSAJE_APR, adj=None, **kw):
-    return K.accion(k, "Mandarle un mensaje a quien la cargó", K.area_("Mensaje", texto) + (adj if adj is not None else K.adjuntar()) + p24_pl(), **kw)
+def a_msj_pl(k, texto=K.M_APR, adj=None, **kw):
+    return K.accion(k, "Mandarle un mensaje a quien la cargó", K.msj5(texto) + (adj if adj is not None else K.adjuntar()) + p24_pl(), **kw)
 
 
 def a_aprobar_pl(k, **kw):
@@ -368,37 +386,36 @@ def a_pdf_pl(k, **kw):
 
 
 def a_correo_pl(k, **kw):
-    cuerpo = ('<div class="dos">' + K.sel_("A quién", "Una dirección fija") + bloqueado("Dirección") + "</div>" + K.area_("Mensaje", "Se aprobó {número}.") + K.adjuntar())
+    cuerpo = ('<div class="dos">' + K.sel_("A quién", "Una dirección fija") + bloqueado("Dirección") + "</div>" + K.msj5(K.M_CORREO) + K.adjuntar())
     return K.accion(k, "Mandar por correo", cuerpo, **kw)
 
 
 def a_rol_pl(k, **kw):
-    cuerpo = ('<div class="dos">' + bloqueado("Rol") + sugerido_pl(GER) + "</div>" + K.area_("Mensaje", K.MENSAJE_DUENO) + K.adjuntar(False) + p24_pl())
+    cuerpo = ('<div class="dos">' + bloqueado("Rol") + sugerido_pl(GER) + "</div>" + K.msj5(K.M_DUENO) + K.adjuntar(False) + p24_pl())
     return K.accion(k, "Avisar a un rol", cuerpo, **kw)
 
 
 def a_persona_pl(k, **kw):
-    cuerpo = bloqueado("Persona") + K.area_("Mensaje", "Se aprobó {número}: pasá a retirar el pedido.") + K.adjuntar(False) + p24_pl()
+    cuerpo = bloqueado("Persona") + K.msj5("Se aprobó [Número]: pasá a retirar el pedido.") + K.adjuntar(False) + p24_pl()
     return K.accion(k, "Avisar a una persona", cuerpo, **kw)
 
 
 def caja_reglas_pl(abierta=None, n_abierta=1, vacia=False):
-    """«Cuando llega una respuesta» de la 21, debajo de las preguntas (33): sin «Guardar reglas» ni historial, que van con el borrador."""
+    """«Cuando llega una respuesta» de la 21, debajo de las preguntas (33), con cada regla en pasos (138): sin «Guardar reglas» ni «Historial»,
+    porque las reglas de ejemplo se guardan con el borrador y su historia es la de las versiones."""
     cab = (f'<div class="f-cab"><span class="tt">Cuando llega una respuesta{info(AY_REGLAS_PL)}</span><span class="der">'
            f'<button type="button" class="cb cb-sec">{MAS} Agregar regla</button></span></div>')
     if vacia:
-        return f'<div class="w-caja rg2">{cab}<div class="vac">Todavía no hay reglas de ejemplo.</div></div>'
-    filas = "".join(abierta if (abierta and n == n_abierta) else K.resumen(n, c, s, a) for n, c, s, a in REGLAS_PL)
-    return f'<div class="w-caja rg2">{cab}{filas}</div>'
+        return f'<div class="w-caja rg2 rg5">{cab}<div class="vac">Todavía no hay reglas de ejemplo.</div></div>'
+    filas = "".join(abierta if (abierta and n == n_abierta) else K.regla5(n, ev, c, a) for n, (ev, c, a) in enumerate(REGLAS_PL, 1))
+    return f'<div class="w-caja rg2 rg5">{cab}{filas}</div>'
 
 
-def cuerpo_plantilla(abierta=False, quien=False, reglas=None, sup="", scroll=0):
+def cuerpo_plantilla(abierta=False, quien=False, reglas=None, sup="", desde_reglas=False):
     """La pestaña «Plantilla»: el formulario, las preguntas y las reglas de ejemplo, con el teléfono al costado.
-    scroll: la página corrida hacia abajo, para ver las reglas (la banda queda fija arriba)."""
-    pila = caja_plantilla(quien) + caja_preguntas(abierta) + (reglas if reglas is not None else caja_reglas_pl())
+    desde_reglas: la página corrida hasta las reglas, con las pestañas a la vista; sin un corrimiento en píxeles, que la escala (180) no acompaña."""
+    pila = ("" if desde_reglas else caja_plantilla(quien) + caja_preguntas(abierta)) + (reglas if reglas is not None else caja_reglas_pl())
     cols = f'<div class="f-cols"><div class="f-pila">{pila}</div>{vista_pl()}</div>'
-    if scroll:
-        return f'<div class="w-body sc"><div class="pl-sc" style="--sc: {scroll}px;">{sup}{tabs_pl("plantilla")}{cols}</div></div>'
     return f'<div class="w-body">{sup}{tabs_pl("plantilla")}{cols}</div>'
 
 
@@ -437,21 +454,23 @@ def dlg_catalogo_contactos():
     return F.dialogo("Clientes", cuerpo, pie, una=False).replace('class="w-dlg"', 'class="w-dlg cat"', 1)
 
 
-# ---------------------------------------------------------------- Publicación: el estado en grilla y las versiones con su motivo
+# ---------------------------------------------------------------- Publicación: el uso en grilla y las versiones con su motivo
 def publicacion(tipo="publicada"):
+    """Sin el renglón «Estado», que ya dice la banda (175): la grilla dice cuántas organizaciones la usaron y la última publicación, o quién la
+    retiró y por qué. La caja se llama «Publicación», porque ya no muestra el estado."""
     if tipo == "publicada":
-        est = F.grilla([("Estado", EST["Publicada"]), ("La usaron", "12 organizaciones"), ("Última publicación", f"05/10/2026 11:20 · {OTRO_OP}")])
+        est = F.grilla([("La usaron", "12 organizaciones"), ("Última publicación", f"05/10/2026 11:20 · {OTRO_OP}")])
         vers = [("2", "05/10/2026 11:20", OTRO_OP, "Agrega el monto estimado."), ("1", "28/09/2026 16:05", OPERADOR, "Primera versión.")]
     elif tipo == "retirada":
-        est = F.grilla([("Estado", EST["Retirada"]), ("La usaron", "3 organizaciones"), ("Retirada", f"10/10/2026 09:40 · {OPERADOR}"), ("Motivo", "Se reemplaza por una más corta.")])
+        est = F.grilla([("La usaron", "3 organizaciones"), ("Retirada", f"10/10/2026 09:40 · {OPERADOR}"), ("Motivo", "Se reemplaza por una más corta.")])
         vers = [("1", "01/10/2026 15:30", OTRO_OP, "Primera versión.")]
     else:
-        est = F.grilla([("Estado", EST["Borrador"]), ("La usaron", '<span class="gris">—</span>')])
+        est = F.grilla([("La usaron", '<span class="gris">—</span>')])
         vers = []
     filas = "".join(f'<div class="w-tr vr"><span>{n}</span><span>{f}</span><span>{p}</span><span>{m}</span></div>' for n, f, p, m in vers)
     tabla = ('<div class="w-th vr"><span>Versión</span><span>Publicada</span><span>Por</span><span>Motivo</span></div>' + filas) if vers \
         else '<div class="pb-vacio">Todavía no se publicó.</div>'
-    return (f'<div class="w-caja"><div class="f-cab"><span>Estado</span></div><div class="pb-in">{est}</div></div>'
+    return (f'<div class="w-caja"><div class="f-cab"><span>Publicación</span></div><div class="pb-in">{est}</div></div>'
             f'<div class="w-caja"><div class="f-cab"><span>Versiones</span></div>{tabla}</div>')
 
 
@@ -485,19 +504,18 @@ def plat_ficha():
 
 # ================================================================ Plat-FRM-Plantilla-Reglas: las reglas de ejemplo, debajo de las preguntas
 E_RG = ["Reglas", "Editar una regla", "Mandar por correo", "Avisar a un rol y a una persona", "Una regla con errores", "Guardando", "Borrador guardado", "Sin reglas"]
-SCROLL = 900
 
 
 def plat_reglas():
     n1 = lambda acciones: K.regla_abierta(1, "Se recibe una respuesta", acciones)  # noqa: E731
     n2 = lambda acciones: K.regla_abierta(2, "Se aprueba una respuesta", acciones)  # noqa: E731
-    cond = X.cond("Monto estimado", "es mayor o igual a", "100.000", numero=True) + f'<button type="button" class="cb cb-sec">{MAS} Agregar condición</button>'
+    cond = K.cond5("Monto estimado", "Es mayor o igual a", "100.000") + K.AGREGAR_COND
     n3 = lambda acciones: K.regla_abierta(3, "Se aprueba una respuesta", acciones, si=cond)  # noqa: E731
-    uno = a_msj_pl(1, K.MENSAJE_REC, adj=K.adjuntar(False), primera=True) + a_aprobar_pl(2, ultima=True)
+    uno = a_msj_pl(1, K.M_REC, adj=K.adjuntar(False), primera=True) + a_aprobar_pl(2, ultima=True)
     dos = a_pdf_pl(1, primera=True) + a_msj_pl(2) + a_correo_pl(3, ultima=True)
     tres = a_rol_pl(1, primera=True) + a_persona_pl(2, ultima=True)
     mal = a_msj_pl(1, adj=K.adjuntar(motivo=K.MOT_FALTA, arreglo=K.SUBIR), primera=True) + a_pdf_pl(2) + a_correo_pl(3, ultima=True)
-    cu = lambda **k: cuerpo_plantilla(reglas=caja_reglas_pl(**k), scroll=SCROLL)  # noqa: E731
+    cu = lambda **k: cuerpo_plantilla(reglas=caja_reglas_pl(**k), desde_reglas=True)  # noqa: E731
     pub = lambda modo="cambios": banda_pl(FORM, EST["Publicada"], acc_pl(modo))  # noqa: E731
     V = {"Reglas": (pub("limpio"), cu()), "Editar una regla": (pub(), cu(abierta=n1(uno), n_abierta=1)), "Mandar por correo": (pub(), cu(abierta=n2(dos), n_abierta=2)),
          "Avisar a un rol y a una persona": (pub(), cu(abierta=n3(tres), n_abierta=3)), "Una regla con errores": (pub(), cu(abierta=n2(mal), n_abierta=2)),
@@ -812,28 +830,36 @@ def plantilla_usar():
 
 
 # ================================================================ FRM-Editor-Reglas-Plantilla: el formulario nuevo y sus reglas precargadas (B9)
+# Las reglas se leen en pasos, como las de la 21 (138), y «Historial» va primero en la cabecera: apagado hasta que se guardan, con el motivo
+# en su tooltip (140). Lo que elige cada organización dice «Elegí…», y en rojo después de tocar «Guardar reglas» (43).
 ELEGI = lambda que, mal=False: f'<span class="ab-chip {"mal" if mal else "falta"}">{que}</span>'  # noqa: E731
-P24_ORG = lambda mal=False: f' <span class="ad">· fuera de las 24 horas, con</span> {ELEGI("Elegí la plantilla", mal)}'  # noqa: E731
-SUG_ORG = lambda rol: f' <span class="ad">· sugerido: {rol}</span>'  # noqa: E731
-CON_PDF = K.CON_PDF
+P24_ORG = lambda mal=False: f'<span class="g">fuera de las 24 horas, con</span>{ELEGI("Elegí la plantilla", mal)}'  # noqa: E731
+SUG_ORG = lambda rol: f'<span class="sug">sugerido: {rol}</span>'  # noqa: E731
+HIST_PLANTILLA = "Todavía no se guardaron: vienen de la plantilla."
+NO_DISPONIBLE = '<span class="dato mal">Pregunta no disponible</span>'
+CSS_ERP = """.rg5-r.mal { background: var(--peligro-t); }
+.rg5-cond .ct.sel.mal { border-color: var(--peligro); color: var(--peligro); }
+.rg5 > .f-cab .e-tipw .e-tip { left: auto; right: 0; top: calc(100% + 6px); width: 260px; white-space: normal; z-index: 40; }
+.w-caja.rg5:has(.e-tip:not([hidden])) { overflow: visible; }
+"""
 
 
 def reglas_org(mal=False, borrada=False, elegidas=False):
-    """Las reglas de ejemplo, precargadas y sin guardar: lo de cada organización con «Elegí…» (y en rojo después de tocar «Guardar reglas»)."""
+    """Las reglas de ejemplo, precargadas y sin guardar, como las lee la 21: (cuándo, condiciones, [(acción, etiquetas, mensaje, lo demás)])."""
     if elegidas:
-        return [(1, "se recibe una respuesta", None, [f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_REC}»", f"Pedir aprobación a alguien con el rol <b>{SUP}</b>"]),
-                (2, "se aprueba una respuesta", None, [f"Armar el PDF «Comprobante de visita» · {VER_PDF_ORG}", f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_APR}»{CON_PDF}",
-                                                      f"Mandar por correo a {DIRECCION}: «Se aprobó {{número}}.»{CON_PDF}"]),
-                (3, "se aprueba una respuesta", "Monto estimado es mayor o igual a 100.000", [f"Avisar a las personas con el rol <b>Dueño</b>: «{K.MENSAJE_DUENO}»"]),
-                (4, "se rechaza una respuesta", None, [f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_RCH}»"])]
-    si3 = ('<span class="tok-mal">Monto estimado</span> es mayor o igual a 100.000' if borrada else "Monto estimado es mayor o igual a 100.000")
-    duenio = K.MENSAJE_DUENO.replace("{Monto estimado}", '<span class="tok-mal">{Monto estimado}</span>') if borrada else K.MENSAJE_DUENO
-    return [(1, "se recibe una respuesta", None, [f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_REC}»{P24_ORG(mal)}",
-                                                  f"Pedir aprobación a alguien con el rol {ELEGI('Elegí el rol', mal)}{SUG_ORG(SUP)}"]),
-            (2, "se aprueba una respuesta", None, [f"Armar el PDF «Comprobante de visita» · {VER_PDF_ORG}", f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_APR}»{CON_PDF}{P24_ORG(mal)}",
-                                                  f"Mandar por correo a {ELEGI('Elegí la dirección', mal)}: «Se aprobó {{número}}.»{CON_PDF}"]),
-            (3, "se aprueba una respuesta", si3, [f"Avisar a las personas con el rol {ELEGI('Elegí el rol', mal)}{SUG_ORG(GER)}: «{duenio}»{P24_ORG(mal)}"]),
-            (4, "se rechaza una respuesta", None, [f"Mandarle un mensaje a quien la cargó: «{K.MENSAJE_RCH}»{P24_ORG(mal)}"])]
+        return [("Se recibe una respuesta", [], [("Mandarle un mensaje a quien la cargó", [], K.M_REC, ""), ("Pedir aprobación a un rol", [SUP], None, "")]),
+                ("Se aprueba una respuesta", [], [("Armar el PDF", ["Comprobante de visita"], None, VER_PDF_ORG), ("Mandarle un mensaje a quien la cargó", ["con el PDF"], K.M_APR, ""),
+                                                  ("Mandar por correo", [DIRECCION, "con el PDF"], K.M_CORREO, "")]),
+                ("Se aprueba una respuesta", [COND_MONTO], [("Avisar a un rol", ["Dueño"], K.M_DUENO, "")]),
+                ("Se rechaza una respuesta", [], [("Mandarle un mensaje a quien la cargó", [], K.M_RCH, "")])]
+    cond3 = f'{NO_DISPONIBLE} <span class="g">desde</span> <b>100.000</b>' if borrada else COND_MONTO
+    duenio = K.M_DUENO.replace("[Monto estimado]", "[!Monto estimado]") if borrada else K.M_DUENO
+    return [("Se recibe una respuesta", [], [("Mandarle un mensaje a quien la cargó", [], K.M_REC, P24_ORG(mal)),
+                                             ("Pedir aprobación a un rol", [], None, ELEGI("Elegí el rol", mal) + SUG_ORG(SUP))]),
+            ("Se aprueba una respuesta", [], [("Armar el PDF", ["Comprobante de visita"], None, VER_PDF_ORG), ("Mandarle un mensaje a quien la cargó", ["con el PDF"], K.M_APR, P24_ORG(mal)),
+                                              ("Mandar por correo", [], K.M_CORREO, ELEGI("Elegí la dirección", mal) + K.chip5("con el PDF"))]),
+            ("Se aprueba una respuesta", [cond3], [("Avisar a un rol", [], duenio, ELEGI("Elegí el rol", mal) + SUG_ORG(GER) + P24_ORG(mal))]),
+            ("Se rechaza una respuesta", [], [("Mandarle un mensaje a quien la cargó", [], K.M_RCH, P24_ORG(mal))])]
 
 
 def sel_org(rot, ph, ayuda="", menu="", dato="", mal=""):
@@ -852,21 +878,29 @@ def p24_org(mal=False):
     return sel_org("Fuera de las 24 horas, con la plantilla", "Elegí la plantilla", K.AY_PLANTILLA, mal="Elegí la plantilla." if mal else "")
 
 
-def caja_reglas_org(filas, guardar="sucio"):
+def b_historial(on, tip=False):
+    """«Historial», primero en la cabecera (140), como en la 21; sin revisiones, apagado y con el motivo en su tooltip."""
+    if on:
+        return '<button type="button" class="cb cb-sec">Historial</button>'
+    return (f'<span class="e-tipw"><button type="button" class="cb cb-sec" disabled>Historial</button>'
+            f'<span class="e-tip" role="tooltip"{"" if tip else " hidden"}>{HIST_PLANTILLA}</span></span>')
+
+
+def caja_reglas_org(filas, guardar="sucio", historial=False, tip=False):
     g = (E.trabaja("Guardando…") if guardar == "guardando" else
          '<button type="button" class="cb cb-pri" disabled>Guardar reglas</button>' if guardar == "limpio" else
          '<button type="button" class="cb cb-pri">Guardar reglas</button>')
-    cab = (f'<div class="f-cab"><span class="tt">Cuando llega una respuesta{info(K.AY_REGLAS)}</span><span class="der">'
+    cab = (f'<div class="f-cab"><span class="tt">Cuando llega una respuesta{info(K.AY_REGLAS)}</span><span class="der">{b_historial(historial, tip)}'
            f'<button type="button" class="cb cb-sec">{MAS} Agregar regla</button>{g}</span></div>')
-    return f'<div class="w-caja rg2">{cab}{filas}</div>'
+    return f'<div class="w-caja rg2 rg5">{cab}{filas}</div>'
 
 
-def hist_org(guardadas=False):
-    cab = f'<div class="f-cab"><span class="tt">Historial de las reglas{info(K.AY_HIST)}</span></div>'
-    if guardadas:
-        return (f'<div class="w-caja rg2-hi">{cab}<a class="it nueva" href="#"><b>Revisión 1 <span class="w-est">Vigente</span></b>'
-                '<small>03/11/2026 10:20 · Lucía Fernández</small><small>4 reglas agregadas</small></a></div>')
-    return f'<div class="w-caja rg2-hi">{cab}<div class="vac">Todavía no se guardaron reglas.<b>Estas vienen de la plantilla «{FORM}».</b></div></div>'
+def panel_hist_org():
+    """El historial, al costado, como el de la 21: la primera revisión, recién guardada."""
+    cerrar = f'<button type="button" class="ib" aria-label="Cerrar" title="Cerrar (Esc)">{F.CERRAR}</button>'
+    it = ('<a class="it nueva" href="#"><b>Revisión 1 <span class="w-est">Vigente</span></b><small>03/11/2026 10:20 · Lucía Fernández</small>'
+          '<small>4 reglas agregadas</small></a>')
+    return f'<aside class="rg5-hist" role="dialog" aria-label="Historial de las reglas"><div class="hh"><b>Historial de las reglas</b>{cerrar}</div><div class="cu">{it}</div></aside>'
 
 
 def tabs_nuevo(sel):
@@ -881,37 +915,46 @@ def diseno_nuevo():
     return f'<div class="w-body">{tabs_nuevo("diseno")}{cols}</div>'
 
 
-E_ERP = ["El formulario nuevo", "Las reglas de la plantilla", "Elegir el rol", "Guardar sin elegir", "Una pregunta borrada", "Guardando", "Reglas guardadas"]
+E_ERP = ["El formulario nuevo", "Las reglas de la plantilla", "Elegir el rol", "Guardar sin elegir", "Una pregunta borrada", "Guardando", "Reglas guardadas", "Historial"]
+
+
+def leer_reglas(reglas, marcar=()):
+    """Cada regla en pasos, con ✎ 🗑 (la de la 21); las que tienen algo por elegir después de tocar «Guardar reglas», marcadas."""
+    filas = ""
+    for n, (ev, c, a) in enumerate(reglas, 1):
+        r = K.regla5(n, ev, c, a)
+        filas += r.replace('<div class="rg5-r">', '<div class="rg5-r mal">', 1) if n in marcar else r
+    return filas
 
 
 def editor_reglas_plantilla():
-    def cu(filas, guardar="sucio", guardadas=False):
-        return f'<div class="w-body">{tabs_nuevo("reglas")}<div class="rg2-cols">{caja_reglas_org(filas, guardar)}{hist_org(guardadas)}</div></div>'
-    resumen = lambda reglas, marcar=(): "".join(K.resumen(n, c, s, a).replace('<div class="rg2-r">', '<div class="rg2-r mal">', 1) if n in marcar else K.resumen(n, c, s, a)  # noqa: E731
-                                               for n, c, s, a in reglas)
+    def cu(filas, guardar="sucio", historial=False, tip=False):
+        return f'<div class="w-body">{tabs_nuevo("reglas")}{caja_reglas_org(filas, guardar, historial, tip)}</div>'
     base = reglas_org()
     # «Elegir el rol»: la regla 1 abierta, con la plantilla de WhatsApp y el rol por elegir, y el menú de roles con el sugerido
-    msj = K.accion(1, "Mandarle un mensaje a quien la cargó", K.area_("Mensaje", K.MENSAJE_REC) + K.adjuntar(False) + p24_org(), primera=True)
+    msj = K.accion(1, "Mandarle un mensaje a quien la cargó", K.msj5(K.M_REC) + K.adjuntar(False) + p24_org(), primera=True)
     rol = K.accion(2, "Pedir aprobación a un rol", sel_org("Rol", "Elegí el rol", K.AY_ROL, menu_roles(SUP), f"Rol sugerido: {SUP}"), ultima=True)
-    abierta1 = K.regla_abierta(1, "Se recibe una respuesta", msj + rol)
-    # «Una pregunta borrada»: «Monto estimado» se borró en Diseño; la condición y el texto que la nombra quedan marcados
+    abierta1 = K.regla_abierta5(1, "Se recibe una respuesta", msj + rol)
+    # «Una pregunta borrada»: «Monto estimado» se borró en Diseño; la condición la marca y el mensaje la muestra «Pregunta no disponible», en rojo (149)
     mal_q = "«Monto estimado» se borró del formulario."
-    cond = (X.cond("Monto estimado", "es mayor o igual a", "100.000", mal=True, numero=True) + f'<span class="err2" role="alert">{mal_q}</span>'
-            + f'<button type="button" class="cb cb-sec">{MAS} Agregar condición</button>')
-    texto3 = K.MENSAJE_DUENO.replace("{Monto estimado}", '<span class="tok-mal">{Monto estimado}</span>')
+    cond = (K.cond5("Pregunta no disponible", "Es mayor o igual a", "100.000").replace('<div class="ct sel">', '<div class="ct sel mal">', 1)
+            + f'<span class="err2" role="alert">{mal_q}</span>' + K.AGREGAR_COND)
     aviso = K.accion(1, "Avisar a un rol", sel_org("Rol", "Elegí el rol", "", "", f"Rol sugerido: {GER}")
-                     + f'<div class="w-cmp"><span class="rt">Mensaje{info(K.AY_MSJ)}</span><div class="ct area mal">{texto3}</div><span class="err2" role="alert">{mal_q}</span></div>'
+                     + K.msj5(K.M_DUENO.replace("[Monto estimado]", "[!Monto estimado]"), error="Quitá el dato que ya no está en el formulario.")
                      + K.adjuntar(False) + p24_org(), primera=True, ultima=True)
-    abierta3 = K.regla_abierta(3, "Se aprueba una respuesta", aviso, si=cond)
-    filas_borrada = "".join(abierta3 if n == 3 else K.resumen(n, c, s, a) for n, c, s, a in reglas_org(borrada=True))
-    filas_elegir = "".join(abierta1 if n == 1 else K.resumen(n, c, s, a) for n, c, s, a in base)
+    abierta3 = K.regla_abierta5(3, "Se aprueba una respuesta", aviso, si=cond)
+    borrada = reglas_org(borrada=True)
+    filas_borrada = "".join(abierta3 if n == 3 else K.regla5(n, ev, c, a) for n, (ev, c, a) in enumerate(borrada, 1))
+    filas_elegir = "".join(abierta1 if n == 1 else K.regla5(n, ev, c, a) for n, (ev, c, a) in enumerate(base, 1))
     banda_r = E.banda(FORM, E.EST_BOR, E.kebab(False), "FRM-Formularios-22.dc.html")
+    guardadas = leer_reglas(reglas_org(elegidas=True))
     V = {"El formulario nuevo": (E.banda(FORM, E.EST_BOR, E.acc("limpio", publicado=False), "FRM-Formularios-22.dc.html"), diseno_nuevo()),
-         "Las reglas de la plantilla": (banda_r, cu(resumen(base))), "Elegir el rol": (banda_r, cu(filas_elegir)),
-         "Guardar sin elegir": (banda_r, cu(resumen(reglas_org(mal=True), (1, 2, 3, 4)))), "Una pregunta borrada": (banda_r, cu(filas_borrada)),
-         "Guardando": (banda_r, cu(resumen(reglas_org(elegidas=True)), "guardando")), "Reglas guardadas": (banda_r, cu(resumen(reglas_org(elegidas=True)), "limpio", True))}
-    capas = {"El formulario nuevo": toast(f"Creamos «{FORM}» desde la plantilla."), "Reglas guardadas": toast("Reglas guardadas.")}
-    return pagina_org(V, capas, E_ERP, "Las reglas que trae una plantilla · /org/formularios/:id/reglas")
+         "Las reglas de la plantilla": (banda_r, cu(leer_reglas(base), tip=True)), "Elegir el rol": (banda_r, cu(filas_elegir)),
+         "Guardar sin elegir": (banda_r, cu(leer_reglas(reglas_org(mal=True), (1, 2, 3, 4)))), "Una pregunta borrada": (banda_r, cu(filas_borrada)),
+         "Guardando": (banda_r, cu(guardadas, "guardando")), "Reglas guardadas": (banda_r, cu(guardadas, "limpio", True)),
+         "Historial": (banda_r, cu(guardadas, "limpio", True))}
+    capas = {"El formulario nuevo": toast(f"Creamos «{FORM}» desde la plantilla."), "Reglas guardadas": toast("Reglas guardadas."), "Historial": panel_hist_org()}
+    return pagina_org(V, capas, E_ERP, "Las reglas que trae una plantilla · /org/formularios/:id/reglas", K.CSS_RG5 + CSS_PASOS_22 + CSS_ERP)
 
 
 # ================================================================ Los teléfonos de la organización
@@ -982,8 +1025,13 @@ def tel_reglas_org():
            f'<span class="sub">Borrador</span></div><button type="button" class="ap-ib" aria-label="Acciones de {FORM}">{F.TKEBAB}</button></div>')
     tabs = ('<div class="f-ptabs" role="tablist" aria-label="Vistas del formulario">' + "".join(f'<a class="{"on" if t == "Reglas" else ""}" role="tab" href="#">{t}</a>'
                                                                                               for t in ["Respuestas", "Tablero", "Diseño", "Reglas"]) + "</div>")
-    lista = lambda mal: ('<div class="ap-cuerpo"><div class="rg-gtit">Cuando llega una respuesta<a href="#">Agregar regla</a></div><div class="rg-t">'  # noqa: E731
-                         + "".join(t_regla_ro(*r, mal=mal) for r in reglas_org(mal=mal)) + '</div><div style="height: 96px; flex-shrink: 0;"></div></div>')
+    # Cada regla en pasos, como la lista de la 21 en el teléfono (138); «Historial», apagado, con su motivo debajo, como se dice en el teléfono (132 y 140)
+    fila = lambda n, r, mal: (f'<div class="r{" mal" if mal else ""}"><span class="n">{n}</span>{K.pasos(*r)}'  # noqa: E731
+                              f'<button type="button" class="ap-ib" aria-label="Editar la regla {n}">{A.LAPIZ}</button></div>')
+    cab = ('<div class="rg-gtit">Cuando llega una respuesta</div><div class="rg-acc"><span class="off" aria-disabled="true">Historial</span><a href="#">Agregar regla</a></div>'
+           f'<p class="rg-mot">{HIST_PLANTILLA}</p>')
+    lista = lambda mal: (f'<div class="ap-cuerpo">{cab}<div class="rg-t5">'  # noqa: E731
+                         + "".join(fila(n, r, mal) for n, r in enumerate(reglas_org(mal=mal), 1)) + '</div><div style="height: 96px; flex-shrink: 0;"></div></div>')
     fijo = '<div class="ap-fijo"><button type="button" class="cb cb-pri full">Guardar reglas</button></div>'
     edit = (C.t_bar("Regla 1", FORM, "M-FRM-Reglas-Plantilla.dc.html") + '<div class="ap-cuerpo"><div class="rg-hb">' + F.tcampo("Cuándo", "Se recibe una respuesta")
             + '<div class="acc"><b>Acción 2 · Pedir aprobación a un rol</b>' + F.tcampo("Rol", "Elegí el rol", vacio=True, select=True) + f'<span class="ab-sub">Rol sugerido: {SUP}</span></div>'
@@ -991,8 +1039,13 @@ def tel_reglas_org():
     roles = F.thoja("Rol", '<div class="ap-acciones2">' + "".join(f'<span role="option">{r}{" · sugerido" if r == SUP else ""}</span>' for r in ROLES) + "</div>", "")
     cu = {"Las reglas de la plantilla": bar + tabs + lista(False) + fijo, "Elegir el rol": edit, "Guardar sin elegir": bar + tabs + lista(True) + fijo}
     css = L.CSS_PTABS + ".f-ptabs { grid-template-columns: repeat(4, 1fr); }\n.f-ptabs a { font-size: 14px; }\n.ap-acciones2 { display: flex; flex-direction: column; }\n" \
-        ".ap-acciones2 span { padding: 14px 4px; font-size: 16px; border-top: 1px solid var(--borde); }\n.ap-acciones2 span:first-child { border-top: 0; }\n"
-    return C.tel_pagina(cu, est, {"Elegir el rol": roles}, "Las reglas que trae una plantilla · teléfono", A.CSS_AB + A.CSS_TED + E.CSS_E12 + E.CSS_TED_E12 + W.CSS_TP + K.CSS_TRG + CSS_TEL + css)
+        ".ap-acciones2 span { padding: 14px 4px; font-size: 16px; border-top: 1px solid var(--borde); }\n.ap-acciones2 span:first-child { border-top: 0; }\n" \
+        ".rg-acc { display: flex; align-items: center; gap: 20px; margin: -2px 16px 0; font-size: 15px; font-weight: 500; }\n" \
+        ".rg-acc a { color: var(--marca-tx); text-decoration: none; }\n.rg-acc .off { color: var(--t3); }\n" \
+        ".rg-mot { margin: 4px 16px 0; font-size: 13px; color: var(--t3); }\n.rg-t5 .r.mal { background: var(--peligro-t); }\n" \
+        ".rg-t5 .ab-chip.mal { border-color: oklch(0.82 0.08 25); background: #fff; color: var(--peligro); }\n"
+    return C.tel_pagina(cu, est, {"Elegir el rol": roles}, "Las reglas que trae una plantilla · teléfono",
+                        A.CSS_AB + A.CSS_TED + E.CSS_E12 + E.CSS_TED_E12 + W.CSS_TP + K.CSS_TRG + K.CSS_RG5 + K.CSS_TRG5 + CSS_TEL + CSS_PASOS_22 + css)
 
 
 # ================================================================ canvas.json: Plataforma acá; la fila de la organización, en formularios_etapas_1004.py
@@ -1053,5 +1106,6 @@ if __name__ == "__main__":
         (PROJ / f"{n}.dc.html").write_text(enlaces(miga(t, hoja)), encoding="utf-8")
     for n, f in [("M-FRM-Biblioteca", tel_biblioteca_org), ("M-FRM-Plantilla", tel_plantilla_org), ("M-FRM-Reglas-Plantilla", tel_reglas_org)]:
         (PROJ / f"{n}.dc.html").write_text(enlaces(E.post(n, f())), encoding="utf-8")
-    registrar()
+    if "--sin-canvas" not in sys.argv:
+        registrar()
     print("tableros", len(LUGAR_PLAT) + len(TITULOS_ORG))

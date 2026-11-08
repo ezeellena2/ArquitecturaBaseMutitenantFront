@@ -1,11 +1,15 @@
 """La etapa 23, segunda parte: los chats (los casos, el modo de atención, el asistente, la sugerencia y los audios), el formulario
-(«Cuándo lo ofrece», «Sugerencias» y «Armar desde un texto»), los catálogos («Por aprobar» y el catálogo propuesto), dar de baja,
-los formularios que faltan, de dónde vino una respuesta y los máximos de Plataforma. Lo llama `formularios_23_asistente_1004.py`.
+(«Cuándo lo ofrece», «Sugerencias» y «Armar desde un texto»), dar de baja, los formularios que faltan, de dónde vino una respuesta y los
+máximos de Plataforma. Lo llama `formularios_23_asistente_1004.py`.
 
 Lo que tiene modelo en ArquitecturaBase lo sigue, con nuestras piezas: el chat con el modo, «Por qué lo mandó», la sugerencia y los
-audios («Escuchar audio» y la transcripción debajo), «Qué sugerir después» con su historial al costado (acá, una pestaña, como las
-reglas de la 21: 79), «Cómo empezó» en el detalle de una respuesta y el catálogo propuesto, que acá dice «Aprobar» y «Descartar».
-Los chats llevan la barra de la bandeja y las fechas de WA-Chats: el 27/09/2026, antes de las 10:45.
+audios («Escuchar audio» y la transcripción debajo), «Qué sugerir después» (acá, una pestaña, como las reglas de la 21: 79) y «Cómo
+empezó» en el detalle de una respuesta. Los chats llevan la barra de la bandeja y las fechas de WA-Chats: el 27/09/2026, antes de las 10:45.
+
+Con el traspaso 10 (2026-11-07): la oferta del asistente es fija y nombra el formulario (165), también en una sugerencia que manda una
+persona; lo prellenado va en dos columnas (138, el `DataList` de allá); las sugerencias se leen en pasos y su historial va detrás de su
+botón (138 y 140), y el catálogo que propone el asistente pasa a la E25 (167): `FRM-Catalogos-23` y `FRM-Catalogo-Propuesta` se dejan
+de generar y quedan en el Archivo tal como estaban.
 """
 import json
 import pathlib
@@ -63,7 +67,7 @@ def a_wa(t, chats=True):
     if chats:
         t = re.sub(r"(</svg>) Buscar por nombre o número(</span>)", r"\1 Buscar\2", t)
         t = t.replace("<b>Martín Paz</b><span>Ayer</span>", f"<b>Martín Paz</b><span>{AYER} 17:10</span>")
-        t = L.con_css(t, "wa23", B0.CSS_CHATS + CSS_CH)
+        t = L.con_css(t, "wa23", B0.CSS_CHATS + CSS_CH + CSS_PRE_CH)
     t = re.sub(r'(<span class="(?:w|ap)-dia">)Hoy(</span>)', rf"\g<1>{HOY}\2", t)
     return re.sub(r"(?<![\d:/.])(10:48|10:50|11:20|11:21|11:23|11:04|11:34)(?![\d:])", lambda m: HORAS[m[1]], t)
 
@@ -89,6 +93,40 @@ E_H1 = ["Modo Asistente", "Por qué respondió esto", "Menú del chat", "Pasar a
         "Pregunta si duda", "Después de un «ahora no»", "No hay formulario", "Fuera de las 24 horas"]
 POR_132 = ("Formularios · Visita a cliente", "«Cuándo lo ofrece» de Visita a cliente",
            "Reconoció una visita a un cliente. Propuso Cliente, ¿Se concretó la venta? y Monto estimado, del mensaje de Tomás.")
+# La oferta fija que nombra el formulario (165) y lo prellenado en dos columnas (138): la tarjeta del chat, la sugerencia y «Revisar y enviar»
+OFERTA_VIS = AS.oferta("Visita a cliente")
+PRE_132 = [("Cliente", "Ferretería Rosales"), ("¿Se concretó la venta?", "Sí"), ("Monto estimado", "125.500,00")]
+CSS_PRE_CH = AS.CSS_PRE + """.as-card .as-pre, .as-sug .as-pre { min-width: 260px; }
+.as-sug .t .as-pre .t { color: var(--t3); }
+.as-sug .t .as-pre .g span { color: var(--t1); }
+.as-sug .t .as-pre .g .k { color: var(--t3); }
+.w-dlg .rg-ck { align-items: flex-start; }
+.w-dlg .rg-ck .tx { display: flex; flex-direction: column; gap: 1px; }
+.w-dlg .rg-ck .tx small { font-size: 13px; color: var(--t2); }
+.w-dlg .rv-f { font-size: 14px; }
+"""
+
+
+def card_visita(pre=PRE_132):
+    """La tarjeta del formulario que manda el asistente: el nombre, el botón y lo prellenado en dos columnas."""
+    return (f'<span class="as-card"><span>{F.ICONO}</span><span class="t"><b>Visita a cliente</b><small>Formulario · versión 4 · botón «Abrir formulario»</small>'
+            f'{AS.prellenado(pre)}</span></span>')
+
+
+def sugerencia(pre=PRE_132):
+    """En atención manual, el asistente sugiere un formulario: lo prellenado va debajo de «Prellenado con», en dos columnas (como allá)."""
+    return (f'<div class="as-sug" role="status"><span style="color: var(--marca-tx); margin-top: 1px;">{BOT}</span><span class="t"><b>El asistente sugiere mandarle Visita a cliente</b>'
+            f'{AS.prellenado(pre)}</span><span class="acc"><button type="button" class="cb cb-sec">No, gracias</button><button type="button" class="cb cb-pri">Revisar y enviar</button></span></div>')
+
+
+def dlg_revisar():
+    """«Revisar y enviar», como allá: el formulario y su versión, y cada dato prellenado con su casilla y el valor debajo. Sin mensaje propio:
+    sale la oferta fija que nombra el formulario (165)."""
+    filas = PRE_132 + [("Fecha de la visita", HOY)]
+    pre = "".join(f'<span class="rg-ck on"><span class="bx">{TILDE}</span><span class="tx"><b>{k}</b><small>{v}</small></span></span>' for k, v in filas)
+    cuerpo = (f'<div class="w-cmp"><span class="rt">Formulario</span><span class="rv-f">Visita a cliente · versión 4</span></div>'
+              f'<div class="c-pre"><span class="rt2">Datos que van prellenados {info("Tomás los ve cargados y los puede cambiar. Lo que destildes va vacío.")}</span>{pre}</div>')
+    return F.dialogo("Enviar un formulario a Tomás Acosta", cuerpo, '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Enviar formulario</button>')
 
 
 def con_enlaces(h):
@@ -99,17 +137,17 @@ def con_enlaces(h):
 def chat_asistente():
     resp = A.tarjeta(A.grilla_r(VALORES_132) + A.r_ok("VIS-000132"))
     auto = R.automatico("Recibimos VIS-000132. Te avisamos cuando la aprueben.", "Regla de Visita a cliente · 11:34 · Entregado", R.card_aviso())
-    te = "Te preparé el formulario de la visita con lo que me contaste. Revisalo y confirmalo."
+    te = OFERTA_VIS
     msgs = {
-        "Modo Asistente": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja(te, V.card_form()) + resp + auto,
-        "Por qué respondió esto": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja(te, V.card_form(), "Asistente · 11:21 · Leído" + enlace_pq(por_que(*POR_132))) + resp + auto,
+        "Modo Asistente": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja(te, card_visita()) + resp + auto,
+        "Por qué respondió esto": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja(te, card_visita(), "Asistente · 11:21 · Leído" + enlace_pq(por_que(*POR_132))) + resp + auto,
         "Menú del chat": V.MSJ_TOMAS, "Pasar a modo Asistente": V.MSJ_TOMAS,
-        "Tomar atención a mitad de un envío": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja(te, V.card_form(), "Asistente · 11:21 · Enviando")
+        "Tomar atención a mitad de un envío": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja(te, card_visita(), "Asistente · 11:21 · Enviando")
         + V.sis("Lucía Fernández tomó la atención manual")
         + f'<div class="as-aviso inf" role="status">{INFO}<span>Tomaste la atención manual. El asistente estaba mandando un formulario: ese envío termina y queda en la conversación.</span></div>',
         "El asistente no está disponible": V.MSJ_TOMAS + f'<div class="as-aviso amb" role="status">{V.TRI}<span>{NO_DISPONIBLE}</span></div>',
         "Pregunta si duda": V.PASO + V.ent("Pasé por lo de Rosales.") + V.asistente_burbuja("¿Fue una visita o una entrega?", quick=["Visita", "Entrega"]),
-        "Después de un «ahora no»": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja("Te preparé el formulario de la visita con lo que me contaste.", V.card_form(), "Asistente · 11:21 · Leído")
+        "Después de un «ahora no»": V.PASO + V.MSJ_TOMAS + V.asistente_burbuja(te, card_visita(), "Asistente · 11:21 · Leído")
         + V.ent("Ahora no, después lo cargo.", "11:23") + V.asistente_burbuja("Dale, cuando quieras pedímelo.", pie="Asistente · 11:23 · Leído"),
         "No hay formulario": V.PASO + V.ent("Quiero cargar un reclamo de Ferretería Rosales.")
         + V.asistente_burbuja("Todavía no hay un formulario para registrar reclamos. Ya anoté el pedido para que lo armen.", pie="Asistente · 11:21 · Leído"),
@@ -133,9 +171,9 @@ def chat_asistente():
 # ---------------------------------------------------------------- WA-Chats-Sugerencia: en atención manual, sugiere un formulario
 def chat_sugerencia():
     E_ = V.ESTADOS_H2
-    msgs = {"Sugerencia": V.MSJ_TOMAS + V.sugerencia(), "Revisar y enviar": V.MSJ_TOMAS + V.sugerencia(),
+    msgs = {"Sugerencia": V.MSJ_TOMAS + sugerencia(), "Revisar y enviar": V.MSJ_TOMAS + sugerencia(),
             "No, gracias": V.MSJ_TOMAS + V.sis("Descartaste la sugerencia del asistente")}
-    t = V.pagina_chat_as(E_, {e: A.escr() for e in E_}, msgs, {"Revisar y enviar": V.dlg_revisar()}, {e: "Recién salgo de Ferretería Rosales…" for e in E_},
+    t = V.pagina_chat_as(E_, {e: A.escr() for e in E_}, msgs, {"Revisar y enviar": dlg_revisar()}, {e: "Recién salgo de Ferretería Rosales…" for e in E_},
                          {e: f"{HOY} 10:33" for e in E_}, "WhatsApp · Internos · el asistente sugiere · etapa 23", {e: "man" for e in E_})
     t = t.replace("</helmet>", '<style data-asistente="revisar">\n.rg-ck { display: flex; align-items: center; gap: 10px; font-size: 13.5px; min-height: 26px; }\n'
                   ".rg-ck .bx { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--borde2); display: inline-flex; align-items: center; justify-content: center; background: #fff; box-sizing: border-box; }\n"
@@ -169,17 +207,16 @@ E_H6 = ["Pasando a texto", "Transcripto", "Escuchar el audio", "En modo Asistent
 
 
 def chat_audio():
-    te = "Te preparé el formulario de la visita con lo que me contaste."
     msgs = {"Pasando a texto": audio("pasando"), "Transcripto": audio(), "Escuchar el audio": audio("escuchando"),
-            "En modo Asistente": V.PASO + audio() + V.asistente_burbuja(te, V.card_form()),
-            "En atención manual, sugiere": audio() + V.sugerencia(True),
+            "En modo Asistente": V.PASO + audio() + V.asistente_burbuja(OFERTA_VIS, card_visita()),
+            "En atención manual, sugiere": audio() + sugerencia(),
             "No se pudo pasar a texto": V.PASO + audio("error") + V.sis("El asistente no pudo leer el audio · Necesita una persona"),
             "Ya no está": audio("vencido")}
     msgs = {k: con_enlaces(v) for k, v in msgs.items()}
     flags = {e: ("as" if e in ("En modo Asistente", "No se pudo pasar a texto") else "man") for e in E_H6}
     esc = {e: (V.esc_asistente() if flags[e] == "as" else A.escr()) for e in E_H6}
     vp = {e: "Audio · 0:24" for e in E_H6}
-    vp["En modo Asistente"] = "Asistente: Te preparé el formulario…"
+    vp["En modo Asistente"] = "Asistente: Te preparé el formulario «Visita a cliente»…"
     hora = {e: f"{HOY} 10:34" for e in E_H6}
     hora["Ya no está"] = "12/09/2026 16:20"
     t = V.pagina_chat_as(E_H6, esc, msgs, {}, vp, hora, "WhatsApp · Internos · audios · etapa 23", flags)
@@ -194,8 +231,42 @@ def tel_chat_asistente():
     t = t.replace(V.dlg_pasar().split('<p class="d-tx">')[1].split("</p>")[0], dlg_pasar().split('<p class="d-tx">')[1].split("</p>")[0])
     t, k = re.subn(r'<div class="t-por">.*?</div>', "", t, flags=re.S)
     assert k, "el porqué abierto del teléfono"
+    # La oferta fija que nombra el formulario (165) y lo prellenado en dos columnas (138), en la tarjeta y en la sugerencia
+    for viejo in ("Te preparé el formulario de la visita con lo que me contaste. Revisalo y confirmalo.", "Te preparé el formulario de la visita con lo que me contaste."):
+        assert f"<span>{viejo}</span>" in t, viejo
+        t = t.replace(f"<span>{viejo}</span>", f"<span>{OFERTA_VIS}</span>")
+    card = '<span><b>Visita a cliente</b><small>Prellenado: Cliente, ¿Se concretó la venta? y Monto estimado</small></span>'
+    assert card in t, "la tarjeta del teléfono"
+    t = t.replace(card, f'<span class="t"><b>Visita a cliente</b>{AS.prellenado(PRE_132)}</span>')
+    sug = "<span>Prellenado con Cliente, ¿Se concretó la venta? y Monto estimado.</span>"
+    assert sug in t, "la sugerencia del teléfono"
+    t = t.replace(sug, AS.prellenado(PRE_132))
+    t, k = re.subn(r'<div class="ap-hoja" role="dialog" aria-label="Enviar un formulario a Tomás">.*?<div class="hp">.*?</div></div>', lambda m: hoja_revisar_tel(), t, count=1, flags=re.S)
+    assert k == 1, "«Revisar y enviar» del teléfono"
     t = con_enlaces(t)
-    return a_wa(t, chats=False).replace("</helmet>", f'<style data-wa23="audio">\n{CSS_CH}</style>\n</helmet>', 1)
+    return a_wa(t, chats=False).replace("</helmet>", f'<style data-wa23="audio">\n{CSS_CH}{CSS_PRE_CH}{CSS_PRE_TEL}</style>\n</helmet>', 1)
+
+
+CSS_PRE_TEL = """.ap-m .as-card .t { display: flex; flex-direction: column; min-width: 0; }
+.ap-m .as-pre .g, .t-sug .as-pre .g { font-size: 14px; }
+.ap-m .as-pre .t, .t-sug .as-pre .t { font-size: 13px; color: var(--t3); }
+.t-sug .as-pre .g span { color: var(--t1); }
+.t-sug .as-pre .g .k { color: var(--t3); }
+.t-opc .tx { display: flex; flex-direction: column; gap: 2px; }
+.t-opc .tx small { font-size: 14px; color: var(--t2); font-weight: 400; }
+.t-ro { display: block; padding: 6px 0 2px; font-size: 16px; color: var(--t1); }
+"""
+
+
+def hoja_revisar_tel():
+    """«Revisar y enviar» en el teléfono, como en la compu: el formulario y cada dato prellenado con su valor debajo; sin mensaje propio (165)."""
+    tilde = F.svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 18, "2.25")
+    pre = "".join(f'<span class="t-opc on"><span class="tx"><b>{k}</b><small>{v}</small></span><span class="d">{tilde}</span></span>'
+                  for k, v in PRE_132 + [("Fecha de la visita", HOY)])
+    cuerpo = ('<div class="ap-cmp"><span class="rt"><span>Formulario</span></span><span class="t-ro">Visita a cliente · versión 4</span></div>'
+              f'<div class="p-tit2">Datos que van prellenados{A.t_info("Tomás los ve cargados y los puede cambiar. Lo que destildes va vacío.")}</div>{pre}')
+    h = F.thoja("Enviar un formulario a Tomás", cuerpo, '<button type="button" class="cb cb-pri lleno">Enviar formulario</button><button type="button" class="cb cb-sec">Cancelar</button>')
+    return h.split('<div class="ap-velo"></div>', 1)[1]
 
 
 # ================================================================ WA-Chats-Casos: Martina López, en Clientes, con los casos
@@ -269,7 +340,8 @@ def hoja_pq(filas):
 
 
 CARD_SERVICE = (f'<span class="as-card"><span>{F.ICONO}</span><span class="t"><b>Pedido de service</b><small>Formulario · versión 2 · botón «Abrir formulario»</small>'
-                '<small>Prellenado: Sucursal</small></span></span>')
+                f'{AS.prellenado([("Sucursal", "Centro")])}</span></span>')
+OFERTA_SERVICE = AS.oferta("Pedido de service")
 DERIVA = "Ya le paso tu consulta a una persona del equipo. Te responde por acá."
 NECESITA = "Pasó a atención manual · Necesita una persona"
 POR_SAB = ("Caso 1 · Pregunta por envíos, precios, horarios o garantías", "Horario de atención", "Pregunta si atienden los sábados: está cargado.")
@@ -283,12 +355,12 @@ def msgs_casos(e_=ent, a_=asis, s_=V.sis, pq_=por_que):
     sabado = e_("¿Atienden los sábados?", "10:22") + a_("Sí, los sábados de 9 a 13. De lunes a viernes, de 9 a 18.", "10:22")
     envios = (e_("¿Hacen envíos a Córdoba?", "10:30") + a_("¿A qué ciudad de Córdoba sería? Lo consulto con el equipo.", "10:30")
               + a_(DERIVA, "10:30") + s_(NECESITA))
-    heladera = e_("Se rompió la heladera en la sucursal Centro", "10:32") + a_("Te paso el formulario para pedir el service.", "10:32", CARD_SERVICE)
+    heladera = e_("Se rompió la heladera en la sucursal Centro", "10:32") + a_(OFERTA_SERVICE, "10:32", CARD_SERVICE)
     botones = e_("Quiero comprar una heladera", "10:34") + a_(AS.PREG_BOTONES, "10:34", quick=AS.BOTONES)
     texto = e_("¿Dónde está mi pedido?", "10:35") + a_(AS.TEXTO_PEDIDO, "10:35")
     persona = e_("Quiero hablar con alguien", "10:36") + a_(DERIVA, "10:36") + s_(NECESITA)
     rafaga = (e_("Hola", "10:38") + e_("Se rompió la heladera de la sucursal Centro", "10:38") + e_("Y quiero hablar con alguien", "10:38")
-              + a_("¡Hola, Martina! Lamento lo de la heladera.", "10:38") + a_("Te paso el formulario para pedir el service.", "10:38", CARD_SERVICE)
+              + a_("¡Hola, Martina! Lamento lo de la heladera.", "10:38") + a_(OFERTA_SERVICE, "10:38", CARD_SERVICE)
               + a_(DERIVA, "10:38") + s_(NECESITA))
     tope = hola + sabado + e_("¿Y los domingos?", "10:39") + s_("Llegó al tope de 20 respuestas de hoy · Necesita una persona")
     borrador = (envios + s_("Lucía Fernández tomó la conversación") + e_("¿Hacen service a domicilio?", "10:41")
@@ -358,7 +430,7 @@ def tel_chat_martina(E_, esc, msgs, capas, titulo, css="", marca=""):
     return re.sub(r"<title>[^<]*</title>", f"<title>{titulo}</title>", t)
 
 
-CSS_TCH = V.CSS_AS.replace(".w-m", ".ap-m") + V.CSS_TAS + CSS_CH + """.t-por .g { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 4px 8px; margin-top: 6px; }
+CSS_TCH = V.CSS_AS.replace(".w-m", ".ap-m") + V.CSS_TAS + CSS_CH + CSS_PRE_CH + CSS_PRE_TEL + """.t-por .g { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 4px 8px; margin-top: 6px; }
 .t-por .g .k { color: var(--t3); }
 .t-sug.borr span { color: var(--t1); }
 .ap-cbar .as-np { font-size: 11px; height: 18px; padding: 0 6px; }
@@ -461,48 +533,77 @@ def editor_asistente():
 
 
 # ---------------------------------------------------------------- FRM-Editor-Sugerencias: la pestaña «Sugerencias», como las reglas
-SUGS = [("Entrega de pedido", "La IA decide", "Cuándo", "Cuando se cerró una venta y hay que coordinar la entrega al cliente.", "Cliente y Observaciones"),
-        ("Control de vehículo", "Preguntar siempre", "Solo si", "«¿Se concretó la venta?» es Sí", "Cliente")]
-BAJA = ("Relevamiento de obra", "Preguntar siempre", "Solo si", "«Motivo» es Reclamo", "Cliente")
+# Cada sugerencia se lee en pasos (138), con las piezas de las reglas de la 21 y como allá: el formulario con su modo, cuándo (si decide la IA),
+# la condición (si pregunta siempre) y los datos que pasan. «Historial» va primero en la cabecera y abre su panel al costado (140).
+# (formulario, modo, cuándo, condiciones, datos que pasan)
+SUGS = [("Entrega de pedido", "La IA decide", "Cuando se cerró una venta y hay que coordinar la entrega al cliente.", [], ["Cliente", "Observaciones"]),
+        ("Control de vehículo", "Preguntar siempre", "", ['<b>¿Se concretó la venta?</b> <span class="g">es</span> <b>Sí</b>'], ["Cliente"])]
+BAJA = ("Relevamiento de obra", "Preguntar siempre", "", ['<b>Motivo</b> <span class="g">es</span> <b>Reclamo</b>'], ["Cliente"])
 AY_SUGS = "Después de una respuesta, ofrece estos formularios a quien respondió. Solo los que son para el mismo destinatario, hasta 20. Valen al guardar, sin volver a publicar."
-AY_HIST_S = "Cada guardado es una revisión. Cada respuesta recuerda con cuál llegó."
 AY_BAJA = "No se ofrece mientras esté dado de baja. Vuelve si lo reactivan."
+SIN_REVISIONES = "Todavía no hay revisiones."
 HIST_S = [("Revisión 2", "14/10/2026 11:30 · Lucía Fernández", "1 sugerencia agregada", True), ("Revisión 1", "10/10/2026 09:15 · Lucía Fernández", "1 sugerencia agregada", False)]
+I_FORM = svg('<path d="M14.5 3.5H7a1.5 1.5 0 0 0-1.5 1.5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3.5V8h4.5"/><path d="M8.5 12.5h7M8.5 16h5"/>', 16)
+I_PASAN = svg('<rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5"/>', 16)
+
+
+def pasos_sug(s, baja=False, solo_siempre=False):
+    """Una sugerencia en pasos: el formulario con su modo, cuándo, la condición y los datos que pasan, cada uno con su ícono (138)."""
+    n, modo, cuando, conds, pasan = s
+    if solo_siempre:
+        modo, cuando = "Preguntar siempre", ""
+    chips = K.chip5(modo) + (f'<span class="ab-chip mal">Dado de baja</span>{info(AY_BAJA)}' if baja else "")
+    h = K.paso(I_FORM, f'<p><b>{n}</b>{chips}</p>')
+    if cuando:
+        h += K.paso(K.I_MSJ, f'<p>{cuando}</p>')
+    if conds:
+        h += K.paso(K.I_SI, K.cond_lineas(conds))
+    if pasan:
+        h += K.paso(I_PASAN, '<p><span class="g">Pasan</span>' + K.datos5("".join(f"[{p}]" for p in pasan)) + "</p>")
+    return f'<ol class="rg5-p">{h}</ol>'
 
 
 def fila_sug(k, s, baja=False, solo_siempre=False):
-    n, modo, rot, cuando, pasa = s
-    if solo_siempre:
-        modo, rot, cuando = "Preguntar siempre", "Solo si", ("Sin condición" if rot == "Cuándo" else cuando)
-    chip_b = f'<span class="ab-chip mal">Dado de baja</span>{info(AY_BAJA)}' if baja else ""
     lapiz = "" if baja else f'<button type="button" class="ib" aria-label="Editar la sugerencia {k}">{LAPIZ}</button>'
     ac = f'<span class="ac">{lapiz}<button type="button" class="ib" aria-label="Quitar la sugerencia {k}">{QUITAR}</button></span>'
-    return (f'<div class="rg2-r"><span class="n">{k}</span><div class="tx"><div class="l"><span class="ab-chip">Sugerir</span><span><b>{n}</b> · {modo}{chip_b}</span></div>'
-            f'<div class="l"><span class="ab-chip">{rot}</span><span>{cuando}</span></div><div class="l"><span class="ab-chip">Pasa</span><span>{pasa}</span></div></div>{ac}</div>')
+    return f'<div class="rg5-r"><span class="n">{k}</span>{pasos_sug(s, baja, solo_siempre)}{ac}</div>'
 
 
-def caja_sugs(abierta=None, guardar="limpio", vacia=False, baja=False, solo_siempre=False):
+def b_hist(on=True):
+    """«Historial», primero en la cabecera, como en las reglas de la 21; sin revisiones, apagado y con el motivo en su tooltip (140)."""
+    if on:
+        return '<button type="button" class="cb cb-sec">Historial</button>'
+    return (f'<span class="e-tipw"><button type="button" class="cb cb-sec" disabled>Historial</button>'
+            f'<span class="e-tip" role="tooltip">{SIN_REVISIONES}</span></span>')
+
+
+def caja_sugs(abierta=None, guardar="limpio", vacia=False, baja=False, solo_siempre=False, historial=True):
     if guardar == "guardando":
         g = E.trabaja("Guardando…")
     else:
         g = f'<button type="button" class="cb cb-pri"{" disabled" if guardar == "limpio" else ""}>Guardar sugerencias</button>'
     ay = AY_SUGS + (" Sin el asistente, se ofrecen siempre, sin IA." if solo_siempre else "")
-    cab = (f'<div class="f-cab"><span class="tt">Qué sugerir después{info(ay)}</span><span class="der">'
+    cab = (f'<div class="f-cab"><span class="tt">Qué sugerir después{info(ay)}</span><span class="der">{b_hist(historial)}'
            f'<button type="button" class="cb cb-sec">{MAS} Agregar sugerencia</button>{g}</span></div>')
     if vacia:
-        return f'<div class="w-caja rg2">{cab}<div class="vac">Todavía no sugiere otros formularios.</div></div>'
+        return f'<div class="w-caja rg2 rg5">{cab}<div class="vac">Todavía no sugiere otros formularios.</div></div>'
     filas = ""
     lista = SUGS + ([BAJA] if baja else [])
     for k, s in enumerate(lista, 1):
         filas += abierta if (abierta and k == 1 + (abierta.count("data-segunda") > 0)) else fila_sug(k, s, baja=(baja and s is BAJA), solo_siempre=solo_siempre)
-    return f'<div class="w-caja rg2">{cab}{filas}</div>'
+    return f'<div class="w-caja rg2 rg5">{cab}{filas}</div>'
 
 
-def caja_hist_s(nueva=False):
-    cab = f'<div class="f-cab"><span class="tt">Historial de las sugerencias{info(AY_HIST_S)}</span></div>'
-    filas = HIST_S if not nueva else [("Revisión 3", f"15/10/2026 18:40 · Lucía Fernández", "1 sugerencia cambiada", True)] + [(a, b, c, False) for a, b, c, _ in HIST_S]
-    it = "".join(f'<a class="it" href="#"><b>{r}{" <span class=" + chr(34) + "w-est" + chr(34) + ">Vigente</span>" if v else ""}</b><small>{q}</small><small>{c}</small></a>' for r, q, c, v in filas)
-    return f'<div class="w-caja rg2-hi">{cab}{it}</div>'
+def panel_hist_s(revision=False):
+    """El historial de las sugerencias, al costado, como el de las reglas de la 21: tocar una revisión la lee en pasos, sin editar."""
+    cerrar = f'<button type="button" class="ib" aria-label="Cerrar" title="Cerrar (Esc)">{F.CERRAR}</button>'
+    if revision:
+        vol = f'<button type="button" class="ib" aria-label="Volver a las revisiones">{K.I_VOLVER}</button>'
+        cuerpo = f'<div class="rv"><span class="cab">10/10/2026 09:15 · Lucía Fernández · 1 sugerencia agregada</span><div>{pasos_sug(SUGS[0])}</div></div>'
+        return f'<aside class="rg5-hist" role="dialog" aria-label="Revisión 1"><div class="hh">{vol}<b>Revisión 1</b>{cerrar}</div><div class="cu">{cuerpo}</div></aside>'
+    it = "".join(f'<a class="it" href="#"><b>{r}{" <span class=" + chr(34) + "w-est" + chr(34) + ">Vigente</span>" if v else ""}</b><small>{q}</small><small>{c}</small></a>'
+                 for r, q, c, v in HIST_S)
+    return f'<aside class="rg5-hist" role="dialog" aria-label="Historial de las sugerencias"><div class="hh"><b>Historial de las sugerencias</b>{cerrar}</div><div class="cu">{it}</div></aside>'
 
 
 def abierta_sug(modo="ia", error=False, segunda=False):
@@ -511,24 +612,26 @@ def abierta_sug(modo="ia", error=False, segunda=False):
 
 
 E_SG = ["Sugerencias", "Editar una sugerencia", "Preguntar siempre", "Un dato de otro tipo", "Hacia un dado de baja", "Guardando", "Sugerencias guardadas",
-        "Sin sugerencias", "Sin el asistente"]
+        "Historial", "Una revisión", "Sin sugerencias", "Sin el asistente"]
 
 
 def editor_sugerencias():
     def cu(**k):
-        hist = k.pop("hist", {})
-        return f'<div class="w-body"><div class="rg2-cols">{caja_sugs(**k)}{caja_hist_s(**hist)}</div></div>'
+        return f'<div class="w-body">{caja_sugs(**k)}</div>'
     V_ = {"Sugerencias": cu(), "Editar una sugerencia": cu(abierta=abierta_sug(), guardar="sucio"), "Preguntar siempre": cu(abierta=abierta_sug("siempre", segunda=True), guardar="sucio"),
           "Un dato de otro tipo": cu(abierta=abierta_sug("ia", True), guardar="sucio"), "Hacia un dado de baja": cu(baja=True),
-          "Guardando": cu(abierta=abierta_sug(), guardar="guardando"), "Sugerencias guardadas": cu(hist={"nueva": True}), "Sin sugerencias": cu(vacia=True),
-          "Sin el asistente": cu(solo_siempre=True)}
+          "Guardando": cu(abierta=abierta_sug(), guardar="guardando"), "Sugerencias guardadas": cu(), "Historial": cu(), "Una revisión": cu(),
+          "Sin sugerencias": cu(vacia=True, historial=False), "Sin el asistente": cu(solo_siempre=True)}
     banda = E.banda(FORM, E.EST_PUB4, E.kebab(False), "FRM-Formularios-22.dc.html")
-    capas = {"Sugerencias guardadas": A.toast("Sugerencias guardadas.")}
-    css = E.CSS_E12 + E.CSS_CA4 + X.CSS_19 + K.CSS_RG + K.CSS_21 + C.CSS_K4 + C.CSS_K2 + V.CSS_SG + ".rg2 .sg-fila.abierta { border-top: 1px solid var(--borde); }\n.rg2-r .tx .l .f-i { margin-left: 4px; }\n"
+    capas = {"Sugerencias guardadas": A.toast("Sugerencias guardadas."), "Historial": panel_hist_s(), "Una revisión": panel_hist_s(True)}
+    css = (E.CSS_E12 + E.CSS_CA4 + X.CSS_19 + K.CSS_RG + K.CSS_21 + K.CSS_RG5 + C.CSS_K4 + C.CSS_K2 + V.CSS_SG
+           + ".rg2 .sg-fila.abierta { border-top: 1px solid var(--borde); }\n.rg5-p .tx > p .f-i { margin-left: -4px; }\n"
+           + ".rg5 > .f-cab .e-tipw .e-tip { left: auto; right: 0; top: calc(100% + 6px); width: 220px; white-space: normal; z-index: 40; }\n"
+           + ".w-caja.rg5:has(.e-tip) { overflow: visible; }\n")
     return A.pagina_editor({e: (banda, V_[e]) for e in E_SG}, capas, E_SG, "Sugerencias · /org/formularios/:id/sugerencias · etapa 23", css)
 
 
-# ---------------------------------------------------------------- FRM-Editor-Reglas-23: «Armar desde un texto» (63)
+# ---------------------------------------------------------------- FRM-Editor-Reglas-23: «Armar desde un texto» (63), sobre las reglas en pasos de la 21
 AY_ARMAR = "La IA la convierte en una regla normal, que revisás antes de guardar. Después corre sin IA. Cuenta en el tope de IA del mes."
 TOPE_REGLA = "Se agotó el tope de IA del mes. Armá la regla a mano."
 TEXTO_REGLA = "Cuando se aprueba una visita de más de 100.000, avisale al gerente."
@@ -543,15 +646,17 @@ def b_armar(modo="on"):
 
 
 def con_armar(cuerpo, modo="on"):
+    """«Armar desde un texto», al lado de «Agregar regla» (63), después de «Historial», que va primero (140)."""
     ancla = f'<button type="button" class="cb cb-sec">{MAS} Agregar regla</button>'
     assert ancla in cuerpo
     return cuerpo if modo == "no" else cuerpo.replace(ancla, b_armar(modo) + ancla, 1)
 
 
 def propuesta():
-    si_ = X.cond("Monto estimado", "es mayor o igual a", "100.000", numero=True)
-    acciones = K.a_rol(1, "Gerente", texto="Se aprobó {número}, de {Cliente}, por {Monto estimado}.", primera=True, ultima=True)
-    return K.regla_abierta(5, "Se aprueba una respuesta", acciones, si=si_)
+    """La regla que propone la IA: una regla normal, abierta y sin guardar, con la condición y el mensaje de la 21 (149)."""
+    si_ = K.cond5("Monto estimado", "Es mayor o igual a", "100.000") + K.AGREGAR_COND
+    acciones = K.a_rol5(1, "Gerente", texto="Se aprobó [Número], de [Cliente], por [Monto estimado].", primera=True, ultima=True)
+    return K.regla_abierta5(5, "Se aprueba una respuesta", acciones, si=si_)
 
 
 def dlg_armar(modo="listo"):
@@ -565,15 +670,15 @@ def dlg_armar(modo="listo"):
 
 
 def reglas23():
-    base = K.cuerpo_reglas()
-    prop = K.caja_reglas(guardar="sucio")
+    base = K.cuerpo_reglas5()
+    prop = K.caja_reglas5(guardar="sucio")
     prop = prop[:prop.rindex("</div>")] + propuesta() + "</div>"
-    con_prop = f'<div class="w-body"><div class="rg2-cols">{prop}{K.caja_historial()}</div></div>'
+    con_prop = f'<div class="w-body">{prop}</div>'
     V_ = {"Reglas": con_armar(base), "Armar desde un texto": con_armar(base), "Armando": con_armar(base), "La regla propuesta": con_armar(con_prop),
           "No se pudo armar": con_armar(base), "Tope de IA agotado": con_armar(base, "tope"), "Sin el asistente": base}
     capas = {"Armar desde un texto": dlg_armar(), "Armando": dlg_armar("armando"), "No se pudo armar": dlg_armar("error")}
     banda = E.banda(FORM, E.EST_PUB4, E.kebab(False), "FRM-Formularios-22.dc.html")
-    css = (E.CSS_E12 + E.CSS_CA4 + X.CSS_19 + K.CSS_RG + K.CSS_21 + AS.B.CSS_22 + ".rg2-si .lg-c { margin: 0; }\n"
+    css = (E.CSS_E12 + E.CSS_CA4 + X.CSS_19 + K.CSS_RG + K.CSS_21 + K.CSS_RG5 + AS.B.CSS_22 + ".rg2-si .lg-c { margin: 0; }\n"
            ".rg2 > .f-cab { flex-wrap: wrap; row-gap: 8px; overflow: visible; }\n.rg2 > .f-cab .der { margin-left: auto; }\n"
            ".rg2 > .f-cab .e-tipw .e-tip { left: 0; right: auto; top: calc(100% + 6px); width: 260px; white-space: normal; z-index: 40; }\n"
            ".w-caja.rg2:has(.e-tip) { overflow: visible; }\n")
@@ -581,86 +686,24 @@ def reglas23():
 
 
 def tel_reglas23():
+    """El teléfono: las reglas en pasos, como la lista de la 21; «Historial» y «Armar desde un texto» debajo del título de la sección."""
     est = ["Reglas", "Armar desde un texto", "Tope de IA agotado"]
 
     def lista(armar):
+        filas = "".join(f'<div class="r"><span class="n">{n}</span>{K.pasos(ev, c, a)}<button type="button" class="ap-ib" aria-label="Editar la regla {n}">{LAPIZ}</button></div>'
+                        for n, (ev, c, a) in enumerate(K.REGLAS5, 1))
         return ('<div class="ap-cuerpo"><div class="rg-gtit">Cuando llega una respuesta<a href="#">Agregar regla</a></div>'
-                f'<div class="rg-gtit" style="margin-top: 6px; justify-content: flex-end; font-weight: 500;">{armar}</div><div class="rg-t">'
-                + "".join(K.t_regla(n, c, s, a) for n, c, s, a in K.REGLAS) + "</div></div>")
-    on = f'<a href="#" style="display: inline-flex; align-items: center; gap: 6px;">{CHISPA} Armar desde un texto</a>'
-    tope = f'<span style="color: var(--t3); display: inline-flex; align-items: center; gap: 6px; font-size: 14px;" aria-disabled="true">{CHISPA} Armar desde un texto{A.t_info(TOPE_REGLA)}</span>'
+                f'<div class="rg-acc"><a href="#">Historial</a>{armar}</div><div class="rg-t5">{filas}</div></div>')
+    on = f'<a href="#">{CHISPA} Armar desde un texto</a>'
+    tope = f'<span class="off" aria-disabled="true">{CHISPA} Armar desde un texto{A.t_info(TOPE_REGLA)}</span>'
     fijo = '<div class="ap-fijo"><button type="button" class="cb cb-pri full" disabled>Guardar reglas</button></div>'
     hoja = F.thoja("Armar una regla desde un texto", F.tcampo("Qué tiene que pasar", TEXTO_REGLA, req=True), '<button type="button" class="cb cb-pri lleno">Armar la regla</button><button type="button" class="cb cb-sec">Cancelar</button>')
     cu = {"Reglas": K.t_bar_f() + lista(on) + fijo, "Armar desde un texto": K.t_bar_f() + lista(on) + fijo, "Tope de IA agotado": K.t_bar_f() + lista(tope) + fijo}
-    t = C.tel_pagina(cu, est, {"Armar desde un texto": hoja}, "Reglas · armar desde un texto · teléfono · etapa 23", A.CSS_TED + E.CSS_E12 + E.CSS_TED_E12 + W.CSS_TP + K.CSS_TRG)
+    css = (A.CSS_AB + A.CSS_TED + E.CSS_E12 + E.CSS_TED_E12 + W.CSS_TP + K.CSS_TRG + K.CSS_RG5 + K.CSS_TRG5
+           + ".rg-acc { display: flex; align-items: center; gap: 20px; margin: -2px 16px 0; font-size: 15px; font-weight: 500; }\n"
+           + ".rg-acc a, .rg-acc .off { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }\n.rg-acc a { color: var(--marca-tx); }\n.rg-acc .off { color: var(--t3); }\n")
+    t = C.tel_pagina(cu, est, {"Armar desde un texto": hoja}, "Reglas · armar desde un texto · teléfono · etapa 23", css)
     return K.con_tabs_tel(t, "reglas").replace('"M-FRM-Formularios-21.dc.html"', '"M-FRM-Formularios-22.dc.html"')
-
-
-# ================================================================ Los catálogos: «Por aprobar» en la lista y el catálogo propuesto
-PROPUESTO = "Supervisores de Delta Norte"
-PIDIO = f"La pidió Lucía Fernández por WhatsApp el {HOY} 10:12"
-CSS_PEND = ".w-est.pend { color: oklch(0.5 0.12 70); }\n.w-est.pend::before { background: oklch(0.72 0.15 70); }\n"
-
-
-def catalogos23():
-    t = (PROJ / "FRM-Catalogos-14.dc.html").read_text(encoding="utf-8")
-    m = re.search(r'<sc-if value="\{\{(\w+)\}\}" hint-placeholder-val="\{\{si\}\}"><div class="w-tr k14"><span class="k-tc"><a href="FRM-Catalogo-Filtros\.dc\.html">Supervisores</a>.*?</sc-if>', t, re.S)
-    assert m, "la fila de Supervisores"
-    fila = m.group(0)
-    nueva = (fila.replace(">Supervisores</a>", f">{PROPUESTO}</a>").replace('href="FRM-Catalogo-Filtros.dc.html"', 'href="FRM-Catalogo-Propuesta.dc.html"'))
-    nueva = re.sub(r'<span class="est2"><span class="w-est [^"]*">[^<]*</span></span>', '<span class="est2"><span class="w-est pend">Por aprobar</span></span>', nueva, count=1)
-    nueva = re.sub(r'<a class="usan"[^>]*>[^<]*</a>', '<span class="gris">—</span>', nueva, count=1)
-    nueva = re.sub(r"(</span><span>)(\d+)(</span>)", r"\g<1>3\3", nueva, count=1)
-    t = t.replace(fila, fila + nueva, 1)
-    t = re.sub(r"<title>[^<]*</title>", "<title>Catálogos · «Por aprobar» · etapa 23</title>", t)
-    t = re.sub(r"(\d+) catálogos", lambda x: f"{int(x[1]) + 1} catálogos", t).replace("1–8 de 8", "1–9 de 9")
-    return L.con_css(t, "e23", CSS_PEND)
-
-
-E_CP = ["Por aprobar", "Un dato que no existe", "Descartar", "Aprobando", "Aprobado", "Sin permiso para aprobar"]
-
-
-def catalogo_propuesta():
-    """Desde FRM-Catalogo-Filtros: el catálogo de los miembros, para leer, con «Descartar» y «Aprobar» (B10). Aprobado, queda activo."""
-    t = (PROJ / "FRM-Catalogo-Filtros.dc.html").read_text(encoding="utf-8")
-    bnd = re.search(r'<sc-if value="\{\{s0\}\}" hint-placeholder-val="\{\{si\}\}"><div class="w-bnd">.*?</sc-if>', t, re.S).group(0)
-    bnd_html = bnd[bnd.index("<div"):bnd.rindex("</sc-if>")]
-    cuerpos = [m for m in re.finditer(r'<sc-if value="\{\{s0\}\}" hint-placeholder-val="\{\{si\}\}"><div class="w-body">.*?</sc-if>', t, re.S)]
-    assert cuerpos, "el cuerpo del catálogo"
-    cu = cuerpos[0].group(0)
-    cu_html = cu[cu.index("<div"):cu.rindex("</sc-if>")]
-    cu_html = cu_html.replace(">Supervisores<", f">{PROPUESTO}<").replace("Quienes pueden aprobar una visita.", "Supervisores activos de Delta Norte S.A.")
-    activo = re.search(r'<div class="k-cond"><span class="si">Y</span><div class="ct">Activo.*?</button></div>', cu_html, re.S)
-    assert activo, "la condición de Activo"
-    empresa = activo.group(0).replace(">Activo<", ">Empresa<").replace(">Sí<", ">Delta Norte S.A.<")
-    cu_html = cu_html.replace(activo.group(0), activo.group(0) + empresa, 1)
-    ro = re.sub(r'class="ct( sel| area)?"', r'class="ct ro\1"', cu_html)
-    ro = re.sub(r'<button type="button" class="ib" aria-label="Quitar condición">.*?</button>', "", ro, flags=re.S)
-    ro = re.sub(r'<button type="button" class="cb cb-sec"[^>]*>(?:(?!</button>).)*Agregar condición</button>', "", ro, flags=re.S)
-    nota = (f'<div class="p-prob" role="status" style="margin: 0 16px 16px;"><span class="mal">{F.ALERTA}</span><span class="tx"><b>Un filtro que no se pudo armar</b>'
-            '<span>«Zona»: ese dato no existe en los miembros.</span></span></div>')
-    k = ro.rfind("</div></div>")
-    con_nota = ro[:k] + nota + ro[k:]
-
-    def banda(estado, acciones):
-        b = bnd_html.replace("<h1>Supervisores</h1>", f"<h1>{PROPUESTO}</h1>")
-        b = re.sub(r'<p class="res f-bnd-est">.*?</p>', f'<p class="res f-bnd-est">{estado}</p>', b, count=1, flags=re.S)
-        return re.sub(r'<div class="ac">.*?</div></div>$', f'<div class="ac">{acciones}</div></div>', b, count=1, flags=re.S)
-    pend = f'<span class="w-est pend">Por aprobar</span><span>{PIDIO}</span>'
-    acc = '<button type="button" class="cb cb-sec">Descartar</button><button type="button" class="cb cb-pri">Aprobar</button>'
-    V_ = {"Por aprobar": (banda(pend, acc), ro), "Un dato que no existe": (banda(pend, acc), con_nota), "Descartar": (banda(pend, acc), ro),
-          "Aprobando": (banda(pend, '<button type="button" class="cb cb-sec" disabled>Descartar</button>' + E.trabaja("Aprobando…")), ro),
-          "Aprobado": (banda('<span class="w-est">Activo</span>', '<button type="button" class="cb cb-sec">Dar de baja</button><button type="button" class="cb cb-sec" disabled>Descartar</button>'
-                             '<button type="button" class="cb cb-pri" disabled>Guardar cambios</button>'), cu_html),
-          "Sin permiso para aprobar": (banda(pend, ""), ro)}
-    capas = {"Descartar": A.confirmar(f"¿Descartar «{PROPUESTO}»?", "El catálogo propuesto se borra y no se puede usar en formularios.", "Descartar"),
-             "Aprobado": A.toast("Aprobamos el catálogo. Ya se puede usar.")}
-    css_t = re.findall(r"<style[^>]*>.*?</style>", t[:t.index("</helmet>")], re.S)
-    css_ro = ".k-g1 .ct.ro, .k-sec .ct.ro { background: var(--s2); color: var(--t2); border-color: var(--borde); }\n.k-cond { grid-template-columns: 40px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); }\n"
-    pagina = A.pagina_editor(V_, capas, E_CP, "Catálogo propuesto por el asistente · etapa 23", E.CSS_E12 + CSS_PEND + F.CSS_OFERTA + css_ro)
-    estilos = "".join(s for s in css_t if s not in pagina)
-    pagina = pagina.replace("</helmet>", estilos + "\n</helmet>", 1)
-    return pagina.replace("Inicio / Formularios / Diseñar formularios / Visita a cliente", f"Inicio / Gestión de formularios / Catálogos / {PROPUESTO}")
 
 
 # ================================================================ Dar de baja: «Qué deja de pasar» suma el asistente y las sugerencias
@@ -693,30 +736,36 @@ def faltan(t):
 
 VALORES_C = [("Cliente", "Ferretería Rosales"), ("Fecha de la visita", "15/10/2026"), ("¿Se concretó la venta?", "Sí"), ("Monto estimado", "128.000,00"), ("Motivo", "Venta nueva")]
 FILA_132 = ("VIS-000132", "15/10/2026 17:40", "Tomás Acosta", "", "WhatsApp", "Ferretería Rosales", "128.000,00", "Venta nueva")
+# Lo que propuso el asistente, en dos columnas (138); lo que Tomás cambió al completarlo lleva su etiqueta, como allá
+PROPUESTOS = [("Cliente", "Ferretería Rosales"), ("¿Se concretó la venta?", "Sí"), ("Monto estimado", '125.500,00 <span class="ab-chip">Corregido al completar</span>'),
+              ("Fecha de la visita", "15/10/2026")]
 E_CD = ["La mandó el asistente", "Los datos que propuso", "La cadena"]
 
 
 def cadena():
+    """Sobre la vista rápida de la 21, ya alineada (139, `K.d4`): los momentos con la fecha a la derecha, «Cómo empezó» con los datos propuestos
+    en dos columnas y la cadena de respuestas."""
     ver = lambda abierto: f'<button type="button" class="cb cb-enl" aria-expanded="{"true" if abierto else "false"}">{"Ocultar" if abierto else "Ver"} los datos propuestos</button>'  # noqa: E731
     como = lambda abierto: ('<div class="ca-sec"><div class="ca-tit">Cómo empezó</div>'  # noqa: E731
                            + F.grilla([("La preparó", "El asistente, en la conversación con Tomás Acosta"), ("Caso", "Formularios · Visita a cliente"),
                                        ("Por qué", "Reconoció una visita a un cliente: «Cuándo lo ofrece» de Visita a cliente.")]) + ver(abierto)
-                           + (F.grilla([("Cliente", "Ferretería Rosales"), ("¿Se concretó la venta?", "Sí"), ("Monto estimado", "125.500,00 · Tomás lo cambió a 128.000,00"),
-                                        ("Fecha de la visita", "15/10/2026")]) if abierto else "") + "</div>")
-    mom = (K.mom("", CHECK, "Recibida", FILA_132[1], f"{K.PERSONA} La mandó el asistente · la confirmó Tomás Acosta por WhatsApp")
-           + K.mom("", CHECK, "Al recibirla", "2 de 2 hechas") + K.mom("esp", K.RELOJ, "Por aprobar", "hace 5 minutos", f"Lo aprueba alguien con el rol {SUP}", K.botones(), "esp"))
+                           + (F.grilla(PROPUESTOS) if abierto else "") + "</div>")
+    moms = (K.m4("Mandada", "15/10/2026 17:21", "El asistente, en la conversación") + K.mo_recibida(FILA_132[1], "Tomás Acosta")
+            + K.mo_efectos("Al recibirla", 2, 2, K.A_REC) + K.mo_por_aprobar("hace 5 minutos", FILA_132[1], K.decidir()))
     cad = ('<div class="ca-sec"><div class="ca-tit">Cadena de respuestas</div><div class="ca-cad"><div class="ca-it esta"><b>' + F.ICONO
            + ' VIS-000126 <span class="ab-chip">Esta respuesta</span></b><span>Visita a cliente</span><small>Tomás Acosta · 13/10/2026 15:30</small></div>'
            f'<span class="ca-fl">{V.BAJA} sugirió «Entrega de pedido» · La IA decide · Tomás la aceptó</span>'
            f'<div class="ca-it"><a href="#">{F.ICONO} ENT-000047</a><span>Entrega de pedido</span><small>Tomás Acosta · 13/10/2026 16:10</small></div></div></div>')
-    paneles = {"La mandó el asistente": K.vista("VIS-000132", K.CHIP["Por aprobar"], mom, None, cuerpo=F.grilla(VALORES_C) + como(False), fotos=0),
-               "Los datos que propuso": K.vista("VIS-000132", K.CHIP["Por aprobar"], mom, None, cuerpo=F.grilla(VALORES_C) + como(True), fotos=0),
-               "La cadena": K.vista(K.NUM_A, K.CHIP["Aprobada"], K.moms("ok", quien=K.QUIEN_A, hora=K.HORA_A, cuando=K.DEC_A), None, cuerpo=cad + F.grilla(K.VAL_A[:4]),
-                                    pdf=True, pos="6 de 11", primera=False)}
+    ac = K.acciones_vr("VIS-000132", corregir=False, chat="WA-Chats-Asistente.dc.html")
+    paneles = {"La mandó el asistente": K.d4("VIS-000132", "Por aprobar", moms, F.grilla(VALORES_C) + como(False), K.tabs_v(0), acciones=ac, primera=True),
+               "Los datos que propuso": K.d4("VIS-000132", "Por aprobar", moms, F.grilla(VALORES_C) + como(True), K.tabs_v(0), acciones=ac, primera=True),
+               "La cadena": K.d4(K.NUM_A, "Aprobada", K.moms_126(), cad + F.grilla(K.VAL_A[:4]), K.tabs_v(2, pdf=True),
+                                 acciones=K.acciones_vr(K.NUM_A, corregir=False, chat="WA-Chats-Asistente.dc.html", pdf=True), pos="6 de 11")}
     filas = [FILA_132] + K.FILAS
-    cu = {e: K.fondo(filas[:10], sel=("VIS-000132" if e != "La cadena" else K.NUM_A), pie="1–10 de 25", estados={"VIS-000132": "Por aprobar"}) for e in E_CD}
-    t = K.planilla(E_CD, {e: K.banda_p() for e in E_CD}, cu, paneles, "Una respuesta · de dónde vino · etapa 23")
-    return L.con_css(t, "cadena", V.CSS_CA + ".ca-sec .cb-enl { margin-top: 6px; }\n")
+    cu = {e: K.fondo5(filas[:10], vista="Todas", sel=("VIS-000132" if e != "La cadena" else K.NUM_A), pie="1–10 de 25", estados={"VIS-000132": "Por aprobar"})
+          for e in E_CD}
+    t = K.planilla5(E_CD, {e: K.banda_p() for e in E_CD}, cu, paneles, "Una respuesta · de dónde vino · etapa 23")
+    return L.con_css(t, "cadena", V.CSS_CA + ".ca-sec .cb-enl { margin-top: 6px; }\n.g-det .ab-chip { margin-left: 6px; vertical-align: 1px; }\n")
 
 
 # ================================================================ Plataforma: los máximos de cada límite
@@ -754,8 +803,6 @@ TITULOS = {"WA-Chats-Casos": ("WhatsApp · Clientes · los casos del asistente �
            "FRM-Editor-Asistente": ("Formularios · cuándo lo ofrece el asistente · etapa 23", 1440, 1400),
            "FRM-Editor-Sugerencias": ("Formularios · las sugerencias · etapa 23", 1440, 1100),
            "FRM-Editor-Reglas-23": ("Formularios · armar una regla desde un texto · etapa 23", 1440, 1300), "M-FRM-Reglas-23": ("Armar una regla · teléfono · etapa 23", 390, 844),
-           "FRM-Catalogos-23": ("Formularios · Catálogos · «Por aprobar» · etapa 23", 1440, 900),
-           "FRM-Catalogo-Propuesta": ("Formularios · el catálogo propuesto · etapa 23", 1440, 1100),
            "FRM-Dar-De-Baja-23": ("Formularios · dar de baja · etapa 23", 1440, 900), "FRM-Editor-Baja-23": ("Formularios · un dado de baja · etapa 23", 1440, 900),
            "FRM-Faltan": ("Formularios · formularios que faltan · etapa 23", 1440, 900), "M-FRM-Faltan": ("Formularios que faltan · teléfono · etapa 23", 390, 844),
            "FRM-Respuesta-Cadena": ("Formularios · de dónde vino una respuesta · etapa 23", 1440, 900),
@@ -775,8 +822,6 @@ def escribir_todo():
     escribir_frm("FRM-Editor-Asistente", editor_asistente(), 1400, "diseno")
     escribir_frm("FRM-Editor-Sugerencias", editor_sugerencias(), 1100, "sugerencias")
     escribir_frm("FRM-Editor-Reglas-23", reglas23(), 1300, "reglas")
-    escribir_frm("FRM-Catalogo-Propuesta", catalogo_propuesta(), 1100)
-    escribir("FRM-Catalogos-23", catalogos23())
     escribir("FRM-Dar-De-Baja-23", enlaces23(dar_de_baja23()))
     escribir("FRM-Editor-Baja-23", enlaces23(editor_baja23()))
     escribir("FRM-Respuesta-Cadena", enlaces23(L.sin_disenar("FRM-Respuesta-Cadena", E.post("FRM-Respuesta-Cadena", cadena()))))

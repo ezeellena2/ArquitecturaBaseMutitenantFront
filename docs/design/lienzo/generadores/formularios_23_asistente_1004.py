@@ -7,7 +7,7 @@ solo Guardar. El conocimiento sigue a «Información del negocio» de Arquitectu
 «Formularios que faltan» (67). Los chats, el editor del formulario, los catálogos y Plataforma están en `formularios_23_chats_1004.py`.
 
 Corre después de `formularios_22_biblioteca_1004.py` y antes de los bloques; la fila de la etapa la pone `formularios_etapas_1004.py`
-y la campana de la 23, `campana_1004.py`. Se puede volver a correr.
+y la campana de la 23, `campana_1004.py`. Se puede volver a correr; con `--sin-canvas` no escribe `canvas.json`.
 """
 import json
 import pathlib
@@ -22,6 +22,7 @@ import formularios_ab_reglas_1004 as R  # noqa: E402
 import formularios_e12_sin_idioma_1004 as E  # noqa: E402
 import formularios_20_carga_1004 as W  # noqa: E402
 import formularios_22_biblioteca_1004 as B  # noqa: E402
+import estados_util as U  # noqa: E402
 
 PROJ = F.PROJ
 svg, info = F.svg, F.info
@@ -76,6 +77,8 @@ CSS_23 = """.f-cols.as23 { grid-template-columns: minmax(0, 1fr) 360px; }
 .pr-burb .bts span { padding: 7px 10px; text-align: center; color: var(--marca-tx); font-weight: 600; border-bottom: 1px solid var(--borde); }
 .pr-burb .bts span:last-child { border-bottom: 0; }
 .pr-burb .card { display: flex; flex-direction: column; margin-top: 6px; padding: 6px 8px; border-radius: 6px; background: var(--s2); font-size: 12.5px; }
+.pr-g { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 4px 10px; font-size: 13px; line-height: 1.45; color: var(--t2); }
+.pr-g .k { color: var(--t3); }
 .pr-nada { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t2); }
 .pr-nada svg { color: var(--marca-tx); }
 .pr-vacio { padding: 14px 16px 16px; border-top: 1px solid var(--borde); font-size: 13px; color: var(--t3); }
@@ -110,11 +113,30 @@ CSS_23 = """.f-cols.as23 { grid-template-columns: minmax(0, 1fr) 360px; }
 .as23-bandeja .rt { font-size: 13px; font-weight: 600; color: var(--t2); }
 .f-cab .vac { margin-left: 8px; }
 .ab-chip.vac { color: var(--t3); }
-.as23-hor { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px 12px; align-items: center; padding: 14px 16px 16px; font-size: 13.5px; }
-.as23-hor .ct { height: 34px; }
-.as23-hor .k { color: var(--t2); }
-.as23-hor .esp { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; padding-top: 10px; margin-top: 4px; border-top: 1px solid var(--borde); }
-.as23-hor .esp span { color: var(--t3); }
+.hz { display: flex; flex-direction: column; padding: 2px 16px 16px; font-size: 13.5px; }
+.hz-d { display: grid; grid-template-columns: 84px 132px minmax(0, 1fr); gap: 6px 12px; align-items: start; padding: 9px 0; border-bottom: 1px solid var(--borde); }
+.hz-d .dia { padding-top: 7px; font-weight: 500; }
+.hz-e, .hz-h { display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; height: 32px; padding: 0 10px; border: 1px solid var(--borde2); border-radius: 8px; background: #fff; font-size: 13.5px; color: var(--t1); }
+.hz-h { width: 92px; font-variant-numeric: tabular-nums; }
+.hz-e.mal, .hz-h.mal { border-color: var(--peligro); }
+.hz-fs { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.hz-f { display: flex; align-items: center; gap: 8px; }
+.hz-f .a { color: var(--t3); }
+.hz-f .ib { width: 32px; height: 32px; }
+.hz-sig .q-chk { font-size: 13px; color: var(--t2); }
+.cb.cb-enl.hz-add { height: auto; padding: 0; font-size: 13px; }
+.hz-err { grid-column: 2 / -1; }
+.hz-cp { padding: 12px 0 2px; }
+.hz-esp { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--borde); }
+.hz-esp > b { font-size: 13.5px; font-weight: 600; }
+.hz-fe { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+.hz-fe .fe { font-variant-numeric: tabular-nums; }
+.hz-fe .ac { display: inline-flex; align-items: center; gap: 4px; }
+.hz-fe .cb-enl { height: auto; padding: 0 6px; font-size: 13px; }
+.hz-vac { color: var(--t3); }
+.w-dlg.hz-dlg { width: 440px; }
+.w-dlg.hz-dlg .ct.sel { display: flex; align-items: center; justify-content: space-between; }
+.w-dlg.hz-dlg .ct.sel.hz-h { width: 92px; padding: 0 10px; }
 .as23-faq .q-it .dato span { white-space: normal; }
 .w-tr.pq, .w-th.pq { grid-template-columns: minmax(280px, 2fr) 100px 90px minmax(160px, 1fr) 48px; }
 .w-tr.pq { position: relative; min-height: 56px; overflow: visible; }
@@ -199,7 +221,7 @@ def en_whatsapp(t, activo, miga):
 
 
 def pagina_wa(V, capas, estados, nombre, miga, activo="asistente", alto=900, css=""):
-    t = A.pagina_editor(V, capas, estados, nombre, B.CSS_ORG + CSS_23 + css)
+    t = A.pagina_editor(V, capas, estados, nombre, B.CSS_ORG + CSS_23 + CSS_PRE + css)
     t = E.post("WA-Asistente", t, alto)
     t = W.css_y_alto(t, alto)
     return en_whatsapp(t, activo, miga)
@@ -248,7 +270,31 @@ def burbuja(texto, botones=None, card=""):
     return f'<div class="pr-burb">{texto}{card}{b}</div>'
 
 
-CARD_SERVICE = '<span class="card"><b>Pedido de service</b><span>Prellenado: Sucursal</span></span>'
+def oferta(nombre):
+    """La oferta del asistente es fija y nombra el formulario (165): el modelo no la redacta, tampoco en Probar ni al mandar una sugerencia."""
+    return f"Te preparé el formulario «{nombre}» para que lo completes."
+
+
+def prellenado(filas):
+    """Lo prellenado en dos columnas, debajo de «Prellenado con» (138, como el `DataList` de allá): el dato en gris y su valor al lado, nunca «Dato: valor»."""
+    g = "".join(f'<span class="k">{k}</span><span class="v">{v}</span>' for k, v in filas)
+    return f'<span class="as-pre"><span class="t">Prellenado con</span><span class="g">{g}</span></span>'
+
+
+def pr_grilla(caso, uso, por):
+    """Lo de cada acción de Probar en dos columnas, como el globo «Por qué respondió esto»: el caso, lo que usó y por qué."""
+    return f'<span class="pr-g"><span class="k">Caso</span><span>{caso}</span><span class="k">Usó</span><span>{uso}</span><span class="k">Por qué</span><span>{por}</span></span>'
+
+
+CSS_PRE = """.as-pre { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+.as-pre .t { font-size: 12px; color: var(--t3); }
+.as-pre .g { display: grid; grid-template-columns: fit-content(60%) minmax(0, 1fr); font-size: 12.5px; line-height: 1.4; }
+.as-pre .g > span { padding: 4px 0; border-top: 1px solid var(--borde); }
+.as-pre .g > span:nth-child(-n+2) { border-top: 0; }
+.as-pre .g .k { color: var(--t3); padding-right: 10px; }
+.as-pre .g .v { color: var(--t1); }
+"""
+CARD_SERVICE = f'<span class="card"><b>Pedido de service</b>{prellenado([("Sucursal", "Centro")])}</span>'
 # Lo que haría con cada prueba: qué hace, con qué caso, cómo lo vería la persona, por qué y qué usó
 PRUEBAS = {
     "envios": ("¿Hacen envíos a Córdoba?", [
@@ -258,8 +304,8 @@ PRUEBAS = {
         ("Derivar", "Caso 1 · sin la información cargada", burbuja(DERIVAR),
          "Falta la información: anota la pregunta en «Preguntas sin respuesta» y pasa el chat a una persona.", "El mensaje al derivar, del perfil")]),
     "heladera": ("Se rompió la heladera en la sucursal Centro", [
-        ("Mandar un formulario", "Formularios · Pedido de service", burbuja("Te paso el formulario para pedir el service.", ["Abrir formulario"], CARD_SERVICE),
-         "Coincide con «Cuándo lo ofrece» de Pedido de service. Propone Sucursal = Centro.", "Pedido de service · versión 2")]),
+        ("Mandar un formulario", "Formularios · Pedido de service", burbuja(oferta("Pedido de service"), ["Abrir formulario"], CARD_SERVICE),
+         "Coincide con «Cuándo lo ofrece» de Pedido de service. La sucursal sale del mensaje.", "Pedido de service · versión 2")]),
     "persona": ("Quiero hablar con alguien", [
         ("Derivar", "Caso 4 · Quiere hablar con una persona", burbuja(DERIVAR), "Pide hablar con una persona.", "El mensaje al derivar, del perfil")]),
     "hola": ("hola, ¿qué hora es?", [
@@ -276,8 +322,7 @@ def probar(prueba=None, modo="listo", bandeja="Clientes"):
     seg = f'<span class="ab-seg"><span class="{"on" if bandeja == "Clientes" else ""}">Clientes</span><span class="{"on" if bandeja == "Internos" else ""}">Internos</span></span>'
     entrada = f'<div class="pr-in"><div class="w-cmp"><span class="rt">Bandeja</span>{seg}</div>{msj}{b_probar(modo)}</div>'
     if prueba and modo == "listo":
-        acciones = "".join(f'<div class="pr-ac"><span class="n">{k}</span><div class="tx"><b>{que}</b><span class="caso">{caso}</span>{vista}'
-                           f'<span class="por">{por}</span><span class="uso">Usó: {uso}</span></div></div>'
+        acciones = "".join(f'<div class="pr-ac"><span class="n">{k}</span><div class="tx"><b>{que}</b>{vista}{pr_grilla(caso, uso, por)}</div></div>'
                            for k, (que, caso, vista, por, uso) in enumerate(PRUEBAS[prueba][1], 1))
         res = f'<div class="pr-res"><span class="pr-t">Lo que haría</span>{acciones}<span class="pr-nada">{CHECK} No se mandó nada.</span></div>'
     elif modo == "probando":
@@ -404,7 +449,73 @@ FAQ = [("¿Hacen service a domicilio?", "Sí, en CABA y Gran Buenos Aires, de lu
        ("¿Cómo puedo pagar?", "En efectivo, con transferencia o con tarjeta de débito.")]
 
 
-def contenido_conocimiento(zona_vacia=False, faq_abierta=False):
+# El horario, como «Información del negocio» de ArquitecturaBase (169): cada día dice «Sin definir», «Abierto», «Cerrado» o «24 horas»; abierto,
+# lleva hasta cuatro franjas de 15 en 15 minutos, «Agregar franja» debajo y la papelera en cada una cuando hay más de una; una franja que termina
+# después de la medianoche lo dice con «Cierra al día siguiente». «Aplicar de lunes a viernes» copia el lunes a los días hábiles, y una fecha
+# especial reemplaza su día. Las horas van en la zona horaria de la organización: no hay una zona propia del horario. La dirección se escribe.
+DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+FR_DIA, FR_SAB = [("09:00", "18:00", False)], [("09:00", "13:00", False)]
+FR_DOS = [("09:00", "13:00", False), ("14:00", "18:00", False)]
+HORARIO = {d: ("Abierto", FR_DIA) for d in DIAS[:5]} | {"Sábado": ("Abierto", FR_SAB), "Domingo": ("Cerrado", [])}
+FECHAS_ESP = [("24/12/2026", "Abierto", [("09:00", "13:00", False)])]
+AY_HORARIO = "Las horas van en la zona horaria de la organización. Una fecha especial reemplaza el horario de su día."
+PISAN = "Hay franjas superpuestas. Revisá también las que cierran al día siguiente."
+PRODUCTOS = "Heladeras familiares y comerciales, freezers y exhibidoras. Service a domicilio y repuestos originales."
+POLITICAS = "El diagnóstico a domicilio se cobra y se descuenta si se hace la reparación. Las reparaciones tienen 90 días de garantía."
+
+
+def hora(h, mal=False):
+    return f'<div class="ct sel hz-h{" mal" if mal else ""}">{h}{CHEV}</div>'
+
+
+def franjas(dia, lista, mal=False):
+    """Las franjas de un día abierto: «Desde – Hasta», la papelera si hay más de una y «Agregar franja» debajo.
+    mal: dos franjas que se pisan; se marcan las dos horas que chocan (el cierre de la primera y la apertura de la segunda)."""
+    h = ""
+    for k, (desde, hasta, sig) in enumerate(lista, 1):
+        quitar = (f'<button type="button" class="ib" aria-label="Quitar la franja {k} del {dia.lower()}">{QUITAR}</button>' if len(lista) > 1 else "")
+        h += f'<div class="hz-f">{hora(desde, mal and k == 2)}<span class="a">–</span>{hora(hasta, mal and k == 1)}{quitar}</div>'
+        if sig:
+            h += f'<div class="hz-sig">{chk("Cierra al día siguiente")}</div>'
+    h += f'<button type="button" class="cb cb-enl hz-add" aria-label="Agregar franja · {dia}">Agregar franja</button>'
+    return f'<div class="hz-fs">{h}</div>'
+
+
+def dia_fila(dia, estado, lista, mal=""):
+    sel = f'<div class="ct sel hz-e">{estado}{CHEV}</div>'
+    fr = franjas(dia, lista, bool(mal)) if estado == "Abierto" else "<span></span>"
+    err = f'<span class="err2 hz-err" role="alert">{mal}</span>' if mal else ""
+    return f'<div class="hz-d"><span class="dia">{dia}</span>{sel}{fr}{err}</div>'
+
+
+def fechas_especiales(fechas=FECHAS_ESP):
+    filas = "".join(f'<div class="hz-fe"><span class="fe">{f}</span><span>{est}' + (" · " + ", ".join(f"{a}–{b}" for a, b, _s in fr) if fr else "") + "</span>"
+                    f'<span class="ac"><button type="button" class="cb cb-enl">Editar</button><button type="button" class="ib" aria-label="Quitar el {f}">{QUITAR}</button></span></div>'
+                    for f, est, fr in fechas) if fechas else '<span class="hz-vac">Sin fechas especiales.</span>'
+    return (f'<div class="hz-esp"><b>Feriados y fechas especiales</b>{filas}'
+            f'<button type="button" class="cb cb-sec" style="align-self: flex-start;">{MAS} Agregar fecha especial</button></div>')
+
+
+def caja_horario(cambios=None, mal=None):
+    """cambios: {día: (estado, franjas)} sobre el horario de siempre; mal: (día, error) que se marca en ese día, al intentar guardar."""
+    hz = HORARIO | (cambios or {})
+    dias = "".join(dia_fila(d, *hz[d], mal=(mal[1] if mal and mal[0] == d else "")) for d in DIAS)
+    cuerpo = (f'<div class="hz">{dias}<div class="hz-cp"><button type="button" class="cb cb-sec">Aplicar de lunes a viernes</button></div>'
+              f'{fechas_especiales()}</div>')
+    return caja("Horario de atención", cuerpo, AY_HORARIO)
+
+
+def dlg_fecha():
+    """«Agregar fecha especial»: la fecha y su horario, que reemplaza el de ese día."""
+    cuerpo = (f'<div class="w-cmp"><span class="rt">Fecha <span class="req">*</span></span><div class="ct">24/12/2026</div></div>'
+              f'<div class="w-cmp"><span class="rt">Atención</span><div class="ct sel hz-e">Abierto{CHEV}</div></div>'
+              f'<div class="w-cmp"><span class="rt">Franjas</span>{franjas("24/12/2026", [("09:00", "13:00", False)])}</div>')
+    pie = '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Agregar fecha</button>'
+    return F.dialogo("Horario de una fecha especial", cuerpo, pie).replace('class="w-dlg"', 'class="w-dlg hz-dlg"', 1)
+
+
+def contenido_conocimiento(zona_vacia=False, faq_abierta=False, horario=None, mal=None, desde=None):
+    """desde: la sección con la que arranca lo que se ve, como la página corrida hasta ahí con las pestañas a la vista ("horario" o "servicios")."""
     datos = '<div class="as23-g">' + campo("Nombre del negocio", "Grupo Delta") + area("Qué hace el negocio", "Venta y service de heladeras familiares y comerciales.", ancho=False) + "</div>"
     if zona_vacia:
         ubic = ('<div class="as23-g">' + selc("Dónde atendés", "Elegí una opción", req=False, ph=True) + campo("Dirección del local", "Opcional", req=False, ph=True)
@@ -414,11 +525,7 @@ def contenido_conocimiento(zona_vacia=False, faq_abierta=False):
         ubic = ('<div class="as23-g">' + selc("Dónde atendés", "Local y zona de atención", req=False) + campo("Dirección del local", "Av. Rivadavia 4520, CABA", req=False)
                 + campo("Referencia para llegar", "Frente a la plaza.", req=False) + area("Zona de atención o entrega", ZONA, req=False, ancho=False) + "</div>")
         chip_u = ""
-    hor = ('<div class="as23-hor"><span class="k">Lunes a viernes</span><div class="ct sel" style="display: flex; justify-content: space-between;">Abierto' + CHEV + '</div>'
-           '<div class="ct">09:00</div><div class="ct">18:00</div>'
-           '<span class="k">Sábado</span><div class="ct sel" style="display: flex; justify-content: space-between;">Abierto' + CHEV + '</div><div class="ct">09:00</div><div class="ct">13:00</div>'
-           '<span class="k">Domingo</span><div class="ct sel" style="display: flex; justify-content: space-between;">Cerrado' + CHEV + '</div><span></span><span></span>'
-           f'<div class="esp"><span>Feriados y fechas especiales: ninguna</span><button type="button" class="cb cb-sec">{MAS} Agregar fecha especial</button></div></div>')
+    servicios = '<div class="as23-g">' + area("Productos y servicios", PRODUCTOS, req=False, ancho=False) + area("Políticas y condiciones", POLITICAS, req=False, ancho=False) + "</div>"
     faq = ""
     for k, (p, r) in enumerate(FAQ, 1):
         fila = (f'<div class="q-it"><span class="num">{k}</span><span class="dato"><b>{p}</b><span>{r}</span></span><span class="chips"></span>'
@@ -426,8 +533,12 @@ def contenido_conocimiento(zona_vacia=False, faq_abierta=False):
         if faq_abierta and k == 1:
             fila = f'<div class="q-ab">{fila}<div class="as23-ed">{area("Pregunta", p)}{area("Respuesta", r)}<div class="w-cmp ancho" style="align-items: flex-end;"><span class="q-pie"><button type="button" class="cb cb-sec">Listo</button></span></div></div></div>'
         faq += fila
-    return (caja("Datos del negocio", datos, AY_SECCION) + caja("Ubicación y zona de atención", ubic, chip=chip_u)
-            + caja("Horario de atención", hor) + f'<div class="as23-faq">{caja("Preguntas frecuentes", faq, der=f"<button type=" + chr(34) + "button" + chr(34) + " class=" + chr(34) + "cb cb-sec" + chr(34) + f">{MAS} Agregar pregunta</button>")}</div>')
+    agregar = f'<button type="button" class="cb cb-sec">{MAS} Agregar pregunta</button>'
+    secciones = [("datos", caja("Datos del negocio", datos, AY_SECCION)), ("ubicacion", caja("Ubicación y zona de atención", ubic, chip=chip_u)),
+                 ("horario", caja_horario(horario, mal)), ("servicios", caja("Servicios y condiciones", servicios)),
+                 ("faq", f'<div class="as23-faq">{caja("Preguntas frecuentes", faq, der=agregar)}</div>')]
+    k = [s for s, _h in secciones].index(desde) if desde else 0
+    return "".join(h for _s, h in secciones[k:])
 
 
 # ================================================================ Límites, uno por bandeja (65), con el tope de ofrecimientos (66)
@@ -525,17 +636,28 @@ def asistente_probar():
 
 
 # ================================================================ WA-Asistente-Limites: Límites y Conocimiento, que se editan ahí
-E_LI = ["Límites: Clientes", "Límites: Internos", "Sobre el máximo", "Conocimiento", "Una sección vacía", "Editar una pregunta frecuente"]
+E_LI = ["Límites: Clientes", "Límites: Internos", "Sobre el máximo", "Conocimiento", "Una sección vacía", "Un día con dos franjas", "Un día de 24 horas",
+        "Una franja que pasa la medianoche", "Dos franjas que se pisan", "Aplicar de lunes a viernes", "Una fecha especial", "Editar una pregunta frecuente"]
+# El horario de cada estado, sobre el de siempre (lunes a viernes de 9 a 18, sábado de 9 a 13 y domingo cerrado)
+HZ = {"Un día con dos franjas": {"Lunes": ("Abierto", FR_DOS)}, "Un día de 24 horas": {"Sábado": ("24 horas", [])},
+      "Una franja que pasa la medianoche": {"Viernes": ("Abierto", FR_DIA + [("20:00", "00:30", True)])},
+      "Dos franjas que se pisan": {"Lunes": ("Abierto", [("09:00", "13:00", False), ("12:00", "18:00", False)])},
+      "Aplicar de lunes a viernes": {d: ("Abierto", FR_DOS) for d in DIAS[:5]}, "Una fecha especial": {}}
 
 
 def asistente_limites():
+    sucio = lambda c: (banda("sucio"), cuerpo("conocimiento", c, probar(modo="sucio")))  # noqa: E731
     V = {"Límites: Clientes": (banda(), cuerpo("limites", contenido_limites())),
          "Límites: Internos": (banda(), cuerpo("limites", contenido_limites("Internos"))),
          "Sobre el máximo": (banda("sucio"), cuerpo("limites", contenido_limites(mal=True), probar(modo="sucio"))),
          "Conocimiento": (banda(), cuerpo("conocimiento", contenido_conocimiento(), probar("envios"))),
-         "Una sección vacía": (banda("sucio"), cuerpo("conocimiento", contenido_conocimiento(zona_vacia=True), probar(modo="sucio"))),
-         "Editar una pregunta frecuente": (banda("sucio"), cuerpo("conocimiento", contenido_conocimiento(faq_abierta=True), probar(modo="sucio")))}
-    return pagina_wa(V, {}, E_LI, "Asistente · Límites y conocimiento · /org/whatsapp/asistente", "Inicio / WhatsApp / Asistente", alto=1300)
+         "Una sección vacía": sucio(contenido_conocimiento(zona_vacia=True)),
+         "Editar una pregunta frecuente": sucio(contenido_conocimiento(faq_abierta=True, desde="servicios"))}
+    for e, hz in HZ.items():
+        mal = ("Lunes", PISAN) if e == "Dos franjas que se pisan" else None
+        V[e] = sucio(contenido_conocimiento(horario=hz, mal=mal, desde="horario"))
+    capas = {"Una fecha especial": dlg_fecha()}
+    return pagina_wa({e: V[e] for e in E_LI}, capas, E_LI, "Asistente · Límites y conocimiento · /org/whatsapp/asistente", "Inicio / WhatsApp / Asistente", alto=1300)
 
 
 # ================================================================ WA-Modo-Atencion: quién atiende y cuándo vuelve, por bandeja (52)
@@ -600,7 +722,7 @@ def preguntas():
 
 # ================================================================ Los teléfonos de la pantalla «Asistente» y de las preguntas
 CSS_T23 = """.t23-tabs { display: flex; gap: 6px; padding: 10px 16px; overflow-x: auto; border-bottom: 1px solid var(--borde); flex-shrink: 0; background: #fff; }
-.t23-tabs span { flex: none; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--borde); font-size: 14px; color: var(--t2); background: #fff; }
+.t23-tabs span { flex: none; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--borde); font-size: 14px; color: var(--t2); background: #fff; }
 .t23-tabs span.on { background: var(--marca-t); border-color: oklch(0.51 0.099 195 / 0.35); color: var(--marca-tx); font-weight: 600; }
 .t23-gtit { display: flex; align-items: center; justify-content: space-between; margin: 16px 16px 6px; font-size: 15px; font-weight: 600; }
 .t23-gtit a { font-size: 14px; font-weight: 500; color: var(--marca-tx); text-decoration: none; }
@@ -611,6 +733,29 @@ CSS_T23 = """.t23-tabs { display: flex; gap: 6px; padding: 10px 16px; overflow-x
 .t23-nada { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; color: var(--t2); }
 .t23-nada svg { color: var(--marca-tx); }
 .ap-fila .tx .l2 { white-space: normal; }
+.t23-ac .pr-g { font-size: 13.5px; }
+.t23-hz { display: flex; flex-direction: column; padding: 0 16px; background: #fff; border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
+.t23-dia { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--borde); }
+.t23-dia:last-child { border-bottom: 0; }
+.t23-dia .h { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 15px; font-weight: 500; }
+.t23-sel { display: flex; align-items: center; justify-content: space-between; gap: 8px; box-sizing: border-box; height: 40px; padding: 0 12px; border: 1px solid var(--borde2); border-radius: 10px; background: #fff; font-size: 15px; font-weight: 400; color: var(--t1); }
+.t23-sel svg { color: var(--t3); flex-shrink: 0; }
+.t23-dia .h .t23-sel { width: 150px; }
+.t23-fr { display: flex; align-items: center; gap: 8px; }
+.t23-fr .t23-sel { flex: 1; font-variant-numeric: tabular-nums; }
+.t23-fr .a { color: var(--t3); }
+.t23-add { align-self: flex-start; font-size: 14px; font-weight: 500; color: var(--marca-tx); text-decoration: none; }
+.t23-sig .q-chk, .hz-sig .q-chk { display: inline-flex; align-items: center; gap: 8px; }
+.t23-sig .q-chk { font-size: 14px; color: var(--t2); }
+.t23-sig .q-chk i, .hz-sig .q-chk i { width: 16px; height: 16px; flex: none; border-radius: 4px; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
+.t23-sig .q-chk i svg, .hz-sig .q-chk i svg { width: 12px; height: 12px; }
+.t23-cp { padding: 12px 16px 0; }
+.t23-cp .cb { width: 100%; height: 44px; justify-content: center; }
+.t23-fe { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 12px 16px; font-size: 15px; background: #fff; border-bottom: 1px solid var(--borde); }
+.t23-fe:first-of-type { border-top: 1px solid var(--borde); }
+.t23-fe .fe { font-variant-numeric: tabular-nums; }
+.t23-fe .ap-ib { width: 36px; height: 36px; }
+.t23-mas { display: inline-flex; align-items: center; gap: 6px; margin: 12px 16px 0; font-size: 15px; font-weight: 500; color: var(--marca-tx); text-decoration: none; }
 """
 
 
@@ -622,8 +767,41 @@ def t_fila(t1, t2, extra=""):
     return f'<div class="ap-fila"><div class="tx"><span class="l1">{t1}</span><span class="l2">{t2}</span></div>{extra}</div>'
 
 
+def t_sel(valor):
+    return f'<div class="t23-sel">{valor}{U.CHEV_CAMPO}</div>'
+
+
+def t_franjas(dia, lista):
+    fr = ""
+    for k, (desde, hasta, sig) in enumerate(lista, 1):
+        quitar = (f'<button type="button" class="ap-ib" aria-label="Quitar la franja {k} del {dia.lower()}">{QUITAR}</button>' if len(lista) > 1 else "")
+        fr += f'<div class="t23-fr">{t_sel(desde)}<span class="a">–</span>{t_sel(hasta)}{quitar}</div>'
+        if sig:
+            fr += f'<div class="t23-sig">{chk("Cierra al día siguiente")}</div>'
+    return fr + f'<a class="t23-add" href="#" aria-label="Agregar franja · {dia}">Agregar franja</a>'
+
+
+def t_dia(dia, estado, lista):
+    """Un día en el teléfono: el día y su estado arriba; abierto, sus franjas debajo, con «Agregar franja» (como allá a 390, apilado)."""
+    fr = t_franjas(dia, lista) if estado == "Abierto" else ""
+    return f'<div class="t23-dia"><div class="h"><span>{dia}</span>{t_sel(estado)}</div>{fr}</div>'
+
+
+def t_horario(cambios=None, desde=None):
+    """desde: el día con el que arranca lo que se ve, como la lista corrida hasta ahí (sin el título de la sección, que quedó arriba)."""
+    hz = HORARIO | (cambios or {})
+    fechas = "".join(f'<div class="t23-fe"><span class="fe">{f}</span><span>{est}' + (" · " + ", ".join(f"{a}–{b}" for a, b, _s in fr) if fr else "") + "</span>"
+                     f'<button type="button" class="ap-ib" aria-label="Quitar el {f}">{QUITAR}</button></div>' for f, est, fr in FECHAS_ESP)
+    dias = DIAS[DIAS.index(desde):] if desde else DIAS
+    tit = "" if desde else '<div class="t23-gtit">Horario de atención</div>'
+    return (f'{tit}<div class="t23-hz">' + "".join(t_dia(d, *hz[d]) for d in dias) + "</div>"
+            '<div class="t23-cp"><button type="button" class="cb cb-sec">Aplicar de lunes a viernes</button></div>'
+            f'<div class="t23-gtit">Feriados y fechas especiales</div>{fechas}<a class="t23-mas" href="#">{MAS} Agregar fecha especial</a>')
+
+
 def tel_asistente():
-    est = ["Casos", "Editar un caso", "Perfil", "Probar", "Probar: lo que haría"]
+    est = ["Casos", "Editar un caso", "Perfil", "Conocimiento", "Conocimiento: el horario", "Conocimiento: el fin de semana", "Conocimiento: una fecha especial",
+           "Probar", "Probar: lo que haría"]
     probar_ic = f'<a class="ap-ib" aria-label="Probar" href="#">{BOT}</a>'
     bar = C.t_bar("Asistente", "WhatsApp", "M-WA-Menu.dc.html", probar_ic)
     fijo = lambda on: f'<div class="ap-fijo"><button type="button" class="cb cb-pri full"{"" if on else " disabled"}>Guardar cambios</button></div>'  # noqa: E731
@@ -641,12 +819,26 @@ def tel_asistente():
               + F.tcampo("Presentación", PRESENTACION, req=True) + F.tcampo("Mensaje al derivar", DERIVAR, req=True) + "</div></div>" + fijo(False))
     pr_in = (C.t_bar("Probar", "Asistente", "M-WA-Asistente.dc.html") + '<div class="ap-cuerpo"><div class="t23-hb">' + F.tcampo("Bandeja", "Clientes", select=True)
              + F.tcampo("Mensaje", PRUEBAS["envios"][0], req=True))
-    acciones = "".join(f'<div class="t23-ac"><b>{k}. {que}</b><span class="caso">{caso}</span>{vista}<span class="por">{por}</span><span class="uso">Usó: {uso}</span></div>'
-                       for k, (que, caso, vista, por, uso) in enumerate(PRUEBAS["envios"][1], 1))
+    acciones = "".join(f'<div class="t23-ac"><b>{k}. {que}</b>{vista}{pr_grilla(caso, uso, por)}</div>' for k, (que, caso, vista, por, uso) in enumerate(PRUEBAS["envios"][1], 1))
     pr = pr_in + "</div></div>" + '<div class="ap-fijo"><button type="button" class="cb cb-pri full">Probar</button></div>'
     pr_res = pr_in + '<div class="t23-gtit" style="margin: 4px 0 0;">Lo que haría</div>' + acciones + f'<span class="t23-nada">{CHECK} No se mandó nada.</span></div></div>'
-    cu = {"Casos": lista, "Editar un caso": edit, "Perfil": perfil, "Probar": pr, "Probar: lo que haría": pr_res}
-    return C.tel_pagina(cu, est, {}, "Asistente · teléfono", E.CSS_E12 + E.CSS_TED_E12 + W.CSS_TP + CSS_T23 + CSS_23)
+    # Conocimiento: la información del negocio de allá (169), apilada; el horario, con sus franjas, y una fecha especial en una hoja
+    conoc = (bar + t_tabs("conocimiento") + '<div class="ap-cuerpo"><div class="t23-gtit">Datos del negocio</div><div class="t23-hb" style="padding-bottom: 6px;">'
+             + F.tcampo("Nombre del negocio", "Grupo Delta", req=True) + F.tcampo("Qué hace el negocio", "Venta y service de heladeras familiares y comerciales.", req=True)
+             + '</div><div class="t23-gtit">Ubicación y zona de atención</div><div class="t23-hb">' + F.tcampo("Dónde atendés", "Local y zona de atención", select=True)
+             + F.tcampo("Dirección del local", "Av. Rivadavia 4520, CABA") + F.tcampo("Referencia para llegar", "Frente a la plaza.")
+             + F.tcampo("Zona de atención o entrega", ZONA) + "</div></div>" + fijo(False))
+    horario = (bar + t_tabs("conocimiento") + f'<div class="ap-cuerpo">{t_horario({"Lunes": ("Abierto", FR_DOS)})}'
+               '<div style="height: 96px; flex-shrink: 0;"></div></div>' + fijo(True))
+    finde = {"Viernes": ("Abierto", FR_DIA + [("20:00", "00:30", True)]), "Sábado": ("24 horas", [])}
+    fin_semana = (bar + t_tabs("conocimiento") + f'<div class="ap-cuerpo">{t_horario(finde, desde="Viernes")}'
+                  '<div style="height: 96px; flex-shrink: 0;"></div></div>' + fijo(True))
+    fecha = F.thoja("Horario de una fecha especial", F.tcampo("Fecha", "24/12/2026", req=True) + F.tcampo("Atención", "Abierto", select=True)
+                    + f'<div class="t23-dia" style="border: 0; padding: 0;">{t_franjas("24/12/2026", [("09:00", "13:00", False)])}</div>',
+                    '<button type="button" class="cb cb-pri lleno">Agregar fecha</button><button type="button" class="cb cb-sec">Cancelar</button>')
+    cu = {"Casos": lista, "Editar un caso": edit, "Perfil": perfil, "Conocimiento": conoc, "Conocimiento: el horario": horario,
+          "Conocimiento: el fin de semana": fin_semana, "Conocimiento: una fecha especial": fin_semana, "Probar": pr, "Probar: lo que haría": pr_res}
+    return C.tel_pagina(cu, est, {"Conocimiento: una fecha especial": fecha}, "Asistente · teléfono", E.CSS_E12 + E.CSS_TED_E12 + W.CSS_TP + CSS_T23 + CSS_23)
 
 
 def tel_preguntas():
@@ -699,5 +891,6 @@ if __name__ == "__main__":
     for n, f in [("M-WA-Asistente", tel_asistente), ("M-WA-Preguntas-Sin-Respuesta", tel_preguntas)]:
         (PROJ / f"{n}.dc.html").write_text(E.post(n, f()), encoding="utf-8")
     hechos = CH.escribir_todo()
-    registrar(TITULOS | CH.TITULOS)
+    if "--sin-canvas" not in sys.argv:
+        registrar(TITULOS | CH.TITULOS)
     print("tableros", len(TITULOS) + len(hechos))
