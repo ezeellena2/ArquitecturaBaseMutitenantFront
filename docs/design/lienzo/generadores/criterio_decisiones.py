@@ -613,6 +613,17 @@ DECISIONES = {
         ("«Por aprobar»", "PL1-A", "Elegido por el usuario: «Por aprobar (N) | Todas» arriba de la planilla, con el segmentado y no con pestañas (148).", "Falta dibujar"),
         ("El mensaje con datos", "MD1-A", "Elegido por el usuario: «Agregar dato» pone etiquetas que siguen a la pregunta, con «Así llega» debajo (149).", "Falta dibujar"),
     ],
+    "Revisión de las specs · v169 · 08/11": [
+        ("Elegir primero por un campo", "LD1-A a LD3-A", "Una pregunta de catálogo pide primero el valor de un campo, como «Rubro», y lista solo las opciones con ese valor, también por WhatsApp. Va después del bloque, con las listas dependientes en WhatsApp: de la E12 a la E25 no cambia nada (191).", "Decidido"),
+        ("Un pedido vago", "", "La IA propone enseguida su mejor versión y la persona la ajusta; pregunta una sola vez, con sus palabras, solo si no sabe qué armar. Es fijo solo lo que tiene que ser exacto: los botones, el resumen, la oferta de un formulario y el mensaje al derivar (192; precisa la 155).", "Dibujada en parte"),
+        ("Una sola pestaña", "", "Elegido por el usuario: la barra de pestañas aparece cuando el formulario tiene dos; en la E14 solo está «Diseño», y la barra llega en la E15, con «Respuestas» y «Tablero» (193).", "Dibujada"),
+        ("El visor de una foto", "", "Elegido por el usuario: el nombre, el tamaño y «Descargar», igual en la planilla y en el chat; quién la mandó y cuándo ya están en la tarjeta del chat (194).", "Dibujada"),
+        ("Pasar una pregunta al bloque", "", "Elegido por el usuario: con «Mostrar si» o «Permitir elegir varias», marcar «Se carga varias veces» pide confirmar: «Se quitan sus condiciones.» o «Pasa a elegir una sola opción.» (195; la 162).", "Dibujada"),
+        ("«Correo» en el bloque", "", "Elegido por el usuario: en una pregunta del bloque va apagado en «Tipo de respuesta», con su motivo, como Foto y Documento, y «Mandar por correo» ofrece solo las preguntas de afuera del bloque (196).", "Decidido"),
+        ("El bloque en una plantilla", "", "Elegido por el usuario: el bloque no es una variable de una plantilla de WhatsApp, porque una variable no admite saltos de línea; va solo en los avisos dentro de las 24 horas (197).", "Dibujada"),
+        ("Dónde se usó una plantilla", "", "Elegido por el usuario: la tarjeta dice «La usaste en «Visita a cliente» y 1 más» (198).", "Dibujada"),
+        ("Un documento en atención manual", "", "Elegido por el usuario: se lee igual y queda en «Documentos recibidos»; al operador le aparece la sugerencia de mandar el formulario prellenado, con «Revisar y enviar», como en la E23 (199).", "Dibujada"),
+    ],
     "Traspaso 10 · 08/11": [
         ("El teléfono", "A", "Elegido por el usuario: no se achica; debajo de 768 px, todo lo que se toca sigue midiendo 44 × 44, porque el dedo lo necesita (187; la 180).", "Dibujada"),
         ("La vista previa de los chats", "A", "Elegido por el usuario: el último mensaje va en un renglón, cortado con «…», como en WhatsApp, para que las filas tengan la misma altura; entero, al abrir el chat. Es la única excepción a la 174 (188).", "Dibujada"),

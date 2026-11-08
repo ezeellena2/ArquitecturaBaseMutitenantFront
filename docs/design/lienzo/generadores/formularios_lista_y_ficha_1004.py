@@ -546,7 +546,7 @@ def tel_lista(n):
         lee = bar + seg(False, "3") + '<div class="ap-cuerpo">' + "".join(t_fila(f, e, menu=False, cuenta=False) for f in t_filas[:3]) + "</div>"
         cuerpo = {x: (bajas if x in ("Dados de baja", "Acciones de un dado de baja", "Reactivar") else lee if x.startswith("Quien solo ve respuestas")
                       else esq if x == "Cargando" else error if x == "No se pudo cargar" else activos) for x in E_T}
-        if e.n == 17:  # 131 (v169): «Reactivar» de la lista lleva al formulario y abre ahí su hoja, como en M-FRM-Editor-Baja
+        if e.ciclo:  # 131 (v169): «Reactivar» de la lista lleva al formulario y abre ahí su hoja, como en M-FRM-Editor-Baja (desde la 17)
             cuerpo["Reactivar"] = B.t_pantalla_baja(f"{n}.dc.html")
         if e.carga:
             cuerpo["Quien solo carga"] = bar + '<div class="ap-cuerpo">' + "".join(t_carga(f) for f in [t_filas[0], t_filas[1], t_filas[3]]) + "</div>"
@@ -574,11 +574,11 @@ def tel_lista(n):
         if e.plantilla:
             capas["Nuevo formulario: elegir"] = M.hoja("Nuevo formulario", '<a role="menuitem" href="M-FRM-Editor.dc.html">Desde cero</a><a role="menuitem" href="M-FRM-Biblioteca.dc.html">Desde una plantilla</a>')
     t = C.tel_pagina(cuerpo, E_T, capas, f"Formularios · teléfono · etapa {e.n}", A.CSS_TCHAT_AB + E.CSS_E12 + B.CSS_E12B + E.CSS_TED_E12 + F.CSS_TFILTRO + B.CSS_TDET
-                     + (B.CSS_TBAJA if e.n == 17 else ""))
+                     + (B.CSS_TBAJA if e.ciclo else ""))
     if e.resp:
         t = t.replace("Publicado · versión 3", "Publicado · versión 4")
     t = M.css(t, M.CSS_HOJA, "hoja")
-    if e.n == 17:  # el formulario de «Reactivar», con sus pestañas, como cuando se abre
+    if e.ciclo:  # el formulario de «Reactivar», con sus pestañas, como cuando se abre
         t = con_pestanas_tel(t, "diseno")
     return con_css(E.post(n, t), "tlista", CSS_TLISTA)
 

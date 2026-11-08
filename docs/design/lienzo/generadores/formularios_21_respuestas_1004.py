@@ -392,6 +392,7 @@ def dar_de_baja():
     nuevo = (f'{m.group(1)}{m.group(2)}<div class="tx"><b>Se conservan las 24 respuestas, con sus fotos, documentos, PDF y aprobaciones</b><span>Siguen en la planilla y en el Excel.</span></div></div>'
              f'{m.group(1)}{m.group(2)}<div class="tx"><b>3 respuestas esperan aprobación</b><span>Se pueden seguir aprobando o rechazando.</span></div></div>')
     t = t.replace(m.group(0), nuevo, 1).replace("Publicado · versión 3", "Publicado · versión 4")
+    t = con_bloque(t)  # el editor de atrás, como en FRM-Editor-Baja-21: «Agregar título · Agregar bloque · Agregar pregunta» (177, v169)
     return re.sub(r"<title>[^<]*</title>", "<title>Dar de baja · etapa 21</title>", t)
 
 
