@@ -502,6 +502,7 @@ CSS_R5 = CSS_FCAB + """.w-body > .w-caja, .w-body > .rc-ban, .w-body > .co-pg, .
 .co-ch { columns: 3; column-gap: 16px; }
 .cg-q .co-ch .q-chk { display: flex; margin-bottom: 10px; font-size: 14px; break-inside: avoid; }
 .cg-panel .co-ch { columns: 2; }
+.cg-panel .cg-ppie { justify-content: flex-end; }
 .co-ya { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--borde); border-radius: 8px; background: #fff; }
 .co-ya + .co-ya { margin-top: 6px; }
 .co-ya .im { width: 36px; height: 36px; flex: none; border-radius: 6px; background: linear-gradient(135deg, oklch(0.84 0.03 170), oklch(0.66 0.05 170)); }
