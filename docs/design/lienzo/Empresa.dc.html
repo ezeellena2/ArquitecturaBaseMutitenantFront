@@ -667,6 +667,10 @@ textarea.in2 { height: auto; min-height: 84px; }
 .tt-h .ord { margin-left: 2.9px/*4px*/; font-size: 10.5px/*10px*/; color: var(--t2); }
 .tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
 </style>
+<style data-t10="nucleo">
+/* 161 · El foco arranca en «Cancelar», para que un Enter apurado no confirme lo que no se leyó. */
+:root .dlg-f .t10n-foco, :root .df .t10n-foco { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--marca) !important; }
+</style>
 <style data-t10="piezas">
 /* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
 :root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
@@ -675,7 +679,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 :root .ini-ico, :root .lp-ico { background: transparent !important; width: auto !important; height: auto !important; }
 
 /* 173 · El avatar, un cuadrado con la inicial, sin degradé: chico (24) en la barra de arriba y en el pie del menú. */
-:root .avatar, :root .w-av, :root .ap-nav .yo, :root .av, :root .org-av, :root .mail-de .logo { background: var(--marca) !important; color: #fff; border-radius: 3px/*6px*/ !important; }
+:root .avatar, :root .w-av, :root .ap-nav .yo, :root .av:not(.z-f), :root .org-av, :root .mail-de .logo { background: var(--marca) !important; color: #fff; border-radius: 3px/*6px*/ !important; }
 :root .avatar.gris { background: var(--s3) !important; color: var(--t2) !important; }
 :root .w-av.g { background: oklch(0.9 0.015 95) !important; color: var(--t2) !important; }
 :root .ab-topbar .um-btn .avatar, :root .ab-sidebar__user .avatar, :root .ab-sidebar__footer .avatar, :root .w-us .w-av, :root .w-umd .um .w-av { width: 17.8px/*24px*/ !important; height: 17.8px/*24px*/ !important; font-size: 10.5px/*12px*/ !important; border-radius: 3px/*5px*/ !important; }
@@ -853,7 +857,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <sc-if value="{{abiertoRol}}" hint-placeholder-val="{{no}}">
               <div class="menu izq" role="listbox" aria-label="Filtrar por rol">
                 <sc-for list="{{opcionesRol}}" as="o" hint-placeholder-count="3">
-                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}<span class="menu-cnt">{{o.c}}</span></button>
+                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it t10n-op {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}</button>
                 </sc-for>
               </div>
             </sc-if>
@@ -863,7 +867,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <sc-if value="{{abiertoEstadoM}}" hint-placeholder-val="{{no}}">
               <div class="menu izq" role="listbox" aria-label="Filtrar por estado">
                 <sc-for list="{{opcionesEstadoM}}" as="o" hint-placeholder-count="3">
-                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}<span class="menu-cnt">{{o.c}}</span></button>
+                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it t10n-op {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}</button>
                 </sc-for>
               </div>
             </sc-if>
@@ -1084,7 +1088,7 @@ textarea.in2 { height: auto; min-height: 84px; }
           </div>
         </sc-if>
         <div class="dlg-f">
-          <button type="button" class="b b-sec" onClick="{{cancelarConfirmacion}}">Cancelar</button>
+          <button type="button" class="b b-sec t10n-foco" onClick="{{cancelarConfirmacion}}">Cancelar</button>
           <button type="button" class="b {{claseConfirmar}}" onClick="{{confirmar}}">{{botonConfirmacion}}</button>
         </div>
       </div>
@@ -1102,6 +1106,9 @@ textarea.in2 { height: auto; min-height: 84px; }
 </x-dc>
 
 <script type="text/x-dc" data-dc-script data-props='{"pestana":{"editor":"enum","options":["Miembros","Roles"],"default":"Miembros","section":"Estado"},"quien":{"editor":"enum","options":["Administra la organización","Administra solo la empresa"],"default":"Administra la organización","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+// 174: un correo baja de renglón después de la «@», nunca a mitad de palabra (traspaso10_nucleo_1004.py).
+const t10nCorreo = (s) => (typeof s === 'string' ? s.replace('@', '@\u200b') : s);
+
 const ORG_ZONA = 'America/Argentina/Buenos_Aires';
 // La zona se guarda con su ID; en pantalla va la ciudad y el desfase.
 const NOMBRES_ZONA = { 'America/Argentina/Buenos_Aires': 'Buenos Aires (GMT−3)', 'America/Argentina/Cordoba': 'Córdoba (GMT−3)', 'America/Argentina/Mendoza': 'Mendoza (GMT−3)', 'America/Argentina/Tucuman': 'Tucumán (GMT−3)', 'America/Montevideo': 'Montevideo (GMT−3)', 'America/Santiago': 'Santiago (GMT−3)', 'America/Asuncion': 'Asunción (GMT−3)' };
@@ -1474,7 +1481,7 @@ class Component extends DCLogic {
         this.pedirConfirmacion({
           titulo: '¿Dar de baja ' + e.n + '?',
           texto: 'Nadie entra a esta empresa mientras esté inactiva. Sus datos y sus miembros se conservan.',
-          boton: 'Dar de baja',
+          boton: 'Dar de baja', peligro: false,
           accion: () => { this.setState({ empresa: { ...this.state.empresa, estado: 'inactiva' } }); this.avisar('Dimos de baja ' + e.n + '.'); },
         });
       },
@@ -1503,7 +1510,7 @@ class Component extends DCLogic {
 
         return {
           ...this.fila(m.id, m.nombre),
-          email: m.email, nombre: m.nombre, roles: m.roles, sinRoles: m.roles.length === 0, activo: act,
+          email: t10nCorreo(m.email), nombre: m.nombre, roles: m.roles, sinRoles: m.roles.length === 0, activo: act,
           pill: act ? 'ok' : baja || m.estado === 'vencida' ? 'alerta' : inv ? 'pend' : 'off',
           textoEstado: act ? 'Activo' : baja ? 'Por borrar' : m.estado === 'invitado' ? 'Invitación pendiente' : m.estado === 'vencida' ? 'Invitación vencida' : 'De baja',
           invitado: inv, noInvitado: !inv, textoVence: (m.estado === 'vencida' ? 'Venció ' : 'Vence ') + (m.vence || ''),
@@ -1550,7 +1557,7 @@ class Component extends DCLogic {
             this.pedirConfirmacion({
               titulo: '¿Dar de baja a ' + m.nombre + ' en la empresa?',
               texto: 'Deja de entrar a ' + e.n + ' y pierde sus roles acá. Sigue en la organización y en sus otras empresas.',
-              boton: 'Quitar',
+              boton: 'Dar de baja', peligro: false,
               accion: () => {
                 this.setState({ miembros: this.state.miembros.map((x) => (x.id === m.id ? { ...x, estado: 'inactivo', roles: [] } : x)) });
                 this.avisar('Dimos de baja a ' + m.nombre + ' en la empresa.');

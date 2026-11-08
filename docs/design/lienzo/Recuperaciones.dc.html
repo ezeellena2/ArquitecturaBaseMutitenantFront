@@ -664,6 +664,10 @@ textarea.in2 { height: auto; min-height: 84px; }
 .o-fila .dos > .n2 { flex: 0 1 auto; font-size: 10.7px/*13px*/; color: var(--t2); text-align: right; }
 .rev-tx { margin: 0; font-size: 11.1px/*13.5px*/; color: var(--t2); line-height: 1.55; }
 </style>
+<style data-t10="nucleo">
+/* 161 · El foco arranca en «Cancelar», para que un Enter apurado no confirme lo que no se leyó. */
+:root .dlg-f .t10n-foco, :root .df .t10n-foco { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--marca) !important; }
+</style>
 <style data-t10="piezas">
 /* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
 :root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
@@ -672,7 +676,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 :root .ini-ico, :root .lp-ico { background: transparent !important; width: auto !important; height: auto !important; }
 
 /* 173 · El avatar, un cuadrado con la inicial, sin degradé: chico (24) en la barra de arriba y en el pie del menú. */
-:root .avatar, :root .w-av, :root .ap-nav .yo, :root .av, :root .org-av, :root .mail-de .logo { background: var(--marca) !important; color: #fff; border-radius: 3px/*6px*/ !important; }
+:root .avatar, :root .w-av, :root .ap-nav .yo, :root .av:not(.z-f), :root .org-av, :root .mail-de .logo { background: var(--marca) !important; color: #fff; border-radius: 3px/*6px*/ !important; }
 :root .avatar.gris { background: var(--s3) !important; color: var(--t2) !important; }
 :root .w-av.g { background: oklch(0.9 0.015 95) !important; color: var(--t2) !important; }
 :root .ab-topbar .um-btn .avatar, :root .ab-sidebar__user .avatar, :root .ab-sidebar__footer .avatar, :root .w-us .w-av, :root .w-umd .um .w-av { width: 17.8px/*24px*/ !important; height: 17.8px/*24px*/ !important; font-size: 10.5px/*12px*/ !important; border-radius: 3px/*5px*/ !important; }
@@ -791,7 +795,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <sc-if value="{{abiertoEstado}}" hint-placeholder-val="{{no}}">
               <div class="menu izq" role="listbox" aria-label="Filtrar por estado">
                 <sc-for list="{{opcionesEstado}}" as="o" hint-placeholder-count="4">
-                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}<span class="menu-cnt">{{o.c}}</span></button>
+                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it t10n-op {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}</button>
                 </sc-for>
               </div>
             </sc-if>
@@ -865,8 +869,8 @@ textarea.in2 { height: auto; min-height: 84px; }
         </div>
         <div class="dlg-f">
           <sc-if value="{{rev.pendiente}}" hint-placeholder-val="{{si}}">
-            <button type="button" class="b b-sec" onClick="{{cerrarDialogo}}">Cancelar</button>
-            <button type="button" class="b b-pel" onClick="{{rechazar}}">Rechazar</button>
+            <button type="button" class="b b-sec t10n-foco" onClick="{{cerrarDialogo}}">Cancelar</button>
+            <button type="button" class="b b-sec" onClick="{{rechazar}}">Rechazar</button>
             <button type="button" class="b b-pri" onClick="{{aprobar}}" disabled="{{rev.sinCuenta}}">Aprobar</button>
           </sc-if>
           <sc-if value="{{rev.resuelto}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-sec" onClick="{{cerrarDialogo}}">Cerrar</button></sc-if>
@@ -886,7 +890,7 @@ textarea.in2 { height: auto; min-height: 84px; }
           </div>
         </sc-if>
         <div class="dlg-f">
-          <button type="button" class="b b-sec" onClick="{{cancelarConfirmacion}}">Cancelar</button>
+          <button type="button" class="b b-sec t10n-foco" onClick="{{cancelarConfirmacion}}">Cancelar</button>
           <button type="button" class="b {{claseConfirmar}}" onClick="{{confirmar}}">{{botonConfirmacion}}</button>
         </div>
       </div>
@@ -1184,7 +1188,7 @@ class Component extends DCLogic {
         revisar: () => this.setState({ abierto: null, revisando: x.id, motivoRev: '', errMotivoRev: '' }),
       })),
       dlgRevisar: !!r,
-      tituloRevisar: r && r.estado === 'pendiente' ? 'Revisar el pedido' : 'Pedido de recuperación',
+      tituloRevisar: !r ? '' : (r.estado === 'pendiente' ? 'Revisar el pedido de ' : 'Pedido de ') + (r.cuenta || r.antes),
       rev: r ? {
         ...r,
         cuentaTexto: r.cuenta || 'Ninguna',
