@@ -227,6 +227,25 @@ def c_cargar(n, k):
     return f'<a class="cb cb-sec cb-ch" href="FRM-Cargar-Respuesta.dc.html" aria-label="Cargar {n}">Cargar</a>'
 
 
+# Lo de quien solo carga (153, que cambia la 83): cuántas cargó de cada formulario y la última, con su número y cuándo llegó; sin cargas,
+# «Todavía no cargaste». Nunca los totales de la organización. Es Tomás Acosta: coincide con lo propio (5 de «Pedido de materiales», con
+# PED-000046, en la 20; 6 de «Visita a cliente», con VIS-000126, en la 21) y con los dados de baja (REL-000012).
+MIS_CARGAS = {"Pedido de materiales": (5, "PED-000046", "15/10/2026 12:32"), "Visita a cliente": (6, "VIS-000126", "13/10/2026 15:30"),
+              "Relevamiento de obra": (2, "REL-000012", "30/09/2026 10:15")}
+NO_CARGO = "Todavía no cargaste"
+CSS_MIS = """.w-th.fx1c, .w-tr.fx1c { grid-template-columns: minmax(200px, 1.4fr) 110px 150px 150px 72px; }
+.w-tr.fx1c { position: relative; min-height: 40px; }
+"""
+
+
+def c_mis(n):
+    """«Mis cargas», «Mi última carga», que abre lo suyo, y «Recibida»; sin cargas, «Todavía no cargaste»."""
+    d = MIS_CARGAS.get(n)
+    if not d:
+        return f'<span class="num">0</span><span class="fm-no">{NO_CARGO}</span><span class="fm-no">—</span>'
+    return f'<span class="num">{d[0]}</span><span><a class="fx-num" href="FRM-Respuestas-Propias.dc.html">{d[1]}</a></span><span class="num">{d[2]}</span>'
+
+
 def fila(f, cols, e):
     n, k, (clase, texto, info), preg, cambio, apr, resp, ult = f
     defecto = "no" if k == "Rel" else "si"
@@ -248,9 +267,9 @@ def fila(f, cols, e):
     elif cols == "lee":
         celdas = c_nombre(n, abre) + f'<span class="num">{resp}</span>' + c_ultima(ult, e)
         grilla = "fx3"
-    elif cols == "carga":  # `formrecords.create` sin `formrecords.read`: sus formularios, sin conteos (85)
-        celdas = c_nombre(n, "FRM-Respuestas-Propias.dc.html") + c_cargar(n, k)
-        grilla = "fx1"
+    elif cols == "carga":  # `formrecords.create` sin `formrecords.read`: sus formularios, con lo suyo y sin los totales de la organización (85 y 153)
+        celdas = c_nombre(n, "FRM-Respuestas-Propias.dc.html") + c_mis(n) + c_cargar(n, k)
+        grilla = "fx1c"
     elif cols == "lectura":  # `forms.read` sin `formrecords.read`: sin las columnas de respuestas
         celdas = c_nombre(n, "FRM-Editor-Baja.dc.html" if k == "Rel" else "FRM-Editor.dc.html") + f'<span class="num">{preg}</span>' + c_whatsapp(clase, texto, info) + f'<span class="num">{cambio}</span>'
         grilla = "fx14"
@@ -271,7 +290,7 @@ def tabla(cols, bandera, e):
     elif cols == "lectura":
         cab, clase = ["Formulario", "Preguntas", "En WhatsApp", "Último cambio"], "fx14"
     elif cols == "carga":
-        cab, clase = ["Formulario", '<span class="sr">Cargar</span>'], "fx1"
+        cab, clase = ["Formulario", "Mis cargas", "Mi última carga", "Recibida", '<span class="sr">Cargar</span>'], "fx1c"
     else:
         cab, clase = ["Formulario", "Por aprobar"], "fx2"
     # La columna por la que está ordenada muestra ▲ (el usuario, 25/10)
@@ -336,6 +355,9 @@ def js_carga(js, aprob=False):
                  ("const filas = baja || bor ? 1 : conAlgo ? 2 : pub || lee || aprueba ? 3 : 4;", filas[0]),
                  (": baja ? '1 dado de baja' : lee ? '3 activos' : aprueba ? '4 por aprobar' : !CI ? '4 formularios' : AP ? '4 activos · 4 por aprobar' : '4 activos · 1 dado de baja',", filas[1]),
                  ("conEstado: disena || (CI && lee),", "conEstado: disena || lee || carga,"),
+                 # quien solo carga no ve lo que espera aprobación de la organización: ni el filtro «Aprobación» ni la cuenta del panel (153)
+                 ("conCnt: AP && !lee,", "conCnt: AP && !lee && !carga,"),
+                 ("conAprobacion: !lee && v !== 'Sin permiso' && !baja,", "conAprobacion: !lee && !carga && v !== 'Sin permiso' && !baja,"),
                  ("estC_t: '4', estC_p: '3', estC_b: '1', estC_d: '1',", "estC_t: '5', estC_p: '4', estC_b: '1', estC_d: '1',"),
                  ("colsTodas: disena && !(R && lectura), colsLee: lee, colsLectura: R && lectura,", "colsTodas: disena && !(R && lectura), colsLee: lee, colsLectura: R && lectura, colsCarga: carga, conWa: !carga, tipCliente: v === 'Uno solo para clientes',"),
                  ("rVis: lista && !baja && !bor, rEnt: lista && !baja && !bor, rCon: lista && !baja && !bor && !conAlgo,", filas_r[0]),
@@ -430,6 +452,8 @@ def lista(n):
     t = pagina_lista(n, estados_lista(e), "e", e=e)
     if e.resp:  # desde la 15, la planilla ya tiene respuestas de la versión 4
         t = t.replace("Publicado · versión 3", "Publicado · versión 4")
+    if e.carga:
+        t = con_css(t, "mis-cargas", CSS_MIS)
     return re.sub(r"<title>[^<]*</title>", f"<title>Formularios · /org/formularios · etapa {e.n}</title>", t)
 
 
@@ -483,9 +507,11 @@ def t_fila(f, e, menu=True, cuenta=True):
 
 
 def t_carga(f, baja=False):
-    """Quien solo carga: sus formularios y «Cargar», sin conteos (85); en uno dado de baja ve lo suyo, sin «Cargar» (101)."""
+    """Quien solo carga: sus formularios, con cuántas cargó y la última (153), y «Cargar» (85); en uno dado de baja ve lo suyo, sin «Cargar» (101)."""
     c = "" if baja else '<a class="cb cb-sec cb-ch" href="M-FRM-Cargar-Respuesta.dc.html">Cargar</a>'
-    return f'<div class="ap-fila fx"><a class="tx" href="M-FRM-Respuestas-Propias.dc.html"><span class="l1">{f[0]}</span></a>{c}</div>'
+    d = MIS_CARGAS.get(f[0])
+    l2 = f"{d[0]} cargas · la última, {d[1]}, el {d[2]}" if d else NO_CARGO
+    return f'<div class="ap-fila fx"><a class="tx" href="M-FRM-Respuestas-Propias.dc.html"><span class="l1">{f[0]}</span><span class="l2">{l2}</span></a>{c}</div>'
 
 
 def tel_lista(n):
@@ -861,9 +887,23 @@ def registrar():
     ruta.write_text(json.dumps(c, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def solo():
+    """--solo A,B: los tableros de la lista que se piden, nada más."""
+    if "--solo" not in sys.argv:
+        return None
+    return {x for a in sys.argv[sys.argv.index("--solo") + 1:] for x in a.split(",") if x}
+
+
 if __name__ == "__main__":
     panel_e16 = re.search(r'<style data-e16="panel">\n(.*?)</style>', leer("FRM-Catalogos"), re.S)
     E.R.CSS_PANEL_E16 = panel_e16.group(1) if panel_e16 else ""
+    pedidos = solo()
+    if pedidos is not None:
+        for n in sorted(pedidos):
+            assert n in LISTAS or n in TLISTAS, f"--solo: {n} no es una lista"
+            escribir(n, sin_disenar(n, enlaces_de(n, lista(n) if n in LISTAS else tel_lista(n))))
+        print("listo:", ", ".join(sorted(pedidos)))
+        sys.exit(0)
     for n in LISTAS:
         escribir(n, enlaces_de(n, lista(n)))
     escribir("FRM-Copiar", B.copiar())

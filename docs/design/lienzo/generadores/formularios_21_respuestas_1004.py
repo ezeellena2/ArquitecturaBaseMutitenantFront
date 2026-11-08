@@ -14,6 +14,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import formularios_1004 as F  # noqa: E402
 import formularios_ab_1004 as A  # noqa: E402
 import formularios_ab_catalogos_1004 as C  # noqa: E402
+import formularios_ab_planilla_1004 as P  # noqa: E402
 import formularios_e12_sin_idioma_1004 as E  # noqa: E402
 import formularios_lista_y_ficha_1004 as L  # noqa: E402
 import formularios_15_respuestas_1004 as R  # noqa: E402
@@ -489,15 +490,520 @@ def tel_cargar():
                         "Nueva respuesta · la pregunta «Correo» · teléfono · etapa 21", W.CSS_TP)
 
 
+# ================================================================ Traspasos 5, 9 y 10 (2026-11-07): la 21 con las piezas nuevas
+# Lo de arriba queda para la 23, que usa `con_visita` y `PV_CORREO`. Desde acá: la planilla con «Por aprobar (N) | Todas» (148) y un solo «Filtros»
+# (144); corregir y anular como en ArquitecturaBase (166: «Corregir» con su lápiz en la fila del título, el ⋮ con solo «Anular», el motivo al final,
+# «Guardar corrección», «Ya cargado · 86 KB» y «¿Anular VIS-…?» con «Anular respuesta»); lo propio con el motivo del rechazo en los momentos; la carga
+# en dos anchos (141) con «Mantener las respuestas para la siguiente» (147); el editor sin «Grupo de líneas» y con «Agregar bloque» (177), y la
+# tarjeta del chat que dice qué pasó después (WA-Chats-Respuesta-21, nuevo).
+CSS_FCAB = "".join(linea + "\n" for linea in F.CSS_FICHA.splitlines() if linea.startswith(".f-cab"))  # la banda de las zonas, fuera del editor
+CSS_R5 = CSS_FCAB + """.w-body > .w-caja, .w-body > .rc-ban, .w-body > .co-pg, .w-body > .pa-vis { flex-shrink: 0; }
+.co-ant { display: block; margin-top: 4px; font-size: 12.5px; color: var(--t2); }
+.co-ch { columns: 3; column-gap: 16px; }
+.cg-q .co-ch .q-chk { display: flex; margin-bottom: 10px; font-size: 14px; break-inside: avoid; }
+.cg-panel .co-ch { columns: 2; }
+.co-ya { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--borde); border-radius: 8px; background: #fff; }
+.co-ya + .co-ya { margin-top: 6px; }
+.co-ya .im { width: 36px; height: 36px; flex: none; border-radius: 6px; background: linear-gradient(135deg, oklch(0.84 0.03 170), oklch(0.66 0.05 170)); }
+.co-ya .pdf { width: 30px; height: 36px; flex: none; border-radius: 4px; background: oklch(0.55 0.18 25); color: #fff; font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.co-ya .t { flex: 1; min-width: 0; display: flex; flex-direction: column; font-size: 13.5px; }
+.co-ya .t small { font-size: 12.5px; color: var(--t2); }
+.co-ya .cb { height: 30px; font-size: 13px; }
+.co-mas { margin-top: 8px; }
+.co-mas .cg-drop { min-height: 48px; }
+.co-mot { display: flex; flex-direction: column; gap: 6px; padding-top: 16px; border-top: 1px solid var(--borde2); }
+.co-mot .rt { font-size: 13.5px; font-weight: 600; color: var(--t2); }
+.co-mot .ct { min-height: 64px; height: auto; white-space: normal; line-height: 1.45; padding-top: 8px; padding-bottom: 8px; }
+.co-mot .ct.mal { border-color: var(--peligro); box-shadow: 0 0 0 3px oklch(0.57 0.2 25 / 0.12); }
+.co-mot .err2 { font-size: 13px; color: var(--peligro); }
+.co-pz { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px 18px; }
+.co-pz .co-mot { padding-top: 14px; }
+.co-pg { display: flex; flex-direction: column; gap: 16px; }
+.dc-moms { padding: 2px 0; }
+.dc-moms .d3-moms { padding: 4px 20px; }
+.w-bnd h1 .w-est, .w-bnd h1 .d4-marca { margin-left: 8px; vertical-align: 3px; font-size: 13px; font-weight: 500; }
+.w-bnd .ac { align-items: center; }
+.rc-ban { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; border: 1px solid oklch(0.85 0.08 85); background: oklch(0.97 0.04 85); font-size: 14px; color: oklch(0.36 0.08 70); }
+.rc-ban a { margin-left: auto; font-weight: 600; color: var(--marca-tx); text-decoration: none; white-space: nowrap; }
+.pa-cola .w-tr .cb { height: 30px; font-size: 13px; justify-self: start; }
+.pa-cola .w-tr > span { display: flex; align-items: center; }
+.w-dlg .ex-anu { display: flex; margin-top: 4px; }
+"""
+VAL_CO = {"Cliente": "Ferretería Rosales", "Fecha": "13/10/2026", "Venta": "Sí", "Monto": "125.500,00", "Motivo": "Venta nueva", "Fallas": ["Frío", "Ruido"],
+          "Observaciones": "Cerramos el pedido de octubre."}
+V_NUEVO = [(k, ("130.000,00" if k == "Monto estimado" else v)) for k, v in K.VAL_A]
+
+
+def antes5(texto):
+    """Debajo de lo que cambió, en gris: «Antes: 125.500,00» («Antes: sin respuesta» si no tenía), sin tachar (166)."""
+    return f'<span class="co-ant">Antes: {texto}</span>'
+
+
+def casillas(elegidas, des=False):
+    """Elegir varias: sus casillas en columnas, de arriba abajo (AR1-A)."""
+    return '<div class="co-ch">' + "".join(f'<span class="q-chk{" des" if des else ""}">{"<i>" + TILDE + "</i>" if f in elegidas else "<i class=" + chr(34) + "no" + chr(34) + "></i>"}{f}</span>'
+                                          for f in ["Frío", "Ruido", "Puerta", "Luz"]) + "</div>"
+
+
+def ya(nombre, peso, foto=True, des=False):
+    """Un archivo que ya estaba: «Ya cargado · 86 KB», con «Quitar» (166)."""
+    ic = '<span class="im" role="img" aria-label="' + nombre + '"></span>' if foto else '<span class="pdf">PDF</span>'
+    return (f'<div class="co-ya">{ic}<span class="t"><b>{nombre}</b><small>Ya cargado · {peso}</small></span>'
+            f'<button type="button" class="cb cb-sec"{" disabled" if des else ""}>Quitar</button></div>')
+
+
+def fotos_ya(des=False):
+    mas = f'<div class="co-mas"><div class="cg-drop">Arrastrá las fotos acá o <button type="button" class="cb cb-sec"{" disabled" if des else ""}>Elegir fotos</button></div></div>'
+    return ya("IMG_2231.jpg", "86 KB", des=des) + ya("IMG_2232.jpg", "92 KB", des=des) + mas + '<span class="cg-cnt">2 de 3</span>'
+
+
+def zonas_visita(v, cambios=None, des=False, columnas=3, correo=None, archivos=True, err=None):
+    """«Visita a cliente» en dos anchos (AR1-A): lo de un valor ocupa una columna; texto largo, elegir varias, fotos y documentos, el renglón entero."""
+    cambios, err = cambios or {}, err or {}
+    datos = [q("Cliente", txt(v.get("Cliente", ""), des=des), 1, True), q("Fecha de la visita", txt(v.get("Fecha", ""), des=des), 1, True)]
+    if correo is not None:
+        datos.append(q("Correo del cliente", txt(correo or '<span class="ph">nombre@ejemplo.com</span>', mal="Correo" in err, des=des), 1, False, err.get("Correo")))
+    res = [q("¿Se concretó la venta?", seg(v.get("Venta"), des), 1, True)]
+    if v.get("Venta") == "Sí":
+        res.append(q("Monto estimado", txt(v.get("Monto", ""), des=des) + (antes5(cambios["Monto"]) if "Monto" in cambios else ""), 1))
+    res += [q("Motivo", radios(["Venta nueva", "Reclamo", "Seguimiento"], v.get("Motivo"), des), 1),
+            q("Fallas", casillas(v.get("Fallas", []), des), 3, extra=' <span class="cg-hasta">hasta 3</span>'),
+            q("Observaciones", area(v.get("Observaciones", ""), des=des), 3)]
+    if archivos == "ya":
+        arch = [q("Fotos de la visita", fotos_ya(des), 3, extra=' <span class="cg-hasta">hasta 3</span>'), q("Remito firmado", ya("remito-0810.pdf", "1,2 MB", False, des), 3)]
+    else:
+        arch = [q("Fotos de la visita", W.fotos(0, des=des), 3, extra=' <span class="cg-hasta">hasta 3</span>'),
+                q("Remito firmado", '<div class="cg-drop">Arrastrá el documento acá o <button type="button" class="cb cb-sec">Elegir archivo</button></div>', 3)]
+    return zona("La visita", datos, columnas=columnas) + zona("El resultado", res, columnas=columnas) + zona("Fotos y documentos", arch, columnas=columnas)
+
+
+def motivo_co(texto="", error="", des=False):
+    """Al final, después de una línea: «Motivo de la corrección *», de hasta 500 caracteres (166)."""
+    t = texto or ""
+    e = f'<span class="err2" role="alert">{error}</span>' if error else ""
+    return (f'<div class="co-mot"><div class="w-cmp cg-q"><span class="rt">Motivo de la corrección <span class="req">*</span></span>'
+            f'<div class="ct cg-area{" ph" if not texto else ""}{" mal" if error else ""}{" des" if des else ""}">{t}</div>{e}</div></div>')
+
+
+def pagina_co(motivo="", cambios=None, error="", des=False):
+    v = {**VAL_CO, "Monto": "130.000,00"} if cambios else VAL_CO
+    return f'<div class="w-body"><div class="co-pg">{zonas_visita(v, cambios, des, archivos="ya")}{motivo_co(motivo, error, des)}</div></div>'
+
+
+def panel_co(motivo="", cambios=None):
+    """En la compu, «Corregir VIS-000126» se abre donde estaba la vista rápida, del ancho del panel de carga, con sus zonas en una columna."""
+    v = {**VAL_CO, "Monto": "130.000,00"} if cambios else VAL_CO
+    cerrar = f'<button type="button" class="ib" aria-label="Cerrar">{F.X}</button>'
+    pie = '<div class="cg-ppie"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Guardar corrección</button></div>'
+    return (f'<aside class="d2 cg-panel" role="region" aria-label="Corregir {K.NUM_A}"><div class="d2-h"><b>Corregir {K.NUM_A}</b><a href="FRM-Respuesta-Corregir.dc.html">Pantalla completa</a>{cerrar}</div>'
+            f'<div class="d2-b"><div class="co-pz">{zonas_visita(v, cambios, columnas=1, archivos="ya")}{motivo_co(motivo)}</div></div>{pie}</aside>')
+
+
+def banda5(num, estado, res, acciones, marca="", volver="FRM-Respuestas-21.dc.html"):
+    return (f'<div class="w-bnd"><div class="iz"><a class="vol" href="{volver}" aria-label="Volver a las respuestas">{L.VOLVER}</a>'
+            f'<div><h1>{num}{K.est(estado, marca) if estado else ""}</h1><p class="res">{res}</p></div></div><div class="ac">{acciones}</div></div>')
+
+
+def acciones_dc(num, menu=False, pos="5 de 10", corregir=True, chat="WA-Chats-Respuesta-21.dc.html"):
+    """En la pantalla completa, la navegación y «Abrir conversación» siguen en la banda, con «Corregir» y el ⋮ (166)."""
+    a = (f'<span class="rc-pos">{pos}</span><button type="button" class="nv" aria-label="Respuesta anterior">{K.SUBE}</button>'
+         f'<button type="button" class="nv" aria-label="Respuesta siguiente">{K.BAJA}</button>')
+    a += f'<a class="cb cb-sec" href="{chat}">Abrir conversación</a>' if chat else ""
+    return a + (K.corregir_btn() + K.kebab_anular(num, menu) if corregir else "")
+
+
+def completa5(moms, valores, bandas, aviso="", resumen="9 preguntas · 9 respondidas"):
+    return R.CUERPO.format(aviso + f'<div class="w-caja dc-moms"><div class="d3-moms">{moms}</div></div>' + R.rc_seccion("Respuesta", F.grilla(valores), resumen, True)
+                           + R.rc_seccion("Actividad", K.act5(bandas), "", True))
+
+
+def moms_126_dc(corregida=False):
+    m = K.mo_mandada("13/10/2026 11:20") + K.mo_recibida(K.HORA_A, K.QUIEN_A)
+    if not corregida:
+        return m + K.mo_efectos("Al recibirla", 2, 2, K.A_REC) + K.mo_decidida("Aprobada", K.DEC_A, LUCIA) + K.mo_efectos("Al aprobarla", 4, 4, K.A_APR)
+    co = K.m4("Corregida", CORREGIDA, f"{LUCIA} · «{MOTIVO_CO}»", '<a class="ln" href="FRM-Respuesta-Corregir.dc.html">Ver la versión anterior y su PDF</a>')
+    return (m + K.mo_decidida("Aprobada", K.DEC_A, LUCIA, pdf=K.DEC_A) + co + K.mo_efectos("Al recibirla", 2, 2, K.A_REC)
+            + K.mo_por_aprobar("hace un momento", CORREGIDA, K.decidir("La corregiste vos: la aprueba otra persona con el rol Supervisor."), otra=True))
+
+
+BANDAS_CORREGIDA = [("Al recibirla", [K.fila5(CORREGIDA, "Se corrigió la respuesta", f"{LUCIA} · «{MOTIVO_CO}»"),
+                                      K.fila5("18:30", "Mandarle un mensaje a quien la cargó", K.QUIEN_A, "Entregado", msj="Recibimos VIS-000126. Te avisamos cuando la aprueben."),
+                                      K.fila5("18:30", "Se pidió aprobación", f"Rol {SUP}")]),
+                    ("Aprobación", [K.fila5("", "Espera aprobación", f"Rol {SUP}", "Por aprobar", "esp")])]
+E_CO5 = ["Respuesta", "Más acciones: menú", "Corregir: el panel", "Corregir", "Con el motivo", "Sin el motivo", "Guardando", "¿Descartar la corrección?", "Corregida",
+         "Ya no se puede corregir", "La versión anterior"]
+
+
+def corregir5():
+    sub_co = f"{FORM} · versión 4 · la cargó {K.QUIEN_A} el {K.HORA_A}"
+    botones = lambda g: (f'<button type="button" class="cb cb-sec"{" disabled" if g else ""}>Cancelar</button>'
+                         + (E.trabaja("Guardando…") if g else '<button type="button" class="cb cb-pri">Guardar corrección</button>'))
+    res = f"{FORM} · versión 4 · recibida el {K.HORA_A}"
+    ban_ant = (f'<div class="rc-ban" role="status">{F.ALERTA}<span>Versión anterior de {K.NUM_A}: la reemplazó la corrección del {CORREGIDA}.</span>'
+               '<a href="FRM-Respuesta-Corregir.dc.html">Ver la actual</a></div>')
+    no_se = (f'<div class="w-body"><div class="rc-msj"><b>Esta respuesta ya no se puede corregir.</b><a class="cb cb-sec" href="FRM-Respuesta-Corregir.dc.html">Ver la actual</a></div></div>')
+    bnd = {"Respuesta": banda5(K.NUM_A, "Aprobada", res, acciones_dc(K.NUM_A)), "Más acciones: menú": banda5(K.NUM_A, "Aprobada", res, acciones_dc(K.NUM_A, True)),
+           "Corregir: el panel": K.banda_p(), "Corregir": banda5(f"Corregir {K.NUM_A}", "", sub_co, botones(False)),
+           "Con el motivo": banda5(f"Corregir {K.NUM_A}", "", sub_co, botones(False)), "Sin el motivo": banda5(f"Corregir {K.NUM_A}", "", sub_co, botones(False)),
+           "Guardando": banda5(f"Corregir {K.NUM_A}", "", sub_co, botones(True)), "¿Descartar la corrección?": banda5(f"Corregir {K.NUM_A}", "", sub_co, botones(False)),
+           "Corregida": banda5(K.NUM_A, "Por aprobar", f"{res} · corregida el {CORREGIDA}", acciones_dc(K.NUM_A), "Corregida"),
+           "Ya no se puede corregir": banda5(f"Corregir {K.NUM_A}", "", sub_co, ""),
+           "La versión anterior": banda5(K.NUM_A, "Reemplazada", res, "")}
+    cu = {"Respuesta": completa5(moms_126_dc(), K.VAL_A, K.bandas_126()), "Más acciones: menú": completa5(moms_126_dc(), K.VAL_A, K.bandas_126()),
+          "Corregir: el panel": K.fondo5(vista="Todas", sel=K.NUM_A).replace('<div class="w-body">', '<div class="w-body">' + K.tabs("respuestas"), 1),
+          "Corregir": pagina_co(), "Con el motivo": pagina_co(MOTIVO_CO, {"Monto": "125.500,00"}),
+          "Sin el motivo": pagina_co("", {"Monto": "125.500,00"}, "Escribí el motivo."), "Guardando": pagina_co(MOTIVO_CO, {"Monto": "125.500,00"}, des=True),
+          "¿Descartar la corrección?": pagina_co("", {"Monto": "125.500,00"}),
+          "Corregida": completa5(moms_126_dc(True), V_NUEVO, BANDAS_CORREGIDA), "Ya no se puede corregir": no_se,
+          "La versión anterior": completa5(moms_126_dc(), K.VAL_A, K.bandas_126(), ban_ant)}
+    descartar = A.confirmar("¿Descartar la corrección?", "Lo que cambiaste no se guarda.", "Descartar", cancelar="Seguir corrigiendo").replace('class="w-dlg"', 'class="w-dlg dec"', 1)
+    capas = {"Corregir: el panel": panel_co(), "¿Descartar la corrección?": descartar, "Corregida": A.toast(f"Se corrigió {K.NUM_A}")}
+    css = CSS + K.CSS_PL5 + W.CSS_20 + R.CSS_RC + CSS_R5
+    t = R.pagina("Corregir una respuesta · /org/formularios/:id/respuestas/:recordId/corregir", A.con_estados([(e, bnd[e]) for e in E_CO5]),
+                 A.con_estados([(e, cu[e]) for e in E_CO5]), E_CO5, css=css)
+    k = t.rindex("</div>\n</x-dc>")
+    t = t[:k] + A.con_estados([(e, capas.get(e, "")) for e in E_CO5]) + t[k:]
+    # Las migas de la versión anterior terminan en «Versión anterior», y las de corregir en «Corregir VIS-000126»
+    migas = ["Inicio / Gestión de formularios / Formularios / " + FORM + ("" if e in ("Respuesta", "Más acciones: menú", "Corregir: el panel", "Corregida") else
+                                                                    " / Versión anterior" if e == "La versión anterior" else f" / Corregir {K.NUM_A}") for e in E_CO5]
+    t = re.sub(r'miga: (\[[^\]]*\])\[k\]', lambda m: "miga: " + json.dumps(migas, ensure_ascii=False) + "[k]", t, count=1)
+    return L.con_css(t, "pestanas", L.CSS_PESTANAS)
+
+
+# ================================================================ FRM-Respuesta-Anular: el ⋮ con solo «Anular» (166) y «¿Anular VIS-000127?»
+def dlg_anular5(trabajando=False):
+    """Sin ✕, como toda confirmación de algo que no se deshace: dice qué pasa, pide el motivo y el botón repite la acción, en rojo."""
+    cuerpo = ('<p class="d-tx">VIS-000127 queda en la planilla como anulada, con su número; deja de contar y no sale en el Excel.</p>'
+              f'<div class="w-cmp"><span class="rt">Motivo <span class="req">*</span></span><div class="ct area{" des" if trabajando else ""}">{MOTIVO_ANULAR}</div></div>')
+    pie = (f'<button type="button" class="cb cb-sec"{" disabled" if trabajando else ""}>Cancelar</button>'
+           + (E.trabaja("Anulando…", "cb-pel lleno") if trabajando else '<button type="button" class="cb cb-pel lleno">Anular respuesta</button>'))
+    return F.dialogo("¿Anular VIS-000127?", cuerpo, pie).replace('class="w-dlg"', 'class="w-dlg dec anu"', 1)
+
+
+def dlg_exportar5():
+    """El Excel de la 15 suma «Incluir las anuladas», sin marcar, debajo de las columnas; acá, marcada."""
+    t = R.dlg_exportar().replace("4 respuestas", "24 respuestas").replace("3 filtros aplicados", "0 filtros aplicados")
+    chk = f'<span class="q-chk ex-anu"><i>{TILDE}</i>Incluir las anuladas</span>'
+    marca = '<span class="ex-arch">'
+    return t.replace(marca, chk + marca, 1) if marca in t else t.replace('</div><div class="df">', chk + '</div><div class="df">', 1)
+
+
+E_AN5 = ["Más acciones: menú", "Anular", "Anulando", "Anulada", "Estado: Anulada", "Exportar con las anuladas"]
+
+
+def anular5():
+    v127 = K.con_fotos([("Cliente", "Ferretería Sur"), ("Fecha de la visita", "14/10/2026"), ("¿Se concretó la venta?", "No"), ("Monto estimado", "0,00"), ("Motivo", "Reclamo"),
+                        ("Fallas", "Puerta"), ("Observaciones", "Reclamo por demora en la entrega.")], 2, False)
+    pend = (K.mo_recibida(FILA_127[1], "Marta Gil, cliente") + K.mo_efectos("Al recibirla", 2, 2, K.A_REC)
+            + K.mo_por_aprobar(HACE["VIS-000127"], FILA_127[1], K.decidir()))
+    vista_p = lambda menu=False: K.d4("VIS-000127", "Por aprobar", pend, F.grilla(v127), K.tabs_v(2), acciones=K.acciones_vr("VIS-000127", menu=menu), pos="4 de 10")
+    anulada_m = (K.mo_recibida(FILA_127[1], "Marta Gil, cliente") + K.mo_efectos("Al recibirla", 2, 2, K.A_REC)
+                 + K.m4("Anulada", "15/10/2026 18:40", f"{LUCIA} · «{MOTIVO_ANULAR}»"))
+    vista_a = K.d4("VIS-000127", "Anulada", anulada_m, F.grilla(v127), K.tabs_v(2), acciones=K.iconos(), pos="1 de 2", primera=True)
+    sin = [r for r in K.FILAS if r[0] != "VIS-000127"] + [("VIS-000120", "11/10/2026 18:05", "Florencia Fernández de la Fuente", "", "WhatsApp", "Obra Centro", "22.000,00", "Seguimiento")]
+    anuladas = [FILA_127, ANULADA]
+    todas = dict(vista="Todas")
+    cu = {"Más acciones: menú": K.fondo5(sel="VIS-000127", **todas), "Anular": K.fondo5(sel="VIS-000127", **todas), "Anulando": K.fondo5(sel="VIS-000127", **todas),
+          "Anulada": K.fondo5(sin, pie="1–10 de 23", estados={"VIS-000120": "Aprobada"}, **todas),
+          "Estado: Anulada": K.fondo5(anuladas, estado="Anulada", sel="VIS-000127", pie="1–2 de 2", pag="Página 1 de 1", estados={"VIS-000127": "Anulada", ANULADA[0]: "Anulada"}, **todas),
+          "Exportar con las anuladas": K.fondo5(**todas)}
+    capas = {"Más acciones: menú": vista_p(True), "Anular": vista_p() + K.sobre(dlg_anular5()), "Anulando": vista_p() + K.sobre(dlg_anular5(True)), "Anulada": A.toast("Se anuló VIS-000127"),
+             "Estado: Anulada": vista_a, "Exportar con las anuladas": dlg_exportar5()}
+    bnd = {e: K.banda_p() for e in E_AN5}
+    return K.planilla5(E_AN5, bnd, cu, capas, "Anular una respuesta · /org/formularios/:id/respuestas", P.CSS_EX + R.CSS_EX2 + CSS_R5)
+
+
+# ================================================================ FRM-Respuestas-21: «Por aprobar (3) | Todas» arriba de la planilla (148)
+COLS_COLA5 = [("num", "N°", 120, ""), ("quien", "Cargó", 220, ""), ("rec", "Recibida", 150, ""), ("rol", "Rol", 150, ""), ("rev", "", 110, "")]
+COLS_COLA_SOLO = [c for c in COLS_COLA5 if c[0] != "quien"]
+E_PL5 = ["Por aprobar", "Desde la campana", "Todas", "Estado: menú", "Estado: Anulada", "Quien solo ve respuestas", "Quien solo aprueba", "Quien solo aprueba: la decisión",
+         "Quien solo aprueba: confirmar"]
+
+
+def cola5(cols=COLS_COLA5, sel=None):
+    """«Por aprobar»: una tabla corta, de la más vieja a la más nueva y sin filtros ni valores; «Revisar» abre la vista rápida (148)."""
+    def c(k, r):
+        if k == "num":
+            return f'<span><a class="pl-num" href="FRM-Respuesta-Aprobacion.dc.html">{r[0]}</a></span>'
+        if k == "quien":
+            return R.quien(r[2], r[3])
+        if k == "rec":
+            return f"<span>{r[1]}</span>"
+        if k == "rol":
+            return f"<span>{SUP}</span>"
+        return '<span><a class="cb cb-sec" href="FRM-Respuesta-Aprobacion.dc.html">Revisar</a></span>'
+    filas = sorted(POR_APROBAR, key=lambda r: r[0])
+    h = "".join(f'<div class="w-tr pl{" sel" if r[0] == sel else ""}">' + "".join(c(k, r) for k, *_ in cols) + "</div>" for r in filas)
+    return (f'<div class="w-caja pl-caja pa-cola" style="--pl-cols: {R.plantilla(cols)};"><div class="pl-scroll">{R.cabecera(cols)}{h}</div>'
+            '<div class="w-pie"><span>1–3 de 3</span><span>10 por página · Página 1 de 1</span></div></div>')
+
+
+def respuestas5():
+    vieja = next(r for r in K.FILAS if r[0] == "VIS-000123")
+    m123 = (K.mo_mandada("13/10/2026 09:40") + K.mo_recibida(vieja[1], TOMAS) + K.mo_efectos("Al recibirla", 2, 2, K.A_REC)
+            + K.mo_por_aprobar(HACE["VIS-000123"], vieja[1], K.decidir()))
+    desde = K.d4("VIS-000123", "Por aprobar", m123, F.grilla(K.con_fotos(R.VALORES_123, 0, False)), K.tabs_v(0), acciones=K.acciones_vr("VIS-000123"), pos="1 de 3 por aprobar", primera=True)
+    solo_m = K.mo_recibida(vieja[1]) + K.mo_por_aprobar(HACE["VIS-000123"], vieja[1], K.decidir())
+    solo = K.d4("VIS-000123", "Por aprobar", solo_m, "", (), pos="1 de 3 por aprobar", primera=True).replace('<div class="d2-b"></div>', "", 1)
+    cola_v = lambda sel=None: R.CUERPO.format(K.vistas("Por aprobar") + cola5(sel=sel))
+    cu = {"Por aprobar": cola_v(), "Desde la campana": cola_v("VIS-000123"), "Todas": K.fondo5(vista="Todas"), "Estado: menú": K.fondo5(vista="Todas", menu_estado=True),
+          "Estado: Anulada": K.fondo5([ANULADA], vista="Todas", estado="Anulada", pie="1 de 1", pag="Página 1 de 1", estados={ANULADA[0]: "Anulada"}),
+          "Quien solo ve respuestas": K.fondo5(), "Quien solo aprueba": R.CUERPO.format(cola5(COLS_COLA_SOLO)),
+          "Quien solo aprueba: la decisión": R.CUERPO.format(cola5(COLS_COLA_SOLO, "VIS-000123")), "Quien solo aprueba: confirmar": R.CUERPO.format(cola5(COLS_COLA_SOLO, "VIS-000123"))}
+    sin_acciones = R.banda(FORM, "Respuestas · versión 4 publicada", "").replace('href="FRM-Formularios.dc.html"', 'href="FRM-Formularios-21.dc.html"')
+    bnd = {e: (sin_acciones if e.startswith("Quien solo aprueba") else K.banda_p(K.EXPORTAR) if e == "Quien solo ve respuestas" else K.banda_p()) for e in E_PL5}
+    capas = {"Desde la campana": desde, "Quien solo aprueba: la decisión": solo,
+             "Quien solo aprueba: confirmar": solo + K.sobre(K.dlg_aprobar5("VIS-000123", vieja[1]))}
+    t = K.planilla5(E_PL5, bnd, cu, capas, "Respuestas · /org/formularios/:id/respuestas · etapa 21", CSS_R5)
+    return K.quien_mira(t, ("e.startsWith('Quien solo aprueba')", MARTIN, "martin.paz@delta.ejemplo.com"), ("e === 'Quien solo ve respuestas'", "Ana Gómez", "ana.gomez@delta.ejemplo.com"))
+
+
+# ================================================================ FRM-Respuestas-Propias-21: lo propio, con el motivo del rechazo en los momentos (166)
+COLS_PR5 = [c for c in COLS_PR if c[0] != "rch"]
+E_PR5 = ["Lo suyo", "Una rechazada", "Una por aprobar", "Ya aprobada", "Su PDF"]
+
+
+def propias5():
+    def tabla5(sel=None):
+        h = "".join(f'<div class="w-tr pl{" sel" if r[0] == sel else ""}">' + "".join(K.celda(k, r, "FRM-Respuestas-Propias-21.dc.html", EST_PR[r[0]]) for k, *_ in COLS_PR5) + "</div>"
+                    for r in PROPIAS)
+        return (f'<div class="w-caja pl-caja" style="--pl-cols: {R.plantilla(COLS_PR5)};"><div class="pl-scroll">{R.cabecera(COLS_PR5)}{h}</div>'
+                '<div class="w-pie"><span>1–6 de 6</span><span>10 por página · Página 1 de 1</span></div></div>')
+    fondo = lambda sel=None: R.CUERPO.format(K.barra21(empresa=False) + tabla5(sel))
+    r117 = K.con_fotos([("Cliente", "Obra Centro"), ("Fecha de la visita", "10/10/2026"), ("¿Se concretó la venta?", "No"), ("Monto estimado", None), ("Motivo", "Seguimiento"),
+                        ("Fallas", R.gris("—")), ("Observaciones", "Avance de obra, segunda etapa.")], 0, False)
+    propio = lambda n, **k: K.acciones_vr(n, completa="FRM-Respuestas-Propias-21.dc.html", chat=None, **k)
+    # Quien solo carga ve en qué quedó, sin su nombre, sin el rol ni quién decidió, y sin la actividad (85 y 166)
+    rch = K.mo_recibida("10/10/2026 17:20", canal="App", propio=True) + K.mo_decidida("Rechazada", "11/10/2026 09:15", motivo=MOTIVO_117)
+    pend = K.mo_recibida("13/10/2026 11:04", propio=True) + K.mo_por_aprobar(HACE["VIS-000123"], "13/10/2026 11:04", solo=True)
+    ok = K.mo_recibida(K.HORA_A, propio=True) + K.mo_decidida("Aprobada", K.DEC_A)
+    v123 = K.con_fotos(R.VALORES_123, 0, False)
+    sin_act = lambda fotos=0, pdf=False: K.tabs_v(fotos, actividad=False, pdf=pdf)
+    capas = {"Una rechazada": K.d4("VIS-000117", "Rechazada", rch, F.grilla(r117), sin_act(), acciones=propio("VIS-000117"), pos="3 de 6"),
+             "Una por aprobar": K.d4("VIS-000123", "Por aprobar", pend, F.grilla(v123), sin_act(), acciones=propio("VIS-000123"), pos="2 de 6"),
+             "Ya aprobada": K.d4(K.NUM_A, "Aprobada", ok, F.grilla(K.VAL_A), sin_act(2, True), acciones=propio(K.NUM_A, corregir=False, pdf=True), pos="1 de 6", primera=True),
+             "Su PDF": K.d4(K.NUM_A, "Aprobada", ok, K.pestana_pdf5(), sin_act(2, True), "PDF", propio(K.NUM_A, corregir=False, pdf=True), pos="1 de 6", primera=True)}
+    sel = {"Una rechazada": "VIS-000117", "Una por aprobar": "VIS-000123", "Ya aprobada": K.NUM_A, "Su PDF": K.NUM_A}
+    agregar = '<a class="cb cb-pri" href="FRM-Cargar-Respuesta-21.dc.html">Agregar respuesta</a>'
+    bnd = {e: K.banda_p(agregar) for e in E_PR5}
+    cu = {e: fondo(sel.get(e)) for e in E_PR5}
+    return K.planilla5(E_PR5, bnd, cu, capas, "Lo propio · /org/formularios/:id/respuestas · etapa 21", CSS_R5)
+
+
+# ================================================================ FRM-Editor-21: «Correo», con «Agregar bloque» y sin «Grupo de líneas» (177)
+TIPOS5 = ["Texto corto", "Texto largo", "Número", "Fecha", "Sí o no", "Correo", "Elegir una", "Elegir varias", "De un catálogo", "Foto", "Documento", "Cálculo"]
+AGREGAR_BLOQUE = f'<button type="button" class="cb cb-sec">{MAS} Agregar bloque</button>'
+
+
+def con_bloque(t):
+    """La caja de preguntas con «Agregar título», «Agregar bloque» y «Agregar pregunta», en ese orden, como en todas las etapas (RG10-D); si la
+    caja ya trae «Agregar bloque» después de «Agregar pregunta», lo pasa adelante."""
+    marca = f'<button type="button" class="cb cb-sec">{MAS} Agregar pregunta</button>'
+    assert marca in t, "«Agregar pregunta» en la caja de preguntas"
+    if "Agregar bloque" not in t:
+        return t.replace(marca, AGREGAR_BLOQUE + marca)
+    return t.replace(marca + AGREGAR_BLOQUE, AGREGAR_BLOQUE + marca)
+
+
+@con_visita
+def editor5():
+    menu = ('<div class="rg2-menu" role="listbox" aria-label="Tipo de respuesta" style="top: 64px; left: calc(50% + 6px); right: auto; width: 280px;">'
+            + "".join(f'<span role="option" class="{"on" if t == "Correo" else ""}">{t}</span>' for t in TIPOS5) + "</div>")
+    abierta = X.abierta(3, "Correo", "").replace('<span class="rt">Tipo de respuesta</span>', f'<span class="rt">Tipo de respuesta{info(AY_CORREO)}</span>', 1)
+    V = {"El tipo «Correo»": X.cuerpo(3, abierta, PV_CORREO), "Tipos de respuesta: menú": X.cuerpo(3, abierta.replace('<div class="q-ed">', '<div class="q-ed" style="position: relative;">' + menu, 1), PV_CORREO)}
+    V = {e: con_bloque(v) for e, v in V.items()}
+    est = list(V)
+    banda = E.banda(FORM, E.EST_PUB4, E.acc("cambios"), "FRM-Formularios-21.dc.html")
+    return A.pagina_editor({e: (banda, V[e]) for e in est}, {}, est, "Editor · la pregunta «Correo» · etapa 21",
+                           E.CSS_E12 + E.CSS_CA4 + E.CSS_TITULOS + X.CSS_19 + K.CSS_RG + K.CSS_21 + ".q-ed .rt { display: inline-flex; align-items: center; gap: 4px; }\n")
+
+
+# ================================================================ FRM-Cargar-Respuesta-21: «Correo» en dos anchos (141) y «Mantener las respuestas para la siguiente» (147)
+MANTENER = f'<span class="q-chk cg-mant"><i class="no"></i>Mantener las respuestas para la siguiente</span>'
+
+
+def con_mantener(bnd):
+    """AR2-A: la misma casilla que el panel, en la banda de «Nueva respuesta», antes de Cancelar y Enviar; si la banda de la 20 ya la trae, no se repite."""
+    if "Mantener las respuestas" in bnd:
+        return bnd
+    return bnd.replace('<div class="ac"><button type="button" class="cb cb-sec">Cancelar</button>', '<div class="ac">' + MANTENER + '<button type="button" class="cb cb-sec">Cancelar</button>', 1)
+
+
+E_CA5 = ["Nueva respuesta", "Un correo mal escrito"]
+
+
+def cargar5():
+    v = {"Cliente": "Ferretería Rosales", "Fecha": "15/10/2026"}
+    try:  # la banda de la 20 trae la casilla desde su tanda (AR2-A); si todavía no, va la de acá
+        bnd = W.banda(titulo="Nueva respuesta", sub=f"{FORM} · versión 4", volver="FRM-Formularios-21.dc.html", con_mantener=True)
+    except TypeError:
+        bnd = W.banda(titulo="Nueva respuesta", sub=f"{FORM} · versión 4", volver="FRM-Formularios-21.dc.html")
+    bnd = con_mantener(bnd)
+    cuerpo = lambda correo, err=None: f'<div class="w-body">{zonas_visita(v, correo=correo, archivos=False, err=err)}</div>'
+    V = {"Nueva respuesta": (bnd, cuerpo("")), "Un correo mal escrito": (bnd, cuerpo("compras@ferreteriarosales", {"Correo": "Escribí un correo válido, como nombre@ejemplo.com."}))}
+    css = ".cg-q .ph, .co-mot .ph { color: var(--t3); }\n.w-bnd .ac .cg-mant { margin-right: 8px; font-size: 13.5px; }\n" + CSS_R5 + K.CSS_21
+    return W.editor(V, {}, E_CA5, "Nueva respuesta · la pregunta «Correo» · etapa 21", css)
+
+
+# ================================================================ WA-Chats-Respuesta-21: la tarjeta que dice qué pasó después (166), nuevo
+# La tarjeta conserva lo que llegó y suma al pie, en gris y con el ícono de información, «Después se corrigió: …» o «Después se anuló …». La copia de
+# «Mis mensajes» no cambia: es lo que mandó la persona. Por el chat de Tomás Acosta llegaron VIS-000126, que Lucía corrigió, y VIS-000127, que se
+# anuló; para comparar, VIS-000123 no cambió (texto para Diseño de la 21). El número de la tarjeta abre la respuesta: la corregida en su versión
+# anterior, con «Ver la actual» (FRM-Respuesta-Corregir), y la anulada con su estado (FRM-Respuesta-Anular).
+CSS_CH5 = """.r-st.desp { align-items: flex-start; line-height: 1.4; }
+.r-st.desp svg { margin-top: 2px; }
+.r-ok .r-num { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+"""
+VAL_CHAT_126 = [("Cliente", "Ferretería Rosales"), ("¿Se concretó la venta?", "Sí"), ("Monto estimado", "125.500,00"), ("Motivo", "Venta nueva")]
+VAL_CHAT_127 = [("Cliente", "Ferretería Sur"), ("¿Se concretó la venta?", "No"), ("Monto estimado", "0,00"), ("Motivo", "Reclamo")]
+VAL_CHAT_123 = [("Cliente", "Ferretería Rosales"), ("¿Se concretó la venta?", "No"), ("Monto estimado", "0,00"), ("Motivo", "Seguimiento")]
+E_CH5 = ["Después se corrigió", "Después se anuló", "Sin cambios"]
+
+
+def despues(texto):
+    """Al pie de la tarjeta, en gris y con el ícono de información: la pieza de los estados de la tarjeta (r_st)."""
+    return A.r_st(texto, F.INFO, "desp")
+
+
+def r_num(num, destino):
+    """«Guardada como VIS-…», con el número como enlace a la respuesta."""
+    return A.r_ok(num).replace(f"<b>{num}</b>", f'<a class="r-num" href="{destino}">{num}</a>', 1)
+
+
+def msgs_ch5(burbuja, tarjeta, m=""):
+    env = burbuja("Lucía Fernández · 10:51 · Leído")
+    co = tarjeta(A.grilla_r(VAL_CHAT_126) + r_num(K.NUM_A, f"{m}FRM-Respuesta-Corregir.dc.html")
+                 + despues(f"Después se corrigió: {K.NUM_A} quedó reemplazada por su corrección."))
+    an = tarjeta(A.grilla_r(VAL_CHAT_127) + r_num("VIS-000127", f"{m}FRM-Respuesta-Anular.dc.html") + despues("Después se anuló VIS-000127."))
+    igual = tarjeta(A.grilla_r(VAL_CHAT_123) + r_num("VIS-000123", f"{m}FRM-Respuestas-21.dc.html"))
+    return {"Después se corrigió": env + co, "Después se anuló": env + an, "Sin cambios": env + igual}
+
+
+def chat_respuesta5():
+    vp = {"Después se corrigió": f"Respuesta: {K.NUM_A}", "Después se anuló": "Respuesta: VIS-000127", "Sin cambios": "Respuesta: VIS-000123"}
+    hora = {e: "11:04" for e in E_CH5}
+    t = A.pagina_chat(E_CH5, {e: A.escr() for e in E_CH5}, msgs_ch5(A.burbuja, A.tarjeta), {}, vp, hora, "WhatsApp · Internos · una respuesta que después se corrigió o se anuló · etapa 21")
+    return L.con_css(t, "e21", CSS_CH5)
+
+
+def tel_chat_respuesta5():
+    m = msgs_ch5(A.t_burbuja, A.t_tarjeta, "M-")
+    return A.pagina_tchat(E_CH5, {e: A.t_escr() for e in E_CH5}, m, {}, "Una respuesta que después se corrigió o se anuló · teléfono · etapa 21",
+                          A.CSS_AB + A.CSS_TRESP_AB + A.CSS_ARCH + CSS_CH5)
+
+
+# ================================================================ Los teléfonos, con las piezas de la 15
+def tel_respuestas5():
+    est = ["Por aprobar", "Todas", "Quien solo aprueba"]
+    fab = f'<a class="ap-fab" aria-label="Agregar respuesta" href="M-FRM-Cargar-Respuesta-21.dc.html">{F.TFAB}</a>'
+    seg = lambda sel: f'<div class="t-vis">{K.vistas(sel)}</div>'
+
+    def fila(r):
+        e = K.ESTADO[r[0]]
+        return (f'<a class="ap-fila" href="M-FRM-Respuesta-Aprobacion.dc.html"><div class="tx"><span class="l1">{r[0]}<span class="hr">{r[1]}</span></span>'
+                f'<span class="l2"><span class="w-est {K.CLASE[e]}">{e}</span> · {r[5]}</span><span class="l3">{r[2]} · {r[4]}</span></div></a>')
+
+    def fila_cola(r, quien=True):
+        return (f'<a class="ap-fila" href="M-FRM-Respuesta-Aprobacion.dc.html"><div class="tx"><span class="l1">{r[0]}<span class="hr">{r[1]}</span></span>'
+                + (f'<span class="l2">{r[2]}</span>' if quien else "") + f'<span class="l3">Rol {SUP}</span></div></a>')
+    cola = sorted(POR_APROBAR, key=lambda r: r[0])
+    bar = K.t_bar_f().replace("Publicado · versión 4", "24 respuestas")
+    cu = {"Por aprobar": bar + seg("Por aprobar") + '<div class="ap-cuerpo">' + "".join(fila_cola(r) for r in cola) + "</div>",
+          "Todas": bar + seg("Todas") + '<div class="ap-cuerpo">' + "".join(fila(r) for r in K.FILAS) + "</div>" + fab,
+          "Quien solo aprueba": C.t_bar(FORM, "Por aprobar · 3", "M-FRM-Formularios-21.dc.html") + '<div class="ap-cuerpo">' + "".join(fila_cola(r, False) for r in cola) + "</div>"}
+    css = W.CSS_TP + K.CSS_21 + K.CSS_V5 + ".t-vis { padding: 10px 16px; border-bottom: 1px solid var(--borde); background: #fff; }\n.t-vis .pa-vis, .t-vis .ab-seg { width: 100%; }\n.t-vis .ab-seg > span { flex: 1; text-align: center; padding: 8px 10px; font-size: 14px; }\n"
+    t = C.tel_pagina(cu, est, {}, "Respuestas · teléfono · etapa 21", css)
+    return K.con_tabs_tel(t, "respuestas")
+
+
+def tel_corregir5():
+    est = ["Respuesta", "Más acciones", "Corregir", "Corregida"]
+    m126 = ('<div class="tr-moms">' + K.t_m4("Recibida", K.HORA_A, f"Por WhatsApp · {K.QUIEN_A}") + K.t_m4("Aprobada", K.DEC_A, f"{LUCIA} · rol {SUP}") + "</div>")
+    base = (K.t_bar_v(K.NUM_A, "Aprobada") + K.t_nav("5 de 10") + '<div class="tr-scroll">' + m126 + K.t_sec("Respuesta", K.t_grilla(K.VAL_A)) + "</div>")
+    menu = F.thoja("Más acciones", '<div class="ap-acciones2"><span role="menuitem" style="color: var(--peligro);">Anular</span></div>', "")
+    zona_t = W.t_zona
+    form = (C.t_bar(f"Corregir {K.NUM_A}", f"La cargó {K.QUIEN_A}", "M-FRM-Respuesta-Corregir.dc.html") + '<div class="ap-cuerpo">'
+            + zona_t("La visita", "", True) + zona_t("El resultado", W.t_txt("Monto estimado", "130.000,00") + '<span class="co-ant t">Antes: 125.500,00</span>')
+            + zona_t("Fotos y documentos", ya("IMG_2231.jpg", "86 KB") + ya("IMG_2232.jpg", "92 KB") + ya("remito-0810.pdf", "1,2 MB", False))
+            + '<div class="t-mot">' + F.tcampo("Motivo de la corrección", MOTIVO_CO, req=True) + "</div></div>"
+            + '<div class="ap-fijo"><button type="button" class="cb cb-pri full">Guardar corrección</button></div>')
+    mco = ('<div class="tr-moms">' + K.t_m4("Recibida", K.HORA_A, f"Por WhatsApp · {K.QUIEN_A}") + K.t_m4("Aprobada", K.DEC_A, f"{LUCIA} · PDF del {K.DEC_A}")
+           + K.t_m4("Corregida", CORREGIDA, f"{LUCIA} · «{MOTIVO_CO}»", '<a class="ln" href="#">Ver la versión anterior y su PDF</a>')
+           + K.t_m4("Por aprobar otra vez", "hace un momento", "el PDF nuevo sale al aprobarla", clase="esp") + "</div>")
+    corregida = (K.t_bar_v(K.NUM_A, "Por aprobar").replace("</h1>", "</h1>", 1) + K.t_nav("5 de 10") + '<div class="tr-scroll">' + mco
+                 + K.t_sec("Respuesta", K.t_grilla(V_NUEVO)) + "</div>")
+    toast = f'<div class="t-toast" role="status"><span class="ok">{F.OK}</span><span>Se corrigió {K.NUM_A}</span></div>'
+    css = W.CSS_TP + CSS_R21 + K.CSS_21 + R.CSS_T5_TEL + P.CSS_TPL + R.CSS_T15 + K.CSS_TV5 + CSS_R5 + A.CSS_ARCH + """.co-ant.t { margin: -4px 0 0; font-size: 13.5px; }
+.ap-cuerpo .co-ya { margin: 0; }
+.t-mot { margin: 16px 16px 90px; padding-top: 14px; border-top: 1px solid var(--borde2); }
+"""
+    return C.tel_pagina({"Respuesta": base, "Más acciones": base, "Corregir": form, "Corregida": corregida}, est, {"Más acciones": menu, "Corregida": toast}, "Corregir · teléfono · etapa 21", css)
+
+
+def tel_anular5():
+    est = ["Más acciones", "Anular", "Anulada"]
+    v127 = [("Cliente", "Ferretería Sur"), ("¿Se concretó la venta?", "No"), ("Motivo", "Reclamo"), ("Observaciones", "Reclamo por demora en la entrega.")]
+    m127 = '<div class="tr-moms">' + K.t_m4("Recibida", FILA_127[1], "Por WhatsApp · Marta Gil, cliente") + K.t_m4("Por aprobar", HACE["VIS-000127"], f"Rol {SUP}", clase="esp") + "</div>"
+    base = K.t_bar_v("VIS-000127", "Por aprobar") + K.t_nav("4 de 10") + '<div class="tr-scroll">' + m127 + K.t_sec("Respuesta", K.t_grilla(v127)) + "</div>"
+    menu = F.thoja("Más acciones", '<div class="ap-acciones2"><span role="menuitem" style="color: var(--peligro);">Anular</span></div>', "")
+    hoja = K.t_hoja_dec("¿Anular VIS-000127?", "VIS-000127 queda en la planilla como anulada, con su número; deja de contar y no sale en el Excel.",
+                        '<button type="button" class="cb cb-pel lleno">Anular respuesta</button><button type="button" class="cb cb-sec">Cancelar</button>')
+    hoja = hoja.replace('</p></div><div class="hp">', '</p>' + F.tcampo("Motivo", MOTIVO_ANULAR, req=True) + '</div><div class="hp">', 1)
+    sin = [r for r in K.FILAS if r[0] != "VIS-000127"]
+    lista = (K.t_bar_f().replace("Publicado · versión 4", "23 respuestas") + '<div class="ap-cuerpo">'
+             + "".join(f'<a class="ap-fila" href="#"><div class="tx"><span class="l1">{r[0]}<span class="hr">{r[1]}</span></span><span class="l2">{K.est(K.ESTADO[r[0]])} · {r[5]}</span></div></a>' for r in sin) + "</div>")
+    toast = '<div class="t-toast" role="status"><span class="ok">' + F.OK + '</span><span>Se anuló VIS-000127</span></div>'
+    css = W.CSS_TP + K.CSS_21 + R.CSS_T5_TEL + P.CSS_TPL + R.CSS_T15 + K.CSS_TV5
+    return C.tel_pagina({"Más acciones": base, "Anular": base, "Anulada": lista}, est, {"Más acciones": menu, "Anular": hoja, "Anulada": toast}, "Anular · teléfono · etapa 21", css)
+
+
+def tel_propias5():
+    est = ["Lo suyo", "Una rechazada"]
+    der = f'<button type="button" class="ap-ib" aria-label="Filtros">{F.TFILTROS}</button>'
+    fab = f'<a class="ap-fab" aria-label="Agregar respuesta" href="M-FRM-Cargar-Respuesta-21.dc.html">{F.TFAB}</a>'
+    filas = "".join(f'<a class="ap-fila" href="M-FRM-Respuestas-Propias-21.dc.html"><div class="tx"><span class="l1">{r[0]}<span class="hr">{r[1]}</span></span>'
+                    f'<span class="l2"><span class="w-est {K.CLASE[EST_PR[r[0]]]}">{EST_PR[r[0]]}</span> · {r[5]}</span></div></a>' for r in PROPIAS)
+    lista = C.t_bar(FORM, "6 respuestas", "M-FRM-Formularios-21.dc.html", der) + '<div class="ap-cuerpo">' + filas + "</div>" + fab
+    m = ('<div class="tr-moms">' + K.t_m4("Recibida", "10/10/2026 17:20", "En la app") + K.t_m4("Rechazada", "11/10/2026 09:15", "", f'<span class="mot">{MOTIVO_117}</span>') + "</div>")
+    v117 = [("Cliente", "Obra Centro"), ("¿Se concretó la venta?", "No"), ("Motivo", "Seguimiento"), ("Observaciones", "Avance de obra, segunda etapa.")]
+    rch = (K.t_bar_v("VIS-000117", "Rechazada", "M-FRM-Respuestas-Propias-21.dc.html") + K.t_nav("3 de 6", chat=False) + '<div class="tr-scroll">' + m
+           + K.t_sec("Respuesta", K.t_grilla(v117)) + "</div>")
+    css = W.CSS_TP + K.CSS_TRG + K.CSS_21 + R.CSS_T5_TEL + P.CSS_TPL + R.CSS_T15 + K.CSS_TV5
+    return C.tel_pagina({"Lo suyo": lista, "Una rechazada": rch}, est, {}, "Lo propio · teléfono · etapa 21", css)
+
+
+def tel_editor5():
+    est = ["El tipo «Correo»"]
+    t = (C.t_bar("Correo del cliente", "Pregunta", "M-FRM-Editor-21.dc.html") + '<div class="ap-cuerpo"><div class="rg-hb">' + F.tcampo("Pregunta", "Correo del cliente", req=True)
+         + F.tcampo("Tipo de respuesta", "Correo", extra=A.t_info(AY_CORREO)) + F.tcampo("Ayuda para quien lo recibe", "Opcional", vacio=True)
+         + '<span class="q-chk"><i class="no"></i>Obligatoria</span></div></div><div class="ap-fijo"><button type="button" class="cb cb-pri full">Listo</button></div>')
+    return C.tel_pagina({"El tipo «Correo»": t}, est, {}, "La pregunta «Correo» · teléfono · etapa 21", E.CSS_E12 + E.CSS_TED_E12 + W.CSS_TP + K.CSS_TRG)
+
+
+def tel_cargar5():
+    est = ["Nueva respuesta", "Un correo mal escrito"]
+
+    def pag(correo, mal=None):
+        datos = W.t_txt("Cliente", "Ferretería Rosales", True) + W.t_txt("Fecha de la visita", "15/10/2026", True) + W.t_txt("Correo del cliente", correo, mal=mal, ph="nombre@ejemplo.com")
+        fijo = (f'<div class="ap-fijo t-mant">{MANTENER}<button type="button" class="cb cb-pri full">{W.ENVIAR}</button></div>')
+        return (C.t_bar("Nueva respuesta", f"{FORM} · versión 4", "M-FRM-Formularios-21.dc.html") + '<div class="ap-cuerpo">' + W.t_zona("La visita", datos) + W.t_zona("El resultado", "", True)
+                + W.t_zona("Fotos y documentos", "", True) + "</div>" + fijo)
+    css = W.CSS_TP + K.CSS_21 + ".ap-fijo.t-mant { flex-direction: column; align-items: stretch; gap: 10px; }\n.ap-fijo.t-mant .q-chk { font-size: 15px; display: inline-flex; align-items: center; gap: 8px; }\n"
+    return C.tel_pagina({"Nueva respuesta": pag(""), "Un correo mal escrito": pag("compras@ferreteriarosales", "Escribí un correo válido, como nombre@ejemplo.com.")}, est, {},
+                        "Nueva respuesta · la pregunta «Correo» · teléfono · etapa 21", css)
+
+
 # ================================================================ canvas.json (la fila de cada uno la pone formularios_etapas_1004.py)
 TITULOS = {"FRM-Respuestas-21": ("Formularios · la planilla con «Estado» · etapa 21", 1440, 900), "M-FRM-Respuestas-21": ("La planilla · teléfono · etapa 21", 390, 844),
            "FRM-Tablero-21": ("Formularios · el tablero con «Por estado» · etapa 21", 1440, 1500), "M-FRM-Tablero-21": ("El tablero · teléfono · etapa 21", 390, 844),
-           "FRM-Respuesta-Corregir": ("Formularios · corregir una respuesta · etapa 21", 1440, 1100), "M-FRM-Respuesta-Corregir": ("Corregir · teléfono · etapa 21", 390, 844),
+           "FRM-Respuesta-Corregir": ("Formularios · corregir una respuesta · etapa 21", 1440, 1400), "M-FRM-Respuesta-Corregir": ("Corregir · teléfono · etapa 21", 390, 844),
            "FRM-Respuesta-Anular": ("Formularios · anular una respuesta · etapa 21", 1440, 900), "M-FRM-Respuesta-Anular": ("Anular · teléfono · etapa 21", 390, 844),
            "FRM-Respuestas-Propias-21": ("Formularios · lo propio · etapa 21", 1440, 900), "M-FRM-Respuestas-Propias-21": ("Lo propio · teléfono · etapa 21", 390, 844),
            "FRM-Editor-21": ("Formularios · la pregunta «Correo» · etapa 21", 1440, 1400), "M-FRM-Editor-21": ("La pregunta «Correo» · teléfono · etapa 21", 390, 844),
            "FRM-Cargar-Respuesta-21": ("Nueva respuesta · la pregunta «Correo» · etapa 21", 1440, 1100), "M-FRM-Cargar-Respuesta-21": ("Nueva respuesta · «Correo» · teléfono · etapa 21", 390, 844),
-           "FRM-Dar-De-Baja-21": ("Formularios · dar de baja · etapa 21", 1440, 900), "FRM-Editor-Baja-21": ("Formularios · un dado de baja · etapa 21", 1440, 900)}
+           "FRM-Dar-De-Baja-21": ("Formularios · dar de baja · etapa 21", 1440, 900), "FRM-Editor-Baja-21": ("Formularios · un dado de baja · etapa 21", 1440, 900),
+           "WA-Chats-Respuesta-21": ("WhatsApp · una respuesta que después se corrigió o se anuló · etapa 21", 1440, 900),
+           "M-WA-Conversacion-Respuesta-21": ("Corregida o anulada en el chat · teléfono · etapa 21", 390, 844)}
 
 
 def registrar():
@@ -514,8 +1020,18 @@ def registrar():
 if __name__ == "__main__":
     panel_e16 = re.search(r'<style data-e16="panel">\n(.*?)</style>', (PROJ / "FRM-Catalogos.dc.html").read_text(encoding="utf-8"), re.S)
     E.R.CSS_PANEL_E16 = panel_e16.group(1) if panel_e16 else ""
-    for n, f, alto, pestana in [("FRM-Respuestas-21", respuestas, None, "respuestas"), ("FRM-Respuesta-Corregir", corregir, 1100, None), ("FRM-Respuesta-Anular", anular, None, "respuestas"),
-                                ("FRM-Respuestas-Propias-21", propias, None, None), ("FRM-Editor-21", editor, 1400, "diseno"), ("FRM-Cargar-Respuesta-21", cargar, 1100, None)]:
+    lista = K.solo()  # «--solo A,B»: solo esos tableros, sin tocar canvas.json
+    hechos = []
+    quiere = lambda n: lista is None or n in lista
+
+    def escribir(n, t):
+        (PROJ / f"{n}.dc.html").write_text(t, encoding="utf-8")
+        hechos.append(n)
+    for n, f, alto, pestana in [("FRM-Respuestas-21", respuestas5, None, "respuestas"), ("FRM-Respuesta-Corregir", corregir5, 1400, None),
+                                ("FRM-Respuesta-Anular", anular5, None, "respuestas"), ("FRM-Respuestas-Propias-21", propias5, None, None), ("FRM-Editor-21", editor5, 1400, "diseno"),
+                                ("FRM-Cargar-Respuesta-21", cargar5, 1100, None)]:
+        if not quiere(n):
+            continue
         t = L.sin_disenar(n, E.post(n, f(), alto))
         t = W.css_y_alto(t, alto)
         if pestana:
@@ -524,11 +1040,16 @@ if __name__ == "__main__":
             t = t.replace(f"Formularios / {FORM}</span>", f"Formularios / {FORM} / Nueva respuesta</span>", 1)
         if n == "FRM-Respuestas-Propias-21":
             t = como_tomas(t)
-        (PROJ / f"{n}.dc.html").write_text(K.enlaces(K.migas(t)), encoding="utf-8")
+        escribir(n, K.enlaces(K.migas(t)))
     for n, f in [("FRM-Tablero-21", tablero), ("M-FRM-Tablero-21", tel_tablero), ("FRM-Dar-De-Baja-21", dar_de_baja), ("FRM-Editor-Baja-21", editor_baja)]:
-        (PROJ / f"{n}.dc.html").write_text(K.enlaces(f()), encoding="utf-8")
-    for n, f in [("M-FRM-Respuestas-21", tel_respuestas), ("M-FRM-Respuesta-Corregir", tel_corregir), ("M-FRM-Respuesta-Anular", tel_anular), ("M-FRM-Respuestas-Propias-21", tel_propias),
-                 ("M-FRM-Editor-21", tel_editor), ("M-FRM-Cargar-Respuesta-21", tel_cargar)]:
-        (PROJ / f"{n}.dc.html").write_text(K.enlaces(E.post(n, f())), encoding="utf-8")
-    registrar()
-    print("tableros", len(TITULOS))
+        if quiere(n):
+            escribir(n, K.enlaces(f()))
+    if quiere("WA-Chats-Respuesta-21"):
+        escribir("WA-Chats-Respuesta-21", K.enlaces(E.post("WA-Chats-Respuesta-21", chat_respuesta5())))
+    for n, f in [("M-FRM-Respuestas-21", tel_respuestas5), ("M-FRM-Respuesta-Corregir", tel_corregir5), ("M-FRM-Respuesta-Anular", tel_anular5), ("M-FRM-Respuestas-Propias-21", tel_propias5),
+                 ("M-FRM-Editor-21", tel_editor5), ("M-FRM-Cargar-Respuesta-21", tel_cargar5), ("M-WA-Conversacion-Respuesta-21", tel_chat_respuesta5)]:
+        if quiere(n):
+            escribir(n, K.enlaces(E.post(n, f())))
+    if lista is None:
+        registrar()
+    print("tableros", len(hechos), hechos)
