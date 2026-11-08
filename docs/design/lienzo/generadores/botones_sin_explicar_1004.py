@@ -24,7 +24,7 @@ PARA_APROBAR = " · para aprobar"
 
 # Los de formularios que se redibujan con su etapa (evaluación del traspaso 2, §4)
 FORMULARIOS = set("""FRM-Editor M-FRM-Editor FRM-Publicar FRM-Publicando FRM-Catalogo M-FRM-Catalogo FRM-Catalogo-Filtros M-FRM-Catalogo-Filtros
-FRM-Catalogo-Propuesta FRM-Editor-Reglas M-FRM-Reglas FRM-Editor-Reglas-Plantilla M-FRM-Reglas-Plantilla FRM-Editor-Sugerencias FRM-Pdf
+FRM-Editor-Reglas M-FRM-Reglas FRM-Editor-Reglas-Plantilla M-FRM-Reglas-Plantilla FRM-Editor-Sugerencias FRM-Pdf
 M-FRM-Respuesta-Aprobacion Plat-FRM-Plantilla Plat-FRM-Publicar Plat-FRM-Retirar Plat-FRM-Plantilla-Reglas Plat-FRM-Pdf Plat-FRM-Categorias
 M-FRM-Plantilla FRM-Editor-Asistente""".split())
 NO_TOCAR = FORMULARIOS | {"Criterio-Decisiones"}  # Decisiones sale de criterio_decisiones.py

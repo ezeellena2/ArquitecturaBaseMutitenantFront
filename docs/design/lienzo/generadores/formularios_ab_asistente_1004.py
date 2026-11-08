@@ -5,7 +5,7 @@ Sigue a `formularios_ab_reglas_1004.py` (E16), con las mismas piezas. Spec: `doc
 28 (pasa a modo Asistente quien tiene «Administrar WhatsApp») y 29 (solo en Internos). Donde la disposición de allá choca con una
 regla escrita del lienzo, manda la nuestra: ⋮ en las filas, «Estado ▾» en lugar del segmentado, las explicaciones en ⓘ.
 
-Tableros: WA-Chats-Asistente (H1, H3, H5), WA-Chats-Sugerencia (H2), WA-Chats-Audio (H6), FRM-Catalogo-Propuesta (H4), FRM-Faltan (H7),
+Tableros: WA-Chats-Asistente (H1, H3, H5), WA-Chats-Sugerencia (H2), WA-Chats-Audio (H6), FRM-Faltan (H7),
 FRM-Editor-Asistente (03), FRM-Editor-Sugerencias (s2), FRM-Respuesta-Cadena (s4 y el origen del asistente) y los teléfonos
 M-WA-Conversacion-Asistente y M-FRM-Faltan. Además suma «Formularios que faltan» al panel de Formularios y a Más › Formularios.
 Corre después de `formularios_ab_reglas_1004.py`.
@@ -255,48 +255,8 @@ def chat_audio():
     return pagina_chat_as(E, esc, msgs, {}, vp, hora, "WhatsApp · Internos · audios", flags)
 
 
-# ================================================================ H4 · un catálogo que propone el asistente (la pantalla de K4, marcada como propuesta)
-def f_fuente_prop(falta=False):
-    conds = (C.f_cond("Si", "Rol", "tiene alguno de", '<span class="k-chip">Supervisor ×</span>') + C.f_cond("Y", "Activo", "es", "Sí")
-             + C.f_cond("Y", "Empresa", "es", "Delta Norte S.A."))
-    nota = ('<span class="k-nota" role="status">No se pudo filtrar por zona: ese dato no existe en la vista Miembros.</span>' if falta else "")
-    return ('<div class="w-caja"><div class="f-cab"><span>De dónde salen: los miembros, con filtros</span></div><div class="k-sec"><div class="k-g3">'
-            f'<div class="w-cmp"><span class="rt">Vista</span><div class="ct ro">Miembros{A.CANDADO}</div><span class="ay">Columnas: Nombre, Rol, Empresa, Activo.</span></div>'
-            f'<div class="w-cmp"><span class="rt">Texto de cada opción</span><div class="ct sel">Nombre{CHEV}</div></div>'
-            f'<div class="w-cmp"><span class="rt">Detalle</span><div class="ct sel">Rol{CHEV}</div></div></div>'
-            f'<span class="rt2">Qué miembros entran</span><div class="k-conds">{conds}</div>{nota}</div></div>')
-
-
-def prev_prop():
-    li = [("Florencia Fernández de la Fu…", "Supervisora"), ("Julián Sosa", "Supervisor"), ("Valeria Ruiz", "Supervisora")]
-    cuerpo = "".join(f'<div class="li">{n}<small>{d}</small></div>' for n, d in li) + '<div class="pie">3 opciones · comprobado hoy a las 10:12</div>'
-    return f'<div class="w-caja"><div class="f-cab"><span>Vista previa</span></div><div class="k-prev">{cuerpo}</div></div>'
-
-
-ESTADOS_H4 = ["Propuesta", "Un dato que no existe", "Descartar propuesta", "Aprobada", "Sin permiso para aprobar"]
-
-
-def catalogo_propuesta():
-    E = ESTADOS_H4
-    tit = "Supervisores de Delta Norte"
-    chip = '<span class="w-est pend">Propuesta del asistente</span>'
-    acc = '<button type="button" class="cb cb-sec">Descartar propuesta</button><button type="button" class="cb cb-pri">Aprobar y activar</button>'
-    banner = (f'<div class="w-cartel info" role="status">{BOT}<span class="tx"><b>Propuesta del asistente.</b> La pidió Lucía Fernández por WhatsApp, hoy a las 10:12. '
-              'No se usa hasta que alguien la apruebe.</span></div>')
-    def cuerpo(falta=False, con_banner=True):
-        return ('<div class="w-body">' + (banner if con_banner else "") + '<div class="f-cols k4"><div class="f-pila">'
-                + C.k_catalogo(tit, "Supervisores activos de Delta Norte S.A.", origen="De los miembros") + f_fuente_prop(falta) + "</div>" + prev_prop() + "</div></div>")
-    V = {"Propuesta": (C.banda_k(tit, chip, acc), cuerpo()), "Un dato que no existe": (C.banda_k(tit, chip, acc), cuerpo(True)),
-         "Descartar propuesta": (C.banda_k(tit, chip, acc), cuerpo()), "Aprobada": (C.banda_k(tit, C.ACTIVO, C.k_acc()), cuerpo(con_banner=False)),
-         "Sin permiso para aprobar": (C.banda_k(tit, chip, ""), cuerpo())}
-    capas = {"Descartar propuesta": A.confirmar("¿Descartar la propuesta?", "El catálogo propuesto se borra. Si lo necesitan, se puede pedir de nuevo.", "Descartar propuesta"),
-             "Aprobada": A.toast("Catálogo aprobado y activo.")}
-    css = (F.CSS_FICHA + F.CSS_ESTADOS + A.CSS_AB + C.CSS_K3 + C.CSS_K4 + ".f-cols.k4 { grid-template-columns: minmax(0, 1fr) 360px; }\n"
-           + ".k-nota { font-size: 12.5px; color: oklch(0.45 0.1 70); }\n.w-cartel.info svg { flex-shrink: 0; }\n.w-body > .w-cartel { margin-top: 0; }\n")
-    t = C.pagina_k("Catálogo propuesto por el asistente · /org/formularios/catalogos/:id", "Inicio / Formularios / Catálogos / Supervisores de Delta Norte",
-                   A.con_estados([(k, v[0]) for k, v in V.items()]), A.con_estados([(k, v[1]) for k, v in V.items()]), css, E, A.js_estados(E), alto=1000)
-    over = "".join(f'<sc-if value="{{{{s{E.index(k)}}}}}" hint-placeholder-val="{{{{no}}}}">{h}</sc-if>' for k, h in capas.items())
-    return F.con_dialogo(t, over)
+# H4, el catálogo que propone el asistente, pasó a la E25 (`FRM-Catalogo-Propuesta-25`, de formularios_25_documentos_1004.py, decisión 167);
+# el tablero de antes quedó en el Archivo.
 
 
 # ================================================================ H7 · formularios que faltan
@@ -680,12 +640,11 @@ def menu_telefono():
 
 # ================================================================ canvas.json
 TITULOS = {"WA-Chats-Asistente": "WhatsApp · Internos · el asistente atiende", "WA-Chats-Sugerencia": "WhatsApp · Internos · el asistente sugiere",
-           "WA-Chats-Audio": "WhatsApp · Internos · audios", "FRM-Catalogo-Propuesta": "Formularios · catálogo propuesto por el asistente",
-           "FRM-Faltan": "Formularios · formularios que faltan", "FRM-Editor-Asistente": "Formularios · editor · cuándo lo ofrece el asistente",
+           "WA-Chats-Audio": "WhatsApp · Internos · audios", "FRM-Faltan": "Formularios · formularios que faltan", "FRM-Editor-Asistente": "Formularios · editor · cuándo lo ofrece el asistente",
            "FRM-Editor-Sugerencias": "Formularios · editor · qué sugerir después", "FRM-Respuesta-Cadena": "Formularios · una respuesta · de dónde vino",
            "M-WA-Conversacion-Asistente": "WhatsApp · el asistente · teléfono", "M-FRM-Faltan": "Formularios · formularios que faltan · teléfono"}
 LUGAR = {"WA-Chats-Asistente": (0, 12800, 1440, 900), "WA-Chats-Sugerencia": (1520, 12800, 1440, 900), "WA-Chats-Audio": (3040, 12800, 1440, 900),
-         "FRM-Catalogo-Propuesta": (4560, 12800, 1440, 1000), "FRM-Faltan": (0, 13880, 1440, 900), "FRM-Editor-Asistente": (1520, 13880, 1440, 1400),
+         "FRM-Faltan": (0, 13880, 1440, 900), "FRM-Editor-Asistente": (1520, 13880, 1440, 1400),
          "FRM-Editor-Sugerencias": (3040, 13880, 1440, 1400), "FRM-Respuesta-Cadena": (4560, 13880, 1440, 900),
          "M-WA-Conversacion-Asistente": (0, 14880, 390, 844), "M-FRM-Faltan": (470, 14880, 390, 844)}
 
@@ -704,7 +663,7 @@ def registrar():
 
 if __name__ == "__main__":
     tableros = {"WA-Chats-Asistente": chat_asistente(), "WA-Chats-Sugerencia": chat_sugerencia(), "WA-Chats-Audio": chat_audio(),
-                "FRM-Catalogo-Propuesta": catalogo_propuesta(), "FRM-Faltan": faltan(), "FRM-Editor-Asistente": editor_asistente(),
+                "FRM-Faltan": faltan(), "FRM-Editor-Asistente": editor_asistente(),
                 "FRM-Editor-Sugerencias": editor_sugerencias(), "FRM-Respuesta-Cadena": respuesta_cadena(),
                 "M-WA-Conversacion-Asistente": tel_chat_asistente(), "M-FRM-Faltan": tel_faltan()}
     for nombre, t in tableros.items():

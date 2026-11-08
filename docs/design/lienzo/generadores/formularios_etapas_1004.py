@@ -10,6 +10,7 @@ etapa en el nombre (FRM-Formularios-15).
   14 (con lo que espera aprobación desde la 21) y «Formularios que faltan» desde la 23.
 - La página «Organización · Formularios» va en filas, una por etapa, con su título: arriba los tableros de la compu y
   debajo los teléfonos.
+- La 25 arma su propio panel, con «Documentos recibidos» (`PANEL_PROPIO`): acá solo se ubica.
 
 Corre al final de los generadores de formularios, antes de `campana_1004.py`. Se puede volver a correr.
 """
@@ -30,9 +31,9 @@ FILAS = [
                                   "FRM-Catalogo-Contactos"],
      ["M-FRM-Catalogos", "M-FRM-Catalogo", "M-FRM-Catalogo-Opciones", "M-FRM-Catalogo-Filtros", "M-FRM-Catalogo-Contactos"]),
     (13, "Etapa 13 · Campos de los catálogos", ["FRM-Catalogo-13", "FRM-Catalogo-Campos", "FRM-Catalogo-Opciones-13"], ["M-FRM-Catalogo-13", "M-FRM-Catalogo-Campos", "M-FRM-Catalogo-Opciones-13"]),
-    (14, "Etapa 14 · Formularios", ["FRM-Formularios", "FRM-Editor", "FRM-Publicar", "FRM-Publicando", "WA-Chats-Formulario", "WA-Chats-Respuesta",
+    (14, "Etapa 14 · Formularios", ["FRM-Formularios", "FRM-Editor", "FRM-Publicar", "FRM-Publicando", "FRM-Vista-Oficial", "WA-Chats-Formulario", "WA-Chats-Respuesta",
                                     "WA-Chats-Formulario-Cliente", "WA-Mensajes-14", "FRM-Catalogos-14", "FRM-Catalogo-14", "Campana-14"],
-     ["M-FRM-Formularios", "M-FRM-Editor", "M-WA-Chats-Formulario", "M-WA-Conversacion-Respuesta", "M-WA-Chats-Formulario-Cliente", "M-WA-Mensaje-14",
+     ["M-FRM-Formularios", "M-FRM-Editor", "M-FRM-Vista-Oficial", "M-WA-Chats-Formulario", "M-WA-Conversacion-Respuesta", "M-WA-Chats-Formulario-Cliente", "M-WA-Mensaje-14",
       "M-FRM-Catalogos-14", "M-FRM-Catalogo-14", "M-Campana-14"]),
     (15, "Etapa 15 · Respuestas", ["FRM-Formularios-15", "FRM-Respuestas", "FRM-Respuestas-Filtros", "FRM-Respuesta", "FRM-Respuesta-Completa", "FRM-Respuestas-Exportar", "FRM-Tablero"],
      ["M-FRM-Formularios-15", "M-FRM-Respuestas", "M-FRM-Respuesta", "M-FRM-Tablero"]),
@@ -46,23 +47,32 @@ FILAS = [
     (19, "Etapa 19 · Condiciones, cálculos y líneas", ["FRM-Editor-Condiciones", "FRM-Editor-Calculo", "FRM-Editor-Lineas", "FRM-Publicar-19", "FRM-Respuestas-19", "FRM-Respuesta-19", "WA-Chats-Respuesta-19", "FRM-Tablero-19"],
      ["M-FRM-Editor-Condiciones", "M-FRM-Editor-Calculo", "M-FRM-Editor-Lineas", "M-FRM-Respuestas-19", "M-FRM-Respuesta-19", "M-WA-Conversacion-Respuesta-19", "M-FRM-Tablero-19"]),
     (20, "Etapa 20 · Cargar una respuesta desde la web", ["FRM-Formularios-20", "FRM-Cargar-Respuesta", "FRM-Cargar-Panel", "FRM-Cargar-Lista", "FRM-Cargar-Archivos", "FRM-Cargar-Enviada", "FRM-Respuestas-20", "FRM-Respuesta-20",
-                                                          "FRM-Respuestas-Propias", "FRM-Editor-Listas", "FRM-Publicar-20"],
-     ["M-FRM-Formularios-20", "M-FRM-Cargar-Respuesta", "M-FRM-Cargar-Lista", "M-FRM-Cargar-Archivos", "M-FRM-Cargar-Enviada", "M-FRM-Respuestas-20", "M-FRM-Respuesta-20", "M-FRM-Respuestas-Propias", "M-FRM-Editor-Listas", "M-FRM-Publicar-20"]),
-    (21, "Etapa 21 · Reglas, aprobación, PDF y avisos", ["FRM-Formularios-21", "FRM-Editor-Reglas", "FRM-Pdf", "FRM-Respuestas-21", "FRM-Respuesta-Aprobacion", "FRM-Tablero-21",
+                                                          "FRM-Respuestas-Propias", "FRM-Editor-Listas", "FRM-Publicar-20", "WA-Chats-Formulario-20"],
+     ["M-FRM-Formularios-20", "M-FRM-Cargar-Respuesta", "M-FRM-Cargar-Lista", "M-FRM-Cargar-Archivos", "M-FRM-Cargar-Enviada", "M-FRM-Respuestas-20", "M-FRM-Respuesta-20", "M-FRM-Respuestas-Propias", "M-FRM-Editor-Listas", "M-FRM-Publicar-20", "M-WA-Chats-Formulario-20"]),
+    (21, "Etapa 21 · Reglas, aprobación, PDF y avisos", ["FRM-Formularios-21", "FRM-Editor-Reglas", "FRM-Editor-Reglas-Bloque", "FRM-Pdf", "FRM-Respuestas-21", "FRM-Respuesta-Aprobacion", "FRM-Tablero-21",
                                                        "FRM-Respuesta-Corregir", "FRM-Respuesta-Anular", "FRM-Respuestas-Propias-21", "FRM-Editor-21", "FRM-Cargar-Respuesta-21", "Campana-21",
-                                                       "WA-Chats-Avisos", "FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21"],
-     ["M-FRM-Formularios-21", "M-FRM-Reglas", "M-FRM-Respuestas-21", "M-FRM-Respuesta-Aprobacion", "M-FRM-Tablero-21", "M-FRM-Respuesta-Corregir", "M-FRM-Respuesta-Anular",
-      "M-FRM-Respuestas-Propias-21", "M-FRM-Editor-21", "M-FRM-Cargar-Respuesta-21", "M-Campana-21", "M-WA-Conversacion-Avisos"]),
+                                                       "Cuenta-21", "WA-Chats-Avisos", "WA-Chats-Respuesta-21", "FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21"],
+     ["M-FRM-Formularios-21", "M-FRM-Reglas", "M-FRM-Reglas-Bloque", "M-FRM-Respuestas-21", "M-FRM-Respuesta-Aprobacion", "M-FRM-Tablero-21", "M-FRM-Respuesta-Corregir", "M-FRM-Respuesta-Anular",
+      "M-FRM-Respuestas-Propias-21", "M-FRM-Editor-21", "M-FRM-Cargar-Respuesta-21", "M-Campana-21", "M-Cuenta-21", "M-WA-Conversacion-Avisos",
+      "M-WA-Conversacion-Respuesta-21"]),
     (22, "Etapa 22 · Biblioteca", ["FRM-Formularios-22", "FRM-Biblioteca", "FRM-Plantilla", "FRM-Plantilla-Usar", "FRM-Editor-Reglas-Plantilla"],
      ["M-FRM-Formularios-22", "M-FRM-Biblioteca", "M-FRM-Plantilla", "M-FRM-Reglas-Plantilla"]),
     (23, "Etapa 23 · El asistente, con Casos", ["WA-Asistente", "WA-Asistente-Casos", "WA-Asistente-Probar", "WA-Asistente-Limites", "WA-Modo-Atencion", "WA-Chats-Casos",
                                                 "WA-Preguntas-Sin-Respuesta", "WA-Chats-Asistente", "WA-Chats-Sugerencia", "WA-Chats-Audio", "FRM-Editor-Asistente",
-                                                "FRM-Editor-Sugerencias", "FRM-Editor-Reglas-23", "FRM-Catalogos-23", "FRM-Catalogo-Propuesta", "FRM-Respuesta-Cadena",
+                                                "FRM-Editor-Sugerencias", "FRM-Editor-Reglas-23", "FRM-Respuesta-Cadena",
                                                 "FRM-Faltan", "FRM-Dar-De-Baja-23", "FRM-Editor-Baja-23", "Campana-23"],
      ["M-WA-Asistente", "M-WA-Chats-Casos", "M-WA-Modo-Atencion", "M-WA-Preguntas-Sin-Respuesta", "M-WA-Conversacion-Asistente", "M-FRM-Reglas-23", "M-FRM-Faltan",
       "M-Campana-23"]),
     (24, "Etapa 24 · Varios asistentes", ["WA-Asistentes", "WA-Equipo-Asistente", "WA-Chats-Casos-24"], ["M-WA-Asistentes", "M-WA-Equipo-Asistente", "M-WA-Chats-Casos-24"]),
+    # La 25, en el orden de TITULOS de formularios_25_documentos_1004.py; su plantilla de Plataforma va en «Plataforma · Formularios».
+    (25, "Etapa 25 · Documentos", ["FRM-Documentos", "Campana-25", "WA-Chats-Documento", "FRM-Armar-Con-IA", "FRM-Respuesta-25", "FRM-Editor-Lectura", "FRM-Plantilla-25",
+                                  "WA-Asistente-Casos-25", "Asistente-Org-25", "FRM-Catalogo-Propuesta-25", "FRM-Formularios-25", "FRM-Catalogos-25", "FRM-Faltan-25"],
+     ["M-FRM-Documentos", "M-Campana-25", "M-WA-Chats-Documento", "M-WA-Flow-Prellenado", "M-FRM-Armar-Con-IA", "M-FRM-Respuesta-25", "M-FRM-Editor-Lectura",
+      "M-FRM-Plantilla-25", "M-Asistente-Org-25", "M-WA-Armar-Con-IA"]),
 ]
+# Las etapas que arman su propio panel: la 25 suma «Documentos recibidos» (panel25 de formularios_25_documentos_1004.py), que
+# `entradas` no tiene; si se le rearmara acá, lo perdería.
+PANEL_PROPIO = {25}
 ETAPA_DE = {n: etapa for etapa, _t, compu, tel in FILAS for n in compu + tel}
 TODAS = list(G.ENTRADAS)  # sin «Diseñar formularios» cuando corre después de formularios_lista_y_ficha_1004.py
 
@@ -93,7 +103,7 @@ LISTAS = {"FRM-Formularios", "FRM-Formularios-15", "FRM-Formularios-17", "FRM-Fo
 
 def con_panel_de_la_etapa(n, t):
     m = G.PANEL_RE.search(t)
-    if not m or n in LISTAS or n not in ETAPA_DE:
+    if not m or n in LISTAS or n not in ETAPA_DE or ETAPA_DE[n] in PANEL_PROPIO:
         return t
     on = re.search(r'<a class="w-ln on" href="([^"]+)"', m.group(0))
     activo = ACTIVO.get(on.group(1), "formularios") if on else ("catalogos" if n.startswith("FRM-Catalogo") else "formularios")

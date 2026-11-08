@@ -17,6 +17,7 @@ aviso lleva a donde se resuelve. Ningún cartel en el cuerpo de una pantalla, sa
   etapa dibuja su versión: `Campana-14` y `M-Campana-14` suman «WhatsApp rechazó la versión N de …». `Campana` se abre sobre Usuarios, de la
   base; la versión de la 14, sobre Formularios. El número es el de lo que lista esa campana: 1 en una organización, hasta que una etapa dibuje
   la suya (2 en la 14), y 2 en Plataforma. Los teléfonos de Plataforma suman la campana en sus pantallas principales (base-de-la-12.md).
+- La 21, la 23 y la 25 abren la suya, con lo de cada etapa; `Campana-25` y su lista los dibuja formularios_25_documentos_1004.py.
 
 Corre al final de todo. Se puede volver a correr.
 """
@@ -179,20 +180,29 @@ ESTADOS = ["Con avisos", "Versión nueva", "Sin avisos"]
 GANCHOS = ("      si: true, no: false,\n", "      si: true,\n      no: false,\n")  # la pieza donde cada tablero arma sus valores
 NUMERO = '<sc-if value="{{cmpHay}}" hint-placeholder-val="{{si}}"><span class="n">{{cmpCant}}</span></sc-if>'
 # Los tableros de la 14 abren su versión, con sus dos avisos
-TABLEROS_14 = ["FRM-Formularios", "FRM-Editor", "FRM-Publicar", "FRM-Publicando", "FRM-Catalogos-14", "FRM-Catalogo-14", "WA-Chats-Formulario", "WA-Chats-Respuesta",
+TABLEROS_14 = ["FRM-Formularios", "FRM-Editor", "FRM-Publicar", "FRM-Publicando", "FRM-Vista-Oficial", "FRM-Catalogos-14", "FRM-Catalogo-14", "WA-Chats-Formulario", "WA-Chats-Respuesta",
                "WA-Chats-Formulario-Cliente"]
 # Los de la 21 abren la suya, con lo que espera aprobación
-TABLEROS_21 = ["FRM-Formularios-21", "FRM-Respuestas-21", "FRM-Respuesta-Aprobacion", "FRM-Editor-Reglas", "FRM-Pdf", "FRM-Tablero-21", "FRM-Respuesta-Corregir", "FRM-Respuesta-Anular",
-               "FRM-Editor-21", "FRM-Cargar-Respuesta-21", "FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21", "WA-Chats-Avisos"]
+TABLEROS_21 = ["FRM-Formularios-21", "FRM-Respuestas-21", "FRM-Respuesta-Aprobacion", "FRM-Editor-Reglas", "FRM-Editor-Reglas-Bloque", "FRM-Pdf", "FRM-Tablero-21", "FRM-Respuesta-Corregir", "FRM-Respuesta-Anular",
+               "FRM-Editor-21", "FRM-Cargar-Respuesta-21", "FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21", "WA-Chats-Avisos", "WA-Chats-Respuesta-21"]
 # Los de la 23 abren la suya, con las preguntas sin respuesta
 TABLEROS_23 = ["WA-Asistente", "WA-Asistente-Casos", "WA-Asistente-Probar", "WA-Asistente-Limites", "WA-Modo-Atencion", "WA-Chats-Casos", "WA-Preguntas-Sin-Respuesta",
-               "WA-Chats-Asistente", "WA-Chats-Sugerencia", "WA-Chats-Audio", "FRM-Editor-Asistente", "FRM-Editor-Sugerencias", "FRM-Editor-Reglas-23", "FRM-Catalogos-23",
-               "FRM-Catalogo-Propuesta", "FRM-Respuesta-Cadena", "FRM-Faltan", "FRM-Dar-De-Baja-23", "FRM-Editor-Baja-23",
+               "WA-Chats-Asistente", "WA-Chats-Sugerencia", "WA-Chats-Audio", "FRM-Editor-Asistente", "FRM-Editor-Sugerencias", "FRM-Editor-Reglas-23",
+               "FRM-Respuesta-Cadena", "FRM-Faltan", "FRM-Dar-De-Baja-23", "FRM-Editor-Baja-23",
                "WA-Asistentes", "WA-Equipo-Asistente", "WA-Chats-Casos-24"]  # la 24 no suma avisos: abre la de la 23
+# Los de la 25 abren la suya, que dibuja formularios_25_documentos_1004.py (`AVISOS_25`): los documentos por revisar y los
+# parecidos, más los de la 23
+TABLEROS_25 = ["FRM-Documentos", "WA-Chats-Documento", "FRM-Armar-Con-IA", "FRM-Respuesta-25", "FRM-Editor-Lectura", "FRM-Plantilla-25", "WA-Asistente-Casos-25",
+               "Asistente-Org-25", "FRM-Catalogo-Propuesta-25", "FRM-Formularios-25", "FRM-Catalogos-25", "FRM-Faltan-25"]
+CANT_25 = str(2 + len(AVISOS_23))
+# Las listas abiertas de cada etapa: su campana la dibuja quien arma la lista, y no se toca
+ABIERTAS = {"Campana-14", "Campana-21", "Campana-23", "Campana-25"}
 
 
 def la_suya(n, t, pagina):
     """Cada campana abre la de su acceso y su etapa, con su número."""
+    if n in ABIERTAS:
+        return t
     if pagina in ("plataforma", "plat-formularios"):
         return t.replace('<a class="w-campana" href="Campana.dc.html"', '<a class="w-campana" href="Campana-Plat.dc.html"')
     if pagina == "personal":
@@ -203,6 +213,8 @@ def la_suya(n, t, pagina):
         return numero(t.replace('<a class="w-campana" href="Campana.dc.html"', '<a class="w-campana" href="Campana-21.dc.html"'), str(len(AVISOS_21)))
     if n in TABLEROS_23:
         return numero(t.replace('<a class="w-campana" href="Campana.dc.html"', '<a class="w-campana" href="Campana-23.dc.html"'), str(len(AVISOS_23)))
+    if n in TABLEROS_25:
+        return numero(t.replace('<a class="w-campana" href="Campana.dc.html"', '<a class="w-campana" href="Campana-25.dc.html"'), CANT_25)
     return numero(t, "1")
 
 
@@ -287,7 +299,7 @@ if __name__ == "__main__":
     hechos = []
     for k, v in c["boards"].items():
         n = k[:-8]
-        if n.startswith("M-") or v.get("page") not in CANT or n in NUEVOS or n in ("Campana-14", "Campana-21", "Campana-23"):
+        if n.startswith("M-") or v.get("page") not in CANT or n in NUEVOS or n in ABIERTAS:
             continue
         f = PROJ / k
         t = f.read_text(encoding="utf-8")
