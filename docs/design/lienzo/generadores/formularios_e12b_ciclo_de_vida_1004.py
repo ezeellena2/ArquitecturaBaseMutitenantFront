@@ -534,7 +534,7 @@ def tel_editor_baja():
 # ================================================================ Escritura
 NUEVOS = {"FRM-Editor-Baja": (6080, 260, 1440, 1400, "Formularios · editor de un dado de baja"),
           "FRM-Dar-De-Baja": (7600, 260, 1440, 1400, "Formularios · dar de baja"),
-          "FRM-Reactivar-Eliminar": (6080, 1780, 1440, 900, "Formularios · reactivar y eliminar"),
+          "FRM-Reactivar-Eliminar": (6080, 1780, 1440, 900, "Formularios · reactivar y borrar"),
           "FRM-Copiar": (7600, 1780, 1440, 900, "Formularios · copiar un formulario"),
           "M-FRM-Editor-Baja": (2820, 2800, 390, 844, "Formularios · editor de un dado de baja · teléfono")}
 TABLEROS = ["FRM-Editor", "M-FRM-Editor"] + list(NUEVOS)

@@ -728,7 +728,7 @@ def menu_telefono():
 
 
 # ---------------------------------------------------------------- canvas.json
-TITULOS = {"FRM-Respuestas": "Formularios · Respuestas · la planilla", "FRM-Respuestas-Filtros": "Formularios · Respuestas · más filtros",
+TITULOS = {"FRM-Respuestas": "Formularios · Respuestas · la planilla", "FRM-Respuestas-Filtros": "Formularios · Respuestas · Filtros",
            "FRM-Respuesta": "Formularios · Respuestas · una respuesta al costado", "FRM-Respuestas-Exportar": "Formularios · Respuestas · exportar a Excel",
            "M-FRM-Respuestas": "Formularios · Respuestas · teléfono", "M-FRM-Respuesta": "Formularios · una respuesta · teléfono"}
 LUGAR = {"FRM-Respuestas": (0, 8200, 1440, 900), "FRM-Respuestas-Filtros": (1520, 8200, 1440, 900), "FRM-Respuesta": (3040, 8200, 1440, 900),

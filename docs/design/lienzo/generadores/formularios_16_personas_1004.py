@@ -589,11 +589,11 @@ def tel_respuestas_16():
 # ================================================================ canvas.json (la fila de cada uno la pone formularios_etapas_1004.py)
 TITULOS = {"FRM-Datos-Personas": ("Administración · Datos de las personas · etapa 16", 1440, 1000), "M-FRM-Datos-Personas": ("Datos de las personas · teléfono", 390, 844),
            "FRM-Usuario-Datos": ("Administración · la ficha, con «Datos» · etapa 16", 1440, 900), "M-FRM-Usuario-Datos": ("La ficha, con «Datos» · teléfono", 390, 844),
-           "FRM-Catalogo-16": ("Formularios · la columna «Filtro» · etapa 16", 1280, 1560), "M-FRM-Catalogo-16": ("La columna «Filtro» · teléfono", 390, 844),
+           "FRM-Catalogo-16": ("Formularios · el papel «Filtro» · etapa 16", 1280, 1560), "M-FRM-Catalogo-16": ("El papel «Filtro» · teléfono", 390, 844),
            "FRM-Editor-16": ("Formularios · qué opciones ve cada persona · etapa 16", 1440, 1660), "M-FRM-Editor-16": ("Qué opciones ve cada persona · teléfono", 390, 844),
            "FRM-Publicar-16": ("Formularios · publicar con avisos · etapa 16", 1440, 1400),
            "WA-Chats-Formulario-16": ("WhatsApp · un formulario que no se puede mandar · etapa 16", 1440, 900), "M-WA-Chats-Formulario-16": ("Un formulario que no se puede mandar · teléfono", 390, 844),
-           "FRM-Respuestas-16": ("Formularios · la subcolumna de un filtro · etapa 16", 1440, 900), "M-FRM-Respuestas-16": ("La subcolumna de un filtro · teléfono", 390, 844)}
+           "FRM-Respuestas-16": ("Formularios · la subcolumna de un filtro · etapa 16", 1440, 900), "M-FRM-Respuestas-16": ("Respuestas · teléfono · etapa 16", 390, 844)}
 
 
 def registrar():

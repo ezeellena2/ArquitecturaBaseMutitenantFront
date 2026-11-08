@@ -2240,7 +2240,7 @@
       "y": 9322,
       "w": 1440,
       "h": 900,
-      "title": "Formularios · Respuestas · más filtros",
+      "title": "Formularios · Respuestas · Filtros",
       "page": "formularios",
       "is_interactive": true
     },
@@ -2536,7 +2536,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · reactivar y eliminar",
+      "title": "Formularios · reactivar y borrar",
       "w": 1440,
       "x": 4560,
       "y": 15450
@@ -2980,7 +2980,7 @@
       "w": 1280,
       "h": 1560,
       "page": "formularios",
-      "title": "Formularios · la columna «Filtro» · etapa 16"
+      "title": "Formularios · el papel «Filtro» · etapa 16"
     },
     "M-FRM-Catalogo-16.dc.html": {
       "x": 940,
@@ -2989,7 +2989,7 @@
       "w": 390,
       "h": 844,
       "page": "formularios",
-      "title": "La columna «Filtro» · teléfono"
+      "title": "El papel «Filtro» · teléfono"
     },
     "FRM-Editor-16.dc.html": {
       "x": 4560,
@@ -3052,7 +3052,7 @@
       "w": 390,
       "h": 844,
       "page": "formularios",
-      "title": "La subcolumna de un filtro · teléfono"
+      "title": "Respuestas · teléfono · etapa 16"
     },
     "FRM-Catalogo-Campos.dc.html": {
       "x": 1520,
