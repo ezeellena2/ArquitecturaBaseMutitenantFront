@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, type MutationMeta, type QueryKey } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -61,6 +61,8 @@ export function ReasonDialog<TData>({ title, description, confirmLabel, pendingL
   });
   const until = useController({ control: form.control, name: "expiresOn" });
   const blocked = Boolean(blockedReason);
+  // «Criterio · Decisiones» (161): el foco arranca en «Cancelar».
+  const cancel = useRef<HTMLButtonElement>(null);
 
   function rejected(error: unknown) {
     if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return;
@@ -81,7 +83,8 @@ export function ReasonDialog<TData>({ title, description, confirmLabel, pendingL
   });
 
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}>
-    <DialogContent size="sm" showCloseButton={phoneCloseButton ? "phone" : false} onCloseAutoFocus={restoreFocus}>
+    <DialogContent size="sm" showCloseButton={phoneCloseButton ? "phone" : false} onCloseAutoFocus={restoreFocus}
+      onOpenAutoFocus={(event) => { event.preventDefault(); cancel.current?.focus(); }}>
       <DialogHeader><DialogTitle>{title}</DialogTitle></DialogHeader>
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
@@ -101,7 +104,7 @@ export function ReasonDialog<TData>({ title, description, confirmLabel, pendingL
           <FormError message={actionErrorMessage(failure, t)} />
         </DialogBody>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={close}>{t("actions.cancel")}</Button>
+          <Button ref={cancel} type="button" variant="outline" onClick={close}>{t("actions.cancel")}</Button>
           <Button type="submit" variant={destructive ? "destructive" : "default"} disabled={blocked} pending={action.isPending} pendingLabel={pendingLabel}>{confirmLabel}</Button>
         </DialogFooter>
       </form>

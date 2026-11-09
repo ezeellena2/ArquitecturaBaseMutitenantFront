@@ -384,7 +384,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
       excludedCompanyIds={[...assignedCompanyIds]} companies={activeCompanies.filter((company) => !assignedCompanyIds.has(company.id))} roles={companyRoles} pending={save.isPending} error={dialogError}
       returnFocusTo={companyDialog.returnFocusTo} onEdit={() => setDialogFailure(undefined)} onClose={closeCompanyDialog}
       onSave={(assignment) => saveCompanyDialog(companyDialog, assignment)} /> : null}
-    <ConfirmDialog open={confirmation !== null} onOpenChange={(open) => { if (!open) setConfirmAction(null); }} destructive
+    <ConfirmDialog open={confirmation !== null} onOpenChange={(open) => { if (!open) setConfirmAction(null); }} destructive={confirmAction !== "disable"}
       title={confirmation?.title ?? ""} description={confirmation?.description} confirmLabel={confirmation?.label ?? ""}
       pending={confirmation?.pending ?? false} pendingLabel={confirmation?.pendingLabel}
       onConfirm={() => confirmation?.run()} />

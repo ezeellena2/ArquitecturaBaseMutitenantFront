@@ -85,6 +85,13 @@ describe("ReasonDialog (E5)", () => {
     expect(mutationFn).not.toHaveBeenCalled();
   });
 
+  // «Criterio · Decisiones» (161): el foco arranca en «Cancelar».
+  it("arranca con el foco en «Cancelar»", async () => {
+    dialog();
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Cancelar" })).toHaveFocus());
+  });
+
   it("Escape cierra y devuelve el foco al botón que lo abrió", async () => {
     function Harness() {
       const [open, setOpen] = useState(false);

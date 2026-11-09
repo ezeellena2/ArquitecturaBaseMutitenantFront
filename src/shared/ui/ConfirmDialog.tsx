@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Button } from "./button";
@@ -26,7 +27,9 @@ interface ConfirmDialogProps {
   pendingLabel?: string;
 }
 
-/// Diálogo de confirmación para acciones que no se pueden deshacer.
+/// Diálogo de confirmación para acciones que no se pueden deshacer. «Criterio · Decisiones» (161): el título nombra lo que
+/// se decide («¿Dar de baja a Tomás Acosta?»), va sin ✕ y el foco arranca en «Cancelar», así Enter no confirma sin
+/// querer. La confirmación es la principal; el rojo lleno (`destructive`) queda para lo que destruye.
 export function ConfirmDialog({
   open,
   onOpenChange,
@@ -43,11 +46,13 @@ export function ConfirmDialog({
   const { t } = useTranslation();
   const restoreFocus = useRestoreFocusOnClose(open, returnFocusTo);
   const waits = pending !== undefined;
+  const cancel = useRef<HTMLButtonElement>(null);
 
   return (
     <Dialog open={open} onOpenChange={(next) => { if (!pending) onOpenChange(next); }}>
       <DialogContent
-        showCloseButton={!destructive}
+        showCloseButton={false}
+        onOpenAutoFocus={(event) => { event.preventDefault(); cancel.current?.focus(); }}
         onCloseAutoFocus={restoreFocus}
         size="sm"
       >
@@ -58,7 +63,7 @@ export function ConfirmDialog({
             compu y 8/20/16 en la hoja del teléfono. */}
         {description ? <DialogDescription className="p-5 max-md:pt-2 max-md:pb-4">{description}</DialogDescription> : null}
         <DialogFooter>
-          <Button type="button" variant="outline" disabled={pending} onClick={() => onOpenChange(false)}>
+          <Button ref={cancel} type="button" variant="outline" disabled={pending} onClick={() => onOpenChange(false)}>
             {cancelLabel ?? t("actions.cancel")}
           </Button>
           <Button

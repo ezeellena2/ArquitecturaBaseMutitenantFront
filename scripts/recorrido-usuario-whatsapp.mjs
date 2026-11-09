@@ -369,7 +369,7 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
       assert.equal(reply.status(), 200); pending = selectRecovery((await reply.json()).items, phone, recovered); assert.equal(pending.status, "Pending");
       await recoveryRow(platformPage, pending).getByRole("button", { name: /^Acciones de/ }).click();
       await platformPage.getByRole("menuitem", { name: "Revisar", exact: true }).click();
-      await platformPage.getByRole("dialog", { name: "Revisar el pedido", exact: true }).getByRole("textbox", { name: /Motivo/ }).fill("Verificación humana del recorrido aislado.");
+      await platformPage.getByRole("dialog", { name: /^Revisar el pedido de / }).getByRole("textbox", { name: /Motivo/ }).fill("Verificación humana del recorrido aislado.");
       return "Abrió Pending y completó el motivo con la versión del GET original.";
     }, platformPage);
     await step("22", async () => {

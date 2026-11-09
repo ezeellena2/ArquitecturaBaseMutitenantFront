@@ -56,6 +56,7 @@ export function ReviewRecoveryDialog({ recovery, returnFocusTo, onClose, onResol
   useRecentAuthenticationPurpose(t(`platformRecoveries:reauth.${submittedAction === "reject" ? "reject" : "approve"}${recovery.accountName ? "" : "Unnamed"}`, { name: recovery.accountName ?? "" }));
   const [operation, setOperation] = useState<RecoveryOperation | null>(null);
   const pending = recovery.status === "Pending"; const hasAccount = Boolean(recovery.accountId); const base = useRef(recovery.version); const draft = useRef(0); const choice = useRef<RecoveryAction | null>(null);
+  const cancel = useRef<HTMLButtonElement>(null);
   const schema = useMemo(() => z.object({ reason: z.string().trim().min(1, t("common:reasonDialog.reasonRequired")) }), [t]);
   const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: { reason: "" }, reValidateMode: "onSubmit" });
   const { getValues, setError } = form; const { failure, fail, clear, close } = useDialogFailure(onClose, recoveriesQueryRoot, recoveryStateConflictCodes);
@@ -87,9 +88,14 @@ export function ReviewRecoveryDialog({ recovery, returnFocusTo, onClose, onResol
       { key: "reason", label: t("common:reasonDialog.reason"), value: recovery.reason || <EmptyValue /> },
     ] : []),
   ];
-  return <Dialog open onOpenChange={(open) => { if (!open) close(); }}><DialogContent onCloseAutoFocus={restoreFocus}>
+  // Tablero Recuperaciones («Criterio · Decisiones», 161): el título nombra el pedido (la cuenta o, si no hay, el método de
+  // antes), «Aprobar» es la principal, «Rechazar» la secundaria y el foco arranca en «Cancelar».
+  const requester = recovery.accountName || (recovery.previousMethodType === "Phone" && /^\+[1-9]\d{1,14}$/u.test(recovery.previousMethod)
+    ? format.formatPhone(recovery.previousMethod) : recovery.previousMethod);
+  return <Dialog open onOpenChange={(open) => { if (!open) close(); }}><DialogContent onCloseAutoFocus={restoreFocus}
+    onOpenAutoFocus={(event) => { if (!pending) return; event.preventDefault(); cancel.current?.focus(); }}>
     {operation ? <RecoveryMutationOwner key={operation.draft} operation={operation} meta={action.meta} execute={execute} /> : null}
-    <DialogHeader><DialogTitle>{t(pending ? "platformRecoveries:review.title" : "platformRecoveries:review.resolvedTitle")}</DialogTitle></DialogHeader>
+    <DialogHeader><DialogTitle>{t(pending ? "platformRecoveries:review.title" : "platformRecoveries:review.resolvedTitle", { name: requester })}</DialogTitle></DialogHeader>
     <form noValidate onSubmit={(event) => { event.preventDefault(); }} className="flex min-h-0 flex-col">
       <DialogBody><DialogDescription>{t("platformRecoveries:review.requested", { date: format.formatDateTime(recovery.createdAtUtc) })}</DialogDescription>
         <DetailGrid items={items} phone={phone} />
@@ -98,8 +104,8 @@ export function ReviewRecoveryDialog({ recovery, returnFocusTo, onClose, onResol
             <Textarea {...form.register("reason")} onChange={(event) => { void form.register("reason").onChange(event); draft.current++; setOperation(null); form.clearErrors("reason"); clear(); }} disabled={busy} />
           </FormField><FormError message={actionErrorMessage(failure, t)} /></> : null}
       </DialogBody><DialogFooter>{pending ? <>
-        <Button type="button" variant="outline" onClick={close}>{t("common:actions.cancel")}</Button>
-        <Button type="button" variant="destructive" disabled={busy} pending={busy && submittedAction === "reject"} pendingLabel={t("platformRecoveries:actions.rejecting")} onClick={() => { void submit("reject")(); }}>{t("platformRecoveries:actions.reject")}</Button>
+        <Button ref={cancel} type="button" variant="outline" onClick={close}>{t("common:actions.cancel")}</Button>
+        <Button type="button" variant="outline" disabled={busy} pending={busy && submittedAction === "reject"} pendingLabel={t("platformRecoveries:actions.rejecting")} onClick={() => { void submit("reject")(); }}>{t("platformRecoveries:actions.reject")}</Button>
         <Button type="button" disabled={busy || !hasAccount} pending={busy && submittedAction === "approve"} pendingLabel={t("platformRecoveries:actions.approving")} onClick={() => { void submit("approve")(); }}>{t("platformRecoveries:actions.approve")}</Button>
       </> : <Button type="button" variant="outline" onClick={close}>{t("common:actions.close")}</Button>}</DialogFooter>
     </form>

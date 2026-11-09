@@ -125,7 +125,7 @@ async function reviewRecovery(page, previous, next, action, fixture) {
   await target.getByRole("button", { name: /^Acciones de/ }).click();
   detail("abrir revisión humana");
   await page.getByRole("menuitem", { name: "Revisar", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Revisar el pedido", exact: true });
+  const dialog = page.getByRole("dialog", { name: /^Revisar el pedido de / });
   detail("completar motivo humano");
   await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Verificación humana del recorrido aislado.");
   detail("aviso real con formulario abierto y repetición sin duplicar");

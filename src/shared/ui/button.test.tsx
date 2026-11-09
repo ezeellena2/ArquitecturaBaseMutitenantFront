@@ -106,11 +106,12 @@ describe("Button · Criterio · Botones", () => {
     expect(button).not.toBeDisabled();
     expect(button).toHaveClass("opacity-50");
     expect(button).toHaveAccessibleDescription("Guardá los cambios antes de publicar.");
+    // Primero el mouse encima: el tooltip dice el motivo. Un clic de Radix lo cierra, así que va después.
+    await user.hover(button);
+    expect((await screen.findByRole("tooltip")).textContent).toContain("Guardá los cambios antes de publicar.");
     await user.click(button);
     expect(onClick).not.toHaveBeenCalled();
     expect(toast).not.toHaveBeenCalled();
-    await user.hover(button);
-    expect((await screen.findByRole("tooltip")).textContent).toContain("Guardá los cambios antes de publicar.");
   });
 
   it("en el teléfono, tocar un botón apagado muestra su motivo en la franja oscura de abajo", async () => {

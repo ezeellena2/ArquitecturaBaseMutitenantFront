@@ -182,7 +182,7 @@ export function UsersPage() {
 
     {inviteOpen ? <InviteUserDialog onClose={() => setInviteOpen(false)} onInvited={invalidate} /> : null}
 
-    <ConfirmDialog open={confirmAction !== null} onOpenChange={(open) => { if (!open) { setConfirmAction(null); setTarget(null); } }} destructive={confirmAction !== null}
+    <ConfirmDialog open={confirmAction !== null} onOpenChange={(open) => { if (!open) { setConfirmAction(null); setTarget(null); } }} destructive={confirmAction === "remove" || confirmAction === "revoke"}
       title={target ? t(`users:confirm.${confirmAction}`, { name: target.displayName || userContactText(target, format), email: userContactText(target, format), organization: organizationName }) : ""}
       description={confirmAction ? t(`users:confirm.${confirmAction}Description`, { organization: organizationName }) : undefined}
       confirmLabel={confirmAction ? t(`users:confirm.${confirmAction}Confirm`) : ""}

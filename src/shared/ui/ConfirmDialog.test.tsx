@@ -153,6 +153,19 @@ describe("ConfirmDialog", () => {
     expect(screen.queryByRole("button", { name: "Cerrar" })).not.toBeInTheDocument();
   });
 
+  // «Criterio · Decisiones» (161): decidir a propósito. El título nombra lo que se decide, la confirmación va sin ✕ y el
+  // foco arranca en «Cancelar», así Enter no confirma sin querer.
+  it("arranca con el foco en «Cancelar» y va sin ✕", async () => {
+    const onConfirm = vi.fn();
+    renderWithProviders(<ConfirmDialog open onOpenChange={vi.fn()} title="¿Dar de baja a Tomás Acosta?" confirmLabel="Dar de baja" onConfirm={onConfirm} />);
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Cancelar" })).toHaveFocus());
+    expect(screen.getByRole("dialog", { name: "¿Dar de baja a Tomás Acosta?" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Cerrar" })).not.toBeInTheDocument();
+    await userEvent.keyboard("{Enter}");
+    expect(onConfirm).not.toHaveBeenCalled();
+  });
+
   it("keeps the default variant when the confirmation is not destructive", () => {
     renderWithProviders(
       <ConfirmDialog

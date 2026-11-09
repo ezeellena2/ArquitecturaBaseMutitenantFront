@@ -300,7 +300,7 @@ async function openRecovery(h, page, next, previous) {
   assert.equal(pending.status, "Pending");
   await supplementRecoveryRow(page, pending).getByRole("button", { name: /^Acciones de/ }).click();
   await page.getByRole("menuitem", { name: "Revisar", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Revisar el pedido", exact: true }); await dialog.waitFor();
+  const dialog = page.getByRole("dialog", { name: /^Revisar el pedido de / }); await dialog.waitFor();
   return { pending, dialog };
 }
 

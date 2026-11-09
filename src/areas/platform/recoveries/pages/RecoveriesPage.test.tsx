@@ -83,6 +83,12 @@ describe("Recuperaciones de Plataforma", () => {
     const user = userEvent.setup(); const { container } = renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" }); const dialog = await open(user);
     expect(within(dialog).getByText("Pedido del 27/09/2026 10:20")).toBeVisible(); expect(within(dialog).getByText("Entraba con")).toBeVisible(); expect(within(dialog).getByText("pa•••@gmail.com · verificado")).toBeVisible();
     expect(within(dialog).getByText("Si lo aprobás, el método nuevo pasa a ser el principal de la cuenta y le avisamos a la persona.")).toBeVisible();
+    // Tablero Recuperaciones (161): el título nombra el pedido, «Aprobar» es la principal, «Rechazar» la secundaria y el
+    // foco arranca en «Cancelar».
+    expect(dialog).toHaveAccessibleName(/^Revisar el pedido de .+/);
+    expect(within(dialog).getByRole("button", { name: "Aprobar" })).toHaveAttribute("data-variant", "default");
+    expect(within(dialog).getByRole("button", { name: "Rechazar" })).toHaveAttribute("data-variant", "outline");
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Cancelar" })).toHaveFocus());
     for (const label of ["Aprobar", "Rechazar"]) { await user.click(within(dialog).getByRole("button", { name: label })); expect(await within(dialog).findByText("Escribí el motivo.")).toBeVisible(); }
     expect(await axe(container)).toHaveNoViolations();
   });
