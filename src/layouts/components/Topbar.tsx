@@ -3,16 +3,22 @@ import { AccessMenu } from "@/tenancy/AccessMenu";
 
 interface TopbarProps {
   breadcrumbs?: ReactNode;
+  /** La campana (tableros Campana y Campana-Plat): entre las migas y tu menú. */
+  bell?: ReactNode;
 }
 
 /// La barra de arriba de la compu. En el teléfono no existe: la app lleva su barra con el título (tableros M-*).
-export function Topbar({ breadcrumbs }: TopbarProps) {
+export function Topbar({ breadcrumbs, bell }: TopbarProps) {
   return (
     // «Criterio · Marco» (lienzo v104): la barra arena con las migas a la izquierda y tu menú a la derecha, con 16 de
-    // margen. Nada más: sin ☰. El menú lateral se achica con la flecha redonda de su borde (`Sidebar`).
+    // margen; la campana, a 6 antes de tu menú (`.w-cmp-env`). Nada más: sin ☰. El menú lateral se achica con la flecha
+    // redonda de su borde (`Sidebar`).
     <header className="flex h-13 items-center justify-between border-b border-[var(--lado-borde)] bg-[var(--lado)] px-4 text-[var(--t1)]">
       {breadcrumbs ? <div className="min-w-0">{breadcrumbs}</div> : <span />}
-      <AccessMenu />
+      <div className="flex shrink-0 items-center gap-1.5">
+        {bell}
+        <AccessMenu />
+      </div>
     </header>
   );
 }

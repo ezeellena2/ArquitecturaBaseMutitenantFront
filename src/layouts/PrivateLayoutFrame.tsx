@@ -8,6 +8,7 @@ import { useIsSigningOut } from "@/auth/signOutStatus";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { useLocalStorage } from "@/shared/hooks/useLocalStorage";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { AppBarBellProvider } from "@/shared/ui/app/AppBar";
 import { AppChromeProvider, type AppChrome } from "@/shared/ui/app/AppChrome";
 import { BottomNav, BottomNavBadge } from "@/shared/ui/app/BottomNav";
 import { AppHomeIcon } from "@/shared/ui/icons";
@@ -15,6 +16,8 @@ import { AdminPanel } from "./components/AdminPanel";
 import { Breadcrumbs } from "./components/Breadcrumbs";
 import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
+import { NotificationBell, PhoneNotificationBell } from "./notifications/NotificationBell";
+import { notificationsPath, platformNotificationsPath } from "./notifications/paths";
 import { findNavigationPanelEntry, navigationPanel, type NavigationPanelKey } from "./navigation/administration";
 import type { NavigationConfig } from "./navigation/types";
 import { visibleNavigation } from "./navigation/visible";
@@ -79,10 +82,12 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
     homePath: home?.path ?? navigation.breadcrumbRoot?.path ?? null,
     markHome,
   }), [isMobile, navigation.moreTo, navigation.breadcrumbRoot?.path, routePanel, onHome, onMore, bottomSection, panelEntry, context?.title, hideBottomNav, hideActiveSection, home?.path, markHome, t]);
+  // Tableros M-Campana*: en el teléfono, la campana va en la barra de cada pantalla de primer nivel y lleva a «Avisos».
+  const phoneBell = useMemo(() => <PhoneNotificationBell to={scope === "platform" ? platformNotificationsPath : notificationsPath} />, [scope]);
 
   if (isSigningOut) return <SessionStatusPage status="closing" />;
 
-  if (isMobile) return <AppChromeProvider value={chrome}>
+  if (isMobile) return <AppChromeProvider value={chrome}><AppBarBellProvider value={phoneBell}>
     <div className="flex h-svh flex-col bg-[var(--lado-activo)]">
       <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">{children ?? <Outlet />}</main>
       {navigation.moreTo && !bottomNavHidden ? <BottomNav label={t("navigation.sections")} items={[
@@ -93,7 +98,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
         { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: account?.avatarInitials, avatarMuted: account?.avatarMuted, active: !(bottomSections ? bottomSection || onHome : onHome) && !activeSectionHidden },
       ]} /> : null}
     </div>
-  </AppChromeProvider>;
+  </AppBarBellProvider></AppChromeProvider>;
 
   return <AppChromeProvider value={chrome}>
     <div className="flex h-svh print:h-auto">
@@ -114,7 +119,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
         currentLink={panelEntry?.panel === openPanel ? panelEntry.link : null}
         onClose={() => setToggledPanel({ pathname, panel: null })} />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <Topbar breadcrumbs={<Breadcrumbs navigation={navigation} permissions={permissions} />} />
+        <Topbar breadcrumbs={<Breadcrumbs navigation={navigation} permissions={permissions} />} bell={<NotificationBell />} />
         <main className="relative min-h-0 flex-1 scroll-pt-14 overflow-y-auto bg-[var(--fondo)] print:overflow-visible">{children ?? <Outlet />}</main>
       </div>
     </div>

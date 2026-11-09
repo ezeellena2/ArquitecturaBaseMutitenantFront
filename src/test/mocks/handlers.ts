@@ -59,6 +59,8 @@ export const handlers: RequestHandler[] = [
   // La portada anónima consulta el directorio; cada test con empresas reemplaza esta proyección vacía.
   http.get("/api/directory", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
   http.get("/api/home", () => HttpResponse.json({ organization: null, companies: [], pending: [] })),
+  // La campana de los tres accesos, como la responde el back hasta la B1: sin avisos. Cada test con avisos la reemplaza.
+  http.get("/api/notifications", () => HttpResponse.json({ items: [], unread: 0 })),
   // Como el back de hoy, sin el módulo de WhatsApp: se entra con correo y con Google.
   http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "google", countries: [] }] })),
   http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [

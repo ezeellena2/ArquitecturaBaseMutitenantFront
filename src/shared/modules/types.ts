@@ -1,5 +1,6 @@
+import type { TFunction } from "i18next";
 import type { ComponentType, ReactNode } from "react";
-import type { MeResponse, PendingItem, PlatformFeatureResponse, PlatformTenantDetailResponse } from "@/shared/api/types";
+import type { MeResponse, NotificationItem, PendingItem, PlatformFeatureResponse, PlatformTenantDetailResponse } from "@/shared/api/types";
 import type { RowAction } from "@/shared/ui/RowActions";
 import type { IconComponent } from "@/shared/ui/icons";
 import type { Access } from "@/tenancy/access";
@@ -94,6 +95,23 @@ export interface ModulePendingKind {
   /** La fila: lo que dice y adónde lleva su acción. */
   describe: (item: PendingItem) => { title: string; detail?: string; to: string };
 }
+
+/**
+ * El tono de un aviso de la campana (tableros Campana-*, `.cmp-ic`): lo que espera a alguien, con el reloj, o lo que
+ * falló en segundo plano, con el círculo y el «!».
+ */
+export type NotificationTone = "waiting" | "failed";
+
+/**
+ * Cómo se lee un aviso de la campana que aporta el módulo (`NotificationItem.kind`, «WhatsApp rechazó la versión 4 de
+ * Visita a cliente»). La campana busca primero en los del núcleo y después en los de los módulos instalados; un `kind`
+ * que nadie describe no se muestra.
+ */
+export interface ModuleNotificationKind {
+  kind: string;
+  /** El texto del aviso con sus `params`, en el idioma de quien mira, y su tono. Adónde lleva lo dice el `link` del aviso. */
+  describe: (item: NotificationItem, t: TFunction) => { text: string; tone: NotificationTone };
+}
 export interface ModuleRegistration {
   id: string;
   /** Textos propios, también enums aportados al namespace compartido. */
@@ -114,6 +132,8 @@ export interface ModuleRegistration {
   pageActions?: { readonly users?: readonly ModulePageAction[] };
   /** Lo que el módulo suma al Inicio de la organización: sus tarjetas y sus tipos de «Para resolver». */
   businessHome?: { readonly cards?: readonly ModuleHomeCard[]; readonly pending?: readonly ModulePendingKind[] };
+  /** Cómo se leen los avisos que el módulo suma a la campana, en los tres accesos (base de la 12). */
+  notifications?: readonly ModuleNotificationKind[];
 }
 
 export interface ModuleOrganizationUi {

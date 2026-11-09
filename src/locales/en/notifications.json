@@ -1,0 +1,16 @@
+{
+  "title": "Notifications",
+  "bell": "Notifications: {{n}}",
+  "back": "Back",
+  "empty": "No notifications.",
+  "loadError": "We couldn't load your notifications.",
+  "unreadMark": ", unread",
+  "newVersion": "A new version of the system is available",
+  "kinds": {
+    "personalLoginMethod": "Add a personal email or your WhatsApp so you don't lose your account if you leave the company",
+    "organizationPending": "{{name}} is waiting for approval",
+    "organizationPendingUnnamed": "An organization is waiting for approval",
+    "recoveryRequested": "{{name}} asked to recover their account",
+    "recoveryRequestedUnnamed": "Someone asked to recover their account"
+  }
+}

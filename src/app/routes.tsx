@@ -15,6 +15,7 @@ import { SiteLayout } from "@/layouts/SiteLayout";
 import { AppErrorPage } from "@/layouts/AppErrorBoundary";
 import { AppShell } from "@/layouts/AppShell";
 import { businessRoutes } from "@/layouts/navigation/business";
+import { notificationsPath, platformNotificationsPath } from "@/layouts/notifications/paths";
 import { platformNavigation, platformOrganizationsRoute, platformRoutes } from "@/layouts/navigation/platform";
 import type { AppRoute } from "@/layouts/navigation/types";
 import { ForbiddenRoute, HomeRoute, NotFoundRoute, PlatformHomeRoute } from "./RouteViews";
@@ -126,6 +127,8 @@ export const routes: RouteObject[] = [
       { path: "/cuenta", lazy: lazyPage(() => import("@/areas/personal/account/pages/AccountPage"), (page) => () => <AccountLayout><page.AccountPage /></AccountLayout>), errorElement: <AppErrorPage /> },
       // Tableros M-Mas-Personal y M-WA-Menu: la pestaña «Más» del teléfono, en cualquiera de los accesos.
       { path: "/mas", lazy: lazyPage(() => import("@/layouts/MorePage"), (page) => () => <AccountLayout><page.MorePage /></AccountLayout>), errorElement: <AppErrorPage /> },
+      // Tableros M-Campana y M-Campana-Personal: «Avisos», adonde lleva la campana del teléfono, como «Más».
+      { path: notificationsPath, lazy: lazyPage(() => import("@/layouts/notifications/NotificationsPage"), (page) => () => <AccountLayout><page.NotificationsPage /></AccountLayout>), errorElement: <AppErrorPage /> },
       { element: <AccessRoute access="business" />, children: [
         { path: homeOf("business"), element: <BusinessLayout />, children: [
           { index: true, element: <BusinessHomePage /> },
@@ -138,6 +141,8 @@ export const routes: RouteObject[] = [
           ...createPlatformPageRoutes(platformPages),
           ...createModulePageRoutes("platform"),
           { path: platformNavigation.moreTo, lazy: lazyPage(() => import("@/layouts/MorePage"), (page) => page.MorePage), errorElement: <AppErrorPage /> },
+          // Tablero M-Campana-Plat: «Avisos» de Plataforma, como su «Más».
+          { path: platformNotificationsPath, lazy: lazyPage(() => import("@/layouts/notifications/NotificationsPage"), (page) => page.NotificationsPage), errorElement: <AppErrorPage /> },
         ] },
       ] },
       ] },

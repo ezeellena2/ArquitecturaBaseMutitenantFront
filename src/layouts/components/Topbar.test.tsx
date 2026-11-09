@@ -20,4 +20,13 @@ describe("Topbar", () => {
     expect(screen.getByRole("button", { name: "Cuenta" })).toBeVisible();
     expect(screen.getAllByRole("button")).toHaveLength(1);
   });
+
+  // Tableros Campana y Campana-Plat (.w-cmp-env): la campana va después de las migas y antes de tu menú.
+  it("lleva la campana entre las migas y tu menú", () => {
+    render(<Topbar breadcrumbs={<span>{"Inicio"}</span>} bell={<button type="button">{"Avisos"}</button>} />);
+
+    expect(screen.getAllByRole("button").map((button) => button.textContent)).toEqual(["Avisos", "Cuenta"]);
+    expect(screen.getByText("Inicio").compareDocumentPosition(screen.getByRole("button", { name: "Avisos" })))
+      .toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
 });

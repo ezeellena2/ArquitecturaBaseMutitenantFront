@@ -5,9 +5,10 @@ import { ForbiddenPage } from "@/areas/public/errors/pages/ForbiddenPage";
 import { OrganizationUnavailablePage } from "@/areas/public/errors/pages/OrganizationUnavailablePage";
 import { clearAccessError, useAccessError } from "@/shared/api/accessErrorStore";
 import { AppErrorBoundary } from "./AppErrorBoundary";
-import { NewVersionBanner } from "./components/NewVersionBanner";
 import { OfflineBanner } from "./components/OfflineBanner";
+import { NewVersionProvider, type NewVersion } from "./notifications/newVersion";
 import { AppNoticesProvider } from "@/shared/ui/app/AppNotices";
+import { nowUtc } from "@/shared/time/serverClock";
 import { BusinessLayout } from "./BusinessLayout";
 import { useDeletionRequestedDate } from "@/auth/deletionRequestStatus";
 import { DeletionRequestedPage } from "@/areas/personal/account/components/DeletionRequestedPage";
@@ -18,15 +19,17 @@ interface AppShellProps {
   onReload?: () => void;
 }
 
+const reloadPage = () => window.location.reload();
+
 /// Armazón transversal de E1. Los estados del acceso y la organización se conectan en E3.
-export function AppShell({ children, onReload = () => window.location.reload() }: AppShellProps) {
+export function AppShell({ children, onReload = reloadPage }: AppShellProps) {
   const auth = useContext(AuthContext);
   const accessError = useAccessError();
   const deletionDate = useDeletionRequestedDate();
   const { pathname } = useLocation();
   const previousPathname = useRef(pathname);
   const [offline, setOffline] = useState(() => !navigator.onLine);
-  const [newVersion, setNewVersion] = useState(false);
+  const [newVersionAt, setNewVersionAt] = useState<string | null>(null);
   // Tablero M-Avisos: en el teléfono, la barra de la pantalla reclama los avisos y los pone debajo de ella.
   const [hosts, setHosts] = useState(0);
   const claim = useCallback(() => {
@@ -45,8 +48,9 @@ export function AppShell({ children, onReload = () => window.location.reload() }
     const onOffline = () => setOffline(true);
     const onOnline = () => setOffline(false);
     const onPreloadError = () => {
-      // Vite propaga el fallo de precarga; la persona decide cuándo recargar.
-      setNewVersion(true);
+      // Vite propaga el fallo de precarga. La versión nueva se avisa en la campana, sin franja, y la persona decide
+      // cuándo recargar: al abrir el aviso.
+      setNewVersionAt((detected) => detected ?? nowUtc());
     };
 
     window.addEventListener("offline", onOffline);
@@ -59,13 +63,9 @@ export function AppShell({ children, onReload = () => window.location.reload() }
     };
   }, []);
 
-  const notices = useMemo(() => ({
-    notices: offline || newVersion ? <>
-      {offline ? <OfflineBanner /> : null}
-      {newVersion ? <NewVersionBanner onUpdate={onReload} /> : null}
-    </> : null,
-    claim,
-  }), [offline, newVersion, onReload, claim]);
+  const notices = useMemo(() => ({ notices: offline ? <OfflineBanner /> : null, claim }), [offline, claim]);
+  const newVersion = useMemo<NewVersion | null>(() => newVersionAt ? { detectedAtUtc: newVersionAt, reload: onReload } : null,
+    [newVersionAt, onReload]);
 
   const access = parseAccess(auth?.user?.profile.access) ?? "consumer";
   const code = accessError?.code;
@@ -81,11 +81,13 @@ export function AppShell({ children, onReload = () => window.location.reload() }
         : children ?? <Outlet />;
 
   return (
-    <AppNoticesProvider value={notices}>
-      <div className="flex min-h-screen flex-col">
-        {hosts === 0 ? <div className="sticky top-0 z-50">{notices.notices}</div> : null}
-        <div className="min-h-0 flex-1"><AppErrorBoundary onReload={onReload}>{content}</AppErrorBoundary></div>
-      </div>
-    </AppNoticesProvider>
+    <NewVersionProvider value={newVersion}>
+      <AppNoticesProvider value={notices}>
+        <div className="flex min-h-screen flex-col">
+          {hosts === 0 ? <div className="sticky top-0 z-50">{notices.notices}</div> : null}
+          <div className="min-h-0 flex-1"><AppErrorBoundary onReload={onReload}>{content}</AppErrorBoundary></div>
+        </div>
+      </AppNoticesProvider>
+    </NewVersionProvider>
   );
 }

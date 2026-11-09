@@ -12,11 +12,13 @@ import { ApiError } from "@/shared/api/ApiError";
 import { api } from "@/shared/api/httpClient";
 import { publishAccessError, clearAccessError, getAccessError } from "@/shared/api/accessErrorStore";
 import { createQueryClient } from "@/shared/api/queryClient";
+import { FormatProvider } from "@/shared/format/useFormat";
 import i18n, { configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
 import { visualBusiness } from "@/test/mocks/currentUsers";
 import { AppBar } from "@/shared/ui/app/AppBar";
 import { AppShell } from "./AppShell";
+import { useNewVersion } from "./notifications/newVersion";
 
 beforeAll(async () => {
   await configureI18n([
@@ -66,17 +68,25 @@ describe("AppShell", () => {
     expect(screen.getByRole("status", { name: "Sin conexión" })).toBeInTheDocument();
   });
 
-  it("propaga el error de Vite y ofrece Actualizar sin recargar solo", async () => {
-    const onReload = renderShell();
+  // Base de la 12: la versión nueva se avisa en la campana, sin franja; la recarga es de la persona, al abrir el aviso.
+  it("propaga el error de Vite y le pasa la versión nueva a la campana, sin franja ni recarga sola", async () => {
+    const onReload = vi.fn();
+    function Bell() {
+      const version = useNewVersion();
+      return version ? <button type="button" onClick={version.reload}>{version.detectedAtUtc}</button> : null;
+    }
+    render(<I18nextProvider i18n={i18n}><MemoryRouter><AppShell onReload={onReload}><Bell /></AppShell></MemoryRouter></I18nextProvider>);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
     const event = new CustomEvent("vite:preloadError", { cancelable: true, detail: new Error("chunk") });
 
     act(() => window.dispatchEvent(event));
 
     expect(event.defaultPrevented).toBe(false);
-    expect(screen.getByRole("status", { name: /Hay una versión nueva/ })).toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^\d{4}-\d{2}-\d{2}T.*Z$/ })).toBeInTheDocument();
     expect(onReload).not.toHaveBeenCalled();
 
-    await userEvent.click(screen.getByRole("button", { name: "Actualizar" }));
+    await userEvent.click(screen.getByRole("button"));
     expect(onReload).toHaveBeenCalledOnce();
   });
 
@@ -191,9 +201,10 @@ describe("AppShell", () => {
     server.use(http.get("/api/me", () => HttpResponse.json(visualBusiness)));
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const auth = { isAuthenticated: true, user: { profile: { access: "business", tenant_id: "grupo-delta" } } } as unknown as AuthContextProps;
-    render(<I18nextProvider i18n={i18n}><AuthContext.Provider value={auth}><QueryClientProvider client={client}>
+    // El marco con sesión lleva la campana, que cuenta con los formatos de la app.
+    render(<I18nextProvider i18n={i18n}><AuthContext.Provider value={auth}><QueryClientProvider client={client}><FormatProvider>
       <MemoryRouter initialEntries={["/org"]}><AppShell><main>{"Contenido"}</main></AppShell></MemoryRouter>
-    </QueryClientProvider></AuthContext.Provider></I18nextProvider>);
+    </FormatProvider></QueryClientProvider></AuthContext.Provider></I18nextProvider>);
     act(() => publishAccessError(new ApiError(403, { code: "Authorization.Forbidden", organizationName: "Grupo Delta" })));
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
     expect(screen.getByRole("complementary", { name: "Navegación principal" })).toBeVisible();

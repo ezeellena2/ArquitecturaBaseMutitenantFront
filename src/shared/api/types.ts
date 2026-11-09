@@ -83,6 +83,9 @@ export type HomeOrganizationSummary = ApiSchemas["HomeOrganizationSummary"];
 export type HomeCompanyCard = ApiSchemas["HomeCompanyCard"];
 export type PendingItem = ApiSchemas["PendingItem"];
 export type PendingGroup = ApiSchemas["PendingGroup"];
+/** La campana (K1 de la base de la 12): los avisos de quien mira, en los tres accesos. */
+export type NotificationItem = ApiSchemas["NotificationItem"];
+export type NotificationListResponse = ApiSchemas["NotificationListResponse"];
 export type OrganizationInvitationIssuedResponse = ApiSchemas["OrganizationInvitationIssuedResponse"];
 export type UpdateOrganizationUserRequest = ApiSchemas["UpdateOrganizationUserHttpRequest"];
 export type ChangeOrganizationUserStatusRequest = ApiSchemas["ChangeOrganizationUserStatusHttpRequest"];

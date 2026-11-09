@@ -230,6 +230,12 @@ export async function installApiMocks(context, responses = [], userFixture, open
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ requestToken: "capture-antiforgery" }) });
       return;
     }
+    // La campana de los tres accesos (base de la 12), sin avisos, como el back hasta la B1. Un caso con avisos los manda
+    // en sus respuestas.
+    if (requestPath === "/api/notifications" && request.method() === "GET") {
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ items: [], unread: 0 }) });
+      return;
+    }
     await route.fulfill({
       status: 501, contentType: "application/problem+json",
       body: JSON.stringify({ code: "Capture.UnmockedRoute", traceId: "capture" }),

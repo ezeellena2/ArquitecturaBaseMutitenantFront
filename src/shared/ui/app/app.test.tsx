@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { House } from "lucide-react";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
-import { AppBar, AppIconButton } from "./AppBar";
+import { AppBar, AppBarBellProvider, AppIconButton } from "./AppBar";
 import { AppChromeProvider } from "./AppChrome";
 import { AppNoticesProvider } from "./AppNotices";
 import { BottomNav } from "./BottomNav";
@@ -94,7 +94,21 @@ describe("marco de app del teléfono", () => {
     expect(screen.getByRole("link", { name: /Delta S.A./ })).toHaveClass("min-h-14");
   });
 
-  // Tablero M-Avisos: lo que sigue pasando (sin conexión, versión nueva) va debajo de la barra de la pantalla.
+  // Tableros M-Cuentas, M-WA-Chats y M-Mas-Plat: la campana del marco va al final de la barra, solo sin ‹.
+  it("la barra lleva al final la campana del marco, salvo en una pantalla interna", () => {
+    const bell = <a href="/avisos">{"Avisos"}</a>;
+    const { rerender } = render(<MemoryRouter><AppBarBellProvider value={bell}>
+      <AppBar title="Cuentas" actions={<AppIconButton label="Buscar"><House /></AppIconButton>} />
+    </AppBarBellProvider></MemoryRouter>);
+    expect(screen.getByRole("button", { name: "Buscar" }).parentElement!.nextElementSibling).toBe(screen.getByRole("link", { name: "Avisos" }));
+
+    rerender(<MemoryRouter><AppBarBellProvider value={bell}>
+      <AppBar title="Usuarios" back={{ to: "/mas", label: "Volver a Más" }} />
+    </AppBarBellProvider></MemoryRouter>);
+    expect(screen.queryByRole("link", { name: "Avisos" })).not.toBeInTheDocument();
+  });
+
+  // Tablero M-Avisos: lo que sigue pasando (sin conexión) va debajo de la barra de la pantalla.
   it("la barra aloja debajo los avisos que siguen pasando", () => {
     const release = vi.fn();
     const claim = vi.fn(() => release);

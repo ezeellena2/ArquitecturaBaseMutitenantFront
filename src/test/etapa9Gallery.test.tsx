@@ -43,8 +43,10 @@ function mount(app: GalleryApp) {
       && (!item.afterResponse || completed.has(`${item.afterResponse.method} ${item.afterResponse.path}`))
       && Object.entries(item.query ?? {}).every(([key, value]) => url.searchParams.get(key) === value));
     if (!response) {
-      // Como el arnés: el catálogo de referencia y los métodos de ingreso los sirve el fixture común si el caso no los pisa.
-      if (url.pathname === "/api/reference-data" || url.pathname === "/api/auth/methods") return undefined;
+      // Como el arnés: el catálogo de referencia, los métodos de ingreso y la campana sin avisos los sirve el fixture común
+      // si el caso no los pisa.
+      if (url.pathname === "/api/reference-data" || url.pathname === "/api/auth/methods"
+        || (url.pathname === "/api/notifications" && request.method === "GET")) return undefined;
       missing.push(`${request.method} ${url.pathname}${url.search}`);
       return HttpResponse.json({ code: "Capture.UnmockedRoute" }, { status: 501 });
     }

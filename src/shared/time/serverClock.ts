@@ -21,6 +21,9 @@ export function now(): number {
   return anchor ? anchor.serverMs + Math.max(0, monotonicNow() - anchor.elapsedMs) : Date.now();
 }
 
+/** Ahora, en UTC con `Z`, del mismo reloj: la fecha de lo que anuncia el front por su cuenta (la versión nueva). */
+export function nowUtc(): string { return new Date(now()).toISOString(); }
+
 export function isPast(utcInstant: string): boolean { return parseUtcInstant(utcInstant).getTime() <= now(); }
 
 /** «En N días», redondeado como el tablero de invitación; el último medio día dice «Hoy». */

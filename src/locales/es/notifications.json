@@ -1,0 +1,16 @@
+{
+  "title": "Avisos",
+  "bell": "Avisos: {{n}}",
+  "back": "Volver",
+  "empty": "No hay avisos.",
+  "loadError": "No pudimos cargar los avisos.",
+  "unreadMark": ", sin leer",
+  "newVersion": "Hay una versión nueva del sistema",
+  "kinds": {
+    "personalLoginMethod": "Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa",
+    "organizationPending": "{{name}} espera aprobación",
+    "organizationPendingUnnamed": "Una organización espera aprobación",
+    "recoveryRequested": "{{name}} pidió recuperar su cuenta",
+    "recoveryRequestedUnnamed": "Una persona pidió recuperar su cuenta"
+  }
+}
