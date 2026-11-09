@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import { lazy, Suspense, type ComponentType } from "react";
 import type { LazyRouteFunction, RouteObject } from "react-router";
 import { Outlet } from "react-router";
 import { SessionRecovery } from "@/auth/SessionRecovery";
@@ -24,6 +24,7 @@ import { homeOf, loginPathOf } from "@/tenancy/access";
 import { siteOfHost } from "@/tenancy/publicSite";
 import { moduleComposition } from "./moduleComposition";
 import { ModuleRoutePage } from "@/shared/modules/ModuleRegistry";
+import { PageLoading } from "@/shared/ui/PageLoading";
 import type { ModuleRegistration } from "@/shared/modules/types";
 import type { Access } from "@/tenancy/access";
 
@@ -37,19 +38,30 @@ function lazyPage<TModule>(load: () => Promise<TModule>, page: (module: TModule)
   return async () => ({ Component: page(await load()) });
 }
 
+/// La pantalla de una ruta del marco (Organización y Plataforma), que se carga recién al entrar. Mientras llega su código,
+/// el marco muestra su banda con el título como bloque de carga y tres barras (`PageLoading`, 160): la pantalla no queda
+/// en blanco ni salta cuando llega.
+function lazyFramedPage<TModule>(load: () => Promise<TModule>, page: (module: TModule) => ComponentType): LazyRouteFunction<RouteObject> {
+  const Loaded = lazy(async () => ({ default: page(await load()) }));
+  function Component() {
+    return <Suspense fallback={<PageLoading />}><Loaded /></Suspense>;
+  }
+  return async () => ({ Component });
+}
+
 // La pantalla de cada ruta del manifiesto de la organización (salvo el Inicio, que se carga con el marco). El permiso,
 // el módulo y el camino salen del manifiesto: acá no se repiten.
 const businessPages: Record<Exclude<keyof typeof businessRoutes, "home">, LazyRouteFunction<RouteObject>> = {
-  users: lazyPage(() => import("@/areas/business/users/pages/UsersPage"), (page) => page.UsersPage),
-  user: lazyPage(() => import("@/areas/business/users/pages/UserDetailPage"), (page) => page.UserDetailPage),
-  roles: lazyPage(() => import("@/areas/business/roles/pages/RolesPage"), (page) => page.RolesPage),
-  newRole: lazyPage(() => import("@/areas/business/roles/pages/RoleEditorPage"), (page) => () => <page.RoleEditorPage mode="create" />),
-  role: lazyPage(() => import("@/areas/business/roles/pages/RoleEditorPage"), (page) => () => <page.RoleEditorPage mode="edit" />),
-  companies: lazyPage(() => import("@/areas/business/companies/pages/CompaniesPage"), (page) => page.CompaniesPage),
-  company: lazyPage(() => import("@/areas/business/companies/pages/CompanyDetailPage"), (page) => page.CompanyDetailPage),
-  settings: lazyPage(() => import("@/areas/business/settings/pages/SettingsPage"), (page) => page.SettingsPage),
-  publicPage: lazyPage(() => import("@/areas/business/public-page/pages/PublicPagePage"), (page) => page.PublicPagePage),
-  audit: lazyPage(() => import("@/areas/business/audit/pages/AuditPage"), (page) => page.AuditPage),
+  users: lazyFramedPage(() => import("@/areas/business/users/pages/UsersPage"), (page) => page.UsersPage),
+  user: lazyFramedPage(() => import("@/areas/business/users/pages/UserDetailPage"), (page) => page.UserDetailPage),
+  roles: lazyFramedPage(() => import("@/areas/business/roles/pages/RolesPage"), (page) => page.RolesPage),
+  newRole: lazyFramedPage(() => import("@/areas/business/roles/pages/RoleEditorPage"), (page) => () => <page.RoleEditorPage mode="create" />),
+  role: lazyFramedPage(() => import("@/areas/business/roles/pages/RoleEditorPage"), (page) => () => <page.RoleEditorPage mode="edit" />),
+  companies: lazyFramedPage(() => import("@/areas/business/companies/pages/CompaniesPage"), (page) => page.CompaniesPage),
+  company: lazyFramedPage(() => import("@/areas/business/companies/pages/CompanyDetailPage"), (page) => page.CompanyDetailPage),
+  settings: lazyFramedPage(() => import("@/areas/business/settings/pages/SettingsPage"), (page) => page.SettingsPage),
+  publicPage: lazyFramedPage(() => import("@/areas/business/public-page/pages/PublicPagePage"), (page) => page.PublicPagePage),
+  audit: lazyFramedPage(() => import("@/areas/business/audit/pages/AuditPage"), (page) => page.AuditPage),
 };
 
 const businessPageRoutes: RouteObject[] = (Object.keys(businessPages) as (keyof typeof businessPages)[]).map((name) => {
@@ -63,15 +75,15 @@ export type PlatformPages = Partial<Record<keyof typeof platformRoutes, LazyRout
 
 // Las páginas se suman en T21–T23: una entrada del manifiesto sola no monta una pantalla futura.
 export const platformPages: PlatformPages = {
-  organizations: lazyPage(() => import("@/areas/platform/tenants/pages/OrganizationsPage"), (page) => page.OrganizationsPage),
-  organization: lazyPage(() => import("@/areas/platform/tenants/pages/OrganizationPage"), (page) => page.OrganizationPage),
-  accounts: lazyPage(() => import("@/areas/platform/accounts/pages/AccountsPage"), (page) => page.AccountsPage),
-  account: lazyPage(() => import("@/areas/platform/accounts/pages/AccountPage"), (page) => page.AccountPage),
-  recoveries: lazyPage(() => import("@/areas/platform/recoveries/pages/RecoveriesPage"), (page) => page.RecoveriesPage),
-  legal: lazyPage(() => import("@/areas/platform/legal/pages/LegalDocumentsPage"), (page) => page.LegalDocumentsPage),
-  newLegal: lazyPage(() => import("@/areas/platform/legal/pages/PublishLegalVersionPage"), (page) => page.PublishLegalVersionPage),
-  audit: lazyPage(() => import("@/areas/platform/audit/pages/SecurityAuditPage"), (page) => page.SecurityAuditPage),
-  settings: lazyPage(() => import("@/areas/platform/settings/pages/PlatformSettingsPage"), (page) => page.PlatformSettingsPage),
+  organizations: lazyFramedPage(() => import("@/areas/platform/tenants/pages/OrganizationsPage"), (page) => page.OrganizationsPage),
+  organization: lazyFramedPage(() => import("@/areas/platform/tenants/pages/OrganizationPage"), (page) => page.OrganizationPage),
+  accounts: lazyFramedPage(() => import("@/areas/platform/accounts/pages/AccountsPage"), (page) => page.AccountsPage),
+  account: lazyFramedPage(() => import("@/areas/platform/accounts/pages/AccountPage"), (page) => page.AccountPage),
+  recoveries: lazyFramedPage(() => import("@/areas/platform/recoveries/pages/RecoveriesPage"), (page) => page.RecoveriesPage),
+  legal: lazyFramedPage(() => import("@/areas/platform/legal/pages/LegalDocumentsPage"), (page) => page.LegalDocumentsPage),
+  newLegal: lazyFramedPage(() => import("@/areas/platform/legal/pages/PublishLegalVersionPage"), (page) => page.PublishLegalVersionPage),
+  audit: lazyFramedPage(() => import("@/areas/platform/audit/pages/SecurityAuditPage"), (page) => page.SecurityAuditPage),
+  settings: lazyFramedPage(() => import("@/areas/platform/settings/pages/PlatformSettingsPage"), (page) => page.PlatformSettingsPage),
 };
 
 /// Monta sólo las páginas disponibles, con el permiso del manifiesto. El inicio elige Gestión y luego Administración.

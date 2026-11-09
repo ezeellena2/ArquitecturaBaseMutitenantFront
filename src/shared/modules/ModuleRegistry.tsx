@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { currentUserQueryKey, useCurrentUser } from "@/auth/useCurrentUser";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
+import { PageLoading } from "@/shared/ui/PageLoading";
 import { homeOf, type Access } from "@/tenancy/access";
 import type { ModuleContentProps, ModuleOrganizationUiProps, ModuleRegistration } from "./types";
 import { ModuleRegistryContext, useModuleHome, useModuleRegistry } from "./useModules";
@@ -43,11 +44,12 @@ function AvailableModuleHome({ home, fallback, ...content }: ModuleContentProps 
 export function ModuleRoutePage({ moduleId, path }: { moduleId: string; path: string }) {
   const registry = useModuleRegistry();
   const { data: me } = useCurrentUser();
-  if (!me) return null;
+  // Mientras llegan la sesión o el código de la pantalla del módulo, su banda y sus barras (160).
+  if (!me) return <PageLoading />;
   const route = registry.find((module) => module.id === moduleId)?.routes.find((entry) => entry.path === path);
   const status = route ? route.access === me.access ? route.guard(me) : "forbidden" : "unavailable";
   if (!route || status === "unavailable") return <NotFoundPage homePath={homeOf(me.access)} />;
   if (status === "forbidden") return <ForbiddenPage homePath={homeOf(me.access)} />;
   const Page = route.Page;
-  return <Suspense fallback={null}><Page key={`${me.access}:${me.activeTenantId}:${me.id}`} me={me} /></Suspense>;
+  return <Suspense fallback={<PageLoading />}><Page key={`${me.access}:${me.activeTenantId}:${me.id}`} me={me} /></Suspense>;
 }

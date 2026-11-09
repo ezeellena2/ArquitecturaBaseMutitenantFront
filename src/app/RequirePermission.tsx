@@ -3,6 +3,7 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
 import { ForbiddenPage } from "@/areas/public/errors/pages/ForbiddenPage";
 import { NotFoundPage } from "@/areas/public/errors/pages/NotFoundPage";
+import { PageLoading } from "@/shared/ui/PageLoading";
 import type { AppRoute } from "@/layouts/navigation/types";
 import { homeOf } from "@/tenancy/access";
 
@@ -14,7 +15,8 @@ export function RequirePermission({ permission, companyPermission, platformPermi
   const { data: me } = useCurrentUser();
   const { can, canInCompany, canPlatform, hasFeature } = usePermissions();
   const { companyId } = useParams();
-  if (!me) return null;
+  // Mientras llegan los permisos, la página muestra su banda y sus barras (160), no un hueco.
+  if (!me) return <PageLoading />;
   if (feature && !hasFeature(feature)) return <NotFoundPage homePath={homeOf(me.access)} />;
   const inCompany = Boolean(companyPermission && companyId && canInCompany(companyId, companyPermission));
   if (permission && !can(permission) && !inCompany) return <ForbiddenPage homePath={homeOf(me.access)} />;

@@ -27,7 +27,7 @@ describe("Ruta real de Configuración", () => {
     server.use(http.get("/api/platform/settings", async () => { reads++; if (reads === 1) { await new Promise<void>((resolve) => { release = resolve; }); return HttpResponse.error(); } return HttpResponse.json(platformSettingsFixture); }));
     const user = userEvent.setup(); const page = renderRouteWithProviders("/plataforma/configuracion", { as: "platform-operator" });
     server.use(meHandlerFor({ ...platformOperator, effectivePermissions: { ...platformOperator.effectivePermissions, platform: ["platform.settings.manage"] } }));
-    await waitFor(() => expect(release).toBeDefined()); expect(screen.getByRole("status")).toHaveTextContent("Cargando"); await act(async () => { release?.(); });
+    await waitFor(() => expect(release).toBeDefined()); expect(screen.getByRole("status", { name: "Cargando…" })).toHaveAttribute("data-slot", "form-skeleton"); await act(async () => { release?.(); });
     await user.click(await screen.findByRole("button", { name: "Reintentar" })); expect(await screen.findByRole("textbox", { name: "Correo de ventas" })).toBeVisible(); expect(reads).toBe(2); expect(page.router.state.location.pathname).toBe("/plataforma/configuracion");
   });
 });

@@ -27,6 +27,7 @@ import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Input } from "@/shared/ui/input";
 import { phoneDraftFromE164, phoneE164FromDraft } from "@/shared/phone/phoneInput";
 import { PhoneField, type PhoneDraft } from "@/shared/ui/fields/PhoneField";
+import { FormSkeleton } from "@/shared/ui/FormSkeleton";
 import { Page } from "@/shared/ui/Page";
 import { PublicPageCard, publicPageBackdropClass } from "@/shared/ui/PublicPageCard";
 import { Section, SectionFields } from "@/shared/ui/Section";
@@ -97,7 +98,7 @@ export function PublicPagePage() {
 
   // «Criterio · Avisos» (Pantalla de error): la página no cargó y no hay nada que mostrar.
   if (page.isError && !page.data) return <LoadErrorPage onRetry={() => { void page.refetch(); }} />;
-  if (!page.data) return <Page title={t("publicPage:title")}><p role="status" className="text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (!page.data) return <Page title={t("publicPage:title")}><FormSkeleton zones={3} /></Page>;
   return <PublicPageEditor page={page.data} loadError={page.error} reload={async () => (await page.refetch()).data} />;
 }
 

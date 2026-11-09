@@ -5,15 +5,15 @@ import { configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { RequirePermission } from "./RequirePermission";
 
-const session = vi.hoisted(() => ({ access: "business", platform: [] as string[], organization: [] as string[], features: [] as string[], companies: {} as Record<string, string[]> }));
-vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: {
+const session = vi.hoisted(() => ({ loading: false, access: "business", platform: [] as string[], organization: [] as string[], features: [] as string[], companies: {} as Record<string, string[]> }));
+vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: session.loading ? undefined : {
   access: session.access, features: session.features, effectivePermissions: { platform: session.platform, organization: session.organization, companies: session.companies },
 } }) }));
 
 beforeAll(async () => {
   await configureI18n(referenceDataFixture().cultures);
 });
-afterEach(() => { session.access = "business"; session.platform = []; });
+afterEach(() => { session.loading = false; session.access = "business"; session.platform = []; });
 
 function open(path: string) {
   const router = createMemoryRouter([
@@ -36,6 +36,18 @@ function openCompany(path: string) {
 }
 
 describe("RequirePermission", () => {
+  // «Criterio · Marco» (160): mientras llegan los permisos, la página muestra su banda con el título como bloque de carga y
+  // tres barras, no un hueco que después salta.
+  it("mientras llegan los permisos, muestra la banda y las barras de la página", () => {
+    session.loading = true;
+    open("/org/reportes");
+
+    const loading = screen.getByRole("status", { name: "Cargando…" });
+    expect(loading).toHaveAttribute("data-slot", "page-loading");
+    expect(loading.querySelectorAll("[data-slot='page-loading-bar']")).toHaveLength(3);
+    expect(screen.queryByRole("heading", { name: "Reportes" })).not.toBeInTheDocument();
+  });
+
   it("el permiso de Plataforma se exige sin aceptar el mismo código de organización", () => {
     session.access = "platform";
     session.platform = [];

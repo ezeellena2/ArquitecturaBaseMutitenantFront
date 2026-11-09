@@ -31,6 +31,7 @@ import { CultureSelect } from "@/shared/ui/fields/CultureSelect";
 import { CurrencySelect } from "@/shared/ui/fields/CurrencySelect";
 import { TimeZoneSelect } from "@/shared/ui/fields/TimeZoneSelect";
 import { Input } from "@/shared/ui/input";
+import { FormSkeleton } from "@/shared/ui/FormSkeleton";
 import { Page } from "@/shared/ui/Page";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Section, SectionFields } from "@/shared/ui/Section";
@@ -71,7 +72,7 @@ export function SettingsPage() {
 
   // «Criterio · Avisos» (Pantalla de error): la configuración no cargó y no hay nada que mostrar.
   if (settings.isError && !settings.data) return <LoadErrorPage onRetry={() => { void settings.refetch(); }} />;
-  if (!settings.data) return <Page title={t("settings:title")}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (!settings.data) return <Page title={t("settings:title")}><FormSkeleton zones={3} /></Page>;
   return <SettingsEditor settings={settings.data} loadError={settings.error} reload={async () => (await settings.refetch()).data} />;
 }
 
