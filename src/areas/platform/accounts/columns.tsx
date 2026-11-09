@@ -23,10 +23,10 @@ function profiles(account: PlatformAccountResponse, t: TFunction): ReactNode {
 }
 export function accountPhoneRow(account: PlatformAccountResponse, t: TFunction, trailing: ReactNode): ReactNode {
   const invitation = isOperatorInvitation(account); const named = Boolean(account.displayName);
-  const status = <span className="inline-flex max-w-full items-center gap-1"><StatusBadge tones={accountStateTones} value={account.state} />{" · "}{invitation ? <>{t("platformAccounts:columns.expiresInline")} <DateText value={account.invitationExpiresAtUtc} kind="shortDate" /></> : profiles(account, t)}</span>;
+  const status = <span className="inline-flex max-w-full items-center gap-1"><StatusBadge tones={accountStateTones} value={account.state} />{" · "}{invitation ? <>{t("platformAccounts:columns.expiresInline")} <DateText value={account.invitationExpiresAtUtc} kind="date" /></> : profiles(account, t)}</span>;
   return <ListRow key={account.id} to={accountPath(account.id)}
     leading={<Avatar size="row" muted={!named} initials={named || invitation ? accountName(account).trim().charAt(0).toUpperCase() : "—"} />}
-    title={accountName(account) || <EmptyValue />} meta={invitation ? undefined : <DateText value={account.lastSignInAtUtc} kind="relative" />}
+    title={accountName(account) || <EmptyValue />} meta={invitation ? undefined : <DateText value={account.lastSignInAtUtc} kind="dateTime" />}
     lines={[named ? account.maskedPrimaryPhone || account.primaryEmail || "" : invitation ? t("platformAccounts:profiles.operator") : "", status]} trailing={trailing} />;
 }
 export function createAccountColumns(t: TFunction): Column<PlatformAccountResponse>[] {

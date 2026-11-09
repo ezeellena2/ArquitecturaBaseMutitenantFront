@@ -32,7 +32,6 @@
     "audit": {
       "title": "Audit",
       "short": "Audit",
-      "lastChange": "Last change {{when}}",
       "noChanges": "No changes yet"
     }
   },

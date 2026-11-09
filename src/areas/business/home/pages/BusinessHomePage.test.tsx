@@ -117,16 +117,16 @@ describe("BusinessHomePage", () => {
       expect(within(block).getByText("Invitada 0").closest("li")).not.toHaveTextContent("Usuarios");
     } else expect(within(block).getAllByRole("columnheader").map((header) => header.textContent)).toEqual(["Pendiente", "Estado", "Desde", "Acción"]);
   });
-  // Relevamiento de la consolidación (N17): con un cambio de otro día, «Último cambio 01/10/2026 10:42» no entraba en la
-  // tarjeta y la hora se cortaba. Hoy y ayer llevan la hora; otro día, la fecha sola.
-  it("la tarjeta Auditoría dice la fecha sola si el último cambio no es de hoy ni de ayer", async () => {
+  // Tablero Inicio-Org (base de la 12): la tarjeta de Auditoría dice cuándo fue el último cambio, con fecha y hora completas,
+  // nunca «hoy» ni «ayer».
+  it("la tarjeta Auditoría dice la fecha y la hora completas del último cambio", async () => {
     serveHome({ organization: { ...organization, audit: { lastChangeAtUtc: "2026-10-01T13:42:00Z" } }, companies: [], pending });
     renderRouteWithProviders("/org", { as: "visual-owner" });
 
     const areas = await screen.findByRole("navigation", { name: "Áreas de la organización" });
     const audit = within(areas).getByRole("link", { name: /^Auditoría/ });
-    expect(audit).toHaveTextContent("Último cambio 01/10/2026");
-    expect(audit).not.toHaveTextContent("10:42");
+    expect(audit).toHaveTextContent("01/10/2026 10:42");
+    expect(audit).not.toHaveTextContent("Último cambio");
   });
 
   it("tablero Inicio-Org: cada área con su dato real y «Para resolver» con el enlace que lo resuelve", async () => {
@@ -146,7 +146,8 @@ describe("BusinessHomePage", () => {
     // El punto del tono que registra el Inicio para el estado de la página (statusTones), como la Página pública.
     expect(card("Página pública").querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--punto-ok)]");
     expect(card("Configuración")).toHaveTextContent("delta.ejemplo.com");
-    expect(card("Auditoría")).toHaveTextContent("Último cambio hoy, 10:42");
+    expect(card("Auditoría")).toHaveTextContent("03/10/2026 10:42");
+    expect(card("Auditoría")).not.toHaveTextContent("hoy");
 
     const toResolve = screen.getByRole("region", { name: "Para resolver" });
     expect(within(toResolve).getByText("3")).toBeVisible();

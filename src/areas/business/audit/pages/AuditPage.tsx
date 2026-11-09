@@ -118,7 +118,7 @@ export function AuditPage() {
             // Tablero M-Auditoria-Org: qué pasó (en dos renglones si hace falta), cuándo a la derecha (la fecha corta, sin el año
             // si es del año en curso), y dónde y quién abajo.
             mobileRow={(row) => <ListRow key={row.id} title={row.actionText} onClick={() => setSelected(row)}
-              meta={<DateText value={row.occurredAtUtc} kind="shortDateTime" />}
+              meta={<DateText value={row.occurredAtUtc} kind="dateTime" />}
               lines={[[row.whereText, row.actorDisplayName ?? row.actorText].filter(Boolean).join(" · ")]} />}
             rows={audit.items}
             rowKey={(row) => row.id}

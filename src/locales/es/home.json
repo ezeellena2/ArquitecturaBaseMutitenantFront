@@ -32,7 +32,6 @@
     "audit": {
       "title": "Auditoría",
       "short": "Auditoría",
-      "lastChange": "Último cambio {{when}}",
       "noChanges": "Sin cambios todavía"
     }
   },

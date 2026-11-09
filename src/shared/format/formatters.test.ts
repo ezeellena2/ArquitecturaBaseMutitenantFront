@@ -100,7 +100,6 @@ function renderCase(item: FormatCase, now: string): string {
     case "dateTime": return formatter.formatDateTime(item.input as string);
     case "time": return formatter.formatTime(item.input as string);
     case "dateLong": return formatter.formatDateLong(item.input as string);
-    case "relative": return formatter.formatRelative(item.input as string);
     case "dateRange": return formatter.formatDateRange(item.input as { start: string; end: string });
     case "integer": return formatter.formatInteger(item.input as number);
     case "decimal": {
@@ -129,6 +128,10 @@ function renderCase(item: FormatCase, now: string): string {
   }
 }
 
+// La fecha relativa sigue en el contrato porque la usa el back (DisplayFormatter); el front ya no la presenta desde la base de
+// la 12 (formatos.md: nunca «hace 2 horas»), así que no la arma ni prueba sus casos.
+const notPresentedByTheFront = new Set(["relative"]);
+
 describe.skipIf(!backendPresent)("paridad con format-cases.json", () => {
   const contract = backendPresent
     ? readJson<FormatContract>(path.join(backendRoot, "docs/contracts/format-cases.json"))
@@ -137,7 +140,7 @@ describe.skipIf(!backendPresent)("paridad con format-cases.json", () => {
   it("abarca todos los tipos documentados en ambas culturas", () => {
     const types = new Set(contract.cases.map((item) => item.type));
     for (const type of [
-      "date", "dateTime", "time", "dateLong", "relative", "dateRange", "integer", "decimal",
+      "date", "dateTime", "time", "dateLong", "dateRange", "integer", "decimal",
       "quantity", "percent", "money", "compact", "fileSize", "duration", "phone", "timeZone",
       "culture", "taxId", "email", "enum", "boolean", "empty", "text",
     ]) {
@@ -146,7 +149,7 @@ describe.skipIf(!backendPresent)("paridad con format-cases.json", () => {
     expect(new Set(contract.cases.map((item) => item.culture)).size).toBeGreaterThanOrEqual(2);
   });
 
-  for (const item of contract.cases) {
+  for (const item of contract.cases.filter((entry) => !notPresentedByTheFront.has(entry.type))) {
     it(item.id, () => {
       if (item.error) {
         expect(() => renderCase(item, contract.now)).toThrow();
@@ -189,66 +192,15 @@ describe.skipIf(!backendPresent)("reloj del formateador", () => {
     }
   });
 
-  it("dice hoy o ayer con la hora de la zona, y si no, la fecha sola (tablero Inicio-Org: «Último cambio hoy, 10:42»)", () => {
+  // formatos.md (base de la 12): una fecha se muestra completa, con su año, y un momento con su hora; nunca la fecha
+  // corta, «hace 2 horas», «hoy» ni «ayer». El front ya no tiene con qué armarlas.
+  it("no ofrece la fecha corta, la relativa ni la de calendario", () => {
     const formatter = createFormatters({
       referenceData: sourceCatalog("es-AR"), culture: "es-AR", timeZone: "America/Argentina/Buenos_Aires",
       now: "2026-10-03T18:00:00Z", translate: translator("es-AR"),
-    });
-    expect(formatter.formatCalendar("2026-10-03T13:42:00Z")).toBe("hoy, 10:42");
-    expect(formatter.formatCalendar("2026-10-02T23:30:00Z")).toBe("ayer, 20:30");
-    // Otro día, sin la hora: en la tarjeta del Inicio, «Último cambio 30/09/2026 10:42» no entraba y la hora se cortaba.
-    expect(formatter.formatCalendar("2026-09-30T13:42:00Z")).toBe("30/09/2026");
-  });
-
-  // Lienzo v99 («Fecha corta», formatos.md): sin el año solo para el año en curso, en la zona de la persona; la de otro año
-  // va completa. Las listas del teléfono la usan: «27/09» y «27/09 10:42»; en en-US, «09/27».
-  it("la fecha corta va sin el año solo en el año en curso, en es-AR", () => {
-    const formatter = createFormatters({
-      referenceData: sourceCatalog("es-AR"), culture: "es-AR", timeZone: "America/Argentina/Buenos_Aires",
-      now: "2026-10-03T18:00:00Z", translate: translator("es-AR"),
-    });
-    expect(formatter.formatShortDate("2026-09-27T13:42:00Z")).toBe("27/09");
-    expect(formatter.formatShortDateTime("2026-09-27T13:42:00Z")).toBe("27/09 10:42");
-    expect(formatter.formatShortDate("2026-09-27")).toBe("27/09");
-    expect(formatter.formatShortDate("2025-09-27T13:42:00Z")).toBe("27/09/2025");
-    expect(formatter.formatShortDateTime("2025-09-27T13:42:00Z")).toBe("27/09/2025 10:42");
-    expect(formatter.formatShortDate("2027-01-02")).toBe("02/01/2027");
-  });
-
-  it("la fecha corta va sin el año solo en el año en curso, en en-US", () => {
-    const formatter = createFormatters({
-      referenceData: sourceCatalog("en-US"), culture: "en-US", timeZone: "America/New_York",
-      now: "2026-10-03T18:00:00Z", translate: translator("en-US"),
-    });
-    expect(formatter.formatShortDate("2026-09-27T13:42:00Z")).toBe("09/27");
-    expect(formatter.formatShortDateTime("2026-09-27T13:42:00Z")).toBe(formatter.formatDateTime("2026-09-27T13:42:00Z").replace("/2026", ""));
-    expect(formatter.formatShortDate("2025-09-27T13:42:00Z")).toBe("09/27/2025");
-    expect(formatter.formatShortDateTime("2025-09-27T13:42:00Z")).toBe(formatter.formatDateTime("2025-09-27T13:42:00Z"));
-  });
-
-  it("el año en curso es el de la zona de la persona: el 31/12 a la noche todavía no cambió", () => {
-    const formatter = createFormatters({
-      referenceData: sourceCatalog("es-AR"), culture: "es-AR", timeZone: "America/Argentina/Buenos_Aires",
-      now: "2027-01-01T01:00:00Z", translate: translator("es-AR"),
-    });
-    expect(formatter.formatShortDate("2026-12-30T15:00:00Z")).toBe("30/12");
-    expect(formatter.formatShortDate("2027-01-01T12:00:00Z")).toBe("01/01/2027");
-  });
-
-  it("actualiza también los textos relativos cuando no se fijó now", () => {
-    vi.useFakeTimers();
-    try {
-      vi.setSystemTime(new Date("2026-01-15T15:00:00Z"));
-      const formatter = createFormatters({
-        referenceData: sourceCatalog("en-US"), culture: "en-US", timeZone: "America/New_York",
-        translate: translator("en-US"),
-      });
-      expect(formatter.formatRelative("2026-01-15T14:55:00Z")).toBe("5 minutes ago");
-      vi.setSystemTime(new Date("2026-01-16T15:00:00Z"));
-      expect(formatter.formatRelative("2026-01-15T14:55:00Z")).toBe("1 day ago");
-    } finally {
-      vi.useRealTimers();
-    }
+    }) as unknown as Record<string, unknown>;
+    for (const name of ["formatShortDate", "formatShortDateTime", "formatRelative", "formatCalendar"]) expect(formatter[name]).toBeUndefined();
+    expect((formatter.formatDateTime as (value: string) => string)("2026-10-03T13:42:00Z")).toBe("03/10/2026 10:42");
   });
 });
 

@@ -44,7 +44,7 @@ type ValueColumn<TRow, TType extends string, TValue> = TType extends string ? Co
   value: (row: TRow) => OptionalValue<TValue>;
 } : never;
 
-type DateColumn<TRow> = ValueColumn<TRow, "date" | "dateTime" | "time" | "long" | "relative", string>;
+type DateColumn<TRow> = ValueColumn<TRow, "date" | "dateTime" | "time" | "long", string>;
 type NumberColumn<TRow> = ValueColumn<TRow, "integer" | "quantity" | "compact" | "percent" | "fileSize" | "duration", number>;
 type StringColumn<TRow> = ValueColumn<TRow, "text" | "phone" | "timeZone" | "culture", string>;
 
@@ -117,7 +117,6 @@ function columnCell<TRow>(column: Column<TRow>, row: TRow): ReactNode {
     case "dateTime":
     case "time":
     case "long":
-    case "relative":
       return <DateText value={column.value(row)} kind={column.type} />;
     case "dateRange":
       return <DateRangeText value={column.value(row)} />;

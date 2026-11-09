@@ -80,28 +80,16 @@ export function templatePreview(body: string, values: readonly string[]): Previe
   });
 }
 
-type DayFormat = Pick<FormatState, "formatCalendar" | "formatDate" | "formatTime" | "formatShortDate">;
+type DayFormat = Pick<FormatState, "formatDate" | "formatDateTime">;
 
-/** Hoy, ayer u otro día, en la zona de la persona: lo resuelve `formatCalendar` («hoy, 10:42»). */
-function dayOf(format: DayFormat, value: string, words: { today: string; yesterday: string }): "today" | "yesterday" | "other" {
-  const calendar = format.formatCalendar(value);
-  if (calendar === format.formatDate(value)) return "other";
-  return calendar.startsWith(words.today) ? "today" : calendar.startsWith(words.yesterday) ? "yesterday" : "other";
+/** La hora de la fila de la bandeja (WA-Chats, .l1 span): la fecha y la hora completas, en la zona de quien mira. */
+export function chatTime(format: DayFormat, value: string): string {
+  return format.formatDateTime(value);
 }
 
-/**
- * La hora de la fila de la bandeja (WA-Chats, .l1 span): la hora si es de hoy, «Ayer» o la fecha corta. `calendarWords`
- * son las palabras de `format:calendar` (minúsculas), para reconocer hoy y ayer; `labels`, las del tablero.
- */
-export function chatTime(format: DayFormat, value: string, calendarWords: { today: string; yesterday: string }, labels: { yesterday: string }): string {
-  const day = dayOf(format, value, calendarWords);
-  return day === "today" ? format.formatTime(value) : day === "yesterday" ? labels.yesterday : format.formatShortDate(value);
-}
-
-/** El separador de días del hilo (.w-dia): «Hoy», «Ayer» o la fecha corta. */
-export function chatDay(format: DayFormat, value: string, calendarWords: { today: string; yesterday: string }, labels: { today: string; yesterday: string }): string {
-  const day = dayOf(format, value, calendarWords);
-  return day === "today" ? labels.today : day === "yesterday" ? labels.yesterday : format.formatShortDate(value);
+/** El separador de días del hilo (WA-Chats, .w-dia): la fecha completa, nunca «Hoy» ni «Ayer». */
+export function chatDay(format: DayFormat, value: string): string {
+  return format.formatDate(value);
 }
 
 /** El número como lo muestra `PhoneText`; si el back mandara uno que no se puede leer, tal cual llegó. */

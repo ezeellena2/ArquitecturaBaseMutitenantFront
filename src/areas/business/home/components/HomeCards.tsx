@@ -43,7 +43,8 @@ export function AreaCards({ organization, moduleCards = [] }: { organization: Ho
   if (organization.settings) details.push(["settings", organization.settings.domain ?? t("cards.settings.noDomain")]);
   if (organization.audit) {
     const last = organization.audit.lastChangeAtUtc;
-    details.push(["audit", last ? t("cards.audit.lastChange", { when: format.formatCalendar(last) }) : t("cards.audit.noChanges")]);
+    // Tablero Inicio-Org (base de la 12): la tarjeta de Auditoría dice cuándo fue el último cambio, con fecha y hora completas.
+    details.push(["audit", last ? format.formatDateTime(last) : t("cards.audit.noChanges")]);
   }
   return <nav aria-label={t("areas")} className={grid}>
     {details.map(([area, detail]) => {

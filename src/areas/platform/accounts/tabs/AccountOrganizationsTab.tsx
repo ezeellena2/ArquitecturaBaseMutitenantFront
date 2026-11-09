@@ -21,5 +21,5 @@ export function AccountOrganizationsTab({ organizations }: { organizations: read
     { id: "status", header: t("detail.membershipState"), type: "custom", cell: state },
   ];
   return <Surface phoneFlush><DataTable columns={columns} rows={organizations} rowKey={(row) => row.tenantId} emptyTitle={t("detail.organizationsEmpty")}
-    mobileRow={(row) => <ListRow key={row.tenantId} to={path(row.tenantId)} title={row.name} meta={<DateText value={row.joinedAtUtc} kind="shortDate" />} lines={[role(row), state(row)]} />} /></Surface>;
+    mobileRow={(row) => <ListRow key={row.tenantId} to={path(row.tenantId)} title={row.name} meta={<DateText value={row.joinedAtUtc} kind="date" />} lines={[role(row), state(row)]} />} /></Surface>;
 }

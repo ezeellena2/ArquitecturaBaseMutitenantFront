@@ -68,7 +68,6 @@ export function MessagesPage() {
   const rows = data?.items ?? [];
   const selectedId = conversationId ?? (phone ? undefined : rows[0]?.id);
   const none = data !== undefined && data.totalCount === 0 && !search;
-  const words = { today: t("format:calendar.today"), yesterday: t("format:calendar.yesterday") };
   const loadMore = data?.hasNext ? <LoadMore hasMore isLoading={list.isFetching} onLoadMore={() => {
     const larger = pageSizes.find((size) => size > pageSize);
     if (larger) setPageSize(larger); else setPage(page + 1);
@@ -80,7 +79,7 @@ export function MessagesPage() {
     {data && rows.length === 0 ? <EmptyState framed={false} title={t("personal.noMatches")} /> : <ul aria-label={t("personal.list")} className={phone ? undefined : "min-h-0 flex-1 overflow-y-auto"}>
       {rows.map((row) => <ConversationItem key={row.id} to={`${basePath}/${encodeURIComponent(row.id)}${location.search}`} selected={row.id === selectedId} phone={phone}
         avatar={<OrganizationAvatar name={row.organizationName} size={phone ? "row" : "default"} />} title={row.organizationName}
-        time={row.lastMessageAtUtc && !format.isLoading ? <time dateTime={row.lastMessageAtUtc}>{chatTime(format, row.lastMessageAtUtc, words, { yesterday: t("chats.day.yesterday") })}</time> : null}
+        time={row.lastMessageAtUtc && !format.isLoading ? <time dateTime={row.lastMessageAtUtc}>{chatTime(format, row.lastMessageAtUtc)}</time> : null}
         preview={row.lastMessagePreview} />)}
     </ul>}
     {!data ? <p role="status" className="px-4 py-3 text-[var(--t2)]">{t("common:states.loading")}</p> : null}

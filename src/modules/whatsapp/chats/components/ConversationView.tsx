@@ -230,7 +230,7 @@ function ConversationNotice({ notice, name, number, messages, onClose }: {
   if (notice === "window") {
     const last = lastInbound(messages);
     return <ImportantNotice open onOpenChange={close} title={t("chats.notices.window.title")}
-      reason={last && !format.isLoading ? t("chats.notices.window.reason", { name, when: format.formatCalendar(last.createdAtUtc) }) : t("chats.notices.window.reasonUnknown", { name })}
+      reason={last && !format.isLoading ? t("chats.notices.window.reason", { name, when: format.formatDateTime(last.createdAtUtc) }) : t("chats.notices.window.reasonUnknown", { name })}
       detail={t("chats.notices.window.detail")} steps={[t("chats.notices.window.stepTemplate"), t("chats.notices.window.stepReply")]} />;
   }
   if (notice === "readOnly") return <ImportantNotice open onOpenChange={close} title={t("chats.notices.readOnly.title", { name })}

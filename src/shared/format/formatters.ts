@@ -92,11 +92,6 @@ function applyDatePattern(pattern: string, parts: CivilParts, profile: CultureRe
     quoted === undefined ? tokens[token]() : quoted);
 }
 
-/** El patrón de la cultura sin el año ni el separador que lo acompaña: «dd/MM/yyyy HH:mm» → «dd/MM HH:mm». */
-function withoutYear(pattern: string): string {
-  return /[^A-Za-z']yyyy/.test(pattern) ? pattern.replace(/[^A-Za-z']+yyyy/, "") : pattern.replace(/yyyy[^A-Za-z']*/, "");
-}
-
 function formatNumber(value: number, minimumDigits: number, maximumDigits: number,
   decimalSeparator: string, groupSeparator: string, culture: string): string {
   if (!Number.isFinite(value) || minimumDigits < 0 || maximumDigits > 20 || minimumDigits > maximumDigits) {
@@ -184,42 +179,6 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
     const value = `${String(parts.year).padStart(4, "0")}-${String(parts.month).padStart(2, "0")}`;
     if (parseMonth(value) === null) throw new Error("El mes actual no es válido.");
     return value;
-  }
-
-  /** «Fecha corta» (lienzo v99): sin el año si es del año en curso en la zona de la persona; si no, completa. */
-  function short(value: string, pattern: string): string {
-    const parts = parseCivil(value, timeZone, culture);
-    const thisYear = parseCivil(clock().toISOString(), timeZone, culture).year;
-    return applyDatePattern(parts.year === thisYear ? withoutYear(pattern) : pattern, parts, profile);
-  }
-  function formatShortDate(value: string): string { return short(value, profile.datePattern); }
-  function formatShortDateTime(value: string): string { return short(value, profile.dateTimePattern); }
-
-  function formatRelative(value: string): string {
-    if (!value.endsWith("Z")) throw new Error("Un instante relativo debe terminar en Z.");
-    const instant = new Date(value);
-    if (Number.isNaN(instant.getTime())) throw new Error("El instante no es válido.");
-    const elapsed = clock().getTime() - instant.getTime();
-    if (elapsed < 0 || elapsed >= 7 * 24 * 3600 * 1000) return formatDate(value);
-    if (elapsed < 60 * 1000) return translate("format:relative.justNow");
-    const count = elapsed >= 24 * 3600 * 1000 ? Math.floor(elapsed / (24 * 3600 * 1000))
-      : elapsed >= 3600 * 1000 ? Math.floor(elapsed / (3600 * 1000))
-        : Math.floor(elapsed / (60 * 1000));
-    const key = elapsed >= 24 * 3600 * 1000 ? "daysAgo" : elapsed >= 3600 * 1000 ? "hoursAgo" : "minutesAgo";
-    return translate(`format:relative.${key}`, { count });
-  }
-
-  /**
-   * «hoy, 10:42», «ayer, 20:30» en la zona de la persona; si no, la fecha sola: en la tarjeta del Inicio (tablero
-   * Inicio-Org, «Último cambio hoy, 10:42»), la fecha y la hora de otro día no entraban y la hora se cortaba.
-   */
-  function formatCalendar(value: string): string {
-    const day = formatDate(value);
-    const today = clock();
-    if (day === formatDate(today.toISOString())) return `${translate("format:calendar.today")}, ${formatTime(value)}`;
-    const yesterday = new Date(today.getTime() - 24 * 3600 * 1000);
-    if (day === formatDate(yesterday.toISOString())) return `${translate("format:calendar.yesterday")}, ${formatTime(value)}`;
-    return day;
   }
 
   function formatDateRange(value: DateRangeValue): string {
@@ -364,8 +323,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
 
   return {
     formatMonth, getMonthOptions, getAdjacentMonthYear, getCurrentMonth,
-    formatDate, formatDateTime, formatShortDate, formatShortDateTime, formatTime, formatDateLong, formatRelative,
-    formatCalendar, formatDateRange,
+    formatDate, formatDateTime, formatTime, formatDateLong, formatDateRange,
     formatInteger, formatDecimal, formatQuantity, formatPercent, formatMoney, formatCompact,
     formatFileSize, formatDuration, formatPhone, formatTimeZone, formatCulture, formatTaxId,
     formatEmail, formatEnum, formatBoolean, formatEmpty, formatText,

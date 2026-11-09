@@ -168,7 +168,6 @@ function InboxRow({ row, to, selected, phone }: { row: WhatsAppConversationRowRe
   return <ConversationItem to={to} selected={selected} phone={phone} unread={row.unread} unreadLabel={t("chats.list.unread")}
     avatar={<ChatAvatar name={row.contactName} size={phone ? "row" : "default"} />}
     title={row.contactName ?? phoneLabel(format, row.displayNumber)}
-    time={format.isLoading ? null : <time dateTime={row.lastMessageAtUtc}>{chatTime(format, row.lastMessageAtUtc,
-      { today: t("format:calendar.today"), yesterday: t("format:calendar.yesterday") }, { yesterday: t("chats.day.yesterday") })}</time>}
+    time={format.isLoading ? null : <time dateTime={row.lastMessageAtUtc}>{chatTime(format, row.lastMessageAtUtc)}</time>}
     preview={row.lastMessagePreview} assignment={rowAssignment(row, t("chats.list.untaken"))} assignmentTone={untaken ? "untaken" : undefined} />;
 }

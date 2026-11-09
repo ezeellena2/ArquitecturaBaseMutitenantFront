@@ -21,10 +21,6 @@
     "empty": "Todavía no hay conversaciones",
     "noMatches": "Ninguna conversación coincide con los filtros"
   },
-  "day": {
-    "today": "Hoy",
-    "yesterday": "Ayer"
-  },
   "header": {
     "linkedToAccount": "Vinculada a su cuenta",
     "employee": "Empleado",

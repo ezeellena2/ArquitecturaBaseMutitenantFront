@@ -32,13 +32,13 @@ export function createOrganizationOwnerColumns(t: TFunction): Column<OwnerRow>[]
     // Tablero Organizacion (Dueños, base de la 12): el correo en su columna.
     { id: "name", header: t("platformTenants:columns.owner"), type: "text", mobile: "primary", value: (row) => row.name },
     { id: "email", header: t("platformTenants:detail.email"), type: "text", value: (row) => row.email },
-    { id: "lastSignInAtUtc", header: t("platformTenants:detail.lastSignIn"), type: "custom", cell: (row) => row.lastSignInAtUtc ? <DateText value={row.lastSignInAtUtc} kind="relative" /> : t("platformTenants:detail.never") },
+    { id: "lastSignInAtUtc", header: t("platformTenants:detail.lastSignIn"), type: "custom", cell: (row) => row.lastSignInAtUtc ? <DateText value={row.lastSignInAtUtc} kind="dateTime" /> : t("platformTenants:detail.never") },
     { id: "state", header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones: ownerStatusTones, value: (row) => row.state },
   ];
 }
 export function organizationOwnerPhoneRow(row: OwnerRow, t: TFunction): ReactNode {
   return <ListRow key={row.id} title={row.name || <EmptyValue />}
-    meta={row.lastSignInAtUtc ? <DateText value={row.lastSignInAtUtc} kind="relative" /> : t("platformTenants:detail.phoneNever")}
+    meta={row.lastSignInAtUtc ? <DateText value={row.lastSignInAtUtc} kind="dateTime" /> : t("platformTenants:detail.phoneNever")}
     lines={[row.email || <EmptyValue key="email" />, <StatusBadge key="state" tones={ownerStatusTones} value={row.state} />]} />;
 }
 export function createOrganizationHistoryColumns(t: TFunction): Column<PlatformTenantHistoryResponse>[] {

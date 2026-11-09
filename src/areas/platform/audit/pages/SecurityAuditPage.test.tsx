@@ -223,7 +223,7 @@ describe("SecurityAuditPage", () => {
     const { container } = mount();
     const title = await screen.findByText("Suspendió la cuenta");
     const row = title.closest("li")!;
-    expect(row).toHaveTextContent("26/09 17:30");
+    expect(row).toHaveTextContent("26/09/2026 17:30");
     expect(row).toHaveTextContent("Ana Gómez · Laura Díaz");
     expect(title).not.toHaveClass("truncate");
     expect(screen.getByText("Administración")).toBeVisible();

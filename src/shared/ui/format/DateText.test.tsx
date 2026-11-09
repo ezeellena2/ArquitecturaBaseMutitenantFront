@@ -6,19 +6,16 @@ vi.mock("@/shared/format/useFormat", () => ({
   useFormat: () => ({
     formatDate: () => "27/09/2026",
     formatDateTime: () => "27/09/2026 12:00",
-    formatShortDate: () => "27/09",
-    formatShortDateTime: () => "27/09 12:00",
     formatTime: () => "12:00",
     formatDateLong: () => "27 de septiembre de 2026",
-    formatRelative: () => "hace 5 minutos",
     formatEmpty: () => "—",
   }),
 }));
 
 describe("DateText", () => {
   it("usa time con el instante ISO y muestra la fecha/hora absoluta como tooltip", () => {
-    render(<DateText value="2026-09-27T15:00:00Z" kind="relative" />);
-    const time = screen.getByText("hace 5 minutos");
+    render(<DateText value="2026-09-27T15:00:00Z" kind="date" />);
+    const time = screen.getByText("27/09/2026");
     expect(time.tagName).toBe("TIME");
     expect(time).toHaveAttribute("datetime", "2026-09-27T15:00:00Z");
     expect(time).toHaveAttribute("title", "27/09/2026 12:00");
@@ -31,11 +28,9 @@ describe("DateText", () => {
     expect(screen.getByText("—")).toBeInTheDocument();
   });
 
-  // Lienzo v99 («Fecha corta»): las listas del teléfono la piden; la fecha completa queda en el tooltip.
-  it("muestra la fecha corta, con la fecha y hora completas como tooltip", () => {
-    const { rerender } = render(<DateText value="2026-09-27T15:00:00Z" kind="shortDate" />);
-    expect(screen.getByText("27/09")).toHaveAttribute("title", "27/09/2026 12:00");
-    rerender(<DateText value="2026-09-27T15:00:00Z" kind="shortDateTime" />);
-    expect(screen.getByText("27/09 12:00")).toHaveAttribute("title", "27/09/2026 12:00");
+  // formatos.md (base de la 12): un momento va con fecha y hora completas; sin tooltip, porque ya dice todo.
+  it("un momento muestra la fecha y la hora completas", () => {
+    render(<DateText value="2026-09-27T15:00:00Z" kind="dateTime" />);
+    expect(screen.getByText("27/09/2026 12:00")).not.toHaveAttribute("title");
   });
 });

@@ -65,7 +65,7 @@ function invitationExpiry(member: CompanyMember, t: TFunction): ReactNode {
   const expiresAt = invitationExpiresAt(member);
   if (!expiresAt) return null;
   const label = memberState(member) === "Expired" ? "companies:memberColumns.expiredInline" : "companies:memberColumns.expiresInline";
-  return <>{t(label)} <DateText value={expiresAt} kind="shortDate" /></>;
+  return <>{t(label)} <DateText value={expiresAt} kind="date" /></>;
 }
 
 /// Tablero M-Empresa: en el teléfono cada miembro es una fila con su círculo, el correo y, abajo, sus roles, el estado y,

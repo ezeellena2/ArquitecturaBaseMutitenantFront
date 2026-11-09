@@ -85,7 +85,7 @@ export function SecurityAuditPage() {
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={columns} rows={audit.items} rowKey={(row) => row.id}
             mobileRow={(row) => <ListRow key={row.id} title={row.summary} onClick={() => select(row)}
-              meta={<DateText value={row.occurredAtUtc} kind="shortDateTime" />}
+              meta={<DateText value={row.occurredAtUtc} kind="dateTime" />}
               lines={[[row.target, row.actor].filter(Boolean).join(" · "), ...(row.reason ? [row.reason] : [])]} />}
             isLoading={audit.isPending} isFetching={audit.isFetching}
             error={audit.error ? apiErrorMessage(audit.error, t) : undefined} onRetry={() => { void audit.refetch(); }}

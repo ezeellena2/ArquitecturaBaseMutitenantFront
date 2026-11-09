@@ -47,7 +47,7 @@ export function AssistantUsageRows({ rows, platform, group, fetching, error, ret
     { id: "cost", header: t("usage.monthCost"), type: "money", value: (row) => row.cost },
   ];
   return <Surface phoneFlush><DataTable columns={columns} rows={rows} rowKey={usageRowKey} isFetching={fetching} emptyTitle={t("usage.empty")} error={error} onRetry={retry}
-    mobileRow={(row) => <ListRow title={row.kind === "day" ? <DateText value={row.day} kind="shortDate" /> : row.displayName}
+    mobileRow={(row) => <ListRow title={row.kind === "day" ? <DateText value={row.day} kind="date" /> : row.displayName}
       lines={[platform ? <><NumberText value={row.queries} /> {t("usage.queriesNoun", { count: row.queries })}{" · "}<EnumText enum="AssistantMode" value={row.fundingMode} />{row.fundingMode === "OwnKey" && row.monthlyBudget ? <>{" · "}{t("usage.ownBudget")} <MoneyText value={row.monthlyBudget} /></> : null}</>
         : group === "day" ? <><NumberText value={row.queries} /> {t("usage.queriesNoun", { count: row.queries })}{" · "}<NumberText value={row.peopleCount} /> {t("usage.peopleNoun", { count: row.peopleCount ?? undefined })}</>
           : <>{t("usage.today")} <TodayUsage row={row} />{" · "}<NumberText value={row.queries} /> {t("usage.inMonth")}</>]}

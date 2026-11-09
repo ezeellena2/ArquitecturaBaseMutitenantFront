@@ -29,9 +29,9 @@ export const duplicateSource = "desde";
 export const duplicatePath = (id: string) => `${newBroadcastPath}?${duplicateSource}=${encodeURIComponent(id)}`;
 export const contactPath = (id: string) => `/org/whatsapp/contactos/${encodeURIComponent(id)}`;
 
-function dateCell(broadcast: WhatsAppBroadcastResponse, phone: boolean): ReactNode {
+function dateCell(broadcast: WhatsAppBroadcastResponse): ReactNode {
   const { value, withTime } = broadcastDate(broadcast);
-  return <DateText value={value} kind={withTime ? phone ? "shortDateTime" : "dateTime" : "date"} />;
+  return <DateText value={value} kind={withTime ? "dateTime" : "date"} />;
 }
 
 export function createBroadcastColumns(t: TFunction, format: FormatState): Column<WhatsAppBroadcastResponse>[] {
@@ -49,7 +49,7 @@ export function createBroadcastColumns(t: TFunction, format: FormatState): Colum
       id: "results", header: t("whatsapp:broadcasts.columns.results"), type: "custom",
       cell: (broadcast) => { const results = resultsLabel(broadcast, t, format); return results ? <span>{results}</span> : <EmptyValue />; },
     },
-    { id: "date", header: t("whatsapp:broadcasts.columns.date"), type: "custom", className: "w-37.5", cell: (broadcast) => dateCell(broadcast, false) },
+    { id: "date", header: t("whatsapp:broadcasts.columns.date"), type: "custom", className: "w-37.5", cell: (broadcast) => dateCell(broadcast) },
   ];
 }
 
@@ -57,7 +57,7 @@ export function createBroadcastColumns(t: TFunction, format: FormatState): Colum
 /// resultados.
 export function broadcastPhoneRow(broadcast: WhatsAppBroadcastResponse, t: TFunction, format: FormatState, trailing?: ReactNode): ReactNode {
   const results = resultsLabel(broadcast, t, format);
-  return <ListRow key={broadcast.id} to={broadcastPath(broadcast.id)} title={broadcast.name} meta={dateCell(broadcast, true)}
+  return <ListRow key={broadcast.id} to={broadcastPath(broadcast.id)} title={broadcast.name} meta={dateCell(broadcast)}
     lines={[
       [broadcast.template.name, audienceLabel(broadcast.audience, t), t("whatsapp:broadcasts.contacts", countOf(format, broadcast.recipients))].join(" · "),
       <span key="status" className="inline-flex max-w-full items-center gap-1">
@@ -76,6 +76,6 @@ export function createRecipientColumns(t: TFunction, status: (recipient: WhatsAp
     },
     { id: "number", header: t("whatsapp:broadcasts.recipients.columns.number"), type: "custom", className: "w-[22%]", cell: (recipient) => <PhoneText value={recipient.displayNumber} /> },
     { id: "status", header: t("whatsapp:broadcasts.recipients.columns.status"), type: "custom", mobile: "status", cell: status },
-    { id: "changedAtUtc", header: t("whatsapp:broadcasts.recipients.columns.changed"), type: "custom", className: "w-40", cell: (recipient) => <DateText value={recipient.changedAtUtc} kind="shortDateTime" /> },
+    { id: "changedAtUtc", header: t("whatsapp:broadcasts.recipients.columns.changed"), type: "custom", className: "w-40", cell: (recipient) => <DateText value={recipient.changedAtUtc} kind="dateTime" /> },
   ];
 }

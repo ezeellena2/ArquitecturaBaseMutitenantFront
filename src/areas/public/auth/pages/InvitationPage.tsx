@@ -1,5 +1,4 @@
 import { initials } from "@/shared/lib/initials";
-import { daysUntil } from "@/shared/time/serverClock";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
@@ -147,7 +146,6 @@ function InvitationFlow() {
     void antiforgery.refetch();
     if (antiforgery.data) void preview.refetch();
   };
-  const days = invitation?.expiresAtUtc ? daysUntil(invitation.expiresAtUtc) : 0;
   const note = "text-center text-xs leading-normal text-[var(--t3)]";
 
   return <AuthLayout access="consumer">
@@ -183,7 +181,7 @@ function InvitationFlow() {
               <span className="truncate text-[0.9375rem] font-semibold text-[var(--t1)]">{t("join.invitedBy", { inviter })}</span>
               <span className="text-[0.8125rem] text-[var(--t3)]">
                 {inviterRoles.join(", ")}{inviterRoles.length > 0 && invitation.issuedAtUtc ? " · " : null}
-                {invitation.issuedAtUtc ? <DateText value={invitation.issuedAtUtc} kind="relative" /> : null}
+                {invitation.issuedAtUtc ? <DateText value={invitation.issuedAtUtc} kind="dateTime" /> : null}
               </span>
             </span>
           </div>
@@ -191,7 +189,7 @@ function InvitationFlow() {
             {companies.length > 0 ? <><dt className="text-[var(--t2)]">{t("join.company")}</dt><dd className="font-medium text-[var(--t1)]">{companies.join(", ")}</dd></> : null}
             {roles.length > 0 ? <><dt className="text-[var(--t2)]">{t("join.roles")}</dt><dd className="font-medium text-[var(--t1)]">{roles.join(", ")}</dd></> : null}
             <dt className="text-[var(--t2)]">{t("join.expires")}</dt>
-            <dd className="font-medium text-[var(--t1)]"><time dateTime={invitation.expiresAtUtc ?? undefined}>{days > 0 ? t("join.expiresIn", { count: days }) : t("join.expiresToday")}</time></dd>
+            <dd className="font-medium text-[var(--t1)]"><DateText value={invitation.expiresAtUtc} kind="dateTime" /></dd>
           </dl>
           {invitation.state === "WrongSession" ? <>
             <FormError tone="warning" message={t("wrongSession", { currentEmail: invitation.currentAccountEmail ?? t("accountFallback"), email })} />

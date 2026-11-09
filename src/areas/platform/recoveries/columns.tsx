@@ -13,7 +13,7 @@ import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 
 export function recoveryPhoneRow(recovery: PlatformRecoveryResponse, t: TFunction, trailing: ReactNode, onClick: () => void): ReactNode {
   return <ListRow key={recovery.id} title={recovery.accountId ? recovery.accountName || <EmptyValue /> : t("platformRecoveries:noAccount")}
-    meta={<DateText value={recovery.createdAtUtc} kind="shortDateTime" />} lines={[(recovery.previousMethodType === "Phone" || recovery.newMethodType === "Phone") ? <span key="methods"><RecoveryMethodText type={recovery.previousMethodType} value={recovery.previousMethod} />{t("platformRecoveries:methods", { previous: "", next: "" })}<RecoveryMethodText type={recovery.newMethodType} value={recovery.newMethod} /></span> : t("platformRecoveries:methods", { previous: recovery.previousMethod, next: recovery.newMethod }), <StatusBadge key="status" tones={recoveryStatusTones} value={recovery.status} />]}
+    meta={<DateText value={recovery.createdAtUtc} kind="dateTime" />} lines={[(recovery.previousMethodType === "Phone" || recovery.newMethodType === "Phone") ? <span key="methods"><RecoveryMethodText type={recovery.previousMethodType} value={recovery.previousMethod} />{t("platformRecoveries:methods", { previous: "", next: "" })}<RecoveryMethodText type={recovery.newMethodType} value={recovery.newMethod} /></span> : t("platformRecoveries:methods", { previous: recovery.previousMethod, next: recovery.newMethod }), <StatusBadge key="status" tones={recoveryStatusTones} value={recovery.status} />]}
     onClick={onClick} trailing={trailing} />;
 }
 export function createRecoveryColumns(t: TFunction): Column<PlatformRecoveryResponse>[] {

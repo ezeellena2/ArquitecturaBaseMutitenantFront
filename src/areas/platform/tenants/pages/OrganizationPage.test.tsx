@@ -95,10 +95,10 @@ describe("Ficha de Organización", () => {
     expect(await screen.findByText("Invitación pendiente")).toBeVisible(); expect(screen.getByText("lucia@example.com")).toBeVisible(); expect(screen.queryByText("Registrante antiguo")).not.toBeInTheDocument(); expect(screen.getByRole("img", { name: "Sin dato" })).toBeVisible();
     detail({ ...organization, owners: [], ownerEmail: null }); await act(async () => { await queryClient.invalidateQueries({ queryKey: tenantsQueryRoot }); }); expect(await screen.findByText("Todavía no hay Dueños")).toBeVisible(); expect(screen.getByRole("tab", { name: "Dueños 0" })).toBeVisible();
   });
-  it("Dueño sin nombre/correo conserva null; último ingreso es relativo", async () => {
+  it("Dueño sin nombre/correo conserva null; último ingreso con fecha y hora", async () => {
     const user = userEvent.setup(); detail({ ...organization, owners: [{ ...owner, displayName: null, email: null, lastSignInAtUtc: "2026-01-12T11:40:00Z" }] }); render(); await user.click(await screen.findByRole("tab", { name: "Dueños 1" }));
     // El Dueño y su correo van cada uno en su columna (base de la 12): sin dato, los dos dicen la raya.
-    expect(await screen.findAllByRole("img", { name: "Sin dato" })).toHaveLength(2); expect(within(screen.getByRole("tabpanel")).getByText("12/01/2026")).toBeVisible();
+    expect(await screen.findAllByRole("img", { name: "Sin dato" })).toHaveLength(2); expect(within(screen.getByRole("tabpanel")).getByText("12/01/2026 08:40")).toBeVisible();
   });
   it("404 y error inicial usan las pantallas comunes y Reintentar vuelve a pedir", async () => {
     const user = userEvent.setup(); server.use(http.get("/api/platform/tenants/delta", () => HttpResponse.json({ code: "Tenancy.Tenant.NotFound" }, { status: 404 }))); const first = render();
@@ -114,7 +114,7 @@ describe("Ficha de Organización", () => {
   });
   it("a 390 el ⋮ abre la hoja con menuitem, fecha corta y actor/motivo; axe", async () => {
     asPhone(); const user = userEvent.setup(); const { container } = render(); expect(await screen.findByRole("heading", { name: "Grupo Delta" })).toBeVisible();
-    expect(screen.getByText(/3 empresas · 11 miembros/)).toBeVisible(); expect(await screen.findByText("20/09 11:02")).toBeVisible(); expect(screen.getByText("Martín Sosa · Se resolvió el reclamo")).toBeVisible();
+    expect(screen.getByText(/3 empresas · 11 miembros/)).toBeVisible(); expect(await screen.findByText("20/09/2026 11:02")).toBeVisible(); expect(screen.getByText("Martín Sosa · Se resolvió el reclamo")).toBeVisible();
     expect(screen.getByText(history.action)).toBeVisible(); expect(screen.queryByText(history.summary)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Suspender" })).not.toBeInTheDocument(); const trigger = screen.getByRole("button", { name: "Acciones de Grupo Delta" }); await user.click(trigger); expect(within(await screen.findByRole("dialog", { name: "Grupo Delta" })).getByRole("menuitem", { name: "Suspender" })).toBeVisible(); await user.keyboard("{Escape}"); expect(await axe(container)).toHaveNoViolations();
   });

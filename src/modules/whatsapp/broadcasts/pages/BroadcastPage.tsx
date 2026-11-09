@@ -103,7 +103,7 @@ export function BroadcastPage({ me }: ModuleContentProps) {
           clearLabel={t("common:actions.clearFilters")} onClear={filters.clear} />
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={columns} rows={detail.data?.items ?? []} rowKey={(recipient) => recipient.contactId}
-            mobileRow={(recipient) => <ListRow key={recipient.contactId} title={name(recipient)} meta={<DateText value={recipient.changedAtUtc} kind="shortDateTime" />}
+            mobileRow={(recipient) => <ListRow key={recipient.contactId} title={name(recipient)} meta={<DateText value={recipient.changedAtUtc} kind="dateTime" />}
               lines={[recipient.contactName ? <PhoneText key="number" value={recipient.displayNumber} /> : null, status(recipient)]}
               trailing={canSeeContacts ? recipientActions(recipient) : undefined} />}
             isFetching={detail.isFetching} error={detail.error ? apiErrorMessage(detail.error, t) : undefined} onRetry={() => { void detail.refetch(); }}
@@ -128,7 +128,7 @@ function BroadcastSummary({ broadcast, short = false }: { broadcast: WhatsAppBro
   const format = useFormat();
   const when = broadcast.sentAtUtc ?? broadcast.scheduledAtUtc;
   const audience = audienceLabel(broadcast.audience, t);
-  if (short) return <>{when ? <><DateText value={when} kind={broadcast.sentAtUtc ? "shortDate" : "shortDateTime"} />{" · "}</> : null}{broadcast.template.name}{" · "}{audience}</>;
+  if (short) return <>{when ? <><DateText value={when} kind={broadcast.sentAtUtc ? "date" : "dateTime"} />{" · "}</> : null}{broadcast.template.name}{" · "}{audience}</>;
   const status = broadcast.status === "Sent" && broadcast.sentAtUtc ? t("broadcasts.detail.sentOn", { date: format.formatDate(broadcast.sentAtUtc) })
     : broadcast.status === "Scheduled" && broadcast.scheduledAtUtc ? t("broadcasts.detail.scheduledFor", { date: format.formatDateTime(broadcast.scheduledAtUtc) })
       : format.formatEnum("WhatsAppBroadcastStatus", broadcast.status);

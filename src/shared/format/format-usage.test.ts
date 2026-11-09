@@ -35,6 +35,11 @@ function violations(relative: string, source: string): string[] {
   if (/\bcase\s+["'](?:[A-Z]{2,3}|[a-z]{2}-[A-Z]{2}|[A-Za-z]+\/[A-Za-z_/]+)["']\s*:/.test(source)) {
     found.push("switch de códigos de referencia");
   }
+  // formatos.md (base de la 12): una fecha va completa y un momento con su hora; nunca la fecha corta, «hace 2 horas»,
+  // «hoy» ni «ayer».
+  if (/\bformat(?:Relative|Calendar|ShortDate|ShortDateTime)\b|kind=\{?["'](?:relative|shortDate|shortDateTime)["']|type:\s*["']relative["']/.test(source)) {
+    found.push("fecha relativa, corta o de calendario");
+  }
   return found;
 }
 
@@ -49,6 +54,11 @@ describe("uso exclusivo de formatos y catálogos", () => {
     expect(violations("shared/format/formatters.ts", 'const options = ["ARS", "USD"]')).not.toEqual([]);
     expect(violations("shared/ui/fields/CountrySelect.tsx", 'switch (code) { case "AR": return "Argentina"; }')).not.toEqual([]);
     expect(violations("shared/format/formatters.ts", "new Date(value); Intl.DateTimeFormat(culture)")).toEqual([]);
+    expect(violations("areas/business/home/components/HomeCards.tsx", "format.formatCalendar(last)")).not.toEqual([]);
+    expect(violations("areas/platform/accounts/columns.tsx", '<DateText value={value} kind="relative" />')).not.toEqual([]);
+    expect(violations("modules/whatsapp/contacts/columns.tsx", '{ id: "last", type: "relative", value }')).not.toEqual([]);
+    expect(violations("shared/ui/format/DateText.tsx", '<DateText value={value} kind="shortDate" />')).not.toEqual([]);
+    expect(violations("shared/format/formatters.ts", "function formatShortDateTime(value)")).not.toEqual([]);
   });
 
   it("mantiene las reglas en el código de producción", () => {

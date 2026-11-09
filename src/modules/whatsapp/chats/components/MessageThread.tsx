@@ -36,8 +36,6 @@ export function MessageThread({ messages, perspective, label, phone, hasEarlier,
   useEffect(() => { end.current?.scrollIntoView?.({ block: "end" }); }, [lastId]);
   if (format.isLoading) return <div className={threadClass(phone)} />;
 
-  const calendarWords = { today: t("format:calendar.today"), yesterday: t("format:calendar.yesterday") };
-  const dayLabels = { today: t("chats.day.today"), yesterday: t("chats.day.yesterday") };
 
   return <div role="log" aria-label={label} className={threadClass(phone)}>
     {hasEarlier ? <div className="flex justify-center">
@@ -47,7 +45,7 @@ export function MessageThread({ messages, perspective, label, phone, hasEarlier,
       const previous = messages[index - 1];
       const separator = !previous || format.formatDate(previous.createdAtUtc) !== format.formatDate(message.createdAtUtc)
         ? <span className={cn("self-center rounded-full border border-[var(--borde)] bg-[var(--lado-activo)] px-2.5 py-0.5 text-[0.75rem]", phone ? "rounded-[0.5rem] border-0 text-[var(--t2)] shadow-[var(--sombra-flecha)]" : "text-[var(--t3)]")}>
-          {chatDay(format, message.createdAtUtc, calendarWords, dayLabels)}
+          {chatDay(format, message.createdAtUtc)}
         </span> : null;
       return <Fragment key={message.id}>{separator}<ThreadItem message={message} perspective={perspective} phone={phone} /></Fragment>;
     })}

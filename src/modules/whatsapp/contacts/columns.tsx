@@ -35,7 +35,7 @@ export function createContactColumns(t: TFunction): Column<WhatsAppContactRespon
     { id: "number", header: t("whatsapp:contacts.columns.number"), type: "custom", className: "w-[18%]", cell: (contact) => <PhoneText value={contact.displayNumber} /> },
     { id: "tags", header: t("whatsapp:contacts.columns.tags"), type: "text", value: (contact) => contact.tags.join(", ") || null },
     { id: "consent", header: t("whatsapp:contacts.columns.consent"), type: "status", tones: consentTones, mobile: "status", value: (contact) => contact.consent },
-    { id: "lastConversationAtUtc", header: t("whatsapp:contacts.columns.lastConversation"), type: "relative", className: "w-42.5", value: (contact) => contact.lastConversationAtUtc },
+    { id: "lastConversationAtUtc", header: t("whatsapp:contacts.columns.lastConversation"), type: "dateTime", className: "w-42.5", value: (contact) => contact.lastConversationAtUtc },
   ];
 }
 
@@ -49,14 +49,14 @@ export function contactPhoneRow(contact: WhatsAppContactResponse, t: TFunction, 
   const number = contact.name ? <><PhoneText value={contact.displayNumber} />{contact.linkedToAccount ? ` · ${t("whatsapp:contacts.linkedShort")}` : null}</> : null;
   return <ListRow key={contact.id} to={contactPath(contact.id)} leading={<ContactAvatar name={contact.name} />}
     title={<ContactTitle contact={contact} />}
-    meta={contact.lastConversationAtUtc ? <DateText value={contact.lastConversationAtUtc} kind="relative" /> : undefined}
+    meta={contact.lastConversationAtUtc ? <DateText value={contact.lastConversationAtUtc} kind="dateTime" /> : undefined}
     lines={[number, consent]} trailing={trailing} />;
 }
 
 export function createContactConversationColumns(t: TFunction): Column<WhatsAppContactConversationResponse>[] {
   return [
     // Tablero WA-Contacto (base de la 12): la fecha y el último mensaje, cada uno en su columna (CC18).
-    { id: "startedAtUtc", header: t("whatsapp:contacts.conversations.columns.conversation"), type: "relative", mobile: "primary", className: "w-40",
+    { id: "startedAtUtc", header: t("whatsapp:contacts.conversations.columns.conversation"), type: "dateTime", mobile: "primary", className: "w-40",
       value: (row) => row.startedAtUtc },
     { id: "lastMessagePreview", header: t("whatsapp:contacts.conversations.columns.lastMessage"), type: "text", value: (row) => row.lastMessagePreview },
     { id: "team", header: t("whatsapp:contacts.conversations.columns.team"), type: "text", value: (row) => row.team?.name },
@@ -68,7 +68,7 @@ export function createContactConversationColumns(t: TFunction): Column<WhatsAppC
 /// M-WA-Contacto: la fecha con los mensajes a la derecha, el último mensaje y debajo el equipo y quién la atendió.
 export function contactConversationPhoneRow(row: WhatsAppContactConversationResponse, t: TFunction, format: FormatState, trailing?: ReactNode): ReactNode {
   const attended = [row.team?.name, row.assignee?.name].filter(Boolean).join(" · ");
-  return <ListRow key={row.conversationId} to={chatPath(row.conversationId)} title={<DateText value={row.startedAtUtc} kind="relative" />}
+  return <ListRow key={row.conversationId} to={chatPath(row.conversationId)} title={<DateText value={row.startedAtUtc} kind="dateTime" />}
     meta={t("whatsapp:contacts.conversations.messages", countOf(format, row.messageCount))} lines={[row.lastMessagePreview, attended || <EmptyValue key="empty" />]} trailing={trailing} />;
 }
 
@@ -84,6 +84,6 @@ export function createContactBroadcastColumns(t: TFunction): Column<WhatsAppCont
 }
 
 export function contactBroadcastPhoneRow(row: WhatsAppContactBroadcastResponse): ReactNode {
-  return <ListRow key={row.broadcastId} to={broadcastPath(row.broadcastId)} title={row.name} meta={<DateText value={row.sentAtUtc} kind="shortDate" />}
+  return <ListRow key={row.broadcastId} to={broadcastPath(row.broadcastId)} title={row.name} meta={<DateText value={row.sentAtUtc} kind="date" />}
     lines={[<StatusBadge key="status" tones={recipientStatusTones} value={row.status} className="text-[0.8125rem] text-[var(--t2)]" />]} />;
 }

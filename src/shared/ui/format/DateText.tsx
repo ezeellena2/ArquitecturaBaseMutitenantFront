@@ -1,8 +1,9 @@
 import { useFormat } from "@/shared/format/useFormat";
 import { EmptyValue, FormatLoading } from "./EmptyValue";
 
-/** `shortDate` y `shortDateTime`: la «Fecha corta», sin el año si es del año en curso; solo en las listas del teléfono. */
-type DateKind = "date" | "dateTime" | "shortDate" | "shortDateTime" | "time" | "long" | "relative";
+/** Una fecha se muestra completa, con su año, y un momento con su hora, en la zona de quien mira: nunca la fecha corta,
+ *  «hace 2 horas», «hoy» ni «ayer» (formatos.md, base de la 12). */
+type DateKind = "date" | "dateTime" | "time" | "long";
 
 export function DateText({ value, kind = "date", className }: {
   value: string | null | undefined;
@@ -14,13 +15,9 @@ export function DateText({ value, kind = "date", className }: {
   if (value == null) return <EmptyValue className={className} />;
 
   const text = kind === "dateTime" ? format.formatDateTime(value)
-    : kind === "shortDate" ? format.formatShortDate(value)
-      : kind === "shortDateTime" ? format.formatShortDateTime(value)
-        : kind === "time" ? format.formatTime(value)
-          : kind === "long" ? format.formatDateLong(value)
-            : kind === "relative" ? format.formatRelative(value) : format.formatDate(value);
-  const absolute = value.endsWith("Z") && (kind === "date" || kind === "relative" || kind === "shortDate" || kind === "shortDateTime")
-    ? format.formatDateTime(value) : undefined;
+    : kind === "time" ? format.formatTime(value)
+      : kind === "long" ? format.formatDateLong(value) : format.formatDate(value);
+  const absolute = value.endsWith("Z") && kind === "date" ? format.formatDateTime(value) : undefined;
 
   return <time dateTime={value} title={absolute} className={className}>{text}</time>;
 }

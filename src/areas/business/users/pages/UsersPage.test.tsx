@@ -65,9 +65,10 @@ describe("UsersPage", () => {
       renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
 
       const thisYear = (await screen.findByRole("link", { name: /Sofía Herrera/ })).closest("li")!;
-      expect(within(thisYear).getByText("02/10")).toHaveAttribute("datetime", "2026-10-02T12:00:00Z");
+      // formatos.md (base de la 12): la fecha va completa, con su año, también la del año en curso.
+      expect(within(thisYear).getByText("02/10/2026")).toHaveAttribute("datetime", "2026-10-02T12:00:00Z");
       // Tablero M-Usuarios: después del punto, «vence» en minúscula.
-      expect(thisYear).toHaveTextContent("Invitación pendiente · vence 02/10");
+      expect(thisYear).toHaveTextContent("Invitación pendiente · vence 02/10/2026");
       const nextYear = screen.getByRole("link", { name: /Valentina Ruiz/ }).closest("li")!;
       expect(within(nextYear).getByText("05/01/2027")).toBeInTheDocument();
     } finally {
