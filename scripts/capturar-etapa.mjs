@@ -1,4 +1,5 @@
-// Galería de una etapa: casos externos y el lienzo vigente. Sin tests propios ni recibos versionados.
+// Galería de una etapa: casos externos y el lienzo vigente, a 1440, 390 y 320. Sin recibos versionados; lo que decide qué
+// se fotografía y la comprobación de que nada se desplaza de costado se prueban en capturar-etapa.test.mjs.
 import { createServer } from "node:http";
 import { existsSync, lstatSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -14,14 +15,49 @@ const interFont = path.join(root, "node_modules/@fontsource-variable/inter/files
 const defaultCases = path.join(root, "scripts/capturas/etapa-8b.json");
 export const otpMaskStyle = 'input[inputmode="numeric"] { -webkit-text-security: disc; }';
 export const sideBySideFile = (entry, out = output) => path.join(out, entry.group, entry.id + "-" + entry.viewport.width + "x" + entry.viewport.height + "-lado-a-lado.png");
-export function boardChoices(file) {
+
+/// Los anchos de la galería: la compu, el teléfono y el teléfono más chico (traspaso 10). El de 320 no tiene tablero propio
+/// (responsive.md): se compara con el de 390, con el mismo alto, y su tablero se fotografía en el tamaño del de 390.
+export const viewports = Object.freeze({
+  desktop: Object.freeze({ width: 1440, height: 900 }),
+  phone: Object.freeze({ width: 390, height: 844 }),
+  narrow: Object.freeze({ width: 320, height: 844 }),
+});
+const approvedViewports = Object.values(viewports).map(({ width, height }) => width + "x" + height);
+
+function boardProps(file) {
   const html = readFileSync(file, "utf8");
   const attribute = html.match(/<script\b[^>]*\bdata-dc-script\b[^>]*\bdata-props='([^']+)'/);
   if (!attribute) throw new Error(`El tablero no declara data-props: ${file}`);
-  const props = JSON.parse(attribute[1]);
-  return Object.fromEntries(Object.entries(props)
+  return JSON.parse(attribute[1]);
+}
+export function boardChoices(file) {
+  return Object.fromEntries(Object.entries(boardProps(file))
     .filter(([key]) => !key.startsWith("$"))
     .map(([key, field]) => [key, field.options ?? [field.default]]));
+}
+/** El ancho con el que el lienzo dibuja el tablero (`$preview`): 390 en los del teléfono. */
+export const boardWidth = (file) => boardProps(file).$preview?.width;
+
+/// El tamaño del tablero de un caso: el suyo, salvo a 320, que se compara con el del teléfono.
+export function boardViewport(entry) {
+  return entry.viewport.width === viewports.narrow.width ? { ...viewports.phone } : entry.viewport;
+}
+
+/// «Sin desplazamiento lateral» (responsive.md, traspaso 10): la pantalla entra entera en su ancho, a 1440, 390 y 320. Se
+/// mide el documento y, como con sesión el que se desplaza es el contenido y no la página, también `main` y los diálogos
+/// abiertos (la hoja del teléfono). Lo que se desplaza adentro de su propia caja, como unas pestañas, no cuenta.
+/// Devuelve qué se desplaza de costado, o `null`.
+export async function sideScroll(page) {
+  const wide = await page.evaluate(() => [document.documentElement, ...document.querySelectorAll("main, [role=dialog], [role=alertdialog]")]
+    .filter((element) => element.scrollWidth > element.clientWidth)
+    .map((element) => {
+      const labelledBy = element.getAttribute("aria-labelledby");
+      const name = element.getAttribute("aria-label") ?? (labelledBy ? document.getElementById(labelledBy)?.textContent : null) ?? "";
+      const what = element === document.documentElement ? "la página" : element.localName === "main" ? "el contenido" : `el diálogo «${name.trim()}»`;
+      return `${what} mide ${element.scrollWidth} px de ancho en ${element.clientWidth}`;
+    }));
+  return wide.length ? wide.join("; ") : null;
 }
 
 export async function waitForAppFont(page) {
@@ -295,13 +331,15 @@ export async function composeSideBySide(browser, entry, files, target) {
   const left = size(files.board);
   const right = size(files.app);
   const propsText = Object.entries(entry.props ?? {}).map(([key, value]) => `${key}: ${value}`).join(" · ");
+  // A 320 la app no tiene el ancho de su tablero (el de 390): el rótulo lo dice.
+  const appText = entry.viewport.width === boardViewport(entry).width ? "App" : `App · ${entry.viewport.width} px`;
   const figure = (label, file) => `<figure><figcaption>${label}</figcaption><img src="${image(file)}"></figure>`;
   const page = await browser.newPage({ viewport: { width: left.width + right.width + 72, height: Math.max(left.height, right.height) + 80 }, deviceScaleFactor: 1 });
   try {
     await page.setContent(`<!doctype html><html><body style="margin:0;background:#ece6dc">
       <style>main{display:flex;gap:24px;padding:16px 24px 24px;align-items:flex-start}figure{margin:0}figcaption{font:600 14px/1.6 system-ui,sans-serif;color:#3b352d;margin-bottom:6px}
       img{display:block;box-shadow:0 0 0 1px #d8d0c4}</style>
-      <main>${figure(`Tablero · ${entry.board}${propsText ? ` · ${propsText}` : ""}`, files.board)}${figure("App", files.app)}</main></body></html>`);
+      <main>${figure(`Tablero · ${entry.board}${propsText ? ` · ${propsText}` : ""}`, files.board)}${figure(appText, files.app)}</main></body></html>`);
     await page.waitForFunction(() => [...document.images].every((img) => img.complete));
     mkdirSync(path.dirname(target), { recursive: true });
     await page.screenshot({ path: target, fullPage: true });
@@ -315,14 +353,16 @@ export async function composeSideBySide(browser, entry, files, target) {
 export async function buildManifest(casesFile = defaultCases) {
   return JSON.parse(readFileSync(path.resolve(root, casesFile), "utf8"));
 }
-export function validateManifest(manifest) {
+export function validateManifest(manifest, canvasRoot = canvas) {
   if (manifest.version !== 1 || !/^[0-9]+[a-z]?$/.test(manifest.stage) || !Array.isArray(manifest.cases) || !Array.isArray(manifest.pending)) throw new Error("Datos de captura inválidos");
   const seen = new Set();
   for (const entry of [...manifest.cases, ...manifest.pending]) {
     if (!/^[a-z0-9-]+$/.test(entry.id) || seen.has(entry.id) || !/^[A-Za-z0-9-]+$/.test(entry.board)) throw new Error("Caso inválido o repetido");
     seen.add(entry.id);
-    if (!["1440x900", "390x844"].includes(entry.viewport?.width + "x" + entry.viewport?.height)) throw new Error(entry.id + ": viewport no aprobado");
-    const choices = boardChoices(path.join(canvas, entry.board + ".dc.html"));
+    if (!approvedViewports.includes(entry.viewport?.width + "x" + entry.viewport?.height)) throw new Error(entry.id + ": viewport no aprobado");
+    const boardFile = path.join(canvasRoot, entry.board + ".dc.html");
+    if (entry.viewport.width === viewports.narrow.width && boardWidth(boardFile) !== viewports.phone.width) throw new Error(entry.id + ": a 320 se compara con un tablero de 390");
+    const choices = boardChoices(boardFile);
     for (const [key, value] of Object.entries(entry.props ?? {})) if (!choices[key]?.includes(value)) throw new Error(entry.id + ": estado ajeno al lienzo");
     if (entry.app && (entry.app.captureMode !== "harness" || !entry.app.path?.startsWith("/src/test/") || !entry.app.readySelector)) throw new Error(entry.id + ": fixture visual inválido");
     if (!entry.app && !entry.reason) throw new Error(entry.id + ": pendiente sin motivo");
@@ -357,7 +397,7 @@ export async function main(args) {
     browser = await chromium.launch({ headless: true, args: ["--no-proxy-server", "--host-resolver-rules=MAP localtest.me 127.0.0.1", "--unsafely-treat-insecure-origin-as-secure=" + manifest.issuer], ...(option(args, "--browser-path") ? { executablePath: option(args, "--browser-path") } : { channel: "chrome" }) });
     for (const entry of selected) {
       const context = await browser.newContext({ ...appContextOptions(entry.viewport), locale: "es-AR" });
-      const boardContext = await browser.newContext({ viewport: entry.viewport, deviceScaleFactor: 1, locale: "es-AR" });
+      const boardContext = await browser.newContext({ viewport: boardViewport(entry), deviceScaleFactor: 1, locale: "es-AR" });
       let stream;
       const failures = [];
       for (const each of [context, boardContext]) each.on("page", page => page.on("pageerror", () => failures.push("Error JavaScript")));
@@ -369,6 +409,8 @@ export async function main(args) {
       try {
         if (entry.app.responses.some(r => r.openStream)) stream = await startAssistantOpenStream(entry.app.responses, manifest.issuer);
         const board = await openBoard(boardContext, server.url, entry), app = await openApp(context, appUrl, entry, stream && { url: stream.url, origin: manifest.issuer });
+        const sideways = await sideScroll(app);
+        if (sideways) failures.push("se desplaza de costado a " + entry.viewport.width + ": " + sideways);
         if (failures.length) throw new Error(entry.id + ": " + failures.join("; "));
         mkdirSync(path.dirname(files.app), { recursive: true });
         await board.screenshot({ path: files.board }); await app.screenshot({ path: files.app });

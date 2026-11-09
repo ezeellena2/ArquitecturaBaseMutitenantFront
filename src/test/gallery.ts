@@ -23,7 +23,8 @@ export interface GalleryApp {
 }
 export interface GalleryCase {
   id: string; group: string; board: string; state: string; stateKey: string; props: Record<string, string>;
-  viewport: { width: 1440 | 390; height: 900 | 844 }; label: string; captureExtent: "viewport"; app: GalleryApp;
+  /** 1440 en la compu, 390 en el teléfono y 320 en el teléfono más chico, que se compara con el tablero de 390 (`at320`). */
+  viewport: { width: 1440 | 390 | 320; height: 900 | 844 }; label: string; captureExtent: "viewport"; app: GalleryApp;
   boardActions?: GalleryBoardAction[];
 }
 export interface GalleryPending {
@@ -65,6 +66,17 @@ export function galleryCase(group: string, board: string, state: string, app: Ga
   const stateKey = options.stateKey ?? "estado";
   return { id: options.id ?? slug(`${board}-${state}`), group, board, state, stateKey, props: options.props ?? { [stateKey]: state },
     viewport: viewportOf(board), label: state, captureExtent: "viewport", app, ...(options.boardActions ? { boardActions: options.boardActions } : {}) };
+}
+
+/**
+ * La misma pantalla a 320, el teléfono más chico (traspaso 10): no tiene tablero propio y se compara con el de 390, con sus
+ * mismos datos, pasos y alto (responsive.md). `capturar-etapa.mjs` la fotografía al lado de ese tablero y comprueba que no
+ * se desplaza de costado. Sirve también para un caso de la galería de un módulo, que tiene sus propios tipos.
+ */
+export function at320<T extends { id: string; viewport: { width: number; height: number } }>(entry: T):
+  Omit<T, "viewport"> & { viewport: { width: 320; height: T["viewport"]["height"] } } {
+  if (entry.viewport.width !== 390) throw new Error(`${entry.id}: a 320 se compara con un tablero de 390`);
+  return { ...entry, id: `${entry.id}-320`, viewport: { width: 320, height: entry.viewport.height } };
 }
 
 /** Lo que todavía no se fotografía, con su motivo: un estado que el lienzo no publicó o una tarea que falta programar. */
