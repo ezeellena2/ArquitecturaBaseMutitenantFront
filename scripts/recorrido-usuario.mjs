@@ -14,6 +14,7 @@ import { e8Definitions, e8ManualChecks, e8SourceRevision, runE8Journey } from ".
 import { loadAssistantJourneyDefinitions } from "./recorrido-usuario-asistente.mjs";
 import { e11Definitions, e11ManualChecks, runE11Journey } from "./recorrido-usuario-e11.mjs";
 import { e9Definitions, e9ManualChecks, factorSecretMasks, runE9Journey } from "./recorrido-usuario-e9.mjs";
+import { base12Definitions, base12ManualChecks, runBase12Journey } from "./recorrido-usuario-base12.mjs";
 import { runAssistantJourney } from "./assistant-real-ui.mjs";
 import { completeOperatorFactor } from "./platform-factor-real.mjs";
 
@@ -602,6 +603,11 @@ async function runWidth({ width, context, env, record, output, signal }) {
   // E9 en la pestaña de Plataforma: el alta de otro operador, «Confirmá que sos vos», restablecer, límites y Auditoría.
   await runE9Journey({ platformPage, width, env, base: baseUrl, record, signOut, login, requestCode, verify,
     awaitPlatformHome: waitForPlatformHome, operator });
+  // Base de la 12 en las mismas pestañas: la campana de los tres accesos, una tabla, una fecha y un botón por área, el otro
+  // acceso, la baja, el borrado de la cuenta propia, «Cargar teléfonos» con su casilla y cada área a 320. La persona es la
+  // de los pasos 01 y 14, con el nombre que guardó ahí; la organización y su Dueña, las de la E7.
+  await runBase12Journey({ page, platformPage, width, env, base: baseUrl, record, signOut, awaitApp, login, requestCode, verify,
+    owner: businessEmail, organization, person: { email, name: "Alex Recorrido" }, signal });
   // Salida real de la sesión de Plataforma, sin tocar cookies a mano entre recorridos.
   await platformPage.setViewportSize(viewport(1440)); await signOut(platformPage, "Plataforma");
   await platformPage.close(); await page.close();
@@ -615,9 +621,9 @@ export async function main({ build = true, widths: selectedWidths = widths } = {
   await mkdir(output, { recursive: true });
   const steps = definitions.map(([id, title, expected]) => ({ id, title, expected }));
   steps.splice(29, 0, ...e8Definitions);
-  steps.push(...await loadAssistantJourneyDefinitions(), ...e11Definitions, ...e9Definitions);
-  const report = { date, stage: "Etapas 7, 8, 8b, 11 y 9", widths: selectedWidths, sourceRevision: e8SourceRevision,
-    manual: [...e8ManualChecks, "Anthropic real: cargar la clave y probar el proveedor externo.", ...e11ManualChecks, ...e9ManualChecks], startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: steps.map((step) => ({ ...step, results: selectedWidths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
+  steps.push(...await loadAssistantJourneyDefinitions(), ...e11Definitions, ...e9Definitions, ...base12Definitions);
+  const report = { date, stage: "Etapas 7, 8, 8b, 11, 9 y base de la 12", widths: selectedWidths, sourceRevision: e8SourceRevision,
+    manual: [...e8ManualChecks, "Anthropic real: cargar la clave y probar el proveedor externo.", ...e11ManualChecks, ...e9ManualChecks, ...base12ManualChecks], startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: steps.map((step) => ({ ...step, results: selectedWidths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
   const persist = async () => {
     await writeFile(path.join(output, "resultados.json"), `${JSON.stringify(report, null, 2)}\n`);
     await writeFile(path.join(output, "index.html"), renderIndex(report));

@@ -9,6 +9,8 @@ import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } fro
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
 import { botOption, e11Definitions, e11ManualChecks, nationalPhone, outboundCount, runE11Journey } from "./recorrido-usuario-e11.mjs";
 import { e9Definitions, e9ManualChecks, factorSecretMasks, newcomerOf, operatorNameOf, runE9Journey } from "./recorrido-usuario-e9.mjs";
+import { base12Definitions, base12ManualChecks, bellLabel, importedPhoneOf, invitationLinkFrom, isFullDateTime, runBase12Journey, whileHeld,
+  workingButtonProblems, workingButtonState } from "./recorrido-usuario-base12.mjs";
 
 test("la selección de ancho conserva el recorrido completo por defecto y permite sólo un ancho vigente", () => {
   assert.deepEqual(parseJourneyArguments([]), { build: true, widths: [1440, 390] });
@@ -404,5 +406,115 @@ test("sin las órdenes privadas del preparador, E9 no abre pantallas ni se decla
   const record = async () => { touched.push("record"); };
   await assert.rejects(runE9Journey({ platformPage: page, width: 1440, env: {}, base: baseUrl, record, signOut: async () => {}, login: async () => {},
     requestCode: async () => "", verify: async () => ({}), awaitPlatformHome: async () => {}, operator: "e2e-a3-operator@example.test" }), /órdenes privadas/);
+  assert.deepEqual(touched, []);
+});
+
+test("la base de la 12 tiene sus pasos en orden, cubre la I4 por área y deja el bot real de WhatsApp para probar a mano", () => {
+  assert.deepEqual(base12Definitions.map((step) => step.id), Array.from({ length: 14 }, (_, index) => `B12-${String(index + 1).padStart(2, "0")}`));
+  for (const step of base12Definitions) assert.ok(step.title.startsWith("B12 · ") && step.expected && !step.controlled);
+  const titles = base12Definitions.map((step) => step.title.slice("B12 · ".length));
+  // La campana de los tres accesos; una tabla, una fecha y un botón, y una pantalla a 320, en cada área.
+  for (const area of ["la organización", "la persona", "Plataforma"]) assert.ok(titles.includes(`La campana de ${area}`), area);
+  for (const area of ["Organización", "Persona", "Plataforma"]) {
+    assert.ok(titles.includes(`${area}: una tabla, una fecha y un botón`), area);
+    assert.ok(titles.includes(`${area} a 320`), area);
+  }
+  for (const title of ["Un link del otro acceso", "Dar de baja y reactivar", "Borrar mi cuenta y cancelar el borrado", "Cargar teléfonos sin la casilla", "Cargar teléfonos con la casilla"])
+    assert.ok(titles.includes(title), title);
+  assert.ok(base12Definitions.find((step) => step.title.endsWith("sin la casilla")).expected.includes("WhatsApp.PhoneImport.ConsentRequired"));
+  assert.ok(base12ManualChecks.some((item) => item.includes("«Entrar a mi cuenta»") && item.includes("/login")));
+  assert.ok(base12ManualChecks.some((item) => item.startsWith("WhatsApp real") && item.includes("Cargar teléfonos")));
+});
+
+test("la campana se nombra con lo que tiene sin leer y una fecha se ve completa, con su año y su hora", () => {
+  assert.equal(bellLabel(0), "Avisos");
+  assert.equal(bellLabel(3), "Avisos: 3");
+  for (const wrong of [-1, 1.5, "2"]) assert.throws(() => bellLabel(wrong));
+  for (const text of ["09/11/2026 14:05", " 01/01/2027 00:00\n"]) assert.equal(isFullDateTime(text), true, text);
+  for (const text of ["09/11/26 14:05", "09/11/2026", "9/11/2026 14:05", "09/11/2026 14:05:30", "hace 2 horas", "hoy 14:05", "11/09/2026 2:05 PM"])
+    assert.equal(isFullDateTime(text), false, text);
+});
+
+test("el enlace de una invitación sale de su .eml, en el origen del front y con el token en el fragmento", () => {
+  const eml = (line) => "To: e2e-b12@example.test\r\nContent-Type: multipart/alternative; boundary=frontera\r\n\r\n--frontera\r\n"
+    + `Content-Type: text/plain; charset=utf-8\r\n\r\nTe invitaron.\r\n${line}\r\n--frontera\r\nContent-Type: text/html\r\n\r\n<p>Te invitaron.</p>\r\n--frontera--\r\n`;
+  const link = `${baseUrl.origin}/invitacion#abc_DEF-123`;
+  assert.equal(invitationLinkFrom(eml(link), baseUrl), link);
+  assert.equal(invitationLinkFrom(eml("Sin enlace."), baseUrl), null);
+  assert.throws(() => invitationLinkFrom(eml("https://otro.example.test/invitacion#abc"), baseUrl), /origen del front/);
+});
+
+test("la base de la 12 carga en «Cargar teléfonos» un celular sintético propio por ancho, que no usa otro paso", () => {
+  const phones = [1440, 390].map(importedPhoneOf);
+  assert.equal(new Set(phones).size, 2);
+  for (const phone of phones) {
+    assert.match(phone, /^\+54911345678\d{2}$/u, "Sintético de la fixture.");
+    assert.ok(Number(phone.slice(-2)) > 92 && !phone.endsWith("99"), "El resto del recorrido va del 80 al 92 y el 99 es del operador.");
+    assert.match(nationalPhone(phone), /^11 3456-78\d{2}$/u);
+  }
+});
+
+test("un botón que trabaja queda apagado, con el aro, su gerundio y su texto, sin atenuarse ni achicarse", () => {
+  const expected = { label: "Invitar", pendingLabel: "Invitando…", width: 80 };
+  const working = { disabled: true, busy: "true", ring: true, text: "InvitarInvitando…", opacity: "1", width: 80 };
+  assert.deepEqual(workingButtonProblems(working, expected), []);
+  assert.deepEqual(workingButtonProblems({ ...working, width: 96 }, expected), [], "Si el gerundio es más largo, crece lo justo.");
+  for (const [patch, problem] of [[{ disabled: false }, "acepta otro clic"], [{ busy: null }, "no avisa que trabaja"], [{ ring: false }, "no tiene el aro"],
+    [{ text: "Invitar" }, "no dice «Invitando…»"], [{ text: "Invitando…" }, "perdió su texto «Invitar»"], [{ opacity: "0.5" }, "se atenúa"], [{ width: 60 }, "se achica"]])
+    assert.deepEqual(workingButtonProblems({ ...working, ...patch }, expected), [problem], problem);
+});
+
+test("retener el pedido muestra el botón trabajando y después lo deja seguir, sin cambiarlo", async () => {
+  // Una página local con el botón de Button.tsx mientras guarda; el pedido lo responde la ruta de la prueba, no el producto.
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    page.setDefaultTimeout(2_000);
+    const served = [];
+    const html = `<main><button type="button" data-slot="button">Guardar</button><p role="status"></p><button type="button">Mudo</button></main><script>
+      const button = document.querySelector('[data-slot="button"]');
+      button.addEventListener("click", async () => {
+        button.disabled = true; button.dataset.pending = "true"; button.setAttribute("aria-busy", "true");
+        button.innerHTML = '<span aria-hidden="true" style="visibility:hidden">Guardar</span><span data-slot="button-ring"></span><span>Guardando…</span>';
+        const reply = await fetch("/api/guardar", { method: "POST" });
+        button.disabled = false; delete button.dataset.pending; button.removeAttribute("aria-busy"); button.textContent = "Guardar";
+        document.querySelector('[role="status"]').textContent = "Guardado " + reply.status;
+      });</script>`;
+    await page.route(`${baseUrl.origin}/**`, (route) => {
+      if (new URL(route.request().url()).pathname !== "/api/guardar") return route.fulfill({ contentType: "text/html; charset=utf-8", body: html });
+      served.push(route.request().method());
+      return route.fulfill({ status: 204 });
+    });
+    await page.goto(new URL("/prueba", baseUrl).href);
+    const button = page.getByRole("button", { name: "Guardar", exact: true });
+    const width = (await button.boundingBox()).width;
+    await whileHeld(page, { method: "POST", path: "/api/guardar" }, () => button.click(), async () => {
+      assert.deepEqual(served, [], "Mientras se retiene, el pedido no llegó.");
+      const state = await workingButtonState(page.locator('[data-slot="button"][data-pending="true"]'));
+      assert.deepEqual(workingButtonProblems(state, { label: "Guardar", pendingLabel: "Guardando…", width }), []);
+    });
+    await page.getByRole("status").filter({ hasText: "Guardado 204" }).waitFor();
+    assert.deepEqual(served, ["POST"]);
+    // Un clic que no manda nada no se queda esperando, y la ruta que retiene no queda puesta.
+    await assert.rejects(whileHeld(page, { method: "POST", path: "/api/guardar" }, () => page.getByRole("button", { name: "Mudo", exact: true }).click(),
+      async () => { throw new Error("Sin pedido no hay nada que mirar."); }, { timeout: 300 }), /no mandó su pedido/);
+    await page.evaluate(() => { document.querySelector('[role="status"]').textContent = ""; });
+    await button.click();
+    await page.getByRole("status").filter({ hasText: "Guardado 204" }).waitFor();
+    assert.deepEqual(served, ["POST", "POST"]);
+  } finally { await browser.close(); }
+});
+
+test("sin el correo aislado del entorno o sin las sesiones del recorrido, la base de la 12 no abre pantallas ni se declara aprobada", async () => {
+  const touched = [];
+  const page = new Proxy({}, { get: (_, name) => { touched.push(String(name)); return () => {}; } });
+  const record = async () => { touched.push("record"); };
+  const env = { files: async () => [], messages: async () => [], code: async () => "" };
+  const journey = { page, platformPage: page, width: 1440, env, base: baseUrl, record, signOut: async () => {}, awaitApp: async () => {}, login: async () => {},
+    requestCode: async () => "", verify: async () => ({}), owner: "e2e-recorrido-empresa@example.test", organization: "Recorrido 1440",
+    person: { email: "e2e-recorrido-persona@example.test", name: "Alex Recorrido" } };
+  await assert.rejects(runBase12Journey({ ...journey, env: {} }), /correo aislado/);
+  await assert.rejects(runBase12Journey({ ...journey, person: undefined }), /persona del paso 14/);
+  await assert.rejects(runBase12Journey({ ...journey, login: undefined }), /sesiones/);
   assert.deepEqual(touched, []);
 });
