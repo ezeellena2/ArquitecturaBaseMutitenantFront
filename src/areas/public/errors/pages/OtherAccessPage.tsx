@@ -1,9 +1,10 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckIcon } from "lucide-react";
 import type { MeResponse } from "@/shared/api/types";
 import { initials } from "@/shared/lib/initials";
 import { cn } from "@/shared/lib/utils";
+import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { BuildingIcon, UserIcon } from "@/shared/ui/icons";
@@ -20,6 +21,12 @@ export function OtherAccessPage({ target, returnTo, organizations }: {
 }) {
   const { t } = useTranslation("otherAccess");
   const { switchAccess, isSwitching, hasError } = useSwitchAccess();
+  const { hideActiveSection } = useAppChrome();
+  // Tableros M-Otro-Acceso y M-Otro-Acceso-Persona, como M-Error-Org: la barra de abajo no marca ninguna sección.
+  useEffect(() => {
+    hideActiveSection?.(true);
+    return () => hideActiveSection?.(false);
+  }, [hideActiveSection]);
   const [chosen, setChosen] = useState(organizations[0]?.id ?? "");
   const groupId = useId();
   const business = target === "business";
