@@ -26,7 +26,7 @@ export function OtherAccessPage({ target, returnTo, organizations }: {
   const title = !business ? t("personal") : organizations.length === 1 ? t("business", { name: organizations[0].name }) : t("someBusiness");
   const Icon = business ? BuildingIcon : UserIcon;
 
-  return <div data-slot="other-access" className="flex flex-1 items-center justify-center p-6 max-md:items-stretch max-md:p-5">
+  return <div data-slot="other-access" className="flex min-h-full flex-1 items-center justify-center p-6 max-md:items-stretch max-md:p-5">
     <div className="flex w-100 max-w-full flex-col items-center gap-4 text-center max-md:w-full max-md:justify-center max-md:gap-4.5">
       <span aria-hidden="true" className="inline-flex size-16 shrink-0 items-center justify-center rounded-full bg-[var(--s3)] text-[var(--t2)]">
         <Icon className="size-6.5" />
