@@ -43,6 +43,18 @@ test("un caso del teléfono pasa a 320 con sus datos y pasos, y se compara con e
   } finally { rmSync(canvas, { recursive: true, force: true }); }
 });
 
+// La base de una etapa tiene su galería (scripts/capturas/etapa-base-12.json, en docs/design/capturas/etapa-base-12/).
+test("la base de una etapa es una etapa de la galería; otro nombre no", () => {
+  const canvas = canvasWith({ "Prueba-Editar": { width: 1440, height: 900 } });
+  try {
+    const desktop = galleryCase("bot", "Prueba-Editar", "Editar opción", app);
+    assert.equal(validateManifest({ ...manifest(desktop), stage: "base-12" }, canvas).stage, "base-12");
+    for (const stage of ["base12", "base-", "otra-12", "12-base"]) {
+      assert.throws(() => validateManifest({ ...manifest(desktop), stage }, canvas), /Datos de captura inválidos/);
+    }
+  } finally { rmSync(canvas, { recursive: true, force: true }); }
+});
+
 test("a 320 nada se desplaza de costado: ni la página, ni el contenido, ni un diálogo; sí lo que va en su propia caja", async () => {
   // DOM local con la forma del marco: con sesión, el que se desplaza es `main`, no la página. Sin red ni app.
   const browser = await chromium.launch({ headless: true });
