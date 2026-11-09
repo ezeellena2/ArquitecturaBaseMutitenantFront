@@ -381,8 +381,8 @@ export const screens = [
   {
     "id": "enlace",
     "chapter": "entra",
-    "title": "Enlace del bot de WhatsApp",
-    "route": "/login/enlace",
+    "title": "Ingreso desde el bot de WhatsApp",
+    "route": "/login",
     "boards": [
       "Enlace",
       "M-Enlace"
@@ -392,13 +392,13 @@ export const screens = [
       "Sistema"
     ],
     "actions": [
-      "El enlace de un solo uso que manda el bot para entrar.",
-      "Toca «Continuar».",
-      "Espera a que se abra la sesión."
+      "El bot contesta con «Entrar a mi cuenta», que abre el ingreso.",
+      "Elige WhatsApp, escribe su número y toca «Enviar código».",
+      "Escribe el código y toca «Verificar»."
     ],
     "source": "docs/design/guia/recorrido.py:38",
     "actualRoutes": [
-      "/login/enlace"
+      "/login"
     ],
     "area": "identity",
     "chapterTitle": "Entra o crea su cuenta",
@@ -2665,9 +2665,9 @@ export const guidedCases = [
     "id": "GUIA-el-bot-y-su-enlace-01",
     "area": "system-delivery",
     "actor": "Lucía · WhatsApp",
-    "action": "Escribe «Hola» y toca «Entrar».",
+    "action": "Escribe «Hola» y toca «Entrar a mi cuenta».",
     "route": "—",
-    "expected": "Le escribe «Hola» al número de la plataforma. El bot le contesta con un enlace de un solo uso, que vence en 10 minutos.",
+    "expected": "Le escribe «Hola» al número de la plataforma. El bot le contesta con «Entrar a mi cuenta», que abre el ingreso: ningún mensaje lleva un enlace para entrar.",
     "source": "docs/design/recorridos/el-bot-y-su-enlace.json#pasos/1",
     "existingScripts": [
       "scripts/recorrido-usuario-whatsapp.mjs"
@@ -2687,9 +2687,9 @@ export const guidedCases = [
     "id": "GUIA-el-bot-y-su-enlace-02",
     "area": "identity",
     "actor": "Lucía · Dueña · web",
-    "action": "Toca «Continuar».",
-    "route": "/login/enlace",
-    "expected": "El enlace entra como persona; después puede ir a su organización desde Perfiles. Si no pidió entrar, cierra la página.",
+    "action": "Elige WhatsApp, escribe su número y toca «Enviar código».",
+    "route": "/login",
+    "expected": "El botón abre el ingreso. Elige WhatsApp y escribe su número: el código se pide desde acá, nunca desde el chat.",
     "source": "docs/design/recorridos/el-bot-y-su-enlace.json#pasos/2",
     "existingScripts": [
       "scripts/recorrido-usuario-whatsapp.mjs"
@@ -2700,16 +2700,16 @@ export const guidedCases = [
     "existingE2EGroups": [],
     "flow": "el-bot-y-su-enlace",
     "step": 2,
-    "title": "Confirma que es ella",
-    "board": "Enlace"
+    "title": "Pide el código en la web",
+    "board": "Ingreso"
   },
   {
     "id": "GUIA-el-bot-y-su-enlace-03",
     "area": "identity",
     "actor": "Sistema",
-    "action": "Espera a que se abra la sesión.",
-    "route": "/login/enlace",
-    "expected": "Un mensaje nunca abre la sesión solo: hace falta tocar «Continuar».",
+    "action": "Escribe el código y toca «Verificar».",
+    "route": "/login",
+    "expected": "Le llega por WhatsApp un código de seis números, de un solo uso.",
     "source": "docs/design/recorridos/el-bot-y-su-enlace.json#pasos/3",
     "existingScripts": [
       "scripts/recorrido-usuario-whatsapp.mjs"
@@ -2720,8 +2720,8 @@ export const guidedCases = [
     "existingE2EGroups": [],
     "flow": "el-bot-y-su-enlace",
     "step": 3,
-    "title": "Se abre la sesión",
-    "board": "Enlace"
+    "title": "Pone el código",
+    "board": "Ingreso"
   },
   {
     "id": "GUIA-el-bot-y-su-enlace-04",
