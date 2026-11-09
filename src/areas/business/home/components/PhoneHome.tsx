@@ -6,6 +6,7 @@ import { Link } from "react-router";
 import type { HomeCompanyCard, HomeOrganizationSummary } from "@/shared/api/types";
 import { initials } from "@/shared/lib/initials";
 import { validationConstraints } from "@/shared/api/generated/validation";
+import { EmailText } from "@/shared/ui/format/EmailText";
 import { NumberText } from "@/shared/ui/format/NumberText";
 import { PhoneNotificationBell } from "@/layouts/notifications/NotificationBell";
 import { companyDetail } from "./companyDetail";
@@ -105,8 +106,8 @@ function YourCompanies({ companies }: { companies: readonly HomeCompanyCard[] })
         <Link to={`/org/empresas/${company.companyId}`} className={`${rowClass} focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]`}>
           <span aria-hidden="true" className="inline-flex size-10 shrink-0 items-center justify-center rounded-[0.625rem] bg-[var(--marca-t)] text-[0.875rem] font-bold text-[var(--marca-tx)]">{initials(company.name)}</span>
           <span className="flex min-w-0 flex-1 flex-col gap-0.5 leading-[normal]">
-            <span className="truncate text-[0.9375rem] font-semibold text-[var(--t1)]">{company.name}</span>
-            <span className="truncate text-[0.8125rem] text-[var(--t3)]">{companyDetail(company, t, format)}</span>
+            <span className="text-[0.9375rem] font-semibold text-[var(--t1)] [overflow-wrap:anywhere]">{company.name}</span>
+            <span className="text-[0.8125rem] text-[var(--t3)] [overflow-wrap:anywhere]">{companyDetail(company, t, format)}</span>
           </span>
           <ChevronRight aria-hidden="true" className="size-4.5 shrink-0 text-[var(--t3)]" />
         </Link>
@@ -137,8 +138,8 @@ function ToResolveRows({ groups }: { groups: readonly PendingRowGroup[] }) {
           return <li key={row.key} className={`${rowClass} ${rowLine}`}>
             <span aria-hidden="true" className={`inline-flex size-10 shrink-0 items-center justify-center rounded-full ${toneCircle[tone(row)]}`}><Icon className="size-5" /></span>
             <span className="flex min-w-0 flex-1 flex-col gap-0.5 leading-[normal]">
-              <span className="truncate text-[0.9375rem] font-semibold text-[var(--t1)]">{row.title}</span>
-              <span className={`truncate text-[0.8125rem] font-medium ${toneText[tone(row)]}`}>{row.phoneState}</span>
+              <span className="text-[0.9375rem] font-semibold text-[var(--t1)] [overflow-wrap:anywhere]"><EmailText value={row.title} /></span>
+              <span className={`text-[0.8125rem] font-medium [overflow-wrap:anywhere] ${toneText[tone(row)]}`}>{row.phoneState}</span>
             </span>
             <Link to={row.to} className="inline-flex h-8.5 shrink-0 items-center rounded-[1.0625rem] bg-[var(--marca-t)] px-3.5 text-[0.875rem] font-semibold text-[var(--marca-tx)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">{row.action}</Link>
           </li>;

@@ -27,7 +27,7 @@ export function BottomNavBadge({ count }: { count: number }) {
 
 // Tableros M-* (.ap-nav): hasta cuatro secciones y «Más». La elegida, en verde sobre una píldora clara.
 export function BottomNav({ label, items }: { label: string; items: readonly BottomNavItem[] }) {
-  return <nav aria-label={label} data-slot="bottom-nav" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+  return <nav aria-label={label} data-slot="bottom-nav" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(min-content, 1fr))` }}
     className="grid shrink-0 border-t border-[var(--borde)] bg-[var(--superficie)] px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
     {items.map((item) => {
       return <Link key={item.key} to={item.to} aria-current={item.active ? "page" : undefined}
@@ -38,7 +38,9 @@ export function BottomNav({ label, items }: { label: string; items: readonly Bot
             : item.icon ?? null}
           {item.badge ?? null}
         </span>
-        {item.label}
+        {/* Columnas iguales, como el tablero; a 320, un rótulo largo («Organizaciones») ocupa lo que mide y las demás se
+            reparten el resto, sin partir una palabra ni pisar la de al lado. */}
+        <span className="text-center">{item.label}</span>
         {/* El ícono no se lee: la cantidad se repite para el lector, después del rótulo («Chats 2»). */}
         {item.badge ? <>{" "}<span className="sr-only">{item.badge}</span></> : null}
       </Link>;

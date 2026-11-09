@@ -67,7 +67,7 @@ export function BroadcastPage({ me }: ModuleContentProps) {
 
   const name = (recipient: WhatsAppRecipientResponse) => recipient.contactName ?? (format.isLoading ? "" : format.formatPhone(recipient.displayNumber));
   // «No llegó» con su ⓘ: el motivo que informó Meta y qué hacer (tablero WA-Difusion-Resultados, «Por qué no llegó»).
-  const status = (recipient: WhatsAppRecipientResponse) => <span className="inline-flex max-w-full items-center gap-1">
+  const status = (recipient: WhatsAppRecipientResponse) => <span>
     <StatusBadge tones={recipientStatusTones} value={recipient.status} />
     {recipient.status === "Failed" ? <InfoButton label={t("whatsapp:broadcasts.failure.why")} onClick={() => setFailure(recipient)} /> : null}
   </span>;

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 import { Avatar } from "../Avatar";
+import { PhoneIcon } from "../icons";
 
 // Tableros M-* (.ap-fila): filas de borde a borde con hasta tres líneas, con la altura normal de la letra; la línea fina
 // de abajo arranca donde empieza el texto si hay un círculo a la izquierda. Un texto largo baja de renglón y la fila crece,
@@ -22,7 +23,8 @@ export function ListRow({ leading, title, meta, lines = [], trailing, to, onClic
   const body = <>
     {leading}
     <span className="flex min-w-0 flex-1 flex-col gap-0.5 pr-2.5 leading-[normal]">
-      <span className="flex items-start justify-between gap-2">
+      {/* Por debajo de 360 (el teléfono de 320), el dato de la derecha baja debajo del título: si no, lo aprieta y lo corta. */}
+      <span className="flex items-start justify-between gap-2 max-[22.5rem]:flex-col max-[22.5rem]:gap-0.5">
         <span className="min-w-0 flex-1 text-[0.96875rem] font-medium text-[var(--t1)] [overflow-wrap:anywhere]">{title}</span>
         {meta ? <span className="shrink-0 pt-0.5 text-[0.78125rem] text-[var(--t3)]">{meta}</span> : null}
       </span>
@@ -43,7 +45,9 @@ export function ListRow({ leading, title, meta, lines = [], trailing, to, onClic
   </li>;
 }
 
-/// El cuadrado de una persona en una fila (`Avatar`, en la marca); una invitación sin nombre lleva «@» en gris.
-export function RowAvatar({ name, invitation }: { name: string; invitation?: boolean }) {
+/// El cuadrado de una persona en una fila (`Avatar`, en la marca); una invitación sin nombre, en gris: «@» si es por correo
+/// y el teléfono si es por teléfono (M-Usuarios).
+export function RowAvatar({ name, invitation, phone }: { name: string; invitation?: boolean; phone?: boolean }) {
+  if (invitation && phone) return <Avatar size="row" muted initials="" icon={<PhoneIcon className="size-5" />} />;
   return <Avatar size="row" muted={invitation} initials={invitation ? "@" : name.trim().charAt(0).toUpperCase()} />;
 }

@@ -60,7 +60,7 @@ export function broadcastPhoneRow(broadcast: WhatsAppBroadcastResponse, t: TFunc
   return <ListRow key={broadcast.id} to={broadcastPath(broadcast.id)} title={broadcast.name} meta={dateCell(broadcast)}
     lines={[
       [broadcast.template.name, audienceLabel(broadcast.audience, t), t("whatsapp:broadcasts.contacts", countOf(format, broadcast.recipients))].join(" · "),
-      <span key="status" className="inline-flex max-w-full items-center gap-1">
+      <span key="status">
         <StatusBadge tones={broadcastStatusTones} value={broadcast.status} className="text-[0.8125rem] text-[var(--t2)]" />
         {results ? <span>{`· ${results}`}</span> : null}
       </span>,

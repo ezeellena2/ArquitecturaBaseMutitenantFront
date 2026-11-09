@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
 
 export interface AvatarProps extends Omit<ComponentProps<"span">, "children"> {
@@ -7,6 +7,8 @@ export interface AvatarProps extends Omit<ComponentProps<"span">, "children"> {
   size?: "small" | "default" | "medium" | "large" | "nav" | "row" | "profile";
   /** Una invitación sin nombre (M-Usuarios, `.w-av.g`): «@» en gris, sin el degradé. */
   muted?: boolean;
+  /** En vez de la inicial, un ícono: una invitación por teléfono lleva el teléfono (M-Usuarios). */
+  icon?: ReactNode;
 }
 
 // «Criterio · Marco» (173): un cuadrado con la inicial, relleno de la marca y la letra blanca, sin círculo ni degradé, igual
@@ -28,6 +30,7 @@ export function Avatar({
   label,
   size = "default",
   muted = false,
+  icon,
   className,
   ...props
 }: AvatarProps) {
@@ -46,7 +49,7 @@ export function Avatar({
       )}
       {...props}
     >
-      {initials}
+      {icon ?? initials}
     </span>
   );
 }

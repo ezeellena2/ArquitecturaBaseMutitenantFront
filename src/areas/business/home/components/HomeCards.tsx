@@ -21,7 +21,7 @@ function Card({ to, icon, title, detail }: { to: string; icon: ReactNode; title:
     <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[0.625rem] bg-[var(--marca-t)] text-[0.78125rem] font-bold text-[var(--marca-tx)]">{icon}</span>
     <span className="flex min-w-0 flex-1 flex-col gap-0.75">
       <span className="text-[0.875rem] font-semibold">{title}</span>
-      <span className="truncate text-[0.78125rem] text-[var(--t3)]">{detail}</span>
+      <span className="text-[0.78125rem] text-[var(--t3)] [overflow-wrap:anywhere]">{detail}</span>
     </span>
     <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)]" />
   </Link>;

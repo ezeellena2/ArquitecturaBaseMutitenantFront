@@ -42,7 +42,7 @@ export function createContactColumns(t: TFunction): Column<WhatsAppContactRespon
 /// M-WA-Contactos: el círculo, el nombre con la última conversación a la derecha, el número (y si está vinculado) y, en la
 /// línea de abajo, las etiquetas y el consentimiento con su punto. Sin nombre, el número va de título.
 export function contactPhoneRow(contact: WhatsAppContactResponse, t: TFunction, trailing?: ReactNode): ReactNode {
-  const consent = <span className="inline-flex max-w-full items-center gap-1">
+  const consent = <span>
     {contact.tags.length > 0 ? <span>{contact.tags.join(", ")}{" ·"}</span> : null}
     <StatusBadge tones={consentTones} value={contact.consent} className="text-[0.78125rem] text-[var(--t2)]" />
   </span>;

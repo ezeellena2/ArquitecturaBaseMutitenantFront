@@ -9,7 +9,7 @@ import { AppNoticesProvider } from "./AppNotices";
 import { BottomNav } from "./BottomNav";
 import { Fab } from "./Fab";
 import { FixedActions } from "./FixedActions";
-import { ListRow } from "./ListRow";
+import { ListRow, RowAvatar } from "./ListRow";
 import { GroupTitle, SettingsGroup, SettingsItem } from "./SettingsGroup";
 
 // Tableros M-* (.ap-* del lienzo): las piezas del marco de app del teléfono.
@@ -39,7 +39,8 @@ describe("marco de app del teléfono", () => {
 
     const nav = screen.getByRole("navigation", { name: "Secciones" });
     expect(nav).toHaveClass("grid", "border-t");
-    expect(nav).toHaveStyle({ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" });
+    // Columnas iguales, como el tablero; a 320, cada una mide al menos su rótulo («Organizaciones»), sin partir palabras.
+    expect(nav).toHaveStyle({ gridTemplateColumns: "repeat(2, minmax(min-content, 1fr))" });
     expect(screen.getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByRole("link", { name: "Más" })).toHaveClass("text-[var(--marca-tx)]", "font-semibold");
     // 173: la inicial va en un cuadrado relleno de la marca, sin círculo ni degradé, como en la compu.
@@ -81,6 +82,29 @@ describe("marco de app del teléfono", () => {
     // tercera línea en 12,5.
     expect(screen.getByText("tomas@delta.test")).toHaveClass("text-[0.875rem]", "text-[var(--t3)]");
     expect(screen.getByText("Activo · Delta S.A.")).toHaveClass("text-[0.78125rem]", "text-[var(--t3)]");
+  });
+
+  // A 320 (sin tablero propio) se lee como el de 390: el texto entero, partido entre palabras (174), y el dato de la
+  // derecha debajo del título para no apretarlo.
+  it("a 320, una fila no corta su texto y baja la fecha debajo del título", () => {
+    render(<ul><ListRow leading={<span>{"L"}</span>} title="Lucía Fernández" meta="27/09/2026 09:50" lines={["lucia@delta.test", "Activa"]} /></ul>);
+    for (const text of ["Lucía Fernández", "lucia@delta.test", "Activa"]) expect(screen.getByText(text)).not.toHaveClass("truncate");
+    expect(screen.getByText("Lucía Fernández").parentElement).toHaveClass("max-[22.5rem]:flex-col");
+  });
+
+  it("el subtítulo de la barra de arriba va entero", () => {
+    render(<MemoryRouter><AppBar title="Delta S.A." subtitle="CUIT 30-71234567-1 · Buenos Aires (GMT−3)" /></MemoryRouter>);
+    expect(screen.getByText("CUIT 30-71234567-1 · Buenos Aires (GMT−3)")).not.toHaveClass("truncate");
+  });
+
+  // M-Usuarios: una invitación sin nombre lleva «@» si es por correo y el teléfono si es por teléfono.
+  it("el cuadrado de una invitación por teléfono lleva el teléfono", () => {
+    const { container, rerender } = render(<RowAvatar name="" invitation phone />);
+    expect(container.querySelector("[data-slot=avatar] svg")).not.toBeNull();
+    expect(container).not.toHaveTextContent("@");
+    rerender(<RowAvatar name="" invitation />);
+    expect(container.querySelector("[data-slot=avatar] svg")).toBeNull();
+    expect(container).toHaveTextContent("@");
   });
 
   it("los ajustes van en grupos blancos con su título arriba", () => {

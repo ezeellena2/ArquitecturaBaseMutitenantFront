@@ -36,7 +36,7 @@ export function companyPhoneRow(company: CompanyResponse, t: TFunction, format: 
   return <ListRow key={company.id} to={`/org/empresas/${encodeURIComponent(company.id)}`} title={company.name}
     meta={t("companies:phone.members", countOf(format, company.memberCount))}
     lines={[company.taxId ? <TaxIdText key="taxId" value={company.taxId} withType /> : t("companies:withoutTaxId"),
-      <span key="state" className="inline-flex max-w-full items-center gap-1"><StatusBadge tones={companyStatusTones} value={company.status} className="text-[0.8125rem] text-[var(--t2)]" />
+      <span key="state"><StatusBadge tones={companyStatusTones} value={company.status} className="text-[0.8125rem] text-[var(--t2)]" />
         <span>{" · "}<TimeZoneText value={company.timeZoneId} /></span></span>]}
     trailing={trailing} />;
 }

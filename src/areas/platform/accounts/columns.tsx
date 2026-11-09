@@ -5,6 +5,7 @@ import type { PlatformAccountResponse } from "@/shared/api/types";
 import { defineStatusTones } from "@/shared/format/statusTones";
 import { Avatar } from "@/shared/ui/Avatar";
 import { ListRow } from "@/shared/ui/app/ListRow";
+import { EmailText } from "@/shared/ui/format/EmailText";
 import type { Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
@@ -23,11 +24,17 @@ function profiles(account: PlatformAccountResponse, t: TFunction): ReactNode {
 }
 export function accountPhoneRow(account: PlatformAccountResponse, t: TFunction, trailing: ReactNode): ReactNode {
   const invitation = isOperatorInvitation(account); const named = Boolean(account.displayName);
-  const status = <span className="inline-flex max-w-full items-center gap-1"><StatusBadge tones={accountStateTones} value={account.state} />{" · "}{invitation ? <>{t("platformAccounts:columns.expiresInline")} <DateText value={account.invitationExpiresAtUtc} kind="date" /></> : profiles(account, t)}</span>;
+  // Tablero M-Cuentas: el estado con su punto y los perfiles; en una invitación de operador, «Operador · vence …» arriba y el
+  // estado solo abajo. Un correo se parte después de la @.
+  const status = invitation ? <StatusBadge tones={accountStateTones} value={account.state} />
+    : <span><StatusBadge tones={accountStateTones} value={account.state} />{" · "}{profiles(account, t)}</span>;
+  const contact = account.maskedPrimaryPhone || (account.primaryEmail ? <EmailText value={account.primaryEmail} /> : "");
+  const expires = <>{t("platformAccounts:profiles.operator")}{" · "}{t("platformAccounts:columns.expiresInline")} <DateText value={account.invitationExpiresAtUtc} kind="date" /></>;
+  const name = accountName(account);
   return <ListRow key={account.id} to={accountPath(account.id)}
-    leading={<Avatar size="row" muted={!named} initials={named || invitation ? accountName(account).trim().charAt(0).toUpperCase() : "—"} />}
-    title={accountName(account) || <EmptyValue />} meta={invitation ? undefined : <DateText value={account.lastSignInAtUtc} kind="dateTime" />}
-    lines={[named ? account.maskedPrimaryPhone || account.primaryEmail || "" : invitation ? t("platformAccounts:profiles.operator") : "", status]} trailing={trailing} />;
+    leading={<Avatar size="row" muted={!named} initials={named || invitation ? name.trim().charAt(0).toUpperCase() : "—"} />}
+    title={name ? <EmailText value={name} /> : <EmptyValue />} meta={invitation ? undefined : <DateText value={account.lastSignInAtUtc} kind="dateTime" />}
+    lines={[named ? contact : invitation ? expires : "", status]} trailing={trailing} />;
 }
 export function createAccountColumns(t: TFunction): Column<PlatformAccountResponse>[] {
   return [
@@ -35,7 +42,7 @@ export function createAccountColumns(t: TFunction): Column<PlatformAccountRespon
     { id: "name", header: t("platformAccounts:columns.account"), type: "custom", mobile: "primary", sortable: true, className: "w-[24%]",
       cell: (account) => <Link className={`hover:underline ${account.displayName ? "font-medium text-[var(--t1)]" : "text-[var(--t3)]"}`} to={accountPath(account.id)}>{accountName(account) || <EmptyValue />}</Link> },
     { id: "contact", header: t("platformAccounts:columns.contact"), type: "custom", className: "w-[24%]",
-      cell: (account) => account.maskedPrimaryPhone || account.primaryEmail || <EmptyValue /> },
+      cell: (account) => account.maskedPrimaryPhone || (account.primaryEmail ? <EmailText value={account.primaryEmail} /> : <EmptyValue />) },
     { id: "profiles", header: t("platformAccounts:columns.profiles"), type: "custom", cell: (account) => profiles(account, t) },
     { id: "lastSignInAtUtc", header: t("platformAccounts:columns.lastSignIn"), type: "custom", className: "w-40",
       cell: (account) => isOperatorInvitation(account) ? t("platformAccounts:columns.never") : <DateText value={account.lastSignInAtUtc} kind="dateTime" /> },

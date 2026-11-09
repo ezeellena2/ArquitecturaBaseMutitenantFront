@@ -38,7 +38,7 @@ export function AppBar({ title, titleHelp, subtitle, back, actions, leading }: {
         <h1 className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[1.25rem]" : "text-[1.5rem]", "leading-[1.15]")}>{title}</h1>
         {titleHelp}
       </span> : <h1 className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[1.25rem]" : "text-[1.5rem]", "leading-[1.15]")}>{title}</h1>}
-      {subtitle ? <span className="block truncate text-[0.78125rem] leading-[normal] font-medium text-[var(--t3)]">{subtitle}</span> : null}
+      {subtitle ? <span className="block text-[0.78125rem] leading-[normal] font-medium text-[var(--t3)] [overflow-wrap:anywhere]">{subtitle}</span> : null}
     </div>
     {actions ? <div className="flex shrink-0 items-center">{actions}</div> : null}
     {back ? null : bell}

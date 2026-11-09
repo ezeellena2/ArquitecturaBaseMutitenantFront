@@ -8,12 +8,13 @@ import type { ReactNode } from "react";
 import { ListRow, RowAvatar } from "@/shared/ui/app/ListRow";
 import { defineStatusTones } from "@/shared/format/statusTones";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
+import { EmailText } from "@/shared/ui/format/EmailText";
 import { PhoneText } from "@/shared/ui/format/PhoneText";
 import type { FormatState } from "@/shared/format/useFormat";
 
 /// CC25 (E11): una invitación por teléfono no tiene correo; la persona se nombra por el número invitado, en E.164.
 export function userContact(user: OrganizationUserResponse): ReactNode {
-  return user.email ?? (user.phone ? <PhoneText value={user.phone} /> : null);
+  return user.email ? <EmailText value={user.email} /> : user.phone ? <PhoneText value={user.phone} /> : null;
 }
 
 /// Lo mismo como texto, para los avisos y las confirmaciones («Se revocó la invitación de …»).
@@ -28,7 +29,8 @@ export const userStateTones = defineStatusTones("OrganizationUserState", {
 });
 
 /// Tablero M-Usuarios: en el teléfono cada persona es una fila con su círculo, el correo y, en la línea de abajo, el
-/// estado con su punto, los roles de la organización y la empresa. Una invitación sin nombre lleva «@».
+/// estado con su punto, los roles de la organización y la empresa. Una invitación sin nombre lleva «@», o el teléfono si es
+/// por teléfono.
 export function userPhoneRow(user: OrganizationUserResponse, t: TFunction, trailing: ReactNode): ReactNode {
   const invitation = user.state === "Invited" || user.state === "Expired";
   const organizationRoles = user.roles.filter((role) => role.scope === "Organization").map((role) => role.name);
@@ -38,13 +40,13 @@ export function userPhoneRow(user: OrganizationUserResponse, t: TFunction, trail
   const details = invitation
     ? (user.invitationExpiresAtUtc ? [<>{t(user.state === "Expired" ? "users:columns.expiredInline" : "users:columns.expiresInline")} <DateText value={user.invitationExpiresAtUtc} kind="date" /></>] : [])
     : [...organizationRoles, ...(company ? [company] : [])];
-  const status = <span className="inline-flex max-w-full items-center gap-1">
+  const status = <span>
     <StatusBadge tones={userStateTones} value={user.state} className="text-[0.78125rem] text-[var(--t2)]" />
     {details.map((detail, index) => <span key={index}>{" · "}{detail}</span>)}
   </span>;
   const named = Boolean(user.displayName);
   return <ListRow key={user.memberId} to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}
-    leading={<RowAvatar name={user.displayName || user.email || ""} invitation={!named && invitation} />}
+    leading={<RowAvatar name={user.displayName || user.email || ""} invitation={!named && invitation} phone={!user.email && Boolean(user.phone)} />}
     title={user.displayName || userContact(user) || ""}
     lines={named ? [userContact(user) ?? "", status] : [company ?? "", status]}
     trailing={trailing} />;

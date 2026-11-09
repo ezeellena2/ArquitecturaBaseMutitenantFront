@@ -103,7 +103,7 @@ function PhoneStep({ mark, title, detail, question, branches }: { mark: string; 
       {branches && branches.length > 0 ? <ul className="m-0 mt-2.5 flex list-none flex-col gap-1.5 p-0">
         {branches.map((item) => <li key={item.key} className="flex items-center gap-2.5 rounded-[0.625rem] border border-[var(--borde)] bg-[var(--s2)] px-3 py-2.25 text-[0.90625rem] text-[var(--t1)]">
           <span className="rounded-[0.375rem] bg-[var(--marca-t)] px-1.75 py-0.5 text-[0.75rem] font-bold text-[var(--marca-tx)]">{item.mark}</span>
-          <span className="min-w-0 flex-1 truncate">{item.title}</span>
+          <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">{item.title}</span>
           <span className="ml-auto shrink-0 text-[0.78125rem] text-[var(--t3)]">{item.detail}</span>
         </li>)}
       </ul> : null}
