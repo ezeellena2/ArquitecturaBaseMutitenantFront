@@ -157,7 +157,7 @@ describe("Plantillas de Plataforma", () => {
     expect(await screen.findByText("Seguimos tu consulta")).toBeVisible();
     const view = screen.getByRole("group", { name: "Ver" });
     expect(within(view).getByRole("button", { name: /Para consultas/ })).toHaveAttribute("aria-pressed", "true");
-    await waitFor(() => expect(within(view).getByRole("button", { name: /Del sistema/ })).toHaveTextContent("Del sistema2"));
+    await waitFor(() => expect(within(view).getByRole("button", { name: /Del sistema/ })).toHaveTextContent("Del sistema 2"));
     expect(screen.getByText("3 plantillas · 3 aprobadas")).toBeVisible();
     expect(screen.getByRole("button", { name: "Acciones de Seguimos tu consulta" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();

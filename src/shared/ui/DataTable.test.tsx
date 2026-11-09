@@ -185,6 +185,23 @@ describe("DataTable", () => {
     expect(container.querySelector("[data-slot='table-container']")).toHaveClass("last:[&_tbody>tr:last-child]:border-b-0");
   });
 
+  // «Criterio · Tablas» (142): la fila abierta, la de la vista rápida o la que espera una decisión, lleva el tinte de la
+  // marca y una barra de 3 px al inicio, y el lector la anuncia como la actual.
+  it("la fila abierta lleva el tinte de la marca y la barra de 3 px al inicio", () => {
+    const { rerender } = render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} openRowKey={rows[0].id} />);
+
+    const row = screen.getAllByRole("row")[1];
+    expect(row).toHaveAttribute("aria-current", "true");
+    expect(row).toHaveClass("bg-[var(--marca-t)]");
+    const [first, second] = within(row).getAllByRole("cell");
+    expect(first).toHaveClass("shadow-[inset_3px_0_0_var(--marca)]");
+    expect(second).not.toHaveClass("shadow-[inset_3px_0_0_var(--marca)]");
+
+    rerender(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} openRowKey={null} />);
+    expect(screen.getAllByRole("row")[1]).not.toHaveAttribute("aria-current");
+    expect(screen.getAllByRole("row")[1]).not.toHaveClass("bg-[var(--marca-t)]");
+  });
+
   // «Criterio · Tablas»: la columna ordenada muestra ▲ o ▼ y lo anuncia con `aria-sort`; las demás, sin flecha.
   it("la columna ordenada muestra ▲ o ▼", () => {
     const { rerender } = render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} sort="name" onSortChange={vi.fn()} />);

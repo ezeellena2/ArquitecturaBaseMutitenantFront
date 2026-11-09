@@ -59,6 +59,10 @@ describe("Chats de la organización", () => {
     expect(screen.getByText(/Vinculada a su cuenta · Mayorista/)).toBeVisible();
     expect(screen.getByText("Hola, buen día. Quiero hacer un pedido.")).toBeVisible();
     expect(screen.getByText(/5 conversaciones/)).toBeVisible();
+    // «Lo elegido» (142): la conversación abierta lleva el tinte de la marca y una barra de 3 al inicio (.w-conv.on).
+    const open = [...container.querySelectorAll("a[aria-current='page']")].find((link) => link.textContent?.includes("Martina López"));
+    expect(open).toHaveTextContent("Martina López");
+    expect(open).toHaveClass("bg-[var(--marca-t)]", "shadow-[inset_3px_0_0_var(--marca)]");
     expect(await axe(container)).toHaveNoViolations();
     await user.click(within(inboxes).getByRole("button", { name: /Internos/ }));
     await waitFor(() => expect(requested).toContain("internal"));

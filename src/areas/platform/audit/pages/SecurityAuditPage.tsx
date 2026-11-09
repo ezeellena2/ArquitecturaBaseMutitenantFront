@@ -82,7 +82,7 @@ export function SecurityAuditPage() {
               options: [{ value: "all", label: t("filters.allOrganizations") }, ...organizations.items.map((organization) => ({ value: organization.id, label: organization.name }))] },
           ]} clearLabel={t("common:actions.clear")} onClear={filters.clear} />
         <Surface className="overflow-hidden" phoneFlush>
-          <DataTable columns={columns} rows={audit.items} rowKey={(row) => row.id}
+          <DataTable columns={columns} rows={audit.items} rowKey={(row) => row.id} openRowKey={selected?.id ?? null}
             mobileRow={(row) => <ListRow key={row.id} title={row.summary} onClick={() => select(row)}
               meta={<DateText value={row.occurredAtUtc} kind="dateTime" />}
               lines={[[row.target, row.actor].filter(Boolean).join(" · "), ...(row.reason ? [row.reason] : [])]} />}

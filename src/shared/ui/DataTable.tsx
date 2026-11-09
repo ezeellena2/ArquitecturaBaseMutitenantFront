@@ -84,6 +84,11 @@ interface DataTableProps<TRow> {
   mobileRow?: (row: TRow) => ReactNode;
   /** Vistas previas: un encabezado de columnas y grupos con su total y salida al listado completo. */
   rowGroups?: readonly { key: string; rows: readonly TRow[]; header: ReactNode; footer?: ReactNode }[];
+  /**
+   * La fila abierta: la de la vista rápida o la que espera una decisión («Criterio · Tablas», 142). Lleva el tinte de la
+   * marca y una barra de 3 px al inicio, y el lector la anuncia como la actual.
+   */
+  openRowKey?: string | null;
 }
 
 /** También valida las columnas de features que todavía no existen en E1. */
@@ -194,6 +199,7 @@ export function DataTable<TRow>({
   onSortChange,
   mobileRow,
   rowGroups,
+  openRowKey,
 }: DataTableProps<TRow>) {
   const { t } = useTranslation();
   const { phone } = useAppChrome();
@@ -222,12 +228,17 @@ export function DataTable<TRow>({
   </ul>;
   // «Criterio · Tablas»: un dato por celda y las filas de 40 como mínimo; un texto largo baja de renglón y la fila crece
   // (174). Un código con guiones no se parte (`TaxIdText`) y lo demás se corta solo donde no entra.
-  const renderRow = (row: TRow) => <TableRow key={rowKey(row)} className="h-10">
-    {columns.map((column) => <TableCell key={column.id} className={cn("whitespace-normal [overflow-wrap:anywhere]", column.type === "actions" ? "py-0" : "py-2",
-      edgeClass(column), cellLine, column.className, columnVisibility(column), alignClass(column))}>
-      {columnCell(column, row)}
-    </TableCell>)}
-  </TableRow>;
+  const renderRow = (row: TRow) => {
+    const key = rowKey(row);
+    const open = openRowKey != null && key === openRowKey;
+    return <TableRow key={key} aria-current={open ? "true" : undefined} data-open={open || undefined}
+      className={cn("h-10", open && "bg-[var(--marca-t)] hover:bg-[var(--marca-t)]")}>
+      {columns.map((column, index) => <TableCell key={column.id} className={cn("whitespace-normal [overflow-wrap:anywhere]", column.type === "actions" ? "py-0" : "py-2",
+        edgeClass(column), cellLine, column.className, columnVisibility(column), alignClass(column), open && index === 0 && "shadow-[inset_3px_0_0_var(--marca)]")}>
+        {columnCell(column, row)}
+      </TableCell>)}
+    </TableRow>;
+  };
   const sorted = (column: Column<TRow>) => ariaSort(column, sort);
 
   return (

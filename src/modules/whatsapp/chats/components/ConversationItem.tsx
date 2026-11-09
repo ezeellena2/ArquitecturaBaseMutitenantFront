@@ -22,7 +22,7 @@ export function ConversationItem({ to, avatar, title, time, preview, assignment,
   return <li className="border-b border-[var(--borde)]">
     <Link to={to} aria-current={selected ? "page" : undefined}
       className={cn("flex items-start gap-3 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]",
-        phone ? "px-4 py-3" : "px-3.5 py-3 hover:bg-[var(--s2)]", selected ? "bg-[var(--marca-t)] hover:bg-[var(--marca-t)]" : null)}>
+        phone ? "px-4 py-3" : "px-3.5 py-3 hover:bg-[var(--s2)]", selected ? "bg-[var(--marca-t)] shadow-[inset_3px_0_0_var(--marca)] hover:bg-[var(--marca-t)]" : null)}>
       {avatar}
       <span className={cn("flex min-w-0 flex-1 flex-col gap-0.5", phone ? "leading-[normal]" : null)}>
         <span className="flex justify-between gap-2">

@@ -58,9 +58,11 @@ export function NumberPicker({ numbers, selected, onSelect }: {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" aria-label={t("bot.number.title")} className="min-w-95 p-1">
         <DropdownMenuRadioGroup value={selected.id} onValueChange={onSelect}>
-          {numbers.map((number) => <DropdownMenuRadioItem key={number.id} value={number.id} className="flex-col items-start gap-0">
-            <span>{format.formatPhone(number.displayNumber)}</span>
-            <span className="text-[0.75rem] text-[var(--t3)]">{company(number)}</span>
+          {numbers.map((number) => <DropdownMenuRadioItem key={number.id} value={number.id} className="items-start">
+            <span className="flex min-w-0 flex-col">
+              <span>{format.formatPhone(number.displayNumber)}</span>
+              <span className="text-[0.75rem] font-normal text-[var(--t3)]">{company(number)}</span>
+            </span>
           </DropdownMenuRadioItem>)}
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>

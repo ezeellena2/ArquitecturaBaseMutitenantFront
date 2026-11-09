@@ -120,6 +120,7 @@ export function AuditPage() {
               meta={<DateText value={row.occurredAtUtc} kind="dateTime" />}
               lines={[[row.whereText, row.actorDisplayName ?? row.actorText].filter(Boolean).join(" · ")]} />}
             rows={audit.items}
+            openRowKey={selected?.id ?? null}
             rowKey={(row) => row.id}
             isLoading={audit.isPending}
             isFetching={audit.isFetching}

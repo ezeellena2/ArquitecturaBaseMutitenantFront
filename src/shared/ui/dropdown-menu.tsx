@@ -133,12 +133,16 @@ function DropdownMenuRadioItem({
       data-slot="dropdown-menu-radio-item"
       className={cn(
         // Tablero Usuarios (filtro abierto, .menu-it): 34 de alto, 6/10 de relleno y radio 8, sin líneas entre opciones
-        // (las líneas son del ⋮); se resalta adentro en gris claro y la elegida va en verde claro con 500, sin punto.
-        "relative flex min-h-8.5 cursor-default items-center gap-2 rounded-[0.5rem] px-2.5 py-1.5 text-[0.8125rem] outline-hidden select-none focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[state=checked]:bg-[var(--marca-t)] data-[state=checked]:font-medium data-[state=checked]:text-[var(--marca-tx)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.75",
+        // (las líneas son del ⋮); se resalta adentro en gris claro. «Criterio · Formularios», «Lo elegido, sin dudas»
+        // (142): la elegida lleva la tilde a la izquierda y la letra en 600 (`.r311 .mn .it.sel`), nunca solo un tinte.
+        "relative flex min-h-8.5 cursor-default items-center gap-2 rounded-[0.5rem] px-2.5 py-1.5 text-[0.8125rem] outline-hidden select-none focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[state=checked]:font-semibold data-[state=checked]:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.75",
         className
       )}
       {...props}
     >
+      <span data-slot="tilde" aria-hidden="true" className="inline-flex size-4 shrink-0 items-center justify-center text-[var(--marca-tx)]">
+        <DropdownMenuPrimitive.ItemIndicator><CheckIcon strokeWidth={2.25} className="size-3.5" /></DropdownMenuPrimitive.ItemIndicator>
+      </span>
       {children}
     </DropdownMenuPrimitive.RadioItem>
   )

@@ -24,6 +24,38 @@ describe("RadioGroupField", () => {
     await waitFor(() => expect(screen.getByRole("radio", { name: "Tercera" })).toBeChecked()); await user.keyboard("{/ArrowRight}"); expect(screen.getByRole("radio", { name: "Tercera" })).toHaveFocus();
     expect(screen.getByRole("radio", { name: "Segunda" })).toBeDisabled(); expect(submit).not.toHaveBeenCalled();
   });
+  // «Criterio · Formularios», «Lo elegido, sin dudas» (142): el segmentado de un formulario rellena la elegida con la
+  // marca y la letra blanca, en una vía blanca con su borde; en el teléfono, cada opción mide 44 × 44.
+  it("segmentado: la elegida, rellena con la marca; las otras, blancas; 44 × 44 en el teléfono", () => {
+    renderWithProviders(<RadioGroupField variant="segmented" label="¿Llegó en buen estado?" value="yes" onValueChange={vi.fn()}
+      options={[{ value: "yes", label: "Sí" }, { value: "no", label: "No" }]} />);
+
+    expect(screen.getByRole("radiogroup", { name: "¿Llegó en buen estado?" })).toHaveClass("bg-[var(--superficie)]", "border-[var(--borde2)]");
+    for (const option of screen.getAllByRole("radio")) {
+      expect(option).toHaveClass("data-[state=checked]:bg-[var(--marca)]", "data-[state=checked]:text-[var(--superficie)]", "max-md:min-h-11", "max-md:min-w-11");
+      expect(option).not.toHaveClass("truncate", "whitespace-nowrap");
+    }
+    expect(screen.getByRole("radio", { name: "Sí" })).toHaveAttribute("data-state", "checked");
+  });
+
+  // «Tarjetas de opción» (.r311-cards2): la elegida suma un borde de 2 px y el tinte de la marca, además del punto, sin
+  // moverse: el relleno baja 1 cuando el borde sube 1. Tocar la tarjeta en cualquier lado la elige.
+  it("tarjetas: la elegida suma un borde de 2 px y el tinte, sin moverse, y se elige tocándola", async () => {
+    const onValueChange = vi.fn();
+    const { container } = renderWithProviders(<RadioGroupField label="De dónde salen las opciones" value="manual" onValueChange={onValueChange}
+      options={[{ value: "manual", label: "Escritas a mano" }, { value: "members", label: "De los miembros" }]} />);
+
+    const [chosen, other] = container.querySelectorAll("[data-slot='option-card']");
+    expect(chosen).toHaveAttribute("data-state", "checked");
+    expect(chosen).toHaveClass("border-2", "border-[var(--marca)]", "bg-[var(--marca-t)]", "px-2.75", "py-2.25");
+    expect(other).toHaveClass("border", "border-[var(--borde)]", "bg-[var(--superficie)]", "px-3", "py-2.5");
+    expect(screen.getByRole("radio", { name: "Escritas a mano" })).toHaveClass("data-[state=checked]:border-[var(--marca)]");
+    expect(screen.getByText("De los miembros")).toHaveClass("after:absolute", "after:inset-0");
+
+    await userEvent.click(screen.getByText("De los miembros"));
+    expect(onValueChange).toHaveBeenCalledWith("members");
+  });
+
   it("names the group and each option with its label", () => {
     renderWithProviders(<RadioGroupField label="Por dónde" options={options} value="WhatsApp" onValueChange={vi.fn()} />);
 

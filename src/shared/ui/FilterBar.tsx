@@ -246,7 +246,7 @@ function FilterMenu({ filter }: { filter: FilterBarFilter }) {
         {filter.remote ? <RemoteOptionSearch remote={filter.remote} label={filter.menuLabel} /> : null}
         <DropdownMenuRadioGroup value={checkedOf(filter)} onValueChange={filter.onChange}>
           {filter.options.map((option) => (
-            <DropdownMenuRadioItem key={option.value} value={option.value}><Tilde on={checkedOf(filter) === option.value} />{option.label}</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem key={option.value} value={option.value}>{option.label}</DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>
         {filter.remote ? <RemoteOptionFooter remote={filter.remote} /> : null}
@@ -276,10 +276,12 @@ function MoreFilters({ filters, applied }: { filters: readonly FilterBarFilter[]
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content align="start" sideOffset={4} aria-label={t("filters.title")} role="dialog"
           className="z-50 flex max-h-[min(26rem,var(--radix-popover-content-available-height))] w-130 max-w-[calc(100vw-2rem)] overflow-hidden rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--superficie)] text-[0.8125rem] shadow-[var(--sombra-menu)]">
-          <div role="tablist" aria-orientation="vertical" aria-label={t("filters.title")} className="flex w-48 shrink-0 flex-col gap-0.5 overflow-y-auto border-r border-[var(--borde)] bg-[var(--s2)] p-1">
+          {/* .r311-panel .izq: lo que se filtra, con una línea entre cada uno; el que se está eligiendo lleva el tinte de la
+              marca, la barra de 3 y la letra en 600 (142). */}
+          <div role="tablist" aria-orientation="vertical" aria-label={t("filters.title")} className="flex w-55 shrink-0 flex-col overflow-y-auto border-r border-[var(--borde)]">
             {filters.map((item) => <button key={item.key} type="button" role="tab" aria-selected={item.key === filter.key} onClick={() => setCurrent(item.key)}
-              className={cn("flex min-h-8 items-center gap-2 rounded-[0.375rem] px-2.5 py-1.5 text-left text-[var(--t2)] hover:bg-[var(--superficie)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]",
-                item.key === filter.key && "bg-[var(--superficie)] font-semibold text-[var(--t1)]")}>
+              className={cn("flex min-h-10 items-center justify-between gap-2 px-3.5 py-2 text-left text-[var(--t1)] not-first:border-t not-first:border-[var(--borde)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]",
+                item.key === filter.key && "bg-[var(--marca-t)] font-semibold text-[var(--marca-tx)] shadow-[inset_3px_0_0_var(--marca)] hover:bg-[var(--marca-t)]")}>
               <span className="min-w-0 flex-1">{filterName(item)}</span>
               {item.active ? <span data-slot="filter-dot" aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-[var(--marca)]" /> : null}
             </button>)}

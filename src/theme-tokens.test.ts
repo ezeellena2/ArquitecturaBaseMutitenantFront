@@ -15,6 +15,15 @@ function token(name: string): string {
 }
 
 function luminance(name: string): number {
+  const hex = /^#([\da-f]{3}|[\da-f]{6})$/i.exec(token(name))?.[1];
+  if (hex) {
+    const digits = hex.length === 3 ? [...hex].map((digit) => digit + digit) : hex.match(/../g)!;
+    const [red, green, blue] = digits.map((pair) => {
+      const channel = parseInt(pair, 16) / 255;
+      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+  }
   const match = /^oklch\(([\d.]+) ([\d.]+) ([\d.]+)\)$/.exec(token(name));
   if (!match) throw new Error(`${name} debe ser un color OKLCH opaco`);
   const [, lightness, chroma, hue] = match;
@@ -48,6 +57,16 @@ describe("tema aprobado", () => {
     expect(contrast("--input", "--fondo")).toBeGreaterThanOrEqual(3);
     expect(contrast("--peligro", "--peligro-t")).toBeGreaterThanOrEqual(4.5);
     expect(theme).toContain(`\`${token("--peligro")}\` / \`${token("--peligro-t")}\``);
+  });
+
+  // «Lo elegido, sin dudas» (142): la elegida se distingue de las otras con 3:1 y su letra se lee con 4,5:1; la barra de
+  // la fila o la conversación abierta, con 3:1 contra su tinte.
+  it("distingue lo elegido con 3:1 y deja su letra en 4,5:1", () => {
+    expect(contrast("--marca", "--superficie")).toBeGreaterThanOrEqual(3);
+    expect(contrast("--superficie", "--marca")).toBeGreaterThanOrEqual(4.5);
+    expect(contrast("--t2", "--superficie")).toBeGreaterThanOrEqual(4.5);
+    expect(contrast("--marca-tx", "--marca-t")).toBeGreaterThanOrEqual(4.5);
+    expect(contrast("--marca", "--marca-t")).toBeGreaterThanOrEqual(3);
   });
 
   it("ignora los artefactos de dist incluso antes de generarlos", () => {
@@ -101,8 +120,9 @@ describe("tema aprobado", () => {
     const sourceFiles = filesIn(srcDir).filter((file) => /\.(?:ts|tsx|css)$/.test(file) && !/\.test\.(?:ts|tsx)$/.test(file)
       && !file.includes(`${path.sep}test${path.sep}`) && !file.endsWith("schema.d.ts"));
     const comments = /\/\*[\s\S]*?\*\/|(?<![:"'`])\/\/.*$/gm;
-    // Siguen en px los cortes, que no cambian con la raíz, y los anillos, que no se afinan.
-    const allowed = /@media[^\n]*|useMediaQuery\([^)]*\)|ring-\[3px\]|shadow-\[(?:inset_)?0_0_0_[^\]\s]*\]/g;
+    // Siguen en px los cortes, que no cambian con la raíz, los anillos, que no se afinan, y la barra de 3 de lo abierto
+    // (142), que es una línea como un borde: los tableros la dibujan en 3 también en la compu.
+    const allowed = /@media[^\n]*|useMediaQuery\([^)]*\)|ring-\[3px\]|shadow-\[(?:inset_)?0_0_0_[^\]\s]*\]|shadow-\[inset_3px_0_0_var\(--marca\)\]/g;
 
     for (const file of sourceFiles) {
       const source = readFileSync(file, "utf8").replace(comments, "").replace(allowed, "");

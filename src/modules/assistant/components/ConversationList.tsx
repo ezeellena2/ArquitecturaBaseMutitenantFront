@@ -40,9 +40,9 @@ function Group({ saved, query, ...props }: ConversationListProps & { saved: bool
     <ThreadListPrimitive.Items>{({ threadListItem }) => {
       const conversation = query.items.find((item) => item.id === threadListItem.id);
       if (!conversation) return null;
-      return <ThreadListItemPrimitive.Root className={`flex min-w-0 items-center rounded-lg ${props.selectedId === conversation.id ? "bg-[var(--s2)]" : "hover:bg-[var(--s2)]"}`}>
+      return <ThreadListItemPrimitive.Root className={`flex min-w-0 items-center rounded-lg ${props.selectedId === conversation.id ? "bg-[var(--marca-t)] shadow-[inset_3px_0_0_var(--marca)]" : "hover:bg-[var(--s2)]"}`}>
       <ThreadListItemPrimitive.Trigger asChild><button type="button" aria-current={props.selectedId === conversation.id ? "true" : undefined}
-        className="min-w-0 flex-1 truncate px-2.5 py-2 text-left text-sm focus-visible:outline-2 focus-visible:outline-[var(--foco)]"><ThreadListItemPrimitive.Title /></button></ThreadListItemPrimitive.Trigger>
+        className="min-w-0 flex-1 px-2.5 py-2 text-left text-sm [overflow-wrap:anywhere] focus-visible:outline-2 focus-visible:outline-[var(--foco)]"><ThreadListItemPrimitive.Title /></button></ThreadListItemPrimitive.Trigger>
       {props.onActions ? <button type="button" aria-label={t("history.actions", { title: conversation.title ?? t("history.untitled") })} className="flex size-11 items-center justify-center" onClick={() => props.onActions?.(conversation)}><MoreVerticalIcon className="size-5" /></button>
         : <RowActions label={t("history.actions", { title: conversation.title ?? t("history.untitled") })} title={conversation.title ?? t("history.untitled")} actions={props.actions(conversation)} />}
     </ThreadListItemPrimitive.Root>;
