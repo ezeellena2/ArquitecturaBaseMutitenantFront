@@ -97,8 +97,11 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
     (_response, operation) => { toast.success(t("platformAccounts:messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); }),
     { meta: action.meta, sameOperation: (previous, next) => previous.id === next.id });
   const busy = action.isPending;
+  // Tablero Cuenta-Plat, en cada estado: «Cerrar sesiones», solo con la cuenta activa; «Reactivar», suspendida; «Suspender»,
+  // activa o por recuperar.
   const accountActions: AccountAction[] = mutable && canManage && !operator && !invitation
-    ? ["revoke-sessions", ...(data.state === "Suspended" ? ["reactivate"] as const : []), ...(["Active", "NeedsRecovery"].includes(data.state) ? ["suspend"] as const : [])] : [];
+    ? [...(data.state === "Active" ? ["revoke-sessions"] as const : []), ...(data.state === "Suspended" ? ["reactivate"] as const : []),
+      ...(["Active", "NeedsRecovery"].includes(data.state) ? ["suspend"] as const : [])] : [];
   function open(action: Confirmation["action"], trigger: HTMLElement | null) {
     setConfirmation(action === "permissions" ? { account: data, action, trigger } : action === "removeOperator" ? { account: data, action, trigger }
       : action === "resetAuthenticator" ? { account: data, action, trigger } : { account: data, action, trigger, route: data.id });
