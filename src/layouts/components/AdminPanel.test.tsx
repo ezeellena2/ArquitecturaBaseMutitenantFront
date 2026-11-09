@@ -53,7 +53,9 @@ describe("AdminPanel", () => {
     const panel = screen.getByRole("navigation", { name: "Administración" });
     const audit = within(panel).getByRole("link", { name: "Auditoría" });
     expect(audit).toHaveAttribute("aria-current", "page");
-    expect(audit).toHaveClass("bg-[var(--lado-activo)]", "font-semibold", "text-[var(--marca-tx)]", "ring-1");
+    // 173 («Criterio · Menús»): el activo lleva una barra de 2 en la marca y la letra en 600, sin la pastilla blanca.
+    expect(audit).toHaveClass("bg-[var(--lado-hover)]", "font-semibold", "text-[var(--marca-tx)]", "shadow-[inset_2px_0_0_var(--marca)]");
+    expect(audit).not.toHaveClass("bg-[var(--superficie)]", "ring-1", "shadow-sm");
     expect(within(panel).getByRole("link", { name: "Empresas" })).not.toHaveAttribute("aria-current");
     for (const name of ["Gestión de usuarios", "Empresas", "Configuración", "Página pública", "Auditoría"]) {
       expect(within(panel).getByRole("link", { name }).querySelector("svg")).not.toBeNull();

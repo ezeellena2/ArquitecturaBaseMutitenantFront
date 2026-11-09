@@ -27,12 +27,12 @@ export function DirectoryPage() {
     <div className="mx-auto flex max-w-320 flex-col gap-3 px-4 md:gap-4 md:px-10">
       <h1 className="m-0 text-[1.625rem] leading-[1.25] font-bold tracking-[-0.02em] md:text-[1.875rem]">{t("directory.title")}</h1>
       <div role="search" aria-label={t("directory.searchLabel")}
-        className="flex rounded-xl border border-[var(--borde)] bg-[var(--lado-activo)] px-3 py-2.5 max-md:border-0 max-md:bg-transparent max-md:p-0">
+        className="flex rounded-xl border border-[var(--borde)] bg-[var(--superficie)] px-3 py-2.5 max-md:border-0 max-md:bg-transparent max-md:p-0">
         <div className="relative w-full md:w-90">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-[var(--t3)] max-md:left-3 max-md:size-4" />
           <Input type="search" value={pagination.search ?? ""} onChange={(event) => pagination.setSearch(event.target.value)}
             aria-label={t("directory.search")} placeholder={t("directory.search")}
-            className="h-8 rounded-[0.5rem] border-[var(--borde)] bg-[var(--s2)] pl-8 text-[0.8125rem] max-md:h-11 max-md:rounded-xl max-md:bg-[var(--lado-activo)] max-md:pl-9.5 max-md:text-[0.9375rem]" />
+            className="h-8 rounded-[0.5rem] border-[var(--borde)] bg-[var(--s2)] pl-8 text-[0.8125rem] max-md:h-11 max-md:rounded-xl max-md:bg-[var(--superficie)] max-md:pl-9.5 max-md:text-[0.9375rem]" />
         </div>
       </div>
       {directory.isPending ? <p role="status" className="py-12 text-center text-[var(--t2)]">{t("common:states.loading")}</p>

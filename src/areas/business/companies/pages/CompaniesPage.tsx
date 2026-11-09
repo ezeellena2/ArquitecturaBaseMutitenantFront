@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, Pencil, Plus, Power } from "lucide-react";
-import { BuildingIcon } from "@/shared/ui/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -98,7 +97,7 @@ export function CompaniesPage() {
     : companies.data ? t("companies:summaryFallback", countOf(format, companies.data.totalCount)) : undefined;
 
   return <>
-    <Page icon={BuildingIcon} title={t("companies:title")} summary={listSummary} phoneBody="flush"
+    <Page title={t("companies:title")} summary={listSummary} phoneBody="flush"
       fab={canManage ? { label: t("companies:create"), onClick: openCreate } : undefined}
       actions={canManage ? <Button type="button" onClick={openCreate}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("companies:create")}</Button> : undefined}>
       <div className="flex flex-col gap-3 md:gap-3.5">

@@ -122,4 +122,61 @@ describe("tema aprobado", () => {
       }
     }
   });
+
+  // 173 («Criterio · Marco», Que no parezca plantilla): sin sombras salvo en menús, desplegables y tooltips, y sin degradés
+  // en las piezas. Un anillo o un borde dibujado con box-shadow (`0 0 0 1px`, `inset`) no es una sombra.
+  it("deja las sombras solo en menús, desplegables y tooltips, y saca los degradés de las piezas", () => {
+    const sourceFiles = filesIn(srcDir).filter((file) => /\.(?:ts|tsx)$/.test(file) && !/\.test\.(?:ts|tsx)$/.test(file));
+    const allowedShadow = /^shadow-(?:none|\[var\(--sombra-menu\)\]|\[inset_[^\]]*\]|\[0_0_0_[^\]]*\])$/;
+    for (const file of sourceFiles) {
+      const source = readFileSync(file, "utf8");
+      const shadows = [...source.matchAll(/(?<![\w-])(?:[a-z-]+:)*(shadow-(?:\[[^\]\s"]+\]|xs|sm|md|lg|xl|2xl))/g)].map((match) => match[1]);
+      expect(shadows.filter((shadow) => !allowedShadow.test(shadow)), `Sombra en ${path.relative(srcDir, file)}`).toEqual([]);
+      expect(source, `Sombra en línea en ${path.relative(srcDir, file)}`).not.toMatch(/boxShadow/);
+      expect(source, `Degradé en ${path.relative(srcDir, file)}`).not.toMatch(/linear-gradient|bg-gradient-|bg-linear-/);
+    }
+    for (const gone of ["--marca-2", "--marca-sombra", "--auth-panel-", "--lado-activo", "--shadow-card", "--brillo:", "--sombra-dialogo", "--sombra-hoja",
+      "--sombra-aviso", "--sombra-franja", "--sombra-fab", "--sombra-tarjeta", "--sombra-directorio", "--sombra-flecha", "--sombra-segmento"]) {
+      expect(css, `${gone} salió con la base de la 12`).not.toContain(gone);
+    }
+    expect(css).toMatch(/\.auth-brand-panel \{\s*background: var\(--marca\);\s*\}/);
+  });
+
+  // 180 («Criterio · Marco», La escala): en la compu, la letra a × 0,82 de la nominal sin bajar de 10,5 y las esquinas en 3
+  // como mucho. Cada clase de letra y de esquina que usa el código tiene su regla generada en index.css.
+  it("cubre con la escala de la compu cada letra y cada esquina que usa el código", () => {
+    const scale = css.split("/* 180 · La escala de ArquitecturaBase en la compu")[1] ?? "";
+    expect(scale).toMatch(/^[\s\S]*@media \(min-width: 64rem\) and \(pointer: fine\)/);
+    expect(scale).toContain('[class~="text-[0.8125rem]"] { font-size: 0.8883rem; }');
+    expect(scale).toContain('[class~="text-[0.75rem]"] { font-size: 0.875rem; }');
+    expect(scale).toContain('[class~="rounded-[0.5rem]"] { border-radius: 0.25rem; }');
+    const sourceFiles = filesIn(srcDir).filter((file) => /\.(?:ts|tsx)$/.test(file) && !/\.(?:test|d)\.(?:ts|tsx)$/.test(file));
+    const texts = /(?<![\w:\-[])((?:md|lg):)?text-(\[(?:\d*\.)?\d+rem\]|xs|sm|base|lg|xl|2xl|3xl)(?![\w\-\]])/g;
+    const corners = /(?<![\w:\-[])((?:md|lg):)?rounded(-(?:t|b|l|r|tl|tr|bl|br))?-(\[(?:\d*\.)?\d+rem\]|sm|md|lg|xl|2xl|3xl)(?![\w\-\]])/g;
+    const missing = new Set<string>();
+    for (const file of sourceFiles) {
+      const source = readFileSync(file, "utf8");
+      for (const match of source.matchAll(texts)) if (!scale.includes(`[class~="${match[0]}"]`)) missing.add(match[0]);
+      for (const match of source.matchAll(corners)) {
+        const size = match[3].startsWith("[") ? Number(match[3].slice(1, -4)) : 1;
+        if (size > 0.25 && !scale.includes(`[class~="${match[0]}"]`)) missing.add(match[0]);
+      }
+    }
+    expect([...missing], "Falta su medida en la escala de la compu: volvé a generarla").toEqual([]);
+  });
+
+  // 187: a 390, lo que se toca sigue en 44 × 44. La raíz al 75 % y la escala de letras y esquinas viven solo en la compu
+  // (pantalla ancha y mouse): no cambian un alto, un ancho ni un relleno, y el teléfono y la tablet conservan sus medidas.
+  it("deja el teléfono con sus medidas: lo que se toca sigue en 44 × 44", () => {
+    expect(css.match(/font-size: 75%/g)).toHaveLength(1);
+    const scale = css.split("/* 180 · La escala de ArquitecturaBase en la compu")[1]?.split("\n}\n")[0] ?? "";
+    expect(scale).toMatch(/^[^@]*@media \(min-width: 64rem\) and \(pointer: fine\) \{/);
+    const properties = [...scale.matchAll(/\{([^{}]*)\}/g)]
+      .flatMap((block) => block[1].split(";"))
+      .map((declaration) => declaration.split(":")[0].trim())
+      .filter(Boolean);
+    expect(properties.length).toBeGreaterThan(40);
+    expect(properties.filter((property) => !/^(?:font-size|--radius-(?:card|control)|border(?:-(?:top|bottom)-(?:left|right))?-radius)$/.test(property)))
+      .toEqual([]);
+  });
 });

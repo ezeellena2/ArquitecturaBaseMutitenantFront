@@ -15,7 +15,7 @@ import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { Button } from "@/shared/ui/button";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { FilterBar } from "@/shared/ui/FilterBar";
-import { CloseIcon, LogOutIcon, RotateIcon, UsersIcon } from "@/shared/ui/icons";
+import { CloseIcon, LogOutIcon, RotateIcon } from "@/shared/ui/icons";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -97,7 +97,7 @@ export function AccountsPage() {
     void invalidate();
   };
   return <>
-    <Page icon={UsersIcon} title={t("platformAccounts:title")} summary={summary} phoneSubtitle={t("platformAccounts:platform")} phoneBody="flush"
+    <Page title={t("platformAccounts:title")} summary={summary} phoneSubtitle={t("platformAccounts:platform")} phoneBody="flush"
       fab={canInvite ? { label: t("platformAccounts:invite.title"), onClick: () => setInviteRoute(route) } : undefined}
       actions={canInvite ? <Button onClick={() => setInviteRoute(route)}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("platformAccounts:invite.title")}</Button> : undefined}>
       <div className="flex flex-col gap-3 md:gap-3.5">

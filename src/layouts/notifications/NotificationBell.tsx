@@ -46,7 +46,7 @@ function BellMenu() {
       <button type="button" aria-label={label}
         className="relative inline-flex size-9.5 shrink-0 items-center justify-center rounded-[0.25rem] text-[var(--t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] data-[state=open]:bg-[var(--lado-hover)] data-[state=open]:text-[var(--t1)]">
         <BellIcon className="size-5" />
-        {unread > 0 ? <span aria-hidden="true" className="absolute top-0.5 right-px inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-[0.25rem] border-2 border-[var(--lado)] bg-[var(--marca)] px-1.25 text-[0.6875rem] leading-none font-bold text-[var(--lado-activo)]">
+        {unread > 0 ? <span aria-hidden="true" className="absolute top-0.5 right-px inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-[0.25rem] border-2 border-[var(--lado)] bg-[var(--marca)] px-1.25 text-[0.6875rem] leading-none font-bold text-[var(--superficie)]">
           <NumberText value={unread} />
         </span> : null}
       </button>
@@ -54,7 +54,7 @@ function BellMenu() {
     <Popover.Portal>
       {/* `.cmp-lista`: 420 de ancho, a 8 de la campana, con el borde y la sombra de un desplegable. */}
       <Popover.Content aria-label={t("title")} align="end" sideOffset={6} collisionPadding={16}
-        className="z-50 flex max-h-(--radix-popover-content-available-height) w-105 max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-[0.25rem] border border-[var(--borde)] bg-[var(--lado-activo)] text-[var(--t1)] shadow-[var(--sombra-menu)]">
+        className="z-50 flex max-h-(--radix-popover-content-available-height) w-105 max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-[0.25rem] border border-[var(--borde)] bg-[var(--superficie)] text-[var(--t1)] shadow-[var(--sombra-menu)]">
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--borde)] px-4 py-3 text-[0.9375rem] font-bold">
           {t("title")}
           {unread > 0 ? <span className="text-[0.8125rem] font-medium text-[var(--t3)]"><NumberText value={unread} /></span> : null}
@@ -83,10 +83,10 @@ function PhoneBell({ to, tone }: { to: string; tone: "bar" | "cover" }) {
 
   return <Link to={to} state={{ from: `${pathname}${search}` }} aria-label={label}
     className={cn("relative inline-flex size-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-[var(--foco)]",
-      cover ? "bg-[var(--lado-activo)]/14 text-[var(--lado-activo)]" : "text-[var(--t1)] hover:bg-[var(--s2)]")}>
+      cover ? "bg-[var(--superficie)]/14 text-[var(--superficie)]" : "text-[var(--t1)] hover:bg-[var(--s2)]")}>
     <BellIcon className="size-5" />
     {unread > 0 ? <span aria-hidden="true" className={cn("absolute top-0.5 right-0 inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-[0.3125rem] border-2 px-1.25 text-[0.6875rem] leading-none font-bold",
-      cover ? "border-transparent bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "border-[var(--lado-activo)] bg-[var(--marca)] text-[var(--lado-activo)]")}>
+      cover ? "border-transparent bg-[var(--superficie)] text-[var(--marca-tx)]" : "border-[var(--superficie)] bg-[var(--marca)] text-[var(--superficie)]")}>
       <NumberText value={unread} />
     </span> : null}
   </Link>;

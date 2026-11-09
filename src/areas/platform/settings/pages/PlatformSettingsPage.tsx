@@ -24,7 +24,6 @@ import { EmailField } from "@/shared/ui/fields/EmailField";
 import { NumberField } from "@/shared/ui/fields/NumberField";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { SlidersHorizontalIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Page } from "@/shared/ui/Page";
 import { Section, SectionFields } from "@/shared/ui/Section";
@@ -68,7 +67,7 @@ export function PlatformSettingsPage() {
   const { t } = useTranslation(["platformSettings", "common"]);
   const settings = useQuery({ queryKey: platformSettingsKey, queryFn: fetchPlatformSettings, meta: { silent: true, blocksView: true } });
   if (settings.isError && !settings.data) return <LoadErrorPage onRetry={() => { void settings.refetch(); }} />;
-  if (!settings.data) return <Page icon={SlidersHorizontalIcon} title={t("platformSettings:title")}><p role="status">{t("common:states.loading")}</p></Page>;
+  if (!settings.data) return <Page title={t("platformSettings:title")}><p role="status">{t("common:states.loading")}</p></Page>;
   return <SettingsEditor settings={settings.data} loadError={settings.error} reload={async () => { const result = await settings.refetch(); return result.isSuccess ? result.data : undefined; }} />;
 }
 
@@ -142,7 +141,7 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
   }
   const errors = form.formState.errors;
   return <>
-    <Page icon={SlidersHorizontalIcon} title={t("platformSettings:title")} phoneSubtitle={t("platformSettings:administration")}
+    <Page title={t("platformSettings:title")} phoneSubtitle={t("platformSettings:administration")}
       backTo={phone ? { to: "/plataforma/mas", label: t("platformSettings:back") } : undefined} banner={edit.banner}
       actions={<><Button type="button" variant="outline" onClick={discard}>{t("platformSettings:discard")}</Button><Button type="submit" form="platform-settings-editor" disabled={!isDirty} pending={visiblyBusy} pendingLabel={t("platformSettings:saving")}>{t("platformSettings:save")}</Button></>}>
       {loadError ? <FormError message={apiErrorMessage(loadError, t)} /> : null}{edit.formError}

@@ -28,7 +28,6 @@ import { ChatColumns } from "../../chats/components/ConversationView";
 import { ConversationItem } from "../../chats/components/ConversationItem";
 import { MessageThread } from "../../chats/components/MessageThread";
 import { chatTime, chronological, phoneLabel, whatsappLink } from "../../chats/lib/conversation";
-import { ChatsIcon } from "../../components/icons";
 import { countOf } from "../../lib/values";
 import { fetchPersonalConversation, fetchPersonalConversations, personalConversationQueryKey, personalConversationsQueryKey, personalMessagesQueryRoot, unlinkConversation } from "../api/messages";
 
@@ -90,7 +89,7 @@ export function MessagesPage() {
   if (phone) return <Page title={title} phoneBody="flush">{none ? empty : listColumn}</Page>;
   const summary = data ? data.totalCount === 0 ? t("personal.noOrganizations") : t("personal.organizations", countOf(format, data.totalCount)) : undefined;
   return <div className="flex h-full min-h-0 flex-col">
-    <Page icon={ChatsIcon} title={title} summary={summary} bodyClassName={none ? undefined : "flex min-h-0 flex-1 flex-col"}>
+    <Page title={title} summary={summary} bodyClassName={none ? undefined : "flex min-h-0 flex-1 flex-col"}>
       {none ? <Surface className="flex overflow-hidden">{empty}</Surface> : <ChatColumns>
         <aside aria-label={t("personal.list")} className="flex w-95 shrink-0 flex-col border-r border-[var(--borde)]">{listColumn}</aside>
         {selectedId ? <PersonalConversation key={selectedId} id={selectedId} back={back} phone={false} /> : <div className="flex-1 bg-[var(--s2)]" />}
@@ -168,7 +167,7 @@ function PersonalConversation({ id, back, phone }: { id: string; back: { to: str
       </DropdownMenu>
     </header>
     {thread}
-    <div className="flex shrink-0 justify-center border-t border-[var(--borde)] bg-[var(--lado-activo)] px-4 py-3">{follow}</div>
+    <div className="flex shrink-0 justify-center border-t border-[var(--borde)] bg-[var(--superficie)] px-4 py-3">{follow}</div>
     {confirm}
   </section>;
 }

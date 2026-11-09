@@ -170,7 +170,7 @@ function InvitationFlow() {
               detail={t(`states.${invitation.state}.description`, { organization: organizationName, inviter })}
               actions={<Button asChild variant="outline" size="lg"><Link to="/login">{t("backToSignIn")}</Link></Button>} />
             : <div className="flex flex-col gap-5">
-          <span aria-hidden="true" className="flex size-14 items-center justify-center rounded-[0.875rem] bg-[linear-gradient(135deg,var(--marca),var(--auth-panel-mid))] text-xl font-bold text-[var(--lado-activo)]">{initials(organizationName, "O")}</span>
+          <span aria-hidden="true" className="flex size-14 items-center justify-center rounded-[0.75rem] bg-[var(--marca)] text-xl font-bold text-[var(--superficie)]">{initials(organizationName, "O")}</span>
           <div>
             <h1 className="text-[1.5rem] leading-[1.2] font-bold tracking-[-0.02em]">{t("join.title", { organization: organizationName })}</h1>
             <p className="mt-1.5 break-all text-sm text-[var(--t2)]"><Trans ns="invitations" i18nKey="join.forEmail" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>

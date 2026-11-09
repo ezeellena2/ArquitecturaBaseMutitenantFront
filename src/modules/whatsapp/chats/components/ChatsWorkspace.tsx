@@ -13,7 +13,6 @@ import { pageSizes } from "@/shared/api/pageSizes";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { FilterBar, type FilterBarFilter } from "@/shared/ui/FilterBar";
-import { WhatsAppIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { LoadMore } from "@/shared/ui/LoadMore";
 import { Page, SublineSeparator } from "@/shared/ui/Page";
@@ -21,7 +20,6 @@ import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { inboxPermission } from "../../access";
 import type { WhatsAppConversationFilter, WhatsAppConversationRowResponse } from "../../api/types";
 import { inboxRefetchInterval } from "../../api/untaken";
-import { ChatsIcon } from "../../components/icons";
 import { countOf } from "../../lib/values";
 import { conversationsQueryKey, fetchConversations, inboxTeamOptions, type ChatsScope, type ConversationsQuery, type InboxKey } from "../api/chats";
 import { chatTime, isUntaken, phoneLabel, rowAssignment } from "../lib/conversation";
@@ -151,7 +149,7 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
   const summary = counts && total !== undefined ? <>{t("chats.conversations", countOf(format, total))}<SublineSeparator />{t("chats.untakenCount", countOf(format, counts.untaken))}</> : undefined;
   if (phone) return <Page title={title} phoneBody="flush">{inboxColumn}</Page>;
   return <div className="flex h-full min-h-0 flex-col">
-    <Page icon={platform ? WhatsAppIcon : ChatsIcon} title={title} summary={summary} bodyClassName="flex min-h-0 flex-1 flex-col">
+    <Page title={title} summary={summary} bodyClassName="flex min-h-0 flex-1 flex-col">
       <ChatColumns>
         <aside aria-label={t("chats.list.label")} className="flex w-95 shrink-0 flex-col border-r border-[var(--borde)]">{inboxColumn}</aside>
         {selectedId ? <ConversationView key={selectedId} scope={scope} id={selectedId} links={links} back={back} phone={false} /> : <div className="flex-1 bg-[var(--s2)]" />}

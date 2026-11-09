@@ -13,7 +13,7 @@ import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { FilterBar } from "@/shared/ui/FilterBar";
-import { EyeIcon, KeyIcon } from "@/shared/ui/icons";
+import { EyeIcon } from "@/shared/ui/icons";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -61,7 +61,7 @@ export function RecoveriesPage() {
   }) : undefined;
   const filtered = Boolean(pagination.search || query.status);
   return <>
-    <Page icon={KeyIcon} title={t("platformRecoveries:title")} summary={summary} phoneSubtitle={t("platformRecoveries:platform")} phoneBody="flush">
+    <Page title={t("platformRecoveries:title")} summary={summary} phoneSubtitle={t("platformRecoveries:platform")} phoneBody="flush">
       <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar phoneTools="filter" screen={t("platformRecoveries:title")} label={t(phone ? "platformRecoveries:filters.phone" : "platformRecoveries:filters.label")} searchLabel={t("platformRecoveries:filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch} clearLabel={t("common:actions.clear")} onClear={filters.clear}
           filters={[{ key: "status", label: t("platformRecoveries:filters.status"), menuLabel: t("platformRecoveries:filters.statusMenu"), value: query.status ?? "", active: query.status !== undefined,

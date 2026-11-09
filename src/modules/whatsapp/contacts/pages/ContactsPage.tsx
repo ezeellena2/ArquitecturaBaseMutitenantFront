@@ -15,7 +15,6 @@ import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
-import { ContactsIcon } from "../../components/icons";
 import type { WhatsAppConsent, WhatsAppContactResponse } from "../../api/types";
 import { contactsQueryKey, contactTagOptions, fetchContacts, tagMaxLength, type ContactsQuery } from "../api/contacts";
 import { contactPath, contactPhoneRow, createContactColumns } from "../columns";
@@ -65,7 +64,7 @@ export function ContactsPage(_props: ModuleContentProps) {
   const openImport = () => setDialog({ kind: "import" });
 
   return <>
-    <Page icon={ContactsIcon} title={t("whatsapp:contacts.title")} phoneBody="flush"
+    <Page title={t("whatsapp:contacts.title")} phoneBody="flush"
       summary={summary ? <><span>{t("whatsapp:contacts.summaryTotal", countOf(format, summary.total))}</span><SublineSeparator /><span>{t("whatsapp:contacts.summaryAccepting", countOf(format, summary.accepting))}</span></> : undefined}
       // M-WA-Contactos: «Importar» en texto en la barra; en la compu, el botón principal de la banda.
       barAction={phone ? { label: t("whatsapp:contacts.import.short"), onClick: openImport } : undefined}

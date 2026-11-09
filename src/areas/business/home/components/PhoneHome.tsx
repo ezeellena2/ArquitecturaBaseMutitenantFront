@@ -7,6 +7,7 @@ import type { HomeCompanyCard, HomeOrganizationSummary } from "@/shared/api/type
 import { initials } from "@/shared/lib/initials";
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { NumberText } from "@/shared/ui/format/NumberText";
+import { PhoneNotificationBell } from "@/layouts/notifications/NotificationBell";
 import { companyDetail } from "./companyDetail";
 import { areaIcons, areaPaths, pendingTotal, type HomeArea, type PendingRow, type PendingRowGroup } from "./pendingItems";
 import type { ModuleCardRow } from "./HomeCards";
@@ -43,12 +44,14 @@ export function PhoneHome({ organization, moduleCards = [], companies, groups, f
 
   return <div className="flex min-h-full flex-col">
     {/* .c-top y .c-hola: 10 arriba y 46 abajo (la tarjeta blanca sube 26 sobre ellos), el saludo con la altura normal de
-        su letra y el nombre con interlineado 1,15. */}
-    <div className="bg-[linear-gradient(160deg,var(--marca),var(--marca-tx))] px-5 pt-2.5 pb-11.5 text-[var(--primary-foreground)]">
+        su letra y el nombre con interlineado 1,15. La campana (.c-campana), blanca sobre un velo claro, a 8 de arriba y 16
+        de la derecha; el saludo y el nombre le dejan su lugar y bajan de renglón antes de pasarle por debajo. */}
+    <div className="relative bg-[var(--marca)] pt-2.5 pr-17 pb-11.5 pl-5 text-[var(--primary-foreground)]">
+      <div className="absolute top-2 right-4"><PhoneNotificationBell tone="cover" /></div>
       <span className="block text-[0.9375rem] leading-[normal] opacity-80">{firstName ? t("greeting", { name: firstName }) : t("greetingUnnamed")}</span>
       <h1 className="mt-0.5 text-[1.75rem] leading-[1.15] font-bold tracking-[-0.02em]">{organizationName}</h1>
     </div>
-    <div className="relative z-[1] -mt-6.5 flex flex-1 flex-col overflow-hidden rounded-t-[1.5rem] bg-[var(--lado-activo)]">
+    <div className="relative z-[1] -mt-6.5 flex flex-1 flex-col overflow-hidden rounded-t-[1.5rem] bg-[var(--superficie)]">
       {organization ? <>
         <Shortcuts organization={organization} moduleCards={moduleCards} groups={groups} />
         <div className="h-2 shrink-0 bg-[var(--s2)]" />
@@ -81,7 +84,7 @@ function Shortcuts({ organization, moduleCards, groups }: { organization: HomeOr
         className="flex flex-col items-center gap-1.75 text-center text-[0.78125rem] leading-[normal] font-medium text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
         <span className="relative inline-flex size-14 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]">
           <Icon aria-hidden="true" className="size-6" />
-          {count > 0 ? <span aria-hidden="true" className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-[0.625rem] bg-[var(--peligro)] px-1.5 text-[0.71875rem] font-bold text-[var(--primary-foreground)] shadow-[0_0_0_2px_var(--lado-activo)]"><NumberText value={count} /></span> : null}
+          {count > 0 ? <span aria-hidden="true" className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-[0.625rem] bg-[var(--peligro)] px-1.5 text-[0.71875rem] font-bold text-[var(--primary-foreground)] shadow-[0_0_0_2px_var(--superficie)]"><NumberText value={count} /></span> : null}
         </span>
         {label}
       </Link>;

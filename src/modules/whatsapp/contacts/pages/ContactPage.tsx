@@ -12,7 +12,7 @@ import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { PhoneText } from "@/shared/ui/format/PhoneText";
-import { ChatsIcon, ContactsIcon } from "../../components/icons";
+import { ChatsIcon } from "../../components/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { Page } from "@/shared/ui/Page";
@@ -45,7 +45,7 @@ export function ContactPage(_props: ModuleContentProps) {
   const format = useFormat();
   useBreadcrumbLeaf(contact.data ? contact.data.name ?? (format.isLoading ? undefined : format.formatPhone(contact.data.displayNumber)) : undefined);
 
-  if (contact.isPending) return <Page icon={ContactsIcon} title={t("whatsapp:contacts.detail.loading")} backTo={back}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (contact.isPending) return <Page title={t("whatsapp:contacts.detail.loading")} backTo={back}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   if (!contact.data) return isNotFoundError(contact.error)
     ? <NotFoundPage homePath={homeOf("business")} screen={t("whatsapp:contacts.detail.title")} back={back} />
     : <LoadErrorPage onRetry={() => { void contact.refetch(); }} screen={t("whatsapp:contacts.detail.title")} back={back} />;
@@ -84,7 +84,7 @@ function ContactDetail({ contact, back }: { contact: WhatsAppContactResponse; ba
   const openChat = contact.latestConversationId ? <Button asChild><Link to={chatPath(contact.latestConversationId)}>{t("whatsapp:contacts.openChat")}</Link></Button> : null;
 
   return <>
-    <Page icon={ContactsIcon} title={title} backTo={back} summary={summary} phoneSubtitle={summary} phoneBody="flush"
+    <Page title={title} backTo={back} summary={summary} phoneSubtitle={summary} phoneBody="flush"
       actions={phone ? openChat ?? undefined : <>
         <Button type="button" variant="outline" onClick={() => setEditing({})}>{t("whatsapp:contacts.actions.edit")}</Button>
         {openChat}

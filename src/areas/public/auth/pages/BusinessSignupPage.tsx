@@ -348,7 +348,7 @@ export function BusinessSignupPage() {
 // una caja gris aparte, pegada al campo, con la letra del campo (15). El texto ocupa todo el alto de la caja, sin el alto
 // ni el radio que `Input` toma en el teléfono.
 function SlugInput({ suffix, className, ...inputProps }: React.ComponentProps<"input"> & { suffix: string }) {
-  return <div className="flex h-11 items-stretch overflow-hidden rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--lado-activo)] focus-within:border-[var(--marca)] focus-within:ring-[3px] focus-within:ring-[var(--foco-halo)]">
+  return <div className="flex h-11 items-stretch overflow-hidden rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--superficie)] focus-within:border-[var(--marca)] focus-within:ring-[3px] focus-within:ring-[var(--foco-halo)]">
     <Input {...inputProps} className={cn(className, "h-full min-w-0 flex-1 rounded-none border-0 shadow-none focus-visible:ring-0 max-md:h-full max-md:rounded-none")} />
     <span data-slug-suffix className="flex shrink-0 items-center border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[0.9375rem] text-[var(--t2)]">{suffix}</span>
   </div>;

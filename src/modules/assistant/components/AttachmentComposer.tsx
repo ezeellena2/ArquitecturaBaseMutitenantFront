@@ -56,7 +56,7 @@ export function AttachmentComposer({ files, limits, errorId, placeholder, unavai
   const invalid = files.some((item) => item.invalid);
   const fileInput = useRef<HTMLInputElement>(null);
   return <ComposerPrimitive.Root onSubmit={(event) => { if (!text.trim() || invalid) { event.preventDefault(); if (!text.trim()) setRequired(true); } }}
-    className="relative flex shrink-0 flex-col gap-2 rounded-2xl border border-[var(--borde2)] bg-[var(--lado-activo)] p-3 focus-within:border-[var(--marca)] max-md:rounded-[1.75rem] max-md:p-2">
+    className="relative flex shrink-0 flex-col gap-2 rounded-2xl border border-[var(--borde2)] bg-[var(--superficie)] p-3 focus-within:border-[var(--marca)] max-md:rounded-[1.75rem] max-md:p-2">
     <FilesContext.Provider value={{ files, errorId, pending }}><ul className="flex flex-wrap gap-2 empty:hidden"><ComposerPrimitive.Attachments components={{ Attachment: ComposerFile }} /></ul></FilesContext.Provider>
     <div className="[&_label]:sr-only max-md:mx-9"><FormField label={t("composer.label")} error={required ? t("composer.required") : undefined}>
       <ComposerPrimitive.Input asChild addAttachmentOnPaste={false} onChange={() => setRequired(false)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && (!text.trim() || invalid)) { event.preventDefault(); if (!text.trim()) setRequired(true); } }}>

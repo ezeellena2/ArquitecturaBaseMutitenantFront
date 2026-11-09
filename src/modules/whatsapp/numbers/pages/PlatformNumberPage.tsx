@@ -10,7 +10,7 @@ import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { Button } from "@/shared/ui/button";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
-import { PhoneIcon, RotateIcon, WhatsAppIcon } from "@/shared/ui/icons";
+import { PhoneIcon, RotateIcon } from "@/shared/ui/icons";
 import { InfoButton } from "@/shared/ui/InfoButton";
 import { List, ListItem } from "@/shared/ui/List";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
@@ -117,7 +117,7 @@ export function PlatformNumberPage() {
   }
 
   return <>
-    <Page icon={WhatsAppIcon} title={t("whatsapp:numbers.platform.title")} summary={summary} phoneBody={number ? "gray" : "padded"}
+    <Page title={t("whatsapp:numbers.platform.title")} summary={summary} phoneBody={number ? "gray" : "padded"}
       fab={!number && signup ? { label: t("whatsapp:numbers.actions.connect"), onClick: connect } : undefined}
       actions={number ? undefined : connectButton}>
       {!data ? <p role="status" className="text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p>

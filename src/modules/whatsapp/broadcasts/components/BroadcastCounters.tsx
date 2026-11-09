@@ -20,7 +20,7 @@ export function BroadcastCounters({ broadcast }: { broadcast: WhatsAppBroadcastR
   ];
   if (phone) return <ul aria-label={t("broadcasts.counters.title")} className="m-0 flex list-none flex-wrap gap-2 px-4 pt-1 pb-3">
     {[...counters, { key: "failed", value: broadcast.failed }].map((counter) => <li key={counter.key}
-      className="flex h-14.5 min-w-21 flex-col justify-center rounded-[0.875rem] border border-[var(--borde)] bg-[var(--lado-activo)] px-3.5 leading-[1.25]">
+      className="flex h-14.5 min-w-21 flex-col justify-center rounded-[0.875rem] border border-[var(--borde)] bg-[var(--superficie)] px-3.5 leading-[1.25]">
       <NumberText value={counter.value} className="text-left text-[1.0625rem] font-semibold text-[var(--t1)]" />
       <span className="text-[0.78125rem] text-[var(--t3)]">{t(`broadcasts.counters.${counter.key}`)}</span>
     </li>)}

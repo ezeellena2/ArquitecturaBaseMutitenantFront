@@ -102,7 +102,7 @@ function MonthPicker({ value, selectedValue, onSelect }: {
   }
 
   return <Popover.Content role="dialog" aria-label={t("fields.chooseMonth")} sideOffset={4} align="start"
-    className="z-50 w-[min(18rem,calc(100vw-2rem))] max-h-(--radix-popover-content-available-height) overflow-y-auto rounded-[0.625rem] border border-[var(--borde)] bg-[var(--lado-activo)] p-2 text-[var(--t1)] shadow-[var(--sombra-menu)]"
+    className="z-50 w-[min(18rem,calc(100vw-2rem))] max-h-(--radix-popover-content-available-height) overflow-y-auto rounded-[0.625rem] border border-[var(--borde)] bg-[var(--superficie)] p-2 text-[var(--t1)] shadow-[var(--sombra-menu)]"
     onOpenAutoFocus={(event) => { event.preventDefault(); optionRefs.current[active]?.focus(); }}>
     <div className="mb-2 flex items-center gap-2">
       <Button type="button" variant="icon" size="icon" aria-label={t("fields.previousYear")}

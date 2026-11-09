@@ -270,7 +270,7 @@ export function DataTable<TRow>({
         </TableRow> : rowGroups ? rowGroups.map((group) => <Fragment key={group.key}>
           <TableRow className="hover:bg-[var(--s2)]"><TableCell colSpan={columns.length} className="bg-[var(--s2)] px-5 py-2.5">{group.header}</TableCell></TableRow>
           {group.rows.map(renderRow)}
-          {group.footer ? <TableRow><TableCell colSpan={columns.length} className="bg-[var(--lado-activo)] px-5 py-3">{group.footer}</TableCell></TableRow> : null}
+          {group.footer ? <TableRow><TableCell colSpan={columns.length} className="bg-[var(--superficie)] px-5 py-3">{group.footer}</TableCell></TableRow> : null}
         </Fragment>) : rows.map(renderRow)}
       </TableBody>
     </Table>

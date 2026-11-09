@@ -59,8 +59,10 @@ describe("Sidebar", () => {
     </MemoryRouter>);
     expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-58");
     expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("link", { name: "Inicio" })).toHaveClass("rounded-[0.5rem]", "ring-1", "ring-[var(--borde)]", "shadow-sm");
-    expect(screen.getByRole("button", { name: "Contraer menú" })).toHaveClass("top-16", "bg-[var(--lado-activo)]");
+    // 173 («Criterio · Menús»): el activo lleva una barra de 2 en la marca y la letra en 600, sin la pastilla blanca.
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveClass("bg-[var(--lado-hover)]", "font-semibold", "text-[var(--marca-tx)]", "shadow-[inset_2px_0_0_var(--marca)]");
+    expect(screen.getByRole("link", { name: "Inicio" })).not.toHaveClass("bg-[var(--superficie)]", "ring-1", "shadow-sm");
+    expect(screen.getByRole("button", { name: "Contraer menú" })).toHaveClass("top-16", "bg-[var(--superficie)]");
     expect(screen.getByText("Ana")).toBeVisible();
     expect(screen.getByText("ana@example.com")).toBeVisible();
     expect(screen.getByText("Empresa A")).toBeVisible();
@@ -93,7 +95,9 @@ describe("Sidebar", () => {
 
     rerender(<MemoryRouter initialEntries={["/org"]}><Sidebar {...props} navigation={businessNavigation} administrationOpen /></MemoryRouter>);
     const open = screen.getByRole("button", { name: "Administración" });
-    expect(open).toHaveClass("bg-[var(--lado-activo)]", "font-semibold", "text-[var(--marca-tx)]", "ring-1");
+    // 173 («Criterio · Menús»): el activo lleva una barra de 2 en la marca y la letra en 600, sin la pastilla blanca.
+    expect(open).toHaveClass("bg-[var(--lado-hover)]", "font-semibold", "text-[var(--marca-tx)]", "shadow-[inset_2px_0_0_var(--marca)]");
+    expect(open).not.toHaveClass("bg-[var(--superficie)]", "ring-1", "shadow-sm");
     expect(open.querySelector(".lucide-chevron-left")).not.toBeNull();
   });
 

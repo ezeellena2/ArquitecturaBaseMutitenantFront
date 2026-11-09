@@ -9,7 +9,6 @@ import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
-import { WhatsAppIcon } from "@/shared/ui/icons";
 import { ImportantNotice } from "@/shared/ui/ImportantNotice";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
@@ -81,7 +80,7 @@ function TemplatesPage({ scope }: { scope: TemplateScope }) {
   const groupLabel = (value: Group) => t(`enums:WhatsAppTemplateGroup.${value}`);
 
   return <>
-    <Page icon={WhatsAppIcon} title={t("whatsapp:templates.title")} phoneBody="flush" summary={summary}
+    <Page title={t("whatsapp:templates.title")} phoneBody="flush" summary={summary}
       fab={{ label: t("whatsapp:templates.create"), onClick: create }}
       actions={<Button type="button" onClick={create}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("whatsapp:templates.create")}</Button>}>
       <div className="flex flex-col gap-3 md:gap-3.5">

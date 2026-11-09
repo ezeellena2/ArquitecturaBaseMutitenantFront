@@ -49,7 +49,7 @@ export function NumberPicker({ numbers, selected, onSelect }: {
 
   const label = t("bot.number.pill", { value: text(selected) });
   // WA-Respuestas (.w-caja.o-fb y .w-pil): la píldora de 36 en una caja con 12 y 16 de margen.
-  const pill = "inline-flex h-9 max-w-full items-center gap-1.5 rounded-full border border-[var(--borde)] bg-[var(--lado-activo)] px-3.5 text-[0.8125rem] text-[var(--t2)]";
+  const pill = "inline-flex h-9 max-w-full items-center gap-1.5 rounded-full border border-[var(--borde)] bg-[var(--superficie)] px-3.5 text-[0.8125rem] text-[var(--t2)]";
   return <Surface className="flex items-center gap-2.5 px-4 py-3">
     {several ? <DropdownMenu>
       <DropdownMenuTrigger className={`${pill} hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] data-[state=open]:border-[var(--marca)] data-[state=open]:shadow-[0_0_0_3px_var(--marca-t)]`}>

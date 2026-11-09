@@ -10,13 +10,13 @@ export function FixedActions({ children, notice }: { children: ReactNode; notice
     return () => hideBottomNav(false);
   }, [hideBottomNav]);
 
-  const bar = <div data-slot="fixed-actions" className="sticky bottom-0 z-20 mt-auto flex items-center gap-3 border-t border-[var(--borde)] bg-[var(--lado-activo)] px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] [&>*]:h-12.5 [&>*]:min-w-0 [&>*]:flex-1 [&>*]:rounded-[0.75rem] [&>*]:text-[1rem]">
+  const bar = <div data-slot="fixed-actions" className="sticky bottom-0 z-20 mt-auto flex items-center gap-3 border-t border-[var(--borde)] bg-[var(--superficie)] px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] [&>*]:h-12.5 [&>*]:min-w-0 [&>*]:flex-1 [&>*]:rounded-[0.75rem] [&>*]:text-[1rem]">
     {children}
   </div>;
   if (!notice) return bar;
   // Un aviso pegado a la acción (M-Rol, .ap-cartel): arriba de la barra, con 16 a los costados y 10 hasta ella.
   return <div className="sticky bottom-0 z-20 mt-auto flex flex-col [&>[data-slot=fixed-actions]]:static [&>[data-slot=fixed-actions]]:mt-0">
-    <div data-slot="fixed-actions-notice" className="bg-[var(--lado-activo)] px-4 pb-2.5">{notice}</div>
+    <div data-slot="fixed-actions-notice" className="bg-[var(--superficie)] px-4 pb-2.5">{notice}</div>
     {bar}
   </div>;
 }

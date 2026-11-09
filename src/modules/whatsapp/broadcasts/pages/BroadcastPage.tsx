@@ -24,7 +24,6 @@ import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { homeOf } from "@/tenancy/access";
-import { BroadcastsIcon } from "../../components/icons";
 import type { WhatsAppBroadcastResponse, WhatsAppRecipientResponse, WhatsAppRecipientStatus } from "../../api/types";
 import { broadcastQueryKey, fetchBroadcast, type RecipientsQuery } from "../api/broadcasts";
 import { broadcastsPath, contactPath, createRecipientColumns, recipientStatusTones } from "../columns";
@@ -61,7 +60,7 @@ export function BroadcastPage({ me }: ModuleContentProps) {
   useBreadcrumbLeaf(broadcast?.name);
   const back = { to: broadcastsPath, label: t("whatsapp:broadcasts.back") };
 
-  if (detail.isPending) return <Page icon={BroadcastsIcon} title={t("whatsapp:broadcasts.detail.loading")} backTo={back}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (detail.isPending) return <Page title={t("whatsapp:broadcasts.detail.loading")} backTo={back}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   if (!broadcast) return isNotFoundError(detail.error)
     ? <NotFoundPage homePath={homeOf("business")} screen={t("whatsapp:broadcasts.detail.title")} back={back} />
     : <LoadErrorPage onRetry={() => { void detail.refetch(); }} screen={t("whatsapp:broadcasts.detail.title")} back={back} />;
@@ -86,7 +85,7 @@ export function BroadcastPage({ me }: ModuleContentProps) {
   const scheduled = broadcast.status === "Scheduled";
 
   return <>
-    <Page icon={BroadcastsIcon} title={broadcast.name} backTo={back} phoneBody="flush"
+    <Page title={broadcast.name} backTo={back} phoneBody="flush"
       summary={<BroadcastSummary broadcast={broadcast} />} phoneSubtitle={<BroadcastSummary broadcast={broadcast} short />}
       actions={phone ? undefined : <Button type="button" variant="outline" onClick={() => actions.duplicate(broadcast)}>{t("whatsapp:broadcasts.actions.duplicate")}</Button>}
       moreActions={{ label: t(phone ? "whatsapp:broadcasts.detail.actions" : "whatsapp:broadcasts.detail.more"), items: [

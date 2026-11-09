@@ -4,7 +4,7 @@ import { RemoteOptionFooter, RemoteOptionSearch } from "@/shared/ui/RemoteOption
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
 import { Building2 } from "lucide-react";
-import { CloseIcon, RotateIcon, ShieldIcon, UserIcon, UserMinusIcon } from "@/shared/ui/icons";
+import { CloseIcon, RotateIcon, ShieldIcon, UserMinusIcon } from "@/shared/ui/icons";
 import { useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
@@ -297,7 +297,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   </>;
 
   return <>
-    <Page banner={edit.banner} icon={UserIcon} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
+    <Page banner={edit.banner} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
       phoneSubtitle={userContact(member) ?? undefined} phoneBody="gray"
       moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
         { label: t("users:actions.resend"), icon: RotateIcon, onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },

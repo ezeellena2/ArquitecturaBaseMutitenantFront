@@ -211,6 +211,13 @@ describe("BusinessHomePage", () => {
     expect(screen.getByText("Hola, Lucía")).toHaveClass("leading-[normal]");
     expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" })).toHaveClass("leading-[1.15]");
     expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" }).parentElement).toHaveClass("pt-2.5", "pb-11.5");
+    // .c-campana: la campana blanca de la cabecera verde, a 8 de arriba y 16 de la derecha, lleva a «Avisos»; el saludo y
+    // el nombre le dejan su lugar.
+    const bell = await screen.findByRole("link", { name: /^Avisos/ });
+    expect(bell).toHaveAttribute("href", "/avisos");
+    expect(bell).toHaveClass("size-11", "text-[var(--superficie)]");
+    expect(bell.parentElement).toHaveClass("absolute", "top-2", "right-4");
+    expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" }).parentElement).toHaveClass("relative", "pr-17");
     const shortcuts = screen.getByRole("navigation", { name: "Áreas de la organización" });
     // .c-atajos a, .c-tit y .c-p: los rótulos de los atajos, el título y las dos líneas de cada fila con la altura normal
     // de su letra (las filas, de 60).

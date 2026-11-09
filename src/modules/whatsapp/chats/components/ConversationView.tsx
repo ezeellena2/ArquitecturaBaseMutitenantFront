@@ -246,5 +246,5 @@ function ConversationNotice({ notice, name, number, messages, onClose }: {
 
 /** Que el chat abierto ocupe el alto de la pantalla en la compu: la bandeja y el hilo se desplazan cada uno. */
 export function ChatColumns({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("flex min-h-0 flex-1 bg-[var(--lado-activo)]", className)}>{children}</div>;
+  return <div className={cn("flex min-h-0 flex-1 bg-[var(--superficie)]", className)}>{children}</div>;
 }

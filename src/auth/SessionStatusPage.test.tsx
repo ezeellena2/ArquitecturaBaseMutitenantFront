@@ -42,7 +42,9 @@ describe("SessionStatusPage", () => {
 
   it("mantiene el estado de error accesible", async () => {
     const { container } = renderStatus({ status: "error" });
-    expect(container.querySelector(".brand-mark > span")).not.toBeNull();
+    // 173: la marca es el nombre, sin el cuadrado con degradé.
+    expect(container.querySelector(".brand-mark")).toBeNull();
+    expect(screen.getByText("ArquitecturaBase")).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -52,8 +54,9 @@ describe("SessionStatusPage", () => {
     const restore = asPhone();
     try {
       const starting = renderStatus({ status: "starting" });
-      expect(starting.container.querySelector(".brand-mark")).toHaveClass("size-19!");
-      expect(starting.container.querySelectorAll(".brand-mark")).toHaveLength(1);
+      // 173: sin el cuadrado de la marca; queda el giro chico.
+      expect(starting.container.querySelector(".brand-mark")).toBeNull();
+      expect(starting.container.querySelector(".animate-spin")).not.toBeNull();
       starting.unmount();
 
       const switching = renderStatus({ status: "switching", targetName: "Grupo Delta" });
@@ -62,7 +65,7 @@ describe("SessionStatusPage", () => {
 
       renderStatus({ status: "error", loginPath: "/login" });
       expect(screen.getByRole("link", { name: "Volver a ingresar" }).parentElement).toHaveAttribute("data-slot", "fixed-actions");
-      // M-Sesion (.cb.cb-pri): el principal con su degradé, como en la compu.
+      // M-Sesion (.cb.cb-pri): el principal, sólido (173), como en la compu.
       expect(screen.getByRole("link", { name: "Volver a ingresar" })).toHaveAttribute("data-variant", "default");
     } finally {
       restore();

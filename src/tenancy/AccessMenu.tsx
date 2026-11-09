@@ -23,7 +23,7 @@ function ProfileRow({ profile, onClose }: { profile: ProfileEntry; onClose: () =
     onSelect={() => { if (profile.checked) onClose(); else profile.select(); }}
     className={rowClass}
   >
-    <span aria-hidden="true" className={`inline-flex size-7 shrink-0 items-center justify-center rounded-[0.5rem] text-[0.71875rem] font-bold ${profile.checked ? "bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]"}`}>
+    <span aria-hidden="true" className={`inline-flex size-7 shrink-0 items-center justify-center rounded-[0.5rem] text-[0.71875rem] font-bold ${profile.checked ? "bg-[var(--superficie)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]"}`}>
       {initials(profile.name)}
     </span>
     <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
@@ -52,7 +52,7 @@ export function AccessMenu() {
   return <DropdownMenu open={open} onOpenChange={setOpen}>
     <DropdownMenuTrigger asChild>
       {/* «Criterio · Menús»: tu inicial, tu nombre en 13 y negrita y el perfil en gris de 12; abierto, en blanco con borde. */}
-      <button type="button" aria-label={`${nameLabel}, ${activeName}`} className="inline-flex h-10 items-center gap-2.5 rounded-[0.625rem] border border-transparent bg-transparent py-0 pl-1 pr-2 text-left hover:border-[var(--borde)] hover:bg-[var(--lado-activo)] data-[state=open]:border-[var(--borde)] data-[state=open]:bg-[var(--lado-activo)]">
+      <button type="button" aria-label={`${nameLabel}, ${activeName}`} className="inline-flex h-10 items-center gap-2.5 rounded-[0.625rem] border border-transparent bg-transparent py-0 pl-1 pr-2 text-left hover:border-[var(--borde)] hover:bg-[var(--superficie)] data-[state=open]:border-[var(--borde)] data-[state=open]:bg-[var(--superficie)]">
         <Avatar initials={avatarInitials} muted={avatarMuted} />
         <span className="flex flex-col leading-[1.25]"><span className="text-[0.8125rem] font-bold text-[var(--t1)]">{nameLabel}</span><span className="text-[0.75rem] text-[var(--t2)]">{activeName}</span></span>
         <ChevronDownIcon strokeWidth={2} className="size-3.5 text-[var(--t3)]" />
@@ -60,7 +60,7 @@ export function AccessMenu() {
     </DropdownMenuTrigger>
     {/* Las filas miden 320, como en «Criterio · Menús» y en el tablero Inicio-Personal; la caja suma su margen de 4 y el
         borde, y queda alineada con el botón por la derecha. */}
-    <DropdownMenuContent align="end" sideOffset={6} aria-label={t("accessMenu.menuFor", { name: nameLabel })} className="w-82.5 min-w-0 max-w-82.5 rounded-[0.625rem] border-[var(--borde)] bg-[var(--lado-activo)] p-1 shadow-[var(--shadow-card)]">
+    <DropdownMenuContent align="end" sideOffset={6} aria-label={t("accessMenu.menuFor", { name: nameLabel })} className="w-82.5 min-w-0 max-w-82.5 rounded-[0.625rem] border-[var(--borde)] bg-[var(--superficie)] p-1 shadow-[var(--sombra-menu)]">
       <div className="flex items-center gap-2.5 p-2.5">
         <Avatar size="medium" initials={avatarInitials} muted={avatarMuted} />
         <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">

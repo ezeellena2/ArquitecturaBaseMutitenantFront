@@ -42,9 +42,10 @@ describe("marco de app del teléfono", () => {
     expect(nav).toHaveStyle({ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" });
     expect(screen.getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByRole("link", { name: "Más" })).toHaveClass("text-[var(--marca-tx)]", "font-semibold");
-    // Lienzo v104: la inicial va en el círculo con el degradé de la marca, como en la compu.
+    // 173: la inicial va en un cuadrado relleno de la marca, sin círculo ni degradé, como en la compu.
     expect(screen.getByText("L")).toHaveAttribute("data-slot", "avatar");
-    expect(screen.getByText("L")).toHaveClass("size-6.5", "rounded-full", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
+    expect(screen.getByText("L")).toHaveClass("size-6.5", "rounded-[0.5rem]", "bg-[var(--marca)]");
+    expect(screen.getByText("L")).not.toHaveClass("rounded-full");
     expect(screen.getByRole("link", { name: "Inicio" })).not.toHaveAttribute("aria-current");
   });
 
@@ -90,7 +91,7 @@ describe("marco de app del teléfono", () => {
     expect(screen.getByText("Empresas", { selector: "span" })).toHaveClass("text-[0.84375rem]", "font-semibold");
     // .ap-gtit: con el interlineado normal; con el 1.5 de la página, cada grupo bajaba 4 px.
     expect(screen.getByText("Empresas", { selector: "span" }).parentElement).toHaveClass("leading-[normal]");
-    expect(screen.getByRole("list", { name: "Empresas" })).toHaveClass("rounded-[0.875rem]", "bg-[var(--lado-activo)]");
+    expect(screen.getByRole("list", { name: "Empresas" })).toHaveClass("rounded-[0.875rem]", "bg-[var(--superficie)]");
     expect(screen.getByRole("link", { name: /Delta S.A./ })).toHaveClass("min-h-14");
   });
 

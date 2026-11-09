@@ -29,7 +29,6 @@ import { RadioGroupField } from "@/shared/ui/RadioGroupField";
 import { SearchSelect } from "@/shared/ui/SearchSelect";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { homeOf } from "@/tenancy/access";
-import { BroadcastsIcon } from "../../components/icons";
 import type { CreateWhatsAppBroadcastRequest, WhatsAppBroadcastResponse, WhatsAppTemplateOptionResponse } from "../../api/types";
 import {
   broadcastQueryKey, broadcastsQueryRoot, broadcastTagOptions, broadcastTemplateOptions, createBroadcast, estimateQueryKey, fetchBroadcast, fetchEstimate,
@@ -116,7 +115,7 @@ export function NewBroadcastPage(_props: ModuleContentProps) {
   const back = { to: broadcastsPath, label: t("whatsapp:broadcasts.back") };
 
   if (!sourceId) return <BroadcastEditor initial={emptyForm} />;
-  if (source.isPending || (original && sourceTemplate.isPending)) return <Page icon={BroadcastsIcon} title={t("whatsapp:broadcasts.form.title")} backTo={back}>
+  if (source.isPending || (original && sourceTemplate.isPending)) return <Page title={t("whatsapp:broadcasts.form.title")} backTo={back}>
     <p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p>
   </Page>;
   if (!original) return isNotFoundError(source.error)
@@ -244,7 +243,7 @@ function BroadcastEditor({ initial, initialTemplate }: { initial: BroadcastForm;
   </div> : null;
 
   return <>
-    <Page icon={BroadcastsIcon} title={t("whatsapp:broadcasts.form.title")} backTo={{ to: broadcastsPath, label: t("whatsapp:broadcasts.back") }}
+    <Page title={t("whatsapp:broadcasts.form.title")} backTo={{ to: broadcastsPath, label: t("whatsapp:broadcasts.back") }}
       summary={t("whatsapp:broadcasts.form.draft")} phoneSubtitle={t("whatsapp:broadcasts.form.draft")} banner={edit.banner}
       actions={phone
         ? <><EstimateLine estimate={estimateData} /><Button type="submit" form="new-broadcast">{submitLabel}</Button></>

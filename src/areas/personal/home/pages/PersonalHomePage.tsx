@@ -1,4 +1,3 @@
-import { HomeIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { Page } from "@/shared/ui/Page";
@@ -12,6 +11,6 @@ export function PersonalHomePage() {
   const { data } = useCurrentUser();
   const { phone } = useAppChrome();
   const notice = data?.needsPersonalLoginMethod ? <PersonalLoginMethodNotice className="mx-4 mt-2" /> : null;
-  const original = <Page icon={HomeIcon} title={t("home.title")} phoneBody="flush">{notice}</Page>;
+  const original = <Page title={t("home.title")} phoneBody="flush">{notice}</Page>;
   return phone ? original : <ModuleHome access="consumer" fallback={original}>{notice}</ModuleHome>;
 }

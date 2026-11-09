@@ -20,7 +20,7 @@ export function MetaWindowNotice({ onBack, onCancel }: { onBack: () => void; onC
   </Dialog>;
   // WA-Alta-Meta (.mw-velo y .mw-pill): el velo sobre toda la pantalla y el aviso redondo, abajo al centro.
   return <div className="fixed inset-0 z-50 bg-[var(--velo)]">
-    <div role="status" className="absolute bottom-7 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full bg-[var(--lado-activo)] py-2.5 pr-3 pl-4.5 text-[0.84375rem] text-[var(--t1)] shadow-[var(--sombra-dialogo)]">
+    <div role="status" className="absolute bottom-7 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full bg-[var(--superficie)] py-2.5 pr-3 pl-4.5 text-[0.84375rem] text-[var(--t1)]">
       <span className="whitespace-nowrap">{t("numbers.metaWindow.open")}</span>
       <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={onBack}>{t("numbers.metaWindow.back")}</Button>
       <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={onCancel}>{t("numbers.metaWindow.cancel")}</Button>

@@ -316,7 +316,7 @@ describe("LoginPage", () => {
     const group = screen.getByRole("group", { name: "Código" });
     expect(within(group).getAllByRole("textbox")).toHaveLength(6);
     expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toHaveClass("bg-[var(--lado-activo)]");
+    expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toHaveClass("bg-[var(--superficie)]");
     expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).not.toHaveClass("bg-background");
     // Tablero Ingreso y «Criterio · Botones»: «Verificar» está activo con los casilleros vacíos; si falta el código, la
     // franja dice qué falta, en vez de apagar el botón. Un dígito nuevo la saca.

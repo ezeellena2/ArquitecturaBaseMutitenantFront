@@ -46,7 +46,7 @@ export function RadioRow({ name, label, checked, onChoose }: { name: string; lab
 export function CheckRow({ label, checked, onCheckedChange }: { label: string; checked: boolean; onCheckedChange: (checked: boolean) => void }) {
   return <label className={cn(rowClass, checked ? pickedClass : "text-[var(--t1)]")}>
     <Checkbox checked={checked} onCheckedChange={(next) => onCheckedChange(next === true)}
-      className="size-5.5 rounded-[0.375rem] border-[1.5px] border-[var(--borde2)] bg-[var(--lado-activo)] shadow-none data-[state=checked]:border-[var(--marca)] data-[state=checked]:bg-[var(--marca)] data-[state=checked]:text-[var(--lado-activo)]" />
+      className="size-5.5 rounded-[0.375rem] border-[1.5px] border-[var(--borde2)] bg-[var(--superficie)] shadow-none data-[state=checked]:border-[var(--marca)] data-[state=checked]:bg-[var(--marca)] data-[state=checked]:text-[var(--superficie)]" />
     <span className="min-w-0 flex-1 truncate">{label}</span>
   </label>;
 }

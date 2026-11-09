@@ -55,7 +55,7 @@ export function RadioGroupField({ label, options, value, onValueChange, error, v
           const descriptionId = `${optionId}-description`;
 
           if (variant === "segmented") return <RadioGroup.Item key={option.value} value={option.value} disabled={option.disabled}
-            className="relative flex-1 rounded-[0.4375rem] text-[0.875rem] font-semibold text-[var(--t2)] outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] data-[state=checked]:bg-[var(--lado-activo)] data-[state=checked]:text-[var(--t1)] data-[state=checked]:shadow-sm disabled:cursor-not-allowed disabled:opacity-50">
+            className="relative flex-1 rounded-[0.4375rem] text-[0.875rem] font-semibold text-[var(--t2)] outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] data-[state=checked]:bg-[var(--superficie)] data-[state=checked]:text-[var(--t1)] disabled:cursor-not-allowed disabled:opacity-50">
             {option.label}
           </RadioGroup.Item>;
 
@@ -69,7 +69,7 @@ export function RadioGroupField({ label, options, value, onValueChange, error, v
                 disabled={option.disabled}
                 aria-describedby={option.description ? descriptionId : undefined}
                 className={cn(
-                  "mt-px inline-flex size-4 shrink-0 items-center justify-center rounded-full border border-[var(--t2)] bg-[var(--lado-activo)] outline-none",
+                  "mt-px inline-flex size-4 shrink-0 items-center justify-center rounded-full border border-[var(--t2)] bg-[var(--superficie)] outline-none",
                   "focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:border-primary",
                   "disabled:cursor-not-allowed disabled:opacity-50",
                 )}

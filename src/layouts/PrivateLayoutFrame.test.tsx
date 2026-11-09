@@ -85,7 +85,7 @@ describe("PrivateLayoutFrame", () => {
     const [arrow] = arrows;
     expect(arrow).toHaveAccessibleName(name);
     expect(arrow.closest("aside, nav")).toHaveAccessibleName(panel);
-    expect(arrow).toHaveClass("absolute", "-right-3.5", "top-16", "size-7", "rounded-full", "border-[var(--borde2)]", "bg-[var(--lado-activo)]",
+    expect(arrow).toHaveClass("absolute", "-right-3.5", "top-16", "size-7", "rounded-full", "border-[var(--borde2)]", "bg-[var(--superficie)]",
       "text-[var(--t1)]", "hover:text-[var(--marca)]");
     expect(arrow.querySelector("svg")).toHaveClass("size-4.5");
   });

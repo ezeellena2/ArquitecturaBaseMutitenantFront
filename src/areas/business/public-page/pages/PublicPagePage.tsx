@@ -97,7 +97,7 @@ export function PublicPagePage() {
 
   // «Criterio · Avisos» (Pantalla de error): la página no cargó y no hay nada que mostrar.
   if (page.isError && !page.data) return <LoadErrorPage onRetry={() => { void page.refetch(); }} />;
-  if (!page.data) return <Page icon={GlobeIcon} title={t("publicPage:title")}><p role="status" className="text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (!page.data) return <Page title={t("publicPage:title")}><p role="status" className="text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   return <PublicPageEditor page={page.data} loadError={page.error} reload={async () => (await page.refetch()).data} />;
 }
 
@@ -213,7 +213,6 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
 
   return <>
     <Page
-      icon={GlobeIcon}
       title={t("publicPage:title")}
       banner={edit.banner}
       summary={summary}
@@ -254,7 +253,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
           <div className="flex min-h-14 items-center gap-3 border-b border-[var(--borde)] px-4 py-1.5 md:px-5 max-md:min-h-0 max-md:gap-3.5 max-md:border-0 max-md:px-4 max-md:pt-3.5 max-md:pb-0">
             {/* Pagina-Org (.o-logo-chico): el logo de 40, con radio 10 y la sigla en 14. */}
             {logo.dataUri ? <img src={logo.dataUri} alt={t("publicPage:logoAlt")} className="size-10 rounded-[0.625rem] object-contain max-md:size-14 max-md:rounded-[0.875rem]" />
-              : <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-[0.625rem] bg-[var(--marca-t)] text-[0.875rem] font-bold text-[var(--marca-tx)] max-md:size-14 max-md:rounded-[0.875rem] max-md:bg-[var(--marca)] max-md:text-[1.125rem] max-md:font-bold max-md:text-[var(--lado-activo)]">{initials(name)}</span>}
+              : <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-[0.625rem] bg-[var(--marca-t)] text-[0.875rem] font-bold text-[var(--marca-tx)] max-md:size-14 max-md:rounded-[0.875rem] max-md:bg-[var(--marca)] max-md:text-[1.125rem] max-md:font-bold max-md:text-[var(--superficie)]">{initials(name)}</span>}
             <span className="text-[0.8125rem] font-medium text-[var(--t1)] max-md:sr-only">{t("publicPage:logoTitle")}</span>
             <span className="ml-auto flex items-center gap-2 max-md:ml-0">
               {logo.dataUri ? <Button type="button" variant="outline" size="sm" className="max-md:h-10 max-md:rounded-[0.625rem] max-md:px-3.5 max-md:text-[0.875rem]"

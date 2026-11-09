@@ -31,8 +31,8 @@ describe("AuthLayout", () => {
     expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveAttribute("href", "/");
     // La marca, con el espaciado del tablero (.auth-top, -0.01em): `tracking-tight` la apretaba 3 a 4 px.
     expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveClass("tracking-[-0.01em]");
-    expect(screen.getByRole("link", { name: "ArquitecturaBase" }).firstElementChild).toHaveClass("size-7", "bg-gradient-to-br");
-    expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector(".brand-mark > span")).toHaveClass("-rotate-45", "border-r-transparent");
+    // 173 («Criterio · Marco»): la marca es el nombre, en negrita, sin el cuadrado con degradé.
+    expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector(".brand-mark, span")).toBeNull();
     expect(screen.getByTestId("auth-brand-panel").querySelectorAll("li svg")).toHaveLength(3);
     expect(screen.getByRole("link", { name: "Términos" })).toHaveAttribute("href", "/terminos");
     expect(screen.getByRole("link", { name: "Privacidad" })).toHaveAttribute("href", "/privacidad");
@@ -46,7 +46,7 @@ describe("AuthLayout", () => {
     expect(screen.getByText("Tu grupo y todas sus empresas en un solo lugar.")).toBeInTheDocument();
     expect(screen.getByText("Usuarios con roles por organización y por empresa.")).toBeInTheDocument();
     const panel = screen.getByTestId("auth-brand-panel");
-    expect(panel.querySelector("ul")).toHaveClass("font-normal", "text-[var(--lado-activo)]/90");
+    expect(panel.querySelector("ul")).toHaveClass("font-normal", "text-[var(--superficie)]/90");
     expect(panel.querySelector("li:first-child svg path")?.getAttribute("d"))
       .toBe("M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16");
   });

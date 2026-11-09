@@ -16,8 +16,9 @@ describe("Button · Criterio · Botones", () => {
     );
 
     const standard = screen.getByRole("button", { name: "Guardar cambios" });
-    expect(standard).toHaveClass("h-9", "text-[0.875rem]", "bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)]", "hover:brightness-105");
-    expect(standard).toHaveClass("shadow-[0_1px_2px_var(--marca-sombra),inset_0_1px_0_var(--brillo)]");
+    // 173: el principal es sólido en la marca, sin degradé ni sombra, y pasa a --marca-h con el mouse.
+    expect(standard).toHaveClass("h-9", "text-[0.875rem]", "bg-[var(--marca)]", "hover:bg-[var(--marca-h)]");
+    expect(standard.className).not.toMatch(/gradient|shadow-/);
     expect(screen.getByRole("button", { name: "Agregar" })).toHaveClass("h-8", "text-[0.8125rem]", "border-[var(--borde2)]");
     expect(screen.getByRole("button", { name: "Continuar" })).toHaveClass("h-11", "text-[0.9375rem]");
   });
@@ -31,8 +32,8 @@ describe("Button · Criterio · Botones", () => {
       </>,
     );
 
-    expect(screen.getByRole("button", { name: "Dar de baja" })).toHaveClass("border-[var(--peligro-borde)]", "text-[var(--peligro)]", "bg-[var(--lado-activo)]");
-    expect(screen.getByRole("button", { name: "Quitar" })).toHaveClass("bg-[var(--peligro)]", "text-[var(--lado-activo)]");
+    expect(screen.getByRole("button", { name: "Dar de baja" })).toHaveClass("border-[var(--peligro-borde)]", "text-[var(--peligro)]", "bg-[var(--superficie)]");
+    expect(screen.getByRole("button", { name: "Quitar" })).toHaveClass("bg-[var(--peligro)]", "text-[var(--superficie)]");
     expect(screen.getByRole("button", { name: "Verificar" })).toHaveClass("h-auto", "px-0", "text-[var(--marca-tx)]");
   });
 

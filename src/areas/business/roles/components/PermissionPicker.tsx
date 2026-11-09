@@ -18,7 +18,7 @@ interface PermissionPickerProps {
 // M-Rol, .ap-chk), de 22 con borde de 1,5, y bloqueada (.fijo, un rol de sistema, v108) gris también: blanca con su borde o,
 // marcada, en `--casilla-fija`, sin transparencia.
 const checkClass = "border-[var(--t2)] max-md:size-5.5! max-md:rounded-[0.375rem]! max-md:border-[1.5px]! max-md:border-[var(--borde2)]! max-md:enabled:data-[state=checked]:border-[var(--marca)]!"
-  + " max-md:disabled:opacity-100! max-md:disabled:bg-[var(--lado-activo)]! max-md:disabled:data-[state=checked]:bg-[var(--casilla-fija)]! max-md:disabled:data-[state=checked]:border-[var(--casilla-fija)]!";
+  + " max-md:disabled:opacity-100! max-md:disabled:bg-[var(--superficie)]! max-md:disabled:data-[state=checked]:bg-[var(--casilla-fija)]! max-md:disabled:data-[state=checked]:border-[var(--casilla-fija)]!";
 
 /// «Permisos» de un rol («Criterio · Formularios»: la única lista con grupos que se abren y se cierran). Tableros Rol y
 /// M-Rol: cada área es una fila (40 en la compu, 52 en el teléfono) con la flecha, la casilla de todos, el nombre (que

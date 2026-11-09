@@ -7,7 +7,6 @@ import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import { Button } from "@/shared/ui/button";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
-import { DocumentIcon } from "@/shared/ui/icons";
 import { List, ListItem } from "@/shared/ui/List";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Page } from "@/shared/ui/Page";
@@ -22,7 +21,7 @@ export function LegalDocumentsPage() {
   const documents = useQuery({ queryKey: legalDocumentsQueryKey, queryFn: fetchLegalDocuments, meta: { silent: true, blocksView: true } });
   if (documents.isError && !documents.data) return <LoadErrorPage onRetry={() => { void documents.refetch(); }} />;
   const rows = documents.data ?? []; const title = t("platformLegal:title"); const publish = t("platformLegal:newVersion");
-  return <Page icon={DocumentIcon} title={title} summary={documents.data ? t("platformLegal:summary", { documents: format.formatInteger(rows.length), versions: format.formatInteger(rows.reduce((total, document) => total + document.versions.length, 0)) }) : undefined}
+  return <Page title={title} summary={documents.data ? t("platformLegal:summary", { documents: format.formatInteger(rows.length), versions: format.formatInteger(rows.reduce((total, document) => total + document.versions.length, 0)) }) : undefined}
     phoneSubtitle={t("common:navigation.administration")} backTo={phone ? { to: "/plataforma/mas", label: t("platformLegal:back") } : undefined} phoneBody="flush"
     actions={<Button asChild><Link to="/plataforma/legales/nueva"><Plus aria-hidden="true" />{publish}</Link></Button>} fab={{ label: publish, to: "/plataforma/legales/nueva" }}>
     {documents.isPending ? <p role="status">{t("common:states.loading")}</p> : <Surface phoneFlush><List label={title}>

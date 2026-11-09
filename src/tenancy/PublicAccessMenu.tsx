@@ -45,7 +45,7 @@ function MobilePublicAccessMenu() {
             {profiles.map((profile) => <button key={profile.key} type="button" aria-pressed={profile.checked} aria-disabled={profile.unavailable || undefined}
               onClick={() => { setOpen(false); if (!profile.checked) profile.select(); }}
               className={cn(itemClass, profile.checked ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : profile.unavailable ? "text-[var(--t3)]" : "")}>
-              <span aria-hidden="true" className={"inline-flex size-7 shrink-0 items-center justify-center rounded-[0.5rem] text-[0.71875rem] font-bold " + (profile.checked ? "bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]")}>{initials(profile.name)}</span>
+              <span aria-hidden="true" className={"inline-flex size-7 shrink-0 items-center justify-center rounded-[0.5rem] text-[0.71875rem] font-bold " + (profile.checked ? "bg-[var(--superficie)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]")}>{initials(profile.name)}</span>
               <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
                 <span className="truncate">{profile.name}</span>
                 {profile.detail ? <span className="text-[0.78125rem] text-[var(--t3)]">{profile.detail}</span> : null}

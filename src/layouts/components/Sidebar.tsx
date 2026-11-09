@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
 import type { AccountIdentity } from "@/auth/accountIdentity";
 import { Avatar } from "@/shared/ui/Avatar";
-import { BrandMark } from "@/shared/ui/BrandMark";
 import { findNavigationPanelEntry, modulePanelKey, type NavigationPanelKey } from "../navigation/administration";
 import type { NavigationConfig, NavigationLink } from "../navigation/types";
 import { MenuBadge } from "./MenuBadge";
@@ -40,7 +39,6 @@ export function Sidebar({ navigation, account, context, collapsed, managementOpe
 
   return <aside aria-label={t("layout.sidebar.navigation")} className={`relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] ${collapsed ? "w-16" : "w-58"}`}>
     <div className="flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]">
-      <BrandMark />
       {showLabels ? <span>{t("app.name")}</span> : null}
     </div>
     {/* «Criterio · Marco» y tableros Inicio-Personal y Configuración: el perfil en 14 y negrita, debajo «Organización» o

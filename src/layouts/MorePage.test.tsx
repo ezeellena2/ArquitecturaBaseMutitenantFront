@@ -71,10 +71,12 @@ describe("Más en el teléfono", () => {
     expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
     expect(screen.getByRole("button", { name: "Salir" })).toBeVisible();
     expect(within(screen.getByRole("navigation", { name: "Secciones" })).getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
-    // Lienzo v104 (.ap-yo .w-av): tu inicial, de 56, con el degradé de la marca, como en la barra de abajo y en la compu.
+    // 173 (.ap-yo .w-av): tu inicial, de 56, en un cuadrado relleno de la marca, sin círculo ni degradé, como en la barra
+    // de abajo y en la compu.
     const [you, tab] = container.querySelectorAll("[data-slot='avatar']");
-    expect(you).toHaveClass("size-14", "text-[1.25rem]", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
-    expect(tab).toHaveClass("size-6.5", "bg-linear-to-br");
+    expect(you).toHaveClass("size-14", "text-[1.25rem]", "rounded-[0.75rem]", "bg-[var(--marca)]");
+    expect(you).not.toHaveClass("rounded-full", "bg-linear-to-br");
+    expect(tab).toHaveClass("size-6.5", "rounded-[0.5rem]", "bg-[var(--marca)]");
     // .ap-yo: el nombre y el correo con el interlineado normal, como el resto del teléfono.
     expect(you.nextElementSibling).toHaveClass("leading-[normal]");
     expect(await axe(container)).toHaveNoViolations();

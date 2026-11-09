@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { AppChromeProvider } from "./app/AppChrome";
 import { Page, SublineSeparator } from "./Page";
-import { CloseIcon, RotateIcon, UsersIcon } from "./icons";
+import { CloseIcon, RotateIcon } from "./icons";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -13,7 +13,7 @@ import { referenceDataFixture } from "@/test/mocks/handlers";
 describe("Page", () => {
   it("names the screen with a single level-one heading", () => {
     renderWithProviders(
-      <Page icon={UsersIcon} title="Usuarios">
+      <Page title="Usuarios">
         <p>{"contenido"}</p>
       </Page>,
     );
@@ -25,7 +25,7 @@ describe("Page", () => {
 
   it("uses the static 64 px band and shared page padding", () => {
     const { container } = renderWithProviders(
-      <Page icon={UsersIcon} title="Usuarios">
+      <Page title="Usuarios">
         <p>{"contenido"}</p>
       </Page>,
     );
@@ -39,20 +39,21 @@ describe("Page", () => {
     expect(body).toHaveClass("p-4", "lg:px-6", "lg:py-5", "text-[0.8125rem]", "flex", "flex-col", "gap-3.5");
   });
 
-  it("hides the section icon from the screen reader", () => {
+  // 173 («Criterio · Marco», Que no parezca plantilla): la banda va sin el ícono de la sección ni su cuadradito.
+  it("draws the band without the section icon", () => {
     const { container } = renderWithProviders(
-      <Page icon={UsersIcon} title="Usuarios">
+      <Page title="Usuarios">
         <p>{"contenido"}</p>
       </Page>,
     );
 
-    // Es identidad visual, no información: el título ya dice dónde estás.
-    expect(container.querySelector("svg")?.closest("[aria-hidden='true']")).not.toBeNull();
+    expect(container.querySelector("header svg")).toBeNull();
+    expect(container.querySelector('header [class~="bg-[var(--marca-t)]"]')).toBeNull();
   });
 
   it("renders the primary action", () => {
     renderWithProviders(
-      <Page icon={UsersIcon} title="Usuarios" actions={<button type="button">{"Nuevo usuario"}</button>}>
+      <Page title="Usuarios" actions={<button type="button">{"Nuevo usuario"}</button>}>
         <p>{"contenido"}</p>
       </Page>,
     );
@@ -62,7 +63,7 @@ describe("Page", () => {
 
   it("shows a compact summary below the title and keeps the primary action at the right", () => {
     renderWithProviders(
-      <Page icon={UsersIcon} title="Usuarios" summary="11 usuarios · 7 activos · 3 invitaciones" actions={<button type="button">{"Invitar usuario"}</button>}>
+      <Page title="Usuarios" summary="11 usuarios · 7 activos · 3 invitaciones" actions={<button type="button">{"Invitar usuario"}</button>}>
         <p>{"contenido"}</p>
       </Page>,
     );
@@ -77,7 +78,7 @@ describe("Page", () => {
 
   it("on the phone moves the actions to a second line instead of cutting the title", () => {
     renderWithProviders(
-      <Page icon={UsersIcon} title="Configuración" actions={<><button type="button">{"Descartar cambios"}</button><button type="button">{"Guardar cambios"}</button></>}>
+      <Page title="Configuración" actions={<><button type="button">{"Descartar cambios"}</button><button type="button">{"Guardar cambios"}</button></>}>
         <p>{"contenido"}</p>
       </Page>,
     );
@@ -121,7 +122,7 @@ describe("Page", () => {
 
   it("puts the content inside its own padded area, outside the band", () => {
     renderWithProviders(
-      <Page icon={UsersIcon} title="Usuarios">
+      <Page title="Usuarios">
         <p>{"contenido"}</p>
       </Page>,
     );
@@ -142,7 +143,6 @@ describe("Page", () => {
       const { container } = renderWithProviders(
         <MemoryRouter>
           <Page
-            icon={UsersIcon}
             title="Editar el rol Soporte"
             backTo={{ to: "/roles", label: "Volver a Roles y permisos" }}
           >
@@ -217,17 +217,17 @@ describe("Page", () => {
     expect(banner.nextElementSibling).toBe(screen.getByText("contenido"));
   });
 
-  it("keeps the section icon and has no way back when the screen is not a child", () => {
+  it("has no way back nor section icon when the screen is not a child", () => {
     const { container } = renderWithProviders(
       <MemoryRouter>
-        <Page icon={UsersIcon} title="Usuarios">
+        <Page title="Usuarios">
           <p>{"contenido"}</p>
         </Page>
       </MemoryRouter>,
     );
 
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
-    expect(container.querySelector("header [aria-hidden='true'] svg")).not.toBeNull();
+    expect(container.querySelector("header svg")).toBeNull();
   });
 
   // «Criterio · Marco», Pestañas (decisión del usuario del 2026-10-05, 6d-4a): una pestaña por grupo de datos cuando hay
@@ -242,7 +242,7 @@ describe("Page", () => {
     });
     const renderPage = (tabs: ReturnType<typeof groups>, phone: boolean) => renderWithProviders(
       <AppChromeProvider value={{ phone, parent: null, subtitle: null, hideBottomNav: () => {} }}>
-        <MemoryRouter><Page icon={UsersIcon} title="Delta S.A." tabs={tabs} /></MemoryRouter>
+        <MemoryRouter><Page title="Delta S.A." tabs={tabs} /></MemoryRouter>
       </AppChromeProvider>,
     );
 

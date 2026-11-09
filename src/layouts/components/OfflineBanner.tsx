@@ -15,7 +15,7 @@ export function OfflineBanner() {
   </PhoneBand>;
 
   return (
-    <div role="status" aria-label={label} className="flex min-h-9 items-center justify-center gap-2 bg-[var(--t1)] px-6 py-1.5 text-[0.8125rem] font-medium text-[var(--lado-activo)]">
+    <div role="status" aria-label={label} className="flex min-h-9 items-center justify-center gap-2 bg-[var(--t1)] px-6 py-1.5 text-[0.8125rem] font-medium text-[var(--superficie)]">
       <WifiOffIcon aria-hidden="true" className="size-4 shrink-0" />
       {label}
     </div>

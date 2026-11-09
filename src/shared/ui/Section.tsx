@@ -43,13 +43,13 @@ export function Section({ title, action, meta, phone = "card", children }: Secti
         {action ? <button type="button" onClick={action.onClick} disabled={action.disabled}
           className="text-[0.90625rem] font-semibold text-[var(--marca-tx)] disabled:opacity-45">{action.label}</button> : null}
       </div>
-      <div className={cn("overflow-hidden rounded-[0.875rem] bg-[var(--lado-activo)] shadow-[0_0_0_1px_var(--borde)]", phone === "card" ? "mx-4" : "")}>{body}</div>
+      <div className={cn("overflow-hidden rounded-[0.875rem] bg-[var(--superficie)] shadow-[0_0_0_1px_var(--borde)]", phone === "card" ? "mx-4" : "")}>{body}</div>
     </section>;
   }
 
   // «Criterio · Formularios» (.caja2) y tableros Configuración y Página pública (.w-caja): la caja de un formulario lleva
   // borde y 12 de radio, sin sombra; la sombra suave es de las tablas (Surface).
-  return <div className="overflow-hidden rounded-[0.75rem] border border-[var(--borde)] bg-[var(--lado-activo)]">
+  return <div className="overflow-hidden rounded-[0.75rem] border border-[var(--borde)] bg-[var(--superficie)]">
     <section aria-labelledby={id}>
       {/* «Criterio · Tablas» (.lista .cab) y tableros Cuenta, Usuario y Configuración (.w-cab): 16 a la izquierda y 4 a la
           derecha, con el botón chico a 4 del borde; lo que cuenta la caja, a 16 (4 y 12 suyos). */}

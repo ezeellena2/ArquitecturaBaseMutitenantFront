@@ -2,7 +2,6 @@ import { companyOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
-import { ShieldIcon } from "@/shared/ui/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
@@ -97,7 +96,6 @@ export function RolesPage() {
 
   return <>
     <Page
-      icon={ShieldIcon}
       title={t("roles:title")}
       summary={listSummary}
       phoneBody="flush"

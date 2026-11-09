@@ -30,9 +30,9 @@ describe("listas en el teléfono", () => {
 
     expect(screen.getByRole("link", { name: /Tomás Acosta/ })).toHaveAttribute("href", "/org/usuarios/1");
     expect(screen.getByText("1 usuario")).toHaveClass("text-[0.78125rem]", "text-[var(--t3)]");
-    // Lienzo v104: el círculo de una persona lleva el degradé de la marca, como en la compu.
+    // 173: una persona lleva su cuadrado relleno de la marca, sin círculo ni degradé, como en la compu.
     expect(screen.getByText("T")).toHaveAttribute("data-slot", "avatar");
-    expect(screen.getByText("T")).toHaveClass("size-11", "rounded-full", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
+    expect(screen.getByText("T")).toHaveClass("size-11", "rounded-[0.5rem]", "bg-[var(--marca)]");
   });
 
   // Tableros M-Roles y M-Empresas (.ap-fila .ap-ib): en una fila sin círculo el ⋮ va gris y 4 más afuera; en la de una

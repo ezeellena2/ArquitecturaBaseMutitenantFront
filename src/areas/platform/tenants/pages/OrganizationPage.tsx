@@ -18,7 +18,6 @@ import { Button } from "@/shared/ui/button";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
-import { BuildingIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { Page, SublineSeparator } from "@/shared/ui/Page";
@@ -92,7 +91,7 @@ function OrganizationDetail({ id }: { id: string }) {
   }
   const retry = useIdempotentMutation((data: PlatformTenantDetailResponse, key) => retryTenantProvisioning(data.id, { version: data.version }, key), { sameOperation: (previous, next) => previous.id === next.id && previous.version === next.version });
   const back = { to: moduleHome ? "/plataforma/organizaciones" : homeOf("platform"), label: t("platformTenants:detail.back") };
-  if (organization.isPending) return <Page icon={BuildingIcon} title={t("platformTenants:detail.loading")} backTo={back}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (organization.isPending) return <Page title={t("platformTenants:detail.loading")} backTo={back}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   if (!organization.data) return isNotFoundError(organization.error)
     ? <NotFoundPage homePath={homeOf("platform")} screen={t("platformTenants:detail.title")} back={back} />
     : <LoadErrorPage onRetry={() => { void organization.refetch(); }} screen={t("platformTenants:detail.title")} back={back} />;
@@ -106,7 +105,7 @@ function OrganizationDetail({ id }: { id: string }) {
     <Trans t={t} i18nKey={`platformTenants:detail.banner.${data.status}`} components={{ strong: <strong />, date: <DateText value={data.lastStateChange?.atUtc} />, reason: <>{data.lastStateChange?.reason || <EmptyValue />}</> }} />
   </Banner> : undefined;
   return <>
-    <Page icon={BuildingIcon} title={data.name} backTo={back} phoneBody="flush" banner={banner}
+    <Page title={data.name} backTo={back} phoneBody="flush" banner={banner}
       summary={<><StatusBadge tones={tenantStatusTones} value={data.status} /><SublineSeparator /><span>{t(data.status === "PendingApproval" || data.status === "Provisioning" ? "platformTenants:detail.requested" : "platformTenants:detail.created")} <DateText value={data.createdAtUtc} /> {t(`platformTenants:detail.source.${data.source}`)}{" · "}{counts}</span></>}
       phoneSubtitle={<><StatusBadge tones={tenantStatusTones} value={data.status} />{" · "}{counts}</>}
       actions={!phone && canManage ? <>{actions.map((action) => <Button key={action} variant={action === "reject" || action === "close" ? "danger" : action === "approve" ? "default" : "outline"} onClick={(event) => open(action, event.currentTarget)}>{t(`platformTenants:actions.${action}`)}</Button>)}{data.status === "Provisioning" ? <Button pending={retry.isPending} onClick={retryProvisioning}>{t("platformTenants:actions.retry")}</Button> : null}</> : undefined}

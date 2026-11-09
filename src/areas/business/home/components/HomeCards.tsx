@@ -16,8 +16,8 @@ import type { ModuleHomeCard } from "@/shared/modules/types";
 export interface ModuleCardRow { card: ModuleHomeCard; total: number }
 
 function Card({ to, icon, title, detail }: { to: string; icon: ReactNode; title: string; detail: ReactNode }) {
-  return <Link to={to} style={{ boxShadow: "var(--shadow-card)" }}
-    className="flex min-w-0 items-center gap-3 rounded-[0.875rem] border border-[var(--borde)] bg-[var(--lado-activo)] p-4 text-[var(--t1)] hover:border-[var(--borde2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
+  return <Link to={to}
+    className="flex min-w-0 items-center gap-3 rounded-[0.875rem] border border-[var(--borde)] bg-[var(--superficie)] p-4 text-[var(--t1)] hover:border-[var(--borde2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
     <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[0.625rem] bg-[var(--marca-t)] text-[0.78125rem] font-bold text-[var(--marca-tx)]">{icon}</span>
     <span className="flex min-w-0 flex-1 flex-col gap-0.75">
       <span className="text-[0.875rem] font-semibold">{title}</span>

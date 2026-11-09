@@ -43,7 +43,7 @@ export function ListRow({ leading, title, meta, lines = [], trailing, to, onClic
   </li>;
 }
 
-/// El círculo de una persona en una fila (`Avatar`, con el degradé de la marca); una invitación sin nombre lleva «@» en gris.
+/// El cuadrado de una persona en una fila (`Avatar`, en la marca); una invitación sin nombre lleva «@» en gris.
 export function RowAvatar({ name, invitation }: { name: string; invitation?: boolean }) {
   return <Avatar size="row" muted={invitation} initials={invitation ? "@" : name.trim().charAt(0).toUpperCase()} />;
 }

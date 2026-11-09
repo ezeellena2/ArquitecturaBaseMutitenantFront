@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { HomeIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useFormat } from "@/shared/format/useFormat";
@@ -51,7 +50,7 @@ export function BusinessHomePage() {
       {groups.length > 0 ? <ToResolve groups={groups} /> : null}
     </div> : null}
   </>;
-  const original = <Page icon={HomeIcon} title={t("common:home.title")} summary={organizationName}>{content}</Page>;
+  const original = <Page title={t("common:home.title")} summary={organizationName}>{content}</Page>;
   const moduleContent = organization ? <div className="flex flex-col gap-5"><ToResolve groups={groups} /><AreaCards organization={organization} moduleCards={moduleCards} /></div> : content;
   return phone ? original : <ModuleHome access="business" fallback={original}>{moduleContent}</ModuleHome>;
 }

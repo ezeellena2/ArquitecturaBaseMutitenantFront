@@ -25,7 +25,7 @@ import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { CopyIcon, SettingsIcon } from "@/shared/ui/icons";
+import { CopyIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { CultureSelect } from "@/shared/ui/fields/CultureSelect";
 import { CurrencySelect } from "@/shared/ui/fields/CurrencySelect";
@@ -71,7 +71,7 @@ export function SettingsPage() {
 
   // «Criterio · Avisos» (Pantalla de error): la configuración no cargó y no hay nada que mostrar.
   if (settings.isError && !settings.data) return <LoadErrorPage onRetry={() => { void settings.refetch(); }} />;
-  if (!settings.data) return <Page icon={SettingsIcon} title={t("settings:title")}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (!settings.data) return <Page title={t("settings:title")}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   return <SettingsEditor settings={settings.data} loadError={settings.error} reload={async () => (await settings.refetch()).data} />;
 }
 
@@ -185,7 +185,6 @@ function SettingsEditor({ settings, loadError, reload }: {
   return <>
     {/* Tablero Configuracion: el título lleva la rueda; los deslizadores son el ícono del menú. */}
     <Page banner={edit.banner}
-      icon={SettingsIcon}
       title={t("settings:title")}
       actions={canManage ? <>
         <Button type="button" variant="outline" onClick={discard}>{t("settings:discard")}</Button>

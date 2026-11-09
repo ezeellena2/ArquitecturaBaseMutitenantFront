@@ -11,7 +11,7 @@ export function StorefrontUnavailablePage() {
   const { t } = useTranslation("storefront");
   return <SiteLayout variant="storefront">
     <section className={cn("flex flex-1 items-center justify-center px-6 py-12 text-[var(--t1)] max-md:px-4 max-md:py-5", publicPageBackdropClass)}>
-      <div className="flex w-full max-w-140 flex-col items-center gap-4 rounded-[1.25rem] border border-[var(--borde)] bg-[var(--lado-activo)] p-8 text-center shadow-[var(--sombra-tarjeta)] max-md:rounded-[1.125rem] max-md:px-4.5 max-md:pt-6 max-md:pb-5 max-md:shadow-[var(--sombra-tarjeta-movil)]">
+      <div className="flex w-full max-w-140 flex-col items-center gap-4 rounded-[1.25rem] border border-[var(--borde)] bg-[var(--superficie)] p-8 text-center max-md:rounded-[1.125rem] max-md:px-4.5 max-md:pt-6 max-md:pb-5">
         <span aria-hidden="true" className="inline-flex size-14 items-center justify-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><BanIcon className="size-6" /></span>
         <h1 className="m-0 text-[1.5rem] leading-[1.25] font-bold tracking-[-0.02em] max-md:text-[1.375rem]">{t("unavailable.title")}</h1>
         <Button asChild variant="outline" size="lg"><a href={mainSiteUrl()}>{t("unavailable.mainSite")}</a></Button>

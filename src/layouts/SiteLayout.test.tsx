@@ -19,7 +19,8 @@ describe("SiteLayout", () => {
     const { container } = render(<MemoryRouter><SiteLayout><h1>{"Portada"}</h1></SiteLayout></MemoryRouter>);
 
     expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveAttribute("href", "/");
-    expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector(".brand-mark")).not.toBeNull();
+    // 173: la marca es el nombre, sin el cuadrado con degradé.
+    expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector(".brand-mark")).toBeNull();
     // La marca, con el espaciado del tablero (.lp-marca, -0.01em).
     expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveClass("tracking-[-0.01em]");
     expect(screen.getByRole("navigation", { name: "Secciones" })).toBeVisible();
@@ -62,10 +63,9 @@ describe("SiteLayout", () => {
       expect(link).toHaveClass("h-8", "rounded-[0.5rem]", "border", "border-transparent", "px-3", "md:h-9", "md:px-3.5");
       expect(link).not.toHaveClass("md:h-10", "md:border-0", "md:px-4.5", "md:rounded-[0.625rem]");
     }
-    // Tablero Legal (.lp-marca): el logo de la compu mide 28, como en el teléfono.
-    expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector(".brand-mark")).not.toHaveClass("md:size-8");
-    expect(login).toHaveClass("bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)]", "shadow-[0_1px_2px_var(--marca-sombra),inset_0_1px_0_var(--brillo)]",
-      "md:bg-none", "md:shadow-none");
+    // 173: «Ingresar» es un principal, sólido en la marca, sin degradé ni sombra.
+    expect(login).toHaveClass("bg-[var(--marca)]", "hover:bg-[var(--marca-h)]");
+    expect(login.className).not.toMatch(/linear-gradient|--marca-sombra/);
     expect(screen.getByRole("contentinfo")).toHaveClass("py-4", "max-md:leading-[1.6]", "md:py-6");
     expect(screen.getByRole("link", { name: "Privacidad" }).parentElement).toHaveClass("gap-4", "md:gap-5");
   });

@@ -1,5 +1,4 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Sparkles } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import type { OrganizationAssistantUsageQuery } from "@/modules/assistant/api/types";
@@ -63,7 +62,7 @@ export function AssistantUsagePage({ me }: ModuleContentProps) {
       totalCount={rows.totalCount} totalPages={rows.totalPages} hasPrevious={rows.hasPrevious} hasNext={rows.hasNext}
       onPageChange={pagination.setPage} onPageSizeChange={pagination.setPageSize} /> : null}
   </> : month !== null ? <p role="status" className="max-md:px-5">{t("loading")}</p> : null;
-  return <Page icon={Sparkles} title={t("usage.title")} summary={data ? format.formatMonth(data.month) : undefined} phoneBody="flush"
+  return <Page title={t("usage.title")} summary={data ? format.formatMonth(data.month) : undefined} phoneBody="flush"
     phoneSubtitle={data ? `${t("title")} · ${format.formatMonth(data.month)}` : t("title")}
     actions={<MonthField value={rawMonth || null} aria-label={t("usage.month")} onChange={(value) => filters.setFilter("month", value ?? undefined)} />}>
     <div className="flex flex-col gap-3.5">{list}</div>

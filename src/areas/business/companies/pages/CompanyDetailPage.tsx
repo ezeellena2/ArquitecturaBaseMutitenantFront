@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Power } from "lucide-react";
-import { BuildingIcon } from "@/shared/ui/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
@@ -74,7 +73,7 @@ export function CompanyDetailPage() {
     onError: (error) => { setDialog((current) => current?.kind === "deactivate" ? null : current); toastActionError(error, t); },
   });
 
-  if (company.isPending) return <Page icon={BuildingIcon} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (company.isPending) return <Page title={t("companies:detail.loading")}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar; si no existe (404),
   // «No encontramos esta página» (errores.md).
   if (!company.data) return isNotFoundError(company.error)
@@ -86,7 +85,7 @@ export function CompanyDetailPage() {
   const closeDialog = () => setDialog(null);
 
   return <>
-    <Page icon={BuildingIcon} title={data.name} backTo={back}
+    <Page title={data.name} backTo={back}
       phoneBody="flush"
       // Tablero M-Empresa: debajo del título, el CUIT y la zona; crear es un «+» flotante según la pestaña.
       phoneSubtitle={<>{data.taxId ? <><TaxIdText value={data.taxId} withType />{" · "}</> : null}<TimeZoneText value={data.timeZoneId} /></>}

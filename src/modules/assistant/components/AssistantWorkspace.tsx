@@ -64,8 +64,8 @@ export function AssistantWorkspace({ props, session, state }: { props: Assistant
     </>;
   const queries = <QuickQueries scope={scope} queries={state.quickQueries} disabled={busy || notice} onSelect={quick} />;
   return <AssistantRuntimeProvider runtime={runtime.runtime}><div className="relative flex min-h-0 flex-1 overflow-hidden text-[var(--t1)]">
-    {!phone ? <aside aria-label={t("history.title")} className={`${collapsed ? "w-14" : "w-66"} shrink-0 border-r border-[var(--borde)] bg-[var(--lado-activo)]`}>
-      <Button variant="icon" size="icon" className={`absolute top-5 z-10 size-7 rounded-full border border-[var(--borde2)] bg-[var(--lado-activo)] shadow-[var(--sombra-flecha)] ${collapsed ? "left-10.5" : "left-62.5"}`} aria-label={t(collapsed ? "history.show" : "history.hide")} aria-expanded={!collapsed} onClick={() => setCollapsed(!collapsed)}><ChevronLeftIcon className={`size-4.5 ${collapsed ? "rotate-180" : ""}`} /></Button>
+    {!phone ? <aside aria-label={t("history.title")} className={`${collapsed ? "w-14" : "w-66"} shrink-0 border-r border-[var(--borde)] bg-[var(--superficie)]`}>
+      <Button variant="icon" size="icon" className={`absolute top-5 z-10 size-7 rounded-full border border-[var(--borde2)] bg-[var(--superficie)] ${collapsed ? "left-10.5" : "left-62.5"}`} aria-label={t(collapsed ? "history.show" : "history.hide")} aria-expanded={!collapsed} onClick={() => setCollapsed(!collapsed)}><ChevronLeftIcon className={`size-4.5 ${collapsed ? "rotate-180" : ""}`} /></Button>
       {collapsed ? <Button variant="icon" size="icon" className="m-3 mt-14" aria-label={t("history.new")} onClick={() => select(null)}><Plus className="size-4.5" /></Button> : history}
     </aside> : null}
     <section aria-label={t("title")} className="flex min-h-0 min-w-0 flex-1 flex-col">

@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { initials } from "@/shared/lib/initials";
-import { BrandMark } from "@/shared/ui/BrandMark";
 import { FixedActions } from "@/shared/ui/app/FixedActions";
 import { Button } from "@/shared/ui/button";
 
@@ -27,7 +26,7 @@ export function SessionStatusPage(props: SessionStatusPageProps) {
 
   // Tablero M-Sesion: en el teléfono la pantalla es blanca y sin la marca arriba. Al entrar o salir, la marca grande y
   // un giro chico; al cambiar de lado, las iniciales con el giro alrededor; si falla, «Volver a ingresar» fijo abajo.
-  if (phone) return <main className="flex min-h-dvh flex-col bg-[var(--lado-activo)] text-[var(--t1)]">
+  if (phone) return <main className="flex min-h-dvh flex-col bg-[var(--superficie)] text-[var(--t1)]">
     <div role="status" className="flex flex-1 flex-col items-center justify-center gap-3 px-8 text-center">
       {isError ? <span aria-hidden="true" className="flex size-16 items-center justify-center rounded-full bg-[var(--peligro-t)] text-[var(--peligro)]">
         <CircleAlert className="size-7" strokeWidth={1.75} />
@@ -35,7 +34,6 @@ export function SessionStatusPage(props: SessionStatusPageProps) {
         <span className="inline-flex size-16.5 items-center justify-center rounded-full bg-[var(--marca-t)] text-[1.375rem] font-bold text-[var(--marca-tx)]">{initials(props.targetName)}</span>
         <span className="absolute inset-0 animate-spin rounded-full border-[0.1875rem] border-[var(--borde)] border-t-[var(--marca)] [animation-duration:1.1s]" />
       </span> : <>
-        <BrandMark className="size-19! rounded-[1.375rem]! [&>span]:inset-5.25! [&>span]:rounded-[0.3125rem]! [&>span]:border-[0.3125rem]!" />
         <span aria-hidden="true" className="mt-4.5 size-6.5 animate-spin rounded-full border-[0.1875rem] border-[var(--borde)] border-t-[var(--marca)] [animation-duration:0.9s]" />
       </>}
       <h1 className="mt-1.5 text-[1.375rem] font-bold leading-tight tracking-[-0.015em]">{title}</h1>
@@ -52,7 +50,6 @@ export function SessionStatusPage(props: SessionStatusPageProps) {
     <main className="relative min-h-dvh bg-[var(--fondo)] text-[var(--t1)]">
       <div role="status" className="flex min-h-dvh flex-col items-center justify-center gap-5 px-6 text-center">
         <span className="absolute left-6 top-6 flex items-center gap-2.5 text-[1.0625rem] font-bold md:left-12 md:top-8">
-          <BrandMark />
           {t("brand")}
         </span>
         {isError ? (

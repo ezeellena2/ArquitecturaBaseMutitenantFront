@@ -88,7 +88,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   if (isSigningOut) return <SessionStatusPage status="closing" />;
 
   if (isMobile) return <AppChromeProvider value={chrome}><AppBarBellProvider value={phoneBell}>
-    <div className="flex h-svh flex-col bg-[var(--lado-activo)]">
+    <div className="flex h-svh flex-col bg-[var(--superficie)]">
       <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">{children ?? <Outlet />}</main>
       {navigation.moreTo && !bottomNavHidden ? <BottomNav label={t("navigation.sections")} items={[
         ...(bottomSections?.map(({ link, icon: Icon }) => ({

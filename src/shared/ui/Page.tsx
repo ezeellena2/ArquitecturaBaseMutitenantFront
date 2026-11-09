@@ -67,7 +67,6 @@ export interface PageTabs {
 }
 
 interface PageProps {
-  icon?: ComponentType<{ className?: string }>;
   title: string;
   summary?: ReactNode;
   backTo?: { to: string; label: string };
@@ -120,10 +119,9 @@ export function SublineSeparator(): ReactNode {
   return <span aria-hidden="true" data-slot="subline-separator" className="mx-1.5 shrink-0 text-[var(--t3)]">{"·"}</span>;
 }
 
-/// Banda de ancho completo y cuerpo con su propio margen. Las acciones adicionales se pasan ya
-/// traducidas y van en el menú ⋮; la principal queda a la derecha.
+/// Banda de ancho completo y cuerpo con su propio margen, sin el ícono de la sección (173). Las acciones adicionales se
+/// pasan ya traducidas y van en el menú ⋮; la principal queda a la derecha.
 export function Page({
-  icon: Icon,
   title,
   summary,
   backTo,
@@ -197,7 +195,7 @@ export function Page({
     // encogiera a su alto, la barra (`sticky`, que no sale de su caja) se iría con el scroll en una pantalla larga. Un
     // chat mide justo el alto del marco: el `main` no se desplaza, la barra queda arriba y la caja de escribir, abajo.
     return withTabs(<div className={cn("flex flex-col", phoneBody === "chat" ? "min-h-0 flex-1" : "min-h-full shrink-0",
-      phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--lado-activo)]")}>
+      phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--superficie)]")}>
       <AppBar title={title} back={back} subtitle={phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
         leading={<div ref={setLeadingTools} className="flex items-center empty:hidden" />}
         actions={<>
@@ -215,7 +213,7 @@ export function Page({
               onSelect={(action) => { setMoreSheetOpen(false); action.run(moreTrigger.current); }} />
           </> : null}
         </>} />
-      {tabList ? <div data-slot="page-tabs" className="border-b border-[var(--borde)] bg-[var(--lado-activo)]">{tabList}</div> : null}
+      {tabList ? <div data-slot="page-tabs" className="border-b border-[var(--borde)] bg-[var(--superficie)]">{tabList}</div> : null}
       {/* M-Avisos (.ap-cuerpo): debajo de un cartel, el cuerpo con margen arranca a 14 y no a 4. Lo decide el cartel que se
           ve: el de useEditPage es siempre un fragmento, vacío si no hay nada que avisar. */}
       <div data-slot="page-banner" className="contents">{banner}</div>
@@ -227,7 +225,7 @@ export function Page({
   return withTabs(
     <>
       {/* «Criterio · Marco», La banda de la página (.bnd): 64 de alto, con 10 arriba y abajo; con la segunda línea, 65. */}
-      <header className="flex min-h-16 flex-wrap items-center justify-between gap-4 border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4 py-2.5 md:flex-nowrap md:px-6">
+      <header className="flex min-h-16 flex-wrap items-center justify-between gap-4 border-b border-[var(--borde)] bg-[var(--superficie)] px-4 py-2.5 md:flex-nowrap md:px-6">
         <div className="flex min-w-0 flex-[1_1_12rem] items-center gap-3 md:flex-1">
           {backTo ? (
             <Link
@@ -238,10 +236,6 @@ export function Page({
             >
               <ChevronLeftIcon strokeWidth={2} className="size-4" />
             </Link>
-          ) : Icon ? (
-            <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[0.625rem] bg-[var(--marca-t)] text-[var(--marca-tx)]">
-              <Icon className="size-5" />
-            </span>
           ) : null}
           <div className="min-w-0">
             <h1 className="truncate text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>
@@ -266,7 +260,7 @@ export function Page({
                     type="button"
                     aria-label={moreActions.label}
                     title={moreActions.label}
-                    className="inline-flex size-8.5 items-center justify-center rounded-[0.5rem] border border-[var(--borde)] bg-[var(--lado-activo)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
+                    className="inline-flex size-8.5 items-center justify-center rounded-[0.5rem] border border-[var(--borde)] bg-[var(--superficie)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
                   >
                     <MoreVerticalIcon className="size-4" />
                   </button>

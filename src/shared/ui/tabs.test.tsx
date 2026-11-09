@@ -30,7 +30,7 @@ describe("Tabs · Criterio · Marco", () => {
     expect(strip).toHaveClass("border-b", "px-1");
     // La elegida subraya sobre la línea, como `.tab2` (margin-bottom: -1px): la franja mide 44 y no 45.
     expect(strip).toHaveClass("[&>[role=tablist]]:-mb-px");
-    expect(strip).not.toHaveClass("bg-[var(--lado-activo)]");
+    expect(strip).not.toHaveClass("bg-[var(--superficie)]");
     // Dentro del contenido, que lleva el margen de la página, y no pegadas a la banda.
     expect(screen.getByRole("banner")).not.toContainElement(list);
     expect(screen.getByRole("banner").nextElementSibling).toContainElement(strip);

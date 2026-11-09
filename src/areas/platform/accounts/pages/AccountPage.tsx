@@ -20,7 +20,7 @@ import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { NumberText } from "@/shared/ui/format/NumberText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { Pencil, Power, RotateCw, Trash2 } from "lucide-react";
-import { CloseIcon, LockIcon, LogOutIcon, UsersIcon } from "@/shared/ui/icons";
+import { CloseIcon, LockIcon, LogOutIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { Page, SublineSeparator } from "@/shared/ui/Page";
@@ -61,7 +61,7 @@ function AccountDetail({ id }: { id: string }) {
   const [written, setWritten] = useState<OwnOperatorWrite>();
   useBreadcrumbLeaf(query.data ? accountLabel(query.data, t) : undefined);
   const back = { to: "/plataforma/cuentas", label: t("platformAccounts:detail.back") };
-  if (query.isPending) return <Page icon={UsersIcon} title={t("platformAccounts:detail.loading")} backTo={back}><span role="status">{t("common:states.loading")}</span></Page>;
+  if (query.isPending) return <Page title={t("platformAccounts:detail.loading")} backTo={back}><span role="status">{t("common:states.loading")}</span></Page>;
   if (!query.data) return isNotFoundError(query.error) ? <NotFoundPage homePath="/plataforma" screen={t("platformAccounts:detail.title")} back={back} />
     : <LoadErrorPage onRetry={() => { void query.refetch(); }} screen={t("platformAccounts:detail.title")} back={back} />;
   const data = written ? { ...query.data, operatorVersion: written.version, operatorPermissions: written.permissions } : query.data;
@@ -129,7 +129,7 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
           values={{ organization: managed?.managedByOrganizationName || format.formatEmpty() }}
           components={{ strong: <strong />, ended: <DateText value={ended?.endedAtUtc} />, recoveries: <Link className="font-semibold text-[var(--marca-tx)] hover:underline" to="/plataforma/recuperaciones" /> }} /></Banner> : undefined;
   return <>
-    <Page icon={UsersIcon} title={name} backTo={{ to: "/plataforma/cuentas", label: t("platformAccounts:detail.back") }} phoneBody="flush" banner={banner}
+    <Page title={name} backTo={{ to: "/plataforma/cuentas", label: t("platformAccounts:detail.back") }} phoneBody="flush" banner={banner}
       summary={<><StatusBadge tones={accountStateTones} value={data.state} /><SublineSeparator />{operator ? operatorSummary : personSummary}</>}
       phoneSubtitle={<><StatusBadge tones={accountStateTones} value={data.state} />{" · "}{operator ? invitation ? expires : <>{t("platformAccounts:detail.operatorInline")} {" · "}<NumberText value={permissionCount} /> {t("platformAccounts:detail.permissionCount", { count: permissionCount })}</> : <>{t(data.state === "Deleted" ? "platformAccounts:detail.deletedInline" : "platformAccounts:detail.lastSignInInline")} <DateText value={data.state === "Deleted" ? data.deletedAtUtc : data.lastSignInAtUtc} kind={data.state === "Deleted" ? "date" : "dateTime"} /></>}</>}
       actions={!phone ? <>{accountActions.map((action) => <Button key={action} variant="outline" onClick={(event) => open(action, event.currentTarget)}>{t(action === "revoke-sessions" ? "platformAccounts:detail.closeSessions" : `platformAccounts:actions.${action}`)}</Button>)}

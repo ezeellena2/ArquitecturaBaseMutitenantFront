@@ -217,8 +217,8 @@ describe("SettingsPage", () => {
     expect(await screen.findByRole("textbox", { name: "Nombre de la organización" })).toHaveValue("Grupo Delta");
   });
 
-  // Tablero Configuracion: el ícono del título es la rueda (un círculo con ocho rayos), no los deslizadores del menú.
-  it("el título lleva la rueda del tablero", async () => {
+  // 173 («Criterio · Marco»): la banda va sin el ícono de la sección.
+  it("el título va sin el ícono de la sección", async () => {
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
       http.get("/api/organization/settings/domains/paged", () => HttpResponse.json(domainPage([verified]))),
@@ -226,10 +226,7 @@ describe("SettingsPage", () => {
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
     const header = (await screen.findByRole("heading", { level: 1, name: "Configuración" })).closest("header")!;
-    const icon = header.querySelector("svg")!;
-    expect(icon).not.toHaveClass("lucide-sliders-horizontal");
-    expect(icon.querySelectorAll("circle")).toHaveLength(1);
-    expect(icon.querySelectorAll("path")).toHaveLength(8);
+    expect(header.querySelector("svg")).toBeNull();
   });
 
   it("guarda con la versión y la ficha pasa axe", async () => {

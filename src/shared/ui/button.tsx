@@ -11,15 +11,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Principal: la acción que hace avanzar; una sola por pantalla o diálogo, la última a la derecha. Con el degradé de la
-        // marca y su sombra en todas las pantallas, también en el teléfono (Criterio · Botones y Criterio · Decisiones, v107).
-        default: "bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)] text-[var(--lado-activo)] shadow-[0_1px_2px_var(--marca-sombra),inset_0_1px_0_var(--brillo)] hover:brightness-105",
+        // Principal: la acción que hace avanzar; una sola por pantalla o diálogo, la última a la derecha. Sólida en la marca,
+        // sin degradé ni sombra, también en el teléfono (Criterio · Botones, 173).
+        default: "bg-[var(--marca)] text-[var(--superficie)] hover:bg-[var(--marca-h)]",
         // Secundario: todas las demás acciones.
-        outline: "border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t1)] hover:bg-[var(--s2)]",
+        outline: "border-[var(--borde2)] bg-[var(--superficie)] text-[var(--t1)] hover:bg-[var(--s2)]",
         // Peligro: con borde en la pantalla.
-        danger: "border-[var(--peligro-borde)] bg-[var(--lado-activo)] text-[var(--peligro)] hover:bg-[var(--peligro-t)]",
+        danger: "border-[var(--peligro-borde)] bg-[var(--superficie)] text-[var(--peligro)] hover:bg-[var(--peligro-t)]",
         // Peligro relleno: solo en el diálogo que confirma algo que no se deshace.
-        destructive: "border-[var(--peligro)] bg-[var(--peligro)] text-[var(--lado-activo)] hover:brightness-95",
+        destructive: "border-[var(--peligro)] bg-[var(--peligro)] text-[var(--superficie)] hover:brightness-95",
         // Enlace: una acción chica dentro de una fila o de un texto; nunca la principal.
         link: "bg-transparent text-[var(--marca-tx)] underline-offset-[0.1875rem] hover:underline",
         // Solo para los botones de ícono.

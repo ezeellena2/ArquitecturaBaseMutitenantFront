@@ -115,7 +115,7 @@ export function MultiSelect({
         aria-invalid={ariaInvalid}
         aria-describedby={ariaDescribedBy}
         className={cn(
-          "flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3 text-left text-[0.8125rem] outline-none max-md:h-12 max-md:rounded-[0.75rem] max-md:px-3.5 max-md:text-[1rem]",
+          "flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--superficie)] px-3 text-left text-[0.8125rem] outline-none max-md:h-12 max-md:rounded-[0.75rem] max-md:px-3.5 max-md:text-[1rem]",
           // Con la enumeración, el campo crece con sus renglones (M-Cuenta-Plat, .ct.sel).
           list && "h-auto min-h-9 py-1.5 max-md:h-auto max-md:min-h-12 max-md:py-2 max-md:leading-[1.3]",
           // Tablero Usuario (.o-dd > button.ct[aria-expanded=true]): abierto, con el borde verde y el halo, como con foco.

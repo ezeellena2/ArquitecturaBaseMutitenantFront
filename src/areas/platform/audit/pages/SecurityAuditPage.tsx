@@ -7,7 +7,6 @@ import { useCursorList } from "@/shared/hooks/useCursorList";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useFilters } from "@/shared/hooks/useFilters";
 import { usePagination } from "@/shared/hooks/usePagination";
-import { ClipboardIcon } from "@/shared/ui/icons";
 import { Button } from "@/shared/ui/button";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { DetailGrid } from "@/shared/ui/DetailGrid";
@@ -66,7 +65,7 @@ export function SecurityAuditPage() {
   ];
 
   return <>
-    <Page icon={ClipboardIcon} title={t("title")} phoneBody="flush">
+    <Page title={t("title")} phoneBody="flush">
       <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar phoneTools="filter" screen={t("title")} label={t("filters.label")} searchLabel={t("filters.search")}
           searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}

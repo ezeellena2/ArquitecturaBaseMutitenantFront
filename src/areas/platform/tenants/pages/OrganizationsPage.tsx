@@ -16,7 +16,7 @@ import { ReasonDialog } from "@/shared/platform/ReasonDialog";
 import { Button } from "@/shared/ui/button";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { FilterBar } from "@/shared/ui/FilterBar";
-import { BuildingIcon, CheckIcon, CloseIcon, EyeIcon } from "@/shared/ui/icons";
+import { CheckIcon, CloseIcon, EyeIcon } from "@/shared/ui/icons";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -108,7 +108,7 @@ export function OrganizationsPage() {
   const summary = globalCounts.data ? t("platformTenants:summary", { total: format.formatInteger(globalCounts.data.total), pending: format.formatInteger(pending), count: pending }) : undefined;
   const filtered = Boolean(query.status || query.source || pagination.search);
   return <>
-    <Page icon={BuildingIcon} title={t("platformTenants:title")} summary={summary} phoneSubtitle={t("platformTenants:platform")} phoneBody="flush"
+    <Page title={t("platformTenants:title")} summary={summary} phoneSubtitle={t("platformTenants:platform")} phoneBody="flush"
       fab={canManage ? { label: t("platformTenants:create.title"), onClick: () => setCreateOpen(true) } : undefined}
       actions={canManage ? <Button onClick={() => setCreateOpen(true)}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("platformTenants:create.title")}</Button> : undefined}>
       <div className="flex flex-col gap-3 md:gap-3.5">

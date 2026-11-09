@@ -24,7 +24,7 @@ export function AppBar({ title, subtitle, back, actions, leading }: {
 }) {
   const notices = useHostedNotices();
   const bell = useContext(AppBarBellContext);
-  return <><header data-slot="app-bar" className={cn("sticky top-0 z-20 box-content flex h-15 shrink-0 items-center gap-1 bg-[var(--lado-activo)] pt-[env(safe-area-inset-top)] pr-1.5", back ? "pl-1" : "pl-4")}>
+  return <><header data-slot="app-bar" className={cn("sticky top-0 z-20 box-content flex h-15 shrink-0 items-center gap-1 bg-[var(--superficie)] pt-[env(safe-area-inset-top)] pr-1.5", back ? "pl-1" : "pl-4")}>
     {back ? <Link to={back.to} aria-label={back.label} title={back.label} className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
       <ChevronLeft className="size-6.5" strokeWidth={1.9} aria-hidden="true" />
     </Link> : null}

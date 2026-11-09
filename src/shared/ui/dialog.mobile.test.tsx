@@ -25,7 +25,9 @@ describe("Dialog mobile layout", () => {
     expect(content).toHaveClass("max-h-[calc(100dvh-1rem)]");
     // Tablero M-Usuarios-Invitar (.ap-hoja): en el teléfono es una hoja con esquinas de 20 y manija; el título de 18
     // va sin fondo arena, el ✕ mide 44 y los botones de 48 van uno al lado del otro, a lo ancho.
-    expect(content).toHaveClass("rounded-t-[1.25rem]", "shadow-[var(--sombra-hoja)]");
+    // 173: la hoja se separa con el velo, sin sombra.
+    expect(content).toHaveClass("rounded-t-[1.25rem]");
+    expect(content.className).not.toMatch(/shadow-\[/);
     expect(content.querySelector("[data-slot='dialog-handle']")).toHaveClass("md:hidden", "h-1.25", "w-9");
     expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("size-11", "md:size-8");
     expect(document.querySelector('[data-slot="dialog-header"]')).toHaveClass("md:bg-[var(--cab)]", "md:min-h-12", "max-md:bg-transparent");

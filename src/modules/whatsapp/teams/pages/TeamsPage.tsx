@@ -8,7 +8,7 @@ import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
-import { DeleteIcon, EditIcon, WhatsAppIcon } from "@/shared/ui/icons";
+import { DeleteIcon, EditIcon } from "@/shared/ui/icons";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -56,7 +56,7 @@ function TeamsPage({ scope }: { scope: TeamScope }) {
   const create = () => setEditing({});
 
   return <>
-    <Page icon={WhatsAppIcon} title={t("whatsapp:teams.title")} phoneBody="flush"
+    <Page title={t("whatsapp:teams.title")} phoneBody="flush"
       summary={teams.data ? t("whatsapp:teams.summary", { count: teams.data.totalCount }) : undefined}
       fab={{ label: t("whatsapp:teams.create"), onClick: create }}
       actions={<Button type="button" onClick={create}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("whatsapp:teams.create")}</Button>}>

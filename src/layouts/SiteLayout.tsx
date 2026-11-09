@@ -1,7 +1,6 @@
 import { useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { BrandMark } from "@/shared/ui/BrandMark";
 import { MenuIcon } from "@/shared/ui/icons";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/shared/ui/Sheet";
 import { cn } from "@/shared/lib/utils";
@@ -79,13 +78,12 @@ export function SiteLayout({ children, variant = "landing", publicSiteName = nul
   const legal = variant === "legal";
   const storefront = variant === "storefront";
   const directory = variant === "directory";
-  const loginClass = "inline-flex h-8 items-center rounded-[0.5rem] border border-transparent bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)] px-3 text-[var(--lado-activo)] shadow-[0_1px_2px_var(--marca-sombra),inset_0_1px_0_var(--brillo)] hover:brightness-105 md:h-9 md:bg-none md:bg-transparent md:px-3.5 md:text-[var(--t2)] md:shadow-none md:hover:bg-[var(--s2)] md:hover:brightness-100";
+  const loginClass = "inline-flex h-8 items-center rounded-[0.5rem] border border-transparent bg-[var(--marca)] hover:bg-[var(--marca-h)] px-3 text-[var(--superficie)] hover:brightness-105 md:h-9 md:bg-none md:bg-transparent md:px-3.5 md:text-[var(--t2)] md:shadow-none md:hover:bg-[var(--s2)] md:hover:brightness-100";
 
-  return <div className={cn("min-h-screen bg-[var(--lado-activo)] text-[var(--t1)]", variant !== "landing" ? "flex flex-col" : "", storefront || directory ? "min-h-dvh" : "")}>
+  return <div className={cn("min-h-screen bg-[var(--superficie)] text-[var(--t1)]", variant !== "landing" ? "flex flex-col" : "", storefront || directory ? "min-h-dvh" : "")}>
     {storefront ? <header className="h-13.25 shrink-0 border-b border-[var(--borde)] md:h-16.25">
       <div className="mx-auto flex h-full max-w-320 items-center justify-between gap-4 px-4 md:px-10">
         <a href={mainSiteUrl()} className="inline-flex shrink-0 items-center gap-2 text-[0.875rem] font-semibold text-[var(--t2)] no-underline hover:text-[var(--t1)]">
-          <BrandMark className="max-md:size-6 max-md:rounded-[0.4375rem] md:size-5.5 md:rounded-[0.375rem]" />
           {t("brand")}
         </a>
         <PublicAccessMenu />
@@ -93,7 +91,6 @@ export function SiteLayout({ children, variant = "landing", publicSiteName = nul
     </header> : <header className="h-15.25 shrink-0 border-b border-[var(--borde)] md:h-18.25">
       <div className="mx-auto flex h-full max-w-320 items-center gap-0 px-4 md:gap-8 md:px-10">
         <Link to="/" className="inline-flex shrink-0 items-center gap-2.5 text-base font-bold tracking-[-0.01em] text-[var(--t1)] no-underline md:text-lg">
-          <BrandMark />
           {t("brand")}
         </Link>
         {!legal && !phone ? <nav aria-label={t("navigation.label")} className="flex items-center gap-7 text-[0.9375rem] font-medium">

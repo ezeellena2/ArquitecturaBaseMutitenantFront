@@ -10,7 +10,7 @@ import { usePagination } from "@/shared/hooks/usePagination";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable } from "@/shared/ui/DataTable";
-import { RotateIcon, SwapIcon, UnlinkIcon, WhatsAppIcon } from "@/shared/ui/icons";
+import { RotateIcon, SwapIcon, UnlinkIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
@@ -104,7 +104,7 @@ export function NumbersPage() {
   };
 
   return <>
-    <Page icon={WhatsAppIcon} title={t("whatsapp:numbers.title")} summary={summary} phoneBody="flush"
+    <Page title={t("whatsapp:numbers.title")} summary={summary} phoneBody="flush"
       fab={signup ? { label: t("whatsapp:numbers.actions.connect"), onClick: startConnect } : undefined}
       actions={signup ? <Button type="button" onClick={startConnect} pending={connection.connecting} pendingLabel={t("whatsapp:numbers.actions.connecting")}>
         <Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("whatsapp:numbers.actions.connect")}

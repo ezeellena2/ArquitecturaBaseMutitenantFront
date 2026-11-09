@@ -33,7 +33,7 @@ export function ChatComposer({ state, phone, sendPending, notePending, onSend, o
   const { t } = useTranslation("whatsapp");
   const [noteMode, setNoteMode] = useState(false);
   const form = useForm<{ text: string }>({ resolver: zodResolver(schema), defaultValues: { text: "" } });
-  const bar = (children: ReactNode) => <div data-slot="chat-composer" className={cn("flex shrink-0 items-center gap-2 border-t border-[var(--borde)] bg-[var(--lado-activo)]",
+  const bar = (children: ReactNode) => <div data-slot="chat-composer" className={cn("flex shrink-0 items-center gap-2 border-t border-[var(--borde)] bg-[var(--superficie)]",
     phone ? "sticky bottom-0 z-10 px-2.5 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]" : "px-4 py-3")}>{children}</div>;
 
   if (state.kind === "readOnly") return bar(<span className="flex flex-1 items-center gap-2 text-[0.8125rem] text-[var(--t2)] max-md:text-[0.875rem]">
@@ -44,7 +44,7 @@ export function ChatComposer({ state, phone, sendPending, notePending, onSend, o
   const noteButton = <button type="button" aria-pressed={noteMode} aria-label={t("chats.composer.note")} title={t("chats.composer.note")} onClick={() => setNoteMode((value) => !value)}
     className={cn("inline-flex shrink-0 items-center justify-center focus-visible:outline-2 focus-visible:outline-[var(--foco)]",
       phone ? "size-11 rounded-full" : "size-10 rounded-[0.625rem] border",
-      noteMode ? "border-[color-mix(in_oklch,var(--punto-alerta)_60%,transparent)] bg-[var(--alerta-t)] text-[var(--alerta-tx)]" : "border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t2)]")}>
+      noteMode ? "border-[color-mix(in_oklch,var(--punto-alerta)_60%,transparent)] bg-[var(--alerta-t)] text-[var(--alerta-tx)]" : "border-[var(--borde2)] bg-[var(--superficie)] text-[var(--t2)]")}>
     <StickyNote aria-hidden="true" className={phone ? "size-5.5" : "size-4.5"} />
   </button>;
 

@@ -2,7 +2,7 @@ import { companyOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Plus, Power, Trash2 } from "lucide-react";
-import { CloseIcon, RotateIcon, UsersIcon } from "@/shared/ui/icons";
+import { CloseIcon, RotateIcon } from "@/shared/ui/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
@@ -139,7 +139,7 @@ export function UsersPage() {
   const invite = canInvite ? <Button type="button" onClick={() => setInviteOpen(true)}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("users:invite.open")}</Button> : null;
 
   return <>
-    <Page icon={UsersIcon} title={t("users:title")} summary={listSummary} phoneBody="flush"
+    <Page title={t("users:title")} summary={listSummary} phoneBody="flush"
       fab={canInvite ? { label: t("users:invite.open"), onClick: () => setInviteOpen(true) } : undefined}
       moreActions={phone && pageActions.length ? { label: t("users:detail.moreActions"), items: pageActions.map((action) => ({ label: t(action.labelKey), onSelect: () => { void navigate(action.to); } })) } : undefined}
       actions={moduleActions.length || invite ? <>{phone ? null : moduleActions}{invite}</> : undefined}>

@@ -198,7 +198,7 @@ export function FilterBar({
       </div>
       {more.length > 0 && hasFilters ? <div data-slot="filter-chips" className="flex flex-wrap items-center gap-2">
         {applied.map((filter) => <span key={filter.key} data-slot="filter-chip"
-          className="inline-flex h-7 items-center gap-1 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--lado-activo)] pr-1 pl-2.5 text-[0.8125rem] text-[var(--t1)]">
+          className="inline-flex h-7 items-center gap-1 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--superficie)] pr-1 pl-2.5 text-[0.8125rem] text-[var(--t1)]">
           {chipText(filter)}
           <button type="button" aria-label={t("filters.remove", { filter: chipText(filter) })} title={t("filters.remove", { filter: chipText(filter) })}
             onClick={() => filter.onChange(filter.options[0]?.value ?? "")}
@@ -224,7 +224,7 @@ const filterButtonClass = (active: boolean) => cn(
   "h-8 rounded-[0.5rem] px-3 text-[0.8125rem] shadow-none",
   active
     ? "border-[var(--marca)] bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]"
-    : "border-[var(--borde)] bg-[var(--lado-activo)] font-normal text-[var(--t2)]",
+    : "border-[var(--borde)] bg-[var(--superficie)] font-normal text-[var(--t2)]",
 );
 
 /// Un filtro de opciones es un desplegable simple: cerrado dice «Todas» o la elegida; abierto, una opción por renglón,
@@ -275,11 +275,11 @@ function MoreFilters({ filters, applied }: { filters: readonly FilterBarFilter[]
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content align="start" sideOffset={4} aria-label={t("filters.title")} role="dialog"
-          className="z-50 flex max-h-[min(26rem,var(--radix-popover-content-available-height))] w-130 max-w-[calc(100vw-2rem)] overflow-hidden rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--lado-activo)] text-[0.8125rem] shadow-[var(--sombra-menu)]">
+          className="z-50 flex max-h-[min(26rem,var(--radix-popover-content-available-height))] w-130 max-w-[calc(100vw-2rem)] overflow-hidden rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--superficie)] text-[0.8125rem] shadow-[var(--sombra-menu)]">
           <div role="tablist" aria-orientation="vertical" aria-label={t("filters.title")} className="flex w-48 shrink-0 flex-col gap-0.5 overflow-y-auto border-r border-[var(--borde)] bg-[var(--s2)] p-1">
             {filters.map((item) => <button key={item.key} type="button" role="tab" aria-selected={item.key === filter.key} onClick={() => setCurrent(item.key)}
-              className={cn("flex min-h-8 items-center gap-2 rounded-[0.375rem] px-2.5 py-1.5 text-left text-[var(--t2)] hover:bg-[var(--lado-activo)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]",
-                item.key === filter.key && "bg-[var(--lado-activo)] font-semibold text-[var(--t1)]")}>
+              className={cn("flex min-h-8 items-center gap-2 rounded-[0.375rem] px-2.5 py-1.5 text-left text-[var(--t2)] hover:bg-[var(--superficie)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]",
+                item.key === filter.key && "bg-[var(--superficie)] font-semibold text-[var(--t1)]")}>
               <span className="min-w-0 flex-1">{filterName(item)}</span>
               {item.active ? <span data-slot="filter-dot" aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-[var(--marca)]" /> : null}
             </button>)}

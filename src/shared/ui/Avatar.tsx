@@ -9,8 +9,8 @@ export interface AvatarProps extends Omit<ComponentProps<"span">, "children"> {
   muted?: boolean;
 }
 
-// Tableros Usuarios e Invitación: el círculo con el degradado de la marca (tema.md, `--marca-2`), igual en la compu y en el
-// teléfono (lienzo v104). En el marco de la compu (la barra de arriba y el pie del menú) mide 32 con la inicial de 12; en tu
+// «Criterio · Marco» (173): un cuadrado con la inicial, relleno de la marca y la letra blanca, sin círculo ni degradé, igual
+// en la compu y en el teléfono; radio de 8 hasta 44 y de 12 más grande (en la compu, 3 como mucho, por la escala). En el marco de la compu (la barra de arriba y el pie del menú) mide 32 con la inicial de 12; en tu
 // menú, 36 con 15; quien invita, 40 con 16. En el teléfono: «Más» en la barra de abajo, 26 con 12; una fila, 44 con 15; tu
 // inicial arriba de «Más», 56 con 20.
 const sizes = {
@@ -38,8 +38,9 @@ export function Avatar({
       aria-label={label}
       aria-hidden={label ? undefined : true}
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-full font-semibold",
-        muted ? "bg-[var(--s3)] text-[var(--t2)]" : "bg-linear-to-br from-[var(--marca)] to-[var(--marca-2)] text-[var(--lado-activo)]",
+        "inline-flex shrink-0 items-center justify-center font-semibold",
+        size === "profile" ? "rounded-[0.75rem]" : "rounded-[0.5rem]",
+        muted ? "bg-[var(--s3)] text-[var(--t2)]" : "bg-[var(--marca)] text-[var(--superficie)]",
         sizes[size],
         className,
       )}

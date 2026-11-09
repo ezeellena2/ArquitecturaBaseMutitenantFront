@@ -56,11 +56,11 @@ export function Pagination({
           <SelectTrigger
             size="sm"
             aria-label={t("pagination.rowsPerPage")}
-            className="h-7 rounded-full border-[var(--borde)] bg-[var(--lado-activo)] px-2.5 text-[0.75rem] text-[var(--t2)] shadow-none"
+            className="h-7 rounded-full border-[var(--borde)] bg-[var(--superficie)] px-2.5 text-[0.75rem] text-[var(--t2)] shadow-none"
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent position="popper" align="end" className="border-[var(--borde)] bg-[var(--lado-activo)] text-[var(--t1)]">
+          <SelectContent position="popper" align="end" className="border-[var(--borde)] bg-[var(--superficie)] text-[var(--t1)]">
             {pageSizes.map((size) => (
               <SelectItem key={size} value={String(size)}>{t("pagination.perPage", { size })}</SelectItem>
             ))}

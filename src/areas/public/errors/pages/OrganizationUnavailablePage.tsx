@@ -8,7 +8,6 @@ import { useIsSigningOut } from "@/auth/signOutStatus";
 import { useSignOut } from "@/auth/useSignOut";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useSwitchAccess, type SwitchTarget } from "@/tenancy/useSwitchAccess";
-import { BrandMark } from "@/shared/ui/BrandMark";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { GroupTitle, SettingsGroup, SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { isSelectable, loginPathOf, type UnavailableCode } from "@/tenancy/access";
@@ -71,7 +70,6 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
 
   return <main className="relative min-h-dvh bg-[var(--fondo)] px-5 py-8 text-[var(--t1)]">
     <div className="absolute left-6 top-6 flex items-center gap-2.5 text-[1.0625rem] font-bold md:left-12 md:top-8">
-      <BrandMark />
       {t("auth:brand")}
     </div>
     {/* Tablero Perfil-Suspendido: el círculo, el texto, la tarjeta y «Salir» van a 22 uno del otro; el título y el
@@ -82,7 +80,7 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
         <h1 className="text-xl leading-[normal] font-bold tracking-[-0.02em]">{title}</h1>
         <p className="mt-1.5 text-sm leading-[normal] text-[var(--t2)]">{description}</p>
       </div>
-      <div className="rounded-2xl border border-[var(--borde)] bg-[var(--lado-activo)] p-1.5 shadow-[var(--shadow-card)]">
+      <div className="rounded-2xl border border-[var(--borde)] bg-[var(--superficie)] p-1.5">
         {/* Tablero Perfil-Suspendido: la lista de perfiles como la de tu menú, con el nombre en 13 y 500, el rol en 12 y el
             ícono del perfil de 28 con la sigla en 11,5 y negrita; arriba, el título de un menú (.menu-tit: 6 arriba y 2
             abajo); a la derecha, la flecha gris clara de 15 (.menu-it svg). */}

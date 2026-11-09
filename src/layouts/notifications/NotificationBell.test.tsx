@@ -205,5 +205,5 @@ it("la campana de la cabecera del teléfono lleva a «Avisos» con el número", 
 
   const bell = await screen.findByRole("link", { name: "Avisos: 1" });
   expect(bell).toHaveAttribute("href", "/avisos");
-  expect(bell).toHaveClass("size-11", "text-[var(--lado-activo)]");
+  expect(bell).toHaveClass("size-11", "text-[var(--superficie)]");
 });

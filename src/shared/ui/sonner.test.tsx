@@ -36,22 +36,23 @@ afterEach(() => vi.restoreAllMocks());
 
 describe("Toaster · Criterio v65", () => {
   // Tablero Avisos («Guardado», .p-aviso) y «Criterio · Avisos» (.toast3): en la compu, abajo a la derecha, blanco con
-  // borde y sombra, el texto oscuro y solo el ícono de color (index.css).
-  it("puts white toasts with a shadow at the bottom right using system tokens", () => {
+  // borde y sin sombra (173), el texto oscuro y solo el ícono de color (index.css).
+  it("puts white toasts with their border at the bottom right using system tokens", () => {
     renderWithProviders(<Toaster />);
     const toaster = document.querySelector<HTMLElement>("[data-testid='sonner-root']");
 
     expect(toaster).toHaveAttribute("data-x-position", "right");
     expect(toaster).toHaveAttribute("data-y-position", "bottom");
     expect(toaster).toHaveAttribute("data-rich-colors", "false");
-    expect(toaster).toHaveAttribute("data-toast-shadow", "var(--sombra-aviso)");
+    expect(toaster).not.toHaveAttribute("data-toast-shadow");
     expect(toaster).toHaveAttribute("data-toast-padding", "0.75rem 0.875rem");
     expect(toaster).toHaveAttribute("data-toast-gap", "0.625rem");
-    expect(toaster).toHaveAttribute("data-toast-radius", "0.625rem");
+    // La escala de la compu (180): las esquinas, de 3 como mucho.
+    expect(toaster).toHaveAttribute("data-toast-radius", "0.25rem");
     expect(toaster).toHaveAttribute("data-toast-font-size", "0.8125rem");
     expect((toaster as HTMLElement).style.getPropertyValue("--width")).toBe("21.25rem");
     expect((toaster as HTMLElement).style.getPropertyValue("--border-radius")).toBe("0.625rem");
-    expect((toaster as HTMLElement).style.getPropertyValue("--normal-bg")).toBe("var(--lado-activo)");
+    expect((toaster as HTMLElement).style.getPropertyValue("--normal-bg")).toBe("var(--superficie)");
     expect((toaster as HTMLElement).style.getPropertyValue("--normal-border")).toBe("var(--borde)");
     expect((toaster as HTMLElement).style.getPropertyValue("--normal-text")).toBe("var(--t1)");
     expect((toaster as HTMLElement).style.getPropertyValue("--success-bg")).toBe("");
@@ -77,7 +78,7 @@ describe("Toaster · Criterio v65", () => {
       expect(toaster).toHaveAttribute("data-toast-radius", "0.875rem");
       expect(toaster).toHaveAttribute("data-toast-font-size", "0.90625rem");
       expect(toaster.style.getPropertyValue("--normal-bg")).toBe("var(--franja)");
-      expect(toaster.style.getPropertyValue("--normal-text")).toBe("var(--lado-activo)");
+      expect(toaster.style.getPropertyValue("--normal-text")).toBe("var(--superficie)");
       // M-Avisos (.f-snack .ok y .mal): la tilde de 20 y el signo de 28, con el círculo de 8,5 del tablero.
       const ok = toaster!.querySelector<SVGElement>("[data-testid='icon-success'] svg")!;
       expect(ok).toHaveClass("size-5");

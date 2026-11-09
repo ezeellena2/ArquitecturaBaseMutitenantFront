@@ -29,7 +29,7 @@ describe("GoogleButton", () => {
     show(<GoogleButton mode="login" access="business" returnUrl="/connect/authorize?client_id=web&response_type=code" />);
     const link = await screen.findByRole("link", { name: "Ingresar con Google" });
     expect(link).toHaveAttribute("href", "/api/auth/external/google?returnUrl=%2Fconnect%2Fauthorize%3Fclient_id%3Dweb%26response_type%3Dcode&access=business");
-    expect(link).toHaveClass("bg-[var(--lado-activo)]");
+    expect(link).toHaveClass("bg-[var(--superficie)]");
     expect(link).not.toHaveClass("bg-background");
   });
 

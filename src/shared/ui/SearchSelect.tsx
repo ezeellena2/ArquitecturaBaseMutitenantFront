@@ -147,7 +147,7 @@ export function SearchSelect({
     }}
     // «Criterio · Formularios» (A11, 07/10): apagado es el mismo campo, con fondo y texto grises (.o-txt.sel de Rol).
     className={cn(
-      "group flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3 text-left text-[0.8125rem] outline-none max-md:h-12 max-md:rounded-[0.75rem] max-md:px-3.5 max-md:text-[1rem]",
+      "group flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--superficie)] px-3 text-left text-[0.8125rem] outline-none max-md:h-12 max-md:rounded-[0.75rem] max-md:px-3.5 max-md:text-[1rem]",
       "focus-visible:border-[var(--marca)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] aria-expanded:border-[var(--marca)] aria-expanded:ring-[3px] aria-expanded:ring-[var(--foco-halo)] disabled:cursor-default disabled:border-[var(--borde)] disabled:bg-[var(--s2)] disabled:opacity-100 aria-invalid:border-destructive",
       className,
     )}
@@ -245,7 +245,7 @@ export function SearchSelect({
             event.preventDefault();
             listRef.current?.focus();
           }}
-          className="z-50 w-(--radix-popover-trigger-width) min-w-0 overflow-hidden rounded-[0.625rem] border border-[var(--borde)] bg-[var(--lado-activo)] text-[0.8125rem] shadow-[var(--sombra-menu)]"
+          className="z-50 w-(--radix-popover-trigger-width) min-w-0 overflow-hidden rounded-[0.625rem] border border-[var(--borde)] bg-[var(--superficie)] text-[0.8125rem] shadow-[var(--sombra-menu)]"
         >
           {search}
           {list}

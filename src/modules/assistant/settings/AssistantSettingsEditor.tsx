@@ -1,7 +1,6 @@
 import { useQueryUpdate } from "@/shared/hooks/useQueryUpdate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Sparkles } from "lucide-react";
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { Controller, useWatch } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
@@ -240,7 +239,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   </form>;
   const actions = tab === "general" ? <><Button type="button" variant="outline" onClick={discard}>{t("assistant:settings.discard")}</Button><Button type="submit" form="assistant-settings" disabled={!form.formState.isDirty} pending={pending} pendingLabel={t("assistant:settings.saving")}>{t("assistant:settings.save")}</Button></> : <Button onClick={(event) => setModelDialog({ trigger: event.currentTarget })}>{t("assistant:settings.addModel")}</Button>;
   return <>
-    <Page icon={Sparkles} title={t("assistant:settings.title")} summary={platform && !savedHasKey ? <span className="font-medium text-[var(--alerta)]">{t("assistant:settings.unconfigured")}</span> : null} phoneSubtitle={t("assistant:title")} backTo={phone ? { to: platform ? "/plataforma/mas" : "/mas", label: t("assistant:settings.back") } : undefined}
+    <Page title={t("assistant:settings.title")} summary={platform && !savedHasKey ? <span className="font-medium text-[var(--alerta)]">{t("assistant:settings.unconfigured")}</span> : null} phoneSubtitle={t("assistant:title")} backTo={phone ? { to: platform ? "/plataforma/mas" : "/mas", label: t("assistant:settings.back") } : undefined}
       banner={edit.banner} actions={actions} phoneBody={tab === "catalog" ? "flush" : "padded"}
       tabs={platform ? { label: t("assistant:settings.title"), value: tab, onValueChange: (value) => updateQuery({ tab: value }), items: [
         { value: "general", label: t("assistant:settings.general"), content: general },

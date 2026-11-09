@@ -39,7 +39,7 @@ export function ErrorPageFrame({ icon, title, back, screen, standalone = false, 
   const announce = (heading: ReactNode) => retry ? <div role="alert">{heading}</div> : heading;
 
   const page = (content: ReactNode) => standalone
-    ? <main className={cn("flex min-h-dvh flex-col", phone ? "bg-[var(--lado-activo)]" : "bg-[var(--fondo)]")}>{content}</main>
+    ? <main className={cn("flex min-h-dvh flex-col", phone ? "bg-[var(--superficie)]" : "bg-[var(--fondo)]")}>{content}</main>
     : content;
 
   // Tablero M-Error-Org: en el teléfono la barra lleva ‹ y el nombre de la pantalla; el aviso va al medio, con el botón
@@ -48,14 +48,14 @@ export function ErrorPageFrame({ icon, title, back, screen, standalone = false, 
     const barTitle = standalone ? null : screen ?? chrome.title;
     const Title = barTitle ? "h2" : "h1";
     const pill = "mt-2.5 inline-flex h-12 items-center justify-center rounded-full px-6.5 text-[0.96875rem] font-semibold focus-visible:outline-2 focus-visible:outline-[var(--foco)]";
-    return page(<div className="flex min-h-full flex-1 flex-col bg-[var(--lado-activo)] text-[var(--t1)]">
+    return page(<div className="flex min-h-full flex-1 flex-col bg-[var(--superficie)] text-[var(--t1)]">
       {barTitle ? <AppBar title={barTitle} back={back ?? chrome.parent ?? undefined} subtitle={chrome.subtitle ?? undefined} /> : null}
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-8 text-center">
         <span aria-hidden="true" className="inline-flex size-16 items-center justify-center rounded-full bg-[var(--s3)] text-[var(--t2)] [&_svg]:size-7">{icon}</span>
         {announce(<Title className="mt-1.5 text-[1.375rem] font-bold leading-tight tracking-[-0.015em]">{title}</Title>)}
         {retry
-          ? <button type="button" onClick={retry} className={`${pill} border border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t1)]`}>{t("common:actions.retry")}</button>
-          : <Link to={action.homePath} onClick={action.onHomeClick} className={`${pill} bg-[var(--marca)] text-[var(--lado-activo)]`}>{t("errorPage.home")}</Link>}
+          ? <button type="button" onClick={retry} className={`${pill} border border-[var(--borde2)] bg-[var(--superficie)] text-[var(--t1)]`}>{t("common:actions.retry")}</button>
+          : <Link to={action.homePath} onClick={action.onHomeClick} className={`${pill} bg-[var(--marca)] text-[var(--superficie)]`}>{t("errorPage.home")}</Link>}
       </div>
     </div>);
   }

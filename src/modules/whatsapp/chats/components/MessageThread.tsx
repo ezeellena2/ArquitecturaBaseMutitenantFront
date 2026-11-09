@@ -44,7 +44,7 @@ export function MessageThread({ messages, perspective, label, phone, hasEarlier,
     {messages.map((message, index) => {
       const previous = messages[index - 1];
       const separator = !previous || format.formatDate(previous.createdAtUtc) !== format.formatDate(message.createdAtUtc)
-        ? <span className={cn("self-center rounded-full border border-[var(--borde)] bg-[var(--lado-activo)] px-2.5 py-0.5 text-[0.75rem]", phone ? "rounded-[0.5rem] border-0 text-[var(--t2)] shadow-[var(--sombra-flecha)]" : "text-[var(--t3)]")}>
+        ? <span className={cn("self-center rounded-full border border-[var(--borde)] bg-[var(--superficie)] px-2.5 py-0.5 text-[0.75rem]", phone ? "rounded-[0.5rem] border-0 text-[var(--t2)]" : "text-[var(--t3)]")}>
           {chatDay(format, message.createdAtUtc)}
         </span> : null;
       return <Fragment key={message.id}>{separator}<ThreadItem message={message} perspective={perspective} phone={phone} /></Fragment>;
@@ -86,7 +86,7 @@ function ThreadItem({ message, perspective, phone }: { message: WhatsAppChatMess
     <span className={cn("px-3 py-2 whitespace-pre-wrap [overflow-wrap:anywhere]",
       phone ? "rounded-[0.875rem] text-[0.9375rem] leading-[1.4]" : "rounded-[0.75rem] text-[0.84375rem] leading-[1.45]",
       own ? "rounded-tr-[0.25rem] bg-[var(--marca-t)] text-[var(--sugerencia-tx)]"
-        : cn("rounded-tl-[0.25rem] bg-[var(--lado-activo)]", phone ? "shadow-[var(--sombra-flecha)]" : "border border-[var(--borde)]"),
+        : cn("rounded-tl-[0.25rem] bg-[var(--superficie)]", phone ? "" : "border border-[var(--borde)]"),
       MediaIcon ? "inline-flex items-center gap-2 text-[var(--t2)] italic" : null)}>
       {MediaIcon ? <><MediaIcon aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)]" />{t(`chats.thread.media.${message.mediaKind ?? "Other"}`)}</> : message.text}
     </span>

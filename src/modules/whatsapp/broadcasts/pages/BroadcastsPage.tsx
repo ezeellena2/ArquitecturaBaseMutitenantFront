@@ -13,7 +13,6 @@ import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
-import { BroadcastsIcon } from "../../components/icons";
 import type { WhatsAppBroadcastResponse, WhatsAppBroadcastStatus } from "../../api/types";
 import { broadcastsQueryKey, fetchBroadcasts, type BroadcastsQuery } from "../api/broadcasts";
 import { broadcastPhoneRow, createBroadcastColumns, newBroadcastPath } from "../columns";
@@ -57,7 +56,7 @@ export function BroadcastsPage(_props: ModuleContentProps) {
   </> : undefined;
 
   return <>
-    <Page icon={BroadcastsIcon} title={t("whatsapp:broadcasts.title")} summary={summary} phoneBody="flush"
+    <Page title={t("whatsapp:broadcasts.title")} summary={summary} phoneBody="flush"
       fab={{ label: t("whatsapp:broadcasts.new"), to: newBroadcastPath }}
       actions={<Button asChild><Link to={newBroadcastPath}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("whatsapp:broadcasts.new")}</Link></Button>}>
       <div className="flex flex-col gap-3 md:gap-3.5">

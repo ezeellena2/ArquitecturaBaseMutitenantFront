@@ -50,7 +50,7 @@ export function SegmentedControl({
           className={cn(
             "inline-flex h-7.5 min-w-0 items-center justify-center gap-1.5 rounded-[0.5rem] px-2 text-[0.8125rem] font-semibold whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-[var(--foco)] max-md:h-9.5 max-md:rounded-[0.5625rem] max-md:text-[0.90625rem]",
             option.pressed
-              ? "bg-[var(--lado-activo)] text-[var(--t1)] shadow-[var(--sombra-segmento)]"
+              ? "bg-[var(--superficie)] text-[var(--t1)]"
               : "text-[var(--t2)] hover:text-[var(--t1)]",
           )}
         >

@@ -57,7 +57,7 @@ export function PublicPageCard({ page, links = false, signInHref, onSignIn, show
   const signIn = cn(buttonVariants({ size: "lg" }), "mt-4.5 w-full max-md:h-12 max-md:rounded-[0.75rem]");
   const hasContact = filled(address) || filled(contactPhone) || filled(contactEmail) || filled(website);
 
-  return <div className="flex w-full max-w-140 flex-col items-center gap-1.5 rounded-[1.25rem] border border-[var(--borde)] bg-[var(--lado-activo)] p-8 text-center text-[0.9375rem] leading-[1.6] text-[var(--t1)] shadow-[var(--sombra-tarjeta)] max-md:rounded-[1.125rem] max-md:px-4.5 max-md:pt-6 max-md:pb-5 max-md:shadow-[var(--sombra-tarjeta-movil)]">
+  return <div className="flex w-full max-w-140 flex-col items-center gap-1.5 rounded-[1.25rem] border border-[var(--borde)] bg-[var(--superficie)] p-8 text-center text-[0.9375rem] leading-[1.6] text-[var(--t1)] max-md:rounded-[1.125rem] max-md:px-4.5 max-md:pt-6 max-md:pb-5">
     {/* El logo va decorativo: el nombre está debajo. Sin logo, las iniciales en el verde claro. */}
     {filled(logoDataUri)
       ? <img src={logoDataUri} alt="" className="mb-2.5 size-21 rounded-[1.25rem] border border-[var(--borde)] object-contain max-md:mb-2 max-md:size-18 max-md:rounded-[1.125rem]" />

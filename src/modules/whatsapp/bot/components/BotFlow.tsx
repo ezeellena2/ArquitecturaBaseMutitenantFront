@@ -83,7 +83,7 @@ function Mark({ children }: { children: ReactNode }) {
 function Node({ title, detail, start, question, team, selected, narrow }: {
   title: string; detail?: string; start?: boolean; question?: boolean; team?: boolean; selected?: boolean; narrow?: boolean;
 }) {
-  return <div className={cn("flex flex-col gap-0.5 rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3.5 py-2.5 text-center text-[0.8125rem]",
+  return <div className={cn("flex flex-col gap-0.5 rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--superficie)] px-3.5 py-2.5 text-center text-[0.8125rem]",
     narrow ? "w-40" : question ? "w-75" : "w-50",
     start && "border-[var(--borde)] bg-[var(--s3)]", question && "border-dashed", team && "border-[var(--marca)] bg-[var(--marca-t)]",
     selected && "border-[var(--marca)] shadow-[0_0_0_3px_var(--marca-t)]")}>
@@ -95,9 +95,9 @@ function Node({ title, detail, start, question, team, selected, narrow }: {
 /// Un paso del teléfono (.ap-n): el número en su círculo (el «?» de la pregunta, en ámbar), la caja y sus ramas.
 function PhoneStep({ mark, title, detail, question, branches }: { mark: string; title: string; detail?: string; question?: boolean; branches?: readonly Branch[] }) {
   return <li className="relative flex gap-3 pb-3.5 before:absolute before:top-6 before:bottom-0 before:left-2.75 before:w-0.5 before:bg-[var(--borde2)] last:before:hidden">
-    <span aria-hidden="true" className={cn("relative z-[1] mt-2.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[0.75rem] font-bold text-[var(--lado-activo)]",
+    <span aria-hidden="true" className={cn("relative z-[1] mt-2.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[0.75rem] font-bold text-[var(--superficie)]",
       question ? "bg-[var(--alerta)]" : "bg-[var(--marca)]")}>{mark}</span>
-    <div className="min-w-0 flex-1 rounded-[0.75rem] border border-[var(--borde)] bg-[var(--lado-activo)] px-3.5 py-2.5">
+    <div className="min-w-0 flex-1 rounded-[0.75rem] border border-[var(--borde)] bg-[var(--superficie)] px-3.5 py-2.5">
       <b className="block text-[0.9375rem] font-semibold text-[var(--t1)]">{title}</b>
       {detail ? <span className="text-[0.8125rem] text-[var(--t3)]">{detail}</span> : null}
       {branches && branches.length > 0 ? <ul className="m-0 mt-2.5 flex list-none flex-col gap-1.5 p-0">

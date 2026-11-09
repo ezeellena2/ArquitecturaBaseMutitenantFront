@@ -13,7 +13,7 @@ export function GroupTitle({ children, action }: { children: ReactNode; action?:
 }
 
 export function SettingsGroup({ label, children, className }: { label: string; children: ReactNode; className?: string }) {
-  return <ul aria-label={label} className={cn("mx-4 shrink-0 list-none overflow-hidden rounded-[0.875rem] bg-[var(--lado-activo)] p-0 shadow-[0_0_0_1px_var(--borde)]", className)}>{children}</ul>;
+  return <ul aria-label={label} className={cn("mx-4 shrink-0 list-none overflow-hidden rounded-[0.875rem] bg-[var(--superficie)] p-0 shadow-[0_0_0_1px_var(--borde)]", className)}>{children}</ul>;
 }
 
 const itemClass = "relative flex min-h-14 items-center gap-3 py-2 pr-3.5 pl-4 text-[var(--t1)]";

@@ -4,7 +4,6 @@ import { useFormat } from "@/shared/format/useFormat";
 import { useFilters } from "@/shared/hooks/useFilters";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { EmptyState } from "@/shared/ui/EmptyState";
-import { WhatsAppIcon } from "@/shared/ui/icons";
 import { Page } from "@/shared/ui/Page";
 import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { Surface } from "@/shared/ui/Surface";
@@ -45,7 +44,7 @@ export function BotScreen({ variant, bot, teams, picker, empty, onSave }: {
       : flow ? <BotFlow bot={bot} variant={variant} teams={teams} />
         : <BotConfiguration bot={bot} variant={variant} teams={teams} onSave={onSave} />;
 
-  return <Page icon={WhatsAppIcon} title={t("whatsapp:bot.title")} summary={summary} phoneBody="gray">
+  return <Page title={t("whatsapp:bot.title")} summary={summary} phoneBody="gray">
     {/* WA-Respuestas: el segmentado arriba y, debajo, la caja del número; en el teléfono, el número va primero. */}
     {phone ? <>{picker}{empty ? null : views}{content}</> : <>{empty ? null : views}{picker}{content}</>}
   </Page>;
