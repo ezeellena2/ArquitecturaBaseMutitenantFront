@@ -192,6 +192,31 @@ describe("la campana en la compu", () => {
     await user.click(within(list).getByRole("button", { name: "Reintentar" }));
     expect(await within(list).findByRole("link", { name: named(`${loginMethodText}, sin leer`) })).toBeVisible();
   });
+
+  // «Criterio · Botones» (F1): el «Reintentar» trabaja con su aro y su gerundio y, si vuelve a fallar, la lista lo dice.
+  it("«Reintentar» trabaja mientras vuelve a leer y, si vuelve a fallar, lo dice", async () => {
+    let hold: Promise<void> | undefined;
+    let release = () => {};
+    server.use(http.get("/api/notifications", async () => {
+      if (hold) await hold;
+      return HttpResponse.json({ code: "Server.Error" }, { status: 500 });
+    }));
+    const user = userEvent.setup();
+    renderFrame("business-admin", "/org");
+
+    await user.click(await screen.findByRole("button", { name: "Avisos" }));
+    const list = await screen.findByRole("dialog", { name: "Avisos" });
+    expect(await within(list).findByText("No pudimos cargar los avisos.")).toBeVisible();
+    const retry = await within(list).findByRole("button", { name: "Reintentar" });
+    hold = new Promise<void>((resolve) => { release = resolve; });
+    await user.click(retry);
+    expect(await within(list).findByRole("button", { name: "Reintentando…" })).toBeDisabled();
+    expect(within(list).getByText("No pudimos cargar los avisos.")).toBeVisible();
+    release();
+    expect(await within(list).findByText("Seguimos sin poder cargar los avisos. Probá de nuevo en un rato.")).toBeVisible();
+    expect(within(list).getByRole("button", { name: "Reintentar" })).toBeEnabled();
+    expect(await axe(document.body)).toHaveNoViolations();
+  });
 });
 
 // M-Inicio-Org (`.c-campana`): la de la cabecera verde del Inicio del teléfono, blanca, que también lleva a «Avisos».

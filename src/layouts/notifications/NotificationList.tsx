@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
@@ -64,6 +65,13 @@ export function NotificationList({ notifications, variant, onOpen }: {
   const { t } = useTranslation(["notifications", "common"]);
   const page = variant === "page";
   const { rows, status } = notifications;
+  // «Criterio · Botones» (F1): «Reintentar» trabaja en su lugar, con su aro y su gerundio, mientras vuelve a leer (una lista
+  // que nunca cargó vuelve a «cargando»), y si vuelve a fallar la lista lo dice. Cuenta las veces que se tocó desde que no
+  // carga; cuando carga, vuelve a cero.
+  const [retries, setRetries] = useState(0);
+  if (status === "ready" && retries !== 0) setRetries(0);
+  const retrying = retries > 0 && status === "loading";
+  const failedAgain = retrying ? retries > 1 : retries > 0;
 
   if (rows.length > 0) return <ul className={page ? undefined : "min-h-0 overflow-y-auto"}>
     {rows.map((row) => <li key={row.key} className={page ? undefined : "border-t border-[var(--borde)] first:border-t-0"}>
@@ -72,10 +80,11 @@ export function NotificationList({ notifications, variant, onOpen }: {
   </ul>;
 
   const state = page ? "px-6 py-12 text-[1rem] font-semibold text-[var(--t1)]" : "px-4 py-7 text-[0.875rem] text-[var(--t2)]";
-  if (status === "loading") return <div className={cn("flex justify-center", state)}><Spinner /></div>;
-  if (status === "error") return <div className={cn("flex flex-col items-center gap-3 text-center", state)}>
-    <p>{t("loadError")}</p>
-    <Button type="button" variant="outline" size="sm" onClick={notifications.refresh} className={page ? "h-11 px-5 text-[0.9375rem]" : undefined}>
+  if (status === "loading" && !retrying) return <div className={cn("flex justify-center", state)}><Spinner /></div>;
+  if (status === "error" || retrying) return <div className={cn("flex flex-col items-center gap-3 text-center", state)}>
+    <p aria-live="polite">{t(failedAgain ? "loadErrorAgain" : "loadError")}</p>
+    <Button type="button" variant="outline" size="sm" pending={retrying} pendingLabel={t("retrying")}
+      onClick={() => { setRetries((count) => count + 1); notifications.refresh(); }} className={page ? "h-11 px-5 text-[0.9375rem]" : undefined}>
       {t("common:actions.retry")}
     </Button>
   </div>;

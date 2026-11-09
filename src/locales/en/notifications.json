@@ -4,6 +4,8 @@
   "back": "Back",
   "empty": "No notifications.",
   "loadError": "We couldn't load your notifications.",
+  "loadErrorAgain": "We still couldn't load your notifications. Try again in a while.",
+  "retrying": "Retrying…",
   "unreadMark": ", unread",
   "newVersion": "A new version of the system is available",
   "kinds": {

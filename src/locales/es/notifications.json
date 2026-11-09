@@ -4,6 +4,8 @@
   "back": "Volver",
   "empty": "No hay avisos.",
   "loadError": "No pudimos cargar los avisos.",
+  "loadErrorAgain": "Seguimos sin poder cargar los avisos. Probá de nuevo en un rato.",
+  "retrying": "Reintentando…",
   "unreadMark": ", sin leer",
   "newVersion": "Hay una versión nueva del sistema",
   "kinds": {
