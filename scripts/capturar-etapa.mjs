@@ -71,11 +71,10 @@ export async function waitForAppFont(page) {
   if (missing) throw new Error("La app pide Inter y no la cargó: la captura saldría con la letra del sistema.");
 }
 
-/// La app en la compu mide el 75 % (index.css) y el tablero, su tamaño nominal: a 1080 de ancho y escala 4/3, la foto de la
-/// app sale de 1440 con la misma geometría que la del tablero.
+/// La app se fotografía en el tamaño de su tablero, con escala 1, también en la compu: desde la v166 el lienzo dibuja la
+/// compu en la escala que se ve en pantalla (decisión 180), y la app la da sola con la raíz al 75 % y la letra de index.css.
 export function appContextOptions({ width, height }) {
-  if (width < 1024) return { viewport: { width, height }, deviceScaleFactor: 1 };
-  return { viewport: { width: width * 0.75, height: height * 0.75 }, deviceScaleFactor: 4 / 3 };
+  return { viewport: { width, height }, deviceScaleFactor: 1 };
 }
 
 export function capturePaths(outputRoot, entry) {

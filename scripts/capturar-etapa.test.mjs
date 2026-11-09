@@ -33,7 +33,8 @@ test("un caso del teléfono pasa a 320 con sus datos y pasos, y se compara con e
     assert.deepEqual(boardViewport(phone), { width: 390, height: 844 });
     const desktop = galleryCase("bot", "Prueba-Editar", "Editar opción", app);
     assert.deepEqual(boardViewport(desktop), { width: 1440, height: 900 });
-    assert.deepEqual(appContextOptions(desktop.viewport), { viewport: { width: 1080, height: 675 }, deviceScaleFactor: 4 / 3 });
+    // La compu, como el lienzo desde la v166 (180): en el tamaño que se ve en pantalla, sin agrandar la app.
+    assert.deepEqual(appContextOptions(desktop.viewport), { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
 
     // 320 no tiene tablero propio: sale solo de uno del teléfono, y ningún otro ancho se pide.
     assert.throws(() => at320(desktop), /a 320 se compara con un tablero de 390/);
