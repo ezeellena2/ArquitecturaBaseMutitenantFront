@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type ComponentType } from "react";
-import { Trans, useTranslation } from "react-i18next";
-import { Link, useNavigate, useParams } from "react-router";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
@@ -13,10 +13,10 @@ import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { useMountedRef } from "@/shared/hooks/useMountedRef";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
-import { Banner } from "@/shared/ui/Banner";
+import { InfoTip } from "@/shared/ui/InfoTip";
+import { endWithPeriod } from "@/shared/format/phrase";
 import { Button } from "@/shared/ui/button";
 import { DateText } from "@/shared/ui/format/DateText";
-import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { NumberText } from "@/shared/ui/format/NumberText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { Pencil, Power, RotateCw, Trash2 } from "lucide-react";
@@ -118,19 +118,27 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
   const expires = <>{t(data.state === "InvitationExpired" ? "platformAccounts:detail.expired" : "platformAccounts:detail.expires")} <DateText value={data.invitationExpiresAtUtc} /></>;
   const operatorSummary = <>{t("platformAccounts:profiles.operator")} {invitation ? <>{" · "}{t("platformAccounts:detail.never")} {" · "}{expires}</>
     : <> {" · "}<NumberText value={permissionCount} /> {t("platformAccounts:detail.permissionCount", { count: permissionCount })}{" · "}{t("platformAccounts:detail.lastSignInInline")} <DateText value={data.lastSignInAtUtc} kind="dateTime" /></>}</>;
-  const personSummary = <>{t("platformAccounts:detail.created")} <DateText value={data.createdAtUtc} />{" · "}{t(data.state === "Deleted" ? "platformAccounts:detail.deleted" : "platformAccounts:detail.lastSignIn")} <DateText value={data.state === "Deleted" ? data.deletedAtUtc : data.lastSignInAtUtc} kind={data.state === "Deleted" ? "date" : "dateTime"} /></>;
+  // Tablero Cuenta-Plat: con la cuenta por borrar, el resumen dice cuándo se borra en lugar del último ingreso.
+  const personSummary = <>{t("platformAccounts:detail.created")} <DateText value={data.createdAtUtc} />{" · "}{data.state === "PendingDeletion" && data.deletion?.scheduledForUtc
+    ? <>{t("platformAccounts:detail.deletesOn")} <DateText value={data.deletion.scheduledForUtc} /></>
+    : <>{t(data.state === "Deleted" ? "platformAccounts:detail.deleted" : "platformAccounts:detail.lastSignIn")} <DateText value={data.state === "Deleted" ? data.deletedAtUtc : data.lastSignInAtUtc} kind={data.state === "Deleted" ? "date" : "dateTime"} /></>}</>;
   const managed = data.loginMethods.find((method) => !method.canSignIn && method.managedByOrganizationName);
   const matchingMemberships = data.organizations.filter((membership) => membership.name === managed?.managedByOrganizationName);
   const ended = matchingMemberships.length === 1 && ["Inactive", "Removed"].includes(matchingMemberships[0].status) ? matchingMemberships[0] : undefined;
-  const banner = data.state === "Suspended" ? <Banner tone="warning"><Trans t={t} i18nKey="platformAccounts:detail.suspended" components={{ strong: <strong />, date: <DateText value={data.lastStateChange?.atUtc} />, reason: <>{data.lastStateChange?.reason || <EmptyValue />}</> }} /></Banner>
-    : data.state === "PendingDeletion" ? <Banner tone="warning"><Trans t={t} i18nKey={data.deletion?.requestedByPlatform ? "platformAccounts:detail.platformDeletion" : "platformAccounts:detail.personalDeletion"}
-        components={{ strong: <strong />, requested: <DateText value={data.deletion?.requestedAtUtc} />, scheduled: <DateText value={data.deletion?.scheduledForUtc} /> }} /></Banner>
-      : data.state === "NeedsRecovery" ? <Banner tone="warning"><Trans t={t} i18nKey="platformAccounts:detail.recoveryDescription"
-          values={{ organization: managed?.managedByOrganizationName || format.formatEmpty() }}
-          components={{ strong: <strong />, ended: <DateText value={ended?.endedAtUtc} />, recoveries: <Link className="font-semibold text-[var(--marca-tx)] hover:underline" to="/plataforma/recuperaciones" /> }} /></Banner> : undefined;
+  // Tablero Cuenta-Plat (175): el estado una vez; cuándo y por qué, en la frase de su (i).
+  const reason = data.lastStateChange?.reason ? endWithPeriod(data.lastStateChange.reason) : format.formatEmpty();
+  const why = data.state === "Suspended" && data.lastStateChange?.atUtc
+    ? t("platformAccounts:detail.why.suspended", { date: format.formatDateTime(data.lastStateChange.atUtc), reason })
+    : data.state === "PendingDeletion" && data.deletion?.requestedAtUtc
+      ? data.deletion.requestedByPlatform
+        ? t("platformAccounts:detail.why.platformDeletion", { date: format.formatDateTime(data.deletion.requestedAtUtc), reason })
+        : t("platformAccounts:detail.why.personalDeletion", { date: format.formatDateTime(data.deletion.requestedAtUtc) })
+      : data.state === "NeedsRecovery" && ended?.endedAtUtc
+        ? t("platformAccounts:detail.why.recovery", { date: format.formatDateTime(ended.endedAtUtc), organization: managed?.managedByOrganizationName || format.formatEmpty() })
+        : null;
   return <>
-    <Page title={name} backTo={{ to: "/plataforma/cuentas", label: t("platformAccounts:detail.back") }} phoneBody="flush" banner={banner}
-      summary={<><StatusBadge tones={accountStateTones} value={data.state} /><SublineSeparator />{operator ? operatorSummary : personSummary}</>}
+    <Page title={name} backTo={{ to: "/plataforma/cuentas", label: t("platformAccounts:detail.back") }} phoneBody="flush"
+      summary={<><StatusBadge tones={accountStateTones} value={data.state} />{why ? <InfoTip standalone className="ml-1" text={why} title={format.formatEnum("PlatformAccountState", data.state)} /> : null}<SublineSeparator />{operator ? operatorSummary : personSummary}</>}
       phoneSubtitle={<><StatusBadge tones={accountStateTones} value={data.state} />{" · "}{operator ? invitation ? expires : <>{t("platformAccounts:detail.operatorInline")} {" · "}<NumberText value={permissionCount} /> {t("platformAccounts:detail.permissionCount", { count: permissionCount })}</> : <>{t(data.state === "Deleted" ? "platformAccounts:detail.deletedInline" : "platformAccounts:detail.lastSignInInline")} <DateText value={data.state === "Deleted" ? data.deletedAtUtc : data.lastSignInAtUtc} kind={data.state === "Deleted" ? "date" : "dateTime"} /></>}</>}
       actions={!phone ? <>{accountActions.map((action) => <Button key={action} variant="outline" onClick={(event) => open(action, event.currentTarget)}>{t(action === "revoke-sessions" ? "platformAccounts:detail.closeSessions" : `platformAccounts:actions.${action}`)}</Button>)}
         {mutable && canOperators && operator && !invitation ? <Button variant="outline" onClick={(event) => open("permissions", event.currentTarget)}>{t("platformAccounts:operator.change")}</Button> : null}

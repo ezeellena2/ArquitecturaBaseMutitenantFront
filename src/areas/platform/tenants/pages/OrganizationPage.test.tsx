@@ -63,11 +63,16 @@ describe("Ficha de Organización", () => {
     const button = await screen.findByRole("button", { name: label }); expect(button).toHaveAttribute("data-variant", "danger");
     await user.click(button); expect(within(await screen.findByRole("dialog")).getByRole("button", { name: label })).toHaveAttribute("data-variant", "destructive");
   });
-  it.each(["Suspended", "Closed"] as const)("%s usa fecha y motivo reales y conserva null sin inventar", async (status) => {
+  // Tablero Organizacion (175): sin cartel; la banda dice el estado una vez, y cuándo y por qué van en la frase de su (i).
+  // Sin el cambio de estado, no hay frase ni se inventa una fecha.
+  it.each(["Suspended", "Closed"] as const)("%s dice fecha y motivo reales en la (i) del estado y sin dato no inventa", async (status) => {
     detail({ ...organization, status, lastStateChange: { atUtc: "2026-09-03T14:00:00Z", action: status === "Suspended" ? "OrganizationSuspended" : "OrganizationClosed", reason: "Reclamo" } });
-    const { queryClient } = render(); await screen.findByText(/03\/09\/2026/); expect(screen.getByText(/Motivo: Reclamo/)).toBeVisible();
+    const { queryClient } = render();
+    const why = await screen.findByRole("img", { name: status === "Suspended" ? /^El 03\/09\/2026 \d{2}:\d{2}\. Motivo: Reclamo\.$/ : /^El 03\/09\/2026 \d{2}:\d{2}\. Motivo: Reclamo\. Queda de solo lectura\.$/ });
+    expect(why).toHaveAttribute("tabindex", "0");
+    expect(screen.queryByText(/Motivo: Reclamo/)).not.toBeInTheDocument();
     detail({ ...organization, status, lastStateChange: null }); await act(async () => { await queryClient.invalidateQueries({ queryKey: tenantsQueryRoot }); });
-    await waitFor(() => expect(screen.queryByText(/03\/09\/2026/)).not.toBeInTheDocument()); expect(screen.getAllByRole("img", { name: "Sin dato" }).length).toBeGreaterThan(0);
+    await waitFor(() => expect(screen.queryByRole("img", { name: /^El 03\/09\/2026/ })).not.toBeInTheDocument());
   });
   it("Plataforma y fecha nullable se muestran sin atribuir autoservicio", async () => {
     detail({ ...organization, source: "Platform", createdAtUtc: null }); render(); await screen.findByRole("heading", { name: "Grupo Delta" });
@@ -133,7 +138,7 @@ describe("Ficha de Organización", () => {
     const user = userEvent.setup(); let reads = 0; let release: (() => void) | undefined; let body: unknown;
     server.use(http.get("/api/platform/tenants/delta", async () => { reads++; if (reads === 1) return HttpResponse.json({ ...organization, lastStateChange: { atUtc: "2026-09-01T14:00:00Z", action: "OrganizationReactivated", reason: "Anterior" } }); await new Promise<void>((resolve) => { release = resolve; }); return HttpResponse.json({ ...organization, status: "Suspended", version: 99, lastStateChange: { atUtc: "2026-09-03T14:00:00Z", action: "OrganizationSuspended", reason: "Real" } }); }), http.post("/api/platform/tenants/delta/suspend", () => HttpResponse.json({ version: 10 })), http.post("/api/platform/tenants/delta/reactivate", async ({ request }) => { body = await request.json(); return HttpResponse.json({ version: 11 }); }));
     render(); await confirm(user, "Suspender"); await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); expect(await screen.findByRole("button", { name: "Reactivar" })).toBeVisible(); expect(screen.queryByText(/01\/09\/2026/)).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Reactivar" })); await user.click(screen.getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(release).toBeDefined()); await act(async () => { release?.(); }); await waitFor(() => expect(screen.getByText(/Motivo: Real/)).toBeVisible());
+    await user.click(screen.getByRole("button", { name: "Reactivar" })); await user.click(screen.getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(release).toBeDefined()); await act(async () => { release?.(); }); await waitFor(() => expect(screen.getByRole("img", { name: /Motivo: Real\.$/ })).toBeInTheDocument());
     await confirm(user, "Reactivar"); expect(await screen.findByText("Reactivamos Grupo Delta.")).toBeVisible(); expect(body).toEqual({ version: 10, reason: "Revisión" });
   });
   it.each(["General.ConcurrencyConflict", "Tenancy.Tenant.InvalidTransition"])("%s conserva motivo y franja, cerrar descarta coordinación y relee", async (code) => {

@@ -12,12 +12,17 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tool
 /// El texto es la descripción accesible de lo que acompaña: quien la usa pone `id` en su `aria-describedby` y el lector
 /// lo lee al llegar al campo. Va escondido (`hidden`), así no se suma al nombre de un rótulo que lo contiene. La (i) no
 /// toma el foco: no se lo roba al campo cuando se abre un diálogo.
-export function InfoTip({ id, text, title, className }: { id: string; text: string; title: string; className?: string }) {
+///
+/// `standalone` es la (i) del estado en la banda (175, `.t10n-i`): no acompaña a un campo, así que se enfoca sola y la
+/// frase es su nombre («El 18/09/2026 16:45. Motivo: dos meses sin pago.»).
+export function InfoTip({ id, text, title, className, standalone = false }: { id?: string; text: string; title: string; className?: string; standalone?: boolean }) {
   const { phone } = useAppChrome();
   const [open, setOpen] = useState(false);
   const icon = <Info aria-hidden="true" strokeWidth={2} className="size-3.5" />;
-  const base = cn("relative inline-flex shrink-0 align-middle text-[var(--t3)]", className);
-  const description = <span id={id} hidden>{text}</span>;
+  const base = cn("relative inline-flex shrink-0 align-middle text-[var(--t3)]", standalone && "rounded-full focus-visible:outline-2 focus-visible:outline-[var(--foco)]", className);
+  const description = standalone ? null : <span id={id} hidden>{text}</span>;
+  // La (i) sola tiene nombre y foco; la de un campo es solo un dibujo y su texto describe al campo.
+  const role = standalone ? { role: "img", tabIndex: 0, "aria-label": text } : { "aria-hidden": true as const };
 
   if (phone) {
     // Dentro de un rótulo, tocarla no tiene que pasarle el foco al campo.
@@ -25,7 +30,7 @@ export function InfoTip({ id, text, title, className }: { id: string; text: stri
     return <>
       {description}
       {/* El área que se toca llega a 44 × 44 sin mover nada (187). */}
-      <span aria-hidden="true" data-slot="info-tip" onClick={show} className={cn(base, "after:absolute after:-inset-3.75")}>{icon}</span>
+      <span {...role} data-slot="info-tip" onClick={show} className={cn(base, "after:absolute after:-inset-3.75")}>{icon}</span>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent size="sm">
           <SheetHeader><SheetTitle>{title}</SheetTitle></SheetHeader>
@@ -39,7 +44,7 @@ export function InfoTip({ id, text, title, className }: { id: string; text: stri
     {description}
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild><span aria-hidden="true" data-slot="info-tip" className={base}>{icon}</span></TooltipTrigger>
+        <TooltipTrigger asChild><span {...role} data-slot="info-tip" className={base}>{icon}</span></TooltipTrigger>
         <TooltipContent>{text}</TooltipContent>
       </Tooltip>
     </TooltipProvider>

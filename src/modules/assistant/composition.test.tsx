@@ -118,17 +118,16 @@ describe("composición real de accesos e inicios", () => {
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
     expect(assistantRequests).toHaveLength(0);
   });
-  it.each([1440, 768])("Personal a %i conserva el aviso con conversación abierta y desmonta al apagar módulo", async (width) => {
+  // Tablero Inicio-Personal (175): el aviso de método propio va en la campana; el Inicio con el asistente, sin cartel.
+  it.each([1440, 768])("Personal a %i va sin el cartel del método propio y desmonta al apagar módulo", async (width) => {
     vi.stubGlobal("innerWidth", width);
     const conversation: AssistantConversationResponse = { conversation: { id: "chat", title: "Consulta previa", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z" }, messages: { items: [], hasMore: false }, activeTurnId: null };
     server.use(http.get("/api/me/assistant/conversations", ({ request }) => HttpResponse.json({ items: new URL(request.url).searchParams.get("saved") === "false" ? [conversation.conversation] : [], hasMore: false })),
       http.get("/api/me/assistant/conversations/chat", () => HttpResponse.json(conversation)));
     const app = mount("/", { ...personal, needsPersonalLoginMethod: true });
     await screen.findByRole("textbox", { name: "Tu consulta" });
-    const notice = screen.getByText("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.");
-    expect(screen.getByRole("textbox", { name: "Tu consulta" }).compareDocumentPosition(notice) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByText(/para no perder tu cuenta si dejás la empresa/)).not.toBeInTheDocument();
     await app.user.click(await screen.findByRole("button", { name: "Consulta previa" }));
-    expect(notice).not.toBeInTheDocument();
     expect(await axe(app.container)).toHaveNoViolations();
     act(() => app.client.setQueryData(currentUserQueryKey, { ...personal, features: [] }));
     await waitFor(() => expect(screen.queryByRole("textbox", { name: "Tu consulta" })).not.toBeInTheDocument());
@@ -229,7 +228,7 @@ describe("composición real de accesos e inicios", () => {
     asPhone();
     mount("/", { ...personal, needsPersonalLoginMethod: true });
     expect(await screen.findByRole("heading", { name: "Inicio" })).toBeVisible();
-    expect(screen.getByText("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.")).toBeVisible();
+    expect(screen.queryByText(/para no perder tu cuenta si dejás la empresa/)).not.toBeInTheDocument();
     expect(within(screen.getByRole("navigation", { name: "Secciones" })).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/", "/asistente", "/mas"]);
     expect(assistantRequests).toHaveLength(0);
   });

@@ -195,13 +195,16 @@
     "operatorInline": "operator",
     "closeSessions": "Close sessions",
     "resending": "Resending…",
-    "suspended": "<strong>Suspended on <date/>.</strong> Reason: <reason/>",
+    "why": {
+      "suspended": "On {{date}}. Reason: {{reason}}",
+      "personalDeletion": "Asked to delete their account on {{date}}.",
+      "platformDeletion": "The platform asked to delete the account on {{date}}. Reason: {{reason}}",
+      "recovery": "On {{date}} their membership in {{organization}} ended, and it managed their only sign-in method."
+    },
+    "deletesOn": "Will be deleted on",
     "reason": "Reason:",
-    "personalDeletion": "<strong>Requested deletion on <requested />.</strong> Will be deleted on <scheduled />.",
-    "platformDeletion": "<strong>The platform requested deletion on <requested />.</strong> Will be deleted on <scheduled />.",
     "scheduled": "Will be deleted on",
     "recovery": "Needs recovery.",
-    "recoveryDescription": "<strong>Needs recovery.</strong> Their only sign-in method was an email managed by {{organization}} and their membership ended on <ended />. <recoveries>View recovery requests</recoveries>",
     "recoveries": "View recovery requests",
     "historyColumns": {
       "when": "Date and time",

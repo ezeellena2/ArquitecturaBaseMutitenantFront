@@ -1,5 +1,4 @@
 import { screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
@@ -16,25 +15,17 @@ it("mantiene el inicio personal con su banda «Inicio», navegación propia y ac
   expect(await axe(container)).toHaveNoViolations();
 });
 
-// Tablero Inicio-Personal: «Agregar» abre Cuenta-Agregar ahí mismo, sin ir a Mi cuenta (punto 1.12).
-it("avisa que falta método propio y «Agregar» abre el diálogo en el Inicio", async () => {
-  const { router } = renderRouteWithProviders("/", { as: "consumer-needs-personal-method" });
-  expect(await screen.findByText("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.")).toBeVisible();
-  await userEvent.click(screen.getByRole("button", { name: "Agregar" }));
-
-  expect(await screen.findByRole("dialog", { name: "Agregar correo" })).toBeVisible();
-  expect(router.state.location.pathname).toBe("/");
-});
-
-// Tablero M-Inicio-Personal: en el teléfono el aviso es una tarjeta verde clara con «Agregar» como botón principal.
-it("en el teléfono el aviso es una tarjeta con «Agregar» principal", async () => {
-  const restore = asPhone();
+// Tablero Inicio-Personal (175): el aviso de método propio va en la campana, sin cartel en el Inicio, en la compu y en el
+// teléfono.
+it.each([["la compu", false], ["el teléfono", true]] as const)("en %s, sin método propio el Inicio va sin cartel", async (_, phone) => {
+  const restore = phone ? asPhone() : () => {};
   try {
     renderRouteWithProviders("/", { as: "consumer-needs-personal-method" });
-    const text = await screen.findByText("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.");
-    expect(text.parentElement).toHaveClass("rounded-[1rem]", "bg-[var(--marca-t)]");
-    expect(text).toHaveClass("text-[0.9375rem]", "text-[var(--sugerencia-tx)]");
-    expect(screen.getByRole("button", { name: "Agregar" })).toHaveAttribute("data-variant", "default");
+    const main = await screen.findByRole("main");
+    expect(await within(main).findByRole("heading", { level: 1, name: "Inicio" })).toBeVisible();
+    expect(within(main).queryByText(/Agregá un correo personal o tu WhatsApp/)).not.toBeInTheDocument();
+    expect(within(main).queryByRole("button", { name: "Agregar" })).not.toBeInTheDocument();
+    expect(within(main).queryByRole("status")).not.toBeInTheDocument();
   } finally {
     restore();
   }

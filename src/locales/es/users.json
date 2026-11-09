@@ -125,7 +125,7 @@
     "allRoles": "Todos",
     "noRoles": "Ninguno",
     "companyNoRoles": "Sin roles",
-    "deletionScheduled": "Pidió la baja de su cuenta. Se elimina el <date/>.",
+    "deletionWhy": "Pidió borrar su cuenta. Se borra el {{date}}.",
     "addCompany": "Sumar empresa",
     "addCompanyConfirm": "Sumar",
     "companyRequired": "Elegí una empresa.",

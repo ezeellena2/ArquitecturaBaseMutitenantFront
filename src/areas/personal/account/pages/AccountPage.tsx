@@ -9,7 +9,6 @@ import { useQuery } from "@tanstack/react-query";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { accountMethodsQueryKey, fetchLoginMethods } from "@/shared/account/api/loginMethods";
 import { LoginMethodsTable } from "../components/LoginMethodsTable";
-import { PersonalLoginMethodNotice } from "@/shared/account/PersonalLoginMethodNotice";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
@@ -74,7 +73,6 @@ export function AccountPage() {
     {/* Tablero M-Cuenta: en el teléfono, «Agregar correo o teléfono» en texto a la derecha del título. Sin el módulo de
         WhatsApp (tablero Cuenta, «Sin el módulo de WhatsApp»), «Agregar correo». */}
     <Section title={t("account:methods")} action={{ label: t(whatsApp ? "account:add" : "account:addEmail"), onClick: () => setAddOpen(true) }}>
-      {methods.data?.needsPersonalLoginMethod ? <div className="border-b border-[var(--borde)] p-3"><PersonalLoginMethodNotice onAdd={() => setAddOpen(true)} /></div> : null}
       {methods.isPending ? <p className="p-4 text-[0.8125rem] text-[var(--t2)]" role="status">{t("states.loading")}</p> : null}
       {methods.error ? <div className="p-4"><FormError message={apiErrorMessage(methods.error, t)} /><Button type="button" onClick={() => { void methods.refetch(); }}>{t("actions.retry")}</Button></div> : null}
       {methods.data ? <LoginMethodsTable methods={methods.data.methods.filter((method) => method.type !== "Phone" || whatsApp)} canLinkGoogle={methods.data.canLinkGoogle} onAction={(action, method, returnFocus) => { if (action === "verify") setVerifyMethod(method); else setChange({ action, method, returnFocus }); }} /> : null}

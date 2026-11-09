@@ -59,9 +59,9 @@
     "lastSignIn": "Last sign-in",
     "email": "Email",
     "historyEmpty": "No history yet",
-    "banner": {
-      "Closed": "<strong>Closed on <date/>. Read-only.</strong> Reason: <reason/>",
-      "Suspended": "<strong>Suspended on <date/>.</strong> Reason: <reason/>"
+    "why": {
+      "Closed": "On {{date}}. Reason: {{reason}} It is read-only.",
+      "Suspended": "On {{date}}. Reason: {{reason}}"
     },
     "reason": "Reason:",
     "history": "History",

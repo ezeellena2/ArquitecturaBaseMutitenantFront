@@ -21,7 +21,7 @@ import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { orderLike } from "@/shared/lib/orderLike";
-import { Banner } from "@/shared/ui/Banner";
+import { InfoTip } from "@/shared/ui/InfoTip";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { EmptyState } from "@/shared/ui/EmptyState";
@@ -288,8 +288,11 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const detail = isInvitation
     ? <Trans ns="users" i18nKey={member.state === "Expired" ? "detail.expiredOn" : "detail.expiresOn"} components={{ date: <DateText value={member.invitationExpiresAtUtc} kind="date" /> }} />
     : <Trans ns="users" i18nKey="detail.since" components={{ date: <DateText value={member.createdAtUtc} kind="date" /> }} />;
+  // Tablero Usuario (175): el estado una vez, en la banda; quien pidió borrar su cuenta lleva cuándo se borra en su (i).
   const summary = <>
     <StatusBadge tones={userStateTones} value={shownState} />
+    {pendingDeletion && member.deletionScheduledForUtc ? <InfoTip standalone className="ml-1" title={format.formatEnum("OrganizationUserState", shownState)}
+      text={t("users:detail.deletionWhy", { date: format.formatDate(member.deletionScheduledForUtc) })} /> : null}
     <SublineSeparator />
     {/* CC25: una invitación por teléfono se nombra por el número invitado. */}
     {userContact(member) ? <>{userContact(member)}<Separator /></> : null}
@@ -317,13 +320,13 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
         {/* Tablero Usuario: el error de guardado, en una franja debajo de la banda. En el teléfono va en la banda debajo de
             la barra (M-Usuario, v106): la pone useEditPage en `banner`. */}
         {edit.formError}
-        {pendingDeletion ? <Banner tone="warning"><Trans ns="users" i18nKey="detail.deletionScheduled" components={{ date: <DateText value={member.deletionScheduledForUtc} kind="date" /> }} /></Banner> : null}
 
         <Section title={t("users:detail.accessTitle")}>
           <form id="user-access" noValidate aria-label={displayName || t("users:detail.title")} onSubmit={(event) => { void submit(event); }}>
             {/* Tablero M-Usuario: en el teléfono, filas con › que abren una hoja para elegir. */}
             {phone ? <ul className="m-0 list-none p-0">
-              <SettingsItem title={t("users:detail.status")} detail={stateLabel} onClick={editable && isMember ? () => setSheet("state") : undefined} />
+              {/* 175: el renglón «Estado» va solo si se puede cambiar; si no, repetía la banda. */}
+              {editable && isMember ? <SettingsItem title={t("users:detail.status")} detail={stateLabel} onClick={() => setSheet("state")} /> : null}
               <SettingsItem title={t("users:detail.organizationRoles")} detail={roleNames || t("users:detail.noRoles")} onClick={editable ? () => setSheet("roles") : undefined} />
             </ul> : <SectionFields className="grid gap-4 md:grid-cols-2">
               {editable && isMember ? <FormField label={t("users:detail.status")}>
@@ -334,7 +337,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
                     <SelectItem value="Inactive" description={t("users:detail.statusInactiveDescription")}>{t("users:states.Inactive")}</SelectItem>
                   </SelectContent>
                 </Select>
-              </FormField> : <ReadOnlyField control="select" label={t("users:detail.status")}>{t(`users:states.${member.state}`)}</ReadOnlyField>}
+              </FormField> : null}
               {editable ? <RolesField label={t("users:detail.organizationRoles")} allLabel={t("users:detail.allRoles")}
                 remote={orgOptions.remote} allCount={orgOptions.allCount} allOptions={async () => (await orgOptions.allItems()).map((role) => ({ value: role.id, label: role.name }))}
                 selectedOptions={[...member.roles, ...orgOptions.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={current.roleIds}

@@ -195,13 +195,16 @@
     "operatorInline": "operador",
     "closeSessions": "Cerrar sesiones",
     "resending": "Reenviando…",
-    "suspended": "<strong>Suspendida el <date/>.</strong> Motivo: <reason/>",
+    "why": {
+      "suspended": "El {{date}}. Motivo: {{reason}}",
+      "personalDeletion": "Pidió borrar su cuenta el {{date}}.",
+      "platformDeletion": "La plataforma pidió borrar la cuenta el {{date}}. Motivo: {{reason}}",
+      "recovery": "El {{date}} terminó su membresía en {{organization}}, que administraba su único método de ingreso."
+    },
+    "deletesOn": "Se borra el",
     "reason": "Motivo:",
-    "personalDeletion": "<strong>Pidió la baja el <requested />.</strong> Se elimina el <scheduled />.",
-    "platformDeletion": "<strong>La plataforma inició la baja el <requested />.</strong> Se elimina el <scheduled />.",
     "scheduled": "Se elimina el",
     "recovery": "Necesita recuperación.",
-    "recoveryDescription": "<strong>Necesita recuperación.</strong> Su único método de ingreso era un correo administrado por {{organization}} y la membresía terminó el <ended />. <recoveries>Ver recuperaciones</recoveries>",
     "recoveries": "Ver recuperaciones",
     "historyColumns": {
       "when": "Fecha y hora",

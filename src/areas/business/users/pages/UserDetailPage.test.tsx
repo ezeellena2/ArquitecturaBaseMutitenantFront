@@ -307,9 +307,11 @@ describe("UserDetailPage (tablero Usuario)", () => {
 
     expect(await screen.findByRole("heading", { level: 1, name: "sofia@example.com" })).toBeVisible();
     await waitFor(() => expect(subline("sofia@example.com")).toHaveTextContent(/^Invitación pendiente·sofia@example\.com · vence el 02\/10\/2026$/));
+    // 175 y 190: el estado se dice una vez, en la banda; sin el campo gris «Estado», que no se podía cambiar.
     const access = screen.getByRole("region", { name: "Acceso a la organización" });
     expect(within(access).queryByRole("combobox", { name: "Estado" })).not.toBeInTheDocument();
-    expect(within(access).getByText("Invitación pendiente")).toBeVisible();
+    expect(within(access).queryByText("Estado")).not.toBeInTheDocument();
+    expect(within(access).queryByText("Invitación pendiente")).not.toBeInTheDocument();
 
     await open(user, screen.getByRole("button", { name: "Más acciones" }));
     expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Reenviar invitación", "Revocar invitación"]);
@@ -321,13 +323,17 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(await screen.findByText("Revocamos la invitación a sofia@example.com.")).toBeVisible();
   });
 
-  it("baja pedida: cartel con la fecha, «Quitar de la organización» a la vista y nada editable", async () => {
+  // Tablero Usuario (175): sin cartel; la banda dice el estado una vez y cuándo se borra va en la frase de su (i).
+  it("baja pedida: la fecha en la (i) del estado, «Quitar de la organización» a la vista y nada editable", async () => {
     api({ ...member, state: "PendingDeletion" as never, deletionScheduledForUtc: "2026-10-27T15:00:00Z",
       companies: [{ companyId: company.id, companyName: company.name, status: "Active", roles: [] }] });
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
 
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
-    expect((await screen.findByText(/Pidió la baja de su cuenta/)).closest("[role=status]")).toHaveTextContent("Pidió la baja de su cuenta. Se elimina el 27/10/2026.");
+    const why = await screen.findByRole("img", { name: "Pidió borrar su cuenta. Se borra el 27/10/2026." });
+    expect(why).toHaveAttribute("tabindex", "0");
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "Acceso a la organización" })).queryByText("Estado")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Quitar de la organización" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Descartar cambios" })).not.toBeInTheDocument();

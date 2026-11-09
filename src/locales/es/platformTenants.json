@@ -59,9 +59,9 @@
     "lastSignIn": "Último ingreso",
     "email": "Correo",
     "historyEmpty": "Todavía no hay historial",
-    "banner": {
-      "Closed": "<strong>Cerrada el <date/>. Solo lectura.</strong> Motivo: <reason/>",
-      "Suspended": "<strong>Suspendida el <date/>.</strong> Motivo: <reason/>"
+    "why": {
+      "Closed": "El {{date}}. Motivo: {{reason}} Queda de solo lectura.",
+      "Suspended": "El {{date}}. Motivo: {{reason}}"
     },
     "reason": "Motivo:",
     "history": "Historial",

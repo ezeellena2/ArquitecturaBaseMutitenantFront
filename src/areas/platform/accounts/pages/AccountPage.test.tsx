@@ -100,26 +100,26 @@ describe("Ficha de Cuenta de Plataforma", () => {
     expect(screen.getByRole("tab", { name: "Historial de seguridad" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
   });
+  // Tablero Cuenta-Plat (175): sin cartel; la banda dice el estado una vez, y cuándo y por qué van en la frase de su (i).
   it.each([
     ["Activa", ["Cerrar sesiones", "Suspender"], null],
-    ["Suspendida", ["Cerrar sesiones", "Reactivar"], "Suspendida el"],
-    ["Necesita recuperación", ["Cerrar sesiones", "Suspender"], "Necesita recuperación."],
-    ["Baja pedida", [], "Pidió la baja el"],
-    ["Baja iniciada por la plataforma", [], "La plataforma inició la baja el"],
+    ["Suspendida", ["Cerrar sesiones", "Reactivar"], /^El 27\/09\/2026 \d{2}:\d{2}\. Motivo: Denuncia de uso indebido\.$/],
+    ["Necesita recuperación", ["Cerrar sesiones", "Suspender"], /^El 20\/09\/2026 \d{2}:\d{2} terminó su membresía en Kappa S\.R\.L\., que administraba su único método de ingreso\.$/],
+    ["Baja pedida", [], /^Pidió borrar su cuenta el 27\/09\/2026 \d{2}:\d{2}\.$/],
+    ["Baja iniciada por la plataforma", [], /^La plataforma pidió borrar la cuenta el 27\/09\/2026 \d{2}:\d{2}\. Motivo: —$/],
     ["Eliminada", [], null],
-  ] as const)("estado %s conserva evidencia y acciones", async (state, actions, banner) => {
+  ] as const)("estado %s conserva evidencia y acciones", async (state, actions, why) => {
     data = platformAccountDetailFixture({ state }); open();
     await screen.findByRole("heading", { name: data.displayName!, level: 1 });
     for (const label of ["Cerrar sesiones", "Suspender", "Reactivar"]) {
       expect(Boolean(screen.queryByRole("button", { name: label }))).toBe(actions.includes(label as never));
     }
-    if (banner) expect(screen.getByText(new RegExp(banner))).toBeVisible();
+    if (why) expect(screen.getByRole("img", { name: why })).toHaveAttribute("tabindex", "0");
+    else expect(screen.queryByRole("img", { name: /^(El |Pidió|La plataforma)/ })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Suspendida el|Pidió la baja el|inició la baja el|Necesita recuperación\./)).not.toBeInTheDocument();
+    if (state.startsWith("Baja")) expect(screen.getByText(/Se borra el/)).toHaveTextContent("Se borra el 27/10/2026");
     if (state.startsWith("Baja") || state === "Eliminada") expect(screen.queryByRole("button", { name: `Acciones de ${data.displayName}` })).not.toBeInTheDocument();
-    if (state === "Necesita recuperación") {
-      expect(screen.getByText(/Kappa S.R.L. y la membresía terminó el/)).toBeVisible();
-      expect(screen.getByRole("link", { name: "Ver recuperaciones" })).toHaveAttribute("href", "/plataforma/recuperaciones");
-      expect(screen.getByText("Ya no sirve para ingresar")).toBeVisible();
-    }
+    if (state === "Necesita recuperación") expect(screen.getByText("Ya no sirve para ingresar")).toBeVisible();
     if (state === "Eliminada") expect(screen.getByText("No tiene métodos de ingreso.")).toBeVisible();
   });
   it.each(["terminadas", "activa y terminada"] as const)("recuperación con organizaciones homónimas %s no atribuye una fecha ajena", async (memberships) => {
@@ -127,14 +127,15 @@ describe("Ficha de Cuenta de Plataforma", () => {
     const original = { ...data.organizations[0], endedAtUtc: "2026-09-20T13:00:00Z" };
     data.organizations = [original, { ...original, tenantId: "tenant-kappa-homonima", status: memberships === "terminadas" ? "Inactive" : "Active", endedAtUtc: memberships === "terminadas" ? "2026-09-25T13:00:00Z" : null }];
     open(); await screen.findByRole("heading", { name: "Pablo Ortiz", level: 1 });
-    expect(screen.getByText(/Su único método de ingreso/)).toHaveTextContent("la membresía terminó el —.");
+    // Sin una sola membresía que coincida, no hay fecha: la (i) no dice una ajena.
+    expect(screen.queryByRole("img", { name: /terminó su membresía/ })).not.toBeInTheDocument();
     expect(screen.queryByText("20/09/2026")).not.toBeInTheDocument(); expect(screen.queryByText("25/09/2026")).not.toBeInTheDocument();
   });
   it("recuperación con una sola organización coincidente terminada conserva su fecha", async () => {
     data = platformAccountDetailFixture({ state: "Necesita recuperación" });
     data.organizations.push({ ...data.organizations[0], tenantId: "tenant-otra", name: "Otra", endedAtUtc: "2026-09-25T13:00:00Z" });
     open(); await screen.findByRole("heading", { name: "Pablo Ortiz", level: 1 });
-    expect(screen.getByText(/Su único método de ingreso/)).toHaveTextContent("la membresía terminó el 20/09/2026.");
+    expect(screen.getByRole("img", { name: /^El 20\/09\/2026 \d{2}:\d{2} terminó su membresía en Kappa S\.R\.L\./ })).toBeInTheDocument();
   });
   it("organizaciones: nombre traducido por API, null vacío, estados de membresía y vínculo", async () => {
     data.organizations.push({ ...data.organizations[0], tenantId: "ended", name: "Terminada", status: "Removed" });
@@ -429,7 +430,8 @@ describe("Ficha de Cuenta de Plataforma", () => {
   });
   it("suspensión y eliminación sin evidencia muestran vacío sin estimar fechas", async () => {
     data = { ...platformAccountDetailFixture({ state: "Suspendida" }), lastStateChange: null }; const { queryClient } = open(); await screen.findByRole("heading", { name: "Lucía Fernández", level: 1 });
-    expect(screen.getByText(/Suspendida el/).parentElement).toHaveTextContent("Suspendida el —. Motivo: —");
+    // Sin el cambio de estado, la (i) no inventa una fecha: no va.
+    expect(screen.queryByRole("img", { name: /^El / })).not.toBeInTheDocument();
     await act(async () => { queryClient.setQueryData(accountQueryKey(data.id), { ...data, state: "Deleted", deletedAtUtc: null }); });
     await waitFor(() => expect(screen.getByText(/Eliminada el/)).toHaveTextContent(/Eliminada el —/));
   });
