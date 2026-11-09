@@ -24,6 +24,8 @@ export interface PendingRow {
   icon: IconComponent;
   areaLabel: string;
   title: string;
+  /** Cómo lo nombra la tabla de la compu, si no es `title`: un dominio se nombra a sí mismo (tablero Inicio-Org). */
+  tableTitle?: string;
   detail?: string;
   state: string;
   phoneState: string;
@@ -96,7 +98,7 @@ export const pendingTotal = (groups: readonly PendingRowGroup[]) => groups.reduc
 /** Arma el texto de una fila de «Para resolver» (ADR 0040). Un tipo que el front no conoce no se muestra. */
 export function describePending(item: PendingItem, index: number, t: TFunction,
   formatDate: (value: string) => string): PendingRow | null {
-  const base = (area: HomeArea, kind: string, fields: { title: string; detail?: string; to: string }): PendingRow => {
+  const base = (area: HomeArea, kind: string, fields: { title: string; tableTitle?: string; detail?: string; to: string }): PendingRow => {
     const state = t(`home:pending.${kind}.state`);
     return {
       key: `${index}-${kind}`, area, icon: areaIcons[area], areaLabel: t(`home:cards.${area}.title`), state,
@@ -117,8 +119,9 @@ export function describePending(item: PendingItem, index: number, t: TFunction,
         detail: item.dueAtUtc ? t("home:pending.deletionRequested.detail", { date: formatDate(item.dueAtUtc) }) : undefined,
         to: `/org/usuarios/${item.targetId ?? ""}` });
     case "domainUnverified":
-      return base("settings", item.kind, { title: t("home:pending.domainUnverified.title"), detail: item.subject ?? undefined,
-        to: areaPaths.settings });
+      // Tablero Inicio-Org: en la tabla de la compu el pendiente es el dominio; el teléfono dice «Dominio de correo».
+      return base("settings", item.kind, { title: t("home:pending.domainUnverified.title"), tableTitle: item.subject ?? undefined,
+        detail: item.subject ?? undefined, to: areaPaths.settings });
     case "publicPageDraft":
     case "publicPageBlocked":
       return base("publicPage", item.kind, { title: t(`home:pending.${item.kind}.title`), to: areaPaths.publicPage });

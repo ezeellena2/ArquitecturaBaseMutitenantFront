@@ -168,7 +168,8 @@ describe("BusinessHomePage", () => {
     expect(deletion).not.toHaveTextContent("Se borra el 27/10/2026");
     expect(deletion).toHaveTextContent("Por borrar");
     expect(within(deletion).getByRole("link", { name: "Ver" })).toHaveAttribute("href", "/org/usuarios/member-diego");
-    const domain = within(toResolve).getByText("Dominio de correo").closest("tr")!;
+    // En la tabla de la compu, un dominio se nombra a sí mismo (tablero Inicio-Org); el teléfono dice «Dominio de correo».
+    const domain = within(toResolve).getByText("delta.ejemplo.com").closest("tr")!;
     expect(domain).not.toHaveTextContent("Configuración");
     expect(domain).toHaveTextContent("Pendiente");
     expect(within(domain).getByRole("link", { name: "Verificar" })).toHaveAttribute("href", "/org/configuracion");
