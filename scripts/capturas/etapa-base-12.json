@@ -24307,7 +24307,7 @@
           {
             "type": "scroll",
             "role": "button",
-            "name": "Borrar mi cuenta",
+            "name": "Borrar",
             "exact": true,
             "block": "center",
             "waitFor": "011 15-5555-4521"
@@ -24490,7 +24490,7 @@
           {
             "type": "scroll",
             "role": "button",
-            "name": "Borrar mi cuenta",
+            "name": "Borrar",
             "exact": true,
             "block": "center",
             "waitFor": "011 15-5555-4521"
@@ -24673,7 +24673,7 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Borrar mi cuenta",
+            "name": "Borrar",
             "exact": true
           },
           {
@@ -24853,7 +24853,7 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Borrar mi cuenta",
+            "name": "Borrar",
             "exact": true
           },
           {
@@ -25037,7 +25037,7 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Borrar mi cuenta",
+            "name": "Borrar",
             "exact": true
           },
           {

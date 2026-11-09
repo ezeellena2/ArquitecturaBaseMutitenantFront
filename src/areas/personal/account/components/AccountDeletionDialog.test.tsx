@@ -27,15 +27,15 @@ it("exige motivo, confirma sin código y devuelve fecha", async () => {
   expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveClass("max-md:min-h-12");
   expect(screen.queryByText(/exportar/i)).not.toBeInTheDocument();
   expect(screen.queryByRole("group", { name: "Código" })).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Borrar mi cuenta" })).toBeEnabled();
-  await user.click(screen.getByRole("button", { name: "Borrar mi cuenta" }));
+  expect(screen.getByRole("button", { name: "Borrar" })).toBeEnabled();
+  await user.click(screen.getByRole("button", { name: "Borrar" }));
   expect(await screen.findByText("Escribí el motivo.")).toBeVisible();
   expect(complete).not.toHaveBeenCalled();
-  await user.click(screen.getByRole("button", { name: "Borrar mi cuenta" }));
+  await user.click(screen.getByRole("button", { name: "Borrar" }));
   expect(await screen.findByText("Escribí el motivo.")).toBeVisible();
   expect(complete).not.toHaveBeenCalled();
   await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Dejé de usarla");
-  await user.click(screen.getByRole("button", { name: "Borrar mi cuenta" }));
+  await user.click(screen.getByRole("button", { name: "Borrar" }));
   await waitFor(() => expect(complete).toHaveBeenCalledWith("2026-10-30T12:00:00Z"));
 });
 
@@ -46,7 +46,7 @@ it("en el teléfono, «Dar de baja» confirma con el botón destructivo, como en
   try {
     renderWithProviders(<AccountDeletionDialog graceDays={30} onClose={() => {}} onComplete={() => {}} />);
 
-    expect(await screen.findByRole("button", { name: "Borrar mi cuenta" })).toHaveAttribute("data-variant", "destructive");
+    expect(await screen.findByRole("button", { name: "Borrar" })).toHaveAttribute("data-variant", "destructive");
   } finally { restore(); }
 });
 
@@ -59,7 +59,7 @@ it("mientras da de baja dice «Borrando…» con el aro", async () => {
   );
   renderWithProviders(<AccountDeletionDialog graceDays={30} onClose={() => {}} onComplete={() => {}} />);
   await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Dejé de usarla");
-  await user.click(screen.getByRole("button", { name: "Borrar mi cuenta" }));
+  await user.click(screen.getByRole("button", { name: "Borrar" }));
 
   const button = await screen.findByRole("button", { name: "Borrando…" });
   expect(button).toHaveAttribute("data-pending", "true");

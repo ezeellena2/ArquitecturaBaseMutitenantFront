@@ -35,7 +35,7 @@
   "makePrimary": "Make primary",
   "privacy": "Privacy",
   "deletion": "Delete my account",
-  "requestDeletion": "Delete my account",
+  "requestDeletion": "Delete",
   "requestingDeletion": "Deleting account…",
   "deletionBlockedInfo": "Why you cannot delete your account",
   "deletionBlockedTitle": "You cannot delete your account",

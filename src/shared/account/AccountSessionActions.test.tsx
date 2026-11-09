@@ -59,7 +59,7 @@ it("da de baja con motivo sin un código adicional", async () => {
   );
   renderWithProviders(<AccountDeletionDialog graceDays={30} onClose={() => {}} onComplete={complete} />);
   await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Ya no la uso");
-  await user.click(screen.getByRole("button", { name: "Borrar mi cuenta" }));
+  await user.click(screen.getByRole("button", { name: "Borrar" }));
   await waitFor(() => expect(complete).toHaveBeenCalledWith("2026-10-30T12:00:00Z"));
   expect(screen.queryByRole("group", { name: "Código" })).not.toBeInTheDocument();
 });

@@ -134,7 +134,7 @@ describe("Mi cuenta", () => {
       const signIn = screen.getByRole("region", { name: "Cómo entrás" });
       expect(within(signIn).getByRole("button", { name: "Agregar correo" })).toHaveClass("text-[var(--marca-tx)]");
       const privacy = screen.getByRole("region", { name: "Privacidad" });
-      expect(within(privacy).getByRole("button", { name: "Borrar mi cuenta" }).parentElement).toHaveClass("max-md:[&>[data-variant=danger]]:text-[var(--peligro)]");
+      expect(within(privacy).getByRole("button", { name: "Borrar" }).parentElement).toHaveClass("max-md:[&>[data-variant=danger]]:text-[var(--peligro)]");
     } finally {
       restore();
     }
@@ -179,10 +179,11 @@ describe("Mi cuenta", () => {
     const privacy = screen.getByRole("region", { name: "Privacidad" });
     expect(details.compareDocumentPosition(signIn) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(signIn.compareDocumentPosition(privacy) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    const deletionAction = within(privacy).getByRole("button", { name: "Borrar mi cuenta" });
+    const deletionAction = within(privacy).getByRole("button", { name: "Borrar" });
     // Criterio · Botones: peligro con borde en la pantalla; relleno solo en el diálogo que confirma.
     expect(deletionAction).toHaveAttribute("data-variant", "danger");
-    // Tablero Cuenta: «Borrar mi cuenta» es una fila de la lista, sin texto que explique el plazo.
+    // Tablero Cuenta (v168): «Borrar mi cuenta» es una fila de la lista, sin texto que explique el plazo, y su botón dice
+    // «Borrar», como el de la confirmación.
     expect(within(privacy).getByRole("listitem")).toHaveTextContent(/^Borrar mi cuenta/);
     await waitFor(() => expect(within(privacy).queryByText(/días para arrepentirte/)).not.toBeInTheDocument());
     expect(screen.getByRole("button", { name: "Descartar cambios" })).toBeEnabled();
@@ -199,7 +200,7 @@ describe("Mi cuenta", () => {
     const { container } = renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
 
     const privacy = await screen.findByRole("region", { name: "Privacidad" });
-    const deletion = await within(privacy).findByRole("button", { name: "Borrar mi cuenta" });
+    const deletion = await within(privacy).findByRole("button", { name: "Borrar" });
     await waitFor(() => expect(deletion).toHaveAttribute("aria-disabled", "true"));
     await user.click(deletion);
     const info = await screen.findByRole("dialog", { name: "No podés borrar tu cuenta" });
