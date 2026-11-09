@@ -11,17 +11,14 @@ import { TemplateStatus } from "./components/TemplateStatus";
 /// El nombre visible: el `title` de una del sistema («Código de ingreso») o el nombre de las demás.
 export const templateTitle = (template: WhatsAppTemplateResponse) => template.title ?? template.name;
 
-/// Tableros WA-Plantillas y Plat-WA-Plantillas: el nombre con sus idiomas debajo (una del sistema, con su título arriba y
-/// su nombre técnico delante de los idiomas), el tipo, el estado en Meta y la última modificación. La categoría es la
-/// que manda el back (`invitacion_organizacion` es Marketing en español).
+/// Tableros WA-Plantillas y Plat-WA-Plantillas (base de la 12): el nombre, los idiomas, el tipo, el estado en Meta y la
+/// última modificación, un dato por celda. La categoría es la que manda el back (`invitacion_organizacion` es Marketing en
+/// español).
 export function createTemplateColumns(t: TFunction, onWhyRejected: (template: WhatsAppTemplateResponse) => void = () => undefined): Column<WhatsAppTemplateResponse>[] {
   return [
-    { id: "name", header: t("whatsapp:templates.columns.name"), type: "text", mobile: "primary", className: "w-[34%]", value: templateTitle,
-      detail: (template) => template.isSystem
-        ? <span>{template.name}{" · "}<TemplateLanguages languages={template.languages} /></span>
-        : <TemplateLanguages languages={template.languages} /> },
-    { id: "category", header: t("whatsapp:templates.columns.category"), type: "enum", enum: "WhatsAppTemplateCategory", value: (template) => template.category,
-      detail: (template) => template.languages.slice(1).some((language) => language.category !== template.category) ? <OtherCategories template={template} /> : null },
+    { id: "name", header: t("whatsapp:templates.columns.name"), type: "text", mobile: "primary", className: "w-[24%]", value: templateTitle },
+    { id: "languages", header: t("whatsapp:templates.columns.languages"), type: "custom", cell: (template) => <TemplateLanguages languages={template.languages} /> },
+    { id: "category", header: t("whatsapp:templates.columns.category"), type: "enum", enum: "WhatsAppTemplateCategory", value: (template) => template.category },
     { id: "status", header: t("whatsapp:templates.columns.status"), type: "custom", cell: (template) => <TemplateStatus template={template} t={t} onWhyRejected={onWhyRejected} /> },
     { id: "updatedAtUtc", header: t("whatsapp:templates.columns.updated"), type: "date", value: (template) => template.updatedAtUtc },
   ];

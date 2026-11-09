@@ -19,7 +19,9 @@ describe("List · Criterio · Tablas", () => {
     expect(first).not.toHaveClass("odd:bg-[var(--fila-alterna)]");
     expect(second).toHaveClass("min-h-11");
     // Tableros Cuenta, Configuración, Usuario y Página pública: lo que nombra la fila va en 500.
-    expect(screen.getByText("lucia.fer@gmail.com")).toHaveClass("truncate", "font-medium", "text-[var(--t1)]");
+    // Un texto largo baja de renglón, sin «…» (174).
+    expect(screen.getByText("lucia.fer@gmail.com")).toHaveClass("font-medium", "text-[var(--t1)]", "[overflow-wrap:anywhere]");
+    expect(screen.getByText("lucia.fer@gmail.com")).not.toHaveClass("truncate");
     expect(screen.getByText("Principal")).toHaveClass("text-[0.75rem]", "text-[var(--t3)]");
     expect(first.querySelector("svg")?.parentElement).toHaveClass("text-[var(--t3)]");
     expect(screen.getByRole("button", { name: "Verificar" })).toBeVisible();

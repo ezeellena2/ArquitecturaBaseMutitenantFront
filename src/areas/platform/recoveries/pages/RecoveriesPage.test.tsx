@@ -63,11 +63,12 @@ describe("Recuperaciones de Plataforma", () => {
     expect(await screen.findByText("Ningún pedido coincide con los filtros")).toBeVisible(); expect(screen.getByText("4 pedidos · 2 pendientes")).toBeVisible(); expect(screen.queryByRole("combobox", { name: "Filas por página" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Limpiar filtros" })); await screen.findByRole("link", { name: "Pablo Ortiz" }); expect(router.state.location.search).toBe("");
   });
-  it("Estado ofrece conteos y búsqueda llega a la API con el filtro, reiniciando página", async () => {
+  it("Estado ofrece sus opciones sin cantidades y búsqueda llega a la API con el filtro, reiniciando página", async () => {
     const urls: URL[] = []; server.use(http.get("/api/platform/recoveries/paged", ({ request }) => { urls.push(new URL(request.url)); return HttpResponse.json(list()); }));
     const user = userEvent.setup(); const { router } = renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" });
     const filter = await screen.findByRole("button", { name: "Estado: todos" }); filter.focus(); await user.keyboard("{ArrowDown}");
-    expect(await screen.findByRole("menuitemradio", { name: /Pendientes/ })).toHaveTextContent("Pendientes2"); await user.click(screen.getByRole("menuitemradio", { name: /Pendientes/ }));
+    // 143: las opciones de un filtro no dicen cuántas filas traen.
+    expect(await screen.findByRole("menuitemradio", { name: /Pendientes/ })).toHaveTextContent(/^Pendientes$/); await user.click(screen.getByRole("menuitemradio", { name: /Pendientes/ }));
     await user.type(screen.getByRole("searchbox", { name: "Buscar por cuenta, correo o teléfono" }), "Pablo");
     await waitFor(() => expect(urls.some((url) => url.searchParams.get("search") === "Pablo" && url.searchParams.get("status") === "Pending")).toBe(true));
     expect(router.state.location.search).toContain("status=Pending"); expect(router.state.location.search).not.toContain("page=2");

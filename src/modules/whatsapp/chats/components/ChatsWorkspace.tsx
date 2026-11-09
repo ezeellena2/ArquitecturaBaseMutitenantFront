@@ -136,8 +136,9 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
       }))} />
     </div> : null}
     <FilterBar label={t("chats.filters.label")} searchLabel={t("chats.filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
-      filters={filterBar} clearLabel={t("common:actions.clearFilters")} onClear={filters.clear}
-      className="rounded-none border-0 border-b shadow-none! md:px-3 md:py-3 md:[&>div:first-child]:w-full" />
+      filters={filterBar} clearLabel={t("common:actions.clearFilters")} onClear={filters.clear} singleRow
+      // WA-Chats (base de la 12): el buscador y los filtros, en una fila.
+      className="rounded-none border-0 border-b shadow-none! md:px-3 md:py-3" />
     {data && rows.length === 0
       ? <EmptyState framed={false} title={t(filtered ? "chats.list.noMatches" : "chats.list.empty")} />
       : <ul aria-label={t("chats.list.label")} aria-busy={list.isFetching || undefined} className={phone ? undefined : "min-h-0 flex-1 overflow-y-auto"}>

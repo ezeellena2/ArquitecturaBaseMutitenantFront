@@ -120,11 +120,10 @@ describe("CompanyDetailPage", () => {
     expect(edit.querySelector("svg")).toBeNull();
     expect(screen.getByRole("button", { name: "Agregar miembro" })).toBeVisible();
     for (const name of ["Miembro", "Roles en la empresa", "Estado"]) expect(await screen.findByRole("columnheader", { name })).toBeVisible();
-    // Tablero Empresa (.tt-h: 1,6fr, 1,4fr, 150 y 28): «Miembro» se lleva el 41,5 %, así «Roles en la empresa» arranca donde
-    // el tablero (880 a 1440).
-    expect(screen.getByRole("columnheader", { name: "Miembro" })).toHaveClass("w-[41.5%]");
-    // «Criterio · Tablas» (lienzo v92): el correo va en la segunda línea gris, debajo del nombre.
-    expect(screen.getByText("lucia@example.com")).toHaveAttribute("data-slot", "cell-detail");
+    // Tablero Empresa (base de la 12): un dato por celda; el correo va en su columna.
+    expect(screen.getByRole("columnheader", { name: "Miembro" })).toHaveClass("w-[24%]");
+    expect(screen.getByText("lucia@example.com").closest("td")).not.toBeNull();
+    expect(document.querySelector('[data-slot="cell-detail"]')).toBeNull();
     expect(screen.getByRole("button", { name: "Rol: todos" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Estado: todos" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
@@ -232,15 +231,16 @@ describe("CompanyDetailPage", () => {
     expect(await dot("Paula Méndez", "Invitación pendiente")).toHaveClass("bg-[var(--punto-pendiente)]");
   });
 
-  // B3: la tabla de miembros tiene las cuatro columnas del tablero Empresa, en su orden; las acciones, sin rótulo visible.
-  it("los miembros van con Miembro, Roles en la empresa, Estado y Acciones, como el tablero", async () => {
+  // Tablero Empresa (base de la 12): la tabla de miembros tiene las columnas del tablero, en su orden; las acciones, sin
+  // rótulo visible.
+  it("los miembros van con Miembro, Correo, Roles en la empresa, Estado, Vence y Acciones, como el tablero", async () => {
     detailApi([member]);
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
 
     const members = await screen.findByRole("tabpanel");
     await within(members).findByText("Lucía Fernández");
     expect(within(members).getAllByRole("columnheader").map((header) => header.textContent))
-      .toEqual(["Miembro", "Roles en la empresa", "Estado", "Acciones"]);
+      .toEqual(["Miembro▲", "Correo", "Roles en la empresa", "Estado", "Vence", "Acciones"]);
   });
 
   // F1: el 403 bloquea la vista solo si viene de la consulta principal; el de los roles (una consulta secundaria)

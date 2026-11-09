@@ -14,7 +14,8 @@
     "tags": "Tags",
     "consent": "Promotions",
     "lastConversation": "Last conversation",
-    "actions": "Actions"
+    "actions": "Actions",
+    "number": "Number"
   },
   "actions": {
     "view": "View details",
@@ -51,7 +52,8 @@
       "conversation": "Conversation",
       "team": "Team",
       "assignee": "Handled by",
-      "messages": "Messages"
+      "messages": "Messages",
+      "lastMessage": "Last message"
     },
     "messages_one": "{{n}} message",
     "messages_other": "{{n}} messages",

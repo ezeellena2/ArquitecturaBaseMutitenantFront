@@ -96,13 +96,16 @@ describe("UsersPage", () => {
     // Tablero Usuarios: el nombre en el color del texto, no en verde, y las columnas con sus anchos.
     expect(screen.getByRole("link", { name: "Lucía Fernández" })).toHaveClass("font-medium", "text-[var(--t1)]");
     expect(screen.getByRole("link", { name: "Lucía Fernández" })).not.toHaveClass("text-[var(--marca-tx)]");
-    expect(screen.getByRole("columnheader", { name: "Usuario" })).toHaveClass("w-[30%]");
-    expect(screen.getByRole("columnheader", { name: "Rol en la organización" })).toHaveClass("w-[19%]");
-    expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("w-50.5");
+    // Tablero Usuarios (base de la 12): un dato por celda, con el correo y «Vence» en sus columnas.
+    expect(screen.getByRole("columnheader", { name: "Usuario" })).toHaveClass("w-[20%]");
+    expect(screen.getByRole("columnheader", { name: "Correo" })).toHaveClass("w-[22%]");
+    expect(screen.getByRole("columnheader", { name: "Rol en la organización" })).toHaveClass("w-[15%]");
+    expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("w-40.5");
+    expect(screen.getByRole("columnheader", { name: "Vence" })).toHaveClass("w-30");
     expect(screen.getByRole("columnheader", { name: "Usuario" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Rol en la organización" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Empresa" })).toBeVisible();
-    expect(screen.queryByRole("columnheader", { name: "Correo" })).not.toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Correo" })).toBeVisible();
     // Tableros de listas (.pagina, compacto): 14 entre la caja de los filtros y la tabla.
     expect(screen.getByRole("search").parentElement).toHaveClass("md:gap-3.5");
     expect(screen.getByText("lucia@example.com")).toBeVisible();
@@ -151,22 +154,21 @@ describe("UsersPage", () => {
     // «N invitaciones» cuenta las pendientes y las vencidas.
     await waitFor(() => expect(heading.parentElement).toHaveTextContent("11 usuarios · 6 activos · 3 invitaciones"));
     const company = await screen.findByText("Delta S.A. y 1 más");
-    expect(company.parentElement).toHaveTextContent("Delta S.A. y 1 másSolo lectura");
+    // Tablero Usuarios (base de la 12): un dato por celda. La empresa sin sus roles debajo, el correo en «Correo» y hasta
+    // cuándo vale una invitación en «Vence»; las filas, de 40 como mínimo.
+    expect(company.closest("td")).toHaveTextContent(/^Delta S\.A\. y 1 más$/);
     expect(screen.queryByText("Delta Sur S.R.L.")).not.toBeInTheDocument();
-    // «Criterio · Tablas» (lienzo v92): la segunda línea gris de la tabla. El correo debajo del nombre, los roles de la
-    // empresa debajo de la empresa y «Vence…» debajo del estado, bajo la palabra y no bajo el punto; todas las filas, de 52.
-    const detail = (text: string | RegExp) => screen.getByText(text).closest('[data-slot="cell-detail"]');
-    expect(detail("lucia@example.com")).not.toBeNull();
-    expect(detail("Solo lectura")).not.toBeNull();
-    const expires = detail(/^Vence/);
-    expect(expires).toHaveTextContent("Vence 02/10/2026");
-    expect(expires?.firstElementChild).toHaveClass("pl-3.5");
-    expect(screen.getAllByRole("row").slice(1).every((row) => row.classList.contains("h-13"))).toBe(true);
+    expect(screen.queryByText("Solo lectura")).not.toBeInTheDocument();
+    expect(screen.getAllByText("lucia@example.com").some((cell) => cell.closest("td"))).toBe(true);
+    expect(screen.getAllByRole("cell").some((cell) => cell.textContent === "02/10/2026")).toBe(true);
+    expect(document.querySelector('[data-slot="cell-detail"]')).toBeNull();
+    expect(screen.getAllByRole("row").slice(1).every((row) => row.classList.contains("h-10"))).toBe(true);
 
     screen.getByRole("button", { name: "Estado: todos" }).focus();
     await user.keyboard("{Enter}");
+    // 143: las opciones de un filtro no dicen cuántas filas traen.
     expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent))
-      .toEqual(["Todos11", "Activos6", "Invitación pendiente2", "Invitación vencida1", "Deshabilitados1", "Baja pedida1"]);
+      .toEqual(["Todos", "Activos", "Invitación pendiente", "Invitación vencida", "Deshabilitados", "Baja pedida"]);
     await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
 
@@ -174,15 +176,15 @@ describe("UsersPage", () => {
     companyFilter.focus();
     await user.keyboard("{Enter}");
     await waitFor(async () => expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent))
-      .toEqual(["Todas11", "Delta S.A.5", "Delta Sur S.R.L.3", "Sin empresa2"]));
+      .toEqual(["Todas", "Delta S.A.", "Delta Sur S.R.L.", "Sin empresa"]));
     await user.click(screen.getByRole("menuitemradio", { name: /Sin empresa/ }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("withoutCompany")).toBe("true"));
     expect(requests.at(-1)?.searchParams.get("companyId")).toBeNull();
     expect(router.state.location.search).toContain("companyId=none");
   });
 
-  // Tablero Usuarios (v109): una invitación vencida dice «Venció …» debajo del estado, nunca «Vence» con una fecha pasada.
-  it("tablero Usuarios: la invitación vencida dice «Venció» con su fecha", async () => {
+  // Tablero Usuarios (base de la 12): una invitación vencida dice «Invitación vencida» y su fecha va en «Vence».
+  it("tablero Usuarios: la invitación vencida dice su estado y la fecha va en «Vence»", async () => {
     const expired = { ...member, memberId: "member-3", userId: null, displayName: "", email: "valentina@example.com", state: "Expired" as const,
       roles: [], invitationId: "invitation-3", invitationIssuedAtUtc: "2026-09-22T12:00:00Z", invitationExpiresAtUtc: "2026-09-29T12:00:00Z" };
     server.use(
@@ -193,8 +195,7 @@ describe("UsersPage", () => {
     renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
 
     const state = await screen.findByText("Invitación vencida");
-    const detail = state.closest("td")?.querySelector('[data-slot="cell-detail"]');
-    expect(detail).toHaveTextContent(/^Venció 29\/09\/2026$/);
+    expect(state.closest("tr")!.querySelectorAll("td")[5]).toHaveTextContent(/^29\/09\/2026$/);
     expect(screen.queryByText(/^Vence /)).not.toBeInTheDocument();
   });
 

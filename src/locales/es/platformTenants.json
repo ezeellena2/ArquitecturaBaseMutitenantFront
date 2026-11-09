@@ -24,7 +24,7 @@
   },
   "messages": { "created": "Creamos {{name}} e invitamos a {{email}} como Dueño.", "approve": "Aprobamos {{name}}. Le avisamos a {{email}}.", "approveOwners": "Aprobamos {{name}}. Les avisamos a sus Dueños.", "reject": "Rechazamos {{name}}.", "suspend": "Suspendimos {{name}}.", "reactivate": "Reactivamos {{name}}.", "close": "Cerramos {{name}}.", "retried": "Terminamos el alta de {{name}}." },
   "modules": {
-    "title": "Módulos", "module": "Módulo", "source": "Origen", "trialUntil": "Prueba hasta {{date}}",
+    "title": "Módulos", "module": "Módulo", "detail": "Detalle", "source": "Origen", "trialUntil": "Prueba hasta {{date}}",
     "actions": { "enable": "Prender", "extend": "Extender prueba", "disable": "Apagar" },
     "confirm": {
       "enable": { "title": "¿Prender {{module}}?", "description": "{{name}} lo tiene desde ahora, sin fecha de fin.", "pending": "Prendiendo…" },
@@ -57,6 +57,7 @@
     "counts": "{{companies}} {{companyLabel}} · {{members}} {{memberLabel}}",
     "back": "Organizaciones",
     "lastSignIn": "Último ingreso",
+    "email": "Correo",
     "historyEmpty": "Todavía no hay historial",
     "banner": {
       "Closed": "<strong>Cerrada el <date/>. Solo lectura.</strong> Motivo: <reason/>",

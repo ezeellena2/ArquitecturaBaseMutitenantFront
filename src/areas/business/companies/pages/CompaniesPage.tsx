@@ -102,7 +102,7 @@ export function CompaniesPage() {
       fab={canManage ? { label: t("companies:create"), onClick: openCreate } : undefined}
       actions={canManage ? <Button type="button" onClick={openCreate}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("companies:create")}</Button> : undefined}>
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar phoneTools="filter"
+        <FilterBar phoneTools="filter" screen={t("companies:title")}
           label={t("companies:filters.label")}
           searchLabel={t("companies:filters.search")}
           searchValue={pagination.search ?? ""}
@@ -112,7 +112,7 @@ export function CompaniesPage() {
             // Sin filtro el botón dice «Estado: todas» y el menú ofrece «Todas», como el tablero.
             value: status ?? "", active: status !== undefined,
             onChange: (value) => filters.setFilter("status", value === "all" ? undefined : value),
-            options: statusValues.map((value) => ({ value: value ?? "all", label: value ? t(`companies:statusFilters.${value}`) : t("companies:filters.all"), count: value === "Active" ? counts.data?.active : value === "Inactive" ? counts.data?.inactive : counts.data?.all })),
+            options: statusValues.map((value) => ({ value: value ?? "all", label: value ? t(`companies:statusFilters.${value}`) : t("companies:filters.all") })),
           }]}
           clearLabel={t("common:actions.clear")}
           onClear={filters.clear}

@@ -8,7 +8,6 @@ import { ListRow } from "@/shared/ui/app/ListRow";
 import type { Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
-import { EnumText } from "@/shared/ui/format/EnumText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 
 export const accountStateTones = defineStatusTones("PlatformAccountState", { Active: "success", Suspended: "warning", NeedsRecovery: "danger", PendingDeletion: "warning", Deleted: "neutral", Invited: "pending", InvitationExpired: "warning" });
@@ -32,13 +31,14 @@ export function accountPhoneRow(account: PlatformAccountResponse, t: TFunction, 
 }
 export function createAccountColumns(t: TFunction): Column<PlatformAccountResponse>[] {
   return [
-    { id: "name", header: t("platformAccounts:columns.account"), type: "custom", mobile: "primary", sortable: true,
-      cell: (account) => <Link className={`block truncate hover:underline ${account.displayName ? "font-medium text-[var(--t1)]" : "text-[var(--t3)]"}`} to={accountPath(account.id)}>{accountName(account) || <EmptyValue />}</Link>,
-      detail: (account) => account.displayName ? account.maskedPrimaryPhone || account.primaryEmail || null : null },
+    // Tablero Cuentas (base de la 12): un dato por celda; el correo o el teléfono principal, en su columna.
+    { id: "name", header: t("platformAccounts:columns.account"), type: "custom", mobile: "primary", sortable: true, className: "w-[24%]",
+      cell: (account) => <Link className={`hover:underline ${account.displayName ? "font-medium text-[var(--t1)]" : "text-[var(--t3)]"}`} to={accountPath(account.id)}>{accountName(account) || <EmptyValue />}</Link> },
+    { id: "contact", header: t("platformAccounts:columns.contact"), type: "custom", className: "w-[24%]",
+      cell: (account) => account.maskedPrimaryPhone || account.primaryEmail || <EmptyValue /> },
     { id: "profiles", header: t("platformAccounts:columns.profiles"), type: "custom", cell: (account) => profiles(account, t) },
-    { id: "lastSignInAtUtc", header: t("platformAccounts:columns.lastSignIn"), type: "custom",
-      cell: (account) => isOperatorInvitation(account) ? t("platformAccounts:columns.never") : <DateText value={account.lastSignInAtUtc} kind="relative" />,
-      detail: (account) => isOperatorInvitation(account) ? account.invitationExpiresAtUtc ? <>{t("platformAccounts:columns.expiresPrefix")} <DateText value={account.invitationExpiresAtUtc} /></> : null : account.lastSignInMethod ? <EnumText enum="LoginAuditMethod" value={account.lastSignInMethod} /> : null },
+    { id: "lastSignInAtUtc", header: t("platformAccounts:columns.lastSignIn"), type: "custom", className: "w-40",
+      cell: (account) => isOperatorInvitation(account) ? t("platformAccounts:columns.never") : <DateText value={account.lastSignInAtUtc} kind="dateTime" /> },
     { id: "state", header: t("platformAccounts:columns.state"), type: "status", tones: accountStateTones, value: (account) => account.state, mobile: "status" },
   ];
 }

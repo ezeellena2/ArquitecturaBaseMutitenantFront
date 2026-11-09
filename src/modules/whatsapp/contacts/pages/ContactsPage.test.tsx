@@ -23,10 +23,12 @@ describe("Contactos", () => {
     expect(await screen.findByText("486 contactos")).toBeVisible();
     expect(screen.getByText("312 aceptan promociones")).toBeVisible();
     expect(screen.getByRole("link", { name: "Martina López" })).toHaveAttribute("href", "/org/whatsapp/contactos/contact-martina");
-    // Sin nombre, el número es el título; el consentimiento dice de dónde salió.
+    // Sin nombre, el número es el título. Tablero WA-Contactos (base de la 12): el número va en su columna y el
+    // consentimiento, en una palabra con su punto, sin la línea de dónde salió.
     expect(screen.getByRole("link", { name: "0351 15-555-0192" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Número" })).toBeVisible();
     expect(screen.getByText("Se dio de baja")).toBeVisible();
-    expect(screen.getByText(/Por el bot/)).toBeVisible();
+    expect(screen.queryByText(/Por el bot/)).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
 
     await user.click(screen.getByRole("button", { name: "Promociones: todas" }));

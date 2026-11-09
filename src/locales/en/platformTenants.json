@@ -24,7 +24,7 @@
   },
   "messages": { "created": "We created {{name}} and invited {{email}} as Owner.", "approve": "We approved {{name}}. We notified {{email}}.", "approveOwners": "We approved {{name}}. We notified its Owners.", "reject": "We rejected {{name}}.", "suspend": "We suspended {{name}}.", "reactivate": "We reactivated {{name}}.", "close": "We closed {{name}}.", "retried": "We finished setting up {{name}}." },
   "modules": {
-    "title": "Modules", "module": "Module", "source": "Source", "trialUntil": "Trial until {{date}}",
+    "title": "Modules", "module": "Module", "detail": "Detail", "source": "Source", "trialUntil": "Trial until {{date}}",
     "actions": { "enable": "Turn on", "extend": "Extend trial", "disable": "Turn off" },
     "confirm": {
       "enable": { "title": "Turn on {{module}}?", "description": "{{name}} can use it from now on, with no end date.", "pending": "Turning on…" },
@@ -57,6 +57,7 @@
     "counts": "{{companies}} {{companyLabel}} · {{members}} {{memberLabel}}",
     "back": "Organizations",
     "lastSignIn": "Last sign-in",
+    "email": "Email",
     "historyEmpty": "No history yet",
     "banner": {
       "Closed": "<strong>Closed on <date/>. Read-only.</strong> Reason: <reason/>",

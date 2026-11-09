@@ -155,33 +155,67 @@ describe("DataTable", () => {
     expect(screen.getByRole("columnheader", { name: "Acciones" })).toHaveClass("w-12.5", "last:pr-3", "text-right");
   });
 
-  // «Criterio · Tablas» (lienzo v92): lo que aclara una celda va debajo, en una segunda línea gris de 12. Si alguna fila
-  // la tiene, todas las filas de la tabla miden 52; sin segunda línea, 40.
-  it("dibuja la segunda línea gris que declara la columna y entonces todas las filas miden 52", () => {
-    const withDetail: Column<Row>[] = [
-      { ...columns[0], detail: (row) => row.id === "1" ? row.email : null },
-      columns[2],
-    ];
-    render(<DataTable columns={withDetail} rows={[rows[0], { ...rows[0], id: "2", name: "Bruno Díaz" }]} rowKey={(row) => row.id} />);
+  // «Criterio · Tablas» (base de la 12): un dato por celda; un texto largo baja de renglón y la fila crece (174), sin «…»
+  // ni tooltip, y las filas miden 40 como mínimo.
+  it("un texto largo se ve entero: la celda baja de renglón, sin cortar con «…» ni tooltip", () => {
+    const long = "Cerramos el pedido de octubre; la entrega queda para el lunes 9, después de las 14.";
+    render(<DataTable columns={[columns[0], { id: "notes", header: "Observaciones", type: "text", value: () => long }]} rows={rows} rowKey={(row) => row.id} />);
 
-    const detail = screen.getByText("ana@example.com");
-    expect(detail).toHaveAttribute("data-slot", "cell-detail");
-    expect(detail).toHaveClass("block", "truncate", "text-[0.75rem]", "text-[var(--t3)]");
-    expect(detail.parentElement).toHaveClass("flex", "flex-col", "leading-[1.35]");
-    expect(detail.parentElement).toContainElement(screen.getByText("Ana García"));
-    const [, first, second] = screen.getAllByRole("row");
-    expect(first).toHaveClass("h-13");
-    expect(second).toHaveClass("h-13");
-    expect(within(second).queryByText("ana@example.com")).not.toBeInTheDocument();
-    expect(second.querySelector('[data-slot="cell-detail"]')).toBeNull();
+    const cell = screen.getByText(long).closest("td")!;
+    expect(cell).toHaveClass("whitespace-normal", "[overflow-wrap:anywhere]");
+    expect(cell).not.toHaveClass("truncate", "whitespace-nowrap", "overflow-hidden");
+    expect(cell.querySelector("[title]")).toBeNull();
+    expect(cell.querySelector(".truncate")).toBeNull();
+    expect(screen.getAllByRole("row")[1]).toHaveClass("h-10");
+    expect(document.querySelector('[data-slot="cell-detail"]')).toBeNull();
   });
 
-  it("sin segunda línea en ninguna fila, las filas miden 40", () => {
-    render(<DataTable columns={[{ ...columns[0], detail: () => null }, columns[2]]} rows={rows} rowKey={(row) => row.id} />);
+  // «Criterio · Tablas» (137): una línea fina entre columnas, en el encabezado y en el cuerpo, que una columna fija se
+  // lleva al desplazar (es la de la celda, no un borde); la tabla cierra abajo con la línea de su última fila.
+  it("dibuja la línea entre columnas y cierra abajo con la línea de la última fila", () => {
+    const { container } = render(<div><DataTable columns={columns} rows={rows} rowKey={(row) => row.id} /><nav>{"1–1 de 1"}</nav></div>);
 
-    expect(screen.getAllByRole("row")[1]).toHaveClass("h-10");
-    expect(screen.getAllByRole("row")[1]).not.toHaveClass("h-13");
-    expect(document.querySelector('[data-slot="cell-detail"]')).toBeNull();
+    const [firstHead, secondHead] = screen.getAllByRole("columnheader");
+    expect(firstHead).toHaveClass("not-first:shadow-[inset_1px_0_0_var(--borde-cab)]");
+    expect(secondHead).toHaveClass("not-first:shadow-[inset_1px_0_0_var(--borde-cab)]");
+    expect(screen.getAllByRole("cell")[1]).toHaveClass("not-first:shadow-[inset_1px_0_0_var(--borde)]");
+    expect(screen.getAllByRole("cell")[1]).not.toHaveClass("border-l");
+    // La última fila conserva su línea; solo se la saca cuando la tabla toca el borde de su caja.
+    expect(container.querySelector("tbody")).not.toHaveClass("[&_tr:last-child]:border-0");
+    expect(container.querySelector("[data-slot='table-container']")).toHaveClass("last:[&_tbody>tr:last-child]:border-b-0");
+  });
+
+  // «Criterio · Tablas»: la columna ordenada muestra ▲ o ▼ y lo anuncia con `aria-sort`; las demás, sin flecha.
+  it("la columna ordenada muestra ▲ o ▼", () => {
+    const { rerender } = render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} sort="name" onSortChange={vi.fn()} />);
+    const header = screen.getByRole("columnheader", { name: /Nombre/ });
+    expect(header).toHaveAttribute("aria-sort", "ascending");
+    expect(within(header).getByText("▲")).toHaveAttribute("aria-hidden", "true");
+
+    rerender(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} sort="-name" onSortChange={vi.fn()} />);
+    expect(screen.getByRole("columnheader", { name: /Nombre/ })).toHaveAttribute("aria-sort", "descending");
+    expect(within(screen.getByRole("columnheader", { name: /Nombre/ })).getByText("▼")).toBeInTheDocument();
+
+    rerender(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} sort="email" onSortChange={vi.fn()} />);
+    expect(screen.queryByText("▲")).toBeNull();
+    expect(screen.queryByText("▼")).toBeNull();
+  });
+
+  // La primera carga (160): el encabezado y el aro en el alto de ocho filas, sin filas esqueleto; al llegar las filas, la
+  // tabla no cambia de alto.
+  it("la primera carga dibuja el encabezado y el aro en el alto de ocho filas", () => {
+    const { container, rerender } = render(<DataTable columns={columns} rows={[]} rowKey={(row) => row.id} isLoading />);
+
+    expect(screen.getAllByRole("columnheader").length).toBe(columns.length);
+    const loading = container.querySelector("[data-slot='first-load']")!;
+    expect(loading.closest("td")).toHaveClass("h-80");
+    expect(loading.closest("td")).toHaveAttribute("colspan", String(columns.length));
+    expect(within(loading as HTMLElement).getByRole("status")).toHaveTextContent("Cargando…");
+    expect(container.querySelector("[data-slot='skeleton']")).toBeNull();
+
+    rerender(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} />);
+    expect(container.querySelector("[data-slot='first-load']")).toBeNull();
+    expect(screen.getByText("Ana García")).toBeInTheDocument();
   });
 
   it("muestra el estado con un punto y texto, sin pastilla", () => {

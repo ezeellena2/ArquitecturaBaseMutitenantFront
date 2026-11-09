@@ -51,7 +51,8 @@ describe("Cargar teléfonos", () => {
     expect(screen.getByText("Ya es miembro")).toBeVisible();
     expect(screen.getByText("Tomás Acosta")).toBeVisible();
     expect(screen.getByText("Se invita")).toBeVisible();
-    expect(screen.getByText("Le llega una invitación por WhatsApp")).toBeVisible();
+    // Tablero WA-Telefonos (base de la 12): qué va a pasar, en una palabra con su punto, sin otra línea.
+    expect(screen.queryByText("Le llega una invitación por WhatsApp")).not.toBeInTheDocument();
     expect(screen.getByText("Número inválido")).toBeVisible();
     expect(screen.getByText("11 4444")).toBeVisible();
     expect(container).not.toHaveTextContent(/cuenta/i);

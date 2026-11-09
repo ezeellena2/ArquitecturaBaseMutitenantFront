@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import type { Column } from "@/shared/ui/DataTable";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
-import { StatusDetail } from "@/shared/ui/StatusDot";
 import type { WhatsAppPhoneImportRowResponse } from "../api/types";
 import { PhoneCell, type TypedLine } from "./components/PhoneCell";
 import { phoneImportOutcomeTones } from "./tones";
@@ -14,8 +13,8 @@ export function createPhoneImportColumns(t: TFunction, typed: TypedLine = (row) 
   return [
     { id: "phone", header: t("whatsapp:phones.columns.phone"), type: "custom", mobile: "primary", className: "w-[30%]", cell: (row) => <PhoneCell row={row} typed={typed} /> },
     { id: "memberName", header: t("whatsapp:phones.columns.person"), type: "text", value: (row) => row.memberName },
-    { id: "outcome", header: t("whatsapp:phones.columns.outcome"), type: "status", tones: phoneImportOutcomeTones, value: (row) => row.outcome,
-      detail: (row) => <StatusDetail>{t(`whatsapp:phones.outcome.${row.outcome}`)}</StatusDetail> },
+    // Tablero WA-Telefonos (base de la 12): qué va a pasar, en una palabra con su punto.
+    { id: "outcome", header: t("whatsapp:phones.columns.outcome"), type: "status", tones: phoneImportOutcomeTones, value: (row) => row.outcome },
   ];
 }
 

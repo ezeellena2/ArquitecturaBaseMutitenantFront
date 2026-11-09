@@ -2,6 +2,7 @@ import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import type { Column } from "@/shared/ui/DataTable";
+import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import type { WhatsAppTeamResponse } from "../api/types";
 import type { TeamScope } from "./api/teams";
 
@@ -21,20 +22,20 @@ export function teamNoticeText(team: WhatsAppTeamResponse, t: TFunction, short =
   return t(short ? "whatsapp:teams.notice.short" : "whatsapp:teams.notice.after", { minutes: team.notifyAfterMinutes });
 }
 
-/// Tableros WA-Equipos y Plat-WA-Equipos: el equipo (con su bandeja debajo, en la organización), quiénes lo forman con
-/// la cantidad debajo, y el aviso por correo.
+/// Tableros WA-Equipos y Plat-WA-Equipos (base de la 12): el equipo, su bandeja (en la organización), quiénes lo forman, la
+/// cantidad y el aviso por correo, un dato por celda.
 export function createTeamColumns(t: TFunction, scope: TeamScope = "organization"): Column<WhatsAppTeamResponse>[] {
   return [
-    {
-      id: "name", header: t("whatsapp:teams.columns.name"), type: "text", mobile: "primary", className: "w-[34%]",
-      value: (team) => team.name,
-      detail: (team) => scope === "organization" && team.inbox ? t(`whatsapp:teams.inbox.${team.inbox}`) : null,
-    },
+    { id: "name", header: t("whatsapp:teams.columns.name"), type: "text", mobile: "primary", className: "w-[22%]", value: (team) => team.name },
+    ...(scope === "organization" ? [{
+      id: "inbox", header: t("whatsapp:teams.columns.inbox"), type: "custom", className: "w-[16%]",
+      cell: (team) => team.inbox ? t(`whatsapp:teams.inbox.${team.inbox}`) : <EmptyValue />,
+    } satisfies Column<WhatsAppTeamResponse>] : []),
     {
       id: "members", header: t(scope === "organization" ? "whatsapp:teams.columns.members" : "whatsapp:teams.columns.operators"), type: "custom",
-      cell: (team) => <span className="block truncate">{teamPreviewText(team) ?? teamMembersText(team, scope, t)}</span>,
-      detail: (team) => teamPreviewText(team) ? teamMembersText(team, scope, t) : null,
+      cell: (team) => teamPreviewText(team) ?? <EmptyValue />,
     },
+    { id: "memberCount", header: t("whatsapp:teams.columns.count"), type: "integer", className: "w-24", value: (team) => team.memberCount },
     { id: "notice", header: t("whatsapp:teams.columns.notice"), type: "custom", cell: (team) => <span>{teamNoticeText(team, t)}</span> },
   ];
 }

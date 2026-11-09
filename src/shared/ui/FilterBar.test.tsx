@@ -1,57 +1,49 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
-import { FilterBar } from "./FilterBar";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+import { axe } from "vitest-axe";
+import { configureI18n } from "@/shared/i18n";
+import { renderWithProviders } from "@/test/utils/renderWithProviders";
+import { FilterBar, type FilterBarFilter } from "./FilterBar";
 
-// La cantidad pasa por NumberText; acá basta un formato que la deje igual.
-vi.mock("@/shared/format/useFormat", () => ({ useFormat: () => ({ isLoading: false, formatInteger: (value: number) => String(value) }) }));
+beforeAll(async () => {
+  await configureI18n([
+    { code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true },
+    { code: "en-US", languageCode: "en", fallbackCulture: "es-AR", isEnabled: true, isDefault: false },
+  ]);
+});
+
+const filter = (key: string, name: string, overrides: Partial<FilterBarFilter> = {}): FilterBarFilter => ({
+  key, label: `${name}: todos`, menuLabel: `Filtrar por ${name.toLowerCase()}`, value: "", active: false, onChange: vi.fn(),
+  options: [{ value: "all", label: "Todos" }, { value: "a", label: `${name} A` }, { value: "b", label: `${name} B` }],
+  ...overrides,
+});
 
 describe("FilterBar", () => {
-  it("places the full-width search before the filter pills on phones", () => {
+  it("pone el buscador antes de los filtros, en una fila, con el radio de un control", () => {
     const { container } = render(
-      <FilterBar
-        label="Filtros"
-        searchLabel="Buscar"
-        searchValue=""
-        onSearchChange={vi.fn()}
-        filters={[{
-          key: "status",
-          label: "Estado",
-          menuLabel: "Filtrar por estado",
-          value: "all",
-          active: false,
-          options: [{ value: "all", label: "Todos" }],
-          onChange: vi.fn(),
-        }]}
-        clearLabel="Limpiar"
-        onClear={vi.fn()}
-      />,
+      <FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()}
+        filters={[{ key: "status", label: "Estado", menuLabel: "Filtrar por estado", value: "all", active: false, options: [{ value: "all", label: "Todos" }], onChange: vi.fn() }]}
+        clearLabel="Limpiar" onClear={vi.fn()} />,
     );
 
     const bar = screen.getByRole("search", { name: "Filtros" });
     const search = screen.getByRole("searchbox", { name: "Buscar" });
-    const searchContainer = search.parentElement;
+    const searchContainer = search.parentElement!;
     const filterTrigger = screen.getByRole("button", { name: "Todos" });
-
-    expect(bar).toHaveClass("flex-col", "md:flex-row");
-    // La caja de los filtros (.fb) lleva 10 arriba y abajo y 12 a los costados: con el buscador de 36 mide 58.
+    // La caja de los filtros (.fb) lleva 10 arriba y abajo y 12 a los costados.
     expect(bar).toHaveClass("md:px-3", "md:py-2.5");
-    expect(bar).not.toHaveClass("md:p-3");
-    // Lienzo v104 (tableros Usuarios, Roles, Empresas, Empresa y Auditoría): el buscador de 36 × 360, con el borde claro, la
-    // lupa de 16 a 12 del borde, el texto a 36 y letra de 13; los filtros, de 32 y sin negrita.
+    expect(searchContainer.parentElement).toHaveClass("flex-col", "md:flex-row");
+    expect(searchContainer.parentElement!.firstElementChild).toBe(searchContainer);
+    // Lienzo v104: el buscador de 36 × 360, con el borde claro, la lupa de 16 a 12 del borde, el texto a 36 y letra de 13.
     expect(searchContainer).toHaveClass("w-full", "md:w-90");
     expect(search).toHaveClass("h-9", "pl-9", "text-[0.8125rem]", "rounded-[0.5rem]", "border-[var(--borde)]");
-    expect(search).not.toHaveClass("h-8", "pl-8");
-    expect(searchContainer?.querySelector("svg")).toHaveClass("left-3", "size-4");
-    expect(filterTrigger).toHaveClass("h-8", "font-normal");
-    expect(filterTrigger).not.toHaveClass("lg:h-9", "min-h-11");
-    expect(bar.firstElementChild).toBe(searchContainer);
+    // 173: los filtros, de 32, sin negrita y con el radio de un control, nunca en pastilla.
+    expect(filterTrigger).toHaveClass("h-8", "font-normal", "rounded-[0.5rem]");
+    expect(filterTrigger).not.toHaveClass("rounded-full");
     expect(container.querySelector('[data-slot="filter-pills"]')).toContainElement(filterTrigger);
   });
 
-  // Tableros de listas (.fb-limpiar: Usuarios, Roles, Empresas, Auditoría y «Criterio · Tablas»): «Limpiar» va en gris de
-  // 13, con 6 y 8 de relleno (la regla que sigue a la de 14), y se oscurece con el mouse, sin el verde de un enlace.
-  // Tableros Usuarios, Roles y Empresas (.fb-bus, .fb-sel): la lupa y la flecha del filtro son las del lienzo.
   it("dibuja la lupa y la flecha del tablero", () => {
     render(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}
       filters={[{ key: "status", label: "Estado", menuLabel: "Filtrar por estado", value: "all", active: false, options: [{ value: "all", label: "Todos" }], onChange: vi.fn() }]} />);
@@ -62,71 +54,91 @@ describe("FilterBar", () => {
     expect(chevron).toHaveAttribute("stroke-width", "2");
   });
 
-  it("«Limpiar» va en gris de 13, como los tableros", () => {
-    render(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="zzz" onSearchChange={vi.fn()} filters={[]} clearLabel="Limpiar" onClear={vi.fn()} />);
+  // Tableros de listas (.fb-limpiar): «Limpiar» va en gris de 13 y se oscurece con el mouse.
+  it("«Limpiar» va en gris de 13 y aparece solo con algo aplicado", async () => {
+    const onClear = vi.fn();
+    const { rerender } = render(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} filters={[]} clearLabel="Limpiar" onClear={onClear} />);
+    expect(screen.queryByRole("button", { name: "Limpiar" })).not.toBeInTheDocument();
 
+    rerender(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="abc" onSearchChange={vi.fn()} filters={[]} clearLabel="Limpiar" onClear={onClear} />);
     const clear = screen.getByRole("button", { name: "Limpiar" });
     expect(clear).toHaveClass("text-[0.8125rem]", "px-2", "py-1.5", "text-[var(--t3)]", "hover:text-[var(--t1)]", "hover:bg-[var(--s2)]");
-    expect(clear).not.toHaveClass("text-[var(--marca-tx)]");
+    await userEvent.click(clear);
+    expect(onClear).toHaveBeenCalledOnce();
   });
 
-  // Tablero Roles: sin filtro, el botón dice «Vale en: todos» y el menú tiene «Todos» marcado.
-  it("sin filtro muestra su propio texto y marca la opción «Todos»", async () => {
-    render(
-      <FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}
-        filters={[{
-          key: "vale", label: "Vale en: todos", menuLabel: "Filtrar por dónde vale", value: "", active: false, onChange: vi.fn(),
-          options: [{ value: "all", label: "Todos" }, { value: "Organization", label: "Toda la organización" }],
-        }]} />,
-    );
-
-    const trigger = screen.getByRole("button", { name: "Vale en: todos" });
-    trigger.focus();
-    await userEvent.keyboard("{Enter}");
-    const all = await screen.findByRole("menuitemradio", { name: "Todos" });
-    expect(all).toHaveAttribute("aria-checked", "true");
-    // Tablero Usuarios (filtro abierto): la opción elegida va en verde claro, sin el punto de radio.
-    expect(all).toHaveClass("data-[state=checked]:bg-[var(--marca-t)]", "data-[state=checked]:text-[var(--marca-tx)]");
-    expect(all.querySelector("svg")).toBeNull();
-    expect(screen.getByRole("menuitemradio", { name: "Toda la organización" })).toHaveAttribute("aria-checked", "false");
-  });
-
-  // Tablero Usuarios (filtro abierto, lienzo v107): el menú del filtro no lleva líneas entre opciones (esas son del ⋮,
-  // «Criterio · Menús»); tiene 4 de relleno y cada opción, de 34 con radio 8, se resalta adentro en gris claro; la elegida
-  // va en verde claro con 500 y el conteo, en 12 gris a 16 del texto.
-  it("el menú del filtro va sin líneas entre opciones y con el resaltado del tablero", async () => {
-    render(
-      <FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}
-        filters={[{
-          key: "state", label: "Estado: todos", menuLabel: "Filtrar por estado", value: "", active: false, onChange: vi.fn(),
-          options: [{ value: "all", label: "Todos", count: 3 }, { value: "Active", label: "Activos", count: 2 }],
-        }]} />,
-    );
+  // «Criterio · Menús» (143): un filtro de opciones es un desplegable simple: cerrado dice «Estado: todos» o la elegida;
+  // abierto, una opción por renglón, sin la cantidad, con la elegida tildada a la izquierda y ninguna apagada.
+  it("el desplegable de un filtro tilda la elegida y no muestra cantidades", async () => {
+    const onChange = vi.fn();
+    renderWithProviders(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}
+      filters={[filter("state", "Estado", { onChange })]} />);
 
     screen.getByRole("button", { name: "Estado: todos" }).focus();
     await userEvent.keyboard("{Enter}");
     const menu = await screen.findByRole("menu");
     // «Criterio · Menús» (Medidas): un menú mide de 220 a 320 de ancho.
     expect(menu).toHaveClass("p-1", "min-w-55");
-    for (const name of [/^Todos/, /^Activos/]) {
-      const option = screen.getByRole("menuitemradio", { name });
-      expect(option).not.toHaveClass("border-t");
-      expect(option).toHaveClass("min-h-8.5", "rounded-[0.5rem]", "px-2.5", "py-1.5", "gap-2", "focus:bg-[var(--s2)]");
-    }
-    const all = screen.getByRole("menuitemradio", { name: /^Todos/ });
-    expect(all).toHaveClass("data-[state=checked]:bg-[var(--marca-t)]", "data-[state=checked]:font-medium");
-    expect(within(all).getByText("3").parentElement).toHaveClass("ml-auto", "pl-4", "text-xs", "text-[var(--t3)]", "tabular-nums");
+    const all = within(menu).getByRole("menuitemradio", { name: "Todos" });
+    expect(all).toHaveAttribute("aria-checked", "true");
+    expect(all.querySelector("[data-slot='tilde'] svg")).not.toBeNull();
+    const other = within(menu).getByRole("menuitemradio", { name: "Estado A" });
+    expect(other.querySelector("[data-slot='tilde'] svg")).toBeNull();
+    expect(other).not.toHaveAttribute("aria-disabled");
+    expect(menu).not.toHaveTextContent(/\d/);
+    await userEvent.click(other);
+    expect(onChange).toHaveBeenCalledWith("a");
   });
 
-  it("keeps clear hidden until a search or a filter is active", async () => {
+  // «Criterio · Menús» (144): hasta tres filtros a la vista; lo demás en un solo «Filtros», con la cantidad de aplicados,
+  // que se despliega como «Columnas» y aplica cada cambio; lo aplicado ahí va en chips con su × y «Limpiar todo».
+  it("del cuarto en adelante van en «Filtros», con chips y «Limpiar todo»", async () => {
+    const user = userEvent.setup();
     const onClear = vi.fn();
-    const { rerender } = render(
-      <FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} filters={[]} clearLabel="Limpiar" onClear={onClear} />,
-    );
-    expect(screen.queryByRole("button", { name: "Limpiar" })).not.toBeInTheDocument();
+    const provider = vi.fn();
+    const channel = vi.fn();
+    const { container } = renderWithProviders(<FilterBar label="Filtrar respuestas" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={onClear}
+      filters={[
+        filter("company", "Empresa"), filter("channel", "Canal"), filter("state", "Estado"),
+        filter("received", "Recibida"),
+        filter("provider", "Proveedor", { value: "a", active: true, onChange: provider }),
+        filter("version", "Versión", { onChange: channel }),
+      ]} />);
 
-    rerender(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="abc" onSearchChange={vi.fn()} filters={[]} clearLabel="Limpiar" onClear={onClear} />);
-    await userEvent.click(screen.getByRole("button", { name: "Limpiar" }));
+    const row = container.querySelector('[data-slot="filter-pills"]')!;
+    for (const name of ["Empresa: todos", "Canal: todos", "Estado: todos"]) expect(within(row as HTMLElement).getByRole("button", { name })).toBeVisible();
+    expect(within(row as HTMLElement).queryByRole("button", { name: "Recibida: todos" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Más filtros")).not.toBeInTheDocument();
+    const more = within(row as HTMLElement).getByRole("button", { name: /^Filtros/ });
+    // La cantidad de aplicados, como texto y con el formato de la cultura (173).
+    await waitFor(() => expect(more).toHaveTextContent("Filtros1"));
+
+    const chip = container.querySelector('[data-slot="filter-chip"]')!;
+    expect(chip).toHaveTextContent("Proveedor: Proveedor A");
+    expect(chip).toHaveClass("rounded-[0.5rem]");
+    await user.click(within(chip as HTMLElement).getByRole("button", { name: "Quitar Proveedor: Proveedor A" }));
+    expect(provider).toHaveBeenCalledWith("all");
+    await user.click(screen.getByRole("button", { name: "Limpiar todo" }));
     expect(onClear).toHaveBeenCalledOnce();
+
+    await user.click(more);
+    const panel = await screen.findByRole("dialog", { name: "Filtros" });
+    const tabs = within(panel).getByRole("tablist", { name: "Filtros" });
+    expect(within(tabs).getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Recibida", "Proveedor", "Versión"]);
+    await user.click(within(tabs).getByRole("tab", { name: "Versión" }));
+    const options = within(panel).getByRole("radiogroup", { name: "Filtrar por versión" });
+    expect(within(options).getByRole("radio", { name: "Todos" })).toBeChecked();
+    await user.click(within(options).getByRole("radio", { name: "Versión B" }));
+    expect(channel).toHaveBeenCalledWith("b");
+    expect(panel).not.toHaveTextContent("Aplicar");
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("sin nada aplicado en «Filtros» no hay chips ni «Limpiar todo»", () => {
+    const { container } = renderWithProviders(<FilterBar label="Filtrar" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}
+      filters={[filter("a", "Uno"), filter("b", "Dos"), filter("c", "Tres"), filter("d", "Cuatro")]} />);
+
+    expect(container.querySelector('[data-slot="filter-chips"]')).toBeNull();
+    expect(screen.getByRole("button", { name: "Filtros" })).toHaveTextContent(/^Filtros$/);
   });
 });

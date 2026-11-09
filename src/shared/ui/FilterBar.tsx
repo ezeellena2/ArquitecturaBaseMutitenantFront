@@ -1,6 +1,8 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { ListFilter } from "lucide-react";
-import { ChevronDownIcon, SearchIcon } from "./icons";
+import { useTranslation } from "react-i18next";
+import { Popover as PopoverPrimitive } from "radix-ui";
+import { CheckIcon, ChevronDownIcon, ChevronLeftIcon, CloseIcon, SearchIcon } from "./icons";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import {
@@ -15,25 +17,22 @@ import { Surface } from "@/shared/ui/Surface";
 import { AppIconButton } from "./app/AppBar";
 import { AppBarTools } from "./app/AppBarTools";
 import { useAppChrome } from "./app/AppChrome";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "./dialog";
 import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
 import { RemoteOptionFooter, RemoteOptionSearch } from "./RemoteOptionControls";
 import { NumberText } from "./format/NumberText";
 
-/** La cantidad de un filtro o una opción: un número, con los separadores de la cultura. */
-const countText = (count: ReactNode) => typeof count === "number" ? <NumberText value={count} /> : count;
-
+/// Una opción de un filtro. Sin cantidad (143): lo que trae cada una se ve en la tabla y en el paginado.
 export interface FilterOption {
   value: string;
   label: string;
-  count?: ReactNode;
 }
 
 export interface FilterBarFilter {
   key: string;
+  /** Lo que dice el desplegable sin nada elegido («Estado: todos»). Su nombre es lo que va antes de «:». */
   label: string;
   menuLabel: string;
-  count?: ReactNode;
   value: string;
   active: boolean;
   options: readonly FilterOption[];
@@ -47,6 +46,7 @@ export interface FilterBarProps {
   searchLabel: string;
   searchValue: string;
   onSearchChange: (value: string) => void;
+  /** Los tres primeros van a la vista; los demás, en un solo «Filtros» (144). */
   filters: readonly FilterBarFilter[];
   clearLabel: string;
   onClear: () => void;
@@ -54,6 +54,39 @@ export interface FilterBarProps {
   /** En el teléfono, los íconos de la barra según el tablero de la lista: lupa y filtro (M-Usuarios), solo el filtro
    *  (M-Roles, M-Empresas, M-Auditoria-Org) o ninguno (M-Empresa). */
   phoneTools?: "search-and-filter" | "filter" | "none";
+  /** En el teléfono, la bajada de «Filtros»: la lista que se filtra («Catálogos», tablero M-FRM-Catalogos). */
+  screen?: string;
+  /** El buscador y los filtros en una sola fila, el buscador con lo que queda: la columna de Chats (WA-Chats, .filtro). */
+  singleRow?: boolean;
+}
+
+/** Cuántos filtros van a la vista, al lado del buscador («Criterio · Menús», Filtros). */
+const visibleFilters = 3;
+
+/** El nombre de un filtro, sin lo que dice cuando no hay nada elegido: «Estado» de «Estado: todos». */
+function filterName(filter: FilterBarFilter): string {
+  return filter.label.split(":")[0]?.trim() || filter.label;
+}
+
+function selectedOf(filter: FilterBarFilter) {
+  return filter.options.find((option) => option.value === filter.value);
+}
+
+/** Sin filtro, la primera opción («Todos») es la marcada. */
+function checkedOf(filter: FilterBarFilter): string {
+  return selectedOf(filter) ? filter.value : filter.options[0]?.value ?? "";
+}
+
+/** Lo elegido, como lo dice un chip: «Proveedor: Aceros Rosario». */
+function chipText(filter: FilterBarFilter): string {
+  return `${filterName(filter)}: ${selectedOf(filter)?.label ?? filter.selectedLabel ?? ""}`;
+}
+
+/// La tilde de lo elegido, a la izquierda de cada opción (142); las demás guardan su lugar.
+function Tilde({ on }: { on: boolean }) {
+  return <span data-slot="tilde" aria-hidden="true" className="inline-flex size-4 shrink-0 items-center justify-center text-[var(--marca-tx)]">
+    {on ? <CheckIcon strokeWidth={2.25} className="size-3.5" /> : null}
+  </span>;
 }
 
 export function FilterBar({
@@ -66,20 +99,27 @@ export function FilterBar({
   onClear,
   className,
   phoneTools = "search-and-filter",
+  screen,
+  singleRow = false,
 }: FilterBarProps) {
+  const { t } = useTranslation();
   const hasFilters = searchValue.trim().length > 0 || filters.some((filter) => filter.active);
   const { phone } = useAppChrome();
   const [searchOpen, setSearchOpen] = useState(searchValue.trim().length > 0);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const shown = filters.slice(0, visibleFilters);
+  const more = filters.slice(visibleFilters);
+  const applied = more.filter((filter) => filter.active);
 
-  // Tablero M-Usuarios: en el teléfono la lupa y el filtro son íconos de la barra de arriba. La lupa abre el buscador
-  // debajo de la barra; el filtro abre una hoja con cada filtro y sus opciones, con «Todos» marcado si no hay filtro.
+  // Tableros M-Usuarios y M-FRM-Catalogos: en el teléfono la lupa y el filtro son íconos de la barra de arriba. La lupa
+  // abre el buscador debajo de la barra; el filtro abre «Filtros» a pantalla completa, con cada filtro y sus opciones sin
+  // cantidades, que se aplican al tocarlas, y «Limpiar todo» y «Listo» abajo. Con algo aplicado, el ícono lleva un punto.
   if (phone) return <>
     <AppBarTools>
       {phoneTools === "search-and-filter" ? <AppIconButton label={searchLabel} aria-pressed={searchOpen} onClick={() => setSearchOpen((open) => !open)}><SearchIcon /></AppIconButton> : null}
       {filters.length > 0 && phoneTools !== "none" ? <AppIconButton label={label} onClick={() => setSheetOpen(true)}>
         <ListFilter />
-        {filters.some((filter) => filter.active) ? <span aria-hidden="true" className="absolute top-2 right-2 size-2 rounded-full bg-[var(--marca)]" /> : null}
+        {filters.some((filter) => filter.active) ? <span data-slot="filter-dot" aria-hidden="true" className="absolute top-2 right-2 size-2 rounded-full bg-[var(--marca)]" /> : null}
       </AppIconButton> : null}
     </AppBarTools>
     {searchOpen && phoneTools === "search-and-filter" ? <div className="px-4 pt-1 pb-2">
@@ -90,111 +130,177 @@ export function FilterBar({
       </label>
     </div> : null}
     <Dialog open={sheetOpen} onOpenChange={setSheetOpen}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>{label}</DialogTitle></DialogHeader>
-        <div className="flex flex-col pt-1 pb-2">
+      <DialogContent showCloseButton={false} {...(screen ? {} : { "aria-describedby": undefined })} data-slot="filters-screen"
+        className="max-md:inset-0 max-md:h-dvh max-md:max-h-none max-md:grid-rows-[auto_minmax(0,1fr)_auto] max-md:rounded-none [&>[data-slot=dialog-handle]]:hidden">
+        <header className="flex h-15 shrink-0 items-center gap-1 pt-[env(safe-area-inset-top)] pr-1.5 pl-1">
+          <button type="button" onClick={() => setSheetOpen(false)} aria-label={t("actions.back")} title={t("actions.back")}
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
+            <ChevronLeftIcon className="size-6.5" strokeWidth={1.9} />
+          </button>
+          <div className="min-w-0 flex-1">
+            <DialogTitle className="text-[1.25rem] leading-[1.15] font-bold tracking-[-0.02em] text-[var(--t1)]">{t("filters.title")}</DialogTitle>
+            {screen ? <DialogDescription className="block text-[0.78125rem] leading-[normal] font-medium text-[var(--t3)]">{screen}</DialogDescription> : null}
+          </div>
+        </header>
+        <div className="min-h-0 overflow-y-auto pb-4">
           {filters.map((filter) => {
-            const selected = filter.options.find((option) => option.value === filter.value);
-            const checked = selected ? filter.value : filter.options[0]?.value ?? "";
+            const checked = checkedOf(filter);
             return <fieldset key={filter.key} className="m-0 border-0 p-0">
-              <legend className="px-5 pt-2.5 pb-1 text-[0.8125rem] font-semibold text-[var(--t3)]">{filter.label.split(":")[0]}</legend>
+              <legend className="px-4 pt-5 pb-2 text-[0.8125rem] font-semibold text-[var(--t3)]">{filterName(filter)}</legend>
               {filter.remote ? <RemoteOptionSearch remote={filter.remote} label={filter.menuLabel} /> : null}
-              {filter.options.map((option) => <label key={option.value} className="flex min-h-13.5 items-center gap-3 border-t border-[var(--borde)] px-5 text-[1rem] text-[var(--t1)] first-of-type:border-t-0">
-                <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                {option.count === undefined ? null : <span className="text-[0.84375rem] text-[var(--t3)]">{countText(option.count)}</span>}
-                <input type="radio" name={filter.key} value={option.value} checked={checked === option.value} className="size-5 accent-[var(--marca)]"
-                  onChange={() => { filter.onChange(option.value); setSheetOpen(false); }} />
+              {filter.options.map((option) => <label key={option.value} className={cn("flex min-h-13 items-center gap-3 border-b border-[var(--borde)] px-4 text-[1rem] text-[var(--t1)] has-[input:focus-visible]:outline-2 has-[input:focus-visible]:-outline-offset-2 has-[input:focus-visible]:outline-[var(--foco)]", checked === option.value && "font-semibold")}>
+                <input type="radio" name={filter.key} value={option.value} checked={checked === option.value} className="sr-only"
+                  onChange={() => filter.onChange(option.value)} />
+                <Tilde on={checked === option.value} />
+                <span className="min-w-0 flex-1">{option.label}</span>
               </label>)}
               {filter.remote ? <RemoteOptionFooter remote={filter.remote} /> : null}
             </fieldset>;
           })}
         </div>
-        {hasFilters ? <DialogFooter><button type="button" onClick={() => { onClear(); setSheetOpen(false); }}
-          className="inline-flex items-center justify-center rounded-[0.75rem] border border-[var(--borde2)] bg-[var(--lado-activo)] font-semibold text-[var(--t1)]">{clearLabel}</button></DialogFooter> : null}
+        <div className="flex gap-2.5 border-t border-[var(--borde)] px-4 pt-3 pb-[max(1.75rem,env(safe-area-inset-bottom))]">
+          <Button type="button" variant="outline" className="h-12 flex-1" disabled={!hasFilters} onClick={onClear}>{t("filters.clearAll")}</Button>
+          <Button type="button" className="h-12 flex-1" onClick={() => setSheetOpen(false)}>{t("actions.done")}</Button>
+        </div>
       </DialogContent>
     </Dialog>
   </>;
 
-  // Tableros Usuarios, Roles, Empresas, Empresa y Auditoría (lienzo v104): el buscador de 36 × 360 sobre gris claro con
-  // el borde fino, la lupa de 16 a 12 del borde y el texto a 36, con letra de 13; los filtros en píldoras de 32 sin
-  // negrita; el elegido, en verde.
+  // Tableros Usuarios, Roles, Empresas, Empresa y Auditoría, y «Criterio · Menús» (Filtros, 143 y 144): el buscador y hasta
+  // tres desplegables en una fila, sin botón para aplicar ni cantidades; lo demás, en un solo «Filtros», con la cantidad
+  // de aplicados como texto; lo aplicado en «Filtros», en chips con su ×, y «Limpiar todo». Todo con el radio de un
+  // control, nunca en pastilla (173).
   return (
     <Surface
       role="search"
       aria-label={label}
-      className={cn("flex flex-col items-stretch gap-2 p-2.5 md:flex-row md:flex-wrap md:items-center md:px-3 md:py-2.5", className)}
+      className={cn("flex flex-col items-stretch gap-2 p-2.5 md:px-3 md:py-2.5", className)}
     >
-      <div className="relative w-full md:w-90">
-        <SearchIcon
-          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--t3)]"
-        />
-        <Input
-          type="search"
-          value={searchValue}
-          onChange={(event) => onSearchChange(event.target.value)}
-          aria-label={searchLabel}
-          placeholder={searchLabel}
-          className="h-9 rounded-[0.5rem] border-[var(--borde)] bg-[var(--s2)] pl-9 text-[0.8125rem]"
-        />
+      <div className={cn("flex flex-col items-stretch gap-2 md:flex-row md:items-center", singleRow ? "md:flex-nowrap" : "md:flex-wrap")}>
+        <div className={cn("relative w-full", singleRow ? "md:w-auto md:min-w-25 md:flex-1" : "md:w-90")}>
+          <SearchIcon
+            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--t3)]"
+          />
+          <Input
+            type="search"
+            value={searchValue}
+            onChange={(event) => onSearchChange(event.target.value)}
+            aria-label={searchLabel}
+            placeholder={searchLabel}
+            className="h-9 rounded-[0.5rem] border-[var(--borde)] bg-[var(--s2)] pl-9 text-[0.8125rem]"
+          />
+        </div>
+        <div data-slot="filter-pills" className={cn("flex items-center gap-2", singleRow ? "shrink-0 flex-nowrap" : "flex-wrap")}>
+          {shown.map((filter) => <FilterMenu key={filter.key} filter={filter} />)}
+          {more.length > 0 ? <MoreFilters filters={more} applied={applied.length} /> : null}
+          {hasFilters && more.length === 0 ? <ClearButton onClick={onClear}>{clearLabel}</ClearButton> : null}
+        </div>
       </div>
-      <div data-slot="filter-pills" className="flex flex-wrap items-center gap-2">
-      {filters.map((filter) => {
-        const selected = filter.options.find((option) => option.value === filter.value);
-        // Sin filtro, el botón dice su propio texto («Vale en: todos») y el menú marca la primera opción, «Todos».
-        const checked = selected ? filter.value : filter.options[0]?.value ?? "";
-
-        return (
-          <DropdownMenu key={filter.key}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                className={cn(
-                  "h-8 rounded-full px-3 text-[0.8125rem] shadow-none",
-                  filter.active
-                    ? "border-[var(--marca)] bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]"
-                    : "border-[var(--borde)] bg-[var(--lado-activo)] font-normal text-[var(--t2)]",
-                )}
-              >
-                {selected?.label ?? filter.selectedLabel ?? filter.label}
-                {filter.count === undefined ? null : (
-                  <span className="text-xs text-[var(--t2)]">{countText(filter.count)}</span>
-                )}
-                <ChevronDownIcon strokeWidth={2} className="size-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            {/* Tablero Usuarios (filtro abierto, .menu): 4 de relleno alrededor de las opciones; el ancho, el de «Criterio ·
-                Menús» (de 220 a 320; los tableros Empresa y Auditoria-Org lo dibujan de 210). */}
-            <DropdownMenuContent align="start" aria-label={filter.menuLabel} className="min-w-55 p-1">
-              {filter.remote ? <RemoteOptionSearch remote={filter.remote} label={filter.menuLabel} /> : null}
-              <DropdownMenuRadioGroup value={checked} onValueChange={filter.onChange}>
-                {filter.options.map((option) => (
-                  <DropdownMenuRadioItem key={option.value} value={option.value}>
-                    {option.label}
-                    {option.count === undefined ? null : (
-                      <span className="ml-auto pl-4 text-xs text-[var(--t3)] tabular-nums">
-                        {countText(option.count)}
-                      </span>
-                    )}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-              {filter.remote ? <RemoteOptionFooter remote={filter.remote} /> : null}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      })}
-      {hasFilters ? (
-        <button
-          type="button"
-          onClick={onClear}
-          // Tableros de listas (.fb-limpiar): gris de 13 con 6 y 8 de relleno, que se oscurece con el mouse.
-          className="min-h-11 rounded-[0.5rem] px-2 py-1.5 text-[0.8125rem] leading-[normal] text-[var(--t3)] hover:bg-[var(--s2)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] md:min-h-7"
-        >
-          {clearLabel}
-        </button>
-      ) : null}
-      </div>
+      {more.length > 0 && hasFilters ? <div data-slot="filter-chips" className="flex flex-wrap items-center gap-2">
+        {applied.map((filter) => <span key={filter.key} data-slot="filter-chip"
+          className="inline-flex h-7 items-center gap-1 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--lado-activo)] pr-1 pl-2.5 text-[0.8125rem] text-[var(--t1)]">
+          {chipText(filter)}
+          <button type="button" aria-label={t("filters.remove", { filter: chipText(filter) })} title={t("filters.remove", { filter: chipText(filter) })}
+            onClick={() => filter.onChange(filter.options[0]?.value ?? "")}
+            className="inline-flex size-5 items-center justify-center rounded-[0.25rem] text-[var(--t3)] hover:bg-[var(--s2)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
+            <CloseIcon className="size-3.5" strokeWidth={2} />
+          </button>
+        </span>)}
+        <ClearButton onClick={onClear}>{t("filters.clearAll")}</ClearButton>
+      </div> : null}
     </Surface>
+  );
+}
+
+function ClearButton({ onClick, children }: { onClick: () => void; children: string }) {
+  // Tableros de listas (.fb-limpiar): gris de 13 con 6 y 8 de relleno, que se oscurece con el mouse.
+  return <button type="button" onClick={onClick}
+    className="min-h-11 rounded-[0.5rem] px-2 py-1.5 text-[0.8125rem] leading-[normal] text-[var(--t3)] hover:bg-[var(--s2)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] md:min-h-7">
+    {children}
+  </button>;
+}
+
+const filterButtonClass = (active: boolean) => cn(
+  "h-8 rounded-[0.5rem] px-3 text-[0.8125rem] shadow-none",
+  active
+    ? "border-[var(--marca)] bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]"
+    : "border-[var(--borde)] bg-[var(--lado-activo)] font-normal text-[var(--t2)]",
+);
+
+/// Un filtro de opciones es un desplegable simple: cerrado dice «Todas» o la elegida; abierto, una opción por renglón,
+/// sin la cantidad y con la elegida tildada a la izquierda. Con muchas opciones o del servidor, busca escribiendo.
+function FilterMenu({ filter }: { filter: FilterBarFilter }) {
+  const selected = selectedOf(filter);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button type="button" variant="outline" className={filterButtonClass(filter.active)}>
+          {/* Sin filtro, el botón dice su propio texto («Estado: todos»). */}
+          {selected?.label ?? filter.selectedLabel ?? filter.label}
+          <ChevronDownIcon strokeWidth={2} className="size-3.5" />
+        </Button>
+      </DropdownMenuTrigger>
+      {/* Tablero Usuarios (filtro abierto, .menu): 4 de relleno alrededor de las opciones; el ancho, el de «Criterio ·
+          Menús» (de 220 a 320; los tableros Empresa y Auditoria-Org lo dibujan de 210). */}
+      <DropdownMenuContent align="start" aria-label={filter.menuLabel} className="min-w-55 p-1">
+        {filter.remote ? <RemoteOptionSearch remote={filter.remote} label={filter.menuLabel} /> : null}
+        <DropdownMenuRadioGroup value={checkedOf(filter)} onValueChange={filter.onChange}>
+          {filter.options.map((option) => (
+            <DropdownMenuRadioItem key={option.value} value={option.value}><Tilde on={checkedOf(filter) === option.value} />{option.label}</DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+        {filter.remote ? <RemoteOptionFooter remote={filter.remote} /> : null}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+/// «Filtros» (144): lo que no entra en la fila, en un solo botón con la cantidad de aplicados. Se despliega como
+/// «Columnas»: a la izquierda lo que se filtra (con un punto si tiene algo elegido), a la derecha sus opciones, y cada
+/// cambio se aplica enseguida, sin «Aplicar».
+function MoreFilters({ filters, applied }: { filters: readonly FilterBarFilter[]; applied: number }) {
+  const { t } = useTranslation();
+  const [current, setCurrent] = useState(filters[0]?.key ?? "");
+  const filter = filters.find((item) => item.key === current) ?? filters[0];
+  if (!filter) return null;
+  const checked = checkedOf(filter);
+  return (
+    <PopoverPrimitive.Root>
+      <PopoverPrimitive.Trigger asChild>
+        <Button type="button" variant="outline" className={filterButtonClass(applied > 0)}>
+          <ListFilter aria-hidden="true" className="size-3.5" />
+          {t("filters.title")}
+          {applied > 0 ? <span data-slot="filter-count" className="text-[var(--marca-tx)]"><NumberText value={applied} /></span> : null}
+        </Button>
+      </PopoverPrimitive.Trigger>
+      <PopoverPrimitive.Portal>
+        <PopoverPrimitive.Content align="start" sideOffset={4} aria-label={t("filters.title")} role="dialog"
+          className="z-50 flex max-h-[min(26rem,var(--radix-popover-content-available-height))] w-130 max-w-[calc(100vw-2rem)] overflow-hidden rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--lado-activo)] text-[0.8125rem] shadow-[var(--sombra-menu)]">
+          <div role="tablist" aria-orientation="vertical" aria-label={t("filters.title")} className="flex w-48 shrink-0 flex-col gap-0.5 overflow-y-auto border-r border-[var(--borde)] bg-[var(--s2)] p-1">
+            {filters.map((item) => <button key={item.key} type="button" role="tab" aria-selected={item.key === filter.key} onClick={() => setCurrent(item.key)}
+              className={cn("flex min-h-8 items-center gap-2 rounded-[0.375rem] px-2.5 py-1.5 text-left text-[var(--t2)] hover:bg-[var(--lado-activo)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]",
+                item.key === filter.key && "bg-[var(--lado-activo)] font-semibold text-[var(--t1)]")}>
+              <span className="min-w-0 flex-1">{filterName(item)}</span>
+              {item.active ? <span data-slot="filter-dot" aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-[var(--marca)]" /> : null}
+            </button>)}
+          </div>
+          <div role="tabpanel" aria-label={filterName(filter)} className="flex min-w-0 flex-1 flex-col overflow-y-auto p-1">
+            <span className="px-2.5 pt-1.5 pb-1 font-semibold text-[var(--t1)]">{filterName(filter)}</span>
+            {filter.remote ? <RemoteOptionSearch remote={filter.remote} label={filter.menuLabel} /> : null}
+            <div role="radiogroup" aria-label={filter.menuLabel}>
+              {filter.options.map((option) => <label key={option.value}
+                className={cn("flex min-h-8.5 cursor-default items-center gap-2 rounded-[0.5rem] px-2.5 py-1.5 hover:bg-[var(--s2)] has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-[var(--foco)]",
+                  checked === option.value && "font-medium text-[var(--marca-tx)]")}>
+                <input type="radio" name={`mas-${filter.key}`} value={option.value} checked={checked === option.value} className="sr-only"
+                  onChange={() => filter.onChange(option.value)} />
+                <Tilde on={checked === option.value} />
+                <span className="min-w-0 flex-1">{option.label}</span>
+              </label>)}
+            </div>
+            {filter.remote ? <RemoteOptionFooter remote={filter.remote} /> : null}
+          </div>
+        </PopoverPrimitive.Content>
+      </PopoverPrimitive.Portal>
+    </PopoverPrimitive.Root>
   );
 }

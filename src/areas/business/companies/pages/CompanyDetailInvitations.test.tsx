@@ -96,20 +96,21 @@ describe("CompanyDetailPage: las invitaciones de la empresa (6e)", () => {
     expect(await screen.findByText("Sofía Herrera")).toBeVisible();
     expect(states.at(-1)).toBeNull();
   });
-  // Tablero Empresa (v108): la invitación pendiente en celeste y la vencida en ámbar, con la fecha debajo de la palabra.
-  // El estado del back sigue siendo «Invitado» (B8): «vencida» sale de comparar la fecha con la hora actual (decisión 98).
-  it.each([[companyAdmin], [owner]])("%s: Miembros muestra «Invitación pendiente» o «Invitación vencida» y, debajo, hasta cuándo vale", async (as) => {
+  // Tablero Empresa (base de la 12): la invitación pendiente en celeste y la vencida en ámbar, y hasta cuándo vale en su
+  // columna, «Vence». El estado del back sigue siendo «Invitado» (B8): «vencida» sale de comparar la fecha con la hora
+  // actual (decisión 98).
+  it.each([[companyAdmin], [owner]])("%s: Miembros muestra «Invitación pendiente» o «Invitación vencida» y, en «Vence», hasta cuándo vale", async (as) => {
     companyApi([valentina, sofia, martin]);
     const { container } = renderRouteWithProviders("/org/empresas/company-1", { as });
 
     const pending = (await screen.findByText("Sofía Herrera")).closest("tr")!;
     expect(within(pending).getByText("Invitación pendiente").parentElement!.querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--punto-pendiente)]");
-    expect(pending).toHaveTextContent("Vence 02/10/2026");
+    expect(within(pending).getAllByRole("cell").at(-2)).toHaveTextContent("02/10/2026");
     const expired = screen.getByText("Martín Paz").closest("tr")!;
     expect(within(expired).getByText("Invitación vencida").parentElement!.querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--punto-alerta)]");
-    expect(expired).toHaveTextContent("Venció 29/09/2026");
+    expect(within(expired).getAllByRole("cell").at(-2)).toHaveTextContent("29/09/2026");
     const active = screen.getByText("Valentina Ruiz").closest("tr")!;
-    expect(active).not.toHaveTextContent(/Venc/);
+    expect(within(active).getAllByRole("cell").at(-2)).toHaveTextContent("—");
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -177,7 +178,7 @@ describe("CompanyDetailPage: las invitaciones de la empresa (6e)", () => {
 
     const row = (await screen.findByText("Sofía Herrera")).closest("tr")!;
     expect(row).toHaveTextContent("Invitación pendiente");
-    expect(row).toHaveTextContent("Vence 02/10/2026");
+    expect(row).toHaveTextContent("02/10/2026");
     expect(screen.getByRole("button", { name: "Acciones para Valentina Ruiz" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "Acciones para Sofía Herrera" })).not.toBeInTheDocument();
   });

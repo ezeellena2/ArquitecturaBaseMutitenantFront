@@ -18,7 +18,8 @@ export function ToResolve({ groups }: { groups: readonly PendingRowGroup[] }) {
   const rows = groups.flatMap((group) => group.rows);
   const columns: Column<PendingRow>[] = [
     { id: "title", header: t("toResolve.pending"), type: "custom", mobile: "primary", className: "w-[48%]",
-      cell: (row) => <span className="block truncate text-[var(--t1)]">{row.title}</span>, detail: (row) => row.detail },
+      // Tablero Inicio-Org (base de la 12): un dato por celda, el pendiente entero.
+      cell: (row) => <span className="text-[var(--t1)]">{row.title}</span> },
     { id: "state", header: t("toResolve.state"), type: "custom", cell: (row) =>
       <StatusDot tone={row.tone} label={row.state} /> },
     { id: "since", header: t("toResolve.since"), type: "date", className: "w-30.5", value: (row) => row.since },

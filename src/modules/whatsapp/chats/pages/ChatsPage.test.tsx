@@ -65,6 +65,21 @@ describe("Chats de la organización", () => {
     expect(router.state.location.search).toBe("?inbox=internal");
   });
 
+  // WA-Chats (base de la 12): los filtros en una fila, y la vista previa del último mensaje en un renglón, cortada con «…»
+  // (188): es la única excepción al texto entero; el nombre y quién la atiende bajan de renglón.
+  it("los filtros van en una fila y la vista previa del último mensaje, en un renglón con «…»", async () => {
+    inbox(row());
+    const { container } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    const preview = await screen.findByText("2 cajas de tornillos. ¿Atienden hasta las 18?");
+    expect(preview).toHaveAttribute("data-slot", "chat-preview");
+    expect(preview).toHaveClass("truncate");
+    const list = screen.getByRole("list", { name: /conversaciones/i });
+    expect(within(list).getAllByText("Martina López").every((name) => !name.classList.contains("truncate"))).toBe(true);
+    const filterRow = container.querySelector('[role="search"] > div')!;
+    expect(filterRow).toHaveClass("md:flex-nowrap");
+    expect(container.querySelector('[data-slot="filter-pills"]')).toHaveClass("flex-nowrap");
+  });
+
   it("quien atiende solo internos no ve el segmentado y lee solo esa bandeja", async () => {
     const requested = inbox(row({ inbox: "Internal", tags: [], linkedToAccount: false }));
     mountWhatsApp(whatsappMember("whatsapp.internal"), "/org/whatsapp/chats");

@@ -15,7 +15,9 @@
     "members": "Personas",
     "operators": "Operadores",
     "notice": "Aviso por correo",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "inbox": "Bandeja",
+    "count": "Cantidad"
   },
   "inbox": {
     "Customers": "Bandeja Clientes",

@@ -26,14 +26,16 @@ export function ConversationItem({ to, avatar, title, time, preview, assignment,
       {avatar}
       <span className={cn("flex min-w-0 flex-1 flex-col gap-0.5", phone ? "leading-[normal]" : null)}>
         <span className="flex justify-between gap-2">
-          <span className={cn("truncate", phone ? "text-[0.96875rem]" : null, unread ? "font-semibold text-[var(--t1)]" : "font-medium text-[var(--t1)]")}>{title}</span>
+          <span className={cn("min-w-0 [overflow-wrap:anywhere]", phone ? "text-[0.96875rem]" : null, unread ? "font-semibold text-[var(--t1)]" : "font-medium text-[var(--t1)]")}>{title}</span>
           <span className={cn("shrink-0 text-[0.75rem]", unread ? "font-semibold text-[var(--marca-tx)]" : "text-[var(--t3)]")}>{time}</span>
         </span>
         {preview ? <span className={cn("flex justify-between gap-2", phone ? "text-[0.875rem]" : "text-[0.78125rem]")}>
-          <span className={cn("truncate", unread ? "font-semibold text-[var(--t1)]" : "text-[var(--t3)]")}>{preview}</span>
+          {/* La vista previa del último mensaje va en un renglón y se corta con «…», como en WhatsApp: es la única excepción
+              al texto entero (188); el mensaje completo se ve al abrir el chat. */}
+          <span data-slot="chat-preview" className={cn("truncate", unread ? "font-semibold text-[var(--t1)]" : "text-[var(--t3)]")}>{preview}</span>
           {unread ? <span role="img" aria-label={unreadLabel} className="mt-1.25 size-2 shrink-0 rounded-full bg-[var(--marca)]" /> : null}
         </span> : null}
-        {assignment ? <span className={cn("truncate", phone ? "text-[0.78125rem]" : "text-[0.75rem]", assignmentTone === "untaken" ? "text-[var(--alerta)]" : "text-[var(--t3)]")}>{assignment}</span> : null}
+        {assignment ? <span className={cn("[overflow-wrap:anywhere]", phone ? "text-[0.78125rem]" : "text-[0.75rem]", assignmentTone === "untaken" ? "text-[var(--alerta)]" : "text-[var(--t3)]")}>{assignment}</span> : null}
       </span>
     </Link>
   </li>;

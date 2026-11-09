@@ -14,7 +14,8 @@
     "tags": "Etiquetas",
     "consent": "Promociones",
     "lastConversation": "Última conversación",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "number": "Número"
   },
   "actions": {
     "view": "Ver ficha",
@@ -51,7 +52,8 @@
       "conversation": "Conversación",
       "team": "Equipo",
       "assignee": "La atendió",
-      "messages": "Mensajes"
+      "messages": "Mensajes",
+      "lastMessage": "Último mensaje"
     },
     "messages_one": "{{n}} mensaje",
     "messages_other": "{{n}} mensajes",

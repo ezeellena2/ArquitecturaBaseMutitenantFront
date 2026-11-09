@@ -27,8 +27,8 @@ export function ListItem({ icon, title, detail, children, className, ...props }:
     detail ? "min-h-14" : "min-h-11", className)} {...props}>
     {icon ? <span className="inline-flex shrink-0 text-[var(--t3)] max-md:hidden [&_svg:not([class*='size-'])]:size-4">{icon}</span> : null}
     <span className="flex min-w-0 flex-1 flex-col leading-[1.35] max-md:gap-px max-md:leading-tight">
-      <span className="truncate font-medium text-[var(--t1)] max-md:text-[0.96875rem]">{title}</span>
-      {detail ? <span className="truncate text-[0.75rem] text-[var(--t3)] max-md:text-[0.8125rem]">{detail}</span> : null}
+      <span className="font-medium text-[var(--t1)] [overflow-wrap:anywhere] max-md:text-[0.96875rem]">{title}</span>
+      {detail ? <span className="text-[0.75rem] text-[var(--t3)] [overflow-wrap:anywhere] max-md:text-[0.8125rem]">{detail}</span> : null}
     </span>
     {children ? <span className="flex shrink-0 items-center justify-end gap-1 max-md:[&>[data-variant=outline]]:border-0 max-md:[&>[data-variant=outline]]:bg-transparent max-md:[&>[data-variant=outline]]:px-1.5 max-md:[&>[data-variant=outline]]:text-[0.9375rem] max-md:[&>[data-variant=outline]]:text-[var(--marca-tx)] max-md:[&>[data-variant=danger]]:border-0 max-md:[&>[data-variant=danger]]:bg-transparent max-md:[&>[data-variant=danger]]:px-1.5 max-md:[&>[data-variant=danger]]:text-[0.9375rem] max-md:[&>[data-variant=danger]]:text-[var(--peligro)]">{children}</span> : null}
   </li>;

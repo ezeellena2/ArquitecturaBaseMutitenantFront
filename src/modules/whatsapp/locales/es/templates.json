@@ -19,7 +19,8 @@
     "category": "Tipo",
     "status": "Estado en Meta",
     "updated": "Última modificación",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "languages": "Idiomas"
   },
   "form": {
     "name": "Nombre",

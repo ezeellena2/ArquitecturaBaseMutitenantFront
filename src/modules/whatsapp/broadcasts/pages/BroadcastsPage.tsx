@@ -61,7 +61,7 @@ export function BroadcastsPage(_props: ModuleContentProps) {
       fab={{ label: t("whatsapp:broadcasts.new"), to: newBroadcastPath }}
       actions={<Button asChild><Link to={newBroadcastPath}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("whatsapp:broadcasts.new")}</Link></Button>}>
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar label={t("whatsapp:broadcasts.filters.label")} searchLabel={t("whatsapp:broadcasts.filters.search")}
+        <FilterBar screen={t("whatsapp:broadcasts.title")} label={t("whatsapp:broadcasts.filters.label")} searchLabel={t("whatsapp:broadcasts.filters.search")}
           searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
           filters={[{ key: "status", label: t("whatsapp:broadcasts.filters.status"), menuLabel: t("whatsapp:broadcasts.filters.statusMenu"),
             value: query.status ?? "", active: query.status !== undefined, onChange: (value) => filters.setFilter("status", value === allValue ? undefined : value),

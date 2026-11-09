@@ -13,7 +13,7 @@ export function OrganizationHistoryTab({ id }: { id: string }) {
   const history = useOrganizationHistory(id);
   return <Surface className="overflow-hidden" phoneFlush>
     <DataTable columns={createOrganizationHistoryColumns(t)} rows={history.items} rowKey={(row) => row.id}
-      mobileRow={(row) => <ListRow key={row.id} wrapTitle title={row.action} meta={<DateText value={row.occurredAtUtc} kind="shortDateTime" />}
+      mobileRow={(row) => <ListRow key={row.id} title={row.action} meta={<DateText value={row.occurredAtUtc} kind="shortDateTime" />}
         lines={[[row.actor, row.reason].filter(Boolean).join(" · ")]} />}
       isLoading={history.isPending} isFetching={history.isFetching} error={history.error ? apiErrorMessage(history.error, t) : undefined}
       onRetry={() => { void history.refetch(); }} emptyTitle={t("platformTenants:detail.historyEmpty")} />

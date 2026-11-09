@@ -168,10 +168,10 @@ describe("Plantillas de Plataforma", () => {
     expect(groups).toEqual(["Consultations", "System"]);
     const row = screen.getByText("Invitación a una organización").closest("tr");
     expect(row).not.toBeNull();
-    expect(row).toHaveTextContent("invitacion_organizacion · Español (Argentina), Inglés (Estados Unidos)");
+    // Tablero Plat-WA-Plantillas (base de la 12): un dato por celda; los idiomas en su columna, sin el nombre técnico.
+    expect(row).toHaveTextContent("Español (Argentina), Inglés (Estados Unidos)");
+    expect(row).not.toHaveTextContent("invitacion_organizacion");
     expect(within(row as HTMLElement).getByText("Marketing")).toBeVisible();
-    // CC24: cada idioma trae su categoría; la invitación es Marketing en español y Utility en inglés.
-    expect(within(row as HTMLElement).getByText("Utilidad en Inglés (Estados Unidos)")).toBeVisible();
     const login = screen.getByText("Código de ingreso").closest("tr") as HTMLElement;
     expect(within(login).queryByText(/ en /)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Acciones de Invitación a una organización" })).not.toBeInTheDocument();

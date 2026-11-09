@@ -156,15 +156,15 @@ describe("BusinessHomePage", () => {
     expect(areas.parentElement).toHaveClass("gap-5");
     expect(within(toResolve).getByRole("heading", { name: "Para resolver" }).parentElement).toHaveClass("py-3");
     const invitation = within(toResolve).getByText("carla.bianchi@delta.ejemplo.com").closest("tr")!;
-    expect(invitation).toHaveTextContent("Invitación");
-    // «Criterio · Tablas» (lienzo v92): lo que aclara el pendiente va en la segunda línea gris de la tabla.
-    expect(within(invitation).getByText("Invitación")).toHaveAttribute("data-slot", "cell-detail");
+    // Tablero Inicio-Org (base de la 12): un dato por celda; el pendiente va solo, sin la segunda línea gris.
+    expect(invitation).not.toHaveTextContent(/^Invitación/);
+    expect(document.querySelector('[data-slot="cell-detail"]')).toBeNull();
     expect(invitation).not.toHaveTextContent("Usuarios");
     expect(invitation).toHaveTextContent("Vencida");
     expect(invitation).toHaveTextContent("25/09/2026");
     expect(within(invitation).getByRole("link", { name: "Reenviar" })).toHaveAttribute("href", "/org/usuarios?state=Expired");
     const deletion = within(toResolve).getByText("Diego Ríos").closest("tr")!;
-    expect(deletion).toHaveTextContent("Se elimina el 27/10/2026");
+    expect(deletion).not.toHaveTextContent("Se elimina el 27/10/2026");
     expect(deletion).toHaveTextContent("Baja pedida");
     expect(within(deletion).getByRole("link", { name: "Ver" })).toHaveAttribute("href", "/org/usuarios/member-diego");
     const domain = within(toResolve).getByText("Dominio de correo").closest("tr")!;

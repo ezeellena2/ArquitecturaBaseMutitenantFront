@@ -20,7 +20,9 @@
     "status": "Status",
     "results": "Results",
     "date": "Date",
-    "actions": "Actions"
+    "actions": "Actions",
+    "template": "Template",
+    "contacts": "Contacts"
   },
   "actions": {
     "duplicate": "Duplicate",
@@ -67,7 +69,8 @@
     "columns": {
       "contact": "Contact",
       "status": "Status",
-      "changed": "Last change"
+      "changed": "Last change",
+      "number": "Number"
     },
     "search": "Search by name or number",
     "filter": "Status: all",

@@ -105,7 +105,7 @@ export function RolesPage() {
       actions={canManage ? <Button asChild><Link to="/org/roles/nuevo"><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("roles:create")}</Link></Button> : undefined}
     >
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar phoneTools="filter"
+        <FilterBar phoneTools="filter" screen={t("roles:title")}
           label={t("roles:filters.label")}
           searchLabel={t("roles:filters.search")}
           searchValue={pagination.search ?? ""}
@@ -118,9 +118,9 @@ export function RolesPage() {
             active: vale !== undefined, remote: companies.remote, selectedLabel: companies.knownItems.find((item) => item.id === vale)?.name,
             onChange: (value) => filters.setFilter("vale", value === "all" ? undefined : value),
             options: [
-              { value: "all", label: t("roles:filters.allScopes"), count: counts.data?.matching.all },
-              { value: "Organization", label: t("roles:scope.organization"), count: counts.data?.matching.organization },
-              ...activeCompanies.map((company) => ({ value: company.id, label: company.name, count: counts.data ? counts.data.companies[company.id] ?? counts.data.anyCompany : undefined })),
+              { value: "all", label: t("roles:filters.allScopes") },
+              { value: "Organization", label: t("roles:scope.organization") },
+              ...activeCompanies.map((company) => ({ value: company.id, label: company.name })),
             ],
           }]}
           clearLabel={t("common:actions.clear")}

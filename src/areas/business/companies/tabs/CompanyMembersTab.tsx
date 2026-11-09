@@ -1,7 +1,7 @@
 import { companyRoleOptions, companyCandidateOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Power, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -23,8 +23,6 @@ import { Surface } from "@/shared/ui/Surface";
 import {
   changeCompanyMemberStatus,
   companiesQueryRoot,
-  companyMembersCountQueryKey,
-  fetchCompanyMemberCounts,
   resendCompanyInvitation,
   revokeCompanyInvitation,
 } from "../api/companies";
@@ -79,9 +77,6 @@ export function CompanyMembersTab({ company, list, roles }: {
   const canViewUsers = can("users.read");
   const { filters, pagination, query, result: members, paginationProps } = list;
   const { state, roleId, withoutRoles } = query;
-  const search = query.search ?? undefined;
-  const counts = useQuery({ queryKey: companyMembersCountQueryKey(company.id, search), queryFn: () => fetchCompanyMemberCounts(company.id, search),
-    enabled: canReadMembers, meta: { silent: true } });
   const [rolesTarget, setRolesTarget] = useState<MemberTarget | null>(null);
   const [removeTarget, setRemoveTarget] = useState<MemberTarget | null>(null);
   const [revokeTarget, setRevokeTarget] = useState<MemberTarget | null>(null);
@@ -132,13 +127,10 @@ export function CompanyMembersTab({ company, list, roles }: {
     ...createCompanyMemberColumns(t),
     { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: memberActions },
   ];
-  // Sin filtro el botón dice «Estado: todos» o «Rol: todos» y el menú ofrece «Todos», como el tablero.
-  const countForState = (value: typeof memberStates[number]) => value === undefined ? counts.data?.all : value === "Active" ? counts.data?.active
-    : value === "PendingDeletion" ? counts.data?.pendingDeletion : value === "Inactive" ? counts.data?.inactive : counts.data?.invited;
+  // Sin filtro el botón dice «Estado: todos» o «Rol: todos» y el menú ofrece «Todos», como el tablero, sin cantidades (143).
   const filtered = Boolean(state || roleId || withoutRoles || pagination.search);
 
   return <>
-    {counts.isError ? <FormError message={apiErrorMessage(counts.error, t)} /> : null}
     <FilterBar phoneTools="none" label={t("companies:detail.filters.label")} searchLabel={t("companies:detail.filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
       filters={[
         { key: "roleId", label: t("companies:detail.filters.role"), menuLabel: t("companies:detail.filters.roleMenu"), remote: roleOptions.remote, selectedLabel: roleOptions.knownItems.find((role) => role.id === roleId)?.name, value: filters.values.roleId ?? "", active: filters.values.roleId !== undefined,
@@ -146,14 +138,14 @@ export function CompanyMembersTab({ company, list, roles }: {
           options: [{ value: "all", label: t("companies:detail.filters.allRoles") }, { value: "none", label: t("companies:detail.filters.withoutRoles") }, ...roleOptions.items.map((role) => ({ value: role.id, label: role.name }))] },
         { key: "state", label: t("companies:detail.filters.state"), menuLabel: t("companies:detail.filters.stateMenu"), value: state ?? "", active: state !== undefined,
           onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value),
-          options: [...memberStates.map((value) => ({ value: value ?? "all", label: value ? t(`companies:detail.filters.states.${value}`) : t("companies:detail.filters.allStates"), count: countForState(value) })),
+          options: [...memberStates.map((value) => ({ value: value ?? "all", label: value ? t(`companies:detail.filters.states.${value}`) : t("companies:detail.filters.allStates") })),
             ...(state === "Expired" ? [{ value: "Expired", label: t("companies:detail.filters.states.Expired") }] : [])] },
       ]}
       clearLabel={t("common:actions.clear")} onClear={filters.clear} />
     <Surface className="overflow-hidden" phoneFlush>
       <DataTable columns={columns} mobileRow={(member) => companyMemberPhoneRow(member, t, memberActions(member))} rows={members.data?.items ?? []} rowKey={(member) => member.memberId}
         isLoading={members.isPending} isFetching={members.isFetching} error={members.error ? apiErrorMessage(members.error, t) : undefined}
-        onRetry={() => { void members.refetch(); void counts.refetch(); }}
+        onRetry={() => { void members.refetch(); }}
         emptyTitle={filtered ? t("companies:detail.empty.filtered") : t("companies:detail.empty.all")}
         emptyAction={filtered ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined}
         sort={pagination.sort} onSortChange={pagination.toggleSort} />

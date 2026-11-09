@@ -66,7 +66,8 @@ describe("Cuentas de Plataforma", () => {
     server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list([{ ...person, displayName: null, primaryEmail: null }]))),
       http.post("/api/platform/accounts/lucia/suspend", () => new HttpResponse(null, { status: 204 })));
     const user = userEvent.setup(); const { container } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
-    const empty = await screen.findByRole("img", { name: "Sin dato" });
+    // La cuenta y «Correo o teléfono» van cada una en su columna (base de la 12): sin dato, las dos dicen la raya.
+    const [empty] = await screen.findAllByRole("img", { name: "Sin dato" });
     expect(empty).toHaveTextContent("—");
     expect(empty.closest("a")).toHaveAttribute("href", "/plataforma/cuentas/lucia");
     if (phone) {
@@ -98,7 +99,8 @@ describe("Cuentas de Plataforma", () => {
     expect(await screen.findByText("11 cuentas · 1 suspendida")).toBeVisible();
     expect(screen.getByRole("link", { name: "Lucía Fernández" })).toHaveAttribute("href", "/plataforma/cuentas/lucia");
     expect(screen.getByText("Personal + 2 organizaciones")).toBeVisible();
-    expect(screen.getByText("Nunca")).toBeVisible(); expect(screen.getByText(/Vence el/)).toHaveTextContent("Vence el 04/10/2026");
+    // Tablero Cuentas (base de la 12): un dato por celda; hasta cuándo vale la invitación lo dice su estado, sin otra línea.
+    expect(screen.getByText("Nunca")).toBeVisible(); expect(screen.queryByText(/Vence el/)).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
   it.each([
@@ -121,7 +123,8 @@ describe("Cuentas de Plataforma", () => {
     ]))));
     renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await screen.findByRole("link", { name: "Cuenta eliminada" });
     expect(screen.queryByRole("button", { name: /Acciones de (Lucía|Martín|Cuenta eliminada)/ })).not.toBeInTheDocument();
-    expect(screen.getAllByText("sin.nombre@example.com")).toHaveLength(1); expect(screen.getByText("1 organización")).toBeVisible();
+    // Tablero Cuentas: sin nombre, la cuenta se nombra por su correo, que va también en «Correo o teléfono».
+    expect(screen.getAllByText("sin.nombre@example.com")).toHaveLength(2); expect(screen.getByText("1 organización")).toBeVisible();
     expect(within(screen.getByRole("link", { name: "Cuenta eliminada" }).closest("tr")!).getAllByText("—").length).toBeGreaterThan(0);
   });
   it.each(["suspend", "reactivate", "revoke-sessions"] as const)("%s manda sólo motivo, conserva franja409 y relee al cerrar", async (path) => {
@@ -377,7 +380,8 @@ describe("Cuentas de Plataforma", () => {
     server.use(http.get("/api/platform/accounts/filter-counts", ({ request }) => HttpResponse.json(new URL(request.url).search ? crossed : counts)), http.get("/api/platform/accounts/paged", ({ request }) => { requested.push(Object.fromEntries(new URL(request.url).searchParams)); return HttpResponse.json(list([person])); }));
     const { router } = renderRouteWithProviders("/plataforma/cuentas?kind=Person&state=Active&search=lucia", { as: "platform-operator" }); await screen.findByRole("link", { name: "Lucía Fernández" });
     expect(await screen.findByText("11 cuentas · 1 suspendida")).toBeVisible(); const state = screen.getByRole("button", { name: "Activas" }); state.focus(); await user.keyboard("{ArrowDown}");
-    expect(screen.getByRole("menuitemradio", { name: /^Todos/ })).toHaveTextContent("5"); expect(screen.getByRole("menuitemradio", { name: /^Suspendidas/ })).toHaveTextContent("2"); await user.click(screen.getByRole("menuitemradio", { name: /^Suspendidas/ }));
+    // 143: las opciones de un filtro no dicen cuántas filas traen.
+    expect(screen.getByRole("menuitemradio", { name: /^Todos/ })).not.toHaveTextContent(/\d/); expect(screen.getByRole("menuitemradio", { name: /^Suspendidas/ })).toHaveTextContent(/^Suspendidas$/); await user.click(screen.getByRole("menuitemradio", { name: /^Suspendidas/ }));
     await waitFor(() => expect(requested.at(-1)).toMatchObject({ kind: "Person", state: "Suspended", search: "lucia" })); expect(router.state.location.search).toContain("state=Suspended");
     await user.click(screen.getByRole("button", { name: /^Cuenta/ })); await waitFor(() => expect(requested.at(-1)?.sort).toBe("-name"));
     await user.click(screen.getByRole("button", { name: "Limpiar" })); await waitFor(() => expect(router.state.location.search).not.toMatch(/kind=|state=|search=/));
@@ -404,7 +408,7 @@ describe("Cuentas de Plataforma", () => {
   it("en-US traduce estados, perfiles, métodos y confirmaciones", async () => {
     const user = userEvent.setup(); const { queryClient } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await screen.findByRole("link", { name: "Lucía Fernández" });
     await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture: "en-US" }); });
-    expect(await screen.findByRole("heading", { name: "Accounts" })).toBeVisible(); expect(screen.getByText("Personal + 2 organizations")).toBeVisible(); expect(screen.getByText("Email code")).toBeVisible(); expect(screen.getByText("Invitation pending")).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "Accounts" })).toBeVisible(); expect(screen.getByText("Personal + 2 organizations")).toBeVisible(); expect(screen.queryByText("Email code")).not.toBeInTheDocument(); expect(screen.getByText("Invitation pending")).toBeVisible();
     const trigger = screen.getByRole("button", { name: "Actions for Lucía Fernández" }); trigger.focus(); await user.keyboard("{ArrowDown}"); await user.click(screen.getByRole("menuitem", { name: "Suspend" })); expect(screen.getByRole("dialog")).toHaveTextContent("Suspend the account for Lucía Fernández?");
   });
   it("invitar corregido o cancelado genera otra clave y un Retry viejo no cierra el formulario nuevo", async () => {

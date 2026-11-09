@@ -68,7 +68,7 @@ export function SecurityAuditPage() {
   return <>
     <Page icon={ClipboardIcon} title={t("title")} phoneBody="flush">
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar phoneTools="filter" label={t("filters.label")} searchLabel={t("filters.search")}
+        <FilterBar phoneTools="filter" screen={t("title")} label={t("filters.label")} searchLabel={t("filters.search")}
           searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
           filters={[
             { key: "period", label: t("filters.period"), menuLabel: t("filters.periodMenu"), value: period,
@@ -84,7 +84,7 @@ export function SecurityAuditPage() {
           ]} clearLabel={t("common:actions.clear")} onClear={filters.clear} />
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={columns} rows={audit.items} rowKey={(row) => row.id}
-            mobileRow={(row) => <ListRow key={row.id} wrapTitle title={row.summary} onClick={() => select(row)}
+            mobileRow={(row) => <ListRow key={row.id} title={row.summary} onClick={() => select(row)}
               meta={<DateText value={row.occurredAtUtc} kind="shortDateTime" />}
               lines={[[row.target, row.actor].filter(Boolean).join(" · "), ...(row.reason ? [row.reason] : [])]} />}
             isLoading={audit.isPending} isFetching={audit.isFetching}

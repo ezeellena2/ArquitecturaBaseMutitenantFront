@@ -7,7 +7,8 @@ function Table({ className, refreshing, ...props }: React.ComponentProps<"table"
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      // «Criterio · Tablas» (137): la tabla cierra abajo con la línea de su última fila, salvo que toque el borde de su caja.
+      className="relative w-full overflow-x-auto last:[&_tbody>tr:last-child]:border-b-0"
     >
       <table
         data-slot="table"
@@ -36,7 +37,7 @@ function TableBody({ className, refreshing, ...props }: React.ComponentProps<"tb
     <tbody
       data-slot="table-body"
       inert={refreshing || undefined}
-      className={cn("[&_tr:last-child]:border-0", refreshing && "opacity-50", className)}
+      className={cn(refreshing && "opacity-50", className)}
       {...props}
     />
   )

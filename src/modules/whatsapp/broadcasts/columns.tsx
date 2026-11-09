@@ -36,21 +36,18 @@ function dateCell(broadcast: WhatsAppBroadcastResponse, phone: boolean): ReactNo
 
 export function createBroadcastColumns(t: TFunction, format: FormatState): Column<WhatsAppBroadcastResponse>[] {
   return [
+    // Tablero WA-Difusiones (base de la 12): un dato por celda; la plantilla y cuántos contactos, en sus columnas.
     {
-      // Tablero WA-Difusiones: el nombre y debajo la plantilla; a quiénes y debajo cuántos.
-      id: "name", header: t("whatsapp:broadcasts.columns.broadcast"), type: "custom", mobile: "primary", className: "w-[28%]",
-      cell: (broadcast) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={broadcastPath(broadcast.id)}>{broadcast.name}</Link>,
-      detail: (broadcast) => t("whatsapp:broadcasts.template", { name: broadcast.template.name }),
+      id: "name", header: t("whatsapp:broadcasts.columns.broadcast"), type: "custom", mobile: "primary", className: "w-[20%]",
+      cell: (broadcast) => <Link className="font-medium text-[var(--t1)] hover:underline" to={broadcastPath(broadcast.id)}>{broadcast.name}</Link>,
     },
-    {
-      id: "audience", header: t("whatsapp:broadcasts.columns.recipients"), type: "custom",
-      cell: (broadcast) => <span className="block truncate">{audienceLabel(broadcast.audience, t)}</span>,
-      detail: (broadcast) => t("whatsapp:broadcasts.contacts", countOf(format, broadcast.recipients)),
-    },
+    { id: "template", header: t("whatsapp:broadcasts.columns.template"), type: "text", value: (broadcast) => broadcast.template.name },
+    { id: "audience", header: t("whatsapp:broadcasts.columns.recipients"), type: "custom", cell: (broadcast) => <span>{audienceLabel(broadcast.audience, t)}</span> },
+    { id: "recipients", header: t("whatsapp:broadcasts.columns.contacts"), type: "integer", className: "w-24", value: (broadcast) => broadcast.recipients },
     { id: "status", header: t("whatsapp:broadcasts.columns.status"), type: "status", tones: broadcastStatusTones, mobile: "status", value: (broadcast) => broadcast.status },
     {
       id: "results", header: t("whatsapp:broadcasts.columns.results"), type: "custom",
-      cell: (broadcast) => { const results = resultsLabel(broadcast, t, format); return results ? <span className="block truncate">{results}</span> : <EmptyValue />; },
+      cell: (broadcast) => { const results = resultsLabel(broadcast, t, format); return results ? <span>{results}</span> : <EmptyValue />; },
     },
     { id: "date", header: t("whatsapp:broadcasts.columns.date"), type: "custom", className: "w-37.5", cell: (broadcast) => dateCell(broadcast, false) },
   ];
@@ -65,19 +62,19 @@ export function broadcastPhoneRow(broadcast: WhatsAppBroadcastResponse, t: TFunc
       [broadcast.template.name, audienceLabel(broadcast.audience, t), t("whatsapp:broadcasts.contacts", countOf(format, broadcast.recipients))].join(" · "),
       <span key="status" className="inline-flex max-w-full items-center gap-1">
         <StatusBadge tones={broadcastStatusTones} value={broadcast.status} className="text-[0.8125rem] text-[var(--t2)]" />
-        {results ? <span className="truncate">{`· ${results}`}</span> : null}
+        {results ? <span>{`· ${results}`}</span> : null}
       </span>,
     ]} trailing={trailing} />;
 }
 
-/** El contacto: su nombre y debajo su número; sin nombre, el número solo. */
+/** Tablero WA-Difusion-Resultados (base de la 12): el contacto y su número, cada uno en su columna. */
 export function createRecipientColumns(t: TFunction, status: (recipient: WhatsAppRecipientResponse) => ReactNode): Column<WhatsAppRecipientResponse>[] {
   return [
     {
-      id: "contact", header: t("whatsapp:broadcasts.recipients.columns.contact"), type: "custom", mobile: "primary", className: "w-[40%]",
-      cell: (recipient) => <span className="block truncate font-medium text-[var(--t1)]">{recipient.contactName ?? <PhoneText value={recipient.displayNumber} />}</span>,
-      detail: (recipient) => recipient.contactName ? <PhoneText value={recipient.displayNumber} /> : null,
+      id: "contact", header: t("whatsapp:broadcasts.recipients.columns.contact"), type: "custom", mobile: "primary", className: "w-[30%]",
+      cell: (recipient) => <span className="font-medium text-[var(--t1)]">{recipient.contactName ?? <PhoneText value={recipient.displayNumber} />}</span>,
     },
+    { id: "number", header: t("whatsapp:broadcasts.recipients.columns.number"), type: "custom", className: "w-[22%]", cell: (recipient) => <PhoneText value={recipient.displayNumber} /> },
     { id: "status", header: t("whatsapp:broadcasts.recipients.columns.status"), type: "custom", mobile: "status", cell: status },
     { id: "changedAtUtc", header: t("whatsapp:broadcasts.recipients.columns.changed"), type: "custom", className: "w-40", cell: (recipient) => <DateText value={recipient.changedAtUtc} kind="shortDateTime" /> },
   ];

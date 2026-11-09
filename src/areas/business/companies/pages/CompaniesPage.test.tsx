@@ -41,16 +41,14 @@ describe("CompaniesPage", () => {
     expect(await screen.findByRole("link", { name: "Delta S.A." })).toHaveAttribute("href", "/org/empresas/company-1");
     // Tablero Empresas: el nombre en el color del texto y «Miembros» angosta, con el número a la derecha.
     expect(screen.getByRole("link", { name: "Delta S.A." })).toHaveClass("font-medium", "text-[var(--t1)]");
-    expect(screen.getByRole("columnheader", { name: "Empresa" })).toHaveClass("w-[35%]");
+    // Tablero Empresas (base de la 12): un dato por celda; el CUIT va en su columna, entero y sin partirse en sus guiones.
+    expect(screen.getByRole("columnheader", { name: "Empresa" })).toHaveClass("w-[28%]");
     expect(screen.getByRole("columnheader", { name: "Miembros" })).toHaveClass("w-28", "text-right");
     expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("w-40.5");
-    expect(screen.queryByRole("columnheader", { name: "CUIT" })).not.toBeInTheDocument();
     expect(screen.getAllByRole("columnheader").map((header) => header.textContent))
-      .toEqual(["Empresa", "Zona horaria", "Miembros", "Estado", "Acciones"]);
-    expect(screen.getByText("CUIT 30-71234567-1")).toBeVisible();
-    // «Criterio · Tablas» (lienzo v92): el CUIT va en la segunda línea gris, debajo del nombre, y la fila mide 52.
-    expect(screen.getByText("CUIT 30-71234567-1").closest('[data-slot="cell-detail"]')).not.toBeNull();
-    expect(screen.getAllByRole("row")[1]).toHaveClass("h-13");
+      .toEqual(["Empresa▲", "CUIT", "Zona horaria", "Miembros", "Estado", "Acciones"]);
+    expect(screen.getByText("30-71234567-1")).toHaveClass("whitespace-nowrap");
+    expect(screen.getAllByRole("row")[1]).toHaveClass("h-10");
     // Tablero Empresas: «1 empresa · 1 activa» y el filtro «Estado: todas».
     expect(screen.getByText("1 empresa · 1 activa")).toBeVisible();
     // Tableros de listas (.pagina, compacto): 14 entre la caja de los filtros y la tabla.
@@ -58,7 +56,8 @@ describe("CompaniesPage", () => {
     expect(await axe(container)).toHaveNoViolations();
 
     await user.click(screen.getByRole("button", { name: "Estado: todas" }));
-    expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent?.replace(/\d+$/, ""))).toEqual(["Todas", "Activas", "Inactivas"]);
+    // 143: las opciones de un filtro no dicen cuántas filas traen.
+    expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent)).toEqual(["Todas", "Activas", "Inactivas"]);
     await user.click(await screen.findByRole("menuitemradio", { name: /Inactivas/ }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Inactive"));
     expect(router.state.location.search).toContain("status=Inactive");
@@ -79,7 +78,7 @@ describe("CompaniesPage", () => {
     expect(await screen.findByRole("link", { name: "Empresa 50" })).toHaveAttribute("href", "/org/empresas/company-50");
     expect(screen.getAllByRole("row")).toHaveLength(51);
     expect(screen.getByText(/50 empresas/)).toBeVisible();
-    expect(screen.getByText("Sin CUIT")).toHaveAttribute("data-slot", "cell-detail");
+    expect(document.querySelector('[data-slot="cell-detail"]')).toBeNull();
     expect(container.querySelector("table")).toBeVisible();
   });
 

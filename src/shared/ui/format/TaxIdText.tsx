@@ -1,3 +1,4 @@
+import { cn } from "@/shared/lib/utils";
 import { useFormat } from "@/shared/format/useFormat";
 import { EmptyValue, FormatLoading } from "./EmptyValue";
 
@@ -10,5 +11,5 @@ export function TaxIdText({ value, withType = false, className }: { value: TaxId
   if (value == null) return <EmptyValue className={className} />;
   const number = format.formatTaxId({ type: value.type, number: value.number });
   const type = withType ? format.referenceData.taxIdTypes.find((item) => item.code === value.type)?.name : undefined;
-  return <span className={className}>{type ? `${type} ${number}` : number}</span>;
+  return <span className={cn("whitespace-nowrap", className)}>{type ? `${type} ${number}` : number}</span>;
 }

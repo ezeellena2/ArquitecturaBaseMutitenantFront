@@ -33,7 +33,10 @@ describe("Equipos de la organización", () => {
     expect(screen.getByText("A los 10 minutos")).toBeVisible();
     expect(screen.getByText("Sin aviso")).toBeVisible();
     expect(screen.getByText("Lucía Fernández, Carolina Vega")).toBeVisible();
-    expect(screen.getByText("1 persona")).toBeVisible();
+    // Tablero WA-Equipos (base de la 12): la bandeja, quiénes y cuántos, cada uno en su columna.
+    expect(screen.getByRole("columnheader", { name: "Bandeja" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Cantidad" })).toBeVisible();
+    expect(screen.queryByText("1 persona")).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -153,7 +156,8 @@ describe("Equipos de Plataforma", () => {
     const { user, container } = mountWhatsApp(whatsappOperator(), "/plataforma/whatsapp/equipos");
     expect(await screen.findByText("Soporte")).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Operadores" })).toBeVisible();
-    expect(screen.getByText("2 operadores")).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Cantidad" })).toBeVisible();
+    expect(screen.queryByRole("columnheader", { name: "Bandeja" })).not.toBeInTheDocument();
     expect(screen.queryByText("Bandeja Clientes")).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
 

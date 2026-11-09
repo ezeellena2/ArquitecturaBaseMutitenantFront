@@ -19,7 +19,8 @@
     "category": "Type",
     "status": "Status in Meta",
     "updated": "Last changed",
-    "actions": "Actions"
+    "actions": "Actions",
+    "languages": "Languages"
   },
   "form": {
     "name": "Name",

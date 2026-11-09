@@ -89,14 +89,16 @@ describe("listas en el teléfono", () => {
     expect(screen.getByRole("listitem")).toHaveTextContent("Tomás Acostatomas@delta.test");
   });
 
-  it("los filtros son íconos en la barra y se eligen en una hoja", async () => {
+  // Tableros M-Usuarios y M-FRM-Catalogos: el filtro abre «Filtros» a pantalla completa, sin cantidades; cada opción se
+  // aplica al tocarla y «Listo» vuelve a la lista. Con algo aplicado, el ícono de la barra lleva un punto.
+  it("los filtros son íconos en la barra y se eligen en «Filtros», a pantalla completa", async () => {
     const onChange = vi.fn();
     const onSearchChange = vi.fn();
-    // Las cantidades de las opciones pasan por NumberText: necesitan el formato de los providers.
-    renderWithProviders(<MemoryRouter><AppChromeProvider value={phone}><Page title="Usuarios">
-      <FilterBar label="Filtrar usuarios" searchLabel="Buscar por nombre o correo" searchValue="" onSearchChange={onSearchChange} clearLabel="Limpiar" onClear={vi.fn()}
-        filters={[{ key: "state", label: "Estado: todos", menuLabel: "Filtrar por estado", value: "", active: false, onChange,
-          options: [{ value: "all", label: "Todos", count: 11 }, { value: "Active", label: "Activos", count: 6 }] }]} />
+    const onClear = vi.fn();
+    const props = { label: "Filtrar usuarios", searchLabel: "Buscar por nombre o correo", searchValue: "", onSearchChange, clearLabel: "Limpiar", onClear, screen: "Usuarios" };
+    const states = [{ value: "all", label: "Todos" }, { value: "Active", label: "Activos" }];
+    const { rerender } = renderWithProviders(<MemoryRouter><AppChromeProvider value={phone}><Page title="Usuarios">
+      <FilterBar {...props} filters={[{ key: "state", label: "Estado: todos", menuLabel: "Filtrar por estado", value: "", active: false, onChange, options: states }]} />
     </Page></AppChromeProvider></MemoryRouter>);
 
     const bar = screen.getByRole("heading", { level: 1, name: "Usuarios" }).closest("header")!;
@@ -105,12 +107,30 @@ describe("listas en el teléfono", () => {
     await userEvent.type(screen.getByRole("searchbox", { name: "Buscar por nombre o correo" }), "L");
     expect(onSearchChange).toHaveBeenLastCalledWith("L");
 
-    await userEvent.click(within(bar).getByRole("button", { name: "Filtrar usuarios" }));
-    const sheet = await screen.findByRole("dialog", { name: "Filtrar usuarios" });
+    const trigger = within(bar).getByRole("button", { name: "Filtrar usuarios" });
+    expect(trigger.querySelector("[data-slot='filter-dot']")).toBeNull();
+    await userEvent.click(trigger);
+    const sheet = await screen.findByRole("dialog", { name: "Filtros" });
+    expect(sheet).toHaveAccessibleDescription("Usuarios");
+    expect(sheet).toHaveClass("max-md:inset-0", "max-md:h-dvh", "max-md:rounded-none");
     expect(within(sheet).getByText("Estado")).toBeVisible();
-    expect(within(sheet).getByRole("radio", { name: /Todos/ })).toBeChecked();
-    await userEvent.click(within(sheet).getByRole("radio", { name: /Activos/ }));
+    expect(within(sheet).getByRole("radio", { name: "Todos" })).toBeChecked();
+    expect(sheet).not.toHaveTextContent(/\d/);
+    await userEvent.click(within(sheet).getByRole("radio", { name: "Activos" }));
     expect(onChange).toHaveBeenCalledWith("Active");
+    // Cada cambio se aplica enseguida: la pantalla sigue abierta hasta «Listo».
+    expect(screen.getByRole("dialog", { name: "Filtros" })).toBeVisible();
+    expect(within(sheet).getByRole("button", { name: "Limpiar todo" })).toBeDisabled();
+    await userEvent.click(within(sheet).getByRole("button", { name: "Listo" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    rerender(<MemoryRouter><AppChromeProvider value={phone}><Page title="Usuarios">
+      <FilterBar {...props} filters={[{ key: "state", label: "Estado: todos", menuLabel: "Filtrar por estado", value: "Active", active: true, onChange, options: states }]} />
+    </Page></AppChromeProvider></MemoryRouter>);
+    expect(within(bar).getByRole("button", { name: "Filtrar usuarios" }).querySelector("[data-slot='filter-dot']")).not.toBeNull();
+    await userEvent.click(within(bar).getByRole("button", { name: "Filtrar usuarios" }));
+    await userEvent.click(within(await screen.findByRole("dialog", { name: "Filtros" })).getByRole("button", { name: "Limpiar todo" }));
+    expect(onClear).toHaveBeenCalledOnce();
   });
 
   // Tableros M-Roles, M-Empresas y M-Auditoria-Org: solo el filtro en la barra; M-Empresa, ni la lupa ni el filtro.

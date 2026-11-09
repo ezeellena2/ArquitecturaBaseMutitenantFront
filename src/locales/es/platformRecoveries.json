@@ -10,7 +10,7 @@
   "noAccount": "Sin cuenta",
   "methods": "{{previous}} → {{next}}",
   "rowActions": "Acciones de {{name}}",
-  "columns": { "account": "Cuenta", "previous": "Método de antes", "new": "Método nuevo", "status": "Estado", "actions": "Acciones" },
+  "columns": { "account": "Cuenta", "createdAt": "Fecha y hora", "previous": "Método de antes", "new": "Método nuevo", "status": "Estado", "actions": "Acciones" },
   "filters": { "label": "Filtrar pedidos de recuperación", "phone": "Filtros", "search": "Buscar por cuenta, correo o teléfono", "status": "Estado: todos", "statusMenu": "Filtrar por estado", "statuses": { "all": "Todos", "Pending": "Pendientes", "Approved": "Aprobados", "Rejected": "Rechazados" } },
   "empty": { "all": "No hay pedidos de recuperación", "filtered": "Ningún pedido coincide con los filtros", "clear": "Limpiar filtros" },
   "actions": { "review": "Revisar", "detail": "Ver detalle", "approve": "Aprobar", "reject": "Rechazar", "approving": "Aprobando…", "rejecting": "Rechazando…" },

@@ -14,7 +14,8 @@
     "company": "Serves",
     "status": "Status",
     "month": "This month",
-    "actions": "Actions"
+    "actions": "Actions",
+    "verifiedName": "Verified name"
   },
   "wholeOrganization": "The whole organization",
   "detail": {

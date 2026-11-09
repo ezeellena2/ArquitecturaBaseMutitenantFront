@@ -65,9 +65,10 @@ describe("composición real de accesos e inicios", () => {
     const pending = screen.getByRole("region", { name: "Para resolver" });
     expect(pending).toBeInTheDocument();
     expect(await within(pending).findByText("Gamma S.A.")).toBeVisible();
-    expect(within(pending).getByText("Julio Pérez")).toBeVisible();
+    // Tablero de Plataforma (base de la 12): un dato por celda; el Dueño y la cuenta ya no van debajo del pendiente.
+    expect(within(pending).queryByText("Julio Pérez")).not.toBeInTheDocument();
     expect(within(pending).getByText("pa•••@kappa.ejemplo.com")).toBeVisible();
-    expect(within(pending).getByText("Pablo Ortiz")).toBeVisible();
+    expect(within(pending).queryByText("Pablo Ortiz")).not.toBeInTheDocument();
     expect(within(pending).getByText("4")).toBeVisible();
     expect(within(pending).getAllByRole("link", { name: "Revisar" }).map((link) => link.getAttribute("href"))).toEqual(["/plataforma/organizaciones/tenant-3", "/plataforma/organizaciones/tenant-4", "/plataforma/recuperaciones?status=Pending", "/plataforma/recuperaciones?status=Pending"]);
     expect(screen.getAllByRole("heading", { name: "Inicio" })).toHaveLength(1);

@@ -38,8 +38,12 @@ describe("OrganizationsPage", () => {
     expect(await screen.findByRole("heading", { name: "Organizaciones", level: 1 })).toBeVisible();
     expect(await screen.findByText("7 organizaciones · 2 esperan aprobación")).toBeVisible();
     expect(screen.getByRole("link", { name: "Grupo Delta" })).toHaveAttribute("href", "/plataforma/organizaciones/delta");
-    expect(screen.getByText(/Alta/)).toHaveTextContent("Alta 12/01/2026 · Autoservicio");
-    expect(screen.getByText("lucia@example.com")).toBeVisible();
+    // Tablero Organizaciones (base de la 12): un dato por celda; el alta en su columna y el Dueño por su nombre.
+    expect(screen.getByRole("columnheader", { name: "Alta" })).toBeVisible();
+    expect(screen.getByRole("cell", { name: "12/01/2026" })).toBeVisible();
+    expect(screen.getByRole("cell", { name: "Lucía Fernández" })).toBeVisible();
+    expect(screen.queryByText("lucia@example.com")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Autoservicio/)).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Crear organización" })).toBeEnabled();
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -82,7 +86,8 @@ describe("OrganizationsPage", () => {
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("search")).toBe("Delta"));
     expect(router.state.location.search).toContain("search=Delta"); expect(router.state.location.search).not.toContain("page=2");
     await user.click(screen.getByRole("button", { name: "Estado: todas" }));
-    expect(await screen.findByRole("menuitemradio", { name: /^Activa/u })).toHaveTextContent("Activa1");
+    // 143: las opciones de un filtro no dicen cuántas filas traen.
+    expect(await screen.findByRole("menuitemradio", { name: /^Activa/u })).toHaveTextContent(/^Activa$/u);
     await user.click(screen.getByRole("menuitemradio", { name: /^Activa/u }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Active"));
     await user.click(screen.getByRole("button", { name: "Origen: todos" }));
@@ -247,10 +252,14 @@ describe("OrganizationsPage", () => {
       expect(await axe(container)).toHaveNoViolations();
     } finally { restore(); }
   });
-  it("la tabla con dueño sin nombre muestra — y la singular de espera queda en la banda", async () => {
+  it("la tabla con dueño sin nombre muestra su correo, sin nada muestra — y la singular de espera queda en la banda", async () => {
     server.use(http.get("/api/platform/tenants/paged", () => HttpResponse.json(list([{ ...organization, ownerName: null }]))), http.get("/api/platform/tenants/filter-counts", () => HttpResponse.json({ ...counts, statuses: [{ status: "PendingApproval", count: 1 }] })));
+    const first = renderRouteWithProviders("/plataforma", { as: "platform-operator" });
+    expect(await screen.findByText("7 organizaciones · 1 espera aprobación")).toBeVisible(); expect(screen.getByRole("cell", { name: "lucia@example.com" })).toBeVisible(); expect(screen.getByText("1 de 1")).toBeVisible();
+    first.unmount();
+    server.use(http.get("/api/platform/tenants/paged", () => HttpResponse.json(list([{ ...organization, ownerName: null, ownerEmail: null }]))));
     renderRouteWithProviders("/plataforma", { as: "platform-operator" });
-    expect(await screen.findByText("7 organizaciones · 1 espera aprobación")).toBeVisible(); expect(screen.getByLabelText("Sin dato")).toHaveTextContent("—"); expect(screen.getByText("1 de 1")).toBeVisible();
+    expect(await screen.findByLabelText("Sin dato")).toHaveTextContent("—");
   });
   it.each([false, true])("vacío filtered=%s ofrece el texto y la recuperación del tablero", async (filtered) => {
     server.use(http.get("/api/platform/tenants/paged", () => HttpResponse.json(list([]))));
@@ -269,6 +278,6 @@ describe("OrganizationsPage", () => {
   it("en en-US traduce la pantalla y presenta la fecha con esa cultura", async () => {
     const { queryClient } = renderRouteWithProviders("/plataforma", { as: "platform-operator" }); await screen.findByRole("link", { name: "Grupo Delta" });
     await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture: "en-US" }); });
-    expect(await screen.findByRole("heading", { name: "Organizations", level: 1 })).toBeVisible(); await waitFor(() => expect(screen.getByText(/Created/)).toHaveTextContent("Created 01/12/2026 · Self service")); expect(screen.getByRole("button", { name: "Create organization" })).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "Organizations", level: 1 })).toBeVisible(); await waitFor(() => expect(screen.getByRole("cell", { name: "01/12/2026" })).toBeVisible()); expect(screen.getByRole("columnheader", { name: "Created" })).toBeVisible(); expect(screen.getByRole("button", { name: "Create organization" })).toBeVisible();
   });
 });

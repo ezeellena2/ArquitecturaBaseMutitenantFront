@@ -29,7 +29,9 @@ export function organizationOwners(organization: PlatformTenantDetailResponse): 
 }
 export function createOrganizationOwnerColumns(t: TFunction): Column<OwnerRow>[] {
   return [
-    { id: "name", header: t("platformTenants:columns.owner"), type: "text", mobile: "primary", value: (row) => row.name, detail: (row) => row.email },
+    // Tablero Organizacion (Dueños, base de la 12): el correo en su columna.
+    { id: "name", header: t("platformTenants:columns.owner"), type: "text", mobile: "primary", value: (row) => row.name },
+    { id: "email", header: t("platformTenants:detail.email"), type: "text", value: (row) => row.email },
     { id: "lastSignInAtUtc", header: t("platformTenants:detail.lastSignIn"), type: "custom", cell: (row) => row.lastSignInAtUtc ? <DateText value={row.lastSignInAtUtc} kind="relative" /> : t("platformTenants:detail.never") },
     { id: "state", header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones: ownerStatusTones, value: (row) => row.state },
   ];
@@ -58,10 +60,11 @@ export function organizationPhoneRow(organization: PlatformTenantResponse, t: TF
 }
 export function createOrganizationColumns(t: TFunction): Column<PlatformTenantResponse>[] {
   return [
-    { id: "name", header: t("platformTenants:columns.organization"), type: "custom", mobile: "primary", sortable: true,
-      cell: (organization) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={organizationPath(organization.id)}>{organization.name}</Link>,
-      detail: (organization) => <>{t("platformTenants:columns.created")} <DateText value={organization.createdAtUtc} kind="date" />{" · "}<EnumText enum="TenantRegistrationSource" value={organization.source} /></> },
-    { id: "ownerName", header: t("platformTenants:columns.owner"), type: "text", value: (organization) => organization.ownerName, detail: (organization) => organization.ownerEmail || null },
+    // Tablero Organizaciones (base de la 12): un dato por celda; el alta en su columna y el Dueño por su nombre o su correo.
+    { id: "name", header: t("platformTenants:columns.organization"), type: "custom", mobile: "primary", sortable: true, className: "w-[26%]",
+      cell: (organization) => <Link className="font-medium text-[var(--t1)] hover:underline" to={organizationPath(organization.id)}>{organization.name}</Link> },
+    { id: "createdAtUtc", header: t("platformTenants:columns.created"), type: "date", className: "w-30", value: (organization) => organization.createdAtUtc },
+    { id: "ownerName", header: t("platformTenants:columns.owner"), type: "text", value: (organization) => organization.ownerName || organization.ownerEmail || null },
     { id: "companyCount", header: t("platformTenants:columns.companies"), type: "integer", value: (organization) => organization.companyCount },
     { id: "memberCount", header: t("platformTenants:columns.members"), type: "integer", value: (organization) => organization.memberCount },
     { id: "status", header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones: tenantStatusTones, value: (organization) => organization.status },

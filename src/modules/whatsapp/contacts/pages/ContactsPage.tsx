@@ -71,7 +71,7 @@ export function ContactsPage(_props: ModuleContentProps) {
       barAction={phone ? { label: t("whatsapp:contacts.import.short"), onClick: openImport } : undefined}
       actions={phone ? undefined : <Button type="button" onClick={openImport}>{t("whatsapp:contacts.import.open")}</Button>}>
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar label={t("whatsapp:contacts.filters.label")} searchLabel={t("whatsapp:contacts.filters.search")}
+        <FilterBar screen={t("whatsapp:contacts.title")} label={t("whatsapp:contacts.filters.label")} searchLabel={t("whatsapp:contacts.filters.search")}
           searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
           filters={[
             { key: "tag", label: t("whatsapp:contacts.filters.tag"), menuLabel: t("whatsapp:contacts.filters.tagMenu"), remote: tags.remote,

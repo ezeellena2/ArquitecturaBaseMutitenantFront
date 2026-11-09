@@ -93,7 +93,8 @@
     "expiresPrefix": "Vence",
     "expiredPrefix": "Venció",
     "expiresInline": "vence",
-    "expiredInline": "venció"
+    "expiredInline": "venció",
+    "expires": "Vence"
   },
   "back": "Volver a Empresas",
   "backHome": "Volver al inicio",

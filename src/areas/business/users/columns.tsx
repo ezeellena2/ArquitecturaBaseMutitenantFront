@@ -8,7 +8,6 @@ import type { ReactNode } from "react";
 import { ListRow, RowAvatar } from "@/shared/ui/app/ListRow";
 import { defineStatusTones } from "@/shared/format/statusTones";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
-import { StatusDetail } from "@/shared/ui/StatusDot";
 import { PhoneText } from "@/shared/ui/format/PhoneText";
 import type { FormatState } from "@/shared/format/useFormat";
 
@@ -41,7 +40,7 @@ export function userPhoneRow(user: OrganizationUserResponse, t: TFunction, trail
     : [...organizationRoles, ...(company ? [company] : [])];
   const status = <span className="inline-flex max-w-full items-center gap-1">
     <StatusBadge tones={userStateTones} value={user.state} className="text-[0.78125rem] text-[var(--t2)]" />
-    {details.map((detail, index) => <span key={index} className="truncate">{" · "}{detail}</span>)}
+    {details.map((detail, index) => <span key={index}>{" · "}{detail}</span>)}
   </span>;
   const named = Boolean(user.displayName);
   return <ListRow key={user.memberId} to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}
@@ -54,32 +53,28 @@ export function userPhoneRow(user: OrganizationUserResponse, t: TFunction, trail
 export function createUserColumns(t: TFunction): Column<OrganizationUserResponse>[] {
   return [
     {
-      // Anchos del tablero Usuarios: 1.6fr, 1fr, 1.3fr y 190 px, más los márgenes de cada celda. Debajo del nombre, el
-      // correo (Criterio · Tablas).
-      id: "displayName", header: t("users:columns.person"), type: "custom", mobile: "primary", sortable: true, className: "w-[30%]",
-      cell: (user) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}>{user.displayName || userContact(user) || <EmptyValue />}</Link>,
-      detail: (user) => user.displayName && user.displayName !== user.email ? userContact(user) : null,
+      // Tablero Usuarios (base de la 12): un dato por celda; el correo y hasta cuándo vale una invitación, en sus columnas.
+      id: "displayName", header: t("users:columns.person"), type: "custom", mobile: "primary", sortable: true, className: "w-[20%]",
+      cell: (user) => <Link className="font-medium text-[var(--t1)] hover:underline" to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}>{user.displayName || userContact(user) || <EmptyValue />}</Link>,
     },
+    { id: "email", header: t("users:columns.email"), type: "custom", className: "w-[22%]", cell: (user) => userContact(user) ?? <EmptyValue /> },
     {
-      id: "roles", header: t("users:columns.organizationRoles"), type: "text", className: "w-[19%]",
+      id: "roles", header: t("users:columns.organizationRoles"), type: "text", className: "w-[15%]",
       value: (user) => user.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || null,
     },
     {
       id: "companies", header: t("users:columns.companies"), type: "custom",
-      // Tablero Usuarios: la primera empresa con «y N más», y debajo sus roles.
+      // Tablero Usuarios: la primera empresa con «y N más».
       cell: (user) => {
         const [first, ...others] = user.companies;
         if (!first) return <EmptyValue />;
-        return <span className="block truncate text-[var(--t1)]">{others.length > 0 ? t("users:columns.companyAndMore", { company: first.companyName, count: others.length }) : first.companyName}</span>;
+        return <span className="text-[var(--t1)]">{others.length > 0 ? t("users:columns.companyAndMore", { company: first.companyName, count: others.length }) : first.companyName}</span>;
       },
-      detail: (user) => user.companies[0]?.roles.map((role) => role.name).join(", ") || null,
     },
+    { id: "state", header: t("users:columns.state"), type: "status", tones: userStateTones, value: (user) => user.state, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
     {
-      id: "state", header: t("users:columns.state"), type: "status", tones: userStateTones, value: (user) => user.state, mobile: "status", className: "w-50.5 max-md:w-[38%]",
-      // Una invitación dice hasta cuándo vale, debajo de la palabra del estado.
-      detail: (user) => user.invitationExpiresAtUtc && (user.state === "Invited" || user.state === "Expired")
-        ? <StatusDetail>{t(user.state === "Expired" ? "users:columns.expiredPrefix" : "users:columns.expiresPrefix")} <DateText value={user.invitationExpiresAtUtc} kind="date" /></StatusDetail>
-        : null,
+      id: "invitationExpiresAtUtc", header: t("users:columns.expires"), type: "date", className: "w-30",
+      value: (user) => user.state === "Invited" || user.state === "Expired" ? user.invitationExpiresAtUtc ?? null : null,
     },
   ];
 }

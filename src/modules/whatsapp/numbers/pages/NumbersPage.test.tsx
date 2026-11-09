@@ -69,7 +69,9 @@ describe("Números", () => {
     expect(await screen.findByText("1.240 ·", { exact: false })).toBeVisible();
     expect(screen.getByText("240 se cobran")).toBeVisible();
     expect(screen.getByText("310 de 1.000 gratis")).toBeVisible();
-    expect(screen.getByText("Grupo Delta · también en la app")).toBeVisible();
+    // Tablero WA-Admin (base de la 12): el nombre verificado va en su columna.
+    expect(screen.getByRole("cell", { name: "Grupo Delta" })).toBeVisible();
+    expect(screen.queryByText(/también en la app/)).not.toBeInTheDocument();
     expect(screen.getByText("Toda la organización")).toBeVisible();
     expect(document.querySelector("[data-slot=page-subline]")).toHaveTextContent("2 números·1 sin medio de pago");
     // El SDK de Facebook no se pide al abrir la pantalla.

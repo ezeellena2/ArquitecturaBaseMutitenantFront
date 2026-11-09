@@ -37,8 +37,7 @@ export function PlatformToResolve() {
     ...(canRecoveries ? recoveries.data?.items.map((data): PendingRow => ({ kind: "recovery", data })) ?? [] : []),
   ];
   const columns: Column<PendingRow>[] = [
-    { id: "title", header: t("home:toResolve.pending"), type: "custom", mobile: "primary", className: "w-[48%]", cell: (row) => row.kind === "organization" ? row.data.name : <LoginMethodText type={row.data.previousMethodType} value={row.data.previousMethod} />,
-      detail: (row) => row.kind === "organization" ? row.data.ownerName : row.data.accountId ? row.data.accountName : null },
+    { id: "title", header: t("home:toResolve.pending"), type: "custom", mobile: "primary", className: "w-[48%]", cell: (row) => row.kind === "organization" ? row.data.name : <LoginMethodText type={row.data.previousMethodType} value={row.data.previousMethod} /> },
     { id: "state", header: t("home:toResolve.state"), type: "custom", cell: (row) => row.kind === "organization" ? <StatusBadge tones={tenantStatusTones} value={row.data.status} /> : <StatusBadge tones={recoveryStatusTones} value={row.data.status} /> },
     { id: "since", header: t("home:toResolve.since"), type: "date", className: "w-26", value: (row) => row.data.createdAtUtc },
     { id: "action", header: t("home:toResolve.action"), type: "actions", className: "w-24!", cell: (row) => <Link className="text-[0.8125rem] font-semibold text-[var(--marca-tx)] hover:underline" to={row.kind === "organization" ? `/plataforma/organizaciones/${encodeURIComponent(row.data.id)}` : "/plataforma/recuperaciones?status=Pending"}>{t("platformRecoveries:actions.review")}</Link> },

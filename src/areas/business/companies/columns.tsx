@@ -10,7 +10,6 @@ import { defineStatusTones, type StatusTones } from "@/shared/format/statusTones
 import type { CompanyMemberState } from "@/shared/api/types";
 import { DateText } from "@/shared/ui/format/DateText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
-import { StatusDetail } from "@/shared/ui/StatusDot";
 import { isPast } from "@/shared/time/serverClock";
 import type { FormatState } from "@/shared/format/useFormat";
 import { countOf } from "@/shared/format/countOf";
@@ -38,7 +37,7 @@ export function companyPhoneRow(company: CompanyResponse, t: TFunction, format: 
     meta={t("companies:phone.members", countOf(format, company.memberCount))}
     lines={[company.taxId ? <TaxIdText key="taxId" value={company.taxId} withType /> : t("companies:withoutTaxId"),
       <span key="state" className="inline-flex max-w-full items-center gap-1"><StatusBadge tones={companyStatusTones} value={company.status} className="text-[0.8125rem] text-[var(--t2)]" />
-        <span className="truncate">{" · "}<TimeZoneText value={company.timeZoneId} /></span></span>]}
+        <span>{" · "}<TimeZoneText value={company.timeZoneId} /></span></span>]}
     trailing={trailing} />;
 }
 
@@ -56,22 +55,25 @@ function memberState(member: CompanyMember): CompanyMemberDisplayState {
   return isCompanyInvitation(member) && member.invitationExpiresAtUtc && isPast(member.invitationExpiresAtUtc) ? "Expired" : member.state;
 }
 
-/// Hasta cuándo vale una invitación: «Vence …» o «Venció …» debajo del estado en la compu (Criterio · Tablas) y «vence …»
-/// o «venció …», con la fecha corta, al lado del estado en el teléfono (tableros Empresa y M-Empresa, v108).
-function invitationExpiry(member: CompanyMember, t: TFunction, phone: boolean): ReactNode {
-  if (!isCompanyInvitation(member) || !member.invitationExpiresAtUtc) return null;
-  const expired = memberState(member) === "Expired";
-  const label = phone ? (expired ? "companies:memberColumns.expiredInline" : "companies:memberColumns.expiresInline")
-    : expired ? "companies:memberColumns.expiredPrefix" : "companies:memberColumns.expiresPrefix";
-  return <>{t(label)} <DateText value={member.invitationExpiresAtUtc} kind={phone ? "shortDate" : "date"} /></>;
+/// Hasta cuándo vale una invitación: en la compu, en su columna «Vence» (un dato por celda); en el teléfono, «vence …» o
+/// «venció …» al lado del estado (tableros Empresa y M-Empresa, v108).
+function invitationExpiresAt(member: CompanyMember): string | null {
+  return isCompanyInvitation(member) ? member.invitationExpiresAtUtc ?? null : null;
+}
+
+function invitationExpiry(member: CompanyMember, t: TFunction): ReactNode {
+  const expiresAt = invitationExpiresAt(member);
+  if (!expiresAt) return null;
+  const label = memberState(member) === "Expired" ? "companies:memberColumns.expiredInline" : "companies:memberColumns.expiresInline";
+  return <>{t(label)} <DateText value={expiresAt} kind="shortDate" /></>;
 }
 
 /// Tablero M-Empresa: en el teléfono cada miembro es una fila con su círculo, el correo y, abajo, sus roles, el estado y,
 /// si es una invitación, hasta cuándo vale. Esa línea no se corta: si no entra, sigue abajo (.w-conv .l3).
 export function companyMemberPhoneRow(member: CompanyMember, t: TFunction, trailing: ReactNode): ReactNode {
   const roles = member.roles.map((role) => role.name).join(", ");
-  const expiry = invitationExpiry(member, t, true);
-  return <ListRow key={member.memberId} leading={<RowAvatar name={member.displayName} />} title={member.displayName} wrapLines
+  const expiry = invitationExpiry(member, t);
+  return <ListRow key={member.memberId} leading={<RowAvatar name={member.displayName} />} title={member.displayName}
     lines={[member.email ?? "", <span key="state">{roles ? `${roles} · ` : null}
       <StatusBadge tones={companyMemberStateTones} value={memberState(member)} className="text-[0.78125rem] text-[var(--t2)]" />
       {expiry ? <>{" · "}{expiry}</> : null}</span>]}
@@ -80,13 +82,12 @@ export function companyMemberPhoneRow(member: CompanyMember, t: TFunction, trail
 
 export function createCompanyColumns(t: TFunction): Column<CompanyResponse>[] {
   return [
+    // Tablero Empresas (base de la 12): un dato por celda; el CUIT va en su columna y, sin CUIT, una raya.
     {
-      // Anchos del tablero Empresas: 1.6fr, 1.4fr, 100 px y 150 px, más los márgenes de cada celda. Debajo del nombre, el
-      // CUIT o «Sin CUIT» (Criterio · Tablas).
-      id: "name", header: t("companies:columns.name"), type: "custom", mobile: "primary", sortable: true, className: "w-[35%]",
-      cell: (company) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/empresas/${encodeURIComponent(company.id)}`}>{company.name}</Link>,
-      detail: (company) => company.taxId ? <TaxIdText value={company.taxId} withType /> : t("companies:withoutTaxId"),
+      id: "name", header: t("companies:columns.name"), type: "custom", mobile: "primary", sortable: true, className: "w-[28%]",
+      cell: (company) => <Link className="font-medium text-[var(--t1)] hover:underline" to={`/org/empresas/${encodeURIComponent(company.id)}`}>{company.name}</Link>,
     },
+    { id: "taxId", header: t("companies:columns.taxId"), type: "taxId", className: "w-38", value: (company) => company.taxId },
     { id: "timeZoneId", header: t("companies:columns.timeZone"), type: "timeZone", value: (company) => company.timeZoneId },
     { id: "memberCount", header: t("companies:columns.members"), type: "integer", className: "w-28", value: (company) => company.memberCount },
     { id: "status", header: t("companies:columns.status"), type: "status", tones: companyStatusTones, value: (company) => company.status, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
@@ -95,14 +96,12 @@ export function createCompanyColumns(t: TFunction): Column<CompanyResponse>[] {
 
 export function createCompanyMemberColumns(t: TFunction): Column<CompanyMember>[] {
   return [
-    // Anchos del tablero Empresa: 1.6fr, 1.4fr y 150 px, más los márgenes de cada celda (con «Miembro» en el 41,5 %, «Roles en
-    // la empresa» arranca donde el tablero). Debajo del nombre, el correo.
-    { id: "displayName", header: t("companies:memberColumns.name"), type: "custom", mobile: "primary", sortable: true, className: "w-[41.5%]",
-      cell: (member) => <span className="block truncate font-medium text-[var(--t1)]">{member.displayName}</span>,
-      detail: (member) => member.email },
+    // Tablero Empresa (base de la 12): un dato por celda; el correo y hasta cuándo vale una invitación, en sus columnas.
+    { id: "displayName", header: t("companies:memberColumns.name"), type: "custom", mobile: "primary", sortable: true, className: "w-[24%]",
+      cell: (member) => <span className="font-medium text-[var(--t1)]">{member.displayName}</span> },
+    { id: "email", header: t("companies:memberColumns.email"), type: "text", value: (member) => member.email },
     { id: "roles", header: t("companies:memberColumns.roles"), type: "text", value: (member) => member.roles.map((role) => role.name).join(", ") || null },
-    { id: "state", header: t("companies:memberColumns.state"), type: "status", tones: companyMemberStateTones, value: memberState, mobile: "status", className: "w-40.5 max-md:w-[38%]",
-      // Una invitación dice hasta cuándo vale, debajo de la palabra del estado.
-      detail: (member) => { const expiry = invitationExpiry(member, t, false); return expiry ? <StatusDetail>{expiry}</StatusDetail> : null; } },
+    { id: "state", header: t("companies:memberColumns.state"), type: "status", tones: companyMemberStateTones, value: memberState, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
+    { id: "invitationExpiresAtUtc", header: t("companies:memberColumns.expires"), type: "date", className: "w-30", value: invitationExpiresAt },
   ];
 }

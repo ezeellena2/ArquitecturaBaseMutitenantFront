@@ -13,11 +13,12 @@ describe("StatusDot · Criterio · Tablas", () => {
     expect(state.querySelector("[data-slot='status-dot']")).toHaveClass("size-2", "shrink-0", "rounded-full", "bg-[var(--punto-alerta)]");
   });
 
-  // En una celda angosta («Invitación pendiente» a 390) la palabra se corta con puntos suspensivos.
-  it("corta la palabra con «…» si no entra", () => {
+  // En una celda angosta («Invitación pendiente» a 390) la palabra baja de renglón: el texto largo se ve entero (174).
+  it("no corta la palabra con «…» si no entra", () => {
     render(<StatusDot tone="pending" label="Invitación pendiente" />);
 
-    expect(screen.getByText("Invitación pendiente")).toHaveClass("min-w-0", "truncate");
+    expect(screen.getByText("Invitación pendiente")).toHaveClass("min-w-0");
+    expect(screen.getByText("Invitación pendiente")).not.toHaveClass("truncate");
     expect(screen.getByText("Invitación pendiente").parentElement).toHaveClass("max-w-full");
   });
 });

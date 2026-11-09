@@ -33,8 +33,8 @@ export function SettingsItem({ title, detail, leading, to, onClick, trailing, to
   const content = <>
     {leading}
     <span className="flex min-w-0 flex-1 flex-col gap-px leading-tight">
-      <span className={cn("truncate text-[0.96875rem] font-medium", tone === "danger" && "text-[var(--peligro)]")}>{title}</span>
-      {detail ? <span className="truncate text-[0.8125rem] text-[var(--t3)]">{detail}</span> : null}
+      <span className={cn("text-[0.96875rem] font-medium [overflow-wrap:anywhere]", tone === "danger" && "text-[var(--peligro)]")}>{title}</span>
+      {detail ? <span className="text-[0.8125rem] text-[var(--t3)] [overflow-wrap:anywhere]">{detail}</span> : null}
     </span>
     {trailing ?? (to || onClick ? <ChevronRight aria-hidden="true" className="size-4.5 shrink-0 text-[var(--t3)]" /> : null)}
   </>;

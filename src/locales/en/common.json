@@ -16,7 +16,8 @@
     "retry": "Retry",
     "close": "Close",
     "clearFilters": "Clear filters",
-    "done": "Done"
+    "done": "Done",
+    "back": "Back"
   },
   "notice": {
     "whatCanYouDo": "What you can do",
@@ -209,5 +210,10 @@
     "locked": "Your account is locked for a few minutes after too many failed attempts. Try again in 15 minutes.",
     "confirm": "Confirm",
     "confirming": "Confirming…"
+  },
+  "filters": {
+    "title": "Filters",
+    "clearAll": "Clear all",
+    "remove": "Remove {{filter}}"
   }
 }

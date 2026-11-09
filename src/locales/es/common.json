@@ -16,7 +16,8 @@
     "retry": "Reintentar",
     "close": "Cerrar",
     "clearFilters": "Limpiar filtros",
-    "done": "Listo"
+    "done": "Listo",
+    "back": "Volver"
   },
   "notice": {
     "whatCanYouDo": "Qué podés hacer",
@@ -209,5 +210,10 @@
     "locked": "Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos. Probá de nuevo en 15 minutos.",
     "confirm": "Confirmar",
     "confirming": "Confirmando…"
+  },
+  "filters": {
+    "title": "Filtros",
+    "clearAll": "Limpiar todo",
+    "remove": "Quitar {{filter}}"
   }
 }

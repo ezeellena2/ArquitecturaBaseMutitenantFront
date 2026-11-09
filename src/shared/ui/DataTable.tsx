@@ -28,7 +28,7 @@ import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
 type OptionalValue<T> = T | null | undefined;
 type MobileRole = "primary" | "status";
 
-interface ColumnBase<TRow> {
+interface ColumnBase {
   /** Campo del backend usado también para el orden. */
   id: string;
   header: string;
@@ -37,15 +37,9 @@ interface ColumnBase<TRow> {
   priority?: "low";
   mobile?: MobileRole;
   className?: string;
-  /**
-   * Lo que aclara la celda, en una segunda línea gris de 12 («Criterio · Tablas», lienzo v92): el correo debajo del
-   * nombre, los roles debajo de la empresa, cuándo vence debajo del estado. Sin nada que aclarar, `null`. Si alguna fila
-   * la tiene, todas las filas de la tabla miden 52.
-   */
-  detail?: (row: TRow) => ReactNode;
 }
 
-type ValueColumn<TRow, TType extends string, TValue> = TType extends string ? ColumnBase<TRow> & {
+type ValueColumn<TRow, TType extends string, TValue> = TType extends string ? ColumnBase & {
   type: TType;
   value: (row: TRow) => OptionalValue<TValue>;
 } : never;
@@ -66,8 +60,8 @@ export type Column<TRow> =
   | (ValueColumn<TRow, "enum", string> & { enum: string })
   // Un estado: el punto del tono que registró la feature (`defineStatusTones`) y la palabra de su enum.
   | (ValueColumn<TRow, "status", string> & { tones: StatusTones })
-  | (ColumnBase<TRow> & { type: "custom"; cell: (row: TRow) => ReactNode })
-  | (ColumnBase<TRow> & { type: "actions"; cell: (row: TRow) => ReactNode });
+  | (ColumnBase & { type: "custom"; cell: (row: TRow) => ReactNode })
+  | (ColumnBase & { type: "actions"; cell: (row: TRow) => ReactNode });
 
 interface DataTableProps<TRow> {
   columns: readonly Column<TRow>[];
@@ -115,8 +109,9 @@ function columnCell<TRow>(column: Column<TRow>, row: TRow): ReactNode {
 
   switch (column.type) {
     case "text": {
+      // El texto largo se ve entero (174): la celda baja de renglón y la fila crece, sin «…» ni tooltip.
       const value = column.value(row);
-      return value == null ? <EmptyValue /> : <span className="block truncate" title={value}>{value}</span>;
+      return value == null ? <EmptyValue /> : value;
     }
     case "date":
     case "dateTime":
@@ -157,10 +152,6 @@ function columnCell<TRow>(column: Column<TRow>, row: TRow): ReactNode {
   }
 }
 
-function hasContent(node: ReactNode): boolean {
-  return node !== null && node !== undefined && node !== false && node !== "";
-}
-
 function isNumericColumn<TRow>(column: Column<TRow>): boolean {
   return column.type === "integer" || column.type === "decimal" || column.type === "quantity"
     || column.type === "compact" || column.type === "percent" || column.type === "money"
@@ -172,6 +163,14 @@ function isNumericColumn<TRow>(column: Column<TRow>): boolean {
 function edgeClass<TRow>(column: Column<TRow>): string {
   return column.type === "actions" ? "w-12.5 px-1.5 first:pl-4 last:pr-3" : "px-1.5 first:pl-4 last:pr-4";
 }
+
+// «Criterio · Tablas» (137): una línea fina entre columnas, del tono de la que separa las filas, en el encabezado y en el
+// cuerpo. Es una línea interior de la celda y no un borde: una columna fija se la lleva al desplazar.
+const headLine = "not-first:shadow-[inset_1px_0_0_var(--borde-cab)]";
+const cellLine = "not-first:shadow-[inset_1px_0_0_var(--borde)]";
+
+/** La primera carga (160): el encabezado y el aro en el alto de ocho filas de 40, sin filas esqueleto. */
+const firstLoadHeight = "h-80";
 
 // Números y montos a la derecha; el estado, como el resto del texto, a la izquierda.
 function alignClass<TRow>(column: Column<TRow>): string | undefined {
@@ -203,13 +202,15 @@ export function DataTable<TRow>({
   assertOneMobilePrimary(columns);
 
   const list = phone && mobileRow;
+  const firstLoad = !error && isLoading === true;
   // El aviso de una lista vacía o que no cargó. En la compu va en la tabla, debajo de sus encabezados y sin recuadro
   // propio («Criterio · Tablas», «Ninguno coincide»; tablero Roles); en una lista del teléfono, solo.
   const notice = error
     ? <EmptyState title={error} description={errorDescription} action={onRetry ? <Button type="button" variant="outline" disabled={limit.isRunning} onClick={onRetry}>{limit.label ?? t("actions.retry")}</Button> : undefined} framed={Boolean(list)} />
     : rows.length === 0 && !isLoading ? <EmptyState title={emptyTitle ?? t("states.empty")} description={emptyDescription} action={emptyAction} framed={Boolean(list)} />
       : null;
-  if (!error && isLoading) return <div className="flex justify-center p-10"><Spinner /></div>;
+  // La primera carga de una lista del teléfono: el aro en el lugar de la lista, debajo de la barra (160).
+  if (firstLoad && list) return <div data-slot="first-load" className="flex min-h-90 items-center justify-center"><Spinner /></div>;
   // «Criterio · Tablas», Cuando vuelve a leer: lo que estaba queda atenuado y fuera de alcance, con la línea que corre.
   const refreshing = isFetching === true;
   if (list) return notice ?? <ul aria-busy={refreshing || undefined} inert={refreshing || undefined} data-line="top"
@@ -220,20 +221,15 @@ export function DataTable<TRow>({
       {group.footer ? <li className="px-5 py-3">{group.footer}</li> : null}
     </Fragment>) : rows.map((row) => <Fragment key={rowKey(row)}>{mobileRow(row)}</Fragment>)}
   </ul>;
-  // «Criterio · Tablas»: las filas miden 40; si alguna lleva segunda línea, todas las de la tabla miden 52.
-  const details = notice ? [] : rows.map((row) => columns.map((column) => column.detail?.(row)));
-  const twoLines = details.some((cells) => cells.some(hasContent));
-  const renderRow = (row: TRow) => <TableRow key={rowKey(row)} className={twoLines ? "h-13" : "h-10"}>
-    {columns.map((column) => {
-      const detail = column.detail?.(row);
-      return <TableCell key={column.id} className={cn("overflow-hidden whitespace-nowrap", column.type === "actions" ? "py-0" : "py-2",
-        edgeClass(column), column.className, columnVisibility(column), alignClass(column))}>
-        {hasContent(detail) ? <span className="flex min-w-0 flex-col leading-[1.35]">
-          {columnCell(column, row)}<span data-slot="cell-detail" className="block truncate text-[0.75rem] text-[var(--t3)]">{detail}</span>
-        </span> : columnCell(column, row)}
-      </TableCell>;
-    })}
+  // «Criterio · Tablas»: un dato por celda y las filas de 40 como mínimo; un texto largo baja de renglón y la fila crece
+  // (174). Un código con guiones no se parte (`TaxIdText`) y lo demás se corta solo donde no entra.
+  const renderRow = (row: TRow) => <TableRow key={rowKey(row)} className="h-10">
+    {columns.map((column) => <TableCell key={column.id} className={cn("whitespace-normal [overflow-wrap:anywhere]", column.type === "actions" ? "py-0" : "py-2",
+      edgeClass(column), cellLine, column.className, columnVisibility(column), alignClass(column))}>
+      {columnCell(column, row)}
+    </TableCell>)}
   </TableRow>;
+  const sorted = (column: Column<TRow>) => ariaSort(column, sort);
 
   return (
     <Table refreshing={refreshing} className="table-fixed text-[0.8125rem]">
@@ -247,14 +243,18 @@ export function DataTable<TRow>({
               className={cn(
                 "h-10 bg-[var(--cab)] py-0 text-[0.8125rem] font-semibold normal-case text-[var(--t2)] whitespace-normal",
                 edgeClass(column),
+                headLine,
                 column.className,
                 columnVisibility(column),
                 alignClass(column),
               )}
             >
               {column.sortable && onSortChange ? (
-                <button type="button" onClick={() => onSortChange(column.id)} className="-mx-1 rounded-[0.375rem] px-1 text-[0.8125rem] font-semibold normal-case hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
+                <button type="button" onClick={() => onSortChange(column.id)} className="-mx-1 inline-flex items-center gap-1 rounded-[0.375rem] px-1 text-[0.8125rem] font-semibold normal-case hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
                   {column.header}
+                  {/* La columna ordenada muestra ▲ o ▼; tocarla invierte el orden (`aria-sort` lo anuncia). */}
+                  {sorted(column) === "ascending" ? <span data-slot="sort-arrow" aria-hidden="true">{"▲"}</span>
+                    : sorted(column) === "descending" ? <span data-slot="sort-arrow" aria-hidden="true">{"▼"}</span> : null}
                 </button>
               ) : column.type === "actions" ? <span className="sr-only">{column.header}</span> : column.header}
             </TableHead>
@@ -262,7 +262,11 @@ export function DataTable<TRow>({
         </TableRow>
       </TableHeader>
       <TableBody refreshing={refreshing}>
-        {notice ? <TableRow className="border-b-0 hover:bg-transparent">
+        {firstLoad ? <TableRow className="border-b-0 hover:bg-transparent">
+          <TableCell colSpan={columns.length} className={cn("p-0", firstLoadHeight)}>
+            <div data-slot="first-load" className="flex h-full items-center justify-center"><Spinner /></div>
+          </TableCell>
+        </TableRow> : notice ? <TableRow className="border-b-0 hover:bg-transparent">
           <TableCell colSpan={columns.length} className="p-0 whitespace-normal">{notice}</TableCell>
         </TableRow> : rowGroups ? rowGroups.map((group) => <Fragment key={group.key}>
           <TableRow className="hover:bg-[var(--s2)]"><TableCell colSpan={columns.length} className="bg-[var(--s2)] px-5 py-2.5">{group.header}</TableCell></TableRow>

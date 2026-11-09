@@ -20,7 +20,9 @@
     "status": "Estado",
     "results": "Resultados",
     "date": "Fecha",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "template": "Plantilla",
+    "contacts": "Contactos"
   },
   "actions": {
     "duplicate": "Duplicar",
@@ -67,7 +69,8 @@
     "columns": {
       "contact": "Contacto",
       "status": "Estado",
-      "changed": "Último cambio"
+      "changed": "Último cambio",
+      "number": "Número"
     },
     "search": "Buscar por nombre o número",
     "filter": "Estado: todos",

@@ -14,7 +14,8 @@
     "company": "Atiende a",
     "status": "Estado",
     "month": "Este mes",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "verifiedName": "Nombre verificado"
   },
   "wholeOrganization": "Toda la organización",
   "detail": {

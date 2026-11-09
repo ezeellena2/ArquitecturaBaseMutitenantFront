@@ -92,15 +92,16 @@ describe("RolesPage", () => {
     expect(screen.getByRole("columnheader", { name: "Vale en" })).toBeVisible();
     // Tablero Roles: el nombre en el color del texto, «Vale en» a la izquierda y los números en columnas angostas.
     expect(screen.getByRole("link", { name: "Dueño" })).toHaveClass("font-medium", "text-[var(--t1)]");
-    expect(screen.getByRole("columnheader", { name: "Rol" })).toHaveClass("w-[39%]");
+    expect(screen.getByRole("columnheader", { name: "Rol" })).toHaveClass("w-[30%]");
     expect(screen.getByRole("columnheader", { name: "Vale en" })).not.toHaveClass("text-right");
     expect(screen.getByRole("columnheader", { name: "Usuarios" })).toHaveClass("w-28", "text-right");
     expect(screen.getByRole("columnheader", { name: "Permisos" })).toHaveClass("w-28", "text-right");
     expect(screen.queryByRole("columnheader", { name: "Descripción" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("columnheader", { name: "Tipo" })).not.toBeInTheDocument();
+    // Tablero Roles (base de la 12): si es de sistema o personalizado va en su columna, «Tipo».
+    expect(screen.getByRole("columnheader", { name: "Tipo" })).toBeVisible();
     expect(screen.getAllByText("De sistema")).toHaveLength(2);
-    // «Criterio · Tablas» (lienzo v92): «De sistema» va en la segunda línea gris, debajo del nombre.
-    for (const system of screen.getAllByText("De sistema")) expect(system).toHaveAttribute("data-slot", "cell-detail");
+    for (const system of screen.getAllByText("De sistema")) expect(system.closest("td")).not.toBeNull();
+    expect(document.querySelector('[data-slot="cell-detail"]')).toBeNull();
     // Tableros de listas (.pagina, compacto): 14 entre la caja de los filtros y la tabla.
     expect(screen.getByRole("search").parentElement).toHaveClass("md:gap-3.5");
     // «Vale en» de un rol de una empresa es el nombre de la empresa.

@@ -10,7 +10,7 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
 import { apiErrorMessage, isRateLimitError, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
-import type { OrganizationUserFilterCountsResponse, OrganizationUserResponse, OrganizationUserState } from "@/shared/api/types";
+import type { OrganizationUserResponse, OrganizationUserState } from "@/shared/api/types";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
@@ -35,15 +35,6 @@ const userFilterKeys = ["state", "companyId"] as const;
 const userStates: readonly (OrganizationUserState | undefined)[] = [undefined, "Active", "Invited", "Expired", "Inactive", "PendingDeletion"];
 // «Sin empresa» viaja en la URL como companyId=none y a la API como withoutCompany.
 const withoutCompanyValue = "none";
-
-function countFor(counts: OrganizationUserFilterCountsResponse | undefined, state: OrganizationUserState | undefined): number | undefined {
-  if (!counts) return undefined;
-  return state === undefined ? counts.all
-    : state === "Active" ? counts.active
-      : state === "PendingDeletion" ? counts.pendingDeletion
-        : state === "Invited" ? counts.invited
-          : state === "Expired" ? counts.expired : counts.inactive;
-}
 
 /// El ⋮ de un usuario. El reenvío vive por invitación (R04), como AccountActions de Plataforma: cada una con su clave y su
 /// dueño, así reenviar otra no le cambia la clave y un reintento conserva sus avisos.
@@ -95,10 +86,8 @@ export function UsersPage() {
     placeholderData: keepPreviousData, meta: { silent: true },
   });
   const companies = useResourceOptions(companyOptions, canFilterByCompany);
-  // Conteos del filtro «Empresa»: cada empresa y «Sin empresa», con la búsqueda y el estado elegidos.
+  // Las opciones del filtro «Empresa»: «Todas», cada empresa activa y «Sin empresa», sin cantidades (143).
   const companyCountTargets = ["all", ...(companies.data?.items ?? []).filter((company) => company.status === "Active").map((company) => company.id), withoutCompanyValue];
-  const companyCount = (target: string) => target === "all" ? counts.data?.companyAll ?? undefined
-    : target === withoutCompanyValue ? counts.data?.withoutCompany ?? undefined : counts.data?.companies?.[target] ?? (counts.data?.companies ? 0 : undefined);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [target, setTarget] = useState<OrganizationUserResponse | null>(null);
   const [confirmAction, setConfirmAction] = useState<"revoke" | "disable" | "remove" | null>(null);
@@ -139,7 +128,6 @@ export function UsersPage() {
     ...createUserColumns(t),
     { id: "actions", header: t("users:columns.actions"), type: "actions", cell: rowActions },
   ];
-  const stateCount = (value: OrganizationUserState | undefined) => countFor(counts.data, value);
   // «N invitaciones» del tablero: las pendientes y las vencidas.
   const listSummary = counts.data ? <span className="max-md:text-[0.75rem]">{t("users:summary", { total: format.formatInteger(counts.data.all), active: format.formatInteger(counts.data.active), invited: format.formatInteger(counts.data.invited + counts.data.expired) })}</span> : undefined;
   // Sin filtro el botón dice «Estado: todos» o «Empresa: todas» y el menú ofrece «Todos» o «Todas», como el tablero.
@@ -156,15 +144,15 @@ export function UsersPage() {
       moreActions={phone && pageActions.length ? { label: t("users:detail.moreActions"), items: pageActions.map((action) => ({ label: t(action.labelKey), onSelect: () => { void navigate(action.to); } })) } : undefined}
       actions={moduleActions.length || invite ? <>{phone ? null : moduleActions}{invite}</> : undefined}>
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar
+        <FilterBar screen={t("users:title")}
           label={t("users:filters.label")}
           searchLabel={t("users:filters.search")}
           searchValue={pagination.search ?? ""}
           onSearchChange={pagination.setSearch}
           filters={[
-            { key: "state", label: t("users:filters.state"), menuLabel: t("users:filters.stateMenu"), value: currentState, active: state !== undefined, onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value), options: userStates.map((value) => ({ value: value ?? "all", label: t(`users:filters.states.${value ?? "all"}`), count: stateCount(value) })) },
+            { key: "state", label: t("users:filters.state"), menuLabel: t("users:filters.stateMenu"), value: currentState, active: state !== undefined, onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value), options: userStates.map((value) => ({ value: value ?? "all", label: t(`users:filters.states.${value ?? "all"}`) })) },
             ...(canFilterByCompany ? [{ key: "companyId", label: t("users:filters.company"), menuLabel: t("users:filters.companyMenu"), remote: companies.remote, selectedLabel: companies.knownItems.find((item) => item.id === companyFilter)?.name, value: companyFilter ?? "", active: companyFilter !== undefined, onChange: (value: string) => filters.setFilter("companyId", value === "all" ? undefined : value), options: [
-              ...companyCountTargets.map((target) => ({ value: target, label: target === "all" ? t("users:filters.allCompanies") : target === withoutCompanyValue ? t("users:filters.withoutCompany") : companies.data?.items.find((item) => item.id === target)?.name ?? target, count: companyCount(target) })),
+              ...companyCountTargets.map((target) => ({ value: target, label: target === "all" ? t("users:filters.allCompanies") : target === withoutCompanyValue ? t("users:filters.withoutCompany") : companies.data?.items.find((item) => item.id === target)?.name ?? target })),
             ] }] : []),
           ]}
           clearLabel={t("common:actions.clear")}

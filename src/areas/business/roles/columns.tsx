@@ -32,15 +32,14 @@ const visiblePermissionCount = (role: RoleResponse) => permissionCountInScope(ro
 export function createRoleColumns(t: TranslateRole): Column<RoleResponse>[] {
   return [
     {
-      // Anchos del tablero Roles: 1.6fr, 1.3fr, 100 px y 100 px, más los márgenes de cada celda. Debajo del nombre, «De
-      // sistema» (Criterio · Tablas).
+      // Tablero Roles (base de la 12): un dato por celda; si es de sistema o propio va en su columna, «Tipo».
       ...roleColumnDefinitions.name,
       header: t("roles:columns.name"),
       type: "custom",
-      className: "w-[39%]",
-      cell: (role) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/roles/${encodeURIComponent(role.id)}`}>{role.name}</Link>,
-      detail: (role) => role.isSystemRole ? t("roles:system") : null,
+      className: "w-[30%]",
+      cell: (role) => <Link className="font-medium text-[var(--t1)] hover:underline" to={`/org/roles/${encodeURIComponent(role.id)}`}>{role.name}</Link>,
     },
+    { id: "type", header: t("roles:columns.type"), type: "custom", className: "w-36", cell: (role) => <span>{t(role.isSystemRole ? "roles:system" : "roles:custom")}</span> },
     { ...roleColumnDefinitions.scope, header: t("roles:columns.scope"), type: "custom", cell: (role) => <span>{roleScopeLabel(role.scope, t, role.companyName ?? undefined)}</span> },
     { ...roleColumnDefinitions.userCount, header: t("roles:columns.users"), className: "w-28" },
     { ...roleColumnDefinitions.permissions, header: t("roles:columns.permissions"), className: "w-28", value: visiblePermissionCount },

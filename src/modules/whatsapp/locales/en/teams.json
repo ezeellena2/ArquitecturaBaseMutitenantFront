@@ -15,7 +15,9 @@
     "members": "People",
     "operators": "Operators",
     "notice": "Email alert",
-    "actions": "Actions"
+    "actions": "Actions",
+    "inbox": "Inbox",
+    "count": "Count"
   },
   "inbox": {
     "Customers": "Customers inbox",

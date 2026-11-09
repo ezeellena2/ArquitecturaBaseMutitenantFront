@@ -18,13 +18,13 @@ export function numberDetail(number: WhatsAppNumberResponse, t: TFunction): stri
 /** «Atiende a»: la empresa o toda la organización. */
 export const numberCompany = (number: WhatsAppNumberResponse, t: TFunction): string => number.company?.name ?? t("whatsapp:numbers.wholeOrganization");
 
-/// Tablero WA-Admin: Número (con lo que lo aclara debajo), Atiende a, Estado, Este mes y el ⋮.
+/// Tablero WA-Admin (base de la 12): Número, Nombre verificado, Atiende a, Estado, Este mes y el ⋮, un dato por celda.
 export function createNumberColumns(t: TFunction, onPaymentInfo: (number: WhatsAppNumberResponse) => void,
   actions: (number: WhatsAppNumberResponse) => ReactNode): Column<WhatsAppNumberResponse>[] {
   return [
-    { id: "number", header: t("whatsapp:numbers.columns.number"), type: "custom", mobile: "primary", className: "w-[30%]",
-      cell: (number) => <PhoneText value={number.displayNumber} className="block truncate font-medium text-[var(--t1)]" />,
-      detail: (number) => numberDetail(number, t) },
+    { id: "number", header: t("whatsapp:numbers.columns.number"), type: "custom", mobile: "primary", className: "w-[18%]",
+      cell: (number) => <PhoneText value={number.displayNumber} className="font-medium text-[var(--t1)]" /> },
+    { id: "verifiedName", header: t("whatsapp:numbers.columns.verifiedName"), type: "text", value: (number) => number.verifiedName },
     { id: "company", header: t("whatsapp:numbers.columns.company"), type: "text", value: (number) => numberCompany(number, t) },
     { id: "status", header: t("whatsapp:numbers.columns.status"), type: "custom", mobile: "status", className: "w-[22%]",
       cell: (number) => <NumberStatus number={number} onPaymentInfo={onPaymentInfo} /> },

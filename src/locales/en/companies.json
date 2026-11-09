@@ -93,7 +93,8 @@
     "expiresPrefix": "Expires",
     "expiredPrefix": "Expired",
     "expiresInline": "expires",
-    "expiredInline": "expired"
+    "expiredInline": "expired",
+    "expires": "Expires"
   },
   "back": "Back to Companies",
   "backHome": "Back to home",

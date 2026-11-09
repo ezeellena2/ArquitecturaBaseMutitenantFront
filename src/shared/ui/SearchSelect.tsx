@@ -208,8 +208,8 @@ export function SearchSelect({
         >
           {option.icon}
           <span className="flex min-w-0 flex-1 flex-col leading-[1.35]">
-            <span id={`${optionId(index)}-label`} className="truncate">{option.label}</span>
-            {option.description ? <span id={`${optionId(index)}-description`} className={cn("truncate", option.descriptionClassName ?? "text-[var(--t3)]", phone ? "text-[0.8125rem]" : "text-[0.75rem]")}>{option.description}</span> : null}
+            <span id={`${optionId(index)}-label`} className="[overflow-wrap:anywhere]">{option.label}</span>
+            {option.description ? <span id={`${optionId(index)}-description`} className={cn("[overflow-wrap:anywhere]", option.descriptionClassName ?? "text-[var(--t3)]", phone ? "text-[0.8125rem]" : "text-[0.75rem]")}>{option.description}</span> : null}
           </span>
           {/* El espacio separa el nombre del prefijo también para los lectores de pantalla («Argentina +54»). */}
           {option.trailing ? <>{" "}<span id={`${optionId(index)}-trailing`} className="ml-auto shrink-0 font-normal text-[var(--t2)]">{option.trailing}</span></> : null}

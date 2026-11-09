@@ -97,7 +97,8 @@ describe("Ficha de Organización", () => {
   });
   it("Dueño sin nombre/correo conserva null; último ingreso es relativo", async () => {
     const user = userEvent.setup(); detail({ ...organization, owners: [{ ...owner, displayName: null, email: null, lastSignInAtUtc: "2026-01-12T11:40:00Z" }] }); render(); await user.click(await screen.findByRole("tab", { name: "Dueños 1" }));
-    expect(await screen.findByRole("img", { name: "Sin dato" })).toBeVisible(); expect(within(screen.getByRole("tabpanel")).getByText("12/01/2026")).toBeVisible();
+    // El Dueño y su correo van cada uno en su columna (base de la 12): sin dato, los dos dicen la raya.
+    expect(await screen.findAllByRole("img", { name: "Sin dato" })).toHaveLength(2); expect(within(screen.getByRole("tabpanel")).getByText("12/01/2026")).toBeVisible();
   });
   it("404 y error inicial usan las pantallas comunes y Reintentar vuelve a pedir", async () => {
     const user = userEvent.setup(); server.use(http.get("/api/platform/tenants/delta", () => HttpResponse.json({ code: "Tenancy.Tenant.NotFound" }, { status: 404 }))); const first = render();

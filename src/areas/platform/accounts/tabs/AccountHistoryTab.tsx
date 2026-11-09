@@ -21,7 +21,7 @@ export function AccountHistoryTab({ id }: { id: string }) {
   ];
   return <Surface className="overflow-hidden" phoneFlush>
     <DataTable columns={columns} rows={history.items} rowKey={(row) => row.id}
-      mobileRow={(row) => <ListRow key={row.id} wrapTitle title={row.summary} meta={<DateText value={row.occurredAtUtc} kind="shortDateTime" />} lines={[row.actor, row.reason || <EmptyValue key="reason" />]} />}
+      mobileRow={(row) => <ListRow key={row.id} title={row.summary} meta={<DateText value={row.occurredAtUtc} kind="shortDateTime" />} lines={[row.actor, row.reason || <EmptyValue key="reason" />]} />}
       isLoading={history.isPending} isFetching={history.isFetching} error={history.error ? apiErrorMessage(history.error, t) : undefined}
       onRetry={() => { void history.refetch(); }} emptyTitle={t("platformAccounts:detail.historyEmpty")} />
     <LoadMore hasMore={history.hasNextPage} isLoading={history.isFetchingNextPage} onLoadMore={() => { void history.fetchNextPage(); }} />

@@ -70,7 +70,7 @@ export function AuditPage() {
         toda pantalla interna; el período elegido se ve en el filtro. */}
     <Page icon={ClipboardIcon} title={t("audit:title")} phoneBody="flush">
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar phoneTools="filter"
+        <FilterBar phoneTools="filter" screen={t("audit:title")}
           label={t("audit:filters.label")}
           searchLabel={t("audit:filters.search")}
           searchValue={pagination.search ?? ""}
@@ -117,7 +117,7 @@ export function AuditPage() {
             columns={columns}
             // Tablero M-Auditoria-Org: qué pasó (en dos renglones si hace falta), cuándo a la derecha (la fecha corta, sin el año
             // si es del año en curso), y dónde y quién abajo.
-            mobileRow={(row) => <ListRow key={row.id} wrapTitle title={row.actionText} onClick={() => setSelected(row)}
+            mobileRow={(row) => <ListRow key={row.id} title={row.actionText} onClick={() => setSelected(row)}
               meta={<DateText value={row.occurredAtUtc} kind="shortDateTime" />}
               lines={[[row.whereText, row.actorDisplayName ?? row.actorText].filter(Boolean).join(" · ")]} />}
             rows={audit.items}

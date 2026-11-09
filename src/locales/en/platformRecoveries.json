@@ -10,7 +10,7 @@
   "noAccount": "No account",
   "methods": "{{previous}} → {{next}}",
   "rowActions": "Actions for {{name}}",
-  "columns": { "account": "Account", "previous": "Previous method", "new": "New method", "status": "Status", "actions": "Actions" },
+  "columns": { "account": "Account", "createdAt": "Date and time", "previous": "Previous method", "new": "New method", "status": "Status", "actions": "Actions" },
   "filters": { "label": "Filter recovery requests", "phone": "Filters", "search": "Search by account, email or phone", "status": "Status: all", "statusMenu": "Filter by status", "statuses": { "all": "All", "Pending": "Pending", "Approved": "Approved", "Rejected": "Rejected" } },
   "empty": { "all": "There are no recovery requests", "filtered": "No requests match the filters", "clear": "Clear filters" },
   "actions": { "review": "Review", "detail": "View details", "approve": "Approve", "reject": "Reject", "approving": "Approving…", "rejecting": "Rejecting…" },

@@ -14,6 +14,7 @@ import { ModuleOrganizationUi } from "@/shared/modules/ModuleRegistry";
 import type { ModuleOrganizationUi as OrganizationUi } from "@/shared/modules/types";
 import { useModuleRegistry } from "@/shared/modules/useModules";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
+import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { EnumText } from "@/shared/ui/format/EnumText";
 import { BanIcon, CalendarIcon, PowerIcon } from "@/shared/ui/icons";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -75,7 +76,9 @@ export function OrganizationModulesTab({ organization, query, writes, onWrite, o
     { label: t("platformTenants:modules.actions.disable"), accessibleName: t("platformTenants:modules.actions.disable"), icon: BanIcon, destructive: true, hidden: !editable || state(feature) === "Off", onSelect: (trigger) => openGeneric({ feature, action: "disable", trigger }) },
   ]} />;
   const columns: Column<PlatformFeatureResponse>[] = [
-    { id: "key", header: t("platformTenants:modules.module"), type: "text", mobile: "primary", value: (row) => moduleName(row.key), detail: (row) => contributions.get(row.key)?.description },
+    // Tablero Organizacion (Módulos, base de la 12): lo que aporta cada módulo va en su columna, «Detalle».
+    { id: "key", header: t("platformTenants:modules.module"), type: "text", mobile: "primary", value: (row) => moduleName(row.key) },
+    { id: "detail", header: t("platformTenants:modules.detail"), type: "custom", cell: (row) => contributions.get(row.key)?.description ?? <EmptyValue /> },
     { id: "state", header: t("platformTenants:columns.status"), type: "custom", mobile: "status", cell: status },
     { id: "source", header: t("platformTenants:modules.source"), type: "enum", enum: "TenantFeatureSource", value: (row) => row.source },
     { id: "actions", header: t("platformTenants:columns.actions"), type: "actions", cell: rowActions },

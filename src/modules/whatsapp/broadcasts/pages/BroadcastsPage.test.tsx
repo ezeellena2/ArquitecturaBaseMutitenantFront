@@ -21,7 +21,9 @@ describe("Difusiones", () => {
     expect(await screen.findByText("2 difusiones")).toBeVisible();
     expect(screen.getByText("1 programada")).toBeVisible();
     expect(screen.getByRole("link", { name: "20 % en empanadas" })).toHaveAttribute("href", "/org/whatsapp/difusiones/broadcast-sent");
-    expect(screen.getByText("Plantilla «Promo semanal»")).toBeVisible();
+    // Tablero WA-Difusiones (base de la 12): la plantilla y cuántos contactos, cada uno en su columna.
+    expect(screen.getByRole("cell", { name: "Promo semanal" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Contactos" })).toBeVisible();
     expect(screen.getByText("Todos los que aceptan")).toBeVisible();
     expect(screen.getByText("118 entregados · 86 leídos")).toBeVisible();
     expect(screen.getByRole("link", { name: "Nueva difusión" })).toHaveAttribute("href", "/org/whatsapp/difusiones/nueva");

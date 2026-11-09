@@ -236,9 +236,11 @@ describe("SecurityAuditPage", () => {
     expect(within(dialog).getAllByRole("img", { name: "Sin dato" })).toHaveLength(2);
     expect(await axe(dialog)).toHaveNoViolations();
     await user.click(within(dialog).getAllByRole("button", { name: "Cerrar" }).at(-1)!);
+    // Tableros M-* (base de la 12): «Filtros» a pantalla completa aplica cada cambio y «Listo» vuelve a la lista.
     await user.click(screen.getByRole("button", { name: "Filtrar la auditoría" }));
-    const filters = await screen.findByRole("dialog", { name: "Filtrar la auditoría" });
+    const filters = await screen.findByRole("dialog", { name: "Filtros" });
     await user.click(within(filters).getByRole("radio", { name: "Grupo Delta" }));
+    await user.click(within(filters).getByRole("button", { name: "Listo" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
