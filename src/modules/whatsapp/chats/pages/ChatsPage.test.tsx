@@ -173,6 +173,45 @@ describe("Chats de la organización", () => {
     expect(await axe(document.body)).toHaveNoViolations();
   });
 
+  // Ninguna elección se descarta en silencio (162): pasar de una plantilla a otra conserva lo escrito en cada una, y se
+  // manda solo lo de la elegida, como en «Nueva difusión».
+  it("cambiar de plantilla conserva lo escrito en cada una y manda solo lo de la elegida", async () => {
+    inbox(row({ windowOpenUntilUtc: closed }));
+    const pedido: WhatsAppTemplateOptionResponse = { templateId: "t-pedido", name: "Pedido listo", category: "Utility",
+      body: "Hola {{1}}, tu pedido {{2}} está listo.", variables: ["Nombre", "Número de pedido"], estimatedCost: { amount: 30, currency: "ARS" } };
+    const turno: WhatsAppTemplateOptionResponse = { templateId: "t-turno", name: "Turno confirmado", category: "Utility",
+      body: "{{1}}, tu turno es el {{2}}.", variables: ["Nombre", "Día"], estimatedCost: { amount: 30, currency: "ARS" } };
+    let body: unknown;
+    server.use(
+      http.get(`${org}/customers/conversations/c-martina/template-options`, () => HttpResponse.json(paged([pedido, turno]))),
+      http.post(`${org}/customers/conversations/c-martina/templates`, async ({ request }) => {
+        body = await request.json();
+        return HttpResponse.json(message({ id: "m-t", kind: "Template", direction: "Outbound", text: "Hola Martina", status: "Pending" }), { status: 201 });
+      }),
+    );
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    await user.click(await screen.findByRole("button", { name: "Elegir plantilla" }));
+    const dialog = await screen.findByRole("dialog", { name: "Mandar plantilla a Martina López" });
+    const choose = async (name: RegExp) => {
+      await user.click(within(dialog).getByRole("combobox", { name: "Plantilla" }));
+      await user.click(await screen.findByRole("option", { name }));
+    };
+    await choose(/Pedido listo/);
+    await user.type(within(dialog).getByRole("textbox", { name: "Nombre" }), "Martina");
+    await user.type(within(dialog).getByRole("textbox", { name: "Número de pedido" }), "1043");
+    await choose(/Turno confirmado/);
+    expect(within(dialog).getByRole("textbox", { name: "Nombre" })).toHaveValue("");
+    await user.type(within(dialog).getByRole("textbox", { name: "Día" }), "lunes");
+    await choose(/Pedido listo/);
+    expect(within(dialog).getByRole("textbox", { name: "Nombre" })).toHaveValue("Martina");
+    expect(within(dialog).getByRole("textbox", { name: "Número de pedido" })).toHaveValue("1043");
+    await choose(/Turno confirmado/);
+    expect(within(dialog).getByRole("textbox", { name: "Día" })).toHaveValue("lunes");
+    await choose(/Pedido listo/);
+    await user.click(within(dialog).getByRole("button", { name: "Mandar" }));
+    await waitFor(() => expect(body).toEqual({ templateId: "t-pedido", variables: ["Martina", "1043"] }));
+  });
+
   it("la nota interna va a notas y nunca sale como mensaje", async () => {
     inbox(row());
     let note: unknown; let messages = 0;

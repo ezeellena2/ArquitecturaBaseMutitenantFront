@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { validationConstraints } from "@/shared/api/generated/validation";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { useController, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -76,6 +76,20 @@ export function TemplateDialog({ scope, row, name, onClose, onSent, onConflict }
     send.mutate({ templateId: value.templateId, variables: value.variables.map((variable) => variable.trim()) });
   });
 
+  // Ninguna elección se descarta en silencio (162): lo escrito en las variables de cada plantilla queda guardado mientras el
+  // diálogo está abierto y vuelve si se vuelve a esa plantilla, como en «Nueva difusión». Se manda solo lo de la elegida.
+  const written = useRef(new Map<string, string[]>());
+  function chooseTemplate(templateId: string) {
+    const previous = form.getValues("templateId");
+    if (previous) written.current.set(previous, [...form.getValues("variables")]);
+    const next = options.knownItems.find((option) => option.templateId === templateId);
+    const kept = written.current.get(templateId) ?? [];
+    template.field.onChange(templateId);
+    form.setValue("variables", next ? next.variables.map((_variable, index) => kept[index] ?? "") : []);
+    form.clearErrors("variables");
+    clear();
+  }
+
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}>
     <DialogContent aria-describedby={undefined} onCloseAutoFocus={restoreFocus}>
       <DialogHeader><DialogTitle>{phone ? t("chats.template.titleShort") : t("chats.template.title", { name })}</DialogTitle></DialogHeader>
@@ -85,13 +99,7 @@ export function TemplateDialog({ scope, row, name, onClose, onSent, onConflict }
             <FormField label={t("chats.template.template")} required error={form.formState.errors.templateId?.message}>
               <SearchSelect value={template.field.value} remote={options.remote} placeholder={t("chats.template.choose")} searchLabel={t("chats.template.search")}
                 aria-label={t("chats.template.template")} title={t("chats.template.template")}
-                onChange={(templateId) => {
-                  const next = options.knownItems.find((option) => option.templateId === templateId);
-                  template.field.onChange(templateId);
-                  form.setValue("variables", next ? next.variables.map(() => "") : []);
-                  form.clearErrors("variables");
-                  clear();
-                }}
+                onChange={chooseTemplate}
                 selectedLabel={selected?.name}
                 renderValue={(option) => <>{option.label}{" · "}<EnumText enum="WhatsAppTemplateCategory" value={options.knownItems.find((item) => item.templateId === option.value)?.category} /></>}
                 options={options.items.map((option) => ({ value: option.templateId, label: option.name,
