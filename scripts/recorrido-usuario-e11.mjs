@@ -282,6 +282,8 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
       const main = page.getByRole("main");
       // El resumen va en la banda; en el teléfono, corto (sin los inválidos) y en la barra de arriba.
       await page.getByText(width === 390 ? "2 teléfonos · 1 invitación" : "2 teléfonos · 1 invitación · 1 inválido", { exact: true }).first().waitFor();
+      // B7: la casilla del consentimiento aparece con la revisión y se tilda antes de «Vincular y mandar».
+      await page.getByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp", exact: true }).check();
       await page.getByRole("button", { name: "Vincular y mandar 1 invitación", exact: true }).first().waitFor();
       assert.equal(/cuenta/i.test(await main.innerText()), false, "La revisión no dice si un teléfono tiene cuenta.");
       assert.equal(invited, 0);

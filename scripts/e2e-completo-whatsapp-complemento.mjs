@@ -586,8 +586,11 @@ async function runWhatsAppSupplementPlan(h, repair, mobile = false) {
       await ownerPage.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click(); await ownerPage.keyboard.press("Escape");
       const reviewed = await clickForResponse(ownerPage, ownerPage.getByRole("button", { name: /^Revisar 1 teléfono$/u }).first(), root + "/phone-imports/preview", "POST");
       const preview = await reviewed.json(); assert.equal(preview.invites, 1); assert.equal(preview.invalid, 0);
+      // B7: sin la casilla del consentimiento tildada, el back responde 400 WhatsApp.PhoneImport.ConsentRequired.
+      await ownerPage.getByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp", exact: true }).check();
       const confirmed = await clickForResponse(ownerPage, ownerPage.getByRole("button", { name: "Vincular y mandar 1 invitación", exact: true }).first(), root + "/phone-imports", "POST");
       const request = confirmed.request().postDataJSON(); assert.equal(request.companyId, company.id); assert.equal(request.roleIds.length, 1);
+      assert.equal(request.consentConfirmed, true);
       assert.deepEqual(await confirmed.json(), { linked: 0, invited: 1, invalid: 0 });
       const after = await read(h, ownerPage, "/api/users/paged?page=1&pageSize=100");
       const added = after.items.filter((item) => !before.items.some((previous) => previous.memberId === item.memberId));

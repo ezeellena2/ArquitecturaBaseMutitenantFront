@@ -111,7 +111,8 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     ├── auth/
     ├── layouts/
     │   ├── components/
-    │   └── navigation/
+    │   ├── navigation/
+    │   └── notifications/  la campana de los tres accesos y «Avisos» del teléfono (base de la 12)
     ├── locales/  un namespace por módulo; es y en con las mismas claves
     │   ├── en/  mismos archivos
     │   └── es/
@@ -247,6 +248,7 @@ Decisión del usuario (2026-10-11): cada raíz de capa, área, módulo, proyecto
 | `src/areas/storefront/site/` | Feature site: api/ llama a la API; pages/ contiene pantallas; components/ sus piezas; tabs/ sus pestañas. | [docs/features/sitio-publico.md](../../../ArquitecturaBaseMutitenant/docs/features/sitio-publico.md) | `src/areas/storefront/site/pages/PublicPage.tsx` | [AGENTS.md](../../src/areas/storefront/site/AGENTS.md) |
 | `src/auth/` | Componentes y servicios de . | [docs/rules/accesos-y-permisos.md](../rules/accesos-y-permisos.md) | `src/auth/AccessRoute.tsx` | [AGENTS.md](../../src/auth/AGENTS.md) |
 | `src/layouts/` | Componentes y servicios de . | [docs/rules/accesos-y-permisos.md](../rules/accesos-y-permisos.md) | `src/layouts/navigation/business.ts` | [AGENTS.md](../../src/layouts/AGENTS.md) |
+| `src/layouts/notifications/` | La campana de los tres accesos y «Avisos» del teléfono: los avisos del back y la versión nueva, que arma el front. | [docs/features/identidad.md](../../../ArquitecturaBaseMutitenant/docs/features/identidad.md#la-campana) | `src/layouts/notifications/useNotifications.ts` | [AGENTS.md](../../src/layouts/notifications/AGENTS.md) |
 | `src/locales/` | Componentes y servicios de . | [docs/rules/textos-y-traducciones.md](../rules/textos-y-traducciones.md) | `src/locales/es/roles.json` | [AGENTS.md](../../src/locales/AGENTS.md) |
 | `src/modules/assistant/` | Componentes y servicios de assistant. | [docs/features/asistente.md](../../../ArquitecturaBaseMutitenant/docs/features/asistente.md) | `src/modules/assistant/registration.ts` | [AGENTS.md](../../src/modules/assistant/AGENTS.md) |
 | `src/modules/assistant/usage/` | Pantallas y componentes de uso del asistente. | [docs/features/asistente.md](../../../ArquitecturaBaseMutitenant/docs/features/asistente.md) | `src/modules/assistant/usage/AssistantUsagePage.tsx` | [AGENTS.md](../../src/modules/assistant/usage/AGENTS.md) |
