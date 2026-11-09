@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 import { Button } from "./button";
 import { List, ListItem } from "./List";
 
-// Tablero «Criterio · Tablas», Lista: lo corto dentro de una pantalla, sin encabezado de columnas. Filas de 44, o
-// de 56 con segunda línea; lo que aclara la fila, en gris de 12 debajo; el ícono, gris.
+// Tablero «Criterio · Tablas», Lista: lo corto dentro de una pantalla, sin encabezado de columnas. Filas de 44; lo que
+// aclara la fila, en gris de 12 a la derecha, en la misma fila y nunca en una segunda línea (25/10); el ícono, gris.
 describe("List · Criterio · Tablas", () => {
-  it("filas de 44, o de 56 con segunda línea, con el ícono gris y lo que aclara la fila debajo", () => {
+  it("filas de 44, con el ícono gris y lo que aclara la fila a la derecha", () => {
     render(<List label="Cómo entrás">
       <ListItem icon={<Mail />} title="lucia.fer@gmail.com" detail="Principal" />
       <ListItem title="delta.ejemplo.com"><button type="button">{"Verificar"}</button></ListItem>
@@ -15,14 +15,15 @@ describe("List · Criterio · Tablas", () => {
 
     expect(screen.getByRole("list", { name: "Cómo entrás" })).toHaveClass("list-none");
     const [first, second] = screen.getAllByRole("listitem");
-    expect(first).toHaveClass("min-h-14", "border-b", "border-[var(--borde)]", "last:border-b-0", "pl-4", "text-[0.8125rem]");
+    expect(first).toHaveClass("min-h-11", "border-b", "border-[var(--borde)]", "last:border-b-0", "pl-4", "text-[0.8125rem]");
     expect(first).not.toHaveClass("odd:bg-[var(--fila-alterna)]");
     expect(second).toHaveClass("min-h-11");
     // Tableros Cuenta, Configuración, Usuario y Página pública: lo que nombra la fila va en 500.
     // Un texto largo baja de renglón, sin «…» (174).
     expect(screen.getByText("lucia.fer@gmail.com")).toHaveClass("font-medium", "text-[var(--t1)]", "[overflow-wrap:anywhere]");
     expect(screen.getByText("lucia.fer@gmail.com")).not.toHaveClass("truncate");
-    expect(screen.getByText("Principal")).toHaveClass("text-[0.75rem]", "text-[var(--t3)]");
+    expect(screen.getByText("Principal")).toHaveClass("text-[0.75rem]", "text-[var(--t3)]", "md:text-right");
+    expect(screen.getByText("Principal").parentElement).toHaveClass("md:flex-row");
     expect(first.querySelector("svg")?.parentElement).toHaveClass("text-[var(--t3)]");
     expect(screen.getByRole("button", { name: "Verificar" })).toBeVisible();
   });
