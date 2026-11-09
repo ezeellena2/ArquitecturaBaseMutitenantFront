@@ -64,6 +64,12 @@
     "removed": "«{{name}}» was removed",
     "removeOption": "Remove option",
     "removing": "Removing…",
+    "change": {
+      "title": "Change to «{{action}}»?",
+      "dropsReply": "The text is removed.",
+      "dropsTeam": "The team is removed.",
+      "confirm": "Change"
+    },
     "empty": "There are no menu options yet."
   },
   "promotions": {

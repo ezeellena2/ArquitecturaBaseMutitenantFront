@@ -64,6 +64,12 @@
     "removed": "Se quitó «{{name}}»",
     "removeOption": "Quitar opción",
     "removing": "Quitando…",
+    "change": {
+      "title": "¿Cambiar a «{{action}}»?",
+      "dropsReply": "Se quita el texto.",
+      "dropsTeam": "Se quita el equipo.",
+      "confirm": "Cambiar"
+    },
     "empty": "Todavía no hay opciones en el menú."
   },
   "promotions": {

@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import { useController, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -7,7 +8,7 @@ import { validationConstraints } from "@/shared/api/generated/validation";
 import { useFormat } from "@/shared/format/useFormat";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Button } from "@/shared/ui/button";
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
@@ -24,6 +25,12 @@ const actions: readonly WhatsAppBotAction[] = ["Team", "Reply"];
 
 /// «Editar opción 1» (WA-Admin-Editar y M-WA-Editar) y «Agregar opción»: el texto que ve el cliente en la lista, qué hace
 /// (pasa a un equipo o contesta un texto) y el equipo o el texto. Guarda el menú entero con la opción cambiada.
+///
+/// Ninguna elección se descarta en silencio (162): cambiar lo que hace conserva el texto de la opción y, si se pierde el
+/// texto escrito o el equipo elegido, lo pregunta antes («¿Cambiar a «Pasa a un equipo»? Se quita el texto.»). La pregunta
+/// toma el lugar de la opción, que queda montada y oculta detrás, nunca un diálogo encima de otro; es una confirmación
+/// sin ✕, con el foco en «Cancelar». «Cancelar» o Escape vuelven a la opción tal cual; «Cambiar» cambia la acción y quita
+/// lo que ya no va. Sin nada escrito, cambia sin preguntar.
 export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusTo, onRemove, removing = false }: {
   menu: readonly WhatsAppBotMenuOption[];
   /** La opción que se edita; sin índice, se agrega al final. */
@@ -60,6 +67,38 @@ export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusT
   const { failure, clear, close, pending, submit } = useBotDialogSave(onSave, onClose);
   const errors = form.formState.errors;
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
+  // La acción a la que se quiere pasar mientras se pregunta si se quita lo que ya no va.
+  const [switching, setSwitching] = useState<WhatsAppBotAction | null>(null);
+  const actionsId = useId();
+  const questionId = useId();
+  const asked = useRef(false);
+
+  // La pregunta arranca con el foco en «Cancelar» (Criterio-Dialogos, «Decidir a propósito»). Al responderla, el foco
+  // vuelve a «Qué hace», a la acción que quedó elegida, como vuelve el de un diálogo a lo que lo abrió; antes de que
+  // Radix lo mande al diálogo entero porque se fue el botón que lo tenía.
+  useLayoutEffect(() => {
+    if (switching) { asked.current = true; return; }
+    if (!asked.current) return;
+    asked.current = false;
+    document.getElementById(actionsId)?.querySelector<HTMLElement>("[role=radio][aria-checked=true]")?.focus();
+  }, [switching, actionsId]);
+
+  const apply = (next: WhatsAppBotAction) => { action.field.onChange(next); clear(); };
+  // Pasar a un equipo pierde el texto escrito; pasar a un texto, el equipo elegido. Unos espacios no son un texto.
+  const choose = (value: string) => {
+    const next = actions.find((item) => item === value);
+    if (!next || next === action.field.value) return;
+    const loses = next === "Team" ? form.getValues("reply").trim() !== "" : form.getValues("teamId") !== "";
+    if (loses) setSwitching(next);
+    else apply(next);
+  };
+  const answer = (change: boolean) => {
+    if (change && switching) {
+      form.setValue(switching === "Team" ? "reply" : "teamId", "", { shouldDirty: true });
+      apply(switching);
+    }
+    setSwitching(null);
+  };
 
   const send = form.handleSubmit((values) => {
     const option: WhatsAppBotMenuOption = { id: current?.id ?? null, label: values.label.trim(), action: values.action, isSystem: false,
@@ -68,16 +107,27 @@ export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusT
   });
 
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}>
-    <DialogContent size="sm" aria-describedby={undefined} onCloseAutoFocus={restoreFocus}>
-      <DialogHeader><DialogTitle>{index === null ? t("whatsapp:bot.option.addTitle") : t("whatsapp:bot.option.editTitle", { number: index + 1 })}</DialogTitle></DialogHeader>
-      <form noValidate onSubmit={(event) => { void send(event); }} className="flex min-h-0 flex-col">
+    <DialogContent size="sm" role={switching ? "alertdialog" : "dialog"} showCloseButton={!switching}
+      aria-describedby={switching ? questionId : undefined} onCloseAutoFocus={restoreFocus}
+      onEscapeKeyDown={(event) => { if (switching) { event.preventDefault(); answer(false); } }}>
+      {switching ? <>
+        <DialogHeader><DialogTitle>{t("whatsapp:bot.option.change.title", { action: format.formatEnum("WhatsAppBotAction", switching) })}</DialogTitle></DialogHeader>
+        {/* Como ConfirmDialog: el texto con la letra de los diálogos, con 20 de margen en la compu y 8/20/16 en la hoja. */}
+        <DialogDescription id={questionId} className="p-5 max-md:pt-2 max-md:pb-4">
+          {switching === "Team" ? t("whatsapp:bot.option.change.dropsReply") : t("whatsapp:bot.option.change.dropsTeam")}
+        </DialogDescription>
+        <DialogFooter>
+          <Button type="button" variant="outline" autoFocus onClick={() => answer(false)}>{t("common:actions.cancel")}</Button>
+          <Button type="button" onClick={() => answer(true)}>{t("whatsapp:bot.option.change.confirm")}</Button>
+        </DialogFooter>
+      </> : <DialogHeader><DialogTitle>{index === null ? t("whatsapp:bot.option.addTitle") : t("whatsapp:bot.option.editTitle", { number: index + 1 })}</DialogTitle></DialogHeader>}
+      <form noValidate hidden={switching !== null} onSubmit={(event) => { void send(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <FormField label={t("whatsapp:bot.option.label")} required error={errors.label?.message}>
             <Input maxLength={labelLimit} {...form.register("label", { onChange: clear })} />
           </FormField>
           <FormField label={t("whatsapp:bot.option.action")}>
-            <RadioGroupField variant="segmented" label={t("whatsapp:bot.option.action")} value={action.field.value}
-              onValueChange={(value) => { action.field.onChange(value); clear(); }}
+            <RadioGroupField id={actionsId} variant="segmented" label={t("whatsapp:bot.option.action")} value={action.field.value} onValueChange={choose}
               options={actions.map((value) => ({ value, label: format.formatEnum("WhatsAppBotAction", value) }))} />
           </FormField>
           {chosen === "Team" ? <FormField label={t("whatsapp:bot.option.team")} required error={errors.teamId?.message}>

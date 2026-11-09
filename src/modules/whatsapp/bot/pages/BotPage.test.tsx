@@ -198,6 +198,118 @@ describe("Bot de la organización", () => {
     } finally { restore(); }
   });
 
+  // 162 (WA-Admin-Editar y M-WA-Editar): cambiar lo que hace una opción conserva lo que sigue sirviendo y, antes de quitar
+  // el texto o el equipo, lo pregunta en el lugar del diálogo, nunca encima, con el foco en «Cancelar».
+  it("con un texto escrito, pasar a «Pasa a un equipo» pregunta; «Cancelar» deja la acción y el texto como estaban", async () => {
+    handlers();
+    const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+    await page.user.click(within(await openMenu(page.user, "Horarios y dirección")).getByRole("menuitem", { name: "Editar" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar opción 3" });
+    await page.user.click(within(dialog).getByRole("radio", { name: "Pasa a un equipo" }));
+
+    const question = await screen.findByRole("alertdialog", { name: "¿Cambiar a «Pasa a un equipo»?" });
+    expect(question).toHaveAccessibleDescription("Se quita el texto.");
+    expect(within(question).getByRole("button", { name: "Cancelar" })).toHaveFocus();
+    expect(within(question).getAllByRole("button").map((button) => button.textContent)).toEqual(["Cancelar", "Cambiar"]);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: "Texto" })).not.toBeInTheDocument();
+    expect(await axe(question)).toHaveNoViolations();
+
+    await page.user.click(within(question).getByRole("button", { name: "Cancelar" }));
+    const back = await screen.findByRole("dialog", { name: "Editar opción 3" });
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(within(back).getByRole("radio", { name: "Contesta un texto" })).toBeChecked();
+    expect(within(back).getByRole("radio", { name: "Contesta un texto" })).toHaveFocus();
+    expect(within(back).getByRole("textbox", { name: "Texto" })).toHaveValue("Estamos en Av. Corrientes 1234, de 9 a 18");
+    expect(within(back).getByRole("textbox", { name: "Texto de la opción" })).toHaveValue("Horarios y dirección");
+    expect(within(back).getByRole("button", { name: "Guardar" })).toBeDisabled();
+
+    // Escape también es «Cancelar»: vuelve a la opción, sin cerrarla.
+    await page.user.click(within(back).getByRole("radio", { name: "Pasa a un equipo" }));
+    await screen.findByRole("alertdialog", { name: "¿Cambiar a «Pasa a un equipo»?" });
+    await page.user.keyboard("{Escape}");
+    expect(await screen.findByRole("dialog", { name: "Editar opción 3" })).toBeVisible();
+    expect(screen.getByRole("textbox", { name: "Texto" })).toHaveValue("Estamos en Av. Corrientes 1234, de 9 a 18");
+  });
+
+  it("al confirmar, la opción pasa a un equipo y se guarda sin el texto", async () => {
+    handlers();
+    const sent = saving(() => HttpResponse.json(bot({ version: 6 })));
+    const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+    await page.user.click(within(await openMenu(page.user, "Horarios y dirección")).getByRole("menuitem", { name: "Editar" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar opción 3" });
+    await page.user.click(within(dialog).getByRole("radio", { name: "Pasa a un equipo" }));
+    await page.user.click(within(await screen.findByRole("alertdialog", { name: "¿Cambiar a «Pasa a un equipo»?" })).getByRole("button", { name: "Cambiar" }));
+
+    const back = await screen.findByRole("dialog", { name: "Editar opción 3" });
+    expect(within(back).getByRole("radio", { name: "Pasa a un equipo" })).toBeChecked();
+    expect(within(back).getByRole("radio", { name: "Pasa a un equipo" })).toHaveFocus();
+    // El texto se quitó: al volver a «Contesta un texto» está vacío, y sin nada escrito no se pregunta.
+    await page.user.click(within(back).getByRole("radio", { name: "Contesta un texto" }));
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(within(back).getByRole("textbox", { name: "Texto" })).toHaveValue("");
+    await page.user.click(within(back).getByRole("radio", { name: "Pasa a un equipo" }));
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+
+    await page.user.click(within(back).getByRole("combobox", { name: "Equipo" }));
+    await page.user.click(await screen.findByRole("option", { name: "Soporte" }));
+    await page.user.click(within(back).getByRole("button", { name: "Guardar" }));
+    await waitFor(() => expect(sent).toHaveLength(1));
+    expect(sent[0].menu?.[2]).toEqual({ id: "o3", label: "Horarios y dirección", action: "Team", teamId: "t-support", reply: null });
+  });
+
+  it("en el teléfono, con un equipo elegido, pasar a «Contesta un texto» pregunta; «Cancelar» lo deja y confirmar guarda sin el equipo", async () => {
+    const restore = asPhone();
+    try {
+      handlers();
+      const sent = saving(() => HttpResponse.json(bot({ version: 6 })));
+      const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+      await page.user.click(await screen.findByRole("button", { name: /Hacer un pedido/ }));
+      const dialog = await screen.findByRole("dialog", { name: "Editar opción 1" });
+      await page.user.click(within(dialog).getByRole("radio", { name: "Contesta un texto" }));
+
+      const question = await screen.findByRole("alertdialog", { name: "¿Cambiar a «Contesta un texto»?" });
+      expect(question).toHaveAccessibleDescription("Se quita el equipo.");
+      expect(within(question).getByRole("button", { name: "Cancelar" })).toHaveFocus();
+      // La pregunta va sin ✕ y sin «Quitar opción»: solo «Cancelar» y «Cambiar».
+      expect(within(question).getAllByRole("button").map((button) => button.textContent)).toEqual(["Cancelar", "Cambiar"]);
+      expect(await axe(question)).toHaveNoViolations();
+
+      await page.user.click(within(question).getByRole("button", { name: "Cancelar" }));
+      const back = await screen.findByRole("dialog", { name: "Editar opción 1" });
+      expect(within(back).getByRole("radio", { name: "Pasa a un equipo" })).toBeChecked();
+      expect(within(back).getByRole("combobox", { name: "Equipo" })).toHaveTextContent("Ventas");
+
+      await page.user.click(within(back).getByRole("radio", { name: "Contesta un texto" }));
+      await page.user.click(within(await screen.findByRole("alertdialog", { name: "¿Cambiar a «Contesta un texto»?" })).getByRole("button", { name: "Cambiar" }));
+      const text = within(await screen.findByRole("dialog", { name: "Editar opción 1" })).getByRole("textbox", { name: "Texto" });
+      expect(text).toHaveValue("");
+      await page.user.click(text);
+      await page.user.paste("Escribinos tu pedido y te lo confirmamos");
+      await page.user.click(screen.getByRole("button", { name: "Guardar" }));
+      await waitFor(() => expect(sent).toHaveLength(1));
+      expect(sent[0].menu?.[0]).toEqual({ id: "o1", label: "Hacer un pedido", action: "Reply", teamId: null, reply: "Escribinos tu pedido y te lo confirmamos" });
+    } finally { restore(); }
+  });
+
+  it("sin nada escrito, cambiar lo que hace una opción no pregunta", async () => {
+    handlers();
+    const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+    await page.user.click(await screen.findByRole("button", { name: "Agregar opción" }));
+    const dialog = await screen.findByRole("dialog", { name: "Agregar opción" });
+    await page.user.type(within(dialog).getByRole("textbox", { name: "Texto de la opción" }), "Reclamos");
+    await page.user.click(within(dialog).getByRole("radio", { name: "Contesta un texto" }));
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(within(dialog).getByRole("radio", { name: "Contesta un texto" })).toBeChecked();
+    // Unos espacios no son un texto escrito.
+    await page.user.type(within(dialog).getByRole("textbox", { name: "Texto" }), "   ");
+    await page.user.click(within(dialog).getByRole("radio", { name: "Pasa a un equipo" }));
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(within(dialog).getByRole("radio", { name: "Pasa a un equipo" })).toBeChecked();
+    expect(within(dialog).getByRole("textbox", { name: "Texto de la opción" })).toHaveValue("Reclamos");
+    expect(await axe(dialog)).toHaveNoViolations();
+  });
+
   it("en la compu el diálogo de una opción no lleva «Quitar opción»: va en el ⋮", async () => {
     handlers();
     const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
