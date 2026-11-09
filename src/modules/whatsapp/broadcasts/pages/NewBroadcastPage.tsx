@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useController, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router";
@@ -161,10 +161,17 @@ function BroadcastEditor({ initial, initialTemplate }: { initial: BroadcastForm;
   const create = useIdempotentMutation((request: CreateWhatsAppBroadcastRequest, key) => createBroadcast(request, key), { sameOperation: sameBroadcast });
   const edit = useEditPage({ isDirty: form.formState.isDirty, error: undefined, onSeeNew: () => {}, onContinueEditing: () => {} });
 
+  // Ninguna elección se descarta en silencio (162): lo escrito en las variables de cada plantilla queda guardado mientras
+  // se arma la difusión, y vuelve si se vuelve a esa plantilla. Se manda solo lo de la elegida. La etiqueta y la fecha
+  // tampoco se borran al cambiar a quiénes o cuándo: `broadcastRequest` manda solo lo de la opción elegida.
+  const written = useRef(new Map<string, string[]>());
   function chooseTemplate(next: string) {
+    const previous = form.getValues("templateId");
+    if (previous) written.current.set(previous, [...form.getValues("variables")]);
     templateField.field.onChange(next);
     const chosen = knownTemplates.find((option) => option.templateId === next);
-    form.setValue("variables", (chosen?.variables ?? []).map(() => ""), { shouldDirty: true });
+    const kept = written.current.get(next) ?? [];
+    form.setValue("variables", (chosen?.variables ?? []).map((_variable, index) => kept[index] ?? ""), { shouldDirty: true });
   }
 
   // Lo que el back rechaza de un dato va debajo de ese dato y cierra la confirmación; lo demás queda en su franja.

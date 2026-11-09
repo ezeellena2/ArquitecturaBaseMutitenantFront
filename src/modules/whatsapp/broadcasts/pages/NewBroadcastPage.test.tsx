@@ -2,7 +2,7 @@ import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import type { CreateWhatsAppBroadcastRequest } from "../../api/types";
+import type { CreateWhatsAppBroadcastRequest, WhatsAppTemplateOptionResponse } from "../../api/types";
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { mountWhatsApp, whatsappOwner } from "../../test/support";
@@ -114,6 +114,97 @@ describe("Nueva difusión", () => {
     expect(await screen.findByText("Ningún contacto con esa etiqueta acepta promociones.")).toBeVisible();
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(screen.getByRole("radiogroup", { name: "Destinatarios" })).toHaveAttribute("aria-invalid", "true");
+  });
+
+  // Ninguna elección se descarta en silencio (162): cambiar la plantilla conserva lo escrito en las variables de cada una, y
+  // «Una etiqueta» y «Programar» conservan la etiqueta y la fecha aunque se cambie de opción. Se manda solo lo elegido.
+  describe("lo escrito de cada opción", () => {
+    const weekly: WhatsAppTemplateOptionResponse = { templateId: "template-weekly", name: "Promo semanal", category: "Marketing",
+      body: "Hola {{1}}, esta semana tenés {{2}} de descuento.", variables: ["Nombre", "Descuento"], estimatedCost: { amount: 0.06, currency: "ARS" } };
+    const variable = (label: string, index: number) => screen.findByLabelText(new RegExp(`^${label}`), { selector: `input[name='variables.${index}']` });
+
+    /** La pantalla con dos plantillas, con el nombre ya escrito; `send` la manda ahora y devuelve lo que llegó al back. */
+    async function start() {
+      const bodies: CreateWhatsAppBroadcastRequest[] = [];
+      server.use(
+        http.get("/api/organization/whatsapp/broadcasts/template-options", () => HttpResponse.json(paged([promoTemplate, weekly]))),
+        http.post("/api/organization/whatsapp/broadcasts", async ({ request }) => {
+          bodies.push(await request.json() as CreateWhatsAppBroadcastRequest);
+          return HttpResponse.json({ ...scheduled, id: "broadcast-new" }, { status: 201 });
+        }),
+        http.get("/api/organization/whatsapp/broadcasts/broadcast-new", () => HttpResponse.json({ broadcast: { ...scheduled, id: "broadcast-new" }, recipients: paged([]) })),
+      );
+      const app = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/nueva");
+      fireEvent.change(await screen.findByLabelText(/^Nombre/, { selector: "input[name=name]" }), { target: { value: "Horario de fiestas" } });
+      return {
+        user: app.user,
+        async chooseTemplate(name: string) {
+          await app.user.click(screen.getByRole("combobox", { name: /Plantilla/ }));
+          await app.user.click(await screen.findByRole("option", { name }));
+        },
+        async send() {
+          await app.user.click(screen.getByRole("button", { name: "Mandar" }));
+          await app.user.click(within(await screen.findByRole("dialog", { name: "¿Mandar «Horario de fiestas»?" })).getByRole("button", { name: "Mandar" }));
+          await waitFor(() => expect(app.router.state.location.pathname).toBe("/org/whatsapp/difusiones/broadcast-new"));
+          return bodies;
+        },
+      };
+    }
+
+    it("cambiar la plantilla conserva las variables escritas de cada una y manda solo las de la elegida", async () => {
+      const page = await start();
+      await page.chooseTemplate("Promo semanal · Marketing");
+      fireEvent.change(await variable("Nombre", 0), { target: { value: "Ana" } });
+      fireEvent.change(await variable("Descuento", 1), { target: { value: "20 %" } });
+      await page.chooseTemplate("Aviso de horario · Marketing");
+      expect(await variable("Nombre", 0)).toHaveValue("");
+      expect(screen.queryByLabelText(/^Descuento/)).not.toBeInTheDocument();
+      fireEvent.change(await variable("Nombre", 0), { target: { value: "Martina" } });
+
+      await page.chooseTemplate("Promo semanal · Marketing");
+      expect(await variable("Nombre", 0)).toHaveValue("Ana");
+      expect(await variable("Descuento", 1)).toHaveValue("20 %");
+
+      expect(await page.send()).toEqual([{ name: "Horario de fiestas", templateId: "template-weekly", variables: ["Ana", "20 %"],
+        audience: { kind: "AllAccepting", tag: null }, scheduledAtUtc: null }]);
+    });
+
+    it("«Una etiqueta» conserva la etiqueta al pasar a «Todos los que aceptan» y volver, y se manda sin ella", async () => {
+      const page = await start();
+      const { user } = page;
+      await page.chooseTemplate("Aviso de horario · Marketing");
+      fireEvent.change(await variable("Nombre", 0), { target: { value: "Martina" } });
+
+      await user.click(screen.getByRole("radio", { name: "Una etiqueta" }));
+      await user.click(screen.getByRole("combobox", { name: /Etiqueta/ }));
+      await user.click(await screen.findByRole("option", { name: "Mayorista" }));
+      await user.click(screen.getByRole("radio", { name: "Todos los que aceptan" }));
+      expect(screen.queryByRole("combobox", { name: /Etiqueta/ })).not.toBeInTheDocument();
+      await user.click(screen.getByRole("radio", { name: "Una etiqueta" }));
+      expect(screen.getByRole("combobox", { name: /Etiqueta/ })).toHaveTextContent("Mayorista");
+      await user.click(screen.getByRole("radio", { name: "Todos los que aceptan" }));
+
+      expect(await page.send()).toEqual([{ name: "Horario de fiestas", templateId: "template-hours", variables: ["Martina"],
+        audience: { kind: "AllAccepting", tag: null }, scheduledAtUtc: null }]);
+    });
+
+    it("«Programar» conserva la fecha al pasar a «Ahora» y volver, y se manda sin ella", async () => {
+      const page = await start();
+      const { user } = page;
+      await page.chooseTemplate("Aviso de horario · Marketing");
+      fireEvent.change(await variable("Nombre", 0), { target: { value: "Martina" } });
+
+      await user.click(screen.getByRole("radio", { name: "Programar" }));
+      fireEvent.change(await screen.findByRole("textbox", { name: /Fecha y hora/ }), { target: { value: "20/12/2026 09:00" } });
+      await user.click(screen.getByRole("radio", { name: "Ahora" }));
+      expect(screen.queryByRole("textbox", { name: /Fecha y hora/ })).not.toBeInTheDocument();
+      await user.click(screen.getByRole("radio", { name: "Programar" }));
+      expect((await screen.findByRole("textbox", { name: /Fecha y hora/ }) as HTMLInputElement).value).toMatch(/^20\/12\/2026\D+09:00$/);
+      await user.click(screen.getByRole("radio", { name: "Ahora" }));
+
+      expect(await page.send()).toEqual([{ name: "Horario de fiestas", templateId: "template-hours", variables: ["Martina"],
+        audience: { kind: "AllAccepting", tag: null }, scheduledAtUtc: null }]);
+    });
   });
 
   it("a 390 px el costo va abajo, junto a «Mandar»", async () => {

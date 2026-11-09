@@ -177,9 +177,35 @@ it("conserva la clave tras 5xx idéntico y la renueva tras cambiar y volver al m
   for (let index = 0; index < 2; index++) { await user.click(screen.getByRole("button", { name: "Enviar código" })); await screen.findByRole("alert"); }
   expect(keys[0]).toBe(keys[1]);
   await user.click(screen.getByRole("button", { name: "Correo" }));
-  await chooseWhatsApp(user);
+  await user.click(screen.getByRole("button", { name: "WhatsApp" }));
+  expect(screen.getByRole("textbox", { name: "Número" })).toHaveValue("11 5555-4521");
   await user.click(screen.getByRole("button", { name: "Enviar código" })); await screen.findByRole("alert");
   expect(keys[2]).not.toBe(keys[1]);
+});
+
+// Ninguna elección se descarta en silencio (162): pasar entre «Correo» y «WhatsApp» no borra lo escrito. Cada uno conserva
+// lo suyo mientras el diálogo está abierto, y se valida y se manda solo el elegido.
+it("pasar entre «Correo» y «WhatsApp» conserva el correo y el número, y manda solo el elegido", async () => {
+  const user = userEvent.setup(); enableWhatsApp();
+  const sent: unknown[] = [];
+  server.use(http.post("/api/me/login-methods", async ({ request }) => {
+    sent.push(await request.json());
+    return HttpResponse.json({ methodId: "phone", resendAfterSeconds: 60 });
+  }));
+  renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} />);
+  await user.type(await screen.findByRole("textbox", { name: "Correo" }), "ana@");
+  await chooseWhatsApp(user);
+
+  await user.click(screen.getByRole("button", { name: "Correo" }));
+  expect(screen.getByRole("button", { name: "Correo" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("textbox", { name: "Correo" })).toHaveValue("ana@");
+  await user.click(screen.getByRole("button", { name: "WhatsApp" }));
+  expect(screen.getByRole("textbox", { name: "Número" })).toHaveValue("11 5555-4521");
+
+  // El correo a medias no frena el WhatsApp ni viaja con él.
+  await user.click(screen.getByRole("button", { name: "Enviar código" }));
+  expect(await screen.findByRole("dialog", { name: "Verificar tu WhatsApp" })).toBeVisible();
+  expect(sent).toEqual([{ phone: { country: "AR", number: "11 5555-4521" }, channel: "whatsapp" }]);
 });
 
 it("verifica Phone previo por id aunque el país ya no se habilite para alta y reenvía con código limpio", async () => {

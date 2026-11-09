@@ -31,12 +31,26 @@ import { useAppChrome } from "@/shared/ui/app/AppChrome";
 interface Props { open: boolean; onOpenChange: (open: boolean) => void; onComplete: () => void; method?: AccountLoginMethod }
 const codeLength = 6;
 
+/// Ninguna elección se descarta en silencio (162): el correo y el número quedan escritos los dos mientras el diálogo está
+/// abierto, y pasar entre «Correo» y «WhatsApp» no borra ninguno. Se valida y se manda solo el del canal elegido, como en
+/// el ingreso (`authDestinationSchema`).
 function destinationSchema(t: TFunction) {
-  return z.discriminatedUnion("type", [
-    z.object({ type: z.literal("email"), email: z.email(t("auth:login.emailInvalid")) }),
-    z.object({ type: z.literal("phone"), phone: z.object({ country: z.string(), number: z.string() }).refine((phone) => phone.country !== "" && phone.number.trim() !== "", t("common:phone.invalid")) }),
-  ]);
+  return z.object({
+    type: z.enum(["email", "phone"]),
+    email: z.string(),
+    phone: z.object({ country: z.string(), number: z.string() }),
+  }).superRefine((value, context) => {
+    if (value.type === "email" && !z.email().safeParse(value.email).success) {
+      context.addIssue({ code: "custom", path: ["email"], message: t("auth:login.emailInvalid") });
+    }
+    if (value.type === "phone" && (value.phone.country === "" || value.phone.number.trim() === "")) {
+      context.addIssue({ code: "custom", path: ["phone"], message: t("common:phone.invalid") });
+    }
+  });
 }
+type DestinationFields = z.infer<ReturnType<typeof destinationSchema>>;
+const destinationOf = (values: DestinationFields): LoginDestination => values.type === "phone"
+  ? { type: "phone", phone: { ...values.phone } } : { type: "email", email: values.email };
 function codeSchema(t: TFunction) { return z.object({ code: z.string().length(codeLength, t("common:code.incomplete")) }); }
 type CodeForm = z.infer<ReturnType<typeof codeSchema>>;
 type SendOperation = { revision: number } & ({ destination: LoginDestination; methodId?: string } | { destination: null; methodId: string });
@@ -63,7 +77,8 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
   const [failure, setFailure] = useState<string | null>(null);
   const schema = useMemo(() => destinationSchema(t), [t]);
   const otpSchema = useMemo(() => codeSchema(t), [t]);
-  const form = useForm<LoginDestination>({ resolver: zodResolver(schema), defaultValues: { type: "email", email: method?.value ?? "" }, reValidateMode: "onSubmit" });
+  const form = useForm<DestinationFields>({ resolver: zodResolver(schema), reValidateMode: "onSubmit",
+    defaultValues: { type: "email", email: method?.value ?? "", phone: { country: "", number: "" } } });
   const codeForm = useForm<CodeForm>({ resolver: zodResolver(otpSchema), defaultValues: { code: "" }, reValidateMode: "onSubmit" });
   const code = useController({ control: codeForm.control, name: "code" });
   const type = useWatch({ control: form.control, name: "type" });
@@ -159,7 +174,7 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
     <DialogContent size="sm" onCloseAutoFocus={restoreFocus} aria-describedby={step ? "method-code-hint" : undefined}>
       <form noValidate onSubmit={(event) => {
         if (method && !step) { event.preventDefault(); sendExisting(); }
-        else void (step ? codeForm.handleSubmit(confirm) : form.handleSubmit((destination) => send({ destination, revision: revision.current })))(event);
+        else void (step ? codeForm.handleSubmit(confirm) : form.handleSubmit((values) => send({ destination: destinationOf(values), revision: revision.current })))(event);
       }}>
         <DialogHeader><DialogTitle>{t(method || step ? phone ? "account:verifyPhoneTitle" : "account:verifyTitle" : whatsApp ? "account:add" : "account:addEmail")}</DialogTitle></DialogHeader>
         <DialogBody>
@@ -173,7 +188,7 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
             {whatsApp ? <div role="group" aria-label={t("account:chooseMethod")} className="flex rounded-lg bg-[var(--s3)] p-1">
               {(["email", "phone"] as const).map((choice) => <button key={choice} type="button" disabled={busy} aria-pressed={type === choice}
                 className={`flex-1 rounded-md py-2 text-[0.8125rem] font-medium ${type === choice ? "bg-[var(--lado-activo)]" : ""}`}
-                onClick={() => { edit(); form.reset(choice === "email" ? { type: choice, email: "" } : { type: choice, phone: { country: "", number: "" } }); }}>{t(choice === "phone" ? "account:phone" : "account:email")}</button>)}
+                onClick={() => { if (choice !== type) { edit(); form.setValue("type", choice); } }}>{t(choice === "phone" ? "account:phone" : "account:email")}</button>)}
             </div> : null}
             {type === "phone" && whatsApp ? <Controller control={form.control} name="phone" render={({ field }) => <FormField label={t("account:phoneNumber")} error={form.getFieldState("phone", form.formState).error?.message}>
               <PhoneField usage="whatsapp" name={field.name} value={field.value} onChange={(value) => { edit(); field.onChange(value); }} disabled={busy} />
