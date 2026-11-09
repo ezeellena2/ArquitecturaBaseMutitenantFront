@@ -1,6 +1,7 @@
 import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
 import { AppChromeProvider } from "@/shared/ui/app/AppChrome";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -14,7 +15,7 @@ beforeAll(async () => { await configureI18n(referenceDataFixture().cultures); })
 describe("Otro acceso en el teléfono", () => {
   it("la barra de abajo no marca ninguna sección", async () => {
     const hideActiveSection = vi.fn();
-    const { unmount } = renderWithProviders(<MemoryRouter>
+    const { container, unmount } = renderWithProviders(<MemoryRouter>
       <AppChromeProvider value={{ phone: true, parent: null, subtitle: null, title: "Inicio", hideBottomNav: () => {}, hideActiveSection }}>
         <OtherAccessPage target="consumer" returnTo="/mensajes" organizations={[]} />
       </AppChromeProvider>
@@ -22,6 +23,7 @@ describe("Otro acceso en el teléfono", () => {
 
     expect(await screen.findByRole("heading", { level: 1, name: "Este link es de tu perfil personal" })).toBeVisible();
     expect(hideActiveSection).toHaveBeenLastCalledWith(true);
+    expect(await axe(container)).toHaveNoViolations();
     unmount();
     expect(hideActiveSection).toHaveBeenLastCalledWith(false);
   });
