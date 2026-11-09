@@ -42,7 +42,8 @@ export function createAccountColumns(t: TFunction): Column<PlatformAccountRespon
     { id: "name", header: t("platformAccounts:columns.account"), type: "custom", mobile: "primary", sortable: true, className: "w-[24%]",
       cell: (account) => <Link className={`hover:underline ${account.displayName ? "font-medium text-[var(--t1)]" : "text-[var(--t3)]"}`} to={accountPath(account.id)}>{accountName(account) || <EmptyValue />}</Link> },
     { id: "contact", header: t("platformAccounts:columns.contact"), type: "custom", className: "w-[24%]",
-      cell: (account) => account.maskedPrimaryPhone || (account.primaryEmail ? <EmailText value={account.primaryEmail} /> : <EmptyValue />) },
+      cell: (account) => account.maskedPrimaryPhone || account.primaryEmail
+        ? <span className="text-[var(--t2)]">{account.maskedPrimaryPhone || <EmailText value={account.primaryEmail ?? ""} />}</span> : <EmptyValue /> },
     { id: "profiles", header: t("platformAccounts:columns.profiles"), type: "custom", cell: (account) => profiles(account, t) },
     { id: "lastSignInAtUtc", header: t("platformAccounts:columns.lastSignIn"), type: "custom", className: "w-40",
       cell: (account) => isOperatorInvitation(account) ? t("platformAccounts:columns.never") : <DateText value={account.lastSignInAtUtc} kind="dateTime" /> },

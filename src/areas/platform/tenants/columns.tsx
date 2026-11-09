@@ -7,6 +7,7 @@ export { tenantStatusTones } from "@/shared/format/statusTones";
 import type { Column } from "@/shared/ui/DataTable";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import { DateText } from "@/shared/ui/format/DateText";
+import { EmailText } from "@/shared/ui/format/EmailText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { EnumText } from "@/shared/ui/format/EnumText";
 import { NumberText } from "@/shared/ui/format/NumberText";
@@ -50,11 +51,16 @@ export function createOrganizationHistoryColumns(t: TFunction): Column<PlatformT
   ];
 }
 
+/** El dueño: su nombre o, si todavía no lo tiene, su correo, que se parte después de la @ como en el tablero. */
+function ownerOf(organization: PlatformTenantResponse): ReactNode {
+  return organization.ownerName || (organization.ownerEmail ? <EmailText value={organization.ownerEmail} /> : <EmptyValue />);
+}
+
 export function organizationPhoneRow(organization: PlatformTenantResponse, t: TFunction, trailing: ReactNode): ReactNode {
   return <ListRow key={organization.id} to={organizationPath(organization.id)} title={organization.name}
     meta={<DateText value={organization.createdAtUtc} kind="date" />}
     lines={[
-      <>{organization.ownerName || organization.ownerEmail || <EmptyValue />}{" · "}{organization.companyCount === 0 ? t("platformTenants:columns.noCompanies") : <><NumberText value={organization.companyCount} /> {t("platformTenants:columns.company", { count: organization.companyCount })}{" · "}<NumberText value={organization.memberCount} /> {t("platformTenants:columns.member", { count: organization.memberCount })}</>}</>,
+      <>{ownerOf(organization)}{" · "}{organization.companyCount === 0 ? t("platformTenants:columns.noCompanies") : <><NumberText value={organization.companyCount} /> {t("platformTenants:columns.company", { count: organization.companyCount })}{" · "}<NumberText value={organization.memberCount} /> {t("platformTenants:columns.member", { count: organization.memberCount })}</>}</>,
       <><StatusBadge tones={tenantStatusTones} value={organization.status} />{" · "}<EnumText enum="TenantRegistrationSource" value={organization.source} /></>,
     ]} trailing={trailing} />;
 }
@@ -64,7 +70,7 @@ export function createOrganizationColumns(t: TFunction): Column<PlatformTenantRe
     { id: "name", header: t("platformTenants:columns.organization"), type: "custom", mobile: "primary", sortable: true, className: "w-[26%]",
       cell: (organization) => <Link className="font-medium text-[var(--t1)] hover:underline" to={organizationPath(organization.id)}>{organization.name}</Link> },
     { id: "createdAtUtc", header: t("platformTenants:columns.created"), type: "date", className: "w-30", value: (organization) => organization.createdAtUtc },
-    { id: "ownerName", header: t("platformTenants:columns.owner"), type: "text", value: (organization) => organization.ownerName || organization.ownerEmail || null },
+    { id: "ownerName", header: t("platformTenants:columns.owner"), type: "custom", cell: ownerOf },
     { id: "companyCount", header: t("platformTenants:columns.companies"), type: "integer", value: (organization) => organization.companyCount },
     { id: "memberCount", header: t("platformTenants:columns.members"), type: "integer", value: (organization) => organization.memberCount },
     { id: "status", header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones: tenantStatusTones, value: (organization) => organization.status },

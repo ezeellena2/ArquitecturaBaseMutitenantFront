@@ -59,7 +59,9 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
       id: "displayName", header: t("users:columns.person"), type: "custom", mobile: "primary", sortable: true, className: "w-[20%]",
       cell: (user) => <Link className="font-medium text-[var(--t1)] hover:underline" to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}>{user.displayName || userContact(user) || <EmptyValue />}</Link>,
     },
-    { id: "email", header: t("users:columns.email"), type: "custom", className: "w-[22%]", cell: (user) => userContact(user) ?? <EmptyValue /> },
+    // Tablero Usuarios: el correo, en gris; una invitación por teléfono no tiene correo y va con «—».
+    { id: "email", header: t("users:columns.email"), type: "custom", className: "w-[22%]",
+      cell: (user) => user.email ? <span className="text-[var(--t2)]"><EmailText value={user.email} /></span> : <EmptyValue /> },
     {
       id: "roles", header: t("users:columns.organizationRoles"), type: "text", className: "w-[15%]",
       value: (user) => user.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || null,
