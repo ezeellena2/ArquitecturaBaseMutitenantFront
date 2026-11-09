@@ -58,6 +58,21 @@ describe("useSwitchAccess", () => {
     expect(assign).not.toHaveBeenCalled();
   });
 
+  // F7: al entrar desde un link del otro acceso, abre el link; un link que no es de ese acceso, o que sale del sitio, lleva
+  // a su inicio.
+  it.each([
+    ["/org/usuarios?state=Active", "/org/usuarios?state=Active"],
+    ["/plataforma/organizaciones", "/org"],
+    ["//otro.ejemplo/org", "/org"],
+    ["https://otro.ejemplo/org", "/org"],
+  ])("con returnTo %s llega a %s", async (returnTo, destination) => {
+    signinSilent.mockResolvedValue({ access_token: "nuevo" } as User);
+    const { result } = setup();
+
+    await act(async () => { await result.current.switching.switchAccess({ access: "business", tenantId: "empresa-a", returnTo }); });
+    expect(`${result.current.location.pathname}${result.current.location.search}`).toBe(destination);
+  });
+
   it("fuerza authorize con access y tenant, limpia caché y llega al inicio B2B", async () => {
     signinSilent.mockResolvedValue({ access_token: "nuevo" } as User);
     publishAccessError(new ApiError(403, { code: "Tenancy.Tenant.Suspended" }));

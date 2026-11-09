@@ -62,9 +62,12 @@ describe("rutas de ingreso 3a", () => {
     expect(screen.queryByRole("complementary", { name: "Navegación principal" })).not.toBeInTheDocument();
   });
 
-  it("corrige con replace una URL de otro acceso hacia su inicio", async () => {
+  // F7: un link del otro acceso ofrece entrar con ese acceso, en su misma ruta; el inicio personal no es un link y lleva
+  // con replace al inicio del acceso activo.
+  it("un link del otro acceso ofrece entrar, y el inicio personal corrige con replace hacia el inicio de la empresa", async () => {
     const consumer = renderRouteWithProviders("/org", { as: "consumer-with-organizations" });
-    await waitFor(() => expect(consumer.router.state.location.pathname).toBe("/"));
+    expect(await screen.findByRole("heading", { level: 1, name: "Este link es de Empresa A" })).toBeVisible();
+    expect(consumer.router.state.location.pathname).toBe("/org");
     consumer.unmount();
 
     const business = renderRouteWithProviders("/", { as: "business-admin" });

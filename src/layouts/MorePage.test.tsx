@@ -146,10 +146,11 @@ describe("Más en el teléfono", () => {
     expect(router.state.historyAction).toBe("REPLACE");
   });
 
-  it("la ruta canónica de Más de Plataforma corrige un acceso personal hacia su inicio", async () => {
+  // F7 (accesos-y-permisos.md): una persona no tiene el acceso de Plataforma; el link no existe para ella.
+  it("la ruta canónica de Más de Plataforma no existe para un acceso personal", async () => {
     const { router } = renderRouteWithProviders("/plataforma/mas", { as: "consumer-empty" });
-    await waitFor(() => expect(router.state.location.pathname).toBe("/"));
-    expect(router.state.historyAction).toBe("REPLACE");
+    expect(await screen.findByRole("heading", { name: "No encontramos esta página" })).toBeVisible();
+    expect(router.state.location.pathname).toBe("/plataforma/mas");
     expect(screen.queryByRole("heading", { name: "Más" })).not.toBeInTheDocument();
   });
 

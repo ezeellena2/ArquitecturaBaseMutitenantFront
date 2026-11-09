@@ -1,0 +1,10 @@
+{
+  "business": "Este link es de {{name}}",
+  "someBusiness": "Este link es de una empresa",
+  "personal": "Este link es de tu perfil personal",
+  "organizations": "Organización",
+  "enterBusiness": "Entrar como empresa",
+  "enterPersonal": "Entrar como persona",
+  "entering": "Entrando…",
+  "failed": "No pudimos cambiar de perfil. Probá de nuevo."
+}

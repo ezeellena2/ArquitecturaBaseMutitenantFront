@@ -1,0 +1,10 @@
+{
+  "business": "This link belongs to {{name}}",
+  "someBusiness": "This link belongs to a company",
+  "personal": "This link belongs to your personal profile",
+  "organizations": "Organization",
+  "enterBusiness": "Enter as a company",
+  "enterPersonal": "Enter as a person",
+  "entering": "Entering…",
+  "failed": "We couldn't switch profiles. Try again."
+}
