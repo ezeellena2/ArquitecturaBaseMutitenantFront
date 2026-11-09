@@ -51,10 +51,11 @@ describe("Pagination", () => {
     expect(screen.getByText("Página 1 de 124")).not.toHaveClass("tabular-nums");
     expect(screen.getByText("1–10 de 1.234")).not.toHaveClass("tabular-nums");
     expect(previous).toHaveClass("text-[var(--t3)]", "disabled:opacity-40");
-    // Tableros Empresas y Usuarios: el pie en letra de 12, y el tamaño de página en una píldora de 28 con letra de 12,
-    // también en la compu grande.
+    // Tableros Empresas y Usuarios: el pie en letra de 12, y el tamaño de página en un control de 28 con letra de 12,
+    // también en la compu grande; con las esquinas de un control, nunca en pastilla (173).
     expect(screen.getByRole("navigation", { name: "Paginado" })).toHaveClass("text-[0.75rem]");
-    expect(screen.getByRole("combobox", { name: "Filas por página" })).toHaveClass("h-7", "text-[0.75rem]");
+    expect(screen.getByRole("combobox", { name: "Filas por página" })).toHaveClass("h-7", "text-[0.75rem]", "rounded-[0.5rem]");
+    expect(screen.getByRole("combobox", { name: "Filas por página" })).not.toHaveClass("rounded-full");
     expect(screen.getByRole("combobox", { name: "Filas por página" })).not.toHaveClass("lg:h-8", "lg:text-[0.8125rem]");
 
     // Las flechas del tablero (.pag), con trazo 2; y la del tamaño de página, la chica de los desplegables.

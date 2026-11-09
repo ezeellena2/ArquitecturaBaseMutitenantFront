@@ -56,7 +56,7 @@ export function Pagination({
           <SelectTrigger
             size="sm"
             aria-label={t("pagination.rowsPerPage")}
-            className="h-7 rounded-full border-[var(--borde)] bg-[var(--superficie)] px-2.5 text-[0.75rem] text-[var(--t2)] shadow-none"
+            className="h-7 rounded-[0.5rem] border-[var(--borde)] bg-[var(--superficie)] px-2.5 text-[0.75rem] text-[var(--t2)] shadow-none"
           >
             <SelectValue />
           </SelectTrigger>
