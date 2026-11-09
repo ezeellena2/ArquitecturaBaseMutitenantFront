@@ -14,5 +14,6 @@
   "unlink": "Unlink",
   "unlinkTitle": "Unlink the conversation with {{name}}?",
   "unlinkDescription": "It stops showing in Messages and {{name}} no longer sees it tied to your account. You can keep writing to them on WhatsApp.",
-  "continueOnWhatsApp": "Continue on WhatsApp"
+  "continueOnWhatsApp": "Continue on WhatsApp",
+  "unlinking": "Unlinking…"
 }

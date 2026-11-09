@@ -82,7 +82,10 @@
     "removeDescription": "They stop being a member of the organization and its companies.",
     "revokeConfirm": "Revoke",
     "disableConfirm": "Disable",
-    "removeConfirm": "Remove"
+    "removeConfirm": "Remove",
+    "revoking": "Revoking…",
+    "disabling": "Disabling…",
+    "removing": "Removing…"
   },
   "messages": {
     "saved": "Changes saved.",
@@ -137,7 +140,10 @@
       "removeConfirm": "Remove",
       "revokeTitle": "Revoke the invitation to {{email}}?",
       "revokeDescription": "The link will stop working. You can invite them again anytime.",
-      "revokeConfirm": "Revoke"
+      "revokeConfirm": "Revoke",
+      "revoking": "Revoking…",
+      "disabling": "Disabling…",
+      "removing": "Removing…"
     },
     "messages": {
       "saved": "We saved the changes for {{name}}.",

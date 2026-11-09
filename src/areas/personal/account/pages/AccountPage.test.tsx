@@ -234,8 +234,9 @@ describe("Mi cuenta", () => {
       expect(discard).toBeEnabled();
       const name = await screen.findByRole("textbox", { name: "Nombre" });
       await user.type(name, " nuevo");
-      expect(screen.getByText("Cambios sin guardar")).toHaveClass("text-[var(--alerta)]");
-      expect(screen.getByText("Cambios sin guardar")).not.toHaveClass("rounded-full");
+      // La barra nunca dice «Cambios sin guardar» (base de la 12): que «Guardar cambios» esté habilitado ya lo dice.
+      expect(screen.queryByText("Cambios sin guardar")).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
     } finally {
       vi.unstubAllGlobals();
     }

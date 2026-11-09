@@ -70,14 +70,20 @@ function Button({
       data-variant={variant}
       data-size={size}
       data-pending={working || undefined}
-      // Guardando va con opacidad de 0,85, no con la de un botón apagado (0,5).
-      className={cn(buttonVariants({ variant, size, className }), working && "disabled:opacity-85")}
+      aria-busy={working || undefined}
+      // «Criterio · Botones», Mientras trabaja (base de la 12): con su color, sin atenuarse como un botón apagado.
+      className={cn(buttonVariants({ variant, size, className }), working && "disabled:opacity-100")}
       disabled={working || disabled}
       {...props}
     >
-      {working ? <PendingContent label={pendingLabel}>{children}</PendingContent> : children}
+      {/* Un botón de ícono cambia su dibujo por el aro; su nombre sigue en `aria-label`. */}
+      {working ? size === "icon" ? <ButtonRing /> : <PendingContent label={pendingLabel}>{children}</PendingContent> : children}
     </Comp>
   )
+}
+
+function ButtonRing() {
+  return <span data-slot="button-ring" aria-hidden="true" className="size-3.5 shrink-0 animate-spin rounded-full border-2 border-current/40 border-t-current motion-reduce:animate-none" />
 }
 
 /// El botón mientras guarda: el aro de 14 (de 2 de trazo, en el color del texto: blanco en el principal) y lo que está
@@ -90,7 +96,7 @@ function PendingContent({ label, children }: { label: React.ReactNode | undefine
     <span className="grid place-items-center">
       <span aria-hidden="true" className="invisible col-start-1 row-start-1 inline-flex items-center gap-1.5">{children}</span>
       <span className="col-start-1 row-start-1 inline-flex items-center gap-1.5">
-        <span data-slot="button-ring" aria-hidden="true" className="size-3.5 shrink-0 animate-spin rounded-full border-2 border-current/40 border-t-current motion-reduce:animate-none" />
+        <ButtonRing />
         {label ?? t("states.saving")}
       </span>
     </span>

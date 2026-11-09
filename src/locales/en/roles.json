@@ -85,5 +85,6 @@
     "permissions_other": "{{n}} permissions"
   },
   "inUse_one": "{{n}} user has it. Remove it first.",
-  "inUse_other": "{{n}} users have it. Remove it from them first."
+  "inUse_other": "{{n}} users have it. Remove it from them first.",
+  "deactivating": "Deactivating…"
 }

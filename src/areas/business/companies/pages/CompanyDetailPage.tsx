@@ -70,7 +70,8 @@ export function CompanyDetailPage() {
       toast.success(sentence(t(change.status === "Inactive" ? "companies:messages.deactivated" : "companies:messages.activated", { name: change.name })));
       await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
     },
-    onError: (error) => toastActionError(error, t),
+    // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+    onError: (error) => { setDialog((current) => current?.kind === "deactivate" ? null : current); toastActionError(error, t); },
   });
 
   if (company.isPending) return <Page icon={BuildingIcon} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
@@ -127,6 +128,7 @@ export function CompanyDetailPage() {
       title={t("companies:confirm.deactivate", { name: dialog.change.name })}
       description={t("companies:confirm.deactivateDescription")}
       confirmLabel={t("companies:confirm.deactivateConfirm")} destructive returnFocusTo={dialog.returnFocusTo}
+      pending={changeCompanyState.isPending} pendingLabel={t("companies:confirm.deactivating")}
       onConfirm={() => changeCompanyState.mutate(dialog.change)} /> : null}
   </>;
 }

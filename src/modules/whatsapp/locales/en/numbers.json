@@ -65,7 +65,8 @@
   "disconnect": {
     "title": "Disconnect {{number}}?",
     "description": "Its chats stay available to read, without replying. To serve again, connect it again.",
-    "done": "{{number}} disconnected"
+    "done": "{{number}} disconnected",
+    "disconnecting": "Disconnecting…"
   },
   "payment": {
     "title": "{{number}} has no payment method",

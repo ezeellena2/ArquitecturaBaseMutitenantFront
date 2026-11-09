@@ -43,7 +43,8 @@
     "description_other": "No se va a mandar a los {{n}} contactos. Podés duplicarla para programarla de nuevo.",
     "back": "Volver",
     "confirm": "Cancelar difusión",
-    "done": "Cancelamos «{{name}}»."
+    "done": "Cancelamos «{{name}}».",
+    "cancelling": "Cancelando…"
   },
   "detail": {
     "title": "Difusión",

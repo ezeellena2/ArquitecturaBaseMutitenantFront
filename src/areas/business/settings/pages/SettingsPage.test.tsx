@@ -450,8 +450,8 @@ describe("SettingsPage", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled());
   });
 
-  // B11 (tablero Avisos › «Salir sin guardar»): con el nombre cambiado, la banda dice «Cambios sin guardar» y un enlace
-  // del menú pregunta antes de salir; «Seguir editando» se queda con lo escrito.
+  // B11 (tablero Avisos › «Salir sin guardar»): con el nombre cambiado, un enlace del menú pregunta antes de salir;
+  // «Seguir editando» se queda con lo escrito.
   it("con cambios, un enlace del menú pregunta «¿Salir sin guardar?»", async () => {
     const user = userEvent.setup();
     server.use(
@@ -479,8 +479,9 @@ describe("SettingsPage", () => {
     await waitFor(() => expect(router.state.location.pathname).toBe("/org"));
   });
 
-  // Tablero Configuracion: con cambios, la segunda línea de la banda dice solo «Cambios sin guardar».
-  it("con cambios, la banda dice «Cambios sin guardar»", async () => {
+  // «Criterio · Botones» (base de la 12): la banda nunca dice «Cambios sin guardar»; que «Guardar cambios» esté habilitado
+  // ya lo dice.
+  it("con cambios, la banda no dice «Cambios sin guardar» y se habilita «Guardar cambios»", async () => {
     const user = userEvent.setup();
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
@@ -493,7 +494,8 @@ describe("SettingsPage", () => {
     expect(subline()).toBeNull();
     await user.clear(name);
     await user.paste("Grupo Delta Sur");
-    expect(subline()).toHaveTextContent(/^Cambios sin guardar$/);
+    expect(subline()).toBeNull();
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
     await user.click(screen.getByRole("button", { name: "Descartar cambios" }));
     expect(subline()).toBeNull();
   });

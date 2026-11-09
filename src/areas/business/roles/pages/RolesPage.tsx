@@ -68,7 +68,8 @@ export function RolesPage() {
       toast.success(t("roles:removed", { name: role.name }));
       await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
     },
-    onError: (error) => toastActionError(error, t),
+    // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+    onError: (error) => { setRoleToDelete(null); toastActionError(error, t); },
   });
 
   const rowActions = (role: RoleResponse) => <RowActions
@@ -151,6 +152,7 @@ export function RolesPage() {
       description={t("roles:confirmDeactivateDescription")}
       confirmLabel={t("roles:deactivate")}
       destructive
+      pending={remove.isPending} pendingLabel={t("roles:deactivating")}
       onConfirm={() => { if (roleToDelete) remove.mutate(roleToDelete); }}
     />
   </>;

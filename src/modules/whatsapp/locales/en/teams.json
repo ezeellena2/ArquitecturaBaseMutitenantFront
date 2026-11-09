@@ -52,5 +52,6 @@
     "created": "We created the team “{{name}}”.",
     "updated": "We saved the team “{{name}}”.",
     "deleted": "We deleted the team “{{name}}”."
-  }
+  },
+  "deleting": "Deleting…"
 }

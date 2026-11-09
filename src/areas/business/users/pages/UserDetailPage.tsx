@@ -200,12 +200,12 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     setFailure(undefined);
   }
 
-  function saveAccess(values: AccessForm) {
+  function saveAccess(values: AccessForm, settled?: () => void) {
     setFailure(undefined);
     save.mutate({
       request: { ...(isMember ? { isActive: values.isActive } : {}), roleIds: values.roleIds, companies: changeableAssignments, version },
       message: t("users:detail.messages.saved", { name: displayName }), origin: "page", access: values,
-    });
+    }, { onSettled: settled });
   }
 
   // Tablero Usuario: deshabilitar pide confirmación antes de guardar.
@@ -272,10 +272,12 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     : managedDomain
       ? t("users:detail.confirm.removeManagedDescription", { organization: organizationName, domain: managedDomain })
       : t("users:detail.confirm.removeDescription", { organization: organizationName });
+  // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+  const settled = () => setConfirmAction(null);
   const confirmations = {
-    disable: { title: t("users:detail.confirm.disableTitle", { name: displayName }), description: t("users:detail.confirm.disableDescription", { organization: organizationName }), label: t("users:detail.confirm.disableConfirm"), run: () => saveAccess(form.getValues()) },
-    remove: { title: t("users:detail.confirm.removeTitle", { name: displayName, organization: organizationName }), description: removeDescription, label: t("users:detail.confirm.removeConfirm"), run: () => { setFailure(undefined); remove.mutate({ message: t("users:detail.messages.removed", { name: displayName, organization: organizationName }), version: removeVersion }); } },
-    revoke: { title: t("users:detail.confirm.revokeTitle", { email: userContactText(member, format) }), description: t("users:detail.confirm.revokeDescription"), label: t("users:detail.confirm.revokeConfirm"), run: () => { if (member.invitationId) revoke.mutate(member.invitationId); } },
+    disable: { title: t("users:detail.confirm.disableTitle", { name: displayName }), description: t("users:detail.confirm.disableDescription", { organization: organizationName }), label: t("users:detail.confirm.disableConfirm"), pending: save.isPending, pendingLabel: t("users:detail.confirm.disabling"), run: () => saveAccess(form.getValues(), settled) },
+    remove: { title: t("users:detail.confirm.removeTitle", { name: displayName, organization: organizationName }), description: removeDescription, label: t("users:detail.confirm.removeConfirm"), pending: remove.isPending, pendingLabel: t("users:detail.confirm.removing"), run: () => { setFailure(undefined); remove.mutate({ message: t("users:detail.messages.removed", { name: displayName, organization: organizationName }), version: removeVersion }, { onSettled: settled }); } },
+    revoke: { title: t("users:detail.confirm.revokeTitle", { email: userContactText(member, format) }), description: t("users:detail.confirm.revokeDescription"), label: t("users:detail.confirm.revokeConfirm"), pending: revoke.isPending, pendingLabel: t("users:detail.confirm.revoking"), run: () => { if (member.invitationId) revoke.mutate(member.invitationId, { onSettled: settled }); } },
   };
   const confirmation = confirmAction ? confirmations[confirmAction] : null;
   // Tableros Usuario y M-Usuario: punto de color y palabra, sin pastilla, con los tonos de Usuarios.
@@ -288,7 +290,6 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     : <Trans ns="users" i18nKey="detail.since" components={{ date: <DateText value={member.createdAtUtc} kind="date" /> }} />;
   const summary = <>
     <StatusBadge tones={userStateTones} value={shownState} />
-    {edit.unsaved ? <><SublineSeparator />{edit.unsaved}</> : null}
     <SublineSeparator />
     {/* CC25: una invitación por teléfono se nombra por el número invitado. */}
     {userContact(member) ? <>{userContact(member)}<Separator /></> : null}
@@ -297,8 +298,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
 
   return <>
     <Page banner={edit.banner} icon={UserIcon} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
-      // En el teléfono, con cambios, la barra dice «Cambios sin guardar» en lugar del correo, como Configuración (M-Avisos).
-      phoneSubtitle={edit.unsaved ?? userContact(member) ?? undefined} phoneBody="gray"
+      phoneSubtitle={userContact(member) ?? undefined} phoneBody="gray"
       moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
         { label: t("users:actions.resend"), icon: RotateIcon, onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },
         { label: t("users:actions.revoke"), icon: CloseIcon, onSelect: () => setConfirmAction("revoke"), destructive: true, hidden: !isInvitation || !member.invitationId },
@@ -386,6 +386,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
       onSave={(assignment) => saveCompanyDialog(companyDialog, assignment)} /> : null}
     <ConfirmDialog open={confirmation !== null} onOpenChange={(open) => { if (!open) setConfirmAction(null); }} destructive
       title={confirmation?.title ?? ""} description={confirmation?.description} confirmLabel={confirmation?.label ?? ""}
+      pending={confirmation?.pending ?? false} pendingLabel={confirmation?.pendingLabel}
       onConfirm={() => confirmation?.run()} />
     {edit.leaveDialog}
   </>;

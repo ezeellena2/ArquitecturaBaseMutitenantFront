@@ -381,7 +381,8 @@ describe("interfaz del asistente", () => {
     await waitFor(() => expect(requested).toBe(true));
     const sending = screen.getByRole("button", { name: "Guardando…" });
     expect(sending).toBeDisabled();
-    expect(within(sending).getByText("Guardando…")).toBeVisible();
+    // Un botón de ícono cambia su dibujo por el aro y conserva su nombre (base de la 12).
+    expect(sending.querySelector("[data-slot='button-ring']")).not.toBeNull();
     await app.user.click(screen.getByRole("button", { name: "Nueva conversación" }));
     await act(async () => { release(); await gate; });
     expect(app.requests).toEqual([]);

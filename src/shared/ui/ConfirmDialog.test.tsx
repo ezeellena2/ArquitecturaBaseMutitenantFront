@@ -178,4 +178,32 @@ describe("ConfirmDialog", () => {
     expect(text).toHaveClass("text-[0.84375rem]", "leading-[1.55]", "text-[var(--t2)]", "max-md:text-[0.90625rem]", "max-md:leading-normal");
     expect(text).not.toHaveClass("max-md:text-[var(--t1)]");
   });
+
+  // «Criterio · Diálogos», Mientras trabaja (base de la 12): queda abierta hasta la respuesta, con su botón en gerundio, y
+  // se cierra con la respuesta, sea cual sea.
+  function Waiting({ action }: { action: () => Promise<void> }) {
+    const [open, setOpen] = useState(true);
+    const [pending, setPending] = useState(false);
+    return <ConfirmDialog open={open} onOpenChange={setOpen} title="¿Dar de baja a Ana Gómez?" confirmLabel="Dar de baja" destructive
+      pending={pending} pendingLabel="Dando de baja…"
+      onConfirm={() => { setPending(true); void action().catch(() => undefined).finally(() => { setPending(false); setOpen(false); }); }} />;
+  }
+
+  it.each([["sale bien", true], ["falla", false]] as const)("queda abierta hasta la respuesta cuando %s", async (_case, succeeds) => {
+    let settle: () => void = () => undefined;
+    const action = () => new Promise<void>((resolve, reject) => { settle = succeeds ? resolve : () => reject(new Error("falló")); });
+    const user = userEvent.setup();
+    renderWithProviders(<Waiting action={action} />);
+
+    await user.click(screen.getByRole("button", { name: "Dar de baja" }));
+    const working = screen.getByRole("button", { name: "Dando de baja…" });
+    expect(working).toBeDisabled();
+    expect(working).not.toHaveClass("disabled:opacity-50");
+    expect(screen.getByRole("button", { name: "Cancelar" })).toBeDisabled();
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("dialog", { name: "¿Dar de baja a Ana Gómez?" })).toBeInTheDocument();
+
+    settle();
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
 });

@@ -63,7 +63,8 @@ function TemplatesPage({ scope }: { scope: TemplateScope }) {
       toast.success(t("whatsapp:templates.messages.deleted", { name: template.name }));
       await queryClient.invalidateQueries({ queryKey: templatesQueryRoot(scope) });
     },
-    onError: (error) => toastActionError(error, t),
+    // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+    onError: (error) => { setDeleting(null); toastActionError(error, t); },
   });
 
   // Una del sistema no tiene ⋮: es de solo lectura. Las demás se duplican (salvo en revisión) y se borran.
@@ -108,7 +109,8 @@ function TemplatesPage({ scope }: { scope: TemplateScope }) {
       steps={[t("whatsapp:templates.rejected.duplicate"), t("whatsapp:templates.rejected.resend")]} />
     <ConfirmDialog open={deleting !== null} onOpenChange={(open) => { if (!open) setDeleting(null); }}
       title={t("whatsapp:templates.confirmDelete", { name: deleting?.template.name ?? "" })} confirmLabel={t("whatsapp:templates.delete")} destructive
-      returnFocusTo={deleting?.returnFocusTo} onConfirm={() => { if (deleting) remove.mutate(deleting.template); }} />
+      returnFocusTo={deleting?.returnFocusTo} pending={remove.isPending} pendingLabel={t("whatsapp:templates.deleting")}
+      onConfirm={() => { if (deleting) remove.mutate(deleting.template); }} />
   </>;
 }
 

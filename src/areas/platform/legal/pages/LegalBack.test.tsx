@@ -34,7 +34,7 @@ function expectDraft() {
   expect(screen.getByRole("textbox", { name: "Vigente desde" })).toHaveValue("01/11/2026");
   expect(screen.getByRole("textbox", { name: "En español" })).toHaveValue("Texto es");
   expect(screen.getByRole("textbox", { name: "En inglés" })).toHaveValue("Text en");
-  expect(screen.getByText("Cambios sin guardar")).toBeVisible();
+  expect(screen.queryByText("Cambios sin guardar")).not.toBeInTheDocument();
 }
 
 describe("Atrás desde confirmación legal", () => {

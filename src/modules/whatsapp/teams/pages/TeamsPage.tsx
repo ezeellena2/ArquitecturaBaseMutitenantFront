@@ -41,7 +41,8 @@ function TeamsPage({ scope }: { scope: TeamScope }) {
       toast.success(t("whatsapp:teams.messages.deleted", { name: team.name }));
       await queryClient.invalidateQueries({ queryKey: teamsQueryRoot(scope) });
     },
-    onError: (error) => toastActionError(error, t),
+    // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+    onError: (error) => { setDeleting(null); toastActionError(error, t); },
   });
 
   const rowActions = (team: WhatsAppTeamResponse) => <RowActions label={t("whatsapp:teams.rowActions", { name: team.name })} title={team.name} actions={[
@@ -71,7 +72,8 @@ function TeamsPage({ scope }: { scope: TeamScope }) {
     {editing ? <TeamDialog scope={scope} team={editing.team} returnFocusTo={editing.returnFocusTo} onClose={() => setEditing(null)} /> : null}
     <ConfirmDialog open={deleting !== null} onOpenChange={(open) => { if (!open) setDeleting(null); }}
       title={t("whatsapp:teams.confirmDelete", { name: deleting?.team.name ?? "" })} confirmLabel={t("whatsapp:teams.delete")} destructive
-      returnFocusTo={deleting?.returnFocusTo} onConfirm={() => { if (deleting) remove.mutate(deleting.team); }} />
+      returnFocusTo={deleting?.returnFocusTo} pending={remove.isPending} pendingLabel={t("whatsapp:teams.deleting")}
+      onConfirm={() => { if (deleting) remove.mutate(deleting.team); }} />
   </>;
 }
 

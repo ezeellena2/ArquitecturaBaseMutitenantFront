@@ -104,20 +104,22 @@ export function UsersPage() {
   const [confirmAction, setConfirmAction] = useState<"revoke" | "disable" | "remove" | null>(null);
 
   const invalidate = async () => client.invalidateQueries({ queryKey: usersQueryRoot });
+  // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+  const closeConfirmation = () => { setTarget(null); setConfirmAction(null); };
   const revoke = useMutation({
     mutationFn: (user: OrganizationUserResponse) => revokeUserInvitation(user.invitationId!),
     onSuccess: async (_result, user) => { toast.success(t("users:messages.revoked", { email: userContactText(user, format) })); setTarget(null); setConfirmAction(null); await invalidate(); },
-    onError: (error) => toastActionError(error, t),
+    onError: (error) => { closeConfirmation(); toastActionError(error, t); },
   });
   const changeStatus = useMutation({
     mutationFn: (user: OrganizationUserResponse & { isActive: boolean }) => changeUserStatus(user.memberId, { isActive: user.isActive, version: user.version }),
     onSuccess: async (_result, user) => { toast.success(t(user.isActive ? "users:messages.enabled" : "users:messages.disabled", { name: user.displayName || userContactText(user, format) })); setTarget(null); setConfirmAction(null); await invalidate(); },
-    onError: (error) => toastActionError(error, t),
+    onError: (error) => { closeConfirmation(); toastActionError(error, t); },
   });
   const remove = useMutation({
     mutationFn: (user: OrganizationUserResponse) => removeUser(user.memberId, user.version),
     onSuccess: async (_result, user) => { toast.success(t("users:messages.removed", { name: user.displayName || userContactText(user, format), organization: organizationName })); setTarget(null); setConfirmAction(null); await invalidate(); },
-    onError: (error) => toastActionError(error, t),
+    onError: (error) => { closeConfirmation(); toastActionError(error, t); },
   });
 
   const rowActions = (member: OrganizationUserResponse) => <UserRowActions member={member}
@@ -196,6 +198,8 @@ export function UsersPage() {
       title={target ? t(`users:confirm.${confirmAction}`, { name: target.displayName || userContactText(target, format), email: userContactText(target, format), organization: organizationName }) : ""}
       description={confirmAction ? t(`users:confirm.${confirmAction}Description`, { organization: organizationName }) : undefined}
       confirmLabel={confirmAction ? t(`users:confirm.${confirmAction}Confirm`) : ""}
+      pending={confirmAction === "revoke" ? revoke.isPending : confirmAction === "disable" ? changeStatus.isPending : confirmAction === "remove" ? remove.isPending : false}
+      pendingLabel={confirmAction === "revoke" ? t("users:confirm.revoking") : confirmAction === "disable" ? t("users:confirm.disabling") : t("users:confirm.removing")}
       onConfirm={() => {
         if (!target || !confirmAction) return;
         if (confirmAction === "revoke" && target.invitationId) revoke.mutate(target);

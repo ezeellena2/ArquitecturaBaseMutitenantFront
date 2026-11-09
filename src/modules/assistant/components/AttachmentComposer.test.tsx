@@ -45,7 +45,8 @@ describe("disponibilidad y espera del compositor", () => {
     const app = renderWithProviders(<AttachmentComposer {...props} pending onSend={send} onStop={stop} />);
     const sending = screen.getByRole("button", { name: "Guardando…" });
     expect(sending).toBeDisabled();
-    expect(within(sending).getByText("Guardando…")).toBeVisible();
+    // Un botón de ícono cambia su dibujo por el aro y conserva su nombre (base de la 12).
+    expect(sending.querySelector("[data-slot='button-ring']")).not.toBeNull();
     await user.click(sending);
     expect(send).not.toHaveBeenCalled();
     app.rerender(<AttachmentComposer {...props} pending canStop onSend={send} onStop={stop} />);

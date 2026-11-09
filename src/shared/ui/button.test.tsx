@@ -42,16 +42,17 @@ describe("Button · Criterio · Botones", () => {
     expect(screen.getByRole("button", { name: "Más acciones" })).toHaveClass("size-8", "bg-transparent");
   });
 
-  // «Criterio · Botones», Guardando: dice qué está haciendo y no se puede volver a tocar. El aro blanco de 14 va antes del
-  // texto, con la opacidad de 0,85 (no la de un botón apagado). Lo que decía el botón queda invisible y le guarda el
+  // «Criterio · Botones», Mientras trabaja (base de la 12): dice qué está haciendo y no se puede volver a tocar. El aro
+  // blanco de 14 va antes del texto, con su color y sin atenuarse. Lo que decía el botón queda invisible y le guarda el
   // ancho: el botón no se achica mientras guarda.
-  it("mientras guarda dice qué hace, con el aro de 14 y opacidad 0,85, no se puede tocar y no se achica", () => {
+  it("mientras guarda dice qué hace, con el aro de 14 y sin atenuarse, no se puede tocar y no se achica", () => {
     render(<Button pending>{"Guardar cambios"}</Button>);
 
     const button = screen.getByRole("button", { name: "Guardando…" });
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute("data-pending", "true");
-    expect(button).toHaveClass("disabled:opacity-85");
+    expect(button).toHaveClass("disabled:opacity-100");
+    expect(button).not.toHaveClass("disabled:opacity-85");
     expect(button).not.toHaveClass("disabled:opacity-50");
     const ring = button.querySelector("[data-slot='button-ring']");
     expect(ring).toHaveClass("size-3.5", "rounded-full", "border-2", "animate-spin", "motion-reduce:animate-none");
@@ -59,6 +60,17 @@ describe("Button · Criterio · Botones", () => {
     const saved = screen.getByText("Guardar cambios");
     expect(saved).toHaveClass("invisible");
     expect(saved).toHaveAttribute("aria-hidden", "true");
+  });
+
+  it("un botón de ícono cambia su dibujo por el aro y conserva su nombre", () => {
+    render(<Button variant="icon" size="icon" aria-label="Más acciones" pending><span data-testid="dibujo" aria-hidden="true">{"⋮"}</span></Button>);
+
+    const button = screen.getByRole("button", { name: "Más acciones" });
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute("aria-busy", "true");
+    expect(button.querySelector("[data-slot='button-ring']")).not.toBeNull();
+    expect(screen.queryByTestId("dibujo")).toBeNull();
+    expect(button).not.toHaveTextContent("Guardando…");
   });
 
   it("dice lo que hace cada botón: invitar, agregar, enviar", () => {

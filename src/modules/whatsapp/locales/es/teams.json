@@ -52,5 +52,6 @@
     "created": "Creamos el equipo «{{name}}».",
     "updated": "Guardamos el equipo «{{name}}».",
     "deleted": "Borramos el equipo «{{name}}»."
-  }
+  },
+  "deleting": "Borrando…"
 }

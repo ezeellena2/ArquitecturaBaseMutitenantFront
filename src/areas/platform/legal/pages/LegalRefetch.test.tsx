@@ -65,7 +65,7 @@ describe("relectura legal con datos en caché", () => {
     expect(screen.getByRole("textbox", { name: "En español" })).toBe(content);
     expect(content).toHaveValue("Borrador es"); expect(date).toHaveValue("01/11/2026");
     expect(screen.getByRole("textbox", { name: "En inglés" })).toHaveValue("Draft en");
-    expect(screen.getByText("Cambios sin guardar")).toBeVisible();
+    expect(screen.queryByText("Cambios sin guardar")).not.toBeInTheDocument();
     await retryRefetch(page);
     expect(screen.getByRole("textbox", { name: "En español" })).toBe(content);
     expect(content).toHaveValue("Borrador es"); expect(date).toHaveValue("01/11/2026");

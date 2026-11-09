@@ -14,5 +14,6 @@
   "unlink": "Desvincular",
   "unlinkTitle": "¿Desvincular la conversación con {{name}}?",
   "unlinkDescription": "Deja de verse en Mensajes y {{name}} ya no la ve unida a tu cuenta. Podés seguir escribiéndole por WhatsApp.",
-  "continueOnWhatsApp": "Seguir en WhatsApp"
+  "continueOnWhatsApp": "Seguir en WhatsApp",
+  "unlinking": "Desvinculando…"
 }

@@ -305,9 +305,9 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
   });
 
-  // Tableros Pagina-Org y Avisos: con cambios, la banda dice «Publicada · Cambios sin guardar» y un enlace del menú
-  // pregunta «¿Salir sin guardar?».
-  it("con cambios, la banda suma «Cambios sin guardar» y salir pregunta antes", async () => {
+  // Tableros Pagina-Org y Avisos: con cambios, la banda sigue diciendo solo el estado (nunca «Cambios sin guardar», base de
+  // la 12) y un enlace del menú pregunta «¿Salir sin guardar?».
+  it("con cambios, la banda no dice «Cambios sin guardar» y salir pregunta antes", async () => {
     const user = userEvent.setup();
     api(page);
     const { router } = renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
@@ -316,7 +316,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(subline()).toHaveTextContent(/^Publicada$/);
     await user.clear(name);
     await user.type(name, "Grupo Delta Norte");
-    expect(subline()).toHaveTextContent(/^Publicada·Cambios sin guardar$/);
+    expect(subline()).toHaveTextContent(/^Publicada$/);
 
     await user.click(screen.getByRole("link", { name: "Empresas" }));
     expect(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).toBeVisible();
@@ -450,7 +450,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
 
     await user.click(screen.getByRole("switch", { name: "Visible en grupo-delta.localtest.me:5174" }));
     expect(await screen.findByText("Publicamos tu página.")).toBeVisible();
-    await waitFor(() => expect(subline()).toHaveTextContent(/^Publicada·Cambios sin guardar$/));
+    await waitFor(() => expect(subline()).toHaveTextContent(/^Publicada$/));
     expect(name).toHaveValue("Grupo Delta Norte");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 

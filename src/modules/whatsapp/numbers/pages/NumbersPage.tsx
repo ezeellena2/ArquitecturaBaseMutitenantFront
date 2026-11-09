@@ -130,7 +130,9 @@ export function NumbersPage() {
       returnFocusTo={open?.kind === "disconnect" ? open.trigger : undefined}
       title={open?.kind === "disconnect" ? t("whatsapp:numbers.disconnect.title", { number: phoneLabel(open.number) }) : ""}
       description={t("whatsapp:numbers.disconnect.description")} confirmLabel={t("whatsapp:numbers.actions.disconnect")}
-      onConfirm={() => { if (open?.kind === "disconnect") disconnect.mutate(open.number); }} />
+      pending={disconnect.isPending} pendingLabel={t("whatsapp:numbers.disconnect.disconnecting")}
+      // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+      onConfirm={() => { if (open?.kind === "disconnect") disconnect.mutate(open.number, { onSettled: () => setOpen(null) }); }} />
     {connection.ui}
   </>;
 }

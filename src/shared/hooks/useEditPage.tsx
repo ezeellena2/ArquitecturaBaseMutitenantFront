@@ -34,8 +34,6 @@ export interface EditPage {
   /** El cartel del 409 `General.ConcurrencyConflict`, para el `banner` de `Page`; en el teléfono, también la banda del
    * error de guardado, debajo de la barra (M-Usuario y M-Pagina-Org, v106). */
   readonly banner: ReactNode;
-  /** «Cambios sin guardar» para la segunda línea de la banda; `null` sin cambios. */
-  readonly unsaved: ReactNode;
   /** La franja del error de guardado en la compu: todo salvo el 409 y lo que ya avisó el MutationCache (red, 5xx y 429).
    * En el teléfono va en `banner`. */
   readonly formError: ReactNode;
@@ -46,8 +44,9 @@ export interface EditPage {
 }
 
 /// Lo común de una pantalla que edita algo que ya existe (tableros Avisos y «Criterio · Avisos y errores»): el cartel
-/// del 409 debajo de la banda, «Cambios sin guardar» en la banda, la franja del error de guardado y la pregunta antes de
-/// salir con cambios. Cada error va en un solo lugar.
+/// del 409 debajo de la banda, la franja del error de guardado y la pregunta antes de salir con cambios. Cada error va en
+/// un solo lugar. La banda nunca dice «Cambios sin guardar» (base de la 12): que «Guardar cambios» esté habilitado ya lo
+/// dice («Criterio · Botones»).
 export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, errorMessage, searchKeys, onNavigationAttempt }: EditPageOptions): EditPage {
   const { t } = useTranslation("errors");
   const { phone } = useAppChrome();
@@ -66,7 +65,6 @@ export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, error
         <span className="min-w-0">{message}</span>
       </PhoneBand> : null}
     </>,
-    unsaved: isDirty ? <span className="font-medium text-[var(--alerta)]">{t("unsaved.changes")}</span> : null,
     // Tablero Usuario («Error al guardar», .w-cartel.o-prob): en la compu, el cartel de problema debajo de la banda.
     formError: message && !phone ? <Banner tone="danger">{message}</Banner> : null,
     leaveDialog: <ConfirmDialog

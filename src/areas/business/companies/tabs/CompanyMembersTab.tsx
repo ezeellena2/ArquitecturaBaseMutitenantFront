@@ -93,7 +93,8 @@ export function CompanyMembersTab({ company, list, roles }: {
       toast.success(t(member.membershipStatus === "Active" ? "companies:messages.memberRemoved" : "companies:messages.memberRestored", { name: member.displayName }));
       await Promise.all([queryClient.invalidateQueries({ queryKey: companiesQueryRoot }), queryClient.invalidateQueries({ queryKey: companyCandidateOptions(company.id).queryKeyRoot })]);
     },
-    onError: (error) => toastActionError(error, t),
+    // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+    onError: (error) => { setRemoveTarget(null); toastActionError(error, t); },
   });
   // Decisión 97: la invitación de un miembro se reenvía (InvitationRowActions) o se revoca desde su empresa.
   const revokeInvitation = useMutation({
@@ -103,7 +104,7 @@ export function CompanyMembersTab({ company, list, roles }: {
       toast.success(t("companies:messages.invitationRevoked", { email: member.email ?? member.displayName }));
       await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
     },
-    onError: (error) => toastActionError(error, t),
+    onError: (error) => { setRevokeTarget(null); toastActionError(error, t); },
   });
 
   if (!canReadMembers) return <FormError message={t("companies:detail.membersForbidden")} />;
@@ -165,12 +166,14 @@ export function CompanyMembersTab({ company, list, roles }: {
       title={t("companies:confirm.removeMember", { name: removeTarget.member.displayName })}
       description={t("companies:confirm.removeMemberDescription", { company: company.name })}
       confirmLabel={t("companies:confirm.removeMemberConfirm")} destructive returnFocusTo={removeTarget.trigger}
+      pending={changeMemberState.isPending} pendingLabel={t("companies:confirm.removingMember")}
       onConfirm={() => changeMemberState.mutate(removeTarget.member)} /> : null}
     {/* Tablero Empresa: revocar pide confirmación con el correo de la invitación. */}
     {revokeTarget ? <ConfirmDialog open onOpenChange={(open) => { if (!open) setRevokeTarget(null); }}
       title={t("companies:confirm.revokeInvitation", { email: revokeTarget.member.email ?? revokeTarget.member.displayName })}
       description={t("companies:confirm.revokeInvitationDescription")}
       confirmLabel={t("companies:confirm.revokeInvitationConfirm")} destructive returnFocusTo={revokeTarget.trigger}
+      pending={revokeInvitation.isPending} pendingLabel={t("companies:confirm.revokingInvitation")}
       onConfirm={() => revokeInvitation.mutate(revokeTarget.member)} /> : null}
   </>;
 }

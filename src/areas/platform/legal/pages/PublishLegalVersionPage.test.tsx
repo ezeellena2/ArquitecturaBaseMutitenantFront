@@ -17,10 +17,10 @@ beforeEach(async () => {
   server.use(http.get("/api/platform/legal-documents", () => HttpResponse.json([{ kind: "Terms", currentVersion: 2, currentEffectiveAtUtc: "2026-06-01T03:00:00Z", versions: [{ id: "t2", version: 2, effectiveAtUtc: "2026-06-01T03:00:00Z", isCurrent: true }] }, { kind: "Privacy", currentVersion: 1, currentEffectiveAtUtc: "2026-01-12T03:00:00Z", versions: [{ id: "p8", version: 8, effectiveAtUtc: "2026-11-01T03:00:00Z", isCurrent: false }, { id: "p1", version: 1, effectiveAtUtc: "2026-01-12T03:00:00Z", isCurrent: true }] }])));
 });
 describe("Publicar documento legal", () => {
-  it.each(["Cancelar", "Volver a Documentos legales"])("%s usa Cambios sin guardar y pregunta; Seguir editando conserva todo", async (action) => {
+  it.each(["Cancelar", "Volver a Documentos legales"])("%s pregunta con cambios, sin «Cambios sin guardar»; Seguir editando conserva todo", async (action) => {
     const user = userEvent.setup(); const { router } = renderRouteWithProviders("/plataforma/legales/nueva", { as: "platform-operator" });
     const content = await screen.findByRole("textbox", { name: "En español" }); fireEvent.change(content, { target: { value: "Borrador" } });
-    expect(screen.getByText("Cambios sin guardar")).toBeVisible(); expect(screen.queryByRole("button", { name: "Descartar cambios" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Cambios sin guardar")).not.toBeInTheDocument(); expect(screen.queryByRole("button", { name: "Descartar cambios" })).not.toBeInTheDocument();
     await user.click(screen.getByRole(action === "Cancelar" ? "button" : "link", { name: action })); const dialog = await screen.findByRole("dialog", { name: "¿Salir sin guardar?" });
     await user.click(within(dialog).getByRole("button", { name: "Seguir editando" })); expect(content).toHaveValue("Borrador"); expect(router.state.location.pathname).toBe("/plataforma/legales/nueva");
     await user.click(screen.getByRole("button", { name: "Cancelar" })); await user.click(within(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).getByRole("button", { name: "Salir sin guardar" }));
@@ -88,7 +88,7 @@ describe("Publicar documento legal", () => {
     fireEvent.change(await screen.findByRole("textbox", { name: "Vigente desde" }), { target: { value: "01/11/2026" } });
     fireEvent.change(screen.getByRole("textbox", { name: "En español" }), { target: { value: "Texto es" } }); fireEvent.change(screen.getByRole("textbox", { name: "En inglés" }), { target: { value: "Text en" } });
     fireEvent.click(screen.getByRole("button", { name: "Publicar" })); fireEvent.change(screen.getByRole("textbox", { name: "En español" }), { target: { value: "Borrador nuevo" } });
-    await waitFor(() => expect(screen.getByText("Cambios sin guardar")).toBeVisible());
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "En español" })).toHaveValue("Borrador nuevo"));
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
   });
   it("editor propio, cartel bajo banda, Sections Versión/Contenido, máximo+1 y axe", async () => {

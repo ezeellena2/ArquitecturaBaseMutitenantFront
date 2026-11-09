@@ -142,7 +142,7 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
   }
   const errors = form.formState.errors;
   return <>
-    <Page icon={SlidersHorizontalIcon} title={t("platformSettings:title")} summary={edit.unsaved} phoneSubtitle={t("platformSettings:administration")}
+    <Page icon={SlidersHorizontalIcon} title={t("platformSettings:title")} phoneSubtitle={t("platformSettings:administration")}
       backTo={phone ? { to: "/plataforma/mas", label: t("platformSettings:back") } : undefined} banner={edit.banner}
       actions={<><Button type="button" variant="outline" onClick={discard}>{t("platformSettings:discard")}</Button><Button type="submit" form="platform-settings-editor" disabled={!isDirty} pending={visiblyBusy} pendingLabel={t("platformSettings:saving")}>{t("platformSettings:save")}</Button></>}>
       {loadError ? <FormError message={apiErrorMessage(loadError, t)} /> : null}{edit.formError}

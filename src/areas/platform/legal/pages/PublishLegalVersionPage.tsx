@@ -118,7 +118,7 @@ function LegalVersionEditor({ initialKind, cultures, documents }: { initialKind:
   const title = t("platformLegal:newVersion");
   return <>
     {operation && !edit.isBlocked ? <LegalPublicationOwner key={operation.draft} operation={operation} meta={action.meta} execute={execute} /> : null}
-    <Page title={title} summary={t("platformLegal:draftSummary", { name, version: format.formatInteger(number) })} status={edit.unsaved ?? undefined} phoneSubtitle={edit.unsaved ?? name}
+    <Page title={title} summary={t("platformLegal:draftSummary", { name, version: format.formatInteger(number) })} phoneSubtitle={name}
       backTo={{ to: "/plataforma/legales", label: t("platformLegal:backToList") }} banner={edit.banner}
       actions={<><Button type="button" variant="outline" onClick={() => { abandon(); void navigate("/plataforma/legales"); }}>{t("common:actions.cancel")}</Button><Button type="submit" form="legal-editor" pending={busy} pendingLabel={t("platformLegal:publishing")}>{t("platformLegal:publish")}</Button></>}>
       <Banner tone="warning">{t("platformLegal:warning")}</Banner>

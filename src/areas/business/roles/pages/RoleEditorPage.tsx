@@ -119,8 +119,8 @@ function sameRoleRequest(previous: CreateRoleRequest, next: CreateRoleRequest) {
 
 /// El editor de un rol (tableros Rol y M-Rol): datos sueltos (nombre, «Vale en», descripción) y «Permisos» en grupos
 /// que se abren. Al editar, «Descartar cambios» vuelve a lo guardado sin salir; al crear, «Cancelar» vuelve a la lista
-/// (lienzo v87). La versión que manda el guardado la lleva `useEditForm`; el 409, «Cambios sin guardar», la franja y
-/// «¿Salir sin guardar?» los pone `useEditPage`.
+/// (lienzo v87). La versión que manda el guardado la lleva `useEditForm`; el 409, la franja y «¿Salir sin guardar?» los
+/// pone `useEditPage`.
 function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Promise<RoleResponse | undefined> }) {
   const { t } = useTranslation(["roles", "common"]);
   const format = useFormat();
@@ -245,9 +245,9 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
       title={title}
       backTo={{ to: "/org/roles", label: t("roles:backToList") }}
       summary={summary}
-      // Tablero Rol: «De sistema» o «Cambios sin guardar» antes de dónde vale; en el teléfono, con cambios, la barra lo dice.
-      status={role?.isSystemRole ? t("roles:system") : edit.unsaved ?? undefined}
-      phoneSubtitle={edit.unsaved ?? summary}
+      // Tablero Rol: «De sistema» antes de dónde vale; la banda nunca dice «Cambios sin guardar» (base de la 12).
+      status={role?.isSystemRole ? t("roles:system") : undefined}
+      phoneSubtitle={summary}
       actionsNotice={phone ? limitNotice : undefined}
       actions={editable ? <>
         {role

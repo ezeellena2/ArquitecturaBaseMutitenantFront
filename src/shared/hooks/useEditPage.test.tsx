@@ -26,7 +26,6 @@ function Editor({ error, onSeeNew = () => {}, onContinueEditing = () => {}, sear
 
   return <>
     <h1>{"Configuración"}</h1>
-    <p data-testid="banda">{edit.unsaved}</p>
     {edit.banner}
     {edit.formError}
     <button type="button" onClick={() => setDirty(true)}>{"Cambiar algo"}</button>
@@ -58,17 +57,18 @@ describe("useEditPage", () => {
   it("sin cambios ni error, no muestra nada y deja salir", async () => {
     const router = renderEditor();
 
-    expect(await screen.findByTestId("banda")).toBeEmptyDOMElement();
+    expect(await screen.findByRole("heading", { name: "Configuración" })).toBeVisible();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("link", { name: "Empresas" }));
     await waitFor(() => expect(router.state.location.pathname).toBe("/empresas"));
   });
 
-  it("con cambios, «Cambios sin guardar» en la banda y «¿Salir sin guardar?» antes de salir", async () => {
+  // «Criterio · Botones» (base de la 12): nunca aparece «Cambios sin guardar»; al salir con cambios, se pregunta.
+  it("con cambios, sin «Cambios sin guardar», pregunta «¿Salir sin guardar?» antes de salir", async () => {
     const router = renderEditor();
     await userEvent.click(await screen.findByRole("button", { name: "Cambiar algo" }));
 
-    expect(screen.getByTestId("banda")).toHaveTextContent("Cambios sin guardar");
+    expect(document.body).not.toHaveTextContent("Cambios sin guardar");
     await userEvent.click(screen.getByRole("link", { name: "Empresas" }));
     const dialog = await screen.findByRole("dialog", { name: "¿Salir sin guardar?" });
     expect(dialog).toHaveTextContent("Se pierde lo que cambiaste acá.");

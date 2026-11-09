@@ -119,12 +119,23 @@ describe("DataTable", () => {
     expect(onRetry).toHaveBeenCalledOnce();
   });
 
-  it("mantiene filas anteriores atenuadas y marca aria-busy durante la siguiente página", () => {
-    render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} isFetching />);
-    const table = screen.getByRole("table");
+  // «Criterio · Tablas», Cuando vuelve a leer (base de la 12): las filas quedan atenuadas y fuera de alcance, y una línea
+  // corre bajo el encabezado hasta que llega lo nuevo.
+  it("mientras vuelve a leer atenúa las filas, las deja fuera de alcance y corre la línea bajo el encabezado", () => {
+    const { container, rerender } = render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} isFetching />);
+    const table = screen.getByRole("table", { hidden: true });
     expect(table).toHaveAttribute("aria-busy", "true");
     expect(within(table).getByText("Ana García")).toBeInTheDocument();
-    expect(table).toHaveClass("opacity-60");
+    const header = container.querySelector("thead")!;
+    const body = container.querySelector("tbody")!;
+    expect(header).toHaveClass("tabla-relee");
+    expect(body).toHaveClass("opacity-50");
+    expect(body).toHaveAttribute("inert");
+
+    rerender(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} />);
+    expect(screen.getByRole("table")).not.toHaveAttribute("aria-busy");
+    expect(container.querySelector("thead")).not.toHaveClass("tabla-relee");
+    expect(container.querySelector("tbody")).not.toHaveAttribute("inert");
   });
 
   // Tablero «Criterio · Tablas» y Usuarios: encabezado de 40, filas de 40 (52 con segunda línea), 16 px a los

@@ -202,7 +202,7 @@ describe("InvitationPage", () => {
 
     const accepting = await screen.findByRole("button", { name: "Aceptando…" });
     expect(accepting).toBeDisabled();
-    expect(accepting).toHaveClass("disabled:opacity-85");
+    expect(accepting).toHaveClass("disabled:opacity-100");
     // El aro de Button («Criterio · Botones», Guardando), no uno hecho a mano.
     expect(accepting).toHaveAttribute("data-pending", "true");
     expect(accepting.querySelector("[data-slot='button-ring']")).toHaveClass("size-3.5", "animate-spin", "rounded-full", "border-2");

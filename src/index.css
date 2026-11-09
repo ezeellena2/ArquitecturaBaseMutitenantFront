@@ -201,6 +201,29 @@ body {
   background-color: var(--fondo);
   color: var(--t1);
 }
+
+/* «Criterio · Tablas», Cuando vuelve a leer (base de la 12): lo que estaba queda atenuado y fuera de alcance, y una línea de
+   2 en la marca corre bajo el encabezado (en una lista del teléfono, arriba de las filas) hasta que llega lo nuevo. */
+.tabla-relee { position: relative; }
+.tabla-relee::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(var(--marca), var(--marca)) no-repeat;
+  background-size: 40% 100%;
+  animation: tabla-relee 1.1s linear infinite;
+}
+.tabla-relee[data-line="top"]::after { top: 0; bottom: auto; }
+@media (prefers-reduced-motion: reduce) {
+  .tabla-relee::after { animation: none; background-size: 100% 100%; }
+}
+@keyframes tabla-relee {
+  from { background-position: -67% 0; }
+  to { background-position: 167% 0; }
+}
 /* En el teléfono, los avisos suben por encima de la acción fija de abajo (tablero M-Avisos). */
 @media (max-width: 767px) {
   /* M-Avisos (.f-snack, a 110 del pie con la barra de 97): la franja queda a 13 de la barra de botones, que acá mide 75. */

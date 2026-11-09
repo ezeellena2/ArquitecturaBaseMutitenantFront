@@ -670,9 +670,9 @@ describe("RoleEditorPage", () => {
     expect(screen.queryByRole("option", { name: /Cada empresa/ })).not.toBeInTheDocument();
   });
 
-  // Tableros Rol y Avisos: con cambios, «Cambios sin guardar» en la banda; al irse, «¿Salir sin guardar?» con los textos
-  // de todas las fichas (useEditPage).
-  it("con cambios dice «Cambios sin guardar» y pregunta antes de salir", async () => {
+  // Tableros Rol y Avisos: la banda nunca dice «Cambios sin guardar» (base de la 12); al irse con cambios, «¿Salir sin
+  // guardar?» con los textos de todas las fichas (useEditPage).
+  it("con cambios no dice «Cambios sin guardar» y pregunta antes de salir", async () => {
     const user = userEvent.setup();
     server.use(
       http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
@@ -684,7 +684,8 @@ describe("RoleEditorPage", () => {
     const band = screen.getByRole("heading", { level: 1, name: "Solo lectura" }).parentElement!;
     expect(band).not.toHaveTextContent("Cambios sin guardar");
     await user.type(name, " y algo más");
-    expect(band).toHaveTextContent("Cambios sin guardar·Vale en toda la organización · 0 usuarios lo tienen");
+    expect(band).not.toHaveTextContent("Cambios sin guardar");
+    expect(band).toHaveTextContent("Vale en toda la organización · 0 usuarios lo tienen");
 
     await user.click(screen.getByRole("link", { name: "Volver a Roles y permisos" }));
     const leave = await screen.findByRole("dialog", { name: "¿Salir sin guardar?" });

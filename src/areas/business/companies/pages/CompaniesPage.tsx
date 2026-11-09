@@ -76,7 +76,8 @@ export function CompaniesPage() {
       toast.success(sentence(t(company.status === "Active" ? "companies:messages.deactivated" : "companies:messages.activated", { name: company.name })));
       await invalidate();
     },
-    onError: (error) => toastActionError(error, t),
+    // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+    onError: (error) => { setStatusTarget(null); toastActionError(error, t); },
   });
 
   const openCreate = () => setDialog({});
@@ -145,6 +146,7 @@ export function CompaniesPage() {
       confirmLabel={t("companies:confirm.deactivateConfirm")}
       destructive
       returnFocusTo={statusTarget.trigger}
+      pending={updateStatus.isPending} pendingLabel={t("companies:confirm.deactivating")}
       onConfirm={() => updateStatus.mutate(statusTarget.company)}
     /> : null}
   </>;

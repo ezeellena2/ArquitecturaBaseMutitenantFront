@@ -27,7 +27,7 @@ import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Input } from "@/shared/ui/input";
 import { phoneDraftFromE164, phoneE164FromDraft } from "@/shared/phone/phoneInput";
 import { PhoneField, type PhoneDraft } from "@/shared/ui/fields/PhoneField";
-import { Page, SublineSeparator } from "@/shared/ui/Page";
+import { Page } from "@/shared/ui/Page";
 import { PublicPageCard, publicPageBackdropClass } from "@/shared/ui/PublicPageCard";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { Switch } from "@/shared/ui/switch";
@@ -102,8 +102,7 @@ export function PublicPagePage() {
 }
 
 /// La página pública de la organización (tableros Pagina-Org y M-Pagina-Org), como el editor de Roles: React Hook Form
-/// con zod, la versión de `useEditForm`, y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de
-/// `useEditPage`. La publicación se aplica al momento, sin esperar a «Guardar cambios».
+/// con zod, la versión de `useEditForm`, y el 409, la franja y «¿Salir sin guardar?» de `useEditPage`. La publicación se aplica al momento, sin esperar a «Guardar cambios».
 function PublicPageEditor({ page, loadError, reload }: { page: PublicPageResponse; loadError: unknown; reload: () => Promise<PublicPageResponse | undefined> }) {
   const { t } = useTranslation(["publicPage", "common"]);
   const client = useQueryClient();
@@ -117,8 +116,8 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
   });
   const [failure, setFailure] = useState<unknown>();
   const isDirty = form.formState.isDirty;
-  // Tableros Pagina-Org y Avisos: el 409 en su cartel, «Cambios sin guardar» después del estado, el error de guardado en
-  // la franja del formulario y «¿Salir sin guardar?» antes de irse con cambios.
+  // Tableros Pagina-Org y Avisos: el 409 en su cartel, el error de guardado en la franja del formulario y «¿Salir sin
+  // guardar?» antes de irse con cambios. La banda dice solo el estado (base de la 12).
   const edit = useEditPage({
     isDirty, error: failure,
     onSeeNew: () => { void reload().then((fresh) => { if (fresh) resetTo(fresh); setFailure(undefined); }); },
@@ -156,6 +155,8 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
       wrote(sent, saved, client.getQueryData<PublicPageResponse>(publicPageQueryKey));
     },
     onError: (error) => toastActionError(error, t),
+    // «Despublicar» espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+    onSettled: () => setUnpublishOpen(false),
   });
 
   const blocked = page.publishBlockedAtUtc != null;
@@ -208,7 +209,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
   const state = <span className={`inline-flex items-center gap-1.5 ${blocked ? "text-[var(--peligro)]" : "text-[var(--t1)] max-md:text-[var(--t3)]"}`}>
     <StatusMark tones={publicPageStateTones} value={pageState} />{stateText}
   </span>;
-  const summary = <>{state}{edit.unsaved ? <><SublineSeparator />{edit.unsaved}</> : null}</>;
+  const summary = state;
 
   return <>
     <Page
@@ -320,6 +321,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
 
     <ConfirmDialog open={unpublishOpen} onOpenChange={setUnpublishOpen} title={t("publicPage:unpublishTitle")}
       description={t("publicPage:unpublishDescription", { host: publicSiteHost(savedSlug) })} confirmLabel={t("publicPage:unpublish")} destructive
+      pending={publication.isPending} pendingLabel={t("publicPage:unpublishing")}
       onConfirm={() => publication.mutate(false)} />
     {edit.leaveDialog}
   </>;

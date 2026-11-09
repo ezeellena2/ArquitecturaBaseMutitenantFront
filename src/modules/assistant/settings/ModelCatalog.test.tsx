@@ -132,7 +132,8 @@ describe("catálogo y configuración de plataforma", () => {
     await screen.findByLabelText(/Clave de la plataforma/);
     expect(screen.getByText("Sin configurar")).toBeVisible();
     fireEvent.change(screen.getByRole("textbox", { name: "Consultas por persona por día" }), { target: { value: "75" } });
-    expect(screen.getByText("Cambios sin guardar")).toBeVisible(); expect(screen.queryByText("Sin configurar")).not.toBeInTheDocument();
+    // El estado se dice una vez y sin «Cambios sin guardar» (base de la 12): «Sin configurar» sigue hasta guardar una clave.
+    expect(screen.queryByText("Cambios sin guardar")).not.toBeInTheDocument(); expect(screen.getByText("Sin configurar")).toBeVisible();
     await app.user.click(screen.getByRole("button", { name: "Descartar cambios" })); expect(screen.getByText("Sin configurar")).toBeVisible();
   });
   it("esfuerzo expone tres radios visibles, admite flechas y guarda la elección", async () => {

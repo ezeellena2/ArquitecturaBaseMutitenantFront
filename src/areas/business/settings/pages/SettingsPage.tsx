@@ -76,8 +76,8 @@ export function SettingsPage() {
 }
 
 /// Configuración (tableros Configuracion y M-Configuracion), como el editor de Roles: los datos con React Hook Form y zod,
-/// la versión de `useEditForm`, y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`. Los
-/// dominios se guardan al momento, desde sus diálogos.
+/// la versión de `useEditForm`, y el 409, la franja y «¿Salir sin guardar?» de `useEditPage`. Los dominios se guardan al
+/// momento, desde sus diálogos.
 function SettingsEditor({ settings, loadError, reload }: {
   settings: OrganizationSettingsResponse;
   loadError: unknown;
@@ -101,8 +101,8 @@ function SettingsEditor({ settings, loadError, reload }: {
   const currency = useController({ control: form.control, name: "defaultCurrency" });
   const [failure, setFailure] = useState<unknown>();
   const isDirty = canManage && form.formState.isDirty;
-  // Tableros Configuracion y Avisos: el 409 en su cartel, «Cambios sin guardar» solo en la banda, el error de guardado en
-  // la franja y «¿Salir sin guardar?» antes de irse con cambios.
+  // Tableros Configuracion y Avisos: el 409 en su cartel, el error de guardado en la franja y «¿Salir sin guardar?» antes
+  // de irse con cambios.
   const edit = useEditPage({
     isDirty, error: failure,
     onSeeNew: () => { void reload().then((fresh) => { if (fresh) resetTo(fresh); setFailure(undefined); }); },
@@ -123,7 +123,8 @@ function SettingsEditor({ settings, loadError, reload }: {
   const removeDomain = useMutation({
     mutationFn: (domain: OrganizationDomainResponse) => removeOrganizationDomain(domain.id, domain.version),
     onSuccess: async (_result, domain) => { setDomainToRemove(null); toast.success(t("settings:domains.removed", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
-    onError: (error) => toastActionError(error, t),
+    // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+    onError: (error) => { setDomainToRemove(null); toastActionError(error, t); },
   });
 
   function rejected(error: unknown) {
@@ -186,8 +187,6 @@ function SettingsEditor({ settings, loadError, reload }: {
     <Page banner={edit.banner}
       icon={SettingsIcon}
       title={t("settings:title")}
-      summary={edit.unsaved}
-      phoneSubtitle={edit.unsaved}
       actions={canManage ? <>
         <Button type="button" variant="outline" onClick={discard}>{t("settings:discard")}</Button>
         <Button type="submit" form="settings-editor" disabled={!isDirty} pending={save.isPending}>{t("settings:save")}</Button>
@@ -285,6 +284,7 @@ function SettingsEditor({ settings, loadError, reload }: {
         ...(domainToRemove && domainToRemove.managedEmailCount > 0 ? [t("settings:domains.removeKept", { count: domainToRemove.managedEmailCount })] : [])].join(" ")}
       confirmLabel={t("settings:domains.remove")}
       destructive
+      pending={removeDomain.isPending} pendingLabel={t("settings:domains.removing")}
       onConfirm={() => { if (domainToRemove) removeDomain.mutate(domainToRemove); }}
     />
     {edit.leaveDialog}

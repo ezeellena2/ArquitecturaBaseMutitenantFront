@@ -82,7 +82,10 @@
     "removeDescription": "Deja de ser miembro de la organización y de sus empresas.",
     "revokeConfirm": "Revocar",
     "disableConfirm": "Deshabilitar",
-    "removeConfirm": "Quitar"
+    "removeConfirm": "Quitar",
+    "revoking": "Revocando…",
+    "disabling": "Deshabilitando…",
+    "removing": "Quitando…"
   },
   "messages": {
     "saved": "Guardamos los cambios.",
@@ -137,7 +140,10 @@
       "removeConfirm": "Quitar",
       "revokeTitle": "¿Revocar la invitación a {{email}}?",
       "revokeDescription": "El enlace deja de funcionar. Podés volver a invitarla cuando quieras.",
-      "revokeConfirm": "Revocar"
+      "revokeConfirm": "Revocar",
+      "revoking": "Revocando…",
+      "disabling": "Deshabilitando…",
+      "removing": "Quitando…"
     },
     "messages": {
       "saved": "Guardamos los cambios de {{name}}.",

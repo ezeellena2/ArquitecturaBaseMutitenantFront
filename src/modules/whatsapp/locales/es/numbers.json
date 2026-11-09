@@ -65,7 +65,8 @@
   "disconnect": {
     "title": "¿Desconectar {{number}}?",
     "description": "Sus chats quedan para leer, sin responder. Para volver a atender, conectalo de nuevo.",
-    "done": "{{number}} desconectado"
+    "done": "{{number}} desconectado",
+    "disconnecting": "Desconectando…"
   },
   "payment": {
     "title": "{{number}} no tiene medio de pago",

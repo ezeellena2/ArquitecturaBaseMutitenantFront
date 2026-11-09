@@ -142,9 +142,9 @@ describe("UserDetailPage (tablero Usuario)", () => {
       await user.click(within(stateSheet).getByRole("radio", { name: "Deshabilitado" }));
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
       expect(within(access).getByRole("button", { name: /Estado/ })).toHaveTextContent("Deshabilitado");
-      // Como Configuración en el teléfono (tablero M-Avisos): con cambios, la barra dice «Cambios sin guardar».
-      expect(bar).toHaveTextContent("Cambios sin guardar");
-      expect(bar).not.toHaveTextContent("lucia@example.com");
+      // La barra nunca dice «Cambios sin guardar» (base de la 12): sigue con el correo.
+      expect(bar).not.toHaveTextContent("Cambios sin guardar");
+      expect(bar).toHaveTextContent("lucia@example.com");
 
       // Tablero M-Usuario (v99, «Elegir los roles»): la casilla a la izquierda de cada rol, sin «Todos», y «Listo» cierra
       // la hoja. Lo elegido queda en la ficha hasta guardar.
@@ -160,7 +160,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
       await user.click(within(rolesSheet).getByRole("button", { name: "Listo" }));
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
       expect(rolesRow).toHaveTextContent("Soporte");
-      expect(bar).toHaveTextContent("Cambios sin guardar");
+      expect(bar).not.toHaveTextContent("Cambios sin guardar");
+      expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
 
       const companies = screen.getByRole("region", { name: "Empresas" });
       expect(within(companies).getByRole("button", { name: "Sumar empresa" })).toHaveClass("text-[var(--marca-tx)]");
@@ -257,7 +258,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
 
     await open(user, screen.getByRole("combobox", { name: "Estado" }));
     await user.click(await screen.findByRole("option", { name: /Deshabilitado/ }));
-    expect(subline("Lucía Fernández")).toHaveTextContent(/^Deshabilitado·Cambios sin guardar·lucia@example\.com/);
+    expect(subline("Lucía Fernández")).toHaveTextContent(/^Deshabilitado·lucia@example\.com/);
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
     const dialog = await screen.findByRole("dialog", { name: "¿Deshabilitar a Lucía Fernández?" });
@@ -438,7 +439,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await waitFor(() => expect(actions).toHaveFocus());
   });
 
-  // Sacar un rol y volver a ponerlo deja lo guardado: no hay «Cambios sin guardar» ni nada para guardar.
+  // Sacar un rol y volver a ponerlo deja lo guardado: no hay nada para guardar.
   it("sacar un rol y volver a ponerlo no cuenta como un cambio", async () => {
     const user = userEvent.setup();
     api({ ...member, roles: [ownerRole, { ...ownerRole, id: "role-support", name: "Soporte", isSystemRole: false }] });
@@ -448,7 +449,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
     await user.click(await screen.findByRole("menuitemcheckbox", { name: "Dueño" }));
     await user.keyboard("{Escape}");
-    expect(subline("Lucía Fernández")).toHaveTextContent(/Cambios sin guardar/);
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
     await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
     await user.click(await screen.findByRole("menuitemcheckbox", { name: "Dueño" }));
     await user.keyboard("{Escape}");
@@ -515,7 +516,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
   });
 
   // Tablero M-Usuario (v106, «Error al guardar»): en el teléfono, el error de guardado, con el texto del back, va en la
-  // banda roja pegada debajo de la barra, y la barra sigue diciendo «Cambios sin guardar».
+  // banda roja pegada debajo de la barra; la barra nunca dice «Cambios sin guardar» (base de la 12).
   it("en el teléfono, el error al guardar va en la banda debajo de la barra", async () => {
     const restore = asPhone();
     try {
@@ -539,7 +540,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
       expect(bar.nextElementSibling).toHaveAttribute("data-slot", "page-banner");
       expect(bar.nextElementSibling).toContainElement(band);
       expect(band).not.toHaveClass("rounded-xl");
-      expect(bar).toHaveTextContent("Cambios sin guardar");
+      expect(bar).not.toHaveTextContent("Cambios sin guardar");
     } finally {
       restore();
     }
@@ -624,7 +625,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
     await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
     await user.keyboard("{Escape}");
-    expect(subline("Lucía Fernández")).toHaveTextContent(/^Activo·Cambios sin guardar·lucia@example\.com/);
+    expect(subline("Lucía Fernández")).toHaveTextContent(/^Activo·lucia@example\.com/);
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
 
     await user.click(screen.getByRole("link", { name: "Empresas" }));
     expect(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).toBeVisible();
@@ -660,7 +662,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await user.keyboard("{Escape}");
     await waitFor(() => expect(within(document.body).queryByRole("dialog", { name: "Sumar empresa" })).not.toBeInTheDocument());
     expect(dialog).not.toBeInTheDocument();
-    expect(subline("Lucía Fernández")).toHaveTextContent(/Cambios sin guardar/);
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
     expect(reads.user).toBe(before);
   });
 
@@ -755,7 +757,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await user.click(within(dialog).getByRole("button", { name: "Sumar" }));
     expect(await screen.findByText("Sumamos a Lucía Fernández a Delta S.A.")).toBeVisible();
     await waitFor(() => expect(within(screen.getByRole("region", { name: "Empresas" })).getByText("Delta S.A.")).toBeVisible());
-    expect(subline("Lucía Fernández")).toHaveTextContent(/Cambios sin guardar/);
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
     expect(await screen.findByText("Guardamos los cambios de Lucía Fernández.")).toBeVisible();

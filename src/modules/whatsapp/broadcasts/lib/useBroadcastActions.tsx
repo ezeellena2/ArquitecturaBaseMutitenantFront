@@ -33,9 +33,12 @@ export function useBroadcastActions() {
       title={t("whatsapp:broadcasts.cancel.title", { name: cancelling.broadcast.name })}
       description={t("whatsapp:broadcasts.cancel.description", countOf(format, cancelling.broadcast.recipients))}
       cancelLabel={t("whatsapp:broadcasts.cancel.back")} confirmLabel={t("whatsapp:broadcasts.cancel.confirm")} returnFocusTo={cancelling.returnFocusTo}
+      pending={cancel.isPending} pendingLabel={t("whatsapp:broadcasts.cancel.cancelling")}
+      // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
       onConfirm={() => cancel.mutate(cancelling.broadcast, {
         onSuccess: async () => { toast.success(t("whatsapp:broadcasts.cancel.done", { name: cancelling.broadcast.name })); await invalidate(); },
         onError: async (error) => { toastActionError(error, t); await invalidate(); },
+        onSettled: () => setCancelling(null),
       })} /> : null,
   };
 }

@@ -1,7 +1,9 @@
 import * as React from "react"
 import { cn } from "cn"
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+/// `refreshing` («Criterio · Tablas», Cuando vuelve a leer): la tabla avisa que trabaja (`aria-busy`). Su encabezado corre
+/// la línea y su cuerpo queda atenuado y fuera de alcance, cada uno con su `refreshing`.
+function Table({ className, refreshing, ...props }: React.ComponentProps<"table"> & { refreshing?: boolean }) {
   return (
     <div
       data-slot="table-container"
@@ -9,6 +11,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
     >
       <table
         data-slot="table"
+        aria-busy={refreshing || undefined}
         className={cn("w-full caption-bottom text-[0.8125rem]", className)}
         {...props}
       />
@@ -16,21 +19,24 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
   )
 }
 
-function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
+function TableHeader({ className, refreshing, ...props }: React.ComponentProps<"thead"> & { refreshing?: boolean }) {
   return (
     <thead
       data-slot="table-header"
-      className={cn("[&_tr]:border-b", className)}
+      data-refreshing={refreshing || undefined}
+      className={cn("[&_tr]:border-b", refreshing && "tabla-relee", className)}
       {...props}
     />
   )
 }
 
-function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
+/// Mientras vuelve a leer, lo que estaba se ve atenuado y no se puede tocar ni enfocar (`inert`).
+function TableBody({ className, refreshing, ...props }: React.ComponentProps<"tbody"> & { refreshing?: boolean }) {
   return (
     <tbody
       data-slot="table-body"
-      className={cn("[&_tr:last-child]:border-0", className)}
+      inert={refreshing || undefined}
+      className={cn("[&_tr:last-child]:border-0", refreshing && "opacity-50", className)}
       {...props}
     />
   )

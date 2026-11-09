@@ -43,7 +43,8 @@
     "description_other": "It won’t be sent to the {{n}} contacts. You can duplicate it to schedule it again.",
     "back": "Go back",
     "confirm": "Cancel broadcast",
-    "done": "We cancelled “{{name}}”."
+    "done": "We cancelled “{{name}}”.",
+    "cancelling": "Cancelling…"
   },
   "detail": {
     "title": "Broadcast",

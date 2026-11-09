@@ -210,7 +210,10 @@ export function DataTable<TRow>({
     : rows.length === 0 && !isLoading ? <EmptyState title={emptyTitle ?? t("states.empty")} description={emptyDescription} action={emptyAction} framed={Boolean(list)} />
       : null;
   if (!error && isLoading) return <div className="flex justify-center p-10"><Spinner /></div>;
-  if (list) return notice ?? <ul aria-busy={isFetching === true} className={cn("m-0 list-none p-0", isFetching ? "opacity-60" : undefined)}>
+  // «Criterio · Tablas», Cuando vuelve a leer: lo que estaba queda atenuado y fuera de alcance, con la línea que corre.
+  const refreshing = isFetching === true;
+  if (list) return notice ?? <ul aria-busy={refreshing || undefined} inert={refreshing || undefined} data-line="top"
+    className={cn("m-0 list-none p-0", refreshing && "tabla-relee [&>li]:opacity-50")}>
     {rowGroups ? rowGroups.map((group) => <Fragment key={group.key}>
       <li className="bg-[var(--s2)] px-5 py-2.5">{group.header}</li>
       {group.rows.map((row) => <Fragment key={rowKey(row)}>{mobileRow(row)}</Fragment>)}
@@ -233,8 +236,8 @@ export function DataTable<TRow>({
   </TableRow>;
 
   return (
-    <Table aria-busy={isFetching === true} className={cn("table-fixed text-[0.8125rem]", isFetching ? "opacity-60" : undefined)}>
-      <TableHeader>
+    <Table refreshing={refreshing} className="table-fixed text-[0.8125rem]">
+      <TableHeader refreshing={refreshing}>
         <TableRow className="bg-[var(--s2)] hover:bg-[var(--s2)]">
           {columns.map((column) => (
             <TableHead
@@ -258,7 +261,7 @@ export function DataTable<TRow>({
           ))}
         </TableRow>
       </TableHeader>
-      <TableBody>
+      <TableBody refreshing={refreshing}>
         {notice ? <TableRow className="border-b-0 hover:bg-transparent">
           <TableCell colSpan={columns.length} className="p-0 whitespace-normal">{notice}</TableCell>
         </TableRow> : rowGroups ? rowGroups.map((group) => <Fragment key={group.key}>

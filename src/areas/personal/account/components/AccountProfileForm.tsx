@@ -104,7 +104,7 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
     <Button type="submit" form="account-profile" disabled={!isDirty} pending={update.isPending}>{t("save")}</Button>
   </>;
   return <>
-    <Page title={t("title")} icon={UserIcon} status={edit.unsaved} actions={actions} phoneBody="gray" banner={edit.banner}>
+    <Page title={t("title")} icon={UserIcon} actions={actions} phoneBody="gray" banner={edit.banner}>
       {formError ? <div className="mb-3">{formError}</div> : null}
       <form id="account-profile" noValidate aria-label={t("title")} onSubmit={(event) => { void submit(event); }}>
         <Section title={t("data")}>

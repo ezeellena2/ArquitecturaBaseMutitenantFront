@@ -67,7 +67,10 @@
     "removeMemberConfirm": "Remove",
     "revokeInvitation": "Revoke the invitation to {{email}}?",
     "revokeInvitationDescription": "The link stops working.",
-    "revokeInvitationConfirm": "Revoke"
+    "revokeInvitationConfirm": "Revoke",
+    "deactivating": "Deactivating…",
+    "removingMember": "Removing…",
+    "revokingInvitation": "Revoking…"
   },
   "messages": {
     "created": "We created {{name}}. You have the Administrator role.",

@@ -141,7 +141,9 @@ function PersonalConversation({ id, back, phone }: { id: string; back: { to: str
   </a></Button>;
   const confirm = confirming ? <ConfirmDialog open onOpenChange={(open) => { if (!open) setConfirming(null); }} destructive returnFocusTo={confirming.trigger}
     title={t("personal.unlinkTitle", { name })} description={t("personal.unlinkDescription", { name })} confirmLabel={t("personal.unlink")}
-    onConfirm={() => unlink.mutate()} /> : null;
+    pending={unlink.isPending} pendingLabel={t("personal.unlinking")}
+    // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
+    onConfirm={() => unlink.mutate(undefined, { onSettled: () => setConfirming(null) })} /> : null;
 
   if (phone) return <Page title={name} backTo={back} phoneBody="flush" phoneSubtitle={since || undefined}
     moreActions={{ label: t("personal.actionsOf", { name }), items: [{ label: t("personal.unlink"), destructive: true, onSelect: (trigger) => setConfirming({ trigger }) }] }}>

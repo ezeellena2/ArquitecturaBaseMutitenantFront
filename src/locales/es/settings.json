@@ -43,6 +43,7 @@
     "copy": "Copiar",
     "copied": "Copiado",
     "check": "Comprobar",
-    "checking": "Comprobando…"
+    "checking": "Comprobando…",
+    "removing": "Quitando…"
   }
 }

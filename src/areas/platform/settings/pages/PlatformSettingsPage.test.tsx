@@ -49,7 +49,7 @@ describe("Configuración de Plataforma", { timeout: 15_000 }, () => {
     expect(screen.getByRole("region", { name: "Registro y altas" })).toBeVisible(); expect(screen.getByRole("region", { name: "Contacto" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled(); expect(screen.getByRole("button", { name: "Descartar cambios" })).toBeEnabled();
     expect(screen.queryByText(/gracia/i)).not.toBeInTheDocument(); expect(await axe(container)).toHaveNoViolations();
-    change("Correo de ventas", "nuevo@ejemplo.com"); expect(screen.getByText("Cambios sin guardar")).toBeVisible();
+    change("Correo de ventas", "nuevo@ejemplo.com"); expect(screen.queryByText("Cambios sin guardar")).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
     await user.click(screen.getByRole("button", { name: "Descartar cambios" })); expect(screen.getByRole("textbox", { name: "Correo de ventas" })).toHaveValue("ventas@ejemplo.com"); expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
   });
   it("opciones con explicaciones exactas del tablero", async () => {
