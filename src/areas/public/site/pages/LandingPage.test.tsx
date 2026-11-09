@@ -59,6 +59,9 @@ describe("LandingPage", () => {
     expect(within(main).getByText("Como persona, creá tu cuenta con tu correo o tu WhatsApp. Si tenés una empresa o un grupo, registralo y sumá a tu equipo con sus roles.")).toBeVisible();
     expect(within(main).getByText("Lucía Fernández")).toBeVisible();
     expect(within(main).getByText("Grupo Delta")).toBeVisible();
+    // 173: el avatar de la vista previa es el cuadrado con la inicial de toda la app, sin círculo.
+    expect(container.querySelector("[data-slot=avatar]")).toHaveClass("rounded-[0.5rem]");
+    expect(container.querySelector("[data-slot=avatar]")).not.toHaveClass("rounded-full");
     expect(within(main).getAllByRole("link", { name: "Crear mi cuenta" })).toHaveLength(3);
     expect(within(main).getAllByRole("link", { name: "Crear mi cuenta" })[0]).toHaveClass("min-h-10");
     expect(within(main).getAllByRole("link", { name: "Crear mi cuenta" })[2]).toHaveClass("min-h-10");

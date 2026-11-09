@@ -4,6 +4,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
+import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { Input } from "@/shared/ui/input";
@@ -62,7 +63,7 @@ function PublishedCompanies() {
 function ProfilePreview() {
   const { t } = useTranslation("site");
   return <div aria-hidden="true" className="mx-auto flex w-full max-w-72.5 flex-col gap-3 rounded-[1.25rem] border border-[var(--borde)] bg-[var(--superficie)] p-4.5 md:max-w-none">
-    <div className="flex items-center gap-3 border-b border-[var(--borde)] px-1.5 pb-3 pt-1.5"><span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-base font-bold text-[var(--superficie)]">{t("landing.preview.initial")}</span><span className="flex min-w-0 flex-col leading-[1.3]"><span className="text-[0.9375rem] font-semibold">{t("landing.preview.name")}</span><span className="text-[0.6875rem] text-[var(--t3)] md:text-[0.8125rem]">{t("landing.preview.email")}</span></span></div>
+    <div className="flex items-center gap-3 border-b border-[var(--borde)] px-1.5 pb-3 pt-1.5"><Avatar size="large" initials={t("landing.preview.initial")} className="font-bold" /><span className="flex min-w-0 flex-col leading-[1.3]"><span className="text-[0.9375rem] font-semibold">{t("landing.preview.name")}</span><span className="text-[0.6875rem] text-[var(--t3)] md:text-[0.8125rem]">{t("landing.preview.email")}</span></span></div>
     <div className="pl-3.5 text-[0.8125rem] font-semibold text-[var(--t3)]">{t("landing.preview.profiles")}</div>
     <div className="flex items-center gap-3 rounded-xl px-3.5 py-3"><span className="flex size-9 shrink-0 items-center justify-center rounded-[0.5625rem] bg-[var(--s3)] text-xs font-semibold md:size-8">{t("landing.preview.personalInitial")}</span><span className="flex min-w-0 flex-col leading-[1.3]"><span className="text-[0.8125rem] font-semibold md:text-[0.875rem]">{t("landing.preview.personal")}</span><span className="text-[0.75rem] text-[var(--t3)] md:text-[0.8125rem]">{t("landing.preview.personalDetail")}</span></span></div>
     <div className="flex items-center gap-3 rounded-xl bg-[var(--marca-t)] px-3.5 py-3"><span className="flex size-9 shrink-0 items-center justify-center rounded-[0.5625rem] bg-[var(--superficie)] text-xs font-semibold text-[var(--marca-tx)] md:size-8">{t("landing.preview.groupInitial")}</span><span className="flex min-w-0 flex-1 flex-col leading-[1.3]"><span className="text-[0.8125rem] font-semibold md:text-[0.875rem]">{t("landing.preview.group")}</span><span className="text-[0.75rem] text-[var(--t3)] md:text-[0.8125rem]">{t("landing.preview.groupDetail")}</span></span><Check className="size-4 shrink-0 text-[var(--marca-tx)]" /></div>
