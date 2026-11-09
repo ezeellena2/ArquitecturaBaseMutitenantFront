@@ -823,7 +823,7 @@ textarea.in2 { height: auto; min-height: 84px; }
         <div style="display: flex; flex-direction: column;">
           <div class="tabs2" role="tablist" aria-label="Secciones de la organización">
             <sc-for list="{{pestanas}}" as="t" hint-placeholder-count="2">
-              <button type="button" role="tab" class="tab2" aria-selected="{{t.sel}}" onClick="{{t.elegir}}">{{t.n}}<span class="cnt">{{t.c}}</span></button>
+              <button type="button" role="tab" class="tab2" aria-selected="{{t.sel}}" onClick="{{t.elegir}}">{{t.n}}<sc-if value="{{t.conC}}" hint-placeholder-val="{{si}}"><span class="cnt">{{t.c}}</span></sc-if></button>
             </sc-for>
           </div>
           <sc-if value="{{enHistorial}}" hint-placeholder-val="{{si}}">
@@ -1302,8 +1302,8 @@ class Component extends DCLogic {
       suspender: () => this.pedirConfirmacion({ titulo: '¿Suspender Grupo Delta?', texto: 'Nadie entra a la organización mientras esté suspendida y se cierran las sesiones abiertas en ella. Los perfiles personales de sus miembros siguen funcionando.', boton: 'Suspender', motivo: true, accion: (m) => this.cambiar('suspendida', 'Suspendió la organización', 'Suspendimos Grupo Delta.', m) }),
       reactivar: () => this.pedirConfirmacion({ titulo: '¿Reactivar Grupo Delta?', texto: 'Sus miembros vuelven a entrar con los mismos roles.', boton: 'Reactivar', peligro: false, motivo: true, accion: (m) => this.cambiar('activa', 'Reactivó la organización', 'Reactivamos Grupo Delta.', m) }),
       cerrar: () => this.pedirConfirmacion({ titulo: '¿Cerrar Grupo Delta?', texto: 'No se puede deshacer. Sus datos se conservan hasta la purga y nadie vuelve a entrar.', boton: 'Cerrar', motivo: true, accion: (m) => this.cambiar('cerrada', 'Cerró la organización', 'Cerramos Grupo Delta.', m) }),
-      pestanas: [{ id: 'historial', n: 'Historial', c: String(s.historial.length) }, { id: 'admins', n: 'Dueños', c: '1' }, { id: 'modulos', n: 'Módulos', c: String(s.modulos.length) }, { id: 'dominio', n: 'Dominio verificado', c: s.dominio ? '1' : '0' }, { id: 'pagina', n: 'Página pública', c: '1' }]
-        .map((t) => ({ ...t, sel: s.pestana === t.id ? 'true' : 'false', elegir: () => this.setState({ pestana: t.id }) })),
+      pestanas: [{ id: 'historial', n: 'Historial', c: '' }, { id: 'admins', n: 'Dueños', c: '1' }, { id: 'modulos', n: 'Módulos', c: String(s.modulos.length) }, { id: 'dominio', n: 'Dominio verificado', c: '' }, { id: 'pagina', n: 'Página pública', c: '' }]
+        .map((t) => ({ ...t, conC: t.c !== '', sel: s.pestana === t.id ? 'true' : 'false', elegir: () => this.setState({ pestana: t.id }) })),
       enHistorial: s.pestana === 'historial',
       enAdmins: s.pestana === 'admins',
       enModulos: s.pestana === 'modulos',

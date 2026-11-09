@@ -575,10 +575,10 @@
   <style data-criterio="decisiones">
 .dec { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; overflow: hidden; font-size: 11.1px/*13.5px*/; }
 .dec .c, .dec .f { display: grid; gap: 14.4px/*20px*/; align-items: center; padding: 0 13px/*18px*/; }
-.dec .c { min-height: 29.6px/*40px*/; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 10.7px/*13px*/; font-weight: 600; color: var(--t2); }
+.dec .c { min-height: 29.6px/*40px*/; background: oklch(0.945 0.027 95); border-bottom: 1px solid oklch(0.89 0.031 95); font-size: 10.7px/*13px*/; font-weight: 600; color: var(--t2); }
 .dec .f { min-height: 38.5px/*52px*/; padding-top: 7.2px/*10px*/; padding-bottom: 7.2px/*10px*/; box-sizing: border-box; border-bottom: 1px solid var(--borde); line-height: 1.5; }
 .dec .f:last-child { border-bottom: 0; }
-.dec .f:nth-child(odd) { background: oklch(0.975 0.008 78); }
+.dec .f:nth-child(odd) { background: oklch(0.975 0.01 95); }
 .dec .f strong { font-weight: 600; }
 .dec .f .op { font-weight: 600; color: var(--marca-tx); margin-right: 4.3px/*6px*/; }
 .dec .f .nada { color: var(--t3); }
@@ -586,7 +586,7 @@
 .est { display: inline-flex; align-items: center; gap: 5.8px/*8px*/; }
 .est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--t3); flex-shrink: 0; }
 .est.ok::before { background: oklch(0.6 0.13 155); }
-.est.pend::before { background: var(--marca); }
+.est.pend::before { background: oklch(0.62 0.12 240); }
 .est.alerta::before { background: oklch(0.72 0.15 70); }
 .est.off { color: var(--t2); }
 .est.off::before { background: oklch(0.75 0.01 78); }
@@ -734,7 +734,7 @@
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Nada revela si un correo o un teléfono tiene cuenta, en «Recuperar mi cuenta» ni en Mi cuenta: la pantalla sigue igual y a ese correo le llega un aviso en lugar del código. Excepción: «Invitar operador», porque quien tiene permiso de cuentas ya las ve.</span><span>Avisos y errores</span><span class="gris">03/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Una celda puede llevar una segunda línea gris que aclara la primera.</span><span>Tablas y listas</span><span class="gris">02/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Filas de 40; si alguna fila de la tabla tiene segunda línea, todas son de 52, para que la tabla quede pareja.</span><span>Tablas y listas</span><span class="gris">04/10/2026</span></div>
-      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>En las listas del teléfono, una fecha del año en curso va sin el año («27/09» o «27/09 10:42»); de otro año, completa. En la compu, siempre con el año.</span><span>Tablas y listas</span><span class="gris">04/10/2026</span></div>
+      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span><span class="gris"><s>En las listas del teléfono, una fecha del año en curso va sin el año («27/09» o «27/09 10:42»); de otro año, completa. En la compu, siempre con el año.</s></span> Reemplazada por «Las fechas» (25/10).</span><span>Tablas y listas</span><span class="gris">04/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>En el panel de Administración, un grupo arranca abierto solo si estás en una de sus pantallas; los demás, cerrados.</span><span>Menús y desplegables</span><span class="gris">04/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span><span class="gris"><s>El círculo con la inicial de una persona lleva el degradé de la marca, en la compu y en el teléfono.</s></span> Reemplazada por la 173 (07/11).</span><span>Marco y pantallas</span><span class="gris">04/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Sin ☰ en las pantallas con sesión: el menú lateral se achica con la flecha redonda de su borde.</span><span>Menús y desplegables</span><span class="gris">04/10/2026</span></div>

@@ -77,7 +77,7 @@ REGLAS = [
     ("Nada revela si un correo o un teléfono tiene cuenta, en «Recuperar mi cuenta» ni en Mi cuenta: la pantalla sigue igual y a ese correo le llega un aviso en lugar del código. Excepción: «Invitar operador», porque quien tiene permiso de cuentas ya las ve.", "Avisos y errores", "03/10/2026"),
     ("Una celda puede llevar una segunda línea gris que aclara la primera.", "Tablas y listas", "02/10/2026"),
     ("Filas de 40; si alguna fila de la tabla tiene segunda línea, todas son de 52, para que la tabla quede pareja.", "Tablas y listas", "04/10/2026"),
-    ("En las listas del teléfono, una fecha del año en curso va sin el año («27/09» o «27/09 10:42»); de otro año, completa. En la compu, siempre con el año.", "Tablas y listas", "04/10/2026"),
+    ('<span class="gris"><s>En las listas del teléfono, una fecha del año en curso va sin el año («27/09» o «27/09 10:42»); de otro año, completa. En la compu, siempre con el año.</s></span> Reemplazada por «Las fechas» (25/10).', "Tablas y listas", "04/10/2026"),
     ("En el panel de Administración, un grupo arranca abierto solo si estás en una de sus pantallas; los demás, cerrados.", "Menús y desplegables", "04/10/2026"),
     ('<span class="gris"><s>El círculo con la inicial de una persona lleva el degradé de la marca, en la compu y en el teléfono.</s></span> Reemplazada por la 173 (07/11).', "Marco y pantallas", "04/10/2026"),
     ("Sin ☰ en las pantallas con sesión: el menú lateral se achica con la flecha redonda de su borde.", "Menús y desplegables", "04/10/2026"),
