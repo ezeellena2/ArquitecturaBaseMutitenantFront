@@ -27,7 +27,9 @@ type OpenApi = {
 };
 
 const openApi = JSON.parse(readFileSync(path.join(back, "docs/contracts/openapi.json"), "utf8")) as OpenApi;
-const generated = readFileSync(path.join(front, "src/shared/api/generated/schema.d.ts"), "utf8");
+// Una clonación con `core.autocrlf=true` trae el esquema con CRLF: se lee con LF, porque se corta por renglones.
+const readText = (file: string) => readFileSync(file, "utf8").replace(/\r\n/g, "\n");
+const generated = readText(path.join(front, "src/shared/api/generated/schema.d.ts"));
 
 function generatedRoute(route: string): string {
   const start = generated.indexOf(`    "${route}": {`);
@@ -329,7 +331,7 @@ describe("contratos de Plataforma entre back y front", () => {
       paths: Record<string, { post: { requestBody: { content: Record<string, { schema: { $ref: string } }> } } }>;
       components: { schemas: Record<string, { properties: Record<string, unknown> }> };
     };
-    const generated = readFileSync(path.join(front, "src/shared/api/generated/schema.d.ts"), "utf8");
+    const generated = readText(path.join(front, "src/shared/api/generated/schema.d.ts"));
 
     expect(openApi.paths["/api/platform/tenants/{id}/retry-provisioning"].post.requestBody
       .content["application/json"].schema.$ref).toBe("#/components/schemas/PlatformTenantRetryHttpRequest");

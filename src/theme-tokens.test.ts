@@ -4,8 +4,10 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const srcDir = import.meta.dirname;
-const css = readFileSync(path.join(srcDir, "index.css"), "utf8");
-const theme = readFileSync(path.resolve(srcDir, "../docs/architecture/tema.md"), "utf8");
+// Una clonación con `core.autocrlf=true` trae los archivos con CRLF: se leen con LF para cortarlos por renglones.
+const readText = (file: string) => readFileSync(file, "utf8").replace(/\r\n/g, "\n");
+const css = readText(path.join(srcDir, "index.css"));
+const theme = readText(path.resolve(srcDir, "../docs/architecture/tema.md"));
 
 function token(name: string): string {
   const value = new RegExp(`^\\s*${name}:\\s*([^;]+);`, "m").exec(css)?.[1].trim();

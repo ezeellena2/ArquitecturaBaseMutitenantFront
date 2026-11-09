@@ -6,7 +6,9 @@ import { areStagesClosed, ClosedStages, HarnessStage, isStageClosed } from "./Ha
 const root = path.resolve(import.meta.dirname, "../..");
 const src = path.join(root, "src");
 const rules = path.join(root, "docs/rules");
-const arnes = readFileSync(path.join(root, "docs/architecture/arbol.md"), "utf8");
+// Una clonación con `core.autocrlf=true` trae los documentos con CRLF: se leen con LF para cortarlos por renglones.
+const readText = (file: string) => readFileSync(file, "utf8").replace(/\r\n/g, "\n");
+const arnes = readText(path.join(root, "docs/architecture/arbol.md"));
 
 function allFiles(directory: string): string[] {
   if (!existsSync(directory)) return [];
@@ -74,7 +76,7 @@ function closedMarker(marker: string): boolean {
 }
 
 function brokenLinks(file: string): string[] {
-  const markdown = readFileSync(file, "utf8");
+  const markdown = readText(file);
   const broken: string[] = [];
   for (const match of markdown.matchAll(/\]\(([^)]+)\)/g)) {
     const nextLine = markdown.slice(match.index + match[0].length).split("\n", 1)[0];
@@ -227,7 +229,7 @@ describe("arnés de reglas", () => {
   it("exige los Copiá de y tests de etapas cerradas", () => {
     const sourceFiles = allFiles(src);
     for (const file of ficheFiles) {
-      const markdown = readFileSync(file, "utf8");
+      const markdown = readText(file);
       for (const line of section(markdown, "Copiá de").split("\n")) {
         for (const segment of line.split(" · ")) {
           const paths = [...segment.matchAll(/`((?:src|docs)\/[^`]+)`/g)].map((match) => match[1]);
