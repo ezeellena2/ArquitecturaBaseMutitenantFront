@@ -86,13 +86,19 @@ const paste: GalleryAction[] = [click("Empresa", "combobox"), click("Delta S.A."
   click("Solo lectura", "menuitemcheckbox"), press("Solo lectura", "menuitemcheckbox", "Escape"),
   fill("Uno por renglón, hasta 200", ["11 5555-4521", "11 5555-7310", "11 5555-8812", "11 5555-9934", "11 5555-1200", "11 4444"].join("\n"))];
 const review: GalleryAction[] = [...paste, click("Revisar 6 teléfonos")];
+/** M-WA-Telefonos: en el teléfono, la empresa y los roles se eligen en una hoja, desde su fila con ›. */
+const companySheet = { role: "dialog", name: "Empresa" } as const;
+const rolesSheet = { role: "dialog", name: "Roles en la empresa" } as const;
+const phonePaste: GalleryAction[] = [click("Empresa"), click("Delta S.A.", "radio", companySheet), click("Roles en la empresa"),
+  click("Solo lectura", "checkbox", rolesSheet), click("Listo", "button", rolesSheet), paste[paste.length - 1]];
+const phoneReview: GalleryAction[] = [...phonePaste, click("Revisar 6 teléfonos")];
 
 /** Galería de la E11 de esta área: un caso por tablero y estado que se fotografía, y lo pendiente con su motivo. */
 export const phonesGalleryCases: GalleryCase[] = [
   galleryCase("telefonos", "WA-Telefonos", "Pegar o subir", phonesApp({ actions: paste, readyText: "Revisar 6 teléfonos" })),
   galleryCase("telefonos", "WA-Telefonos", "Revisar", phonesApp({ actions: review, readyText: "6 teléfonos · 2 ya son miembros · 3 invitaciones · 1 inválido" })),
-  galleryCase("telefonos", "M-WA-Telefonos", "Pegar o subir", phonesApp({ actions: paste, readyText: "Revisar 6 teléfonos" })),
-  galleryCase("telefonos", "M-WA-Telefonos", "Revisar", phonesApp({ actions: review, readyText: "6 teléfonos · 3 invitaciones" })),
+  galleryCase("telefonos", "M-WA-Telefonos", "Pegar o subir", phonesApp({ actions: phonePaste, readyText: "Revisar 6 teléfonos" })),
+  galleryCase("telefonos", "M-WA-Telefonos", "Revisar", phonesApp({ actions: phoneReview, readyText: "6 teléfonos · 3 invitaciones" })),
   // «Cargar teléfonos» de la E11 en Usuarios: secundario en la banda; en el teléfono, en el ⋮ de la barra.
   galleryCase("telefonos", "Usuarios", "Lista", usersApp(desktopUsers, { readyText: "Cargar teléfonos" }), { props: {} }),
   galleryCase("telefonos", "M-Usuarios", "Lista", usersApp(phoneUsers, { readyText: "Tomás Acosta" })),

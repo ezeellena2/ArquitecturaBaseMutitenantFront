@@ -17934,35 +17934,46 @@
         "actions": [
           {
             "type": "click",
-            "role": "combobox",
+            "role": "button",
             "name": "Empresa",
             "exact": true
           },
           {
             "type": "click",
-            "role": "option",
+            "role": "radio",
             "name": "Delta S.A.",
-            "exact": true
-          },
-          {
-            "type": "press",
-            "role": "button",
-            "name": "Roles en la empresa",
             "exact": true,
-            "key": "Enter"
+            "within": {
+              "role": "dialog",
+              "name": "Empresa"
+            },
+            "force": true
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Solo lectura",
+            "role": "button",
+            "name": "Roles en la empresa",
             "exact": true
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Solo lectura",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Roles en la empresa"
+            }
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Listo",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Roles en la empresa"
+            }
           },
           {
             "type": "fill",
@@ -18265,35 +18276,46 @@
         "actions": [
           {
             "type": "click",
-            "role": "combobox",
+            "role": "button",
             "name": "Empresa",
             "exact": true
           },
           {
             "type": "click",
-            "role": "option",
+            "role": "radio",
             "name": "Delta S.A.",
-            "exact": true
-          },
-          {
-            "type": "press",
-            "role": "button",
-            "name": "Roles en la empresa",
             "exact": true,
-            "key": "Enter"
+            "within": {
+              "role": "dialog",
+              "name": "Empresa"
+            },
+            "force": true
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Solo lectura",
+            "role": "button",
+            "name": "Roles en la empresa",
             "exact": true
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Solo lectura",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Roles en la empresa"
+            }
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Listo",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Roles en la empresa"
+            }
           },
           {
             "type": "fill",

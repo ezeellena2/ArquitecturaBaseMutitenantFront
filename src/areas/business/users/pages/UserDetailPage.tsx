@@ -42,7 +42,7 @@ import { activeOrganization, homeOf } from "@/tenancy/access";
 import { fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userQueryKey, usersQueryRoot } from "../api/users";
 import { userContact, userContactText, userStateTones } from "../columns";
 import { useFormat } from "@/shared/format/useFormat";
-import { ChoiceSheet, CheckRow, RadioRow } from "../components/AccessSheets";
+import { ChoiceSheet, CheckRow, RadioRow } from "@/shared/ui/app/ChoiceSheet";
 import { RolesField } from "../components/RolesField";
 import { UserCompanyDialog } from "../components/UserCompanyDialog";
 import { userErrorMessage, type UserAction } from "../errors";

@@ -17,6 +17,8 @@ import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { phoneCountryOptions } from "@/shared/phone/countries";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
+import { ChoiceSheet, CheckRow, RadioRow } from "@/shared/ui/app/ChoiceSheet";
+import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { Button } from "@/shared/ui/button";
 import { CheckboxField } from "@/shared/ui/CheckboxField";
 import { DataTable } from "@/shared/ui/DataTable";
@@ -24,6 +26,7 @@ import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { Page } from "@/shared/ui/Page";
+import { RemoteOptionFooter, RemoteOptionSearch } from "@/shared/ui/RemoteOptionControls";
 import { SearchSelect } from "@/shared/ui/SearchSelect";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { Surface } from "@/shared/ui/Surface";
@@ -94,6 +97,11 @@ export function LoadPhonesPage() {
   const companies = useResourceOptions(companyOptions);
   const companyRoles = useResourceOptions(roleOptions("Company", company.field.value || undefined), Boolean(company.field.value));
   const roles = companyRoles.items.filter((role) => role.scope === "AnyCompany" || role.companyId === company.field.value);
+  // Tablero M-WA-Telefonos: en el teléfono, «Empresa» y «Roles» son filas con › que abren una hoja para elegir.
+  const [sheet, setSheet] = useState<"company" | "roles" | null>(null);
+  const companyName = companies.knownItems.find((item) => item.id === company.field.value)?.name;
+  const roleNames = companyRoles.knownItems.filter((role) => roleIds.field.value.includes(role.id)).map((role) => role.name).join(", ");
+  const chooseCompany = (value: string) => { company.field.onChange(value); roleIds.field.onChange([]); setSheet(null); };
   const file = useRef<HTMLInputElement>(null);
   const preview = useMutation({ mutationFn: (request: WhatsAppPhoneImportPreviewRequest) => previewPhoneImport(request) });
   const confirm = useIdempotentMutation((request: WhatsAppPhoneImportRequest, key) => importPhones(request, key), { meta: { handlesError: true }, sameOperation: sameImport });
@@ -163,6 +171,12 @@ export function LoadPhonesPage() {
       <FormError message={message} />
       <Section title={t("whatsapp:phones.invitees")}>
         <SectionFields className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">
+          {phone ? <ul className="m-0 list-none p-0">
+            <SettingsItem title={t("whatsapp:phones.form.company")} detail={companyName ?? t("whatsapp:phones.form.noCompany")} onClick={() => setSheet("company")} />
+            <SettingsItem title={t("whatsapp:phones.form.roles")} tone={company.field.value ? undefined : "muted"}
+              detail={company.field.value ? roleNames || t("whatsapp:phones.form.noRoles") : t("whatsapp:phones.form.chooseCompanyFirst")}
+              onClick={company.field.value ? () => setSheet("roles") : undefined} />
+          </ul> : <>
           <FormField label={t("whatsapp:phones.form.company")}>
             <SearchSelect value={company.field.value || noCompany} onChange={(value) => { company.field.onChange(value === noCompany ? "" : value); roleIds.field.onChange([]); }}
               remote={companies.remote} selectedLabel={companies.knownItems.find((item) => item.id === company.field.value)?.name}
@@ -178,6 +192,7 @@ export function LoadPhonesPage() {
                 {t("whatsapp:phones.form.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" />
               </button>}
           </FormField>
+          </>}
           {reviewed ? <div className="md:col-span-2">
             <CheckboxField label={t("whatsapp:phones.consent.label")} checked={consent}
               onCheckedChange={(checked) => { setConsent(checked); if (checked) setConsentError(false); }}
@@ -188,7 +203,7 @@ export function LoadPhonesPage() {
       {reviewed
         ? <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={createPhoneImportColumns(t, typed)} rows={reviewed.rows} rowKey={(row) => String(row.row)}
-            mobileRow={(row) => phoneImportPhoneRow(row, t, typed)} />
+            mobileRow={(row) => phoneImportPhoneRow(row, typed)} />
         </Surface>
         : <Section title={t("whatsapp:phones.phones")}>
           <SectionFields>
@@ -202,5 +217,20 @@ export function LoadPhonesPage() {
           </SectionFields>
         </Section>}
     </form>
+    {/* Tablero M-WA-Telefonos: la empresa se elige y la hoja se cierra; los roles se marcan y «Listo» la cierra. */}
+    <ChoiceSheet open={sheet === "company"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("whatsapp:phones.form.company")}>
+      <RemoteOptionSearch remote={companies.remote} />
+      <RadioRow name="phones-company" label={t("whatsapp:phones.form.noCompany")} checked={!company.field.value} onChoose={() => chooseCompany("")} />
+      {companies.items.filter((item) => item.status === "Active").map((item) => <RadioRow key={item.id} name="phones-company" label={item.name}
+        checked={company.field.value === item.id} onChoose={() => chooseCompany(item.id)} />)}
+      <RemoteOptionFooter remote={companies.remote} />
+    </ChoiceSheet>
+    <ChoiceSheet open={sheet === "roles"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("whatsapp:phones.form.roles")}
+      done={{ label: t("common:actions.done"), onClick: () => setSheet(null) }}>
+      <RemoteOptionSearch remote={companyRoles.remote} />
+      {roles.map((role) => <CheckRow key={role.id} label={role.name} checked={roleIds.field.value.includes(role.id)}
+        onCheckedChange={(checked) => roleIds.field.onChange(checked ? [...roleIds.field.value, role.id] : roleIds.field.value.filter((id) => id !== role.id))} />)}
+      <RemoteOptionFooter remote={companyRoles.remote} />
+    </ChoiceSheet>
   </Page>;
 }

@@ -1,5 +1,5 @@
 import { ChevronRight } from "lucide-react";
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 
@@ -30,17 +30,20 @@ export function SettingsItem({ title, detail, leading, to, onClick, trailing, to
   trailing?: ReactNode;
   tone?: "danger" | "muted";
 }) {
+  // Como PhoneTapRow: el título nombra lo que se abre y el detalle lo describe, así el lector dice primero qué se abre.
+  const id = useId();
+  const labels = { "aria-labelledby": `${id}-title`, "aria-describedby": detail ? `${id}-detail` : undefined };
   const content = <>
     {leading}
     <span className="flex min-w-0 flex-1 flex-col gap-px leading-tight">
-      <span className={cn("text-[0.96875rem] font-medium [overflow-wrap:anywhere]", tone === "danger" && "text-[var(--peligro)]")}>{title}</span>
-      {detail ? <span className="text-[0.8125rem] text-[var(--t3)] [overflow-wrap:anywhere]">{detail}</span> : null}
+      <span id={`${id}-title`} className={cn("text-[0.96875rem] font-medium [overflow-wrap:anywhere]", tone === "danger" && "text-[var(--peligro)]")}>{title}</span>
+      {detail ? <span id={`${id}-detail`} className="text-[0.8125rem] text-[var(--t3)] [overflow-wrap:anywhere]">{detail}</span> : null}
     </span>
     {trailing ?? (to || onClick ? <ChevronRight aria-hidden="true" className="size-4.5 shrink-0 text-[var(--t3)]" /> : null)}
   </>;
   return <li className={cn(lineClass, tone === "muted" && "opacity-55")}>
-    {to ? <Link to={to} className={itemClass}>{content}</Link>
-      : onClick ? <button type="button" onClick={onClick} className={cn(itemClass, "w-full text-left")}>{content}</button>
+    {to ? <Link to={to} {...labels} className={itemClass}>{content}</Link>
+      : onClick ? <button type="button" onClick={onClick} {...labels} className={cn(itemClass, "w-full text-left")}>{content}</button>
         : <div className={itemClass}>{content}</div>}
   </li>;
 }

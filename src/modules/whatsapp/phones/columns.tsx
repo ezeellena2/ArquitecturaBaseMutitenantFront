@@ -18,8 +18,8 @@ export function createPhoneImportColumns(t: TFunction, typed: TypedLine = (row) 
   ];
 }
 
-/// M-WA-Telefonos: el teléfono con qué va a pasar a la derecha; debajo, la persona si ya es miembro y lo que significa.
-export function phoneImportPhoneRow(row: WhatsAppPhoneImportRowResponse, t: TFunction, typed: TypedLine): ReactNode {
+/// M-WA-Telefonos: el teléfono con qué va a pasar a la derecha y, debajo, la persona si ya es miembro.
+export function phoneImportPhoneRow(row: WhatsAppPhoneImportRowResponse, typed: TypedLine): ReactNode {
   return <ListRow key={row.row} title={<PhoneCell row={row} typed={typed} />} meta={<StatusBadge tones={phoneImportOutcomeTones} value={row.outcome} />}
-    lines={row.memberName ? [row.memberName, t(`whatsapp:phones.outcome.${row.outcome}`)] : [t(`whatsapp:phones.outcome.${row.outcome}`)]} />;
+    lines={row.memberName ? [row.memberName] : []} />;
 }

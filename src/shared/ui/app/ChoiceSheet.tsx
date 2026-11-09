@@ -5,7 +5,7 @@ import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 
-// Tablero M-Usuario (v99): en el teléfono el estado y los roles de la organización son filas con › que abren una hoja
+// Tableros M-Usuario (v99) y M-WA-Telefonos: en el teléfono lo que se elige va en filas con › que abren una hoja
 // para elegir. Las filas de la hoja (.ap-op) miden 52, con la letra de 16 y una línea fina entre ellas que no llega a
 // los bordes (20 a cada lado, como el cuerpo de la hoja); la elegida va en verde. El estado se aplica y cierra al
 // tocarlo; los roles se marcan de a uno y la hoja se cierra con «Listo» o con ✕.
@@ -37,7 +37,7 @@ export function ChoiceSheet({ open, onOpenChange, title, done, children }: {
 export function RadioRow({ name, label, checked, onChoose }: { name: string; label: string; checked: boolean; onChoose: () => void }) {
   return <label className={cn(rowClass, checked ? pickedClass : "text-[var(--t1)]")}>
     <input type="radio" name={name} checked={checked} onChange={onChoose} className="sr-only" />
-    <span className="min-w-0 flex-1 truncate">{label}</span>
+    <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">{label}</span>
     {checked ? <CheckIcon aria-hidden="true" data-slot="tilde" strokeWidth={2.4} className="size-5 shrink-0" /> : null}
   </label>;
 }
@@ -47,6 +47,6 @@ export function CheckRow({ label, checked, onCheckedChange }: { label: string; c
   return <label className={cn(rowClass, checked ? pickedClass : "text-[var(--t1)]")}>
     <Checkbox checked={checked} onCheckedChange={(next) => onCheckedChange(next === true)}
       className="size-5.5 rounded-[0.375rem] border-[1.5px] border-[var(--borde2)] bg-[var(--superficie)] shadow-none data-[state=checked]:border-[var(--marca)] data-[state=checked]:bg-[var(--marca)] data-[state=checked]:text-[var(--superficie)]" />
-    <span className="min-w-0 flex-1 truncate">{label}</span>
+    <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">{label}</span>
   </label>;
 }

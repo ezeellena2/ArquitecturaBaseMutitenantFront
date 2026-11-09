@@ -135,10 +135,40 @@ describe("Cargar teléfonos", () => {
     expect(await screen.findByRole("heading", { name: "Cargar teléfonos" })).toBeVisible();
     await review(user);
     expect(await screen.findByText("3 teléfonos · 1 invitación")).toBeVisible();
-    const list = screen.getByRole("list");
+    const list = screen.getByText("Tomás Acosta").closest("ul")!;
     expect(within(list).getByText("Tomás Acosta")).toBeVisible();
     expect(within(list).getByText("Número inválido")).toBeVisible();
+    // Tablero M-WA-Telefonos: debajo del teléfono, solo la persona si ya es miembro; sin una línea que lo explique.
+    expect(within(list).queryByText(/Queda vinculado|Le llega una invitación|No se carga/)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Cancelar" })).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  // Tablero M-WA-Telefonos: en el teléfono, «Empresa» y «Roles» son filas con › que abren una hoja; la empresa se elige y
+  // la hoja se cierra, y los roles se marcan y «Listo» la cierra. Sin empresa, «Roles» no se abre.
+  it("en el teléfono la empresa y los roles se eligen en una hoja, desde su fila", async () => {
+    asPhone();
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json(page([{ id: "company-delta", name: "Delta S.A.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires",
+        status: "Active", memberCount: 6, version: 1, createdAtUtc: "2026-01-12T15:00:00Z" }]))),
+      http.get("/api/roles/paged", () => HttpResponse.json(page([{ id: "role-lectura", name: "Solo lectura", description: null, scope: "SpecificCompany",
+        companyId: "company-delta", companyName: "Delta S.A.", isSystemRole: false, userCount: 0, permissions: [], version: 1, createdAtUtc: "2026-01-12T15:00:00Z" }]))),
+    );
+    const { user } = mountWhatsApp(whatsappOwner, path);
+    expect(await screen.findByText("Elegí primero la empresa")).toBeVisible();
+    expect(screen.queryByRole("button", { name: /^Roles en la empresa/ })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /^Empresa/ }));
+    const companySheet = await screen.findByRole("dialog", { name: "Empresa" });
+    await user.click(await within(companySheet).findByRole("radio", { name: "Delta S.A." }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Empresa" })).not.toBeInTheDocument());
+    expect(screen.getByRole("button", { name: /^Empresa/ })).toHaveTextContent("Delta S.A.");
+
+    await user.click(screen.getByRole("button", { name: /^Roles en la empresa/ }));
+    const rolesSheet = await screen.findByRole("dialog", { name: "Roles en la empresa" });
+    await user.click(await within(rolesSheet).findByRole("checkbox", { name: "Solo lectura" }));
+    await user.click(within(rolesSheet).getByRole("button", { name: "Listo" }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Roles en la empresa" })).not.toBeInTheDocument());
+    expect(screen.getByRole("button", { name: /^Roles en la empresa/ })).toHaveTextContent("Solo lectura");
   });
 });
