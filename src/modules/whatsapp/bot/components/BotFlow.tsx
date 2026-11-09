@@ -17,7 +17,7 @@ export function BotFlow({ bot, variant, teams }: { bot: BotData; variant: "organ
   const branch = (option: WhatsAppBotMenuOption, index: number): Branch => {
     const key = option.id ?? `option-${index}`;
     const mark = String(index + 1);
-    if (option.isSystem) return { key, mark, title: t("bot.flow.systemTitle"), detail: t("bot.flow.systemDetail"), team: false };
+    if (option.isSystem) return { key, mark, title: t(phone ? "bot.flow.systemTitleShort" : "bot.flow.systemTitle"), detail: t("bot.flow.systemDetail"), team: false };
     if (option.action === "Team") return { key, mark, title: teamName(teams, option.teamId) ?? t("bot.flow.team"), detail: t("bot.flow.team"), team: true };
     return phone ? { key, mark, title: option.label, detail: t("bot.flow.reply"), team: false } : { key, mark, title: t("bot.flow.reply"), detail: option.label, team: false };
   };

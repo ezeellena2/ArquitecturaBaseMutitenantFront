@@ -87,7 +87,7 @@ export const botGalleryCases: readonly GalleryCase[] = [
   galleryCase("bot", "M-WA-Bot-Recorrido", "Recorrido", galleryApp("business", `${route}?vista=recorrido`, botApi(), { readyText: "¿Es un empleado?" }), { props: {} }),
   galleryCase("bot", "Plat-WA-Bot", "Configuración", galleryApp("platform", platformRoute, platformApi, { readyText: "Del sistema" }), { props: {} }),
   galleryCase("bot", "Plat-WA-Bot-Recorrido", "Recorrido", galleryApp("platform", `${platformRoute}?vista=recorrido`, platformApi,
-    { readyText: "Enlace para entrar o registrarse" }), { props: {} }),
+    { readyText: "Botón para ir al ingreso" }), { props: {} }),
   galleryCase("bot", "M-Plat-WA-Bot", "Configuración", galleryApp("platform", platformRoute, platformApi, { readyText: "Del sistema" }), { stateKey: "pestana" }),
   galleryCase("bot", "M-Plat-WA-Bot", "Recorrido", galleryApp("platform", `${platformRoute}?vista=recorrido`, platformApi, { readyText: "Lo manda el bot" }),
     { stateKey: "pestana" }),

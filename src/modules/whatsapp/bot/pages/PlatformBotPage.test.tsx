@@ -41,7 +41,7 @@ describe("Bot de Plataforma", () => {
   it("la opción del sistema se ve y no se edita; sin «Además»; guardar no la manda", async () => {
     const sent = handlers();
     const page = mountWhatsApp(operator, "/plataforma/whatsapp/bot");
-    expect(await screen.findByText("Manda el enlace para entrar o registrarse")).toBeVisible();
+    expect(await screen.findByText("Manda el botón para ir al ingreso")).toBeVisible();
     expect(screen.getByText("Del sistema")).toBeVisible();
     expect(screen.queryByRole("button", { name: "Acciones de Entrar a mi cuenta" })).toBeNull();
     expect(screen.queryByText("Además")).toBeNull();
@@ -58,7 +58,7 @@ describe("Bot de Plataforma", () => {
   it("el recorrido de Plataforma no pregunta si es un empleado", async () => {
     handlers();
     const page = mountWhatsApp(operator, "/plataforma/whatsapp/bot?vista=recorrido");
-    expect(await screen.findByText("Enlace para entrar o registrarse")).toBeVisible();
+    expect(await screen.findByText("Botón para ir al ingreso")).toBeVisible();
     expect(screen.getByText("Soporte")).toBeVisible();
     expect(screen.queryByText("¿Es un empleado?")).toBeNull();
     expect(await axe(page.container)).toHaveNoViolations();

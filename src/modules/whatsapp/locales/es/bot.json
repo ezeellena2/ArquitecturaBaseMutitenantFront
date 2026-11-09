@@ -58,7 +58,7 @@
     "noTeams": "Todavía no hay equipos",
     "toTeam": "Pasa a {{team}}",
     "replies": "Contesta: «{{reply}}»",
-    "system": "Manda el enlace para entrar o registrarse",
+    "system": "Manda el botón para ir al ingreso",
     "systemTag": "Del sistema",
     "remove": "Quitar",
     "removed": "Se quitó «{{name}}»",
@@ -111,7 +111,8 @@
     "options_other": "{{count}} opciones",
     "team": "Equipo",
     "reply": "Contesta",
-    "systemTitle": "Enlace para entrar o registrarse",
+    "systemTitle": "Botón para ir al ingreso",
+    "systemTitleShort": "Botón al ingreso",
     "systemDetail": "Lo manda el bot"
   },
   "validation": {

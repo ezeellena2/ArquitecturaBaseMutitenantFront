@@ -58,7 +58,7 @@
     "noTeams": "There are no teams yet",
     "toTeam": "Goes to {{team}}",
     "replies": "Replies: «{{reply}}»",
-    "system": "Sends the link to sign in or sign up",
+    "system": "Sends the button to go to sign in",
     "systemTag": "System",
     "remove": "Remove",
     "removed": "«{{name}}» was removed",
@@ -111,7 +111,8 @@
     "options_other": "{{count}} options",
     "team": "Team",
     "reply": "Replies",
-    "systemTitle": "Link to sign in or sign up",
+    "systemTitle": "Button to go to sign in",
+    "systemTitleShort": "Sign-in button",
     "systemDetail": "Sent by the bot"
   },
   "validation": {
