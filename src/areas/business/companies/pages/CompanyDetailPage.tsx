@@ -60,7 +60,9 @@ export function CompanyDetailPage() {
   const roles = useCompanyRoles(id, { canReadRoles, canReadMembers });
   const company = useQuery({ queryKey: companyQueryKey(id), queryFn: () => fetchCompany(id), enabled: Boolean(id), meta: { silent: true, blocksView: true } });
   useBreadcrumbLeaf(company.data?.name);
-  const [tab, setTab] = useState<CompanyTab>("members");
+  const [chosenTab, setTab] = useState<CompanyTab>("members");
+  // F9: sin permiso para ver los miembros de la empresa, la pestaña «Miembros» no aparece y la ficha abre en «Roles».
+  const tab: CompanyTab = canReadMembers ? chosenTab : "roles";
   const [dialog, setDialog] = useState<BandDialog | null>(null);
   const changeCompanyState = useMutation({
     mutationFn: ({ status, version }: StatusChange) => changeCompanyStatus(id, { status, version }),
@@ -115,7 +117,7 @@ export function CompanyDetailPage() {
       // Tablero Empresa: las pestañas abren el contenido, debajo de la banda, con la cantidad en gris. Quien no lee los roles
       // de la organización (el Administrador de empresa) ve un solo grupo, Miembros, y la ficha va sin la barra (Page).
       tabs={{ label: t("companies:detail.tabsLabel"), value: tab, onValueChange: (value) => setTab(value as CompanyTab), items: [
-        { value: "members", label: t("companies:detail.members"), count: members.result.data?.totalCount ?? data.memberCount,
+        { value: "members", label: t("companies:detail.members"), count: members.result.data?.totalCount ?? data.memberCount, hidden: !canReadMembers,
           className: "flex flex-col gap-3 md:gap-4", content: <CompanyMembersTab company={data} list={members} roles={roles.assignable} /> },
         { value: "roles", label: t("companies:detail.roles"), count: roles.ownCount, hidden: !canReadRoles, content: <CompanyRolesTab roles={roles} /> },
       ] }} />

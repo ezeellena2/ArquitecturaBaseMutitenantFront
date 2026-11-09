@@ -265,6 +265,19 @@ describe("CompanyDetailPage", () => {
   // B4 (decisiones 13 y 87): quien administra una empresa sin roles de la organización entra a la ficha de su empresa
   // con el permiso de esa empresa (`/api/me`, mapa por empresa) y ve sus miembros, sus roles y los filtros. Los roles
   // salen de la ruta de la empresa, no de `/api/roles/paged`, que pide `roles.read`.
+  // F9 (base de la 12): sin el permiso para ver los miembros de la empresa, la pestaña «Miembros» no aparece y la ficha
+  // abre en «Roles».
+  it("sin el permiso de los miembros, la pestaña Miembros no aparece y abre en Roles", async () => {
+    detailApi([member]);
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-companies-reader" });
+
+    expect(await screen.findByRole("heading", { level: 1, name: "Delta S.A." })).toBeVisible();
+    // Con una sola pestaña a la vista, su contenido va sin la barra de pestañas («Criterio · Marco»).
+    await waitFor(() => expect(screen.queryByRole("tab", { name: /^Miembros/ })).not.toBeInTheDocument());
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+    expect(screen.queryByText("Lucía Fernández")).not.toBeInTheDocument();
+  });
+
   it("B4: un Administrador de empresa sin roles de la organización ve los miembros, los roles y los filtros de su empresa", async () => {
     const user = userEvent.setup();
     let organizationRoles = 0;

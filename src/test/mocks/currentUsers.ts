@@ -52,6 +52,9 @@ const ownerPermissions: readonly Permission[] = ["users.read", "users.invite", "
 
 export const businessE6Admin: MeResponse = withPermissions(businessUser, ownerPermissions);
 
+/// F9: lee las empresas y los roles de la organización, pero no los miembros de una empresa.
+export const businessCompaniesReader: MeResponse = withPermissions(businessUser, ["companies.read", "roles.read"]);
+
 /// B4: un Administrador de empresa sin roles de la organización. /api/me trae sus permisos en el mapa de su empresa
 /// (decisión 13), y la organización, vacía.
 export const businessCompanyAdmin: MeResponse = {
@@ -169,6 +172,7 @@ export const currentUsers = {
   "business-role-manager": businessRoleManager,
   "business-no-permissions": businessWithoutPermissions,
   "business-company-admin": businessCompanyAdmin,
+  "business-companies-reader": businessCompaniesReader,
   "platform-operator": platformOperator,
   "platform-operator-english": { ...platformOperator, culture: "en-US" },
   "platform-operator-reader": platformOperatorReader,
