@@ -1,5 +1,5 @@
 import type { PagedResultOfPlatformRecoveryResponse } from "@/shared/api/types";
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -33,8 +33,8 @@ export function RecoveriesPage() {
   const { filters, pagination, query, result: recoveries, paginationProps } = usePagedQuery({ filterKeys, defaultSort: "-createdAt",
     toQuery: (page, values): RecoveriesQuery => ({ ...page, status: statuses.find((value) => value === values.status) }),
     queryKey: recoveriesQueryKey, queryFn: fetchRecoveries, meta: { silent: true, blocksView: true } });
-  const countQuery = { search: query.search, status: query.status };
-  const counts = useQuery({ queryKey: recoveryCountsQueryKey(countQuery), queryFn: () => fetchRecoveryCounts(countQuery), placeholderData: keepPreviousData, meta: { silent: true } });
+  // El resumen cuenta todo lo de la lista: los conteos se piden una vez, sin la búsqueda ni los filtros, porque los filtros
+  // no llevan cantidades (143).
   const globalCounts = useQuery({ queryKey: recoveryCountsQueryKey({}), queryFn: () => fetchRecoveryCounts({}), meta: { silent: true } });
   const [ownWrites, setOwnWrites] = useState(() => new Map<string, OwnWrite>());
   const rows = (recoveries.data?.items ?? []).map((recovery) => {
@@ -67,7 +67,7 @@ export function RecoveriesPage() {
           filters={[{ key: "status", label: t("platformRecoveries:filters.status"), menuLabel: t("platformRecoveries:filters.statusMenu"), value: query.status ?? "", active: query.status !== undefined,
             onChange: (value) => filters.setFilter("status", value === "all" ? undefined : value), options: statuses.map((value) => ({ value: value ?? "all", label: t(`platformRecoveries:filters.statuses.${value ?? "all"}`) })) }]} />
         <Surface className="overflow-hidden" phoneFlush><DataTable columns={columns} rows={rows} rowKey={(recovery) => recovery.id} openRowKey={activeConfirmation?.recovery.id ?? null} mobileRow={(recovery) => recoveryPhoneRow(recovery, t, rowActions(recovery), () => open(recovery, null))}
-          isLoading={recoveries.isPending} isFetching={recoveries.isFetching} error={recoveries.error ? apiErrorMessage(recoveries.error, t) : undefined} onRetry={() => { void recoveries.refetch(); void counts.refetch(); void globalCounts.refetch(); }}
+          isLoading={recoveries.isPending} isFetching={recoveries.isFetching} error={recoveries.error ? apiErrorMessage(recoveries.error, t) : undefined} onRetry={() => { void recoveries.refetch(); void globalCounts.refetch(); }}
           emptyTitle={t(filtered ? "platformRecoveries:empty.filtered" : "platformRecoveries:empty.all")} emptyAction={filtered ? <Button variant="outline" onClick={filters.clear}>{t("platformRecoveries:empty.clear")}</Button> : undefined} sort={pagination.sort} onSortChange={pagination.toggleSort} />
           {paginationProps && paginationProps.totalCount > 0 ? <Pagination {...paginationProps} /> : null}</Surface>
       </div>

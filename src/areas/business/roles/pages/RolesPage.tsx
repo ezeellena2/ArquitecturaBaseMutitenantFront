@@ -42,7 +42,7 @@ export function RolesPage() {
   const canManage = can("roles.manage");
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { filters, pagination, query, result: roles, paginationProps } = usePagedQuery({
+  const { filters, pagination, result: roles, paginationProps } = usePagedQuery({
     filterKeys: roleFilterKeys,
     defaultSort: "name",
     toQuery: (page, values): RolesQuery => ({
@@ -53,12 +53,11 @@ export function RolesPage() {
     queryKey: rolesQueryKey, queryFn: fetchRoles, meta: { silent: true, blocksView: true },
   });
   const vale = filters.values.vale;
-  const debouncedSearch = query.search ?? undefined;
   const companies = useResourceOptions(companyOptions, can("companies.read"));
   const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");
-  // Un solo pedido trae los conteos de la búsqueda y el resumen de todos los roles.
-  const counts = useQuery({ queryKey: roleCountsQueryKey(debouncedSearch),
-    queryFn: () => fetchRoleCounts(debouncedSearch), meta: { silent: true } });
+  // El resumen cuenta todo lo de la lista: los conteos se piden una vez, sin la búsqueda ni los filtros, porque los filtros
+  // no llevan cantidades (143).
+  const counts = useQuery({ queryKey: roleCountsQueryKey(), queryFn: () => fetchRoleCounts(), meta: { silent: true } });
   const [roleToDelete, setRoleToDelete] = useState<RoleResponse | null>(null);
   const remove = useMutation({
     mutationFn: (role: RoleResponse) => deleteRole(role.id, role.version),

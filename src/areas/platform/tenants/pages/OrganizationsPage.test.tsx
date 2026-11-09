@@ -75,7 +75,7 @@ describe("OrganizationsPage", () => {
       await waitFor(() => expect(bodies).toEqual([{ version: 2, reason: "Revisión" }, { version: 10, reason: "Resuelto" }]));
     } finally { await act(async () => { release?.(); }); }
   });
-  it("mantiene banda global y conteos cruzados al buscar con debounce y elegir filtros en la URL", async () => {
+  it("mantiene la banda global al buscar con debounce y elegir filtros en la URL, con los conteos pedidos una vez", async () => {
     const user = userEvent.setup(); const requests: URL[] = []; const countRequests: URL[] = [];
     server.use(http.get("/api/platform/tenants/paged", ({ request }) => { requests.push(new URL(request.url)); return HttpResponse.json(list()); }), http.get("/api/platform/tenants/filter-counts", ({ request }) => { const url = new URL(request.url); countRequests.push(url); return HttpResponse.json(url.search ? { total: 1, statuses: [{ status: "Active", count: 1 }], sources: [{ source: "SelfService", count: 1 }] } : counts); }));
     const { router } = renderRouteWithProviders("/plataforma?page=2&pageSize=50", { as: "platform-operator" });
@@ -92,8 +92,11 @@ describe("OrganizationsPage", () => {
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Active"));
     await user.click(screen.getByRole("button", { name: "Origen: todos" }));
     await user.click(await screen.findByRole("menuitemradio", { name: /^Autoservicio/u }));
-    await waitFor(() => expect(countRequests.at(-1)?.searchParams.get("source")).toBe("SelfService"));
-    expect(countRequests.at(-1)?.searchParams.get("status")).toBe("Active");
+    await waitFor(() => expect(requests.at(-1)?.searchParams.get("source")).toBe("SelfService"));
+    expect(requests.at(-1)?.searchParams.get("status")).toBe("Active");
+    // Los filtros no llevan cantidades (143): los conteos se piden una vez, sin la búsqueda ni los filtros.
+    expect(countRequests).toHaveLength(1);
+    expect(countRequests[0].search).toBe("");
     expect(screen.getByText("7 organizaciones · 2 esperan aprobación")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Limpiar" }));
     await waitFor(() => expect(router.state.location.search).not.toMatch(/search|status|source/u));

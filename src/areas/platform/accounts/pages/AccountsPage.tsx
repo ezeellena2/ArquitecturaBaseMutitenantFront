@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Power, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -65,8 +65,8 @@ export function AccountsPage() {
   const { filters, pagination, query, result: accounts, paginationProps } = usePagedQuery({ filterKeys, defaultSort: "name",
     toQuery: (page, values): AccountsQuery => ({ ...page, kind: kinds.find((value) => value === values.kind), state: states.find((value) => value === values.state) }),
     queryKey: accountsQueryKey, queryFn: fetchAccounts, meta: { silent: true, blocksView: true } });
-  const countQuery = { search: query.search, kind: query.kind, state: query.state };
-  const counts = useQuery({ queryKey: accountCountsQueryKey(countQuery), queryFn: () => fetchAccountCounts(countQuery), placeholderData: keepPreviousData, meta: { silent: true } });
+  // El resumen cuenta todo lo de la lista: los conteos se piden una vez, sin la búsqueda ni los filtros, porque los filtros
+  // no llevan cantidades (143).
   const globalCounts = useQuery({ queryKey: accountCountsQueryKey({}), queryFn: () => fetchAccountCounts({}), meta: { silent: true } });
   const route = location.pathname + location.search;
   const [inviteRoute, setInviteRoute] = useState<string | null>(null); const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
@@ -107,7 +107,7 @@ export function AccountsPage() {
             { key: "state", label: t("platformAccounts:filters.state"), menuLabel: t("platformAccounts:filters.stateMenu"), value: query.state ?? "", active: query.state !== undefined, onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value), options: states.map((value) => ({ value: value ?? "all", label: t(`platformAccounts:filters.states.${value ?? "all"}`) })) },
           ]} />
         <Surface className="overflow-hidden" phoneFlush><DataTable columns={columns} rows={accounts.data?.items ?? []} rowKey={(account) => account.id} mobileRow={(account) => accountPhoneRow(account, t, rowActions(account))}
-          isLoading={accounts.isPending} isFetching={accounts.isFetching} error={accounts.error ? apiErrorMessage(accounts.error, t) : undefined} onRetry={() => { void accounts.refetch(); void counts.refetch(); void globalCounts.refetch(); }}
+          isLoading={accounts.isPending} isFetching={accounts.isFetching} error={accounts.error ? apiErrorMessage(accounts.error, t) : undefined} onRetry={() => { void accounts.refetch(); void globalCounts.refetch(); }}
           emptyTitle={t("platformAccounts:empty.filtered")} emptyAction={filtered ? <Button variant="outline" onClick={filters.clear}>{t("platformAccounts:empty.clear")}</Button> : undefined} sort={pagination.sort} onSortChange={pagination.toggleSort} />
           {paginationProps ? <Pagination {...paginationProps} /> : null}</Surface>
       </div>

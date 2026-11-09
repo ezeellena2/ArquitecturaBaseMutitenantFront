@@ -1,9 +1,12 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, type JsonBodyType } from "msw";
 import { beforeEach, expect, it } from "vitest";
 import { configureI18n, changeCulture } from "@/shared/i18n";
+import type { CurrentUserFixture } from "@/test/mocks/currentUsers";
 import { referenceDataFixture } from "@/test/mocks/handlers";
+import { accountCounts } from "@/test/mocks/platformAccounts";
+import { platformTenantsCounts } from "@/test/mocks/platformTenants";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 
@@ -12,10 +15,17 @@ beforeEach(async () => {
   await changeCulture("es-AR");
 });
 
-it.each([
-  { route: "/org/roles", endpoint: "/api/roles", label: "Buscar por nombre o descripción", payload: { matching: { all: 0, organization: 0, company: 0 }, total: { all: 0, organization: 0, company: 0 }, anyCompany: 0, companies: {} } },
-  { route: "/org/usuarios", endpoint: "/api/users", label: "Buscar por nombre o correo", payload: { all: 0, active: 0, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0, companyAll: 0, withoutCompany: 0, companies: {} } },
-])("$route hace un solo pedido de conteos por búsqueda con muchas empresas", async ({ route, endpoint, label, payload }) => {
+const emptyPage = { items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false };
+
+// Los filtros no llevan cantidades (143): de los conteos, cada lista lee solo el resumen de todo lo suyo. Se piden una vez,
+// sin la búsqueda ni los filtros, y buscar vuelve a pedir la lista, no los conteos.
+it.each<{ route: string; as: CurrentUserFixture; endpoint: string; label: string; payload: JsonBodyType }>([
+  { route: "/org/roles", as: "business-e6-admin", endpoint: "/api/roles", label: "Buscar por nombre o descripción", payload: { matching: { all: 0, organization: 0, company: 0 }, total: { all: 0, organization: 0, company: 0 }, anyCompany: 0, companies: {} } },
+  { route: "/org/usuarios", as: "business-e6-admin", endpoint: "/api/users", label: "Buscar por nombre o correo", payload: { all: 0, active: 0, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0, companyAll: 0, withoutCompany: 0, companies: {} } },
+  { route: "/plataforma/cuentas", as: "platform-operator", endpoint: "/api/platform/accounts", label: "Buscar por nombre, correo o teléfono", payload: accountCounts([]) },
+  { route: "/plataforma/organizaciones", as: "platform-operator", endpoint: "/api/platform/tenants", label: "Buscar por nombre o correo", payload: platformTenantsCounts([]) },
+  { route: "/plataforma/recuperaciones", as: "platform-operator", endpoint: "/api/platform/recoveries", label: "Buscar por cuenta, correo o teléfono", payload: { total: 0, statuses: [] } },
+])("$route pide los conteos una sola vez, sin la búsqueda", async ({ route, as, endpoint, label, payload }) => {
   const user = userEvent.setup();
   const requests: URL[] = [];
   const listRequests: URL[] = [];
@@ -26,24 +36,21 @@ it.each([
     })),
     http.get(`${endpoint}/paged`, ({ request }) => {
       listRequests.push(new URL(request.url));
-      return HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false });
+      return HttpResponse.json(emptyPage);
     }),
     http.get(`${endpoint}/filter-counts`, ({ request }) => {
       requests.push(new URL(request.url));
       return HttpResponse.json(payload);
     }),
   );
-  renderRouteWithProviders(route, { as: "business-e6-admin" });
+  renderRouteWithProviders(route, { as });
   const search = await screen.findByRole("searchbox", { name: label });
   await waitFor(() => expect(listRequests.length).toBeGreaterThan(0));
   await waitFor(() => expect(requests).toHaveLength(1));
   await user.type(search, "Delta");
   await waitFor(() => expect(listRequests.at(-1)?.searchParams.get("search")).toBe("Delta"));
-  await waitFor(() => expect(requests.filter((url) => url.searchParams.get("search") === "Delta")).toHaveLength(1));
-  expect(requests).toHaveLength(2);
-  expect(listRequests.every((url) => !url.searchParams.has("companyId"))).toBe(true);
-  expect(listRequests.filter((url) => !url.searchParams.has("search"))).toHaveLength(1);
   expect(listRequests.filter((url) => url.searchParams.get("search") === "Delta")).toHaveLength(1);
-  expect(listRequests).toHaveLength(2);
-  expect(requests.every((url) => !url.searchParams.has("companyId"))).toBe(true);
+  expect(listRequests.every((url) => !url.searchParams.has("companyId"))).toBe(true);
+  expect(requests).toHaveLength(1);
+  expect(requests[0].search).toBe("");
 }, 15_000);

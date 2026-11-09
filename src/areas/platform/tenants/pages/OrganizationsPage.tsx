@@ -1,5 +1,5 @@
 import type { PagedResultOfPlatformTenantResponse } from "@/shared/api/types";
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Power, RotateCw, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -74,8 +74,8 @@ export function OrganizationsPage() {
     toQuery: (page, values): TenantsQuery => ({ ...page, status: statuses.find((value) => value === values.status), source: sources.find((value) => value === values.source) }),
     queryKey: tenantsQueryKey, queryFn: fetchTenants, meta: { silent: true, blocksView: true },
   });
-  const countQuery = { search: query.search, status: query.status, source: query.source };
-  const counts = useQuery({ queryKey: tenantCountsQueryKey(countQuery), queryFn: () => fetchTenantCounts(countQuery), enabled: canRead, placeholderData: keepPreviousData, meta: { silent: true } });
+  // El resumen cuenta todo lo de la lista: los conteos se piden una vez, sin la búsqueda ni los filtros, porque los filtros
+  // no llevan cantidades (143).
   const globalCounts = useQuery({ queryKey: tenantCountsQueryKey({}), queryFn: () => fetchTenantCounts({}), enabled: canRead, meta: { silent: true } });
   const [createOpen, setCreateOpen] = useState(false);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
@@ -120,7 +120,7 @@ export function OrganizationsPage() {
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={columns} rows={(organizations.data?.items ?? []).map(effective)} mobileRow={(organization) => organizationPhoneRow(organization, t, rowActions(organization))} rowKey={(organization) => organization.id}
             isLoading={organizations.isPending} isFetching={organizations.isFetching} error={organizations.error ? apiErrorMessage(organizations.error, t) : undefined}
-            onRetry={() => { void organizations.refetch(); void counts.refetch(); void globalCounts.refetch(); }} emptyTitle={t(filtered ? "platformTenants:empty.filtered" : "platformTenants:empty.all")}
+            onRetry={() => { void organizations.refetch(); void globalCounts.refetch(); }} emptyTitle={t(filtered ? "platformTenants:empty.filtered" : "platformTenants:empty.all")}
             emptyAction={filtered ? <Button variant="outline" onClick={filters.clear}>{t("platformTenants:empty.clear")}</Button> : undefined} sort={pagination.sort} onSortChange={pagination.toggleSort} />
           {paginationProps ? <Pagination {...paginationProps} /> : null}
         </Surface>

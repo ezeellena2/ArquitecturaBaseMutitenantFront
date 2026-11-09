@@ -1,6 +1,6 @@
 import { companyOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Plus, Power, Trash2 } from "lucide-react";
 import { CloseIcon, RotateIcon } from "@/shared/ui/icons";
 import { useState } from "react";
@@ -78,13 +78,11 @@ export function UsersPage() {
     },
     queryKey: usersQueryKey, queryFn: fetchUsers, meta: { silent: true, blocksView: true },
   });
-  const { state, companyId, withoutCompany, search: debouncedSearch } = query;
+  const { state, companyId, withoutCompany } = query;
   const companyFilter = withoutCompany ? withoutCompanyValue : companyId;
-  const countQuery = { search: debouncedSearch, state, companyId, withoutCompany };
-  const counts = useQuery({
-    queryKey: userCountsQueryKey(countQuery), queryFn: () => fetchUserCounts(countQuery),
-    placeholderData: keepPreviousData, meta: { silent: true },
-  });
+  // El resumen cuenta todo lo de la lista: los conteos se piden una vez, sin la búsqueda ni los filtros, porque los filtros
+  // no llevan cantidades (143).
+  const counts = useQuery({ queryKey: userCountsQueryKey({}), queryFn: () => fetchUserCounts({}), meta: { silent: true } });
   const companies = useResourceOptions(companyOptions, canFilterByCompany);
   // Las opciones del filtro «Empresa»: «Todas», cada empresa activa y «Sin empresa», sin cantidades (143).
   const companyCountTargets = ["all", ...(companies.data?.items ?? []).filter((company) => company.status === "Active").map((company) => company.id), withoutCompanyValue];
