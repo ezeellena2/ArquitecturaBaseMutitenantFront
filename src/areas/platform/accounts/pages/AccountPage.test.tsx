@@ -41,7 +41,7 @@ afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); });
 describe("Ficha de Cuenta de Plataforma", () => {
   it.each([
     ["Persona", "Cerrar sesiones", "¿Cerrar las sesiones de Sin dato?"],
-    ["Persona", "Dar de baja", "¿Dar de baja la cuenta de Sin dato?"],
+    ["Persona", "Borrar la cuenta", "¿Borrar la cuenta de Sin dato?"],
     ["Persona suspendida", "Reactivar", "¿Reactivar la cuenta de Sin dato?"],
     ["Operador", "Cambiar permisos", "Cambiar permisos de Sin dato"],
     ["Operador", "Quitar operador", "¿Quitar a Sin dato como operador?"],
@@ -54,7 +54,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
     if (["Reactivar", "Cerrar sesiones", "Cambiar permisos"].includes(action)) await user.click(screen.getByRole("button", { name: action }));
     else await menu(user, action);
     expect(await screen.findByRole("dialog")).toHaveAccessibleName(title);
-    if (action === "Dar de baja") await screen.findByRole("textbox", { name: "Motivo" });
+    if (action === "Borrar la cuenta") await screen.findByRole("textbox", { name: "Motivo" });
     expect(await axe(container)).toHaveNoViolations();
   });
   it.each([
@@ -105,9 +105,9 @@ describe("Ficha de Cuenta de Plataforma", () => {
     ["Activa", ["Cerrar sesiones", "Suspender"], null],
     ["Suspendida", ["Cerrar sesiones", "Reactivar"], /^El 27\/09\/2026 \d{2}:\d{2}\. Motivo: Denuncia de uso indebido\.$/],
     ["Necesita recuperación", ["Cerrar sesiones", "Suspender"], /^El 20\/09\/2026 \d{2}:\d{2} terminó su membresía en Kappa S\.R\.L\., que administraba su único método de ingreso\.$/],
-    ["Baja pedida", [], /^Pidió borrar su cuenta el 27\/09\/2026 \d{2}:\d{2}\.$/],
-    ["Baja iniciada por la plataforma", [], /^La plataforma pidió borrar la cuenta el 27\/09\/2026 \d{2}:\d{2}\. Motivo: —$/],
-    ["Eliminada", [], null],
+    ["Por borrar", [], /^Pidió borrar su cuenta el 27\/09\/2026 \d{2}:\d{2}\.$/],
+    ["Por borrar a pedido de la plataforma", [], /^La plataforma pidió borrar la cuenta el 27\/09\/2026 \d{2}:\d{2}\. Motivo: —$/],
+    ["Borrada", [], null],
   ] as const)("estado %s conserva evidencia y acciones", async (state, actions, why) => {
     data = platformAccountDetailFixture({ state }); open();
     await screen.findByRole("heading", { name: data.displayName!, level: 1 });
@@ -117,10 +117,10 @@ describe("Ficha de Cuenta de Plataforma", () => {
     if (why) expect(screen.getByRole("img", { name: why })).toHaveAttribute("tabindex", "0");
     else expect(screen.queryByRole("img", { name: /^(El |Pidió|La plataforma)/ })).not.toBeInTheDocument();
     expect(screen.queryByText(/Suspendida el|Pidió la baja el|inició la baja el|Necesita recuperación\./)).not.toBeInTheDocument();
-    if (state.startsWith("Baja")) expect(screen.getByText(/Se borra el/)).toHaveTextContent("Se borra el 27/10/2026");
-    if (state.startsWith("Baja") || state === "Eliminada") expect(screen.queryByRole("button", { name: `Acciones de ${data.displayName}` })).not.toBeInTheDocument();
+    if (state.startsWith("Por borrar")) expect(screen.getByText(/Se borra el/)).toHaveTextContent("Se borra el 27/10/2026");
+    if (state.startsWith("Por borrar") || state === "Borrada") expect(screen.queryByRole("button", { name: `Acciones de ${data.displayName}` })).not.toBeInTheDocument();
     if (state === "Necesita recuperación") expect(screen.getByText("Ya no sirve para ingresar")).toBeVisible();
-    if (state === "Eliminada") expect(screen.getByText("No tiene métodos de ingreso.")).toBeVisible();
+    if (state === "Borrada") expect(screen.getByText("No tiene métodos de ingreso.")).toBeVisible();
   });
   it.each(["terminadas", "activa y terminada"] as const)("recuperación con organizaciones homónimas %s no atribuye una fecha ajena", async (memberships) => {
     data = platformAccountDetailFixture({ state: "Necesita recuperación" });
@@ -294,15 +294,15 @@ describe("Ficha de Cuenta de Plataforma", () => {
     const user = userEvent.setup(); const { queryClient } = open(); await screen.findByRole("heading", { name: "Lucía Fernández", level: 1 });
     queryClient.setQueryData(accountQueryKey(data.id), data);
     server.use(http.get("/api/platform/accounts/:id", () => new HttpResponse(null, { status: 503 })));
-    await menu(user, "Dar de baja"); expect(await screen.findByText("Algo salió mal. Probá de nuevo en un rato.")).toBeVisible();
+    await menu(user, "Borrar la cuenta"); expect(await screen.findByText("Algo salió mal. Probá de nuevo en un rato.")).toBeVisible();
     expect(screen.queryByRole("textbox", { name: "Motivo" })).not.toBeInTheDocument();
     expect(within(screen.getByRole("dialog")).getByRole("button", { name: "Reintentar" })).toBeVisible();
   });
   it("baja conocida del único Dueño bloquea y oculta motivo", async () => {
     const user = userEvent.setup(); open(); await screen.findByRole("heading", { name: "Lucía Fernández", level: 1 });
-    data = { ...data, soleOwnerOrganizations: ["Grupo Delta"] }; await menu(user, "Dar de baja");
+    data = { ...data, soleOwnerOrganizations: ["Grupo Delta"] }; await menu(user, "Borrar la cuenta");
     expect(await screen.findByText(/Es el único Dueño de Grupo Delta/)).toBeVisible(); expect(reads).toBe(2);
-    expect(screen.queryByRole("textbox", { name: "Motivo" })).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Dar de baja" })).toBeDisabled();
+    expect(screen.queryByRole("textbox", { name: "Motivo" })).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Borrar la cuenta" })).toBeDisabled();
   });
   it("baja conserva motivo y franja durante refetch, relee LastAdmin y fecha real tras POST", async () => {
     const user = userEvent.setup(); let writes = 0; const requests: unknown[] = [];
@@ -312,19 +312,19 @@ describe("Ficha de Cuenta de Plataforma", () => {
       data = { ...data, state: "PendingDeletion", deletion: { requestedAtUtc: "2026-10-06T12:00:00Z", scheduledForUtc: "2026-12-24T12:00:00Z", requestedByPlatform: true } };
       return new HttpResponse(null, { status: 204 });
     }));
-    const { queryClient } = open(); await menu(user, "Dar de baja"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Dar de baja");
+    const { queryClient } = open(); await menu(user, "Borrar la cuenta"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Borrar la cuenta");
     expect(await screen.findByText("Hace falta otro Dueño.")).toBeVisible(); const motive = screen.getByRole("textbox", { name: "Motivo" }); const dialog = screen.getByRole("dialog");
     await act(async () => { await queryClient.invalidateQueries({ queryKey: accountQueryKey(data.id) }); });
     expect(screen.getByRole("dialog")).toBe(dialog); expect(screen.getByRole("textbox", { name: "Motivo" })).toBe(motive); expect(motive).toHaveValue("Revisión"); expect(screen.getByText("Hace falta otro Dueño.")).toBeVisible();
-    await user.click(within(dialog).getByRole("button", { name: "Dar de baja" }));
-    expect(await screen.findByText("Dimos de baja la cuenta de Lucía Fernández. Se elimina el 24/12/2026.")).toBeVisible();
+    await user.click(within(dialog).getByRole("button", { name: "Borrar la cuenta" }));
+    expect(await screen.findByText("Pedimos borrar la cuenta de Lucía Fernández. Se borra el 24/12/2026.")).toBeVisible();
     expect(requests).toEqual([{ reason: "Revisión" }, { reason: "Revisión" }]); expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
   it("LastAdmin relee organizaciones nuevas para mostrar bloqueo sin duplicar motivo", async () => {
     const user = userEvent.setup(); server.use(http.post("/api/platform/accounts/:id/deletion", () => {
       data = { ...data, soleOwnerOrganizations: ["Grupo Delta", "Beta"] }; return HttpResponse.json({ code: "Legal.AccountDeletion.LastAdmin", detail: "Viejo" }, { status: 409 });
     }));
-    open(); await menu(user, "Dar de baja"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Dar de baja");
+    open(); await menu(user, "Borrar la cuenta"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Borrar la cuenta");
     expect(await screen.findByText(/Es el único Dueño de Grupo Delta, Beta/)).toBeVisible(); expect(screen.queryByText("Viejo")).not.toBeInTheDocument();
     expect(screen.queryByRole("textbox", { name: "Motivo" })).not.toBeInTheDocument();
   });
@@ -433,7 +433,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
     // Sin el cambio de estado, la (i) no inventa una fecha: no va.
     expect(screen.queryByRole("img", { name: /^El / })).not.toBeInTheDocument();
     await act(async () => { queryClient.setQueryData(accountQueryKey(data.id), { ...data, state: "Deleted", deletedAtUtc: null }); });
-    await waitFor(() => expect(screen.getByText(/Eliminada el/)).toHaveTextContent(/Eliminada el —/));
+    await waitFor(() => expect(screen.getByText(/Borrada el/)).toHaveTextContent(/Borrada el —/));
   });
   it("permisos InProgress conserva clave y final de MutationCache aunque el observer sea retirado", async () => {
     data = platformAccountDetailFixture({ kind: "Operador" }); const user = userEvent.setup(); let failed = 2; let requests = 0; const keys: (string | null)[] = [];
@@ -454,7 +454,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
       if (++details <= 2) return HttpResponse.json(data);
       await new Promise<void>((resolve) => { release = resolve; }); return failed === "red" ? HttpResponse.error() : new HttpResponse(null, { status: 503 });
     }), http.post("/api/platform/accounts/:id/deletion", () => new HttpResponse(null, { status: 204 })));
-    const { router, queryClient } = open(); await menu(user, "Dar de baja"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Dar de baja"); await waitFor(() => expect(release).toBeDefined());
+    const { router, queryClient } = open(); await menu(user, "Borrar la cuenta"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Borrar la cuenta"); await waitFor(() => expect(release).toBeDefined());
     await act(async () => { await router.navigate("/plataforma/cuentas/otra"); }); await user.click(await screen.findByRole("button", { name: "Suspender" })); const motive = screen.getByRole("textbox", { name: "Motivo" }); await user.type(motive, "Otro recorrido");
     await act(async () => { release?.(); }); await waitFor(() => expect(queryClient.isMutating()).toBe(0)); expect(screen.getByRole("textbox", { name: "Motivo" })).toBe(motive); expect(motive).toHaveValue("Otro recorrido");
     expect(screen.queryByText("No pudimos conectarnos. Revisá tu conexión.")).not.toBeInTheDocument(); expect(screen.queryByText("Algo salió mal. Probá de nuevo en un rato.")).not.toBeInTheDocument();

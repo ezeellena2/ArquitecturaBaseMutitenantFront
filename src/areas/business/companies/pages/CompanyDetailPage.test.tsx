@@ -226,8 +226,8 @@ describe("CompanyDetailPage", () => {
       return within(row).getByText(state).parentElement!.querySelector("[data-slot='status-dot']");
     };
     expect(await dot("Lucía Fernández", "Activo")).toHaveClass("bg-[var(--punto-ok)]");
-    expect(await dot("Diego Ríos", "Baja pedida")).toHaveClass("bg-[var(--punto-alerta)]");
-    expect(await dot("Marcos Giménez", "Inactivo")).toHaveClass("bg-[var(--punto-apagado)]");
+    expect(await dot("Diego Ríos", "Por borrar")).toHaveClass("bg-[var(--punto-alerta)]");
+    expect(await dot("Marcos Giménez", "De baja")).toHaveClass("bg-[var(--punto-apagado)]");
     expect(await dot("Paula Méndez", "Invitación pendiente")).toHaveClass("bg-[var(--punto-pendiente)]");
   });
 
@@ -296,7 +296,7 @@ describe("CompanyDetailPage", () => {
     await user.keyboard("{Escape}");
     screen.getByRole("button", { name: "Estado: todos" }).focus();
     await user.keyboard("{Enter}");
-    expect(await screen.findByRole("menuitemradio", { name: /^Baja pedida/ })).toBeVisible();
+    expect(await screen.findByRole("menuitemradio", { name: /^Por borrar/ })).toBeVisible();
     await user.keyboard("{Escape}");
     expect(organizationRoles).toBe(0);
     // Lo de la organización no se ofrece: editar la empresa, la pestaña Roles (que lleva al editor de roles) ni la ficha
@@ -451,20 +451,20 @@ describe("CompanyDetailPage", () => {
     const open = async (name: string) => { const trigger = await screen.findByRole("button", { name }); trigger.focus(); await user.keyboard("{Enter}"); };
 
     await open("Acciones para Diego Ríos");
-    expect(await screen.findByRole("menuitem", { name: "Quitar de la empresa" })).toBeVisible();
+    expect(await screen.findByRole("menuitem", { name: "Dar de baja" })).toBeVisible();
     await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
 
     await open("Acciones para Lucía Fernández");
-    await user.click(await screen.findByRole("menuitem", { name: "Quitar de la empresa" }));
-    const confirm = await screen.findByRole("dialog", { name: "¿Quitar a Lucía Fernández de la empresa?" });
+    await user.click(await screen.findByRole("menuitem", { name: "Dar de baja" }));
+    const confirm = await screen.findByRole("dialog", { name: "¿Dar de baja a Lucía Fernández en la empresa?" });
     expect(confirm).toHaveTextContent("Deja de entrar a Delta S.A. y pierde sus roles acá. Sigue en la organización y en sus otras empresas.");
-    await user.click(within(confirm).getByRole("button", { name: "Quitar" }));
-    expect(await screen.findByText("Quitamos a Lucía Fernández de la empresa.")).toBeVisible();
+    await user.click(within(confirm).getByRole("button", { name: "Dar de baja" }));
+    expect(await screen.findByText("Dimos de baja a Lucía Fernández en la empresa.")).toBeVisible();
 
     await open("Acciones para Marcos Giménez");
-    await user.click(await screen.findByRole("menuitem", { name: "Volver a sumar" }));
-    expect(await screen.findByText("Volvimos a sumar a Marcos Giménez. Dale los roles de nuevo.")).toBeVisible();
+    await user.click(await screen.findByRole("menuitem", { name: "Reactivar" }));
+    expect(await screen.findByText("Reactivamos a Marcos Giménez. Dale los roles de nuevo.")).toBeVisible();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(statusBodies).toEqual([{ status: "Inactive", version: 8 }, { status: "Active", version: 8 }]);
   });
@@ -661,10 +661,10 @@ describe("CompanyDetailPage", () => {
     expect(sent[2].key).not.toBe(sent[0].key);
   }, 10_000);
 
-  // R01 (formularios, concurrencia): «Inactivar» manda el estado y la versión de cuando se abrió la confirmación. Si con la
+  // R01 (formularios, concurrencia): «Dar de baja» manda el estado y la versión de cuando se abrió la confirmación. Si con la
   // confirmación abierta llega una relectura (otra persona la inactivó), no manda la acción inversa con la versión nueva:
   // manda la de apertura y el back responde 409.
-  it("una relectura con «¿Inactivar …?» abierta manda la versión de apertura y recibe el 409", async () => {
+  it("una relectura con «¿Dar de baja …?» abierta manda la versión de apertura y recibe el 409", async () => {
     let current: Omit<typeof company, "status"> & { status: "Active" | "Inactive" } = company;
     const bodies: unknown[] = [];
     server.use(
@@ -681,15 +681,15 @@ describe("CompanyDetailPage", () => {
     const { queryClient } = renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     (await screen.findByRole("button", { name: "Más acciones" })).focus();
     await user.keyboard("{Enter}");
-    // Tablero Empresa: «Inactivar» con su ícono gris, como pide «Criterio · Menús».
-    expect((await screen.findByRole("menuitem", { name: "Inactivar" })).querySelector("svg")).not.toBeNull();
-    await user.click(await screen.findByRole("menuitem", { name: "Inactivar" }));
-    const confirm = await screen.findByRole("dialog", { name: `¿Inactivar ${company.name}?` });
+    // Tablero Empresa: «Dar de baja» con su ícono gris, como pide «Criterio · Menús».
+    expect((await screen.findByRole("menuitem", { name: "Dar de baja" })).querySelector("svg")).not.toBeNull();
+    await user.click(await screen.findByRole("menuitem", { name: "Dar de baja" }));
+    const confirm = await screen.findByRole("dialog", { name: `¿Dar de baja ${company.name}?` });
 
     current = { ...company, status: "Inactive", version: company.version + 1 };
     await act(async () => { await queryClient.invalidateQueries(); });
     await waitFor(() => expect(queryClient.getQueryData<typeof company>(companyQueryKey("company-1"))?.version).toBe(company.version + 1));
-    await user.click(within(confirm).getByRole("button", { name: "Inactivar" }));
+    await user.click(within(confirm).getByRole("button", { name: "Dar de baja" }));
 
     await waitFor(() => expect(bodies).toEqual([{ status: "Inactive", version: company.version }]));
     expect(await screen.findByText("Otra persona cambió esta empresa.")).toBeVisible();
@@ -856,8 +856,8 @@ describe("CompanyDetailPage", () => {
 
     rowActions.focus();
     await user.keyboard("{Enter}");
-    await user.click(await screen.findByRole("menuitem", { name: "Quitar de la empresa" }));
-    await user.click(within(await screen.findByRole("dialog", { name: "¿Quitar a Lucía Fernández de la empresa?" })).getByRole("button", { name: "Cancelar" }));
+    await user.click(await screen.findByRole("menuitem", { name: "Dar de baja" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "¿Dar de baja a Lucía Fernández en la empresa?" })).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     await waitFor(() => expect(rowActions).toHaveFocus());
   });

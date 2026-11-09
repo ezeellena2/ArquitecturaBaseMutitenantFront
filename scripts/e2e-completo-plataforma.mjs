@@ -399,9 +399,9 @@ function createPlatformLifecycleActions(h, state) {
     }],
     [25, async () => {
       await page.goto(url(accountRoute()));
-      await changeWithReason(page, "Dar de baja", `/api/platform/accounts/${state.person.me.id}/deletion`, "Prueba integral: baja cancelable de cuenta sintética.");
-      await page.getByText("Baja pedida", { exact: true }).first().waitFor();
-      return "Plataforma pidió la baja; la cuenta sin organizaciones muestra Baja pedida.";
+      await changeWithReason(page, "Borrar la cuenta", `/api/platform/accounts/${state.person.me.id}/deletion`, "Prueba integral: baja cancelable de cuenta sintética.");
+      await page.getByText("Por borrar", { exact: true }).first().waitFor();
+      return "Plataforma pidió la baja; la cuenta sin organizaciones muestra Por borrar.";
     }],
     [26, async () => {
       await assertPlatformProblem(await proveLogin(h, personPage, state.person.email), 403, "Identity.Account.PendingDeletion");
@@ -447,7 +447,7 @@ function createPlatformLifecycleActions(h, state) {
       const actual = await h.api(page, `/api/platform/accounts/${state.person.me.id}`); assert.equal(actual.status(), 200);
       assert.equal((await actual.json()).id, state.person.me.id);
       assert.equal(await page.getByRole("button", { name: /^Acciones de / }).count(), 0);
-      for (const label of ["Suspender", "Reactivar", "Cerrar sus sesiones", "Dar de baja"]) {
+      for (const label of ["Suspender", "Reactivar", "Cerrar sus sesiones", "Borrar la cuenta"]) {
         assert.equal(await page.getByRole("button", { name: label, exact: true }).count(), 0);
         assert.equal(await page.getByRole("menuitem", { name: label, exact: true }).count(), 0);
       }

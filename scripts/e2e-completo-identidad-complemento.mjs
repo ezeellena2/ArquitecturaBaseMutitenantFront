@@ -18,7 +18,7 @@ export const identitySupplementDefinitions = [
   definition(3, "Persona con correo y otra con Phone", "Intentar agregar el Phone ya verificado ajeno", "/cuenta", "400 Identity.LoginMethod.PhoneAlreadyUsed en phone; sin pantalla OTP ni método pendiente, y las dos cuentas conservan sus métodos.", ["BACK-CU-007"]),
   definition(4, "Persona Phone sin organizaciones", "Pedir baja con motivo y comprobar las sesiones anteriores", "/cuenta", "Gracia de30d, motivo enviado y cierre visible; ambos tokens reales anteriores quedan401.", ["BACK-CU-014"]),
   definition(5, "Cuenta Phone en baja", "Rechazar cancelación vencida y reutilizada", "/login · /api/auth/deletion/cancel", "Un ticket emitido por OTP y vencido por el control existente da403; otro permite cancelar por UI una vez y su replay da403 sin sesión ni nueva autorización.", ["BACK-ID-024"]),
-  definition(6, "Última Dueña y operador con tenants.manage", "Bloquear la baja con organización activa y suspendida", "/cuenta · /plataforma/organizaciones/:id", "En ambos estados se informa la organización, Dar de baja queda apagado y POST409 LastAdmin; la organización se reactiva por UI al terminar.", ["BACK-CU-015"]),
+  definition(6, "Última Dueña y operador con tenants.manage", "Bloquear la baja con organización activa y suspendida", "/cuenta · /plataforma/organizaciones/:id", "En ambos estados se informa la organización, Borrar mi cuenta queda apagado y POST409 LastAdmin; la organización se reactiva por UI al terminar.", ["BACK-CU-015"]),
   definition(7, "Persona con dos membresías", "Elegir y recordar la organización al volver a ingresar", "/login/empresa · /org", "Dos invitaciones aceptadas en el mismo OTP prueban el desempate por nombre; Perfiles cambia a la otra organización, otro ingreso la recuerda y Personal conserva su acceso separado. No certifica antigüedad diferenciada sin selección anterior.", ["BACK-ID-018"]),
   definition(8, "Operador de legales y persona existente", "Publicar y aceptar términos con retorno protegido", "/plataforma/legales/nueva · /aceptar-terminos", "Versión nueva publicada por UI; casilla inicialmente desmarcada, continuar sin aceptar muestra validación sin POST; aceptación explícita204 y vuelta a Mi cuenta con la misma identidad y sin pendientes.", ["BACK-CU-017"]),
   definition(9, "Miembro de tres organizaciones y operador de las fixtures", "Elegir la membresía más antigua cuando la última Business deja de estar disponible", "/login/empresa · /org · /plataforma/organizaciones/:id", "Tres invitaciones aceptadas por UI en ingresos separados tienen JoinedAtUtc distintos; al suspender la última Business recordada, otro ingreso elige la más antigua entre dos candidatas activas, aunque su nombre ordene después. La suspensión se revierte por UI.", []),
@@ -70,7 +70,7 @@ export async function requireSoleOwnerDeletionUi(page, organization) {
   // El GET del arnés no espera la query de React. Este control aparece en la
   // misma renderización que calcula aria-disabled a partir de soleOwnerOrganizations.
   await information.waitFor();
-  assert.equal(await page.getByRole("button", { name: "Dar de baja", exact: true }).getAttribute("aria-disabled"), "true");
+  assert.equal(await page.getByRole("button", { name: "Borrar mi cuenta", exact: true }).getAttribute("aria-disabled"), "true");
   await information.click();
   await page.getByRole("dialog").getByText(new RegExp(escapeRegex(organization), "u")).first().waitFor();
 }
@@ -231,8 +231,8 @@ export async function runIdentitySupplementCases(h) {
     await run(4, [3], async () => {
       await page.goto(new URL("/cuenta", h.base).href); const methods = await read(h, page, "/api/me/login-methods"); assert.equal(methods.accountDeletionGraceDays, 30);
       await other.goto(new URL("/cuenta", h.base).href); assert.equal((await authenticated(h, other, "consumer")).id, phoneAccount.id);
-      await page.getByRole("button", { name: "Dar de baja", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "¿Dar de baja tu cuenta?", exact: true }); const reason = "Identidad: verificar gracia y revocación real de sesiones propias.";
-      await dialog.getByRole("textbox", { name: /Motivo/u }).fill(reason); const before = Date.now(); const response = await click(page, dialog.getByRole("button", { name: "Dar de baja", exact: true }), "/api/me/deletion"); const after = Date.now();
+      await page.getByRole("button", { name: "Borrar mi cuenta", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "¿Borrar tu cuenta?", exact: true }); const reason = "Identidad: verificar gracia y revocación real de sesiones propias.";
+      await dialog.getByRole("textbox", { name: /Motivo/u }).fill(reason); const before = Date.now(); const response = await click(page, dialog.getByRole("button", { name: "Borrar mi cuenta", exact: true }), "/api/me/deletion"); const after = Date.now();
       assert.equal(response.request().postDataJSON().reason, reason); requireThirtyDayGrace((await response.json()).scheduledForUtc, before, after);
       await page.getByRole("heading", { name: "Cerramos tu sesión", exact: true }).waitFor();
       for (const oldPage of [page, other]) await requireProblem(await h.api(oldPage, "/api/me"), 401, "Http.Unauthorized");
@@ -241,10 +241,10 @@ export async function runIdentitySupplementCases(h) {
     await run(5, [4], async () => {
       const scenario = `ids-expired-${tag}`; const pending = await provePhone(h, page, phone.foreign, scenario, 403); const problem = await requireProblem(pending.response, 403, "Identity.Account.PendingDeletion"); assert.ok(problem.cancelTicket);
       assert.equal((await h.env.command("whatsapp", { kind: "expireTicket", scenario, phone: phone.foreign, ticket: problem.cancelTicket })).ok, true);
-      await requireProblem(await click(page, page.getByRole("button", { name: "Cancelar la baja y entrar", exact: true }), "/api/auth/deletion/cancel", 403), 403, "Legal.AccountDeletion.CancelProofInvalid");
-      await page.getByRole("heading", { name: "Tu cuenta tiene la baja pedida", exact: true }).waitFor({ state: "hidden" }); await page.getByRole("button", { name: "Enviar código", exact: true }).waitFor(); assert.equal((await page.request.get(new URL("/api/me", h.base).href)).status(), 401);
+      await requireProblem(await click(page, page.getByRole("button", { name: "Cancelar el borrado y entrar", exact: true }), "/api/auth/deletion/cancel", 403), 403, "Legal.AccountDeletion.CancelProofInvalid");
+      await page.getByRole("heading", { name: "Tu cuenta está por borrarse", exact: true }).waitFor({ state: "hidden" }); await page.getByRole("button", { name: "Enviar código", exact: true }).waitFor(); assert.equal((await page.request.get(new URL("/api/me", h.base).href)).status(), 401);
       const renewed = await provePhone(h, page, phone.foreign, `ids-reused-${tag}`, 403); const valid = await requireProblem(renewed.response, 403, "Identity.Account.PendingDeletion");
-      await click(page, page.getByRole("button", { name: "Cancelar la baja y entrar", exact: true }), "/api/auth/deletion/cancel"); assert.equal((await authenticated(h, page, "consumer")).id, phoneAccount.id); await h.signOut(page);
+      await click(page, page.getByRole("button", { name: "Cancelar el borrado y entrar", exact: true }), "/api/auth/deletion/cancel"); assert.equal((await authenticated(h, page, "consumer")).id, phoneAccount.id); await h.signOut(page);
       await requireProblem(await page.request.post(new URL("/api/auth/deletion/cancel", h.base).href, { headers: { "Idempotency-Key": randomUUID() }, data: { cancelTicket: valid.cancelTicket } }), 403, "Legal.AccountDeletion.CancelProofInvalid");
       assert.equal((await page.request.get(new URL("/api/me", h.base).href)).status(), 401);
       return "Ticket vencido403 sin sesión; ticket nuevo canceló una vez por UI y su reutilización403 tampoco autenticó.";

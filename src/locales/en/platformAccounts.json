@@ -42,7 +42,7 @@
       "InvitationExpired": "Invitation expired",
       "Suspended": "Suspended",
       "NeedsRecovery": "Need recovery",
-      "PendingDeletion": "Deletion requested",
+      "PendingDeletion": "To be deleted",
       "Deleted": "Deleted"
     }
   },

@@ -221,7 +221,7 @@
   "outputPrice": "Output price per million",
   "state": "Status",
   "active": "Active",
-  "inactive": "Inactive",
+  "inactive": "Deactivated",
   "modelActions": "Actions for {{name}}",
   "actions": "Actions",
   "filterModels": "Filter models",

@@ -134,7 +134,7 @@ describe("Mi cuenta", () => {
       const signIn = screen.getByRole("region", { name: "Cómo entrás" });
       expect(within(signIn).getByRole("button", { name: "Agregar correo" })).toHaveClass("text-[var(--marca-tx)]");
       const privacy = screen.getByRole("region", { name: "Privacidad" });
-      expect(within(privacy).getByRole("button", { name: "Dar de baja" }).parentElement).toHaveClass("max-md:[&>[data-variant=danger]]:text-[var(--peligro)]");
+      expect(within(privacy).getByRole("button", { name: "Borrar mi cuenta" }).parentElement).toHaveClass("max-md:[&>[data-variant=danger]]:text-[var(--peligro)]");
     } finally {
       restore();
     }
@@ -179,11 +179,11 @@ describe("Mi cuenta", () => {
     const privacy = screen.getByRole("region", { name: "Privacidad" });
     expect(details.compareDocumentPosition(signIn) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(signIn.compareDocumentPosition(privacy) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    const deletionAction = within(privacy).getByRole("button", { name: "Dar de baja" });
+    const deletionAction = within(privacy).getByRole("button", { name: "Borrar mi cuenta" });
     // Criterio · Botones: peligro con borde en la pantalla; relleno solo en el diálogo que confirma.
     expect(deletionAction).toHaveAttribute("data-variant", "danger");
-    // Tablero Cuenta: «Dar de baja mi cuenta» es una fila de la lista, sin texto que explique el plazo.
-    expect(within(privacy).getByRole("listitem")).toHaveTextContent(/^Dar de baja mi cuenta/);
+    // Tablero Cuenta: «Borrar mi cuenta» es una fila de la lista, sin texto que explique el plazo.
+    expect(within(privacy).getByRole("listitem")).toHaveTextContent(/^Borrar mi cuenta/);
     await waitFor(() => expect(within(privacy).queryByText(/días para arrepentirte/)).not.toBeInTheDocument());
     expect(screen.getByRole("button", { name: "Descartar cambios" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
@@ -199,10 +199,10 @@ describe("Mi cuenta", () => {
     const { container } = renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
 
     const privacy = await screen.findByRole("region", { name: "Privacidad" });
-    const deletion = await within(privacy).findByRole("button", { name: "Dar de baja" });
+    const deletion = await within(privacy).findByRole("button", { name: "Borrar mi cuenta" });
     await waitFor(() => expect(deletion).toHaveAttribute("aria-disabled", "true"));
     await user.click(deletion);
-    const info = await screen.findByRole("dialog", { name: "No podés dar de baja tu cuenta" });
+    const info = await screen.findByRole("dialog", { name: "No podés borrar tu cuenta" });
     expect(info).toHaveTextContent("Sos la única persona con el rol Dueño en Grupo Delta");
     // Tablero: el aviso en bordó y negrita; los números de los pasos en un círculo gris relleno.
     expect(within(info).getByText("Sos la única persona con el rol Dueño en Grupo Delta")).toHaveClass("font-semibold");
@@ -211,12 +211,12 @@ describe("Mi cuenta", () => {
     expect(info).toHaveTextContent("Qué podés hacer");
     expect(within(info).getAllByRole("listitem").map((item) => item.textContent?.replace(/^\d/, "")))
       .toEqual(["Sumá otro Dueño en Grupo Delta", "O pedí a la plataforma que cierre la organización"]);
-    expect(screen.queryByRole("dialog", { name: "¿Dar de baja tu cuenta?" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "¿Borrar tu cuenta?" })).not.toBeInTheDocument();
     await user.click(within(info).getByRole("button", { name: "Entendido" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
 
-    await user.click(within(privacy).getByRole("button", { name: "Por qué no podés darte de baja" }));
-    expect(await screen.findByRole("dialog", { name: "No podés dar de baja tu cuenta" })).toBeVisible();
+    await user.click(within(privacy).getByRole("button", { name: "Por qué no podés borrar tu cuenta" }));
+    expect(await screen.findByRole("dialog", { name: "No podés borrar tu cuenta" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
   });
 

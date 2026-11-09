@@ -4,8 +4,8 @@
     "Active": "Activa",
     "Suspended": "Suspendida",
     "NeedsRecovery": "Necesita recuperación",
-    "PendingDeletion": "Baja pedida",
-    "Deleted": "Eliminada",
+    "PendingDeletion": "Por borrar",
+    "Deleted": "Borrada",
     "Invited": "Invitación pendiente",
     "InvitationExpired": "Invitación vencida"
   },
@@ -53,19 +53,19 @@
   },
   "OrganizationUserState": {
     "Active": "Activo",
-    "PendingDeletion": "Baja pedida",
+    "PendingDeletion": "Por borrar",
     "Invited": "Invitación pendiente",
     "Expired": "Invitación vencida",
-    "Inactive": "Deshabilitado"
+    "Inactive": "De baja"
   },
   "CompanyStatus": {
     "Active": "Activa",
-    "Inactive": "Inactiva"
+    "Inactive": "De baja"
   },
   "CompanyMemberState": {
     "Active": "Activo",
-    "PendingDeletion": "Baja pedida",
-    "Inactive": "Inactivo",
+    "PendingDeletion": "Por borrar",
+    "Inactive": "De baja",
     "Invited": "Invitación pendiente",
     "Expired": "Invitación vencida"
   },
@@ -75,13 +75,13 @@
     "Blocked": "Despublicada"
   },
   "PlatformOwnerState": {
-    "Inactive": "Inactivo",
+    "Inactive": "De baja",
     "Active": "Activo",
     "Invited": "Invitación pendiente",
-    "PendingDeletion": "Baja pedida",
+    "PendingDeletion": "Por borrar",
     "Removed": "Terminada",
     "Suspended": "Suspendido",
-    "Deleted": "Eliminado"
+    "Deleted": "Borrado"
   },
   "LegalDocumentKind": { "Terms": "Términos y condiciones", "Privacy": "Política de privacidad" },
   "LoginMethodType": {

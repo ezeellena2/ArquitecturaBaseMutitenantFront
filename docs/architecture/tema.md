@@ -51,9 +51,9 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 | Tono | Punto |
 |---|---|
 | `success` | `--punto-ok` (activo, verificado, publicada) |
-| `warning` | `--punto-alerta` (vencida, baja pedida, sin verificar) |
+| `warning` | `--punto-alerta` (vencida, por borrar, sin verificar) |
 | `danger` | `--peligro` (despublicada por la plataforma) |
-| `neutral` | `--punto-apagado` (deshabilitado, borrador) |
+| `neutral` | `--punto-apagado` (de baja, borrador) |
 | `pending` | `--punto-pendiente` (invitación pendiente, difusión programada) |
 
 ## Forma

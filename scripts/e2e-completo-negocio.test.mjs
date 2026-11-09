@@ -181,10 +181,10 @@ test("deshabilitarse exige 403 CannotDisableSelf y conserva el acceso, roles y v
   for (const width of [1440, 390]) {
     const { h, page, calls } = selfDisableFixture({ width });
     assert.match(await business.checkSelfDisable(h, page, "own-person"), /403/u);
-    assert.ok(calls.some((entry) => entry[1] === "Deshabilitar y guardar"));
+    assert.ok(calls.some((entry) => entry[1] === "Dar de baja y guardar"));
     assert.ok(calls.some((entry) => entry[1] === "No podés deshabilitarte a vos misma."));
     if (width === 390) {
-      assert.ok(calls.some((entry) => entry[0] === "click" && entry[1] === "opción visible Deshabilitado"));
+      assert.ok(calls.some((entry) => entry[0] === "click" && entry[1] === "opción visible De baja"));
       assert.equal(calls.some(([action]) => action === "check"), false, "El input sr-only no recibe clicks forzados.");
     }
   }
@@ -237,8 +237,8 @@ test("el estado de empresa se comprueba por badge en escritorio y por la acción
   for (const width of [390, 1440]) for (const status of ["Active", "Inactive"]) {
     const calls = [];
     const control = (name) => ({ click: async () => calls.push(["click", name]), waitFor: async () => calls.push(["visible", name]), first: () => control(name) });
-    const inverse = { waitFor: async () => calls.push(["visible", status === "Inactive" ? "Activar" : "Inactivar"]) };
-    const menu = { waitFor: async () => {}, getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.deepEqual(options, { name: status === "Inactive" ? "Activar" : "Inactivar", exact: true }); return inverse; } };
+    const inverse = { waitFor: async () => calls.push(["visible", status === "Inactive" ? "Reactivar" : "Dar de baja"]) };
+    const menu = { waitFor: async () => {}, getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.deepEqual(options, { name: status === "Inactive" ? "Reactivar" : "Dar de baja", exact: true }); return inverse; } };
     const sheet = { waitFor: async () => {}, getByRole: (role) => { assert.equal(role, "menu"); return menu; } };
     const title = { filter: () => title, first: () => title, innerText: async () => "Empresa propia" };
     const page = {
@@ -253,12 +253,12 @@ test("el estado de empresa se comprueba por badge en escritorio y por la acción
       getByText: (name) => { assert.equal(width, 1440, "El tablero móvil no tiene badge de estado."); return control(name); },
     };
     await business.assertCompanyStateVisible({ width }, page, status);
-    assert.deepEqual(calls, width === 390 ? [["focus", "Más acciones"], ["press", "Enter"], ["visible", status === "Inactive" ? "Activar" : "Inactivar"]]
-      : [["visible", status === "Inactive" ? "Inactiva" : "Activa"]]);
+    assert.deepEqual(calls, width === 390 ? [["focus", "Más acciones"], ["press", "Enter"], ["visible", status === "Inactive" ? "Reactivar" : "Dar de baja"]]
+      : [["visible", status === "Inactive" ? "De baja" : "Activa"]]);
   }
   await assert.rejects(business.assertCompanyStateVisible({ width: 390 }, {}, "Desconocido"));
   const expected = businessDefinitions.find((entry) => entry.id === "BIZ-21").expected;
-  assert.match(expected, /móvil/u); assert.match(expected, /Activar/u); assert.match(expected, /Inactiva/u);
+  assert.match(expected, /móvil/u); assert.match(expected, /Reactivar/u); assert.match(expected, /De baja/u);
 });
 
 test("el runner móvil de Negocio sólo registra sus cinco acciones y ejecuta las siete fixtures", async () => {

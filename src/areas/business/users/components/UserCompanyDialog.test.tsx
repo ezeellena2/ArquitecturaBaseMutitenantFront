@@ -41,6 +41,6 @@ it("cambiar de empresa descarta el Todos que todavía está leyendo roles de la 
   await user.click(await screen.findByRole("option", { name: "Empresa B" }));
   await act(async () => { releaseOldRequest(); await oldRequest; });
   await waitFor(() => expect(screen.getByRole("checkbox", { name: "Todos" })).toBeEnabled());
-  await user.click(screen.getByRole("button", { name: "Sumar" }));
+  await user.click(screen.getByRole("button", { name: "Agregar" }));
   await waitFor(() => expect(saved).toHaveBeenCalledWith({ companyId: "b", roleIds: [] }));
 });

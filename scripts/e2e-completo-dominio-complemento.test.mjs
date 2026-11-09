@@ -55,7 +55,7 @@ test("el focal de dominio conserva los tres callbacks y sólo admite390", async 
 
 test("el estado móvil se elige por su etiqueta visible y se comprueba después de cerrar la hoja", async () => {
   for (const width of [390, 1440]) for (const active of [false, true]) {
-    const label = active ? "Activo" : "Deshabilitado"; const calls = []; let chosen; let closed = false;
+    const label = active ? "Activo" : "De baja"; const calls = []; let chosen; let closed = false;
     const state = { click: async () => calls.push("Estado"), getByText: (text, options) => {
       assert.equal(text, label); assert.deepEqual(options, { exact: true }); return { waitFor: async () => { assert.equal(closed, true); assert.equal(chosen, label); calls.push("estado visible"); } };
     } };

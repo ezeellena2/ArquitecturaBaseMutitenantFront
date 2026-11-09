@@ -154,13 +154,13 @@ describe("LoginPage", () => {
     const code = await screen.findByRole("textbox", { name: "Código 1" });
     fireEvent.change(code, { target: { value: "123456" } });
     fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
-    expect(await screen.findByRole("heading", { name: "Tu cuenta tiene la baja pedida" })).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "Tu cuenta está por borrarse" })).toBeVisible();
     // El reloj del tablero Ingreso («Cuenta con la baja pedida»).
     expect(screen.getByRole("main").querySelector("span[aria-hidden='true'] svg circle")).toHaveAttribute("r", "8.5");
     expect(completeLogin).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar el borrado y entrar" }));
     try {
-      await waitFor(() => expect(screen.getByRole("button", { name: "Cancelar la baja y entrar" })).toBeDisabled());
+      await waitFor(() => expect(screen.getByRole("button", { name: "Cancelar el borrado y entrar" })).toBeDisabled());
       expect(screen.getByRole("button", { name: "Salir" })).toBeDisabled();
       expect(completeLogin).not.toHaveBeenCalled();
     } finally { finishCancellation(); }
@@ -170,7 +170,7 @@ describe("LoginPage", () => {
   it("lee prueba de Google desde cookie segura sin iniciar OIDC antes de cancelar", async () => {
     server.use(http.post("/api/auth/deletion/pending", () => HttpResponse.json({ scheduledForUtc: "2026-10-30T12:00:00Z", cancelTicket: "cookie-proof", timeZoneId: "America/Argentina/Buenos_Aires", returnUrl: authorizeUrl, expiresAtUtc: "2026-09-30T13:00:00Z" })));
     show("business", "/login/empresa?error=Identity.Account.PendingDeletion");
-    expect(await screen.findByRole("heading", { name: "Tu cuenta tiene la baja pedida" })).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "Tu cuenta está por borrarse" })).toBeVisible();
     expect(signinRedirect).not.toHaveBeenCalled();
   });
   it("inicia OIDC una vez desde cada puerta y conserva el acceso elegido", async () => {
@@ -375,7 +375,7 @@ describe("LoginPage", () => {
 
   it.each([
     ["Tenancy.Access.NotMember", {}, "Tu cuenta no está en ninguna empresa todavía", ["Registrá tu empresa", "Ingresá como persona"]],
-    ["Tenancy.Member.Inactive", { organizationName: "Grupo Delta" }, "Tu acceso a Grupo Delta está deshabilitado", ["Ingresá como persona", "Registrá tu empresa"]],
+    ["Tenancy.Member.Inactive", { organizationName: "Grupo Delta" }, "Tu acceso a Grupo Delta está dado de baja", ["Ingresá como persona", "Registrá tu empresa"]],
   ])("muestra el estado empresarial %s después del código", async (code, metadata, title, links) => {
     server.use(
       http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 })),

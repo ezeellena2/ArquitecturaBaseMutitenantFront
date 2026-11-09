@@ -57,8 +57,8 @@ describe("CompaniesPage", () => {
 
     await user.click(screen.getByRole("button", { name: "Estado: todas" }));
     // 143: las opciones de un filtro no dicen cuántas filas traen.
-    expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent)).toEqual(["Todas", "Activas", "Inactivas"]);
-    await user.click(await screen.findByRole("menuitemradio", { name: /Inactivas/ }));
+    expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent)).toEqual(["Todas", "Activas", "Dadas de baja"]);
+    await user.click(await screen.findByRole("menuitemradio", { name: /Dadas de baja/ }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Inactive"));
     expect(router.state.location.search).toContain("status=Inactive");
   });
@@ -313,18 +313,18 @@ describe("CompaniesPage", () => {
     const rowActions = await screen.findByRole("button", { name: "Acciones para Delta S.A." });
     rowActions.focus();
     await user.keyboard("{Enter}");
-    // Tablero Empresas: «Ver ficha», «Editar» y, después de la franja, «Inactivar» en rojo.
-    expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Ver ficha", "Editar", "Inactivar"]);
-    await user.click(await screen.findByRole("menuitem", { name: "Inactivar" }));
-    const confirm = await screen.findByRole("dialog", { name: "¿Inactivar Delta S.A.?" });
-    expect(confirm).toHaveTextContent("Nadie entra a esta empresa mientras esté inactiva. Sus datos y sus miembros se conservan.");
-    await user.click(within(confirm).getByRole("button", { name: "Inactivar" }));
+    // Tablero Empresas: «Ver ficha», «Editar» y, después de la franja, «Dar de baja» en rojo.
+    expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Ver ficha", "Editar", "Dar de baja"]);
+    await user.click(await screen.findByRole("menuitem", { name: "Dar de baja" }));
+    const confirm = await screen.findByRole("dialog", { name: "¿Dar de baja Delta S.A.?" });
+    expect(confirm).toHaveTextContent("Nadie entra a esta empresa mientras esté de baja. Sus datos y sus miembros se conservan.");
+    await user.click(within(confirm).getByRole("button", { name: "Dar de baja" }));
 
     await waitFor(() => expect(requestBody).toEqual({ status: "Inactive", version: 3 }));
-    expect(await screen.findByText("Inactivamos Delta S.A.")).toBeVisible();
+    expect(await screen.findByText("Dimos de baja Delta S.A.")).toBeVisible();
   });
 
-  // accesibilidad.md: «Crear empresa» le devuelve el foco a su botón; «Editar» y «Inactivar», al ⋮ de la fila, porque la
+  // accesibilidad.md: «Crear empresa» le devuelve el foco a su botón; «Editar» y «Dar de baja», al ⋮ de la fila, porque la
   // opción se va con el menú. El diálogo es el mismo que el de la ficha (CompanyDialog).
   it("los diálogos de Empresas le devuelven el foco a lo que los abrió", async () => {
     server.use(
@@ -351,8 +351,8 @@ describe("CompaniesPage", () => {
 
     rowActions.focus();
     await user.keyboard("{Enter}");
-    await user.click(await screen.findByRole("menuitem", { name: "Inactivar" }));
-    await user.click(within(await screen.findByRole("dialog", { name: "¿Inactivar Delta S.A.?" })).getByRole("button", { name: "Cancelar" }));
+    await user.click(await screen.findByRole("menuitem", { name: "Dar de baja" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "¿Dar de baja Delta S.A.?" })).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     await waitFor(() => expect(rowActions).toHaveFocus());
   });

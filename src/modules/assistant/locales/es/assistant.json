@@ -221,7 +221,7 @@
   "outputPrice": "Precio de salida por millón",
   "state": "Estado",
   "active": "Activo",
-  "inactive": "Inactivo",
+  "inactive": "De baja",
   "modelActions": "Acciones de {{name}}",
   "actions": "Acciones",
   "filterModels": "Filtrar modelos",

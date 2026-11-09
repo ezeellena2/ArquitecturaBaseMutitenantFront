@@ -97,7 +97,7 @@ test("el ciclo exige PUT y estado real, usando acción inversa móvil y badge de
     const next = active ? "Active" : "Inactive";
     const response = { url: () => "https://localtest.me/api/companies/propia/status", request: () => ({ method: () => "PUT" }), status: () => 200 };
     const write = async () => { status = next; open = false; writes++; };
-    const item = (name) => ({ click: async () => { assert.equal(open, true); if (active) await write(); else open = false; }, waitFor: async () => { assert.equal(name, active ? "Inactivar" : "Activar"); assert.equal(status, next); assert.equal(open, true); checked = true; } });
+    const item = (name) => ({ click: async () => { assert.equal(open, true); if (active) await write(); else open = false; }, waitFor: async () => { assert.equal(name, active ? "Dar de baja" : "Reactivar"); assert.equal(status, next); assert.equal(open, true); checked = true; } });
     const menu = { waitFor: async (options) => assert.equal(open, options?.state !== "hidden"), getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.equal(options.exact, true); return item(options.name); } };
     const sheet = { waitFor: menu.waitFor, getByRole: (role) => { assert.equal(role, "menu"); return menu; } };
     const desktopMenu = { filter: () => desktopMenu, last: () => menu };
@@ -106,7 +106,7 @@ test("el ciclo exige PUT y estado real, usando acción inversa móvil y badge de
       viewportSize: () => ({ width }),
       waitForResponse: async (predicate) => { assert.equal(predicate(response), true); return response; },
       keyboard: { press: async (key) => { assert.equal(key, "Escape"); open = false; } },
-      getByText: (label) => { assert.equal(width, 1440, "La ficha móvil comunica el estado mediante el menú."); assert.equal(label, active ? "Activa" : "Inactiva"); return { first: () => ({ waitFor: async () => { assert.equal(status, next); checked = true; } }) }; },
+      getByText: (label) => { assert.equal(width, 1440, "La ficha móvil comunica el estado mediante el menú."); assert.equal(label, active ? "Activa" : "De baja"); return { first: () => ({ waitFor: async () => { assert.equal(status, next); checked = true; } }) }; },
       getByRole: (role, { name } = {}) => {
         if (role === "heading") return title;
         if (role === "menu") { assert.equal(width, 1440); return desktopMenu; }

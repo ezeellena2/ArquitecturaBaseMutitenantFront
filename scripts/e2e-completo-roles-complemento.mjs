@@ -134,21 +134,21 @@ export async function disableMember(h, page, memberId) {
   if (h.width === 390) {
     await page.getByRole("region", { name: "Acceso a la organización", exact: true }).getByRole("button", { name: /^Estado/ }).click();
     const sheet = page.getByRole("dialog", { name: "Estado", exact: true });
-    await sheet.getByText("Deshabilitado", { exact: true }).click();
+    await sheet.getByText("De baja", { exact: true }).click();
     await sheet.waitFor({ state: "hidden" });
   } else {
-    await page.getByRole("combobox", { name: "Estado", exact: true }).click(); await page.getByRole("option", { name: "Deshabilitado", exact: true }).click();
+    await page.getByRole("combobox", { name: "Estado", exact: true }).click(); await page.getByRole("option", { name: "De baja", exact: true }).click();
   }
   await page.getByRole("button", { name: "Guardar cambios", exact: true }).click();
-  await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Deshabilitar y guardar", exact: true }), `/api/users/${memberId}`, "PUT");
+  await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Dar de baja y guardar", exact: true }), `/api/users/${memberId}`, "PUT");
   assert.equal((await read(h, page, `/api/users/${memberId}`)).state, "Inactive");
 }
 
 export async function companyStatus(h, page, company, active) {
   const opened = await openBusinessBarMenu(page);
-  const action = opened.menu.getByRole("menuitem", { name: active ? "Activar" : "Inactivar", exact: true });
+  const action = opened.menu.getByRole("menuitem", { name: active ? "Reactivar" : "Dar de baja", exact: true });
   if (active) { await clickForResponse(page, action, `/api/companies/${company.id}/status`, "PUT"); await opened.waitForClosed(); }
-  else { await action.click(); await opened.waitForClosed(); await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/companies/${company.id}/status`, "PUT"); }
+  else { await action.click(); await opened.waitForClosed(); await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Dar de baja", exact: true }), `/api/companies/${company.id}/status`, "PUT"); }
   const inverse = await assertCompanyStateVisible(h, page, active ? "Active" : "Inactive");
   if (h.width === 390) { await page.keyboard.press("Escape"); await inverse.waitForClosed(); }
   const result = await read(h, page, `/api/companies/${company.id}`); assert.equal(result.status, active ? "Active" : "Inactive"); return result;

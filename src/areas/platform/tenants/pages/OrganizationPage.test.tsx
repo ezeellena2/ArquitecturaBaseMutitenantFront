@@ -90,7 +90,7 @@ describe("Ficha de Organización", () => {
     server.use(http.get("/api/platform/tenants/delta/history", () => HttpResponse.json({ items: [], hasMore: false }))); await user.click(screen.getByRole("button", { name: "Reintentar" })); expect(await screen.findByText("Todavía no hay historial")).toBeVisible();
   });
   it.each([
-    ["Active", "Active", "Activo"], ["Suspended", "Active", "Suspendido"], ["PendingDeletion", "Active", "Baja pedida"], ["Deleted", "Active", "Eliminado"], ["Active", "Inactive", "Inactivo"], ["Active", "Removed", "Terminada"], ["Active", "Invited", "Invitación pendiente"],
+    ["Active", "Active", "Activo"], ["Suspended", "Active", "Suspendido"], ["PendingDeletion", "Active", "Por borrar"], ["Deleted", "Active", "Borrado"], ["Active", "Inactive", "De baja"], ["Active", "Removed", "Terminada"], ["Active", "Invited", "Invitación pendiente"],
   ] as const)("Dueño %s/%s refleja identidad y membresía", async (identityStatus, membershipStatus, label) => {
     detail({ ...organization, owners: [{ ...owner, identityStatus, membershipStatus }] }); const user = userEvent.setup(); render(); await user.click(await screen.findByRole("tab", { name: "Dueños 1" }));
     expect(await screen.findByText("Lucía Fernández")).toBeVisible(); expect(screen.getByText("lucia@example.com")).toBeVisible(); expect(screen.getByText("Nunca")).toBeVisible(); expect(screen.getByText(label)).toBeVisible();

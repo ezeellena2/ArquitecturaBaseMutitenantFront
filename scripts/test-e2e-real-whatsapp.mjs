@@ -327,10 +327,10 @@ async function loginFromRegistration(page, phone, access, width, organization, o
 }
 async function requestDeletion(page) {
   await page.goto(`${base}/cuenta`);
-  await page.getByRole("button", { name: "Dar de baja", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "¿Dar de baja tu cuenta?", exact: true });
+  await page.getByRole("button", { name: "Borrar mi cuenta", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "¿Borrar tu cuenta?", exact: true });
   await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Prueba aislada de cancelación desde el ingreso.");
-  await clickHttp(page, dialog.getByRole("button", { name: "Dar de baja", exact: true }), "/api/me/deletion", 200);
+  await clickHttp(page, dialog.getByRole("button", { name: "Borrar mi cuenta", exact: true }), "/api/me/deletion", 200);
   await page.getByRole("heading", { name: "Cerramos tu sesión", exact: true }).waitFor();
 }
 async function pendingLogin(page, phone, width, scenario, observed) {

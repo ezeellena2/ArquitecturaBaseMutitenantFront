@@ -106,7 +106,7 @@ describe("BusinessHomePage", () => {
     expect(within(block).getByText("1.010")).toBeVisible();
     expect(within(block).getByText("1.000")).toBeVisible();
     expect(within(block).getByText("Invitaciones vencidas")).toBeVisible();
-    expect(within(block).getByText("Bajas pedidas")).toBeVisible();
+    expect(within(block).getByText("Cuentas por borrar")).toBeVisible();
     expect(within(block).getAllByRole("link", { name: "Ver todos" })).toHaveLength(1);
     expect(within(block).getByRole("link", { name: "Ver todos" })).toHaveAttribute("href", "/org/usuarios?state=Expired");
     expect(within(block).getAllByText(/^Invitada \d+$/)).toHaveLength(10);
@@ -165,8 +165,8 @@ describe("BusinessHomePage", () => {
     expect(invitation).toHaveTextContent("25/09/2026");
     expect(within(invitation).getByRole("link", { name: "Reenviar" })).toHaveAttribute("href", "/org/usuarios?state=Expired");
     const deletion = within(toResolve).getByText("Diego Ríos").closest("tr")!;
-    expect(deletion).not.toHaveTextContent("Se elimina el 27/10/2026");
-    expect(deletion).toHaveTextContent("Baja pedida");
+    expect(deletion).not.toHaveTextContent("Se borra el 27/10/2026");
+    expect(deletion).toHaveTextContent("Por borrar");
     expect(within(deletion).getByRole("link", { name: "Ver" })).toHaveAttribute("href", "/org/usuarios/member-diego");
     const domain = within(toResolve).getByText("Dominio de correo").closest("tr")!;
     expect(domain).not.toHaveTextContent("Configuración");

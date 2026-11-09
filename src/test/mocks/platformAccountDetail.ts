@@ -5,7 +5,7 @@ type Event = ApiSchemas["PlatformAuditEventResponse"];
 const personLastSignInAtUtc = "2026-09-27T19:40:00Z";
 const operatorInvitedAtUtc = "2026-08-12T11:40:00Z";
 const invitationCreatedAtUtc = "2026-09-27T20:35:00Z";
-const states: Record<string, Detail["state"]> = { Activa: "Active", Suspendida: "Suspended", "Necesita recuperación": "NeedsRecovery", "Baja pedida": "PendingDeletion", "Baja iniciada por la plataforma": "PendingDeletion", Eliminada: "Deleted" };
+const states: Record<string, Detail["state"]> = { Activa: "Active", Suspendida: "Suspended", "Necesita recuperación": "NeedsRecovery", "Por borrar": "PendingDeletion", "Por borrar a pedido de la plataforma": "PendingDeletion", Borrada: "Deleted" };
 const method = (id: string, maskedValue: string, verifiedAtUtc: string, isPrimary = false, managedByOrganizationName: string | null = null): Detail["loginMethods"][number] =>
   ({ id, type: "Email", maskedValue, isPrimary, verifiedAtUtc, managedByOrganizationName, canSignIn: true });
 const membership = (tenantId: string, name: string, joinedAtUtc: string, roleName: string | null = null): Detail["organizations"][number] =>
@@ -34,7 +34,7 @@ export function platformAccountDetailFixture({ state = "Activa", kind = "Persona
     loginMethods: [{ ...method("method-kappa", "pa•••@kappa.ejemplo.com", "2026-03-15T12:30:00Z", true, "Kappa S.R.L."), canSignIn: false }],
     organizations: [{ ...membership("tenant-kappa", "Kappa S.R.L.", "2026-03-15T12:30:00Z", "Dueño"), status: "Inactive", endedAtUtc: "2026-09-20T13:00:00Z" }], soleOwnerOrganizations: [] };
   if (base.state === "PendingDeletion") return { ...base, id: "account-diego", displayName: "Diego Ríos", primaryEmail: "diego.rios@delta.ejemplo.com", createdAtUtc: "2026-02-18T13:05:00Z", lastSignInAtUtc: "2026-09-27T12:12:00Z",
-    deletion: { requestedAtUtc: state === "Baja iniciada por la plataforma" ? "2026-09-27T13:30:00Z" : "2026-09-27T12:15:00Z", scheduledForUtc: "2026-10-27T12:15:00Z", requestedByPlatform: state === "Baja iniciada por la plataforma" },
+    deletion: { requestedAtUtc: state === "Por borrar a pedido de la plataforma" ? "2026-09-27T13:30:00Z" : "2026-09-27T12:15:00Z", scheduledForUtc: "2026-10-27T12:15:00Z", requestedByPlatform: state === "Por borrar a pedido de la plataforma" },
     loginMethods: [method("method-diego", "di•••@delta.ejemplo.com", "2026-02-18T13:05:00Z", true, "Grupo Delta")], organizations: [membership("tenant-1", "Grupo Delta", "2026-02-18T13:05:00Z")], soleOwnerOrganizations: [] };
   if (base.state === "Deleted") return { ...base, id: "account-deleted", displayName: "Cuenta eliminada", primaryEmail: null, createdAtUtc: "2026-03-04T19:22:00Z", deletedAtUtc: "2026-09-11T06:00:00Z",
     lastSignInAtUtc: "2026-08-12T21:36:00Z", hasPersonalSpace: false, loginMethods: [], organizations: [], soleOwnerOrganizations: [] };

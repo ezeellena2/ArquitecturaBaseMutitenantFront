@@ -32,7 +32,7 @@ export const businessDefinitions = [
   definition("18", "La misma persona en B2C", "Entrar a Personal y llamar APIs empresariales", "/", "Token consumer, sin Crear empresa, y las APIs Business responden 403.", ["BACK-ID-020", "BACK-HT-006"]),
   definition("19", "Dueño A", "Reenviar una invitación pendiente propia", "/org/usuarios/:id", "Encola otro correo real, renueva la invitación y el enlace anterior responde inválido."),
   definition("20", "Dueño A", "Revocar la invitación reenviada", "/org/usuarios/:id", "La UI revoca y el nuevo enlace también queda inválido; no hay acceso activo.", ["BACK-OR-013"]),
-  definition("21", "Dueño A", "Inactivar su empresa", "/org/empresas/:id", "El PUT versionado y GET confirman Inactive; escritorio muestra Inactiva y móvil ofrece Activar en Más acciones. Conserva la identidad y los datos de la empresa."),
+  definition("21", "Dueño A", "Inactivar su empresa", "/org/empresas/:id", "El PUT versionado y GET confirman Inactive; escritorio muestra De baja y móvil ofrece Reactivar en Más acciones. Conserva la identidad y los datos de la empresa."),
   definition("22", "Dueño A", "Reactivar su empresa", "/org/empresas/:id", "La empresa recupera el estado activo con los mismos miembros.", ["BACK-EM-005"]),
   definition("23", "Dueño A", "Deshabilitar una membresía sin borrar sus roles", "/org/usuarios/:id", "Un guardado versionado cambia a Deshabilitado y conserva el rol de lectura."),
   definition("24", "Dueño A", "Rehabilitar la membresía", "/org/usuarios/:id", "Vuelve a Activo con las mismas asignaciones guardadas."),
@@ -308,7 +308,7 @@ async function openInvalidInvitation(h, page, token) {
 
 export async function changeMemberState(h, page, memberId, active, status = 200) {
   await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href);
-  const label = active ? "Activo" : "Deshabilitado";
+  const label = active ? "Activo" : "De baja";
   if (h.width === 390) {
     await page.getByRole("region", { name: "Acceso a la organización", exact: true }).getByRole("button", { name: /^Estado/ }).click();
     const sheet = page.getByRole("dialog", { name: "Estado", exact: true });
@@ -321,7 +321,7 @@ export async function changeMemberState(h, page, memberId, active, status = 200)
   const save = page.getByRole("button", { name: "Guardar cambios", exact: true });
   if (active) return clickForResponse(page, save, `/api/users/${memberId}`, "PUT", status);
   await save.click();
-  return clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Deshabilitar y guardar", exact: true }), `/api/users/${memberId}`, "PUT", status);
+  return clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Dar de baja y guardar", exact: true }), `/api/users/${memberId}`, "PUT", status);
 }
 
 export async function checkMemberStateChange(h, page, memberId, active) {
@@ -334,7 +334,7 @@ export async function checkMemberStateChange(h, page, memberId, active) {
   assert.equal(after.userId, before.userId); assert.equal(after.memberId, before.memberId);
   assert.deepEqual(after.roles, before.roles, "Cambiar el estado no cambia los roles.");
   assert.deepEqual(after.companies, before.companies, "Cambiar el estado no cambia las asignaciones de empresa.");
-  await page.getByText(active ? "Activo" : "Deshabilitado", { exact: true }).first().waitFor();
+  await page.getByText(active ? "Activo" : "De baja", { exact: true }).first().waitFor();
   return { before, after };
 }
 
@@ -343,9 +343,9 @@ export async function assertCompanyStateVisible(h, page, status) {
   assert.ok(["Active", "Inactive"].includes(status), "El estado debe pertenecer al contrato de empresas.");
   if (h.width === 390) {
     const opened = await openBusinessBarMenu(page, { activation: "Enter" });
-    await opened.menu.getByRole("menuitem", { name: status === "Inactive" ? "Activar" : "Inactivar", exact: true }).waitFor();
+    await opened.menu.getByRole("menuitem", { name: status === "Inactive" ? "Reactivar" : "Dar de baja", exact: true }).waitFor();
     return opened;
-  } else await page.getByText(status === "Inactive" ? "Inactiva" : "Activa", { exact: true }).first().waitFor();
+  } else await page.getByText(status === "Inactive" ? "De baja" : "Activa", { exact: true }).first().waitFor();
 }
 
 export async function checkSelfDisable(h, page, personId) {
@@ -501,14 +501,14 @@ export async function runBusinessAccessRepairCases(h) {
       await clickForResponse(page, dialog.getByRole("button", { name: "Guardar cambios", exact: true }), `/api/companies/${company.id}/members/${partial.memberId}/roles`, "PUT");
       const assigned = await read(h, page, `/api/roles/${companyRole.id}`); assert.equal(assigned.userCount, 1); await page.goto(new URL(`/org/roles/${companyRole.id}`, h.base).href);
       assert.equal(await page.getByRole("combobox", { name: "Vale en", exact: true }).isDisabled(), true); await filterRolesByCompany(h, page, company);
-      await page.getByRole("button", { name: `Acciones para ${companyRole.name}`, exact: true }).click(); assert.equal(await page.getByRole("menuitem", { name: "Inactivar", exact: true }).getAttribute("aria-disabled"), "true");
+      await page.getByRole("button", { name: `Acciones para ${companyRole.name}`, exact: true }).click(); assert.equal(await page.getByRole("menuitem", { name: "Dar de baja", exact: true }).getAttribute("aria-disabled"), "true");
       await page.getByText("Lo tiene 1 usuario. Quitáselo primero.", { exact: true }).waitFor(); await requireProblem(await h.api(page, `/api/roles/${companyRole.id}`, { method: "DELETE", data: { version: assigned.version } }), 409, "Roles.Role.HasUsers");
       return "Rol propio asignado por UI; alcance bloqueado, Inactivar apagado con motivo y DELETE409 HasUsers.";
     });
     await run("28", [], async () => {
       await as(owner.email); const disposable = await createReadRole(h, page, `Sin asignar reparación ${tag}`, "Ver miembros", { companyName: company.name, area: "Miembros" }); await filterRolesByCompany(h, page, company);
-      await page.getByRole("button", { name: `Acciones para ${disposable.name}`, exact: true }).click(); await page.getByRole("menuitem", { name: "Inactivar", exact: true }).click();
-      await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/roles/${disposable.id}`, "DELETE", 204);
+      await page.getByRole("button", { name: `Acciones para ${disposable.name}`, exact: true }).click(); await page.getByRole("menuitem", { name: "Dar de baja", exact: true }).click();
+      await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Dar de baja", exact: true }), `/api/roles/${disposable.id}`, "DELETE", 204);
       await requireProblem(await h.api(page, `/api/roles/${disposable.id}`), 404, "Roles.Role.NotFound"); return "Rol propio sin personas inactivado por UI204 y lectura404.";
     });
     await run("31", ["24"], async () => { await as(partialEmail); await requireProblem(await h.api(page, "/api/organization/audit"), 403); await requireProblem(await h.api(page, "/api/organization/audit/actors/paged"), 403); await page.goto(new URL("/org/auditoria", h.base).href); await page.getByRole("heading", { name: "No tenés permiso para ver esta página", exact: true }).waitFor(); return "Miembro propio sin audit.read no obtuvo eventos, actores ni pantalla privada."; });
@@ -891,7 +891,7 @@ export async function runBusinessCases(h) {
     assert.equal(await page.getByRole("link", { name: "Crear rol", exact: true }).count(), 0);
     await page.getByRole("button", { name: `Acciones para ${roleB.name}`, exact: true }).click();
     await page.getByRole("menuitem", { name: "Ver permisos", exact: true }).waitFor();
-    for (const name of ["Editar", "Inactivar"]) assert.equal(await page.getByRole("menuitem", { name, exact: true }).count(), 0);
+    for (const name of ["Editar", "Dar de baja"]) assert.equal(await page.getByRole("menuitem", { name, exact: true }).count(), 0);
     await page.keyboard.press("Escape");
     await page.goto(new URL(`/org/roles/${roleB.id}`, h.base).href);
     await page.getByRole("heading", { name: roleB.name, exact: true }).waitFor();
@@ -961,8 +961,8 @@ export async function runBusinessCases(h) {
     await as(a.email);
     membersBeforeDeactivation = await read(h, page, `/api/companies/${companyA.id}/members/paged?page=1&pageSize=100`);
     await page.goto(new URL(`/org/empresas/${companyA.id}`, h.base).href);
-    await chooseBusinessBarAction(page, "Inactivar");
-    await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/companies/${companyA.id}/status`, "PUT");
+    await chooseBusinessBarAction(page, "Dar de baja");
+    await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Dar de baja", exact: true }), `/api/companies/${companyA.id}/status`, "PUT");
     const detail = await read(h, page, `/api/companies/${companyA.id}`); assert.equal(detail.status, "Inactive");
     await assertCompanyStateVisible(h, page, "Inactive");
     return `La empresa quedó Inactive por PUT y GET; ${h.width === 390 ? "el menú móvil ofrece Activar" : "la ficha muestra Inactiva"}, con la misma identidad y datos.`;
@@ -973,7 +973,7 @@ export async function runBusinessCases(h) {
     assert.equal(inactive.status, "Inactive", "La restauración comprueba el estado real aunque el caso21 haya fallado en su UI.");
     await page.goto(new URL(`/org/empresas/${companyA.id}`, h.base).href);
     const opened = await openBusinessBarMenu(page);
-    await clickForResponse(page, opened.menu.getByRole("menuitem", { name: "Activar", exact: true }), `/api/companies/${companyA.id}/status`, "PUT");
+    await clickForResponse(page, opened.menu.getByRole("menuitem", { name: "Reactivar", exact: true }), `/api/companies/${companyA.id}/status`, "PUT");
     await opened.waitForClosed();
     const detail = await read(h, page, `/api/companies/${companyA.id}`); assert.equal(detail.status, "Active");
     const after = await read(h, page, `/api/companies/${companyA.id}/members/paged?page=1&pageSize=100`);
@@ -1033,7 +1033,7 @@ export async function runBusinessCases(h) {
     assert.equal(await page.getByRole("combobox", { name: "Vale en", exact: true }).isDisabled(), true);
     await filterRolesByCompany(h, page, companyA);
     await page.getByRole("button", { name: `Acciones para ${companyRole.name}`, exact: true }).click();
-    const inactivate = page.getByRole("menuitem", { name: "Inactivar", exact: true });
+    const inactivate = page.getByRole("menuitem", { name: "Dar de baja", exact: true });
     assert.equal(await inactivate.getAttribute("aria-disabled"), "true");
     await page.getByText("Lo tiene 1 usuario. Quitáselo primero.", { exact: true }).waitFor();
     await requireProblem(await h.api(page, `/api/roles/${companyRole.id}`, { method: "DELETE", data: { version: assigned.version } }), 409, "Roles.Role.HasUsers");
@@ -1043,8 +1043,8 @@ export async function runBusinessCases(h) {
     const disposable = await createReadRole(h, page, `Sin asignar ${tag}`, "Ver miembros", { companyName: a.companyName, area: "Miembros" });
     await filterRolesByCompany(h, page, companyA);
     await page.getByRole("button", { name: `Acciones para ${disposable.name}`, exact: true }).click();
-    await page.getByRole("menuitem", { name: "Inactivar", exact: true }).click();
-    await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/roles/${disposable.id}`, "DELETE", 204);
+    await page.getByRole("menuitem", { name: "Dar de baja", exact: true }).click();
+    await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Dar de baja", exact: true }), `/api/roles/${disposable.id}`, "DELETE", 204);
     await requireProblem(await h.api(page, `/api/roles/${disposable.id}`), 404, "Roles.Role.NotFound");
     return "El rol sin personas se inactivó por UI y dejó de ser un recurso accesible.";
   });
@@ -1121,7 +1121,7 @@ export async function runBusinessCases(h) {
     await dialog.getByText(problem.detail, { exact: true }).waitFor();
     await dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
     await page.getByRole("button", { name: `Acciones para ${sole.displayName}`, exact: true }).click();
-    await page.getByRole("menuitem", { name: "Quitar de la empresa", exact: true }).click();
+    await page.getByRole("menuitem", { name: "Dar de baja", exact: true }).click();
     const status = await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Quitar", exact: true }), `/api/companies/${companyB.id}/members/${sole.memberId}/status`, "PUT", 409);
     const rejected = await requireProblem(status, 409, "Companies.Membership.LastCompanyAdmin");
     await page.getByText(rejected.detail, { exact: true }).first().waitFor();

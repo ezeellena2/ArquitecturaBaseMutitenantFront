@@ -94,11 +94,11 @@ function versionedApi(initial: typeof member) {
 }
 
 async function addCompanyWithConflict(user: ReturnType<typeof userEvent.setup>) {
-  await user.click(await screen.findByRole("button", { name: "Sumar empresa" }));
-  const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
+  await user.click(await screen.findByRole("button", { name: "Agregar empresa" }));
+  const dialog = await screen.findByRole("dialog", { name: "Agregar empresa" });
   await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
   await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
-  await user.click(within(dialog).getByRole("button", { name: "Sumar" }));
+  await user.click(within(dialog).getByRole("button", { name: "Agregar" }));
   await within(dialog).findByRole("alert");
   return dialog;
 }
@@ -114,7 +114,7 @@ beforeEach(async () => {
 
 describe("UserDetailPage (tablero Usuario)", () => {
   // Tablero M-Usuario: en el teléfono el correo va debajo del nombre; el estado y los roles son filas con › que abren
-  // una hoja para elegir, y las empresas, una tarjeta con «Sumar empresa» en texto.
+  // una hoja para elegir, y las empresas, una tarjeta con «Agregar empresa» en texto.
   it("en el teléfono el estado y los roles se eligen en una hoja", async () => {
     const restore = asPhone();
     try {
@@ -137,11 +137,11 @@ describe("UserDetailPage (tablero Usuario)", () => {
       expect(active).toHaveClass("sr-only");
       expect(active.closest("label")).toHaveClass("min-h-13", "text-[1rem]", "font-medium", "text-[var(--marca-tx)]");
       expect(active.closest("label")!.querySelector("[data-slot='tilde']")).not.toBeNull();
-      expect(within(stateSheet).getByRole("radio", { name: "Deshabilitado" }).closest("label")!.querySelector("[data-slot='tilde']")).toBeNull();
+      expect(within(stateSheet).getByRole("radio", { name: "De baja" }).closest("label")!.querySelector("[data-slot='tilde']")).toBeNull();
       expect(stateSheet).not.toHaveTextContent("Entra a la organización");
-      await user.click(within(stateSheet).getByRole("radio", { name: "Deshabilitado" }));
+      await user.click(within(stateSheet).getByRole("radio", { name: "De baja" }));
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-      expect(within(access).getByRole("button", { name: /Estado/ })).toHaveTextContent("Deshabilitado");
+      expect(within(access).getByRole("button", { name: /Estado/ })).toHaveTextContent("De baja");
       // La barra nunca dice «Cambios sin guardar» (base de la 12): sigue con el correo.
       expect(bar).not.toHaveTextContent("Cambios sin guardar");
       expect(bar).toHaveTextContent("lucia@example.com");
@@ -164,7 +164,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
       expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
 
       const companies = screen.getByRole("region", { name: "Empresas" });
-      expect(within(companies).getByRole("button", { name: "Sumar empresa" })).toHaveClass("text-[var(--marca-tx)]");
+      expect(within(companies).getByRole("button", { name: "Agregar empresa" })).toHaveClass("text-[var(--marca-tx)]");
       expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
     } finally {
       restore();
@@ -182,7 +182,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(screen.getByRole("button", { name: "Más acciones" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Descartar cambios" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
-    expect(screen.queryByRole("button", { name: "Deshabilitar" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Dar de baja" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Quitar de la organización" })).not.toBeInTheDocument();
     const access = screen.getByRole("region", { name: "Acceso a la organización" });
     expect(within(access).getByRole("combobox", { name: "Estado" })).toHaveTextContent("Activo");
@@ -194,7 +194,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
   }, 10_000);
 
   // Tablero Usuario (el desplegable de roles abierto): cada rol con su casilla y, debajo, su descripción; también los
-  // roles de una empresa en «Sumar empresa».
+  // roles de una empresa en «Agregar empresa».
   it("el desplegable de roles de la compu muestra la descripción de cada rol", async () => {
     const user = userEvent.setup();
     api(member);
@@ -206,8 +206,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(screen.getByRole("menuitemcheckbox", { name: "Dueño" })).not.toHaveAccessibleDescription();
     await user.keyboard("{Escape}");
 
-    await user.click(screen.getByRole("button", { name: "Sumar empresa" }));
-    const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
+    await user.click(screen.getByRole("button", { name: "Agregar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Agregar empresa" });
     await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
     await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
     await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
@@ -257,13 +257,13 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
 
     await open(user, screen.getByRole("combobox", { name: "Estado" }));
-    await user.click(await screen.findByRole("option", { name: /Deshabilitado/ }));
-    expect(subline("Lucía Fernández")).toHaveTextContent(/^Deshabilitado·lucia@example\.com/);
+    await user.click(await screen.findByRole("option", { name: /De baja/ }));
+    expect(subline("Lucía Fernández")).toHaveTextContent(/^De baja·lucia@example\.com/);
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
-    const dialog = await screen.findByRole("dialog", { name: "¿Deshabilitar a Lucía Fernández?" });
+    const dialog = await screen.findByRole("dialog", { name: "¿Dar de baja a Lucía Fernández?" });
     expect(dialog).toHaveTextContent("Deja de entrar a Empresa A y a sus empresas. Su cuenta y su perfil personal siguen funcionando.");
-    await user.click(within(dialog).getByRole("button", { name: "Deshabilitar y guardar" }));
+    await user.click(within(dialog).getByRole("button", { name: "Dar de baja y guardar" }));
     await waitFor(() => expect(put).toEqual([{ isActive: false, roleIds: ["role-owner"], companies: [], version: 2 }]));
     expect(await screen.findByText("Guardamos los cambios de Lucía Fernández.")).toBeVisible();
   });
@@ -275,7 +275,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
 
     await open(user, screen.getByRole("combobox", { name: "Estado" }));
-    await user.click(await screen.findByRole("option", { name: /Deshabilitado/ }));
+    await user.click(await screen.findByRole("option", { name: /De baja/ }));
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
     await user.click(screen.getByRole("button", { name: "Descartar cambios" }));
     expect(screen.getByRole("combobox", { name: "Estado" })).toHaveTextContent("Activo");
@@ -339,7 +339,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(screen.queryByRole("button", { name: "Descartar cambios" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Más acciones" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Roles de la organización" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Sumar empresa" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Agregar empresa" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Acciones de Delta S.A." })).not.toBeInTheDocument();
   });
 
@@ -351,9 +351,9 @@ describe("UserDetailPage (tablero Usuario)", () => {
     api(member, writes);
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
 
-    await user.click(await screen.findByRole("button", { name: "Sumar empresa" }));
-    const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
-    const add = within(dialog).getByRole("button", { name: "Sumar" });
+    await user.click(await screen.findByRole("button", { name: "Agregar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Agregar empresa" });
+    const add = within(dialog).getByRole("button", { name: "Agregar" });
     expect(add).toBeEnabled();
     await user.click(add);
 
@@ -376,8 +376,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
     expect(screen.getByText("No está en ninguna empresa.")).toBeVisible();
 
-    await user.click(await screen.findByRole("button", { name: "Sumar empresa" }));
-    const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
+    await user.click(await screen.findByRole("button", { name: "Agregar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Agregar empresa" });
     // Tablero Usuario (v100): «Empresa» es obligatoria, con asterisco; «Roles en la empresa» es opcional, sin asterisco,
     // y aparece al elegir la empresa. El cuerpo es el de los diálogos (en el teléfono, el de la hoja de M-Usuario-Empresa).
     const labels = () => [...dialog.querySelectorAll("label")].map((label) => label.textContent);
@@ -392,7 +392,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
     await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
     await user.keyboard("{Escape}");
-    await user.click(within(dialog).getByRole("button", { name: "Sumar" }));
+    await user.click(within(dialog).getByRole("button", { name: "Agregar" }));
 
     await waitFor(() => expect(put).toEqual([{ roleIds: ["role-owner"], companies: [{ companyId: company.id, roleIds: ["role-company-manager"] }], version: 2 }]));
     expect(await screen.findByText("Sumamos a Lucía Fernández a Delta S.A.")).toBeVisible();
@@ -479,7 +479,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
   });
 
   // «Criterio · Botones» (6d-4a): «Roles en …» de una empresa edita y su «Guardar» se apaga sin cambios; sacar un rol y
-  // volver a ponerlo no cuenta como un cambio. «Sumar» de «Sumar empresa» crea y no se apaga.
+  // volver a ponerlo no cuenta como un cambio. «Sumar» de «Agregar empresa» crea y no se apaga.
   it("«Roles en …» de una empresa: «Guardar» apagado sin cambios; sacar un rol y volver a ponerlo no cuenta", async () => {
     const user = userEvent.setup();
     const manager = { ...ownerRole, id: "role-company-manager", name: "Administrador", isSystemRole: false };
@@ -650,7 +650,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     const dialog = await addCompanyWithConflict(user);
     const before = reads.user;
     await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
-    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Sumar empresa" })).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Agregar empresa" })).not.toBeInTheDocument());
     await waitFor(() => expect(reads.user).toBeGreaterThan(before));
   });
 
@@ -666,7 +666,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     const dialog = await addCompanyWithConflict(user);
     const before = reads.user;
     await user.keyboard("{Escape}");
-    await waitFor(() => expect(within(document.body).queryByRole("dialog", { name: "Sumar empresa" })).not.toBeInTheDocument());
+    await waitFor(() => expect(within(document.body).queryByRole("dialog", { name: "Agregar empresa" })).not.toBeInTheDocument());
     expect(dialog).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
     expect(reads.user).toBe(before);
@@ -682,13 +682,13 @@ describe("UserDetailPage (tablero Usuario)", () => {
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
 
-    await user.click(await screen.findByRole("button", { name: "Sumar empresa" }));
-    const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
+    await user.click(await screen.findByRole("button", { name: "Agregar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Agregar empresa" });
     // «Criterio · Diálogos»: dos campos, el diálogo chico de 420 px.
     expect(dialog).toHaveClass("md:max-w-105");
     await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
     await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
-    await user.click(within(dialog).getByRole("button", { name: "Sumar" }));
+    await user.click(within(dialog).getByRole("button", { name: "Agregar" }));
 
     const alert = await within(dialog).findByRole("alert");
     expect(alert).toHaveTextContent("Otra persona cambió esto. Revisá la versión más reciente antes de guardar.");
@@ -697,7 +697,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
 
     await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
-    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Sumar empresa" })).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Agregar empresa" })).not.toBeInTheDocument());
     expect(screen.queryAllByRole("alert", { hidden: true })).toHaveLength(0);
   });
 
@@ -712,9 +712,9 @@ describe("UserDetailPage (tablero Usuario)", () => {
     backend.current = { ...member, roles: [ownerRole, { ...ownerRole, id: "role-support", name: "Soporte", isSystemRole: false }], version: 3 };
     await act(() => queryClient.invalidateQueries({ queryKey: userQueryKey("member-1") }));
     await open(user, screen.getByRole("combobox", { name: "Estado" }));
-    await user.click(await screen.findByRole("option", { name: /Deshabilitado/ }));
+    await user.click(await screen.findByRole("option", { name: /De baja/ }));
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
-    await user.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Deshabilitar y guardar" }));
+    await user.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Dar de baja y guardar" }));
 
     expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
     expect(backend.writes).toEqual([{ isActive: false, roleIds: ["role-owner"], companies: [], version: 2 }]);
@@ -756,11 +756,11 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
     await user.keyboard("{Escape}");
 
-    await user.click(screen.getByRole("button", { name: "Sumar empresa" }));
-    const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
+    await user.click(screen.getByRole("button", { name: "Agregar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Agregar empresa" });
     await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
     await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
-    await user.click(within(dialog).getByRole("button", { name: "Sumar" }));
+    await user.click(within(dialog).getByRole("button", { name: "Agregar" }));
     expect(await screen.findByText("Sumamos a Lucía Fernández a Delta S.A.")).toBeVisible();
     await waitFor(() => expect(within(screen.getByRole("region", { name: "Empresas" })).getByText("Delta S.A.")).toBeVisible());
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
@@ -789,9 +789,9 @@ describe("UserDetailPage (tablero Usuario)", () => {
 
     backend.afterWrite = undefined;
     await open(user, screen.getByRole("combobox", { name: "Estado" }));
-    await user.click(await screen.findByRole("option", { name: /Deshabilitado/ }));
+    await user.click(await screen.findByRole("option", { name: /De baja/ }));
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
-    await user.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Deshabilitar y guardar" }));
+    await user.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Dar de baja y guardar" }));
 
     expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
     expect(backend.writes.map((write) => write.version)).toEqual([2, 3]);

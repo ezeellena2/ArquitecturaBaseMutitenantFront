@@ -42,8 +42,8 @@
       "InvitationExpired": "Invitación vencida",
       "Suspended": "Suspendidas",
       "NeedsRecovery": "Necesitan recuperación",
-      "PendingDeletion": "Baja pedida",
-      "Deleted": "Eliminadas"
+      "PendingDeletion": "Por borrar",
+      "Deleted": "Borradas"
     }
   },
   "empty": {
@@ -78,7 +78,7 @@
     },
     "platform.accounts.manage": {
       "name": "Administrar cuentas",
-      "description": "Suspender, cerrar sesiones y dar de baja."
+      "description": "Suspender, cerrar sesiones y borrar."
     },
     "platform.recoveries.manage": {
       "name": "Recuperaciones",
@@ -102,7 +102,7 @@
     }
   },
   "errors": {
-    "alreadyPending": "Esa cuenta ya tiene la baja pedida."
+    "alreadyPending": "Esa cuenta ya está por borrarse."
   },
   "actions": {
     "resend": "Reenviar invitación",
@@ -110,7 +110,7 @@
     "revoke-sessions": "Cerrar sus sesiones",
     "suspend": "Suspender",
     "reactivate": "Reactivar",
-    "deletion": "Dar de baja"
+    "deletion": "Borrar la cuenta"
   },
   "confirm": {
     "revoke": {
@@ -138,10 +138,10 @@
       "pending": "Reactivando…"
     },
     "deletion": {
-      "title": "¿Dar de baja la cuenta de {{name}}?",
-      "description": "Se cierran sus sesiones y le avisamos por todos sus métodos de ingreso. Tiene 30 días para cancelar la baja ingresando; después se elimina la cuenta. La plataforma no puede cancelarla.",
-      "button": "Dar de baja",
-      "pending": "Dando de baja…",
+      "title": "¿Borrar la cuenta de {{name}}?",
+      "description": "Se cierran sus sesiones y le avisamos por todos sus métodos de ingreso. Tiene 30 días para cancelar el borrado ingresando; después se borra la cuenta. La plataforma no puede cancelarla.",
+      "button": "Borrar la cuenta",
+      "pending": "Borrando…",
       "soleOwner": "Es el único Dueño de {{organization}}. Primero la organización tiene que sumar otro Dueño, o la plataforma tiene que cerrarla."
     }
   },
@@ -152,8 +152,8 @@
     "suspend": "Suspendimos la cuenta de {{name}}.",
     "reactivate": "Reactivamos la cuenta de {{name}}.",
     "revoke-sessions": "Cerramos las sesiones de {{name}}.",
-    "deletion": "Dimos de baja la cuenta de {{name}}. Se elimina el {{date}}.",
-    "deletedWithoutDate": "Dimos de baja la cuenta de {{name}}."
+    "deletion": "Pedimos borrar la cuenta de {{name}}. Se borra el {{date}}.",
+    "deletedWithoutDate": "Pedimos borrar la cuenta de {{name}}."
   },
   "detail": {
     "title": "Cuenta",
@@ -187,8 +187,8 @@
     "created": "Alta el",
     "lastSignIn": "Último ingreso",
     "lastSignInInline": "último ingreso",
-    "deleted": "Eliminada el",
-    "deletedInline": "eliminada el",
+    "deleted": "Borrada el",
+    "deletedInline": "borrada el",
     "never": "Último ingreso: nunca",
     "expires": "vence el",
     "expired": "venció el",
@@ -203,7 +203,7 @@
     },
     "deletesOn": "Se borra el",
     "reason": "Motivo:",
-    "scheduled": "Se elimina el",
+    "scheduled": "Se borra el",
     "recovery": "Necesita recuperación.",
     "recoveries": "Ver recuperaciones",
     "historyColumns": {

@@ -22,7 +22,7 @@
   },
   "statusFilters": {
     "Active": "Activas",
-    "Inactive": "Inactivas"
+    "Inactive": "Dadas de baja"
   },
   "empty": {
     "all": "Todavía no hay empresas",
@@ -45,42 +45,42 @@
   "actions": {
     "view": "Ver ficha",
     "edit": "Editar",
-    "deactivate": "Inactivar",
-    "activate": "Activar",
+    "deactivate": "Dar de baja",
+    "activate": "Reactivar",
     "more": "Más acciones",
     "addMember": "Agregar miembro",
     "addingMember": "Agregando…",
     "changeRoles": "Cambiar roles",
     "viewUser": "Ver usuario",
-    "removeMember": "Quitar de la empresa",
-    "restoreMember": "Volver a sumar",
+    "removeMember": "Dar de baja",
+    "restoreMember": "Reactivar",
     "editCompany": "Editar empresa",
     "resendInvitation": "Reenviar invitación",
     "revokeInvitation": "Revocar invitación"
   },
   "confirm": {
-    "deactivate": "¿Inactivar {{name}}?",
-    "deactivateDescription": "Nadie entra a esta empresa mientras esté inactiva. Sus datos y sus miembros se conservan.",
-    "removeMember": "¿Quitar a {{name}} de la empresa?",
+    "deactivate": "¿Dar de baja {{name}}?",
+    "deactivateDescription": "Nadie entra a esta empresa mientras esté de baja. Sus datos y sus miembros se conservan.",
+    "removeMember": "¿Dar de baja a {{name}} en la empresa?",
     "removeMemberDescription": "Deja de entrar a {{company}} y pierde sus roles acá. Sigue en la organización y en sus otras empresas.",
-    "deactivateConfirm": "Inactivar",
-    "removeMemberConfirm": "Quitar",
+    "deactivateConfirm": "Dar de baja",
+    "removeMemberConfirm": "Dar de baja",
     "revokeInvitation": "¿Revocar la invitación a {{email}}?",
     "revokeInvitationDescription": "El enlace deja de funcionar.",
     "revokeInvitationConfirm": "Revocar",
-    "deactivating": "Inactivando…",
-    "removingMember": "Quitando…",
+    "deactivating": "Dando de baja…",
+    "removingMember": "Dando de baja…",
     "revokingInvitation": "Revocando…"
   },
   "messages": {
     "created": "Creamos {{name}}. Quedaste con el rol Administrador.",
     "updated": "Guardamos los cambios de {{name}}.",
-    "deactivated": "Inactivamos {{name}}.",
-    "activated": "Activamos {{name}}.",
+    "deactivated": "Dimos de baja {{name}}.",
+    "activated": "Reactivamos {{name}}.",
     "memberAdded": "Agregamos a {{name}} a la empresa.",
     "rolesUpdated": "Guardamos los roles de {{name}}.",
-    "memberRemoved": "Quitamos a {{name}} de la empresa.",
-    "memberRestored": "Volvimos a sumar a {{name}}. Dale los roles de nuevo.",
+    "memberRemoved": "Dimos de baja a {{name}} en la empresa.",
+    "memberRestored": "Reactivamos a {{name}}. Dale los roles de nuevo.",
     "detailUpdated": "Guardamos los cambios.",
     "invitationResent": "Reenviamos la invitación a {{email}}.",
     "invitationRevoked": "Revocamos la invitación a {{email}}."
@@ -118,8 +118,8 @@
       "states": {
         "Expired": "Vencidas",
         "Active": "Activos",
-        "Inactive": "Inactivos",
-        "PendingDeletion": "Baja pedida"
+        "Inactive": "Dados de baja",
+        "PendingDeletion": "Por borrar"
       }
     },
     "empty": {

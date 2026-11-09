@@ -386,7 +386,7 @@ it.each(["consumer", "business"] as const)("cancelar baja tras OTP fijo %s inici
   show(access === "consumer" ? "/login" : "/login/empresa", { phone });
   expect(await screen.findByRole("textbox", { name: "Tu número de WhatsApp" })).toHaveValue(phone.number);
   fireEvent.click(screen.getByRole("button", { name: "Enviar código" })); await verify();
-  const cancel = await screen.findByRole("button", { name: "Cancelar la baja y entrar" });
+  const cancel = await screen.findByRole("button", { name: "Cancelar el borrado y entrar" });
   expect(signinRedirect).not.toHaveBeenCalled(); fireEvent.click(cancel);
   await waitFor(() => expect(signinRedirect).toHaveBeenCalledExactlyOnceWith({ extraQueryParams: { access }, state: { returnTo: returnUrl } }));
   expect(completeLogin).not.toHaveBeenCalled();

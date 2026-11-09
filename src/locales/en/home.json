@@ -62,9 +62,9 @@
       "action": "Resend"
     },
     "deletionRequested": {
-      "group": "Deletion requests",
+      "group": "Accounts to be deleted",
       "detail": "Deleted on {{date}}",
-      "state": "Deletion requested",
+      "state": "To be deleted",
       "action": "View"
     },
     "domainUnverified": {

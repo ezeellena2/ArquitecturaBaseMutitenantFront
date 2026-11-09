@@ -20,10 +20,10 @@
   "states": {
     "all": "All statuses",
     "Active": "Active",
-    "PendingDeletion": "Deletion requested",
+    "PendingDeletion": "To be deleted",
     "Invited": "Invitation pending",
     "Expired": "Invitation expired",
-    "Inactive": "Disabled"
+    "Inactive": "Deactivated"
   },
   "filters": {
     "label": "Filter users",
@@ -39,8 +39,8 @@
       "Active": "Active",
       "Invited": "Pending invitation",
       "Expired": "Expired invitation",
-      "Inactive": "Disabled",
-      "PendingDeletion": "Deletion requested"
+      "Inactive": "Deactivated",
+      "PendingDeletion": "To be deleted"
     }
   },
   "empty": {
@@ -67,8 +67,8 @@
   "actions": {
     "view": "Edit",
     "resend": "Resend invitation",
-    "enable": "Enable",
-    "disable": "Disable",
+    "enable": "Reactivate",
+    "disable": "Deactivate",
     "revoke": "Revoke invitation",
     "remove": "Remove from organization"
   },
@@ -76,15 +76,15 @@
   "confirm": {
     "revoke": "Revoke the invitation to {{email}}?",
     "revokeDescription": "The link stops working. You can invite them again whenever you want.",
-    "disable": "Disable {{name}}?",
+    "disable": "Deactivate {{name}}?",
     "disableDescription": "They can no longer enter {{organization}} or its companies. Their account and personal profile keep working.",
     "remove": "Remove {{name}} from {{organization}}?",
     "removeDescription": "They stop being a member of the organization and its companies.",
     "revokeConfirm": "Revoke",
-    "disableConfirm": "Disable",
+    "disableConfirm": "Deactivate",
     "removeConfirm": "Remove",
     "revoking": "Revoking…",
-    "disabling": "Disabling…",
+    "disabling": "Deactivating…",
     "removing": "Removing…"
   },
   "messages": {
@@ -92,8 +92,8 @@
     "invited": "We invited {{email}}. The invitation expires on {{date}}.",
     "resent": "We resent the invitation to {{email}}.",
     "revoked": "We revoked the invitation to {{email}}.",
-    "enabled": "We enabled {{name}}.",
-    "disabled": "We disabled {{name}}.",
+    "enabled": "We reactivated {{name}}.",
+    "disabled": "We deactivated {{name}}.",
     "removed": "We removed {{name}} from {{organization}}.",
     "companyAdded": "Company added.",
     "companyRolesSaved": "Company roles saved.",
@@ -111,7 +111,7 @@
     "addCompanyTitle": "Add company",
     "changeCompanyRolesTitle": "Roles in {{name}}",
     "saveCompanyRoles": "Save",
-    "companyInactive": "Inactive access",
+    "companyInactive": "Deactivated access",
     "noCompanies": "Not in any company.",
     "save": "Save changes",
     "since": "since <date/>",
@@ -121,7 +121,7 @@
     "discard": "Discard changes",
     "status": "Status",
     "statusActiveDescription": "Can access the organization and its companies.",
-    "statusInactiveDescription": "Cannot access. Keeps their roles in case you enable them again.",
+    "statusInactiveDescription": "Cannot access. Keeps their roles in case you reactivate them.",
     "allRoles": "All",
     "noRoles": "None",
     "companyNoRoles": "No roles",
@@ -130,9 +130,9 @@
     "addCompanyConfirm": "Add",
     "companyRequired": "Choose a company.",
     "confirm": {
-      "disableTitle": "Disable {{name}}?",
+      "disableTitle": "Deactivate {{name}}?",
       "disableDescription": "They will no longer access {{organization}} and its companies. Their account and personal profile keep working.",
-      "disableConfirm": "Disable and save",
+      "disableConfirm": "Deactivate and save",
       "removeTitle": "Remove {{name}} from {{organization}}?",
       "removeDescription": "They will no longer access {{organization}} and its companies, and will lose their roles. Their account and personal profile keep working.",
       "removeManagedDescription": "They will no longer access {{organization}} and its companies, and will lose their roles. Their {{domain}} emails will no longer sign them in; we will let them know through their other sign-in methods. Their account and personal profile keep working.",
@@ -142,7 +142,7 @@
       "revokeDescription": "The link will stop working. You can invite them again anytime.",
       "revokeConfirm": "Revoke",
       "revoking": "Revoking…",
-      "disabling": "Disabling…",
+      "disabling": "Deactivating…",
       "removing": "Removing…"
     },
     "messages": {

@@ -9,7 +9,7 @@ import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 const definition = (suffix, actor, action, route, expected, covers) => ({ id: `SUP-BIZ-${suffix}`, area: "Administración complementaria", actor, action, route, expected, covers, critical: true });
 export const supplementBusinessDefinitions = [
   definition("01", "Dueña de una organización nueva", "Crear y editar una empresa con identificación fiscal", "/org/empresas", "El alta inicial escribe y guarda CUIT; otra empresa crea201, abre su ficha y guarda nombre/zona conservando su tipo y número fiscal.", ["BACK-EM-001", "BACK-EM-003", "GUIA-registrar-empresa-04"]),
-  definition("02", "Dueña", "Buscar, filtrar y abrir empresas de la organización", "/org/empresas", "Total3 y estados reales; búsqueda devuelve sus dos empresas nuevas, filtro Inactivas una, y su ficha coincide.", ["BACK-EM-002"]),
+  definition("02", "Dueña", "Buscar, filtrar y abrir empresas de la organización", "/org/empresas", "Total3 y estados reales; búsqueda devuelve sus dos empresas nuevas, filtro Dadas de baja una, y su ficha coincide.", ["BACK-EM-002"]),
   definition("03", "Dueña", "Repetir nombres de roles entre empresas y corregir duplicados", "/org/roles/nuevo", "Mismo nombre permitido en empresas distintas; duplicados en la misma empresa y sin empresa409; corregir envía una operación nueva.", ["BACK-RO-005", "BACK-RO-006"]),
   definition("04", "Persona con cuenta Personal previa", "Aceptar el enlace de invitación usando su cuenta destinataria", "/invitacion", "La vista previa exige ingresar; el OTP y la aceptación activan Business con la misma identidad y su Personal ya existente.", ["BACK-OR-009"]),
   definition("05", "Persona invitada sin cuenta", "Aceptar el enlace que concede Administrador de empresa", "/invitacion", "Preview informa empresa/rol; la aceptación crea identidad Business sin Personal y la ficha reserva/activa el mismo miembro.", ["BACK-OR-008"]),
@@ -138,12 +138,12 @@ async function saveRole(h, page) {
 
 async function addCompanyToUser(h, page, memberId, company, roleName) {
   await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href);
-  await page.getByRole("button", { name: "Sumar empresa", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Sumar empresa", exact: true });
+  await page.getByRole("button", { name: "Agregar empresa", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Agregar empresa", exact: true });
   await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click();
   await page.getByRole("option", { name: company.name, exact: true }).click();
   if (roleName) { await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: roleName, exact: true }).click(); await page.keyboard.press("Escape"); }
-  await clickForResponse(page, dialog.getByRole("button", { name: "Sumar", exact: true }), `/api/users/${memberId}`, "PUT");
+  await clickForResponse(page, dialog.getByRole("button", { name: "Agregar", exact: true }), `/api/users/${memberId}`, "PUT");
   await dialog.waitFor({ state: "hidden" });
 }
 
@@ -217,7 +217,7 @@ async function checkCompanyFilters(h, page, { owner, prefix, b, inactive }) {
   let list = await read(h, page, `/api/companies/paged?search=${encodeURIComponent(prefix)}&pageSize=100`); assert.equal(list.totalCount, 2); assert.deepEqual(list.items.map((item) => item.id).sort(), [b.id, inactive.id].sort());
   assert.deepEqual(await read(h, page, `/api/companies/filter-counts?search=${encodeURIComponent(prefix)}`), { all: 2, active: 1, inactive: 1 });
   const filtered = waitRead(page, "/api/companies/paged", (url) => url.searchParams.get("status") === "Inactive");
-  await chooseFilter(h, page, { label: "Filtrar empresas", index: 0, key: "status", value: "Inactive", option: "Inactivas" });
+  await chooseFilter(h, page, { label: "Filtrar empresas", index: 0, key: "status", value: "Inactive", option: "Dadas de baja" });
   list = await (await filtered).json(); assert.equal(list.totalCount, 1); assert.equal(list.items[0].id, inactive.id);
   assert.equal(new URL(page.url()).searchParams.get("search"), prefix); assert.equal(new URL(page.url()).searchParams.get("status"), "Inactive");
   await page.getByRole("link", { name: new RegExp(`^${escapeRegex(inactive.name)}`) }).first().click(); await heading(page, inactive.name);
@@ -253,8 +253,8 @@ async function prepareBusinessFilterFixture(h, page, owner) {
   const companies = await read(h, page, "/api/companies/paged?pageSize=100"); const a = companies.items.find((item) => item.name === owner.companyName); assert.ok(a?.id);
   const b = await createCompany(h, page, `${prefix} Fiscal`); const inactive = await createCompany(h, page, `${prefix} Inactiva`);
   await page.goto(new URL(`/org/empresas/${inactive.id}`, h.base).href);
-  await page.getByRole("button", { name: "Más acciones", exact: true }).click(); await page.getByRole("menuitem", { name: "Inactivar", exact: true }).click();
-  await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/companies/${inactive.id}/status`, "PUT");
+  await page.getByRole("button", { name: "Más acciones", exact: true }).click(); await page.getByRole("menuitem", { name: "Dar de baja", exact: true }).click();
+  await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Dar de baja", exact: true }), `/api/companies/${inactive.id}/status`, "PUT");
   assert.equal((await read(h, page, `/api/companies/${inactive.id}`)).status, "Inactive");
   await fillRole(h, page, `Lectura filtros ${tag}`, a); const readerA = await saveRole(h, page);
   await fillRole(h, page, `Lectura filtros ${tag}`, b); const readerB = await saveRole(h, page);
@@ -349,8 +349,8 @@ export async function runSupplementBusinessCases(h) {
       await page.reload(); await heading(page, b.name);
       inactive = await createCompany(h, page, `${prefix} Inactiva`);
       await page.goto(new URL(`/org/empresas/${inactive.id}`, h.base).href);
-      await chooseBusinessBarAction(page, "Inactivar");
-      await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Inactivar", exact: true }), `/api/companies/${inactive.id}/status`, "PUT");
+      await chooseBusinessBarAction(page, "Dar de baja");
+      await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Dar de baja", exact: true }), `/api/companies/${inactive.id}/status`, "PUT");
       assert.equal((await read(h, page, `/api/companies/${inactive.id}`)).status, "Inactive");
       return "Empresa fiscal creada201, ficha abierta y edición UI versionada de nombre/zona; su identificación fiscal siguió idéntica tras F5. Tercera empresa preparada inactiva.";
     });
@@ -424,12 +424,12 @@ export async function runSupplementBusinessCases(h) {
       let list = await read(h, page, `/api/companies/${a.id}/members/paged?pageSize=100`); let target = list.items.find((item) => item.memberId === member.memberId); assert.ok(target);
       await changeCompanyMemberRoles(h, page, a, target, readerA.name);
       list = await read(h, page, `/api/companies/${a.id}/members/paged?pageSize=100`); target = list.items.find((item) => item.memberId === member.memberId); assert.deepEqual(target.roles, []);
-      await page.goto(new URL(`/org/empresas/${a.id}?search=${encodeURIComponent(existing.email)}`, h.base).href); await page.getByRole("button", { name: `Acciones para ${target.displayName}`, exact: true }).click(); await page.getByRole("menuitem", { name: "Quitar de la empresa", exact: true }).click();
+      await page.goto(new URL(`/org/empresas/${a.id}?search=${encodeURIComponent(existing.email)}`, h.base).href); await page.getByRole("button", { name: `Acciones para ${target.displayName}`, exact: true }).click(); await page.getByRole("menuitem", { name: "Dar de baja", exact: true }).click();
       const removed = await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Quitar", exact: true }), `/api/companies/${a.id}/members/${target.memberId}/status`, "PUT"); assert.equal(removed.request().postDataJSON().version, target.version);
       list = await read(h, page, `/api/companies/${a.id}/members/paged?pageSize=100`); target = list.items.find((item) => item.memberId === member.memberId); assert.equal(target.membershipStatus, "Inactive");
       await as(owner.email); assertMemberChangesStayInCompany(original, await read(h, page, `/api/users/${member.memberId}`), a.id);
       await as(administrator.email); await page.goto(new URL(`/org/empresas/${a.id}?search=${encodeURIComponent(existing.email)}`, h.base).href); await page.getByRole("button", { name: `Acciones para ${target.displayName}`, exact: true }).click();
-      const restored = await clickForResponse(page, page.getByRole("menuitem", { name: "Volver a sumar", exact: true }), `/api/companies/${a.id}/members/${target.memberId}/status`, "PUT"); assert.equal(restored.request().postDataJSON().version, target.version);
+      const restored = await clickForResponse(page, page.getByRole("menuitem", { name: "Reactivar", exact: true }), `/api/companies/${a.id}/members/${target.memberId}/status`, "PUT"); assert.equal(restored.request().postDataJSON().version, target.version);
       target = (await read(h, page, `/api/companies/${a.id}/members/paged?pageSize=100`)).items.find((item) => item.memberId === member.memberId); assert.equal(target.membershipStatus, "Active"); assert.deepEqual(target.roles, []);
       await changeCompanyMemberRoles(h, page, a, target, readerA.name);
       await as(owner.email); const final = await read(h, page, `/api/users/${member.memberId}`); assertMemberChangesStayInCompany(original, final, a.id); assert.equal(final.companies.find((company) => company.companyId === a.id).roles[0].id, readerA.id);

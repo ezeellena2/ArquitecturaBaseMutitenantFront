@@ -62,9 +62,9 @@
       "action": "Reenviar"
     },
     "deletionRequested": {
-      "group": "Bajas pedidas",
-      "detail": "Se elimina el {{date}}",
-      "state": "Baja pedida",
+      "group": "Cuentas por borrar",
+      "detail": "Se borra el {{date}}",
+      "state": "Por borrar",
       "action": "Ver"
     },
     "domainUnverified": {

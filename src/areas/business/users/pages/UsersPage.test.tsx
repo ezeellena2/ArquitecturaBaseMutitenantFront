@@ -117,7 +117,7 @@ describe("UsersPage", () => {
     expect(router.state.location.search).toContain("search=Luc%C3%ADa");
 
     await user.click(screen.getByRole("button", { name: "Estado: todos" }));
-    await user.click(await screen.findByRole("menuitemradio", { name: /Deshabilitados/ }));
+    await user.click(await screen.findByRole("menuitemradio", { name: /Dados de baja/ }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("state")).toBe("Inactive"));
     expect(router.state.location.search).toContain("state=Inactive");
   }, 10_000);
@@ -169,7 +169,7 @@ describe("UsersPage", () => {
     await user.keyboard("{Enter}");
     // 143: las opciones de un filtro no dicen cuántas filas traen.
     expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent))
-      .toEqual(["Todos", "Activos", "Invitación pendiente", "Invitación vencida", "Deshabilitados", "Baja pedida"]);
+      .toEqual(["Todos", "Activos", "Invitación pendiente", "Invitación vencida", "Dados de baja", "Por borrar"]);
     await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
 
@@ -215,11 +215,11 @@ describe("UsersPage", () => {
 
     const open = async (name: string) => { const trigger = await screen.findByRole("button", { name }); trigger.focus(); await user.keyboard("{Enter}"); };
     await open("Acciones de Lucía Fernández");
-    await user.click(await screen.findByRole("menuitem", { name: "Deshabilitar" }));
-    const disable = await screen.findByRole("dialog", { name: "¿Deshabilitar a Lucía Fernández?" });
+    await user.click(await screen.findByRole("menuitem", { name: "Dar de baja" }));
+    const disable = await screen.findByRole("dialog", { name: "¿Dar de baja a Lucía Fernández?" });
     expect(disable).toHaveTextContent("Deja de entrar a Empresa A y a sus empresas. Su cuenta y su perfil personal siguen funcionando.");
-    await user.click(within(disable).getByRole("button", { name: "Deshabilitar" }));
-    expect(await screen.findByText("Deshabilitamos a Lucía Fernández.")).toBeVisible();
+    await user.click(within(disable).getByRole("button", { name: "Dar de baja" }));
+    expect(await screen.findByText("Dimos de baja a Lucía Fernández.")).toBeVisible();
 
     await open("Acciones de sofia@example.com");
     // «Criterio · Menús» y tablero Usuarios (v109): «Revocar invitación» abajo, después de la franja, en rojo y con la ✕.
@@ -317,7 +317,7 @@ describe("UsersPage", () => {
     expect(dialog).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
     expect(within(dialog).getByRole("textbox", { name: "Correo" }).closest("[data-slot='dialog-body']")).not.toBeNull();
     expect(dialog).not.toHaveTextContent("Enviamos un enlace");
-    expect(within(dialog).queryByRole("button", { name: /Sumar empresa/ })).not.toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: /Agregar empresa/ })).not.toBeInTheDocument();
     expect(within(dialog).getByRole("button", { name: "Roles en la empresa" })).toBeDisabled();
     expect(await axe(container)).toHaveNoViolations();
 

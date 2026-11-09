@@ -12,13 +12,13 @@
   "save": "Guardar cambios",
   "system": "De sistema",
   "custom": "Personalizado",
-  "removed": "Inactivamos el rol {{name}}.",
+  "removed": "Dimos de baja el rol {{name}}.",
   "created": "Creamos el rol {{name}}.",
   "updated": "Guardamos el rol {{name}}.",
-  "deactivate": "Inactivar",
+  "deactivate": "Dar de baja",
   "edit": "Editar",
   "viewPermissions": "Ver permisos",
-  "confirmDeactivate": "¿Inactivar el rol {{name}}?",
+  "confirmDeactivate": "¿Dar de baja el rol {{name}}?",
   "confirmDeactivateDescription": "Deja de aparecer para asignar. Nadie lo tiene, así que no le cambia nada a ningún usuario.",
   "rowActions": "Acciones para {{name}}",
   "noDescription": "Sin descripción",
@@ -86,5 +86,5 @@
   },
   "inUse_one": "Lo tiene {{n}} usuario. Quitáselo primero.",
   "inUse_other": "Lo tienen {{n}} usuarios. Quitáselo primero.",
-  "deactivating": "Inactivando…"
+  "deactivating": "Dando de baja…"
 }

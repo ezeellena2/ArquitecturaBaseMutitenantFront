@@ -20,10 +20,10 @@
   "states": {
     "all": "Todos los estados",
     "Active": "Activo",
-    "PendingDeletion": "Baja pedida",
+    "PendingDeletion": "Por borrar",
     "Invited": "Invitación pendiente",
     "Expired": "Invitación vencida",
-    "Inactive": "Deshabilitado"
+    "Inactive": "De baja"
   },
   "filters": {
     "label": "Filtrar usuarios",
@@ -39,8 +39,8 @@
       "Active": "Activos",
       "Invited": "Invitación pendiente",
       "Expired": "Invitación vencida",
-      "Inactive": "Deshabilitados",
-      "PendingDeletion": "Baja pedida"
+      "Inactive": "Dados de baja",
+      "PendingDeletion": "Por borrar"
     }
   },
   "empty": {
@@ -67,8 +67,8 @@
   "actions": {
     "view": "Editar",
     "resend": "Reenviar invitación",
-    "enable": "Habilitar",
-    "disable": "Deshabilitar",
+    "enable": "Reactivar",
+    "disable": "Dar de baja",
     "revoke": "Revocar invitación",
     "remove": "Quitar de la organización"
   },
@@ -76,15 +76,15 @@
   "confirm": {
     "revoke": "¿Revocar la invitación a {{email}}?",
     "revokeDescription": "El enlace deja de funcionar. Podés volver a invitarla cuando quieras.",
-    "disable": "¿Deshabilitar a {{name}}?",
+    "disable": "¿Dar de baja a {{name}}?",
     "disableDescription": "Deja de entrar a {{organization}} y a sus empresas. Su cuenta y su perfil personal siguen funcionando.",
     "remove": "¿Quitar a {{name}} de {{organization}}?",
     "removeDescription": "Deja de ser miembro de la organización y de sus empresas.",
     "revokeConfirm": "Revocar",
-    "disableConfirm": "Deshabilitar",
+    "disableConfirm": "Dar de baja",
     "removeConfirm": "Quitar",
     "revoking": "Revocando…",
-    "disabling": "Deshabilitando…",
+    "disabling": "Dando de baja…",
     "removing": "Quitando…"
   },
   "messages": {
@@ -92,8 +92,8 @@
     "invited": "Invitamos a {{email}}. La invitación vence el {{date}}.",
     "resent": "Reenviamos la invitación a {{email}}.",
     "revoked": "Revocamos la invitación a {{email}}.",
-    "enabled": "Habilitamos a {{name}}.",
-    "disabled": "Deshabilitamos a {{name}}.",
+    "enabled": "Reactivamos a {{name}}.",
+    "disabled": "Dimos de baja a {{name}}.",
     "removed": "Quitamos a {{name}} de {{organization}}.",
     "companyAdded": "Sumamos la empresa.",
     "companyRolesSaved": "Guardamos los roles de la empresa.",
@@ -108,10 +108,10 @@
     "companyActions": "Acciones de {{name}}",
     "changeCompanyRoles": "Cambiar roles",
     "removeCompanyAction": "Quitar de la empresa",
-    "addCompanyTitle": "Sumar empresa",
+    "addCompanyTitle": "Agregar empresa",
     "changeCompanyRolesTitle": "Roles en {{name}}",
     "saveCompanyRoles": "Guardar",
-    "companyInactive": "Acceso inactivo",
+    "companyInactive": "Acceso dado de baja",
     "noCompanies": "No está en ninguna empresa.",
     "save": "Guardar cambios",
     "since": "desde el <date/>",
@@ -121,18 +121,18 @@
     "discard": "Descartar cambios",
     "status": "Estado",
     "statusActiveDescription": "Entra a la organización y a sus empresas.",
-    "statusInactiveDescription": "No entra. Conserva sus roles por si lo volvés a habilitar.",
+    "statusInactiveDescription": "No entra. Conserva sus roles por si lo reactivás.",
     "allRoles": "Todos",
     "noRoles": "Ninguno",
     "companyNoRoles": "Sin roles",
     "deletionWhy": "Pidió borrar su cuenta. Se borra el {{date}}.",
-    "addCompany": "Sumar empresa",
-    "addCompanyConfirm": "Sumar",
+    "addCompany": "Agregar empresa",
+    "addCompanyConfirm": "Agregar",
     "companyRequired": "Elegí una empresa.",
     "confirm": {
-      "disableTitle": "¿Deshabilitar a {{name}}?",
+      "disableTitle": "¿Dar de baja a {{name}}?",
       "disableDescription": "Deja de entrar a {{organization}} y a sus empresas. Su cuenta y su perfil personal siguen funcionando.",
-      "disableConfirm": "Deshabilitar y guardar",
+      "disableConfirm": "Dar de baja y guardar",
       "removeTitle": "¿Quitar a {{name}} de {{organization}}?",
       "removeDescription": "Deja de entrar a {{organization}} y a sus empresas, y pierde sus roles. Su cuenta y su perfil personal siguen funcionando.",
       "removeManagedDescription": "Deja de entrar a {{organization}} y a sus empresas, y pierde sus roles. Sus correos de {{domain}} dejan de servirle para ingresar; se lo avisamos por sus otros métodos de ingreso. Su cuenta y su perfil personal siguen funcionando.",
@@ -142,7 +142,7 @@
       "revokeDescription": "El enlace deja de funcionar. Podés volver a invitarla cuando quieras.",
       "revokeConfirm": "Revocar",
       "revoking": "Revocando…",
-      "disabling": "Deshabilitando…",
+      "disabling": "Dando de baja…",
       "removing": "Quitando…"
     },
     "messages": {

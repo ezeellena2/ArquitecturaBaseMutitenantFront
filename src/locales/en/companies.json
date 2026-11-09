@@ -22,7 +22,7 @@
   },
   "statusFilters": {
     "Active": "Active",
-    "Inactive": "Inactive"
+    "Inactive": "Deactivated"
   },
   "empty": {
     "all": "There are no companies yet",
@@ -46,41 +46,41 @@
     "view": "View details",
     "edit": "Edit",
     "deactivate": "Deactivate",
-    "activate": "Activate",
+    "activate": "Reactivate",
     "more": "More actions",
     "addMember": "Add member",
     "addingMember": "Adding…",
     "changeRoles": "Change roles",
     "viewUser": "View user",
-    "removeMember": "Remove from company",
-    "restoreMember": "Add back",
+    "removeMember": "Deactivate",
+    "restoreMember": "Reactivate",
     "editCompany": "Edit company",
     "resendInvitation": "Resend invitation",
     "revokeInvitation": "Revoke invitation"
   },
   "confirm": {
     "deactivate": "Deactivate {{name}}?",
-    "deactivateDescription": "Nobody can enter this company while it is inactive. Its data and members are kept.",
-    "removeMember": "Remove {{name}} from the company?",
+    "deactivateDescription": "Nobody can enter this company while it is deactivated. Its data and members are kept.",
+    "removeMember": "Deactivate {{name}} in the company?",
     "removeMemberDescription": "They can no longer enter {{company}} and lose their roles here. They stay in the organization and its other companies.",
     "deactivateConfirm": "Deactivate",
-    "removeMemberConfirm": "Remove",
+    "removeMemberConfirm": "Deactivate",
     "revokeInvitation": "Revoke the invitation to {{email}}?",
     "revokeInvitationDescription": "The link stops working.",
     "revokeInvitationConfirm": "Revoke",
     "deactivating": "Deactivating…",
-    "removingMember": "Removing…",
+    "removingMember": "Deactivating…",
     "revokingInvitation": "Revoking…"
   },
   "messages": {
     "created": "We created {{name}}. You have the Administrator role.",
     "updated": "We saved the changes to {{name}}.",
     "deactivated": "We deactivated {{name}}.",
-    "activated": "We activated {{name}}.",
+    "activated": "We reactivated {{name}}.",
     "memberAdded": "We added {{name}} to the company.",
     "rolesUpdated": "We saved the roles of {{name}}.",
-    "memberRemoved": "We removed {{name}} from the company.",
-    "memberRestored": "We added {{name}} back. Give them their roles again.",
+    "memberRemoved": "We deactivated {{name}} in the company.",
+    "memberRestored": "We reactivated {{name}}. Give them their roles again.",
     "detailUpdated": "We saved the changes.",
     "invitationResent": "We resent the invitation to {{email}}.",
     "invitationRevoked": "We revoked the invitation to {{email}}."
@@ -118,8 +118,8 @@
       "states": {
         "Expired": "Expired",
         "Active": "Active",
-        "Inactive": "Inactive",
-        "PendingDeletion": "Deletion requested"
+        "Inactive": "Deactivated",
+        "PendingDeletion": "To be deleted"
       }
     },
     "empty": {

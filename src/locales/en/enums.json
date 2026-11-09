@@ -4,7 +4,7 @@
     "Active": "Active",
     "Suspended": "Suspended",
     "NeedsRecovery": "Needs recovery",
-    "PendingDeletion": "Deletion requested",
+    "PendingDeletion": "To be deleted",
     "Deleted": "Deleted",
     "Invited": "Invitation pending",
     "InvitationExpired": "Invitation expired"
@@ -53,19 +53,19 @@
   },
   "OrganizationUserState": {
     "Active": "Active",
-    "PendingDeletion": "Deletion requested",
+    "PendingDeletion": "To be deleted",
     "Invited": "Invitation pending",
     "Expired": "Invitation expired",
-    "Inactive": "Disabled"
+    "Inactive": "Deactivated"
   },
   "CompanyStatus": {
     "Active": "Active",
-    "Inactive": "Inactive"
+    "Inactive": "Deactivated"
   },
   "CompanyMemberState": {
     "Active": "Active",
-    "PendingDeletion": "Deletion requested",
-    "Inactive": "Inactive",
+    "PendingDeletion": "To be deleted",
+    "Inactive": "Deactivated",
     "Invited": "Invitation pending",
     "Expired": "Invitation expired"
   },
@@ -75,10 +75,10 @@
     "Blocked": "Unpublished"
   },
   "PlatformOwnerState": {
-    "Inactive": "Inactive",
+    "Inactive": "Deactivated",
     "Active": "Active",
     "Invited": "Invitation pending",
-    "PendingDeletion": "Deletion requested",
+    "PendingDeletion": "To be deleted",
     "Removed": "Ended",
     "Suspended": "Suspended",
     "Deleted": "Deleted"

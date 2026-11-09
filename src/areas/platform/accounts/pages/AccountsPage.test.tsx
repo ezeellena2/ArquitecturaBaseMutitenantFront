@@ -104,9 +104,9 @@ describe("Cuentas de Plataforma", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
   it.each([
-    ["Active", ["Cerrar sus sesiones", "Suspender", "Dar de baja"]],
-    ["Suspended", ["Cerrar sus sesiones", "Reactivar", "Dar de baja"]],
-    ["NeedsRecovery", ["Cerrar sus sesiones", "Suspender", "Dar de baja"]],
+    ["Active", ["Cerrar sus sesiones", "Suspender", "Borrar la cuenta"]],
+    ["Suspended", ["Cerrar sus sesiones", "Reactivar", "Borrar la cuenta"]],
+    ["NeedsRecovery", ["Cerrar sus sesiones", "Suspender", "Borrar la cuenta"]],
     ["Invited", ["Reenviar invitación", "Revocar invitación"]],
     ["InvitationExpired", ["Reenviar invitación", "Revocar invitación"]],
   ] as [Account["state"], string[]][])("%s ofrece sus acciones reales", async (state, labels) => {
@@ -139,15 +139,15 @@ describe("Cuentas de Plataforma", () => {
   });
   it("baja lee la evidencia antes de confirmar y bloquea único Dueño sin motivo", async () => {
     const user = userEvent.setup(); server.use(http.get("/api/platform/accounts/lucia", () => HttpResponse.json({ ...detail, soleOwnerOrganizations: ["Grupo Delta"] })));
-    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Dar de baja");
+    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Borrar la cuenta");
     expect(await screen.findByText("Es el único Dueño de Grupo Delta. Primero la organización tiene que sumar otro Dueño, o la plataforma tiene que cerrarla.")).toBeVisible();
-    expect(screen.queryByRole("textbox", { name: "Motivo" })).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Dar de baja" })).toBeDisabled();
+    expect(screen.queryByRole("textbox", { name: "Motivo" })).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Borrar la cuenta" })).toBeDisabled();
   });
   it("baja relee la fecha real para el aviso, sin calcular treinta días", async () => {
     const user = userEvent.setup(); let written = false; const steps: string[] = [];
     server.use(http.get("/api/platform/accounts/lucia", () => { steps.push("GET"); return HttpResponse.json(written ? { ...detail, deletion: { requestedAtUtc: "2026-09-27T12:00:00Z", scheduledForUtc: "2026-11-18T12:00:00Z", requestedByPlatform: true } } : detail); }), http.post("/api/platform/accounts/lucia/deletion", () => { steps.push("POST"); written = true; return new HttpResponse(null, { status: 204 }); }));
-    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Dar de baja"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Dar de baja");
-    expect(await screen.findByText("Dimos de baja la cuenta de Lucía Fernández. Se elimina el 18/11/2026.")).toBeVisible(); expect(steps.slice(0, 3)).toEqual(["GET", "POST", "GET"]);
+    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Borrar la cuenta"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Borrar la cuenta");
+    expect(await screen.findByText("Pedimos borrar la cuenta de Lucía Fernández. Se borra el 18/11/2026.")).toBeVisible(); expect(steps.slice(0, 3)).toEqual(["GET", "POST", "GET"]);
   });
   it("LastManager se queda en la franja", async () => {
     const user = userEvent.setup(); server.use(http.post("/api/platform/accounts/lucia/suspend", () => HttpResponse.json({ code: "Platform.Operator.LastManager", detail: "Tiene que quedar al menos un operador activo que pueda administrar operadores." }, { status: 409 })));
@@ -209,16 +209,16 @@ describe("Cuentas de Plataforma", () => {
   it("si falla la lectura nueva de la baja no confirma con datos cacheados", async () => {
     const user = userEvent.setup(); server.use(http.get("/api/platform/accounts/lucia", () => HttpResponse.error()));
     const { queryClient } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
-    queryClient.setQueryData(accountQueryKey(person.id), detail); await action(user, "Dar de baja");
+    queryClient.setQueryData(accountQueryKey(person.id), detail); await action(user, "Borrar la cuenta");
     expect(await within(screen.getByRole("dialog")).findByRole("button", { name: "Reintentar" })).toBeVisible();
     expect(screen.queryByRole("textbox", { name: "Motivo" })).not.toBeInTheDocument();
   });
   it("LastAdmin relee el nuevo único Dueño y bloquea con el texto de Plataforma", async () => {
     const user = userEvent.setup(); let rejected = false; let reads = 0;
     server.use(http.get("/api/platform/accounts/lucia", () => { reads++; return HttpResponse.json({ ...detail, soleOwnerOrganizations: rejected ? ["Nueva organización"] : [] }); }), http.post("/api/platform/accounts/lucia/deletion", () => { rejected = true; return HttpResponse.json({ code: "Legal.AccountDeletion.LastAdmin", detail: "Antes de pedir la baja, cada Organización activa debe tener otra persona con el rol Dueño." }, { status: 409 }); }));
-    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Dar de baja"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Dar de baja");
+    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Borrar la cuenta"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Borrar la cuenta");
     expect(await screen.findByText("Es el único Dueño de Nueva organización. Primero la organización tiene que sumar otro Dueño, o la plataforma tiene que cerrarla.")).toBeVisible();
-    expect(reads).toBe(2); expect(screen.queryByRole("textbox", { name: "Motivo" })).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Dar de baja" })).toBeDisabled();
+    expect(reads).toBe(2); expect(screen.queryByRole("textbox", { name: "Motivo" })).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Borrar la cuenta" })).toBeDisabled();
   });
   it("LastAdmin con relectura retenida y sin únicos Dueños conserva motivo y rechazo original", async () => {
     const user = userEvent.setup(); let reads = 0; let release: (() => void) | undefined;
@@ -227,10 +227,10 @@ describe("Cuentas de Plataforma", () => {
       reads++; if (reads === 2) await new Promise<void>((resolve) => { release = resolve; });
       return HttpResponse.json(detail);
     }), http.post("/api/platform/accounts/lucia/deletion", () => HttpResponse.json({ code: "Legal.AccountDeletion.LastAdmin", detail: message }, { status: 409 })));
-    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Dar de baja");
+    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Borrar la cuenta");
     const motive = await screen.findByRole("textbox", { name: "Motivo" });
     try {
-      await reason(user, "Dar de baja"); await waitFor(() => expect(release).toBeDefined());
+      await reason(user, "Borrar la cuenta"); await waitFor(() => expect(release).toBeDefined());
       expect(screen.getByRole("textbox", { name: "Motivo" })).toBe(motive); expect(motive).toHaveValue("Revisión");
     } finally { await act(async () => { release?.(); }); }
     expect(await within(screen.getByRole("dialog")).findByText(message)).toBeVisible();
@@ -242,9 +242,9 @@ describe("Cuentas de Plataforma", () => {
       reads++; if (reads === 2) await new Promise<void>((resolve) => { release = resolve; });
       return HttpResponse.json(detail);
     }), http.post("/api/platform/accounts/lucia/deletion", () => HttpResponse.json({ code: "Legal.AccountDeletion.AlreadyPending", detail: "Ya pediste la baja de tu cuenta." }, { status: 409 })));
-    const { queryClient } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Dar de baja");
-    const motive = await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Dar de baja");
-    const message = "Esa cuenta ya tiene la baja pedida."; expect(await screen.findByText(message)).toBeVisible();
+    const { queryClient } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Borrar la cuenta");
+    const motive = await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Borrar la cuenta");
+    const message = "Esa cuenta ya está por borrarse."; expect(await screen.findByText(message)).toBeVisible();
     try {
       await act(async () => { void queryClient.invalidateQueries({ queryKey: accountQueryKey(person.id), exact: true }); });
       await waitFor(() => expect(release).toBeDefined());
@@ -256,8 +256,8 @@ describe("Cuentas de Plataforma", () => {
   it("AlreadyPending traduce el error y relee al cerrar", async () => {
     const user = userEvent.setup(); let reads = 0;
     server.use(http.get("/api/platform/accounts/paged", () => { reads++; return HttpResponse.json(list()); }), http.post("/api/platform/accounts/lucia/deletion", () => HttpResponse.json({ code: "Legal.AccountDeletion.AlreadyPending", detail: "Ya pediste la baja de tu cuenta." }, { status: 409 })));
-    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Dar de baja"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Dar de baja");
-    expect(await screen.findByText("Esa cuenta ya tiene la baja pedida.")).toBeVisible(); await user.click(screen.getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(reads).toBe(2));
+    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Borrar la cuenta"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Borrar la cuenta");
+    expect(await screen.findByText("Esa cuenta ya está por borrarse.")).toBeVisible(); await user.click(screen.getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(reads).toBe(2));
   });
   it("si la fila deja de estar invitada desaparece un diálogo de revocación", async () => {
     const user = userEvent.setup(); let invited = true;
@@ -353,7 +353,7 @@ describe("Cuentas de Plataforma", () => {
     }), http.post("/api/platform/accounts/lucia/deletion", () => {
       writes++; return result === "LastAdmin" ? HttpResponse.json({ code: "Legal.AccountDeletion.LastAdmin", detail: "Hace falta otro Dueño." }, { status: 409 }) : new HttpResponse(null, { status: 204 });
     }));
-    const { router, queryClient } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Dar de baja"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Dar de baja"); await waitFor(() => expect(release).toBeDefined());
+    const { router, queryClient } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await action(user, "Borrar la cuenta"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Borrar la cuenta"); await waitFor(() => expect(release).toBeDefined());
     try {
       if (result === "LastAdmin") await act(async () => { await router.navigate("/plataforma/cuentas?kind=Person"); });
       else await user.click(screen.getByRole("button", { name: "Cancelar" }));
@@ -370,7 +370,7 @@ describe("Cuentas de Plataforma", () => {
     }), http.post("/api/platform/accounts/lucia/deletion", () => operation === "LastAdmin" ? HttpResponse.json({ code: "Legal.AccountDeletion.LastAdmin", detail: "Hace falta otro Dueño." }, { status: 409 }) : new HttpResponse(null, { status: 204 })));
     const { queryClient } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
     if (operation === "revocar") { await action(user, "Revocar invitación", "julieta@example.com"); await user.click(screen.getByRole("button", { name: "Revocar" })); }
-    else { await action(user, "Dar de baja"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Dar de baja"); }
+    else { await action(user, "Borrar la cuenta"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Borrar la cuenta"); }
     expect(await screen.findByText("Algo salió mal. Probá de nuevo en un rato.")).toBeVisible(); await waitFor(() => expect(queryClient.isMutating()).toBe(0));
     expect(screen.getAllByText("Algo salió mal. Probá de nuevo en un rato.")).toHaveLength(1); expect(screen.getByRole("dialog")).toBeVisible();
     if (operation !== "revocar") expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveValue("Revisión");

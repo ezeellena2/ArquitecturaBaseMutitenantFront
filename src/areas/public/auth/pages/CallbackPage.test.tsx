@@ -172,7 +172,7 @@ describe("CallbackPage", () => {
       error: Object.assign(new ErrorResponse({ error: "access_denied",
         error_description: "Tenancy.Member.Inactive|Grupo%20Delta" }), { source: "unknown" as const }) });
 
-    expect(screen.getByRole("heading", { name: "Tu acceso a Grupo Delta está deshabilitado" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Tu acceso a Grupo Delta está dado de baja" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("href", "/login");
     expect(screen.getByRole("link", { name: "Registrá tu empresa" })).toHaveAttribute("data-variant", "outline");
   });

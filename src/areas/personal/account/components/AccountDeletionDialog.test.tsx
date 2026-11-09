@@ -27,15 +27,15 @@ it("exige motivo, confirma sin código y devuelve fecha", async () => {
   expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveClass("max-md:min-h-12");
   expect(screen.queryByText(/exportar/i)).not.toBeInTheDocument();
   expect(screen.queryByRole("group", { name: "Código" })).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Dar de baja" })).toBeEnabled();
-  await user.click(screen.getByRole("button", { name: "Dar de baja" }));
+  expect(screen.getByRole("button", { name: "Borrar mi cuenta" })).toBeEnabled();
+  await user.click(screen.getByRole("button", { name: "Borrar mi cuenta" }));
   expect(await screen.findByText("Escribí el motivo.")).toBeVisible();
   expect(complete).not.toHaveBeenCalled();
-  await user.click(screen.getByRole("button", { name: "Dar de baja" }));
+  await user.click(screen.getByRole("button", { name: "Borrar mi cuenta" }));
   expect(await screen.findByText("Escribí el motivo.")).toBeVisible();
   expect(complete).not.toHaveBeenCalled();
   await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Dejé de usarla");
-  await user.click(screen.getByRole("button", { name: "Dar de baja" }));
+  await user.click(screen.getByRole("button", { name: "Borrar mi cuenta" }));
   await waitFor(() => expect(complete).toHaveBeenCalledWith("2026-10-30T12:00:00Z"));
 });
 
@@ -46,22 +46,22 @@ it("en el teléfono, «Dar de baja» confirma con el botón destructivo, como en
   try {
     renderWithProviders(<AccountDeletionDialog graceDays={30} onClose={() => {}} onComplete={() => {}} />);
 
-    expect(await screen.findByRole("button", { name: "Dar de baja" })).toHaveAttribute("data-variant", "destructive");
+    expect(await screen.findByRole("button", { name: "Borrar mi cuenta" })).toHaveAttribute("data-variant", "destructive");
   } finally { restore(); }
 });
 
-// «Criterio · Botones», Guardando (decisión del 2026-10-05, 6d-4a): mientras da de baja, el botón dice «Dando de baja…»
+// «Criterio · Botones», Guardando (decisión del 2026-10-05, 6d-4a): mientras da de baja, el botón dice «Borrando…»
 // con el aro de «Guardando…», y no su propio texto.
-it("mientras da de baja dice «Dando de baja…» con el aro", async () => {
+it("mientras da de baja dice «Borrando…» con el aro", async () => {
   const user = userEvent.setup();
   server.use(
     http.post("/api/me/deletion", async () => { await delay("infinite"); return HttpResponse.json({ scheduledForUtc: "2026-10-30T12:00:00Z" }); }),
   );
   renderWithProviders(<AccountDeletionDialog graceDays={30} onClose={() => {}} onComplete={() => {}} />);
   await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Dejé de usarla");
-  await user.click(screen.getByRole("button", { name: "Dar de baja" }));
+  await user.click(screen.getByRole("button", { name: "Borrar mi cuenta" }));
 
-  const button = await screen.findByRole("button", { name: "Dando de baja…" });
+  const button = await screen.findByRole("button", { name: "Borrando…" });
   expect(button).toHaveAttribute("data-pending", "true");
   expect(button).toHaveAttribute("data-variant", "destructive");
   expect(button.querySelector("[data-slot='button-ring']")).not.toBeNull();

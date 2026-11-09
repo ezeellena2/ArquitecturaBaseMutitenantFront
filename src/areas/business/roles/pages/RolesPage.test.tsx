@@ -122,7 +122,7 @@ describe("RolesPage", () => {
     expect(router.state.location.search).toContain("vale=company-1");
   }, 10_000);
 
-  it("el ⋮ de un rol propio lleva «Editar» e «Inactivar»; el de uno de sistema, «Ver permisos»", async () => {
+  it("el ⋮ de un rol propio lleva «Editar» e «Dar de baja»; el de uno de sistema, «Ver permisos»", async () => {
     const user = userEvent.setup();
     server.use(
       http.get("/api/companies/paged", () => HttpResponse.json(companies)),
@@ -133,7 +133,7 @@ describe("RolesPage", () => {
     (await screen.findByRole("button", { name: "Acciones para Solo lectura" })).focus();
     await user.keyboard("{Enter}");
     const own = await screen.findByRole("menu");
-    expect(within(own).getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["Editar", "Inactivar"]);
+    expect(within(own).getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["Editar", "Dar de baja"]);
     await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
     screen.getByRole("button", { name: "Acciones para Dueño" }).focus();
@@ -142,9 +142,9 @@ describe("RolesPage", () => {
     expect(within(system).getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["Ver permisos"]);
   });
 
-  // R10 (pantallas-y-ui, 13/10): con usuarios, «Inactivar» va apagado y con el motivo debajo, en la compu y en el teléfono;
-  // sin usuarios, abre «¿Inactivar el rol …?».
-  it.each([["la compu", false], ["el teléfono", true]] as const)("en %s, «Inactivar» va apagado con su motivo si el rol tiene usuarios", async (_, phone) => {
+  // R10 (pantallas-y-ui, 13/10): con usuarios, «Dar de baja» va apagado y con el motivo debajo, en la compu y en el teléfono;
+  // sin usuarios, abre «¿Dar de baja el rol …?».
+  it.each([["la compu", false], ["el teléfono", true]] as const)("en %s, «Dar de baja» va apagado con su motivo si el rol tiene usuarios", async (_, phone) => {
     const user = userEvent.setup();
     const inUse = { ...companyReader, id: "role-in-use", name: "Auditor", userCount: 1 };
     server.use(
@@ -157,20 +157,20 @@ describe("RolesPage", () => {
       const open = async (name: string) => { const trigger = await screen.findByRole("button", { name }); trigger.focus(); await user.keyboard("{Enter}"); };
 
       await open("Acciones para Auditor");
-      const blocked = await screen.findByRole("menuitem", { name: "Inactivar" });
+      const blocked = await screen.findByRole("menuitem", { name: "Dar de baja" });
       expect(blocked).toHaveAttribute("aria-disabled", "true");
       expect(blocked).toHaveAccessibleDescription("Lo tiene 1 usuario. Quitáselo primero.");
       await user.click(blocked);
-      expect(screen.getByRole("menuitem", { name: "Inactivar" })).toBeVisible();
-      expect(screen.queryByRole("dialog", { name: /¿Inactivar el rol/ })).not.toBeInTheDocument();
+      expect(screen.getByRole("menuitem", { name: "Dar de baja" })).toBeVisible();
+      expect(screen.queryByRole("dialog", { name: /¿Dar de baja el rol/ })).not.toBeInTheDocument();
       await user.keyboard("{Escape}");
-      await waitFor(() => expect(screen.queryByRole("menuitem", { name: "Inactivar" })).not.toBeInTheDocument());
+      await waitFor(() => expect(screen.queryByRole("menuitem", { name: "Dar de baja" })).not.toBeInTheDocument());
 
       await open("Acciones para Solo lectura");
-      const free = await screen.findByRole("menuitem", { name: "Inactivar" });
+      const free = await screen.findByRole("menuitem", { name: "Dar de baja" });
       expect(free).not.toHaveAttribute("aria-disabled");
       await user.click(free);
-      const confirm = await screen.findByRole("dialog", { name: "¿Inactivar el rol Solo lectura?" });
+      const confirm = await screen.findByRole("dialog", { name: "¿Dar de baja el rol Solo lectura?" });
       expect(confirm).toHaveTextContent("Deja de aparecer para asignar. Nadie lo tiene, así que no le cambia nada a ningún usuario.");
     } finally { restore(); }
   });
@@ -218,9 +218,9 @@ describe("RolesPage", () => {
 
     (await screen.findByRole("button", { name: "Acciones para Último rol" })).focus();
     await user.keyboard("{Enter}");
-    await user.click(await screen.findByRole("menuitem", { name: "Inactivar" }));
-    const confirm = await screen.findByRole("dialog", { name: "¿Inactivar el rol Último rol?" });
-    await user.click(within(confirm).getByRole("button", { name: "Inactivar" }));
+    await user.click(await screen.findByRole("menuitem", { name: "Dar de baja" }));
+    const confirm = await screen.findByRole("dialog", { name: "¿Dar de baja el rol Último rol?" });
+    await user.click(within(confirm).getByRole("button", { name: "Dar de baja" }));
 
     expect(await screen.findByRole("link", { name: "Rol 01" })).toBeVisible();
     await waitFor(() => expect(router.state.location.search).toBe(""));

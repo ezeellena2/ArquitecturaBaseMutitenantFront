@@ -236,7 +236,7 @@ describe("AccessMenu", () => {
     screen.getByRole("button", { name: "Ana, Empresa A" }).focus();
     await user.keyboard("{Enter}");
 
-    const inactive = screen.getByRole("menuitemradio", { name: /Gamma S.A..*Membresía inactiva/ });
+    const inactive = screen.getByRole("menuitemradio", { name: /Gamma S.A..*Membresía dada de baja/ });
     expect(inactive).toHaveAttribute("aria-disabled", "true");
     await user.click(inactive);
     expect(switchAccess).toHaveBeenCalledWith({ access: "business", tenantId: "gamma" });

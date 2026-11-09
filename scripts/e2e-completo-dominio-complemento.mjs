@@ -61,13 +61,13 @@ export async function clickDomainForResponse(page, button, route, method, status
 
 async function addDomainBackupCompany(h, page, memberId, company, role) {
   await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href);
-  await page.getByRole("button", { name: "Sumar empresa", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Sumar empresa", exact: true });
+  await page.getByRole("button", { name: "Agregar empresa", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Agregar empresa", exact: true });
   await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click();
   await page.getByRole("option", { name: company.name, exact: true }).click();
   await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click();
   await page.getByRole("menuitemcheckbox", { name: role.name, exact: true }).click(); await page.keyboard.press("Escape");
-  await clickDomainForResponse(page, dialog.getByRole("button", { name: "Sumar", exact: true }), `/api/users/${memberId}`, "PUT");
+  await clickDomainForResponse(page, dialog.getByRole("button", { name: "Agregar", exact: true }), `/api/users/${memberId}`, "PUT");
   await dialog.waitFor({ state: "hidden" });
 }
 
@@ -108,7 +108,7 @@ async function sendCode(page, button, route) {
   }); assert.equal(response.status(), 202); return response;
 }
 export async function chooseDomainMemberState(h, page, active) {
-  const label = active ? "Activo" : "Deshabilitado";
+  const label = active ? "Activo" : "De baja";
   if (h.width === 390) {
     const state = page.getByRole("region", { name: "Acceso a la organización", exact: true }).getByRole("button", { name: /^Estado/u });
     await state.click();
@@ -123,7 +123,7 @@ async function memberState(h, page, memberId, active, onSaved = () => {}) {
   await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href); await chooseDomainMemberState(h, page, active);
   const save = page.getByRole("button", { name: "Guardar cambios", exact: true });
   if (active) await clickDomainForResponse(page, save, `/api/users/${memberId}`, "PUT");
-  else { await save.click(); await clickDomainForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Deshabilitar y guardar", exact: true }), `/api/users/${memberId}`, "PUT"); }
+  else { await save.click(); await clickDomainForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Dar de baja y guardar", exact: true }), `/api/users/${memberId}`, "PUT"); }
   onSaved();
   assert.equal((await read(h, page, `/api/users/${memberId}`)).state, active ? "Active" : "Inactive");
 }

@@ -25,7 +25,7 @@ describe("catálogo y configuración de plataforma", () => {
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Estado" })).not.toBeInTheDocument();
     for (const name of ["Modelo", "Proveedor", "ID", "Entrada por millón", "Salida por millón", "Estado", "Acciones"]) expect(screen.getByRole("columnheader", { name })).toBeVisible();
-    expect(screen.getByText("Inactivo")).toBeVisible();
+    expect(screen.getByText("De baja")).toBeVisible();
     expect(queries.every((url) => !url.searchParams.has("active") && !url.searchParams.has("search"))).toBe(true);
   });
   // Cuatro escrituras y tres GET retenidos forman una sola carrera de versiones; no se divide el recorrido.
