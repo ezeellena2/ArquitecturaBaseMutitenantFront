@@ -54,7 +54,7 @@
 
 ## Lo verifica
 - `platform-contract.test.ts` (E5)
-- `app/otherAccess.test.tsx` y `tenancy/useSwitchAccess.test.tsx` (base de la 12): el link del otro acceso, con cada acceso, y un link ajeno
+- `app/otherAccess.test.tsx` y `tenancy/useSwitchAccess.test.tsx` (base de la 12, E12): el link del otro acceso, con cada acceso, y un link ajeno
 
 ## Detalle
 [frontend.md §3](../architecture/frontend.md#3-rutas) · back: `docs/architecture/multitenancy.md` y `docs/rules/modulos-habilitados.md`
