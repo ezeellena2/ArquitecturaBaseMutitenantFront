@@ -19,7 +19,7 @@ function renderField(props: { allowedCountries?: readonly string[]; usage?: "wha
     const [value, setValue] = useState<PhoneDraft | null>(props.initialValue ?? null);
     return (
       <FormatProvider>
-        <FormField label="Teléfono" hint="Para avisos de la cuenta">
+        <FormField label="Teléfono" help="Para avisos de la cuenta">
           <PhoneField value={value} onChange={setValue} onValidityChange={onValidityChange} {...props} />
         </FormField>
         <output>{JSON.stringify(value)}</output>

@@ -9,7 +9,7 @@ function renderField() {
     const [value, setValue] = useState<string | null>(null);
     return (
       <>
-        <FormField label="Correo" hint="Para avisos de la cuenta">
+        <FormField label="Correo" help="Para avisos de la cuenta">
           <EmailField value={value} onChange={setValue} name="email" />
         </FormField>
         <output>{value ?? "vacío"}</output>

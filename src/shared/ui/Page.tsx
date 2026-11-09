@@ -5,6 +5,7 @@ import { AppBar, AppIconButton } from "./app/AppBar";
 import { useAppChrome } from "./app/AppChrome";
 import { AppBarLeadingToolsProvider, AppBarToolsProvider } from "./app/AppBarTools";
 import { Fab } from "./app/Fab";
+import { InfoTip } from "./InfoTip";
 import { FixedActions } from "./app/FixedActions";
 import { Button } from "./button";
 import {
@@ -68,6 +69,8 @@ export interface PageTabs {
 
 interface PageProps {
   title: string;
+  /** La ayuda que sirve (116): una (i) junto al título, con su tooltip; en el teléfono, tocarla abre la hoja chica. */
+  help?: string;
   summary?: ReactNode;
   backTo?: { to: string; label: string };
   status?: ReactNode;
@@ -123,6 +126,7 @@ export function SublineSeparator(): ReactNode {
 /// pasan ya traducidas y van en el menú ⋮; la principal queda a la derecha.
 export function Page({
   title,
+  help,
   summary,
   backTo,
   status,
@@ -139,6 +143,8 @@ export function Page({
   phoneBody = "padded",
 }: PageProps): ReactNode {
   const chrome = useAppChrome();
+  const helpId = useId();
+  const info = help ? <InfoTip id={helpId} text={help} title={title} /> : null;
   const [tools, setTools] = useState<HTMLDivElement | null>(null);
   const [leadingTools, setLeadingTools] = useState<HTMLDivElement | null>(null);
   // Tablero M-Empresa («Administra solo la empresa»): una pantalla cuyo ‹ vuelve al Inicio es del Inicio, y la barra de
@@ -196,7 +202,7 @@ export function Page({
     // chat mide justo el alto del marco: el `main` no se desplaza, la barra queda arriba y la caja de escribir, abajo.
     return withTabs(<div className={cn("flex flex-col", phoneBody === "chat" ? "min-h-0 flex-1" : "min-h-full shrink-0",
       phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--superficie)]")}>
-      <AppBar title={title} back={back} subtitle={phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
+      <AppBar title={title} titleHelp={info} back={back} subtitle={phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
         leading={<div ref={setLeadingTools} className="flex items-center empty:hidden" />}
         actions={<>
           <div ref={setTools} className="flex items-center" />
@@ -238,7 +244,10 @@ export function Page({
             </Link>
           ) : null}
           <div className="min-w-0">
-            <h1 className="truncate text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>
+            {info ? <span className="flex min-w-0 items-center gap-1.5">
+              <h1 aria-describedby={helpId} className="truncate text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>
+              {info}
+            </span> : <h1 className="truncate text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>}
             {summary === null || summary === undefined ? (
               status ? <p data-slot="page-subline" className="mt-0.5 truncate text-[0.8125rem] text-[var(--t2)]">{status}</p> : null
             ) : (

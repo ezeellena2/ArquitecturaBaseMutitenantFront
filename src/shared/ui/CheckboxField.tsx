@@ -1,16 +1,17 @@
 import { useId, type ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
 import { Checkbox } from "./checkbox";
+import { InfoTip } from "./InfoTip";
 import { Label } from "./label";
 
 interface CheckboxFieldProps {
   label: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
-  /// Línea de ayuda debajo de la etiqueta.
-  description?: string;
-  /// Va debajo de la ayuda, sin reemplazarla: el error dice qué falta y la ayuda, por qué hace falta ("Sin esto,
-  /// WhatsApp no permite escribirle primero"). Es lo que distingue a una casilla de un `FormField`.
+  /// La ayuda que sirve para decidir (116): una (i) al final de la etiqueta, con su tooltip; es la descripción de la
+  /// casilla. Sin línea de ayuda debajo.
+  help?: string;
+  /// Debajo de la etiqueta: dice qué falta.
   error?: string;
   disabled?: boolean;
 }
@@ -21,20 +22,20 @@ interface CheckboxFieldProps {
 ///
 /// La fila es la del selector de permisos del tablero ("Roles · Editar un rol"): se ilumina entera al pasar el
 /// mouse, así que tiene que marcarse entera al hacerle clic. Para eso el `after` de la etiqueta se estira sobre
-/// toda la fila, en vez de meter la ayuda adentro del `<label>`: ahí dejaría de ser la descripción y pasaría a
-/// ser parte del nombre accesible.
+/// toda la fila; la (i) de la ayuda queda afuera del `<label>`, encima, para que su texto sea la descripción y no
+/// parte del nombre accesible.
 export function CheckboxField({
   label,
   checked,
   onCheckedChange,
-  description,
+  help,
   error,
   disabled,
 }: CheckboxFieldProps): ReactNode {
   const id = useId();
-  const descriptionId = `${id}-description`;
+  const helpId = `${id}-help`;
   const errorId = `${id}-error`;
-  const describedBy = [description ? descriptionId : undefined, error ? errorId : undefined].filter(Boolean).join(" ");
+  const describedBy = [help ? helpId : undefined, error ? errorId : undefined].filter(Boolean).join(" ");
 
   return (
     <div
@@ -56,20 +57,18 @@ export function CheckboxField({
         className="mt-px border-[var(--t2)]"
       />
       <div className="flex flex-col gap-0.5">
-        <Label
-          htmlFor={id}
-          className={cn(
-            "text-[0.84375rem] leading-[1.2]",
-            disabled ? "text-[var(--t2)]" : "cursor-pointer after:absolute after:inset-0",
-          )}
-        >
-          {label}
-        </Label>
-        {description ? (
-          <p id={descriptionId} className="text-[0.78125rem] leading-[1.4] text-[var(--t2)]">
-            {description}
-          </p>
-        ) : null}
+        <span className="inline-flex items-center gap-1">
+          <Label
+            htmlFor={id}
+            className={cn(
+              "text-[0.84375rem] leading-[1.2]",
+              disabled ? "text-[var(--t2)]" : "cursor-pointer after:absolute after:inset-0",
+            )}
+          >
+            {label}
+          </Label>
+          {help ? <InfoTip id={helpId} text={help} title={label} /> : null}
+        </span>
         {error ? (
           <p id={errorId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">
             {error}

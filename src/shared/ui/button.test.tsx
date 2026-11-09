@@ -1,12 +1,17 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { toast } from "sonner";
+import { describe, expect, it, vi } from "vitest";
+import { AppChromeProvider } from "./app/AppChrome";
 import { Button } from "./button";
+
+vi.mock("sonner", async (importOriginal) => ({ ...(await importOriginal<typeof import("sonner")>()), toast: vi.fn() }));
 
 // Tablero «Criterio · Botones»: cuatro tipos (principal, secundario, peligro y enlace) y tres tamaños, más el de ícono.
 describe("Button · Criterio · Botones", () => {
-  // «Criterio · Botones» y «Criterio · Decisiones» (lienzo v107, 04/10/2026): el principal lleva el degradé de la marca en
-  // todas las pantallas, también en el teléfono, con su sombra; con el mouse encima, un poco más claro.
-  it("normal de 36 con texto de 14, chico de 32 con 13 y grande de 44 con 15; el principal con el degradé de la marca", () => {
+  // «Criterio · Botones» (173): el principal es sólido en la marca en todas las pantallas, también en el teléfono, sin
+  // degradé ni sombra; con el mouse encima, en --marca-h.
+  it("normal de 36 con texto de 14, chico de 32 con 13 y grande de 44 con 15; el principal, sólido en la marca", () => {
     render(
       <>
         <Button>{"Guardar cambios"}</Button>
@@ -87,5 +92,33 @@ describe("Button · Criterio · Botones", () => {
     expect(button).toBeEnabled();
     expect(button).not.toHaveAttribute("data-pending");
     expect(button.querySelector("[data-slot='button-ring']")).toBeNull();
+  });
+
+  // «Criterio · Botones» (116): un botón apagado cuyo motivo no es obvio lo dice en su tooltip, sin texto al lado ni debajo;
+  // sigue en el recorrido del teclado para que se lea, y tocarlo no hace nada.
+  it("apagado con su motivo: lo dice en el tooltip y en su descripción, y no hace nada", async () => {
+    const onClick = vi.fn();
+    const user = userEvent.setup();
+    render(<Button disabledReason="Guardá los cambios antes de publicar." onClick={onClick}>{"Publicar"}</Button>);
+
+    const button = screen.getByRole("button", { name: "Publicar" });
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(button).not.toBeDisabled();
+    expect(button).toHaveClass("opacity-50");
+    expect(button).toHaveAccessibleDescription("Guardá los cambios antes de publicar.");
+    await user.click(button);
+    expect(onClick).not.toHaveBeenCalled();
+    expect(toast).not.toHaveBeenCalled();
+    await user.hover(button);
+    expect((await screen.findByRole("tooltip")).textContent).toContain("Guardá los cambios antes de publicar.");
+  });
+
+  it("en el teléfono, tocar un botón apagado muestra su motivo en la franja oscura de abajo", async () => {
+    render(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+      <Button disabledReason="Guardá los cambios antes de publicar.">{"Publicar"}</Button>
+    </AppChromeProvider>);
+
+    await userEvent.click(screen.getByRole("button", { name: "Publicar" }));
+    expect(toast).toHaveBeenCalledWith("Guardá los cambios antes de publicar.");
   });
 });

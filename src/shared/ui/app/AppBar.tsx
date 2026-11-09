@@ -15,8 +15,10 @@ export const AppBarBellProvider = AppBarBellContext.Provider;
 // acciones de la pantalla y, sin ‹, la campana. Debajo de la barra, lo que sigue pasando en toda la app (M-Avisos: sin
 // conexión; la versión nueva va en la campana). Queda fija arriba y, con `viewport-fit=cover`, deja libre la barra de
 // estado (.ap-est) con el margen seguro, como la de abajo la raya de inicio.
-export function AppBar({ title, subtitle, back, actions, leading }: {
+export function AppBar({ title, titleHelp, subtitle, back, actions, leading }: {
   title: string;
+  /** La (i) de la ayuda de la pantalla, junto al título (116). */
+  titleHelp?: ReactNode;
   subtitle?: ReactNode;
   back?: { to: string; label: string };
   actions?: ReactNode;
@@ -32,7 +34,10 @@ export function AppBar({ title, subtitle, back, actions, leading }: {
     <div className="min-w-0 flex-1">
       {/* .ap-bar h1 y .sub: el interlineado va después del tamaño, o tailwind-merge lo borra (y el título tomaba el 1.5 de
           la página: la bajada quedaba 4 a 6 px más abajo). La bajada, con el interlineado normal. */}
-      <h1 className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[1.25rem]" : "text-[1.5rem]", "leading-[1.15]")}>{title}</h1>
+      {titleHelp ? <span className="flex min-w-0 items-center gap-1.5">
+        <h1 className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[1.25rem]" : "text-[1.5rem]", "leading-[1.15]")}>{title}</h1>
+        {titleHelp}
+      </span> : <h1 className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[1.25rem]" : "text-[1.5rem]", "leading-[1.15]")}>{title}</h1>}
       {subtitle ? <span className="block truncate text-[0.78125rem] leading-[normal] font-medium text-[var(--t3)]">{subtitle}</span> : null}
     </div>
     {actions ? <div className="flex shrink-0 items-center">{actions}</div> : null}

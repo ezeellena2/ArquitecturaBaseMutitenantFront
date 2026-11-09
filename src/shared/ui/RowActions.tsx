@@ -1,4 +1,5 @@
 import { useId, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { toast } from "sonner";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "./app/AppChrome";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./dialog";
@@ -10,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 import { MoreVerticalIcon } from "./icons";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
 export interface RowAction {
   label: string;
@@ -54,18 +56,20 @@ export function RowActions({ label, title, actions }: { label: string; title?: s
   </button>;
 
   // Apagada, la opción sigue en el recorrido del teclado para que se lea su motivo, pero no hace nada ni cierra el menú.
+  // «Criterio · Menús» (116): gris y sin texto debajo; el motivo va en su tooltip y es su descripción.
   const menuItem = (action: RowAction, id: string, danger: boolean) => {
     const Icon = action.icon;
     const off = action.disabledReason !== undefined;
-    return (
+    const item = (
       <DropdownMenuItem key={id} aria-label={action.accessibleName} variant={danger && !off ? "destructive" : "default"}
         aria-disabled={off || undefined} aria-describedby={off ? id : undefined}
-        className={off ? "flex-col items-start gap-0.5 text-[var(--t3)] focus:bg-transparent focus:text-[var(--t3)] [&_svg:not([class*='text-'])]:text-[var(--t3)]" : undefined}
+        className={off ? "text-[var(--t3)] focus:bg-transparent focus:text-[var(--t3)] [&_svg:not([class*='text-'])]:text-[var(--t3)]" : undefined}
         onSelect={(event) => { if (off) event.preventDefault(); else action.onSelect(trigger.current); }}>
         <span className="inline-flex items-center gap-2"><Icon className={cn("size-4", danger && !off ? "text-current" : "text-[var(--t3)]")} />{action.label}</span>
-        {off ? <span id={id} className="pl-6 text-[0.75rem] leading-[1.35] whitespace-normal">{action.disabledReason}</span> : null}
+        {off ? <span id={id} hidden>{action.disabledReason}</span> : null}
       </DropdownMenuItem>
     );
+    return off ? <Tooltip key={id}><TooltipTrigger asChild>{item}</TooltipTrigger><TooltipContent side="left">{action.disabledReason}</TooltipContent></Tooltip> : item;
   };
 
   if (phone) return <>
@@ -78,9 +82,11 @@ export function RowActions({ label, title, actions }: { label: string; title?: s
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{button}</DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {regular.map((action, index) => menuItem(action, `${reasonId}-r${index}`, false))}
-        {regular.length > 0 && destructive.length > 0 ? <DropdownMenuSeparator /> : null}
-        {destructive.map((action, index) => menuItem(action, `${reasonId}-d${index}`, true))}
+        <TooltipProvider>
+          {regular.map((action, index) => menuItem(action, `${reasonId}-r${index}`, false))}
+          {regular.length > 0 && destructive.length > 0 ? <DropdownMenuSeparator /> : null}
+          {destructive.map((action, index) => menuItem(action, `${reasonId}-d${index}`, true))}
+        </TooltipProvider>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -104,16 +110,17 @@ export function PhoneActionsSheet<T extends PhoneSheetAction>({ open, onOpenChan
   reasonId: string;
   onSelect: (action: T) => void;
 }) {
-  // Tablero M-WA-Chats-Formulario (.ap-menu span.off): apagada, en gris y con el motivo debajo, de 13.
+  // Tablero M-WA-Chats-Formulario (.ap-menu span.off): apagada, en gris y sin texto debajo; tocarla muestra su motivo en
+  // la franja oscura de abajo (116), y el lector lo lee como su descripción.
   const option = (action: T, danger: boolean, id: string) => {
     const off = action.disabledReason !== undefined;
     return <button key={action.label} type="button" role="menuitem" aria-label={action.accessibleName}
       aria-disabled={off || undefined} aria-describedby={off ? id : undefined}
-      onClick={off ? undefined : () => onSelect(action)}
+      onClick={off ? () => toast(action.disabledReason) : () => onSelect(action)}
       className={cn("flex min-h-13.5 w-full items-center border-t border-[var(--borde)] px-5 text-left text-[1.03125rem] first:border-t-0 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]",
-        off ? "cursor-default flex-col items-start justify-center gap-0.5 py-2.5 text-[var(--t3)]" : danger ? "text-[var(--peligro)]" : "text-[var(--t1)]")}>
+        off ? "cursor-default text-[var(--t3)]" : danger ? "text-[var(--peligro)]" : "text-[var(--t1)]")}>
       {action.label}
-      {off ? <span id={id} className="text-[0.8125rem] leading-[1.35]">{action.disabledReason}</span> : null}
+      {off ? <span id={id} hidden>{action.disabledReason}</span> : null}
     </button>;
   };
   return <Dialog open={open} onOpenChange={onOpenChange}>

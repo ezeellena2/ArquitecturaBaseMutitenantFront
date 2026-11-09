@@ -1,14 +1,15 @@
 import { useId, type ReactNode } from "react";
 import { RadioGroup } from "radix-ui";
 import { cn } from "@/shared/lib/utils";
+import { InfoTip } from "./InfoTip";
 import { Label } from "./label";
 
 export interface RadioOption {
   value: string;
   label: string;
-  /// Línea de ayuda debajo de la etiqueta. En una opción apagada, es el porqué ("Cargá un correo para usar esta
-  /// opción"): un botón de opción apagado no recibe foco, así que la razón tiene que estar a la vista.
-  description?: string;
+  /// La ayuda de la opción (116): una (i) al final, con su tooltip; es su descripción. En una opción apagada, es el
+  /// porqué ("Cargá un correo para usar esta opción").
+  help?: string;
   disabled?: boolean;
 }
 
@@ -57,7 +58,7 @@ export function RadioGroupField({ label, options, value, onValueChange, error, v
       >
         {options.map((option) => {
           const optionId = `${id}-${option.value}`;
-          const descriptionId = `${optionId}-description`;
+          const helpId = `${optionId}-help`;
 
           if (variant === "segmented") return <RadioGroup.Item key={option.value} value={option.value} disabled={option.disabled}
             className="relative flex min-h-7.5 min-w-0 items-center justify-center rounded-[0.5rem] px-2 py-1 text-center text-[0.8125rem] leading-[1.25] font-semibold text-[var(--t2)] [overflow-wrap:anywhere] outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] data-[state=unchecked]:enabled:hover:bg-[var(--s2)] data-[state=checked]:bg-[var(--marca)] data-[state=checked]:text-[var(--superficie)] disabled:cursor-not-allowed disabled:opacity-50 max-md:min-h-11 max-md:min-w-11 max-md:rounded-[0.5625rem] max-md:text-[0.90625rem]">
@@ -76,14 +77,14 @@ export function RadioGroupField({ label, options, value, onValueChange, error, v
                 id={optionId}
                 value={option.value}
                 disabled={option.disabled}
-                aria-describedby={option.description ? descriptionId : undefined}
+                aria-describedby={option.help ? helpId : undefined}
                 className={cn(
                   "size-4 shrink-0 rounded-full border-[1.5px] border-[var(--borde2)] bg-[var(--superficie)] outline-none",
                   "focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] data-[state=checked]:border-[0.3125rem] data-[state=checked]:border-[var(--marca)]",
                   "disabled:cursor-not-allowed disabled:opacity-50",
                 )}
               />
-              <div className="flex min-w-0 flex-col gap-0.5">
+              <span className="flex min-w-0 items-center gap-1">
                 {/* El rótulo cubre la tarjeta entera: tocarla en cualquier lado elige la opción. */}
                 <Label
                   htmlFor={optionId}
@@ -94,12 +95,8 @@ export function RadioGroupField({ label, options, value, onValueChange, error, v
                 >
                   {option.label}
                 </Label>
-                {option.description ? (
-                  <p id={descriptionId} className="text-[0.78125rem] leading-[1.4] text-[var(--t2)]">
-                    {option.description}
-                  </p>
-                ) : null}
-              </div>
+                {option.help ? <InfoTip id={helpId} text={option.help} title={option.label} /> : null}
+              </span>
             </div>
           );
         })}

@@ -1,4 +1,6 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { axe } from "vitest-axe";
 import { describe, expect, it } from "vitest";
 import { FormField } from "./FormField";
 import { Input } from "./input";
@@ -28,14 +30,25 @@ describe("FormField", () => {
     expect(input).toHaveAccessibleDescription("Ingresá un correo válido.");
   });
 
-  it("shows the hint when there is no error", () => {
-    render(
-      <FormField label="Código" htmlFor="code" hint="Te lo mandamos por email.">
+  // 116 («Criterio · Formularios», .i-ay): la ayuda va en una (i) junto al rótulo, con su tooltip, y es la descripción
+  // del campo; sin leyenda debajo, y la (i) no toma el foco ni se suma al nombre del campo.
+  it("puts the help in the (i) next to the label, as the field's description", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <FormField label="Código" htmlFor="code" help="Te lo mandamos por email." required>
         <Input id="code" />
       </FormField>,
     );
 
-    expect(screen.getByLabelText("Código")).toHaveAccessibleDescription("Te lo mandamos por email.");
+    const input = screen.getByRole("textbox", { name: "Código" });
+    expect(input).toHaveAccessibleDescription("Te lo mandamos por email.");
+    expect(screen.queryByText("Te lo mandamos por email.")).not.toBeVisible();
+    const info = container.querySelector("[data-slot='info-tip']")!;
+    expect(info).toHaveAttribute("aria-hidden", "true");
+    expect(info).not.toHaveAttribute("tabindex");
+    await user.hover(info);
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Te lo mandamos por email.");
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("announces a required field and uses the compact field label style", () => {

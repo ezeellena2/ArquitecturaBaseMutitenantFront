@@ -20,19 +20,22 @@ describe("CheckboxField", () => {
     expect(onCheckedChange).toHaveBeenCalledWith(true);
   });
 
-  it("describes the checkbox with its help line", () => {
-    renderWithProviders(
-      <CheckboxField label="Admin" description="Puede hacer todo." checked onCheckedChange={vi.fn()} />,
+  // 116: la ayuda va en la (i) al final de la etiqueta, sin línea debajo, y es la descripción de la casilla.
+  it("describes the checkbox with the help of its (i), without a line below", () => {
+    const { container } = renderWithProviders(
+      <CheckboxField label="Admin" help="Puede hacer todo." checked onCheckedChange={vi.fn()} />,
     );
 
     expect(screen.getByRole("checkbox", { name: "Admin" })).toHaveAccessibleDescription("Puede hacer todo.");
+    expect(screen.queryByText("Puede hacer todo.")).not.toBeVisible();
+    expect(container.querySelector("[data-slot='info-tip']")).not.toBeNull();
   });
 
   it("shows the error under the box and marks the checkbox as invalid", () => {
     renderWithProviders(
       <CheckboxField
         label="Aceptó recibir mensajes"
-        description="Sin esto, WhatsApp no permite escribirle primero."
+        help="Sin esto, WhatsApp no permite escribirle primero."
         error="Confirmá que la persona aceptó recibir mensajes por WhatsApp."
         checked={false}
         onCheckedChange={vi.fn()}

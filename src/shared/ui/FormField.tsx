@@ -1,12 +1,15 @@
 import { cloneElement, useId, type ReactElement, type ReactNode } from "react";
 import { cn } from "cn";
+import { InfoTip } from "./InfoTip";
 import { Label } from "./label";
 
 interface FormFieldProps {
   label: string;
   /// Id del control. Si no se pasa, se genera uno y se le enchufa al hijo.
   htmlFor?: string;
-  hint?: string;
+  /// La ayuda que sirve para decidir (116): va en una (i) junto al rótulo, con su tooltip, y es la descripción del
+  /// campo. Sin leyendas debajo: el renglón de abajo es solo para el error.
+  help?: string;
   error?: string;
   required?: boolean;
   /// A la derecha del rótulo, en la misma línea: la casilla «Todos» de un desplegable de varios.
@@ -16,11 +19,13 @@ interface FormFieldProps {
 }
 
 /// Etiqueta, control y mensaje de error, atados entre sí para lectores de pantalla (sección 7.4).
-export function FormField({ label, htmlFor, hint, error, required, aside, variant = "default", children }: FormFieldProps): ReactNode {
+export function FormField({ label, htmlFor, help, error, required, aside, variant = "default", children }: FormFieldProps): ReactNode {
   const generatedId = useId();
   const controlId = htmlFor ?? children.props.id ?? generatedId;
   const messageId = `${controlId}-message`;
-  const message = error ?? hint;
+  const helpId = `${controlId}-help`;
+  const message = error;
+  const describedBy = [help ? helpId : undefined, message ? messageId : undefined].filter(Boolean).join(" ") || undefined;
 
   // «Criterio · Formularios»: rótulo de 12,5 a 6 del campo; en el teléfono de la app (tableros M-*, .ap-cmp .rt), de 13,5
   // con el interlineado normal. En ingreso y registro (tableros Ingreso, Registro y sus M-*), de 12,5 en cualquier tamaño.
@@ -28,6 +33,8 @@ export function FormField({ label, htmlFor, hint, error, required, aside, varian
     {label}
     {/* Tablero «Criterio · Formularios»: el asterisco de obligatorio va en rojo. */}
     {required ? <span aria-hidden="true" className="text-[var(--peligro)]">{" *"}</span> : null}
+    {/* «Criterio · Formularios» (.i-ay): la (i), después del asterisco. */}
+    {help ? <InfoTip id={helpId} text={help} title={label} /> : null}
   </Label>;
 
   return (
@@ -39,15 +46,11 @@ export function FormField({ label, htmlFor, hint, error, required, aside, varian
         // tamaño; en el teléfono no toman los 48, 12 y 16 de los campos de la app.
         className: variant === "auth" ? cn(children.props.className, "h-11 rounded-[0.625rem] px-3.5 text-[0.9375rem] max-md:h-11 max-md:rounded-[0.625rem] max-md:text-[0.9375rem]") : children.props.className,
         "aria-invalid": error ? true : undefined,
-        "aria-describedby": message ? messageId : undefined,
+        "aria-describedby": describedBy,
         "aria-required": required ? true : undefined,
       })}
       {message ? (
-        <p
-          id={messageId}
-          role={error ? "alert" : undefined}
-          className={error ? "text-[0.78125rem] text-[var(--peligro)]" : "text-[0.78125rem] text-[var(--t2)]"}
-        >
+        <p id={messageId} role="alert" className="text-[0.78125rem] text-[var(--peligro)]">
           {message}
         </p>
       ) : null}

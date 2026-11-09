@@ -1,10 +1,13 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { toast } from "sonner";
 import { describe, expect, it, vi } from "vitest";
 import { RowActions, type RowAction } from "./RowActions";
 import { AppChromeProvider } from "./app/AppChrome";
 import { ShieldIcon } from "./icons";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
+
+vi.mock("sonner", async (importOriginal) => ({ ...(await importOriginal<typeof import("sonner")>()), toast: vi.fn() }));
 
 function action(overrides: Partial<RowAction> = {}): RowAction {
   return {
@@ -126,9 +129,10 @@ describe("RowActions", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
-  // R10 («Criterio · Menús», 13/10; tablero M-WA-Chats-Formulario, .ap-menu span.off): una opción que no se puede usar por
-  // algo que se puede resolver va apagada, en gris y con el motivo debajo; se lee con el teclado, pero no hace nada.
-  it.each([["la compu", false], ["el teléfono", true]] as const)("en %s, una opción apagada muestra su motivo y no corre", async (_, phone) => {
+  // R10 y 116 («Criterio · Menús»; tablero M-WA-Chats-Formulario, .ap-menu span.off): una opción que no se puede usar por
+  // algo que se puede resolver va apagada, en gris y sin texto debajo; el motivo va en su tooltip (en el teléfono, tocarla
+  // lo muestra en la franja oscura de abajo) y es su descripción. Se lee con el teclado, pero no hace nada.
+  it.each([["la compu", false], ["el teléfono", true]] as const)("en %s, una opción apagada dice su motivo sin texto debajo y no corre", async (_, phone) => {
     const onSelect = vi.fn();
     renderWithProviders(<AppChromeProvider value={{ phone, parent: null, subtitle: null, hideBottomNav: () => {} }}>
       <RowActions label="Acciones de Auditor" actions={[action(),
@@ -144,8 +148,14 @@ describe("RowActions", () => {
     expect(off).toHaveClass("text-[var(--t3)]");
     // Apagada no va en rojo, aunque sea de peligro.
     if (phone) expect(off).not.toHaveClass("text-[var(--peligro)]"); else expect(off).toHaveAttribute("data-variant", "default");
+    expect(screen.queryByText("Lo tiene 1 usuario. Quitáselo primero.")).not.toBeVisible();
+    if (!phone) {
+      await userEvent.hover(off);
+      expect((await screen.findByRole("tooltip")).textContent).toContain("Lo tiene 1 usuario. Quitáselo primero.");
+    }
     await userEvent.click(off);
     expect(onSelect).not.toHaveBeenCalled();
     expect(screen.getByRole("menuitem", { name: "Inactivar" })).toBeVisible();
+    if (phone) expect(toast).toHaveBeenCalledWith("Lo tiene 1 usuario. Quitáselo primero.");
   });
 });

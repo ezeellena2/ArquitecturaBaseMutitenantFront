@@ -6,7 +6,7 @@ import { RadioGroupField } from "./RadioGroupField";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 
 const options = [
-  { value: "Email", label: "Por correo", description: "Cargá un correo para usar esta opción.", disabled: true },
+  { value: "Email", label: "Por correo", help: "Cargá un correo para usar esta opción.", disabled: true },
   { value: "WhatsApp", label: "Por WhatsApp" },
 ];
 
@@ -64,7 +64,7 @@ describe("RadioGroupField", () => {
     expect(screen.getByRole("radio", { name: "Por correo" })).not.toBeChecked();
   });
 
-  it("disables an option and says why with its help line", () => {
+  it("disables an option and says why in the help of its (i)", () => {
     renderWithProviders(<RadioGroupField label="Por dónde" options={options} value="WhatsApp" onValueChange={vi.fn()} />);
 
     const email = screen.getByRole("radio", { name: "Por correo" });
