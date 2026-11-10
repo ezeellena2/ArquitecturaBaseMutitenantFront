@@ -22,7 +22,7 @@ Quedan como están, a propósito: lo que no es una fecha (lo que dura algo, como
 «Te quedan 10 consultas hoy» o «Consultas hoy», y el filtro «Hoy» de Auditoría, que la app también tiene; los horarios, y lo que
 escribe una persona, un bot o el asistente en un mensaje, como «Mañana paso por el depósito.»); la hora sola de una burbuja y de
 la actividad de una respuesta, porque la fecha va una vez por día, en el separador o en la primera fila, como en la app y en
-ArquitecturaBase; los días del eje «por día» del tablero (26, 27…), que esperan una decisión; el texto de una regla que nombra lo
+ArquitecturaBase; los días del eje «por día» del tablero (26, 27…), que pasa `eje_por_dia_1004.py` (v173); el texto de una regla que nombra lo
 prohibido; lo que dibuja una pantalla que no es nuestra (el correo y el WhatsApp de `Mensajes`); lo que un tablero no dibuja (`rel`
 y `resumen` de `Auditoria-Org`), y el Archivo.
 

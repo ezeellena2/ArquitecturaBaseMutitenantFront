@@ -613,6 +613,9 @@ DECISIONES = {
         ("«Por aprobar»", "PL1-A", "Elegido por el usuario: «Por aprobar (N) | Todas» arriba de la planilla, con el segmentado y no con pestañas (148).", "Falta dibujar"),
         ("El mensaje con datos", "MD1-A", "Elegido por el usuario: «Agregar dato» pone etiquetas que siguen a la pregunta, con «Así llega» debajo (149).", "Falta dibujar"),
     ],
+    "El eje por día · El usuario · v173 · 10/11": [
+        ("Un gráfico por día", "", "Elegido por el usuario: cada marca del eje lleva la fecha completa, 27/09/2026, y nunca «27/09», el día solo ni una fecha relativa; para que entren, van menos marcas: una por semana en la compu y, en el teléfono, las que entran sin pisarse, como mínimo la primera y la última. El cartel de cada barra también lleva la fecha completa. Precisa «Las fechas» (25/10); se descartó el día solo, con el mes y el año una vez abajo (FRM-Tablero, -19 y -21).", "Dibujada"),
+    ],
     "Revisión de las specs · v169 · 08/11": [
         ("Elegir primero por un campo", "LD1-A a LD3-A", "Una pregunta de catálogo pide primero el valor de un campo, como «Rubro», y lista solo las opciones con ese valor, también por WhatsApp. Va después del bloque, con las listas dependientes en WhatsApp: de la E12 a la E25 no cambia nada (191).", "Decidido"),
         ("Un pedido vago", "", "La IA propone enseguida su mejor versión y la persona la ajusta; pregunta una sola vez, con sus palabras, solo si no sabe qué armar. Es fijo solo lo que tiene que ser exacto: los botones, el resumen, la oferta de un formulario y el mensaje al derivar (192; precisa la 155).", "Dibujada en parte"),
