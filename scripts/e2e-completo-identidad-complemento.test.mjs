@@ -139,7 +139,8 @@ test("cambiar organización espera la ficha antes de decidir acción y conserva 
     const waiting = Promise.withResolvers(); const loaded = Promise.withResolvers(); const actions = []; let ready = false;
     const direct = { filter: () => direct, first: () => direct, isVisible: async () => { assert.equal(ready, true); return mode === "directo"; },
       click: async () => actions.push("abrir directo"), or: () => ({ first: () => ({ waitFor: async () => { waiting.resolve(); await loaded.promise; } }) }) };
-    const menu = { filter: () => menu, first: () => menu, getAttribute: async () => "dialog", click: async () => actions.push("abrir hoja") };
+    const menu = { filter: () => menu, first: () => menu, waitFor: async ({ state }) => assert.equal(state, "visible"),
+      getAttribute: async () => "dialog", click: async () => actions.push("abrir hoja") };
     const dialog = { filter: () => dialog, getByRole: (role) => role === "textbox" ? { fill: async (reason) => assert.match(reason, /última Dueña/u) } : { click: async () => actions.push("confirmar") }, waitFor: async ({ state }) => assert.equal(state, "hidden") };
     const sheetMenu = { waitFor: async () => {}, getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.equal(options.name, "Suspender"); return { click: async () => actions.push("opción Suspender") }; } };
     const sheet = { waitFor: async () => {}, getByRole: (role) => { assert.equal(role, "menu"); return sheetMenu; } };
