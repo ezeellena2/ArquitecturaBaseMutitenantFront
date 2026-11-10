@@ -424,11 +424,12 @@ export async function runBase12Journey({ page, platformPage, width, env, base, r
     await step("07", async () => {
       phase = "mi cuenta"; await openAccount();
       phase = "pedir el borrado";
-      await page.getByRole("main").getByRole("button", { name: "Borrar mi cuenta", exact: true }).click();
+      // La fila se llama «Borrar mi cuenta»; su botón y el del diálogo dicen «Borrar» (v168).
+      await page.getByRole("main").getByRole("button", { name: "Borrar", exact: true }).click();
       const dialog = page.getByRole("dialog", { name: "¿Borrar tu cuenta?", exact: true });
       await dialog.getByRole("textbox", { name: /^Motivo/u }).fill("Recorrido de la base de la 12: lo pide y lo cancela.");
       const [requested] = await responsesForAction(page, [responseFor("/api/me/deletion", "POST")],
-        () => dialog.getByRole("button", { name: "Borrar mi cuenta", exact: true }).click());
+        () => dialog.getByRole("button", { name: "Borrar", exact: true }).click());
       assert.equal(requested.status(), 200, "El borrado se pide.");
       await heading(page, "Cerramos tu sesión");
       await page.getByText(/^Tu cuenta se borra el \d{2}\/\d{2}\/\d{4}\.$/u).waitFor();
