@@ -172,8 +172,8 @@ export function LoadPhonesPage() {
       <Section title={t("whatsapp:phones.invitees")}>
         <SectionFields className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">
           {phone ? <ul className="m-0 list-none p-0">
-            <SettingsItem title={t("whatsapp:phones.form.company")} detail={companyName ?? t("whatsapp:phones.form.noCompany")} onClick={() => setSheet("company")} />
-            <SettingsItem title={t("whatsapp:phones.form.roles")} tone={company.field.value ? undefined : "muted"}
+            <SettingsItem title={t("whatsapp:phones.form.company")} label={t("whatsapp:phones.form.company")} detail={companyName ?? t("whatsapp:phones.form.noCompany")} onClick={() => setSheet("company")} />
+            <SettingsItem title={t("whatsapp:phones.form.roles")} label={t("whatsapp:phones.form.roles")} tone={company.field.value ? undefined : "muted"}
               detail={company.field.value ? roleNames || t("whatsapp:phones.form.noRoles") : t("whatsapp:phones.form.chooseCompanyFirst")}
               onClick={company.field.value ? () => setSheet("roles") : undefined} />
           </ul> : <>

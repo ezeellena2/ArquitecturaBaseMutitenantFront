@@ -21,7 +21,7 @@ const lineClass = "relative [&+&]:before:absolute [&+&]:before:top-0 [&+&]:befor
 
 /// Una fila del grupo: el dato y, en gris debajo, lo que lo aclara; a la derecha, una flecha si lleva a otra pantalla,
 /// o la acción que pida (⋮, «Verificar»).
-export function SettingsItem({ title, detail, leading, to, onClick, trailing, tone }: {
+export function SettingsItem({ title, detail, leading, to, onClick, trailing, tone, label }: {
   title: ReactNode;
   detail?: ReactNode;
   leading?: ReactNode;
@@ -29,14 +29,17 @@ export function SettingsItem({ title, detail, leading, to, onClick, trailing, to
   onClick?: () => void;
   trailing?: ReactNode;
   tone?: "danger" | "muted";
+  /** El nombre para el lector, cuando no es todo lo que dice la fila: con él, el detalle queda como su descripción
+   * («Empresa», que describe «Delta S.A.», M-WA-Telefonos). Sin él, la fila se nombra por todo su contenido, como un
+   * perfil de «Más»: «Grupo Delta Dueño Perfil actual». */
+  label?: string;
 }) {
-  // Como PhoneTapRow: el título nombra lo que se abre y el detalle lo describe, así el lector dice primero qué se abre.
   const id = useId();
-  const labels = { "aria-labelledby": `${id}-title`, "aria-describedby": detail ? `${id}-detail` : undefined };
+  const labels = label ? { "aria-label": label, "aria-describedby": detail ? `${id}-detail` : undefined } : {};
   const content = <>
     {leading}
     <span className="flex min-w-0 flex-1 flex-col gap-px leading-tight">
-      <span id={`${id}-title`} className={cn("text-[0.96875rem] font-medium [overflow-wrap:anywhere]", tone === "danger" && "text-[var(--peligro)]")}>{title}</span>
+      <span className={cn("text-[0.96875rem] font-medium [overflow-wrap:anywhere]", tone === "danger" && "text-[var(--peligro)]")}>{title}</span>
       {detail ? <span id={`${id}-detail`} className="text-[0.8125rem] text-[var(--t3)] [overflow-wrap:anywhere]">{detail}</span> : null}
     </span>
     {trailing ?? (to || onClick ? <ChevronRight aria-hidden="true" className="size-4.5 shrink-0 text-[var(--t3)]" /> : null)}

@@ -63,6 +63,8 @@ describe("Más en el teléfono", () => {
     const profiles = screen.getByRole("list", { name: "Perfiles" });
     expect(within(profiles).getByText("Personal")).toBeInTheDocument();
     expect(within(profiles).getByText("Empresa A")).toBeInTheDocument();
+    // La fila de un perfil se nombra por todo lo que dice: la organización, el rol y la tilde del perfil actual.
+    expect(within(profiles).getByRole("button", { name: /^Empresa A.*Perfil actual$/u })).toBeInTheDocument();
     const administration = screen.getByRole("list", { name: "Administración" });
     expect(within(administration).getByRole("link", { name: "Usuarios" })).toHaveAttribute("href", "/org/usuarios");
     // M-WA-Menu: en «Más», «Roles» a secas; la pantalla que abre sigue titulada «Roles y permisos».
