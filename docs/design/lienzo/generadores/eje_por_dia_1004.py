@@ -16,6 +16,10 @@ Lo pasa a los seis tableros con un gráfico por día, el tablero de un formulari
 - las barras de la compu, también las de «Por semana», van en proporción a su valor, en % del alto del gráfico: la escala de la
   180 achicaba solo las de 18 a 72 px (un 1 medía 31,8 y un 2, 87), y la más alta se aplastaba para dejar lugar a los números.
 
+Desde la v174, el eje por semana sigue la misma regla, extendida ese día: cada marca lleva la fecha completa del lunes (21/09/2026)
+y el cartel, el rango, como `DateRangeText` («21/09/2026 – 27/09/2026 · 3 respuestas»); con las cuatro semanas del tablero entran
+todas las marcas. El eje por mes («septiembre de 2026», en la marca y en el cartel) no tiene tablero.
+
 Corre al final de todo, después de `galeria_base12_1004.py` y antes de la pasada de las piezas; al terminar imprime los tableros
 para esa pasada (`python traspaso10_piezas_1004.py --tableros …`). No toca `canvas.json`. Lee y escribe sin cambiar los finales de
 línea, y se puede volver a correr: rehace cada gráfico desde los datos de abajo, que tienen que coincidir con lo que dibuja.
@@ -35,6 +39,9 @@ LLEGARON = {"15": [1, 0, 2, 1, 0, 1, 2, 1, 0, 1, 3, 1, 0, 2, 1, 1, 0, 2, 2, 3],
             "19": [3, 0, 3, 2, 2, 2, 4, 1, 0, 3, 4, 2, 3, 4, 1, 0, 3, 4, 2, 2]}
 MONTO = {"15": [125.5, 0, 87.9, 15.7, 0, 54.2, 212.0, 31.0, 0, 125.5, 160.3, 0, 0, 98.4, 42.0, 15.8, 0, 76.6, 54.3, 118.4],
          "19": [0] * 17 + [298.75, 624.9, 143.0]}
+# Las semanas del tablero, de lunes a domingo; la última, hasta hoy.
+SEMANAS = [(datetime.date(2026, 9, 21), datetime.date(2026, 9, 27)), (datetime.date(2026, 9, 28), datetime.date(2026, 10, 4)),
+           (datetime.date(2026, 10, 5), datetime.date(2026, 10, 11)), (datetime.date(2026, 10, 12), datetime.date(2026, 10, 15))]
 TABLEROS = {"FRM-Tablero": "15", "FRM-Tablero-19": "19", "FRM-Tablero-21": "15",
             "M-FRM-Tablero": "15", "M-FRM-Tablero-19": "19", "M-FRM-Tablero-21": "15"}
 TEL = 10           # el teléfono dibuja los últimos diez días
@@ -133,12 +140,15 @@ def por_dia(cols, forma, cuenta, compu, cartel):
 
 
 def por_semana(cols):
-    """«Cuántas llegaron, por semana» (compu): las mismas barras, con la altura en proporción a su número."""
+    """«Cuántas llegaron, por semana» (compu): cada marca, con la fecha completa del lunes; el cartel, con el rango y lo que vale,
+    como `DateRangeText` (v174), y la altura, en proporción a su número. Acepta las marcas con el rango, como las deja
+    `fechas_completas_1004.py`, o con el lunes, como las deja una corrida anterior."""
     vistos = VALOR.findall(cols)
     marcas = MARCA.findall(cols)
-    assert len(vistos) == len(marcas) == 4 and all(" – " in m for m in marcas), ("las semanas cambiaron", marcas)
+    rangos = [(fecha(a), f"{fecha(a)} – {fecha(b)}") for a, b in SEMANAS]
+    assert len(vistos) == len(marcas) == len(SEMANAS) and all(m in r for m, r in zip(marcas, rangos)), ("las semanas cambiaron", marcas)
     tope = max(int(v) for v in vistos)
-    return "".join(col(v, pct(int(v), tope), m) for v, m in zip(vistos, marcas))
+    return "".join(col(v, pct(int(v), tope), lunes, title=f"{rango} · {cantidad(int(v))}") for v, (lunes, rango) in zip(vistos, rangos))
 
 
 def graficos(t, forma, compu, cartel=None):
