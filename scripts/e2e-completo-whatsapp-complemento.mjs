@@ -10,6 +10,7 @@ import { responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
 import { requireModuleProblem, runModuleDependency } from "./e2e-completo-modulos.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
 import { openBarMenu } from "./e2e-completo-menu-barra.mjs";
+import { checkByLabel } from "./platform-factor-real.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
 const root = "/api/organization/whatsapp";
@@ -587,7 +588,8 @@ async function runWhatsAppSupplementPlan(h, repair, mobile = false) {
       const reviewed = await clickForResponse(ownerPage, ownerPage.getByRole("button", { name: /^Revisar 1 teléfono$/u }).first(), root + "/phone-imports/preview", "POST");
       const preview = await reviewed.json(); assert.equal(preview.invites, 1); assert.equal(preview.invalid, 0);
       // B7: sin la casilla del consentimiento tildada, el back responde 400 WhatsApp.PhoneImport.ConsentRequired.
-      await ownerPage.getByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp", exact: true }).check();
+      // La etiqueta de CheckboxField cubre toda la fila, casilla incluida: se toca la etiqueta, como una persona.
+      await checkByLabel(ownerPage, "La persona aceptó recibir mensajes por WhatsApp");
       const confirmed = await clickForResponse(ownerPage, ownerPage.getByRole("button", { name: "Vincular y mandar 1 invitación", exact: true }).first(), root + "/phone-imports", "POST");
       const request = confirmed.request().postDataJSON(); assert.equal(request.companyId, company.id); assert.equal(request.roleIds.length, 1);
       assert.equal(request.consentConfirmed, true);
