@@ -16,7 +16,7 @@
 |---|---|---|
 | Fecha | DateText, date | es-AR 27/09/2026; en-US 09/27/2026; tooltip absoluto |
 | Fecha y hora | DateText, dateTime | es-AR 27/09/2026 14:35; en-US 09/27/2026 2:35 PM, sin coma |
-| Fecha corta | — | No se usa: una fecha se muestra completa, con su año (decisión del usuario del 2026-10-25). Tampoco en un gráfico por día (E15): cada marca del eje lleva la fecha completa, nunca el día solo, y el cartel de cada barra también; para que entren van menos marcas, una por semana en la compu y, en el teléfono, las que entran sin pisarse, como mínimo la primera y la última (decisión del usuario del 2026-11-10) |
+| Fecha corta | — | No se usa: una fecha se muestra completa, con su año (decisión del usuario del 2026-10-25). Tampoco en un gráfico por día (E15): cada marca del eje lleva la fecha completa, nunca el día solo, y el cartel de cada barra también; para que entren van menos marcas, una por semana en la compu y, en el teléfono, las que entran sin pisarse, como mínimo la primera y la última (decisión del usuario del 2026-11-10). Por semana, la marca lleva la fecha del lunes y el cartel, el rango («21/09/2026 – 27/09/2026»); por mes, «septiembre de 2026» en la marca y en el cartel (E15) |
 | Hora / fecha larga | time / long | 14:35 / 2:35 PM; 27 de septiembre de 2026 / September 27, 2026 |
 | Relativa | — | No se usa: nunca «hace 2 horas»; siempre fecha y hora en la zona de quien mira (decisión del usuario del 2026-10-25) |
 | Calendario | — | No se usa: nunca «hoy» ni «ayer»; siempre fecha y hora (decisión del usuario del 2026-10-25) |
