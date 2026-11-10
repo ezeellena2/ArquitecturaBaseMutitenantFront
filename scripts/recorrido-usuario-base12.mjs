@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
+import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
 import { sideScroll, viewports } from "./capturar-etapa.mjs";
 import { checkByLabel } from "./platform-factor-real.mjs";
 import { nationalPhone } from "./recorrido-usuario-e11.mjs";
@@ -454,6 +455,9 @@ export async function runBase12Journey({ page, platformPage, width, env, base, r
       const active = await platformAccount(personal);
       assert.equal(active.account.state, "Active", "La cuenta vuelve a estar activa.");
       await active.row.getByText("Activa", { exact: true }).waitFor();
+      // En la compu, Inicio es el asistente: en su primera vez ahí abre «Antes de tu primera consulta», que tapa el menú
+      // del perfil. Se acepta al final, cuando ya abrió; en el teléfono el asistente vive en /asistente.
+      if (!isPhone(page)) { phase = "aviso del asistente"; await acceptAssistantNoticeFromHome(page); }
       return "Pidió el borrado con su motivo y se cerró la sesión; Plataforma la vio «Por borrar». Al volver a entrar, «Cancelar el borrado y entrar» la dejó activa.";
     });
     await signOut(page);
