@@ -197,7 +197,7 @@ La versión 173, del 10/11, pasa a los gráficos por día la decisión del usuar
 - cada barra lleva su cartel con la fecha y lo que vale («03/10/2026 · 1 respuesta»), y el estado nuevo «Una barra: su cartel» lo dibuja sobre una barra sin marca;
 - las barras de la compu van en proporción a su valor: la escala de la 180 achicaba solo las de 18 a 72 px, y la más alta se aplastaba.
 
-`Criterio-Decisiones` la anota en «El eje por día» (10/11), desde `criterio_decisiones.py`. Una segunda corrida de los dos no cambia nada. Se publicaron los siete tableros en la versión 199 del artefacto, y las dos guías, regeneradas con la 173: la del lienzo en su versión @GUIA_LIENZO@ y la de Formularios en la @GUIA_FRM@.
+`Criterio-Decisiones` la anota en «El eje por día» (10/11), desde `criterio_decisiones.py`. Una segunda corrida de los dos no cambia nada. Se publicaron los siete tableros en la versión 199 del artefacto, y las dos guías, regeneradas con la 173: la del lienzo en su versión 70 y la de Formularios en la 17.
 
 La versión 172, del 9/11, corrige con `generadores/galeria_base12_1004.py` lo que encontró la galería de la base de la 12, copiado de la app, que ya hacía lo correcto, y deja los correos de `Mensajes` con la fecha completa. El script corre al final de todo, seguido de la pasada de las piezas sobre sus 20 tableros:
 - las pestañas «Historial» e «Historial de seguridad» van sin cantidad (lo que solo crece va con «Cargar más» y sin total, decisión del 04/10), y «Dominio verificado» y «Página pública» tampoco llevan número, en `Organizacion`, `Cuenta-Plat` y sus teléfonos;
