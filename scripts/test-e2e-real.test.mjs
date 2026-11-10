@@ -2625,7 +2625,8 @@ test("WhatsApp real en 1440 y 390: OTP, recuperación humana, enlaces y baja", {
   }
   const checks = fixtureChecks(stdout);
   for (const line of checks) t.diagnostic(line);
-  assert.ok(checks.some((line) => /^CHECK FINAL 38 grupos reales correctos en 1440\/390; Meta Cloud\/delivered pendiente$/.test(line)), "El runner debe completar sus 38 grupos sin sustituir Meta real.");
+  // 36 desde la base de la 12: sin el enlace del bot (179) sale el grupo «enlace usado», uno por ancho.
+  assert.ok(checks.some((line) => /^CHECK FINAL 36 grupos reales correctos en 1440\/390; Meta Cloud\/delivered pendiente$/.test(line)), "El runner debe completar sus 36 grupos sin sustituir Meta real.");
   for (const width of [1440, 390]) {
     for (const label of ["Registro de personas Cerrado/Alta de organizaciones Abierta persistidos por UI/GET/F5",
       "registro empresarial con personas cerrado/OIDC/F5", "políticas/límite/contactos restaurables verificados por UI/GET/F5",

@@ -339,7 +339,10 @@ async function pendingLogin(page, phone, width, scenario, observed) {
   detail("ingresar con código a una cuenta por borrar");
   const fixture = await begin(scenario, phone); // Cursor anterior al ticket que devuelve la verificación.
   const since = observed.oidc.length;
+  // Cargar /login abre la autorización del ingreso (/connect/authorize); probar el código de una cuenta por borrar no la
+  // continúa: después del 403 no hay otro pedido OIDC ni un token hasta cancelar el borrado.
   await page.goto(`${base}/login`); await whatsapp(page, phone);
+  const loaded = observed.oidc.length;
   await clickHttp(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 202);
   await page.getByRole("heading", { name: "Revisá tu WhatsApp", exact: true }).waitFor();
   await fillOtp(page, (await fixture("code")).proof);
@@ -347,8 +350,9 @@ async function pendingLogin(page, phone, width, scenario, observed) {
   const problem = await verified.json(); assert.equal(problem.code, "Identity.Account.PendingDeletion");
   assert.equal(typeof problem.cancelTicket, "string");
   await page.getByRole("button", { name: "Cancelar el borrado y entrar", exact: true }).waitFor();
-  assert.equal(observed.oidc.length, since); assert.equal(new URL(page.url()).hash, "");
-  return { fixture, ticket: problem.cancelTicket, since, width };
+  assert.equal(observed.oidc.length, loaded); assert.equal(new URL(page.url()).hash, "");
+  assert.equal(observed.oidc.slice(since).some((request) => request.path === "/connect/token"), false);
+  return { fixture, ticket: problem.cancelTicket, since, loaded, width };
 }
 
 async function journey(width, index) {
@@ -496,7 +500,7 @@ async function journey(width, index) {
   const expired = await pendingLogin(page, recovered, width, `expired-${width}`, observed); assert.equal((await expired.fixture("expireTicket", { ticket: expired.ticket })).ok, true);
   await clickHttp(page, page.getByRole("button", { name: "Cancelar el borrado y entrar", exact: true }), "/api/auth/deletion/cancel", 403);
   // Con el ticket vencido, el ingreso vuelve a su primer paso: hay que pedir otro código.
-  await page.getByRole("button", { name: "Enviar código", exact: true }).waitFor(); assert.equal(observed.oidc.length, expired.since);
+  await page.getByRole("button", { name: "Enviar código", exact: true }).waitFor(); assert.equal(observed.oidc.length, expired.loaded);
   pass(`ticket vencido/inválido vuelve al ingreso sin OIDC ${width}`);
 }
 
