@@ -464,7 +464,9 @@ export async function runBase12Journey({ page, platformPage, width, env, base, r
     await step("08", async () => {
       phase = "ingreso como persona"; await login(owner);
       phase = "link de la empresa";
-      await page.goto(url("/org/usuarios"));
+      // Un link del otro acceso adentro de la app. Con F5 o una pestaña nueva la sesión se recupera con el acceso de la
+      // ruta (SessionRecovery) y entra directo como empresa; «Otro acceso» (F7) es la navegación dentro de la app.
+      await page.evaluate((path) => { history.pushState(null, "", path); dispatchEvent(new PopStateEvent("popstate")); }, "/org/usuarios");
       await heading(page, `Este link es de ${organization}`);
       phase = "entrar como empresa";
       await page.getByRole("button", { name: "Entrar como empresa", exact: true }).click();
