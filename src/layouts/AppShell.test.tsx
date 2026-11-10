@@ -13,10 +13,13 @@ import { api } from "@/shared/api/httpClient";
 import { publishAccessError, clearAccessError, getAccessError } from "@/shared/api/accessErrorStore";
 import { createQueryClient } from "@/shared/api/queryClient";
 import { FormatProvider } from "@/shared/format/useFormat";
-import i18n, { configureI18n } from "@/shared/i18n";
+import { toast } from "sonner";
+import { rememberArrivalNotice, takeArrivalNotice } from "@/auth/arrivalNotice";
+import i18n, { changeCulture, configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
 import { visualBusiness } from "@/test/mocks/currentUsers";
 import { AppBar } from "@/shared/ui/app/AppBar";
+import { Toaster } from "@/shared/ui/sonner";
 import { AppShell } from "./AppShell";
 import { useNewVersion } from "./notifications/newVersion";
 
@@ -209,5 +212,40 @@ describe("AppShell", () => {
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
     expect(screen.getByRole("complementary", { name: "Navegación principal" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/org");
+  });
+
+  // B12-07 (tableros Ingreso y M-Ingreso): «Cancelar el borrado y entrar» sigue por OIDC, con una carga de página entera.
+  // El aviso que la pantalla guardó antes de salir se ve una sola vez al llegar, en la pantalla de destino y no en el
+  // callback, que sigue de largo. Si la cultura de la cuenta llega después, el aviso cambia con ella.
+  it("muestra una sola vez, al llegar, el aviso guardado antes de salir de la app", async () => {
+    rememberArrivalNotice("auth:deletion.cancelled");
+    const router = createMemoryRouter([{ element: <AppShell onReload={vi.fn()} />, children: [
+      { path: "/auth/callback", element: <Link to="/">{"Seguir"}</Link> },
+      { path: "/", element: <Link to="/cuenta">{"Inicio"}</Link> },
+      { path: "/cuenta", element: <main>{"Mi cuenta"}</main> },
+    ] }], { initialEntries: ["/auth/callback"] });
+    render(<I18nextProvider i18n={i18n}><RouterProvider router={router} /><Toaster /></I18nextProvider>);
+
+    await userEvent.click(await screen.findByRole("link", { name: "Seguir" }));
+    expect(await screen.findByText("Cancelamos el borrado.")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("link", { name: "Inicio" }));
+    expect(await screen.findByText("Mi cuenta")).toBeInTheDocument();
+    expect(toast.getToasts()).toHaveLength(1);
+
+    await act(() => changeCulture("en-US"));
+    expect(await screen.findByText("We cancelled the deletion.")).toBeInTheDocument();
+    await act(() => changeCulture("es-AR"));
+  });
+
+  it("en el callback del ingreso todavía no muestra el aviso guardado", async () => {
+    rememberArrivalNotice("auth:deletion.cancelled");
+    const router = createMemoryRouter([{ element: <AppShell onReload={vi.fn()} />, children: [
+      { path: "/auth/callback", element: <main>{"Entrando"}</main> },
+    ] }], { initialEntries: ["/auth/callback"] });
+    render(<I18nextProvider i18n={i18n}><RouterProvider router={router} /><Toaster /></I18nextProvider>);
+
+    expect(await screen.findByText("Entrando")).toBeInTheDocument();
+    expect(toast.getToasts()).toHaveLength(0);
+    expect(takeArrivalNotice()).toBe("auth:deletion.cancelled");
   });
 });

@@ -31,7 +31,7 @@ import { accountErrorCodes, pendingDeletionFromProblem } from "@/shared/api/acco
 import { getPendingDeletion, cancelAccountDeletion } from "../api/deletion";
 import { PendingDeletionPanel } from "../components/PendingDeletionPanel";
 import { PlatformFactorStep } from "../components/PlatformFactorStep";
-import { toast } from "sonner";
+import { rememberArrivalNotice } from "@/auth/arrivalNotice";
 import { toastError } from "@/shared/ui/sonner";
 import { accessOfPath, homeOf, isUnavailableCode, loginPathOf, type UnavailableCode } from "@/tenancy/access";
 
@@ -137,7 +137,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     setCancelFailure(null);
     try {
       const response = await cancel.mutateAsync(pending.cancelTicket);
-      toast.success(t("deletion.cancelled"));
+      // El ingreso sigue con una carga de página entera, que se llevaría un aviso dado acá: se muestra al llegar.
+      rememberArrivalNotice("auth:deletion.cancelled");
       await finishLogin(response.returnUrl);
     } catch (caught) {
       const message = apiErrorMessage(caught, t);

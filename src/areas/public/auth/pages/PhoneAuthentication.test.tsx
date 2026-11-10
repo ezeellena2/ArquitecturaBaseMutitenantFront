@@ -5,6 +5,7 @@ import { RouterProvider, createMemoryRouter } from "react-router";
 import { afterEach, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { AppProviders } from "@/app/providers";
+import { takeArrivalNotice } from "@/auth/arrivalNotice";
 import { createQueryClient } from "@/shared/api/queryClient";
 import type { BusinessSignupResponse, RequestLoginCodeRequest, SignupRequest, VerifyLoginCodeRequest, VerifySignupRequest } from "@/shared/api/types";
 import { changeCulture, configureI18n } from "@/shared/i18n";
@@ -390,6 +391,8 @@ it.each(["consumer", "business"] as const)("cancelar baja tras OTP fijo %s inici
   expect(signinRedirect).not.toHaveBeenCalled(); fireEvent.click(cancel);
   await waitFor(() => expect(signinRedirect).toHaveBeenCalledExactlyOnceWith({ extraQueryParams: { access }, state: { returnTo: returnUrl } }));
   expect(completeLogin).not.toHaveBeenCalled();
+  // B12-07: el aviso de la cancelación espera guardado a que la persona llegue a la app.
+  expect(takeArrivalNotice()).toBe("auth:deletion.cancelled");
 });
 
 it("alta empresarial Phone completa con aprobación y sin correo conserva aviso y no inventa destinatario", async () => {

@@ -1,6 +1,9 @@
 import { InMemoryWebStorage, WebStorageStateStore, type UserManagerSettings } from "oidc-client-ts";
 import { authIssuer } from "./issuer";
 
+/** Adonde vuelve el ingreso por OIDC. Esa pantalla canjea el código y sigue de largo hasta el destino. */
+export const authCallbackPath = "/auth/callback";
+
 // El issuer pertenece al dominio principal; las llamadas de datos usan el origen de la pestaña.
 export function createAuthConfig(origin = globalThis.location.origin): UserManagerSettings {
   return {
@@ -15,7 +18,7 @@ export function createAuthConfig(origin = globalThis.location.origin): UserManag
       revocation_endpoint: `${origin}/connect/revoke`,
     },
     client_id: "web",
-    redirect_uri: `${origin}/auth/callback`,
+    redirect_uri: `${origin}${authCallbackPath}`,
     post_logout_redirect_uri: `${origin}/`,
     silent_redirect_uri: `${origin}/silent-renew.html`,
     response_type: "code",

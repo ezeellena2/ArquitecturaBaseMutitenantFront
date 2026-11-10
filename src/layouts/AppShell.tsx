@@ -1,6 +1,10 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { AuthContext } from "react-oidc-context";
 import { Outlet, useLocation } from "react-router";
+import { toast } from "sonner";
+import { takeArrivalNotice, type ArrivalNotice } from "@/auth/arrivalNotice";
+import { authCallbackPath } from "@/auth/authConfig";
 import { ForbiddenPage } from "@/areas/public/errors/pages/ForbiddenPage";
 import { OrganizationUnavailablePage } from "@/areas/public/errors/pages/OrganizationUnavailablePage";
 import { clearAccessError, useAccessError } from "@/shared/api/accessErrorStore";
@@ -20,6 +24,12 @@ interface AppShellProps {
 }
 
 const reloadPage = () => window.location.reload();
+
+/** El texto de un aviso de llegada se traduce al mostrarse: si la cultura de la cuenta llega después, cambia con ella. */
+function ArrivalNoticeText({ notice }: { notice: ArrivalNotice }) {
+  const { t } = useTranslation();
+  return t(notice);
+}
 
 /// Armazón transversal de E1. Los estados del acceso y la organización se conectan en E3.
 export function AppShell({ children, onReload = reloadPage }: AppShellProps) {
@@ -42,6 +52,14 @@ export function AppShell({ children, onReload = reloadPage }: AppShellProps) {
       previousPathname.current = pathname;
       clearAccessError();
     }
+  }, [pathname]);
+
+  // El aviso que la pantalla anterior guardó antes de salir de la app (arrivalNotice) se muestra una sola vez, al llegar
+  // a destino. En el callback del ingreso todavía no, porque esa pantalla sigue de largo.
+  useEffect(() => {
+    if (pathname === authCallbackPath) return;
+    const notice = takeArrivalNotice();
+    if (notice) toast.success(<ArrivalNoticeText notice={notice} />);
   }, [pathname]);
 
   useEffect(() => {

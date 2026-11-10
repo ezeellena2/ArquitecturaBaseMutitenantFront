@@ -6,6 +6,7 @@ import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { MemoryRouter } from "react-router";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
+import { takeArrivalNotice } from "@/auth/arrivalNotice";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
 import { LoginPage } from "./LoginPage";
@@ -135,7 +136,9 @@ describe("LoginPage", () => {
   });
 
   it("prueba el correo pendiente sin iniciar sesión y cancela antes de continuar", async () => {
-    const completeLogin = vi.fn();
+    // B12-07: el aviso de la cancelación queda guardado antes de salir de la app, para verse al llegar (AppShell).
+    let carried: string | null = null;
+    const completeLogin = vi.fn(() => { carried = takeArrivalNotice(); });
     let finishCancellation!: () => void;
     const cancellation = new Promise<void>((resolve) => { finishCancellation = resolve; });
     server.use(
@@ -165,6 +168,7 @@ describe("LoginPage", () => {
       expect(completeLogin).not.toHaveBeenCalled();
     } finally { finishCancellation(); }
     await waitFor(() => expect(completeLogin).toHaveBeenCalledWith(authorizeUrl));
+    expect(carried).toBe("auth:deletion.cancelled");
   });
 
   it("lee prueba de Google desde cookie segura sin iniciar OIDC antes de cancelar", async () => {
