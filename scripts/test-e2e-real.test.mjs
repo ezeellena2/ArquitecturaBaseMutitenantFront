@@ -1312,7 +1312,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await dialog.getByText(/30 días/).waitFor();
           await dialog.getByRole("button", { name: "Borrar", exact: true }).click();
           await accountPage.getByRole("heading", { name: "Cerramos tu sesión" }).waitFor();
-          await waitForAccountNotice(original, before, /baja/i);
+          // El aviso dice «Pediste borrar tu cuenta» (vocabulario de la base de la 12).
+          await waitForAccountNotice(original, before, /borrar tu cuenta/i);
           setStage("demuestra posesión al ingresar y cancela durante la gracia");
           await accountPage.goto(new URL("/login", baseUrl).href);
           await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(original);
