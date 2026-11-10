@@ -1305,12 +1305,12 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await waitForAccountNotice(original, before, /quit/i);
           before = new Set(await pickupFiles());
           setStage("confirma baja sin código");
-          await accountPage.getByRole("button", { name: "Borrar mi cuenta", exact: true }).click();
+          await accountPage.getByRole("button", { name: "Borrar", exact: true }).click();
           const dialog = accountPage.getByRole("dialog");
           assert.equal(await dialog.locator('input[inputmode="numeric"]').count(), 0);
           await dialog.getByRole("textbox", { name: "Motivo" }).fill("Recorrido propio del E2E");
           await dialog.getByText(/30 días/).waitFor();
-          await dialog.getByRole("button", { name: "Borrar mi cuenta", exact: true }).click();
+          await dialog.getByRole("button", { name: "Borrar", exact: true }).click();
           await accountPage.getByRole("heading", { name: "Cerramos tu sesión" }).waitFor();
           await waitForAccountNotice(original, before, /baja/i);
           setStage("demuestra posesión al ingresar y cancela durante la gracia");
@@ -1321,8 +1321,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await accountPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
           await enterCode(accountPage, await codeFromPickup(original, loginBefore));
           await accountPage.getByRole("button", { name: "Verificar", exact: true }).click();
-          await accountPage.getByRole("heading", { name: "Tu cuenta tiene la baja pedida" }).waitFor();
-          await accountPage.getByRole("button", { name: "Cancelar la baja y entrar" }).click();
+          await accountPage.getByRole("heading", { name: "Tu cuenta está por borrarse" }).waitFor();
+          await accountPage.getByRole("button", { name: "Cancelar el borrado y entrar" }).click();
           await expectPath(accountPage, "/", "cancelar baja A5");
           await expectProfile(accountPage, "Personal", "cancelar baja A5");
         }],
@@ -1777,17 +1777,17 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
 
           setStage("abre Mi cuenta como único Dueño y comprueba que la baja está bloqueada");
           await openAccount(rolesPage, "Empresa E2E");
-          // Tablero Cuenta: «Borrar mi cuenta» apagado; el aviso enumera las organizaciones donde es única Dueña.
-          const blockedInfo = rolesPage.getByRole("button", { name: "Por qué no podés darte de baja", exact: true });
+          // Tablero Cuenta (v168): el «Borrar» de «Borrar mi cuenta», apagado; el aviso enumera las organizaciones donde es única Dueña.
+          const blockedInfo = rolesPage.getByRole("button", { name: "Por qué no podés borrar tu cuenta", exact: true });
           setStage("comprueba el acceso al motivo de baja bloqueada del único Dueño");
           await blockedInfo.waitFor();
-          setStage("comprueba Borrar mi cuenta apagado para el único Dueño");
-          assert.equal(await rolesPage.getByRole("button", { name: "Borrar mi cuenta", exact: true }).getAttribute("aria-disabled"), "true",
+          setStage("comprueba Borrar apagado para el único Dueño");
+          assert.equal(await rolesPage.getByRole("button", { name: "Borrar", exact: true }).getAttribute("aria-disabled"), "true",
             "La baja del único Dueño queda apagada.");
-          setStage("abre el aviso No podés dar de baja tu cuenta");
+          setStage("abre el aviso No podés borrar tu cuenta");
           await blockedInfo.click();
           const blockedDialog = rolesPage.getByRole("dialog");
-          await blockedDialog.getByRole("heading", { name: "No podés dar de baja tu cuenta" }).waitFor();
+          await blockedDialog.getByRole("heading", { name: "No podés borrar tu cuenta" }).waitFor();
           setStage("comprueba las tres organizaciones donde la cuenta es única Dueña");
           const reasonPrefix = "Sos la única persona con el rol Dueño en ";
           const blockedReason = blockedDialog.getByText(/^Sos la única persona con el rol Dueño en /);
@@ -2020,7 +2020,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           adminPage.on("request", countSettingsWrites);
           try {
             await organizationName.fill("Empresa E2E sin guardar");
-            await adminPage.getByText("Cambios sin guardar", { exact: true }).first().waitFor();
+            // La banda no dice «Cambios sin guardar» (F1, base de la 12): lo escrito queda en el campo.
+            assert.equal(await organizationName.inputValue(), "Empresa E2E sin guardar");
             const homeLink = adminPage.getByRole("navigation", { name: "General", exact: true }).getByRole("link", { name: "Inicio", exact: true });
             await homeLink.click();
             const leaveDialog = adminPage.getByRole("dialog", { name: "¿Salir sin guardar?" });
@@ -2219,11 +2220,11 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         ["3b: pedir baja y cancelarla ingresando durante la gracia", async (accountPage, setStage) => {
           const email = await registerPerson(accountPage);
           await openAccount(accountPage);
-          await accountPage.getByRole("button", { name: "Borrar mi cuenta", exact: true }).click();
+          await accountPage.getByRole("button", { name: "Borrar", exact: true }).click();
           const dialog = accountPage.getByRole("dialog");
           await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Recorrido propio del E2E");
           assert.equal(await dialog.locator('input[inputmode="numeric"]').count(), 0);
-          await dialog.getByRole("button", { name: "Borrar mi cuenta", exact: true }).click();
+          await dialog.getByRole("button", { name: "Borrar", exact: true }).click();
           await accountPage.getByRole("heading", { name: "Cerramos tu sesión" }).waitFor();
           await accountPage.goto(new URL("/login", baseUrl).href);
           await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
@@ -2232,8 +2233,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await accountPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
           await enterCode(accountPage, await codeFromPickup(email, loginBefore));
           await accountPage.getByRole("button", { name: "Verificar", exact: true }).click();
-          await accountPage.getByRole("heading", { name: "Tu cuenta tiene la baja pedida" }).waitFor();
-          await accountPage.getByRole("button", { name: "Cancelar la baja y entrar" }).click();
+          await accountPage.getByRole("heading", { name: "Tu cuenta está por borrarse" }).waitFor();
+          await accountPage.getByRole("button", { name: "Cancelar el borrado y entrar" }).click();
           await expectPath(accountPage, "/", "cancelar baja");
           await expectProfile(accountPage, "Personal", "cancelar baja");
         }],

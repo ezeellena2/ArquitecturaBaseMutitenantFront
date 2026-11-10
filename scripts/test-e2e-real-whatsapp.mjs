@@ -240,7 +240,8 @@ async function platformPhoneAccount(page, phone, identity) {
   const row = page.getByRole(page.viewportSize().width === 390 ? "listitem" : "row").filter({ has: link });
   detail("comprobar máscara, correo de respaldo oculto y acciones");
   await row.waitFor(); assert.equal(await row.count(), 1);
-  await row.getByText(identity.mask, { exact: true }).waitFor();
+  // Tablero Cuentas: una cuenta sin nombre lleva su contacto en «Cuenta» y en su columna; el correo de respaldo, en ninguna.
+  await row.getByText(identity.mask, { exact: true }).first().waitFor();
   assert.equal(await row.getByText(identity.email, { exact: true }).count(), 0);
   await row.getByRole("button", { name: `Acciones de ${identity.mask}`, exact: true }).waitFor();
   detail("abrir ficha y comprobar métodos de ingreso por GET");
@@ -327,10 +328,10 @@ async function loginFromRegistration(page, phone, access, width, organization, o
 }
 async function requestDeletion(page) {
   await page.goto(`${base}/cuenta`);
-  await page.getByRole("button", { name: "Borrar mi cuenta", exact: true }).click();
+  await page.getByRole("button", { name: "Borrar", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "¿Borrar tu cuenta?", exact: true });
   await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Prueba aislada de cancelación desde el ingreso.");
-  await clickHttp(page, dialog.getByRole("button", { name: "Borrar mi cuenta", exact: true }), "/api/me/deletion", 200);
+  await clickHttp(page, dialog.getByRole("button", { name: "Borrar", exact: true }), "/api/me/deletion", 200);
   await page.getByRole("heading", { name: "Cerramos tu sesión", exact: true }).waitFor();
 }
 async function pendingLogin(page, phone, width, scenario, observed) {
@@ -345,7 +346,7 @@ async function pendingLogin(page, phone, width, scenario, observed) {
   const verified = await clickHttp(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 403);
   const problem = await verified.json(); assert.equal(problem.code, "Identity.Account.PendingDeletion");
   assert.equal(typeof problem.cancelTicket, "string");
-  await page.getByRole("button", { name: "Cancelar la baja y entrar", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Cancelar el borrado y entrar", exact: true }).waitFor();
   assert.equal(observed.oidc.length, since); assert.equal(new URL(page.url()).hash, "");
   return { fixture, ticket: problem.cancelTicket, since, width };
 }
@@ -488,12 +489,12 @@ async function journey(width, index) {
 
   start(`baja pendiente por ingreso ${width}`); await login(page, recovered, "consumer", `deletion-login-${width}`); await authenticated(page, width);
   await begin(`deletion-${width}`, recovered); await requestDeletion(page); const pending = await pendingLogin(page, recovered, width, `pending-${width}`, observed);
-  await clickHttp(page, page.getByRole("button", { name: "Cancelar la baja y entrar", exact: true }), "/api/auth/deletion/cancel", 200);
+  await clickHttp(page, page.getByRole("button", { name: "Cancelar el borrado y entrar", exact: true }), "/api/auth/deletion/cancel", 200);
   await authenticated(page, width); accessOidc(observed, pending.since);
   await page.reload(); await authenticated(page, width); pass(`cancelación de baja desde el ingreso/OIDC nuevo/F5 ${width}`);
   start(`ticket cancelación vencido ${width}`); await begin(`deletion-again-${width}`, recovered); await requestDeletion(page);
   const expired = await pendingLogin(page, recovered, width, `expired-${width}`, observed); assert.equal((await expired.fixture("expireTicket", { ticket: expired.ticket })).ok, true);
-  await clickHttp(page, page.getByRole("button", { name: "Cancelar la baja y entrar", exact: true }), "/api/auth/deletion/cancel", 403);
+  await clickHttp(page, page.getByRole("button", { name: "Cancelar el borrado y entrar", exact: true }), "/api/auth/deletion/cancel", 403);
   // Con el ticket vencido, el ingreso vuelve a su primer paso: hay que pedir otro código.
   await page.getByRole("button", { name: "Enviar código", exact: true }).waitFor(); assert.equal(observed.oidc.length, expired.since);
   pass(`ticket vencido/inválido vuelve al ingreso sin OIDC ${width}`);

@@ -105,8 +105,8 @@ test("LastAdmin espera el bloqueo renderizado y mantiene la exigencia de aria-di
   let aria = "true";
   const page = { getByRole: (role, options = {}) => {
     if (role === "dialog") return { getByText: (name) => { assert.equal(name.test("Organización propia"), true); return { first: () => ({ waitFor: async () => assert.equal(opened, true) }) }; } };
-    if (options.name === "Por qué no podés darte de baja") return info;
-    assert.equal(options.name, "Borrar mi cuenta");
+    if (options.name === "Por qué no podés borrar tu cuenta") return info;
+    assert.equal(options.name, "Borrar");
     return { getAttribute: async (name) => { assert.equal(name, "aria-disabled"); assert.equal(loaded, true); reads++; return aria; } };
   } };
   const pending = identity.requireSoleOwnerDeletionUi(page, "Organización propia");

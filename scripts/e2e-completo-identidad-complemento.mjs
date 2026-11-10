@@ -66,11 +66,11 @@ export async function runIdentityDependency(h, outcomes, id, dependencies, page,
 }
 
 export async function requireSoleOwnerDeletionUi(page, organization) {
-  const information = page.getByRole("button", { name: "Por qué no podés darte de baja", exact: true });
+  const information = page.getByRole("button", { name: "Por qué no podés borrar tu cuenta", exact: true });
   // El GET del arnés no espera la query de React. Este control aparece en la
   // misma renderización que calcula aria-disabled a partir de soleOwnerOrganizations.
   await information.waitFor();
-  assert.equal(await page.getByRole("button", { name: "Borrar mi cuenta", exact: true }).getAttribute("aria-disabled"), "true");
+  assert.equal(await page.getByRole("button", { name: "Borrar", exact: true }).getAttribute("aria-disabled"), "true");
   await information.click();
   await page.getByRole("dialog").getByText(new RegExp(escapeRegex(organization), "u")).first().waitFor();
 }
@@ -231,8 +231,8 @@ export async function runIdentitySupplementCases(h) {
     await run(4, [3], async () => {
       await page.goto(new URL("/cuenta", h.base).href); const methods = await read(h, page, "/api/me/login-methods"); assert.equal(methods.accountDeletionGraceDays, 30);
       await other.goto(new URL("/cuenta", h.base).href); assert.equal((await authenticated(h, other, "consumer")).id, phoneAccount.id);
-      await page.getByRole("button", { name: "Borrar mi cuenta", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "¿Borrar tu cuenta?", exact: true }); const reason = "Identidad: verificar gracia y revocación real de sesiones propias.";
-      await dialog.getByRole("textbox", { name: /Motivo/u }).fill(reason); const before = Date.now(); const response = await click(page, dialog.getByRole("button", { name: "Borrar mi cuenta", exact: true }), "/api/me/deletion"); const after = Date.now();
+      await page.getByRole("button", { name: "Borrar", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "¿Borrar tu cuenta?", exact: true }); const reason = "Identidad: verificar gracia y revocación real de sesiones propias.";
+      await dialog.getByRole("textbox", { name: /Motivo/u }).fill(reason); const before = Date.now(); const response = await click(page, dialog.getByRole("button", { name: "Borrar", exact: true }), "/api/me/deletion"); const after = Date.now();
       assert.equal(response.request().postDataJSON().reason, reason); requireThirtyDayGrace((await response.json()).scheduledForUtc, before, after);
       await page.getByRole("heading", { name: "Cerramos tu sesión", exact: true }).waitFor();
       for (const oldPage of [page, other]) await requireProblem(await h.api(oldPage, "/api/me"), 401, "Http.Unauthorized");
