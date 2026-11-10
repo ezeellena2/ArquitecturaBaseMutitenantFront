@@ -336,7 +336,8 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
       assert.equal(reply.status(), 200); const item = (await reply.json()).items.find((account) => account.id === me.id);
       assert.equal(item?.displayName, null); assert.equal(item.maskedPrimaryPhone, me.mask);
       const link = platformPage.getByRole("link").and(platformPage.locator(`a[href='/plataforma/cuentas/${me.id}']`));
-      const row = platformPage.getByRole(width === 390 ? "listitem" : "row").filter({ has: link }); await row.getByText(me.mask, { exact: true }).waitFor();
+      // Tablero Cuentas: una cuenta sin nombre lleva su contacto en «Cuenta» y en su columna; el correo de respaldo, en ninguna.
+      const row = platformPage.getByRole(width === 390 ? "listitem" : "row").filter({ has: link }); await row.getByText(me.mask, { exact: true }).first().waitFor();
       await row.getByRole("button", { name: `Acciones de ${me.mask}`, exact: true }).waitFor(); assert.equal(await row.getByText(backupEmail, { exact: true }).count(), 0);
       const endpoint = `/api/platform/accounts/${me.id}`;
       const [detail] = await responsesForAction(platformPage, [responseFor(endpoint)], () => link.click()); assert.equal(detail.status(), 200);
