@@ -4205,6 +4205,87 @@
       "w": 390,
       "x": 7050,
       "y": 29346
+    },
+    "FRM-Catalogo-Ordenar.dc.html": {
+      "x": 12160,
+      "y": 460,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1200,
+      "page": "formularios",
+      "title": "Formularios · ordenar las opciones"
+    },
+    "M-FRM-Catalogo-Ordenar.dc.html": {
+      "x": 2380,
+      "y": 1780,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "formularios",
+      "title": "Ordenar las opciones · teléfono"
+    },
+    "FRM-Catalogo-Ordenar-13.dc.html": {
+      "x": 4400,
+      "y": 3144,
+      "is_interactive": true,
+      "w": 1280,
+      "h": 1510,
+      "page": "formularios",
+      "title": "Formularios · ordenar por un campo · a 1280 · etapa 13"
+    },
+    "M-FRM-Catalogo-Ordenar-13.dc.html": {
+      "x": 1410,
+      "y": 4774,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "formularios",
+      "title": "Ordenar por un campo · teléfono · etapa 13"
+    },
+    "FRM-Respuestas-Exportar-19.dc.html": {
+      "x": 12160,
+      "y": 21218,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 900,
+      "page": "formularios",
+      "title": "Formularios · exportar con «Filas» · etapa 19"
+    },
+    "FRM-Editor-Ubicacion.dc.html": {
+      "x": 18240,
+      "y": 24542,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1400,
+      "page": "formularios",
+      "title": "Formularios · la pregunta «Ubicación» · etapa 20"
+    },
+    "M-FRM-Editor-Ubicacion.dc.html": {
+      "x": 5170,
+      "y": 26262,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "formularios",
+      "title": "La pregunta «Ubicación» · teléfono · etapa 20"
+    },
+    "FRM-Editor-20.dc.html": {
+      "x": 19760,
+      "y": 24542,
+      "is_interactive": true,
+      "w": 1440,
+      "h": 1500,
+      "page": "formularios",
+      "title": "Formularios · «Dónde se completa» · etapa 20"
+    },
+    "M-FRM-Editor-20.dc.html": {
+      "x": 5640,
+      "y": 26262,
+      "is_interactive": true,
+      "w": 390,
+      "h": 844,
+      "page": "formularios",
+      "title": "«Dónde se completa» · teléfono · etapa 20"
     }
   },
   "createdOnFiles": {
@@ -4710,6 +4791,7 @@
     "FRM-Catalogo-Filtros.dc.html",
     "M-FRM-Catalogos.dc.html",
     "M-FRM-Catalogo.dc.html",
+    "M-FRM-Catalogo-Ordenar.dc.html",
     "M-FRM-Catalogo-Opcion.dc.html",
     "M-FRM-Catalogo-Filtros.dc.html",
     "Plat-FRM-Biblioteca.dc.html",
@@ -4800,7 +4882,9 @@
     "FRM-Catalogo-14.dc.html",
     "FRM-Catalogo-Contactos.dc.html",
     "FRM-Catalogo-Importar.dc.html",
+    "FRM-Catalogo-Ordenar.dc.html",
     "FRM-Catalogo-Opciones-13.dc.html",
+    "FRM-Catalogo-Ordenar-13.dc.html",
     "FRM-Catalogo-Opciones.dc.html",
     "FRM-Catalogo-Tipo.dc.html",
     "FRM-Catalogos-14.dc.html",
@@ -4825,6 +4909,7 @@
     "M-FRM-Catalogo-14.dc.html",
     "M-FRM-Catalogo-Contactos.dc.html",
     "M-FRM-Catalogo-Opciones-13.dc.html",
+    "M-FRM-Catalogo-Ordenar-13.dc.html",
     "M-FRM-Catalogo-Opciones.dc.html",
     "M-FRM-Catalogos-14.dc.html",
     "M-FRM-Editor-18.dc.html",
@@ -4873,6 +4958,7 @@
     "FRM-Editor-Lineas.dc.html",
     "M-FRM-Editor-Lineas.dc.html",
     "FRM-Respuestas-19.dc.html",
+    "FRM-Respuestas-Exportar-19.dc.html",
     "M-FRM-Respuestas-19.dc.html",
     "FRM-Respuesta-19.dc.html",
     "M-FRM-Respuesta-19.dc.html",
@@ -4902,8 +4988,12 @@
     "M-FRM-Editor-Listas.dc.html",
     "FRM-Publicar-20.dc.html",
     "WA-Chats-Formulario-20.dc.html",
+    "FRM-Editor-Ubicacion.dc.html",
+    "FRM-Editor-20.dc.html",
     "M-FRM-Publicar-20.dc.html",
     "M-WA-Chats-Formulario-20.dc.html",
+    "M-FRM-Editor-Ubicacion.dc.html",
+    "M-FRM-Editor-20.dc.html",
     "FRM-Respuestas-21.dc.html",
     "M-FRM-Respuestas-21.dc.html",
     "FRM-Tablero-21.dc.html",
