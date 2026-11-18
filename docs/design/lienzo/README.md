@@ -322,6 +322,26 @@ Navegación de Plataforma elegida el 2026-10-03: **Gestión**, arriba, agrupa Or
 
 Serví esta carpeta con un servidor estático, por ejemplo con `python -m http.server`, y abrí `<Tablero>.dc.html`. Cada estado se elige con el control **Tweak**. El estado inicial está en el atributo `data-props` como `default`.
 
+## Lista de chequeo de diseño
+
+Todo tablero, toda pantalla y todo diálogo pasan estas doce preguntas antes de mostrarse para elegir y otra vez antes de programarse (decisión 213 de la [hoja de ruta](../../../../ArquitecturaBaseMutitenant/docs/plans/2026-10-12-formularios-dinamicos-hoja-de-ruta.md), del traspaso 15). Es un paso de Diseño, junto con `alinear-etapas --detectar`. No suma reglas: junta las de los «Criterio» y las [fichas](../../rules/README.md). Cada diferencia aceptada va en la nota del tablero, con su motivo, y lo que no pasa se corrige antes de mostrarlo o se muestra como una pregunta.
+
+- **Sumar a lo que existe repasa el conjunto:** un control, un dato o un estado nuevo en algo que ya existe se dibuja con la pantalla o el diálogo entero, y se pasa la lista otra vez, no solo por lo nuevo.
+- **Un cambio pedido sobre una pantalla** se busca en todas las parecidas, no solo en las que usan la misma pieza, y se escribe como regla de toda la app (136 y 164), nunca para un caso suelto.
+
+1. **Entero y armado:** ¿muestra la pantalla o el diálogo entero, con sus estados y su recorrido, con las piezas de `shared/ui`? ¿Es un diálogo solo si es breve y contextual?
+2. **Una tarea, zonas que se entienden solas:** ¿resuelve una tarea? ¿Cada zona es una cosa, en el orden en que se usa, sin partirla por tipo de control (213)?
+3. **El control según el dato:** una colección en una tabla; un valor de un catálogo, en un selector; pocas alternativas, en radios o un segmentado; varias, en casillas; un filtro de opciones, en un desplegable simple (143).
+4. **Lo que se lee, en su lugar:** los datos de algo en `DetailGrid`, también lo que un diálogo dice que va a hacer (cuántas, con qué filtros, a quién, a qué archivo); lo que pasa en orden, en pasos; dos versiones, lado a lado (138). Nunca «Rótulo: valor» corrido.
+5. **Un dato por columna** (206).
+6. **Sin leyendas:** ¿ningún texto debajo o al costado explica cómo funciona algo? Lo que sirve va en la (i) (109 y 116).
+7. **Textos ciertos, una sola vez:** ¿cada texto sigue siendo cierto sin datos, con filtros, sin permiso, después de un error y al cambiar una opción? ¿El estado se dice una vez (175) y el idioma solo cuando es el otro?
+8. **Botones y lo apagado:** ¿cada botón nombra su acción, «Cancelar» va junto a la principal, que va última, y la destructiva, separada? ¿Lo apagado no lleva nada al lado y da su motivo sobre el control (211)? ¿A la vista va la tarea y en el ⋮ lo demás, con lo destructivo al final (209)? ¿Una confirmación dice en una frase lo que se afecta?
+9. **Lo elegido y la espera:** ¿lo elegido se distingue por algo más que un tinte (142)? ¿Toda acción que tarda muestra el aro y su gerundio (115) y lo que carga no salta (160)?
+10. **Estados y mensajes:** ¿están la carga, los dos vacíos, el error con reintento, la falta de permiso en cada acceso (organización, persona y Plataforma), «Organización no disponible», la espera de un 429 y el conflicto? ¿Cada mensaje tiene un solo dueño: el resultado en el aviso de abajo (210), la validación junto al campo y la decisión en una confirmación?
+11. **Lo mismo, igual en toda la app:** ¿lo que ya tiene forma en otra pantalla usa la misma pieza (los filtros, como chips)? ¿Solo tokens, la escala (180) y medidas en `rem`? ¿Fechas solo con números (205) y números y porcentajes con la región del idioma (207 y 208)?
+12. **Teléfono, teclado e idiomas:** ¿funciona desde 320 px sin desplazar de costado, con 44 para tocar, con teclado y lector de pantalla, con los textos del sistema en español y en inglés (el contenido no tiene idioma, 35) y con el estado de una colección en la URL?
+
 ## Criterio, en corto
 
 Lo que manda son los tableros «Criterio · …». Estas son las decisiones que más se repiten:
@@ -342,14 +362,15 @@ Lo que manda son los tableros «Criterio · …». Estas son las decisiones que 
   - sin ayudas debajo;
   - lo que no se edita se muestra como texto, nunca como campo gris;
   - lo corto (agregar, verificar, confirmar) va en un diálogo.
-- **Avisos y errores:**
-  - lo que salió bien: aviso verde abajo a la derecha, que se va solo;
-  - una acción directa que falló: aviso rojo con ✕, que no se va solo;
+- **Avisos y errores** (210):
+  - el fondo nunca dice el tipo: todo aviso es blanco, con un filo de 3 px a la izquierda y el ícono del color de su tipo, y la ✕ adentro, a la derecha; en el teléfono, la franja oscura, con el mismo filo e ícono;
+  - lo que salió bien: abajo a la derecha, y se va solo;
+  - una acción directa que falló: se va sola a los 10 s; si trae una acción, como «Copiar código», queda hasta cerrarlo;
   - un error de formulario: debajo del campo, o en una franja arriba;
   - el estado, una vez, en la banda; lo que llegó, lo que falló en segundo plano y lo que espera a alguien, en la campana (el único cartel en el cuerpo es el que bloquea la pantalla entera);
   - lo que no se deshace: un diálogo de confirmación, sin ✕ y con el botón rojo lleno.
 - **Botones** (decisión del usuario del 2026-10-24):
-  - un botón está habilitado o grisado, sin textos al lado ni debajo; si el motivo no es obvio, va en su tooltip;
+  - un botón está habilitado o grisado, sin textos al lado ni debajo; si el motivo no es obvio, va en un tooltip sobre el control entero, que se abre también con un clic o un toque, igual en el teléfono (211);
   - «Guardar cambios» se habilita cuando hay cambios, y al salir con cambios se pregunta «¿Salir sin guardar?»; la banda no dice «Cambios sin guardar» ni muestra revisiones;
   - lo que necesita algo antes queda grisado, como publicar con cambios sin guardar;
   - mientras trabaja, el botón pone el aro y su gerundio («Guardando…»), con su color (decisión 115 del 2026-11-02, que reemplaza lo decidido el 24/10);
@@ -357,7 +378,7 @@ Lo que manda son los tableros «Criterio · …». Estas son las decisiones que 
   - «Descartar cambios» siempre está habilitado;
   - el único ícono que lleva un botón es el «+».
 - **Menús:**
-  - las acciones de fila y las secundarias van en ⋮;
+  - las acciones de fila y lo que no es la tarea de la pantalla van en ⋮: corregir, anular, dar de baja, reactivar, eliminar, descargar la plantilla, ordenar; lo destructivo al final, en rojo (209);
   - tu menú, arriba a la derecha, tiene Perfiles, Mi cuenta y Salir;
   - Administración es un segundo panel al lado del menú lateral;
   - una línea fina entre cada opción de un menú desplegable, y una franja antes de las de peligro;

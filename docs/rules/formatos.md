@@ -8,22 +8,22 @@
 - shared/referenceData entrega todas las filas traducidas con isEnabled; los selectores ofrecen habilitadas y el formato acepta valores guardados deshabilitados.
 - Cultures aporta patrones, separadores y AmDesignator/PmDesignator; cultureProfiles adapta sin perfiles fijos. Currencies aporta MinorUnits; CurrencyTranslations, DisplaySymbol. Símbolos alfabéticos pegados al número reciben espacio CLDR.
 - El signo se decide tras redondear: un negativo presentado como cero no lleva menos. Compactos/tamaños promueven unidad al llegar a mil.
-- parseDecimal permite hasta 15 dígitos significativos y exige que Number recomponga el valor canónico. Si pierde precisión, conserva texto, emite null y marca invalidez.
+- parseDecimal lee con la región de la cultura efectiva, permite hasta 15 dígitos significativos y exige que Number recomponga el valor canónico. Si pierde precisión, conserva texto, emite null y marca invalidez. Lo que se lee distinto con y sin los miles («1.500» en es-AR) es el error `numberAmbiguous` de su campo, que pide escribirlo sin separador de miles; al servidor llega el número con punto (207, desde la segunda parte de la base, 214).
 - DataTable toma tipo, alineación, vacío y tooltip de cada columna; números, montos y porcentajes van a la derecha con tabular-nums, encabezado incluido. Un texto con un número («En 3 formularios»), una fecha o un código («VIS-000024») no es una columna de números. **El texto largo se ve entero, en todo el sistema** (174): una celda baja de renglón en lugar de cortar con «…», y «un dato por celda» sigue valiendo; un código con guiones («30-71458236-9») no se parte, y una zona horaria se corta solo después de sus barras (137).
 - Fuera de tablas se usan los componentes; useFormat sirve fuera de JSX, por ejemplo en aria-label.
 - Un texto con una cantidad («1.000 usuarios»): `countOf(format, n)` de `shared/format/countOf` da `count` para el plural y `n` con la cifra de la cultura; el texto usa `{{n}}`, nunca `{{count}}`. Las cantidades de pestañas (`TabCount`), de los segmentados y de los filtros aplicados pasan por `NumberText` (R21).
 | Dato | Pieza | Presentación y límite |
 |---|---|---|
 | Fecha | DateText, date | es-AR 27/09/2026; en-US 09/27/2026; tooltip absoluto |
-| Fecha y hora | DateText, dateTime | es-AR 27/09/2026 14:35; en-US 09/27/2026 2:35 PM, sin coma |
-| Fecha corta | — | No se usa: una fecha se muestra completa, con su año (decisión del usuario del 2026-10-25). Tampoco en un gráfico por día (E15): cada marca del eje lleva la fecha completa, nunca el día solo, y el cartel de cada barra también; para que entren van menos marcas, una por semana en la compu y, en el teléfono, las que entran sin pisarse, como mínimo la primera y la última (decisión del usuario del 2026-11-10). Por semana, la marca lleva la fecha del lunes y el cartel, el rango («21/09/2026 – 27/09/2026»); por mes, «septiembre de 2026» en la marca y en el cartel (E15) |
-| Hora / fecha larga | time / long | 14:35 / 2:35 PM; 27 de septiembre de 2026 / September 27, 2026 |
+| Fecha y hora | DateText, dateTime | es-AR 27/09/2026, 14:35; en-US 09/27/2026, 2:35 PM: la hora después de una coma (205), también en el PDF, los correos, WhatsApp, el Excel y el asistente |
+| Fecha corta | — | No se usa: una fecha se muestra completa, con su año (decisión del usuario del 2026-10-25). Tampoco en un gráfico por día (E15): cada marca del eje lleva la fecha completa, nunca el día solo, y el cartel de cada barra también; para que entren van menos marcas, una por semana en la compu y, en el teléfono, las que entran sin pisarse, como mínimo la primera y la última (decisión del usuario del 2026-11-10). Por semana, la marca lleva la fecha del lunes y el cartel, el rango («21/09/2026 – 27/09/2026»); por mes, la marca lleva el primer día y el cartel, el rango del mes («01/09/2026 – 30/09/2026», 205) (E15) |
+| Hora / mes | time / month | 14:35 / 2:35 PM. **El mes nunca va en letras** (205): se escribe como su rango, «01/10/2026 – 31/10/2026» (`DateRangeText`), y en una frase «del 01/10/2026 al 31/10/2026». No hay fecha larga |
 | Relativa | — | No se usa: nunca «hace 2 horas»; siempre fecha y hora en la zona de quien mira (decisión del usuario del 2026-10-25) |
 | Calendario | — | No se usa: nunca «hoy» ni «ayer»; siempre fecha y hora (decisión del usuario del 2026-10-25) |
 | Rango | DateRangeText | Dos fechas separadas por guion largo con espacios |
 | Entero / decimal | NumberText | Miles y decimal de cultura; decimal con escala fija declarada |
 | Cantidad | quantity | Cero a tres decimales, sin ceros sobrantes |
-| Porcentaje | PercentText | Fracción 0.125 → 12,5 % / 12.5%; hasta dos decimales |
+| Porcentaje | PercentText | Fracción 0.125 → 12,5% / 12.5%, pegado en las dos (208); hasta dos decimales. Un texto nunca lo arma a mano |
 | Moneda | MoneyText | MinorUnits y símbolo de cultura; extranjera con código/prefijo; negativo sin paréntesis |
 | Compacto | compact | Solo KPI con tooltip completo; 1,3 M / 1.3M |
 | Tamaño / duración | FileSizeText / DurationText | bytes → 1,5 MB / 1.5 MB; segundos → 2 h 15 min |
@@ -37,8 +37,8 @@
 | Vacío | EmptyValue | null → raya larga tenue, aria-label Sin dato |
 | Texto | texto | Tal cual y entero: el largo baja de renglón, sin «…» ni tooltip (174) |
 - DateField emite DateOnly sin zona; DateTimeField convierte desde zona efectiva a UTC; PercentField devuelve fracción. Los fields leen opciones del catálogo y muestran carga; TaxIdNumberField normaliza separadores antes de limitar dígitos.
-- MonthField usa YYYY-MM, años 0001–9999, popup único accesible, sin limitar historia ni elegir por la persona.
-- parseMonth distingue vacío e inválido; useFormat localiza meses y obtiene mes actual con reloj central y zona efectiva, sin definir facturación.
+- MonthField usa YYYY-MM, años 0001–9999, popup único accesible, sin limitar historia ni elegir por la persona. Cerrado dice el rango del mes; abierto, el año y los meses con su número (01 a 12), nunca su nombre (205).
+- parseMonth distingue vacío e inválido; useFormat obtiene el mes actual con reloj central y zona efectiva, sin definir facturación.
 - Deshabilitar, cargar o cambiar el valor de MonthField desmonta popup/borrador; invalidez no se acepta como vacío.
 - MoneyField precision="technical-tariff" conserva seis decimales y rechaza siete ([ADR 0051](../../../ArquitecturaBaseMutitenant/docs/decisions/0051-precision-tecnica-de-costos-ia.md)); presupuestos y presentación mantienen MinorUnits. `fixedCurrency` muestra la unidad sin selector cuando el contrato fija la moneda: sale de `currencyCode` o del Money recibido. Sin esa opción conserva el selector habitual. Lo verifica `MoneyField.test.tsx`.
 - LoginMethodText conserva máscaras recibidas; un Phone completo delega en PhoneText sin enlace ni reconstrucción.

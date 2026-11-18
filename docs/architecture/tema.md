@@ -11,7 +11,7 @@ Tonos cálidos para el contenido, verde pasto como marca y un **marco arena** en
 |---|---|---|
 | `--marca` | `oklch(0.48 0.115 140)` | botón principal (sólido), enlaces fuertes, la barra del activo del menú y el avatar |
 | `--marca-h` | `oklch(0.43 0.115 140)` | hover del botón principal |
-| `--marca-t` | `oklch(0.955 0.035 130)` | fondo tenue: cartel de información, sugerencia del teléfono, lo elegido (la banda ya no lleva ícono, 173) |
+| `--marca-t` | `oklch(0.955 0.035 130)` | fondo tenue: sugerencia del teléfono y lo elegido (la banda ya no lleva ícono, 173); el cartel de información lo deja con la 210 |
 | `--sugerencia-tx` | `oklch(0.3 0.06 140)` | texto de la tarjeta de sugerencia del teléfono (M-Inicio-Personal) |
 | `--marca-tx` | `oklch(0.41 0.1 140)` | texto sobre `--marca-t` y el ítem activo del menú |
 | `--fondo` | `oklch(0.985 0.005 95)` | fondo de la pantalla |
@@ -35,7 +35,7 @@ Tonos cálidos para el contenido, verde pasto como marca y un **marco arena** en
 | `--alerta` / `--alerta-t` | `oklch(0.5 0.12 70)` / `oklch(0.96 0.06 85)` | alerta: texto y fondo tenue |
 | `--alerta-tx` | `oklch(0.4 0.1 70)` | texto de la banda ámbar del teléfono («Otra persona cambió esto») |
 | `--peligro` / `--peligro-t` | `oklch(0.568 0.2 25)` / `oklch(0.97 0.02 25)` | peligro (errores, acciones destructivas): texto y fondo tenue |
-| `--peligro-banda` | `oklch(0.96 0.03 25)` | fondo de la banda roja del teléfono, debajo de la barra («Sin conexión» y el error de guardado de una ficha) |
+| `--peligro-banda` | `oklch(0.96 0.03 25)` | fondo de la banda roja del teléfono, debajo de la barra («Sin conexión» y el error de guardado de una ficha); con la 210 pasa a blanca con el filo rojo |
 | `--peligro-tx` / `--peligro-borde` | `oklch(0.45 0.17 25)` / `oklch(0.57 0.2 25 / 0.4)` | texto rojo de los avisos sobre fondo tenue (la franja de error, el cartel de problema, la banda «Sin conexión» del teléfono y el motivo del aviso importante) y borde del botón de peligro |
 | `--punto-ok` / `--punto-alerta` / `--punto-apagado` / `--punto-pendiente` | `oklch(0.6 0.13 155)` / `oklch(0.72 0.15 70)` / `oklch(0.75 0.01 78)` / `oklch(0.62 0.12 240)` | punto de estado: activo, atención, apagado y pendiente |
 | `--casilla-fija` | `oklch(0.78 0.006 78)` | casilla marcada y fija de un rol de sistema en el teléfono (M-Rol, v108) |
@@ -83,6 +83,7 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 - **Lo elegido, en todo el sistema** (142): nunca solo un tinte, con 3:1 contra lo no elegido y el texto a 4,5:1. La tarjeta elegida suma un borde de 2 px en `--marca` y el fondo `--marca-t`; en un desplegable de un filtro, la elegida lleva la tilde a la izquierda, y la fila abierta de una tabla y la conversación abierta del chat, `--marca-t` y una barra de 3 px en `--marca` al inicio.
 - **El ítem activo del menú** (173): una barra de 2 px en `--marca` a la izquierda, sobre `--lado-hover`, y la letra en `--marca-tx` y 600; sin pastilla blanca ni sombra. Igual en el menú lateral, en su panel y en «Administración» abierta.
 - **Avisos pasajeros en la compu** (tablero Avisos): abajo a la derecha, una tarjeta blanca de 340 con borde `--borde2` y radio de 10 (3 en la compu), sin sombra (173); solo el ícono lleva color (`--aviso-ok`, `--peligro`).
+- **Avisos según el tipo** (210, entra con la segunda parte de la base): **el fondo nunca dice el tipo.** Todo aviso, la franja de error de un formulario y el cartel o la banda que bloquean una pantalla son blancos, con la tinta de siempre, un filo de 3 px a la izquierda y el ícono en el color de su tipo: `--aviso-ok` con tilde (bien), `--t2` con (i) (información, para no confundirse con la marca), `--alerta` con triángulo (atención) y `--peligro` con octógono (error). La ✕ va adentro, a la derecha. La franja oscura del teléfono sigue igual para todos, con el mismo filo e ícono. `--marca-t`, `--alerta-t`, `--peligro-t` y `--peligro-banda` dejan de usarse en avisos.
 
 ## Menú lateral y panel de Administración
 - **Arriba:** Inicio y los módulos de uso diario del producto. **Abajo de todo**, después de una línea en `--lado-borde`: "Administración". Un módulo de uso diario (como WhatsApp, en la E11) abre su propio panel al lado del menú, como Administración, y se abre uno a la vez («Criterio · Menús», R10).
