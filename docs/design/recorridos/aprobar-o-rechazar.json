@@ -85,15 +85,15 @@
     {
       "tablero": "FRM-Respuesta-Corregir",
       "tweaks": {
-        "estado": "Respuesta"
+        "estado": "Más acciones: menú"
       },
-      "resaltar": "a.d4-co:has-text(\"Corregir\")",
+      "resaltar": "a.f-mi:has-text(\"Corregir\")",
       "actor": "Lucía · Dueña · web",
       "titulo": "Una aprobada se corrige, no se edita",
-      "texto": "«Corregir» está en la fila del título, y el ⋮ queda solo para «Anular». Con permiso para corregir, Lucía puede corregir una aprobada.",
+      "texto": "«Corregir» está en el ⋮ del título, arriba de «Anular», que va al final, en rojo. Con permiso para corregir, Lucía puede corregir una aprobada.",
       "avanzar": "Tocá «Corregir».",
       "ruta": "/org/formularios/:id/respuestas/:recordId",
-      "accion": "Toca «Corregir»."
+      "accion": "Abre el ⋮ y toca «Corregir»."
     },
     {
       "tablero": "FRM-Respuesta-Corregir",
@@ -141,7 +141,7 @@
       "resaltar": ".t10n-chat .t10n-av",
       "actor": "Lucía · persona · web",
       "titulo": "Hasta cuándo le llegan los avisos",
-      "texto": "En «Mi cuenta», «Chat de WhatsApp» dice, por organización, si el chat está vinculado y hasta cuándo le llegan los avisos: «Llegan hasta el 16/10/2026 09:40». Pasadas 24 horas de su último mensaje, solo los que van con una plantilla.",
+      "texto": "En «Mi cuenta», «Chat de WhatsApp» dice, por organización, si el chat está vinculado y hasta cuándo le llegan los avisos: «Llegan hasta el 16/10/2026, 09:40». Pasadas 24 horas de su último mensaje, solo los que van con una plantilla.",
       "avanzar": "Fin del recorrido.",
       "ruta": "/cuenta",
       "accion": "Revisa hasta cuándo le llegan los avisos de Grupo Delta."

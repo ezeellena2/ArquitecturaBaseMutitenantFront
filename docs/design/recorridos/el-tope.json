@@ -40,11 +40,11 @@
     },
     {
       "tablero": "Mensajes",
-      "tweaks": { "mensaje": "Asistente: 80 % del tope (su clave)" },
+      "tweaks": { "mensaje": "Asistente: 80% del tope (su clave)" },
       "resaltar": "a.pl-boton",
       "actor": "Lucía · correo",
       "titulo": "Le llega la alerta",
-      "texto": "Al 80 % y al 100 % del tope del mes, los Dueños reciben un correo.",
+      "texto": "Al 80% y al 100% del tope del mes, los Dueños reciben un correo.",
       "avanzar": "Tocá «Siguiente».",
       "ruta": "—",
       "accion": "Recibe el correo de alerta."
