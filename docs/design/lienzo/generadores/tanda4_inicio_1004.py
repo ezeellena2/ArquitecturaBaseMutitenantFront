@@ -32,6 +32,15 @@ Inicio ya programado (segunda parte de la base, 214). Suma estados a los diez ta
   Dueño («Su clave: …»), y con la de la plataforma, uno solo, «El asistente no está disponible por ahora. Lo está resolviendo la
   plataforma.», en la banda y sin «Reemplazar clave».
 
+Dos arreglos del mismo día en el chat, pedidos al revisarlo:
+- «Falló la respuesta» y «Se cortó» pasan a la regla de los avisos (210): blancos, con la tinta de siempre, el filo de 3 px a la
+  izquierda y el octógono del error, del mismo color (`t4-fallo`, como «La propuesta no entra» de `Asistente-Org-25` y
+  `CSS_AVISOS` de la pasada de las piezas). No llevan ✕; «Reintentar» queda, porque es su acción;
+- la confirmación de borrar, igual en los tres lados: `Asistente-Personal` no tenía el encabezado de los diálogos de
+  `Criterio-Dialogos` (arena, con su línea, de 48 y sin bajada, como `DialogHeader` en la compu), que los otros dos toman de sus
+  bloques `data-criterio="aplicado"` y `data-vuelta="1004-piezas-comunes"`; copia esas reglas de `.dlg` desde `Asistente-Org`.
+  Vale para los tres diálogos del tablero. Las hojas del teléfono ya eran iguales.
+
 La lógica nueva va en un método propio, `tanda4(a)`, que recibe lo que ya calculaba el tablero y pisa solo lo de sus estados, así
 los estados de antes no cambian. Las piezas se copian del mismo tablero (el aviso de «Falló la respuesta», la fila abierta de la
 lista con su menú, la ficha de un adjunto, la tarjeta del asistente sin configurar, la confirmación de borrar, el estado de la
@@ -221,6 +230,19 @@ CSS_CHAT = """/* Tanda 4 (0064): la conversación que no se puede leer, en el me
 .as-adj .as-spin { margin: 0 -2px 0 2px; }
 .as-adj.t4-sube { max-width: 100%; }
 """
+_SVG_ERROR = ('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+              'stroke-linejoin="round" aria-hidden="true">')
+TRIANGULO = (_SVG_ERROR + '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/>'
+             '<path d="M12 17h.01"/></svg>')
+OCTOGONO = _SVG_ERROR + '<path d="M8.7 3h6.6L21 8.7v6.6L15.3 21H8.7L3 15.3V8.7z"/><path d="m14.5 9.5-5 5"/><path d="m9.5 9.5 5 5"/></svg>'
+CSS_FALLO = """/* 210 · «Falló la respuesta» y «Se cortó», como aviso de error: blanco, con la tinta de siempre, el filo de 3 px y el octógono del
+   mismo color, como «La propuesta no entra» de Asistente-Org-25. */
+.as-fallo.t4-fallo { background: #fff; color: var(--t1); border: 1px solid var(--borde2); border-left: 3px solid var(--peligro); }
+.as-fallo.t4-fallo > svg { color: var(--peligro); }
+"""
+ENCABEZADO_ARENA = ".dlg-h { background: oklch(0.945 0.027 95) !important"
+CSS_DIALOGOS = ("/* Criterio · Diálogos: el encabezado de un diálogo, arena con su línea, de 48 y sin bajada, como en Asistente-Org y "
+                "Asistente-Plat (copiado de sus bloques). */\n")
 
 
 def pasar_chat(t, nombre):
@@ -241,6 +263,8 @@ def pasar_chat(t, nombre):
         assert corto.count(T_CORTO) == 1 and corto.endswith("</div></sc-if>"), nombre
         corto = corto[:-len("</sc-if>")] + f'<span class="as-nota">{T_CONSUMO}</span></sc-if>'
         t = despues(t, "{{asCorto}}", '<sc-if value="{{asFallo}}"', "sc-if", corto)
+    # Los dos, como aviso de error (210): blancos, con el filo y el octógono.
+    t = cambiar(t, '<div class="as-fallo" role="alert">' + TRIANGULO, '<div class="as-fallo t4-fallo" role="alert">' + OCTOGONO, 2)
 
     # Una subida a la vez: la ficha del que sube, con el aro; y el error de la subida, debajo del campo.
     _, _, adjs = bloque(t, '<sc-if value="{{asAdjuntos}}"', "sc-if")
@@ -307,7 +331,17 @@ def pasar_chat(t, nombre):
         nuevo = (js(JS_CHAT, t) + f"  renderVals() {{{n}    const a = {{ ...this.renderValsBase(), ...this.asistente() }};{n}"
                  f"    return {{ ...a, ...this.tanda4(a) }};{n}  }}")
         t = cambiar(t, viejo, nuevo)
-    return con_estilo(t, 'data-t4i="inicio"', CSS_CHAT)
+    # Los estilos, en el orden en que se sumaron: una corrida desde cero da lo mismo que las dos tandas de este generador.
+    t = con_estilo(t, 'data-t4i="inicio"', CSS_CHAT)
+    # La confirmación de borrar con el encabezado de los otros dos lados (Criterio · Diálogos).
+    if not tel and ENCABEZADO_ARENA not in t:
+        org = leer("Asistente-Org")
+        reglas = [linea.strip() for marca in ('data-criterio="aplicado"', 'data-vuelta="1004-piezas-comunes"')
+                  for linea in re.search(rf"<style {marca}>(.*?)</style>", org, re.S).group(1).splitlines()
+                  if linea.strip().startswith(".dlg")]
+        assert len(reglas) == 8 and any(ENCABEZADO_ARENA in r for r in reglas), reglas
+        t = con_estilo(t, 'data-t4i="dialogos"', CSS_DIALOGOS + "\n".join(reglas) + "\n")
+    return con_estilo(t, 'data-t4i="avisos"', CSS_FALLO)
 
 
 # ---------------------------------------------------------------------------------------------------------------- la configuración
