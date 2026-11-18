@@ -147,6 +147,14 @@ TABLAS_CSS = CSS_COMUN + """
 .t15-tb .vac { color: var(--t3); }
 .t15-cols1 { grid-template-columns: 110px 140px 120px 95px 90px minmax(110px, 1fr); }
 .t15-cols2 { grid-template-columns: minmax(0, 1fr) 90px 150px; }
+.t15-mx .th, .t15-mx .tr { grid-template-columns: 44px 170px 70px 100px minmax(0, 1fr); }
+.t15-mx .tr > span { flex-direction: row; justify-content: flex-start; align-items: center; gap: 8px; flex-wrap: wrap; }
+.t15-cas { width: 16px; height: 16px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--borde2); border-radius: 4px; background: #fff; color: #fff; flex: none; }
+.t15-cas.si { background: var(--marca); border-color: var(--marca); }
+.t15-cas.parte { background: var(--marca); border-color: var(--marca); }
+.t15-cas.parte::after { content: ""; width: 8px; height: 2px; background: #fff; border-radius: 1px; }
+.t15-otro { display: inline-flex; align-items: center; gap: 6px; margin-right: 10px; }
+.t15-mx .ii { color: var(--t3); display: inline-flex; }
 """
 TABLAS_SECCION = f"""  <section data-reglas="t15">
     <h2>Un dato por columna</h2>
@@ -192,7 +200,53 @@ TABLAS_CAMBIOS = [
     ("<li><strong>Un dato por celda</strong> sigue valiendo: lo que baja de renglón es el mismo dato.</li>",
      "<li><strong>Un dato por columna</strong> sigue valiendo: lo que baja de renglón es el mismo dato.</li>"),
 ]
-TABLAS_PROHIBIDO = ["Una etiqueta al lado del dato, «fecha · persona» o el resumen de otra tabla en una celda: cada dato en su columna (206).",
+def casilla(estado=""):
+    tilde = svg("ok", 11).replace(ICONO["ok"], '<path d="m5 12.5 4.5 4.5L19 7.5"/>') if estado == "si" else ""
+    return f'<span class="t15-cas {estado}">{tilde}</span>'
+
+
+def otro(nombre, estado=""):
+    return f'<span class="t15-otro">{casilla(estado)}{nombre}</span>'
+
+
+I_AREA = svg("info", 14)
+TABLAS_ROLES = f"""  <section data-t15-roles>
+    <h2>Los permisos de un rol, en una matriz</h2>
+    <div class="t15-dos">
+      <div class="t15-caso">
+        <div class="t15-tb t15-mx">
+          <div class="th"><span></span><span>Área</span><span>Ver</span><span>Administrar</span><span>Otros permisos</span></div>
+          <div class="tr"><span>{casilla("parte")}</span><span>Usuarios <span class="ii">{I_AREA}</span></span><span>{casilla("si")}</span><span>{casilla()}</span><span>{otro("Invitar usuarios", "si")}</span></div>
+          <div class="tr"><span>{casilla("si")}</span><span>Roles <span class="ii">{I_AREA}</span></span><span>{casilla("si")}</span><span>{casilla("si")}</span><span>{otro("Asignar roles", "si")}</span></div>
+          <div class="tr"><span>{casilla()}</span><span>Empresas <span class="ii">{I_AREA}</span></span><span>{casilla()}</span><span>{casilla()}</span><span class="vac">—</span></div>
+          <div class="tr"><span>{casilla()}</span><span>WhatsApp <span class="ii">{I_AREA}</span></span><span class="vac">—</span><span>{casilla()}</span><span>{otro("Responder chats")}{otro("Difusiones")}</span></div>
+        </div>
+        <span class="t15-rot">Editar el rol Soporte · una fila por área; la casilla del principio marca la fila entera</span>
+      </div>
+      <ul class="t15-reglas">
+        <li><strong>Una fila por área</strong> (212), con Ver, Administrar y «Otros permisos», cada uno con su nombre. Donde el área no tiene ese permiso va «—»; sin otros permisos, esa columna no aparece.</li>
+        <li><strong>La casilla del principio</strong> marca o quita el área entera, y queda vacía, parcial o completa. Un área de un solo permiso no la lleva.</li>
+        <li><strong>Qué permite cada permiso</strong> va en la (i) del área, un permiso por renglón. Sin buscador, «Todos · Elegidos», «Expandir todo» ni áreas que se pliegan.</li>
+        <li><strong>Un rol de sistema que no se cambia</strong> se lee con tildes, sin casillas. Igual en los roles de la organización, en los de una empresa y en los permisos de un operador de Plataforma.</li>
+        <li><strong>En el teléfono,</strong> una banda por área, con la casilla del área a la derecha y sus permisos debajo, con el nombre entero.</li>
+      </ul>
+    </div>
+  </section>
+"""
+GRUPOS = re.compile(r"  <section>\n    <h2>Lista con grupos que se abren</h2>.*?\n  </section>\n", re.S)
+
+
+def roles(t):
+    """La matriz (212) en lugar de la lista con grupos que se abren; si ya está, se rehace."""
+    t = re.sub(r"  <section data-t15-roles>.*?\n  </section>\n", lambda m: "@@ROLES@@", t, count=1, flags=re.S)
+    if "@@ROLES@@" not in t:
+        t, n = GRUPOS.subn(lambda m: "@@ROLES@@", t)
+        assert n == 1, "no encuentro la lista con grupos"
+    return t.replace("@@ROLES@@", TABLAS_ROLES)
+
+
+TABLAS_PROHIBIDO = ["Una lista de permisos que se abre y se cierra: los permisos de un rol son una matriz (212).",
+                    "Una etiqueta al lado del dato, «fecha · persona» o el resumen de otra tabla en una celda: cada dato en su columna (206).",
                     "Una fecha con el mes en letras o sin la coma antes de la hora; un porcentaje con espacio (205 y 208)."]
 
 # ---------------------------------------------------------------------------------------------------------------- Botones
@@ -474,7 +528,7 @@ TABLEROS = {
 }
 
 # El alto de cada tablero con lo que suma esta pasada (medido el 18/11 con la escala de la 180): el lienzo muestra solo ese alto.
-ALTOS = {"Criterio-Tablas": 4440, "Criterio-Botones": 2610, "Criterio-Menus": 3390, "Criterio-Dialogos": 2910,
+ALTOS = {"Criterio-Tablas": 4420, "Criterio-Botones": 2610, "Criterio-Menus": 3390, "Criterio-Dialogos": 2910,
          "Criterio-Formularios": 4320, "Criterio-Avisos": 3020}
 
 
@@ -497,6 +551,8 @@ if __name__ == "__main__":
         t = leer(nombre)
         for viejo, nuevo in cambios:
             t = cambiar(t, viejo, nuevo)
+        if nombre == "Criterio-Tablas":
+            t = roles(t)
         t = antes_de_prohibido(t, secciones)
         t = prohibir(quitar(t, sacar), prohibido)
         t = css(t, estilo)
