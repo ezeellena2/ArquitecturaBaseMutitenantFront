@@ -7,7 +7,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 6000  # 08/11: en seis columnas y con la escala de la 180, con la 181 a la 190, la más alta llega a 5871
+ALTO = 6400  # 18/11: con las tandas 2 a 4 del traspaso 15 (215 a 242 y 254), la más alta llega a 6191 (antes, 6000 y 5871)
 ANCHO = 8880
 COLUMNAS = 6
 ARCHIVO = "Criterio-Decisiones.dc.html"
@@ -132,6 +132,9 @@ REGLAS = [
     ("Los permisos de un rol, en una matriz por área, en cada acceso (212).", "Tablas y listas", "18/11/2026"),
     ("Una cosa, una zona; lo que un diálogo va a hacer, en la grilla de lectura; una confirmación, en una frase (213).", "Formularios y campos · Diálogos", "18/11/2026"),
     ("Todo tablero, pantalla o diálogo pasa la lista de chequeo antes de mostrarse y antes de programarse (213).", "README del lienzo", "18/11/2026"),
+    ("Ordenar una lista que se guarda es «Ordenar por…», en el ⋮: la columna y el sentido (224).", "Menús y desplegables", "18/11/2026"),
+    ("Exportar dice qué exporta con los chips de la pantalla, sin la ✕, en la grilla de lectura (226).", "Diálogos", "18/11/2026"),
+    ("Un diálogo no pliega nada: lo técnico va en un paso aparte o se lee en una grilla (254).", "Diálogos", "18/11/2026"),
 ]
 
 # Decisiones por página: (pantalla, opción elegida, qué se eligió, estado en el lienzo).
@@ -342,14 +345,14 @@ DECISIONES = {
         ("Módulos de una organización", "", "El Asistente se suma; vuelve la fila de prueba de «Módulo B».", "Dibujada"),
     ],
     "El usuario · 10/10": [
-        ("Catálogo de modelos: datos técnicos", "", "El diálogo de agregar o editar un modelo suma «Avanzado: datos técnicos», plegado: capacidades, límites y tarifas especiales, con el error debajo del campo; la tabla sigue con sus seis columnas y los modelos de Claude precargados ya los traen (D26).", "Dibujada"),
+        ("Catálogo de modelos: datos técnicos", "", '<span class="gris"><s>El diálogo de agregar o editar un modelo suma «Avanzado: datos técnicos», plegado: capacidades, límites y tarifas especiales, con el error debajo del campo; la tabla sigue con sus seis columnas y los modelos de Claude precargados ya los traen (D26).</s></span> Reemplazada por la 254 (18/11): el diálogo va en pasos, sin plegar.', "Reemplazada"),
     ],
     "La Guía · 10/10": [
         ("Segundo factor de los operadores", "", "En el ingreso, además del código y del alta del autenticador: el bloqueo por demasiados códigos (el mismo de la cuenta), el código de recuperación que no sirve y el código que no activa el autenticador (Etapa 9).", "Dibujada"),
         ("Confirmá que sos vos", "", "Antes de una acción sensible de Plataforma, si el último código no es reciente: el código del autenticador en un diálogo (una hoja en el teléfono), con el error debajo y «Usar un código de recuperación». Dibujado al guardar permisos (Etapa 9).", "Dibujada"),
         ("Restablecer el autenticador", "", "En el ⋮ de un operador, con motivo: cierra sus sesiones y anula sus códigos de recuperación; al volver a entrar, lo configura de nuevo (Etapa 9).", "Dibujada"),
         ("WhatsApp de atención, al día", "", "Plantillas del sistema: las 16 del catálogo (0049), de a 10; el bot de Plataforma manda el enlace para entrar o registrarse (reemplazado por la 179: ningún mensaje lleva un enlace secreto); «Mis mensajes con empresas» muestra las conversaciones; Cargar teléfonos con el panel de Administración vigente (Etapa 11).", "Dibujada"),
-        ("Catálogo de modelos: datos técnicos completos", "", "«Avanzado» suma Texto y Pensamiento adaptativo, los esfuerzos permitidos, la caché (lectura y escritura de 5 minutos y de 1 hora) y el contexto largo con su caché; editar muestra Claude Haiku 5.5, el único con tramo largo (contrato del back 853b5aed).", "Dibujada"),
+        ("Catálogo de modelos: datos técnicos completos", "", "Los datos técnicos (desde la 254, el segundo paso del diálogo) suman Texto y Pensamiento adaptativo, los esfuerzos permitidos, la caché (lectura y escritura de 5 minutos y de 1 hora) y el contexto largo con su caché; editar muestra Claude Haiku 5.5, el único con tramo largo (contrato del back 853b5aed).", "Dibujada"),
     ],
     "El usuario · 11/10": [
         ("Uso del asistente de la organización", "", "El resumen del mes deja solo el gasto contra el tope, las consultas y las personas: la clave y los topes pueden cambiar a mitad de mes, así que se ven en Configuración.", "Dibujada"),
@@ -620,6 +623,37 @@ DECISIONES = {
         ("Mantener lo cargado", "AR2-A", "Elegido por el usuario: también en la página, antes de Cancelar y Enviar (147).", "Falta dibujar"),
         ("«Por aprobar»", "PL1-A", "Elegido por el usuario: «Por aprobar (N) | Todas» arriba de la planilla, con el segmentado y no con pestañas (148).", "Falta dibujar"),
         ("El mensaje con datos", "MD1-A", "Elegido por el usuario: «Agregar dato» pone etiquetas que siguen a la pregunta, con «Así llega» debajo (149).", "Falta dibujar"),
+    ],
+    "Traspaso 15, tandas 2 a 4 · El usuario · v176 · 18/11": [
+        ("Un documento sin revisar", "", "Elegido por el usuario: uno «Propuesto» que nadie revisa vence a los 90 días y pasa a «Descartado» (215).", "Dibujada"),
+        ("Lo que corrige una persona", "", "No va a la IA: «Cómo viene leyendo» muestra los últimos 30 días y «Ver los ejemplos», solo a quien ve respuestas (216).", "Dibujada"),
+        ("El tope diario de lecturas", "", "Además del de cada persona, 50 lecturas por organización y por día; al llegar, el documento queda sin leer, con su aviso (217).", "Dibujada"),
+        ("El modelo que arma", "", "Arma siempre un modelo calificado para armar, con la clave que paga ese turno (218).", "Decidido"),
+        ("Lo que anota la IA", "", "Elegido por el usuario: un tema nuevo, o uno que vuelve, nace «Sin revisar», y el asistente no lo usa con otras personas hasta revisarlo (219).", "Dibujada"),
+        ("Los estándares de un módulo", "BI1-A", "Elegido por el usuario: conviven con las plantillas de la plataforma, con sus preguntas atadas con candado (220).", "Decidido"),
+        ("Una planilla por WhatsApp", "", "Con un pedido de armar, la IA propone el catálogo; sin pedido, va a la lectura de documentos (221).", "Dibujada"),
+        ("Importar en un catálogo que existe", "", "La IA propone el mapeo y tres filas de muestra, y abre «Importar» con el archivo revisado; importa la persona (222).", "Dibujada"),
+        ("La IA en varias copias", "", "Elegido por el usuario: el cupo vuelve solo si el pedido no llegó al proveedor, y borrar una conversación borra sus audios (223).", "Decidido"),
+        ("Ordenar por…", "OR1-A", "En todo el sistema, «Ordenar por…» en el ⋮ elige la columna y el sentido, en lugar de «Ordenar de la A a la Z» (224).", "Dibujada"),
+        ("Una publicación trabada", "", "«Sin confirmar» suma «Descartar esta publicación», que pide confirmar (225).", "Dibujada"),
+        ("Exportar", "EX1-A", "En todo el sistema, dice qué exporta con los chips de la pantalla, sin la ✕, en la grilla de lectura (226).", "Dibujada"),
+        ("El Excel con bloque", "XL1-A", "Elegido por el usuario: una sola hoja, una fila por ítem (227; cambia la 146 en el Excel).", "Dibujada"),
+        ("Por resolver (N)", "", "Elegido por el usuario: la tercera vista de la planilla, con lo que una regla no pudo hacer y espera a una persona (228).", "Dibujada"),
+        ("Dónde se completa", "SA1-A", "Elegido por el usuario: un ajuste de cada formulario, al lado del prefijo (229; reemplaza la 96, la 104 y la 200).", "Dibujada"),
+        ("La pregunta «Ubicación»", "UB1-A", "Elegido por el usuario: un punto al completar, con latitud, longitud y precisión; solo «Obligatoria» y nunca en el bloque (230).", "Dibujada"),
+        ("Las carpetas", "", "Elegido por el usuario: en una etapa propia, la E26, con dos listados y sin permisos nuevos (231).", "Decidido"),
+        ("El redondeo", "", "Elegido por el usuario: los cálculos redondean al par, como ARCA: 2,205 da 2,20 (232).", "Decidido"),
+        ("El cálculo en el bloque", "", "Elegido por el usuario: con su fórmula, también dentro del bloque (233).", "Dibujada"),
+        ("El cálculo al cargar", "CA1-A", "Se ve en gris mientras se carga en la app y cambia al escribir (234).", "Dibujada"),
+        ("«Mostrar si»", "", "Queda como en la E19, hasta 10 condiciones, con el aviso en el editor (235).", "Dibujada"),
+        ("Las horas del PDF", "", "Elegido por el usuario: en la zona de quien cargó, con su nombre: «17/11/2026, 18:30 (Madrid)» (236).", "Dibujada"),
+        ("Una regla que se frena", "", "Elegido por el usuario: a quien cargó le llega un aviso, una vez por acción (237).", "Dibujada"),
+        ("Quien pasó una respuesta desde un documento", "", "Elegido por el usuario: no la aprueba, como quien la cargó y quien la corrigió (238).", "Decidido"),
+        ("Las acciones de una regla", "", "Como ArquitecturaBase: un aviso a un rol sale a quien sigue en el rol, y pedir aprobación a un rol sin quién decida falla sin abrir la tarea (239).", "Dibujada"),
+        ("Lo que no se sabe si salió", "", "Por WhatsApp queda «Sin confirmar»; lo que seguro no salió se reintenta dos veces como mucho (240; cambia la 80).", "Decidido"),
+        ("Una respuesta con factura", "", "No se corrige: se anula, lo que emite la nota de crédito, y se carga otra (241).", "Decidido"),
+        ("Los nombres fiscales", "", "Siempre en español: «Factura C», «Responsable inscripto» (242).", "Decidido"),
+        ("El diálogo de un modelo del asistente", "", "En pasos: al agregar, los datos técnicos son el segundo paso; al editar, se leen en una grilla y «Cambiar datos técnicos» abre ese paso. Nada plegado (254).", "Dibujada"),
     ],
     "Traspaso 15 · El usuario · v175 · 18/11": [
         ("Las fechas", "", "Elegido por el usuario: con hora, después de una coma («27/09/2026, 14:35»), y nunca el mes en letras: un mes es su rango, «01/10/2026 – 31/10/2026» (205).", "Dibujada"),
