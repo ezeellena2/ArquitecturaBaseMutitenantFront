@@ -10,7 +10,7 @@
   - `FRM-Catalogo-Ordenar` y `M-FRM-Catalogo-Ordenar` (nuevos, E12): el diálogo «Ordenar las opciones», con «Columna» (Texto o
     Código) en un selector y «Orden» en dos radios que dicen el sentido con palabras, con su (i); el orden pendiente por «Código», el
     diálogo que vuelve a abrir con él, lo guardado ya ordenado (también la dada de baja) y los dos apagados.
-  - `FRM-Catalogo-Ordenar-13` (nuevo, E13): «Proveedores» con seis campos guardados (CUIT, Zona, Rubro, Plazo de pago, Alta y Retiene
+  - `FRM-Catalogo-Ordenar-13` y `M-FRM-Catalogo-Ordenar-13` (nuevos, E13): «Proveedores» con seis campos guardados (CUIT, Zona, Rubro, Plazo de pago, Alta y Retiene
     IVA); el selector abierto con cada campo, el sentido de cada tipo («De la A a la Z», «De menor a mayor», «De la más antigua a la
     más reciente», «Primero «No»», y un campo de otro catálogo por el texto de su opción) y el orden pendiente por «Rubro».
 - **Descartar una publicación trabada** (225): con «Sin confirmar · versión 4», la banda de `FRM-Publicando` suma «Descartar esta
@@ -25,8 +25,10 @@
   (`g-det`), con los chips de la planilla sin la ✕ («Ninguno» sin filtros); «Columnas» es el título del grupo con su (i), sin «(13
   columnas)»; sin columnas ocultas, «Solo las visibles» queda apagada con «Se ven todas las columnas.»; al pie, «Archivo». Con la lista
   de chequeo (213): el tope de 10.000 es el motivo del botón apagado y no un cartel, y lo que falló al exportar va en el aviso de abajo
-  (210). En el teléfono, la hoja de `M-FRM-Respuestas` y la de `M-FRM-Respuestas-16`, en una lista de datos que termina en «Archivo».
-  Las de la E18 (`FRM-Respuestas-18`, `M-FRM-Respuestas-18`) y la E21 (`FRM-Respuesta-Anular`) quedan para su tanda.
+  (210). En el teléfono, la hoja de `M-FRM-Respuestas`, `M-FRM-Respuestas-16` y `M-FRM-Respuestas-18`, en una lista de datos que termina
+  en «Archivo». La 18 (`FRM-Respuestas-18`) conserva su (i) de las fotos y los documentos, y la 21 (`FRM-Respuesta-Anular`) suma
+  «Incluir las anuladas» debajo de las columnas, con su (i) («Suma la columna «Anulada».»): marcada, «Respuestas» dice «24 y las
+  anuladas». Los de la E19 a la E21 con «Filas» o «Por resolver» son de su tanda.
 - **`Criterio-Decisiones`**: el ⋮ de «Opciones» con «Ordenar por…», y «Por aprobar (N) | Todas» suma «Por resolver (N)» (228).
 
 Corre después de los de la v175 (`avisos_iconos_1004.py` el último) y antes de la pasada de las piezas; al terminar imprime los
@@ -494,6 +496,50 @@ def ordenar_e13():
     return nuevo_tablero("FRM-Catalogo-13", "Ordenar las opciones, por un campo · /org/formularios/catalogos/:id", estados, extra, CSS_ORDENAR_13)
 
 
+CSS_ORDENAR_TEL_13 = CSS_ORDENAR_TEL + """
+/* La columna se elige en la lista del teléfono, con la elegida tildada. */
+.ap-acciones2 span.t2-hop { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ap-acciones2 span.t2-hop.on { color: var(--marca-tx); font-weight: 600; }
+"""
+
+
+def hoja_columna(columna, columnas):
+    """La lista con que el teléfono elige la columna (el selector abierto)."""
+    opciones = "".join(f'<span class="t2-hop{" on" if c == columna else ""}" role="option" aria-selected="{"true" if c == columna else "false"}">{c}'
+                       f'{TILDE if c == columna else ""}</span>' for c in columnas)
+    return ('<div class="ap-velo"></div><div class="ap-hoja" role="dialog" aria-label="Columna" data-t15t2="ordenar"><span class="asa"></span>'
+            f'<div class="hc"><div><h2>Columna</h2></div><button type="button" class="ap-ib" aria-label="Cerrar">{X22}</button></div>'
+            f'<div class="hb"><div class="ap-acciones2" role="listbox" aria-label="Columna">{opciones}</div></div><div class="hp"></div></div>')
+
+
+def ordenar_e13_tel():
+    """El teléfono de `FRM-Catalogo-Ordenar-13`: la columna en su lista, el sentido de cada tipo y el orden pendiente por «Rubro»."""
+    base = leer("M-FRM-Catalogo-13")
+    pantalla = de(base, "Campos")[0]
+    fijo = ('<div class="ap-fijo"><button type="button" class="cb cb-sec full">Descartar</button>'
+            '<button type="button" class="cb cb-pri full">Guardar cambios</button></div>')
+    opciones = '<div class="ap-gtit">Opciones</div>'
+    aviso = (f'<div class="t2-aviso" role="status"><span>{pendiente("Rubro", SENTIDOS["texto"][0])}</span>'
+             '<button type="button" class="cb cb-sec">Cancelar orden</button></div>')
+    # Dibujada desplazada hasta «Opciones», como si se hubiera bajado: «El catálogo» y «En WhatsApp» quedan arriba, fuera de la vista.
+    i = pantalla.index('<div class="ap-cuerpo">') + len('<div class="ap-cuerpo">')
+    j = pantalla.index(opciones)
+    assert pantalla.count(opciones) == 1 and i < j
+    pend = pantalla[:i] + aviso + pantalla[j:]
+    pend = FLECHAS.sub(lambda m: f'{m.group(1)} aria-disabled="true" title="{MOVER}"', pend)
+    pend = re.sub(r'(aria-label="Borrar [^"]*")>', rf'\1 aria-disabled="true" title="{BORRAR}">', pend) + fijo
+    estados = [
+        ("Elegir la columna", [pantalla], [hoja_columna("Texto", CAMPOS_13)]),
+        ("Por «Rubro»", [pantalla], [hoja_ordenar("Rubro", "texto", False)]),
+        ("Por un número", [pantalla], [hoja_ordenar("Plazo de pago", "numero", False)]),
+        ("Por una fecha", [pantalla], [hoja_ordenar("Alta", "fecha", False)]),
+        ("Por sí o no", [pantalla], [hoja_ordenar("Retiene IVA", "sino", False)]),
+        ("Por un campo de otro catálogo", [pantalla], [hoja_ordenar("Zona", "texto", False)]),
+        ("Orden pendiente por «Rubro»", [pend], []),
+    ]
+    return nuevo_tablero("M-FRM-Catalogo-13", "Ordenar las opciones, por un campo · teléfono", estados, css=CSS_ORDENAR_TEL_13)
+
+
 # ---------------------------------------------------------------------------------------------------------------- 3 · descartar una publicación
 DESCARTAR_PUB = "Descartar esta publicación"
 CSS_DEC = """
@@ -627,6 +673,8 @@ def baja_tel(t, ok_svg):
 
 # ---------------------------------------------------------------------------------------------------------------- 4 · exportar
 INFO_COLUMNAS = "N°, recibida, quién la cargó, canal, empresas y las preguntas de todas las versiones, con todos los campos."
+INFO_ARCHIVOS = "De las fotos y los documentos va la cantidad y los nombres, sin los archivos."
+INFO_ANULADAS = "Suma la columna «Anulada»."
 TOPE = "El máximo es 10.000 respuestas. Acotá los filtros de la planilla."
 CHIPS_0 = ["Empresa: Delta S.A.", "Recibida: últimos 7 días", "Motivo: Venta nueva"]
 CSS_EXPORTAR = """
@@ -651,8 +699,19 @@ CSS_EXPORTAR = """
 """
 
 
-def exportar_dialogo(t, respuestas, chips, visibles_on, eleccion, archivo, modo=""):
-    """El diálogo de exportar de EX1-A. `visibles_on`: True, «Solo las visibles» habilitada; "tip", apagada con el motivo a la vista."""
+def exportar_dialogo(t, respuestas, chips, visibles_on, eleccion, archivo, modo="", info=None, info_abierta=False, anuladas=None):
+    """El diálogo de exportar de EX1-A. `visibles_on`: True, «Solo las visibles» habilitada; "tip", apagada con el motivo a la vista.
+    `info`: lo que dice la (i) de «Columnas» (con `info_abierta`, su globo a la vista, como lo dibuja la 18). `anuladas`: None sin la
+    casilla; False o True, «Incluir las anuladas» (E21) debajo de las columnas, con su (i), y marcada «Respuestas» lo dice."""
+    info = info or INFO_COLUMNAS
+    globo_info = f'<span class="e-tip ex-tip" role="tooltip">{info}</span>' if info_abierta else ""
+    casilla = ""
+    if anuladas is not None:
+        caja = f"<i>{TILDE}</i>" if anuladas else '<i class="no"></i>'  # la tilde de la casilla, la misma del tablero
+        casilla = (f'<span class="q-chk ex-anu" role="checkbox" aria-checked="{"true" if anuladas else "false"}">{caja}Incluir las anuladas'
+                   f'<span class="f-i" tabindex="0" role="img" aria-label="{INFO_ANULADAS}" title="{INFO_ANULADAS}">{INFO}</span></span>')
+        if anuladas:
+            respuestas = f"{respuestas} y las anuladas"
     chips_html = ('<span class="t2-chips">' + "".join(f'<span class="t2-chip">{c}</span>' for c in chips) + "</span>") if chips else '<span class="g-vacio">Ninguno</span>'
     cerrar = re.search(r'<div class="dc"><span>Exportar respuestas a Excel</span><button type="button" class="ib" aria-label="Cerrar">(<svg.*?</svg>)</button>', t, re.S).group(1)
     todas = f'<div class="ex-rd{" on" if eleccion == "todas" else ""}" role="radio" aria-checked="{"true" if eleccion == "todas" else "false"}"><span class="rd"></span>Todas las preguntas</div>'
@@ -677,8 +736,8 @@ def exportar_dialogo(t, respuestas, chips, visibles_on, eleccion, archivo, modo=
             f'<div class="dc"><span>Exportar respuestas a Excel</span>{x}</div><div class="db una">'
             f'<div class="g-det"><span class="k">Respuestas</span><span>{respuestas}</span><span class="k">Filtros</span><span>{chips_html}</span></div>'
             f'<div class="t2-grupo" role="radiogroup" aria-label="Columnas"><span class="ex-tit">Columnas<span class="f-i" tabindex="0" role="img" '
-            f'aria-label="{INFO_COLUMNAS}" title="{INFO_COLUMNAS}">{INFO}</span></span><div class="ex-rds">{todas}{visibles}</div></div>'
-            f'<div class="g-det"><span class="k">Archivo</span><span>{archivo}</span></div></div>'
+            f'aria-label="{info}" title="{info}">{INFO}</span>{globo_info}</span><div class="ex-rds">{todas}{visibles}</div></div>'
+            f'{casilla}<div class="g-det"><span class="k">Archivo</span><span>{archivo}</span></div></div>'
             f'<div class="df">{cancelar}{principal}</div></div></div>')
 
 
@@ -716,6 +775,29 @@ def exportar(t):
     return con_css(t, "exportar", CSS_EXPORTAR)
 
 
+def exportar_un_estado(t, estado, html):
+    """El diálogo de exportar del estado `estado` (su último bloque) pasa a `html`."""
+    a, b = bloques(t, idx(t, estado))[-1]
+    viejo = t[a:b]
+    if 'data-t15t2="exportar"' not in viejo:
+        assert '<div class="w-oscuro"><div class="w-dlg ex"' in viejo, estado
+        t = t[:a] + viejo[:viejo.index(">") + 1] + html + "</sc-if>" + t[b:]
+    assert "(13 columnas)" not in t and "filtros aplicados" not in t
+    return con_css(t, "exportar", CSS_EXPORTAR)
+
+
+def exportar_18(t):
+    """La 18: la (i) de «Columnas» dice qué va de las fotos y los documentos, con su globo a la vista, como antes."""
+    html = exportar_dialogo(t, "24", [], True, "todas", "Visita a cliente-2026-10-15.xlsx", info=INFO_ARCHIVOS, info_abierta=True)
+    return exportar_un_estado(t, "Exportar", html)
+
+
+def exportar_anular(t):
+    """La 21: «Incluir las anuladas», marcada, debajo de las columnas (spec 21), y «Respuestas» dice «24 y las anuladas»."""
+    html = exportar_dialogo(t, "24", [], True, "todas", "Visita a cliente-2026-10-15.xlsx", anuladas=True)
+    return exportar_un_estado(t, "Exportar con las anuladas", html)
+
+
 # En el teléfono (la hoja de `M-FRM-Respuestas` y la de la 16), lo mismo en una lista de datos: Respuestas, Filtros, Columnas (que
 # en el teléfono son siempre todas, sin elegir) con su (i), y al pie Archivo. Sin filtros, «Ninguno».
 HOJA_VIEJA = re.compile(r'<div class="hb"><div style="display: flex; flex-direction: column; gap: 6px;"><span class="t-lin">24 respuestas</span>'
@@ -723,17 +805,23 @@ HOJA_VIEJA = re.compile(r'<div class="hb"><div style="display: flex; flex-direct
                         r'<span class="ex-arch"><svg.*?</svg> Visita a cliente-2026-10-15\.xlsx</span></div>', re.S)
 
 
-def exportar_tel(t):
+HOJA_VIEJA_18 = re.compile(r'<div class="hb"><div style="display: flex; flex-direction: column; gap: 6px;"><span class="t-lin">24 respuestas</span>'
+                           r'<span class="t-lin">0 filtros aplicados</span><span class="t-lin">Todas las preguntas \(13 columnas\)<button type="button" class="ap-i" '
+                           r'aria-label="Qué significa" title="[^"]*"><svg.*?</svg></button></span></div>'
+                           r'<span class="ex-arch"><svg.*?</svg> Visita a cliente-2026-10-15\.xlsx</span></div>', re.S)
+
+
+def exportar_tel(t, info=INFO_COLUMNAS, vieja=HOJA_VIEJA):
     nuevo = ('<div class="hb"><div class="ap-grupo" style="margin: 0;" data-t15t2="exportar">'
              '<div class="ap-dato"><span class="k">Respuestas</span><span class="v">24</span></div>'
              '<div class="ap-dato"><span class="k">Filtros</span><span class="v" style="color: var(--t3);">Ninguno</span></div>'
-             f'<div class="ap-dato"><span class="k">Columnas<span class="f-i" style="margin-left: 4px;" tabindex="0" role="img" aria-label="{INFO_COLUMNAS}" title="{INFO_COLUMNAS}">{INFO}</span></span>'
+             f'<div class="ap-dato"><span class="k">Columnas<span class="f-i" style="margin-left: 4px;" tabindex="0" role="img" aria-label="{info}" title="{info}">{INFO}</span></span>'
              '<span class="v">Todas las preguntas</span></div>'
              '<div class="ap-dato"><span class="k">Archivo</span><span class="v">Visita a cliente-2026-10-15.xlsx</span></div></div></div>')
     if 'data-t15t2="exportar"' in t:
         return t
-    solo(HOJA_VIEJA.pattern, t)
-    t = HOJA_VIEJA.sub(lambda m: nuevo, t)
+    solo(vieja.pattern, t)
+    t = vieja.sub(lambda m: nuevo, t)
     assert "(13 columnas)" not in t and "filtros aplicados" not in t
     return t
 
@@ -747,7 +835,8 @@ CRITERIO = [
 
 
 # ---------------------------------------------------------------------------------------------------------------- el pase
-NUEVOS = {"FRM-Catalogo-Ordenar": ordenar_e12, "M-FRM-Catalogo-Ordenar": ordenar_e12_tel, "FRM-Catalogo-Ordenar-13": ordenar_e13}
+NUEVOS = {"FRM-Catalogo-Ordenar": ordenar_e12, "M-FRM-Catalogo-Ordenar": ordenar_e12_tel, "FRM-Catalogo-Ordenar-13": ordenar_e13,
+          "M-FRM-Catalogo-Ordenar-13": ordenar_e13_tel}
 
 
 def pasar(nombre, t):
@@ -770,6 +859,12 @@ def pasar(nombre, t):
         t = exportar(t)
     if nombre in ("M-FRM-Respuestas", "M-FRM-Respuestas-16"):
         t = exportar_tel(t)
+    if nombre == "M-FRM-Respuestas-18":
+        t = exportar_tel(t, INFO_ARCHIVOS, HOJA_VIEJA_18)
+    if nombre == "FRM-Respuestas-18":
+        t = exportar_18(t)
+    if nombre == "FRM-Respuesta-Anular":
+        t = exportar_anular(t)
     if nombre == "Criterio-Decisiones":
         for viejo, nuevo in CRITERIO:
             t = cambiar(t, viejo, nuevo, 1)
@@ -777,7 +872,8 @@ def pasar(nombre, t):
 
 
 TABLEROS = sorted(set(E12) | set(E13) | {"M-FRM-Catalogo", "FRM-Publicando", "M-FRM-Editor", "FRM-Editor-Baja", "M-FRM-Editor-Baja",
-                                          "FRM-Respuestas-Exportar", "M-FRM-Respuestas", "M-FRM-Respuestas-16", "Criterio-Decisiones"})
+                                          "FRM-Respuestas-Exportar", "M-FRM-Respuestas", "M-FRM-Respuestas-16", "Criterio-Decisiones",
+                                          "FRM-Respuestas-18", "M-FRM-Respuestas-18", "FRM-Respuesta-Anular"})
 
 if __name__ == "__main__":
     canvas = json.loads((PROJ / "canvas.json").read_text(encoding="utf-8"))
