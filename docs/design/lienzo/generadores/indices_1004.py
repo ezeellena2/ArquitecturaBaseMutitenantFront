@@ -23,7 +23,8 @@ NOMBRE_PAGINA = "Índice y mapas"
 ANCHO = 1440
 
 botones = (PROJ / "Criterio-Botones.dc.html").read_text(encoding="utf-8")
-HEAD = botones.split("</helmet>", 1)[0]
+# Sin las secciones de las reglas del traspaso 15 de «Criterio · Botones» (`reglas_t15_1004.py`), que acá no se usan.
+HEAD = re.sub(r'<style data-t15="reglas">.*?</style>\n?', "", botones.split("</helmet>", 1)[0], flags=re.S)
 
 COMPU = ('<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
          '<rect x="3" y="4.5" width="18" height="12" rx="1.5"/><path d="M8.5 20h7M12 16.5V20"/></svg>')

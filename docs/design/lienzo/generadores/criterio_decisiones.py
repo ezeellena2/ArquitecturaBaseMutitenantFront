@@ -17,6 +17,7 @@ botones = (PROJ / "Criterio-Botones.dc.html").read_text(encoding="utf-8")
 head = botones.split("</helmet>", 1)[0].replace("<title>Criterio · Botones</title>", f"<title>{TITULO}</title>")
 head = re.sub(r"(\.crit \{[^}]*min-height: )\d+px", lambda m: m.group(1) + f"{ALTO}px", head)
 head = re.sub(r"(\.crit \{ width: )1440px", lambda m: m.group(1) + f"{ANCHO}px", head)
+head = re.sub(r'<style data-t15="reglas">.*?</style>\n?', "", head, flags=re.S)  # las secciones de reglas_t15_1004.py no se usan acá
 
 CSS = """  <style data-criterio="decisiones">
 .dec { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; font-size: 13.5px; }
