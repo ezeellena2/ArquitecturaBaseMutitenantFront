@@ -664,6 +664,47 @@ textarea.in2 { height: auto; min-height: 84px; }
 /* 161 · El foco arranca en «Cancelar», para que un Enter apurado no confirme lo que no se leyó. */
 :root .dlg-f .t10n-foco, :root .df .t10n-foco { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--marca) !important; }
 </style>
+<style data-r212="matriz">
+/* 212 · Los permisos de un rol o de un operador, en una matriz: una fila por área, con Ver (`.read`), Administrar (`.manage`) y
+   «Otros permisos»; «—» donde el área no tiene ese permiso. La casilla del área queda vacía, parcial o completa; lo que no se
+   cambia se lee con tildes, sin la columna del área. Qué permite cada permiso va en la (i) del área (roles_matriz_1004.py). */
+.r212 { display: flex; flex-direction: column; font-size: 10.7px/*13px*/; line-height: 1.35; color: var(--t1); text-align: left; }
+.r212-f { display: grid; min-height: 29.6px/*40px*/; border-bottom: 1px solid var(--borde); }
+.r212-f:last-child { border-bottom: 0; }
+.r212.con-area.con-otros > .r212-f { grid-template-columns: 34px 180px 84px 108px minmax(0, 1fr); }
+.r212.con-area.sin-otros > .r212-f { grid-template-columns: 34px 180px 84px minmax(0, 1fr); }
+.r212.sin-area.con-otros > .r212-f { grid-template-columns: 180px 84px 108px minmax(0, 1fr); }
+.r212.sin-area.sin-otros > .r212-f { grid-template-columns: 180px 84px minmax(0, 1fr); }
+.r212-f > * { display: flex; align-items: center; gap: 4.3px/*6px*/; min-width: 0; padding: 4.3px/*6px*/ 8.6px/*12px*/; box-sizing: border-box; }
+.r212-f > * + * { border-left: 1px solid oklch(0.915 0.013 95 / 0.8); }
+.r212-h { background: oklch(0.945 0.027 95); border-bottom-color: oklch(0.89 0.031 95); font-weight: 600; color: var(--t2); }
+.r212-h > * + * { border-left-color: oklch(0.89 0.031 95); }
+.r212 > .r212-h:first-child { border-radius: 3px 3px 0 0; }
+.r212 > .r212-f:not(.r212-h):nth-child(odd) { background: oklch(0.968 0.015 95); }
+.r212-f > .r212-c { justify-content: center; padding: 0; }
+.r212-a { font-weight: 500; }
+.r212-no { color: var(--t3); }
+.r212-si { display: inline-flex; align-items: center; gap: 4.3px/*6px*/; color: var(--marca); }
+.r212-o { flex-wrap: wrap; column-gap: 14.4px/*20px*/; row-gap: 2.9px/*4px*/; }
+.r212-ot { display: inline-flex; align-items: center; gap: 5.8px/*8px*/; cursor: pointer; }
+span.r212-ot { cursor: default; }
+.r212-ot .r212-si { color: var(--marca); }
+.r212 input[type="checkbox"] { width: 16px; height: 16px; margin: 0; flex-shrink: 0; accent-color: var(--marca); cursor: pointer; }
+.r212 input[type="checkbox"].r212-mixto { appearance: none; -webkit-appearance: none; border: 0; border-radius: 2px; background: var(--marca) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8h8' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center / 12px 12px no-repeat; }
+.r212-vacio { padding: 11.5px/*16px*/; color: var(--t3); }
+.r212-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.r212-i { position: relative; display: inline-flex; align-items: center; color: var(--t3); cursor: help; outline: none; }
+.r212-i:focus-visible { border-radius: 50%; box-shadow: 0 0 0 2px var(--marca); }
+.r212-tip { display: none; position: absolute; z-index: 40; top: calc(100% + 5.9px/*8px*/); left: -7.2px/*10px*/; width: 340px; padding: 5.8px/*8px*/ 7.2px/*10px*/; border-radius: 3px/*6px*/; background: oklch(0.27 0.012 60); color: #fff; font-size: 10.5px/*12.5px*/; font-weight: 400; line-height: 1.45; white-space: pre-line; text-align: left; }
+.r212-tip::before { content: ""; position: absolute; left: 10.1px/*14px*/; top: -3px/*4px*/; width: 8px; height: 8px; background: inherit; transform: rotate(45deg); }
+.r212-i:hover .r212-tip, .r212-i:focus .r212-tip, .r212-i.abierta .r212-tip { display: block; }
+.r212-tit { display: flex; align-items: center; gap: 4.3px/*6px*/; min-width: 0; }
+.w-caja.r212-caja, .tarjeta.r212-caja { overflow: visible; }
+.r212-marco { border: 1px solid var(--borde); border-radius: 3px; }
+/* En un diálogo de 560, las columnas se ajustan para que «Otros permisos» entre sin cortar un nombre. */
+.dlg .r212.con-area.con-otros > .r212-f { grid-template-columns: 28px 144px 44px 80px minmax(0, 1fr); }
+.r212-err { flex-shrink: 0; }
+</style>
 <style data-t10="piezas">
 /* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
 :root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
@@ -704,9 +745,9 @@ textarea.in2 { height: auto; min-height: 84px; }
 :root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
 /* Las filas de una tabla con columnas fijas conservan su relleno, del que sale dónde queda cada columna fija (ver TABLA_FIJA). */
 :root .k-desp .w-th, :root .k-desp .w-tr { padding-left: 16px !important; padding-right: 8px !important; }
-:root .tt-f > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
-:root .tt-h > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
-:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
+:root .tt-f > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.r212-c):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.r212-c):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
+:root .tt-h > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.r212-c):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.r212-c):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
+:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.r212-c):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.n):not(.quitar):not(.r212-c):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
 :root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }
 
 /* 174 · El texto largo se ve entero: la celda baja de renglón en lugar de cortar con «…». */
@@ -755,6 +796,19 @@ textarea.in2 { height: auto; min-height: 84px; }
 .t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
 .t10-aro { width: 16.3px/*22px*/; height: 16.3px/*22px*/; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
 @keyframes t10-gira { to { transform: rotate(360deg); } }
+
+/* 210 · Avisos según el tipo: el fondo nunca dice el tipo; un filo de 3 px y el ícono del color de su tipo. */
+:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast, .p-aviso) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal, .p-aviso.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+:root :is(.f-toast, .ta-toast, .t-toast):has(> .neu) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.w-cartel.info, .w-cartel.o-info) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel.o-prob, .cartel.prob, .aviso-mal, .imp-franja) { --t15-tipo: var(--peligro); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > svg,
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > .fila > svg { color: var(--t15-tipo) !important; flex: none; }
+:root :is(.f-snack, .ta-snack, .e11b-snack) { border-left: 3px solid oklch(0.78 0.14 155) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .mal) { border-left-color: oklch(0.75 0.15 25) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .neu), :root .f-snack.alto:not(:has(> .ok, > .mal)) { border-left-color: oklch(0.75 0.01 78) !important; }
 /* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */
 :root .tarjeta { box-shadow: none !important; }
 :root a.kpi:hover { box-shadow: none !important; }
@@ -895,16 +949,9 @@ textarea.in2 { height: auto; min-height: 84px; }
               <input class="in2 {{malCorreo}}" id="f-Correo" type="email" autocomplete="off" placeholder="" value="{{Correo}}" onChange="{{onCorreo}}">
               <sc-if value="{{errCorreo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCorreo}}</span></sc-if>
             </div>
-            <div class="campo2 envoltura ancho">
+            <div class="campo2 ancho">
               <span class="et"><span id="et-Permisos">Permisos de plataforma</span></span>
-              <button type="button" class="in2" aria-haspopup="listbox" aria-expanded="{{expPermisos}}" aria-labelledby="et-Permisos" onClick="{{alternarPermisos}}" disabled="{{bloqPermisos}}"><span class="val {{claseValPermisos}}">{{textoPermisos}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
-              <sc-if value="{{abiertoPermisos}}" hint-placeholder-val="{{no}}">
-                <div class="menu lista" role="listbox" aria-multiselectable="true" aria-labelledby="et-Permisos" style="top: 44.4px/*60px*/;">
-                  <sc-for list="{{opcionesPermisos}}" as="o" hint-placeholder-count="3">
-                    <label class="op2"><input type="checkbox" checked="{{o.on}}" onChange="{{o.alternar}}"><span><span class="opn">{{o.n}}</span><sc-if value="{{o.d}}" hint-placeholder-val="{{no}}"><span class="opd">{{o.d}}</span></sc-if></span></label>
-                  </sc-for>
-                </div>
-              </sc-if>
+              <div class="r212-marco"><div class="r212 {{permClase}}" role="table" aria-labelledby="et-Permisos"><div class="r212-f r212-h" role="row"><sc-if value="{{si}}" hint-placeholder-val="{{si}}"><span class="r212-c" role="columnheader"><span class="r212-sr">Toda el área</span></span></sc-if><span role="columnheader">Área</span><span role="columnheader">Ver</span><span role="columnheader">Administrar</span><sc-if value="{{permOtros}}" hint-placeholder-val="{{si}}"><span role="columnheader">Otros permisos</span></sc-if></div><sc-for list="{{permFilas}}" as="a" hint-placeholder-count="3"><div class="r212-f" role="row"><sc-if value="{{si}}" hint-placeholder-val="{{si}}"><span class="r212-c" role="cell"><sc-if value="{{a.conArea}}" hint-placeholder-val="{{si}}"><input type="checkbox" class="{{a.claseArea}}" checked="{{a.todos}}" onChange="{{a.alternarTodos}}" aria-label="{{a.ariaTodos}}"></sc-if></span></sc-if><span class="r212-a" role="rowheader"><span class="r212-n">{{a.n}}</span><span class="r212-i {{a.claseI}}" tabindex="0" role="img" aria-label="{{a.ayuda}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg><span class="r212-tip" role="tooltip">{{a.ayuda}}</span></span></span><span role="cell"><sc-if value="{{a.VerFalta}}" hint-placeholder-val="{{no}}"><span class="r212-no" aria-hidden="true">—</span></sc-if><sc-if value="{{a.VerCasilla}}" hint-placeholder-val="{{si}}"><input type="checkbox" checked="{{a.VerOn}}" onChange="{{a.alternarVer}}" aria-label="{{a.VerN}}"></sc-if><sc-if value="{{a.VerTilde}}" hint-placeholder-val="{{no}}"><span class="r212-si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span class="r212-sr">{{a.VerN}}</span></span></sc-if></span><span role="cell"><sc-if value="{{a.AdmFalta}}" hint-placeholder-val="{{no}}"><span class="r212-no" aria-hidden="true">—</span></sc-if><sc-if value="{{a.AdmCasilla}}" hint-placeholder-val="{{si}}"><input type="checkbox" checked="{{a.AdmOn}}" onChange="{{a.alternarAdm}}" aria-label="{{a.AdmN}}"></sc-if><sc-if value="{{a.AdmTilde}}" hint-placeholder-val="{{no}}"><span class="r212-si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span class="r212-sr">{{a.AdmN}}</span></span></sc-if></span><sc-if value="{{permOtros}}" hint-placeholder-val="{{si}}"><span class="r212-o" role="cell"><sc-for list="{{a.otros}}" as="o" hint-placeholder-count="1"><sc-if value="{{o.casilla}}" hint-placeholder-val="{{si}}"><label class="r212-ot"><input type="checkbox" checked="{{o.on}}" onChange="{{o.alternar}}">{{o.n}}</label></sc-if><sc-if value="{{o.tilde}}" hint-placeholder-val="{{no}}"><span class="r212-ot"><span class="r212-si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>{{o.n}}</span></sc-if></sc-for></span></sc-if></div></sc-for></div></div>
             </div>
 
         </div>
@@ -991,17 +1038,57 @@ const CUENTAS = [
   { id: 'o2', n: 'Laura Díaz', email: 'laura.diaz@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 2, ultimo: '22/09/2026, 15:30', metodo: 'Código + autenticador', estado: 'activa' },
   { id: 'o3', n: '', email: 'julieta.molina@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 3, ultimo: 'Nunca', metodo: 'Vence el 04/10/2026', estado: 'invitado' },
 ];
-const PERMISOS_PLAT = [
-  { v: 'platform.tenants.read', n: 'Ver organizaciones', d: 'El listado y la ficha de cada organización.' },
-  { v: 'platform.tenants.manage', n: 'Administrar organizaciones', d: 'Aprobar, suspender, reactivar y cerrar; módulos y página pública.' },
-  { v: 'platform.accounts.read', n: 'Ver cuentas', d: 'Buscar cuentas y ver su ficha.' },
-  { v: 'platform.accounts.manage', n: 'Administrar cuentas', d: 'Suspender, cerrar sesiones y borrar.' },
-  { v: 'platform.recoveries.manage', n: 'Recuperaciones', d: 'Aprobar o rechazar pedidos de «Recuperar mi cuenta».' },
-  { v: 'platform.legal.manage', n: 'Documentos legales', d: 'Publicar una versión nueva de términos o privacidad.' },
-  { v: 'platform.operators.manage', n: 'Administrar operadores', d: 'Invitar operadores y cambiar sus permisos.' },
-  { v: 'platform.audit.read', n: 'Ver la auditoría', d: 'Los eventos de seguridad de todo el servicio.' },
-  { v: 'platform.settings.manage', n: 'Cambiar la configuración', d: 'Registro de personas y alta de organizaciones.' },
+// 212: los permisos de un operador, por área, como `permissionCatalog.ts`: los del núcleo, los de los módulos y, al final,
+// «Cambiar la configuración».
+const AREAS_PLAT = [
+  { a: 'platform.tenants', n: 'Organizaciones', ps: [['platform.tenants.read', 'Ver organizaciones', 'El listado y la ficha de cada organización.'], ['platform.tenants.manage', 'Administrar organizaciones', 'Aprobar, suspender, reactivar y cerrar; módulos y página pública.']] },
+  { a: 'platform.accounts', n: 'Cuentas', ps: [['platform.accounts.read', 'Ver cuentas', 'Buscar cuentas y ver su ficha.'], ['platform.accounts.manage', 'Administrar cuentas', 'Suspender, cerrar sesiones y borrar.']] },
+  { a: 'platform.recoveries', n: 'Recuperaciones', ps: [['platform.recoveries.manage', 'Recuperaciones', 'Aprobar o rechazar pedidos de «Recuperar mi cuenta».']] },
+  { a: 'platform.legal', n: 'Documentos legales', ps: [['platform.legal.manage', 'Documentos legales', 'Publicar una versión nueva de términos o privacidad.']] },
+  { a: 'platform.operators', n: 'Operadores', ps: [['platform.operators.manage', 'Administrar operadores', 'Invitar operadores y cambiar sus permisos.']] },
+  { a: 'platform.audit', n: 'Auditoría', ps: [['platform.audit.read', 'Ver la auditoría', 'Los eventos de seguridad de todo el servicio.']] },
+  { a: 'platform.whatsapp', n: 'WhatsApp', ps: [['platform.whatsapp.manage', 'Administrar el WhatsApp de Plataforma', 'Conectar el número y configurar el bot, los equipos y las plantillas de consultas.'], ['platform.whatsapp.attend', 'Atender consultas', 'Ver y responder las consultas que llegan al número de Plataforma.']] },
+  { a: 'platform.assistant', n: 'Asistente', ps: [['platform.assistant.use', 'Usar el asistente de Plataforma', 'Consultar el asistente con tus permisos de Plataforma.'], ['platform.assistant.configure', 'Configurar el asistente de Plataforma', 'Configurar claves, modelos y topes del asistente.'], ['platform.assistant.read', 'Ver el uso del asistente', 'Ver costos y consultas agregados sin leer conversaciones.']] },
+  { a: 'platform.settings', n: 'Configuración', ps: [['platform.settings.manage', 'Cambiar la configuración', 'Registro de personas y alta de organizaciones.']] },
 ];
+
+// t212 · La matriz de permisos (212, roles_matriz_1004.py): una fila por área, con Ver (`<área>.read`), Administrar
+// (`<área>.manage`) y «Otros permisos», en el orden del catálogo, y «—» donde el área no tiene ese permiso. La casilla del área
+// queda vacía, parcial o completa, y un área de un solo permiso no la lleva. Con `leer`, tildes, sin casillas ni la columna del
+// área; `abierta` deja a la vista la (i) de esa área, que dice qué permite cada permiso, uno por renglón.
+const matrizConOtros = (areas) => areas.some((a) => a.ps.some((p) => p[0] !== a.a + '.read' && p[0] !== a.a + '.manage'));
+const matrizClase = (areas, leer) => (leer ? 'sin-area' : 'con-area') + (matrizConOtros(areas) ? ' con-otros' : ' sin-otros');
+const matrizFilas = (areas, elegidos, actuales, poner, { leer = false, abierta = null } = {}) => areas.map((a) => {
+  const codigos = a.ps.map((p) => p[0]);
+  const marcados = codigos.filter((c) => elegidos.includes(c));
+  const alternar = (c) => { const l = actuales(); poner(l.includes(c) ? l.filter((x) => x !== c) : [...l, c]); };
+  const ver = a.ps.find((p) => p[0] === a.a + '.read');
+  const adm = a.ps.find((p) => p[0] === a.a + '.manage');
+  const celda = (p, k) => ({
+    [k + 'Falta']: !p, [k + 'Casilla']: !!p && !leer, [k + 'Tilde']: !!p && leer && elegidos.includes(p[0]),
+    [k + 'On']: !!p && elegidos.includes(p[0]), [k + 'N']: p ? p[1] : '', ['alternar' + k]: () => p && alternar(p[0]),
+  });
+
+  return {
+    n: a.n,
+    ayuda: a.ps.map((p) => p[1] + ' — ' + p[2]).join('\n'),
+    claseI: abierta === a.n ? 'abierta' : '',
+    conArea: codigos.length > 1,
+    todos: marcados.length === codigos.length,
+    claseArea: marcados.length > 0 && marcados.length < codigos.length ? 'r212-mixto' : '',
+    ariaTodos: 'Todos los permisos de ' + a.n,
+    alternarTodos: () => {
+      const resto = actuales().filter((c) => !codigos.includes(c));
+      poner(marcados.length === codigos.length ? resto : [...resto, ...codigos]);
+    },
+    ...celda(ver, 'Ver'),
+    ...celda(adm, 'Adm'),
+    otros: a.ps.filter((p) => p !== ver && p !== adm).map((p) => ({
+      n: p[1], on: elegidos.includes(p[0]), casilla: !leer, tilde: leer && elegidos.includes(p[0]), alternar: () => alternar(p[0]),
+    })),
+  };
+});
+// t212 · fin
 
 class Component extends DCLogic {
   constructor(props) {
@@ -1272,7 +1359,10 @@ class Component extends DCLogic {
       dlgOperador: s.dialogo === 'operador',
       cerrarDialogo: () => this.setState({ dialogo: null, abierto: null }),
       Correo: s.correo, onCorreo: (e) => this.setState({ correo: e.target.value, errCorreo: '' }), malCorreo: s.errCorreo ? 'mal' : '', errCorreo: s.errCorreo,
-      ...this.varios('Permisos', 'permisos', PERMISOS_PLAT, 'Ninguno'),
+      // 212: los permisos del operador, en la matriz de los roles.
+      permClase: matrizClase(AREAS_PLAT, false),
+      permOtros: matrizConOtros(AREAS_PLAT),
+      permFilas: matrizFilas(AREAS_PLAT, s.permisos, () => this.state.permisos, (nueva) => this.setState({ permisos: nueva })),
       // POST /api/platform/operators: el operador entra con código y configura el autenticador en su primer ingreso.
       invitar: () => {
         const correo = s.correo.trim().toLowerCase();
