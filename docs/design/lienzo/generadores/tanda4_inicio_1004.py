@@ -41,6 +41,19 @@ Dos arreglos del mismo día en el chat, pedidos al revisarlo:
   bloques `data-criterio="aplicado"` y `data-vuelta="1004-piezas-comunes"`; copia esas reglas de `.dlg` desde `Asistente-Org`.
   Vale para los tres diálogos del tablero. Las hojas del teléfono ya eran iguales.
 
+**El diálogo de un modelo del catálogo, en pasos** (decisión del usuario del mismo día: «Avanzado: datos técnicos» se plegaba y
+se desplazaba adentro del diálogo, contra «sin áreas plegables», 212 y 213), en `Plat-Asistente-Config` y
+`Plat-Asistente-Config-23`, con sus teléfonos. Nada se pliega ni se desplaza adentro:
+- al agregar, dos pasos en la compu: «Agregar modelo» (nombre, proveedor, ID, precios y «Activo») con «Cancelar» y «Siguiente»,
+  y «Datos técnicos» (capacidades, esfuerzos, límites, la caché y el contexto largo, cada zona con su título) con «Atrás» y
+  «Agregar modelo»; «Paso 1 de 2» va en el pie. En el teléfono, que no tiene lugar, lo técnico se parte en tres zonas que entran
+  en la hoja (capacidades y esfuerzos; límites y caché; contexto largo), «Paso 1 de 4» al lado del título;
+- al editar, lo técnico se lee en una grilla (`DetailGrid`, `t15-dg` de `Criterio-Dialogos`), con «Cambiar datos técnicos» en su
+  encabezado, que abre ese paso con «Atrás» y «Guardar cambios». En el teléfono, «Datos técnicos» lleva a la lectura (sus filas,
+  como lectura del teléfono) y desde ahí «Cambiar datos técnicos» recorre las tres zonas, con «Guardar cambios» al final;
+- el error de un dato técnico queda en su paso, y el 409 suma «Otra persona cambió esto. Revisá la versión más reciente antes de
+  guardar.» en la franja de error del diálogo, como `Usuario` (un estado nuevo: el diálogo no lo tenía).
+
 La lógica nueva va en un método propio, `tanda4(a)`, que recibe lo que ya calculaba el tablero y pisa solo lo de sus estados, así
 los estados de antes no cambian. Las piezas se copian del mismo tablero (el aviso de «Falló la respuesta», la fila abierta de la
 lista con su menú, la ficha de un adjunto, la tarjeta del asistente sin configurar, la confirmación de borrar, el estado de la
@@ -493,13 +506,216 @@ def pasar_config(t, nombre):
     return con_estilo(t, 'data-t4i="config"', CSS_CONFIG_TEL if tel else CSS_CONFIG)
 
 
+# ---------------------------------------------------------------------------------------------------------------- el modelo, en pasos
+MODELO = ["Plat-Asistente-Config", "M-Plat-Asistente-Config", "Plat-Asistente-Config-23", "M-Plat-Asistente-Config-23"]
+MODOS_VIEJO = ("const MODOS = { 'Agregar un modelo': 'nuevo', 'Agregar un modelo: avanzado': 'nuevo-av', 'Editar un modelo': 'editar', "
+               "'Editar un modelo: error en un dato técnico': 'error' };")
+AG, ED = "Agregar un modelo", "Editar un modelo"
+MODOS_PC = {AG: "nuevo", f"{AG}: datos técnicos": "nuevo-av", ED: "editar", f"{ED}: datos técnicos": "editar",
+            f"{ED}: error en un dato técnico": "error", f"{ED}: otra persona lo cambió": "editar"}
+MODOS_TEL = {AG: "nuevo", f"{AG}: capacidades y esfuerzos": "nuevo-av", f"{AG}: límites y caché": "nuevo-av",
+             f"{AG}: contexto largo": "nuevo-av", ED: "editar", f"{ED}: datos técnicos": "editar", f"{ED}: cambiar datos técnicos": "editar",
+             f"{ED}: error en un dato técnico": "error", f"{ED}: otra persona lo cambió": "editar"}
+PASO_PC = {f"{AG}: datos técnicos": "tec", f"{ED}: datos técnicos": "tec", f"{ED}: error en un dato técnico": "tec"}
+PASO_TEL = {f"{AG}: capacidades y esfuerzos": "cap", f"{AG}: límites y caché": "lim", f"{AG}: contexto largo": "largo",
+            f"{ED}: datos técnicos": "lectura", f"{ED}: cambiar datos técnicos": "cap", f"{ED}: error en un dato técnico": "lim"}
+T_409 = "Otra persona cambió esto. Revisá la versión más reciente antes de guardar."
+# Lo técnico, como lectura: los mismos títulos y rótulos que su paso.
+LECTURA = [(None, [("Capacidades", "gCap"), ("Esfuerzos permitidos", "gEsf"), ("Contexto (tokens)", "gCtx"), ("Salida máxima (tokens)", "gOut")]),
+           ("Caché · por millón de tokens", [("Lectura de caché", "gCL"), ("Escritura de 5 minutos", "gC5"), ("Escritura de 1 hora", "gC1")]),
+           ("Contexto largo", [("Desde (tokens)", "gLD"), ("Entrada por millón", "gLE"), ("Salida por millón", "gLS"), ("Lectura de caché", "gLCL"),
+                               ("Escritura de 5 minutos", "gLC5"), ("Escritura de 1 hora", "gLC1")])]
+
+JS_PASOS = """
+  // El diálogo de un modelo, en pasos (decisión del usuario del 2026-11-18: nada se pliega ni se desplaza adentro, 212 y 213).
+  // Agregar va de los datos a los técnicos@ZONAS@; al editar, lo técnico se lee en una grilla y «Cambiar datos técnicos» abre su
+  // paso, con «Guardar cambios».
+  pasos(a) {
+    const e = this.state.e ?? (this.props.estado ?? 'Configurada');
+    const MODOS = @MODOS@;
+    const INICIO = @INICIO@;
+    const modo = this.state.modo !== undefined ? this.state.modo : (MODOS[e] || null);
+    const edita = modo === 'editar' || modo === 'error';
+    const ORDEN = @ORDEN@;
+    const pedido = this.state.pasoE === e && this.state.paso ? this.state.paso : (INICIO[e] || (modo === 'nuevo-av' ? ORDEN[1] : 'datos'));
+    const paso = ORDEN.includes(pedido) ? pedido : 'datos';
+    const i = ORDEN.indexOf(paso);
+    const ir = (p) => this.setState({ paso: p, pasoE: e });
+    const cerrar = () => this.setState({ modo: null, av: undefined, paso: undefined, pasoE: undefined });
+    const guardar = edita ? 'Guardar cambios' : 'Agregar modelo';
+    const pri = paso === 'lectura' ? ['Cambiar datos técnicos', () => ir(ORDEN[i + 1])]
+      : (i === ORDEN.length - 1 || (edita && paso === 'datos')) ? [guardar, cerrar] : ['Siguiente', () => ir(ORDEN[i + 1])];
+    const sec = paso === 'datos' ? ['Cancelar', cerrar] : ['Atrás', () => ir(ORDEN[i - 1])];
+    const lista = (xs) => !xs.length ? '—' : xs.length === 1 ? xs[0] : xs.slice(0, -1).join(', ') + ' y ' + xs[xs.length - 1];
+    const marcadas = (xs) => lista(xs.filter(([k]) => a[k] === 'on').map(([, n]) => n));
+    const plata = (v) => (v ? 'US$ ' + v : '—');
+    return {
+      tituloModelo: paso === 'datos' ? (edita ? 'Editar modelo' : 'Agregar modelo') : 'Datos técnicos',
+      pDatos: paso === 'datos', pTec: paso === 'tec', pLectura: paso === 'lectura', pCap: paso === 'cap', pLim: paso === 'lim', pLargo: paso === 'largo',
+      mEdita: edita, hay409: e === 'Editar un modelo: otra persona lo cambió' && paso === 'datos',
+      textoPaso: edita ? '' : 'Paso ' + (i + 1) + ' de ' + ORDEN.length,
+      bPriTexto: pri[0], bPriAccion: pri[1], bSecTexto: sec[0], bSecAccion: sec[1],
+      verTecnicos: () => ir(ORDEN[1]), cerrarModelo: cerrar,
+      agregarModelo: () => this.setState({ modo: 'nuevo', av: false, paso: 'datos', pasoE: e }),
+      gCap: marcadas([['cTxt', 'Texto'], ['cHer', 'Herramientas'], ['cImg', 'Imágenes en los adjuntos'], ['cPdf', 'PDF en los adjuntos'], ['cPen', 'Pensamiento adaptativo']]),
+      gEsf: marcadas([['eBajo', 'Bajo'], ['eMedio', 'Medio'], ['eAlto', 'Alto']]),
+      gCtx: a.mCtx || '—', gOut: a.mOut || '—', gCL: plata(a.mCacheL), gC5: plata(a.mCache5), gC1: plata(a.mCache1),
+      gLD: a.mLargoDesde || '—', gLE: plata(a.mLargoEnt), gLS: plata(a.mLargoSal), gLCL: plata(a.mLargoCL), gLC5: plata(a.mLargoC5), gLC1: plata(a.mLargoC1),
+    };
+  }
+
+"""
+
+
+def js_pasos(tel):
+    return (JS_PASOS.replace("@ZONAS@", ", partidos en zonas que entran en la hoja" if tel else "")
+            .replace("@MODOS@", json.dumps(MODOS_TEL if tel else MODOS_PC, ensure_ascii=False))
+            .replace("@INICIO@", json.dumps(PASO_TEL if tel else PASO_PC, ensure_ascii=False))
+            .replace("@ORDEN@", "edita ? ['datos', 'lectura', 'cap', 'lim', 'largo'] : ['datos', 'cap', 'lim', 'largo']" if tel else "['datos', 'tec']"))
+
+
+CSS_MODELO = """/* El diálogo de un modelo, en pasos: el paso en el pie, lo técnico como lectura (DetailGrid, como Criterio · Diálogos) y el 409. */
+.dlg-f .t4-paso { margin-right: auto; align-self: center; font-size: 13px; color: var(--t2); }
+.t4-lect { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--borde); }
+.t4-lect-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.t4-lect .as-sub { margin-top: 0; }
+.t15-dg { display: grid; grid-template-columns: 150px minmax(0, 1fr); border: 1px solid var(--borde); border-radius: 3px/*10px*/; overflow: hidden; font-size: 10.7px/*13px*/; background: #fff; }
+.t15-dg > span { padding: 6.5px/*9px*/ 8.6px/*12px*/; border-top: 1px solid var(--borde); line-height: 1.4; }
+.t15-dg > span:nth-child(-n+2) { border-top: 0; }
+.t15-dg > span:nth-child(odd) { background: oklch(0.975 0.012 95); color: var(--t2); }
+.t15-dg.dos { grid-template-columns: 150px minmax(0, 1fr) 150px minmax(0, 1fr); }
+.t15-dg.dos > span:nth-child(-n+4) { border-top: 0; }
+.t15-dg.dos > span:nth-child(4n+3) { border-left: 1px solid var(--borde); }
+.aviso-mal { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; font-size: 13px; grid-column: 1 / -1; }
+.aviso-mal svg { flex-shrink: 0; margin-top: 1px; }
+"""
+CSS_MODELO_TEL = """/* El diálogo de un modelo, en pasos: el paso al lado del título, lo técnico como lectura y el 409. */
+/* La hoja llega hasta la barra de estado (44, más sus 34 de relleno) y cada paso entra sin desplazarse. */
+.as-thoja.t4-pasos { max-height: calc(100% - 78px); }
+.t4-pasos .as-thc { padding-bottom: 4px; }
+.t4-pasos .as-thb { gap: 10px; padding-top: 0; }
+.t4-pasos .as-thb .as-avz.t4-fila { min-height: 44px; margin-top: 0; }
+.t4-pasos .as-thc h2 { min-width: 0; margin-right: auto; }
+.as-thc .t4-paso { margin-right: 4px; font-size: 13px; color: var(--t2); white-space: nowrap; }
+.t4-tdg { display: flex; flex-direction: column; }
+.t4-tf { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 6px 0; border-top: 1px solid var(--borde); font-size: 14.5px; line-height: 1.35; }
+.t4-tf:first-child { border-top: 0; padding-top: 0; }
+.t4-tf span { color: var(--t2); flex-shrink: 0; }
+.t4-tf b { font-weight: 500; text-align: right; }
+.as-avz.t4-fila { justify-content: space-between; }
+.aviso-mal { display: flex; align-items: flex-start; gap: 10px; padding: 8px 12px; border-radius: 12px; font-size: 14.5px; line-height: 1.35; }
+.aviso-mal svg { flex-shrink: 0; margin-top: 2px; }
+"""
+
+
+def lectura(tel):
+    """Lo técnico de un modelo, como lectura: la grilla de la compu (`t15-dg`) o las filas del teléfono."""
+    partes = []
+    for titulo, filas in LECTURA:
+        if titulo:
+            partes.append(f'<span class="as-sub">{titulo}</span>')
+        if tel:
+            partes.append('<div class="t4-tdg">' + "".join(f'<div class="t4-tf"><span>{r}</span><b>{{{{{v}}}}}</b></div>' for r, v in filas) + "</div>")
+        else:
+            dos = " dos" if len(filas) == 6 else ""  # el contexto largo, de a dos datos por renglón: sus valores son cortos
+            partes.append(f'<div class="t15-dg{dos}">' + "".join(f"<span>{r}</span><span>{{{{{v}}}}}</span>" for r, v in filas) + "</div>")
+    if tel:
+        return "".join(partes)
+    return ('<div class="w-cmp as-ancho t4-lect" role="group" aria-label="Datos técnicos"><div class="t4-lect-cab"><span class="as-sub">Datos técnicos</span>'
+            '<button type="button" class="cb cb-sec ch" onClick="{{verTecnicos}}">Cambiar datos técnicos</button></div>' + "".join(partes) + "</div>")
+
+
+def dialogo_pc(dlg):
+    a = dlg.index('<div class="dlg-b as-g2 as-dlg">')
+    cab = dlg[:a].replace('class="dlg as-dlg-mod"', 'class="dlg as-dlg-mod t4-pasos"', 1)
+    b = dlg.index('<button type="button" class="as-avz', a)
+    datos = dlg[a + len('<div class="dlg-b as-g2 as-dlg">'):b]
+    k = dlg.index('<div class="as-av-sec as-ancho">', b)
+    tec = dlg[k + len('<div class="as-av-sec as-ancho">'):cierre(dlg, k, "div") - len("</div>")]
+    f = dlg.index('<div class="dlg-f">')
+    resto = dlg[cierre(dlg, f, "div"):]
+    assert "t4-pasos" in cab and resto == "</div></div></sc-if>" and tec.count('<span class="as-sub">') == 5, resto
+    aviso = f'<div class="aviso-mal" role="alert">{OCTOGONO}<span>{T_409}</span></div>'
+    return (cab + si("pDatos", '<div class="dlg-b as-g2 as-dlg">' + datos + si("mEdita", lectura(False)) + si("hay409", aviso) + "</div>", "si")
+            + si("pTec", f'<div class="dlg-b una as-dlg"><div class="as-av-sec">{tec}</div></div>')
+            + '<div class="dlg-f">' + si("textoPaso", '<span class="t4-paso">{{textoPaso}}</span>')
+            + '<button type="button" class="cb cb-sec" onClick="{{bSecAccion}}">{{bSecTexto}}</button>'
+            + '<button type="button" class="cb cb-pri" onClick="{{bPriAccion}}">{{bPriTexto}}</button></div>' + resto)
+
+
+def dialogo_tel(dlg):
+    a = dlg.index('<div class="as-thb">')
+    cab = (dlg[:a].replace('<div class="as-thoja" role="dialog"', '<div class="as-thoja t4-pasos" role="dialog"', 1)
+           .replace("<h2>{{tituloModelo}}</h2>", "<h2>{{tituloModelo}}</h2>" + si("textoPaso", '<span class="t4-paso">{{textoPaso}}</span>'), 1))
+    b = dlg.index('<button type="button" class="as-avz', a)
+    datos = dlg[a + len('<div class="as-thb">'):b]
+    _, _, boton = bloque(dlg, '<button type="button" class="as-avz', "button", b)
+    chev = svg_de(boton, '<span class="as-avz-f">')
+    k = dlg.index('<div class="as-av-sec">', b)
+    tec = dlg[k + len('<div class="as-av-sec">'):cierre(dlg, k, "div") - len("</div>")]
+    zonas = ['<span class="as-sub">' + z for z in tec.split('<span class="as-sub">')[1:]]
+    f = dlg.index('<div class="as-thp">')
+    resto = dlg[cierre(dlg, f, "div"):]
+    assert "t4-pasos" in cab and "{{textoPaso}}" in cab and resto == "</div></sc-if>" and len(zonas) == 5, resto
+    fila = f'<button type="button" class="as-avz t4-fila" onClick="{{{{verTecnicos}}}}">Datos técnicos<span class="as-avz-f">{chev}</span></button>'
+    aviso = f'<div class="aviso-mal tel" role="alert">{OCTOGONO}<span>{T_409}</span></div>'
+
+    def hoja(var, html, defecto="no"):
+        return si(var, f'<div class="as-thb">{html}</div>', defecto)
+    return (cab + hoja("pDatos", datos + si("mEdita", fila) + si("hay409", aviso), "si") + hoja("pLectura", lectura(True))
+            + hoja("pCap", zonas[0] + zonas[1]) + hoja("pLim", zonas[2] + zonas[3]) + hoja("pLargo", zonas[4])
+            + '<div class="as-thp"><button type="button" class="cb cb-pri" onClick="{{bPriAccion}}">{{bPriTexto}}</button>'
+            + '<button type="button" class="cb cb-sec" onClick="{{bSecAccion}}">{{bSecTexto}}</button></div>' + resto)
+
+
+def renombrar_opcion(t, prop, viejo, nuevo):
+    m = re.search(r'"%s":\{"editor":"enum","options":\[([^\]]*)\]' % prop, t)
+    opciones = json.loads("[" + m.group(1) + "]")
+    if nuevo in opciones:
+        return t
+    opciones[opciones.index(viejo)] = nuevo
+    return t[:m.start(1)] + ",".join(json.dumps(o, ensure_ascii=False) for o in opciones) + t[m.end(1):]
+
+
+def pasar_modelo(t, nombre):
+    tel = nombre.startswith("M-")
+    tecnicos = f"{AG}: capacidades y esfuerzos" if tel else f"{AG}: datos técnicos"
+    t = renombrar_opcion(t, "estado", f"{AG}: avanzado", tecnicos)
+    if tel:
+        t = sumar_opciones(t, "estado", tecnicos, [f"{AG}: límites y caché", f"{AG}: contexto largo"])
+    t = sumar_opciones(t, "estado", ED, [f"{ED}: datos técnicos"] + ([f"{ED}: cambiar datos técnicos"] if tel else []))
+    t = sumar_opciones(t, "estado", f"{ED}: error en un dato técnico", [f"{ED}: otra persona lo cambió"])
+    t = cambiar(t, MODOS_VIEJO, "const MODOS = " + json.dumps(MODOS_TEL if tel else MODOS_PC, ensure_ascii=False) + ";")
+    if "t4-pasos" not in t:
+        i, j, dlg = bloque(t, '<sc-if value="{{dlgModelo}}"', "sc-if")
+        t = t[:i] + (dialogo_tel(dlg) if tel else dialogo_pc(dlg)) + t[j:]
+    if "pasos(a) {" not in t:
+        n = "\r\n" if "\r\n" in t else "\n"
+        if "  renderValsPrevio() {" in t:  # ya tiene `tanda4(a)`: suma `pasos(a)` después
+            t = cambiar(t, f"    return {{ ...a, ...this.tanda4(a) }};{n}", f"    return {{ ...a, ...this.tanda4(a), ...this.pasos(a) }};{n}")
+            t = cambiar(t, "  renderValsPrevio() {", js(js_pasos(tel), t).lstrip("\r\n") + "  renderValsPrevio() {")
+        else:
+            t = cambiar(t, f"class Component extends DCLogic {{{n}  renderVals() {{",
+                        f"class Component extends DCLogic {{{n}  renderVals() {{{n}    const a = this.renderValsPrevio();{n}"
+                        f"    return {{ ...a, ...this.pasos(a) }};{n}  }}{n}" + js(js_pasos(tel), t) + "  renderValsPrevio() {")
+    return con_estilo(t, 'data-t4i="modelo"', CSS_MODELO_TEL if tel else CSS_MODELO)
+
+
 # ---------------------------------------------------------------------------------------------------------------- la corrida
 if __name__ == "__main__":
-    tableros = {**{n: pasar_chat for n in CHAT}, **{n: pasar_config for n in CONFIG}}
+    tableros = {n: [pasar_chat] for n in CHAT}
+    for n in CONFIG + MODELO:
+        tableros.setdefault(n, [])
+    for n in CONFIG:
+        tableros[n].append(pasar_config)
+    for n in MODELO:
+        tableros[n].append(pasar_modelo)
     cambiados = []
-    for nombre, pasar in tableros.items():
+    for nombre, pasos in tableros.items():
         t = leer(nombre)
-        nuevo = pasar(t, nombre)
+        nuevo = t
+        for pasar in pasos:
+            nuevo = pasar(nuevo, nombre)
         if nuevo != t:
             escribir(nombre, nuevo)
             cambiados.append(nombre)
