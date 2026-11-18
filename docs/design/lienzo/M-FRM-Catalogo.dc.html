@@ -1194,8 +1194,13 @@ a.w-conv { text-decoration: none; color: inherit; }
 @keyframes t10-gira { to { transform: rotate(360deg); } }
 
 /* 210 · Avisos según el tipo: el fondo nunca dice el tipo; un filo de 3 px y el ícono del color de su tipo. */
-:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast, .p-aviso) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
-:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal, .p-aviso.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+/* El aviso de una página o de un diálogo (`p-aviso`): atención salvo que lleve la tilde (salió bien) o `mal` (error). */
+:root .p-aviso { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root .p-aviso:has(path[d="m8.5 12 2.4 2.4 4.6-4.8"]) { --t15-tipo: oklch(0.55 0.13 155); }
+:root .p-aviso.mal { --t15-tipo: var(--peligro); }
+:root .p-aviso > svg, :root .p-aviso > span:first-child { color: var(--t15-tipo) !important; flex: none; }
 :root :is(.f-toast, .ta-toast, .t-toast):has(> .neu) { --t15-tipo: var(--t2); }
 :root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde) !important; border-left: 3px solid var(--t15-tipo) !important; }
 :root :is(.w-cartel.info, .w-cartel.o-info) { --t15-tipo: var(--t2); }

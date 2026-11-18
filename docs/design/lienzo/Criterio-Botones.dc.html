@@ -703,8 +703,13 @@
 @keyframes t10-gira { to { transform: rotate(360deg); } }
 
 /* 210 · Avisos según el tipo: el fondo nunca dice el tipo; un filo de 3 px y el ícono del color de su tipo. */
-:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast, .p-aviso) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
-:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal, .p-aviso.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+/* El aviso de una página o de un diálogo (`p-aviso`): atención salvo que lleve la tilde (salió bien) o `mal` (error). */
+:root .p-aviso { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root .p-aviso:has(path[d="m8.5 12 2.4 2.4 4.6-4.8"]) { --t15-tipo: oklch(0.55 0.13 155); }
+:root .p-aviso.mal { --t15-tipo: var(--peligro); }
+:root .p-aviso > svg, :root .p-aviso > span:first-child { color: var(--t15-tipo) !important; flex: none; }
 :root :is(.f-toast, .ta-toast, .t-toast):has(> .neu) { --t15-tipo: var(--t2); }
 :root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde) !important; border-left: 3px solid var(--t15-tipo) !important; }
 :root :is(.w-cartel.info, .w-cartel.o-info) { --t15-tipo: var(--t2); }
@@ -869,7 +874,7 @@
           <div class="t15-enc"><div class="tit"><b>Proveedores</b><span>Activo</span></div>
             <div class="ac"><span class="t15-bt">Descartar</span><span class="t15-bt pri">Guardar cambios</span>
               <span class="ab"><span class="t15-ib" style="border-color: var(--marca);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></span>
-                <span class="t15-menu" style="min-width: 190px;"><span class="op"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8 12h8"/></svg>Dar de baja</span></span></span></div></div>
+                <span class="t15-menu" style="min-width: 190px;"><span class="op"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m6 6 12 12"/></svg>Dar de baja</span></span></span></div></div>
         </div>
         <span class="t15-rot">El editor de un catálogo · la tarea a la vista; dar de baja, en el ⋮</span>
       </div>

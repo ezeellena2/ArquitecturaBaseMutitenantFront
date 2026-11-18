@@ -89,7 +89,7 @@ ICONO = {
     "aba": '<path d="m6 9 6 6 6-6"/>',
     "lapiz": '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
     "tacho": '<path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5h9l1-12.5"/>',
-    "baja": '<circle cx="12" cy="12" r="8.5"/><path d="M8 12h8"/>',
+    "baja": '<circle cx="12" cy="12" r="8.5"/><path d="m6 6 12 12"/>',  # el de las pantallas (`FRM-Catalogo`, `FRM-Editor`)
 }
 
 

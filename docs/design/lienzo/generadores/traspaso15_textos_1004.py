@@ -8,7 +8,9 @@ hoja de ruta del back, que dicen `docs/rules/formatos.md` del front y `docs/rule
   (`Asistente-Uso-Org` y `Plat-Asistente-Uso`, con sus teléfonos), «01/10/2026 – 31/10/2026»; en los cuatro correos del tope de
   `Mensajes`, «del 01/10/2026 al 31/10/2026» dentro de la frase y el rango en su dato «Mes». El eje por mes del tablero de un
   formulario no tiene tablero (v174);
-- **el porcentaje va pegado al número** (208): «64%», «12,5%», en las dos regiones.
+- **el porcentaje va pegado al número** (208): «64%», «12,5%», en las dos regiones;
+- **la ayuda de un número en WhatsApp pide coma en español** (207): «Usá coma para los decimales» en la vista previa del teléfono
+  de un formulario, en lugar de «Usá punto…».
 
 Quedan como están, a propósito: lo que escribió una persona (el nombre de la difusión «20 % en empanadas»), lo que no es una fecha
 con hora (un rango de fechas, la hora sola de una burbuja o de la actividad), las hojas de estilo y el Archivo. Los textos de las
@@ -87,8 +89,12 @@ def porcentajes(texto):
     return texto
 
 
+AYUDA = ("Usá punto para los decimales", "Usá coma para los decimales")
+
+
 def pasar(t, nombre):
     t = fuera_de_estilos(t, lambda x: porcentajes(MOMENTO.sub(r"\1, \2", x)))
+    t = t.replace(*AYUDA)
     for viejo, nuevo, veces in MESES.get(nombre, []):
         t = cambiar(t, viejo, nuevo, veces)
     return t

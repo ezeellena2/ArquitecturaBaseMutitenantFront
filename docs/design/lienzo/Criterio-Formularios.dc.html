@@ -813,8 +813,13 @@
 @keyframes t10-gira { to { transform: rotate(360deg); } }
 
 /* 210 · Avisos según el tipo: el fondo nunca dice el tipo; un filo de 3 px y el ícono del color de su tipo. */
-:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast, .p-aviso) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
-:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal, .p-aviso.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+/* El aviso de una página o de un diálogo (`p-aviso`): atención salvo que lleve la tilde (salió bien) o `mal` (error). */
+:root .p-aviso { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root .p-aviso:has(path[d="m8.5 12 2.4 2.4 4.6-4.8"]) { --t15-tipo: oklch(0.55 0.13 155); }
+:root .p-aviso.mal { --t15-tipo: var(--peligro); }
+:root .p-aviso > svg, :root .p-aviso > span:first-child { color: var(--t15-tipo) !important; flex: none; }
 :root :is(.f-toast, .ta-toast, .t-toast):has(> .neu) { --t15-tipo: var(--t2); }
 :root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde) !important; border-left: 3px solid var(--t15-tipo) !important; }
 :root :is(.w-cartel.info, .w-cartel.o-info) { --t15-tipo: var(--t2); }
@@ -926,7 +931,7 @@
       </div>
       <div class="hoja2" style="display: flex; flex-direction: column; gap: 10.1px/*14px*/;">
         <div class="cmp"><span class="rot">Nombre</span><div class="ctl">Lucía</div></div>
-        <div class="aviso-mal" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg> No pudimos conectarnos. Revisá tu conexión.</div>
+        <div class="aviso-mal" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.7 3h6.6L21 8.7v6.6L15.3 21H8.7L3 15.3V8.7z"/><path d="m14.5 9.5-5 5"/><path d="m9.5 9.5 5 5"/></svg> No pudimos conectarnos. Revisá tu conexión.</div>
         <div style="display: flex; justify-content: flex-end; gap: 5.8px/*8px*/;"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Guardar cambios</button></div>
       </div>
     </div>
@@ -935,7 +940,7 @@
       <li><strong>Error general:</strong> una franja roja clara arriba de los botones. Nunca un aviso que se va solo.</li>
       <li><strong>En el teléfono,</strong> la franja usa la letra de los avisos del teléfono: 14,5 con interlineado 1,4. En la compu, 13.</li>
     </ul>
-    <div class="tel-franja"><div class="tf-hoja"><b>Agregar empresa</b><div class="cmp"><span class="rot">Empresa <span class="req">*</span></span><div class="ctl">Delta Sur S.R.L.</div></div><div class="aviso-mal tel" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg> No pudimos agregar la empresa. Revisá tu conexión y probá de nuevo.</div><div class="tf-bt"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Agregar</button></div></div><span class="tf-pie">En el teléfono: la franja con la letra de los avisos del teléfono.</span></div>
+    <div class="tel-franja"><div class="tf-hoja"><b>Agregar empresa</b><div class="cmp"><span class="rot">Empresa <span class="req">*</span></span><div class="ctl">Delta Sur S.R.L.</div></div><div class="aviso-mal tel" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.7 3h6.6L21 8.7v6.6L15.3 21H8.7L3 15.3V8.7z"/><path d="m14.5 9.5-5 5"/><path d="m9.5 9.5 5 5"/></svg> No pudimos agregar la empresa. Revisá tu conexión y probá de nuevo.</div><div class="tf-bt"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Agregar</button></div></div><span class="tf-pie">En el teléfono: la franja con la letra de los avisos del teléfono.</span></div>
   </section>
 
   <section data-reglas="3-11">
