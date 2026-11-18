@@ -26,12 +26,26 @@ hoja de ruta del back (§5), que dicen `docs/rules/pantallas-y-ui.md` y `paginad
   cambios en un `DetailGrid` (`g-det`), en lugar de un renglón con « · »; «¿Aprobar VIS-000130?» dice en una frase quién la cargó
   y cuándo («La cargó Paula Méndez el 15/10/2026, 16:20.»), y quien solo aprueba lee solo cuándo («Se cargó el …»).
 
+La segunda tanda, del mismo día:
+- **«Cliente» en su columna** (206): la marca de al lado de quien cargó (o mandó, en «Documentos recibidos») pasa a una columna
+  después de «Cargó», con «Sí» o «—», solo en las planillas con alguna fila de un cliente. Se llama «Es cliente» porque las planillas
+  de «Visita a cliente» y «Cobro a cliente» ya tienen la columna «Cliente» de su pregunta. En el teléfono, «Cliente» va como texto en
+  la línea de datos;
+- **«Aprobar» y «Rechazar» en la pantalla completa** de una respuesta que espera una decisión (AC2 de ArquitecturaBase): primeros en
+  la banda, antes de «Abrir conversación», y ya no en el momento «Por aprobar otra vez» de la pantalla completa;
+- **el tope fuera del título** («Fallas hasta 3»): va en la (i) del título, sumado a la que ya tenga («Hasta 3 fotos. JPG o PNG…»),
+  en la carga, la corrección y el diseño del PDF;
+- **«Revisando» de importar** (160): el esqueleto lleva la grilla de la revisión, las pestañas y la tabla, del alto del resultado;
+- **«Muchas bajas» y «Muchas filas con error»**: la pestaña, la revisión y la confirmación dicen la misma cantidad, y la tabla muestra
+  la primera página con su pie.
+
 Quedan como están, a propósito: `FRM-Editor-Baja*`, donde «Reactivar» es publicar, la tarea; las acciones de las filas y la barra
 de las elegidas; el pie de los diálogos, y el Archivo (`FRM-Catalogo-Propuesta`, que pasó a la 25).
 
 Corre después de `traspaso15_textos_1004.py`; al terminar imprime los tableros para la pasada de las piezas
-(`python traspaso10_piezas_1004.py --tableros …`). Suma estados, pero no CSS: usa las piezas que los tableros ya tienen (`e-kw`,
-`f-menu`, `g-det`, `d4-*`), y no toca `canvas.json`. Lee y escribe sin cambiar los finales de línea, y se puede volver a correr sin cambiar nada: lo que ya está
+(`python traspaso10_piezas_1004.py --tableros …`). Suma estados y usa las piezas que los tableros ya tienen (`e-kw`, `f-menu`,
+`g-det`, `d4-*`, `f-i`, `w-pie`); el único CSS nuevo es la barra del esqueleto de importar (`data-t15f="esqueleto"`). No toca
+`canvas.json`. Lee y escribe sin cambiar los finales de línea, y se puede volver a correr sin cambiar nada: lo que ya está
 hecho no vuelve a encontrar lo que busca, y un estado sumado no se suma otra vez.
 """
 import json
@@ -390,6 +404,8 @@ def vista_corregida(t):
 
 
 def corregida(t):
+    if '"Corregida: la planilla"' in t and "{{s11}}" in t:
+        return t  # ya está: la vista se arma con los momentos de «Corregida» de antes de subir la decisión a la banda
     vista = vista_corregida(t)
 
     def cambio(numero, copia):
@@ -441,6 +457,213 @@ APROBAR = [
 ]
 
 
+# ---------------------------------------------------------------------------------------------------------------- 6 · la segunda tanda
+# «Cliente» en su columna (206): la marca de al lado de quien cargó (o mandó) pasa a su columna, después de «Cargó», con «Sí» o «—»,
+# solo en las planillas con alguna fila de un cliente, como «Corregida». Se llama «Es cliente» porque «Visita a cliente» y «Cobro a
+# cliente» tienen su pregunta «Cliente», que ya es una columna de la misma planilla. En el teléfono, «Cliente» va como texto en la
+# línea de datos.
+MARCA = '<span class="pl-marca">Cliente</span>'
+ES_CLIENTE = "Es cliente"
+ANCHO_CLIENTE = "96px"
+PLANILLA = re.compile(r'<div class="w-caja pl-caja[^"]*"(?: style="--pl-cols: ([^;"]*);")?><div class="pl-scroll"><div class="w-th pl">')
+CLIENTE_TEL = re.compile(r'(<span class="l2">[^<]*)<span class="pl-marca">Cliente</span>')
+
+
+def hijos(html):
+    """Los elementos de primer nivel de `html`: (inicio, fin)."""
+    res, i = [], 0
+    abre = re.compile(r"<(span|div|a|button)\b")
+    while (m := abre.search(html, i)):
+        fin = cierre(html, m.start(), m.group(1))
+        res.append((m.start(), fin))
+        i = fin
+    return res
+
+
+def texto(html):
+    return re.sub(r"<[^>]+>", "", html).strip()
+
+
+def con_cliente(region, cols_base, nombre):
+    """Una planilla con alguna fila de un cliente: la columna «Es cliente» después de «Cargó» (o «Mandó»)."""
+    a = region.index('<div class="w-th pl">')
+    fin_h = cierre(region, a, "div")
+    head = region[a + len('<div class="w-th pl">'):fin_h - len("</div>")]
+    celdas = hijos(head)
+    nombres = [texto(head[i:j]) for i, j in celdas]
+    idx = next(k for k, n in enumerate(nombres) if n in ("Cargó", "Mandó"))
+    cols = cols_base.split()
+    assert len(cols) == len(celdas), (nombre, cols, nombres)
+    cols.insert(idx + 1, ANCHO_CLIENTE)
+    head = head[:celdas[idx][1]] + f"<span>{ES_CLIENTE}</span>" + head[celdas[idx][1]:]
+    m = PLANILLA.match(region)
+    apertura = m.group(0).replace(' style="--pl-cols: ' + (m.group(1) or "") + ';"', "")
+    apertura = apertura.replace("><div class=\"pl-scroll\">", f' style="--pl-cols: {" ".join(cols)};"><div class="pl-scroll">', 1)
+    cuerpo = region[fin_h:]
+    partes, i, filas = [], 0, 0
+    for mf in re.finditer(r'<div class="w-tr pl[^"]*">', cuerpo):
+        if mf.start() < i:
+            continue
+        fin = cierre(cuerpo, mf.start(), "div")
+        fila = cuerpo[mf.end():fin - len("</div>")]
+        cs = hijos(fila)
+        assert len(cs) == len(celdas), (nombre, len(cs), len(celdas), texto(fila)[:80])
+        celda = fila[cs[idx][0]:cs[idx][1]]
+        assert "pl-quien" in celda, (nombre, celda[:120])
+        nueva = "<span>Sí</span>" if MARCA in celda else '<span><span class="pl-g">—</span></span>'
+        fila = fila[:cs[idx][0]] + celda.replace(MARCA, "") + nueva + fila[cs[idx][1]:]
+        partes += [cuerpo[i:mf.end()], fila, "</div>"]
+        i = fin
+        filas += 1
+    partes.append(cuerpo[i:])
+    assert filas, nombre
+    return apertura + head + "</div>" + "".join(partes)
+
+
+def clientes(t, nombre):
+    if nombre.startswith("M-"):
+        t = CLIENTE_TEL.sub(r"\1 · Cliente", t)
+        assert MARCA not in t, (nombre, "queda «Cliente» al lado del nombre")
+        return t
+    base = re.search(r"--pl-cols: ([^;]+);", "".join(re.findall(r"<style.*?</style>", t, flags=re.S)))
+    partes, i = [], 0
+    for m in PLANILLA.finditer(t):
+        if m.start() < i:
+            continue
+        fin = cierre(t, m.start(), "div")
+        region = t[m.start():fin]
+        if MARCA not in region:
+            continue
+        partes += [t[i:m.start()], con_cliente(region, m.group(1) or base.group(1), nombre)]
+        i = fin
+    partes.append(t[i:])
+    t = "".join(partes)
+    assert MARCA not in t, (nombre, "queda «Cliente» al lado del nombre")
+    return t
+
+
+CLIENTES = ["FRM-Respuesta", "FRM-Respuestas", "FRM-Respuestas-Exportar", "FRM-Respuestas-Filtros", "FRM-Respuesta-18",
+            "FRM-Respuestas-18", "FRM-Respuesta-25", "FRM-Respuesta-Anular", "FRM-Respuesta-Aprobacion", "FRM-Respuesta-Cadena",
+            "FRM-Respuesta-Corregir", "FRM-Respuestas-21", "FRM-Documentos", "Campana-25",
+            "M-FRM-Respuestas", "M-FRM-Respuestas-16", "M-FRM-Respuestas-18"]
+
+# «Aprobar» y «Rechazar» en la pantalla completa (209, AC2 de ArquitecturaBase): mientras espera una decisión, van a la vista y
+# primeros en la banda, antes de «Abrir conversación»; en la pantalla completa dejan el momento «Por aprobar otra vez». En la vista
+# rápida siguen en el momento, y en el teléfono, fijos al pie.
+DECISION = ('<span class="d4-dec"><span class="e-tipw"><button type="button" class="cb cb-sec" disabled>Rechazar</button></span>'
+            '<span class="e-tipw"><button type="button" class="cb cb-pri" disabled>Aprobar</button><span class="e-tip" role="tooltip">'
+            'La corregiste vos: la aprueba otra persona con el rol Supervisor.</span></span></span>')
+BOTONES = DECISION[len('<span class="d4-dec">'):-len("</span>")]
+
+
+def decision_en_banda(t):
+    m = re.search(r'<sc-if value="\{\{s8\}\}" hint-placeholder-val="\{\{no\}\}"><div class="w-bnd">', t)
+    a, b = m.start(), cierre(t, m.start(), "sc-if")
+    banda = t[a:b]
+    if BOTONES not in banda:
+        banda = cambiar(banda, '<div class="ac"><a class="cb cb-sec" href="WA-Chats-Respuesta-21.dc.html">',
+                        '<div class="ac">' + BOTONES + '<a class="cb cb-sec" href="WA-Chats-Respuesta-21.dc.html">', 1)
+        t = t[:a] + banda + t[b:]
+    return cambiar(t, DECISION, "", 1) if DECISION in t else t
+
+
+# El tope de elegir o de subir sale del título («Fallas hasta 3»): va en la (i) del título, sumado a la que ya tenga.
+TOPE = re.compile(r'(<span class="rt">)([^<]*?) <span class="cg-hasta">hasta (\d+)</span>'
+                  r'(?:<span class="f-i" tabindex="0" role="img" aria-label="([^"]*)" title="[^"]*">)?')
+I_INFO = ('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" '
+          'stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg>')
+TOPES = {"FRM-Cargar-Archivos": 6, "FRM-Cargar-Enviada": 1, "FRM-Cargar-Lista": 9, "FRM-Cargar-Panel": 7, "FRM-Cargar-Respuesta": 7,
+         "FRM-Cargar-Respuesta-21": 4, "FRM-Respuesta-Corregir": 12, "FRM-Pdf": 10, "Plat-FRM-Pdf": 6}
+
+
+def tope(m):
+    etiqueta, n = m.group(2), m.group(3)
+    que = f"Hasta {n} fotos." if etiqueta.startswith("Foto") else f"Hasta {n} firmas." if etiqueta == "Firmas" else f"Elegí hasta {n}."
+    if m.group(4):
+        dice = f"{que} {m.group(4)}"
+        return f'{m.group(1)}{etiqueta}<span class="f-i" tabindex="0" role="img" aria-label="{dice}" title="{dice}">'
+    return f'{m.group(1)}{etiqueta}<span class="f-i" tabindex="0" role="img" aria-label="{que}" title="{que}">{I_INFO}</span>'
+
+
+def topes(t, nombre):
+    k = len(TOPE.findall(t))
+    assert k in (0, TOPES[nombre]) and k == t.count('class="cg-hasta"'), (nombre, k, t.count('class="cg-hasta"'))
+    return TOPE.sub(tope, t)
+
+
+# «Revisando» de importar (160): lo que carga ocupa el alto del resultado. El esqueleto lleva la grilla de la revisión, las pestañas y
+# la tabla con dos filas, como «Revisión: errores», que es lo que llega.
+ESQ_VIEJO = ('<div class="imp-esq"><span style="width: 62%;"></span><span style="width: 100%;"></span><span style="width: 100%;"></span>'
+             '<span style="width: 84%;"></span></div>')
+COLS_ERR = "grid-template-columns: 70px 120px minmax(0, 1fr);"
+COLS_BAJA = "grid-template-columns: 120px minmax(0, 1fr);"
+
+
+def barra(ancho):
+    return f'<i class="t15-b" style="width: {ancho};"></i>'
+
+
+ESQ_NUEVO = ('<div class="g-det" aria-hidden="true">'
+             + "".join(f'<span class="k">{barra(a)}</span><span>{barra(b)}</span>' for a, b in (("42%", "34%"), ("26%", "18%"), ("58%", "14%"), ("50%", "14%")))
+             + '</div><div class="imp-tabs" aria-hidden="true">' + "".join(f"<span>{barra(w)}</span>" for w in ("52px", "44px", "58px", "44px"))
+             + f'</div><div class="imp-tabla" aria-hidden="true"><div class="c" style="{COLS_ERR}"><span class="n">{barra("26px")}</span><span>{barra("56px")}</span><span>{barra("70px")}</span></div>'
+             + "".join(f'<div class="f" style="{COLS_ERR}"><span class="n">{barra("20px")}</span><span>{barra("50px")}</span><span>{barra(w)}</span></div>' for w in ("46%", "38%"))
+             + "</div>")
+CSS_ESQ = ('<style data-t15f="esqueleto">\n/* 160 · «Revisando»: el esqueleto con la grilla, las pestañas y la tabla de la revisión, así no salta. */\n'
+           '.t15-b { display: inline-block; vertical-align: middle; max-width: 100%; height: 10px; border-radius: 3px; background: var(--s3); }\n</style>\n')
+
+# «Muchas bajas» y «Muchas filas con error»: la pestaña, la revisión y la confirmación dicen la misma cantidad. El catálogo tiene 1.097
+# opciones: con 412 bajas (el 38%), el archivo trae 678 sin cambios, 5 cambios, 2 errores y 12 altas (697 filas); con 140 filas con
+# error (el 13% de 1.106), las demás son 949 sin cambios, 12 altas y 5 cambios. Las tablas muestran la primera página, de 10.
+BAJAS = [("PRV-0005", "Aluminios Cuyo"), ("PRV-0012", "Distribuidora Litoral"), ("PRV-0047", "Herrajes Mitre"), ("PRV-0103", "Maderas del Sur"),
+         ("PRV-0156", "Sanitarios Centro"), ("PRV-0218", "Vidriería Rivadavia"), ("PRV-0331", "Ferretería Lomas"), ("PRV-0402", "Chapas Rosario"),
+         ("PRV-0517", "Electricidad Norte"), ("PRV-0790", "Pinturas Oeste")]
+ERRORES = [(37, "Código", "Está repetido en la fila 52."), (88, "Texto", "Tiene más de 30 caracteres."),
+           (104, "Código", "Está repetido en la fila 131."), (152, "Texto", "Tiene más de 30 caracteres."),
+           (198, "Código", "Está repetido en la fila 240."), (233, "Texto", "Tiene más de 30 caracteres."),
+           (287, "Código", "Está repetido en la fila 301."), (342, "Texto", "Tiene más de 30 caracteres."),
+           (415, "Código", "Está repetido en la fila 477."), (468, "Texto", "Tiene más de 30 caracteres.")]
+
+
+def pie(total, paginas):
+    return f'<div class="w-pie"><span>1–10 de {total}</span><span>10 por página · Página 1 de {paginas}</span></div>'
+
+
+TABLA_BAJAS = (f'<div class="imp-tabla"><div class="c" style="{COLS_BAJA}"><span>Código</span><span>Texto</span></div>'
+               + "".join(f'<div class="f" style="{COLS_BAJA}"><span><span class="mono">{c}</span></span><span>{x}</span></div>' for c, x in BAJAS)
+               + pie("412", "42") + "</div>")
+TABLA_ERRORES = (f'<div class="imp-tabla"><div class="c" style="{COLS_ERR}"><span class="n">Fila</span><span>Columna</span><span>Qué pasa</span></div>'
+                 + "".join(f'<div class="f" style="{COLS_ERR}"><span class="n">{f}</span><span>{c}</span><span>{q}</span></div>' for f, c, q in ERRORES)
+                 + pie("140", "14") + "</div>")
+CUANTAS = {  # estado: (cambios en su diálogo, la tabla nueva)
+    13: ([('<span class="k">Filas leídas</span><span>1.106</span><span class="k">Sin cambios</span><span>1.084</span>',
+           '<span class="k">Filas leídas</span><span>697</span><span class="k">Sin cambios</span><span>678</span>'),
+          ('<span class="on" role="tab">Bajas<span class="c">3</span></span>', '<span class="on" role="tab">Bajas<span class="c">412</span></span>')],
+         TABLA_BAJAS),
+    14: ([('<span class="k">Sin cambios</span><span>1.084</span>', '<span class="k">Sin cambios</span><span>949</span>'),
+          ('<span class="on" role="tab">Errores<span class="c">2</span></span>', '<span class="on" role="tab">Errores<span class="c">140</span></span>')],
+         TABLA_ERRORES),
+}
+
+
+def importar_2(t):
+    t = cambiar(t, ESQ_VIEJO, ESQ_NUEVO, 1)
+    n = "\r\n" if "\r\n" in t else "\n"
+    if 'data-t15f="esqueleto"' not in t:
+        t = t.replace("</helmet>", CSS_ESQ.replace("\n", n) + "</helmet>", 1)
+    for estado, (cambios, tabla) in CUANTAS.items():
+        m = re.search(r'<sc-if value="\{\{s' + str(estado) + r'\}\}" hint-placeholder-val="\{\{no\}\}"><div class="w-oscuro">', t)
+        a, b = m.start(), cierre(t, m.start(), "sc-if")
+        bloque = t[a:b]
+        for viejo, nuevo in cambios:
+            bloque = cambiar(bloque, viejo, nuevo, 1)
+        if tabla not in bloque:
+            i = bloque.index('<div class="imp-tabla">', bloque.index('role="tablist"'))
+            bloque = bloque[:i] + tabla + bloque[cierre(bloque, i, "div"):]
+        t = t[:a] + bloque + t[b:]
+    return t
+
+
 # ---------------------------------------------------------------------------------------------------------------- el pase
 def pasar(nombre, t):
     if nombre in CATALOGOS:
@@ -463,16 +686,21 @@ def pasar(nombre, t):
     t = planilla(t, nombre)
     if nombre == "FRM-Respuesta-Corregir":
         t = corregida(t)
+        t = decision_en_banda(t)
     if nombre == "FRM-Catalogo-Importar":
-        t = importar(t)
+        t = importar_2(importar(t))
     for tablero, viejo, nuevo, veces in APROBAR:
         if tablero == nombre:
             t = cambiar(t, viejo, nuevo, veces)
+    if nombre in TOPES:
+        t = topes(t, nombre)
+    if nombre in CLIENTES:
+        t = clientes(t, nombre)
     return t
 
 
 TABLEROS = sorted(set(CATALOGOS) | set(RESPUESTAS) | set(TELEFONOS) | set(PLANILLAS_BLOQUE) | set(PLANILLAS_DOC)
-                  | {"M-FRM-Catalogo", "FRM-Respuesta-25", "M-FRM-Respuestas-18"} | {a[0] for a in APROBAR})
+                  | {"M-FRM-Catalogo", "FRM-Respuesta-25", "M-FRM-Respuestas-18"} | {a[0] for a in APROBAR} | set(TOPES) | set(CLIENTES))
 
 if __name__ == "__main__":
     canvas = json.loads((PROJ / "canvas.json").read_text(encoding="utf-8"))
