@@ -987,10 +987,10 @@ const t10nPorQue = (historial, frases) => {
 
 // GET /api/platform/tenants/{id}/security-events
 const HISTORIAL = [
-  { fecha: '20/09/2026 11:02', que: 'Reactivó la organización', quien: 'Martín Sosa', motivo: 'Regularizó el pago.' },
-  { fecha: '18/09/2026 16:45', que: 'Suspendió la organización', quien: 'Martín Sosa', motivo: 'Dos meses sin pago.' },
-  { fecha: '12/01/2026 09:03', que: 'Aprobó la organización', quien: 'Laura Díaz', motivo: 'Datos verificados con AFIP.' },
-  { fecha: '12/01/2026 08:40', que: 'Pidió crear la organización', quien: 'Lucía Fernández', motivo: '—' },
+  { fecha: '20/09/2026, 11:02', que: 'Reactivó la organización', quien: 'Martín Sosa', motivo: 'Regularizó el pago.' },
+  { fecha: '18/09/2026, 16:45', que: 'Suspendió la organización', quien: 'Martín Sosa', motivo: 'Dos meses sin pago.' },
+  { fecha: '12/01/2026, 09:03', que: 'Aprobó la organización', quien: 'Laura Díaz', motivo: 'Datos verificados con AFIP.' },
+  { fecha: '12/01/2026, 08:40', que: 'Pidió crear la organización', quien: 'Lucía Fernández', motivo: '—' },
 ];
 
 // GET /api/platform/tenants/{id}/features: los módulos los declara cada producto en su catálogo.
@@ -1005,10 +1005,10 @@ const PESTANAS = { 'Historial': 'historial', 'Dueños': 'admins', 'Módulos': 'm
 const ESTADOS = { 'Activa': 'activa', 'Espera aprobación': 'pendiente', 'Falló el alta': 'fallo', 'Suspendida': 'suspendida', 'Cerrada': 'cerrada' };
 const HISTORIAL_ESTADO = {
   activa: HISTORIAL,
-  fallo: [{ fecha: '12/01/2026 08:40', que: 'Pidió crear la organización', quien: 'Lucía Fernández', motivo: '—' }],
-  pendiente: [{ fecha: '12/01/2026 08:40', que: 'Pidió crear la organización', quien: 'Lucía Fernández', motivo: '—' }],
-  suspendida: [{ fecha: '25/09/2026 10:15', que: 'Suspendió la organización', quien: 'Martín Sosa', motivo: 'Dos meses sin pago.' }, ...HISTORIAL],
-  cerrada: [{ fecha: '26/09/2026 12:30', que: 'Cerró la organización', quien: 'Martín Sosa', motivo: 'Lo pidió la Dueña por escrito.' }, { fecha: '25/09/2026 10:15', que: 'Suspendió la organización', quien: 'Martín Sosa', motivo: 'Dos meses sin pago.' }, ...HISTORIAL],
+  fallo: [{ fecha: '12/01/2026, 08:40', que: 'Pidió crear la organización', quien: 'Lucía Fernández', motivo: '—' }],
+  pendiente: [{ fecha: '12/01/2026, 08:40', que: 'Pidió crear la organización', quien: 'Lucía Fernández', motivo: '—' }],
+  suspendida: [{ fecha: '25/09/2026, 10:15', que: 'Suspendió la organización', quien: 'Martín Sosa', motivo: 'Dos meses sin pago.' }, ...HISTORIAL],
+  cerrada: [{ fecha: '26/09/2026, 12:30', que: 'Cerró la organización', quien: 'Martín Sosa', motivo: 'Lo pidió la Dueña por escrito.' }, { fecha: '25/09/2026, 10:15', que: 'Suspendió la organización', quien: 'Martín Sosa', motivo: 'Dos meses sin pago.' }, ...HISTORIAL],
 };
 // Página pública (public_site): Draft ⇄ Published. Si la plataforma la despublica, la organización no puede volver a publicarla hasta que la plataforma lo permita.
 const PAGINAS = { 'Publicada': 'publicada', 'Borrador': 'borrador', 'Despublicada por la plataforma': 'bloqueada' };
@@ -1215,12 +1215,12 @@ class Component extends DCLogic {
   }
 
   cambiar(estadoOrg, que, aviso, motivo) {
-    this.setState({ estadoOrg, suspendidaEl: '27/09/2026', motivoEstado: motivo, historial: [{ fecha: '27/09/2026 17:35', que, quien: 'Martín Sosa', motivo }, ...this.state.historial] });
+    this.setState({ estadoOrg, suspendidaEl: '27/09/2026', motivoEstado: motivo, historial: [{ fecha: '27/09/2026, 17:35', que, quien: 'Martín Sosa', motivo }, ...this.state.historial] });
     this.avisar(aviso);
   }
 
   anotar(que, motivo) {
-    this.setState({ historial: [{ fecha: '27/09/2026 17:35', que, quien: 'Martín Sosa', motivo }, ...this.state.historial] });
+    this.setState({ historial: [{ fecha: '27/09/2026, 17:35', que, quien: 'Martín Sosa', motivo }, ...this.state.historial] });
   }
 
   // PUT /api/platform/tenants/{id}/features/{key}: prende, apaga o fija el fin de la prueba; guarda el motivo en un SecurityEvent.
@@ -1261,7 +1261,7 @@ class Component extends DCLogic {
 
     return {
       duenoNombre: this.props.duenos === 'Sin Dueño todavía' ? '—' : 'Lucía Fernández',
-      duenoIngreso: this.props.duenos === 'Sin Dueño todavía' ? 'Nunca' : this.props.duenos === 'Con el Dueño suspendido' ? '24/09/2026 14:20' : '27/09/2026 09:50',
+      duenoIngreso: this.props.duenos === 'Sin Dueño todavía' ? 'Nunca' : this.props.duenos === 'Con el Dueño suspendido' ? '24/09/2026, 14:20' : '27/09/2026, 09:50',
       duenoPill: { 'Sin Dueño todavía': 'pend', 'Con el Dueño suspendido': 'alerta' }[this.props.duenos] || 'ok',
       duenoEstado: { 'Sin Dueño todavía': 'Invitación pendiente', 'Con el Dueño suspendido': 'Suspendido' }[this.props.duenos] || 'Activo',
       ...this.comunes(),

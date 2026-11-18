@@ -777,7 +777,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Consultas esperando","Código para verificar un método","Entrar a mi cuenta (bot)","Bot: número sin cuenta","Bot: número sin cuenta y registro cerrado","Bot: cuenta de operador","Bot: ofrecer vincular","Bot: conversación vinculada","Invitación a una organización","Invitación como operador","Invitación como operador: sin nombre","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Por borrar","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta borrada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: aprobada","Recuperación: rechazada","Organización aprobada","Organización rechazada","Página pública: la despublicó la plataforma","Página pública: se puede volver a publicar","Asistente: 80 % del tope (su clave)","Asistente: tope alcanzado (su clave)","Asistente: 80 % del tope (plataforma)","Asistente: tope alcanzado (plataforma)"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Consultas esperando","Código para verificar un método","Entrar a mi cuenta (bot)","Bot: número sin cuenta","Bot: número sin cuenta y registro cerrado","Bot: cuenta de operador","Bot: ofrecer vincular","Bot: conversación vinculada","Invitación a una organización","Invitación como operador","Invitación como operador: sin nombre","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Por borrar","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta borrada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: aprobada","Recuperación: rechazada","Organización aprobada","Organización rechazada","Página pública: la despublicó la plataforma","Página pública: se puede volver a publicar","Asistente: 80% del tope (su clave)","Asistente: tope alcanzado (su clave)","Asistente: 80% del tope (plataforma)","Asistente: tope alcanzado (plataforma)"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
 // t10-correos · 174: un correo baja de renglón después de la «@», nunca a mitad de palabra (traspaso10_piezas_1004.py).
 if (typeof document !== 'undefined' && !window.__t10Correos) {
   window.__t10Correos = true;
@@ -1176,14 +1176,14 @@ const MENSAJES = [
     wa: { plantilla: 'pagina_publica_moderada', texto: [N('La página pública de Grupo Delta: la plataforma permitió volver a publicarla; podés revisarla y publicarla desde tu organización. Tu organización y sus accesos siguen funcionando.')], botones: [] },
   },
   {
-    n: 'Asistente: 80 % del tope (su clave)',
+    n: 'Asistente: 80% del tope (su clave)',
     // D23: la organización usa su propia clave; le llega al Dueño.
     correo: {
-      asunto: 'El asistente de Grupo Delta usó el 80 % del tope del mes',
+      asunto: 'El asistente de Grupo Delta usó el 80% del tope del mes',
       para: 'lucia.fernandez@delta.ejemplo.com',
-      titulo: 'El asistente usó el 80 % del tope del mes',
-      parrafos: [P('Hola, Lucía. Grupo Delta ya usó US$ 160,00 de los US$ 200,00 de tope de octubre de 2026.'), P('Si llega al tope, el asistente deja de responder hasta el 01/11/2026. Podés subir el tope en la configuración del asistente.')],
-      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'US$ 160,00 de US$ 200,00' }, { k: 'Mes', v: 'Octubre de 2026' }],
+      titulo: 'El asistente usó el 80% del tope del mes',
+      parrafos: [P('Hola, Lucía. Grupo Delta ya usó US$ 160,00 de los US$ 200,00 de tope del 01/10/2026 al 31/10/2026.'), P('Si llega al tope, el asistente deja de responder hasta el 01/11/2026. Podés subir el tope en la configuración del asistente.')],
+      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'US$ 160,00 de US$ 200,00' }, { k: 'Mes', v: '01/10/2026 – 31/10/2026' }],
       boton: 'Ver el uso',
     },
   },
@@ -1194,20 +1194,20 @@ const MENSAJES = [
       asunto: 'El asistente de Grupo Delta llegó al tope del mes',
       para: 'lucia.fernandez@delta.ejemplo.com',
       titulo: 'El asistente llegó al tope del mes',
-      parrafos: [P('Hola, Lucía. Grupo Delta usó los US$ 200,00 de tope de octubre de 2026 y el asistente dejó de responder.'), P('Vuelve a responder el 01/11/2026, o antes si subís el tope en la configuración del asistente.')],
-      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'US$ 200,00 de US$ 200,00' }, { k: 'Mes', v: 'Octubre de 2026' }],
+      parrafos: [P('Hola, Lucía. Grupo Delta usó los US$ 200,00 de tope del 01/10/2026 al 31/10/2026 y el asistente dejó de responder.'), P('Vuelve a responder el 01/11/2026, o antes si subís el tope en la configuración del asistente.')],
+      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'US$ 200,00 de US$ 200,00' }, { k: 'Mes', v: '01/10/2026 – 31/10/2026' }],
       boton: 'Revisar configuración',
     },
   },
   {
-    n: 'Asistente: 80 % del tope (plataforma)',
+    n: 'Asistente: 80% del tope (plataforma)',
     // D23: la organización usa la clave de la plataforma; le llega al correo de soporte de la plataforma.
     correo: {
-      asunto: 'Grupo Delta usó el 80 % del tope del asistente',
+      asunto: 'Grupo Delta usó el 80% del tope del asistente',
       para: 'soporte@ejemplo.com',
-      titulo: 'Grupo Delta usó el 80 % del tope del asistente',
-      parrafos: [P('Grupo Delta, que usa la clave de la plataforma, ya usó US$ 80,00 de los US$ 100,00 de tope de octubre de 2026.'), P('Si llega al tope, su asistente deja de responder hasta el 01/11/2026.')],
-      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'US$ 80,00 de US$ 100,00' }, { k: 'Mes', v: 'Octubre de 2026' }],
+      titulo: 'Grupo Delta usó el 80% del tope del asistente',
+      parrafos: [P('Grupo Delta, que usa la clave de la plataforma, ya usó US$ 80,00 de los US$ 100,00 de tope del 01/10/2026 al 31/10/2026.'), P('Si llega al tope, su asistente deja de responder hasta el 01/11/2026.')],
+      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'US$ 80,00 de US$ 100,00' }, { k: 'Mes', v: '01/10/2026 – 31/10/2026' }],
       boton: 'Ver el uso',
     },
   },
@@ -1218,14 +1218,14 @@ const MENSAJES = [
       asunto: 'Grupo Delta llegó al tope del asistente',
       para: 'soporte@ejemplo.com',
       titulo: 'Grupo Delta llegó al tope del asistente',
-      parrafos: [P('Grupo Delta usó los US$ 100,00 de tope de octubre de 2026 y su asistente dejó de responder hasta el 01/11/2026.')],
-      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'US$ 100,00 de US$ 100,00' }, { k: 'Mes', v: 'Octubre de 2026' }],
+      parrafos: [P('Grupo Delta usó los US$ 100,00 de tope del 01/10/2026 al 31/10/2026 y su asistente dejó de responder hasta el 01/11/2026.')],
+      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'US$ 100,00 de US$ 100,00' }, { k: 'Mes', v: '01/10/2026 – 31/10/2026' }],
       boton: 'Ver el uso',
     },
   },
 ];
 
-const HORA = '27/09/2026 14:35';
+const HORA = '27/09/2026, 14:35';
 
 class Component extends DCLogic {
   constructor(props) {

@@ -976,19 +976,19 @@ const t10nCorreo = (s) => (typeof s === 'string' ? s.replace('@', '@\u200b') : s
 
 // GET /api/platform/accounts: identidades globales. Las personas tienen su perfil personal y sus organizaciones; los operadores, ninguno.
 const CUENTAS = [
-  { id: 'i1', n: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', tel: '•••• 4521', tipo: 'persona', orgs: ['Grupo Delta', 'Beta S.R.L.'], ultimo: '27/09/2026 09:50', metodo: 'Código por correo', estado: 'activa', unicoDueno: 'Grupo Delta' },
-  { id: 'i2', n: 'Beto Ramírez', email: 'beto.ramirez@beta.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Beta S.R.L.'], ultimo: '26/09/2026 18:20', metodo: 'Google', estado: 'activa' },
-  { id: 'i3', n: 'Ana Gómez', email: 'ana.gomez@gmail.com', tel: '•••• 0987', tipo: 'persona', orgs: [], ultimo: '18/09/2026 11:20', metodo: 'WhatsApp', estado: 'suspendida' },
-  { id: 'i4', n: '', email: 'mariana.lopez@gmail.com', tel: '', tipo: 'persona', orgs: [], ultimo: '27/09/2026 02:45', metodo: 'Código por correo', estado: 'activa' },
-  { id: 'i5', n: 'Julio Pérez', email: 'julio@gamma.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Gamma S.A.'], ultimo: '27/09/2026 01:45', metodo: 'Código por correo', estado: 'activa' },
+  { id: 'i1', n: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', tel: '•••• 4521', tipo: 'persona', orgs: ['Grupo Delta', 'Beta S.R.L.'], ultimo: '27/09/2026, 09:50', metodo: 'Código por correo', estado: 'activa', unicoDueno: 'Grupo Delta' },
+  { id: 'i2', n: 'Beto Ramírez', email: 'beto.ramirez@beta.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Beta S.R.L.'], ultimo: '26/09/2026, 18:20', metodo: 'Google', estado: 'activa' },
+  { id: 'i3', n: 'Ana Gómez', email: 'ana.gomez@gmail.com', tel: '•••• 0987', tipo: 'persona', orgs: [], ultimo: '18/09/2026, 11:20', metodo: 'WhatsApp', estado: 'suspendida' },
+  { id: 'i4', n: '', email: 'mariana.lopez@gmail.com', tel: '', tipo: 'persona', orgs: [], ultimo: '27/09/2026, 02:45', metodo: 'Código por correo', estado: 'activa' },
+  { id: 'i5', n: 'Julio Pérez', email: 'julio@gamma.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Gamma S.A.'], ultimo: '27/09/2026, 01:45', metodo: 'Código por correo', estado: 'activa' },
   // Su único método era un correo administrado por Kappa S.R.L. y la membresía terminó: necesita recuperación.
-  { id: 'i6', n: 'Pablo Ortiz', email: 'pablo@kappa.ejemplo.com', tel: '', tipo: 'persona', orgs: [], ultimo: '19/09/2026 08:40', metodo: 'Código por correo', estado: 'recuperacion' },
+  { id: 'i6', n: 'Pablo Ortiz', email: 'pablo@kappa.ejemplo.com', tel: '', tipo: 'persona', orgs: [], ultimo: '19/09/2026, 08:40', metodo: 'Código por correo', estado: 'recuperacion' },
   // Pidió la baja: tiene 30 días para cancelarla ingresando (multitenancy §3.2).
-  { id: 'i7', n: 'Diego Ríos', email: 'diego.rios@delta.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Grupo Delta'], ultimo: '27/09/2026 08:15', metodo: 'Código por correo', estado: 'baja' },
+  { id: 'i7', n: 'Diego Ríos', email: 'diego.rios@delta.ejemplo.com', tel: '', tipo: 'persona', orgs: ['Grupo Delta'], ultimo: '27/09/2026, 08:15', metodo: 'Código por correo', estado: 'baja' },
   // Borrada: la identidad queda anonimizada, sin correo ni teléfono.
-  { id: 'i8', n: 'Cuenta borrada', email: '', tel: '', tipo: 'persona', orgs: [], ultimo: '12/08/2026 16:05', metodo: 'WhatsApp', estado: 'eliminada' },
-  { id: 'o1', n: 'Martín Sosa', email: 'martin.sosa@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 5, ultimo: '27/09/2026 10:05', metodo: 'Código + autenticador', estado: 'activa' },
-  { id: 'o2', n: 'Laura Díaz', email: 'laura.diaz@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 2, ultimo: '22/09/2026 15:30', metodo: 'Código + autenticador', estado: 'activa' },
+  { id: 'i8', n: 'Cuenta borrada', email: '', tel: '', tipo: 'persona', orgs: [], ultimo: '12/08/2026, 16:05', metodo: 'WhatsApp', estado: 'eliminada' },
+  { id: 'o1', n: 'Martín Sosa', email: 'martin.sosa@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 5, ultimo: '27/09/2026, 10:05', metodo: 'Código + autenticador', estado: 'activa' },
+  { id: 'o2', n: 'Laura Díaz', email: 'laura.diaz@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 2, ultimo: '22/09/2026, 15:30', metodo: 'Código + autenticador', estado: 'activa' },
   { id: 'o3', n: '', email: 'julieta.molina@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 3, ultimo: 'Nunca', metodo: 'Vence el 04/10/2026', estado: 'invitado' },
 ];
 const PERMISOS_PLAT = [
@@ -1259,7 +1259,7 @@ class Component extends DCLogic {
           puedeBaja: c.estado !== 'baja' && c.estado !== 'eliminada' && !inv,
           sepBaja: c.estado !== 'activa' && c.estado !== 'baja' && c.estado !== 'eliminada' && !inv,
           // POST /api/platform/accounts/{id}/deletion: con motivo, sin reautenticar a la persona. Mismo camino: 30 días, avisos y eliminación.
-          darDeBaja: () => this.pedirConfirmacion({ titulo: '¿Borrar la cuenta de ' + nombre + '?', error: c.unicoDueno ? 'Es el único Dueño de ' + c.unicoDueno + '. Primero la organización tiene que sumar otro Dueño, o la plataforma tiene que cerrarla.' : '', texto: 'Se cierran sus sesiones y le avisamos por todos sus métodos de ingreso. Tiene 30 días para cancelar el borrado ingresando; después se borra la cuenta. La plataforma no puede cancelarlo.', boton: 'Borrar', motivo: true, accion: () => { this.poner(c.id, { estado: 'baja' }); this.avisar('La cuenta de ' + nombre + ' se borra el 27/10/2026 09:15.'); } }),
+          darDeBaja: () => this.pedirConfirmacion({ titulo: '¿Borrar la cuenta de ' + nombre + '?', error: c.unicoDueno ? 'Es el único Dueño de ' + c.unicoDueno + '. Primero la organización tiene que sumar otro Dueño, o la plataforma tiene que cerrarla.' : '', texto: 'Se cierran sus sesiones y le avisamos por todos sus métodos de ingreso. Tiene 30 días para cancelar el borrado ingresando; después se borra la cuenta. La plataforma no puede cancelarlo.', boton: 'Borrar', motivo: true, accion: () => { this.poner(c.id, { estado: 'baja' }); this.avisar('La cuenta de ' + nombre + ' se borra el 27/10/2026, 09:15.'); } }),
           // POST /api/platform/accounts/{id}/revoke-sessions
           cerrarSesiones: () => this.pedirConfirmacion({ titulo: '¿Cerrar las sesiones de ' + nombre + '?', texto: 'Tiene que volver a ingresar en todos sus dispositivos. No le cambia nada más.', boton: 'Cerrar sesiones', peligro: false, motivo: true, accion: () => this.avisar('Cerramos las sesiones de ' + nombre + '.') }),
           // PUT /api/platform/accounts/{id}/status: suspender revoca todas sus sesiones.

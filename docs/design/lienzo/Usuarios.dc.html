@@ -1051,7 +1051,7 @@ const ZONAS = [
   ...['America/Argentina/Cordoba', 'America/Argentina/Mendoza', 'America/Argentina/Tucuman', 'America/Montevideo'].map((z) => ({ v: z, n: nombreZona(z) })),
 ];
 const ZONAS_TODAS = ['America/Argentina/Buenos_Aires', 'America/Argentina/Cordoba', 'America/Argentina/Mendoza', 'America/Argentina/Tucuman', 'America/Montevideo', 'America/Santiago', 'America/Asuncion'].map((z) => ({ v: z, n: nombreZona(z) }));
-const IDIOMAS = [{ v: 'es-AR', n: 'Español (Argentina)', d: '27/09/2026 14:35 · 1.234,50' }, { v: 'en-US', n: 'English (United States)', d: '09/27/2026 2:35 PM · 1,234.50' }];
+const IDIOMAS = [{ v: 'es-AR', n: 'Español (Argentina)', d: '27/09/2026, 14:35 · 1.234,50' }, { v: 'en-US', n: 'English (United States)', d: '09/27/2026, 2:35 PM · 1,234.50' }];
 const MONEDAS = [{ v: 'ARS', n: 'Peso argentino (ARS)', d: '$ 1.234,50' }, { v: 'USD', n: 'Dólar estadounidense (USD)', d: 'US$ 1.234,50' }];
 // GET /api/companies
 const EMPRESAS = [
@@ -1079,7 +1079,7 @@ const USUARIOS = [
   { id: 'u2', n: 'Tomás Acosta', email: 'tomas.acosta@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '03/02/2026' },
   { id: 'u3', n: 'Julieta Sosa', email: 'julieta.sosa@delta.ejemplo.com', estado: 'activo', rolesOrg: ['Auditor'], empresas: [], desde: '03/02/2026' },
   // Pidió la baja de su cuenta: el estado sale de la identidad, no de la membresía (multitenancy §3.2).
-  { id: 'u4', n: 'Diego Ríos', email: 'diego.rios@delta.ejemplo.com', estado: 'bajaPedida', seElimina: '27/10/2026 09:15', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '18/02/2026' },
+  { id: 'u4', n: 'Diego Ríos', email: 'diego.rios@delta.ejemplo.com', estado: 'bajaPedida', seElimina: '27/10/2026, 09:15', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '18/02/2026' },
   { id: 'u5', n: 'Paula Méndez', email: 'paula.mendez@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }, { c: 'c2', roles: ['Solo lectura'] }], desde: '02/03/2026' },
   { id: 'u9', n: 'Martín Paz', email: 'martin.paz@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '10/03/2026' },
   { id: 'u10', n: 'Carolina Vega', email: 'carolina.vega@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c2', roles: ['Administrador'] }, { c: 'c3', roles: ['Administrador'] }], desde: '10/03/2026' },
