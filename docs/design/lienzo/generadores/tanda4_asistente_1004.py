@@ -22,7 +22,11 @@ una derivación). Es el Grupo A de la tanda; cada estado nuevo se suma al tabler
   «Marcado como revisado», con su aviso; «Otra persona ya lo revisó», con el aviso de conflicto de siempre (el 409 de
   `General.ConcurrencyConflict`) y la fila ya releída, y, en la compu, «Sin revisar», el filtro con la (i) abierta. En `FRM-Faltan-25`
   «Armar con la IA» sigue en cada tema, también en los sin revisar, y «Acciones de un tema» suma la fila de «Remitos de proveedores»
-  que le faltaba (decía «1–4 de 4» con tres filas).
+  que le faltaba (decía «1–4 de 4» con tres filas);
+- los mismos cinco tableros, «Descartados» con un dato por columna (206; el texto gris de abajo nunca es un estado, una fecha ni una
+  persona): «Último pedido» (o «Última pregunta») queda solo con su fecha, y quién lo descartó y cuándo van en dos columnas propias,
+  «Lo descartó» y «Descartado el», que aparecen solo con el filtro «Descartados». En el teléfono, la fila suma sus datos, como las
+  demás, y dos renglones con su rótulo. Lo pidió el coordinador de la tanda después del primer pase.
 
 Corre después de `formularios_23_asistente_1004.py`, `formularios_23_chats_1004.py` y `formularios_25_documentos_1004.py`, sobre los
 tableros que ya están; al terminar imprime los que cambió para la pasada de las piezas (`python traspaso10_piezas_1004.py --tableros
@@ -85,11 +89,11 @@ def nl(t):
     return "\r\n" if "\r\n" in t else "\n"
 
 
-def con_css(t, css):
+def con_css(t, css, marca=MARCA):
     """El bloque propio antes del de las piezas (que siempre va último), una sola vez."""
-    if MARCA in t:
+    if marca in t:
         return t
-    bloque = f"<style {MARCA}>\n{css.strip()}\n</style>\n".replace("\n", nl(t))
+    bloque = f"<style {marca}>\n{css.strip()}\n</style>\n".replace("\n", nl(t))
     i = t.find('<style data-t10="piezas">')
     i = i if i >= 0 else t.index("</helmet>")
     return t[:i] + bloque + t[i:]
@@ -503,7 +507,7 @@ def temas(t, nombre):
 
     t = sumar_estado(t, "Pendientes", "Sin revisar", "Estado: menú", filtro)
     assert estados(t)[:len(lista)] == lista
-    return t
+    return descartados(t, nombre)
 
 
 def remitos_en_acciones(t):
@@ -542,6 +546,73 @@ def temas_tel(t, nombre, sin_revisar, abierto):
                      capas=[aviso_tel(f"Marcamos «{primero}» como revisado.")])
     t = sumar_estado(t, "Pendientes", "Otra persona ya lo revisó", "Marcado como revisado", cambio,
                      capas=[aviso_tel(CONFLICTO, mal=True)])
+    return descartados_tel(t, nombre)
+
+
+# ================================================================ 5 · «Descartados», un dato por columna (206)
+# tema: (el último pedido o la última pregunta, quién lo descartó, cuándo, pedidos o preguntas, personas). Antes, la celda de la
+# fecha decía «Descartado por Lucía Fernández · 10/10/2026».
+DESCARTE = {"Encuesta de clima": ("09/10/2026, 16:20", "Lucía Fernández", "10/10/2026, 09:12", 2, 2),
+            "Cambio de turno": ("07/10/2026, 11:30", "Lucía Fernández", "08/10/2026, 17:40", 1, 1),
+            "Búsquedas laborales": ("19/09/2026, 18:05", "Lucía Fernández", "20/09/2026, 10:00", 2, 2)}
+MARCA_DESC = 'data-t4a="descartados"'
+COLUMNAS_DESC = {  # «Lo descartó» y «Descartado el» después de la fecha, solo en la tabla de «Descartados» (`t4a-desc`); con ocho
+    # columnas, cada una del ancho de su dato, para que el ⋮ (y en la 25, «Armar con la IA») entre en los 938 px de la tabla
+    "FRM-Faltan": ".t4a-desc .w-th.ft, .t4a-desc .w-tr.ft { grid-template-columns: minmax(180px, 1fr) 56px 64px 100px 100px 100px 84px 24px; }",
+    "FRM-Faltan-25": ".t4a-desc .w-th.ft, .t4a-desc .w-tr.ft { grid-template-columns: minmax(160px, 1fr) 56px 64px 100px 100px 100px 84px 124px !important; }",
+    "WA-Preguntas-Sin-Respuesta": ".t4a-desc .w-th.pq, .t4a-desc .w-tr.pq { grid-template-columns: minmax(180px, 1fr) 66px 64px 100px 100px 100px 84px 24px; }",
+}
+CSS_DESC_TEL = """
+/* Tanda 4 · 206: quién lo descartó y cuándo, cada uno en su renglón con su rótulo. */
+.ap-fila .l3.t4a-par { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 8px; }
+.ap-fila .l3.t4a-par > span:last-child { color: var(--t2); }
+"""
+DESCARTADO_POR = re.compile(r"<span>Descartado por [^<]*</span>")
+
+
+def descartados(t, nombre):
+    """En la compu: la fecha sola en su columna, y «Lo descartó» y «Descartado el» en las suyas, solo en «Descartados»."""
+    if "<span>Lo descartó</span>" in t:
+        return t
+    t = con_css(t, "/* Tanda 4 · 206: en «Descartados», quién lo descartó y cuándo, en sus columnas. */\n" + COLUMNAS_DESC[nombre], MARCA_DESC)
+    (a, z), = [(a, z) for a, z in bloques(t, estados(t).index("Descartados")) if 'class="w-body"' in t[a:a + 200]]
+    bloque = t[a:z]
+    fecha = "Última pregunta" if "Preguntas" in nombre else "Último pedido"
+    bloque = cambiar(bloque, f"<span>{fecha}</span>", f"<span>{fecha}</span><span>Lo descartó</span><span>Descartado el</span>", 1)
+    bloque, k = re.subn(r'<div class="w-caja (ftc|pqc)">', r'<div class="w-caja \1 t4a-desc">', bloque, count=1)
+    assert k == 1, nombre
+    partes, i, filas = [], 0, 0
+    for mf in re.finditer(r'<div class="w-tr (?:ft|pq)">', bloque):
+        if mf.start() < i:
+            continue
+        fin = cierre(bloque, mf.start(), "div")
+        fila = bloque[mf.start():fin]
+        ultimo, quien, cuando, _n, _p = DESCARTE[re.search(r"<b>([^<]+)</b>", fila).group(1)]
+        fila, k = DESCARTADO_POR.subn(f"<span>{ultimo}</span><span>{quien}</span><span>{cuando}</span>", fila)
+        assert k == 1, (nombre, fila[:200])
+        partes += [bloque[i:mf.start()], fila]
+        i = fin
+        filas += 1
+    partes.append(bloque[i:])
+    assert filas and not DESCARTADO_POR.search(t[:a] + t[z:]), nombre
+    return t[:a] + "".join(partes) + t[z:]
+
+
+def descartados_tel(t, nombre):
+    """En el teléfono: la fila con sus datos, como las demás, y dos renglones con su rótulo."""
+    if 'class="l3 t4a-par"' in t:
+        return t
+    t = con_css(t, CSS_DESC_TEL, MARCA_DESC)
+    que = ("pregunta", "preguntas") if "Preguntas" in nombre else ("pedido", "pedidos")
+
+    def fila(m):
+        ultimo, quien, cuando, n, p = DESCARTE[m.group(1)]
+        datos = f"{n} {que[n != 1]} · {p} {'persona' if p == 1 else 'personas'} · {ultimo}"
+        return (f'{m.group(0)[:m.start(3) - m.start(0)]}{datos}</span>'
+                f'<span class="l3 t4a-par"><span class="k">Lo descartó</span><span>{quien}</span></span>'
+                f'<span class="l3 t4a-par"><span class="k">Descartado el</span><span>{cuando}</span></span>')
+    t, k = re.subn(r'<span class="l1">([^<]+)</span>(<span class="l2">[^<]*</span>)<span class="l3">(Descartado por [^<]*)</span>', fila, t)
+    assert k == {"M-FRM-Faltan": 2, "M-WA-Preguntas-Sin-Respuesta": 1}[nombre], (nombre, k)
     return t
 
 
