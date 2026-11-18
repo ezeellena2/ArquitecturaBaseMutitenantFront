@@ -60,12 +60,12 @@
       "x": 6080,
       "y": 260,
       "w": 1440,
-      "h": 2670,
+      "h": 3020,
       "title": "Criterio · Avisos y errores",
       "page": "criterio"
     },
     "Criterio-Botones.dc.html": {
-      "h": 1890,
+      "h": 2610,
       "page": "criterio",
       "title": "Criterio · Botones",
       "w": 1440,
@@ -73,7 +73,7 @@
       "y": 260
     },
     "Criterio-Dialogos.dc.html": {
-      "h": 2420,
+      "h": 2910,
       "page": "criterio",
       "title": "Criterio · Diálogos",
       "w": 1440,
@@ -81,7 +81,7 @@
       "y": 260
     },
     "Criterio-Formularios.dc.html": {
-      "h": 3750,
+      "h": 4320,
       "page": "criterio",
       "title": "Criterio · Formularios y campos",
       "w": 1440,
@@ -97,7 +97,7 @@
       "y": 260
     },
     "Criterio-Menus.dc.html": {
-      "h": 3210,
+      "h": 3390,
       "page": "criterio",
       "title": "Criterio · Menús y desplegables",
       "w": 1440,
@@ -105,7 +105,7 @@
       "y": 260
     },
     "Criterio-Tablas.dc.html": {
-      "h": 3890,
+      "h": 4440,
       "page": "criterio",
       "title": "Criterio · Tablas y listas",
       "w": 1440,

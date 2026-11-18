@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 1890px; box-sizing: border-box; padding: 28.8px/*40px*/ 34.6px/*48px*/ 40.3px/*56px*/; background: var(--fondo); color: var(--t1); font-size: 11.5px/*14px*/; line-height: 1.5; display: flex; flex-direction: column; gap: 25.9px/*36px*/; }
+.crit { width: 1440px; min-height: 2610px; box-sizing: border-box; padding: 28.8px/*40px*/ 34.6px/*48px*/ 40.3px/*56px*/; background: var(--fondo); color: var(--t1); font-size: 11.5px/*14px*/; line-height: 1.5; display: flex; flex-direction: column; gap: 25.9px/*36px*/; }
 .crit h1 { margin: 0; font-size: 21.3px/*26px*/; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 2.9px/*4px*/ 0 0; font-size: 12.3px/*15px*/; color: var(--t2); }
 .crit h2 { margin: 0 0 10.1px/*14px*/; font-size: 13.9px/*17px*/; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 7.2px/*10px*/; border-bottom: 1px solid var(--borde); }
@@ -571,6 +571,45 @@
 <style data-vuelta="1004-cola-guia"></style>
 <style data-vuelta="1004-empresa-admin">
 </style>
+<style data-t15="reglas">
+.t15-reglas { margin: 0; padding-left: 14.4px/*20px*/; display: flex; flex-direction: column; gap: 4.3px/*6px*/; color: var(--t2); font-size: 11.5px/*14px*/; }
+.t15-reglas strong { color: var(--t1); font-weight: 600; }
+.t15-dos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20.2px/*28px*/; align-items: start; }
+.t15-caso { display: flex; flex-direction: column; gap: 5.8px/*8px*/; }
+.t15-rot { font-size: 10.5px/*12px*/; font-weight: 600; color: var(--t2); }
+.t15-caja { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; overflow: visible; }
+.t15-ib { width: 23.7px/*32px*/; height: 23.7px/*32px*/; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; color: var(--t2); }
+.t15-bt { height: 26.6px/*36px*/; box-sizing: border-box; display: inline-flex; align-items: center; padding: 0 10.1px/*14px*/; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; color: var(--t1); font-size: 11.5px/*14px*/; font-weight: 500; white-space: nowrap; }
+.t15-bt.pri { background: var(--marca); border-color: var(--marca); color: #fff; }
+.t15-bt.off { color: var(--t3); background: var(--s2); border-color: var(--borde); }
+.t15-menu { position: absolute; z-index: 3; min-width: 210px; background: #fff; border: 1px solid var(--borde); border-radius: 3px/*10px*/; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); padding: 2.9px/*4px*/ 0; font-size: 10.7px/*13px*/; }
+.t15-menu .op { display: flex; align-items: center; gap: 7.2px/*10px*/; min-height: 26.6px/*36px*/; padding: 0 10.1px/*14px*/; color: var(--t1); border-top: 1px solid var(--borde); }
+.t15-menu .op:first-child { border-top: 0; }
+.t15-menu .op svg { color: var(--t3); }
+.t15-menu .op.pel { color: var(--peligro); border-top: 4px solid var(--s2); }
+.t15-menu .op.pel svg { color: var(--peligro); }
+.t15-tip { position: absolute; z-index: 4; max-width: 380px; white-space: nowrap; padding: 5px/*7px*/ 7.2px/*10px*/; border-radius: 3px/*6px*/; background: oklch(0.27 0.012 60); color: #fff; font-size: 10.5px/*12px*/; line-height: 1.4; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
+.t15-tip::after { content: ""; position: absolute; left: 13px/*18px*/; bottom: -3.7px/*5px*/; width: 10px; height: 10px; background: oklch(0.27 0.012 60); transform: rotate(45deg); }
+.t15-dg { display: grid; grid-template-columns: 150px minmax(0, 1fr); border: 1px solid var(--borde); border-radius: 3px/*10px*/; overflow: hidden; font-size: 10.7px/*13px*/; background: #fff; }
+.t15-dg > span { padding: 6.5px/*9px*/ 8.6px/*12px*/; border-top: 1px solid var(--borde); line-height: 1.4; }
+.t15-dg > span:nth-child(-n+2) { border-top: 0; }
+.t15-dg > span:nth-child(odd) { background: oklch(0.975 0.012 95); color: var(--t2); }
+.t15-chip { display: inline-flex; align-items: center; height: 19.2px/*26px*/; padding: 0 6.5px/*9px*/; margin: 0 4.3px/*6px*/ 2.9px/*4px*/ 0; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; font-size: 10.5px/*12.5px*/; color: var(--t1); }
+.t15-tel { width: 360px; background: var(--fondo); border: 1px solid var(--borde); border-radius: 3px/*22px*/; padding: 13px/*18px*/ 10.1px/*14px*/; box-sizing: border-box; display: flex; flex-direction: column; gap: 7.2px/*10px*/; position: relative; }
+
+.t15-enc { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8.6px/*12px*/; min-height: 41.4px/*56px*/; padding: 0 10.1px/*14px*/ 0 13px/*18px*/; }
+.t15-enc .tit { display: flex; flex-direction: column; }
+.t15-enc .tit b { font-size: 13.1px/*16px*/; }
+.t15-enc .tit span { font-size: 10.5px/*12.5px*/; color: var(--t2); display: flex; align-items: center; gap: 4.3px/*6px*/; }
+.t15-enc .tit span::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }
+.t15-enc .ac { display: flex; align-items: center; gap: 4.3px/*6px*/; }
+.t15-enc .ac .sep { width: 1px; height: 16.3px/*22px*/; background: var(--borde); margin: 0 2.9px/*4px*/; }
+.t15-enc .ab { position: relative; }
+.t15-enc .t15-menu { top: 29.6px/*40px*/; right: 0; }
+.t15-apag { position: relative; display: flex; flex-direction: column; gap: 10.1px/*14px*/; padding: 36px/*50px*/ 13px/*18px*/ 11.5px/*16px*/; }
+.t15-casilla { display: flex; align-items: center; gap: 7.2px/*10px*/; font-size: 11.1px/*13.5px*/; color: var(--t3); }
+.t15-casilla i { width: 16px; height: 16px; box-sizing: border-box; border: 1.5px solid var(--borde2); border-radius: 3px/*4px*/; background: var(--s2); }
+</style>
 <style data-t10="piezas">
 /* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
 :root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
@@ -611,9 +650,9 @@
 :root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
 /* Las filas de una tabla con columnas fijas conservan su relleno, del que sale dónde queda cada columna fija (ver TABLA_FIJA). */
 :root .k-desp .w-th, :root .k-desp .w-tr { padding-left: 16px !important; padding-right: 8px !important; }
-:root .tt-f > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
-:root .tt-h > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
-:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
+:root .tt-f > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
+:root .tt-h > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
+:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cb):not(.centro):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.pie):not(.quitar):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
 :root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }
 
 /* 174 · El texto largo se ve entero: la celda baja de renglón en lugar de cortar con «…». */
@@ -662,6 +701,19 @@
 .t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
 .t10-aro { width: 16.3px/*22px*/; height: 16.3px/*22px*/; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
 @keyframes t10-gira { to { transform: rotate(360deg); } }
+
+/* 210 · Avisos según el tipo: el fondo nunca dice el tipo; un filo de 3 px y el ícono del color de su tipo. */
+:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast, .p-aviso) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal, .p-aviso.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+:root :is(.f-toast, .ta-toast, .t-toast):has(> .neu) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.w-cartel.info, .w-cartel.o-info) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel.o-prob, .cartel.prob, .aviso-mal, .imp-franja) { --t15-tipo: var(--peligro); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > svg,
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > .fila > svg { color: var(--t15-tipo) !important; flex: none; }
+:root :is(.f-snack, .ta-snack, .e11b-snack) { border-left: 3px solid oklch(0.78 0.14 155) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .mal) { border-left-color: oklch(0.75 0.15 25) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .neu), :root .f-snack.alto:not(:has(> .ok, > .mal)) { border-left-color: oklch(0.75 0.01 78) !important; }
 /* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */
 :root .tarjeta { box-shadow: none !important; }
 :root a.kpi:hover { box-shadow: none !important; }
@@ -791,19 +843,77 @@
   <section>
     <h2>Habilitado o grisado, y nada más</h2>
     <ul class="reglas2" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4.3px/*6px*/ 28.8px/*40px*/;">
-      <li><strong>Un botón está habilitado o grisado,</strong> sin textos al lado ni debajo. Si el motivo no es obvio, va en su tooltip; en el teléfono, tocarlo lo muestra en la franja oscura de abajo.</li>
+      <li><strong>Un botón está habilitado o grisado,</strong> sin textos al lado ni debajo. Si el motivo no es obvio, va en un tooltip sobre el control, que se abre también con un clic o un toque, igual en el teléfono (211).</li>
       <li><strong>Que «Guardar cambios» esté habilitado ya dice que hay cambios.</strong> Al salir con cambios, se pregunta «¿Salir sin guardar?».</li>
       <li><strong>La banda no cuenta qué pasa:</strong> su segunda línea es el resumen o el estado del objeto, sin «Cambios sin guardar» ni números de revisión, que quedan en los historiales.</li>
-      <li><strong>Lo que salió bien,</strong> en el aviso verde de abajo. <strong>Los errores,</strong> con sus estilos de siempre: debajo del campo o en el aviso rojo. Nunca va en rojo una fila recién agregada.</li>
+      <li><strong>Lo que salió bien y lo que falló,</strong> en el aviso de abajo, con el filo de su tipo (210); <strong>el error de un dato,</strong> debajo de su campo. Nunca va en rojo una fila recién agregada.</li>
       <li><strong>Las acciones van al borde derecho</strong> del encabezado de su superficie: la banda, la caja o el diálogo.</li>
       <li><strong>Lo que no se edita</strong> va en su campo, apagado y gris, sin textos al lado (A11, Criterio · Formularios), también lo elegido al crear que ya no se cambia.</li>
       <li><strong>Mientras dura un límite de pedidos,</strong> el botón queda grisado con su mismo texto, y cuándo se puede volver a probar lo dice el aviso de error.</li>
     </ul>
   </section>
 
+  <section data-reglas="t15">
+    <h2>Qué va a la vista y qué en el ⋮</h2>
+    <div class="t15-dos">
+      <div class="t15-caso">
+        <div class="t15-caja" style="height: 160px;">
+          <div class="t15-enc"><div class="tit"><b>VIS-000126</b><span>Recibida</span></div>
+            <div class="ac"><span class="t15-ib" title="Pantalla completa"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5"/><path d="M20 9V4h-5"/><path d="M4 15v5h5"/><path d="M20 15v5h-5"/></svg></span><span class="t15-ib" title="Abrir conversación"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 18.5 6.2 15A7.5 7.5 0 1 1 9 17.8z"/></svg></span><span class="t15-ib" title="Descargar el PDF"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M5 19.5h14"/></svg></span>
+              <span class="ab"><span class="t15-ib" style="border-color: var(--marca);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></span>
+                <span class="t15-menu"><span class="op"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Corregir</span><span class="op pel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5h9l1-12.5"/></svg>Anular</span></span></span>
+              <span class="sep"></span><span class="t15-ib"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg></span><span class="t15-ib"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span><span class="t15-ib"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></span></div></div>
+        </div>
+        <span class="t15-rot">La vista rápida de una respuesta · ir y bajar a la vista; corregir y anular, en el ⋮</span>
+        <div class="t15-caja" style="height: 110px;">
+          <div class="t15-enc"><div class="tit"><b>Proveedores</b><span>Activo</span></div>
+            <div class="ac"><span class="t15-bt">Descartar</span><span class="t15-bt pri">Guardar cambios</span>
+              <span class="ab"><span class="t15-ib" style="border-color: var(--marca);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></span>
+                <span class="t15-menu" style="min-width: 190px;"><span class="op"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8 12h8"/></svg>Dar de baja</span></span></span></div></div>
+        </div>
+        <span class="t15-rot">El editor de un catálogo · la tarea a la vista; dar de baja, en el ⋮</span>
+      </div>
+      <ul class="t15-reglas">
+        <li><strong>A la vista, con texto, la tarea de la pantalla</strong> (209): guardar, publicar, crear, exportar, o aprobar y rechazar lo que espera una decisión. La principal, al final.</li>
+        <li><strong>Ir a otro lado o bajar algo</strong> (pantalla completa, la conversación, el PDF): íconos con su nombre en un panel, texto en la banda de una pantalla.</li>
+        <li><strong>En el ⋮, lo demás que se hace con el objeto:</strong> corregir, anular, dar de baja, reactivar, eliminar, descargar la plantilla, ordenar. Lo destructivo al final, en rojo y después de una línea.</li>
+        <li><strong>El orden:</strong> la tarea, ir y bajar, el ⋮ y al final ↑ ↓ ×. Hasta tres a la vista. Las filas de una tabla y el pie de un diálogo siguen como están.</li>
+        <li>Lo que espera una decisión es la tarea: «Aprobar» y «Rechazar» van a la vista, primeros, y «Quitar de la organización» a la vista cuando la persona pidió borrar su cuenta.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section data-reglas="t15-apagado">
+    <h2>Lo apagado, con su motivo sobre el control</h2>
+    <div class="t15-dos">
+      <div class="t15-caso">
+        <div class="t15-caja t15-apag">
+          <span class="t15-tip" style="top: 5.9px/*8px*/; left: 13px/*18px*/;">Una pregunta con condiciones no se carga varias veces.</span>
+          <span class="t15-casilla"><i></i>Permitir elegir varias</span>
+        </div>
+        <span class="t15-rot">Una casilla · responde entera, el cuadradito y su texto</span>
+        <div class="t15-caja t15-apag" style="align-items: flex-start;">
+          <span class="t15-tip" style="top: 5.9px/*8px*/; left: 13px/*18px*/;">Guardá los cambios antes de publicar.</span>
+          <span class="t15-bt off">Publicar en WhatsApp</span>
+        </div>
+        <span class="t15-rot">Un botón · con el mouse, el foco, un clic o un toque; igual en el teléfono</span>
+      </div>
+      <ul class="t15-reglas">
+        <li><strong>El motivo va en un tooltip arriba del control apagado</strong> (211), solo si no es obvio: «Guardar» sin cambios no lleva motivo. Al lado o debajo no va nada: ni texto, ni ícono, ni candado.</li>
+        <li><strong>Se abre al pasar el mouse, con el foco, con un clic o con un toque.</strong> El clic, el toque, Enter o Espacio muestran el motivo y no hacen la acción; lo cierran Escape, salir, perder el foco o tocar afuera.</li>
+        <li><strong>Responde el control entero:</strong> la casilla con su texto, el renglón de una opción, la opción de un menú.</li>
+        <li><strong>No cambia de lugar ni de forma</strong> al apagarse o encenderse; una espera de segundos es solo su motivo.</li>
+        <li><strong>En el teléfono, igual:</strong> tocar algo apagado o una (i) abre su texto sobre el control, hasta tocar afuera. Ya no van en la franja oscura ni en una hoja.</li>
+        <li>Se alcanza con Tab, y el lector dice su nombre, «no disponible» y el motivo.</li>
+      </ul>
+    </div>
+  </section>
+
   <section>
     <h2>Prohibido</h2>
     <ul class="prohibido">
+      <li data-t15>Un ícono, un candado o un texto al lado de lo apagado: el motivo va en un tooltip sobre el control (211).</li>
+      <li data-t15>Corregir, anular, dar de baja, reactivar o eliminar a la vista en una banda: van en el ⋮, salvo lo que espera una decisión (209).</li>
       <li data-r711>El principal con degradé o sombra: es sólido (173).</li>
       <li data-r711>«Sumar …» en un alta: dice «Agregar …».</li>
       <li>Dos principales en la misma pantalla o diálogo.</li>
@@ -819,7 +929,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1890}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2610}}'>
 // t10-correos · 174: un correo baja de renglón después de la «@», nunca a mitad de palabra (traspaso10_piezas_1004.py).
 if (typeof document !== 'undefined' && !window.__t10Correos) {
   window.__t10Correos = true;

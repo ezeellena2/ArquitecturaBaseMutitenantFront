@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 2670px; box-sizing: border-box; padding: 28.8px/*40px*/ 34.6px/*48px*/ 40.3px/*56px*/; background: var(--fondo); color: var(--t1); font-size: 11.5px/*14px*/; line-height: 1.5; display: flex; flex-direction: column; gap: 25.9px/*36px*/; }
+.crit { width: 1440px; min-height: 3020px; box-sizing: border-box; padding: 28.8px/*40px*/ 34.6px/*48px*/ 40.3px/*56px*/; background: var(--fondo); color: var(--t1); font-size: 11.5px/*14px*/; line-height: 1.5; display: flex; flex-direction: column; gap: 25.9px/*36px*/; }
 .crit h1 { margin: 0; font-size: 21.3px/*26px*/; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 2.9px/*4px*/ 0 0; font-size: 12.3px/*15px*/; color: var(--t2); }
 .crit h2 { margin: 0 0 10.1px/*14px*/; font-size: 13.9px/*17px*/; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 7.2px/*10px*/; border-bottom: 1px solid var(--borde); }
@@ -668,6 +668,48 @@
 .r711-tip { position: relative; display: inline-flex; }
 .r711-tip .tooltip { position: absolute; z-index: 2; right: 0; bottom: calc(100% + 5.9px/*8px*/); width: 240px; white-space: normal; text-align: left; font-weight: 400; padding: 5.8px/*8px*/ 7.2px/*10px*/; border-radius: 3px/*8px*/; background: oklch(0.27 0.012 60); color: #fff; font-size: 10.5px/*12px*/; line-height: 1.4; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
 </style>
+<style data-t15="reglas">
+.t15-reglas { margin: 0; padding-left: 14.4px/*20px*/; display: flex; flex-direction: column; gap: 4.3px/*6px*/; color: var(--t2); font-size: 11.5px/*14px*/; }
+.t15-reglas strong { color: var(--t1); font-weight: 600; }
+.t15-dos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20.2px/*28px*/; align-items: start; }
+.t15-caso { display: flex; flex-direction: column; gap: 5.8px/*8px*/; }
+.t15-rot { font-size: 10.5px/*12px*/; font-weight: 600; color: var(--t2); }
+.t15-caja { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; overflow: visible; }
+.t15-ib { width: 23.7px/*32px*/; height: 23.7px/*32px*/; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; color: var(--t2); }
+.t15-bt { height: 26.6px/*36px*/; box-sizing: border-box; display: inline-flex; align-items: center; padding: 0 10.1px/*14px*/; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; color: var(--t1); font-size: 11.5px/*14px*/; font-weight: 500; white-space: nowrap; }
+.t15-bt.pri { background: var(--marca); border-color: var(--marca); color: #fff; }
+.t15-bt.off { color: var(--t3); background: var(--s2); border-color: var(--borde); }
+.t15-menu { position: absolute; z-index: 3; min-width: 210px; background: #fff; border: 1px solid var(--borde); border-radius: 3px/*10px*/; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); padding: 2.9px/*4px*/ 0; font-size: 10.7px/*13px*/; }
+.t15-menu .op { display: flex; align-items: center; gap: 7.2px/*10px*/; min-height: 26.6px/*36px*/; padding: 0 10.1px/*14px*/; color: var(--t1); border-top: 1px solid var(--borde); }
+.t15-menu .op:first-child { border-top: 0; }
+.t15-menu .op svg { color: var(--t3); }
+.t15-menu .op.pel { color: var(--peligro); border-top: 4px solid var(--s2); }
+.t15-menu .op.pel svg { color: var(--peligro); }
+.t15-tip { position: absolute; z-index: 4; max-width: 380px; white-space: nowrap; padding: 5px/*7px*/ 7.2px/*10px*/; border-radius: 3px/*6px*/; background: oklch(0.27 0.012 60); color: #fff; font-size: 10.5px/*12px*/; line-height: 1.4; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
+.t15-tip::after { content: ""; position: absolute; left: 13px/*18px*/; bottom: -3.7px/*5px*/; width: 10px; height: 10px; background: oklch(0.27 0.012 60); transform: rotate(45deg); }
+.t15-dg { display: grid; grid-template-columns: 150px minmax(0, 1fr); border: 1px solid var(--borde); border-radius: 3px/*10px*/; overflow: hidden; font-size: 10.7px/*13px*/; background: #fff; }
+.t15-dg > span { padding: 6.5px/*9px*/ 8.6px/*12px*/; border-top: 1px solid var(--borde); line-height: 1.4; }
+.t15-dg > span:nth-child(-n+2) { border-top: 0; }
+.t15-dg > span:nth-child(odd) { background: oklch(0.975 0.012 95); color: var(--t2); }
+.t15-chip { display: inline-flex; align-items: center; height: 19.2px/*26px*/; padding: 0 6.5px/*9px*/; margin: 0 4.3px/*6px*/ 2.9px/*4px*/ 0; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; font-size: 10.5px/*12.5px*/; color: var(--t1); }
+.t15-tel { width: 360px; background: var(--fondo); border: 1px solid var(--borde); border-radius: 3px/*22px*/; padding: 13px/*18px*/ 10.1px/*14px*/; box-sizing: border-box; display: flex; flex-direction: column; gap: 7.2px/*10px*/; position: relative; }
+
+.t15-avisos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11.5px/*16px*/; }
+.t15-aviso { display: flex; align-items: center; gap: 7.2px/*10px*/; min-height: 32.6px/*44px*/; padding: 7.2px/*10px*/ 8.6px/*12px*/ 7.2px/*10px*/ 10.1px/*14px*/; box-sizing: border-box; background: #fff; border: 1px solid var(--borde2); border-left: 3px solid var(--t15-c); border-radius: 3px/*10px*/; font-size: 10.7px/*13px*/; color: var(--t1); }
+.t15-aviso > svg { color: var(--t15-c); flex: none; }
+.t15-aviso .tx { flex: 1; line-height: 1.4; }
+.t15-aviso .ac { font-weight: 600; color: var(--marca-tx); white-space: nowrap; }
+.t15-aviso .x { color: var(--t3); display: inline-flex; }
+.t15-aviso.ok { --t15-c: oklch(0.55 0.13 155); }
+.t15-aviso.info { --t15-c: var(--t2); }
+.t15-aviso.aten { --t15-c: var(--alerta); }
+.t15-aviso.mal { --t15-c: var(--peligro); }
+.t15-franja { display: flex; align-items: center; gap: 7.2px/*10px*/; padding: 9.4px/*13px*/ 10.1px/*14px*/ 9.4px/*13px*/ 10.1px/*14px*/; border-radius: 3px/*14px*/; background: oklch(0.27 0.012 60); border-left: 3px solid var(--t15-c); color: #fff; font-size: 11.9px/*14.5px*/; line-height: 1.4; }
+.t15-franja > svg { color: var(--t15-c); flex: none; }
+.t15-franja .ac { font-weight: 600; color: oklch(0.84 0.12 130); white-space: nowrap; }
+.t15-franja.ok { --t15-c: oklch(0.78 0.14 155); }
+.t15-franja.mal { --t15-c: oklch(0.75 0.15 25); }
+</style>
 <style data-t10="piezas">
 /* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
 :root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
@@ -708,9 +750,9 @@
 :root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
 /* Las filas de una tabla con columnas fijas conservan su relleno, del que sale dónde queda cada columna fija (ver TABLA_FIJA). */
 :root .k-desp .w-th, :root .k-desp .w-tr { padding-left: 16px !important; padding-right: 8px !important; }
-:root .tt-f > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
-:root .tt-h > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
-:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
+:root .tt-f > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
+:root .tt-h > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
+:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.banda):not(.barra):not(.brand):not(.cb):not(.centro):not(.circ):not(.ck):not(.cmp):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.marca-num):not(.mas):not(.menu-cnt):not(.n):not(.pie):not(.quitar):not(.sw3):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
 :root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }
 
 /* 174 · El texto largo se ve entero: la celda baja de renglón en lugar de cortar con «…». */
@@ -759,6 +801,19 @@
 .t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
 .t10-aro { width: 16.3px/*22px*/; height: 16.3px/*22px*/; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
 @keyframes t10-gira { to { transform: rotate(360deg); } }
+
+/* 210 · Avisos según el tipo: el fondo nunca dice el tipo; un filo de 3 px y el ícono del color de su tipo. */
+:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast, .p-aviso) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal, .p-aviso.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+:root :is(.f-toast, .ta-toast, .t-toast):has(> .neu) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.w-cartel.info, .w-cartel.o-info) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel.o-prob, .cartel.prob, .aviso-mal, .imp-franja) { --t15-tipo: var(--peligro); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > svg,
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > .fila > svg { color: var(--t15-tipo) !important; flex: none; }
+:root :is(.f-snack, .ta-snack, .e11b-snack) { border-left: 3px solid oklch(0.78 0.14 155) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .mal) { border-left-color: oklch(0.75 0.15 25) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .neu), :root .f-snack.alto:not(:has(> .ok, > .mal)) { border-left-color: oklch(0.75 0.01 78) !important; }
 /* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */
 :root .tarjeta { box-shadow: none !important; }
 :root a.kpi:hover { box-shadow: none !important; }
@@ -788,12 +843,12 @@
     <h2>¿Dónde se muestra?</h2>
     <div class="donde">
       <div class="c"><span>Qué pasó</span><span>Dónde se ve</span><span>Cuánto dura</span><span>Ejemplo</span></div>
-      <div class="f"><strong>Hiciste algo y salió bien</strong><span>Aviso abajo a la derecha, con tilde verde</span><span>Se va solo a los 4 segundos</span><span class="ej">«Guardamos tus datos.»</span></div>
-      <div class="f"><strong>Hiciste algo y falló (un botón, un ⋮)</strong><span>Aviso abajo a la derecha, rojo, con ✕</span><span>No se va solo: lo cerrás vos</span><span class="ej">«No pudimos conectarnos. Revisá tu conexión.»</span></div>
+      <div class="f"><strong>Hiciste algo y salió bien</strong><span>Aviso abajo a la derecha, blanco, con el filo y la tilde verdes</span><span>Se va solo a los 4 segundos</span><span class="ej">«Guardamos tus datos.»</span></div>
+      <div class="f"><strong>Hiciste algo y falló (un botón, un ⋮)</strong><span>Aviso abajo a la derecha, blanco, con el filo y el ícono rojos y ✕</span><span>Se va a los 10 segundos; si trae una acción, queda hasta que lo cerrás</span><span class="ej">«No pudimos conectarnos. Revisá tu conexión.»</span></div>
       <div class="f"><strong>Un formulario tiene algo mal</strong><span>En su franja; el de un dato, debajo del campo, al intentar guardar</span><span>Hasta que lo corregís</span><span class="ej">«Escribí el correo.»</span></div>
       <div class="f"><strong>El estado de lo que mirás</strong><span>En la banda, con punto y palabra; lo que falló, marcado en su lugar</span><span>Mientras siga así</span><span class="ej">«● No se pudo publicar»</span></div>
       <div class="f"><strong>Llegó algo, falló algo en segundo plano o algo espera a alguien</strong><span>En la campana del encabezado, con su número; cada aviso lleva a donde se resuelve</span><span>Hasta que se resuelve</span><span class="ej">«4 respuestas por aprobar»</span></div>
-      <div class="f"><strong>Algo bloquea la pantalla entera</strong><span>Cartel arriba del contenido: el único cartel en el cuerpo</span><span>Mientras siga pasando</span><span class="ej">«Grupo Delta está suspendida»</span></div>
+      <div class="f"><strong>Algo bloquea la pantalla entera</strong><span>Cartel blanco con el filo de su tipo, arriba del contenido: el único cartel en el cuerpo</span><span>Mientras siga pasando</span><span class="ej">«Grupo Delta está suspendida»</span></div>
       <div class="f"><strong>La pantalla no se puede mostrar</strong><span>La pantalla entera</span><span>Hasta que reintentás o te vas</span><span class="ej">«No pudimos abrir esta pantalla»</span></div>
       <div class="f"><strong>Vas a hacer algo que no se deshace</strong><span>Diálogo de confirmación, antes de hacerlo</span><span>Hasta que decidís</span><span class="ej">«¿Revocar la invitación a Sofía Herrera?»</span></div>
     </div>
@@ -821,19 +876,19 @@
       <li><strong>1 · Campana:</strong> en el encabezado, al lado del nombre, con su número. Abre la lista: cada aviso es una línea y cuándo, y lleva a donde se resuelve.</li>
       <li><strong>2 · Banda:</strong> el estado de lo que mirás, con punto y palabra. Lo que falló se marca en su lugar, con un ⓘ.</li>
       <li><strong>3 · Aviso:</strong> abajo a la derecha, encima de todo, solo para lo que acabás de hacer. Si hay varios, se apilan; como mucho, tres.</li>
-      <li><strong>En el teléfono,</strong> la campana va en la barra de arriba de las pantallas principales y abre su pantalla; lo pasajero, en la franja oscura de abajo.</li>
+      <li><strong>En el teléfono,</strong> la campana va en la barra de arriba de las pantallas principales y abre su pantalla; lo pasajero, en la franja oscura de abajo, con el filo de su tipo.</li>
     </ul>
   </section>
 
   <section>
     <h2>Cómo se ve cada uno</h2>
     <div class="g3c">
-      <div class="pieza2"><div class="dib"><div class="toast3"><span class="ic-ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg></span><span class="tx">Guardamos tus datos.</span></div></div><strong>Salió bien</strong><p>Tilde verde. Se va solo. No lleva botones.</p></div>
-      <div class="pieza2"><div class="dib"><div class="toast3 mal"><span class="ic-mal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg></span><span class="tx">No pudimos conectarnos. Revisá tu conexión.</span><button type="button" class="ib" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div></div><strong>Falló una acción directa</strong><p>Ícono rojo y ✕. Queda hasta que lo cerrás.</p></div>
+      <div class="pieza2"><div class="dib"><div class="toast3"><span class="ic-ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg></span><span class="tx">Guardamos tus datos.</span></div></div><strong>Salió bien</strong><p>Filo y tilde verdes. Se va solo. No lleva botones.</p></div>
+      <div class="pieza2"><div class="dib"><div class="toast3 mal"><span class="ic-mal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg></span><span class="tx">No pudimos conectarnos. Revisá tu conexión.</span><button type="button" class="ib" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div></div><strong>Falló una acción directa</strong><p>Filo y ícono rojos, y la ✕ adentro. Se va a los 10 segundos; con una acción, queda.</p></div>
       <div class="pieza2"><div class="dib"><div class="campo-err"><span class="rot">Correo</span><div class="ctl">sofia.herrera@</div><span class="e">Revisá el correo: no parece válido.</span></div></div><strong>Error en un formulario</strong><p>En el lugar, nunca en un aviso. Ver «Formularios y campos».</p></div>
       <div class="pieza2"><div class="dib"><div class="mini-cmp"><div class="it">WhatsApp rechazó la versión 3 de Control de vehículo<small>27/09/2026, 09:45</small></div><div class="it">4 respuestas por aprobar<small>27/09/2026, 09:12</small></div></div></div><strong>La campana</strong><p>Lo que llegó, lo que falló en segundo plano y lo que espera a alguien.</p></div>
       <div class="pieza2"><div class="dib"><div class="banda-mini"><strong>Control de vehículo</strong><span class="est2">No se pudo publicar</span></div></div><strong>El estado, en la banda</strong><p>Punto y palabra; el motivo, en el ⓘ de donde falló.</p></div>
-      <div class="pieza2"><div class="dib"><div class="cartel prob"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M8.5 8.5A5 5 0 0 0 7 18h10"/><path d="M12 6a5 5 0 0 1 5 5 4 4 0 0 1 3 6"/></svg><span class="tx">Sin conexión</span></div></div><strong>Cartel que bloquea</strong><p>Solo si la pantalla entera no se puede usar.</p></div>
+      <div class="pieza2"><div class="dib"><div class="cartel prob"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M8.5 8.5A5 5 0 0 0 7 18h10"/><path d="M12 6a5 5 0 0 1 5 5 4 4 0 0 1 3 6"/></svg><span class="tx">Sin conexión</span></div></div><strong>Cartel que bloquea</strong><p>Solo si la pantalla entera no se puede usar. Blanco, con el filo de su tipo.</p></div>
     </div>
     <div class="g3c" style="margin-top: 11.5px/*16px*/;">
       <div class="pieza2"><div class="dib"><div class="err-pant"><span class="circ"><span class="ic-mal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg></span></span><strong>No pudimos abrir esta pantalla</strong><button type="button" class="cb cb-sec ch">Reintentar</button></div></div><strong>Pantalla de error</strong><p>Cuando no se puede mostrar nada de la pantalla.</p></div>
@@ -863,7 +918,7 @@
         <li><strong>El estado se dice una vez</strong>, arriba, en la segunda línea de la banda: un punto de color y pocas palabras.</li>
         <li><strong>Donde está la acción, solo un ⓘ.</strong> Lo que no se puede usar queda apagado y abre lo mismo que el ⓘ.</li>
         <li><strong>El ⓘ abre el aviso importante</strong>, con el motivo y qué podés hacer. Ver «Diálogos».</li>
-        <li><strong>Ningún párrafo que explique</strong> en la pantalla: lo que no se puede hacer va en ese aviso, y la ayuda de un campo o una sección, en una (i) con tooltip, que no abre nada.</li><li><strong>En el teléfono,</strong> tocar la (i) abre una hoja chica, y tocar algo apagado muestra el motivo en la franja oscura de abajo.</li>
+        <li><strong>Ningún párrafo que explique</strong> en la pantalla: lo que no se puede hacer va en ese aviso, y la ayuda de un campo o una sección, en una (i) con tooltip, que no abre nada.</li><li><strong>En el teléfono,</strong> igual que en la compu: tocar la (i) o algo apagado abre su texto sobre el control, hasta tocar afuera (211).</li>
         <li><strong>Nada revela si un correo o un teléfono tiene cuenta</strong> (ADR 0041): la pantalla sigue igual y a ese correo o número le llega un aviso en lugar del código. Excepción: «Invitar operador», porque quien tiene ese permiso ya ve las cuentas.</li>
       </ul>
     </div>
@@ -896,11 +951,33 @@
     </ul>
   </section>
 
+  <section data-reglas="t15">
+    <h2>Avisos según el tipo</h2>
+    <div class="t15-avisos">
+      <div class="t15-caso"><div class="t15-aviso ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.2 2.4 2.4 4.6-4.9"/></svg><span class="tx">Guardamos los cambios.</span><span class="x"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></span></div><span class="t15-rot">Salió bien · filo y tilde verdes · se va solo</span></div>
+      <div class="t15-caso"><div class="t15-aviso info"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 16v-4.5"/><path d="M12 8.2h.01"/></svg><span class="tx">Te mandamos tus datos por correo cuando estén listos.</span><span class="x"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></span></div><span class="t15-rot">Información · filo e (i) grises</span></div>
+      <div class="t15-caso"><div class="t15-aviso aten"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span class="tx">Todavía no sabemos si WhatsApp recibió la versión 4.</span><span class="x"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></span></div><span class="t15-rot">Atención · filo y triángulo ámbar</span></div>
+      <div class="t15-caso"><div class="t15-aviso mal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.7 3h6.6L21 8.7v6.6L15.3 21H8.7L3 15.3V8.7z"/><path d="m14.5 9.5-5 5"/><path d="m9.5 9.5 5 5"/></svg><span class="tx">Algo salió mal. Probá de nuevo en un rato.</span><span class="ac">Copiar código</span><span class="x"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></span></div><span class="t15-rot">Error · filo y octógono rojos · con una acción, queda</span></div>
+    </div>
+    <div class="t15-dos" style="margin-top: 13px/*18px*/;">
+      <div class="t15-caso" style="flex-direction: row; gap: 11.5px/*16px*/;">
+        <div class="t15-tel" style="width: 340px;"><div class="t15-franja ok"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.2 2.4 2.4 4.6-4.9"/></svg><span class="tx">Guardamos la configuración.</span></div><div class="t15-franja mal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.7 3h6.6L21 8.7v6.6L15.3 21H8.7L3 15.3V8.7z"/><path d="m14.5 9.5-5 5"/><path d="m9.5 9.5 5 5"/></svg><span class="tx">No pudimos guardar los cambios.</span><span class="ac">Reintentar</span></div></div>
+      </div>
+      <ul class="t15-reglas">
+        <li><strong>El fondo nunca dice el tipo</strong> (210): todo aviso es blanco, con la tinta de siempre, y el tipo va en un filo de 3 px a la izquierda y en el ícono, del mismo color. La ✕ va adentro, a la derecha.</li>
+        <li><strong>Igual el aviso de abajo, la franja de error de un formulario y el cartel que bloquea</strong> una pantalla. En el teléfono, la franja oscura de siempre, con el mismo filo y el mismo ícono.</li>
+        <li><strong>Todo aviso pasajero se va solo:</strong> el que salió bien, a los 4 segundos; el de error, a los 10. El que trae una acción, sea del tipo que sea, como «Copiar código» o «Reintentar», queda hasta cerrarlo.</li>
+        <li>Es una regla para toda la app: un aviso nuevo usa una de estas cuatro formas, nunca una propia.</li>
+      </ul>
+    </div>
+  </section>
+
   <section>
     <h2>Prohibido</h2>
     <ul class="prohibido">
+      <li data-t15>Un fondo de color que dice el tipo de un aviso: va en el filo y en el ícono (210).</li>
+      <li data-t15>Un aviso de error sin una acción que no se va: se va a los 10 segundos (210).</li>
       <li data-r711>Los pasos de un estado detrás de la ⓘ, o una zona que cuenta lo que ya dice la etiqueta (175).</li>
-      <li>Un error en un aviso que se va solo.</li>
       <li>El mismo error en dos lugares: en el formulario y abajo.</li>
       <li>Un diálogo para contar que algo salió bien.</li>
       <li>Un cartel en el cuerpo de una pantalla para algo que no la bloquea: va en la campana.</li>
@@ -915,7 +992,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2670}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3020}}'>
 // t10-correos · 174: un correo baja de renglón después de la «@», nunca a mitad de palabra (traspaso10_piezas_1004.py).
 if (typeof document !== 'undefined' && !window.__t10Correos) {
   window.__t10Correos = true;

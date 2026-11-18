@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 3890px; box-sizing: border-box; padding: 28.8px/*40px*/ 34.6px/*48px*/ 40.3px/*56px*/; background: var(--fondo); color: var(--t1); font-size: 11.5px/*14px*/; line-height: 1.5; display: flex; flex-direction: column; gap: 25.9px/*36px*/; }
+.crit { width: 1440px; min-height: 4440px; box-sizing: border-box; padding: 28.8px/*40px*/ 34.6px/*48px*/ 40.3px/*56px*/; background: var(--fondo); color: var(--t1); font-size: 11.5px/*14px*/; line-height: 1.5; display: flex; flex-direction: column; gap: 25.9px/*36px*/; }
 .crit h1 { margin: 0; font-size: 21.3px/*26px*/; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 2.9px/*4px*/ 0 0; font-size: 12.3px/*15px*/; color: var(--t2); }
 .crit h2 { margin: 0 0 10.1px/*14px*/; font-size: 13.9px/*17px*/; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 7.2px/*10px*/; border-bottom: 1px solid var(--borde); }
@@ -724,6 +724,50 @@
 .r711-tb .th > span + span { box-shadow: inset 1px 0 0 oklch(0.89 0.031 95); }
 .r711-tb .cod { white-space: nowrap; }
 </style>
+<style data-t15="reglas">
+.t15-reglas { margin: 0; padding-left: 14.4px/*20px*/; display: flex; flex-direction: column; gap: 4.3px/*6px*/; color: var(--t2); font-size: 11.5px/*14px*/; }
+.t15-reglas strong { color: var(--t1); font-weight: 600; }
+.t15-dos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20.2px/*28px*/; align-items: start; }
+.t15-caso { display: flex; flex-direction: column; gap: 5.8px/*8px*/; }
+.t15-rot { font-size: 10.5px/*12px*/; font-weight: 600; color: var(--t2); }
+.t15-caja { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; overflow: visible; }
+.t15-ib { width: 23.7px/*32px*/; height: 23.7px/*32px*/; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; color: var(--t2); }
+.t15-bt { height: 26.6px/*36px*/; box-sizing: border-box; display: inline-flex; align-items: center; padding: 0 10.1px/*14px*/; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; color: var(--t1); font-size: 11.5px/*14px*/; font-weight: 500; white-space: nowrap; }
+.t15-bt.pri { background: var(--marca); border-color: var(--marca); color: #fff; }
+.t15-bt.off { color: var(--t3); background: var(--s2); border-color: var(--borde); }
+.t15-menu { position: absolute; z-index: 3; min-width: 210px; background: #fff; border: 1px solid var(--borde); border-radius: 3px/*10px*/; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); padding: 2.9px/*4px*/ 0; font-size: 10.7px/*13px*/; }
+.t15-menu .op { display: flex; align-items: center; gap: 7.2px/*10px*/; min-height: 26.6px/*36px*/; padding: 0 10.1px/*14px*/; color: var(--t1); border-top: 1px solid var(--borde); }
+.t15-menu .op:first-child { border-top: 0; }
+.t15-menu .op svg { color: var(--t3); }
+.t15-menu .op.pel { color: var(--peligro); border-top: 4px solid var(--s2); }
+.t15-menu .op.pel svg { color: var(--peligro); }
+.t15-tip { position: absolute; z-index: 4; max-width: 380px; white-space: nowrap; padding: 5px/*7px*/ 7.2px/*10px*/; border-radius: 3px/*6px*/; background: oklch(0.27 0.012 60); color: #fff; font-size: 10.5px/*12px*/; line-height: 1.4; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
+.t15-tip::after { content: ""; position: absolute; left: 13px/*18px*/; bottom: -3.7px/*5px*/; width: 10px; height: 10px; background: oklch(0.27 0.012 60); transform: rotate(45deg); }
+.t15-dg { display: grid; grid-template-columns: 150px minmax(0, 1fr); border: 1px solid var(--borde); border-radius: 3px/*10px*/; overflow: hidden; font-size: 10.7px/*13px*/; background: #fff; }
+.t15-dg > span { padding: 6.5px/*9px*/ 8.6px/*12px*/; border-top: 1px solid var(--borde); line-height: 1.4; }
+.t15-dg > span:nth-child(-n+2) { border-top: 0; }
+.t15-dg > span:nth-child(odd) { background: oklch(0.975 0.012 95); color: var(--t2); }
+.t15-chip { display: inline-flex; align-items: center; height: 19.2px/*26px*/; padding: 0 6.5px/*9px*/; margin: 0 4.3px/*6px*/ 2.9px/*4px*/ 0; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; font-size: 10.5px/*12.5px*/; color: var(--t1); }
+.t15-tel { width: 360px; background: var(--fondo); border: 1px solid var(--borde); border-radius: 3px/*22px*/; padding: 13px/*18px*/ 10.1px/*14px*/; box-sizing: border-box; display: flex; flex-direction: column; gap: 7.2px/*10px*/; position: relative; }
+
+.t15-tb { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; overflow: hidden; font-size: 10.7px/*13px*/; }
+.t15-tb .th, .t15-tb .tr { display: grid; }
+.t15-tb .th { min-height: 29.6px/*40px*/; background: oklch(0.945 0.027 95); border-bottom: 1px solid oklch(0.89 0.031 95); font-weight: 600; color: var(--t2); }
+.t15-tb .tr { min-height: 29.6px/*40px*/; border-bottom: 1px solid var(--borde); }
+.t15-tb .tr:last-child { border-bottom: 0; }
+.t15-tb .tr:nth-child(odd) { background: oklch(0.968 0.015 95); }
+.t15-tb .th > span, .t15-tb .tr > span { display: flex; flex-direction: column; justify-content: center; padding: 6.5px/*9px*/ 8.6px/*12px*/; line-height: 1.4; min-width: 0; overflow-wrap: break-word; }
+.t15-tb .th > span + span, .t15-tb .tr > span + span { box-shadow: inset 1px 0 0 oklch(0.915 0.013 95 / 0.8); }
+.t15-tb .th > span + span { box-shadow: inset 1px 0 0 oklch(0.89 0.031 95); }
+.t15-tb .n { align-items: flex-end; text-align: right; font-variant-numeric: tabular-nums; }
+.t15-tb .sec { color: var(--t2); font-size: 10.5px/*12px*/; }
+.t15-tb .tr > span.est { display: flex; flex-direction: row; justify-content: flex-start; align-items: center; gap: 5.8px/*8px*/; }
+.t15-tb .est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); flex: none; }
+.t15-tb .est.pend::before { background: oklch(0.62 0.12 240); }
+.t15-tb .vac { color: var(--t3); }
+.t15-cols1 { grid-template-columns: 110px 140px 120px 95px 90px minmax(110px, 1fr); }
+.t15-cols2 { grid-template-columns: minmax(0, 1fr) 90px 150px; }
+</style>
 <style data-t10="piezas">
 /* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
 :root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
@@ -764,9 +808,9 @@
 :root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
 /* Las filas de una tabla con columnas fijas conservan su relleno, del que sale dónde queda cada columna fija (ver TABLA_FIJA). */
 :root .k-desp .w-th, :root .k-desp .w-tr { padding-left: 16px !important; padding-right: 8px !important; }
-:root .tt-f > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
-:root .tt-h > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
-:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
+:root .tt-f > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
+:root .tt-h > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
+:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.acc):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.cnt):not(.cuerpo):not(.der):not(.dlg-f):not(.dlg-x):not(.dos):not(.fb-der):not(.fl):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.l2):not(.mas):not(.menu-cnt):not(.num):not(.pi):not(.pie):not(.quitar):not(.r711-carga):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
 :root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }
 
 /* 174 · El texto largo se ve entero: la celda baja de renglón en lugar de cortar con «…». */
@@ -815,6 +859,19 @@
 .t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
 .t10-aro { width: 16.3px/*22px*/; height: 16.3px/*22px*/; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
 @keyframes t10-gira { to { transform: rotate(360deg); } }
+
+/* 210 · Avisos según el tipo: el fondo nunca dice el tipo; un filo de 3 px y el ícono del color de su tipo. */
+:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast, .p-aviso) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal, .p-aviso.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+:root :is(.f-toast, .ta-toast, .t-toast):has(> .neu) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.w-cartel.info, .w-cartel.o-info) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel.o-prob, .cartel.prob, .aviso-mal, .imp-franja) { --t15-tipo: var(--peligro); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > svg,
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > .fila > svg { color: var(--t15-tipo) !important; flex: none; }
+:root :is(.f-snack, .ta-snack, .e11b-snack) { border-left: 3px solid oklch(0.78 0.14 155) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .mal) { border-left-color: oklch(0.75 0.15 25) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .neu), :root .f-snack.alto:not(:has(> .ok, > .mal)) { border-left-color: oklch(0.75 0.01 78) !important; }
 /* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */
 :root .tarjeta { box-shadow: none !important; }
 :root a.kpi:hover { box-shadow: none !important; }
@@ -857,7 +914,7 @@
         <li><strong>Filtros en su propia tarjeta</strong>, arriba de la tabla. Sin botones.</li>
         <li><strong>Encabezado con color:</strong> 30 px, fondo arena, sin mayúsculas.</li>
         <li><strong>Filas de 30 px</strong>, alternadas, con letra de 11. Al pasar el mouse, verde claro.</li>
-        <li><strong>Un dato por celda.</strong> Lo que lo aclara va en su propia columna si la persona lo necesita (Correo, Vencimiento), o no va. Sin dato, una sola raya. Un texto largo baja de renglón, sin «…» (174).</li>
+        <li><strong>Un dato por columna</strong> (206). Lo que lo aclara va en su propia columna si la persona lo necesita (Correo, Vencimiento), o no va; solo un texto secundario va en gris debajo. Sin dato, una sola raya. Un texto largo baja de renglón, sin «…» (174).</li>
         <li><strong>La columna ordenada</strong> muestra ▲ o ▼ en su encabezado; tocarla invierte el orden. Las demás, sin flecha.</li>
         <li><strong>Las fechas, completas:</strong> 25/10/2026, 18:07, con año y hora, en la zona de quien mira. Nunca «hoy», «ayer» ni «hace 2 horas».</li>
         <li><strong>Un dato personal tapado</strong> muestra lo mínimo: el teléfono, «•••• 4521»; el correo, «lu•••@gmail.com».</li>
@@ -915,7 +972,7 @@
     <div class="medidas">
       <div class="cab" style="grid-template-columns: 220px 150px minmax(0, 1fr);"><span>Pieza</span><span>Medida</span><span>Cómo es</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 29.6px/*40px*/; padding-top: 0; padding-bottom: 0; font-size: 10.7px/*13px*/;"><strong>Encabezado</strong><span>30 px</span><span>Fondo arena, letra de 11 en semibold, gris oscuro, sin mayúsculas. Igual en tablas, listas y cajas.</span></div>
-      <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 29.6px/*40px*/; padding-top: 0; padding-bottom: 0; font-size: 10.7px/*13px*/;"><strong>Fila de tabla</strong><span>30 px como mínimo</span><span>Un dato por celda, con letra de 11; si no entra, baja de renglón y la fila crece. Una fila sí y otra no, arena muy suave. Al pasar el mouse, verde claro.</span></div>
+      <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 29.6px/*40px*/; padding-top: 0; padding-bottom: 0; font-size: 10.7px/*13px*/;"><strong>Fila de tabla</strong><span>30 px como mínimo</span><span>Un dato por columna, con letra de 11; si no entra, baja de renglón y la fila crece. Una fila sí y otra no, arena muy suave. Al pasar el mouse, verde claro.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 29.6px/*40px*/; padding-top: 0; padding-bottom: 0; font-size: 10.7px/*13px*/;"><strong>Fila de lista</strong><span>33 px</span><span>Un renglón con letra de 11: el dato, su estado a la derecha y el ⋮.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 29.6px/*40px*/; padding-top: 0; padding-bottom: 0; font-size: 10.7px/*13px*/;"><strong>Estado</strong><span>Punto de 8 px</span><span>Punto de color y la palabra, sin fondo: verde activo, celeste pendiente, ámbar atención, gris apagado.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 29.6px/*40px*/; padding-top: 0; padding-bottom: 0; font-size: 10.7px/*13px*/;"><strong>Columna de acciones</strong><span>48 px</span><span>Solo el ⋮, botón de ícono de 24 × 24.</span></div>
@@ -1023,7 +1080,7 @@
       </div>
       <ul class="reglas2">
         <li><strong>Un texto largo baja de renglón</strong> y la fila crece: se ve entero, sin «…» ni tooltip. Vale en las celdas, en las filas del teléfono y en las opciones del menú (174).</li>
-        <li><strong>Un dato por celda</strong> sigue valiendo: lo que baja de renglón es el mismo dato.</li>
+        <li><strong>Un dato por columna</strong> sigue valiendo: lo que baja de renglón es el mismo dato.</li>
         <li><strong>Un código con guiones no se parte</strong> (<span style="white-space: nowrap;">«30-71458236-9»</span>): si no entra, baja entero. Una zona horaria se corta solo en sus barras.</li>
       </ul>
     </div>
@@ -1039,9 +1096,47 @@
     </ul>
   </section>
 
+  <section data-reglas="t15">
+    <h2>Un dato por columna</h2>
+    <div class="t15-dos">
+      <div class="t15-caso">
+        <div class="t15-tb">
+          <div class="th t15-cols1"><span>N°</span><span>Recibida</span><span>Estado</span><span>Corregida</span><span>Artículos</span><span>Documentos</span></div>
+          <div class="tr t15-cols1"><span>VIS-000126</span><span>15/10/2026, 16:20</span><span class="est">Aprobada</span><span>Sí</span><span>3 ítems</span><span>2 documentos</span></div>
+          <div class="tr t15-cols1"><span>VIS-000125</span><span>14/10/2026, 09:30</span><span class="est pend">Por aprobar</span><span class="vac">—</span><span>1 ítem</span><span class="vac">—</span></div>
+        </div>
+        <span class="t15-rot">La planilla · «Corregida» en su columna; el bloque y los documentos, con su cantidad</span>
+        <div class="t15-tb">
+          <div class="th t15-cols2"><span>Tema</span><span class="n">Pedidos</span><span>Último pedido</span></div>
+          <div class="tr t15-cols2"><span>Reclamos de clientes<span class="sec">Dejar asentado el reclamo de un cliente: qué pasó y qué pide.</span></span><span class="n">5</span><span>15/10/2026, 10:42</span></div>
+          <div class="tr t15-cols2"><span>Pedidos de materiales<span class="sec">Pedir materiales para una obra, con cantidades.</span></span><span class="n">3</span><span>14/10/2026, 17:05</span></div>
+        </div>
+        <span class="t15-rot">Formularios que faltan · la descripción, en gris debajo del tema</span>
+      </div>
+      <ul class="t15-reglas">
+        <li><strong>Cada columna muestra un dato,</strong> y su encabezado lo nombra (206). Cuentan como uno la fecha y la hora de un momento, un valor con su unidad y varios valores del mismo dato.</li>
+        <li><strong>No van juntos</strong> un número con su fecha o su estado, «fecha · persona», una etiqueta al lado del dato («Corregida» va en su columna, con «Sí» o «—», y solo si alguna fila lo está) ni el resumen de otra tabla: el bloque dice «3 ítems», y los documentos, «2 documentos».</li>
+        <li><strong>Dos excepciones.</strong> Un texto secundario en gris debajo del dato, que no se ordena ni se filtra y nunca es un estado, una fecha ni una persona, como la descripción de un tema. Y las listas que no son tablas (el chat, las opciones de un diálogo, la actividad) siguen las lecturas.</li>
+        <li><strong>Las filas con acciones a la vista</strong> llevan dos líneas, el nombre y su detalle (130).</li>
+      </ul>
+    </div>
+  </section>
+
+  <section data-reglas="t15-formatos">
+    <h2>Fechas y números</h2>
+    <ul class="t15-reglas">
+      <li><strong>Una fecha, solo con números</strong> y completa (205): «27/09/2026»; con hora, después de una coma, «27/09/2026, 14:35» (en inglés, «09/27/2026, 2:35 PM»). Nunca el mes en letras ni una fecha larga.</li>
+      <li><strong>Un mes se escribe como su rango:</strong> «01/10/2026 – 31/10/2026»; dentro de una frase, «del 01/10/2026 al 31/10/2026».</li>
+      <li><strong>Un número, con la región de su idioma:</strong> «1.234,5» en español y «1,234.5» en inglés. El porcentaje va pegado: «64%», «12,5%» (208).</li>
+      <li>Vale también para los correos, WhatsApp, el PDF y el Excel. Ver <code>formatos.md</code> del front.</li>
+    </ul>
+  </section>
+
   <section>
     <h2>Prohibido</h2>
     <ul class="prohibido">
+      <li data-t15>Una etiqueta al lado del dato, «fecha · persona» o el resumen de otra tabla en una celda: cada dato en su columna (206).</li>
+      <li data-t15>Una fecha con el mes en letras o sin la coma antes de la hora; un porcentaje con espacio (205 y 208).</li>
       <li data-r711>Cortar un texto con «…»: baja de renglón y la fila crece (174).</li>
       <li data-r711>Filas esqueleto en la primera carga: van el encabezado y el aro en el alto de ocho filas (160).</li>
       <li>Una tabla sin líneas entre columnas, o los números a la izquierda.</li>
@@ -1061,7 +1156,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3890}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4440}}'>
 // t10-correos · 174: un correo baja de renglón después de la «@», nunca a mitad de palabra (traspaso10_piezas_1004.py).
 if (typeof document !== 'undefined' && !window.__t10Correos) {
   window.__t10Correos = true;

@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 3750px; box-sizing: border-box; padding: 28.8px/*40px*/ 34.6px/*48px*/ 40.3px/*56px*/; background: var(--fondo); color: var(--t1); font-size: 11.5px/*14px*/; line-height: 1.5; display: flex; flex-direction: column; gap: 25.9px/*36px*/; }
+.crit { width: 1440px; min-height: 4320px; box-sizing: border-box; padding: 28.8px/*40px*/ 34.6px/*48px*/ 40.3px/*56px*/; background: var(--fondo); color: var(--t1); font-size: 11.5px/*14px*/; line-height: 1.5; display: flex; flex-direction: column; gap: 25.9px/*36px*/; }
 .crit h1 { margin: 0; font-size: 21.3px/*26px*/; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 2.9px/*4px*/ 0 0; font-size: 12.3px/*15px*/; color: var(--t2); }
 .crit h2 { margin: 0 0 10.1px/*14px*/; font-size: 13.9px/*17px*/; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 7.2px/*10px*/; border-bottom: 1px solid var(--borde); }
@@ -681,6 +681,45 @@
 .r711-cf .p { display: flex; justify-content: flex-end; gap: 5.8px/*8px*/; padding: 8.6px/*12px*/ 14.4px/*20px*/; border-top: 1px solid var(--borde); }
 .r711-cf .foco { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--marca); }
 </style>
+<style data-t15="reglas">
+.t15-reglas { margin: 0; padding-left: 14.4px/*20px*/; display: flex; flex-direction: column; gap: 4.3px/*6px*/; color: var(--t2); font-size: 11.5px/*14px*/; }
+.t15-reglas strong { color: var(--t1); font-weight: 600; }
+.t15-dos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20.2px/*28px*/; align-items: start; }
+.t15-caso { display: flex; flex-direction: column; gap: 5.8px/*8px*/; }
+.t15-rot { font-size: 10.5px/*12px*/; font-weight: 600; color: var(--t2); }
+.t15-caja { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; overflow: visible; }
+.t15-ib { width: 23.7px/*32px*/; height: 23.7px/*32px*/; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; color: var(--t2); }
+.t15-bt { height: 26.6px/*36px*/; box-sizing: border-box; display: inline-flex; align-items: center; padding: 0 10.1px/*14px*/; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; color: var(--t1); font-size: 11.5px/*14px*/; font-weight: 500; white-space: nowrap; }
+.t15-bt.pri { background: var(--marca); border-color: var(--marca); color: #fff; }
+.t15-bt.off { color: var(--t3); background: var(--s2); border-color: var(--borde); }
+.t15-menu { position: absolute; z-index: 3; min-width: 210px; background: #fff; border: 1px solid var(--borde); border-radius: 3px/*10px*/; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); padding: 2.9px/*4px*/ 0; font-size: 10.7px/*13px*/; }
+.t15-menu .op { display: flex; align-items: center; gap: 7.2px/*10px*/; min-height: 26.6px/*36px*/; padding: 0 10.1px/*14px*/; color: var(--t1); border-top: 1px solid var(--borde); }
+.t15-menu .op:first-child { border-top: 0; }
+.t15-menu .op svg { color: var(--t3); }
+.t15-menu .op.pel { color: var(--peligro); border-top: 4px solid var(--s2); }
+.t15-menu .op.pel svg { color: var(--peligro); }
+.t15-tip { position: absolute; z-index: 4; max-width: 380px; white-space: nowrap; padding: 5px/*7px*/ 7.2px/*10px*/; border-radius: 3px/*6px*/; background: oklch(0.27 0.012 60); color: #fff; font-size: 10.5px/*12px*/; line-height: 1.4; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
+.t15-tip::after { content: ""; position: absolute; left: 13px/*18px*/; bottom: -3.7px/*5px*/; width: 10px; height: 10px; background: oklch(0.27 0.012 60); transform: rotate(45deg); }
+.t15-dg { display: grid; grid-template-columns: 150px minmax(0, 1fr); border: 1px solid var(--borde); border-radius: 3px/*10px*/; overflow: hidden; font-size: 10.7px/*13px*/; background: #fff; }
+.t15-dg > span { padding: 6.5px/*9px*/ 8.6px/*12px*/; border-top: 1px solid var(--borde); line-height: 1.4; }
+.t15-dg > span:nth-child(-n+2) { border-top: 0; }
+.t15-dg > span:nth-child(odd) { background: oklch(0.975 0.012 95); color: var(--t2); }
+.t15-chip { display: inline-flex; align-items: center; height: 19.2px/*26px*/; padding: 0 6.5px/*9px*/; margin: 0 4.3px/*6px*/ 2.9px/*4px*/ 0; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; font-size: 10.5px/*12.5px*/; color: var(--t1); }
+.t15-tel { width: 360px; background: var(--fondo); border: 1px solid var(--borde); border-radius: 3px/*22px*/; padding: 13px/*18px*/ 10.1px/*14px*/; box-sizing: border-box; display: flex; flex-direction: column; gap: 7.2px/*10px*/; position: relative; }
+
+.t15-zona { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; overflow: hidden; }
+.t15-zona .cab { display: flex; align-items: center; justify-content: space-between; min-height: 29.6px/*40px*/; padding: 0 2.9px/*4px*/ 0 11.5px/*16px*/; background: oklch(0.945 0.027 95); border-bottom: 1px solid oklch(0.89 0.031 95); font-weight: 600; font-size: 11.1px/*13.5px*/; }
+.t15-zona .ren { display: flex; flex-direction: column; gap: 4.3px/*6px*/; padding: 8.6px/*12px*/ 11.5px/*16px*/; border-top: 1px solid var(--borde); font-size: 10.7px/*13px*/; }
+.t15-zona .ren:first-of-type { border-top: 0; }
+.t15-zona .rot { color: var(--t2); font-size: 10.5px/*12.5px*/; }
+.t15-zona .lin { display: flex; align-items: center; gap: 5.8px/*8px*/; flex-wrap: wrap; }
+.t15-campo { height: 26.6px/*36px*/; box-sizing: border-box; display: inline-flex; align-items: center; padding: 0 8.6px/*12px*/; min-width: 260px; border: 1px solid var(--borde2); border-radius: 3px/*8px*/; background: #fff; color: var(--t1); }
+.t15-campo.mal { border-color: var(--peligro); }
+.t15-err { color: oklch(0.45 0.17 25); font-size: 10.5px/*12.5px*/; }
+.t15-zona .t15-bt.pel { color: var(--peligro); }
+.t15-zona .est { display: inline-flex; align-items: center; gap: 4.3px/*6px*/; }
+.t15-zona .est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }
+</style>
 <style data-t10="piezas">
 /* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
 :root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
@@ -721,9 +760,9 @@
 :root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
 /* Las filas de una tabla con columnas fijas conservan su relleno, del que sale dónde queda cada columna fija (ver TABLA_FIJA). */
 :root .k-desp .w-th, :root .k-desp .w-tr { padding-left: 16px !important; padding-right: 8px !important; }
-:root .tt-f > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
-:root .tt-h > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
-:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
+:root .tt-f > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
+:root .tt-h > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
+:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.cas):not(.cb):not(.centro):not(.ck):not(.der):not(.dib):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ib):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.p):not(.pie):not(.quitar):not(.sw):not(.t15-ib):not(.t15-tip):not(.tachado):not(.todos):not(.velo):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
 :root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }
 
 /* 174 · El texto largo se ve entero: la celda baja de renglón en lugar de cortar con «…». */
@@ -772,6 +811,19 @@
 .t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
 .t10-aro { width: 16.3px/*22px*/; height: 16.3px/*22px*/; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
 @keyframes t10-gira { to { transform: rotate(360deg); } }
+
+/* 210 · Avisos según el tipo: el fondo nunca dice el tipo; un filo de 3 px y el ícono del color de su tipo. */
+:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast, .p-aviso) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal, .p-aviso.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+:root :is(.f-toast, .ta-toast, .t-toast):has(> .neu) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.w-cartel.info, .w-cartel.o-info) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel.o-prob, .cartel.prob, .aviso-mal, .imp-franja) { --t15-tipo: var(--peligro); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > svg,
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > .fila > svg { color: var(--t15-tipo) !important; flex: none; }
+:root :is(.f-snack, .ta-snack, .e11b-snack) { border-left: 3px solid oklch(0.78 0.14 155) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .mal) { border-left-color: oklch(0.75 0.15 25) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .neu), :root .f-snack.alto:not(:has(> .ok, > .mal)) { border-left-color: oklch(0.75 0.01 78) !important; }
 /* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */
 :root .tarjeta { box-shadow: none !important; }
 :root a.kpi:hover { box-shadow: none !important; }
@@ -809,7 +861,7 @@
     </div>
     <ul class="reglas2" style="margin-top: 10.1px/*14px*/; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4.3px/*6px*/ 28.8px/*40px*/;">
       <li><strong>El rótulo va arriba</strong>, siempre visible. Si el dato es obligatorio, lleva un asterisco rojo.</li>
-      <li><strong>Sin leyendas debajo</strong> ni textos de ejemplo adentro: el renglón de abajo es solo para el error o para un dato. Solo el buscador lleva texto adentro.</li><li><strong>La ayuda que sirve va en una (i)</strong> junto a la etiqueta, al título o al final de una opción, con tooltip. En el teléfono, tocarla abre una hoja chica. Lo que no ayuda a decidir no va, ni ahí.</li><li><strong>Un select toma el ancho de su opción más larga:</strong> sin anchos fijos que corten el texto.</li>
+      <li><strong>Sin leyendas debajo</strong> ni textos de ejemplo adentro: el renglón de abajo es solo para el error o para un dato. Solo el buscador lleva texto adentro.</li><li><strong>La ayuda que sirve va en una (i)</strong> junto a la etiqueta, al título o al final de una opción, con tooltip, que se abre también con un clic o un toque, igual en el teléfono (211). Lo que no ayuda a decidir no va, ni ahí.</li><li><strong>Un select toma el ancho de su opción más larga:</strong> sin anchos fijos que corten el texto.</li>
       <li><strong>El error va debajo del campo</strong>, en rojo, y dice qué hacer.</li>
       <li><strong>Se revisa al tocar Guardar.</strong> Después del primer error, se corrige mientras escribís.</li>
     </ul>
@@ -957,9 +1009,46 @@
     </div>
   </section>
 
+  <section data-reglas="t15">
+    <h2>Una cosa, una zona</h2>
+    <div class="t15-dos">
+      <div class="t15-caso">
+        <div class="t15-zona">
+          <div class="cab">Conexión con el proveedor<span class="t15-bt" style="height: 23.7px/*32px*/; font-size: 10.7px/*13px*/;">Probar conexión</span></div>
+          <div class="ren"><span class="rot">Proveedor</span><span class="t15-campo">Anthropic</span></div>
+          <div class="ren"><span class="rot">Clave de API</span><span class="lin"><span class="est">Configurada</span><span class="t15-bt" style="height: 23.7px/*32px*/; font-size: 10.7px/*13px*/;">Reemplazar clave</span><span class="t15-bt pel" style="height: 23.7px/*32px*/; font-size: 10.7px/*13px*/;">Quitar clave</span></span></div>
+          <div class="ren"><span class="rot">Modelo</span><span class="lin"><span class="t15-campo">Claude Sonnet</span><span class="t15-bt" style="height: 23.7px/*32px*/; font-size: 10.7px/*13px*/;">Actualizar modelos</span></span></div>
+          <div class="ren"><span class="rot">Disponibilidad</span><span class="lin">◉ Disponible &nbsp; ○ Pausada</span></div>
+        </div>
+        <span class="t15-rot">Una conexión · una zona, los campos en el orden en que se completan y cada botón al lado de su dato</span>
+      </div>
+      <ul class="t15-reglas">
+        <li><strong>Lo que se configura y se guarda junto va en una zona</strong> (213), como una conexión o un registro: los campos en el orden en que se completan, cada botón al lado del dato que toca, y lo que actúa sobre todo, en su encabezado.</li>
+        <li><strong>Se parte en zonas solo si son cosas distintas o pasos,</strong> como las de un formulario o el alta de ARCA (152); nunca por tipo de control.</li>
+        <li><strong>El título de un grupo de opciones lleva su (i),</strong> como un campo.</li>
+        <li><strong>La (i) se abre también con un clic o un toque,</strong> igual en la compu y en el teléfono, y respeta los saltos de renglón (211).</li>
+      </ul>
+    </div>
+  </section>
+
+  <section data-reglas="t15-numero">
+    <h2>Un número que se puede leer de dos maneras</h2>
+    <div class="t15-dos">
+      <div class="t15-caso">
+        <div class="t15-zona"><div class="ren"><span class="rot">Peso (kg)</span><span class="t15-campo mal">1.500</span><span class="t15-err">Se puede leer de dos maneras: escribilo sin separador de miles, como 1500 o 1500,5.</span></div></div>
+        <span class="t15-rot">El error, debajo del campo, al intentar guardar</span>
+      </div>
+      <ul class="t15-reglas">
+        <li><strong>Un número se lee con la región del idioma de quien carga</strong> (207): en español, coma decimal y punto de miles.</li>
+        <li><strong>Lo que se lee distinto con y sin los miles,</strong> como «1.500» en español, es un error del campo, que pide escribirlo sin separador de miles. Igual por WhatsApp, donde la ayuda pide coma en español.</li>
+      </ul>
+    </div>
+  </section>
+
   <section>
     <h2>Prohibido</h2>
     <ul class="prohibido">
+      <li data-t15>Partir en zonas lo que se guarda junto, o partir una zona por tipo de control (213).</li>
       <li data-r711>Perder lo escrito al cambiar un tipo, una acción o una opción, sin avisar (162).</li>
       <li data-r711>Los campos de un ajuste del ancho de lo que llevan: van en columnas iguales (163).</li>
       <li>Lo elegido marcado solo con un tinte.</li>
@@ -976,7 +1065,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3750}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4320}}'>
 // t10-correos · 174: un correo baja de renglón después de la «@», nunca a mitad de palabra (traspaso10_piezas_1004.py).
 if (typeof document !== 'undefined' && !window.__t10Correos) {
   window.__t10Correos = true;

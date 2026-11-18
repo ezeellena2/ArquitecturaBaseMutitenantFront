@@ -15,6 +15,8 @@
   abierto de una lista con su detalle, con la barra de 3 px;
 - el panel verde del ingreso, liso (189), y los otros dos paneles verdes, el cierre de la página de inicio y la cabecera del Inicio
   del teléfono;
+- los avisos según el tipo (210, traspaso 15, 2026-11-18, `CSS_AVISOS`): el aviso de abajo, la franja de error y los carteles,
+  blancos con un filo de 3 px y el ícono del color de su tipo; la franja oscura del teléfono, con el mismo filo;
 - la escala de ArquitecturaBase (180), en los tableros de la compu: la letra × 0,82 (sin bajar de 10,5 px), los altos y el interlineado
   de 18 a 72 px × 0,74 (y el ancho de lo que es cuadrado), los rellenos, márgenes y separaciones de 4 px o más × 0,72, y las esquinas
   de 3 px como mucho; el ícono de un botón conserva su tamaño. Los factores están en `ESCALA`, en un solo lugar. Cada px que cambia guarda el de antes al lado
@@ -387,6 +389,24 @@ CSS_TILDE_IZQ = """
 :root .t-opc.t10-izq.on { color: var(--t1); font-weight: 600; }
 :root .t-opc.t10-izq .tl { width: 20px; flex: none; display: inline-flex; color: var(--marca-tx); }
 """
+# 210 (traspaso 15, 2026-11-18) · Avisos según el tipo, en todos los tableros: el fondo nunca dice el tipo. Todo aviso es blanco,
+# con la tinta de siempre, un filo de 3 px a la izquierda y el ícono del color de su tipo; en el teléfono, la franja oscura de
+# siempre, con el mismo filo. Los colores son los de `tema.md` del front (`--aviso-ok`, `--t2`, `--alerta`, `--peligro` y los de
+# la franja), en valor, porque los tableros no traen `--aviso-ok` ni `--franja-*`.
+CSS_AVISOS = """
+/* 210 · Avisos según el tipo: el fondo nunca dice el tipo; un filo de 3 px y el ícono del color de su tipo. */
+:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast, .p-aviso) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal, .p-aviso.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+:root :is(.f-toast, .ta-toast, .t-toast):has(> .neu) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.w-cartel.info, .w-cartel.o-info) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel.o-prob, .cartel.prob, .aviso-mal, .imp-franja) { --t15-tipo: var(--peligro); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > svg,
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > .fila > svg { color: var(--t15-tipo) !important; flex: none; }
+:root :is(.f-snack, .ta-snack, .e11b-snack) { border-left: 3px solid oklch(0.78 0.14 155) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .mal) { border-left-color: oklch(0.75 0.15 25) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .neu), :root .f-snack.alto:not(:has(> .ok, > .mal)) { border-left-color: oklch(0.75 0.01 78) !important; }
+"""
 
 
 def pantalla_filtros(nombre, lista, volver, filtros):
@@ -558,7 +578,7 @@ def poner_piezas(t, nombre, cuenta):
     css = css.replace("@CARGA@", numero(8 * 40 * ESCALA["alto"]))  # ocho filas de 40, con la escala de la compu
     css = css.replace("@TILDE@", TILDE)
     # Lo de «Filtros» en el teléfono va solo en los tableros que lo dibujan, así los demás no cambian.
-    css += (CSS_FILTROS_TEL if 'class="t10-fl"' in t else "") + (CSS_TILDE_IZQ if "t-opc t10-izq" in t else "")
+    css += (CSS_FILTROS_TEL if 'class="t10-fl"' in t else "") + (CSS_TILDE_IZQ if "t-opc t10-izq" in t else "") + CSS_AVISOS
     propias = sombras(t)
     cuenta["sombras"] = cuenta.get("sombras", 0) + len(propias)
     bloque = (f'<style {MARCA_BLOQUE}>{css}/* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */\n'
