@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
 import { fillOtp, openPlatformAccountSearch } from "./test-e2e-real-ui.mjs";
-import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
+import { navigationResponses, reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
 import { decideAfterRecoveryNotice, recoveryRow, selectRecovery } from "./test-e2e-real-whatsapp-recovery.mjs";
 
 export const e8SourceRevision = "8a3ac6a57c6bb411bff13967ab74f4501b38b45e";
@@ -226,7 +226,7 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
     await step("02", async () => {
       fixture = await begin(`walkthrough-login-${width}`, phone); since = authorizations.length;
       phase = "methods";
-      const [methods] = await responsesForAction(page, [responseFor("/api/auth/methods")], () => page.goto(url("/login")));
+      const [methods] = await navigationResponses(page, [responseFor("/api/auth/methods")], () => page.goto(url("/login")));
       lastHttp = safeJourneyHttp(methods.status(), methods.status() >= 400 ? await methods.json().catch(() => ({})) : {});
       assert.equal(methods.status(), 200);
       phase = "countries";

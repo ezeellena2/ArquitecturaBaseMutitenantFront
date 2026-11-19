@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
 import { checkByLabel } from "./platform-factor-real.mjs";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
-import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
+import { navigationResponses, reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
 import { readJourneyIdentity, requireE8Control, safeJourneyHttp, sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 
 // E11: la atención por WhatsApp de una organización, con el canal privado de Testing de la E8 (WhatsAppBrowserControl) y
@@ -93,7 +93,7 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     return reply;
   };
   const visit = async (route, endpoints) => {
-    const replies = await responsesForAction(page, endpoints.map((endpoint) => responseFor(endpoint)), () => page.goto(url(route)));
+    const replies = await navigationResponses(page, endpoints.map((endpoint) => responseFor(endpoint)), () => page.goto(url(route)));
     for (const reply of replies) assert.equal(reply.status(), 200);
     return Promise.all(replies.map((reply) => reply.json()));
   };

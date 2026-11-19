@@ -8,7 +8,7 @@ import { nationalPhone } from "./recorrido-usuario-e11.mjs";
 import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 import { fillOtp, openPlatformAccountSearch } from "./test-e2e-real-ui.mjs";
 import { plainTextBody } from "./test-e2e-real-mail.mjs";
-import { responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
+import { navigationResponses, responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
 
 // Base de la 12 en el recorrido de usuario (I4 del plan 2026-11-08-etapa-base-de-la-12): la campana de los tres accesos,
 // una tabla, una fecha y un botón por área, un link del otro acceso, dar de baja y reactivar, borrar la cuenta propia,
@@ -213,7 +213,7 @@ export async function runBase12Journey({ page, platformPage, width, env, base, r
   const noticesPath = (target) => target === platformPage ? "/plataforma/avisos" : "/avisos";
   const noticeLink = (scope, text) => scope.getByRole("link", { name: new RegExp(`^${escapeRegExp(text)}`, "u") });
   const readNotifications = async (target, navigate) => {
-    const [reply] = await responsesForAction(target, [responseFor("/api/notifications")], navigate);
+    const [reply] = await navigationResponses(target, [responseFor("/api/notifications")], navigate);
     assert.equal(reply.status(), 200, "La campana lee sus avisos.");
     return reply.json();
   };
@@ -269,7 +269,7 @@ export async function runBase12Journey({ page, platformPage, width, env, base, r
   };
 
   const openUsers = async () => {
-    const [reply] = await responsesForAction(page, [responseFor("/api/users/paged")], () => page.goto(url("/org/usuarios")));
+    const [reply] = await navigationResponses(page, [responseFor("/api/users/paged")], () => page.goto(url("/org/usuarios")));
     assert.equal(reply.status(), 200, "Usuarios lee su lista.");
     await heading(page, "Usuarios");
     await expectLoaded(page);
@@ -316,7 +316,7 @@ export async function runBase12Journey({ page, platformPage, width, env, base, r
     await awaitApp(page, organization, "/org");
   };
   const openAccount = async () => {
-    const [methods] = await responsesForAction(page, [responseFor("/api/me/login-methods")], () => page.goto(url("/cuenta")));
+    const [methods] = await navigationResponses(page, [responseFor("/api/me/login-methods")], () => page.goto(url("/cuenta")));
     assert.equal(methods.status(), 200, "Mi cuenta lee cómo entrás.");
     await heading(page, "Mi cuenta");
     await page.getByRole("list", { name: "Cómo entrás", exact: true }).getByText(personal, { exact: true }).waitFor();
@@ -364,7 +364,7 @@ export async function runBase12Journey({ page, platformPage, width, env, base, r
     await step("01", async () => {
       phase = "ingreso de la Dueña"; await login(owner, "business");
       phase = "auditoría";
-      const [audit] = await responsesForAction(page, [responseFor("/api/organization/audit")], () => page.goto(url("/org/auditoria")));
+      const [audit] = await navigationResponses(page, [responseFor("/api/organization/audit")], () => page.goto(url("/org/auditoria")));
       assert.equal(audit.status(), 200, "Auditoría lee sus movimientos.");
       assert.ok((await audit.json()).items.length > 0, "La organización del recorrido ya tiene movimientos.");
       await heading(page, "Auditoría"); await expectLoaded(page);

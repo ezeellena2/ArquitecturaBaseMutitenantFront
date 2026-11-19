@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { test } from "node:test";
-import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
+import { navigationResponses, reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
 
 test("prepara todas las esperas antes de actuar y entrega sus respuestas juntas", async () => {
   const order = []; const responses = [{ id: "verified" }, { id: "submitted" }];
@@ -26,6 +26,30 @@ test("F5 ignora consultas anteriores aunque su respuesta llegue después del com
   };
   const response = await reloadResponse(page, (value) => { seen.push(value.request()); return true; });
   assert.equal(response.request(), fresh); assert.deepEqual(seen, [fresh]);
+  assert.equal(page.listenerCount("request"), 0); assert.equal(page.listenerCount("framenavigated"), 0);
+});
+
+test("ir a una pantalla ignora la respuesta del documento que se va, aunque llegue durante la navegación", async () => {
+  // B12-04 a 390 (2026-11-19): la campana del Inicio anterior respondió mientras goto ya navegaba, la espera la tomó y su
+  // cuerpo ya no se podía leer.
+  const page = new EventEmitter(); const main = {}; const leaving = {}; const notifications = {}; const directory = {};
+  const filters = []; const completes = []; const seen = [];
+  page.mainFrame = () => main;
+  page.waitForResponse = (predicate) => { filters.push(predicate); return new Promise((resolve) => { completes.push(resolve); }); };
+  const reply = (request, url) => {
+    const response = { request: () => request, url: () => url };
+    filters.forEach((filter, index) => { if (filter(response)) completes[index](response); });
+  };
+  const navigate = async () => {
+    page.emit("request", leaving); reply(leaving, "/api/notifications");
+    page.emit("framenavigated", main);
+    page.emit("request", directory); reply(directory, "/api/directory");
+    page.emit("request", notifications); reply(notifications, "/api/notifications");
+  };
+  const responses = await navigationResponses(page, [(value) => { seen.push(value.request()); return value.url() === "/api/notifications"; },
+    (value) => value.url() === "/api/directory"], navigate);
+  assert.deepEqual(responses.map((response) => response.request()), [notifications, directory]);
+  assert.equal(seen.includes(leaving), false);
   assert.equal(page.listenerCount("request"), 0); assert.equal(page.listenerCount("framenavigated"), 0);
 });
 

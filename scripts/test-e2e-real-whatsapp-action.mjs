@@ -7,19 +7,27 @@ export async function responsesForAction(page, predicates, action) {
   return results.slice(0, -1);
 }
 
-/** F5 sólo observa consultas iniciadas tras el commit del documento principal, no refetches anteriores. */
-export async function reloadResponse(page, predicate) {
+/**
+ * Una navegación (goto, F5) sólo observa consultas iniciadas tras el commit del documento principal: la respuesta de un
+ * refetch del documento que se va puede llegar durante la navegación, y después su cuerpo ya no se puede leer.
+ */
+export async function navigationResponses(page, predicates, navigate) {
   const requests = new WeakSet(); let committed = false;
   const navigated = (frame) => { if (frame === page.mainFrame()) committed = true; };
   const requested = (request) => { if (committed) requests.add(request); };
   page.on("framenavigated", navigated); page.on("request", requested);
   try {
-    const [response] = await responsesForAction(page,
-      [(reply) => requests.has(reply.request()) && predicate(reply)], () => page.reload());
-    return response;
+    return await responsesForAction(page,
+      predicates.map((predicate) => (reply) => requests.has(reply.request()) && predicate(reply)), navigate);
   } finally {
     page.off("framenavigated", navigated); page.off("request", requested);
   }
+}
+
+/** F5 sólo observa consultas iniciadas tras el commit del documento principal, no refetches anteriores. */
+export async function reloadResponse(page, predicate) {
+  const [response] = await navigationResponses(page, [predicate], () => page.reload());
+  return response;
 }
 
 /** Clasifica firmas conocidas de Playwright; el mensaje nunca se devuelve ni se publica. */
