@@ -109,6 +109,22 @@ describe("Plantillas de la organización", () => {
     expect(screen.queryByText("Algo salió mal. Probá de nuevo en un rato.")).not.toBeInTheDocument();
   });
 
+  // 211: con los 10 datos que admite una plantilla, los dos botones que suman uno quedan apagados y dicen por qué.
+  it("con el máximo de datos, «Nombre del contacto» y «Otro dato» se apagan con su motivo", async () => {
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/plantillas");
+    await user.click(await screen.findByRole("button", { name: "Nueva plantilla" }));
+    const dialog = await screen.findByRole("dialog", { name: "Nueva plantilla" });
+    await user.click(within(dialog).getByRole("textbox", { name: "Texto" }));
+    await user.paste(Array.from({ length: 10 }, (_, index) => `{{${index + 1}}}`).join(" "));
+    for (const name of ["Nombre del contacto", "Otro dato"]) {
+      const add = within(dialog).getByRole("button", { name });
+      expect(add).toHaveAttribute("aria-disabled", "true");
+      expect(add).toHaveAccessibleDescription("La plantilla ya tiene 10 datos, el máximo.");
+      await user.click(add);
+    }
+    expect(within(dialog).getByRole("textbox", { name: "Texto" })).toHaveValue(Array.from({ length: 10 }, (_, index) => `{{${index + 1}}}`).join(" "));
+  });
+
   // CC27: sin un número conectado, el alta responde 409 con su texto, que va en la franja del diálogo como los demás.
   it("sin número conectado, el 409 NumberRequired queda en la franja del diálogo", async () => {
     server.use(http.post("/api/organization/whatsapp/templates", () => HttpResponse.json(

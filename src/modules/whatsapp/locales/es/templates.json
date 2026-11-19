@@ -29,6 +29,8 @@
     "contactName": "Nombre del contacto",
     "contactNameLabel": "nombre",
     "otherData": "Otro dato",
+    "variablesFull_one": "La plantilla ya tiene {{n}} dato, el máximo.",
+    "variablesFull_other": "La plantilla ya tiene {{n}} datos, el máximo.",
     "variableLabel": "Dato {{number}}",
     "variableExample": "Ejemplo del dato {{number}}",
     "nameRequired": "Escribí el nombre de la plantilla.",

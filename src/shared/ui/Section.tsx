@@ -9,8 +9,9 @@ type SectionPhone = "card" | "inset" | "untitled";
 
 interface SectionProps {
   title: string;
-  /** A lo sumo una acción chica: «Agregar dominio», «Sumar empresa». */
-  action?: { label: string; onClick: () => void; disabled?: boolean };
+  /** A lo sumo una acción chica: «Agregar dominio», «Sumar empresa». Apagada por algo que no es obvio, `disabledReason` dice
+   * por qué, como en `Button` (211). */
+  action?: { label: string; onClick: () => void; disabled?: boolean; disabledReason?: string };
   /** Lo que cuenta la caja, en gris a la derecha del título: «1 de 2 elegidos». */
   meta?: ReactNode;
   /** La ayuda que sirve (116): una (i) junto al título, con su tooltip; es la descripción de la caja. */
@@ -47,8 +48,8 @@ export function Section({ title, action, meta, help, phone = "card", children }:
       <div className={cn("mb-2 flex items-center justify-between gap-3 leading-[normal]", phone === "card" ? "mx-5 mt-4.5" : "mt-1.5")}>
         {titled(<h2 id={id} className="text-[0.84375rem] font-semibold text-[var(--t2)]">{title}</h2>)}
         {meta ? <span className="text-[0.84375rem] text-[var(--t3)]">{meta}</span> : null}
-        {action ? <button type="button" onClick={action.onClick} disabled={action.disabled}
-          className="text-[0.90625rem] font-semibold text-[var(--marca-tx)] disabled:opacity-45">{action.label}</button> : null}
+        {action ? <Button type="button" variant="link" onClick={action.onClick} disabled={action.disabled} disabledReason={action.disabledReason}
+          className="text-[0.90625rem] font-semibold text-[var(--marca-tx)] disabled:opacity-45">{action.label}</Button> : null}
       </div>
       <div className={cn("overflow-hidden rounded-[0.875rem] bg-[var(--superficie)] shadow-[0_0_0_1px_var(--borde)]", phone === "card" ? "mx-4" : "")}>{body}</div>
     </section>;
@@ -64,7 +65,7 @@ export function Section({ title, action, meta, help, phone = "card", children }:
         {titled(<h2 id={id}>{title}</h2>)}
         {/* Tablero Rol (.w-cab > span): lo que cuenta la caja, en 13 y peso 500, gris claro. */}
         {meta ? <span className="pr-3 text-[0.8125rem] font-medium text-[var(--t3)]">{meta}</span> : null}
-        {action ? <Button type="button" variant="outline" size="sm" onClick={action.onClick} disabled={action.disabled}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{action.label}</Button> : null}
+        {action ? <Button type="button" variant="outline" size="sm" onClick={action.onClick} disabled={action.disabled} disabledReason={action.disabledReason}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{action.label}</Button> : null}
       </header>
       {body}
     </section>

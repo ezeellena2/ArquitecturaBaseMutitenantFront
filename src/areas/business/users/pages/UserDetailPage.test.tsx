@@ -345,6 +345,26 @@ describe("UserDetailPage (tablero Usuario)", () => {
 
   // «Criterio · Botones» y tablero Usuario (v104): «Sumar» nunca se apaga; sin empresa, el campo queda en rojo con
   // «Elegí una empresa.» y se limpia al elegir una.
+  // 211: con todas las empresas asignadas, «Agregar empresa» queda apagado y dice por qué, sobre el mismo botón; se alcanza
+  // con el teclado y no abre el diálogo. En el teléfono, tocarlo lo muestra.
+  it.each([false, true])("con todas las empresas, «Agregar empresa» se apaga con su motivo (teléfono: %s)", async (onPhone) => {
+    const restore = onPhone ? asPhone() : () => {};
+    try {
+      const user = userEvent.setup();
+      api({ ...member, companies: [{ companyId: company.id, companyName: company.name, status: "Active", roles: [] }] });
+      renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+      const companies = await screen.findByRole("region", { name: "Empresas" });
+      const add = within(companies).getByRole("button", { name: "Agregar empresa" });
+      await waitFor(() => expect(add).toHaveAttribute("aria-disabled", "true"));
+      expect(add).not.toBeDisabled();
+      expect(add).toHaveAccessibleDescription("Ya tiene acceso a todas las empresas.");
+      await user.click(add);
+      expect(screen.queryByRole("dialog", { name: "Agregar empresa" })).not.toBeInTheDocument();
+      if (onPhone) expect(await screen.findByText("Ya tiene acceso a todas las empresas.", { selector: "[data-sonner-toast] *" })).toBeInTheDocument();
+    } finally {
+      restore();
+    }
+  });
   it("«Sumar» sin empresa marca el campo con «Elegí una empresa.» y se limpia al elegir una", async () => {
     const user = userEvent.setup();
     const writes = { put: [] as unknown[] };

@@ -11,6 +11,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { countOf } from "@/shared/format/countOf";
 import { useFormat } from "@/shared/format/useFormat";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Button } from "@/shared/ui/button";
@@ -96,6 +97,8 @@ export function TemplateDialog({ scope, original, onClose, returnFocusTo }: {
   const body = useWatch({ control: form.control, name: "body" });
   const numbers = placeholderNumbers(body);
   const full = numbers.length >= limits.variables.maxItems;
+  // 211: al tope, los dos botones que suman un dato dicen por qué no suman más.
+  const fullReason = full ? t("whatsapp:templates.form.variablesFull", countOf(format, limits.variables.maxItems)) : undefined;
   const send = useIdempotentMutation((request: CreateWhatsAppTemplateRequest, key) => createTemplate(scope, request, key), { meta: { handlesError: true }, sameOperation: sameTemplate });
   const errors = form.formState.errors;
 
@@ -152,10 +155,10 @@ export function TemplateDialog({ scope, original, onClose, returnFocusTo }: {
                   ref={(element) => { bodyField.ref(element); bodyElement.current = element; }} />
               </FormField>
               <div className="flex flex-wrap gap-2">
-                <Button type="button" variant="outline" size="sm" disabled={full} onClick={() => addVariable(t("whatsapp:templates.form.contactNameLabel"))}>
+                <Button type="button" variant="outline" size="sm" disabledReason={fullReason} onClick={() => addVariable(t("whatsapp:templates.form.contactNameLabel"))}>
                   <Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("whatsapp:templates.form.contactName")}
                 </Button>
-                <Button type="button" variant="outline" size="sm" disabled={full} onClick={() => addVariable("")}>
+                <Button type="button" variant="outline" size="sm" disabledReason={fullReason} onClick={() => addVariable("")}>
                   <Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("whatsapp:templates.form.otherData")}
                 </Button>
               </div>

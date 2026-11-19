@@ -127,6 +127,7 @@
     "companyNoRoles": "Sin roles",
     "deletionWhy": "Pidió borrar su cuenta. Se borra el {{date}}.",
     "addCompany": "Agregar empresa",
+    "allCompaniesAssigned": "Ya tiene acceso a todas las empresas.",
     "addCompanyConfirm": "Agregar",
     "companyRequired": "Elegí una empresa.",
     "confirm": {

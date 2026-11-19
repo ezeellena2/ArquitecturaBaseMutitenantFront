@@ -348,7 +348,9 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
         </Section>
 
         <Section title={t("users:detail.companyAccess")} action={editable ? { label: t("users:detail.addCompany"),
-          disabled: companies.isPending || (companies.allCount !== undefined && companies.allCount === activeAssignedCount) || save.isPending,
+          disabled: companies.isPending || save.isPending,
+          // 211: con todas las empresas asignadas no hay nada para agregar, y el botón lo dice.
+          disabledReason: !companies.isPending && companies.allCount !== undefined && companies.allCount === activeAssignedCount ? t("users:detail.allCompaniesAssigned") : undefined,
           onClick: () => openCompanyDialog({ mode: "add", assignment: { companyId: "", roleIds: [] }, version: member.version }) } : undefined}>
             {member.companies.length === 0 ? <p className="p-4 text-[0.8125rem] text-[var(--t2)] md:px-5">{t("users:detail.noCompanies")}</p> : <List label={t("users:detail.companyAccess")}>
               {member.companies.map((company) => {

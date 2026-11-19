@@ -29,6 +29,8 @@
     "contactName": "Contact name",
     "contactNameLabel": "name",
     "otherData": "Other data",
+    "variablesFull_one": "The template already has {{n}} data field, the most it can have.",
+    "variablesFull_other": "The template already has {{n}} data fields, the most it can have.",
     "variableLabel": "Data {{number}}",
     "variableExample": "Example for data {{number}}",
     "nameRequired": "Enter the template name.",

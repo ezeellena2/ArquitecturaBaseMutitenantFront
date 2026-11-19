@@ -127,6 +127,7 @@
     "companyNoRoles": "No roles",
     "deletionWhy": "Asked to delete their account. It will be deleted on {{date}}.",
     "addCompany": "Add company",
+    "allCompaniesAssigned": "They already have access to every company.",
     "addCompanyConfirm": "Add",
     "companyRequired": "Choose a company.",
     "confirm": {
