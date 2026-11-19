@@ -17,6 +17,8 @@ export function fetchCompanyOptions(query: PagedRequest = optionPage, signal?: A
 }
 
 export const companiesQueryRoot = ["companies"] as const;
+/** Los usuarios de la organización: «Cargar teléfonos» (WhatsApp) los vuelve a leer después de invitar. */
+export const usersQueryRoot = ["organization-users"] as const;
 /** La auditoría de Plataforma: la ficha de una cuenta la vuelve a leer después de una acción que deja un evento. */
 export const platformAuditQueryRoot = ["platform-audit"] as const;
 export const companyQueryKey = (companyId: string) => [...companiesQueryRoot, "detail", companyId] as const;

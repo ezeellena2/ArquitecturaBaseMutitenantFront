@@ -107,6 +107,27 @@ describe("Cargar teléfonos", () => {
     expect(previews[0]).not.toHaveProperty("consentConfirmed");
   });
 
+  // Invitar vuelve a Usuarios: la lista y sus cantidades, que quedaron en la caché de antes, se piden de nuevo con las
+  // invitaciones nuevas.
+  it("al invitar vuelve a Usuarios y la lista y sus cantidades se piden de nuevo", async () => {
+    const reads = { list: 0, counts: 0 };
+    server.use(
+      http.get("/api/users/paged", () => { reads.list++; return HttpResponse.json(page([])); }),
+      http.get("/api/users/filter-counts", () => { reads.counts++; return HttpResponse.json({ all: 0, active: 0, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0 }); }),
+      http.post("/api/organization/whatsapp/phone-imports", () => HttpResponse.json({ linked: 1, invited: 1, rows: [] })),
+    );
+    const { user, router, client } = mountWhatsApp(whatsappOwner, "/org/usuarios");
+    // Como en la app (queryClient.ts): lo leído vale 30 s, así que volver a Usuarios no lo pide solo.
+    client.setDefaultOptions({ queries: { retry: false, staleTime: 30_000 } });
+    await waitFor(() => expect(reads).toEqual({ list: 1, counts: 1 }));
+    await router.navigate(path);
+    await review(user);
+    await user.click(await screen.findByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp" }));
+    await user.click(screen.getByRole("button", { name: "Vincular y mandar 1 invitación" }));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/org/usuarios"));
+    await waitFor(() => expect(reads).toEqual({ list: 2, counts: 2 }));
+  });
+
   it("si el back pide la confirmación (400 ConsentRequired), la marca en la casilla y no en la franja", async () => {
     server.use(http.post("/api/organization/whatsapp/phone-imports", () => HttpResponse.json(
       { code: "WhatsApp.PhoneImport.ConsentRequired", detail: "Confirmá que la persona aceptó recibir mensajes por WhatsApp.", errors: { consentConfirmed: ["Confirmá que la persona aceptó recibir mensajes por WhatsApp."] } },

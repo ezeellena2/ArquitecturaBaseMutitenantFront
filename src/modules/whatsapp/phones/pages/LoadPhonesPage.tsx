@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import { ChevronDown } from "lucide-react";
 import { useMemo, useRef, useState, type ChangeEvent } from "react";
@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { validationConstraints } from "@/shared/api/generated/validation";
-import { companyOptions, roleOptions } from "@/shared/api/resourceOptions";
+import { companyOptions, roleOptions, usersQueryRoot } from "@/shared/api/resourceOptions";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useFormat } from "@/shared/format/useFormat";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
@@ -86,6 +86,7 @@ export function LoadPhonesPage() {
   const { t } = useTranslation(["whatsapp", "common"]);
   const { phone } = useAppChrome();
   const navigate = useNavigate();
+  const client = useQueryClient();
   const format = useFormat();
   useBreadcrumbLeaf(t("whatsapp:phones.breadcrumb"));
   const schema = useMemo(() => loadPhonesSchema(t), [t]);
@@ -133,6 +134,8 @@ export function LoadPhonesPage() {
     confirm.mutate({ ...request(form.getValues(), lines), consentConfirmed: true }, {
       onSuccess: (result) => {
         toast.success(t("whatsapp:phones.messages.done", { count: result.invited, linked: result.linked }));
+        // Usuarios vuelve con las invitaciones nuevas en la lista y en sus cantidades.
+        void client.invalidateQueries({ queryKey: usersQueryRoot });
         void navigate(usersPath);
       },
       onError: (error) => { if (isConsentRequired(error)) setConsentError(true); else setFailure(error); },

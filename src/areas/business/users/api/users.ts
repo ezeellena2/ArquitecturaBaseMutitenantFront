@@ -1,3 +1,4 @@
+import { usersQueryRoot } from "@/shared/api/resourceOptions";
 import type { PagedResultOfOrganizationUserHttpResponse } from "@/shared/api/types";
 import { toSearch } from "@/shared/api/toSearch";
 import { api } from "@/shared/api/httpClient";
@@ -19,7 +20,7 @@ export interface UsersQuery extends PagedRequest {
   withoutCompany?: boolean;
 }
 
-export const usersQueryRoot = ["organization-users"] as const;
+export { usersQueryRoot } from "@/shared/api/resourceOptions";
 export const usersQueryKey = (query: UsersQuery) => [...usersQueryRoot, query] as const;
 export const userQueryKey = (memberId: string) => [...usersQueryRoot, "detail", memberId] as const;
 export const userCountsQueryKey = (query: Pick<UsersQuery, "search" | "state" | "companyId" | "withoutCompany">) => [...usersQueryRoot, "counts", query] as const;
