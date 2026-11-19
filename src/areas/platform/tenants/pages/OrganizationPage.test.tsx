@@ -52,6 +52,19 @@ describe("Ficha de Organización", () => {
     await waitFor(() => expect(screen.queryByRole("tab", { name: /^Módulos/ })).not.toBeInTheDocument());
     expect(await axe(container)).toHaveNoViolations();
   });
+  // La campana cuenta la organización mientras espera: aprobarla, rechazarla o enterarse de que otro ya lo hizo la vuelve a leer.
+  it.each([["approve", "Aprobar", null], ["reject", "Rechazar", null], ["approve", "Aprobar", "Tenancy.Tenant.InvalidTransition"]] as const)("%s (%s, %s) vuelve a leer la campana montada", async (action, label, conflict) => {
+    const user = userEvent.setup(); let resolved = false; let reads = 0;
+    const waiting = { id: "organizationPending:delta", kind: "organizationPending", params: { name: "Grupo Delta" }, occurredAtUtc: "2026-09-27T12:05:00Z", link: "/plataforma/organizaciones/delta", read: false };
+    detail({ ...organization, status: "PendingApproval" });
+    server.use(http.get("/api/notifications", () => { reads++; return HttpResponse.json(resolved ? { items: [], unread: 0 } : { items: [waiting], unread: 1 }); }),
+      http.post(`/api/platform/tenants/delta/${action}`, () => { resolved = true; return conflict ? HttpResponse.json({ code: conflict, detail: "Ya cambió." }, { status: 409 }) : HttpResponse.json({ version: 3 }); }));
+    render(); expect(await screen.findByRole("button", { name: "Avisos: 1" })).toBeVisible(); const before = reads;
+    await confirm(user, label);
+    if (conflict) { expect(await screen.findByText("Ya cambió.")).toBeVisible(); await user.click(screen.getByRole("button", { name: "Cancelar" })); }
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(reads).toBeGreaterThan(before)); expect(await screen.findByRole("button", { name: "Avisos" })).toBeVisible();
+  });
   it.each([
     ["PendingApproval", ["Rechazar", "Aprobar"]], ["Provisioning", ["Reintentar el alta"]], ["Active", ["Suspender"]], ["Suspended", ["Reactivar", "Cerrar"]], ["Closed", []],
   ] as const)("%s muestra sólo sus acciones", async (status, actions) => {

@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { Section } from "@/shared/ui/Section";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
+import { invalidateNotifications } from "@/layouts/notifications/api";
 import type { AccountLoginMethod } from "@/shared/api/types";
 import { AddLoginMethodDialog } from "@/shared/account/AddLoginMethodDialog";
 import { useHasLoginChannel } from "@/shared/account/useLoginChannels";
@@ -48,9 +49,9 @@ export function AccountPage() {
   // Tablero Cuenta, «Es la única Dueña»: «Dar de baja» apagado; la ⓘ y el botón explican por qué.
   const soleOwnerOf = methods.data?.soleOwnerOrganizations.join(", ") ?? "";
   const deletionBlocked = soleOwnerOf.length > 0;
-  // Después de cambiar un método de ingreso: los métodos y la cuenta (el correo principal). La versión de «Tus datos» no
-  // cambia: es la del perfil, que solo sube al guardarlo.
-  function refresh() { void queryClient.invalidateQueries({ queryKey: accountMethodsQueryKey }); void queryClient.invalidateQueries({ queryKey: currentUserQueryKey }); }
+  // Después de cambiar un método de ingreso: los métodos, la cuenta (el correo principal) y la campana, que pide un método
+  // propio mientras no lo hay. La versión de «Tus datos» no cambia: es la del perfil, que solo sube al guardarlo.
+  function refresh() { void queryClient.invalidateQueries({ queryKey: accountMethodsQueryKey }); void queryClient.invalidateQueries({ queryKey: currentUserQueryKey }); void invalidateNotifications(queryClient); }
   async function deleted(scheduledForUtc: string) {
     showDeletionRequested(format.formatDate(scheduledForUtc));
     await auth.removeUser();

@@ -25,6 +25,7 @@ import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { accountMethodsQueryKey, addLoginMethod, sendLoginMethodCode, verifyLoginMethod } from "./api/loginMethods";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
+import { invalidateNotifications } from "@/layouts/notifications/api";
 import { loginMethodErrorField } from "./errors";
 import { useHasLoginChannel } from "./useLoginChannels";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
@@ -89,9 +90,11 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
   const alive = useRef(true);
   const started = useRef(false);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
+  // Los métodos, la cuenta y la campana, que pide un método propio mientras no lo hay.
   function refreshAccount() {
     void queryClient.invalidateQueries({ queryKey: accountMethodsQueryKey });
     void queryClient.invalidateQueries({ queryKey: currentUserQueryKey });
+    void invalidateNotifications(queryClient);
   }
   const request = useIdempotentMutation(async (operation: SendOperation, key) => {
     if (operation.destination === null) return sendLoginMethodCode(operation.methodId, key);

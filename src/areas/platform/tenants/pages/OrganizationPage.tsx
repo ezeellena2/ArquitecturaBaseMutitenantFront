@@ -5,6 +5,7 @@ import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { useParams } from "react-router";
 import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
+import { invalidateNotifications } from "@/layouts/notifications/api";
 import { isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
 import type { PlatformTenantDetailResponse, TenantStatus, VersionResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -83,7 +84,8 @@ function OrganizationDetail({ id }: { id: string }) {
   const [publicPageWrite, setPublicPageWrite] = useState<OwnPublicPageWrite>();
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [ownWrites, setOwnWrites] = useState(() => new Map<string, OwnWrite>());
-  const invalidate = () => client.invalidateQueries({ queryKey: tenantsQueryRoot });
+  // Un cambio de estado también resuelve la organización que esperaba aprobación en la campana.
+  const invalidate = () => Promise.all([client.invalidateQueries({ queryKey: tenantsQueryRoot }), invalidateNotifications(client)]);
   function wrote(version: number, status: TenantStatus) {
     setOwnWrites((previous) => new Map(previous).set(id, { version, status }));
     // La respuesta sólo trae versión: no inventa cuándo cambió ni reutiliza un evento anterior.
@@ -126,7 +128,7 @@ function OrganizationDetail({ id }: { id: string }) {
           content: <OrganizationPublicPageTab organization={data} query={publicPage} write={publicPageWrite} onWrite={setPublicPageWrite} onConflict={() => setPublicPageWrite(undefined)} /> },
       ] }} />
     {confirmation ? <OrganizationStateDialog confirmation={confirmation} onClose={(conflicted) => {
-      if (conflicted) setOwnWrites((previous) => { const next = new Map(previous); next.delete(confirmation.organization.id); return next; });
+      if (conflicted) { setOwnWrites((previous) => { const next = new Map(previous); next.delete(confirmation.organization.id); return next; }); void invalidateNotifications(client); }
       setConfirmation((current) => current === confirmation ? null : current);
     }} onSuccess={(response) => {
       wrote(response.version, nextStatus[confirmation.action]);

@@ -562,3 +562,46 @@ it("alta Phone cancelada muestra el método pendiente cuando la creación termin
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   expect(screen.queryByRole("group", { name: "Código" })).not.toBeInTheDocument();
 });
+
+// La campana pide un método propio («personalLoginMethod») mientras no lo hay: verificar uno, aunque la respuesta llegue con el
+// diálogo ya cerrado, o quitar uno, la vuelve a leer.
+describe("la campana después de cambiar un método de ingreso", () => {
+  const waiting = { id: "personalLoginMethod", kind: "personalLoginMethod", params: {}, occurredAtUtc: "2026-09-20T13:12:00Z", link: "/cuenta", read: false };
+  function serve(state: { done: boolean }) {
+    server.use(
+      http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["AR"] }] })),
+      http.get("/api/notifications", () => HttpResponse.json(state.done ? { items: [], unread: 0 } : { items: [waiting], unread: 1 })),
+      http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [
+        { id: "phone", type: "Phone", value: "+5491155554521", isVerified: false, isPrimary: false, canRemove: true, canMakePrimary: false },
+        { id: "email", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: true, canRemove: false, canMakePrimary: false },
+      ], canLinkGoogle: false, needsPersonalLoginMethod: !state.done, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] })),
+      http.post("/api/me/login-methods/phone/code", () => HttpResponse.json({ methodId: "phone", resendAfterSeconds: 0 })),
+    );
+  }
+  it.each([false, true])("verificar un método la vuelve a leer (cancelado antes de la respuesta: %s)", async (cancelled) => {
+    const user = userEvent.setup(); const state = { done: false }; let release!: () => void; const verifying = vi.fn();
+    serve(state);
+    server.use(http.post("/api/me/login-methods/phone/verify", async () => { verifying(); if (cancelled) await new Promise<void>((resolve) => { release = resolve; }); state.done = true; return new HttpResponse(null, { status: 204 }); }));
+    renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+    expect(await screen.findByRole("button", { name: "Avisos: 1" })).toBeVisible();
+    await user.click(await screen.findByRole("button", { name: "Verificar" }));
+    await user.type(await screen.findByRole("textbox", { name: "Código 1" }), "123456");
+    await user.click(screen.getByRole("button", { name: "Verificar" }));
+    await waitFor(() => expect(verifying).toHaveBeenCalledOnce());
+    if (cancelled) { await user.click(screen.getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); }
+    if (cancelled) await act(async () => { release(); });
+    // Solo una lectura posterior a la escritura trae la campana vacía.
+    expect(await screen.findByRole("button", { name: "Avisos" })).toBeVisible();
+  });
+  it("quitar un método la vuelve a leer", async () => {
+    const user = userEvent.setup(); const state = { done: false };
+    serve(state);
+    server.use(http.delete("/api/me/login-methods/phone", () => { state.done = true; return new HttpResponse(null, { status: 204 }); }));
+    renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+    expect(await screen.findByRole("button", { name: "Avisos: 1" })).toBeVisible();
+    const trigger = await screen.findByRole("button", { name: "Acciones de 011 15-5555-4521" }); trigger.focus(); await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Quitar" }));
+    await user.click(screen.getByRole("button", { name: "Quitar" }));
+    expect(await screen.findByRole("button", { name: "Avisos" })).toBeVisible();
+  });
+});

@@ -140,6 +140,20 @@ describe("OrganizationsPage", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(screen.getByRole("button", { name: "Acciones de Grupo Delta" })).toHaveFocus();
   });
+  // La campana cuenta la organización mientras espera: aprobarla, rechazarla o enterarse de que otro ya lo hizo la vuelve a leer.
+  it.each([["approve", "Aprobar", null], ["reject", "Rechazar", null], ["approve", "Aprobar", "Tenancy.Tenant.InvalidTransition"]] as const)("%s (%s, %s) vuelve a leer la campana montada", async (action, label, conflict) => {
+    const user = userEvent.setup(); let resolved = false; let reads = 0;
+    const waiting = { id: "organizationPending:delta", kind: "organizationPending", params: { name: "Grupo Delta" }, occurredAtUtc: "2026-09-27T12:05:00Z", link: "/plataforma/organizaciones/delta", read: false };
+    server.use(http.get("/api/platform/tenants/paged", () => HttpResponse.json(list([{ ...organization, status: "PendingApproval" }]))),
+      http.get("/api/notifications", () => { reads++; return HttpResponse.json(resolved ? { items: [], unread: 0 } : { items: [waiting], unread: 1 }); }),
+      http.post(`/api/platform/tenants/delta/${action}`, () => { resolved = true; return conflict ? HttpResponse.json({ code: conflict, detail: "Ya cambió." }, { status: 409 }) : HttpResponse.json({ version: 4 }); }));
+    renderRouteWithProviders("/plataforma", { as: "platform-operator" });
+    expect(await screen.findByRole("button", { name: "Avisos: 1" })).toBeVisible(); const before = reads;
+    await openAction(user, label); await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Revisión"); await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: label }));
+    if (conflict) { expect(await screen.findByText("Ya cambió.")).toBeVisible(); await user.click(screen.getByRole("button", { name: "Cancelar" })); }
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(reads).toBeGreaterThan(before)); expect(await screen.findByRole("button", { name: "Avisos" })).toBeVisible();
+  });
   it("reintenta el alta directamente, sin motivo, y muestra el error de negocio rojo", async () => {
     const user = userEvent.setup(); const bodies: unknown[] = []; let failing = true;
     server.use(http.get("/api/platform/tenants/paged", () => HttpResponse.json(list([{ ...organization, status: "Provisioning" }]))), http.post("/api/platform/tenants/delta/retry-provisioning", async ({ request }) => { bodies.push(await request.json()); return failing ? HttpResponse.json({ code: "Tenancy.Tenant.InvalidTransition", detail: "El alta ya cambió." }, { status: 409 }) : HttpResponse.json({ version: 9 }); }));

@@ -9,6 +9,7 @@ import { FormError } from "@/shared/ui/FormError";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { accountMethodsQueryKey, makeLoginMethodPrimary, removeLoginMethod } from "./api/loginMethods";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
+import { invalidateNotifications } from "@/layouts/notifications/api";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useFormat } from "@/shared/format/useFormat";
@@ -41,6 +42,8 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, r
       // La escritura termina aunque el diálogo haya cerrado. Releer siempre; la UI pertenece sólo al recorrido vivo.
       void queryClient.invalidateQueries({ queryKey: accountMethodsQueryKey });
       void queryClient.invalidateQueries({ queryKey: currentUserQueryKey });
+      // Quitar el último método propio vuelve a pedirlo en la campana.
+      void invalidateNotifications(queryClient);
       if (!alive.current) return;
       toast.success(t(action === "primary" ? "primaryChanged" : google ? "googleUnlinked" : "removed", { value }));
       onComplete?.(); close();

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
+import { invalidateNotifications } from "@/layouts/notifications/api";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import type { AccountRecoveryStatus, PlatformRecoveryResponse } from "@/shared/api/types";
 import { useFormat } from "@/shared/format/useFormat";
@@ -77,7 +78,7 @@ export function RecoveriesPage() {
       setOwnWrites((previous) => new Map(previous).set(operation.id, written));
       client.setQueriesData<PagedResultOfPlatformRecoveryResponse>({ queryKey: [...recoveriesQueryRoot, "paged"] }, (data) => data ? { ...data, items: data.items.map((row) => row.id === operation.id ? { ...row, ...written } : row) } : data);
       toast.success(t(operation.action === "approve" ? "platformRecoveries:messages.approved" : "platformRecoveries:messages.rejected", { method: activeConfirmation.recovery.newMethod, account: activeConfirmation.recovery.accountName || format.formatEmpty() }));
-      void client.invalidateQueries({ queryKey: recoveriesQueryRoot });
+      void client.invalidateQueries({ queryKey: recoveriesQueryRoot }); void invalidateNotifications(client);
     }} /> : null}
   </>;
 }

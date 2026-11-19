@@ -106,6 +106,20 @@ describe("Recuperaciones de Plataforma", () => {
     expect(queryClient.getQueriesData({ queryKey: [...recoveriesQueryRoot, "paged"] })[0][1]).toMatchObject({ items: [{ id: "r1", version: 37, status: action === "approve" ? "Approved" : "Rejected" }] });
     await act(async () => { release?.(); }); await open(user, "Ver detalle"); expect(within(screen.getByRole("dialog")).queryByRole("button", { name: "Aprobar" })).not.toBeInTheDocument(); expect(within(screen.getByRole("dialog")).getByText("Revisión")).toBeVisible();
   });
+  // La campana cuenta el pedido mientras espera: resolverlo, o enterarse de que otro ya lo resolvió, la vuelve a leer.
+  it.each([["approve", null], ["reject", null], ["approve", "Platform.AccountRecovery.AlreadyResolved"]] as const)("%s (%s) vuelve a leer la campana montada", async (action, conflict) => {
+    const user = userEvent.setup(); let resolved = false; let reads = 0;
+    const waiting = { id: "recoveryRequested:r1", kind: "recoveryRequested", params: { name: "Pablo Ortiz" }, occurredAtUtc: "2026-09-27T13:20:00Z", link: "/plataforma/recuperaciones?status=Pending", read: false };
+    server.use(http.get("/api/notifications", () => { reads++; return HttpResponse.json(resolved ? { items: [], unread: 0 } : { items: [waiting], unread: 1 }); }),
+      http.post(`/api/platform/recoveries/r1/${action}`, () => { resolved = true; return conflict ? HttpResponse.json({ code: conflict, detail: "Ya se resolvió" }, { status: 409 }) : HttpResponse.json({ version: 37 }); }));
+    renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" });
+    expect(await screen.findByRole("button", { name: "Avisos: 1" })).toBeVisible(); const before = reads;
+    await open(user); await send(user, action === "approve" ? "Aprobar" : "Rechazar");
+    if (conflict) await within(screen.getByRole("dialog")).findByRole("alert"); else await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(reads).toBeGreaterThan(before));
+    // Con el conflicto el diálogo sigue abierto y deja el resto fuera del árbol accesible.
+    expect(await screen.findByRole("button", { name: "Avisos", hidden: Boolean(conflict) })).toBeInTheDocument();
+  });
   it.each(["approve", "reject"] as const)("%s muestra sólo su progreso y apaga las dos decisiones", async (action) => {
     const user = userEvent.setup(); let release: (() => void) | undefined;
     server.use(http.post(`/api/platform/recoveries/r1/${action}`, async () => { await new Promise<void>((resolve) => { release = resolve; }); return HttpResponse.json({ version: 37 }); }));

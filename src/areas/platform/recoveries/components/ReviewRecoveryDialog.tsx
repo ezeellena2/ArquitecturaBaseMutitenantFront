@@ -1,10 +1,12 @@
-import type { MutationMeta } from "@tanstack/react-query";
+import { useQueryClient, type MutationMeta } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { RecoveryMethodText } from "./RecoveryMethodText";
 import { z } from "zod";
+import { invalidateNotifications } from "@/layouts/notifications/api";
+import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { PlatformRecoveryResponse, VersionResponse } from "@/shared/api/types";
@@ -61,10 +63,13 @@ export function ReviewRecoveryDialog({ recovery, returnFocusTo, onClose, onResol
   const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: { reason: "" }, reValidateMode: "onSubmit" });
   const { getValues, setError } = form; const { failure, fail, clear, close } = useDialogFailure(onClose, recoveriesQueryRoot, recoveryStateConflictCodes);
   const current = useCallback((operation: RecoveryOperation) => pending && operation.id === recovery.id && operation.version === base.current && operation.draft === draft.current && operation.action === choice.current && operation.reason === getValues().reason.trim() && (operation.action === "reject" || hasAccount), [pending, recovery.id, getValues, hasAccount]);
+  const client = useQueryClient();
   const action = useResourceAction<RecoveryOperation>({
     isCurrent: current,
     onError: (error) => {
     if (applyApiErrorToForm(error, setError, { reason: "reason" })) return;
+    // Otro ya lo resolvió: la campana lo sigue contando hasta volver a leerse.
+    if (error instanceof ApiError && error.status === 409 && (error.code === "General.ConcurrencyConflict" || recoveryStateConflictCodes.some((code) => code === error.code))) void invalidateNotifications(client);
     fail(recoveryActionError(error, t));
     },
   });

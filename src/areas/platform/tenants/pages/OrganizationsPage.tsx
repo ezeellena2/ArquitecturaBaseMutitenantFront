@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
+import { invalidateNotifications } from "@/layouts/notifications/api";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { PlatformTenantResponse, TenantRegistrationSource, TenantStatus, VersionResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -85,7 +86,8 @@ export function OrganizationsPage() {
     const written = ownWrites.get(organization.id);
     return written ? { ...organization, ...written } : organization;
   };
-  const invalidate = async () => client.invalidateQueries({ queryKey: tenantsQueryRoot });
+  // Un cambio de estado también resuelve la organización que esperaba aprobación en la campana.
+  const invalidate = async () => { await Promise.all([client.invalidateQueries({ queryKey: tenantsQueryRoot }), invalidateNotifications(client)]); };
   function wrote(id: string, version: number, status: TenantStatus) {
     setOwnWrites((previous) => new Map(previous).set(id, { version, status }));
     client.setQueriesData<PagedResultOfPlatformTenantResponse>({ queryKey: [...tenantsQueryRoot, "paged"] }, (data) => data ? { ...data, items: data.items.map((item) => item.id === id ? { ...item, version, status } : item) } : data);
@@ -128,7 +130,7 @@ export function OrganizationsPage() {
     </Page>
     {createOpen ? <CreateOrganizationDialog onClose={() => setCreateOpen(false)} onCreated={invalidate} /> : null}
     {confirmation ? <OrganizationStatusDialog confirmation={confirmation}
-      onClose={(conflicted) => { if (conflicted) setOwnWrites((previous) => { const next = new Map(previous); next.delete(confirmation.organization.id); return next; }); setConfirmation((current) => current === confirmation ? null : current); }}
+      onClose={(conflicted) => { if (conflicted) { setOwnWrites((previous) => { const next = new Map(previous); next.delete(confirmation.organization.id); return next; }); void invalidateNotifications(client); } setConfirmation((current) => current === confirmation ? null : current); }}
       onSuccess={(response) => { wrote(confirmation.organization.id, response.version, nextStatus[confirmation.action]); toast.success(t(`platformTenants:messages.${confirmation.action}`, { name: confirmation.organization.name, email: maskEmail(confirmation.organization.ownerEmail ?? "") })); void invalidate(); }} /> : null}
   </>;
 }
