@@ -7,7 +7,7 @@ import { baseUrl } from "./recorrido-usuario-entorno.mjs";
 import { execFileSync } from "node:child_process";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
-import { botOption, e11Definitions, e11ManualChecks, nationalPhone, outboundCount, runE11Journey } from "./recorrido-usuario-e11.mjs";
+import { botOption, e11Definitions, e11ManualChecks, enterPersonalHome, nationalPhone, outboundCount, runE11Journey } from "./recorrido-usuario-e11.mjs";
 import { e9Definitions, e9ManualChecks, factorSecretMasks, newcomerOf, operatorNameOf, runE9Journey } from "./recorrido-usuario-e9.mjs";
 import { base12Definitions, base12ManualChecks, bellLabel, importedPhoneOf, invitationLinkFrom, isFullDateTime, runBase12Journey, whileHeld,
   workingButtonProblems, workingButtonState } from "./recorrido-usuario-base12.mjs";
@@ -356,6 +356,34 @@ test("E11 toca la fila del menú por su título y cuenta lo que salió sin acept
   assert.throws(() => outboundCount([{ kind: "Text", status: "Sent", text: undefined, body: "Hola" }].map(({ kind }) => ({ kind }))), /tipo y estado/);
   assert.equal(nationalPhone("+5491134567884"), "11 3456-7884");
   assert.throws(() => nationalPhone("+541155554521"), /sintético/);
+});
+
+test("E11-15: en la compu la persona nueva acepta el aviso del asistente de su Inicio, aunque abra después del menú", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    // El menú ya se ve cuando abre el aviso modal, que lo tapa: así cortó la salida de E11-15 (2026-11-19).
+    await page.setContent('<header><button>•••• 7884, Personal</button></header><main></main>');
+    await page.evaluate(() => {
+      setTimeout(() => {
+        document.querySelector("header").setAttribute("aria-hidden", "true");
+        document.querySelector("main").innerHTML = '<h2>¿Qué querés consultar?</h2><div role="dialog" aria-label="Antes de tu primera consulta"><button>Entendido</button></div>';
+        document.querySelector('[role="dialog"] button').addEventListener("click", () => {
+          document.body.dataset.accepted = "explicit";
+          document.querySelector('[role="dialog"]').remove();
+          document.querySelector("header").removeAttribute("aria-hidden");
+        });
+      }, 50);
+    });
+    const awaitApp = (target) => target.getByRole("button", { name: /, Personal$/ }).waitFor({ timeout: 2_000 });
+    await enterPersonalHome(page, 1440, { awaitApp });
+    assert.equal(await page.locator("body").getAttribute("data-accepted"), "explicit");
+    await awaitApp(page);
+    // En el teléfono el Inicio no monta el asistente (vive en /asistente): no se espera un aviso que no llega.
+    const order = [];
+    await enterPersonalHome(page, 390, { awaitApp: async () => { order.push("app"); }, acceptNotice: async () => { order.push("aviso"); } });
+    assert.deepEqual(order, ["app"]);
+  } finally { await browser.close(); }
 });
 
 test("sin el control publicado, E11 no abre pantallas ni se declara aprobada", async () => {

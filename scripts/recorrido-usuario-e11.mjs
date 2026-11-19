@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
 import { checkByLabel } from "./platform-factor-real.mjs";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
@@ -55,6 +56,16 @@ export function nationalPhone(e164) {
   const match = /^\+549(11)(\d{4})(\d{4})$/.exec(e164);
   assert.ok(match, "El teléfono del recorrido es un celular sintético de Buenos Aires.");
   return `${match[1]} ${match[2]}-${match[3]}`;
+}
+
+/**
+ * La persona nueva llega a su Inicio. En la compu, después de la 8b, Inicio es el asistente: la primera vez abre «Antes de
+ * tu primera consulta», que tapa el menú del perfil y puede abrir cuando el menú ya se ve. Lo acepta antes de seguir, como
+ * en B12-07; en el teléfono el asistente vive en /asistente y el Inicio no lo monta.
+ */
+export async function enterPersonalHome(page, width, { awaitApp, acceptNotice = acceptAssistantNoticeFromHome }) {
+  if (width !== 390) await acceptNotice(page);
+  await awaitApp(page);
 }
 
 /** Sigue a E8 y 8b en las mismas pestañas: arranca y termina con la persona afuera y Plataforma adentro. */
@@ -300,7 +311,8 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     await page.getByRole("heading", { name: "Revisá tu WhatsApp", exact: true }).waitFor();
     await fillOtp(page, (await login("code")).proof);
     await act(page, () => page.getByRole("button", { name: "Verificar", exact: true }).click(), "/api/auth/login-code/verify");
-    await awaitApp(page);
+    phase = "inicio";
+    await enterPersonalHome(page, width, { awaitApp });
     await page.getByRole("link", { name: "Mensajes", exact: true }).first().waitFor();
     phase = "messages";
     const [list] = await visit("/mensajes", ["/api/me/whatsapp/conversations"]);
@@ -313,6 +325,6 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     await page.getByRole("log", { name: /^Mensajes con / }).getByText(answer, { exact: true }).waitFor();
     assert.equal(await page.getByText(note, { exact: true }).count(), 0);
     await leave("Personal", "/");
-    return "Entró por WhatsApp con OTP controlado y vio en «Mensajes» la respuesta de la organización, sin la nota.";
+    return `Entró por WhatsApp con OTP controlado${width === 390 ? "" : ", aceptó el aviso del asistente de su Inicio"} y vio en «Mensajes» la respuesta de la organización, sin la nota.`;
   });
 }
