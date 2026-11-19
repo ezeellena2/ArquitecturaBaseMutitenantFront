@@ -7,7 +7,7 @@ import { AppBarLeadingToolsProvider, AppBarToolsProvider } from "./app/AppBarToo
 import { Fab } from "./app/Fab";
 import { InfoTip } from "./InfoTip";
 import { FixedActions } from "./app/FixedActions";
-import { Button } from "./button";
+import { Button, ButtonRing } from "./button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -81,7 +81,8 @@ interface PageProps {
   barAction?: { label: string; href?: string; onClick?: () => void };
   /** El ⋮ de la banda. «Criterio · Menús» (v136): en la compu abre debajo del ⋮, con el ícono de cada opción; en el
    * teléfono, la hoja de RowActions desde abajo, con el nombre de la ficha o de la lista de título y sin íconos. */
-  moreActions?: { label: string; items: readonly PageOverflowAction[] };
+  moreActions?: { label: string; items: readonly PageOverflowAction[]; /** Una opción que va directo a la red espera su
+   * respuesta: el ⋮ cambia su dibujo por el aro, lo anuncia con `aria-busy` y no se abre (115). */ pending?: boolean };
   /** Un cartel de algo que sigue pasando (tablero «Criterio · Avisos»): debajo de la banda, arriba del contenido. */
   banner?: ReactNode;
   /** Los grupos de datos de una ficha («Criterio · Marco», Pestañas). Con dos o más, una pestaña por grupo: en la compu
@@ -158,6 +159,8 @@ export function Page({
   }, [fromHome, markHome]);
   const moreTrigger = useRef<HTMLButtonElement>(null);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const morePending = moreActions?.pending === true;
   const moreSheetId = useId();
   const visibleMoreActions = moreActions?.items.filter((action) => !action.hidden) ?? [];
   const regularActions = visibleMoreActions.filter((action) => !action.destructive);
@@ -212,8 +215,8 @@ export function Page({
           {visibleMoreActions.length > 0 && moreActions ? <>
             {/* «Criterio · Menús» (v136; M-Cuenta-Plat, M-Usuario, M-Usuarios, M-WA-Contacto, M-WA-Conversacion…): el ⋮ de
                 la barra de una ficha o de una lista abre la hoja de abajo, con su nombre de título; lo de peligro, al final. */}
-            <AppIconButton ref={moreTrigger} label={moreActions.label} aria-haspopup="dialog" aria-expanded={moreSheetOpen}
-              onClick={() => setMoreSheetOpen(true)}><MoreVerticalIcon className="size-5" /></AppIconButton>
+            <AppIconButton ref={moreTrigger} label={moreActions.label} aria-haspopup="dialog" aria-expanded={moreSheetOpen} aria-busy={morePending || undefined}
+              onClick={() => { if (!morePending) setMoreSheetOpen(true); }}>{morePending ? <ButtonRing /> : <MoreVerticalIcon className="size-5" />}</AppIconButton>
             <PhoneActionsSheet open={moreSheetOpen} onOpenChange={setMoreSheetOpen} label={moreActions.label} title={title} reasonId={moreSheetId}
               regular={regularActions.map(sheetAction)} destructive={destructiveActions.map(sheetAction)}
               onSelect={(action) => { setMoreSheetOpen(false); action.run(moreTrigger.current); }} />
@@ -262,16 +265,17 @@ export function Page({
         {visibleMoreActions.length > 0 || actions || barAction ? (
           <div className="flex shrink-0 items-center gap-2">
             {visibleMoreActions.length > 0 && moreActions ? (
-              <DropdownMenu>
+              <DropdownMenu open={moreMenuOpen && !morePending} onOpenChange={(open) => setMoreMenuOpen(open && !morePending)}>
                 <DropdownMenuTrigger asChild>
                   <button
                     ref={moreTrigger}
                     type="button"
                     aria-label={moreActions.label}
                     title={moreActions.label}
+                    aria-busy={morePending || undefined}
                     className="inline-flex size-8.5 items-center justify-center rounded-[0.5rem] border border-[var(--borde)] bg-[var(--superficie)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
                   >
-                    <MoreVerticalIcon className="size-4" />
+                    {morePending ? <ButtonRing /> : <MoreVerticalIcon className="size-4" />}
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>

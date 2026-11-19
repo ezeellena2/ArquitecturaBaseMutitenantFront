@@ -105,7 +105,8 @@ export function CompanyDetailPage() {
         {canAdd && tab === "members" ? <Button type="button" onClick={() => setDialog({ kind: "addMember" })}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("companies:actions.addMember")}</Button> : null}
         {canManageRoles && tab === "roles" ? <Button asChild><Link to={createRolePath}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("companies:detail.createRole")}</Link></Button> : null}
       </>}
-      moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [
+      // «Reactivar» va directo a la red: mientras espera, el ⋮ muestra que trabaja (115).
+      moreActions={canManageCompany ? { label: t("companies:actions.more"), pending: changeCompanyState.isPending, items: [
         { label: t("companies:actions.editCompany"), onSelect: (trigger) => setDialog({ kind: "edit", returnFocusTo: trigger }), hidden: !phone },
         // Tablero Empresa («Criterio · Menús»): «Inactivar» y «Activar» con el ícono de encender, gris.
         { label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), icon: Power, destructive: data.status === "Active",

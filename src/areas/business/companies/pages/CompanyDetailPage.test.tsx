@@ -695,6 +695,25 @@ describe("CompanyDetailPage", () => {
     expect(await screen.findByText("Otra persona cambió esta empresa.")).toBeVisible();
   });
 
+  // 115: «Reactivar» del ⋮ de la banda va directo a la red; mientras espera, el ⋮ cambia su dibujo por el aro y no se abre.
+  it("«Reactivar» la empresa desde el ⋮ de la banda muestra que trabaja hasta la respuesta", async () => {
+    let release: (() => void) | undefined;
+    detailApi([]);
+    server.use(http.get("/api/companies/company-1", () => HttpResponse.json({ ...company, status: "Inactive" })),
+      http.put("/api/companies/company-1/status", async () => { await new Promise<void>((resolve) => { release = resolve; }); return HttpResponse.json({ version: 4 }); }));
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    const more = await screen.findByRole("button", { name: "Más acciones" });
+    more.focus(); await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Reactivar" }));
+    await waitFor(() => expect(release).toBeDefined());
+    expect(more).toHaveAttribute("aria-busy", "true");
+    more.focus(); await user.keyboard("{Enter}");
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    release?.();
+    await waitFor(() => expect(more).not.toHaveAttribute("aria-busy"));
+  });
+
   it("agrega una persona existente con encabezado idempotente", async () => {
     let requestBody: unknown;
     let idempotencyKey: string | null = null;

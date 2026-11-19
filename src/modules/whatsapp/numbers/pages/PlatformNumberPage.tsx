@@ -81,7 +81,7 @@ export function PlatformNumberPage() {
       <StatusBadge tones={numberStatusTones} value={current.status} />
       {current.status === "PaymentMissing" ? <InfoButton label={t("whatsapp:numbers.platform.whyNoMessages")} onClick={() => setPayment({})} /> : null}
     </span>;
-    const actions = <RowActions label={t("whatsapp:numbers.rowActions", { number: label })} title={label} actions={[
+    const actions = <RowActions label={t("whatsapp:numbers.rowActions", { number: label })} title={label} pending={check.isPending} actions={[
       { label: t("whatsapp:numbers.actions.check"), accessibleName: t("whatsapp:numbers.actions.check"), icon: RotateIcon,
         onSelect: () => check.mutate(current), hidden: current.status !== "PaymentMissing" },
       { label: t("whatsapp:numbers.platform.connectOther"), accessibleName: t("whatsapp:numbers.platform.connectOther"), icon: Plus,

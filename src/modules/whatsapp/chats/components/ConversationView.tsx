@@ -166,7 +166,7 @@ export function ConversationView({ scope, id, links, back, phone }: {
     const subtitle = descriptors.join(" · ");
     return <Page title={name} backTo={back} phoneBody="flush"
       phoneSubtitle={untaken ? <span className="text-[var(--alerta)]">{subtitle}</span> : subtitle || undefined}
-      moreActions={{ label: t("chats.header.actionsOf", { name }), items: [
+      moreActions={{ label: t("chats.header.actionsOf", { name }), pending: take.isPending, items: [
         // M-Plat-WA-Conversacion: «Ver la cuenta» va primero; en la organización, «Ver ficha del contacto» va al final.
         { label: t("chats.header.viewAccount"), hidden: !accountPath, onSelect: () => { if (accountPath) void navigate(accountPath); } },
         { label: t("chats.header.take"), hidden: !untaken || readOnly, onSelect: () => take.mutate() },

@@ -48,7 +48,7 @@ function AccountActions({ account, self, canManage, canInvite, route, onConfirm 
   const busy = action.isPending;
   if (self || account.state === "PendingDeletion" || account.state === "Deleted") return null;
   const confirm = (action: Confirmation["action"], trigger: HTMLElement | null) => onConfirm({ account, action, trigger, route });
-  return <RowActions label={t("rowActions", { name: accountLabel(account, t) })} title={accountLabel(account, t)} actions={[
+  return <RowActions label={t("rowActions", { name: accountLabel(account, t) })} title={accountLabel(account, t)} pending={resend.isPending} actions={[
     { label: t("actions.resend"), accessibleName: t("actions.resend"), icon: RotateIcon, hidden: !canInvite || !invitation || busy, onSelect: () => resend.mutate({ id: account.id, name: accountLabel(account, t) }) },
     { label: t("actions.revoke-sessions"), accessibleName: t("actions.revoke-sessions"), icon: LogOutIcon, hidden: !canManage || invitation, onSelect: (trigger) => confirm("revoke-sessions", trigger) },
     { label: t("actions.reactivate"), accessibleName: t("actions.reactivate"), icon: Power, hidden: !canManage || account.state !== "Suspended", onSelect: (trigger) => confirm("reactivate", trigger) },

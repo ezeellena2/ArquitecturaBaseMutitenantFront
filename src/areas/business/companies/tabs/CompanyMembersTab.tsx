@@ -41,7 +41,7 @@ function InvitationRowActions({ company, member, hidden, onRevoke }: { company: 
   const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendCompanyInvitation(company.id, operation.invitationId, key),
     (_response, operation) => { toast.success(t("companies:messages.invitationResent", { email: operation.email })); void queryClient.invalidateQueries({ queryKey: companiesQueryRoot }); }),
     { meta: action.meta, sameOperation: (previous, next) => previous.invitationId === next.invitationId });
-  return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} actions={[
+  return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} pending={resend.isPending} actions={[
     { label: t("companies:actions.resendInvitation"), accessibleName: t("companies:actions.resendInvitation"), icon: RotateIcon, hidden,
       onSelect: () => { if (member.invitationId) resend.mutate({ invitationId: member.invitationId, email: member.email ?? member.displayName }); } },
     // «Criterio · Menús» y tablero Empresa (v109): abajo, después de la franja, en rojo y con la ✕.
@@ -113,7 +113,8 @@ export function CompanyMembersTab({ company, list, roles }: {
         onRevoke={(trigger) => setRevokeTarget({ member, trigger })} />;
     }
     const removing = member.membershipStatus === "Active";
-    return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} actions={[
+    return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName}
+      pending={changeMemberState.isPending && changeMemberState.variables?.memberId === member.memberId} actions={[
       { label: t("companies:actions.changeRoles"), accessibleName: t("companies:actions.changeRoles"), icon: ShieldCheck, onSelect: (trigger) => setRolesTarget({ member, trigger }),
         hidden: !canManageMembers || member.state !== "Active" || member.membershipStatus !== "Active" || !editable },
       { label: t("companies:actions.viewUser"), accessibleName: t("companies:actions.viewUser"), icon: UserRound, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); }, hidden: !canViewUsers },

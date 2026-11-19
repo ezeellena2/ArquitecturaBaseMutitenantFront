@@ -302,7 +302,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   return <>
     <Page banner={edit.banner} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
       phoneSubtitle={userContact(member) ?? undefined} phoneBody="gray"
-      moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
+      moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), pending: resend.isPending, items: [
         { label: t("users:actions.resend"), icon: RotateIcon, onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },
         { label: t("users:actions.revoke"), icon: CloseIcon, onSelect: () => setConfirmAction("revoke"), destructive: true, hidden: !isInvitation || !member.invitationId },
         { label: t("users:actions.remove"), icon: UserMinusIcon, onSelect: openRemove, destructive: true, hidden: !isMember },

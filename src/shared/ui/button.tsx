@@ -110,6 +110,7 @@ function Button({
   </>
 }
 
+/** El aro de 14 de un botón que trabaja; un botón de ícono, como el ⋮, lo pone en lugar de su dibujo (115). */
 function ButtonRing() {
   return <span data-slot="button-ring" aria-hidden="true" className="size-3.5 shrink-0 animate-spin rounded-full border-2 border-current/40 border-t-current motion-reduce:animate-none" />
 }
@@ -131,4 +132,4 @@ function PendingContent({ label, children }: { label: React.ReactNode | undefine
   )
 }
 
-export { Button, buttonVariants }
+export { Button, ButtonRing, buttonVariants }

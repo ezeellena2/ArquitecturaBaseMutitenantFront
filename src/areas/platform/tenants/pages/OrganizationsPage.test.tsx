@@ -154,6 +154,16 @@ describe("OrganizationsPage", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     await waitFor(() => expect(reads).toBeGreaterThan(before)); expect(await screen.findByRole("button", { name: "Avisos" })).toBeVisible();
   });
+  // 115: «Reintentar el alta» del ⋮ va directo a la red; mientras espera, el ⋮ de la fila cambia su dibujo por el aro.
+  it("«Reintentar el alta» del ⋮ muestra que trabaja hasta la respuesta", async () => {
+    const user = userEvent.setup(); let release: (() => void) | undefined;
+    server.use(http.get("/api/platform/tenants/paged", () => HttpResponse.json(list([{ ...organization, status: "Provisioning" }]))),
+      http.post("/api/platform/tenants/delta/retry-provisioning", async () => { await new Promise<void>((resolve) => { release = resolve; }); return HttpResponse.json({ version: 9 }); }));
+    renderRouteWithProviders("/plataforma", { as: "platform-operator" }); await openAction(user, "Reintentar el alta");
+    const trigger = screen.getByRole("button", { name: "Acciones de Grupo Delta" });
+    await waitFor(() => expect(release).toBeDefined()); expect(trigger).toHaveAttribute("aria-busy", "true");
+    release?.(); await waitFor(() => expect(trigger).not.toHaveAttribute("aria-busy"));
+  });
   it("reintenta el alta directamente, sin motivo, y muestra el error de negocio rojo", async () => {
     const user = userEvent.setup(); const bodies: unknown[] = []; let failing = true;
     server.use(http.get("/api/platform/tenants/paged", () => HttpResponse.json(list([{ ...organization, status: "Provisioning" }]))), http.post("/api/platform/tenants/delta/retry-provisioning", async ({ request }) => { bodies.push(await request.json()); return failing ? HttpResponse.json({ code: "Tenancy.Tenant.InvalidTransition", detail: "El alta ya cambió." }, { status: 409 }) : HttpResponse.json({ version: 9 }); }));

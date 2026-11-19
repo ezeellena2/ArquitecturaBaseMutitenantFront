@@ -96,7 +96,9 @@ export function OrganizationsPage() {
     sameOperation: (previous, next) => previous.id === next.id && previous.version === next.version,
   });
   const openConfirmation = (organization: PlatformTenantResponse, action: TenantAction, trigger: HTMLElement | null) => { setConfirmation({ organization, action, trigger }); };
-  const rowActions = (organization: PlatformTenantResponse) => <RowActions label={t("platformTenants:rowActions", { name: organization.name })} title={organization.name} actions={[
+  // «Reintentar el alta» va directo a la red: mientras espera, el ⋮ de su fila muestra que trabaja (115).
+  const rowActions = (organization: PlatformTenantResponse) => <RowActions label={t("platformTenants:rowActions", { name: organization.name })} title={organization.name}
+    pending={retry.isPending && retry.variables?.id === organization.id} actions={[
     { label: t("platformTenants:actions.view"), accessibleName: t("platformTenants:actions.view"), icon: EyeIcon, onSelect: () => { void navigate(organizationPath(organization.id)); } },
     { label: t("platformTenants:actions.approve"), accessibleName: t("platformTenants:actions.approve"), icon: CheckIcon, hidden: !canManage || organization.status !== "PendingApproval", onSelect: (trigger) => openConfirmation(organization, "approve", trigger) },
     { label: t("platformTenants:actions.retry"), accessibleName: t("platformTenants:actions.retry"), icon: RotateCw, hidden: !canManage || organization.status !== "Provisioning", onSelect: () => retry.mutate(organization, { onSuccess: (response) => { wrote(organization.id, response.version, "Active"); toast.success(t("platformTenants:messages.retried", { name: organization.name })); void invalidate(); }, onError: (error) => toastActionError(error, t) }) },

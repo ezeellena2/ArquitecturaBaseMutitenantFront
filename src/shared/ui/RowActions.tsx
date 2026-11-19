@@ -2,6 +2,7 @@ import { useId, useRef, useState, type ComponentType, type ReactNode } from "rea
 import { toast } from "sonner";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "./app/AppChrome";
+import { ButtonRing } from "./button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./dialog";
 import {
   DropdownMenu,
@@ -28,11 +29,13 @@ export interface RowAction {
 
 /// El nombre del disparador incluye el dato de la fila: "Acciones de Tomás Acosta".
 /// Las opciones sin permiso se omiten y las destructivas quedan separadas al final. En el teléfono, el ⋮ abre una hoja
-/// desde abajo con el dato de la fila (`title`, por ejemplo «Sofía Herrera») de título.
-export function RowActions({ label, title, actions }: { label: string; title?: string; actions: readonly RowAction[] }): ReactNode {
+/// desde abajo con el dato de la fila (`title`, por ejemplo «Sofía Herrera») de título. Mientras una opción que va directo a
+/// la red espera su respuesta (`pending`), el ⋮ cambia su dibujo por el aro, lo anuncia con `aria-busy` y no se abre (115).
+export function RowActions({ label, title, actions, pending = false }: { label: string; title?: string; actions: readonly RowAction[]; pending?: boolean }): ReactNode {
   const trigger = useRef<HTMLButtonElement>(null);
   const reasonId = useId();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { phone } = useAppChrome();
   const visible = actions.filter((action) => !action.hidden);
   if (visible.length === 0) return null;
@@ -46,13 +49,14 @@ export function RowActions({ label, title, actions }: { label: string; title?: s
     title={label}
     aria-haspopup={phone ? "dialog" : undefined}
     aria-expanded={phone ? sheetOpen : undefined}
-    onClick={phone ? () => setSheetOpen(true) : undefined}
+    aria-busy={pending || undefined}
+    onClick={phone ? () => { if (!pending) setSheetOpen(true); } : undefined}
     data-slot="row-actions"
     // En el teléfono (tableros M-Usuarios, M-Empresa y M-Configuracion, .ap-ib): el ⋮ de 20, casi negro, en un botón de 44;
     // en una fila sin círculo (M-Roles, M-Empresas), ListRow lo pasa a gris.
     className="inline-flex size-8 items-center justify-center rounded-[0.5rem] max-md:size-11 max-md:rounded-full max-md:text-[var(--t1)] border border-transparent bg-transparent text-[var(--t3)] hover:border-[var(--borde)] hover:bg-[var(--superficie)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
   >
-    <MoreVerticalIcon className="size-4.5 max-md:size-5" />
+    {pending ? <ButtonRing /> : <MoreVerticalIcon className="size-4.5 max-md:size-5" />}
   </button>;
 
   // Apagada, la opción sigue en el recorrido del teclado para que se lea su motivo, pero no hace nada ni cierra el menú.
@@ -79,7 +83,7 @@ export function RowActions({ label, title, actions }: { label: string; title?: s
   </>;
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={menuOpen && !pending} onOpenChange={(open) => setMenuOpen(open && !pending)}>
       <DropdownMenuTrigger asChild>{button}</DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <TooltipProvider>

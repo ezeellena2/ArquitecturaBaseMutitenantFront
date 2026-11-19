@@ -25,6 +25,28 @@ beforeEach(async () => {
 });
 
 describe("UsersPage", () => {
+  // 115: «Reactivar» del ⋮ va directo a la red; mientras espera, el ⋮ de la fila cambia su dibujo por el aro y no se abre.
+  it("«Reactivar» del ⋮ muestra que trabaja hasta la respuesta", async () => {
+    let release: (() => void) | undefined;
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [{ ...member, state: "Inactive" }], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 0, pendingDeletion: 0, invited: 0, expired: 0, inactive: 1 })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.put("/api/users/member-1/status", async () => { await new Promise<void>((resolve) => { release = resolve; }); return HttpResponse.json({ version: 3 }); }),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    const trigger = await screen.findByRole("button", { name: "Acciones de Lucía Fernández" });
+    trigger.focus(); await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Reactivar" }));
+    await waitFor(() => expect(release).toBeDefined());
+    expect(trigger).toHaveAttribute("aria-busy", "true");
+    trigger.focus(); await user.keyboard("{Enter}");
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    release?.();
+    await waitFor(() => expect(trigger).not.toHaveAttribute("aria-busy"));
+  });
+
   // Tablero M-Usuarios: en el teléfono, filas de borde a borde con el círculo y el estado, y crear es un «+» flotante.
   it("en el teléfono es una lista con «+» para invitar", async () => {
     const restore = asPhone();

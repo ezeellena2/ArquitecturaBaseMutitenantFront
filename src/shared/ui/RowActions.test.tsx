@@ -158,4 +158,18 @@ describe("RowActions", () => {
     expect(screen.getByRole("menuitem", { name: "Inactivar" })).toBeVisible();
     if (phone) expect(toast).toHaveBeenCalledWith("Lo tiene 1 usuario. Quitáselo primero.");
   });
+
+  // 115: mientras una opción que va directo a la red espera, el ⋮ cambia su dibujo por el aro y no se abre, en la compu y en
+  // la hoja del teléfono.
+  it.each([false, true])("trabajando, el ⋮ muestra el aro y no se abre (teléfono: %s)", async (phone) => {
+    renderWithProviders(<AppChromeProvider value={{ phone, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+      <RowActions label="Acciones de Ana" pending actions={[action()]} />
+    </AppChromeProvider>);
+
+    const trigger = screen.getByRole("button", { name: "Acciones de Ana" });
+    expect(trigger).toHaveAttribute("aria-busy", "true");
+    expect(trigger.querySelector("[data-slot=button-ring]")).not.toBeNull();
+    if (phone) await userEvent.click(trigger); else { trigger.focus(); await userEvent.keyboard("{Enter}"); }
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+  });
 });

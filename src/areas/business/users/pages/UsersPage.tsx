@@ -38,8 +38,8 @@ const withoutCompanyValue = "none";
 
 /// El ⋮ de un usuario. El reenvío vive por invitación (R04), como AccountActions de Plataforma: cada una con su clave y su
 /// dueño, así reenviar otra no le cambia la clave y un reintento conserva sus avisos.
-function UserRowActions({ member, label, title, actions }: { member: OrganizationUserResponse; label: string; title: string;
-  actions: (resend: () => void) => readonly RowAction[] }) {
+function UserRowActions({ member, label, title, actions, pending }: { member: OrganizationUserResponse; label: string; title: string;
+  actions: (resend: () => void) => readonly RowAction[]; pending: boolean }) {
   const { t } = useTranslation(["users", "common"]);
   const client = useQueryClient();
   const action = useResourceAction<{ invitationId: string; email: string }>({ onError: (error) => toastActionError(error, t) });
@@ -48,7 +48,8 @@ function UserRowActions({ member, label, title, actions }: { member: Organizatio
     { meta: action.meta, sameOperation: (previous, next) => previous.invitationId === next.invitationId });
   const format = useFormat();
   const send = () => { if (member.invitationId) resend.mutate({ invitationId: member.invitationId, email: userContactText(member, format) }); };
-  return <RowActions label={label} title={title} actions={actions(send)} />;
+  // Reenviar y Reactivar van directo a la red: mientras esperan, el ⋮ muestra que trabaja (115).
+  return <RowActions label={label} title={title} actions={actions(send)} pending={pending || resend.isPending} />;
 }
 
 export function UsersPage() {
@@ -109,7 +110,7 @@ export function UsersPage() {
     onError: (error) => { closeConfirmation(); toastActionError(error, t); },
   });
 
-  const rowActions = (member: OrganizationUserResponse) => <UserRowActions member={member}
+  const rowActions = (member: OrganizationUserResponse) => <UserRowActions member={member} pending={changeStatus.isPending && changeStatus.variables?.memberId === member.memberId}
       label={t("users:rowActions", { name: member.displayName || userContactText(member, format) })}
       title={member.displayName || userContactText(member, format)}
       actions={(resend) => [

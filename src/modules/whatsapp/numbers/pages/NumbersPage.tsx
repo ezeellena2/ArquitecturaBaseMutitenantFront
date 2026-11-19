@@ -88,6 +88,7 @@ export function NumbersPage() {
   const payment = open?.kind === "payment" ? open.number : linked;
 
   const rowActions = (number: WhatsAppNumberResponse) => <RowActions label={t("whatsapp:numbers.rowActions", { number: phoneLabel(number) })} title={phoneLabel(number)}
+    pending={check.isPending && check.variables?.id === number.id}
     actions={[
       { label: t("whatsapp:numbers.actions.changeCompany"), accessibleName: t("whatsapp:numbers.actions.changeCompany"), icon: SwapIcon,
         onSelect: (trigger) => setOpen({ kind: "company", number, trigger }), hidden: number.status === "Disconnected" },
