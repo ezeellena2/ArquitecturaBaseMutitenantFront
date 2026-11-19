@@ -34,7 +34,7 @@ function ComposerFile() {
   if (!owned) return null;
   const { file, invalid, id } = owned;
   return <AttachmentPrimitive.Root asChild><li aria-describedby={invalid && errorId ? `${errorId}-${id}` : undefined} className={`flex max-w-full items-center gap-2 rounded-lg border p-1.5 text-sm ${invalid ? "border-[var(--peligro)] bg-[var(--peligro-banda)] text-[var(--peligro-tx)]" : "border-[var(--borde)] bg-[var(--s2)]"}`}>
-    <FilePreview file={file} /><span className="max-w-44 truncate">{file.name}</span><FileSizeText value={file.size} />
+    <FilePreview file={file} /><span className="min-w-0 wrap-anywhere">{file.name}</span><FileSizeText value={file.size} />
     <AttachmentPrimitive.Remove asChild><button type="button" disabled={pending} aria-label={t("attachments.remove", { name: file.name })}><CloseIcon className="size-5" /></button></AttachmentPrimitive.Remove>
   </li></AttachmentPrimitive.Root>;
 }

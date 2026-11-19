@@ -27,8 +27,8 @@ export function NumberPicker({ numbers, selected, onSelect }: {
 
   if (phone) return <>
     <button type="button" disabled={!several} onClick={() => setSheet(true)} aria-label={t("bot.number.label", { value: text(selected) })}
-      className="mx-4 mb-2.5 flex h-11.5 shrink-0 items-center justify-between gap-2 rounded-[0.75rem] bg-[var(--s3)] px-3.5 text-left text-[0.90625rem] font-medium text-[var(--t1)] disabled:opacity-100">
-      <span className="truncate">{text(selected)}</span>
+      className="mx-4 mb-2.5 flex min-h-11.5 shrink-0 items-center justify-between gap-2 rounded-[0.75rem] bg-[var(--s3)] px-3.5 py-2 text-left text-[0.90625rem] font-medium text-[var(--t1)] disabled:opacity-100">
+      <span className="min-w-0 wrap-break-word">{text(selected)}</span>
       {several ? <ChevronDownIcon aria-hidden="true" className="size-4 shrink-0 text-[var(--t2)]" /> : null}
     </button>
     <Dialog open={sheet} onOpenChange={setSheet}>
@@ -49,11 +49,11 @@ export function NumberPicker({ numbers, selected, onSelect }: {
 
   const label = t("bot.number.pill", { value: text(selected) });
   // WA-Respuestas (.w-caja.o-fb y .w-pil): la píldora de 36 en una caja con 12 y 16 de margen.
-  const pill = "inline-flex h-9 max-w-full items-center gap-1.5 rounded-full border border-[var(--borde)] bg-[var(--superficie)] px-3.5 text-[0.8125rem] text-[var(--t2)]";
+  const pill = "inline-flex min-h-9 max-w-full items-center gap-1.5 rounded-full border border-[var(--borde)] bg-[var(--superficie)] px-3.5 py-1.5 text-left text-[0.8125rem] text-[var(--t2)]";
   return <Surface className="flex items-center gap-2.5 px-4 py-3">
     {several ? <DropdownMenu>
       <DropdownMenuTrigger className={`${pill} hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] data-[state=open]:border-[var(--marca)] data-[state=open]:shadow-[0_0_0_3px_var(--marca-t)]`}>
-        <span className="truncate">{label}</span>
+        <span className="min-w-0 wrap-break-word">{label}</span>
         <ChevronDownIcon aria-hidden="true" strokeWidth={2} className="size-3.5 shrink-0" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" aria-label={t("bot.number.title")} className="min-w-95 p-1">
@@ -66,6 +66,6 @@ export function NumberPicker({ numbers, selected, onSelect }: {
           </DropdownMenuRadioItem>)}
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
-    </DropdownMenu> : <span className={pill}><span className="truncate">{label}</span></span>}
+    </DropdownMenu> : <span className={pill}><span className="min-w-0 wrap-break-word">{label}</span></span>}
   </Surface>;
 }

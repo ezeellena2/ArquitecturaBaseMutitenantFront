@@ -46,7 +46,7 @@ export function PermissionPicker({ groups, value, onChange, readOnly = false }: 
           <Checkbox aria-label={t("roles:allPermissions", { area: group.name })} checked={codes.length > 0 && count.selected === codes.length} disabled={readOnly}
             onCheckedChange={(checked) => onChange(withGroup(value, codes, checked === true))} className={checkClass} />
           {/* El nombre también abre o cierra el grupo; la flecha es la que se alcanza con el teclado. */}
-          <button type="button" tabIndex={-1} aria-expanded={expanded} onClick={toggleArea} className="ml-1 min-w-0 truncate text-left font-semibold max-md:ml-0">{group.name}</button>
+          <button type="button" tabIndex={-1} aria-expanded={expanded} onClick={toggleArea} className="ml-1 min-w-0 wrap-break-word text-left font-semibold max-md:ml-0">{group.name}</button>
           <span className="ml-auto shrink-0 font-medium text-[var(--t3)] tabular-nums max-md:text-[0.8125rem]">{t("roles:groupCount", count)}</span>
         </div>
         {expanded ? group.permissions.map((permission) => <label key={permission.code} className="flex min-h-10 items-center gap-2.5 border-b border-[var(--borde)] pr-4 pl-13 text-[0.8125rem] font-medium text-[var(--t1)] max-md:min-h-12.75 max-md:gap-3 max-md:border-t max-md:border-b-0 max-md:pr-3.5 max-md:pl-11.5 max-md:text-[0.9375rem] max-md:font-normal">

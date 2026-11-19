@@ -57,7 +57,7 @@ export function SecurityAuditPage() {
     // Tablero Auditoria-Plat: «Qué pasó» es la columna ancha (≈32 %); «Sobre» y «Quién», más angostas, y el motivo, el resto.
     { id: "summary", header: t("columns.summary"), type: "custom", mobile: "primary", className: "w-[32%]",
       cell: (row) => <button type="button" aria-label={t("openDetails", { summary: row.summary })}
-        className="block w-full truncate text-left text-[var(--t1)] hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
+        className="block w-full text-left wrap-break-word text-[var(--t1)] hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
         onClick={() => select(row)}>{row.summary}</button> },
     { id: "target", header: t("columns.target"), type: "text", className: "w-[17%]", value: (row) => row.target },
     { id: "actor", header: t("columns.actor"), type: "text", className: "w-[13%]", value: (row) => row.actor },

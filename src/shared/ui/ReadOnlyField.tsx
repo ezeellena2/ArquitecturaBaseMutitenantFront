@@ -29,9 +29,9 @@ export function ReadOnlyField({ label, control = "text", long = false, prefix, a
     </span>
     <div data-slot="read-only-field" className={cn("flex w-full min-w-0 gap-2 rounded-[0.5rem] border border-[var(--borde)] bg-[var(--s2)] px-3 text-[0.8125rem] text-[var(--t2)]",
       "max-md:rounded-[0.75rem] max-md:px-3.5 max-md:text-[1rem]",
-      area ? "min-h-21 items-start py-2 leading-[1.5] max-md:py-3" : "h-9 items-center max-md:h-12")}>
+      area ? "min-h-21 items-start py-2 leading-[1.5] max-md:py-3" : "min-h-9 items-center py-1.5 max-md:min-h-12 max-md:py-2.5")}>
       {prefix ? <span className="shrink-0">{prefix}</span> : null}
-      <span className={cn("min-w-0 flex-1", area ? "whitespace-pre-wrap" : "truncate", muted && "text-[var(--t3)]")}>{children}</span>
+      <span className={cn("min-w-0 flex-1", area ? "whitespace-pre-wrap" : "wrap-break-word", muted && "text-[var(--t3)]")}>{children}</span>
       {action ? <span className="shrink-0">{action}</span> : null}
       {control === "select" ? <ChevronDownIcon strokeWidth={2} aria-hidden="true" className="size-3.5 shrink-0 text-[var(--t3)] max-md:size-4.5" /> : null}
     </div>

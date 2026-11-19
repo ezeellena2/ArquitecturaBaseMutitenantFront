@@ -4,6 +4,18 @@ import { describe, expect, it } from "vitest";
 
 const srcRoot = path.resolve(import.meta.dirname, "../..");
 
+// formatos.md (174): el texto largo se ve entero y baja de renglón, sin «…». Cortan solo los archivos de las excepciones de
+// formatos.md, cada una con el tablero que corta: la vista previa de la lista de chats (188), el título de la barra de arriba
+// del teléfono (`.ap-bar h1`) y el valor elegido de un campo cerrado de un renglón (`button.in2 .val`).
+const cutsText = new Set([
+  "modules/whatsapp/chats/components/ConversationItem.tsx",
+  "shared/ui/app/AppBar.tsx",
+  "shared/ui/select.tsx",
+  "shared/ui/SearchSelect.tsx",
+  "shared/ui/MultiSelect.tsx",
+  "shared/ui/fields/MonthField.tsx",
+]);
+
 function sourceFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(directory, entry.name);
@@ -40,6 +52,9 @@ function violations(relative: string, source: string): string[] {
   if (/\bformat(?:Relative|Calendar|ShortDate|ShortDateTime)\b|kind=\{?["'](?:relative|shortDate|shortDateTime)["']|type:\s*["']relative["']/.test(source)) {
     found.push("fecha relativa, corta o de calendario");
   }
+  if (!cutsText.has(normalized) && /\b(?:truncate|text-ellipsis|line-clamp(?:-\w+)?)\b/.test(source)) {
+    found.push("texto cortado con «…»");
+  }
   return found;
 }
 
@@ -59,6 +74,12 @@ describe("uso exclusivo de formatos y catálogos", () => {
     expect(violations("modules/whatsapp/contacts/columns.tsx", '{ id: "last", type: "relative", value }')).not.toEqual([]);
     expect(violations("shared/ui/format/DateText.tsx", '<DateText value={value} kind="shortDate" />')).not.toEqual([]);
     expect(violations("shared/format/formatters.ts", "function formatShortDateTime(value)")).not.toEqual([]);
+    expect(violations("areas/business/audit/pages/AuditPage.tsx", '<button className="block w-full truncate text-left">')).not.toEqual([]);
+    expect(violations("shared/ui/Page.tsx", '<p className="line-clamp-2">')).not.toEqual([]);
+    expect(violations("shared/ui/DataTable.tsx", '"*:data-[slot=cell]:line-clamp-1"')).not.toEqual([]);
+    expect(violations("shared/ui/select.tsx", '"*:data-[slot=select-value]:line-clamp-1"')).toEqual([]);
+    expect(violations("layouts/MorePage.tsx", '<span className="overflow-hidden text-ellipsis">')).not.toEqual([]);
+    expect(violations("modules/whatsapp/chats/components/ConversationItem.tsx", '<span data-slot="chat-preview" className="truncate">')).toEqual([]);
   });
 
   it("mantiene las reglas en el código de producción", () => {

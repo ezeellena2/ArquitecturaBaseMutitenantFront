@@ -72,6 +72,8 @@ describe("Breadcrumbs", () => {
     // «Criterio · Marco» (.tb): la barra con un espacio a cada lado (0,28 em), no con 6 px.
     expect(screen.getByRole("list")).toHaveClass("gap-[0.28em]");
     expect(screen.getByRole("list")).not.toHaveClass("gap-1.5");
+    // 174: un nombre largo baja de renglón, sin «…».
+    expect(screen.getByText("Tomás Acosta")).not.toHaveClass("truncate"); expect(screen.getByRole("list")).toHaveClass("flex-wrap");
     expect(screen.getByRole("link", { name: "Usuarios" })).toHaveAttribute("href", "/org/usuarios");
   });
 

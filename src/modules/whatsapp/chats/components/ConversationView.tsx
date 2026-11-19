@@ -182,11 +182,11 @@ export function ConversationView({ scope, id, links, back, phone }: {
 
   const subtitle = [...(row.contactName ? [phoneLabel(format, row.displayNumber)] : []), ...descriptors].join(" · ");
   return <section aria-label={name} className="flex min-w-0 flex-1 flex-col">
-    <header className="flex h-15 shrink-0 items-center gap-3 border-b border-[var(--borde)] pr-3 pl-4">
+    <header className="flex min-h-15 shrink-0 items-center gap-3 border-b border-[var(--borde)] py-2 pr-3 pl-4">
       <ChatAvatar name={row.contactName} />
       <div className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-        <h2 className="truncate text-[0.875rem] font-semibold text-[var(--t1)]">{name}</h2>
-        {subtitle ? <span className="truncate text-[0.78125rem] text-[var(--t3)]">{subtitle}</span> : null}
+        <h2 className="wrap-break-word text-[0.875rem] font-semibold text-[var(--t1)]">{name}</h2>
+        {subtitle ? <span className="wrap-break-word text-[0.78125rem] text-[var(--t3)]">{subtitle}</span> : null}
       </div>
       <div className="flex shrink-0 items-center gap-2">
         {accountPath ? <Button asChild variant="outline" size="sm"><Link to={accountPath}>{t("chats.header.viewAccount")}</Link></Button> : null}

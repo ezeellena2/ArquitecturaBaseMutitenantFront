@@ -15,7 +15,7 @@ export function AccountOrganizationsTab({ organizations }: { organizations: read
   const state = (membership: PlatformAccountMembershipResponse) => <StatusDot tone={membership.status === "Active" ? "success" : membership.status === "Invited" ? "pending" : "neutral"}
     label={t(membership.status === "Active" ? "detail.membershipActive" : membership.status === "Invited" ? "detail.membershipInvited" : "detail.membershipEnded")} />;
   const columns: Column<PlatformAccountMembershipResponse>[] = [
-    { id: "name", header: t("detail.organization"), type: "custom", mobile: "primary", cell: (row) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={path(row.tenantId)}>{row.name}</Link> },
+    { id: "name", header: t("detail.organization"), type: "custom", mobile: "primary", cell: (row) => <Link className="block wrap-break-word font-medium text-[var(--t1)] hover:underline" to={path(row.tenantId)}>{row.name}</Link> },
     { id: "roleName", header: t("detail.role"), type: "custom", cell: role },
     { id: "joinedAtUtc", header: t("detail.since"), type: "date", value: (row) => row.joinedAtUtc },
     { id: "status", header: t("detail.membershipState"), type: "custom", cell: state },

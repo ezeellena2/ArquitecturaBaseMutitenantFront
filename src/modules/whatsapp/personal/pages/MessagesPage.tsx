@@ -152,11 +152,11 @@ function PersonalConversation({ id, back, phone }: { id: string; back: { to: str
   </Page>;
 
   return <section aria-label={name} className="flex min-w-0 flex-1 flex-col">
-    <header className="flex h-15 shrink-0 items-center gap-3 border-b border-[var(--borde)] pr-3 pl-4">
+    <header className="flex min-h-15 shrink-0 items-center gap-3 border-b border-[var(--borde)] py-2 pr-3 pl-4">
       <OrganizationAvatar name={name} />
       <div className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-        <h2 className="truncate text-[0.875rem] font-semibold text-[var(--t1)]">{name}</h2>
-        <span className="truncate text-[0.78125rem] text-[var(--t3)]">{[phoneLabel(format, conversation.displayNumber), since].filter(Boolean).join(" · ")}</span>
+        <h2 className="wrap-break-word text-[0.875rem] font-semibold text-[var(--t1)]">{name}</h2>
+        <span className="wrap-break-word text-[0.78125rem] text-[var(--t3)]">{[phoneLabel(format, conversation.displayNumber), since].filter(Boolean).join(" · ")}</span>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild><IconButton ref={menuTrigger} label={t("personal.actionsOf", { name })}><MoreVerticalIcon className="size-4" /></IconButton></DropdownMenuTrigger>

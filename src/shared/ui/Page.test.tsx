@@ -71,7 +71,8 @@ describe("Page", () => {
     const heading = screen.getByRole("heading", { level: 1, name: "Usuarios" });
     const summary = screen.getByText("11 usuarios · 7 activos · 3 invitaciones");
     const band = heading.closest("header");
-    expect(summary).toHaveClass("truncate");
+    // 174: el resumen baja de renglón, sin «…».
+    expect(summary).not.toHaveClass("truncate");
     expect(heading.parentElement?.parentElement).toContainElement(summary);
     expect(band).toContainElement(screen.getByRole("button", { name: "Invitar usuario" }));
   });

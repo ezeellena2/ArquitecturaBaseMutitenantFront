@@ -13,8 +13,10 @@ describe("ReadOnlyField", () => {
     </>);
     const name = screen.getByRole("group", { name: "Nombre" });
     const box = name.querySelector("[data-slot=read-only-field]");
-    expect(box).toHaveClass("border-[var(--borde)]", "bg-[var(--s2)]", "text-[var(--t2)]", "h-9", "max-md:h-12");
+    expect(box).toHaveClass("border-[var(--borde)]", "bg-[var(--s2)]", "text-[var(--t2)]", "min-h-9", "max-md:min-h-12");
     expect(box).toHaveTextContent("Grupo Delta");
+    // .o-txt: lo largo baja de renglón y el campo crece, sin «…» (174).
+    expect(screen.getByText("Grupo Delta")).not.toHaveClass("truncate");
     expect(box?.querySelector("svg")).toBeNull();
     const currency = screen.getByRole("group", { name: "Moneda" });
     expect(currency.querySelector("[data-slot=read-only-field] svg")).toHaveClass("text-[var(--t3)]");

@@ -37,7 +37,7 @@ export function EstimateLine({ estimate }: { estimate: WhatsAppBroadcastEstimate
   const { t } = useTranslation("whatsapp");
   const format = useFormat();
   return <span className="flex flex-col justify-center leading-[1.3]">
-    {estimate ? <strong className="truncate text-[0.9375rem] font-semibold text-[var(--t1)]">
+    {estimate ? <strong className="wrap-break-word text-[0.9375rem] font-semibold text-[var(--t1)]">
       {t("broadcasts.contacts", countOf(format, estimate.recipients))}{" · "}<MoneyText value={estimate.estimatedCost} className="text-left" />
     </strong> : null}
     <span className="text-[0.78125rem] text-[var(--t3)]">{t("broadcasts.preview.costShort")}</span>

@@ -178,7 +178,7 @@ function InvitationFlow() {
           <div className="flex items-center gap-3.5 rounded-[0.625rem] border border-[var(--borde)] bg-[var(--s2)] px-3 py-2.5">
             <Avatar size="large" initials={initials(inviter, "O").charAt(0)} />
             <span className="flex min-w-0 flex-col leading-[1.3]">
-              <span className="truncate text-[0.9375rem] font-semibold text-[var(--t1)]">{t("join.invitedBy", { inviter })}</span>
+              <span className="wrap-break-word text-[0.9375rem] font-semibold text-[var(--t1)]">{t("join.invitedBy", { inviter })}</span>
               <span className="text-[0.8125rem] text-[var(--t3)]">
                 {inviterRoles.join(", ")}{inviterRoles.length > 0 && invitation.issuedAtUtc ? " · " : null}
                 {invitation.issuedAtUtc ? <DateText value={invitation.issuedAtUtc} kind="dateTime" /> : null}

@@ -27,7 +27,7 @@ function ProfileRow({ profile, onClose }: { profile: ProfileEntry; onClose: () =
       {initials(profile.name)}
     </span>
     <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-      <span className="truncate text-[0.8125rem]">{profile.name}</span>
+      <span className="wrap-break-word text-[0.8125rem]">{profile.name}</span>
       {profile.detail ? <span className={`text-[0.78125rem] ${profile.checked ? "" : "text-[var(--t3)]"}`}>{profile.detail}</span> : null}
     </span>
     {profile.checked ? <Check strokeWidth={2.25} className="size-4 text-[var(--t3)]" aria-hidden="true" /> : null}
@@ -64,8 +64,8 @@ export function AccessMenu() {
       <div className="flex items-center gap-2.5 p-2.5">
         <Avatar size="medium" initials={avatarInitials} muted={avatarMuted} />
         <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-          <span className="truncate text-[0.8125rem] font-semibold text-[var(--t1)]">{nameLabel}</span>
-          {detail ? <span className="truncate text-[0.78125rem] text-[var(--t3)]">{detail}</span> : null}
+          <span className="wrap-break-word text-[0.8125rem] font-semibold text-[var(--t1)]">{nameLabel}</span>
+          {detail ? <span className="wrap-anywhere text-[0.78125rem] text-[var(--t3)]">{detail}</span> : null}
         </span>
       </div>
       {separator}

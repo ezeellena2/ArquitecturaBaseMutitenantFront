@@ -56,8 +56,8 @@ export function MorePage() {
     <div className="flex items-center gap-3.5 px-5 pt-2 pb-1">
       <Avatar size="profile" initials={avatarInitials} muted={avatarMuted} />
       <span className="flex min-w-0 flex-col leading-[normal]">
-        <span className="truncate text-[1.125rem] font-semibold text-[var(--t1)]">{nameLabel}</span>
-        {detail ? <span className="truncate text-[0.84375rem] text-[var(--t3)]">{detail}</span> : null}
+        <span className="wrap-break-word text-[1.125rem] font-semibold text-[var(--t1)]">{nameLabel}</span>
+        {detail ? <span className="wrap-anywhere text-[0.84375rem] text-[var(--t3)]">{detail}</span> : null}
       </span>
     </div>
 

@@ -34,8 +34,8 @@ function MobilePublicAccessMenu() {
       <div className="flex items-center gap-3 px-3 py-2.5">
         <Avatar initials={avatarInitials} muted={avatarMuted} size="medium" className="text-[0.875rem]" />
         <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-          <span className="truncate text-[0.875rem] font-semibold text-[var(--t1)]">{nameLabel}</span>
-          {detail ? <span className="truncate text-[0.78125rem] text-[var(--t3)]">{detail}</span> : null}
+          <span className="wrap-break-word text-[0.875rem] font-semibold text-[var(--t1)]">{nameLabel}</span>
+          {detail ? <span className="wrap-anywhere text-[0.78125rem] text-[var(--t3)]">{detail}</span> : null}
         </span>
       </div>
       <div className="flex flex-col px-2 pt-1.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))]">
@@ -47,7 +47,7 @@ function MobilePublicAccessMenu() {
               className={cn(itemClass, profile.checked ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : profile.unavailable ? "text-[var(--t3)]" : "")}>
               <span aria-hidden="true" className={"inline-flex size-7 shrink-0 items-center justify-center rounded-[0.5rem] text-[0.71875rem] font-bold " + (profile.checked ? "bg-[var(--superficie)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]")}>{initials(profile.name)}</span>
               <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-                <span className="truncate">{profile.name}</span>
+                <span className="wrap-break-word">{profile.name}</span>
                 {profile.detail ? <span className="text-[0.78125rem] text-[var(--t3)]">{profile.detail}</span> : null}
               </span>
               {profile.checked ? <Check strokeWidth={2.25} className="size-4 text-[var(--t3)]" aria-hidden="true" /> : null}

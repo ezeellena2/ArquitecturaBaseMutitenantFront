@@ -239,7 +239,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
             {/* Pagina-Org (.o-fila-tit, .o-i): la ⓘ va a 6 de la dirección, en su grupo; con los 12 del interruptor, en el
                 teléfono la dirección se cortaba. */}
             <span className="flex min-w-0 items-center gap-1.5">
-              <span id={visibleId} className="min-w-0 truncate text-[0.8125rem] font-medium text-[var(--t1)] max-md:text-[0.96875rem]">{t("publicPage:visibleAt", { host: publicSiteHost(savedSlug) })}</span>
+              <span id={visibleId} className="min-w-0 wrap-anywhere text-[0.8125rem] font-medium text-[var(--t1)] max-md:text-[0.96875rem]">{t("publicPage:visibleAt", { host: publicSiteHost(savedSlug) })}</span>
               {locked ? <InfoButton label={t("publicPage:blockedInfo")} onClick={() => setBlockedInfoOpen(true)} /> : null}
             </span>
             {/* Trabado, el interruptor se ve apagado pero se puede tocar: abre el aviso, como la ⓘ, y no publica. */}

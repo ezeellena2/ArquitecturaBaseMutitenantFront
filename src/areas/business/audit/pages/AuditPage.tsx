@@ -53,7 +53,7 @@ export function AuditPage() {
       id: "action", header: t("audit:columns.action"), type: "custom", mobile: "primary",
       // Tablero Auditoria-Org: tocar «Qué pasó» abre el detalle; sin el ojo.
       cell: (row) => <button type="button" aria-label={t("audit:openDetails", { action: row.actionText })}
-        className="block w-full truncate text-left text-[var(--t1)] hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
+        className="block w-full text-left wrap-break-word text-[var(--t1)] hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
         onClick={() => setSelected(row)}>{row.actionText}</button>,
     },
     // Columnas del tablero: 140px, 2.4fr, 1.4fr y 1.2fr, más los márgenes de cada celda; «Qué pasó» se lleva el resto. Con

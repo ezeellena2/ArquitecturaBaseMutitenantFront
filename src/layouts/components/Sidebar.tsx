@@ -96,7 +96,7 @@ export function Sidebar({ navigation, account, context, collapsed, managementOpe
     {/* «Criterio · Menús»: identidad en 13 y negrita, contacto en gris de 12 y avatar de la cuenta global. */}
     {account ? <div className="flex items-center gap-2.5 border-t border-[var(--lado-borde)] px-3.5 py-2.5">
       <Avatar initials={account.avatarInitials} muted={account.avatarMuted} />
-      {showLabels ? <span className="flex min-w-0 flex-col leading-[1.3]"><span className="truncate text-[0.8125rem] font-bold text-[var(--t1)]">{account.name || t("format:emptyLabel")}</span>{account.detail ? <span className="truncate text-[0.75rem] text-[var(--t3)]">{account.detail}</span> : null}</span> : null}
+      {showLabels ? <span className="flex min-w-0 flex-col leading-[1.3]"><span className="wrap-break-word text-[0.8125rem] font-bold text-[var(--t1)]">{account.name || t("format:emptyLabel")}</span>{account.detail ? <span className="wrap-anywhere text-[0.75rem] text-[var(--t3)]">{account.detail}</span> : null}</span> : null}
     </div> : null}
   </aside>;
 }

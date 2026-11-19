@@ -39,13 +39,13 @@ export function Breadcrumbs({ navigation, permissions }: { navigation: Navigatio
 
   return <nav aria-label={t("layout.breadcrumbs.label")} className="min-w-0 text-[0.8125rem] text-[var(--t2)]">
     {/* «Criterio · Marco» (.tb): «Inicio / Gestión de usuarios / Usuarios», con un espacio a cada lado de la barra. */}
-    <ol className="flex min-w-0 items-center gap-[0.28em] truncate">
-      <li className="truncate" aria-current={pathname === home.path && crumbs.length === 0 ? "page" : undefined}>
+    <ol className="flex min-w-0 flex-wrap items-center gap-[0.28em]">
+      <li className="min-w-0 wrap-break-word" aria-current={pathname === home.path && crumbs.length === 0 ? "page" : undefined}>
         {pathname === home.path ? t(home.labelKey) : <Link to={home.path} className="hover:underline">{t(home.labelKey)}</Link>}
       </li>
       {crumbs.map((crumb) => [
         <li key={`${crumb.label}-separador`} aria-hidden="true">{"/"}</li>,
-        <li key={crumb.label} className="truncate" aria-current={crumb.current ? "page" : undefined}>
+        <li key={crumb.label} className="min-w-0 wrap-break-word" aria-current={crumb.current ? "page" : undefined}>
           {crumb.to ? <Link to={crumb.to} className="hover:underline">{crumb.label}</Link> : crumb.label}
         </li>,
       ])}

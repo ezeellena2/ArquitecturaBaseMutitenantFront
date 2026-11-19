@@ -245,16 +245,16 @@ export function Page({
           ) : null}
           <div className="min-w-0">
             {info ? <span className="flex min-w-0 items-center gap-1.5">
-              <h1 aria-describedby={helpId} className="truncate text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>
+              <h1 aria-describedby={helpId} className="min-w-0 wrap-break-word text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>
               {info}
-            </span> : <h1 className="truncate text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>}
+            </span> : <h1 className="wrap-break-word text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>}
             {summary === null || summary === undefined ? (
-              status ? <p data-slot="page-subline" className="mt-0.5 truncate text-[0.8125rem] text-[var(--t2)]">{status}</p> : null
+              status ? <p data-slot="page-subline" className="mt-0.5 wrap-break-word text-[0.8125rem] text-[var(--t2)]">{status}</p> : null
             ) : (
               // Tableros Usuario y Rol: el estado va primero; después, el resumen.
               <p data-slot="page-subline" className="mt-0.5 flex min-w-0 items-center text-[0.8125rem] text-[var(--t2)]">
                 {status ? <><span className="shrink-0">{status}</span><SublineSeparator /></> : null}
-                <span className="truncate">{summary}</span>
+                <span className="min-w-0 wrap-break-word">{summary}</span>
               </p>
             )}
           </div>
