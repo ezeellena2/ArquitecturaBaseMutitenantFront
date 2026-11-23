@@ -4327,7 +4327,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "acciones-asistente",
-      "title": "Confirmar lo que propone el asistente · quitar a una persona y borrar un rol · para aprobar",
+      "title": "Confirmar lo que propone el asistente · quitar a una persona y dar de baja un rol · para aprobar",
       "w": 1440,
       "x": 6860,
       "y": 0
@@ -4707,7 +4707,7 @@
     "acciones-asistente": {
       "color": "blue",
       "page": "acciones-asistente",
-      "text": "Acciones del asistente (ADR 0068 y decisión 268 del back), para aprobar. Va después de la segunda parte de la base y antes de la E12: cada tablero muestra solo lo que existe hasta acá (78), sin «Gestión de formularios».\n\nLa regla: la IA prepara, la persona confirma en la pantalla de siempre y guarda la ruta de siempre. La tarjeta va en el hilo, debajo del texto de la IA, con cada dato en su renglón y «Revisá» con su motivo en lo dudoso. Su botón abre la pantalla de la acción con la propuesta: el diálogo «Invitar usuario» sobre el Inicio, la ficha de la persona, el editor de roles o la confirmación de quitar o de borrar.\n\nQuien pide es Valeria Castro, con «Administración de personas»: no es Dueña, así que lo que no puede dar se ve apagado, con el motivo en un tooltip sobre el control (211). Los permisos de un rol van en áreas plegables (260), con lo incluido apagado y su motivo.\n\nPara decidir: la spec llama «Borrar rol» a la acción (y «Rol borrado» a la tarjeta aplicada), pero Roles dice hoy «Dar de baja» para lo mismo (DELETE /api/roles/{id}). La confirmación está copiada de Roles, como es hoy.",
+      "text": "Acciones del asistente (ADR 0068 y decisión 268 del back), para aprobar. Va después de la segunda parte de la base y antes de la E12: cada tablero muestra solo lo que existe hasta acá (78), sin «Gestión de formularios».\n\nLa regla: la IA prepara, la persona confirma en la pantalla de siempre y guarda la ruta de siempre. La tarjeta va en el hilo, debajo del texto de la IA, con cada dato en su renglón y «Revisá» con su motivo en lo dudoso. Su botón abre la pantalla de la acción con la propuesta: el diálogo «Invitar usuario» sobre el Inicio, la ficha de la persona, el editor de roles o la confirmación de quitar o de dar de baja.\n\nQuien pide es Valeria Castro, con «Administración de personas»: no es Dueña, así que lo que no puede dar se ve apagado, con el motivo en un tooltip sobre el control (211). Los permisos de un rol van en áreas plegables (260), con lo incluido apagado y su motivo.\n\nUn rol se da de baja con el verbo de la pantalla de Roles (el usuario, 23/11): la tarjeta «Baja de rol», «Revisar y dar de baja» y, aplicada, «Rol dado de baja». La confirmación es la de Roles de hoy.",
       "w": 620,
       "x": 0,
       "y": 0

@@ -5,7 +5,7 @@ base y antes de la E12, así que cada tablero muestra solo lo que existe hasta a
 Escribe diez tableros, con su teléfono, en la página «Propuesta · Acciones del asistente» de `canvas.json`:
 - `Asistente-Org-Acciones`: el Inicio con la tarjeta de cada acción en el hilo, debajo del texto de la IA, en todos sus estados
   (nueva, con «Revisá», reemplazada, ya no disponible con su motivo, aplicada y plegada, y sin confirmar). La tarjeta copia la de
-  armar de `Asistente-Org-25`, con cada dato en su renglón (263) y el botón de quitar o borrar en rojo contorneado;
+  armar de `Asistente-Org-25`, con cada dato en su renglón (263) y el botón de quitar o dar de baja en rojo contorneado;
 - `Usuarios-Invitar-Propuesta`: «Invitar usuario» sobre el Inicio, con «Propuesta del asistente», un rol con «Revisá», la pieza
   para elegir abierta (262) con lo que no se puede dar apagado y su motivo (211 y 0061), el aviso de que manda la invitación,
   «Invitando…» y «Ya se guardó»;
@@ -13,7 +13,7 @@ Escribe diez tableros, con su teléfono, en la página «Propuesta · Acciones d
   persona cambió desde la propuesta, con lo que cambia contado sobre lo de ahora;
 - `Rol-Propuesta`: el editor de roles con los permisos en áreas plegables (260, RO3-D), con un rol nuevo propuesto, lo incluido y
   lo que no tenés apagados con su motivo, y un cambio de permisos en «Lo que cambia»;
-- `Confirmar-Propuesta`: la confirmación de quitar a una persona, desde su ficha, y la de borrar un rol, desde Roles, abiertas
+- `Confirmar-Propuesta`: la confirmación de quitar a una persona, desde su ficha, y la de dar de baja un rol, desde Roles, abiertas
   desde la tarjeta.
 
 Quien pide es Valeria Castro, con el rol «Administración de personas» (Usuarios y Roles enteros, «Ver empresas», «Usar el
@@ -382,7 +382,7 @@ PIDE = {
     "quitar": "Quitá a Martín Paz de la organización.",
     "rol": "Creá un rol Coordinación que pueda administrar usuarios y ver las empresas.",
     "cambio-rol": "Al rol Ventas sumale Ver usuarios y sacale Ver empresas.",
-    "borrar": "Borrá el rol Ventas mayoristas, ya no lo usamos.",
+    "baja-rol": "Dá de baja el rol Ventas mayoristas, ya no lo usamos.",
     "baja": "Dale a Diego Ríos el rol Recursos humanos.",
 }
 RESPONDE = {
@@ -392,7 +392,7 @@ RESPONDE = {
     "quitar": "Te preparé quitar a Martín Paz. Se confirma desde su ficha.",
     "rol": "Te preparé el rol nuevo. Revisá sus permisos en el editor antes de crearlo.",
     "cambio-rol": "Te preparé el cambio del rol Ventas. Lo revisás en el editor antes de guardar.",
-    "borrar": "Te preparé borrar el rol Ventas mayoristas. Se confirma desde Roles.",
+    "baja-rol": "Te preparé dar de baja el rol Ventas mayoristas. Se confirma desde Roles.",
     "baja": "Te preparé el cambio de roles de Diego Ríos.",
 }
 
@@ -411,7 +411,7 @@ def estados_inicio(tel):
              ("Permisos", "Administrar usuarios, Ver empresas")])
     cambio = T("Cambio de rol", "Revisar cambios", "Rol-Propuesta",
                [("Rol", "Ventas"), ("Se suma", "Ver usuarios"), ("Se quita", "Ver empresas")])
-    borrar = T("Borrar rol", "Revisar y borrar", "Confirmar-Propuesta", [("Rol", "Ventas mayoristas")], peligro=True)
+    baja = T("Baja de rol", "Revisar y dar de baja", "Confirmar-Propuesta", [("Rol", "Ventas mayoristas")], peligro=True)
     t = lambda clave, tarjeta_: (PIDE[clave], RESPONDE[clave], tarjeta_)
     return [
         ("Invitación de usuario", "Invitar a Ana López", [t("invitar", inv)]),
@@ -421,7 +421,7 @@ def estados_inicio(tel):
         ("Quitar de la organización", "Quitar a Martín Paz", [t("quitar", quitar)]),
         ("Rol nuevo", "Un rol para coordinar", [t("rol", rol)]),
         ("Cambio de rol", "Los permisos de Ventas", [t("cambio-rol", cambio)]),
-        ("Borrar rol", "Borrar Ventas mayoristas", [t("borrar", borrar)]),
+        ("Baja de rol", "Baja de Ventas mayoristas", [t("baja-rol", baja)]),
         ("Reemplazada", "Invitar a Ana López",
          [("Invitá a ana.lopez@delta.ejemplo.com con el rol Ventas.", "Te preparé la invitación.",
            plegada("Invitación de usuario", INVITA, "Reemplazada")),
@@ -446,7 +446,7 @@ def estados_inicio(tel):
         ("Rol creado", "Un rol para coordinar", [t("rol", plegada("Rol nuevo", "Coordinación", "Rol creado", E("Ver el rol", "Rol")))]),
         ("Rol cambiado", "Los permisos de Ventas",
          [t("cambio-rol", plegada("Cambio de rol", "Ventas", "Rol cambiado", E("Ver el rol", "Rol")))]),
-        ("Rol borrado", "Borrar Ventas mayoristas", [t("borrar", plegada("Borrar rol", None, "Rol borrado"))]),
+        ("Rol dado de baja", "Baja de Ventas mayoristas", [t("baja-rol", plegada("Baja de rol", None, "Rol dado de baja"))]),
         ("Sin confirmar", "Invitar a Ana López",
          [t("invitar", plegada("Invitación de usuario", INVITA, "Sin confirmar", E("Revisar en Usuarios", "Usuarios")))]),
     ]
@@ -829,7 +829,7 @@ def m_rol_propuesta():
 
 
 # ---------------------------------------------------------------------------------------------------------------- confirmar
-CONF_ESTADOS = ["Quitar a Martín Paz", "Borrar el rol Ventas mayoristas", "Borrar: el rol ya tiene personas"]
+CONF_ESTADOS = ["Quitar a Martín Paz", "Dar de baja el rol Ventas mayoristas", "Dar de baja: el rol ya tiene personas"]
 TEXTO_QUITAR = ("Deja de entrar a Grupo Delta y a sus empresas, y pierde sus roles. Sus correos de delta.ejemplo.com dejan de servirle "
                 "para ingresar; se lo avisamos por sus otros métodos de ingreso. Su cuenta y su perfil personal siguen funcionando.")
 TEXTO_BAJA_ROL = "Deja de aparecer para asignar. Nadie lo tiene, así que no le cambia nada a ningún usuario."
@@ -875,7 +875,7 @@ def confirmar_propuesta():
     borrar = roles.replace("</main>", confirmacion("¿Dar de baja el rol Ventas mayoristas?", TEXTO_BAJA_ROL, "Dar de baja", peligro=False) + "</main>", 1)
     con_personas = roles_compu("2").replace("</main>", confirmacion("¿Dar de baja el rol Ventas mayoristas?", TEXTO_BAJA_ROL.split(".")[0] + ".",
                                                                     "Dar de baja", peligro=False, apagado=MOTIVO_CON_PERSONAS) + "</main>", 1)
-    return tablero("Usuario", "Confirmar lo que propone el asistente · quitar a una persona y borrar un rol · para aprobar", CSS_COMPU,
+    return tablero("Usuario", "Confirmar lo que propone el asistente · quitar a una persona y dar de baja un rol · para aprobar", CSS_COMPU,
                    por_estado([quitar, borrar, con_personas]), CONF_ESTADOS, 1440, 900, otra="Roles")
 
 
@@ -939,12 +939,12 @@ NOTA = ("Acciones del asistente (ADR 0068 y decisión 268 del back), para aproba
         "La regla: la IA prepara, la persona confirma en la pantalla de siempre y guarda la ruta de siempre. La tarjeta va en el hilo, "
         "debajo del texto de la IA, con cada dato en su renglón y «Revisá» con su motivo en lo dudoso. Su botón abre la pantalla de la "
         "acción con la propuesta: el diálogo «Invitar usuario» sobre el Inicio, la ficha de la persona, el editor de roles o la "
-        "confirmación de quitar o de borrar.\n\n"
+        "confirmación de quitar o de dar de baja.\n\n"
         "Quien pide es Valeria Castro, con «Administración de personas»: no es Dueña, así que lo que no puede dar se ve apagado, "
         "con el motivo en un tooltip sobre el control (211). Los permisos de un rol van en áreas plegables (260), con lo incluido "
         "apagado y su motivo.\n\n"
-        "Para decidir: la spec llama «Borrar rol» a la acción (y «Rol borrado» a la tarjeta aplicada), pero Roles dice hoy «Dar de baja» "
-        "para lo mismo (DELETE /api/roles/{id}). La confirmación está copiada de Roles, como es hoy.")
+        "Un rol se da de baja con el verbo de la pantalla de Roles (el usuario, 23/11): la tarjeta «Baja de rol», «Revisar y dar de "
+        "baja» y, aplicada, «Rol dado de baja». La confirmación es la de Roles de hoy.")
 
 
 def registrar():

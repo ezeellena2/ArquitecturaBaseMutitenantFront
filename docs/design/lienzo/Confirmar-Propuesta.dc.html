@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Confirmar lo que propone el asistente · quitar a una persona y borrar un rol · para aprobar</title>
+<title>Confirmar lo que propone el asistente · quitar a una persona y dar de baja un rol · para aprobar</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/ab/components/bundle.css">
 <script src="ds/ab/components/bundle.js"></script>
@@ -1985,7 +1985,7 @@ button.in2 .acc-rev { margin-left: auto; margin-right: 5.8px/*8px*/; }
     
   </div></sc-if>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Quitar a Martín Paz","Borrar el rol Ventas mayoristas","Borrar: el rol ya tiene personas"],"default":"Quitar a Martín Paz","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Quitar a Martín Paz","Dar de baja el rol Ventas mayoristas","Dar de baja: el rol ya tiene personas"],"default":"Quitar a Martín Paz","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 // t10-correos · 174: un correo baja de renglón después de la «@», nunca a mitad de palabra (traspaso10_piezas_1004.py).
 if (typeof document !== 'undefined' && !window.__t10Correos) {
   window.__t10Correos = true;
@@ -2014,7 +2014,7 @@ if (typeof document !== 'undefined' && !window.__t10Correos) {
 
 class Component extends DCLogic {
   renderVals() {
-    const k = ["Quitar a Martín Paz", "Borrar el rol Ventas mayoristas", "Borrar: el rol ya tiene personas"].indexOf(this.props.estado ?? "Quitar a Martín Paz");
+    const k = ["Quitar a Martín Paz", "Dar de baja el rol Ventas mayoristas", "Dar de baja: el rol ya tiene personas"].indexOf(this.props.estado ?? "Quitar a Martín Paz");
     return { si: true, no: false, e0: k === 0, e1: k === 1, e2: k === 2 };
   }
 }
