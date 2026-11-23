@@ -196,7 +196,7 @@ La versión 179, del 23/11, registra que el usuario aprobó ese día los diez ta
 - sus títulos pierden «· para aprobar», y la página pasa a llamarse «Organización · Acciones del asistente» (`acciones_asistente_1004.py`);
 - entran en la guía y en los índices como cinco pantallas del capítulo «Le pregunta al asistente», cada una con su compu y su teléfono (`../guia/recorrido.py` e `indices_1004.py`, con `Indice-asistente` medido en 579 de alto). Después corrieron `paleta_pradera_1004.py` y la pasada de las piezas sobre los doce índices; solo cambian `Indice` y `Indice-asistente`.
 
-Las dos guías no se regeneraron en esta versión. Se publicaron los diez tableros, los dos índices y `canvas.json` en la versión 219 del artefacto.
+Se publicaron los diez tableros, los dos índices y `canvas.json` en la versión 219 del artefacto. Las dos guías, regeneradas con la 179 (441 capturas y 54 recorridos con 273 pasos, sin errores ni imágenes en blanco), suman las cinco pantallas de las acciones en el capítulo del asistente; se publicaron en dos envíos cada una: la del lienzo en sus versiones 76 y 77, y la de Formularios en la 21 y la 22.
 
 La versión 178, del 23/11, da de baja un rol con el verbo de la pantalla de Roles, como eligió el usuario ese día: la tarjeta se llama «Baja de rol», su botón rojo contorneado dice «Revisar y dar de baja» y, aplicada, se pliega en «Rol dado de baja». La confirmación sigue siendo la de Roles («¿Dar de baja el rol …?»). Cambian `Asistente-Org-Acciones`, `Confirmar-Propuesta` y sus teléfonos, desde `acciones_asistente_1004.py`, y se publicaron con `canvas.json` (el título de `Confirmar-Propuesta` y la nota de la página) en la versión 218 del artefacto.
 

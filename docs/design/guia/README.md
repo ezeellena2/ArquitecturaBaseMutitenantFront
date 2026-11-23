@@ -23,6 +23,7 @@ Qué va en la de Formularios lo dicen `CAPITULO_FORMULARIOS` y `BIBLIOTECA`, en 
 | `generar_recorrido.py` | Arma `Guia-Lienzo.html` y `Guia-Formularios.html`, y pasa las capturas a JPG. |
 | `capturar.mjs` | Saca las capturas de los tableros con Playwright y el Chrome del sistema. |
 | `capturar-recorridos.mjs` | Saca las capturas de cada paso de los recorridos guiados ([`../recorridos`](../recorridos/README.md)) y mide el lugar a resaltar. |
+| `de-afuera.mjs` | Lo que comparten las dos capturas: React y las fuentes se piden una vez por corrida y se sirven de memoria, cada captura espera a que el tablero se dibuje, y una que vence o sale con un error de la página se reintenta hasta tres veces. Sin esto, con la PC cargada, salían capturas en blanco o con «React is not defined». |
 
 ## Cómo regenerarlas
 
