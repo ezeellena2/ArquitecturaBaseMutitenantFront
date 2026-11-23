@@ -51,7 +51,7 @@
 - el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (solo los tableros validados); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` y `RoleEditorPage.tsx` (E4), `src/shared/ui/Page.tsx`, `Section.tsx`, `DetailGrid.tsx` (el detalle de Auditoría), `FilterBar.tsx`, `SegmentedControl.tsx`, `src/layouts/components/AdminPanel.tsx` (el segundo panel) y `docs/architecture/tema.md`
 
 ## Lo verifica
-- `theme-tokens.test.ts` (E0): los tokens, y que las medidas estén en `rem`
+- `theme-tokens.test.ts` (E0): los tokens; que las medidas estén en `rem`; y que todo color, también entre corchetes (`bg-[var(--…)]`, `bg-(--…)`), en un estilo en línea, en un atributo de SVG o en otra hoja de estilos, sea un token de tema.md, sin alias de shadcn, variables sueltas ni colores con nombre (`red`, `white`)
 - `DetailGrid.test.tsx` (E5): la grilla en la compu y el rótulo encima del valor en el teléfono, con axe
 - `FilterBar.test.tsx` (E1), `SegmentedControl.test.tsx` (E1) y `AdminPanel.test.tsx` (E3): los filtros con «Limpiar», las dos vistas y el segundo panel
 - `harness.test.ts` (E11): solo `src/shared/ui/Page.tsx` importa `shared/ui/tabs`; `ui-usage.test.ts` (E12): nunca `alert`, `confirm` ni `prompt` del navegador, y fuera de `shared/ui` ni Radix, vaul o cmdk, ni `createPortal`, ni `<table>`, `<select>`, `<dialog>` o un `role="dialog"` a mano (la excepción, con su motivo, está en el test)

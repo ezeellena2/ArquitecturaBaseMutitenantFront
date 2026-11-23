@@ -54,6 +54,70 @@ function filesIn(dir: string): string[] {
   });
 }
 
+// Las utilidades de Tailwind que pintan: el fondo, la letra, los bordes, los anillos, el SVG, el contorno, el subrayado,
+// los degradés, la casilla, el cursor y las divisiones.
+const colorUtility = "(?:bg|text|border(?:-[xytrblse])?|ring(?:-offset)?|fill|stroke|outline|decoration|from|via|to|accent|caret|divide(?:-[xy])?)";
+
+// Los colores del tema: cada token que nombra tema.md, declarado en index.css y que da un color. Los alias de shadcn
+// (`--primary-foreground`) quedan para las clases de shadcn (`text-primary-foreground`), no para nombrarlos a mano.
+const themeColors = new Set([...theme.matchAll(/`(--[a-z][a-z0-9-]*)`/g)].map((match) => match[1]).filter((name) => {
+  try {
+    return /^(?:#|oklch\(|rgba?\(|hsla?\()/.test(token(name));
+  } catch {
+    return false;
+  }
+}));
+
+// Los colores con nombre de CSS. `transparent` y `currentColor` no son un color: dejan ver o heredan el del tema.
+const namedColors = new Set(`aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet brown
+  burlywood cadetblue chartreuse chocolate coral cornflowerblue cornsilk crimson cyan darkblue darkcyan darkgoldenrod darkgray
+  darkgreen darkgrey darkkhaki darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen darkslateblue
+  darkslategray darkslategrey darkturquoise darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue firebrick floralwhite
+  forestgreen fuchsia gainsboro ghostwhite gold goldenrod gray green greenyellow grey honeydew hotpink indianred indigo ivory
+  khaki lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan lightgoldenrodyellow lightgray lightgreen
+  lightgrey lightpink lightsalmon lightseagreen lightskyblue lightslategray lightslategrey lightsteelblue lightyellow lime
+  limegreen linen magenta maroon mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen mediumslateblue
+  mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream mistyrose moccasin navajowhite navy oldlace olive
+  olivedrab orange orangered orchid palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum
+  powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue
+  slateblue slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow
+  yellowgreen`.split(/\s+/));
+
+function namedColorsIn(value: string): string[] {
+  return value.toLowerCase().split(/[^a-z]+/).filter((word) => namedColors.has(word));
+}
+
+/** Lo que pinta fuera del tema en un componente (`tsx`) o en una hoja de estilos aparte (`css`). */
+function colorViolations(source: string, kind: "tsx" | "css" = "tsx"): string[] {
+  const found: string[] = [];
+  if (kind === "css") {
+    for (const match of source.matchAll(/(?:^|[;{\s])((?:[a-z-]*-)?(?:color|background|border|outline|fill|stroke|shadow|decoration)(?:-[a-z-]+)?)\s*:\s*([^;}]+)/g)) {
+      for (const name of namedColorsIn(match[2])) found.push(`${match[1]}: ${name}: va un token de tema.md`);
+    }
+    return found;
+  }
+  // `bg-[…]` y `bg-(--…)`, con su variante (`hover:`) o sin ella. Un tipo explícito que no es un color (`length:`) o un
+  // valor que empieza con un número (`border-[1.5px]`, `text-[0.8125rem]`) no pinta.
+  const arbitrary = new RegExp(`(?<![\\w-])${colorUtility}-(?:\\[([^\\]\\s"'\`]+)\\]|\\(([^)\\s"'\`]+)\\))`, "g");
+  for (const match of source.matchAll(arbitrary)) {
+    const value = (match[1] ?? `var(${match[2]})`).replace(/^color:/, "").replace(/^var\(color:/, "var(");
+    if (/^[a-z-]+:/.test(value) || /^-?[\d.]/.test(value)) continue;
+    for (const variable of value.matchAll(/var\((--[a-z0-9-]+)/g)) {
+      if (!themeColors.has(variable[1])) found.push(`${match[0]}: ${variable[1]} no es un color de tema.md`);
+    }
+    for (const name of namedColorsIn(value.replace(/var\([^)]*\)/g, ""))) found.push(`${match[0]}: ${name}: va un token de tema.md`);
+  }
+  // Un estilo en línea o un objeto que pinta (`color: "red"`) y un atributo de SVG (`fill="white"`).
+  const styleProperty = /\b(color|background(?:Color)?|border(?:Top|Right|Bottom|Left|Block|Inline)?(?:Color)?|outline(?:Color)?|fill|stroke|caretColor|accentColor|textDecoration(?:Color)?|boxShadow|stopColor|floodColor)\s*:\s*(["'`])([^"'`]*)\2/g;
+  for (const match of source.matchAll(styleProperty)) {
+    for (const name of namedColorsIn(match[3])) found.push(`${match[1]}: "${match[3]}": va un token de tema.md`);
+  }
+  for (const match of source.matchAll(/\s(fill|stroke|color|stopColor|floodColor)=(["'])([^"']*)\2/g)) {
+    for (const name of namedColorsIn(match[3])) found.push(`${match[1]}="${name}": va currentColor o un token de tema.md`);
+  }
+  return found;
+}
+
 describe("tema aprobado", () => {
   it("alcanza el contraste mínimo para borde de control y texto peligroso", () => {
     expect(contrast("--input", "--fondo")).toBeGreaterThanOrEqual(3);
@@ -96,7 +160,8 @@ describe("tema aprobado", () => {
     // En una clase de Tailwind, `_` separa los valores (`shadow-[0_8px_oklch(...)]`) y es carácter de palabra: `\b` no lo ve.
     const literalColor = /#[\da-f]{3,8}\b|(?<![a-z\d-])(?:oklch|rgba?|hsla?)\s*\(/i;
     expect("shadow-[0_8px_24px_-12px_oklch(0.24_0.012_60/0.25)]").toMatch(literalColor);
-    const paletteClass = /(?:^|[^\w-])(?:bg|text|border|ring|fill|stroke)-(?:white|black|(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3})(?=[^\w-]|$)/;
+    const paletteClass = new RegExp(`(?:^|[^\\w-])${colorUtility}-(?:white|black|(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\\d{2,3})(?=[^\\w-]|$)`);
+    expect("hover:decoration-red-500 to-white/40").toMatch(paletteClass);
 
     for (const file of sourceFiles) {
       const source = readFileSync(file, "utf8");
@@ -104,6 +169,37 @@ describe("tema aprobado", () => {
       expect(source, `Clase de paleta en ${path.relative(srcDir, file)}`).not.toMatch(paletteClass);
       expect(source, `Token viejo en ${path.relative(srcDir, file)}`).not.toMatch(/--color-[a-z]/);
     }
+  });
+
+  // pantallas-y-ui.md: los colores salen solo de los tokens de tema.md, por nombre. Un valor de Tailwind entre corchetes
+  // (`bg-[…]`, `text-[…]`) o entre paréntesis (`bg-(--…)`) nombra un token del tema, nunca un alias de shadcn, una
+  // variable suelta ni un color con nombre; un estilo en línea, un atributo de SVG o una hoja de estilos aparte tampoco
+  // pintan con `red` o `white`.
+  it("pinta solo con los tokens del tema, también entre corchetes y en los estilos", () => {
+    expect(themeColors.has("--marca")).toBe(true);
+    expect(themeColors.has("--fondo-brillo")).toBe(true);
+    expect(themeColors.has("--primary-foreground")).toBe(false);
+    expect(themeColors.has("--sombra-menu")).toBe(false);
+    expect(colorViolations("bg-[var(--marca)] hover:text-[var(--t2)] border-t-[var(--borde)] bg-(--fondo) text-[0.8125rem] border-[1.5px]")).toEqual([]);
+    expect(colorViolations("bg-[radial-gradient(ellipse_at_80%_0%,var(--fondo-brillo),transparent_55%)] text-[length:inherit]")).toEqual([]);
+    expect(colorViolations("border-[color-mix(in_oklch,var(--punto-alerta)_60%,transparent)] ring-[3px] stroke-[1.5]")).toEqual([]);
+    expect(colorViolations("text-[var(--primary-foreground)]")).not.toEqual([]);
+    expect(colorViolations("bg-[var(--radius-card)]")).not.toEqual([]);
+    expect(colorViolations("data-[state=open]:bg-(--sidebar-accent)")).not.toEqual([]);
+    expect(colorViolations("bg-[white] text-[color:red] decoration-[tomato] from-[navy] via-[gold] to-[snow]")).toHaveLength(6);
+    expect(colorViolations("outline-[color-mix(in_oklch,black_20%,transparent)]")).not.toEqual([]);
+    expect(colorViolations('<div style={{ color: "red", backgroundColor: \'white\' }} />')).toHaveLength(2);
+    expect(colorViolations('<span style={{ borderTop: "1px solid black" }} />')).not.toEqual([]);
+    expect(colorViolations('<path fill="white" stroke="currentColor" /><svg fill="none" />')).toHaveLength(1);
+    expect(colorViolations('<Button variant="outline" tone="danger" style={{ gridTemplateColumns: "1fr" }} />')).toEqual([]);
+    expect(colorViolations(".x { color: red; background: var(--fondo); border: 1px solid transparent; }", "css")).toHaveLength(1);
+
+    const sourceFiles = filesIn(srcDir).filter(
+      (file) => /\.(?:ts|tsx|css)$/.test(file) && !/\.(?:test|d)\.(?:ts|tsx)$/.test(file) && !file.endsWith("index.css"),
+    );
+    const problems = sourceFiles.flatMap((file) => colorViolations(readFileSync(file, "utf8"), file.endsWith(".css") ? "css" : "tsx")
+      .map((problem) => `${path.relative(srcDir, file).replaceAll("\\", "/")}: ${problem}`));
+    expect(problems).toEqual([]);
   });
 
   it("limita las variables de Tailwind de shadcn a alias", () => {

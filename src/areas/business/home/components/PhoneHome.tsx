@@ -47,7 +47,7 @@ export function PhoneHome({ organization, moduleCards = [], companies, groups, f
     {/* .c-top y .c-hola: 10 arriba y 46 abajo (la tarjeta blanca sube 26 sobre ellos), el saludo con la altura normal de
         su letra y el nombre con interlineado 1,15. La campana (.c-campana), blanca sobre un velo claro, a 8 de arriba y 16
         de la derecha; el saludo y el nombre le dejan su lugar y bajan de renglón antes de pasarle por debajo. */}
-    <div className="relative bg-[var(--marca)] pt-2.5 pr-17 pb-11.5 pl-5 text-[var(--primary-foreground)]">
+    <div className="relative bg-[var(--marca)] pt-2.5 pr-17 pb-11.5 pl-5 text-[var(--superficie)]">
       <div className="absolute top-2 right-4"><PhoneNotificationBell tone="cover" /></div>
       <span className="block text-[0.9375rem] leading-[normal] opacity-80">{firstName ? t("greeting", { name: firstName }) : t("greetingUnnamed")}</span>
       <h1 className="mt-0.5 text-[1.75rem] leading-[1.15] font-bold tracking-[-0.02em]">{organizationName}</h1>
@@ -85,7 +85,7 @@ function Shortcuts({ organization, moduleCards, groups }: { organization: HomeOr
         className="flex flex-col items-center gap-1.75 text-center text-[0.78125rem] leading-[normal] font-medium text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
         <span className="relative inline-flex size-14 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]">
           <Icon aria-hidden="true" className="size-6" />
-          {count > 0 ? <span aria-hidden="true" className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-[0.625rem] bg-[var(--peligro)] px-1.5 text-[0.71875rem] font-bold text-[var(--primary-foreground)] shadow-[0_0_0_2px_var(--superficie)]"><NumberText value={count} /></span> : null}
+          {count > 0 ? <span aria-hidden="true" className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-[0.625rem] bg-[var(--peligro)] px-1.5 text-[0.71875rem] font-bold text-[var(--superficie)] shadow-[0_0_0_2px_var(--superficie)]"><NumberText value={count} /></span> : null}
         </span>
         {label}
       </Link>;
