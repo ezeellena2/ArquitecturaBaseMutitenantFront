@@ -1,0 +1,112 @@
+Exportar
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Formularios
+Catálogos
+Inicio / Gestión de formularios / Formularios / Visita a cliente
+1
+L
+Lucía Fernández
+Grupo Delta
+Visita a cliente
+
+Respuestas · versión 4 publicada
+
+Exportar a Excel
+Respuestas 24
+Tablero
+Diseño
+Buscar en textos largos
+Empresa: Delta S.A.
+Filtros
+2
+Columnas
+Recibida: últimos 7 días
+Motivo: Venta nueva
+Limpiar todo
+N°
+Recibida
+Cargó
+Canal
+Empresas
+Cliente
+¿Se concretó la venta?
+Monto estimado
+Motivo
+Fallas
+Observaciones
+Contacto en el local
+VIS-000128
+14/10/2026, 17:02
+Martín Paz
+WhatsApp
+Delta S.A., Delta Sur S.R.L.
+Distribuidora Norte
+Sí
+212.000,00
+Venta nueva
+Ruido
+Firmaron el pedido de noviembre.
+—
+VIS-000126
+13/10/2026, 15:30
+Tomás Acosta
+WhatsApp
+Delta S.A.
+Ferretería Rosales
+Sí
+125.500,00
+Venta nueva
+Frío, Ruido
+Cerramos el pedido de octubre.
+—
+VIS-000124
+13/10/2026, 12:20
+Paula Méndez
+WhatsApp
+Delta S.A.
+Corralón El Puente
+Sí
+96.300,00
+Venta nueva
+—
+Sin respuesta
+—
+VIS-000122
+12/10/2026, 17:40
+Martín Paz
+WhatsApp
+Delta S.A., Delta Sur S.R.L.
+Distribuidora Norte
+Sí
+54.200,00
+Venta nueva
+—
+Entrega parcial, falta un pallet.
+Juan Ortiz
+1–4 de 4
+10 por página · Página 1 de 1
+Exportar respuestas a Excel
+Respuestas
+4
+Filtros
+Empresa: Delta S.A.
+Recibida: últimos 7 días
+Motivo: Venta nueva
+Columnas
+Todas las preguntas
+Solo las visibles
+Archivo
+Visita a cliente-2026-10-15.xlsx
+Cancelar
+Exportar a Excel

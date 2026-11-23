@@ -1,0 +1,42 @@
+9:41
+Delta S.A.
+CUIT 30-71234567-1 · Buenos Aires (GMT−3)
+Miembros
+7
+Roles
+1
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Administrador · Activo
+T
+Tomás Acosta
+tomas.acosta@​delta.ejemplo.com
+Solo lectura · Activo
+D
+Diego Ríos
+diego.rios@​delta.ejemplo.com
+Solo lectura · Por borrar
+P
+Paula Méndez
+paula.mendez@​delta.ejemplo.com
+Solo lectura · Activo
+M
+Martín Paz
+martin.paz@​delta.ejemplo.com
+Solo lectura · Activo
+S
+Sofía Herrera
+sofia.herrera@​delta.ejemplo.com
+Invitación pendiente · vence 02/10/2026
+M
+Marcos Giménez
+marcos.gimenez@​delta.ejemplo.com
+De baja
+Inicio
+Asistente
+2
+Chats
+Contactos
+L
+Más

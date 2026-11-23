@@ -1,0 +1,20 @@
+feat(ui): la ayuda en la (i) y el motivo de lo apagado en su tooltip (F10)
+
+InfoTip es la (i) gris de 14 (.i-ay): en la compu, el texto en su tooltip; en
+el teléfono, tocarla abre una hoja chica con el rótulo de título. Es la
+descripción accesible de lo que acompaña y no toma el foco. FormField,
+CheckboxField, RadioGroupField, Section y Page la ponen con `help`; salen la
+leyenda `hint` de FormField y la línea `description` de la casilla y de la
+opción. El tooltip toma la forma del tablero (.tip).
+
+Lo apagado dice por qué: Button suma `disabledReason` (sigue en el teclado con
+aria-disabled, el motivo en su tooltip y, en el teléfono, en la franja de
+abajo), y una opción apagada del ⋮ va gris y sin texto debajo, con su motivo
+en el tooltip o en la franja. InfoTip.test.tsx frena un `hint` o una
+`description` de ayuda en un campo, una casilla, una caja o una página.
+
+Inventario: hoy no queda ninguna leyenda de ayuda; las `description` que
+quedan son el texto de una confirmación o el dato de una opción de un
+desplegable, que siguen.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

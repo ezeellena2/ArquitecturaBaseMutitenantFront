@@ -1,0 +1,176 @@
+Orden pendiente por «Rubro»
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Catálogos
+Inicio / Gestión de formularios / Catálogos / Proveedores
+1
+L
+Lucía Fernández
+Grupo Delta
+Proveedores
+
+Activo
+
+Descartar
+Guardar cambios
+El catálogo
+
+Escritas a mano · Texto
+
+Nombre *
+Proveedores
+Descripción
+A quiénes se les compra.
+En WhatsApp
+Título · hasta 30 caracteres
+Texto
+Agregar campo
+Descripción · hasta 300
+CUIT
+Zona
+Agregar campo
+Por ejemplo
+Abrasivos del Sur
+30-71234567-1 · Capital
+Así lo ve quien lo recibe
+Una opción
+Varias
+×
+Formulario
+Proveedor
+Elegí una opción
+Enviar
+Se ordenará por «Rubro», de la A a la Z, al guardar.
+Cancelar orden
+Opciones
+Agregar opción
+Agregar campos
+2
+Importar
+Exportar
+Buscar opción
+Columnas
+#
+Texto
+Código
+CUIT
+Zona
+Rubro
+Plazo de pago
+Alta
+Retiene IVA
+Detalle
+Estado
+Acciones
+1
+Abrasivos del Sur
+17/30
+PRV-0001
+30-71234567-1
+Capital
+Ferretería
+30
+12/03/2021
+Abrasivos
+2
+Aceros Rosario
+14/30
+PRV-0002
+30-70988123-4
+Gran Buenos Aires
+Siderurgia
+60
+05/08/2019
+Aceros
+3
+Aislantes Norte
+15/30
+PRV-0003
+33-71011223-9
+Interior
+Construcción
+30
+21/11/2022
+Aislantes
+4
+Alambres Patagónicos
+20/30
+PRV-0004
+30-69877654-2
+Patagonia
+Siderurgia
+90
+14/02/2020
+Alambres
+5
+Aluminios Cuyo
+14/30
+PRV-0005
+30-71455890-7
+Litoral
+Construcción
+30/06/2018
+Aluminio
+Reactivar
+6
+Andamios Litoral
+16/30
+PRV-0006
+30-70233456-1
+Capital
+Construcción
+45
+09/09/2023
+Andamios
+7
+Arenas del Paraná
+17/30
+PRV-0007
+30-71899001-5
+Gran Buenos Aires
+Construcción
+30
+17/01/2024
+Áridos
+8
+Bulonera Central
+16/30
+PRV-0008
+30-70345678-9
+Interior
+Ferretería
+15
+02/05/2017
+Bulones
+9
+Caños y Conexiones
+18/30
+PRV-0009
+30-71123987-3
+Patagonia
+Sanitarios
+60
+28/10/2021
+Sanitarios
+10
+Cementos del Plata
+18/30
+PRV-0010
+30-69001234-8
+Litoral
+Construcción
+30
+11/04/2016
+Cemento
+1–10 de 1.097
+10 por página · Página 1 de 110

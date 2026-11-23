@@ -1,0 +1,92 @@
+Valor de otro tipo
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Catálogos
+Inicio / Gestión de formularios / Catálogos / Recargo por zona
+1
+L
+Lucía Fernández
+Grupo Delta
+Recargo por zona
+
+Activo
+
+Descartar
+Guardar cambios
+El catálogo
+
+Escritas a mano · Decimal
+
+Nombre *
+Recargo por zona
+Descripción
+Cuánto se suma según la zona de entrega.
+Así lo ve quien lo recibe
+Una opción
+Varias
+×
+Formulario
+Zona
+Elegí una opción
+Enviar
+Opciones
+Agregar opción
+Importar
+Exportar
+Buscar opción
+#
+Texto
+Código
+Valor
+Detalle
+Estado
+Acciones
+1
+Capital
+7/30
+CAP
+0,00
+Opcional
+2
+Gran Buenos Aires
+17/30
+GBA
+2.500,00
+Opcional
+3
+Interior
+8/30
+INT
+mil
+Escribí un número.
+Más de 100 km
+4
+Patagonia
+9/30
+PAT
+9.200,00
+Opcional
+5
+Litoral
+7/30
+LIT
+3.100,00
+Opcional
+6
+Retiro en depósito
+18/30
+RET
+0,00
+Sin envío
+1–6 de 6
+10 por página · Página 1 de 1

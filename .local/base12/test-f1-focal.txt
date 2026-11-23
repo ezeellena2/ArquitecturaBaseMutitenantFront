@@ -1,0 +1,1955 @@
+
+ RUN  v5.0.1 C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+stderr | src/areas/platform/legal/pages/PublishLegalVersionPage.test.tsx > Publicar documento legal > Cancelar usa Cambios sin guardar y pregunta; Seguir editando conserva todo
+No `HydrateFallback` element provided to render during initial hydration
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+stderr | src/areas/business/users/pages/UserDetailPage.test.tsx > UserDetailPage (tablero Usuario) > en el teléfono el estado y los roles se eligen en una hoja
+No `HydrateFallback` element provided to render during initial hydration
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+stderr | src/areas/platform/legal/pages/LegalBack.test.tsx > Atrás desde confirmación legal > Seguir editando muestra un solo diálogo de salida y conserva el borrador sin reabrir confirmación
+No `HydrateFallback` element provided to render during initial hydration
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ src/areas/platform/legal/pages/LegalBack.test.tsx (8 tests | 6 failed) 10873ms
+   ❯ Atrás desde confirmación legal (8)
+     × Seguir editando muestra un solo diálogo de salida y conserva el borrador sin reabrir confirmación 1871ms
+     × pendiente success se abandona al preguntar salida; Seguir editando conserva texto y nueva vida 1175ms
+     × pendiente network se abandona al preguntar salida; Seguir editando conserva texto y nueva vida 1200ms
+     × pendiente field se abandona al preguntar salida; Seguir editando conserva texto y nueva vida 1203ms
+     × Retry anterior a Atrás queda inerte y confirmar otra vez usa un dueño/clave nuevos 1380ms
+     × Atrás cancela la espera InProgress y Seguir editando conserva borrador sin más pedidos 1552ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ src/areas/platform/legal/pages/PublishLegalVersionPage.test.tsx (18 tests | 3 failed) 18693ms
+   ❯ Publicar documento legal (18)
+     × Cancelar usa Cambios sin guardar y pregunta; Seguir editando conserva todo 696ms
+     × Volver a Documentos legales usa Cambios sin guardar y pregunta; Seguir editando conserva todo 273ms
+     × cambiar el borrador antes de terminar la validación abandona la confirmación anterior 3563ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ src/modules/assistant/settings/ModelCatalog.test.tsx (16 tests | 1 failed) 26047ms
+   ❯ catálogo y configuración de plataforma (16)
+     × sin clave muestra Sin configurar y da prioridad al aviso de cambios 354ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ src/areas/personal/account/pages/AccountPage.test.tsx (27 tests | 1 failed) 28348ms
+   ❯ Mi cuenta (13)
+     × en teléfono deja las acciones abajo y muestra el borrador en la segunda línea del título 800ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ src/areas/platform/legal/pages/LegalRefetch.test.tsx (4 tests | 1 failed) 3497ms
+   ❯ relectura legal con datos en caché (4)
+     × editor sucio conserva RHF, fecha, contenidos y salida sucia al fallar/reintentar lectura 707ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ src/areas/business/users/pages/UserDetailPage.test.tsx (33 tests | 7 failed) 35396ms
+   ❯ UserDetailPage (tablero Usuario) (33)
+     × en el teléfono el estado y los roles se eligen en una hoja 1768ms
+     × deshabilita desde Estado: confirma y guarda estado y roles en un solo pedido 720ms
+     × sacar un rol y volver a ponerlo no cuenta como un cambio 1902ms
+     × en el teléfono, el error al guardar va en la banda debajo de la barra 818ms
+     × con cambios, salir por el menú pregunta «¿Salir sin guardar?» 629ms
+     × después de un 409 en el diálogo, con cambios sin guardar, cerrarlo no relee la ficha y conserva lo elegido 1550ms
+     × sumar una empresa con el acceso a medio editar no hace chocar después a «Guardar cambios» 1702ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ src/areas/platform/settings/pages/PlatformSettingsPage.test.tsx (24 tests | 1 failed) 65419ms
+   ❯ Configuración de Plataforma (24)
+     × lo guardado, cinco campos, dos Sections, Guardar apagado, descarte y axe 2255ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 20 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/modules/assistant/settings/ModelCatalog.test.tsx > catálogo y configuración de plataforma > sin clave muestra Sin configurar y da prioridad al aviso de cambios
+TestingLibraryElementError: Unable to find an element with the text: Cambios sin guardar. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"sticky top-0 z-50"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-0 flex-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-svh print:h-auto"[39m
+        [36m>[39m
+          [36m<aside[39m
+            [33maria-label[39m=[32m"Navegación principal"[39m
+            [33mclass[39m=[32m"relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] w-58"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"brand-mark relative inline-flex shrink-0 bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[0_2px_0.375rem_-1px_var(--marca-sombra)] size-7 rounded-[0.5rem] "[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"absolute inset-2 -rotate-45 rounded-[0.1875rem] border-[0.15625rem] border-[var(--lado-activo)] border-r-transparent"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mArquitecturaBase[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[0.875rem] font-bold text-[var(--t1)]"[39m
+              [36m>[39m
+                [0mPlataforma[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"mt-px text-[0.78125rem] text-[var(--t3)]"[39m
+              [36m>[39m
+                [0mAdministración del servicio[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<nav[39m
+              [33maria-label[39m=[32m"General"[39m
+              [33mclass[39m=[32m"flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1"[39m
+            [36m>[39m
+              [36m<ul[39m
+                [33mclass[39m=[32m"flex flex-col gap-0.5"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"true"[39m
+                  [33maria-label[39m=[32m"Administración"[39m
+                  [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm w-full text-left"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"1.75"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M12 3.5 5 6v5.5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6Z"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m9.5 12 1.8 1.8 3.4-3.6"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"flex-1"[39m
+                  [36m>[39m
+                    [0mAdministración[0m
+                  [36m</span>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-chevron-right size-4"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"24"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"1.75"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"24"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m9 18 6-6-6-6"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+            [36m</nav>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 border-t border-[var(--lado-borde)] px-3.5 py-2.5"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"inline-flex shrink-0 items-center justify-center rounded-full font-semibold bg-linear-to-br from-[var(--marca)] to-[var(--marca-2)] text-[var(--lado-activo)] size-8 text-[0.75rem]"[39m
+                [33mdata-slot[39m=[32m"avatar"[39m
+              [36m>[39m
+                [0mA[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"flex min-w-0 flex-col leading-[1.3]"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"truncate text-[0.8125rem] font-bold text-[var(--t1)]"[39m
+                [36m>[39m
+                  [0mAna[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"truncate text-[0.75rem] text-[var(--t3)]"[39m
+                [36m>[39m
+                  [0mana@example.test[0m
+                [36m</span>[39m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</aside>[39m
+          [36m<nav[39m
+            [33maria-label[39m=[32m"Administración"[39m
+            [33mclass[39m=[32m"relative flex h-full w-58 shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--panel)]"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-13 items-center border-b border-[var(--lado-borde)] px-3.5 text-[0.875rem] font-bold text-[var(--t1)]...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/modules/assistant/settings/ModelCatalog.test.tsx:135:19
+    133|     expect(screen.getByText("Sin configurar")).toBeVisible();
+    134|     fireEvent.change(screen.getByRole("textbox", { name: "Consultas po…
+    135|     expect(screen.getByText("Cambios sin guardar")).toBeVisible(); exp…
+       |                   ^
+    136|     await app.user.click(screen.getByRole("button", { name: "Descartar…
+    137|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/20]⎯
+
+ FAIL  src/areas/business/users/pages/UserDetailPage.test.tsx > UserDetailPage (tablero Usuario) > en el teléfono el estado y los roles se eligen en una hoja
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  Cambios sin guardar[39m
+Received:
+[31m  Lucía Fernándezlucia@example.com[39m
+ ❯ src/areas/business/users/pages/UserDetailPage.test.tsx:163:19
+    161|       await waitFor(() => expect(screen.queryByRole("dialog")).not.toB…
+    162|       expect(rolesRow).toHaveTextContent("Soporte");
+    163|       expect(bar).toHaveTextContent("Cambios sin guardar");
+       |                   ^
+    164|
+    165|       const companies = screen.getByRole("region", { name: "Empresas" …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/20]⎯
+
+ FAIL  src/areas/business/users/pages/UserDetailPage.test.tsx > UserDetailPage (tablero Usuario) > deshabilita desde Estado: confirma y guarda estado y roles en un solo pedido
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  /^Deshabilitado·Cambios sin guardar·lucia@example\.com/[39m
+Received:
+[31m  Deshabilitado·lucia@example.com · desde el 27/09/2026[39m
+ ❯ src/areas/business/users/pages/UserDetailPage.test.tsx:260:40
+    258|     await open(user, screen.getByRole("combobox", { name: "Estado" }));
+    259|     await user.click(await screen.findByRole("option", { name: /Deshab…
+    260|     expect(subline("Lucía Fernández")).toHaveTextContent(/^Deshabilita…
+       |                                        ^
+    261|     await user.click(screen.getByRole("button", { name: "Guardar cambi…
+    262|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/20]⎯
+
+ FAIL  src/areas/business/users/pages/UserDetailPage.test.tsx > UserDetailPage (tablero Usuario) > sacar un rol y volver a ponerlo no cuenta como un cambio
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  /Cambios sin guardar/[39m
+Received:
+[31m  Activo·lucia@example.com · desde el 27/09/2026[39m
+ ❯ src/areas/business/users/pages/UserDetailPage.test.tsx:451:40
+    449|     await user.click(await screen.findByRole("menuitemcheckbox", { nam…
+    450|     await user.keyboard("{Escape}");
+    451|     expect(subline("Lucía Fernández")).toHaveTextContent(/Cambios sin …
+       |                                        ^
+    452|     await open(user, screen.getByRole("button", { name: "Roles de la o…
+    453|     await user.click(await screen.findByRole("menuitemcheckbox", { nam…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/20]⎯
+
+ FAIL  src/areas/business/users/pages/UserDetailPage.test.tsx > UserDetailPage (tablero Usuario) > en el teléfono, el error al guardar va en la banda debajo de la barra
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  Cambios sin guardar[39m
+Received:
+[31m  Lucía Fernándezlucia@example.com[39m
+ ❯ src/areas/business/users/pages/UserDetailPage.test.tsx:542:19
+    540|       expect(bar.nextElementSibling).toContainElement(band);
+    541|       expect(band).not.toHaveClass("rounded-xl");
+    542|       expect(bar).toHaveTextContent("Cambios sin guardar");
+       |                   ^
+    543|     } finally {
+    544|       restore();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/20]⎯
+
+ FAIL  src/areas/business/users/pages/UserDetailPage.test.tsx > UserDetailPage (tablero Usuario) > con cambios, salir por el menú pregunta «¿Salir sin guardar?»
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  /^Activo·Cambios sin guardar·lucia@example\.com/[39m
+Received:
+[31m  Activo·lucia@example.com · desde el 27/09/2026[39m
+ ❯ src/areas/business/users/pages/UserDetailPage.test.tsx:627:40
+    625|     await user.click(await screen.findByRole("menuitemcheckbox", { nam…
+    626|     await user.keyboard("{Escape}");
+    627|     expect(subline("Lucía Fernández")).toHaveTextContent(/^Activo·Camb…
+       |                                        ^
+    628|
+    629|     await user.click(screen.getByRole("link", { name: "Empresas" }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/20]⎯
+
+ FAIL  src/areas/business/users/pages/UserDetailPage.test.tsx > UserDetailPage (tablero Usuario) > después de un 409 en el diálogo, con cambios sin guardar, cerrarlo no relee la ficha y conserva lo elegido
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  /Cambios sin guardar/[39m
+Received:
+[31m  Activo·lucia@example.com · desde el 27/09/2026[39m
+ ❯ src/areas/business/users/pages/UserDetailPage.test.tsx:663:40
+    661|     await waitFor(() => expect(within(document.body).queryByRole("dial…
+    662|     expect(dialog).not.toBeInTheDocument();
+    663|     expect(subline("Lucía Fernández")).toHaveTextContent(/Cambios sin …
+       |                                        ^
+    664|     expect(reads.user).toBe(before);
+    665|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/20]⎯
+
+ FAIL  src/areas/business/users/pages/UserDetailPage.test.tsx > UserDetailPage (tablero Usuario) > sumar una empresa con el acceso a medio editar no hace chocar después a «Guardar cambios»
+Error: [2mexpect([22m[31melement[39m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  /Cambios sin guardar/[39m
+Received:
+[31m  Activo·lucia@example.com · desde el 27/09/2026[39m
+ ❯ src/areas/business/users/pages/UserDetailPage.test.tsx:758:40
+    756|     expect(await screen.findByText("Sumamos a Lucía Fernández a Delta …
+    757|     await waitFor(() => expect(within(screen.getByRole("region", { nam…
+    758|     expect(subline("Lucía Fernández")).toHaveTextContent(/Cambios sin …
+       |                                        ^
+    759|     await user.click(screen.getByRole("button", { name: "Guardar cambi…
+    760|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/20]⎯
+
+ FAIL  src/areas/personal/account/pages/AccountPage.test.tsx > Mi cuenta > en teléfono deja las acciones abajo y muestra el borrador en la segunda línea del título
+TestingLibraryElementError: Unable to find an element with the text: Cambios sin guardar. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-0 flex-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-svh flex-col bg-[var(--lado-activo)]"[39m
+        [36m>[39m
+          [36m<main[39m
+            [33mclass[39m=[32m"relative flex min-h-0 flex-1 flex-col overflow-y-auto"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex flex-col min-h-full shrink-0 bg-[var(--s2)]"[39m
+            [36m>[39m
+              [36m<header[39m
+                [33mclass[39m=[32m"sticky top-0 z-20 box-content flex h-15 shrink-0 items-center gap-1 bg-[var(--lado-activo)] pt-[env(safe-area-inset-top)] pr-1.5 pl-1"[39m
+                [33mdata-slot[39m=[32m"app-bar"[39m
+              [36m>[39m
+                [36m<a[39m
+                  [33maria-label[39m=[32m"Volver a Más"[39m
+                  [33mclass[39m=[32m"inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]"[39m
+                  [33mdata-discover[39m=[32m"true"[39m
+                  [33mhref[39m=[32m"/mas"[39m
+                  [33mtitle[39m=[32m"Volver a Más"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-chevron-left size-6.5"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"24"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"1.9"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"24"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m15 18-6-6 6-6"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</a>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center empty:hidden"[39m
+                [36m/>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"min-w-0 flex-1"[39m
+                [36m>[39m
+                  [36m<h1[39m
+                    [33mclass[39m=[32m"truncate font-bold tracking-[-0.02em] text-[var(--t1)] text-[1.25rem] leading-[1.15]"[39m
+                  [36m>[39m
+                    [0mMi cuenta[0m
+                  [36m</h1>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"block truncate text-[0.78125rem] leading-[normal] font-medium text-[var(--t3)]"[39m
+                  [36m>[39m
+                    [0mPersonal[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex shrink-0 items-center"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-center"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</header>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"contents"[39m
+                [33mdata-slot[39m=[32m"page-banner"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-1 flex-col pb-6 text-[0.9375rem]"[39m
+              [36m>[39m
+                [36m<form[39m
+                  [33maria-label[39m=[32m"Mi cuenta"[39m
+                  [33mid[39m=[32m"account-profile"[39m
+                  [33mnovalidate[39m=[32m""[39m
+                [36m>[39m
+                  [36m<section[39m
+                    [33maria-labelledby[39m=[32m"_r_7n_"[39m
+                    [33mclass[39m=[32m"flex flex-col"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mb-2 flex items-center justify-between gap-3 leading-[normal] mx-5 mt-4.5"[39m
+                    [36m>[39m
+                      [36m<h2[39m
+                        [33mclass[39m=[32m"text-[0.84375rem] font-semibold text-[var(--t2)]"[39m
+                        [33mid[39m=[32m"_r_7n_"[39m
+                      [36m>[39m
+                        [0mTus datos[0m
+                      [36m</h2>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"overflow-hidden rounded-[0.875rem] bg-[var(--lado-activo)] shadow-[0_0_0_1px_var(--borde)] mx-4"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"px-4 py-3.5 grid grid-cols-1 items-start gap-4 lg:grid-cols-4 max-md:gap-3.5"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"min-w-0"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"flex flex-col gap-1.5"[39m
+                          [36m>[39m
+                            [36m<label[39m
+                              [33mclass[39m=[32m"flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 gap-1! text-[0.78125rem] font-semibold text-[var(--t2)] max-md:text-[0.84375rem] max-md:leading-[normal]"[39m
+                              [33mdata-slot[39m=[32m"label"[39m
+                              [33mfor[39m=[32m"_r_7o_"[39m
+                            [36m>[39m
+                              [0mNombre[0m
+                            [36m</label>[39m
+                            [36m<input[39m
+                              [33mautocomplete[39m=[32m"given-name"[39m
+                              [33mclass[39m=[32m"h-9 w-full min-w-0 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3 text-[0.8125rem] max-md:h-12 max-md:rounded-[0.75rem] max-md:px-3.5 max-md:text-[1rem] shadow-none transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-[0.8125rem] file:font-medium file:text-foreground placeholder:text-[var(--t3)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 focus-visible:border-[var(--marca)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] aria-invalid:border-destructive aria-invalid:...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/areas/personal/account/pages/AccountPage.test.tsx:237:21
+    235|       const name = await screen.findByRole("textbox", { name: "Nombre"…
+    236|       await user.type(name, " nuevo");
+    237|       expect(screen.getByText("Cambios sin guardar")).toHaveClass("tex…
+       |                     ^
+    238|       expect(screen.getByText("Cambios sin guardar")).not.toHaveClass(…
+    239|     } finally {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/20]⎯
+
+ FAIL  src/areas/platform/legal/pages/LegalBack.test.tsx > Atrás desde confirmación legal > Seguir editando muestra un solo diálogo de salida y conserva el borrador sin reabrir confirmación
+TestingLibraryElementError: Unable to find an element with the text: Cambios sin guardar. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"sticky top-0 z-50"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-0 flex-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-svh print:h-auto"[39m
+        [36m>[39m
+          [36m<aside[39m
+            [33maria-label[39m=[32m"Navegación principal"[39m
+            [33mclass[39m=[32m"relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] w-58"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"brand-mark relative inline-flex shrink-0 bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[0_2px_0.375rem_-1px_var(--marca-sombra)] size-7 rounded-[0.5rem] "[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"absolute inset-2 -rotate-45 rounded-[0.1875rem] border-[0.15625rem] border-[var(--lado-activo)] border-r-transparent"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mArquitecturaBase[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[0.875rem] font-bold text-[var(--t1)]"[39m
+              [36m>[39m
+                [0mPlataforma[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"mt-px text-[0.78125rem] text-[var(--t3)]"[39m
+              [36m>[39m
+                [0mAdministración del servicio[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<nav[39m
+              [33maria-label[39m=[32m"General"[39m
+              [33mclass[39m=[32m"flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1"[39m
+            [36m>[39m
+              [36m<ul[39m
+                [33mclass[39m=[32m"flex flex-col gap-0.5"[39m
+              [36m>[39m
+                [36m<li[39m
+                  [33mclass[39m=[32m""[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-expanded[39m=[32m"false"[39m
+                    [33maria-label[39m=[32m"Gestión"[39m
+                    [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] text-[var(--lado-t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)] w-full text-left"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [36m>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex-1"[39m
+                    [36m>[39m
+                      [0mGestión[0m
+                    [36m</span>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-right size-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m9 18 6-6-6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                [36m</li>[39m
+              [36m</ul>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"true"[39m
+                  [33maria-label[39m=[32m"Administración"[39m
+                  [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm w-full text-left"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<svg[39m
+              ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ expectDraft src/areas/platform/legal/pages/LegalBack.test.tsx:37:17
+     35|   expect(screen.getByRole("textbox", { name: "En español" })).toHaveVa…
+     36|   expect(screen.getByRole("textbox", { name: "En inglés" })).toHaveVal…
+     37|   expect(screen.getByText("Cambios sin guardar")).toBeVisible();
+       |                 ^
+     38| }
+     39|
+ ❯ src/areas/platform/legal/pages/LegalBack.test.tsx:44:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/20]⎯
+
+ FAIL  src/areas/platform/legal/pages/LegalBack.test.tsx > Atrás desde confirmación legal > pendiente success se abandona al preguntar salida; Seguir editando conserva texto y nueva vida
+ FAIL  src/areas/platform/legal/pages/LegalBack.test.tsx > Atrás desde confirmación legal > pendiente network se abandona al preguntar salida; Seguir editando conserva texto y nueva vida
+ FAIL  src/areas/platform/legal/pages/LegalBack.test.tsx > Atrás desde confirmación legal > pendiente field se abandona al preguntar salida; Seguir editando conserva texto y nueva vida
+TestingLibraryElementError: Unable to find an element with the text: Cambios sin guardar. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"sticky top-0 z-50"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-0 flex-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-svh print:h-auto"[39m
+        [36m>[39m
+          [36m<aside[39m
+            [33maria-label[39m=[32m"Navegación principal"[39m
+            [33mclass[39m=[32m"relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] w-58"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"brand-mark relative inline-flex shrink-0 bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[0_2px_0.375rem_-1px_var(--marca-sombra)] size-7 rounded-[0.5rem] "[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"absolute inset-2 -rotate-45 rounded-[0.1875rem] border-[0.15625rem] border-[var(--lado-activo)] border-r-transparent"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mArquitecturaBase[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[0.875rem] font-bold text-[var(--t1)]"[39m
+              [36m>[39m
+                [0mPlataforma[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"mt-px text-[0.78125rem] text-[var(--t3)]"[39m
+              [36m>[39m
+                [0mAdministración del servicio[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<nav[39m
+              [33maria-label[39m=[32m"General"[39m
+              [33mclass[39m=[32m"flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1"[39m
+            [36m>[39m
+              [36m<ul[39m
+                [33mclass[39m=[32m"flex flex-col gap-0.5"[39m
+              [36m>[39m
+                [36m<li[39m
+                  [33mclass[39m=[32m""[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-expanded[39m=[32m"false"[39m
+                    [33maria-label[39m=[32m"Gestión"[39m
+                    [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] text-[var(--lado-t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)] w-full text-left"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [36m>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex-1"[39m
+                    [36m>[39m
+                      [0mGestión[0m
+                    [36m</span>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-right size-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m9 18 6-6-6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                [36m</li>[39m
+              [36m</ul>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"true"[39m
+                  [33maria-label[39m=[32m"Administración"[39m
+                  [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm w-full text-left"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<svg[39m
+              ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ expectDraft src/areas/platform/legal/pages/LegalBack.test.tsx:37:17
+     35|   expect(screen.getByRole("textbox", { name: "En español" })).toHaveVa…
+     36|   expect(screen.getByRole("textbox", { name: "En inglés" })).toHaveVal…
+     37|   expect(screen.getByText("Cambios sin guardar")).toBeVisible();
+       |                 ^
+     38| }
+     39|
+ ❯ src/areas/platform/legal/pages/LegalBack.test.tsx:70:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/20]⎯
+
+ FAIL  src/areas/platform/legal/pages/LegalBack.test.tsx > Atrás desde confirmación legal > Retry anterior a Atrás queda inerte y confirmar otra vez usa un dueño/clave nuevos
+TestingLibraryElementError: Unable to find an element with the text: Cambios sin guardar. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"sticky top-0 z-50"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-0 flex-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-svh print:h-auto"[39m
+        [36m>[39m
+          [36m<aside[39m
+            [33maria-label[39m=[32m"Navegación principal"[39m
+            [33mclass[39m=[32m"relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] w-58"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"brand-mark relative inline-flex shrink-0 bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[0_2px_0.375rem_-1px_var(--marca-sombra)] size-7 rounded-[0.5rem] "[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"absolute inset-2 -rotate-45 rounded-[0.1875rem] border-[0.15625rem] border-[var(--lado-activo)] border-r-transparent"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mArquitecturaBase[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[0.875rem] font-bold text-[var(--t1)]"[39m
+              [36m>[39m
+                [0mPlataforma[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"mt-px text-[0.78125rem] text-[var(--t3)]"[39m
+              [36m>[39m
+                [0mAdministración del servicio[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<nav[39m
+              [33maria-label[39m=[32m"General"[39m
+              [33mclass[39m=[32m"flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1"[39m
+            [36m>[39m
+              [36m<ul[39m
+                [33mclass[39m=[32m"flex flex-col gap-0.5"[39m
+              [36m>[39m
+                [36m<li[39m
+                  [33mclass[39m=[32m""[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-expanded[39m=[32m"false"[39m
+                    [33maria-label[39m=[32m"Gestión"[39m
+                    [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] text-[var(--lado-t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)] w-full text-left"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [36m>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex-1"[39m
+                    [36m>[39m
+                      [0mGestión[0m
+                    [36m</span>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-right size-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m9 18 6-6-6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                [36m</li>[39m
+              [36m</ul>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"true"[39m
+                  [33maria-label[39m=[32m"Administración"[39m
+                  [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm w-full text-left"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<svg[39m
+              ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ expectDraft src/areas/platform/legal/pages/LegalBack.test.tsx:37:17
+     35|   expect(screen.getByRole("textbox", { name: "En español" })).toHaveVa…
+     36|   expect(screen.getByRole("textbox", { name: "En inglés" })).toHaveVal…
+     37|   expect(screen.getByText("Cambios sin guardar")).toBeVisible();
+       |                 ^
+     38| }
+     39|
+ ❯ src/areas/platform/legal/pages/LegalBack.test.tsx:108:90
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/20]⎯
+
+ FAIL  src/areas/platform/legal/pages/LegalBack.test.tsx > Atrás desde confirmación legal > Atrás cancela la espera InProgress y Seguir editando conserva borrador sin más pedidos
+TestingLibraryElementError: Unable to find an element with the text: Cambios sin guardar. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"sticky top-0 z-50"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-0 flex-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-svh print:h-auto"[39m
+        [36m>[39m
+          [36m<aside[39m
+            [33maria-label[39m=[32m"Navegación principal"[39m
+            [33mclass[39m=[32m"relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] w-58"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"brand-mark relative inline-flex shrink-0 bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[0_2px_0.375rem_-1px_var(--marca-sombra)] size-7 rounded-[0.5rem] "[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"absolute inset-2 -rotate-45 rounded-[0.1875rem] border-[0.15625rem] border-[var(--lado-activo)] border-r-transparent"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mArquitecturaBase[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[0.875rem] font-bold text-[var(--t1)]"[39m
+              [36m>[39m
+                [0mPlataforma[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"mt-px text-[0.78125rem] text-[var(--t3)]"[39m
+              [36m>[39m
+                [0mAdministración del servicio[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<nav[39m
+              [33maria-label[39m=[32m"General"[39m
+              [33mclass[39m=[32m"flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1"[39m
+            [36m>[39m
+              [36m<ul[39m
+                [33mclass[39m=[32m"flex flex-col gap-0.5"[39m
+              [36m>[39m
+                [36m<li[39m
+                  [33mclass[39m=[32m""[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-expanded[39m=[32m"false"[39m
+                    [33maria-label[39m=[32m"Gestión"[39m
+                    [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] text-[var(--lado-t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)] w-full text-left"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [36m>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex-1"[39m
+                    [36m>[39m
+                      [0mGestión[0m
+                    [36m</span>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-right size-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m9 18 6-6-6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                [36m</li>[39m
+              [36m</ul>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"true"[39m
+                  [33maria-label[39m=[32m"Administración"[39m
+                  [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm w-full text-left"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<svg[39m
+              ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ expectDraft src/areas/platform/legal/pages/LegalBack.test.tsx:37:17
+     35|   expect(screen.getByRole("textbox", { name: "En español" })).toHaveVa…
+     36|   expect(screen.getByRole("textbox", { name: "En inglés" })).toHaveVal…
+     37|   expect(screen.getByText("Cambios sin guardar")).toBeVisible();
+       |                 ^
+     38| }
+     39|
+ ❯ src/areas/platform/legal/pages/LegalBack.test.tsx:126:77
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/20]⎯
+
+ FAIL  src/areas/platform/legal/pages/LegalRefetch.test.tsx > relectura legal con datos en caché > editor sucio conserva RHF, fecha, contenidos y salida sucia al fallar/reintentar lectura
+TestingLibraryElementError: Unable to find an element with the text: Cambios sin guardar. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"sticky top-0 z-50"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-0 flex-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-svh print:h-auto"[39m
+        [36m>[39m
+          [36m<aside[39m
+            [33maria-label[39m=[32m"Navegación principal"[39m
+            [33mclass[39m=[32m"relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] w-58"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"brand-mark relative inline-flex shrink-0 bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[0_2px_0.375rem_-1px_var(--marca-sombra)] size-7 rounded-[0.5rem] "[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"absolute inset-2 -rotate-45 rounded-[0.1875rem] border-[0.15625rem] border-[var(--lado-activo)] border-r-transparent"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mArquitecturaBase[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[0.875rem] font-bold text-[var(--t1)]"[39m
+              [36m>[39m
+                [0mPlataforma[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"mt-px text-[0.78125rem] text-[var(--t3)]"[39m
+              [36m>[39m
+                [0mAdministración del servicio[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<nav[39m
+              [33maria-label[39m=[32m"General"[39m
+              [33mclass[39m=[32m"flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1"[39m
+            [36m>[39m
+              [36m<ul[39m
+                [33mclass[39m=[32m"flex flex-col gap-0.5"[39m
+              [36m>[39m
+                [36m<li[39m
+                  [33mclass[39m=[32m""[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-expanded[39m=[32m"false"[39m
+                    [33maria-label[39m=[32m"Gestión"[39m
+                    [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] text-[var(--lado-t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)] w-full text-left"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [36m>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex-1"[39m
+                    [36m>[39m
+                      [0mGestión[0m
+                    [36m</span>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-right size-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m9 18 6-6-6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                [36m</li>[39m
+              [36m</ul>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"true"[39m
+                  [33maria-label[39m=[32m"Administración"[39m
+                  [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm w-full text-left"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[3...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/areas/platform/legal/pages/LegalRefetch.test.tsx:68:19
+     66|     expect(content).toHaveValue("Borrador es"); expect(date).toHaveVal…
+     67|     expect(screen.getByRole("textbox", { name: "En inglés" })).toHaveV…
+     68|     expect(screen.getByText("Cambios sin guardar")).toBeVisible();
+       |                   ^
+     69|     await retryRefetch(page);
+     70|     expect(screen.getByRole("textbox", { name: "En español" })).toBe(c…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/20]⎯
+
+ FAIL  src/areas/platform/legal/pages/PublishLegalVersionPage.test.tsx > Publicar documento legal > Cancelar usa Cambios sin guardar y pregunta; Seguir editando conserva todo
+ FAIL  src/areas/platform/legal/pages/PublishLegalVersionPage.test.tsx > Publicar documento legal > Volver a Documentos legales usa Cambios sin guardar y pregunta; Seguir editando conserva todo
+TestingLibraryElementError: Unable to find an element with the text: Cambios sin guardar. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"sticky top-0 z-50"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-0 flex-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-svh print:h-auto"[39m
+        [36m>[39m
+          [36m<aside[39m
+            [33maria-label[39m=[32m"Navegación principal"[39m
+            [33mclass[39m=[32m"relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] w-58"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"brand-mark relative inline-flex shrink-0 bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[0_2px_0.375rem_-1px_var(--marca-sombra)] size-7 rounded-[0.5rem] "[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"absolute inset-2 -rotate-45 rounded-[0.1875rem] border-[0.15625rem] border-[var(--lado-activo)] border-r-transparent"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mArquitecturaBase[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[0.875rem] font-bold text-[var(--t1)]"[39m
+              [36m>[39m
+                [0mPlataforma[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"mt-px text-[0.78125rem] text-[var(--t3)]"[39m
+              [36m>[39m
+                [0mAdministración del servicio[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<nav[39m
+              [33maria-label[39m=[32m"General"[39m
+              [33mclass[39m=[32m"flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1"[39m
+            [36m>[39m
+              [36m<ul[39m
+                [33mclass[39m=[32m"flex flex-col gap-0.5"[39m
+              [36m>[39m
+                [36m<li[39m
+                  [33mclass[39m=[32m""[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-expanded[39m=[32m"false"[39m
+                    [33maria-label[39m=[32m"Gestión"[39m
+                    [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] text-[var(--lado-t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)] w-full text-left"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [36m>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex-1"[39m
+                    [36m>[39m
+                      [0mGestión[0m
+                    [36m</span>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-right size-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m9 18 6-6-6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                [36m</li>[39m
+              [36m</ul>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"true"[39m
+                  [33maria-label[39m=[32m"Administración"[39m
+                  [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm w-full text-left"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[3...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/areas/platform/legal/pages/PublishLegalVersionPage.test.tsx:23:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/20]⎯
+
+ FAIL  src/areas/platform/legal/pages/PublishLegalVersionPage.test.tsx > Publicar documento legal > cambiar el borrador antes de terminar la validación abandona la confirmación anterior
+TestingLibraryElementError: Unable to find an element with the text: Cambios sin guardar. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"sticky top-0 z-50"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-0 flex-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-svh print:h-auto"[39m
+        [36m>[39m
+          [36m<aside[39m
+            [33maria-label[39m=[32m"Navegación principal"[39m
+            [33mclass[39m=[32m"relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] w-58"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"brand-mark relative inline-flex shrink-0 bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[0_2px_0.375rem_-1px_var(--marca-sombra)] size-7 rounded-[0.5rem] "[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"absolute inset-2 -rotate-45 rounded-[0.1875rem] border-[0.15625rem] border-[var(--lado-activo)] border-r-transparent"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mArquitecturaBase[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[0.875rem] font-bold text-[var(--t1)]"[39m
+              [36m>[39m
+                [0mPlataforma[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"mt-px text-[0.78125rem] text-[var(--t3)]"[39m
+              [36m>[39m
+                [0mAdministración del servicio[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<nav[39m
+              [33maria-label[39m=[32m"General"[39m
+              [33mclass[39m=[32m"flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1"[39m
+            [36m>[39m
+              [36m<ul[39m
+                [33mclass[39m=[32m"flex flex-col gap-0.5"[39m
+              [36m>[39m
+                [36m<li[39m
+                  [33mclass[39m=[32m""[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-expanded[39m=[32m"false"[39m
+                    [33maria-label[39m=[32m"Gestión"[39m
+                    [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] text-[var(--lado-t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)] w-full text-left"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [36m>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex-1"[39m
+                    [36m>[39m
+                      [0mGestión[0m
+                    [36m</span>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-right size-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m9 18 6-6-6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                [36m</li>[39m
+              [36m</ul>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"true"[39m
+                  [33maria-label[39m=[32m"Administración"[39m
+                  [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm w-full text-left"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<svg[39m
+              ...
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mlang[39m=[32m"es"[39m
+[36m>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m""[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"sticky top-0 z-50"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-h-0 flex-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex h-svh print:h-auto"[39m
+          [36m>[39m
+            [36m<aside[39m
+              [33maria-label[39m=[32m"Navegación principal"[39m
+              [33mclass[39m=[32m"relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] w-58"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"brand-mark relative inline-flex shrink-0 bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[0_2px_0.375rem_-1px_var(--marca-sombra)] size-7 rounded-[0.5rem] "[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"absolute inset-2 -rotate-45 rounded-[0.1875rem] border-[0.15625rem] border-[var(--lado-activo)] border-r-transparent"[39m
+                  [36m/>[39m
+                [36m</span>[39m
+                [36m<span>[39m
+                  [0mArquitecturaBase[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-[0.875rem] font-bold text-[var(--t1)]"[39m
+                [36m>[39m
+                  [0mPlataforma[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"mt-px text-[0.78125rem] text-[var(--t3)]"[39m
+                [36m>[39m
+                  [0mAdministración del servicio[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<nav[39m
+                [33maria-label[39m=[32m"General"[39m
+                [33mclass[39m=[32m"flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1"[39m
+              [36m>[39m
+                [36m<ul[39m
+                  [33mclass[39m=[32m"flex flex-col gap-0.5"[39m
+                [36m>[39m
+                  [36m<li[39m
+                    [33mclass[39m=[32m""[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-expanded[39m=[32m"false"[39m
+                      [33maria-label[39m=[32m"Gestión"[39m
+                      [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] text-[var(--lado-t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)] w-full text-left"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"1.75"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [36m>[39m
+                        [36m<rect[39m
+                          [33mheight[39m=[32m"7"[39m
+                          [33mrx[39m=[32m"1.5"[39m
+                          [33mwidth[39m=[32m"7"[39m
+                          [33mx[39m=[32m"3"[39m
+                          [33my[39m=[32m"3"[39m
+                        [36m/>[39m
+                        [36m<rect[39m
+                          [33mheight[39m=[32m"7"[39m
+                          [33mrx[39m=[32m"1.5"[39m
+                          [33mwidth[39m=[32m"7"[39m
+                          [33mx[39m=[32m"14"[39m
+                          [33my[39m=[32m"3"[39m
+                        [36m/>[39m
+                        [36m<rect[39m
+                          [33mheight[39m=[32m"7"[39m
+                          [33mrx[39m=[32m"1.5"[39m
+                          [33mwidth[39m=[32m"7"[39m
+                          [33mx[39m=[32m"3"[39m
+                          [33my[39m=[32m"14"[39m
+                        [36m/>[39m
+                        [36m<rect[39m
+                          [33mheight[39m=[32m"7"[39m
+                          [33mrx[39m=[32m"1.5"[39m
+                          [33mwidth[39m=[32m"7"[39m
+                          [33mx[39m=[32m"14"[39m
+                          [33my[39m=[32m"14"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                      [36m<span[39m
+                        [33mclass[39m=[32m"flex-1"[39m
+                      [36m>[39m
+                        [0mGestión[0m
+                      [36m</span>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"lucide lucide-chevron-right size-4"[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mheight[39m=[32m"24"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"1.75"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                        [33mwidth[39m=[32m"24"[39m
+                        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"m9 18 6-6-6-6"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                    [36m</button>[39m
+                  [36m</li>[39m
+                [36m</ul>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-expanded[39m=[32m"true"[39m
+                    [33maria-label[39m=[32m"Administración"[39m
+            ...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ src/areas/platform/legal/pages/PublishLegalVersionPage.test.tsx:91:11
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/20]⎯
+
+ FAIL  src/areas/platform/settings/pages/PlatformSettingsPage.test.tsx > Configuración de Plataforma > lo guardado, cinco campos, dos Sections, Guardar apagado, descarte y axe
+TestingLibraryElementError: Unable to find an element with the text: Cambios sin guardar. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m""[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"sticky top-0 z-50"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-0 flex-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex h-svh print:h-auto"[39m
+        [36m>[39m
+          [36m<aside[39m
+            [33maria-label[39m=[32m"Navegación principal"[39m
+            [33mclass[39m=[32m"relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] w-58"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"brand-mark relative inline-flex shrink-0 bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[0_2px_0.375rem_-1px_var(--marca-sombra)] size-7 rounded-[0.5rem] "[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"absolute inset-2 -rotate-45 rounded-[0.1875rem] border-[0.15625rem] border-[var(--lado-activo)] border-r-transparent"[39m
+                [36m/>[39m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mArquitecturaBase[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[0.875rem] font-bold text-[var(--t1)]"[39m
+              [36m>[39m
+                [0mPlataforma[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"mt-px text-[0.78125rem] text-[var(--t3)]"[39m
+              [36m>[39m
+                [0mAdministración del servicio[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<nav[39m
+              [33maria-label[39m=[32m"General"[39m
+              [33mclass[39m=[32m"flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1"[39m
+            [36m>[39m
+              [36m<ul[39m
+                [33mclass[39m=[32m"flex flex-col gap-0.5"[39m
+              [36m>[39m
+                [36m<li[39m
+                  [33mclass[39m=[32m""[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-expanded[39m=[32m"false"[39m
+                    [33maria-label[39m=[32m"Gestión"[39m
+                    [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] text-[var(--lado-t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)] w-full text-left"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [36m>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"3"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"3"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"7"[39m
+                        [33mrx[39m=[32m"1.5"[39m
+                        [33mwidth[39m=[32m"7"[39m
+                        [33mx[39m=[32m"14"[39m
+                        [33my[39m=[32m"14"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex-1"[39m
+                    [36m>[39m
+                      [0mGestión[0m
+                    [36m</span>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-right size-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m9 18 6-6-6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                [36m</li>[39m
+              [36m</ul>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"true"[39m
+                  [33maria-label[39m=[32m"Administración"[39m
+                  [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm w-full text-left"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<svg[39m
+              ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/areas/platform/settings/pages/PlatformSettingsPage.test.tsx:52:68
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/20]⎯
+
+
+ Test Files  7 failed | 130 passed (137)
+      Tests  20 failed | 1124 passed (1144)
+   Start at  20:54:47
+   Duration  71.63s (tests 53%, environment 19%, setup 14%, import 10%, transform 4%)
+
+    Isolate  137 workers spawned · ~2.09s startup each (spawn + environment, per file)
+             at least ~12.97s faster with isolate: false — reuses workers across files instead of one per file
+

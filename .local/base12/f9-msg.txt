@@ -1,0 +1,7 @@
+feat(empresas): sin el permiso de los miembros, la ficha va sin la pestaña «Miembros» (F9)
+
+La ficha de una empresa oculta «Miembros» a quien no puede ver los miembros de
+esa empresa y abre en «Roles»; con una sola pestaña, su contenido va sin la
+barra. Suma la persona de prueba business-companies-reader.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

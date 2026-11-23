@@ -1,0 +1,171 @@
+Los campos
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Catálogos
+Inicio / Gestión de formularios / Catálogos / Proveedores
+1
+L
+Lucía Fernández
+Grupo Delta
+Proveedores
+
+Activo
+
+Descartar
+Guardar cambios
+El catálogo
+
+Escritas a mano · Texto
+
+Nombre *
+Proveedores
+Descripción
+A quiénes se les compra.
+En WhatsApp
+Título · hasta 30 caracteres
+Texto
+Agregar campo
+Descripción · hasta 300
+CUIT
+Zona
+Agregar campo
+Por ejemplo
+Abrasivos del Sur
+30-71234567-1 · Capital
+Así lo ve quien lo recibe
+Una opción
+Varias
+×
+Formulario
+Proveedor
+Elegí una opción
+Enviar
+Opciones
+Agregar opción
+Agregar campos
+2
+Importar
+Exportar
+Buscar opción
+Columnas
+#
+Texto
+Código
+CUIT
+Zona
+Detalle
+Estado
+Acciones
+1
+Abrasivos del Sur
+17/30
+PRV-0001
+30-71234567-1
+Capital
+Abrasivos
+2
+Aceros Rosario
+14/30
+PRV-0002
+30-70988123-4
+Gran Buenos Aires
+Aceros
+3
+Aislantes Norte
+15/30
+PRV-0003
+33-71011223-9
+Interior
+Aislantes
+4
+Alambres Patagónicos
+20/30
+PRV-0004
+30-69877654-2
+Patagonia
+Alambres
+5
+Aluminios Cuyo
+14/30
+PRV-0005
+30-71455890-7
+Litoral
+Aluminio
+Reactivar
+6
+Andamios Litoral
+16/30
+PRV-0006
+30-70233456-1
+Capital
+Andamios
+7
+Arenas del Paraná
+17/30
+PRV-0007
+30-71899001-5
+Gran Buenos Aires
+Áridos
+8
+Bulonera Central
+16/30
+PRV-0008
+30-70345678-9
+Interior
+Bulones
+9
+Caños y Conexiones
+18/30
+PRV-0009
+30-71123987-3
+Patagonia
+Sanitarios
+10
+Cementos del Plata
+18/30
+PRV-0010
+30-69001234-8
+Litoral
+Cemento
+1–10 de 1.097
+10 por página · Página 1 de 110
+Campos de «Proveedores»
+Campos
+2 de 20
+1
+CUIT
+Texto
+2
+Zona
+De un catálogo
+Agregar campo
+Campo 1 de 2
+Quitar campo
+Nombre
+*
+CUIT
+Clave
+*
+cuit
+Tipo
+*
+Texto
+Largo
+Hasta
+13
+caracteres
+Reglas
+Obligatorio
+Único
+Cancelar
+Listo

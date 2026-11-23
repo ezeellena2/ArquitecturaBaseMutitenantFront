@@ -1,0 +1,225 @@
+Actividad
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Formularios
+4
+Catálogos
+Inicio / Gestión de formularios / Formularios / Visita a cliente
+3
+L
+Lucía Fernández
+Grupo Delta
+Visita a cliente
+
+Respuestas · versión 4 publicada
+
+Exportar a Excel
+Agregar respuesta
+Respuestas 24
+Tablero
+Diseño
+Reglas
+Por aprobar (3)
+Por resolver (2)
+Todas
+Buscar en textos largos
+Empresa
+Estado
+Filtros
+Columnas
+N°
+Estado
+Reglas
+Recibida
+Cargó
+Es cliente
+Canal
+Cliente
+Monto estimado
+Motivo
+PDF
+VIS-000130
+Por aprobar
+—
+15/10/2026, 16:20
+Paula Méndez
+—
+WhatsApp
+Corralón El Puente
+Sin respuesta
+Seguimiento
+VIS-000129
+Aprobada
+—
+15/10/2026, 11:47
+Florencia Fernández de la Fuente
+—
+WhatsApp
+Obra Centro
+48.000,00
+Venta nueva
+VIS-000128
+Aprobada
+—
+14/10/2026, 17:02
+Martín Paz
+—
+App
+Distribuidora Norte
+212.000,00
+Venta nueva
+VIS-000127
+Por aprobar
+—
+14/10/2026, 09:30
+Marta Gil
+Sí
+WhatsApp
+Ferretería Sur
+0,00
+Reclamo
+VIS-000126
+Aprobada
+—
+13/10/2026, 15:30
+Tomás Acosta
+—
+WhatsApp
+Ferretería Rosales
+125.500,00
+Venta nueva
+VIS-000125
+Rechazada
+—
+13/10/2026, 14:10
+Persona sin información
+—
+WhatsApp
+Obra Centro
+Sin respuesta
+Seguimiento
+VIS-000124
+Aprobada
+—
+13/10/2026, 12:20
+Paula Méndez
+—
+WhatsApp
+Corralón El Puente
+96.300,00
+Venta nueva
+VIS-000123
+Por aprobar
+—
+13/10/2026, 11:04
+Tomás Acosta
+—
+WhatsApp
+Ferretería Rosales
+0,00
+Seguimiento
+VIS-000122
+Recibida
+Por resolver
+12/10/2026, 17:40
+Martín Paz
+—
+WhatsApp
+Distribuidora Norte
+54.200,00
+Venta nueva
+VIS-000121
+Recibida
+—
+12/10/2026, 10:02
+Paula Méndez
+—
+WhatsApp
+Obra Centro
+15.750,00
+Seguimiento
+1–10 de 24
+10 por página · Página 1 de 3
+VIS-000126
+Aprobada
+Visita a cliente · versión 4
+Mandada
+Lucía Fernández, desde el chat
+13/10/2026, 11:20
+Recibida
+Por WhatsApp · Tomás Acosta
+13/10/2026, 15:30
+Al recibirla
+Mandarle un mensaje a quien la cargó · Pedir aprobación a un rol
+2 de 2 hechas
+Aprobada
+Lucía Fernández · rol Supervisor
+13/10/2026, 16:05
+Al aprobarla
+Armar el PDF · Mandarle un mensaje a quien la cargó · Mandar por correo · Avisar a un rol
+4 de 4 hechas
+Respuesta
+Fotos 2
+Actividad
+PDF
+
+Reglas de la revisión 3
+
+Fecha
+Qué pasó
+Estado
+Al recibirla
+13/10/2026, 11:20
+Se mandó el formulario
+Lucía Fernández, desde el chat
+Hecho
+15:30
+Se respondió el formulario
+Por WhatsApp · Tomás Acosta
+Hecho
+15:30
+Mandarle un mensaje a quien la cargó
+Tomás Acosta
+Recibimos VIS-000126. Te avisamos cuando la aprueben.
+Leído
+15:30
+Se pidió aprobación
+Rol Supervisor
+Hecho
+Aprobación
+16:05
+Lucía Fernández la aprobó
+Aprobada
+Al aprobarla
+16:05
+Armar el PDF
+Comprobante-VIS-000126.pdf
+Hecho
+16:05
+Mandarle un mensaje a quien la cargó
+Tomás Acosta, con el PDF
+Aprobaron VIS-000126. Te mandamos el comprobante.
+Entregado
+16:05
+Mandar por correo
+administracion@​delta.ejemplo.com, con el PDF
+Hecho
+16:05
+Avisar a un rol
+Rol Dueño
+Hecho
+Ana Gómez
+Leído
+Martín Paz
+Entregado
+5 de 10

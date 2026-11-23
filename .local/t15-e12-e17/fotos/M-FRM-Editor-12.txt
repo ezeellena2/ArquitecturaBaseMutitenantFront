@@ -1,0 +1,19 @@
+Nuevo formulario
+9:41
+Nuevo formulario
+Borrador
+El formulario
+Nombre *
+Inspección de obra
+Texto del botón final *
+Enviar
+Prefijo de numeración *
+OBR
+Para quién es *
+Empleados
+Preguntas
+Agregar pregunta
+Agregar título
+Todavía no agregaste preguntas.
+Cancelar
+Guardar borrador

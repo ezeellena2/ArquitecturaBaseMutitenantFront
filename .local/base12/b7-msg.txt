@@ -1,0 +1,8 @@
+test(e2e): «Vincular y mandar» con el consentimiento tildado, y la campana en el mapa de carpetas
+
+Por la B7, el back responde 400 WhatsApp.PhoneImport.ConsentRequired sin el
+consentimiento: los dos scripts que cargan teléfonos tildan la casilla antes
+de «Vincular y mandar», y el completo comprueba que viaja consentConfirmed.
+arbol.md suma src/layouts/notifications, con sus punteros.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

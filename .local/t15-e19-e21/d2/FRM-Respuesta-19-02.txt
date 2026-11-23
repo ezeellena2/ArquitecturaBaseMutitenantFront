@@ -1,0 +1,74 @@
+Pantalla completa
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Formularios
+Catálogos
+Inicio / Gestión de formularios / Formularios / Pedido de materiales
+1
+L
+Lucía Fernández
+Grupo Delta
+PED-000045
+
+Versión 3 · recibida el 15/10/2026, 11:47
+
+Abrir conversación
+1 de 10
+Respuesta
+Cliente
+Corralón El Puente
+¿Se concretó la venta?
+Sí
+Motivo
+Venta nueva
+Monto
+48.000,00
+Fecha de entrega
+20/10/2026
+Productos
+Producto
+Precio
+Cantidad
+Importe
+1
+Caño de 1/2 pulgada
+$ 4.200,00
+10
+$ 42.000,00
+2
+Codo de 90°
+$ 850,00
+40
+$ 34.000,00
+3
+Cinta de teflón
+$ 950,00
+20
+$ 19.000,00
+Total
+$ 143.000,00
+Observaciones
+Pidieron entrega el lunes.
+Actividad
+Fecha
+Qué pasó
+Estado
+Acciones
+15/10/2026, 10:51
+Se la mandó
+Lucía Fernández, desde el chat
+Hecho
+11:47
+La respondió
+Tomás Acosta, por WhatsApp
+Hecho

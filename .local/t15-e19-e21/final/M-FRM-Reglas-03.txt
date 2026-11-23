@@ -1,0 +1,18 @@
+Adjuntar el PDF
+9:41
+Regla 2
+Visita a cliente
+Cuándo
+Se aprueba una respuesta
+ Agregar condición
+Acción 1 · Mandarle un mensaje a quien la cargó
+Mensaje
+Agregar dato
+Aprobaron Número. Te mandamos el comprobante.
+Así llega
+Aprobaron VIS-000001. Te mandamos el comprobante.
+Adjuntar el PDF
+Para adjuntarlo, «Armar el PDF» tiene que ir antes de este mensaje.
+Agregar «Armar el PDF» antes
+ Agregar acción
+Listo

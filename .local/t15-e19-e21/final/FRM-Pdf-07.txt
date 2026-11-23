@@ -1,0 +1,98 @@
+Diseño guardado
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Formularios
+4
+Catálogos
+Inicio / Gestión de formularios / Formularios / Visita a cliente / Diseño del PDF
+3
+L
+Lucía Fernández
+Grupo Delta
+Comprobante de visita
+
+Diseño del PDF · Visita a cliente
+
+Descartar
+El comprobante
+Guardar diseño
+Nombre del PDF
+*
+Comprobante de visita
+Estilo
+Clásico
+Con líneas
+Moderno
+Con el color arriba
+Compacto
+En dos columnas
+Color
+Verde, el del sistema
+Encabezado
+D
+Grupo Delta
+Av. Corrientes 1234, CABA · ventas@​delta.ejemplo.com · 011 4321-0000
+Editar la página pública
+Secciones
+La visita
+Cliente
+Fecha de la visita
+El resultado
+¿Se concretó la venta?
+Monto estimado
+Motivo
+Fallas
+Observaciones
+Archivos
+Fotos de la visita
+Remito firmado
+Agregar sección
+Incluir las fotos
+Quién la aprobó y cuándo
+Firmas
+Firma del cliente
+Firma del supervisor
+Agregar firma
+Texto al pie (opcional)
+Gracias por elegirnos.
+Vista previa
+Vista previa
+D
+Grupo Delta
+Av. Corrientes 1234, CABA · ventas@​delta.ejemplo.com · 011 4321-0000
+Comprobante de visita
+VIS-000126 · 13/10/2026, 15:30 (Buenos Aires)
+La visita
+Cliente
+Ferretería Rosales
+Fecha de la visita
+13/10/2026
+El resultado
+¿Se concretó la venta?
+Sí
+Monto estimado
+125.500,00
+Motivo
+Venta nueva
+Observaciones
+Cerramos el pedido de octubre.
+Archivos
+Remito firmado
+remito-0810.pdf
+Aprobada por Lucía Fernández el 13/10/2026, 16:05 (Buenos Aires)
+Firma del cliente
+Firma del supervisor
+Gracias por elegirnos.
+Página 1 de 1
+Con VIS-000126 de ejemplo · Español
+Diseño guardado.

@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "stage": "12",
+  "issuer": "http://localtest.me:5192",
+  "evidence": "prueba local",
+  "cases": [
+    {
+      "id": "wa-admin-editar-cambiar-a-un-texto",
+      "group": "bot",
+      "board": "WA-Admin-Editar",
+      "state": "Cambiar a un texto",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Cambiar a un texto"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Cambiar a un texto",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=business&route=%2Forg%2Fwhatsapp%2Fbot",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "business",
+        "now": "2026-11-08T12:00:00Z",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Hacer un pedido",
+            "exact": true
+          }
+        ],
+        "readySelector": "[role=dialog]",
+        "readyText": "Editar opción 1",
+        "responses": []
+      }
+    },
+    {
+      "id": "m-wa-editar-cambiar-a-un-texto",
+      "group": "bot",
+      "board": "M-WA-Editar",
+      "state": "Cambiar a un texto",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Cambiar a un texto"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Cambiar a un texto",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=business&route=%2Forg%2Fwhatsapp%2Fbot",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "business",
+        "now": "2026-11-08T12:00:00Z",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Hacer un pedido",
+            "exact": true
+          }
+        ],
+        "readySelector": "[role=dialog]",
+        "readyText": "Editar opción 1",
+        "responses": []
+      }
+    },
+    {
+      "id": "m-wa-editar-cambiar-a-un-texto-320",
+      "group": "bot",
+      "board": "M-WA-Editar",
+      "state": "Cambiar a un texto",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Cambiar a un texto"
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "label": "Cambiar a un texto",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=business&route=%2Forg%2Fwhatsapp%2Fbot",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "business",
+        "now": "2026-11-08T12:00:00Z",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Hacer un pedido",
+            "exact": true
+          }
+        ],
+        "readySelector": "[role=dialog]",
+        "readyText": "Editar opción 1",
+        "responses": []
+      }
+    }
+  ],
+  "pending": []
+}

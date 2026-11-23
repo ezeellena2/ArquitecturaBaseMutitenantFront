@@ -1,0 +1,13 @@
+feat(accesos): un link del otro acceso ofrece entrar con ese acceso (F7)
+
+Quien abre un link del otro acceso ya no va al inicio sin que se le diga nada:
+«Otro acceso» (OtherAccessPage, tableros Otro-Acceso y Otro-Acceso-Persona)
+dice de quién es el link, dentro del marco del acceso activo, y ofrece entrar
+como empresa o como persona; al entrar, abre el link (useSwitchAccess con
+returnTo, que solo acepta una ruta propia de ese acceso). Con varias
+organizaciones, se elige con cuál, con la elegida tildada. Si la cuenta no
+tiene ese acceso (Plataforma, o una empresa sin organizaciones para elegir), va
+«No encontramos esta página». El inicio personal sigue llevando al inicio del
+acceso activo, y un operador, al de Plataforma.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

@@ -1,0 +1,117 @@
+Con un valor
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Catálogos
+Inicio / Gestión de formularios / Catálogos / Motivos de visita
+1
+L
+Lucía Fernández
+Grupo Delta
+Motivos de visita
+
+Activo
+
+Descartar
+Guardar cambios
+El catálogo
+
+Escritas a mano · Texto
+
+Nombre *
+Motivos de visita
+Descripción
+Por qué se visita a un cliente.
+Así lo ve quien lo recibe
+Una opción
+Varias
+×
+Formulario
+Motivo
+Elegí una opción
+Enviar
+Opciones
+Agregar opción
+Importar
+Exportar
+Buscar opción
+#
+Texto
+Código
+Detalle
+Estado
+Acciones
+1
+Seguimiento
+11/30
+SEG
+Visita programada a un cliente actual
+2
+Venta nueva
+11/30
+VEN
+Primera visita a un cliente
+3
+Reclamo
+7/30
+REC
+Hay un problema para resolver
+4
+Cobranza
+8/30
+COB
+Cobrar un pago pendiente
+Reactivar
+1–4 de 4
+10 por página · Página 1 de 1
+Opciones de «Recargo por zona»
+Opciones
+1–6 de 6
+1
+Capital
+CAP
+2
+Gran Buenos Aires
+GBA
+3
+Interior
+INT
+4
+Patagonia
+PAT
+5
+Litoral
+LIT
+6
+Retiro en depósito
+RET
+Agregar opción
+Opción 2 de 6
+Quitar opción
+Texto
+*
+Gran Buenos Aires
+17/30
+Código
+*
+GBA
+Generar desde el texto
+Valor (decimal)
+*
+2.500,00
+Detalle
+Opcional
+Estado
+Activa
+De baja
+Cancelar
+Listo

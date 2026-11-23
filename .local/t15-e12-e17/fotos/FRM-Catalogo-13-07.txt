@@ -1,0 +1,52 @@
+Nuevo catálogo
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Catálogos
+Inicio / Gestión de formularios / Catálogos / Proveedores
+1
+L
+Lucía Fernández
+Grupo Delta
+Nuevo catálogo
+
+Cancelar
+Crear catálogo
+El catálogo
+
+Escritas a mano · Texto
+
+Nombre *
+Nombre del catálogo
+Descripción
+Opcional
+En WhatsApp
+Título · hasta 30 caracteres
+Texto
+Agregar campo
+Descripción · hasta 300
+Detalle
+Agregar campo
+Así lo ve quien lo recibe
+Una opción
+Varias
+×
+Formulario
+Proveedor
+Elegí una opción
+Enviar
+Opciones
+Agregar opción
+Agregar campos
+Importar
+Exportar
+Todavía no hay opciones.

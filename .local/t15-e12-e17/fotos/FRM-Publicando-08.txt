@@ -1,0 +1,91 @@
+Descartar esta publicación
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Formularios
+Catálogos
+Inicio / Gestión de formularios / Formularios / Visita a cliente
+2
+L
+Lucía Fernández
+Grupo Delta
+Visita a cliente
+
+Sin confirmar · versión 4
+
+Guardar cambios
+Consultar publicación
+Descartar esta publicación
+Publicar en WhatsApp
+Todavía no sabemos si WhatsApp recibió la versión 4.
+Ver vista oficial
+El formulario
+Nombre *
+Visita a cliente
+Texto del botón final *
+Enviar
+Prefijo de numeración *
+VIS
+Para quién es *
+Empleados
+Preguntas
+Agregar título
+Agregar pregunta
+1
+Cliente
+Texto corto · Obligatoria
+2
+Fecha de la visita
+Fecha · Opcional
+Resultado de la visita
+3
+¿Se concretó la venta?
+Sí o no · Opcional
+4
+Monto estimado
+Número · 2 decimales · Opcional
+5
+Motivo
+Elegir una · 3 opciones · Opcional
+6
+Fallas
+Elegir varias · 4 opciones · de 1 a 3 · Obligatoria
+7
+Observaciones
+Texto largo, hasta 600 caracteres · Opcional
+×
+Visita a cliente
+Cliente
+Fecha de la visita (opcional)
+Elegí una fecha
+Resultado de la visita
+¿Se concretó la venta? (opcional)
+Sí
+No
+Monto estimado (opcional)
+Usá coma para los decimales
+Motivo (opcional)
+Elegí una opción
+Fallas
+Elegí hasta 3
+Frío
+Ruido
+Puerta
+Luz
+Observaciones (opcional)
+Enviar
+¿Descartar la publicación de la versión 4?
+
+Queda como no publicada y en WhatsApp sigue la versión 3.
+
+Cancelar
+Descartar publicación

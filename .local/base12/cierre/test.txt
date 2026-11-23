@@ -1,0 +1,1258 @@
+
+ RUN  v5.0.1 C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ src/app/routes.test.tsx (35 tests | 1 failed) 7434ms
+   ❯ rutas de ingreso 3a (18)
+     × corrige con replace una URL de otro acceso hacia su inicio 3048ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ src/layouts/MorePage.test.tsx (15 tests | 1 failed) 5856ms
+   ❯ Más en el teléfono (15)
+     × la ruta canónica de Más de Plataforma corrige un acceso personal hacia su inicio 3038ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: Window's getComputedStyle() method: with pseudo-elements
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+stderr | src/auth/SessionRecovery.test.tsx > SessionRecovery > canjea la cookie tras F5 y conserva la ruta privada
+Error handled by React Router default ErrorBoundary: Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+Error handled by React Router default ErrorBoundary: Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  [stack]: [Getter/Setter],
+  [message]: '[vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?\n' +
+    'If you need to partially mock a module, you can use "importOriginal" helper inside:\n',
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+
+The above error occurred in the <AccessRoute> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary.
+
+React Router caught the following error during render Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+stderr | src/auth/SessionRecovery.test.tsx > SessionRecovery > canjea la cookie tras F5 en Cuentas conservando el acceso y la ruta de Plataforma
+Error handled by React Router default ErrorBoundary: Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+Error handled by React Router default ErrorBoundary: Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  [stack]: [Getter/Setter],
+  [message]: '[vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?\n' +
+    'If you need to partially mock a module, you can use "importOriginal" helper inside:\n',
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+
+The above error occurred in the <AccessRoute> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary.
+
+React Router caught the following error during render Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+stderr | src/auth/SessionRecovery.test.tsx > SessionRecovery > omite el iframe cuando ya hay un usuario en memoria
+Error handled by React Router default ErrorBoundary: Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+Error handled by React Router default ErrorBoundary: Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  [stack]: [Getter/Setter],
+  [message]: '[vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?\n' +
+    'If you need to partially mock a module, you can use "importOriginal" helper inside:\n',
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+
+The above error occurred in the <AccessRoute> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary.
+
+React Router caught the following error during render Error: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22) {
+  codeFrame: 'vi.mock(import("react-oidc-context"), async (importOriginal) => {\n' +
+    '  const actual = await importOriginal()\n' +
+    '  return {\n' +
+    '    ...actual,\n' +
+    '    // your mocked methods\n' +
+    '  }\n' +
+    '})'
+}
+
+ ❯ src/auth/SessionRecovery.test.tsx (10 tests | 3 failed) 3529ms
+   ❯ SessionRecovery (10)
+     × canjea la cookie tras F5 y conserva la ruta privada 100ms
+     × canjea la cookie tras F5 en Cuentas conservando el acceso y la ruta de Plataforma 95ms
+     × omite el iframe cuando ya hay un usuario en memoria 3020ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/routes.test.tsx > rutas de ingreso 3a > corrige con replace una URL de otro acceso hacia su inicio
+AssertionError: expected '/org' to be '/' // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mlang[39m=[32m"es"[39m
+[36m>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"sticky top-0 z-50"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-h-0 flex-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex h-svh print:h-auto"[39m
+          [36m>[39m
+            [36m<aside[39m
+              [33maria-label[39m=[32m"Navegación principal"[39m
+              [33mclass[39m=[32m"relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] w-58"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0mArquitecturaBase[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex shrink-0 flex-col px-3.5 py-3 leading-[1.35]"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-[0.875rem] font-bold text-[var(--t1)]"[39m
+                [36m>[39m
+                  [0mPersonal[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"mt-px text-[0.78125rem] text-[var(--t3)]"[39m
+                [36m>[39m
+                  [0mTu perfil personal[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<button[39m
+                [33maria-label[39m=[32m"Contraer menú"[39m
+                [33mclass[39m=[32m"absolute -right-3.5 top-16 z-30 flex size-7 items-center justify-center rounded-full border border-[var(--borde2)] bg-[var(--superficie)] text-[var(--t1)] hover:text-[var(--marca)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-chevron-left size-4.5"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"1.75"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m15 18-6-6 6-6"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+              [36m<nav[39m
+                [33maria-label[39m=[32m"General"[39m
+                [33mclass[39m=[32m"flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1"[39m
+              [36m>[39m
+                [36m<ul[39m
+                  [33mclass[39m=[32m"flex flex-col gap-0.5"[39m
+                [36m>[39m
+                  [36m<li[39m
+                    [33mclass[39m=[32m""[39m
+                  [36m>[39m
+                    [36m<a[39m
+                      [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] [overflow-wrap:anywhere] text-[var(--lado-t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)]"[39m
+                      [33mdata-discover[39m=[32m"true"[39m
+                      [33mhref[39m=[32m"/"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"1.75"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M3 11 12 4l9 7"[39m
+                        [36m/>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M5 10v10h14V10"[39m
+                        [36m/>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M10 20v-6h4v6"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                      [36m<span[39m
+                        [33mclass[39m=[32m""[39m
+                      [36m>[39m
+                        [0mInicio[0m
+                      [36m</span>[39m
+                    [36m</a>[39m
+                  [36m</li>[39m
+                  [36m<li[39m
+                    [33mclass[39m=[32m"relative before:absolute before:inset-x-0 before:-top-0.5 before:h-px before:bg-[var(--lado-borde)]"[39m
+                  [36m>[39m
+                    [36m<a[39m
+                      [33mclass[39m=[32m"flex min-h-8 items-center gap-2.5 rounded-[0.5rem] px-2.5 text-[0.8125rem] [overflow-wrap:anywhere] text-[var(--lado-t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)]"[39m
+                      [33mdata-discover[39m=[32m"true"[39m
+                      [33mhref[39m=[32m"/cuenta"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"size-4.5 shrink-0"[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"1.75"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [36m>[39m
+                        [36m<circle[39m
+                          [33mcx[39m=[32m"12"[39m
+                          [33mcy[39m=[32m"8"[39m
+                          [33mr[39m=[32m"3.75"[39m
+                        [36m/>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M5 20a7 7 0 0 1 14 0"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                      [36m<span[39m
+              ...
+
+Expected: "/"
+Received: "/org"
+
+ ❯ src/app/routes.test.tsx:67:73
+     65|   it("corrige con replace una URL de otro acceso hacia su inicio", asy…
+     66|     const consumer = renderRouteWithProviders("/org", { as: "consumer-…
+     67|     await waitFor(() => expect(consumer.router.state.location.pathname…
+       |                                                                         ^
+     68|     consumer.unmount();
+     69|
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/layouts/MorePage.test.tsx > Más en el teléfono > la ruta canónica de Más de Plataforma corrige un acceso personal hacia su inicio
+AssertionError: expected '/plataforma/mas' to be '/' // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mlang[39m=[32m"es"[39m
+[36m>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex min-h-screen flex-col"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"sticky top-0 z-50"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-h-0 flex-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex h-svh flex-col bg-[var(--superficie)]"[39m
+          [36m>[39m
+            [36m<main[39m
+              [33mclass[39m=[32m"relative flex min-h-0 flex-1 flex-col overflow-y-auto"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex min-h-full flex-1 flex-col bg-[var(--superficie)] text-[var(--t1)]"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex flex-1 flex-col items-center justify-center gap-3 px-8 text-center"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"inline-flex size-16 items-center justify-center rounded-full bg-[var(--s3)] text-[var(--t2)] [&_svg]:size-7"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"size-5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"1.75"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [36m>[39m
+                      [36m<circle[39m
+                        [33mcx[39m=[32m"11"[39m
+                        [33mcy[39m=[32m"11"[39m
+                        [33mr[39m=[32m"6.5"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m16 16 3.5 3.5"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</span>[39m
+                  [36m<h1[39m
+                    [33mclass[39m=[32m"mt-1.5 text-[1.375rem] font-bold leading-tight tracking-[-0.015em]"[39m
+                  [36m>[39m
+                    [0mNo encontramos esta página[0m
+                  [36m</h1>[39m
+                  [36m<a[39m
+                    [33mclass[39m=[32m"mt-2.5 inline-flex h-12 items-center justify-center rounded-full px-6.5 text-[0.96875rem] font-semibold focus-visible:outline-2 focus-visible:outline-[var(--foco)] bg-[var(--marca)] text-[var(--superficie)]"[39m
+                    [33mdata-discover[39m=[32m"true"[39m
+                    [33mhref[39m=[32m"/"[39m
+                  [36m>[39m
+                    [0mIr al inicio[0m
+                  [36m</a>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</main>[39m
+            [36m<nav[39m
+              [33maria-label[39m=[32m"Secciones"[39m
+              [33mclass[39m=[32m"grid shrink-0 border-t border-[var(--borde)] bg-[var(--superficie)] px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]"[39m
+              [33mdata-slot[39m=[32m"bottom-nav"[39m
+              [33mstyle[39m=[32m"grid-template-columns: repeat(2, minmax(0, 1fr));"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33mclass[39m=[32m"flex flex-col items-center gap-1 text-[0.71875rem] font-medium text-[var(--t2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"relative inline-flex h-7.5 w-14 items-center justify-center rounded-[0.9375rem]"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"size-6"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"1.75"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M4 11.5 12 5l8 6.5"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M6.5 10v9h11v-9"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</span>[39m
+                [0mInicio[0m
+              [36m</a>[39m
+              [36m<a[39m
+                [33mclass[39m=[32m"flex flex-col items-center gap-1 text-[0.71875rem] font-medium text-[var(--t2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/mas"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"relative inline-flex h-7.5 w-14 items-center justify-center rounded-[0.9375rem]"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"inline-flex shrink-0 items-center justify-center font-semibold rounded-[0.5rem] bg-[var(--marca)] text-[var(--superficie)] size-6.5 text-[0.75rem]"[39m
+                    [33mdata-slot[39m=[32m"avatar"[39m
+                  [36m>[39m
+                    [0mA[0m
+                  [36m</span>[39m
+                [36m</span>[39m
+                [0mMás[0m
+              [36m</a>[39m
+            [36m</nav>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<section[39m
+        [33maria-atomic[39m=[32m"false"[39m
+        [33maria-label[39m=[32m"Notificaciones alt+T"[39m
+        [33maria-live[39m=[32m"polite"[39m
+        [33maria-relevant[39m=[32m"additions text"[39m
+        [33mdata-react-aria-top-layer[39m=[32m"true"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m/>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m...
+
+Expected: "/"
+Received: "/plataforma/mas"
+
+ ❯ src/layouts/MorePage.test.tsx:151:64
+    149|   it("la ruta canónica de Más de Plataforma corrige un acceso personal…
+    150|     const { router } = renderRouteWithProviders("/plataforma/mas", { a…
+    151|     await waitFor(() => expect(router.state.location.pathname).toBe("/…
+       |                                                                ^
+    152|     expect(router.state.historyAction).toBe("REPLACE");
+    153|     expect(screen.queryByRole("heading", { name: "Más" })).not.toBeInT…
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/auth/SessionRecovery.test.tsx > SessionRecovery > canjea la cookie tras F5 y conserva la ruta privada
+TestingLibraryElementError: Unable to find an accessible element with the role "main" and name "Inicio de organización"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "Unexpected Application Error!":
+  [36m<h2 />[39m
+
+  Name "[vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+  If you need to partially mock a module, you can use "importOriginal" helper inside:":
+  [36m<h3[39m
+    [33mstyle[39m=[32m"font-style: italic;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  code:
+
+  Name "":
+  [36m<code[39m
+    [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<code[39m
+    [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<h2>[39m
+      [0mUnexpected Application Error![0m
+    [36m</h2>[39m
+    [36m<h3[39m
+      [33mstyle[39m=[32m"font-style: italic;"[39m
+    [36m>[39m
+      [0m[vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+    [36m</h3>[39m
+    [36m<pre[39m
+      [33mstyle[39m=[32m"padding: 0.5rem; background-color: rgba(200, 200, 200, 0.5);"[39m
+    [36m>[39m
+      [0mError: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22)[0m
+    [36m</pre>[39m
+    [36m<p>[39m
+      [0m💿 Hey developer 👋[0m
+    [36m</p>[39m
+    [36m<p>[39m
+      [0mYou can provide a way better UX than this when your app throws errors by providing your own [0m
+      [36m<code[39m
+        [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+      [36m>[39m
+        [0mErrorBoundary[0m
+      [36m</code>[39m
+      [0m or[0m
+      [0m [0m
+      [36m<code[39m
+        [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+      [36m>[39m
+        [0merrorElement[0m
+      [36m</code>[39m
+      [0m prop on your route.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ useCurrentUser src/auth/useCurrentUser.ts:12:27
+     10| export function useCurrentUser() {
+     11|   // FormatProvider también se renderiza aislado en campos y tests sin…
+     12|   const auth = useContext(AuthContext);
+       |                           ^
+     13|   return useQuery({
+     14|     queryKey: currentUserQueryKey,
+ ❯ AccessRoute src/auth/AccessRoute.tsx:16:24
+ ❯ Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:28571:20
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom-client.development.js:8030:22
+ ❯ updateFunctionComponent node_modules/react-dom/cjs/react-dom-client.development.js:10569:19
+ ❯ beginWork node_modules/react-dom/cjs/react-dom-client.development.js:12205:18
+ ❯ runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:1048:13
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/auth/SessionRecovery.test.tsx:109:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/auth/SessionRecovery.test.tsx > SessionRecovery > canjea la cookie tras F5 en Cuentas conservando el acceso y la ruta de Plataforma
+TestingLibraryElementError: Unable to find an accessible element with the role "main" and name "Cuentas de plataforma"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "Unexpected Application Error!":
+  [36m<h2 />[39m
+
+  Name "[vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+  If you need to partially mock a module, you can use "importOriginal" helper inside:":
+  [36m<h3[39m
+    [33mstyle[39m=[32m"font-style: italic;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  code:
+
+  Name "":
+  [36m<code[39m
+    [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<code[39m
+    [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<h2>[39m
+      [0mUnexpected Application Error![0m
+    [36m</h2>[39m
+    [36m<h3[39m
+      [33mstyle[39m=[32m"font-style: italic;"[39m
+    [36m>[39m
+      [0m[vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+    [36m</h3>[39m
+    [36m<pre[39m
+      [33mstyle[39m=[32m"padding: 0.5rem; background-color: rgba(200, 200, 200, 0.5);"[39m
+    [36m>[39m
+      [0mError: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22)[0m
+    [36m</pre>[39m
+    [36m<p>[39m
+      [0m💿 Hey developer 👋[0m
+    [36m</p>[39m
+    [36m<p>[39m
+      [0mYou can provide a way better UX than this when your app throws errors by providing your own [0m
+      [36m<code[39m
+        [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+      [36m>[39m
+        [0mErrorBoundary[0m
+      [36m</code>[39m
+      [0m or[0m
+      [0m [0m
+      [36m<code[39m
+        [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+      [36m>[39m
+        [0merrorElement[0m
+      [36m</code>[39m
+      [0m prop on your route.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ useCurrentUser src/auth/useCurrentUser.ts:12:27
+     10| export function useCurrentUser() {
+     11|   // FormatProvider también se renderiza aislado en campos y tests sin…
+     12|   const auth = useContext(AuthContext);
+       |                           ^
+     13|   return useQuery({
+     14|     queryKey: currentUserQueryKey,
+ ❯ AccessRoute src/auth/AccessRoute.tsx:16:24
+ ❯ Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:28571:20
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom-client.development.js:8030:22
+ ❯ updateFunctionComponent node_modules/react-dom/cjs/react-dom-client.development.js:10569:19
+ ❯ beginWork node_modules/react-dom/cjs/react-dom-client.development.js:12205:18
+ ❯ runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:1048:13
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/auth/SessionRecovery.test.tsx:137:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/auth/SessionRecovery.test.tsx > SessionRecovery > omite el iframe cuando ya hay un usuario en memoria
+TestingLibraryElementError: Unable to find role="main" and name "Inicio de organización"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<h2>[39m
+      [0mUnexpected Application Error![0m
+    [36m</h2>[39m
+    [36m<h3[39m
+      [33mstyle[39m=[32m"font-style: italic;"[39m
+    [36m>[39m
+      [0m[vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+    [36m</h3>[39m
+    [36m<pre[39m
+      [33mstyle[39m=[32m"padding: 0.5rem; background-color: rgba(200, 200, 200, 0.5);"[39m
+    [36m>[39m
+      [0mError: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22)[0m
+    [36m</pre>[39m
+    [36m<p>[39m
+      [0m💿 Hey developer 👋[0m
+    [36m</p>[39m
+    [36m<p>[39m
+      [0mYou can provide a way better UX than this when your app throws errors by providing your own [0m
+      [36m<code[39m
+        [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+      [36m>[39m
+        [0mErrorBoundary[0m
+      [36m</code>[39m
+      [0m or[0m
+      [0m [0m
+      [36m<code[39m
+        [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+      [36m>[39m
+        [0merrorElement[0m
+      [36m</code>[39m
+      [0m prop on your route.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<h2>[39m
+      [0mUnexpected Application Error![0m
+    [36m</h2>[39m
+    [36m<h3[39m
+      [33mstyle[39m=[32m"font-style: italic;"[39m
+    [36m>[39m
+      [0m[vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+    [36m</h3>[39m
+    [36m<pre[39m
+      [33mstyle[39m=[32m"padding: 0.5rem; background-color: rgba(200, 200, 200, 0.5);"[39m
+    [36m>[39m
+      [0mError: [vitest] No "AuthContext" export is defined on the "react-oidc-context" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+    at VitestMocker.createError (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:63:17)
+    at Object.get (file:///C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/node_modules/vitest/dist/chunks/index.D4dXTzh9.js:340:16)
+    at useCurrentUser (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/useCurrentUser.ts:12:27)
+    at AccessRoute (C:/Users/ezequ/source/repos/ArquitecturaBaseMutitenantFront/src/auth/AccessRoute.tsx:16:24)
+    at Object.react_stack_bottom_frame (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Users\ezequ\source\repos\ArquitecturaBaseMutitenantFront\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22)[0m
+    [36m</pre>[39m
+    [36m<p>[39m
+      [0m💿 Hey developer 👋[0m
+    [36m</p>[39m
+    [36m<p>[39m
+      [0mYou can provide a way better UX than this when your app throws errors by providing your own [0m
+      [36m<code[39m
+        [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+      [36m>[39m
+        [0mErrorBoundary[0m
+      [36m</code>[39m
+      [0m or[0m
+      [0m [0m
+      [36m<code[39m
+        [33mstyle[39m=[32m"padding: 2px 4px; background-color: rgba(200, 200, 200, 0.5);"[39m
+      [36m>[39m
+        [0merrorElement[0m
+      [36m</code>[39m
+      [0m prop on your route.[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ useCurrentUser src/auth/useCurrentUser.ts:12:27
+     10| export function useCurrentUser() {
+     11|   // FormatProvider también se renderiza aislado en campos y tests sin…
+     12|   const auth = useContext(AuthContext);
+       |                           ^
+     13|   return useQuery({
+     14|     queryKey: currentUserQueryKey,
+ ❯ AccessRoute src/auth/AccessRoute.tsx:16:24
+ ❯ Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:28571:20
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom-client.development.js:8030:22
+ ❯ updateFunctionComponent node_modules/react-dom/cjs/react-dom-client.development.js:10569:19
+ ❯ beginWork node_modules/react-dom/cjs/react-dom-client.development.js:12205:18
+ ❯ runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:1048:13
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/auth/SessionRecovery.test.tsx:155:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  3 failed | 338 passed (341)
+      Tests  5 failed | 3543 passed (3548)
+   Start at  01:11:43
+   Duration  145.16s (tests 54%, environment 19%, setup 14%, import 9%, transform 3%)
+
+    Isolate  341 workers spawned · ~1.77s startup each (spawn + environment, per file)
+             at least ~30.03s faster with isolate: false — reuses workers across files instead of one per file
+
+test exit 1

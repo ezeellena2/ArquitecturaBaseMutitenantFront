@@ -1,0 +1,48 @@
+Sin guardar: apagado
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Catálogos
+Inicio / Gestión de formularios / Catálogos / Motivos de visita
+1
+L
+Lucía Fernández
+Grupo Delta
+Nuevo catálogo
+
+Cancelar
+Crear catálogo
+El catálogo
+
+Escritas a mano · Texto
+
+Nombre *
+Nombre del catálogo
+Descripción
+Opcional
+Así lo ve quien lo recibe
+Una opción
+Varias
+×
+Formulario
+Pregunta
+Elegí una opción
+Enviar
+Opciones
+Agregar opción
+Importar
+Exportar
+Descargar la plantilla
+Ordenar por…
+Guardá el catálogo antes.
+Generar los códigos que faltan
+Todavía no hay opciones.

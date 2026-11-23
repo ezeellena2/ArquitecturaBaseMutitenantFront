@@ -1,0 +1,33 @@
+Borrar una opción
+9:41
+Motivos de visita
+Activo
+El catálogo
+
+Escritas a mano · Texto
+
+Nombre *
+Motivos de visita
+Descripción
+Por qué se visita a un cliente.
+Opciones
+Agregar opción
+1
+Seguimiento
+SEG
+2
+Venta nueva
+VEN
+3
+Reclamo
+REC
+4
+CobranzaDe baja
+COB
+Reactivar
+¿Borrar «Reclamo»?
+
+Se borra al guardar el catálogo. Hasta entonces se puede restaurar.
+
+Borrar opción
+Cancelar

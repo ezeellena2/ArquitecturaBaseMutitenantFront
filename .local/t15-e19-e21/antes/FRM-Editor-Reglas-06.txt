@@ -1,0 +1,84 @@
+Mandar el PDF a un cliente
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Formularios
+4
+Catálogos
+Inicio / Gestión de formularios / Formularios / Visita a cliente
+3
+L
+Lucía Fernández
+Grupo Delta
+Visita a cliente
+
+Publicado · versión 4
+
+Respuestas 24
+Tablero
+Diseño
+Reglas
+Cuando llega una respuesta
+Historial
+Agregar regla
+Guardar reglas
+1
+
+Se recibe una respuesta
+
+Mandarle un mensaje a quien la cargó
+
+Recibimos Número. Te avisamos cuando la aprueben.
+
+Pedir aprobación a un rol
+Supervisor
+
+2
+Cuándo
+Se aprueba una respuesta
+Si (opcional)
+Agregar condición
+Hacer, en este orden
+Acción 1
+Mandar el PDF a un cliente
+Contacto
+Elegí la pregunta
+Ninguna pregunta de Visita a cliente elige de un catálogo «De los contactos».
+Mensaje
+Agregar dato
+Te mandamos el comprobante de Número.
+Así llega
+Te mandamos el comprobante de VIS-000001.
+Fuera de las 24 horas, con la plantilla
+Comprobante · con documento
+Para mandarlo, «Armar el PDF» tiene que ir antes de esta acción.
+Agregar «Armar el PDF» antes
+Agregar acción
+Listo
+3
+
+Se aprueba una respuesta
+
+Si Monto estimado desde 100.000
+
+Avisar a un rol
+Dueño
+
+Se aprobó Número, de Cliente, por Monto estimado.
+
+4
+
+Se rechaza una respuesta
+
+Mandarle un mensaje a quien la cargó
+
+Rechazaron Número: Motivo del rechazo

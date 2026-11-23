@@ -1,0 +1,1298 @@
+[
+ {
+  "tablero": "FRM-Tablero",
+  "estado": "(inicial)",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -4.4,
+    "ancho": 914,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 577.5,
+      "x2": 639.5,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 899,
+      "x2": 961,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 1220.5,
+      "x2": 1282.6,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 259.5,
+    "afuera": [],
+    "barras": [
+     37.5,
+     0,
+     75,
+     37.5,
+     0,
+     37.5,
+     75,
+     37.5,
+     0,
+     37.5,
+     112.5,
+     37.5,
+     0,
+     75,
+     37.5,
+     37.5,
+     0,
+     75,
+     75,
+     112.5
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": null
+   },
+   {
+    "titulo": "Monto estimado, por día",
+    "sobra": -4.3,
+    "ancho": 439,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 518,
+      "x2": 580.1,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 673.2,
+      "x2": 735.2,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 828.3,
+      "x2": 890.4,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 93.1,
+    "afuera": [],
+    "barras": [
+     58.6,
+     0,
+     41.1,
+     7.3,
+     0,
+     25.3,
+     99,
+     14.5,
+     0,
+     58.6,
+     74.8,
+     0,
+     0,
+     45.9,
+     19.6,
+     7.3,
+     0,
+     35.7,
+     25.3,
+     55.3
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": null
+   }
+  ],
+  "archivo": "FRM-Tablero-inter.png"
+ },
+ {
+  "tablero": "FRM-Tablero",
+  "estado": "Una barra: su cartel",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -4.4,
+    "ancho": 914,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 577.5,
+      "x2": 639.5,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 899,
+      "x2": 961,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 1220.5,
+      "x2": 1282.6,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 259.5,
+    "afuera": [],
+    "barras": [
+     37.5,
+     0,
+     75,
+     37.5,
+     0,
+     37.5,
+     75,
+     37.5,
+     0,
+     37.5,
+     112.5,
+     37.5,
+     0,
+     75,
+     37.5,
+     37.5,
+     0,
+     75,
+     75,
+     112.5
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": {
+     "t": "03/10/2026 · 1 respuesta",
+     "x1": 766,
+     "x2": 910,
+     "y1": 406,
+     "y2": 432,
+     "cardTop": 308,
+     "plotTop": 355
+    }
+   },
+   {
+    "titulo": "Monto estimado, por día",
+    "sobra": -4.3,
+    "ancho": 439,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 518,
+      "x2": 580.1,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 673.2,
+      "x2": 735.2,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 828.3,
+      "x2": 890.4,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 93.1,
+    "afuera": [],
+    "barras": [
+     58.6,
+     0,
+     41.1,
+     7.3,
+     0,
+     25.3,
+     99,
+     14.5,
+     0,
+     58.6,
+     74.8,
+     0,
+     0,
+     45.9,
+     19.6,
+     7.3,
+     0,
+     35.7,
+     25.3,
+     55.3
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": null
+   }
+  ],
+  "archivo": "FRM-Tablero-Una_barra_su_cartel-inter.png"
+ },
+ {
+  "tablero": "FRM-Tablero",
+  "estado": "Por semana",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por semana",
+    "sobra": -4.4,
+    "ancho": 914,
+    "marcas": [
+     {
+      "t": "21/09/2026 – 27/09/2026",
+      "x1": 541,
+      "x2": 676,
+      "w": 135
+     },
+     {
+      "t": "28/09/2026 – 04/10/2026",
+      "x1": 770.7,
+      "x2": 905.6,
+      "w": 135
+     },
+     {
+      "t": "05/10/2026 – 11/10/2026",
+      "x1": 1000.4,
+      "x2": 1135.3,
+      "w": 135
+     },
+     {
+      "t": "12/10/2026 – 15/10/2026",
+      "x1": 1230,
+      "x2": 1365,
+      "w": 135
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 94.7,
+    "afuera": [],
+    "barras": [
+     42.1,
+     98.4,
+     84.3,
+     112.5
+    ],
+    "conTitle": 0,
+    "deCols": 4,
+    "cartel": null
+   },
+   {
+    "titulo": "Monto estimado, por día",
+    "sobra": -4.3,
+    "ancho": 439,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 518,
+      "x2": 580.1,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 673.2,
+      "x2": 735.2,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 828.3,
+      "x2": 890.4,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 93.1,
+    "afuera": [],
+    "barras": [
+     58.6,
+     0,
+     41.1,
+     7.3,
+     0,
+     25.3,
+     99,
+     14.5,
+     0,
+     58.6,
+     74.8,
+     0,
+     0,
+     45.9,
+     19.6,
+     7.3,
+     0,
+     35.7,
+     25.3,
+     55.3
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": null
+   }
+  ],
+  "archivo": "FRM-Tablero-Por_semana-inter.png"
+ },
+ {
+  "tablero": "FRM-Tablero-19",
+  "estado": "(inicial)",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -4.4,
+    "ancho": 914,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 577.5,
+      "x2": 639.5,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 899,
+      "x2": 961,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 1220.5,
+      "x2": 1282.6,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 259.5,
+    "afuera": [],
+    "barras": [
+     84.3,
+     0,
+     84.3,
+     56.3,
+     56.3,
+     56.3,
+     112.5,
+     28.2,
+     0,
+     84.3,
+     112.5,
+     56.3,
+     84.3,
+     112.5,
+     28.2,
+     0,
+     84.3,
+     112.5,
+     56.3,
+     56.3
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": null
+   },
+   {
+    "titulo": "Total, por día",
+    "sobra": -4.3,
+    "ancho": 439,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 518,
+      "x2": 580.1,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 673.2,
+      "x2": 735.2,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 828.3,
+      "x2": 890.4,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 93.1,
+    "afuera": [],
+    "barras": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     47.4,
+     99,
+     22.6
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": null
+   }
+  ],
+  "archivo": "FRM-Tablero-19-inter.png"
+ },
+ {
+  "tablero": "FRM-Tablero-19",
+  "estado": "Una barra: su cartel",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -4.4,
+    "ancho": 914,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 577.5,
+      "x2": 639.5,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 899,
+      "x2": 961,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 1220.5,
+      "x2": 1282.6,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 259.5,
+    "afuera": [],
+    "barras": [
+     84.3,
+     0,
+     84.3,
+     56.3,
+     56.3,
+     56.3,
+     112.5,
+     28.2,
+     0,
+     84.3,
+     112.5,
+     56.3,
+     84.3,
+     112.5,
+     28.2,
+     0,
+     84.3,
+     112.5,
+     56.3,
+     56.3
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": {
+     "t": "03/10/2026 · 1 respuesta",
+     "x1": 766,
+     "x2": 910,
+     "y1": 402,
+     "y2": 428,
+     "cardTop": 295,
+     "plotTop": 342
+    }
+   },
+   {
+    "titulo": "Total, por día",
+    "sobra": -4.3,
+    "ancho": 439,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 518,
+      "x2": 580.1,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 673.2,
+      "x2": 735.2,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 828.3,
+      "x2": 890.4,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 93.1,
+    "afuera": [],
+    "barras": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     47.4,
+     99,
+     22.6
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": null
+   }
+  ],
+  "archivo": "FRM-Tablero-19-Una_barra_su_cartel-inter.png"
+ },
+ {
+  "tablero": "FRM-Tablero-19",
+  "estado": "Por semana",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por semana",
+    "sobra": -4.4,
+    "ancho": 914,
+    "marcas": [
+     {
+      "t": "21/09/2026 – 27/09/2026",
+      "x1": 541,
+      "x2": 676,
+      "w": 135
+     },
+     {
+      "t": "28/09/2026 – 04/10/2026",
+      "x1": 770.7,
+      "x2": 905.6,
+      "w": 135
+     },
+     {
+      "t": "05/10/2026 – 11/10/2026",
+      "x1": 1000.4,
+      "x2": 1135.3,
+      "w": 135
+     },
+     {
+      "t": "12/10/2026 – 15/10/2026",
+      "x1": 1230,
+      "x2": 1365,
+      "w": 135
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 94.7,
+    "afuera": [],
+    "barras": [
+     19.8,
+     92.7,
+     112.5,
+     72.8
+    ],
+    "conTitle": 0,
+    "deCols": 4,
+    "cartel": null
+   },
+   {
+    "titulo": "Total, por día",
+    "sobra": -4.3,
+    "ancho": 439,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 518,
+      "x2": 580.1,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 673.2,
+      "x2": 735.2,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 828.3,
+      "x2": 890.4,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 93.1,
+    "afuera": [],
+    "barras": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     47.4,
+     99,
+     22.6
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": null
+   }
+  ],
+  "archivo": "FRM-Tablero-19-Por_semana-inter.png"
+ },
+ {
+  "tablero": "FRM-Tablero-21",
+  "estado": "(inicial)",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -4.4,
+    "ancho": 914,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 577.5,
+      "x2": 639.5,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 899,
+      "x2": 961,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 1220.5,
+      "x2": 1282.6,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 259.5,
+    "afuera": [],
+    "barras": [
+     37.5,
+     0,
+     75,
+     37.5,
+     0,
+     37.5,
+     75,
+     37.5,
+     0,
+     37.5,
+     112.5,
+     37.5,
+     0,
+     75,
+     37.5,
+     37.5,
+     0,
+     75,
+     75,
+     112.5
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": null
+   },
+   {
+    "titulo": "Monto estimado, por día",
+    "sobra": -4.3,
+    "ancho": 439,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 518,
+      "x2": 580.1,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 673.2,
+      "x2": 735.2,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 828.3,
+      "x2": 890.4,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 93.1,
+    "afuera": [],
+    "barras": [
+     58.6,
+     0,
+     41.1,
+     7.3,
+     0,
+     25.3,
+     99,
+     14.5,
+     0,
+     58.6,
+     74.8,
+     0,
+     0,
+     45.9,
+     19.6,
+     7.3,
+     0,
+     35.7,
+     25.3,
+     55.3
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": null
+   }
+  ],
+  "archivo": "FRM-Tablero-21-inter.png"
+ },
+ {
+  "tablero": "FRM-Tablero-21",
+  "estado": "Una barra: su cartel",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -4.4,
+    "ancho": 914,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 577.5,
+      "x2": 639.5,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 899,
+      "x2": 961,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 1220.5,
+      "x2": 1282.6,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 259.5,
+    "afuera": [],
+    "barras": [
+     37.5,
+     0,
+     75,
+     37.5,
+     0,
+     37.5,
+     75,
+     37.5,
+     0,
+     37.5,
+     112.5,
+     37.5,
+     0,
+     75,
+     37.5,
+     37.5,
+     0,
+     75,
+     75,
+     112.5
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": {
+     "t": "03/10/2026 · 1 respuesta",
+     "x1": 766,
+     "x2": 910,
+     "y1": 406,
+     "y2": 432,
+     "cardTop": 308,
+     "plotTop": 355
+    }
+   },
+   {
+    "titulo": "Monto estimado, por día",
+    "sobra": -4.3,
+    "ancho": 439,
+    "marcas": [
+     {
+      "t": "28/09/2026",
+      "x1": 518,
+      "x2": 580.1,
+      "w": 62
+     },
+     {
+      "t": "05/10/2026",
+      "x1": 673.2,
+      "x2": 735.2,
+      "w": 62
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 828.3,
+      "x2": 890.4,
+      "w": 62
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 93.1,
+    "afuera": [],
+    "barras": [
+     58.6,
+     0,
+     41.1,
+     7.3,
+     0,
+     25.3,
+     99,
+     14.5,
+     0,
+     58.6,
+     74.8,
+     0,
+     0,
+     45.9,
+     19.6,
+     7.3,
+     0,
+     35.7,
+     25.3,
+     55.3
+    ],
+    "conTitle": 20,
+    "deCols": 20,
+    "cartel": null
+   }
+  ],
+  "archivo": "FRM-Tablero-21-Una_barra_su_cartel-inter.png"
+ },
+ {
+  "tablero": "M-FRM-Tablero",
+  "estado": "(inicial)",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -3.4,
+    "ancho": 332,
+    "marcas": [
+     {
+      "t": "06/10/2026",
+      "x1": 29,
+      "x2": 94,
+      "w": 65
+     },
+     {
+      "t": "09/10/2026",
+      "x1": 111.8,
+      "x2": 176.8,
+      "w": 65
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 213.2,
+      "x2": 278.2,
+      "w": 65
+     },
+     {
+      "t": "15/10/2026",
+      "x1": 296,
+      "x2": 361,
+      "w": 65
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 17.8,
+    "afuera": [],
+    "barras": [
+     110,
+     37,
+     0,
+     73,
+     37,
+     37,
+     0,
+     73,
+     73,
+     110
+    ],
+    "conTitle": 10,
+    "deCols": 10,
+    "cartel": null
+   }
+  ],
+  "archivo": "M-FRM-Tablero-inter.png"
+ },
+ {
+  "tablero": "M-FRM-Tablero",
+  "estado": "Una barra: su cartel",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -3.4,
+    "ancho": 332,
+    "marcas": [
+     {
+      "t": "06/10/2026",
+      "x1": 29,
+      "x2": 94,
+      "w": 65
+     },
+     {
+      "t": "09/10/2026",
+      "x1": 111.8,
+      "x2": 176.8,
+      "w": 65
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 213.2,
+      "x2": 278.2,
+      "w": 65
+     },
+     {
+      "t": "15/10/2026",
+      "x1": 296,
+      "x2": 361,
+      "w": 65
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 17.8,
+    "afuera": [],
+    "barras": [
+     110,
+     37,
+     0,
+     73,
+     37,
+     37,
+     0,
+     73,
+     73,
+     110
+    ],
+    "conTitle": 10,
+    "deCols": 10,
+    "cartel": {
+     "t": "10/10/2026 · 1 respuesta",
+     "x1": 94,
+     "x2": 262,
+     "y1": 443,
+     "y2": 475,
+     "cardTop": 344,
+     "plotTop": 403
+    }
+   }
+  ],
+  "archivo": "M-FRM-Tablero-Una_barra_su_cartel-inter.png"
+ },
+ {
+  "tablero": "M-FRM-Tablero-19",
+  "estado": "(inicial)",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -3.4,
+    "ancho": 332,
+    "marcas": [
+     {
+      "t": "06/10/2026",
+      "x1": 29,
+      "x2": 94,
+      "w": 65
+     },
+     {
+      "t": "09/10/2026",
+      "x1": 111.8,
+      "x2": 176.8,
+      "w": 65
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 213.2,
+      "x2": 278.2,
+      "w": 65
+     },
+     {
+      "t": "15/10/2026",
+      "x1": 296,
+      "x2": 361,
+      "w": 65
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 17.8,
+    "afuera": [],
+    "barras": [
+     110,
+     55,
+     82,
+     110,
+     28,
+     0,
+     82,
+     110,
+     55,
+     55
+    ],
+    "conTitle": 10,
+    "deCols": 10,
+    "cartel": null
+   }
+  ],
+  "archivo": "M-FRM-Tablero-19-inter.png"
+ },
+ {
+  "tablero": "M-FRM-Tablero-19",
+  "estado": "Una barra: su cartel",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -3.4,
+    "ancho": 332,
+    "marcas": [
+     {
+      "t": "06/10/2026",
+      "x1": 29,
+      "x2": 94,
+      "w": 65
+     },
+     {
+      "t": "09/10/2026",
+      "x1": 111.8,
+      "x2": 176.8,
+      "w": 65
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 213.2,
+      "x2": 278.2,
+      "w": 65
+     },
+     {
+      "t": "15/10/2026",
+      "x1": 296,
+      "x2": 361,
+      "w": 65
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 17.8,
+    "afuera": [],
+    "barras": [
+     110,
+     55,
+     82,
+     110,
+     28,
+     0,
+     82,
+     110,
+     55,
+     55
+    ],
+    "conTitle": 10,
+    "deCols": 10,
+    "cartel": {
+     "t": "10/10/2026 · 1 respuesta",
+     "x1": 94,
+     "x2": 262,
+     "y1": 436,
+     "y2": 468,
+     "cardTop": 328,
+     "plotTop": 387
+    }
+   }
+  ],
+  "archivo": "M-FRM-Tablero-19-Una_barra_su_cartel-inter.png"
+ },
+ {
+  "tablero": "M-FRM-Tablero-21",
+  "estado": "(inicial)",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -3.4,
+    "ancho": 332,
+    "marcas": [
+     {
+      "t": "06/10/2026",
+      "x1": 29,
+      "x2": 94,
+      "w": 65
+     },
+     {
+      "t": "09/10/2026",
+      "x1": 111.8,
+      "x2": 176.8,
+      "w": 65
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 213.2,
+      "x2": 278.2,
+      "w": 65
+     },
+     {
+      "t": "15/10/2026",
+      "x1": 296,
+      "x2": 361,
+      "w": 65
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 17.8,
+    "afuera": [],
+    "barras": [
+     110,
+     37,
+     0,
+     73,
+     37,
+     37,
+     0,
+     73,
+     73,
+     110
+    ],
+    "conTitle": 10,
+    "deCols": 10,
+    "cartel": null
+   }
+  ],
+  "archivo": "M-FRM-Tablero-21-inter.png"
+ },
+ {
+  "tablero": "M-FRM-Tablero-21",
+  "estado": "Una barra: su cartel",
+  "fuente": "inter",
+  "errores": [],
+  "medida": [
+   {
+    "titulo": "Cuántas llegaron, por día",
+    "sobra": -3.4,
+    "ancho": 332,
+    "marcas": [
+     {
+      "t": "06/10/2026",
+      "x1": 29,
+      "x2": 94,
+      "w": 65
+     },
+     {
+      "t": "09/10/2026",
+      "x1": 111.8,
+      "x2": 176.8,
+      "w": 65
+     },
+     {
+      "t": "12/10/2026",
+      "x1": 213.2,
+      "x2": 278.2,
+      "w": 65
+     },
+     {
+      "t": "15/10/2026",
+      "x1": 296,
+      "x2": 361,
+      "w": 65
+     }
+    ],
+    "pisadas": 0,
+    "huecoMinimo": 17.8,
+    "afuera": [],
+    "barras": [
+     110,
+     37,
+     0,
+     73,
+     37,
+     37,
+     0,
+     73,
+     73,
+     110
+    ],
+    "conTitle": 10,
+    "deCols": 10,
+    "cartel": {
+     "t": "10/10/2026 · 1 respuesta",
+     "x1": 94,
+     "x2": 262,
+     "y1": 443,
+     "y2": 475,
+     "cardTop": 344,
+     "plotTop": 403
+    }
+   }
+  ],
+  "archivo": "M-FRM-Tablero-21-Una_barra_su_cartel-inter.png"
+ }
+]

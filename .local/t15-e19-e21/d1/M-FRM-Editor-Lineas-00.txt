@@ -1,0 +1,51 @@
+Así lo ve: el bloque al final
+9:41
+Pedido de materiales
+Publicado · versión 3
+Preguntas
+Agregar título
+Agregar bloque
+Agregar pregunta
+1
+Cliente
+Texto corto · Obligatoria
+2
+¿Se concretó la venta?
+Sí o no · Obligatoria
+3
+Motivo
+Elegir una · 3 opciones · Opcional
+4
+Monto
+Número · 2 decimales · 1 condición · Opcional
+5
+Fecha de entrega
+Fecha · Opcional
+6
+Observaciones
+Texto largo · Opcional
+7
+Productos
+Bloque · de 1 a 10 ítems · 3 preguntas
+Preguntas de cada ítem
+Agregar pregunta
+7.1
+Producto
+Elegir de un catálogo · Productos · Obligatoria
+7.2
+Cantidad
+Número · Obligatoria
+7.3
+Importe
+Cálculo · Pesos
+8
+Total
+Cálculo · Pesos
+Descartar
+Guardar cambios
+Así lo ve quien lo recibe
+Pedido de materiales · borrador
+
+Tocá «Enviar» para mandar el formulario.
+
+Enviar

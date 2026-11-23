@@ -1,0 +1,85 @@
+Grupo Delta
+
+Organización
+
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+
+Lucía Fernández
+
+lucia.fernandez@​delta.ejemplo.com
+
+Administración
+Gestión de usuarios
+Usuarios
+Roles y permisos
+Empresas
+Configuración
+Página pública
+WhatsApp
+Asistente
+Auditoría
+Inicio
+/
+Gestión de usuarios
+/
+Roles y permisos
+1
+L
+Lucía Fernández
+Grupo Delta
+Roles y permisos
+
+7 roles · 3 de la organización · 4 de empresas
+
+Crear rol
+Vale en: todos
+Rol▲
+Tipo
+Vale en
+Usuarios
+Permisos
+Acciones
+Dueño
+De sistema
+Toda la organización
+1
+12
+Recursos humanos
+Personalizado
+Toda la organización
+0
+3
+Auditor
+Personalizado
+Toda la organización
+1
+2
+Administrador
+De sistema
+Cada empresa
+2
+2
+Solo lectura
+Personalizado
+Delta S.A.
+4
+1
+Solo lectura
+Personalizado
+Delta Sur S.R.L.
+1
+1
+Solo lectura
+Personalizado
+Delta Norte S.A.
+0
+1
+1–7 de 7
+10
+por página
+Página 1 de 1

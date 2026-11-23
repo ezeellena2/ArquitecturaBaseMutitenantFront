@@ -1,0 +1,87 @@
+Algún ítem con
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Formularios
+4
+Catálogos
+Inicio / Gestión de formularios / Formularios / Pedido de materiales
+3
+L
+Lucía Fernández
+Grupo Delta
+Pedido de materiales
+
+Solo en la app · versión 4
+
+Respuestas 46
+Tablero
+Diseño
+Reglas
+Cuando llega una respuesta
+Historial
+Agregar regla
+Guardar reglas
+1
+Cuándo
+Se recibe una respuesta
+Si (opcional)
+Algún ítem con
+Pregunta
+Productos › ¿Urgente?
+Condición
+Es
+Valor
+Sí
+Agregar condición
+Hacer, en este orden
+Acción 1
+Avisar a un rol
+Rol
+Compras
+Mensaje
+Agregar dato
+Pedido urgente Número, de Cliente:
+Productos
+Así llega
+Pedido urgente PED-000001, de Ejemplo de respuesta:
+1. Caño de 1/2 pulgada · 10 · Sí
+2. Codo de 90° · 25 · No
+Adjuntar el PDF
+Fuera de las 24 horas, con la plantilla
+Aviso de formulario
+Acción 2
+Mandarle un mensaje a quien la cargó
+Mensaje
+Agregar dato
+Recibimos tu pedido urgente Número. Lo preparamos hoy:
+Productos
+Así llega
+Recibimos tu pedido urgente PED-000001. Lo preparamos hoy:
+1. Caño de 1/2 pulgada · 10 · Sí
+2. Codo de 90° · 25 · No
+Adjuntar el PDF
+Fuera de las 24 horas, con la plantilla
+Aviso de formulario
+Agregar acción
+Listo
+2
+
+Se recibe una respuesta
+
+Si algún ítem de Productos con Producto es Caño de 1/2 pulgada y Cantidad desde 100
+
+Avisar a un rol
+Depósito
+
+Número pide caños en cantidad. Revisá el stock:
+Productos

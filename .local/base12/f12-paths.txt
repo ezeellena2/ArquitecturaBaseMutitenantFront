@@ -1,0 +1,12 @@
+src/app/RequirePermission.test.tsx
+src/app/RequirePermission.tsx
+src/app/routes.tsx
+src/areas/business/public-page/pages/PublicPagePage.tsx
+src/areas/business/settings/pages/SettingsPage.tsx
+src/areas/platform/settings/pages/PlatformSettingsPage.tsx
+src/areas/platform/settings/pages/SettingsRoutes.test.tsx
+src/auth/LegalAcceptanceGate.tsx
+src/shared/modules/ModuleRegistry.tsx
+src/shared/ui/FormSkeleton.tsx
+src/shared/ui/PageLoading.test.tsx
+src/shared/ui/PageLoading.tsx

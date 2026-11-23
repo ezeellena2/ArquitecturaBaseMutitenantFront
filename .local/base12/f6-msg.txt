@@ -1,0 +1,15 @@
+feat(textos): «Dar de baja» y «Reactivar», «Borrar» y «Agregar empresa» (F6)
+
+«Dar de baja» y «Reactivar» en todo el sistema, con el estado «De baja»,
+«Dados de baja» o «Dadas de baja»: salen «Deshabilitar», «Inactivar», y en
+los miembros de una empresa, «Quitar» y «Volver a sumar». «Borrar», nunca
+«Eliminar»: la cuenta propia dice «Borrar mi cuenta», con el estado «Por
+borrar», y Plataforma, «¿Borrar la cuenta de …?». En Usuario, «Agregar
+empresa» y «Agregar». En el Inicio, el grupo es «Cuentas por borrar», como el
+tablero.
+
+src/locales/vocabulary.test.ts frena una palabra vieja en los textos en
+español del núcleo y de los módulos. Las pruebas, los scripts de punta a punta
+y el fixture de la cuenta de Plataforma usan las palabras nuevas.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

@@ -1,0 +1,70 @@
+Actividad
+9:41
+VIS-000126
+Aprobada
+Visita a cliente · versión 4
+5 de 10
+Abrir conversación
+Mandada
+Lucía Fernández, desde el chat
+13/10/2026, 11:20
+Recibida
+Por WhatsApp · Tomás Acosta
+13/10/2026, 15:30
+Al recibirla
+Mandarle un mensaje a quien la cargó · Pedir aprobación a un rol
+2 de 2 hechas
+Aprobada
+Lucía Fernández · rol Supervisor
+13/10/2026, 16:05
+Al aprobarla
+Armar el PDF · Mandarle un mensaje a quien la cargó · Mandar por correo · Avisar a un rol
+4 de 4 hechas
+Actividad
+Reglas de la revisión 3
+Al recibirla
+13/10/2026, 11:20
+Se mandó el formulario
+Lucía Fernández, desde el chat
+Hecho
+15:30
+Se respondió el formulario
+Por WhatsApp · Tomás Acosta
+Hecho
+15:30
+Mandarle un mensaje a quien la cargó
+Tomás Acosta
+Recibimos VIS-000126. Te avisamos cuando la aprueben.
+Leído
+15:30
+Se pidió aprobación
+Rol Supervisor
+Hecho
+Aprobación
+16:05
+Lucía Fernández la aprobó
+Aprobada
+Al aprobarla
+16:05
+Armar el PDF
+Comprobante-VIS-000126.pdf
+Hecho
+Ver PDF
+Descargar
+16:05
+Mandarle un mensaje a quien la cargó
+Tomás Acosta, con el PDF
+Aprobaron VIS-000126. Te mandamos el comprobante.
+Entregado
+16:05
+Mandar por correo
+administracion@​delta.ejemplo.com, con el PDF
+Hecho
+16:05
+Avisar a un rol
+Rol Dueño
+Hecho
+Ana Gómez
+Leído
+Martín Paz
+Entregado

@@ -1,0 +1,47 @@
+El detalle
+9:41
+Relevamiento de obra
+De baja · versión 2
+Respuestas
+12
+Tablero
+Diseño
+El formulario
+Nombre *
+Relevamiento de obra
+Texto del botón final *
+Enviar
+Prefijo de numeración *
+REL
+Para quién es *
+Empleados
+Preguntas
+Agregar pregunta
+Agregar título
+1
+Obra
+Texto corto · Obligatoria
+2
+Fecha del relevamiento
+Fecha · Opcional
+Estado de la obra
+3
+¿Hay demoras?
+Sí o no · Opcional
+4
+Avance de la obra
+Número · 0 decimales · Opcional
+5
+Motivo de la demora
+Elegir una · 4 opciones · Opcional
+6
+Observaciones
+Texto largo, hasta 600 caracteres · Opcional
+Reactivar
+De baja
+Relevamiento de obra · versión 2
+
+Lo dio de baja Lucía Fernández el 09/10/2026, 10:12.
+
+En WhatsApp
+Se deprecan cuando venzan los 2 envíos abiertos. El último vence el 10/10/2026 a las 18:40.

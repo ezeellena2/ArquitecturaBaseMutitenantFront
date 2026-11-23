@@ -1,0 +1,36 @@
+Con movimientos: apagado
+9:41
+Motivos de visita
+Activo
+El catálogo
+
+Escritas a mano · Texto
+
+Nombre *
+Motivos de visita
+Descripción
+Por qué se visita a un cliente.
+Opciones
+Agregar opción
+1
+Venta nueva
+VEN
+2
+Seguimiento
+SEG
+3
+Reclamo
+REC
+4
+CobranzaDe baja
+COB
+Reactivar
+Descartar
+Guardar cambios
+Motivos de visita
+Exportar
+Descargar la plantilla
+Ordenar por…
+Primero descartá los cambios de posición.
+Generar los códigos que faltan
+Dar de baja el catálogo

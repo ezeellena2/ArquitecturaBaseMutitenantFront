@@ -1,0 +1,59 @@
+Editar el bloque
+9:41
+Pedido de materiales
+Publicado · versión 3
+Preguntas
+Agregar título
+Agregar bloque
+Agregar pregunta
+1
+Cliente
+Texto corto · Obligatoria
+2
+¿Se concretó la venta?
+Sí o no · Obligatoria
+3
+Motivo
+Elegir una · 3 opciones · Opcional
+4
+Monto
+Número · 2 decimales · 1 condición · Opcional
+5
+Fecha de entrega
+Fecha · Opcional
+6
+Productos
+Bloque · de 1 a 10 ítems · 2 preguntas
+Preguntas de cada ítem
+Agregar pregunta
+6.1
+Producto
+Elegir de un catálogo · Productos · Obligatoria
+6.2
+Cantidad
+Número · Obligatoria
+7
+Total
+Cálculo · Pesos
+8
+Observaciones
+Texto largo · Opcional
+Descartar
+Guardar cambios
+Productos
+Nombre *
+Productos
+Ayuda para quien lo recibe
+Opcional
+Ítems
+Mínimo
+1
+Máximo
+10
+Preguntas de cada ítem
+Producto
+Elegir de un catálogo · Productos · Obligatoria
+Cantidad
+Número · Obligatoria
+ Agregar pregunta
+Listo

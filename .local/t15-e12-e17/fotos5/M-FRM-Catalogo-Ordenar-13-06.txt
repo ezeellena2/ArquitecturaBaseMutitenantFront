@@ -1,0 +1,50 @@
+Orden pendiente por «Rubro»
+9:41
+Proveedores
+Activo
+El catálogo
+
+Escritas a mano · Texto
+
+Nombre *
+Proveedores
+Descripción
+A quiénes se les compra.
+En WhatsApp
+Título · hasta 30 caracteres
+Texto
+Agregar campo
+Descripción · hasta 300
+CUIT
+Zona
+Agregar campo
+Por ejemplo
+Abrasivos del Sur
+30-71234567-1 · Capital
+Se ordenará por «Rubro», de la A a la Z, al guardar.
+Cancelar orden
+Opciones
+Agregar opción
+Agregar campos
+2
+1
+Abrasivos del Sur
+PRV-0001
+2
+Aceros Rosario
+PRV-0002
+3
+Aislantes Norte
+PRV-0003
+4
+Alambres Patagónicos
+PRV-0004
+5
+Aluminios CuyoDe baja
+PRV-0005
+Reactivar
+6
+Andamios Litoral
+PRV-0006
+Descartar
+Guardar cambios

@@ -1,0 +1,59 @@
+Respuesta
+9:41
+PED-000045
+Pedido de materiales · versión 3
+1 de 45
+Abrir conversación
+Mandada
+Lucía Fernández, desde el chat
+15/10/2026, 10:51
+Recibida
+Tomás Acosta, por WhatsApp
+15/10/2026, 11:47
+Respuesta
+Cliente
+Corralón El Puente
+¿Se concretó la venta?
+Sí
+Motivo
+Venta nueva
+Monto
+48.000,00
+Fecha de entrega
+20/10/2026
+Productos
+1
+Caño de 1/2 pulgada
+Precio
+$ 4.200,00
+Cantidad
+10
+Importe
+$ 42.000,00
+2
+Codo de 90°
+Precio
+$ 850,00
+Cantidad
+40
+Importe
+$ 34.000,00
+3
+Cinta de teflón
+Precio
+$ 950,00
+Cantidad
+20
+Importe
+$ 19.000,00
+Total
+$ 143.000,00
+Observaciones
+Pidieron entrega el lunes.
+Actividad
+Se la mandó
+Lucía Fernández, desde el chat
+15/10/2026, 10:51 · Hecho
+La respondió
+Tomás Acosta, por WhatsApp
+11:47 · Hecho

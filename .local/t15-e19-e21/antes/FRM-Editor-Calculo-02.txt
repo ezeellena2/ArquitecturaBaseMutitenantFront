@@ -1,0 +1,113 @@
+La suma de una pregunta del bloque
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Formularios
+Catálogos
+Inicio / Gestión de formularios / Formularios / Pedido de materiales
+1
+L
+Lucía Fernández
+Grupo Delta
+Pedido de materiales
+
+Publicado · versión 3
+
+Descartar
+Guardar cambios
+Publicar en WhatsApp
+Ver vista oficial
+Respuestas 45
+Tablero
+Diseño
+El formulario
+Nombre *
+Pedido de materiales
+Texto del botón final *
+Enviar
+Prefijo de numeración *
+PED
+Para quién es *
+Empleados
+Preguntas
+Agregar título
+Agregar bloque
+Agregar pregunta
+1
+Cliente
+Texto corto · Obligatoria
+2
+¿Se concretó la venta?
+Sí o no · Obligatoria
+3
+Motivo
+Elegir una · 3 opciones · Opcional
+4
+Monto
+Número · 2 decimales · 1 condición · Opcional
+5
+Fecha de entrega
+Fecha · Opcional
+6
+Productos
+Bloque · de 1 a 10 ítems · 2 preguntas
+Preguntas de cada ítem
+Agregar pregunta
+6.1
+Producto
+Elegir de un catálogo · Productos · Obligatoria
+6.2
+Cantidad
+Número · Obligatoria
+7
+Total
+Cálculo · Pesos
+Pregunta *
+Total
+Tipo de respuesta
+Cálculo
+Fórmula
+Suma de Productos · Cantidad × Precio
+×
++
+Monto
+×
+Agregar dato
++
+−
+×
+÷
+(
+)
+Es un monto
+Moneda
+Pesos (ARS)
+Decimales
+2
+Listo
+8
+Observaciones
+Texto largo · Opcional
+Así lo ve quien lo recibe
+×
+Pedido de materiales
+Observaciones (opcional)
+Enviar
+La suma de una pregunta del bloque
+Pregunta del bloque
+Cantidad
+Multiplicar por
+Un campo del catálogo
+Campo de «Producto»
+Precio
+Cancelar
+Agregar

@@ -1,0 +1,105 @@
+Tipos de respuesta: menú
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Gestión de formularios
+Formularios
+4
+Catálogos
+Inicio / Gestión de formularios / Formularios / Visita a cliente
+3
+L
+Lucía Fernández
+Grupo Delta
+Visita a cliente
+
+Publicado · versión 4
+
+Descartar
+Guardar cambios
+Publicar en WhatsApp
+Ver vista oficial
+Respuestas 24
+Tablero
+Diseño
+Reglas
+El formulario
+Nombre *
+Visita a cliente
+Texto del botón final *
+Enviar
+Prefijo de numeración *
+VIS
+Para quién es *
+Empleados
+Preguntas
+Agregar título
+Agregar bloque
+Agregar pregunta
+1
+Cliente
+Texto corto · Obligatoria
+2
+Fecha de la visita
+Fecha · Obligatoria
+3
+Correo del cliente
+Correo · Opcional
+Texto corto
+Texto largo
+Número
+Fecha
+Sí o no
+Correo
+Elegir una
+Elegir varias
+De un catálogo
+Foto
+Documento
+Cálculo
+Ubicación
+Pregunta
+*
+Correo del cliente
+Tipo de respuesta
+Correo
+Ayuda para quien lo recibe
+Opcional
+Obligatoria
+Listo
+4
+¿Se concretó la venta?
+Sí o no · Obligatoria
+5
+Monto estimado
+Número · 2 decimales · 1 condición · Opcional
+6
+Motivo
+Elegir una · 3 opciones · Opcional
+7
+Fallas
+Elegir varias · 4 opciones · Opcional
+8
+Observaciones
+Texto largo · Opcional
+9
+Fotos de la visita
+Foto · hasta 3 · Opcional
+10
+Remito firmado
+Documento · Opcional
+×
+Visita a cliente
+Cliente
+Fecha de la visita
+Correo del cliente (opcional)
+nombre@​ejemplo.com
+Enviar

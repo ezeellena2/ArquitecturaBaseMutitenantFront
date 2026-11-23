@@ -1,0 +1,67 @@
+ArquitecturaBase
+Grupo Delta
+Organización
+Inicio
+WhatsApp
+2
+Gestión de formularios
+Administración
+L
+Lucía Fernández
+lucia.fernandez@​delta.ejemplo.com
+Administración
+Gestión de usuarios
+Empresas
+Configuración
+Página pública
+WhatsApp
+Números
+Bot
+Equipos
+Plantillas
+Asistente
+Auditoría
+Inicio / WhatsApp / Bot
+1
+L
+Lucía Fernández
+Grupo Delta
+Bot
+
+4 opciones en el menú
+
+Configuración
+Recorrido
+Número: 011 15-5555-0100 · Toda la organización
+Respuestas automáticas
+Bienvenida
+La primera vez que alguien escribe
+Fuera de horario
+Lunes a viernes, de 09:00 a 18:00
+Menú
+Agregar opción
+1
+Hacer un pedido
+Pasa a Ventas
+2
+Consultar un pedido
+Pasa a Soporte
+3
+Horarios y dirección
+Contesta: «Estamos en Av. Corrientes 1234, de 9 a 18»
+4
+Hablar con alguien
+Pasa a Atención general
+Además
+Preguntar por promociones
+Al terminar la primera conversación
+Ofrecer vincular su cuenta
+Si el número es de una persona registrada
+Mensajes de empleados
+Pasan a Carga de pedidos, sin menú
+¿Cambiar a «Contesta un texto»?
+
+Se quita el equipo.
+
+Cancelar
+Cambiar

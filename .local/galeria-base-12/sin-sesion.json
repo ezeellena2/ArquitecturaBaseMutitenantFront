@@ -1,0 +1,1515 @@
+{
+  "version": 1,
+  "stage": "12",
+  "issuer": "http://localtest.me:5192",
+  "evidence": "API y sesión ficticias para comparación visual; no acredita E2E ni el back.",
+  "cases": [
+    {
+      "id": "ingreso-correo",
+      "group": "sin-sesion",
+      "board": "Ingreso",
+      "state": "Correo",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona",
+        "cuenta": "Lucía (miembro de Grupo Delta)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Correo",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dconsumer",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Ingresá a tu cuenta",
+          "Ingresar con Google",
+          "WhatsApp"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "status": 200,
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-ingreso-correo",
+      "group": "sin-sesion",
+      "board": "M-Ingreso",
+      "state": "Correo",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona",
+        "cuenta": "Lucía (miembro de Grupo Delta)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Correo",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dconsumer",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Ingresá a tu cuenta",
+          "Ingresar con Google",
+          "WhatsApp"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "status": 200,
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-ingreso-correo-320",
+      "group": "sin-sesion",
+      "board": "M-Ingreso",
+      "state": "Correo",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona",
+        "cuenta": "Lucía (miembro de Grupo Delta)"
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "label": "Correo",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fclient_id%253Dweb%2526access%253Dconsumer",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Ingresá a tu cuenta",
+          "Ingresar con Google",
+          "WhatsApp"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "status": 200,
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "registro-correo",
+      "group": "sin-sesion",
+      "board": "Registro",
+      "state": "Correo",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Correo"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Correo",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Fregistro",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Creá tu cuenta",
+          "Registrarte con Google",
+          "WhatsApp"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "status": 200,
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-registro-correo",
+      "group": "sin-sesion",
+      "board": "M-Registro",
+      "state": "Correo",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Correo"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Correo",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Fregistro",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Creá tu cuenta",
+          "Registrarte con Google",
+          "WhatsApp"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "status": 200,
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-registro-correo-320",
+      "group": "sin-sesion",
+      "board": "M-Registro",
+      "state": "Correo",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Correo"
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "label": "Correo",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Fregistro",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Creá tu cuenta",
+          "Registrarte con Google",
+          "WhatsApp"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "status": 200,
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "registro-empresa-correo",
+      "group": "sin-sesion",
+      "board": "Registro-Empresa",
+      "state": "Correo",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Correo"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Correo",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Fregistro%2Fempresa",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Registrá tu empresa",
+          "Seguir con Google",
+          "WhatsApp"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "status": 200,
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-registro-empresa-correo",
+      "group": "sin-sesion",
+      "board": "M-Registro-Empresa",
+      "state": "Correo",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Correo"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Correo",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Fregistro%2Fempresa",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Registrá tu empresa",
+          "Seguir con Google",
+          "WhatsApp"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "status": 200,
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-registro-empresa-correo-320",
+      "group": "sin-sesion",
+      "board": "M-Registro-Empresa",
+      "state": "Correo",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Correo"
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "label": "Correo",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Fregistro%2Fempresa",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Registrá tu empresa",
+          "Seguir con Google",
+          "WhatsApp"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "status": 200,
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "recuperar-1-el-correo-o-telefono-de-antes",
+      "group": "sin-sesion",
+      "board": "Recuperar",
+      "state": "1. El correo o teléfono de antes",
+      "stateKey": "paso",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "1. El correo o teléfono de antes",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Frecuperar",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Recuperar mi cuenta",
+          "Escribí el correo con el que entrabas."
+        ],
+        "responses": []
+      }
+    },
+    {
+      "id": "m-recuperar-1-el-correo-o-telefono-de-antes",
+      "group": "sin-sesion",
+      "board": "M-Recuperar",
+      "state": "1. El correo o teléfono de antes",
+      "stateKey": "paso",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "1. El correo o teléfono de antes",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Frecuperar",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Recuperar mi cuenta",
+          "Escribí el correo con el que entrabas."
+        ],
+        "responses": []
+      }
+    },
+    {
+      "id": "m-recuperar-1-el-correo-o-telefono-de-antes-320",
+      "group": "sin-sesion",
+      "board": "M-Recuperar",
+      "state": "1. El correo o teléfono de antes",
+      "stateKey": "paso",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "label": "1. El correo o teléfono de antes",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Frecuperar",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Recuperar mi cuenta",
+          "Escribí el correo con el que entrabas."
+        ],
+        "responses": []
+      }
+    },
+    {
+      "id": "aceptar-terminos-cambiaron-los-dos",
+      "group": "sin-sesion",
+      "board": "Aceptar-Terminos",
+      "state": "Cambiaron los dos",
+      "stateKey": "caso",
+      "props": {
+        "caso": "Cambiaron los dos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Cambiaron los dos",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Faceptar-terminos",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-personal",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Actualizamos los términos",
+          "(versión 3)",
+          "(versión 2)"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "firstName": "Lucía",
+              "lastName": "Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "platform": [],
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": null,
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": [
+                {
+                  "id": "7c3f9a52-1d4e-4b8a-9f21-3e6a0c5d8b13",
+                  "kind": "Terms",
+                  "version": 3
+                },
+                {
+                  "id": "4e8b2d71-6a9c-4f35-8d02-b7c1e9f4a6d8",
+                  "kind": "Privacy",
+                  "version": 2
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-aceptar-terminos-cambiaron-los-dos",
+      "group": "sin-sesion",
+      "board": "M-Aceptar-Terminos",
+      "state": "Cambiaron los dos",
+      "stateKey": "caso",
+      "props": {
+        "caso": "Cambiaron los dos"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Cambiaron los dos",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Faceptar-terminos",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-personal",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Actualizamos los términos",
+          "(versión 3)",
+          "(versión 2)"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "firstName": "Lucía",
+              "lastName": "Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "platform": [],
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": null,
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": [
+                {
+                  "id": "7c3f9a52-1d4e-4b8a-9f21-3e6a0c5d8b13",
+                  "kind": "Terms",
+                  "version": 3
+                },
+                {
+                  "id": "4e8b2d71-6a9c-4f35-8d02-b7c1e9f4a6d8",
+                  "kind": "Privacy",
+                  "version": 2
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-aceptar-terminos-cambiaron-los-dos-320",
+      "group": "sin-sesion",
+      "board": "M-Aceptar-Terminos",
+      "state": "Cambiaron los dos",
+      "stateKey": "caso",
+      "props": {
+        "caso": "Cambiaron los dos"
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "label": "Cambiaron los dos",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=visual-personal&route=%2Faceptar-terminos",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "visual-personal",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Actualizamos los términos",
+          "(versión 3)",
+          "(versión 2)"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "status": 200,
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "firstName": "Lucía",
+              "lastName": "Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "platform": [],
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": null,
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": [
+                {
+                  "id": "7c3f9a52-1d4e-4b8a-9f21-3e6a0c5d8b13",
+                  "kind": "Terms",
+                  "version": 3
+                },
+                {
+                  "id": "4e8b2d71-6a9c-4f35-8d02-b7c1e9f4a6d8",
+                  "kind": "Privacy",
+                  "version": 2
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "invitacion-sin-cuenta",
+      "group": "sin-sesion",
+      "board": "Invitacion",
+      "state": "Sin cuenta",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Sin cuenta"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Sin cuenta",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Finvitacion%23invitacion-ficticia",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-10-01T12:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Te sumás a Grupo Delta",
+          "Aceptar invitación"
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "status": 200,
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "5b0e7c34-9a1f-4d62-8e57-2c4b9f1a3d70",
+              "organizationName": "Grupo Delta",
+              "email": "valentina.ruiz@gmail.com",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false,
+              "canUsePhoneCode": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-invitacion-sin-cuenta",
+      "group": "sin-sesion",
+      "board": "M-Invitacion",
+      "state": "Sin cuenta",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Sin cuenta"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Sin cuenta",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Finvitacion%23invitacion-ficticia",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-10-01T12:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Te sumás a Grupo Delta",
+          "Aceptar invitación"
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "status": 200,
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "5b0e7c34-9a1f-4d62-8e57-2c4b9f1a3d70",
+              "organizationName": "Grupo Delta",
+              "email": "valentina.ruiz@gmail.com",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false,
+              "canUsePhoneCode": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "m-invitacion-sin-cuenta-320",
+      "group": "sin-sesion",
+      "board": "M-Invitacion",
+      "state": "Sin cuenta",
+      "stateKey": "estado",
+      "props": {
+        "estado": "Sin cuenta"
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "label": "Sin cuenta",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Finvitacion%23invitacion-ficticia",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-10-01T12:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Te sumás a Grupo Delta",
+          "Aceptar invitación"
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "status": 200,
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "5b0e7c34-9a1f-4d62-8e57-2c4b9f1a3d70",
+              "organizationName": "Grupo Delta",
+              "email": "valentina.ruiz@gmail.com",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false,
+              "canUsePhoneCode": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "landing-con-empresas",
+      "group": "sin-sesion",
+      "board": "Landing",
+      "state": "Con empresas",
+      "stateKey": "empresas",
+      "props": {
+        "empresas": "Con empresas"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Con empresas",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2F",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Para vos",
+          "Sigma S.R.L.",
+          "Ver todas las empresas"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "query": {
+              "page": "1",
+              "pageSize": "10"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "landing-con-empresas-cierre",
+      "group": "sin-sesion",
+      "board": "Landing",
+      "state": "Con empresas",
+      "stateKey": "empresas",
+      "props": {
+        "empresas": "Con empresas"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "label": "Con empresas · el cierre",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2F",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [
+          {
+            "type": "scroll",
+            "role": "heading",
+            "name": "Probalo hoy",
+            "exact": true,
+            "block": "center",
+            "waitFor": "Ver todas las empresas"
+          }
+        ],
+        "readySelector": "main",
+        "readyTexts": [
+          "Para vos",
+          "Sigma S.R.L.",
+          "Ver todas las empresas"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "query": {
+              "page": "1",
+              "pageSize": "10"
+            }
+          }
+        ]
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "selector": "text=Probalo hoy"
+        }
+      ]
+    },
+    {
+      "id": "landing-movil-con-empresas",
+      "group": "sin-sesion",
+      "board": "Landing-Movil",
+      "state": "Con empresas",
+      "stateKey": "empresas",
+      "props": {
+        "empresas": "Con empresas"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Con empresas",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2F",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Para vos",
+          "Sigma S.R.L.",
+          "Ver todas las empresas"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "query": {
+              "page": "1",
+              "pageSize": "10"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "landing-movil-con-empresas-320",
+      "group": "sin-sesion",
+      "board": "Landing-Movil",
+      "state": "Con empresas",
+      "stateKey": "empresas",
+      "props": {
+        "empresas": "Con empresas"
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "label": "Con empresas",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2F",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [],
+        "readySelector": "main",
+        "readyTexts": [
+          "Para vos",
+          "Sigma S.R.L.",
+          "Ver todas las empresas"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "query": {
+              "page": "1",
+              "pageSize": "10"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "landing-movil-con-empresas-cierre",
+      "group": "sin-sesion",
+      "board": "Landing-Movil",
+      "state": "Con empresas",
+      "stateKey": "empresas",
+      "props": {
+        "empresas": "Con empresas"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "label": "Con empresas · el cierre",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2F",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [
+          {
+            "type": "scroll",
+            "role": "heading",
+            "name": "Probalo hoy",
+            "exact": true,
+            "block": "center",
+            "waitFor": "Ver todas las empresas"
+          }
+        ],
+        "readySelector": "main",
+        "readyTexts": [
+          "Para vos",
+          "Sigma S.R.L.",
+          "Ver todas las empresas"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "query": {
+              "page": "1",
+              "pageSize": "10"
+            }
+          }
+        ]
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "selector": "text=Probalo hoy"
+        }
+      ]
+    },
+    {
+      "id": "landing-movil-con-empresas-cierre-320",
+      "group": "sin-sesion",
+      "board": "Landing-Movil",
+      "state": "Con empresas",
+      "stateKey": "empresas",
+      "props": {
+        "empresas": "Con empresas"
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "label": "Con empresas · el cierre",
+      "captureExtent": "viewport",
+      "app": {
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2F",
+        "captureMode": "harness",
+        "site": "main",
+        "userFixture": "anonymous",
+        "now": "2026-11-09T15:00:00Z",
+        "actions": [
+          {
+            "type": "scroll",
+            "role": "heading",
+            "name": "Probalo hoy",
+            "exact": true,
+            "block": "center",
+            "waitFor": "Ver todas las empresas"
+          }
+        ],
+        "readySelector": "main",
+        "readyTexts": [
+          "Para vos",
+          "Sigma S.R.L.",
+          "Ver todas las empresas"
+        ],
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "query": {
+              "page": "1",
+              "pageSize": "10"
+            }
+          }
+        ]
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "selector": "text=Probalo hoy"
+        }
+      ]
+    }
+  ],
+  "pending": []
+}

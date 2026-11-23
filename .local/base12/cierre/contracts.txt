@@ -1,0 +1,6 @@
+
+> arquitecturabase-multitenant-front@0.0.0 contracts:check
+> node scripts/check-contracts.mjs
+
+Generated TypeScript schema matches OpenAPI.
+contracts exit 0

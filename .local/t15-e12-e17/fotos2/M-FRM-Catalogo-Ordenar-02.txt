@@ -1,0 +1,31 @@
+Orden pendiente
+9:41
+Motivos de visita
+Activo
+El catálogo
+
+Escritas a mano · Texto
+
+Nombre *
+Motivos de visita
+Descripción
+Por qué se visita a un cliente.
+Se ordenará por «Código», de la Z a la A, al guardar.
+Cancelar orden
+Opciones
+Agregar opción
+1
+Seguimiento
+SEG
+2
+Venta nueva
+VEN
+3
+Reclamo
+REC
+4
+CobranzaDe baja
+COB
+Reactivar
+Descartar
+Guardar cambios

@@ -1,0 +1,11 @@
+docs/rules/accesos-y-permisos.md
+src/app/otherAccess.test.tsx
+src/app/routes.test.tsx
+src/areas/public/errors/pages/OtherAccessPage.tsx
+src/auth/AccessRoute.test.tsx
+src/auth/AccessRoute.tsx
+src/layouts/MorePage.test.tsx
+src/locales/en/otherAccess.json
+src/locales/es/otherAccess.json
+src/tenancy/useSwitchAccess.test.tsx
+src/tenancy/useSwitchAccess.ts

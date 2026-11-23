@@ -1,0 +1,39 @@
+Con ítems y el total
+9:41
+TA
+Tomás Acosta
+Empleado · Delta S.A.
+13/10/2026
+Hola, Lucía. Ya terminé la visita en Ferretería Rosales.
+10:48
+Lucía Fernández tomó la conversación
+Genial, Tomás. Te mando el pedido de materiales.
+Lucía Fernández · 10:50
+Completá el formulario «Pedido de materiales».
+Pedido de materiales
+Formulario · versión 3 · botón «Abrir formulario»
+Lucía Fernández · 10:51 · Leído
+Pedido de materiales
+Respuesta del formulario
+Cliente
+Corralón El Puente
+¿Se concretó la venta?
+Sí
+Motivo
+Venta nueva
+Monto
+48.000,00
+Fecha de entrega
+20/10/2026
+Productos
+1. Caño de 1/2 pulgada · 10 · $ 42.000,00
+2. Codo de 90° · 40 · $ 34.000,00
+3. Cinta de teflón · 20 · $ 19.000,00
+Total
+$ 143.000,00
+Observaciones
+Pidieron entrega el lunes.
+Guardada como
+PED-000045
+11:47
+Mensaje

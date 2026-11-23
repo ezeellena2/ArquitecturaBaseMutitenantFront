@@ -1,0 +1,199 @@
+
+> arquitecturabase-multitenant-front@0.0.0 build
+> tsc -b && vite build
+
+[36mvite v8.3.0 [32mbuilding client environment for production...[36m[39m
+transforming...
+✓ 4242 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/silent-renew.html                                       0.56 kB │ gzip:   0.28 kB
+dist/index.html                                              2.85 kB │ gzip:   0.86 kB
+dist/assets/inter-vietnamese-wght-normal-CBcvBZtf.woff2     10.25 kB
+dist/assets/inter-greek-ext-wght-normal-DlzME5K_.woff2      11.23 kB
+dist/assets/inter-cyrillic-wght-normal-DqGufNeO.woff2       18.74 kB
+dist/assets/inter-greek-wght-normal-CkhJZR-_.woff2          18.99 kB
+dist/assets/inter-cyrillic-ext-wght-normal-BOeWTOD4.woff2   25.96 kB
+dist/assets/inter-latin-wght-normal-Dx4kXJAl.woff2          48.25 kB
+dist/assets/inter-latin-ext-wght-normal-DO1Apj_S.woff2      85.06 kB
+dist/assets/main-CxJfjJZX.css                              120.87 kB │ gzip:  20.69 kB
+dist/assets/values-D9BJS4JY.js                               0.06 kB │ gzip:   0.08 kB
+dist/assets/phrase--VrcJS2E.js                               0.08 kB │ gzip:   0.10 kB
+dist/assets/PlatformAssistantUsagePage-Deiti3EO.js           0.09 kB │ gzip:   0.09 kB
+dist/assets/OrganizationAssistantUsagePage-CZ5BsYEr.js       0.09 kB │ gzip:   0.09 kB
+dist/assets/sameList-D6lB0WiW.js                             0.10 kB │ gzip:   0.10 kB
+dist/assets/silentRenew-CQ2sgfrW.js                          0.11 kB │ gzip:   0.12 kB
+dist/assets/orderLike-DfAKqIg6.js                            0.12 kB │ gzip:   0.11 kB
+dist/assets/initials-BTQB74De.js                             0.13 kB │ gzip:   0.13 kB
+dist/assets/check-BGj2bd-c.js                                0.15 kB │ gzip:   0.15 kB
+dist/assets/chevron-left-BKRddSN1.js                         0.15 kB │ gzip:   0.16 kB
+dist/assets/toSearch-DiTiGQmY.js                             0.17 kB │ gzip:   0.16 kB
+dist/assets/power-DUCp2pmR.js                                0.20 kB │ gzip:   0.18 kB
+dist/assets/useMountedRef-B6-U0_Rl.js                        0.22 kB │ gzip:   0.18 kB
+dist/assets/rotate-cw-CGDjUGyo.js                            0.23 kB │ gzip:   0.20 kB
+dist/assets/formErrors-D2hEj2PD.js                           0.23 kB │ gzip:   0.19 kB
+dist/assets/useDebouncedValue-BgOrOjcv.js                    0.25 kB │ gzip:   0.20 kB
+dist/assets/copy-BAnsAVCj.js                                 0.26 kB │ gzip:   0.22 kB
+dist/assets/EmailField-fvgcD9eE.js                           0.27 kB │ gzip:   0.21 kB
+dist/assets/eye-ZyNowdqd.js                                  0.28 kB │ gzip:   0.22 kB
+dist/assets/circle-alert-QMxXFZFb.js                         0.30 kB │ gzip:   0.21 kB
+dist/assets/pencil-D94xPniE.js                               0.30 kB │ gzip:   0.24 kB
+dist/assets/cultureName-bYB2EQl5.js                          0.31 kB │ gzip:   0.19 kB
+dist/assets/useQueryUpdate-6X457G4G.js                       0.32 kB │ gzip:   0.26 kB
+dist/assets/personalData-DCqknoz4.js                         0.32 kB │ gzip:   0.24 kB
+dist/assets/accessErrorStore-BuFGpcEh.js                     0.33 kB │ gzip:   0.23 kB
+dist/assets/useMediaQuery-BErt621w.js                        0.35 kB │ gzip:   0.24 kB
+dist/assets/trash-BfhMRvZW.js                                0.37 kB │ gzip:   0.24 kB
+dist/assets/returnUrl--Q-maoaB.js                            0.41 kB │ gzip:   0.26 kB
+dist/assets/useCurrentUser-Dmu2N8r9.js                       0.44 kB │ gzip:   0.32 kB
+dist/assets/useRestoreFocusOnClose-CKKErxcx.js               0.50 kB │ gzip:   0.33 kB
+dist/assets/useCursorList-DukJRGub.js                        0.50 kB │ gzip:   0.35 kB
+dist/assets/useDialogFailure-DvoIuHoX.js                     0.51 kB │ gzip:   0.37 kB
+dist/assets/legalVersions-aC5-PH9g.js                        0.51 kB │ gzip:   0.30 kB
+dist/assets/useEditForm-BMNfJArU.js                          0.53 kB │ gzip:   0.33 kB
+dist/assets/EmptyValue-Kp_nh4wE.js                           0.53 kB │ gzip:   0.32 kB
+dist/assets/LoadMore-BOopnjTL.js                             0.58 kB │ gzip:   0.38 kB
+dist/assets/paperclip-BVSPdcsv.js                            0.61 kB │ gzip:   0.35 kB
+dist/assets/InfoButton-DMWCuHzv.js                           0.64 kB │ gzip:   0.38 kB
+dist/assets/useFilters-CRhqvlRV.js                           0.67 kB │ gzip:   0.40 kB
+dist/assets/StatusDot-RyWdMFbd.js                            0.69 kB │ gzip:   0.41 kB
+dist/assets/google-mark-DHwieoLB.js                          0.75 kB │ gzip:   0.40 kB
+dist/assets/rolldown-runtime-qXqUbbKo.js                     0.77 kB │ gzip:   0.44 kB
+dist/assets/NotificationsPage-BxO2qiLs.js                    0.78 kB │ gzip:   0.50 kB
+dist/assets/countries-Dxtveiyf.js                            0.78 kB │ gzip:   0.45 kB
+dist/assets/CurrencySelect-D-n3wfs2.js                       0.78 kB │ gzip:   0.47 kB
+dist/assets/usePublicSite-CXNnJwbs.js                        0.79 kB │ gzip:   0.50 kB
+dist/assets/PlatformBotPage-DIXliqIy.js                      0.80 kB │ gzip:   0.49 kB
+dist/assets/Banner-DI31lzeL.js                               0.81 kB │ gzip:   0.46 kB
+dist/assets/PlatformAssistantSettingsPage-DVjVyAi-.js        0.82 kB │ gzip:   0.50 kB
+dist/assets/textarea-Cr0S_a4O.js                             0.83 kB │ gzip:   0.47 kB
+dist/assets/OrganizationAssistantSettingsPage-CKJCtur8.js    0.85 kB │ gzip:   0.51 kB
+dist/assets/FixedActions-bWb7IRmY.js                         0.88 kB │ gzip:   0.49 kB
+dist/assets/access-DSLJnBRx.js                               0.88 kB │ gzip:   0.45 kB
+dist/assets/PlatformAccessResult-BPNDjTdq.js                 0.99 kB │ gzip:   0.58 kB
+dist/assets/TimeZoneSelect-DD8mu3wY.js                       0.99 kB │ gzip:   0.58 kB
+dist/assets/AuthStatus-BtThYCEK.js                           1.04 kB │ gzip:   0.52 kB
+dist/assets/FormSkeleton-CE2VQGUD.js                         1.08 kB │ gzip:   0.51 kB
+dist/assets/CultureSelect-D4k-Z4kk.js                        1.11 kB │ gzip:   0.65 kB
+dist/assets/ConfirmDialog-jPHIL4SI.js                        1.14 kB │ gzip:   0.63 kB
+dist/assets/DetailGrid-C3izvJsD.js                           1.17 kB │ gzip:   0.52 kB
+dist/assets/publicSite-Y9wF8A-Z.js                           1.18 kB │ gzip:   0.66 kB
+dist/assets/CheckboxField-D4GxLWVB.js                        1.18 kB │ gzip:   0.66 kB
+dist/assets/LegalDocumentPage-DUIYJkBH.js                    1.21 kB │ gzip:   0.68 kB
+dist/assets/broadcasts-DTIaeUQ_.js                           1.22 kB │ gzip:   0.58 kB
+dist/assets/usePagination-DdlRFNnM.js                        1.24 kB │ gzip:   0.67 kB
+dist/assets/usePagedQuery-Clmgw-cz.js                        1.25 kB │ gzip:   0.65 kB
+dist/assets/StorefrontUnavailablePage-BUdvVFJK.js            1.28 kB │ gzip:   0.63 kB
+dist/assets/DateField-XMy1SZfT.js                            1.28 kB │ gzip:   0.74 kB
+dist/assets/NumberField-DZsg_IDZ.js                          1.31 kB │ gzip:   0.74 kB
+dist/assets/ReadOnlyField-QwdsCYEf.js                        1.35 kB │ gzip:   0.68 kB
+dist/assets/SegmentedControl-NdFAXADv.js                     1.41 kB │ gzip:   0.72 kB
+dist/assets/RemoteOptionControls-B6ff0Kkc.js                 1.41 kB │ gzip:   0.77 kB
+dist/assets/useBroadcastActions-CFB5SXcR.js                  1.43 kB │ gzip:   0.72 kB
+dist/assets/resourceOptions-CdH0PBWP.js                      1.45 kB │ gzip:   0.57 kB
+dist/assets/accountContract-DfpuWWpl.js                      1.47 kB │ gzip:   0.62 kB
+dist/assets/authConfig-T5LVVHez.js                           1.50 kB │ gzip:   0.79 kB
+dist/assets/PublicPage-Ct-RDsoX.js                           1.50 kB │ gzip:   0.83 kB
+dist/assets/assistant-Kp6piYFT.js                            1.64 kB │ gzip:   0.68 kB
+dist/assets/ImportantNotice-COR_uE7K.js                      1.74 kB │ gzip:   0.75 kB
+dist/assets/List-DvpdqFZJ.js                                 1.79 kB │ gzip:   0.69 kB
+dist/assets/useResourceOptions-DSSEljDu.js                   1.93 kB │ gzip:   1.06 kB
+dist/assets/authDestinationForm-Raym02R7.js                  2.00 kB │ gzip:   0.88 kB
+dist/assets/AppBar-B9X22x_J.js                               2.21 kB │ gzip:   0.93 kB
+dist/assets/BusinessAccessResult-3BOZ_DF2.js                 2.27 kB │ gzip:   0.96 kB
+dist/assets/CallbackPage-BU-brSms.js                         2.40 kB │ gzip:   1.14 kB
+dist/assets/Section-T6p5k-1Y.js                              2.45 kB │ gzip:   0.98 kB
+dist/assets/Pagination-DrGAADCL.js                           2.45 kB │ gzip:   1.06 kB
+dist/assets/LegalDocumentsPage-BoH2SngU.js                   2.65 kB │ gzip:   1.18 kB
+dist/assets/GoogleButton-Cne9oB47.js                         2.67 kB │ gzip:   1.22 kB
+dist/assets/LoadErrorPage-XYtk_ja1.js                        2.81 kB │ gzip:   1.12 kB
+dist/assets/DirectoryPage-DTvdFB-4.js                        2.82 kB │ gzip:   1.22 kB
+dist/assets/useResourceAction-CsDrhZsu.js                    2.86 kB │ gzip:   1.17 kB
+dist/assets/ReasonDialog-BBnsgW5N.js                         2.95 kB │ gzip:   1.42 kB
+dist/assets/columns-Dwa-d_7z.js                              3.21 kB │ gzip:   1.23 kB
+dist/assets/MultiSelect-HQf58zzO.js                          3.32 kB │ gzip:   1.58 kB
+dist/assets/PublicPageCard-rlw7_Q78.js                       3.38 kB │ gzip:   1.29 kB
+dist/assets/SessionStatusPage-Dlv7h2us.js                    3.38 kB │ gzip:   1.08 kB
+dist/assets/BroadcastsPage-DdjkhDN0.js                       3.42 kB │ gzip:   1.47 kB
+dist/assets/columns-CXdbE3Y3.js                              3.42 kB │ gzip:   1.28 kB
+dist/assets/useEditPage-DWbIXpio.js                          3.45 kB │ gzip:   1.37 kB
+dist/assets/columns-CrPjQWjc.js                              3.76 kB │ gzip:   1.44 kB
+dist/assets/AcceptTermsPage-CaraSacS.js                      3.84 kB │ gzip:   1.73 kB
+dist/assets/MorePage-DUi0Xj-M.js                             4.18 kB │ gzip:   1.58 kB
+dist/assets/OrganizationAssistantPolicy-BzEydrXV.js          4.34 kB │ gzip:   1.91 kB
+dist/assets/BotPage-B0761Wf8.js                              4.43 kB │ gzip:   1.85 kB
+dist/assets/RolesPage-BNtrBqPs.js                            4.53 kB │ gzip:   2.05 kB
+dist/assets/ContactPage-BrjS-0kG.js                          4.59 kB │ gzip:   1.81 kB
+dist/assets/AuthLayout-BIl1RZCp.js                           4.71 kB │ gzip:   1.58 kB
+dist/assets/CompaniesPage-DmaUuszG.js                        4.77 kB │ gzip:   2.04 kB
+dist/assets/switch-BsarvLA8.js                               4.81 kB │ gzip:   1.95 kB
+dist/assets/checkbox-CvMGWedd.js                             4.85 kB │ gzip:   2.02 kB
+dist/assets/PhoneField-Dq3wWHza.js                           4.90 kB │ gzip:   2.12 kB
+dist/assets/SecurityAuditPage-DSOOHbjQ.js                    5.70 kB │ gzip:   2.37 kB
+dist/assets/PlatformNumberPage-DFfMoTWd.js                   5.75 kB │ gzip:   2.05 kB
+dist/assets/errors-C6RvgLZO.js                               6.03 kB │ gzip:   2.45 kB
+dist/assets/ChatsPage-Dwr28Wp1.js                            6.13 kB │ gzip:   2.73 kB
+dist/assets/errors-6MH3xn3l.js                               6.26 kB │ gzip:   2.01 kB
+dist/assets/AuditPage-C5MCABPM.js                            6.32 kB │ gzip:   2.52 kB
+dist/assets/SearchSelect-BnHQfCER.js                         6.61 kB │ gzip:   2.75 kB
+dist/assets/BroadcastPage-DmmluMBA.js                        7.23 kB │ gzip:   2.80 kB
+dist/assets/MessagesPage-CjYLIRYL.js                         7.37 kB │ gzip:   3.04 kB
+dist/assets/SignupPage-BK0Dn-JC.js                           7.38 kB │ gzip:   2.91 kB
+dist/assets/RadioGroupField-DvHKcqim.js                      7.68 kB │ gzip:   3.00 kB
+dist/assets/AddLoginMethodDialog-axlVuRYF.js                 7.99 kB │ gzip:   3.12 kB
+dist/assets/PublishLegalVersionPage-DQL27UmU.js              8.55 kB │ gzip:   3.21 kB
+dist/assets/LoadPhonesPage-of7okkOU.js                       8.55 kB │ gzip:   3.46 kB
+dist/assets/RecoverAccountPage-CixMaf_F.js                   8.59 kB │ gzip:   3.20 kB
+dist/assets/InvitationPage-b80CP2MC.js                       8.74 kB │ gzip:   3.12 kB
+dist/assets/ContactsPage-BHj0lL5p.js                         9.54 kB │ gzip:   3.75 kB
+dist/assets/AccountsPage-Dyyfoptg.js                         9.62 kB │ gzip:   3.69 kB
+dist/assets/EditContactDialog-sv4U6z8i.js                    9.74 kB │ gzip:   3.55 kB
+dist/assets/permissionCatalog-COQEw41w.js                    9.99 kB │ gzip:   3.40 kB
+dist/assets/CompanyDialog-BrPPTY5a.js                       10.00 kB │ gzip:   3.69 kB
+dist/assets/NumbersPage-BZBtVK8U.js                         10.03 kB │ gzip:   3.50 kB
+dist/assets/useConnectNumber-oUkuLVk1.js                    10.07 kB │ gzip:   3.97 kB
+dist/assets/FilterBar-Bqzi4vOa.js                           10.59 kB │ gzip:   3.29 kB
+dist/assets/TeamsPage-DW862eMe.js                           10.86 kB │ gzip:   4.00 kB
+dist/assets/OrganizationsPage-CcLqb6y8.js                   11.21 kB │ gzip:   3.89 kB
+dist/assets/UsersPage-LnNETk7o.js                           12.06 kB │ gzip:   4.39 kB
+dist/assets/RecoveriesPage-C0RCgABI.js                      12.39 kB │ gzip:   4.41 kB
+dist/assets/AccountPage-Cla74c7W.js                         12.76 kB │ gzip:   4.59 kB
+dist/assets/RoleEditorPage-BLt8wBj2.js                      12.84 kB │ gzip:   4.81 kB
+dist/assets/PublicPagePage-Bb3Jx31o.js                      12.95 kB │ gzip:   4.44 kB
+dist/assets/SettingsPage-Do74rJA6.js                        13.07 kB │ gzip:   4.40 kB
+dist/assets/AssistantUsagePage-BzcrE6VV.js                  13.14 kB │ gzip:   4.36 kB
+dist/assets/TemplatesPage-DwtxOp55.js                       13.62 kB │ gzip:   4.90 kB
+dist/assets/BusinessSignupPage-DF8pmpDn.js                  13.86 kB │ gzip:   4.69 kB
+dist/assets/NewBroadcastPage-CWkhICJX.js                    14.82 kB │ gzip:   5.04 kB
+dist/assets/PlatformSettingsPage-CgdLmACq.js                14.90 kB │ gzip:   4.76 kB
+dist/assets/AccountPage-CTefCFFe.js                         18.83 kB │ gzip:   5.76 kB
+dist/assets/CompanyDetailPage-DhQkiLQp.js                   19.00 kB │ gzip:   5.99 kB
+dist/assets/UserDetailPage-D6B-xHD4.js                      20.13 kB │ gzip:   6.70 kB
+dist/assets/OrganizationPage-DmUuTN4x.js                    21.43 kB │ gzip:   6.34 kB
+dist/assets/select--oCNMfut.js                              23.44 kB │ gzip:   7.90 kB
+dist/assets/BotScreen-CVW__nhR.js                           27.82 kB │ gzip:   8.20 kB
+dist/assets/ConversationItem-Dek6-W8Y.js                    32.08 kB │ gzip:   9.87 kB
+dist/assets/phoneInput-ChDPT4qz.js                          35.05 kB │ gzip:   8.05 kB
+dist/assets/zod-6vKGDoDm.js                                 37.05 kB │ gzip:  13.04 kB
+dist/assets/AssistantSettingsEditor-BUIwf5ZJ.js             37.90 kB │ gzip:  10.46 kB
+dist/assets/query-D7wqrz70.js                               39.35 kB │ gzip:  11.41 kB
+dist/assets/LoginPage-DelMO576.js                           42.31 kB │ gzip:  14.66 kB
+dist/assets/i18n-Cxd_zK_4.js                                59.62 kB │ gzip:  19.93 kB
+dist/assets/oidc-rhyGHN7C.js                                71.27 kB │ gzip:  18.48 kB
+dist/assets/button-PkJr58gh.js                              89.15 kB │ gzip:  28.49 kB
+dist/assets/useReferenceData-zPleqlC7.js                    92.12 kB │ gzip:  26.27 kB
+dist/assets/useFormat-B8BPBS2Q.js                          138.22 kB │ gzip:  35.83 kB
+dist/assets/TaxIdNumberField-BFpq8PTS.js                   193.06 kB │ gzip:  49.60 kB
+dist/assets/3x2-BTef6W6o.js                                235.89 kB │ gzip:  53.98 kB
+dist/assets/main-Cr8Dyw2A.js                               251.33 kB │ gzip:  64.23 kB
+dist/assets/dist-DhYvz-Km.js                               265.38 kB │ gzip:  76.92 kB
+dist/assets/react-Cvs42B5y.js                              313.31 kB │ gzip:  98.67 kB
+dist/assets/RegisteredAssistant-tJnESTAT.js                591.27 kB │ gzip: 175.50 kB
+
+[33m[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[32m✓ built in 1.37s[39m
+build exit 0

@@ -1,0 +1,25 @@
+Solo lectura
+9:41
+Motivos de visita
+Activo
+El catálogo
+
+Escritas a mano · Texto
+
+Nombre
+Motivos de visita
+Descripción
+Por qué se visita a un cliente.
+Opciones
+1
+Seguimiento
+SEG
+2
+Venta nueva
+VEN
+3
+Reclamo
+REC
+4
+CobranzaDe baja
+COB

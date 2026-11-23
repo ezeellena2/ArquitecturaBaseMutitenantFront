@@ -1,0 +1,52 @@
+ArquitecturaBase
+Plataforma
+Administración del servicio
+Inicio
+Gestión
+WhatsApp
+2
+Administración
+M
+Martín Sosa
+martin.sosa@​arquitecturabase.ejemplo.com
+Administración
+Auditoría
+Documentos legales
+Configuración
+WhatsApp
+Número
+Bot
+Equipos
+Plantillas
+Asistente
+Plataforma / WhatsApp / Bot
+2
+M
+Martín Sosa
+Plataforma
+Bot
+
+4 opciones en el menú
+
+Configuración
+Recorrido
+Respuestas automáticas
+Bienvenida
+La primera vez que alguien escribe
+Fuera de horario
+Lunes a viernes, de 09:00 a 18:00
+Menú
+Agregar opción
+1
+Entrar a mi cuenta
+Manda el botón para ir al ingreso
+Del sistema
+2
+No me llega el código
+Pasa a Soporte
+3
+Registrar mi empresa
+Pasa a Altas
+4
+Hablar con alguien
+Pasa a Soporte
